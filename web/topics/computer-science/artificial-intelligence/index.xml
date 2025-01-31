@@ -1,58 +1,36 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Computer science/Artificial intelligence on Archive of Formal Proofs
-    </title>
+    <title>Computer science/Artificial intelligence</title>
     <link>https://isa-afp.org/topics/computer-science/artificial-intelligence/</link>
-    <description>
-        Recent content in Computer science/Artificial intelligence 
-        on Archive of Formal Proofs
-    </description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language>
-    
-      <atom:link href="https://isa-afp.org/topics/computer-science/artificial-intelligence/index.xml" rel="self" type="application/rss+xml" />
-        <item>
+    <description>AFP entries in Artificial intelligence</description>
+         <item>
           <title>Automation of Boolos&#39; Curious Inference in Isabelle/HOL</title>
           <link>https://isa-afp.org/entries/Boolos_Curious_Inference_Automated.html</link>
           <pubDate>Mon, 05 Dec 2022 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Boolos_Curious_Inference_Automated.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Automation of Boolos&#39; Curious Inference in Isabelle/HOL</title>
-          <link>https://isa-afp.org/entries/Boolos_Curious_Inference_Automated.html</link>
-          <pubDate>Mon, 05 Dec 2022 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Boolos_Curious_Inference_Automated.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>AI Planning Languages Semantics</title>
-          <link>https://isa-afp.org/entries/AI_Planning_Languages_Semantics.html</link>
-          <pubDate>Thu, 29 Oct 2020 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/AI_Planning_Languages_Semantics.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>AI Planning Languages Semantics</title>
-          <link>https://isa-afp.org/entries/AI_Planning_Languages_Semantics.html</link>
-          <pubDate>Thu, 29 Oct 2020 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/AI_Planning_Languages_Semantics.html</guid>
-          <description></description>
+          <description>Automation of Boolos&#39; Curious Inference in Isabelle/HOL in the AFP</description>
+            <category>Logic</category>
+            <category>Logic/Philosophical aspects</category>
+            <category>Logic/Computability</category>
+            <category>Logic/Proof theory</category>
+            <category>Logic/General logic</category>
+            <category>Computer science/Artificial intelligence</category>
+            <category>Tools</category>
         </item>
         <item>
           <title>Verified SAT-Based AI Planning</title>
           <link>https://isa-afp.org/entries/Verified_SAT_Based_AI_Planning.html</link>
           <pubDate>Thu, 29 Oct 2020 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Verified_SAT_Based_AI_Planning.html</guid>
-          <description></description>
+          <description>Verified SAT-Based AI Planning in the AFP</description>
+            <category>Computer science/Artificial intelligence</category>
         </item>
         <item>
-          <title>Verified SAT-Based AI Planning</title>
-          <link>https://isa-afp.org/entries/Verified_SAT_Based_AI_Planning.html</link>
+          <title>AI Planning Languages Semantics</title>
+          <link>https://isa-afp.org/entries/AI_Planning_Languages_Semantics.html</link>
           <pubDate>Thu, 29 Oct 2020 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Verified_SAT_Based_AI_Planning.html</guid>
-          <description></description>
+          <description>AI Planning Languages Semantics in the AFP</description>
+            <category>Computer science/Artificial intelligence</category>
         </item>
+
   </channel>
 </rss>

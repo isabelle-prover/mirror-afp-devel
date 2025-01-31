@@ -1,38 +1,31 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>smola on Archive of Formal Proofs
-    </title>
+    <title>Filip Smola</title>
     <link>https://isa-afp.org/authors/smola/</link>
-    <description>
-        Recent content in smola 
-        on Archive of Formal Proofs
-    </description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language>
-    
-      <lastBuildDate>Mon, 25 Nov 2024 00:00:00 +0000</lastBuildDate>
-      <atom:link href="https://isa-afp.org/authors/smola/index.xml" rel="self" type="application/rss+xml" />
-        <item>
-          <title>Deep Embedding of Intuitionistic Linear Logic</title>
-          <link>https://isa-afp.org/entries/ILL.html</link>
-          <pubDate>Mon, 25 Nov 2024 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/ILL.html</guid>
-          <description></description>
-        </item>
+    <description>AFP entries of Filip Smola</description>
         <item>
           <title>Linear Resources and Process Compositions</title>
           <link>https://isa-afp.org/entries/ProcessComposition.html</link>
           <pubDate>Mon, 25 Nov 2024 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/ProcessComposition.html</guid>
-          <description></description>
+          <description>Linear Resources and Process Compositions in the AFP</description>
+            <category>Computer science/Concurrency/Process calculi</category>
+        </item>
+        <item>
+          <title>Deep Embedding of Intuitionistic Linear Logic</title>
+          <link>https://isa-afp.org/entries/ILL.html</link>
+          <pubDate>Mon, 25 Nov 2024 00:00:00 +0000</pubDate>
+          <description>Deep Embedding of Intuitionistic Linear Logic in the AFP</description>
+            <category>Logic/General logic/Modal logic</category>
         </item>
         <item>
           <title>Hyperdual Numbers and Forward Differentiation</title>
           <link>https://isa-afp.org/entries/Hyperdual.html</link>
           <pubDate>Fri, 31 Dec 2021 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Hyperdual.html</guid>
-          <description></description>
+          <description>Hyperdual Numbers and Forward Differentiation in the AFP</description>
+            <category>Mathematics/Algebra</category>
+            <category>Mathematics/Analysis</category>
         </item>
+
   </channel>
 </rss>

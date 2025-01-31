@@ -1,24 +1,16 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>nagele on Archive of Formal Proofs
-    </title>
+    <title>Julian Nagele</title>
     <link>https://isa-afp.org/authors/nagele/</link>
-    <description>
-        Recent content in nagele 
-        on Archive of Formal Proofs
-    </description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language>
-    
-      <lastBuildDate>Thu, 30 Jun 2016 00:00:00 +0000</lastBuildDate>
-      <atom:link href="https://isa-afp.org/authors/nagele/index.xml" rel="self" type="application/rss+xml" />
+    <description>AFP entries of Julian Nagele</description>
         <item>
           <title>The Z Property</title>
           <link>https://isa-afp.org/entries/Rewriting_Z.html</link>
           <pubDate>Thu, 30 Jun 2016 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Rewriting_Z.html</guid>
-          <description></description>
+          <description>The Z Property in the AFP</description>
+            <category>Logic/Rewriting</category>
         </item>
+
   </channel>
 </rss>

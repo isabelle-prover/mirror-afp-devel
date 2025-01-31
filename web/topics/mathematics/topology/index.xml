@@ -1,156 +1,84 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Mathematics/Topology on Archive of Formal Proofs
-    </title>
+    <title>Mathematics/Topology</title>
     <link>https://isa-afp.org/topics/mathematics/topology/</link>
-    <description>
-        Recent content in Mathematics/Topology 
-        on Archive of Formal Proofs
-    </description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language>
-    
-      <atom:link href="https://isa-afp.org/topics/mathematics/topology/index.xml" rel="self" type="application/rss+xml" />
-        <item>
-          <title>The Lévy-Prokhorov Metric</title>
-          <link>https://isa-afp.org/entries/Levy_Prokhorov_Metric.html</link>
+    <description>AFP entries in Topology</description>
+         <item>
+          <title>The Riesz Representation Theorem</title>
+          <link>https://isa-afp.org/entries/Riesz_Representation.html</link>
           <pubDate>Tue, 04 Jun 2024 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Levy_Prokhorov_Metric.html</guid>
-          <description></description>
+          <description>The Riesz Representation Theorem in the AFP</description>
+            <category>Mathematics/Topology</category>
+            <category>Mathematics/Measure and integration</category>
         </item>
         <item>
           <title>The Lévy-Prokhorov Metric</title>
           <link>https://isa-afp.org/entries/Levy_Prokhorov_Metric.html</link>
           <pubDate>Tue, 04 Jun 2024 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Levy_Prokhorov_Metric.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>The Riesz Representation Theorem</title>
-          <link>https://isa-afp.org/entries/Riesz_Representation.html</link>
-          <pubDate>Tue, 04 Jun 2024 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Riesz_Representation.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>The Riesz Representation Theorem</title>
-          <link>https://isa-afp.org/entries/Riesz_Representation.html</link>
-          <pubDate>Tue, 04 Jun 2024 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Riesz_Representation.html</guid>
-          <description></description>
+          <description>The Lévy-Prokhorov Metric in the AFP</description>
+            <category>Mathematics/Measure and integration</category>
+            <category>Mathematics/Topology</category>
+            <category>Mathematics/Probability theory</category>
         </item>
         <item>
           <title>The Stone-Cech Compactification</title>
           <link>https://isa-afp.org/entries/Stone_Cech.html</link>
           <pubDate>Mon, 27 May 2024 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Stone_Cech.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>The Stone-Cech Compactification</title>
-          <link>https://isa-afp.org/entries/Stone_Cech.html</link>
-          <pubDate>Mon, 27 May 2024 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Stone_Cech.html</guid>
-          <description></description>
+          <description>The Stone-Cech Compactification in the AFP</description>
+            <category>Mathematics/Topology</category>
         </item>
         <item>
           <title>Euler&#39;s Polyhedron Formula</title>
           <link>https://isa-afp.org/entries/Euler_Polyhedron_Formula.html</link>
           <pubDate>Sat, 16 Sep 2023 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Euler_Polyhedron_Formula.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Euler&#39;s Polyhedron Formula</title>
-          <link>https://isa-afp.org/entries/Euler_Polyhedron_Formula.html</link>
-          <pubDate>Sat, 16 Sep 2023 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Euler_Polyhedron_Formula.html</guid>
-          <description></description>
+          <description>Euler&#39;s Polyhedron Formula in the AFP</description>
+            <category>Mathematics/Topology</category>
         </item>
         <item>
           <title>Standard Borel Spaces</title>
           <link>https://isa-afp.org/entries/Standard_Borel_Spaces.html</link>
           <pubDate>Tue, 08 Aug 2023 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Standard_Borel_Spaces.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Standard Borel Spaces</title>
-          <link>https://isa-afp.org/entries/Standard_Borel_Spaces.html</link>
-          <pubDate>Tue, 08 Aug 2023 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Standard_Borel_Spaces.html</guid>
-          <description></description>
+          <description>Standard Borel Spaces in the AFP</description>
+            <category>Mathematics/Analysis</category>
+            <category>Mathematics/Topology</category>
         </item>
         <item>
           <title>Simplicial Complexes and Boolean functions</title>
           <link>https://isa-afp.org/entries/Simplicial_complexes_and_boolean_functions.html</link>
           <pubDate>Mon, 29 Nov 2021 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Simplicial_complexes_and_boolean_functions.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Simplicial Complexes and Boolean functions</title>
-          <link>https://isa-afp.org/entries/Simplicial_complexes_and_boolean_functions.html</link>
-          <pubDate>Mon, 29 Nov 2021 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Simplicial_complexes_and_boolean_functions.html</guid>
-          <description></description>
+          <description>Simplicial Complexes and Boolean functions in the AFP</description>
+            <category>Mathematics/Topology</category>
         </item>
         <item>
           <title>Smooth Manifolds</title>
           <link>https://isa-afp.org/entries/Smooth_Manifolds.html</link>
           <pubDate>Mon, 22 Oct 2018 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Smooth_Manifolds.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Smooth Manifolds</title>
-          <link>https://isa-afp.org/entries/Smooth_Manifolds.html</link>
-          <pubDate>Mon, 22 Oct 2018 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Smooth_Manifolds.html</guid>
-          <description></description>
+          <description>Smooth Manifolds in the AFP</description>
+            <category>Mathematics/Analysis</category>
+            <category>Mathematics/Topology</category>
         </item>
         <item>
           <title>The Kuratowski Closure-Complement Theorem</title>
           <link>https://isa-afp.org/entries/Kuratowski_Closure_Complement.html</link>
           <pubDate>Thu, 26 Oct 2017 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Kuratowski_Closure_Complement.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>The Kuratowski Closure-Complement Theorem</title>
-          <link>https://isa-afp.org/entries/Kuratowski_Closure_Complement.html</link>
-          <pubDate>Thu, 26 Oct 2017 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Kuratowski_Closure_Complement.html</guid>
-          <description></description>
+          <description>The Kuratowski Closure-Complement Theorem in the AFP</description>
+            <category>Mathematics/Topology</category>
         </item>
         <item>
           <title>Knot Theory</title>
           <link>https://isa-afp.org/entries/Knot_Theory.html</link>
           <pubDate>Wed, 20 Jan 2016 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Knot_Theory.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Knot Theory</title>
-          <link>https://isa-afp.org/entries/Knot_Theory.html</link>
-          <pubDate>Wed, 20 Jan 2016 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Knot_Theory.html</guid>
-          <description></description>
+          <description>Knot Theory in the AFP</description>
+            <category>Mathematics/Topology</category>
         </item>
         <item>
           <title>Topology</title>
           <link>https://isa-afp.org/entries/Topology.html</link>
           <pubDate>Mon, 26 Apr 2004 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Topology.html</guid>
-          <description></description>
+          <description>Topology in the AFP</description>
+            <category>Mathematics/Topology</category>
         </item>
-        <item>
-          <title>Topology</title>
-          <link>https://isa-afp.org/entries/Topology.html</link>
-          <pubDate>Mon, 26 Apr 2004 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Topology.html</guid>
-          <description></description>
-        </item>
+
   </channel>
 </rss>

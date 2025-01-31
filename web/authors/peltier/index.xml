@@ -1,31 +1,23 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>peltier on Archive of Formal Proofs
-    </title>
+    <title>Nicolas Peltier</title>
     <link>https://isa-afp.org/authors/peltier/</link>
-    <description>
-        Recent content in peltier 
-        on Archive of Formal Proofs
-    </description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language>
-    
-      <lastBuildDate>Tue, 06 Sep 2016 00:00:00 +0000</lastBuildDate>
-      <atom:link href="https://isa-afp.org/authors/peltier/index.xml" rel="self" type="application/rss+xml" />
+    <description>AFP entries of Nicolas Peltier</description>
         <item>
           <title>A Variant of the Superposition Calculus</title>
           <link>https://isa-afp.org/entries/SuperCalc.html</link>
           <pubDate>Tue, 06 Sep 2016 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/SuperCalc.html</guid>
-          <description></description>
+          <description>A Variant of the Superposition Calculus in the AFP</description>
+            <category>Logic/Proof theory</category>
         </item>
         <item>
           <title>Propositional Resolution and Prime Implicates Generation</title>
           <link>https://isa-afp.org/entries/PropResPI.html</link>
           <pubDate>Fri, 11 Mar 2016 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/PropResPI.html</guid>
-          <description></description>
+          <description>Propositional Resolution and Prime Implicates Generation in the AFP</description>
+            <category>Logic/General logic/Mechanization of proofs</category>
         </item>
+
   </channel>
 </rss>

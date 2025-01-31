@@ -1,31 +1,23 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>kobayashi on Archive of Formal Proofs
-    </title>
+    <title>Hidetsune Kobayashi</title>
     <link>https://isa-afp.org/authors/kobayashi/</link>
-    <description>
-        Recent content in kobayashi 
-        on Archive of Formal Proofs
-    </description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language>
-    
-      <lastBuildDate>Wed, 08 Aug 2007 00:00:00 +0000</lastBuildDate>
-      <atom:link href="https://isa-afp.org/authors/kobayashi/index.xml" rel="self" type="application/rss+xml" />
+    <description>AFP entries of Hidetsune Kobayashi</description>
         <item>
           <title>Fundamental Properties of Valuation Theory and Hensel&#39;s Lemma</title>
           <link>https://isa-afp.org/entries/Valuation.html</link>
           <pubDate>Wed, 08 Aug 2007 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Valuation.html</guid>
-          <description></description>
+          <description>Fundamental Properties of Valuation Theory and Hensel&#39;s Lemma in the AFP</description>
+            <category>Mathematics/Algebra</category>
         </item>
         <item>
           <title>Groups, Rings and Modules</title>
           <link>https://isa-afp.org/entries/Group-Ring-Module.html</link>
           <pubDate>Tue, 18 May 2004 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Group-Ring-Module.html</guid>
-          <description></description>
+          <description>Groups, Rings and Modules in the AFP</description>
+            <category>Mathematics/Algebra</category>
         </item>
+
   </channel>
 </rss>

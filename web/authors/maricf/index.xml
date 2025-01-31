@@ -1,45 +1,37 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>maricf on Archive of Formal Proofs
-    </title>
+    <title>Filip Marić</title>
     <link>https://isa-afp.org/authors/maricf/</link>
-    <description>
-        Recent content in maricf 
-        on Archive of Formal Proofs
-    </description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language>
-    
-      <lastBuildDate>Mon, 16 Dec 2019 00:00:00 +0000</lastBuildDate>
-      <atom:link href="https://isa-afp.org/authors/maricf/index.xml" rel="self" type="application/rss+xml" />
-        <item>
-          <title>Complex Geometry</title>
-          <link>https://isa-afp.org/entries/Complex_Geometry.html</link>
-          <pubDate>Mon, 16 Dec 2019 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Complex_Geometry.html</guid>
-          <description></description>
-        </item>
+    <description>AFP entries of Filip Marić</description>
         <item>
           <title>Poincaré Disc Model</title>
           <link>https://isa-afp.org/entries/Poincare_Disc.html</link>
           <pubDate>Mon, 16 Dec 2019 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Poincare_Disc.html</guid>
-          <description></description>
+          <description>Poincaré Disc Model in the AFP</description>
+            <category>Mathematics/Geometry</category>
+        </item>
+        <item>
+          <title>Complex Geometry</title>
+          <link>https://isa-afp.org/entries/Complex_Geometry.html</link>
+          <pubDate>Mon, 16 Dec 2019 00:00:00 +0000</pubDate>
+          <description>Complex Geometry in the AFP</description>
+            <category>Mathematics/Geometry</category>
         </item>
         <item>
           <title>An Incremental Simplex Algorithm with Unsatisfiable Core Generation</title>
           <link>https://isa-afp.org/entries/Simplex.html</link>
           <pubDate>Fri, 24 Aug 2018 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Simplex.html</guid>
-          <description></description>
+          <description>An Incremental Simplex Algorithm with Unsatisfiable Core Generation in the AFP</description>
+            <category>Computer science/Algorithms/Optimization</category>
         </item>
         <item>
           <title>Formal Verification of Modern SAT Solvers</title>
           <link>https://isa-afp.org/entries/SATSolverVerification.html</link>
           <pubDate>Wed, 23 Jul 2008 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/SATSolverVerification.html</guid>
-          <description></description>
+          <description>Formal Verification of Modern SAT Solvers in the AFP</description>
+            <category>Computer science/Algorithms</category>
         </item>
+
   </channel>
 </rss>

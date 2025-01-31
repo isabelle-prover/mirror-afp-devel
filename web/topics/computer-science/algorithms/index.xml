@@ -1,730 +1,398 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Computer science/Algorithms on Archive of Formal Proofs
-    </title>
+    <title>Computer science/Algorithms</title>
     <link>https://isa-afp.org/topics/computer-science/algorithms/</link>
-    <description>
-        Recent content in Computer science/Algorithms 
-        on Archive of Formal Proofs
-    </description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language>
-    
-      <atom:link href="https://isa-afp.org/topics/computer-science/algorithms/index.xml" rel="self" type="application/rss+xml" />
-        <item>
+    <description>AFP entries in Algorithms</description>
+         <item>
           <title>Formally Verified Suffix Array Construction</title>
           <link>https://isa-afp.org/entries/SuffixArray.html</link>
           <pubDate>Wed, 25 Sep 2024 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/SuffixArray.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Formally Verified Suffix Array Construction</title>
-          <link>https://isa-afp.org/entries/SuffixArray.html</link>
-          <pubDate>Wed, 25 Sep 2024 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/SuffixArray.html</guid>
-          <description></description>
+          <description>Formally Verified Suffix Array Construction in the AFP</description>
+            <category>Computer science/Algorithms</category>
+            <category>Computer science/Data structures</category>
         </item>
         <item>
           <title>The Karatsuba Square Root Algorithm</title>
           <link>https://isa-afp.org/entries/Karatsuba_Sqrt.html</link>
           <pubDate>Wed, 18 Sep 2024 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Karatsuba_Sqrt.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>The Karatsuba Square Root Algorithm</title>
-          <link>https://isa-afp.org/entries/Karatsuba_Sqrt.html</link>
-          <pubDate>Wed, 18 Sep 2024 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Karatsuba_Sqrt.html</guid>
-          <description></description>
+          <description>The Karatsuba Square Root Algorithm in the AFP</description>
+            <category>Computer science/Algorithms</category>
         </item>
         <item>
           <title>Parallel Shear Sort</title>
           <link>https://isa-afp.org/entries/Parallel_Shear_Sort.html</link>
           <pubDate>Tue, 17 Sep 2024 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Parallel_Shear_Sort.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Parallel Shear Sort</title>
-          <link>https://isa-afp.org/entries/Parallel_Shear_Sort.html</link>
-          <pubDate>Tue, 17 Sep 2024 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Parallel_Shear_Sort.html</guid>
-          <description></description>
+          <description>Parallel Shear Sort in the AFP</description>
+            <category>Computer science/Algorithms</category>
         </item>
         <item>
           <title>Alpha-Beta Pruning</title>
           <link>https://isa-afp.org/entries/Alpha_Beta_Pruning.html</link>
           <pubDate>Thu, 13 Jun 2024 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Alpha_Beta_Pruning.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Alpha-Beta Pruning</title>
-          <link>https://isa-afp.org/entries/Alpha_Beta_Pruning.html</link>
-          <pubDate>Thu, 13 Jun 2024 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Alpha_Beta_Pruning.html</guid>
-          <description></description>
+          <description>Alpha-Beta Pruning in the AFP</description>
+            <category>Computer science/Algorithms</category>
+            <category>Mathematics/Games and economics</category>
         </item>
         <item>
           <title>Formalizing Coppersmith&#39;s Method</title>
           <link>https://isa-afp.org/entries/Coppersmith_Method.html</link>
           <pubDate>Mon, 10 Jun 2024 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Coppersmith_Method.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Formalizing Coppersmith&#39;s Method</title>
-          <link>https://isa-afp.org/entries/Coppersmith_Method.html</link>
-          <pubDate>Mon, 10 Jun 2024 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Coppersmith_Method.html</guid>
-          <description></description>
+          <description>Formalizing Coppersmith&#39;s Method in the AFP</description>
+            <category>Computer science/Algorithms</category>
+            <category>Computer science/Security/Cryptography</category>
         </item>
         <item>
           <title>Partial Correctness of the Top-Down Solver</title>
           <link>https://isa-afp.org/entries/Top_Down_Solver.html</link>
           <pubDate>Thu, 09 May 2024 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Top_Down_Solver.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Partial Correctness of the Top-Down Solver</title>
-          <link>https://isa-afp.org/entries/Top_Down_Solver.html</link>
-          <pubDate>Thu, 09 May 2024 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Top_Down_Solver.html</guid>
-          <description></description>
+          <description>Partial Correctness of the Top-Down Solver in the AFP</description>
+            <category>Computer science/Algorithms</category>
         </item>
         <item>
           <title>LL(1) Parser Generator</title>
           <link>https://isa-afp.org/entries/LL1_Parser.html</link>
           <pubDate>Thu, 02 May 2024 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/LL1_Parser.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>LL(1) Parser Generator</title>
-          <link>https://isa-afp.org/entries/LL1_Parser.html</link>
-          <pubDate>Thu, 02 May 2024 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/LL1_Parser.html</guid>
-          <description></description>
+          <description>LL(1) Parser Generator in the AFP</description>
+            <category>Computer science/Algorithms</category>
+            <category>Computer science/Programming languages/Compiling</category>
         </item>
         <item>
           <title>A Verified Proof Checker for Metric First-Order Temporal Logic</title>
           <link>https://isa-afp.org/entries/MFOTL_Checker.html</link>
           <pubDate>Tue, 16 Apr 2024 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/MFOTL_Checker.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>A Verified Proof Checker for Metric First-Order Temporal Logic</title>
-          <link>https://isa-afp.org/entries/MFOTL_Checker.html</link>
-          <pubDate>Tue, 16 Apr 2024 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/MFOTL_Checker.html</guid>
-          <description></description>
+          <description>A Verified Proof Checker for Metric First-Order Temporal Logic in the AFP</description>
+            <category>Computer science/Data management systems</category>
+            <category>Computer science/Algorithms</category>
+            <category>Logic/General logic/Temporal logic</category>
         </item>
         <item>
           <title>Verified QBF Solving</title>
           <link>https://isa-afp.org/entries/QBF_Solver_Verification.html</link>
           <pubDate>Wed, 06 Mar 2024 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/QBF_Solver_Verification.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Verified QBF Solving</title>
-          <link>https://isa-afp.org/entries/QBF_Solver_Verification.html</link>
-          <pubDate>Wed, 06 Mar 2024 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/QBF_Solver_Verification.html</guid>
-          <description></description>
+          <description>Verified QBF Solving in the AFP</description>
+            <category>Computer science/Algorithms</category>
+            <category>Logic/General logic/Classical propositional logic</category>
         </item>
         <item>
           <title>Karatsuba Multiplication on Integers</title>
           <link>https://isa-afp.org/entries/Karatsuba.html</link>
           <pubDate>Mon, 19 Feb 2024 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Karatsuba.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Karatsuba Multiplication on Integers</title>
-          <link>https://isa-afp.org/entries/Karatsuba.html</link>
-          <pubDate>Mon, 19 Feb 2024 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Karatsuba.html</guid>
-          <description></description>
+          <description>Karatsuba Multiplication on Integers in the AFP</description>
+            <category>Computer science/Algorithms</category>
+            <category>Computer science/Algorithms/Mathematical</category>
         </item>
         <item>
           <title>Knuth–Morris–Pratt String Search</title>
           <link>https://isa-afp.org/entries/KnuthMorrisPratt.html</link>
           <pubDate>Mon, 27 Nov 2023 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/KnuthMorrisPratt.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Knuth–Morris–Pratt String Search</title>
-          <link>https://isa-afp.org/entries/KnuthMorrisPratt.html</link>
-          <pubDate>Mon, 27 Nov 2023 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/KnuthMorrisPratt.html</guid>
-          <description></description>
+          <description>Knuth–Morris–Pratt String Search in the AFP</description>
+            <category>Computer science/Algorithms</category>
         </item>
         <item>
           <title>Earley Parser</title>
           <link>https://isa-afp.org/entries/Earley_Parser.html</link>
           <pubDate>Sun, 16 Jul 2023 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Earley_Parser.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Earley Parser</title>
-          <link>https://isa-afp.org/entries/Earley_Parser.html</link>
-          <pubDate>Sun, 16 Jul 2023 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Earley_Parser.html</guid>
-          <description></description>
+          <description>Earley Parser in the AFP</description>
+            <category>Computer science/Algorithms</category>
         </item>
         <item>
           <title>A Verified Efficient Implementation of the Weighted Path Order</title>
           <link>https://isa-afp.org/entries/Efficient_Weighted_Path_Order.html</link>
           <pubDate>Thu, 01 Jun 2023 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Efficient_Weighted_Path_Order.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>A Verified Efficient Implementation of the Weighted Path Order</title>
-          <link>https://isa-afp.org/entries/Efficient_Weighted_Path_Order.html</link>
-          <pubDate>Thu, 01 Jun 2023 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Efficient_Weighted_Path_Order.html</guid>
-          <description></description>
+          <description>A Verified Efficient Implementation of the Weighted Path Order in the AFP</description>
+            <category>Logic/Rewriting</category>
+            <category>Computer science/Algorithms</category>
         </item>
         <item>
           <title>Combinatorial Enumeration Algorithms</title>
           <link>https://isa-afp.org/entries/Combinatorial_Enumeration_Algorithms.html</link>
           <pubDate>Fri, 11 Nov 2022 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Combinatorial_Enumeration_Algorithms.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Combinatorial Enumeration Algorithms</title>
-          <link>https://isa-afp.org/entries/Combinatorial_Enumeration_Algorithms.html</link>
-          <pubDate>Fri, 11 Nov 2022 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Combinatorial_Enumeration_Algorithms.html</guid>
-          <description></description>
+          <description>Combinatorial Enumeration Algorithms in the AFP</description>
+            <category>Mathematics/Combinatorics</category>
+            <category>Computer science/Algorithms</category>
         </item>
         <item>
           <title>Maximum Segment Sum</title>
           <link>https://isa-afp.org/entries/Maximum_Segment_Sum.html</link>
           <pubDate>Thu, 29 Sep 2022 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Maximum_Segment_Sum.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Maximum Segment Sum</title>
-          <link>https://isa-afp.org/entries/Maximum_Segment_Sum.html</link>
-          <pubDate>Thu, 29 Sep 2022 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Maximum_Segment_Sum.html</guid>
-          <description></description>
+          <description>Maximum Segment Sum in the AFP</description>
+            <category>Computer science/Algorithms</category>
         </item>
         <item>
           <title>Verified Complete Test Strategies for Finite State Machines</title>
           <link>https://isa-afp.org/entries/FSM_Tests.html</link>
           <pubDate>Tue, 09 Aug 2022 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/FSM_Tests.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Verified Complete Test Strategies for Finite State Machines</title>
-          <link>https://isa-afp.org/entries/FSM_Tests.html</link>
-          <pubDate>Tue, 09 Aug 2022 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/FSM_Tests.html</guid>
-          <description></description>
+          <description>Verified Complete Test Strategies for Finite State Machines in the AFP</description>
+            <category>Computer science/Automata and formal languages</category>
+            <category>Computer science/Algorithms</category>
         </item>
         <item>
           <title>A Combinator Library for Prefix-Free Codes</title>
           <link>https://isa-afp.org/entries/Prefix_Free_Code_Combinators.html</link>
           <pubDate>Fri, 08 Apr 2022 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Prefix_Free_Code_Combinators.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>A Combinator Library for Prefix-Free Codes</title>
-          <link>https://isa-afp.org/entries/Prefix_Free_Code_Combinators.html</link>
-          <pubDate>Fri, 08 Apr 2022 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Prefix_Free_Code_Combinators.html</guid>
-          <description></description>
+          <description>A Combinator Library for Prefix-Free Codes in the AFP</description>
+            <category>Computer science/Algorithms</category>
+            <category>Computer science/Data structures</category>
         </item>
         <item>
           <title>Multi-Head Monitoring of Metric Dynamic Logic</title>
           <link>https://isa-afp.org/entries/VYDRA_MDL.html</link>
           <pubDate>Sun, 13 Feb 2022 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/VYDRA_MDL.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Multi-Head Monitoring of Metric Dynamic Logic</title>
-          <link>https://isa-afp.org/entries/VYDRA_MDL.html</link>
-          <pubDate>Sun, 13 Feb 2022 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/VYDRA_MDL.html</guid>
-          <description></description>
+          <description>Multi-Head Monitoring of Metric Dynamic Logic in the AFP</description>
+            <category>Computer science/Algorithms</category>
         </item>
         <item>
           <title>Gale-Shapley Algorithm</title>
           <link>https://isa-afp.org/entries/Gale_Shapley.html</link>
           <pubDate>Wed, 29 Dec 2021 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Gale_Shapley.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Gale-Shapley Algorithm</title>
-          <link>https://isa-afp.org/entries/Gale_Shapley.html</link>
-          <pubDate>Wed, 29 Dec 2021 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Gale_Shapley.html</guid>
-          <description></description>
+          <description>Gale-Shapley Algorithm in the AFP</description>
+            <category>Computer science/Algorithms</category>
+            <category>Mathematics/Games and economics</category>
         </item>
         <item>
           <title>Verified Algorithms for Solving Markov Decision Processes</title>
           <link>https://isa-afp.org/entries/MDP-Algorithms.html</link>
           <pubDate>Thu, 16 Dec 2021 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/MDP-Algorithms.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Verified Algorithms for Solving Markov Decision Processes</title>
-          <link>https://isa-afp.org/entries/MDP-Algorithms.html</link>
-          <pubDate>Thu, 16 Dec 2021 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/MDP-Algorithms.html</guid>
-          <description></description>
+          <description>Verified Algorithms for Solving Markov Decision Processes in the AFP</description>
+            <category>Mathematics/Probability theory</category>
+            <category>Computer science/Algorithms</category>
         </item>
         <item>
           <title>Regression Test Selection</title>
           <link>https://isa-afp.org/entries/Regression_Test_Selection.html</link>
           <pubDate>Fri, 30 Apr 2021 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Regression_Test_Selection.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Regression Test Selection</title>
-          <link>https://isa-afp.org/entries/Regression_Test_Selection.html</link>
-          <pubDate>Fri, 30 Apr 2021 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Regression_Test_Selection.html</guid>
-          <description></description>
+          <description>Regression Test Selection in the AFP</description>
+            <category>Computer science/Algorithms</category>
         </item>
         <item>
           <title>Practical Algebraic Calculus Checker</title>
           <link>https://isa-afp.org/entries/PAC_Checker.html</link>
           <pubDate>Mon, 31 Aug 2020 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/PAC_Checker.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Practical Algebraic Calculus Checker</title>
-          <link>https://isa-afp.org/entries/PAC_Checker.html</link>
-          <pubDate>Mon, 31 Aug 2020 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/PAC_Checker.html</guid>
-          <description></description>
+          <description>Practical Algebraic Calculus Checker in the AFP</description>
+            <category>Computer science/Algorithms</category>
         </item>
         <item>
           <title>Formalization of an Algorithm for Greedily Computing Associative Aggregations on Sliding Windows</title>
           <link>https://isa-afp.org/entries/Sliding_Window_Algorithm.html</link>
           <pubDate>Fri, 10 Apr 2020 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Sliding_Window_Algorithm.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Formalization of an Algorithm for Greedily Computing Associative Aggregations on Sliding Windows</title>
-          <link>https://isa-afp.org/entries/Sliding_Window_Algorithm.html</link>
-          <pubDate>Fri, 10 Apr 2020 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Sliding_Window_Algorithm.html</guid>
-          <description></description>
+          <description>Formalization of an Algorithm for Greedily Computing Associative Aggregations on Sliding Windows in the AFP</description>
+            <category>Computer science/Algorithms</category>
         </item>
         <item>
           <title>Formalization of an Optimized Monitoring Algorithm for Metric First-Order Dynamic Logic with Aggregations</title>
           <link>https://isa-afp.org/entries/MFODL_Monitor_Optimized.html</link>
           <pubDate>Thu, 09 Apr 2020 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/MFODL_Monitor_Optimized.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Formalization of an Optimized Monitoring Algorithm for Metric First-Order Dynamic Logic with Aggregations</title>
-          <link>https://isa-afp.org/entries/MFODL_Monitor_Optimized.html</link>
-          <pubDate>Thu, 09 Apr 2020 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/MFODL_Monitor_Optimized.html</guid>
-          <description></description>
+          <description>Formalization of an Optimized Monitoring Algorithm for Metric First-Order Dynamic Logic with Aggregations in the AFP</description>
+            <category>Computer science/Algorithms</category>
+            <category>Logic/General logic/Modal logic</category>
+            <category>Computer science/Automata and formal languages</category>
         </item>
         <item>
           <title>An Efficient Generalization of Counting Sort for Large, possibly Infinite Key Ranges</title>
           <link>https://isa-afp.org/entries/Generalized_Counting_Sort.html</link>
           <pubDate>Wed, 04 Dec 2019 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Generalized_Counting_Sort.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>An Efficient Generalization of Counting Sort for Large, possibly Infinite Key Ranges</title>
-          <link>https://isa-afp.org/entries/Generalized_Counting_Sort.html</link>
-          <pubDate>Wed, 04 Dec 2019 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Generalized_Counting_Sort.html</guid>
-          <description></description>
+          <description>An Efficient Generalization of Counting Sort for Large, possibly Infinite Key Ranges in the AFP</description>
+            <category>Computer science/Algorithms</category>
+            <category>Computer science/Functional programming</category>
         </item>
         <item>
           <title>VerifyThis 2019 -- Polished Isabelle Solutions</title>
           <link>https://isa-afp.org/entries/VerifyThis2019.html</link>
           <pubDate>Wed, 16 Oct 2019 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/VerifyThis2019.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>VerifyThis 2019 -- Polished Isabelle Solutions</title>
-          <link>https://isa-afp.org/entries/VerifyThis2019.html</link>
-          <pubDate>Wed, 16 Oct 2019 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/VerifyThis2019.html</guid>
-          <description></description>
+          <description>VerifyThis 2019 -- Polished Isabelle Solutions in the AFP</description>
+            <category>Computer science/Algorithms</category>
         </item>
         <item>
           <title>Formalization of Multiway-Join Algorithms</title>
           <link>https://isa-afp.org/entries/Generic_Join.html</link>
           <pubDate>Mon, 16 Sep 2019 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Generic_Join.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Formalization of Multiway-Join Algorithms</title>
-          <link>https://isa-afp.org/entries/Generic_Join.html</link>
-          <pubDate>Mon, 16 Sep 2019 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Generic_Join.html</guid>
-          <description></description>
+          <description>Formalization of Multiway-Join Algorithms in the AFP</description>
+            <category>Computer science/Data management systems</category>
+            <category>Computer science/Algorithms</category>
         </item>
         <item>
           <title>Formalisation of an Adaptive State Counting Algorithm</title>
           <link>https://isa-afp.org/entries/Adaptive_State_Counting.html</link>
           <pubDate>Fri, 16 Aug 2019 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Adaptive_State_Counting.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Formalisation of an Adaptive State Counting Algorithm</title>
-          <link>https://isa-afp.org/entries/Adaptive_State_Counting.html</link>
-          <pubDate>Fri, 16 Aug 2019 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Adaptive_State_Counting.html</guid>
-          <description></description>
+          <description>Formalisation of an Adaptive State Counting Algorithm in the AFP</description>
+            <category>Computer science/Automata and formal languages</category>
+            <category>Computer science/Algorithms</category>
         </item>
         <item>
           <title>Formalization of a Monitoring Algorithm for Metric First-Order Temporal Logic</title>
           <link>https://isa-afp.org/entries/MFOTL_Monitor.html</link>
           <pubDate>Thu, 04 Jul 2019 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/MFOTL_Monitor.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Formalization of a Monitoring Algorithm for Metric First-Order Temporal Logic</title>
-          <link>https://isa-afp.org/entries/MFOTL_Monitor.html</link>
-          <pubDate>Thu, 04 Jul 2019 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/MFOTL_Monitor.html</guid>
-          <description></description>
+          <description>Formalization of a Monitoring Algorithm for Metric First-Order Temporal Logic in the AFP</description>
+            <category>Computer science/Algorithms</category>
+            <category>Logic/General logic/Temporal logic</category>
+            <category>Computer science/Automata and formal languages</category>
         </item>
         <item>
           <title>Binary Heaps for IMP2</title>
           <link>https://isa-afp.org/entries/IMP2_Binary_Heap.html</link>
           <pubDate>Thu, 13 Jun 2019 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/IMP2_Binary_Heap.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Binary Heaps for IMP2</title>
-          <link>https://isa-afp.org/entries/IMP2_Binary_Heap.html</link>
-          <pubDate>Thu, 13 Jun 2019 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/IMP2_Binary_Heap.html</guid>
-          <description></description>
+          <description>Binary Heaps for IMP2 in the AFP</description>
+            <category>Computer science/Data structures</category>
+            <category>Computer science/Algorithms</category>
         </item>
         <item>
           <title>The Inversions of a List</title>
           <link>https://isa-afp.org/entries/List_Inversions.html</link>
           <pubDate>Fri, 01 Feb 2019 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/List_Inversions.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>The Inversions of a List</title>
-          <link>https://isa-afp.org/entries/List_Inversions.html</link>
-          <pubDate>Fri, 01 Feb 2019 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/List_Inversions.html</guid>
-          <description></description>
+          <description>The Inversions of a List in the AFP</description>
+            <category>Computer science/Algorithms</category>
         </item>
         <item>
           <title>IMP2 – Simple Program Verification in Isabelle/HOL</title>
           <link>https://isa-afp.org/entries/IMP2.html</link>
           <pubDate>Tue, 15 Jan 2019 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/IMP2.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>IMP2 – Simple Program Verification in Isabelle/HOL</title>
-          <link>https://isa-afp.org/entries/IMP2.html</link>
-          <pubDate>Tue, 15 Jan 2019 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/IMP2.html</guid>
-          <description></description>
+          <description>IMP2 – Simple Program Verification in Isabelle/HOL in the AFP</description>
+            <category>Computer science/Programming languages/Logics</category>
+            <category>Computer science/Algorithms</category>
         </item>
         <item>
           <title>Verifying Imperative Programs using Auto2</title>
           <link>https://isa-afp.org/entries/Auto2_Imperative_HOL.html</link>
           <pubDate>Fri, 21 Dec 2018 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Auto2_Imperative_HOL.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Verifying Imperative Programs using Auto2</title>
-          <link>https://isa-afp.org/entries/Auto2_Imperative_HOL.html</link>
-          <pubDate>Fri, 21 Dec 2018 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Auto2_Imperative_HOL.html</guid>
-          <description></description>
+          <description>Verifying Imperative Programs using Auto2 in the AFP</description>
+            <category>Computer science/Algorithms</category>
+            <category>Computer science/Data structures</category>
         </item>
         <item>
           <title>Optimal Binary Search Trees</title>
           <link>https://isa-afp.org/entries/Optimal_BST.html</link>
           <pubDate>Sun, 27 May 2018 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Optimal_BST.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Optimal Binary Search Trees</title>
-          <link>https://isa-afp.org/entries/Optimal_BST.html</link>
-          <pubDate>Sun, 27 May 2018 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Optimal_BST.html</guid>
-          <description></description>
+          <description>Optimal Binary Search Trees in the AFP</description>
+            <category>Computer science/Algorithms</category>
+            <category>Computer science/Data structures</category>
         </item>
         <item>
           <title>Hidden Markov Models</title>
           <link>https://isa-afp.org/entries/Hidden_Markov_Models.html</link>
           <pubDate>Fri, 25 May 2018 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Hidden_Markov_Models.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Hidden Markov Models</title>
-          <link>https://isa-afp.org/entries/Hidden_Markov_Models.html</link>
-          <pubDate>Fri, 25 May 2018 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Hidden_Markov_Models.html</guid>
-          <description></description>
+          <description>Hidden Markov Models in the AFP</description>
+            <category>Mathematics/Probability theory</category>
+            <category>Computer science/Algorithms</category>
         </item>
         <item>
           <title>Monadification, Memoization and Dynamic Programming</title>
           <link>https://isa-afp.org/entries/Monad_Memo_DP.html</link>
           <pubDate>Tue, 22 May 2018 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Monad_Memo_DP.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Monadification, Memoization and Dynamic Programming</title>
-          <link>https://isa-afp.org/entries/Monad_Memo_DP.html</link>
-          <pubDate>Tue, 22 May 2018 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Monad_Memo_DP.html</guid>
-          <description></description>
+          <description>Monadification, Memoization and Dynamic Programming in the AFP</description>
+            <category>Computer science/Algorithms</category>
+            <category>Computer science/Functional programming</category>
         </item>
         <item>
           <title>VerifyThis 2018 - Polished Isabelle Solutions</title>
           <link>https://isa-afp.org/entries/VerifyThis2018.html</link>
           <pubDate>Fri, 27 Apr 2018 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/VerifyThis2018.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>VerifyThis 2018 - Polished Isabelle Solutions</title>
-          <link>https://isa-afp.org/entries/VerifyThis2018.html</link>
-          <pubDate>Fri, 27 Apr 2018 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/VerifyThis2018.html</guid>
-          <description></description>
+          <description>VerifyThis 2018 - Polished Isabelle Solutions in the AFP</description>
+            <category>Computer science/Algorithms</category>
         </item>
         <item>
           <title>First-Order Terms</title>
           <link>https://isa-afp.org/entries/First_Order_Terms.html</link>
           <pubDate>Tue, 06 Feb 2018 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/First_Order_Terms.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>First-Order Terms</title>
-          <link>https://isa-afp.org/entries/First_Order_Terms.html</link>
-          <pubDate>Tue, 06 Feb 2018 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/First_Order_Terms.html</guid>
-          <description></description>
+          <description>First-Order Terms in the AFP</description>
+            <category>Logic/Rewriting</category>
+            <category>Computer science/Algorithms</category>
         </item>
         <item>
           <title>The Median-of-Medians Selection Algorithm</title>
           <link>https://isa-afp.org/entries/Median_Of_Medians_Selection.html</link>
           <pubDate>Thu, 21 Dec 2017 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Median_Of_Medians_Selection.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>The Median-of-Medians Selection Algorithm</title>
-          <link>https://isa-afp.org/entries/Median_Of_Medians_Selection.html</link>
-          <pubDate>Thu, 21 Dec 2017 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Median_Of_Medians_Selection.html</guid>
-          <description></description>
+          <description>The Median-of-Medians Selection Algorithm in the AFP</description>
+            <category>Computer science/Algorithms</category>
         </item>
         <item>
           <title>The string search algorithm by Knuth, Morris and Pratt</title>
           <link>https://isa-afp.org/entries/Knuth_Morris_Pratt.html</link>
           <pubDate>Mon, 18 Dec 2017 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Knuth_Morris_Pratt.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>The string search algorithm by Knuth, Morris and Pratt</title>
-          <link>https://isa-afp.org/entries/Knuth_Morris_Pratt.html</link>
-          <pubDate>Mon, 18 Dec 2017 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Knuth_Morris_Pratt.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Lower bound on comparison-based sorting algorithms</title>
-          <link>https://isa-afp.org/entries/Comparison_Sort_Lower_Bound.html</link>
-          <pubDate>Wed, 15 Mar 2017 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Comparison_Sort_Lower_Bound.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Lower bound on comparison-based sorting algorithms</title>
-          <link>https://isa-afp.org/entries/Comparison_Sort_Lower_Bound.html</link>
-          <pubDate>Wed, 15 Mar 2017 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Comparison_Sort_Lower_Bound.html</guid>
-          <description></description>
+          <description>The string search algorithm by Knuth, Morris and Pratt in the AFP</description>
+            <category>Computer science/Algorithms</category>
         </item>
         <item>
           <title>The number of comparisons in QuickSort</title>
           <link>https://isa-afp.org/entries/Quick_Sort_Cost.html</link>
           <pubDate>Wed, 15 Mar 2017 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Quick_Sort_Cost.html</guid>
-          <description></description>
+          <description>The number of comparisons in QuickSort in the AFP</description>
+            <category>Computer science/Algorithms</category>
+            <category>Computer science/Algorithms/Randomized</category>
         </item>
         <item>
-          <title>The number of comparisons in QuickSort</title>
-          <link>https://isa-afp.org/entries/Quick_Sort_Cost.html</link>
+          <title>Lower bound on comparison-based sorting algorithms</title>
+          <link>https://isa-afp.org/entries/Comparison_Sort_Lower_Bound.html</link>
           <pubDate>Wed, 15 Mar 2017 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Quick_Sort_Cost.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>A formalisation of the Cocke-Younger-Kasami algorithm</title>
-          <link>https://isa-afp.org/entries/CYK.html</link>
-          <pubDate>Wed, 27 Apr 2016 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/CYK.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>A formalisation of the Cocke-Younger-Kasami algorithm</title>
-          <link>https://isa-afp.org/entries/CYK.html</link>
-          <pubDate>Wed, 27 Apr 2016 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/CYK.html</guid>
-          <description></description>
+          <description>Lower bound on comparison-based sorting algorithms in the AFP</description>
+            <category>Computer science/Algorithms</category>
         </item>
         <item>
           <title>Algorithms for Reduced Ordered Binary Decision Diagrams</title>
           <link>https://isa-afp.org/entries/ROBDD.html</link>
           <pubDate>Wed, 27 Apr 2016 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/ROBDD.html</guid>
-          <description></description>
+          <description>Algorithms for Reduced Ordered Binary Decision Diagrams in the AFP</description>
+            <category>Computer science/Algorithms</category>
+            <category>Computer science/Data structures</category>
         </item>
         <item>
-          <title>Algorithms for Reduced Ordered Binary Decision Diagrams</title>
-          <link>https://isa-afp.org/entries/ROBDD.html</link>
+          <title>A formalisation of the Cocke-Younger-Kasami algorithm</title>
+          <link>https://isa-afp.org/entries/CYK.html</link>
           <pubDate>Wed, 27 Apr 2016 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/ROBDD.html</guid>
-          <description></description>
+          <description>A formalisation of the Cocke-Younger-Kasami algorithm in the AFP</description>
+            <category>Computer science/Algorithms</category>
+            <category>Computer science/Automata and formal languages</category>
         </item>
         <item>
           <title>The Tortoise and Hare Algorithm</title>
           <link>https://isa-afp.org/entries/TortoiseHare.html</link>
           <pubDate>Wed, 18 Nov 2015 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/TortoiseHare.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>The Tortoise and Hare Algorithm</title>
-          <link>https://isa-afp.org/entries/TortoiseHare.html</link>
-          <pubDate>Wed, 18 Nov 2015 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/TortoiseHare.html</guid>
-          <description></description>
+          <description>The Tortoise and Hare Algorithm in the AFP</description>
+            <category>Computer science/Algorithms</category>
         </item>
         <item>
           <title>Imperative Insertion Sort</title>
           <link>https://isa-afp.org/entries/Imperative_Insertion_Sort.html</link>
           <pubDate>Thu, 25 Sep 2014 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Imperative_Insertion_Sort.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Imperative Insertion Sort</title>
-          <link>https://isa-afp.org/entries/Imperative_Insertion_Sort.html</link>
-          <pubDate>Thu, 25 Sep 2014 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Imperative_Insertion_Sort.html</guid>
-          <description></description>
+          <description>Imperative Insertion Sort in the AFP</description>
+            <category>Computer science/Algorithms</category>
         </item>
         <item>
           <title>Boolean Expression Checkers</title>
           <link>https://isa-afp.org/entries/Boolean_Expression_Checkers.html</link>
           <pubDate>Sun, 08 Jun 2014 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Boolean_Expression_Checkers.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Boolean Expression Checkers</title>
-          <link>https://isa-afp.org/entries/Boolean_Expression_Checkers.html</link>
-          <pubDate>Sun, 08 Jun 2014 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Boolean_Expression_Checkers.html</guid>
-          <description></description>
+          <description>Boolean Expression Checkers in the AFP</description>
+            <category>Computer science/Algorithms</category>
+            <category>Logic/General logic/Mechanization of proofs</category>
         </item>
         <item>
           <title>Verification of Selection and Heap Sort Using Locales</title>
           <link>https://isa-afp.org/entries/Selection_Heap_Sort.html</link>
           <pubDate>Tue, 11 Feb 2014 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Selection_Heap_Sort.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Verification of Selection and Heap Sort Using Locales</title>
-          <link>https://isa-afp.org/entries/Selection_Heap_Sort.html</link>
-          <pubDate>Tue, 11 Feb 2014 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Selection_Heap_Sort.html</guid>
-          <description></description>
+          <description>Verification of Selection and Heap Sort Using Locales in the AFP</description>
+            <category>Computer science/Algorithms</category>
         </item>
         <item>
           <title>Efficient Mergesort</title>
           <link>https://isa-afp.org/entries/Efficient-Mergesort.html</link>
           <pubDate>Wed, 09 Nov 2011 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Efficient-Mergesort.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Efficient Mergesort</title>
-          <link>https://isa-afp.org/entries/Efficient-Mergesort.html</link>
-          <pubDate>Wed, 09 Nov 2011 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Efficient-Mergesort.html</guid>
-          <description></description>
+          <description>Efficient Mergesort in the AFP</description>
+            <category>Computer science/Algorithms</category>
         </item>
         <item>
           <title>Formal Verification of Modern SAT Solvers</title>
           <link>https://isa-afp.org/entries/SATSolverVerification.html</link>
           <pubDate>Wed, 23 Jul 2008 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/SATSolverVerification.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Formal Verification of Modern SAT Solvers</title>
-          <link>https://isa-afp.org/entries/SATSolverVerification.html</link>
-          <pubDate>Wed, 23 Jul 2008 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/SATSolverVerification.html</guid>
-          <description></description>
+          <description>Formal Verification of Modern SAT Solvers in the AFP</description>
+            <category>Computer science/Algorithms</category>
         </item>
         <item>
           <title>Much Ado About Two</title>
           <link>https://isa-afp.org/entries/MuchAdoAboutTwo.html</link>
           <pubDate>Tue, 06 Nov 2007 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/MuchAdoAboutTwo.html</guid>
-          <description></description>
+          <description>Much Ado About Two in the AFP</description>
+            <category>Computer science/Algorithms</category>
         </item>
-        <item>
-          <title>Much Ado About Two</title>
-          <link>https://isa-afp.org/entries/MuchAdoAboutTwo.html</link>
-          <pubDate>Tue, 06 Nov 2007 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/MuchAdoAboutTwo.html</guid>
-          <description></description>
-        </item>
+
   </channel>
 </rss>

@@ -1,982 +1,513 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Computer science/Data structures on Archive of Formal Proofs
-    </title>
+    <title>Computer science/Data structures</title>
     <link>https://isa-afp.org/topics/computer-science/data-structures/</link>
-    <description>
-        Recent content in Computer science/Data structures 
-        on Archive of Formal Proofs
-    </description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language>
-    
-      <atom:link href="https://isa-afp.org/topics/computer-science/data-structures/index.xml" rel="self" type="application/rss+xml" />
-        <item>
+    <description>AFP entries in Data structures</description>
+         <item>
           <title>Formally Verified Suffix Array Construction</title>
           <link>https://isa-afp.org/entries/SuffixArray.html</link>
           <pubDate>Wed, 25 Sep 2024 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/SuffixArray.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Formally Verified Suffix Array Construction</title>
-          <link>https://isa-afp.org/entries/SuffixArray.html</link>
-          <pubDate>Wed, 25 Sep 2024 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/SuffixArray.html</guid>
-          <description></description>
+          <description>Formally Verified Suffix Array Construction in the AFP</description>
+            <category>Computer science/Algorithms</category>
+            <category>Computer science/Data structures</category>
         </item>
         <item>
           <title>Difference Bound Matrices</title>
           <link>https://isa-afp.org/entries/Difference_Bound_Matrices.html</link>
           <pubDate>Wed, 14 Aug 2024 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Difference_Bound_Matrices.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Difference Bound Matrices</title>
-          <link>https://isa-afp.org/entries/Difference_Bound_Matrices.html</link>
-          <pubDate>Wed, 14 Aug 2024 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Difference_Bound_Matrices.html</guid>
-          <description></description>
+          <description>Difference Bound Matrices in the AFP</description>
+            <category>Computer science/Algorithms/Graph</category>
+            <category>Computer science/Data structures</category>
         </item>
         <item>
           <title>Region Quadtrees</title>
           <link>https://isa-afp.org/entries/Region_Quadtrees.html</link>
           <pubDate>Fri, 26 Jan 2024 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Region_Quadtrees.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Region Quadtrees</title>
-          <link>https://isa-afp.org/entries/Region_Quadtrees.html</link>
-          <pubDate>Fri, 26 Jan 2024 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Region_Quadtrees.html</guid>
-          <description></description>
+          <description>Region Quadtrees in the AFP</description>
+            <category>Computer science/Data structures</category>
         </item>
         <item>
           <title>Fixed-length vectors</title>
           <link>https://isa-afp.org/entries/Fixed_Length_Vector.html</link>
           <pubDate>Mon, 14 Aug 2023 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Fixed_Length_Vector.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Fixed-length vectors</title>
-          <link>https://isa-afp.org/entries/Fixed_Length_Vector.html</link>
-          <pubDate>Mon, 14 Aug 2023 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Fixed_Length_Vector.html</guid>
-          <description></description>
+          <description>Fixed-length vectors in the AFP</description>
+            <category>Computer science/Data structures</category>
         </item>
         <item>
           <title>Nano JSON: Working with JSON formatted data in Isabelle/HOL and Isabelle/ML</title>
           <link>https://isa-afp.org/entries/Nano_JSON.html</link>
           <pubDate>Fri, 29 Jul 2022 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Nano_JSON.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Nano JSON: Working with JSON formatted data in Isabelle/HOL and Isabelle/ML</title>
-          <link>https://isa-afp.org/entries/Nano_JSON.html</link>
-          <pubDate>Fri, 29 Jul 2022 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Nano_JSON.html</guid>
-          <description></description>
+          <description>Nano JSON: Working with JSON formatted data in Isabelle/HOL and Isabelle/ML in the AFP</description>
+            <category>Tools</category>
+            <category>Computer science/Data structures</category>
         </item>
         <item>
           <title>Real-Time Double-Ended Queue</title>
           <link>https://isa-afp.org/entries/Real_Time_Deque.html</link>
           <pubDate>Thu, 23 Jun 2022 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Real_Time_Deque.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Real-Time Double-Ended Queue</title>
-          <link>https://isa-afp.org/entries/Real_Time_Deque.html</link>
-          <pubDate>Thu, 23 Jun 2022 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Real_Time_Deque.html</guid>
-          <description></description>
+          <description>Real-Time Double-Ended Queue in the AFP</description>
+            <category>Computer science/Data structures</category>
         </item>
         <item>
           <title>A Combinator Library for Prefix-Free Codes</title>
           <link>https://isa-afp.org/entries/Prefix_Free_Code_Combinators.html</link>
           <pubDate>Fri, 08 Apr 2022 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Prefix_Free_Code_Combinators.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>A Combinator Library for Prefix-Free Codes</title>
-          <link>https://isa-afp.org/entries/Prefix_Free_Code_Combinators.html</link>
-          <pubDate>Fri, 08 Apr 2022 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Prefix_Free_Code_Combinators.html</guid>
-          <description></description>
+          <description>A Combinator Library for Prefix-Free Codes in the AFP</description>
+            <category>Computer science/Algorithms</category>
+            <category>Computer science/Data structures</category>
         </item>
         <item>
           <title>van Emde Boas Trees</title>
           <link>https://isa-afp.org/entries/Van_Emde_Boas_Trees.html</link>
           <pubDate>Tue, 23 Nov 2021 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Van_Emde_Boas_Trees.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>van Emde Boas Trees</title>
-          <link>https://isa-afp.org/entries/Van_Emde_Boas_Trees.html</link>
-          <pubDate>Tue, 23 Nov 2021 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Van_Emde_Boas_Trees.html</guid>
-          <description></description>
+          <description>van Emde Boas Trees in the AFP</description>
+            <category>Computer science/Data structures</category>
         </item>
         <item>
           <title>Fresh identifiers</title>
           <link>https://isa-afp.org/entries/Fresh_Identifiers.html</link>
           <pubDate>Mon, 16 Aug 2021 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Fresh_Identifiers.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Fresh identifiers</title>
-          <link>https://isa-afp.org/entries/Fresh_Identifiers.html</link>
-          <pubDate>Mon, 16 Aug 2021 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Fresh_Identifiers.html</guid>
-          <description></description>
+          <description>Fresh identifiers in the AFP</description>
+            <category>Computer science/Data structures</category>
         </item>
         <item>
           <title>A Verified Imperative Implementation of B-Trees</title>
           <link>https://isa-afp.org/entries/BTree.html</link>
           <pubDate>Wed, 24 Feb 2021 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/BTree.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>A Verified Imperative Implementation of B-Trees</title>
-          <link>https://isa-afp.org/entries/BTree.html</link>
-          <pubDate>Wed, 24 Feb 2021 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/BTree.html</guid>
-          <description></description>
+          <description>A Verified Imperative Implementation of B-Trees in the AFP</description>
+            <category>Computer science/Data management systems</category>
+            <category>Computer science/Data structures</category>
         </item>
         <item>
           <title>Hood-Melville Queue</title>
           <link>https://isa-afp.org/entries/Hood_Melville_Queue.html</link>
           <pubDate>Mon, 18 Jan 2021 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Hood_Melville_Queue.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Hood-Melville Queue</title>
-          <link>https://isa-afp.org/entries/Hood_Melville_Queue.html</link>
-          <pubDate>Mon, 18 Jan 2021 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Hood_Melville_Queue.html</guid>
-          <description></description>
+          <description>Hood-Melville Queue in the AFP</description>
+            <category>Computer science/Data structures</category>
         </item>
         <item>
           <title>Finite Map Extras</title>
           <link>https://isa-afp.org/entries/Finite-Map-Extras.html</link>
           <pubDate>Mon, 12 Oct 2020 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Finite-Map-Extras.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Finite Map Extras</title>
-          <link>https://isa-afp.org/entries/Finite-Map-Extras.html</link>
-          <pubDate>Mon, 12 Oct 2020 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Finite-Map-Extras.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>A Formal Model of the Document Object Model with Shadow Roots</title>
-          <link>https://isa-afp.org/entries/Shadow_DOM.html</link>
-          <pubDate>Mon, 28 Sep 2020 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Shadow_DOM.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>A Formal Model of the Document Object Model with Shadow Roots</title>
-          <link>https://isa-afp.org/entries/Shadow_DOM.html</link>
-          <pubDate>Mon, 28 Sep 2020 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Shadow_DOM.html</guid>
-          <description></description>
+          <description>Finite Map Extras in the AFP</description>
+            <category>Computer science/Data structures</category>
         </item>
         <item>
           <title>A Formal Model of the Safely Composable Document Object Model with Shadow Roots</title>
           <link>https://isa-afp.org/entries/Shadow_SC_DOM.html</link>
           <pubDate>Mon, 28 Sep 2020 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Shadow_SC_DOM.html</guid>
-          <description></description>
+          <description>A Formal Model of the Safely Composable Document Object Model with Shadow Roots in the AFP</description>
+            <category>Computer science/Data structures</category>
         </item>
         <item>
-          <title>A Formal Model of the Safely Composable Document Object Model with Shadow Roots</title>
-          <link>https://isa-afp.org/entries/Shadow_SC_DOM.html</link>
+          <title>A Formal Model of the Document Object Model with Shadow Roots</title>
+          <link>https://isa-afp.org/entries/Shadow_DOM.html</link>
           <pubDate>Mon, 28 Sep 2020 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Shadow_SC_DOM.html</guid>
-          <description></description>
+          <description>A Formal Model of the Document Object Model with Shadow Roots in the AFP</description>
+            <category>Computer science/Data structures</category>
         </item>
         <item>
           <title>A Formalization of Safely Composable Web Components</title>
           <link>https://isa-afp.org/entries/SC_DOM_Components.html</link>
           <pubDate>Mon, 28 Sep 2020 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/SC_DOM_Components.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>A Formalization of Safely Composable Web Components</title>
-          <link>https://isa-afp.org/entries/SC_DOM_Components.html</link>
-          <pubDate>Mon, 28 Sep 2020 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/SC_DOM_Components.html</guid>
-          <description></description>
+          <description>A Formalization of Safely Composable Web Components in the AFP</description>
+            <category>Computer science/Data structures</category>
         </item>
         <item>
           <title>A Formalization of Web Components</title>
           <link>https://isa-afp.org/entries/DOM_Components.html</link>
           <pubDate>Mon, 28 Sep 2020 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/DOM_Components.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>A Formalization of Web Components</title>
-          <link>https://isa-afp.org/entries/DOM_Components.html</link>
-          <pubDate>Mon, 28 Sep 2020 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/DOM_Components.html</guid>
-          <description></description>
+          <description>A Formalization of Web Components in the AFP</description>
+            <category>Computer science/Data structures</category>
         </item>
         <item>
           <title>The Safely Composable DOM</title>
           <link>https://isa-afp.org/entries/Core_SC_DOM.html</link>
           <pubDate>Mon, 28 Sep 2020 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Core_SC_DOM.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>The Safely Composable DOM</title>
-          <link>https://isa-afp.org/entries/Core_SC_DOM.html</link>
-          <pubDate>Mon, 28 Sep 2020 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Core_SC_DOM.html</guid>
-          <description></description>
+          <description>The Safely Composable DOM in the AFP</description>
+            <category>Computer science/Data structures</category>
         </item>
         <item>
           <title>Relational Disjoint-Set Forests</title>
           <link>https://isa-afp.org/entries/Relational_Disjoint_Set_Forests.html</link>
           <pubDate>Wed, 26 Aug 2020 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Relational_Disjoint_Set_Forests.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Relational Disjoint-Set Forests</title>
-          <link>https://isa-afp.org/entries/Relational_Disjoint_Set_Forests.html</link>
-          <pubDate>Wed, 26 Aug 2020 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Relational_Disjoint_Set_Forests.html</guid>
-          <description></description>
+          <description>Relational Disjoint-Set Forests in the AFP</description>
+            <category>Computer science/Data structures</category>
         </item>
         <item>
           <title>Authenticated Data Structures As Functors</title>
           <link>https://isa-afp.org/entries/ADS_Functor.html</link>
           <pubDate>Thu, 16 Apr 2020 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/ADS_Functor.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Authenticated Data Structures As Functors</title>
-          <link>https://isa-afp.org/entries/ADS_Functor.html</link>
-          <pubDate>Thu, 16 Apr 2020 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/ADS_Functor.html</guid>
-          <description></description>
+          <description>Authenticated Data Structures As Functors in the AFP</description>
+            <category>Computer science/Data structures</category>
         </item>
         <item>
           <title>Skip Lists</title>
           <link>https://isa-afp.org/entries/Skip_Lists.html</link>
           <pubDate>Thu, 09 Jan 2020 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Skip_Lists.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Skip Lists</title>
-          <link>https://isa-afp.org/entries/Skip_Lists.html</link>
-          <pubDate>Thu, 09 Jan 2020 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Skip_Lists.html</guid>
-          <description></description>
+          <description>Skip Lists in the AFP</description>
+            <category>Computer science/Data structures</category>
+            <category>Computer science/Algorithms/Randomized</category>
         </item>
         <item>
           <title>Interval Arithmetic on 32-bit Words</title>
           <link>https://isa-afp.org/entries/Interval_Arithmetic_Word32.html</link>
           <pubDate>Wed, 27 Nov 2019 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Interval_Arithmetic_Word32.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Interval Arithmetic on 32-bit Words</title>
-          <link>https://isa-afp.org/entries/Interval_Arithmetic_Word32.html</link>
-          <pubDate>Wed, 27 Nov 2019 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Interval_Arithmetic_Word32.html</guid>
-          <description></description>
+          <description>Interval Arithmetic on 32-bit Words in the AFP</description>
+            <category>Computer science/Data structures</category>
         </item>
         <item>
           <title>Priority Search Trees</title>
           <link>https://isa-afp.org/entries/Priority_Search_Trees.html</link>
           <pubDate>Tue, 25 Jun 2019 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Priority_Search_Trees.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Priority Search Trees</title>
-          <link>https://isa-afp.org/entries/Priority_Search_Trees.html</link>
-          <pubDate>Tue, 25 Jun 2019 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Priority_Search_Trees.html</guid>
-          <description></description>
+          <description>Priority Search Trees in the AFP</description>
+            <category>Computer science/Data structures</category>
         </item>
         <item>
           <title>Binary Heaps for IMP2</title>
           <link>https://isa-afp.org/entries/IMP2_Binary_Heap.html</link>
           <pubDate>Thu, 13 Jun 2019 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/IMP2_Binary_Heap.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Binary Heaps for IMP2</title>
-          <link>https://isa-afp.org/entries/IMP2_Binary_Heap.html</link>
-          <pubDate>Thu, 13 Jun 2019 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/IMP2_Binary_Heap.html</guid>
-          <description></description>
+          <description>Binary Heaps for IMP2 in the AFP</description>
+            <category>Computer science/Data structures</category>
+            <category>Computer science/Algorithms</category>
         </item>
         <item>
           <title>Multidimensional Binary Search Trees</title>
           <link>https://isa-afp.org/entries/KD_Tree.html</link>
           <pubDate>Thu, 30 May 2019 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/KD_Tree.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Multidimensional Binary Search Trees</title>
-          <link>https://isa-afp.org/entries/KD_Tree.html</link>
-          <pubDate>Thu, 30 May 2019 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/KD_Tree.html</guid>
-          <description></description>
+          <description>Multidimensional Binary Search Trees in the AFP</description>
+            <category>Computer science/Data structures</category>
         </item>
         <item>
           <title>A Formal Model of the Document Object Model</title>
           <link>https://isa-afp.org/entries/Core_DOM.html</link>
           <pubDate>Wed, 26 Dec 2018 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Core_DOM.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>A Formal Model of the Document Object Model</title>
-          <link>https://isa-afp.org/entries/Core_DOM.html</link>
-          <pubDate>Wed, 26 Dec 2018 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Core_DOM.html</guid>
-          <description></description>
+          <description>A Formal Model of the Document Object Model in the AFP</description>
+            <category>Computer science/Data structures</category>
         </item>
         <item>
           <title>Verifying Imperative Programs using Auto2</title>
           <link>https://isa-afp.org/entries/Auto2_Imperative_HOL.html</link>
           <pubDate>Fri, 21 Dec 2018 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Auto2_Imperative_HOL.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Verifying Imperative Programs using Auto2</title>
-          <link>https://isa-afp.org/entries/Auto2_Imperative_HOL.html</link>
-          <pubDate>Fri, 21 Dec 2018 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Auto2_Imperative_HOL.html</guid>
-          <description></description>
+          <description>Verifying Imperative Programs using Auto2 in the AFP</description>
+            <category>Computer science/Algorithms</category>
+            <category>Computer science/Data structures</category>
         </item>
         <item>
           <title>Deriving generic class instances for datatypes</title>
           <link>https://isa-afp.org/entries/Generic_Deriving.html</link>
           <pubDate>Tue, 06 Nov 2018 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Generic_Deriving.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Deriving generic class instances for datatypes</title>
-          <link>https://isa-afp.org/entries/Generic_Deriving.html</link>
-          <pubDate>Tue, 06 Nov 2018 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Generic_Deriving.html</guid>
-          <description></description>
+          <description>Deriving generic class instances for datatypes in the AFP</description>
+            <category>Computer science/Data structures</category>
         </item>
         <item>
           <title>Randomised Binary Search Trees</title>
           <link>https://isa-afp.org/entries/Randomised_BSTs.html</link>
           <pubDate>Fri, 19 Oct 2018 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Randomised_BSTs.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Randomised Binary Search Trees</title>
-          <link>https://isa-afp.org/entries/Randomised_BSTs.html</link>
-          <pubDate>Fri, 19 Oct 2018 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Randomised_BSTs.html</guid>
-          <description></description>
+          <description>Randomised Binary Search Trees in the AFP</description>
+            <category>Computer science/Data structures</category>
+            <category>Computer science/Algorithms/Randomized</category>
         </item>
         <item>
           <title>Optimal Binary Search Trees</title>
           <link>https://isa-afp.org/entries/Optimal_BST.html</link>
           <pubDate>Sun, 27 May 2018 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Optimal_BST.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Optimal Binary Search Trees</title>
-          <link>https://isa-afp.org/entries/Optimal_BST.html</link>
-          <pubDate>Sun, 27 May 2018 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Optimal_BST.html</guid>
-          <description></description>
+          <description>Optimal Binary Search Trees in the AFP</description>
+            <category>Computer science/Algorithms</category>
+            <category>Computer science/Data structures</category>
         </item>
         <item>
           <title>OpSets: Sequential Specifications for Replicated Datatypes</title>
           <link>https://isa-afp.org/entries/OpSets.html</link>
           <pubDate>Thu, 10 May 2018 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/OpSets.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>OpSets: Sequential Specifications for Replicated Datatypes</title>
-          <link>https://isa-afp.org/entries/OpSets.html</link>
-          <pubDate>Thu, 10 May 2018 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/OpSets.html</guid>
-          <description></description>
+          <description>OpSets: Sequential Specifications for Replicated Datatypes in the AFP</description>
+            <category>Computer science/Algorithms/Distributed</category>
+            <category>Computer science/Data structures</category>
         </item>
         <item>
           <title>Weight-Balanced Trees</title>
           <link>https://isa-afp.org/entries/Weight_Balanced_Trees.html</link>
           <pubDate>Tue, 13 Mar 2018 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Weight_Balanced_Trees.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Weight-Balanced Trees</title>
-          <link>https://isa-afp.org/entries/Weight_Balanced_Trees.html</link>
-          <pubDate>Tue, 13 Mar 2018 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Weight_Balanced_Trees.html</guid>
-          <description></description>
+          <description>Weight-Balanced Trees in the AFP</description>
+            <category>Computer science/Data structures</category>
         </item>
         <item>
           <title>Treaps</title>
           <link>https://isa-afp.org/entries/Treaps.html</link>
           <pubDate>Tue, 06 Feb 2018 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Treaps.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Treaps</title>
-          <link>https://isa-afp.org/entries/Treaps.html</link>
-          <pubDate>Tue, 06 Feb 2018 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Treaps.html</guid>
-          <description></description>
+          <description>Treaps in the AFP</description>
+            <category>Computer science/Data structures</category>
         </item>
         <item>
           <title>Taylor Models</title>
           <link>https://isa-afp.org/entries/Taylor_Models.html</link>
           <pubDate>Mon, 08 Jan 2018 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Taylor_Models.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Taylor Models</title>
-          <link>https://isa-afp.org/entries/Taylor_Models.html</link>
-          <pubDate>Mon, 08 Jan 2018 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Taylor_Models.html</guid>
-          <description></description>
+          <description>Taylor Models in the AFP</description>
+            <category>Computer science/Algorithms/Mathematical</category>
+            <category>Computer science/Data structures</category>
+            <category>Mathematics/Analysis</category>
+            <category>Mathematics/Algebra</category>
         </item>
         <item>
           <title>The IMAP CmRDT</title>
           <link>https://isa-afp.org/entries/IMAP-CRDT.html</link>
           <pubDate>Thu, 09 Nov 2017 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/IMAP-CRDT.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>The IMAP CmRDT</title>
-          <link>https://isa-afp.org/entries/IMAP-CRDT.html</link>
-          <pubDate>Thu, 09 Nov 2017 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/IMAP-CRDT.html</guid>
-          <description></description>
+          <description>The IMAP CmRDT in the AFP</description>
+            <category>Computer science/Algorithms/Distributed</category>
+            <category>Computer science/Data structures</category>
         </item>
         <item>
           <title>Root-Balanced Tree</title>
           <link>https://isa-afp.org/entries/Root_Balanced_Tree.html</link>
           <pubDate>Sun, 20 Aug 2017 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Root_Balanced_Tree.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Root-Balanced Tree</title>
-          <link>https://isa-afp.org/entries/Root_Balanced_Tree.html</link>
-          <pubDate>Sun, 20 Aug 2017 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Root_Balanced_Tree.html</guid>
-          <description></description>
+          <description>Root-Balanced Tree in the AFP</description>
+            <category>Computer science/Data structures</category>
         </item>
         <item>
           <title>A framework for establishing Strong Eventual Consistency for Conflict-free Replicated Datatypes</title>
           <link>https://isa-afp.org/entries/CRDT.html</link>
           <pubDate>Fri, 07 Jul 2017 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/CRDT.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>A framework for establishing Strong Eventual Consistency for Conflict-free Replicated Datatypes</title>
-          <link>https://isa-afp.org/entries/CRDT.html</link>
-          <pubDate>Fri, 07 Jul 2017 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/CRDT.html</guid>
-          <description></description>
+          <description>A framework for establishing Strong Eventual Consistency for Conflict-free Replicated Datatypes in the AFP</description>
+            <category>Computer science/Algorithms/Distributed</category>
+            <category>Computer science/Data structures</category>
         </item>
         <item>
           <title>Expected Shape of Random Binary Search Trees</title>
           <link>https://isa-afp.org/entries/Random_BSTs.html</link>
           <pubDate>Tue, 04 Apr 2017 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Random_BSTs.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Expected Shape of Random Binary Search Trees</title>
-          <link>https://isa-afp.org/entries/Random_BSTs.html</link>
-          <pubDate>Tue, 04 Apr 2017 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Random_BSTs.html</guid>
-          <description></description>
+          <description>Expected Shape of Random Binary Search Trees in the AFP</description>
+            <category>Computer science/Data structures</category>
+            <category>Computer science/Algorithms/Randomized</category>
         </item>
         <item>
           <title>The Imperative Refinement Framework</title>
           <link>https://isa-afp.org/entries/Refine_Imperative_HOL.html</link>
           <pubDate>Mon, 08 Aug 2016 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Refine_Imperative_HOL.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>The Imperative Refinement Framework</title>
-          <link>https://isa-afp.org/entries/Refine_Imperative_HOL.html</link>
-          <pubDate>Mon, 08 Aug 2016 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Refine_Imperative_HOL.html</guid>
-          <description></description>
+          <description>The Imperative Refinement Framework in the AFP</description>
+            <category>Computer science/Semantics and reasoning</category>
+            <category>Computer science/Data structures</category>
         </item>
         <item>
           <title>Pairing Heap</title>
           <link>https://isa-afp.org/entries/Pairing_Heap.html</link>
           <pubDate>Thu, 14 Jul 2016 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Pairing_Heap.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Pairing Heap</title>
-          <link>https://isa-afp.org/entries/Pairing_Heap.html</link>
-          <pubDate>Thu, 14 Jul 2016 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Pairing_Heap.html</guid>
-          <description></description>
+          <description>Pairing Heap in the AFP</description>
+            <category>Computer science/Data structures</category>
         </item>
         <item>
           <title>Finite Machine Word Library</title>
           <link>https://isa-afp.org/entries/Word_Lib.html</link>
           <pubDate>Thu, 09 Jun 2016 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Word_Lib.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Finite Machine Word Library</title>
-          <link>https://isa-afp.org/entries/Word_Lib.html</link>
-          <pubDate>Thu, 09 Jun 2016 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Word_Lib.html</guid>
-          <description></description>
+          <description>Finite Machine Word Library in the AFP</description>
+            <category>Computer science/Data structures</category>
         </item>
         <item>
           <title>Algorithms for Reduced Ordered Binary Decision Diagrams</title>
           <link>https://isa-afp.org/entries/ROBDD.html</link>
           <pubDate>Wed, 27 Apr 2016 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/ROBDD.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Algorithms for Reduced Ordered Binary Decision Diagrams</title>
-          <link>https://isa-afp.org/entries/ROBDD.html</link>
-          <pubDate>Wed, 27 Apr 2016 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/ROBDD.html</guid>
-          <description></description>
+          <description>Algorithms for Reduced Ordered Binary Decision Diagrams in the AFP</description>
+            <category>Computer science/Algorithms</category>
+            <category>Computer science/Data structures</category>
         </item>
         <item>
           <title>Tensor Product of Matrices</title>
           <link>https://isa-afp.org/entries/Matrix_Tensor.html</link>
           <pubDate>Mon, 18 Jan 2016 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Matrix_Tensor.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Tensor Product of Matrices</title>
-          <link>https://isa-afp.org/entries/Matrix_Tensor.html</link>
-          <pubDate>Mon, 18 Jan 2016 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Matrix_Tensor.html</guid>
-          <description></description>
+          <description>Tensor Product of Matrices in the AFP</description>
+            <category>Computer science/Data structures</category>
+            <category>Mathematics/Algebra</category>
         </item>
         <item>
           <title>Reasoning about Lists via List Interleaving</title>
           <link>https://isa-afp.org/entries/List_Interleaving.html</link>
           <pubDate>Thu, 11 Jun 2015 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/List_Interleaving.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Reasoning about Lists via List Interleaving</title>
-          <link>https://isa-afp.org/entries/List_Interleaving.html</link>
-          <pubDate>Thu, 11 Jun 2015 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/List_Interleaving.html</guid>
-          <description></description>
+          <description>Reasoning about Lists via List Interleaving in the AFP</description>
+            <category>Computer science/Data structures</category>
         </item>
         <item>
           <title>Parameterized Dynamic Tables</title>
           <link>https://isa-afp.org/entries/Dynamic_Tables.html</link>
           <pubDate>Sun, 07 Jun 2015 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Dynamic_Tables.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Parameterized Dynamic Tables</title>
-          <link>https://isa-afp.org/entries/Dynamic_Tables.html</link>
-          <pubDate>Sun, 07 Jun 2015 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Dynamic_Tables.html</guid>
-          <description></description>
+          <description>Parameterized Dynamic Tables in the AFP</description>
+            <category>Computer science/Data structures</category>
         </item>
         <item>
           <title>Trie</title>
           <link>https://isa-afp.org/entries/Trie.html</link>
           <pubDate>Mon, 30 Mar 2015 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Trie.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Trie</title>
-          <link>https://isa-afp.org/entries/Trie.html</link>
-          <pubDate>Mon, 30 Mar 2015 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Trie.html</guid>
-          <description></description>
+          <description>Trie in the AFP</description>
+            <category>Computer science/Data structures</category>
         </item>
         <item>
           <title>Deriving class instances for datatypes</title>
           <link>https://isa-afp.org/entries/Deriving.html</link>
           <pubDate>Wed, 11 Mar 2015 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Deriving.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Deriving class instances for datatypes</title>
-          <link>https://isa-afp.org/entries/Deriving.html</link>
-          <pubDate>Wed, 11 Mar 2015 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Deriving.html</guid>
-          <description></description>
+          <description>Deriving class instances for datatypes in the AFP</description>
+            <category>Computer science/Data structures</category>
         </item>
         <item>
           <title>XML</title>
           <link>https://isa-afp.org/entries/XML.html</link>
           <pubDate>Fri, 03 Oct 2014 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/XML.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>XML</title>
-          <link>https://isa-afp.org/entries/XML.html</link>
-          <pubDate>Fri, 03 Oct 2014 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/XML.html</guid>
-          <description></description>
+          <description>XML in the AFP</description>
+            <category>Computer science/Functional programming</category>
+            <category>Computer science/Data structures</category>
         </item>
         <item>
           <title>Priority Queues Based on Braun Trees</title>
           <link>https://isa-afp.org/entries/Priority_Queue_Braun.html</link>
           <pubDate>Thu, 04 Sep 2014 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Priority_Queue_Braun.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Priority Queues Based on Braun Trees</title>
-          <link>https://isa-afp.org/entries/Priority_Queue_Braun.html</link>
-          <pubDate>Thu, 04 Sep 2014 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Priority_Queue_Braun.html</guid>
-          <description></description>
+          <description>Priority Queues Based on Braun Trees in the AFP</description>
+            <category>Computer science/Data structures</category>
         </item>
         <item>
           <title>Skew Heap</title>
           <link>https://isa-afp.org/entries/Skew_Heap.html</link>
           <pubDate>Wed, 13 Aug 2014 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Skew_Heap.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Skew Heap</title>
-          <link>https://isa-afp.org/entries/Skew_Heap.html</link>
-          <pubDate>Wed, 13 Aug 2014 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Skew_Heap.html</guid>
-          <description></description>
+          <description>Skew Heap in the AFP</description>
+            <category>Computer science/Data structures</category>
         </item>
         <item>
           <title>Splay Tree</title>
           <link>https://isa-afp.org/entries/Splay_Tree.html</link>
           <pubDate>Tue, 12 Aug 2014 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Splay_Tree.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Splay Tree</title>
-          <link>https://isa-afp.org/entries/Splay_Tree.html</link>
-          <pubDate>Tue, 12 Aug 2014 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Splay_Tree.html</guid>
-          <description></description>
+          <description>Splay Tree in the AFP</description>
+            <category>Computer science/Data structures</category>
         </item>
         <item>
           <title>Amortized Complexity Verified</title>
           <link>https://isa-afp.org/entries/Amortized_Complexity.html</link>
           <pubDate>Mon, 07 Jul 2014 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Amortized_Complexity.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Amortized Complexity Verified</title>
-          <link>https://isa-afp.org/entries/Amortized_Complexity.html</link>
-          <pubDate>Mon, 07 Jul 2014 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Amortized_Complexity.html</guid>
-          <description></description>
+          <description>Amortized Complexity Verified in the AFP</description>
+            <category>Computer science/Data structures</category>
         </item>
         <item>
           <title>Native Word</title>
           <link>https://isa-afp.org/entries/Native_Word.html</link>
           <pubDate>Tue, 17 Sep 2013 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Native_Word.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Native Word</title>
-          <link>https://isa-afp.org/entries/Native_Word.html</link>
-          <pubDate>Tue, 17 Sep 2013 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Native_Word.html</guid>
-          <description></description>
+          <description>Native Word in the AFP</description>
+            <category>Computer science/Data structures</category>
         </item>
         <item>
           <title>A Formal Model of IEEE Floating Point Arithmetic</title>
           <link>https://isa-afp.org/entries/IEEE_Floating_Point.html</link>
           <pubDate>Sat, 27 Jul 2013 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/IEEE_Floating_Point.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>A Formal Model of IEEE Floating Point Arithmetic</title>
-          <link>https://isa-afp.org/entries/IEEE_Floating_Point.html</link>
-          <pubDate>Sat, 27 Jul 2013 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/IEEE_Floating_Point.html</guid>
-          <description></description>
+          <description>A Formal Model of IEEE Floating Point Arithmetic in the AFP</description>
+            <category>Computer science/Data structures</category>
         </item>
         <item>
           <title>Light-weight Containers</title>
           <link>https://isa-afp.org/entries/Containers.html</link>
           <pubDate>Mon, 15 Apr 2013 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Containers.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Light-weight Containers</title>
-          <link>https://isa-afp.org/entries/Containers.html</link>
-          <pubDate>Mon, 15 Apr 2013 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Containers.html</guid>
-          <description></description>
+          <description>Light-weight Containers in the AFP</description>
+            <category>Computer science/Data structures</category>
         </item>
         <item>
           <title>Generating linear orders for datatypes</title>
           <link>https://isa-afp.org/entries/Datatype_Order_Generator.html</link>
           <pubDate>Tue, 07 Aug 2012 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Datatype_Order_Generator.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Generating linear orders for datatypes</title>
-          <link>https://isa-afp.org/entries/Datatype_Order_Generator.html</link>
-          <pubDate>Tue, 07 Aug 2012 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Datatype_Order_Generator.html</guid>
-          <description></description>
+          <description>Generating linear orders for datatypes in the AFP</description>
+            <category>Computer science/Data structures</category>
         </item>
         <item>
           <title>Infinite Lists</title>
           <link>https://isa-afp.org/entries/List-Infinite.html</link>
           <pubDate>Wed, 23 Feb 2011 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/List-Infinite.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Infinite Lists</title>
-          <link>https://isa-afp.org/entries/List-Infinite.html</link>
-          <pubDate>Wed, 23 Feb 2011 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/List-Infinite.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Binomial Heaps and Skew Binomial Heaps</title>
-          <link>https://isa-afp.org/entries/Binomial-Heaps.html</link>
-          <pubDate>Thu, 28 Oct 2010 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Binomial-Heaps.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Binomial Heaps and Skew Binomial Heaps</title>
-          <link>https://isa-afp.org/entries/Binomial-Heaps.html</link>
-          <pubDate>Thu, 28 Oct 2010 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Binomial-Heaps.html</guid>
-          <description></description>
+          <description>Infinite Lists in the AFP</description>
+            <category>Computer science/Data structures</category>
         </item>
         <item>
           <title>Finger Trees</title>
           <link>https://isa-afp.org/entries/Finger-Trees.html</link>
           <pubDate>Thu, 28 Oct 2010 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Finger-Trees.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Finger Trees</title>
-          <link>https://isa-afp.org/entries/Finger-Trees.html</link>
-          <pubDate>Thu, 28 Oct 2010 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Finger-Trees.html</guid>
-          <description></description>
+          <description>Finger Trees in the AFP</description>
+            <category>Computer science/Data structures</category>
         </item>
         <item>
           <title>Functional Binomial Queues</title>
           <link>https://isa-afp.org/entries/Binomial-Queues.html</link>
           <pubDate>Thu, 28 Oct 2010 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Binomial-Queues.html</guid>
-          <description></description>
+          <description>Functional Binomial Queues in the AFP</description>
+            <category>Computer science/Data structures</category>
         </item>
         <item>
-          <title>Functional Binomial Queues</title>
-          <link>https://isa-afp.org/entries/Binomial-Queues.html</link>
+          <title>Binomial Heaps and Skew Binomial Heaps</title>
+          <link>https://isa-afp.org/entries/Binomial-Heaps.html</link>
           <pubDate>Thu, 28 Oct 2010 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Binomial-Queues.html</guid>
-          <description></description>
+          <description>Binomial Heaps and Skew Binomial Heaps in the AFP</description>
+            <category>Computer science/Data structures</category>
         </item>
         <item>
           <title>Executable Matrix Operations on Matrices of Arbitrary Dimensions</title>
           <link>https://isa-afp.org/entries/Matrix.html</link>
           <pubDate>Thu, 17 Jun 2010 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Matrix.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Executable Matrix Operations on Matrices of Arbitrary Dimensions</title>
-          <link>https://isa-afp.org/entries/Matrix.html</link>
-          <pubDate>Thu, 17 Jun 2010 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Matrix.html</guid>
-          <description></description>
+          <description>Executable Matrix Operations on Matrices of Arbitrary Dimensions in the AFP</description>
+            <category>Computer science/Data structures</category>
         </item>
         <item>
           <title>List Index</title>
           <link>https://isa-afp.org/entries/List-Index.html</link>
           <pubDate>Sat, 20 Feb 2010 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/List-Index.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>List Index</title>
-          <link>https://isa-afp.org/entries/List-Index.html</link>
-          <pubDate>Sat, 20 Feb 2010 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/List-Index.html</guid>
-          <description></description>
+          <description>List Index in the AFP</description>
+            <category>Computer science/Data structures</category>
         </item>
         <item>
           <title>Collections Framework</title>
           <link>https://isa-afp.org/entries/Collections.html</link>
           <pubDate>Wed, 25 Nov 2009 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Collections.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Collections Framework</title>
-          <link>https://isa-afp.org/entries/Collections.html</link>
-          <pubDate>Wed, 25 Nov 2009 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Collections.html</guid>
-          <description></description>
+          <description>Collections Framework in the AFP</description>
+            <category>Computer science/Data structures</category>
         </item>
         <item>
           <title>Code Generation for Functions as Data</title>
           <link>https://isa-afp.org/entries/FinFun.html</link>
           <pubDate>Wed, 06 May 2009 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/FinFun.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Code Generation for Functions as Data</title>
-          <link>https://isa-afp.org/entries/FinFun.html</link>
-          <pubDate>Wed, 06 May 2009 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/FinFun.html</guid>
-          <description></description>
+          <description>Code Generation for Functions as Data in the AFP</description>
+            <category>Computer science/Data structures</category>
         </item>
         <item>
           <title>The Textbook Proof of Huffman&#39;s Algorithm</title>
           <link>https://isa-afp.org/entries/Huffman.html</link>
           <pubDate>Wed, 15 Oct 2008 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Huffman.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>The Textbook Proof of Huffman&#39;s Algorithm</title>
-          <link>https://isa-afp.org/entries/Huffman.html</link>
-          <pubDate>Wed, 15 Oct 2008 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Huffman.html</guid>
-          <description></description>
+          <description>The Textbook Proof of Huffman&#39;s Algorithm in the AFP</description>
+            <category>Computer science/Data structures</category>
         </item>
         <item>
           <title>BDD Normalisation</title>
           <link>https://isa-afp.org/entries/BDD.html</link>
           <pubDate>Fri, 29 Feb 2008 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/BDD.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>BDD Normalisation</title>
-          <link>https://isa-afp.org/entries/BDD.html</link>
-          <pubDate>Fri, 29 Feb 2008 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/BDD.html</guid>
-          <description></description>
+          <description>BDD Normalisation in the AFP</description>
+            <category>Computer science/Data structures</category>
         </item>
         <item>
           <title>File Refinement</title>
           <link>https://isa-afp.org/entries/FileRefinement.html</link>
           <pubDate>Thu, 09 Dec 2004 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/FileRefinement.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>File Refinement</title>
-          <link>https://isa-afp.org/entries/FileRefinement.html</link>
-          <pubDate>Thu, 09 Dec 2004 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/FileRefinement.html</guid>
-          <description></description>
+          <description>File Refinement in the AFP</description>
+            <category>Computer science/Data structures</category>
         </item>
         <item>
           <title>Lazy Lists II</title>
           <link>https://isa-afp.org/entries/Lazy-Lists-II.html</link>
           <pubDate>Mon, 26 Apr 2004 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Lazy-Lists-II.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Lazy Lists II</title>
-          <link>https://isa-afp.org/entries/Lazy-Lists-II.html</link>
-          <pubDate>Mon, 26 Apr 2004 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Lazy-Lists-II.html</guid>
-          <description></description>
+          <description>Lazy Lists II in the AFP</description>
+            <category>Computer science/Data structures</category>
         </item>
         <item>
           <title>Binary Search Trees</title>
           <link>https://isa-afp.org/entries/BinarySearchTree.html</link>
           <pubDate>Mon, 05 Apr 2004 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/BinarySearchTree.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Binary Search Trees</title>
-          <link>https://isa-afp.org/entries/BinarySearchTree.html</link>
-          <pubDate>Mon, 05 Apr 2004 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/BinarySearchTree.html</guid>
-          <description></description>
+          <description>Binary Search Trees in the AFP</description>
+            <category>Computer science/Data structures</category>
         </item>
         <item>
           <title>AVL Trees</title>
           <link>https://isa-afp.org/entries/AVL-Trees.html</link>
           <pubDate>Fri, 19 Mar 2004 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/AVL-Trees.html</guid>
-          <description></description>
+          <description>AVL Trees in the AFP</description>
+            <category>Computer science/Data structures</category>
         </item>
-        <item>
-          <title>AVL Trees</title>
-          <link>https://isa-afp.org/entries/AVL-Trees.html</link>
-          <pubDate>Fri, 19 Mar 2004 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/AVL-Trees.html</guid>
-          <description></description>
-        </item>
+
   </channel>
 </rss>

@@ -1,38 +1,32 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>baksys on Archive of Formal Proofs
-    </title>
+    <title>Mantas Bakšys</title>
     <link>https://isa-afp.org/authors/baksys/</link>
-    <description>
-        Recent content in baksys 
-        on Archive of Formal Proofs
-    </description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language>
-    
-      <lastBuildDate>Sat, 23 Nov 2024 00:00:00 +0000</lastBuildDate>
-      <atom:link href="https://isa-afp.org/authors/baksys/index.xml" rel="self" type="application/rss+xml" />
+    <description>AFP entries of Mantas Bakšys</description>
         <item>
           <title>A Generalization of the Cauchy–Davenport theorem</title>
           <link>https://isa-afp.org/entries/Generalized_Cauchy_Davenport.html</link>
           <pubDate>Sat, 23 Nov 2024 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Generalized_Cauchy_Davenport.html</guid>
-          <description></description>
+          <description>A Generalization of the Cauchy–Davenport theorem in the AFP</description>
+            <category>Mathematics/Combinatorics</category>
+            <category>Mathematics/Algebra</category>
         </item>
         <item>
           <title>Kneser&#39;s Theorem and the Cauchy–Davenport Theorem</title>
           <link>https://isa-afp.org/entries/Kneser_Cauchy_Davenport.html</link>
           <pubDate>Mon, 21 Nov 2022 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Kneser_Cauchy_Davenport.html</guid>
-          <description></description>
+          <description>Kneser&#39;s Theorem and the Cauchy–Davenport Theorem in the AFP</description>
+            <category>Mathematics/Combinatorics</category>
         </item>
         <item>
           <title>The Balog–Szemerédi–Gowers Theorem</title>
           <link>https://isa-afp.org/entries/Balog_Szemeredi_Gowers.html</link>
           <pubDate>Fri, 11 Nov 2022 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Balog_Szemeredi_Gowers.html</guid>
-          <description></description>
+          <description>The Balog–Szemerédi–Gowers Theorem in the AFP</description>
+            <category>Mathematics/Combinatorics</category>
+            <category>Mathematics/Graph theory</category>
         </item>
+
   </channel>
 </rss>

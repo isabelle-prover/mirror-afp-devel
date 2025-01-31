@@ -1,24 +1,16 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>somaini on Archive of Formal Proofs
-    </title>
+    <title>Ivano Somaini</title>
     <link>https://isa-afp.org/authors/somaini/</link>
-    <description>
-        Recent content in somaini 
-        on Archive of Formal Proofs
-    </description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language>
-    
-      <lastBuildDate>Wed, 24 May 2017 00:00:00 +0000</lastBuildDate>
-      <atom:link href="https://isa-afp.org/authors/somaini/index.xml" rel="self" type="application/rss+xml" />
+    <description>AFP entries of Ivano Somaini</description>
         <item>
           <title>Developing Security Protocols by Refinement</title>
           <link>https://isa-afp.org/entries/Security_Protocol_Refinement.html</link>
           <pubDate>Wed, 24 May 2017 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Security_Protocol_Refinement.html</guid>
-          <description></description>
+          <description>Developing Security Protocols by Refinement in the AFP</description>
+            <category>Computer science/Security</category>
         </item>
+
   </channel>
 </rss>

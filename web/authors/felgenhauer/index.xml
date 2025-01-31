@@ -1,59 +1,53 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>felgenhauer on Archive of Formal Proofs
-    </title>
+    <title>Bertram Felgenhauer</title>
     <link>https://isa-afp.org/authors/felgenhauer/</link>
-    <description>
-        Recent content in felgenhauer 
-        on Archive of Formal Proofs
-    </description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language>
-    
-      <lastBuildDate>Wed, 02 Feb 2022 00:00:00 +0000</lastBuildDate>
-      <atom:link href="https://isa-afp.org/authors/felgenhauer/index.xml" rel="self" type="application/rss+xml" />
+    <description>AFP entries of Bertram Felgenhauer</description>
         <item>
           <title>First-Order Theory of Rewriting</title>
           <link>https://isa-afp.org/entries/FO_Theory_Rewriting.html</link>
           <pubDate>Wed, 02 Feb 2022 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/FO_Theory_Rewriting.html</guid>
-          <description></description>
+          <description>First-Order Theory of Rewriting in the AFP</description>
+            <category>Computer science/Automata and formal languages</category>
+            <category>Logic/Rewriting</category>
+            <category>Logic/Proof theory</category>
         </item>
         <item>
           <title>Regular Tree Relations</title>
           <link>https://isa-afp.org/entries/Regular_Tree_Relations.html</link>
           <pubDate>Wed, 15 Dec 2021 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Regular_Tree_Relations.html</guid>
-          <description></description>
+          <description>Regular Tree Relations in the AFP</description>
+            <category>Computer science/Automata and formal languages</category>
         </item>
         <item>
-          <title>Implementing the Goodstein Function in &amp;lambda;-Calculus</title>
+          <title>Implementing the Goodstein Function in &lambda;-Calculus</title>
           <link>https://isa-afp.org/entries/Goodstein_Lambda.html</link>
           <pubDate>Fri, 21 Feb 2020 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Goodstein_Lambda.html</guid>
-          <description></description>
+          <description>Implementing the Goodstein Function in &amp;lambda;-Calculus in the AFP</description>
+            <category>Logic/Rewriting</category>
         </item>
         <item>
           <title>Minsky Machines</title>
           <link>https://isa-afp.org/entries/Minsky_Machines.html</link>
           <pubDate>Tue, 14 Aug 2018 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Minsky_Machines.html</guid>
-          <description></description>
+          <description>Minsky Machines in the AFP</description>
+            <category>Logic/Computability</category>
         </item>
         <item>
           <title>The Z Property</title>
           <link>https://isa-afp.org/entries/Rewriting_Z.html</link>
           <pubDate>Thu, 30 Jun 2016 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Rewriting_Z.html</guid>
-          <description></description>
+          <description>The Z Property in the AFP</description>
+            <category>Logic/Rewriting</category>
         </item>
         <item>
           <title>Decreasing Diagrams II</title>
           <link>https://isa-afp.org/entries/Decreasing-Diagrams-II.html</link>
           <pubDate>Thu, 20 Aug 2015 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Decreasing-Diagrams-II.html</guid>
-          <description></description>
+          <description>Decreasing Diagrams II in the AFP</description>
+            <category>Logic/Rewriting</category>
         </item>
+
   </channel>
 </rss>

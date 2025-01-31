@@ -1,24 +1,17 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>stell on Archive of Formal Proofs
-    </title>
+    <title>Amy Stell</title>
     <link>https://isa-afp.org/authors/stell/</link>
-    <description>
-        Recent content in stell 
-        on Archive of Formal Proofs
-    </description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language>
-    
-      <lastBuildDate>Sun, 21 Jan 2024 00:00:00 +0000</lastBuildDate>
-      <atom:link href="https://isa-afp.org/authors/stell/index.xml" rel="self" type="application/rss+xml" />
+    <description>AFP entries of Amy Stell</description>
         <item>
           <title>(Extended) Interval Analysis</title>
           <link>https://isa-afp.org/entries/Interval_Analysis.html</link>
           <pubDate>Sun, 21 Jan 2024 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Interval_Analysis.html</guid>
-          <description></description>
+          <description>(Extended) Interval Analysis in the AFP</description>
+            <category>Mathematics/Analysis</category>
+            <category>Mathematics</category>
         </item>
+
   </channel>
 </rss>

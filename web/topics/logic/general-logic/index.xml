@@ -1,156 +1,91 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Logic/General logic on Archive of Formal Proofs
-    </title>
+    <title>Logic/General logic</title>
     <link>https://isa-afp.org/topics/logic/general-logic/</link>
-    <description>
-        Recent content in Logic/General logic 
-        on Archive of Formal Proofs
-    </description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language>
-    
-      <atom:link href="https://isa-afp.org/topics/logic/general-logic/index.xml" rel="self" type="application/rss+xml" />
-        <item>
+    <description>AFP entries in General logic</description>
+         <item>
           <title>First Order Clause</title>
           <link>https://isa-afp.org/entries/First_Order_Clause.html</link>
           <pubDate>Fri, 17 Jan 2025 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/First_Order_Clause.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>First Order Clause</title>
-          <link>https://isa-afp.org/entries/First_Order_Clause.html</link>
-          <pubDate>Fri, 17 Jan 2025 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/First_Order_Clause.html</guid>
-          <description></description>
+          <description>First Order Clause in the AFP</description>
+            <category>Logic/General logic/Classical first-order logic</category>
+            <category>Logic/General logic</category>
         </item>
         <item>
           <title>Conditional normative reasoning as a fragment of HOL (Isabelle/HOL dataset)</title>
           <link>https://isa-afp.org/entries/CondNormReasHOL.html</link>
           <pubDate>Sat, 09 Mar 2024 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/CondNormReasHOL.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Conditional normative reasoning as a fragment of HOL (Isabelle/HOL dataset)</title>
-          <link>https://isa-afp.org/entries/CondNormReasHOL.html</link>
-          <pubDate>Sat, 09 Mar 2024 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/CondNormReasHOL.html</guid>
-          <description></description>
+          <description>Conditional normative reasoning as a fragment of HOL (Isabelle/HOL dataset) in the AFP</description>
+            <category>Logic/Philosophical aspects</category>
+            <category>Logic/General logic</category>
         </item>
         <item>
           <title>Soundness of the Q0 proof system for higher-order logic</title>
           <link>https://isa-afp.org/entries/Q0_Soundness.html</link>
           <pubDate>Mon, 20 Nov 2023 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Q0_Soundness.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Soundness of the Q0 proof system for higher-order logic</title>
-          <link>https://isa-afp.org/entries/Q0_Soundness.html</link>
-          <pubDate>Mon, 20 Nov 2023 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Q0_Soundness.html</guid>
-          <description></description>
+          <description>Soundness of the Q0 proof system for higher-order logic in the AFP</description>
+            <category>Logic/General logic</category>
         </item>
         <item>
           <title>Metatheory of Q0</title>
           <link>https://isa-afp.org/entries/Q0_Metatheory.html</link>
           <pubDate>Sat, 04 Nov 2023 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Q0_Metatheory.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Metatheory of Q0</title>
-          <link>https://isa-afp.org/entries/Q0_Metatheory.html</link>
-          <pubDate>Sat, 04 Nov 2023 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Q0_Metatheory.html</guid>
-          <description></description>
+          <description>Metatheory of Q0 in the AFP</description>
+            <category>Logic/General logic</category>
         </item>
         <item>
           <title>A Sound and Complete Calculus for Probability Inequalities</title>
           <link>https://isa-afp.org/entries/Probability_Inequality_Completeness.html</link>
           <pubDate>Mon, 20 Feb 2023 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Probability_Inequality_Completeness.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>A Sound and Complete Calculus for Probability Inequalities</title>
-          <link>https://isa-afp.org/entries/Probability_Inequality_Completeness.html</link>
-          <pubDate>Mon, 20 Feb 2023 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Probability_Inequality_Completeness.html</guid>
-          <description></description>
+          <description>A Sound and Complete Calculus for Probability Inequalities in the AFP</description>
+            <category>Mathematics/Probability theory</category>
+            <category>Logic/General logic/Classical propositional logic</category>
+            <category>Logic/General logic</category>
         </item>
         <item>
           <title>Synthetic Completeness</title>
           <link>https://isa-afp.org/entries/Synthetic_Completeness.html</link>
           <pubDate>Mon, 09 Jan 2023 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Synthetic_Completeness.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Synthetic Completeness</title>
-          <link>https://isa-afp.org/entries/Synthetic_Completeness.html</link>
-          <pubDate>Mon, 09 Jan 2023 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Synthetic_Completeness.html</guid>
-          <description></description>
+          <description>Synthetic Completeness in the AFP</description>
+            <category>Logic/General logic</category>
+            <category>Logic/Proof theory</category>
         </item>
         <item>
           <title>Automation of Boolos&#39; Curious Inference in Isabelle/HOL</title>
           <link>https://isa-afp.org/entries/Boolos_Curious_Inference_Automated.html</link>
           <pubDate>Mon, 05 Dec 2022 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Boolos_Curious_Inference_Automated.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Automation of Boolos&#39; Curious Inference in Isabelle/HOL</title>
-          <link>https://isa-afp.org/entries/Boolos_Curious_Inference_Automated.html</link>
-          <pubDate>Mon, 05 Dec 2022 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Boolos_Curious_Inference_Automated.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Abstract Object Theory</title>
-          <link>https://isa-afp.org/entries/AOT.html</link>
-          <pubDate>Mon, 28 Nov 2022 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/AOT.html</guid>
-          <description></description>
+          <description>Automation of Boolos&#39; Curious Inference in Isabelle/HOL in the AFP</description>
+            <category>Logic</category>
+            <category>Logic/Philosophical aspects</category>
+            <category>Logic/Computability</category>
+            <category>Logic/Proof theory</category>
+            <category>Logic/General logic</category>
+            <category>Computer science/Artificial intelligence</category>
+            <category>Tools</category>
         </item>
         <item>
           <title>Abstract Object Theory</title>
           <link>https://isa-afp.org/entries/AOT.html</link>
           <pubDate>Mon, 28 Nov 2022 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/AOT.html</guid>
-          <description></description>
+          <description>Abstract Object Theory in the AFP</description>
+            <category>Logic/General logic</category>
+            <category>Mathematics</category>
         </item>
         <item>
           <title>Isabelle&#39;s Metalogic: Formalization and Proof Checker</title>
           <link>https://isa-afp.org/entries/Metalogic_ProofChecker.html</link>
           <pubDate>Tue, 27 Apr 2021 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Metalogic_ProofChecker.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Isabelle&#39;s Metalogic: Formalization and Proof Checker</title>
-          <link>https://isa-afp.org/entries/Metalogic_ProofChecker.html</link>
-          <pubDate>Tue, 27 Apr 2021 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Metalogic_ProofChecker.html</guid>
-          <description></description>
+          <description>Isabelle&#39;s Metalogic: Formalization and Proof Checker in the AFP</description>
+            <category>Logic/General logic</category>
         </item>
         <item>
           <title>Topological semantics for paraconsistent and paracomplete logics</title>
           <link>https://isa-afp.org/entries/Topological_Semantics.html</link>
           <pubDate>Thu, 17 Dec 2020 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Topological_Semantics.html</guid>
-          <description></description>
+          <description>Topological semantics for paraconsistent and paracomplete logics in the AFP</description>
+            <category>Logic/General logic</category>
         </item>
-        <item>
-          <title>Topological semantics for paraconsistent and paracomplete logics</title>
-          <link>https://isa-afp.org/entries/Topological_Semantics.html</link>
-          <pubDate>Thu, 17 Dec 2020 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Topological_Semantics.html</guid>
-          <description></description>
-        </item>
+
   </channel>
 </rss>

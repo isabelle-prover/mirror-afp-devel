@@ -1,31 +1,25 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>schulz on Archive of Formal Proofs
-    </title>
+    <title>Jakob Schulz</title>
     <link>https://isa-afp.org/authors/schulz/</link>
-    <description>
-        Recent content in schulz 
-        on Archive of Formal Proofs
-    </description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language>
-    
-      <lastBuildDate>Fri, 10 May 2024 00:00:00 +0000</lastBuildDate>
-      <atom:link href="https://isa-afp.org/authors/schulz/index.xml" rel="self" type="application/rss+xml" />
+    <description>AFP entries of Jakob Schulz</description>
         <item>
           <title>Schönhage-Strassen Multiplication</title>
           <link>https://isa-afp.org/entries/Schoenhage_Strassen.html</link>
           <pubDate>Fri, 10 May 2024 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Schoenhage_Strassen.html</guid>
-          <description></description>
+          <description>Schönhage-Strassen Multiplication in the AFP</description>
+            <category>Computer science/Algorithms/Mathematical</category>
+            <category>Mathematics/Algebra</category>
         </item>
         <item>
           <title>Karatsuba Multiplication on Integers</title>
           <link>https://isa-afp.org/entries/Karatsuba.html</link>
           <pubDate>Mon, 19 Feb 2024 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Karatsuba.html</guid>
-          <description></description>
+          <description>Karatsuba Multiplication on Integers in the AFP</description>
+            <category>Computer science/Algorithms</category>
+            <category>Computer science/Algorithms/Mathematical</category>
         </item>
+
   </channel>
 </rss>

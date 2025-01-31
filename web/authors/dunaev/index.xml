@@ -1,24 +1,16 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>dunaev on Archive of Formal Proofs
-    </title>
+    <title>Georgy Dunaev</title>
     <link>https://isa-afp.org/authors/dunaev/</link>
-    <description>
-        Recent content in dunaev 
-        on Archive of Formal Proofs
-    </description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language>
-    
-      <lastBuildDate>Mon, 11 May 2020 00:00:00 +0000</lastBuildDate>
-      <atom:link href="https://isa-afp.org/authors/dunaev/index.xml" rel="self" type="application/rss+xml" />
+    <description>AFP entries of Georgy Dunaev</description>
         <item>
           <title>Recursion Theorem in ZF</title>
           <link>https://isa-afp.org/entries/Recursion-Addition.html</link>
           <pubDate>Mon, 11 May 2020 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Recursion-Addition.html</guid>
-          <description></description>
+          <description>Recursion Theorem in ZF in the AFP</description>
+            <category>Logic/Set theory</category>
         </item>
+
   </channel>
 </rss>

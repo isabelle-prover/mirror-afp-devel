@@ -1,24 +1,16 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>guzman on Archive of Formal Proofs
-    </title>
+    <title>Laura P. Gamboa Guzman</title>
     <link>https://isa-afp.org/authors/guzman/</link>
-    <description>
-        Recent content in guzman 
-        on Archive of Formal Proofs
-    </description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language>
-    
-      <lastBuildDate>Fri, 23 Sep 2022 00:00:00 +0000</lastBuildDate>
-      <atom:link href="https://isa-afp.org/authors/guzman/index.xml" rel="self" type="application/rss+xml" />
+    <description>AFP entries of Laura P. Gamboa Guzman</description>
         <item>
           <title>Stalnaker&#39;s Epistemic Logic</title>
           <link>https://isa-afp.org/entries/Stalnaker_Logic.html</link>
           <pubDate>Fri, 23 Sep 2022 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Stalnaker_Logic.html</guid>
-          <description></description>
+          <description>Stalnaker&#39;s Epistemic Logic in the AFP</description>
+            <category>Logic/General logic/Logics of knowledge and belief</category>
         </item>
+
   </channel>
 </rss>

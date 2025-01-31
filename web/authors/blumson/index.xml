@@ -1,31 +1,23 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>blumson on Archive of Formal Proofs
-    </title>
+    <title>Ben Blumson</title>
     <link>https://isa-afp.org/authors/blumson/</link>
-    <description>
-        Recent content in blumson 
-        on Archive of Formal Proofs
-    </description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language>
-    
-      <lastBuildDate>Mon, 01 Mar 2021 00:00:00 +0000</lastBuildDate>
-      <atom:link href="https://isa-afp.org/authors/blumson/index.xml" rel="self" type="application/rss+xml" />
+    <description>AFP entries of Ben Blumson</description>
         <item>
           <title>Mereology</title>
           <link>https://isa-afp.org/entries/Mereology.html</link>
           <pubDate>Mon, 01 Mar 2021 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Mereology.html</guid>
-          <description></description>
+          <description>Mereology in the AFP</description>
+            <category>Logic/Philosophical aspects</category>
         </item>
         <item>
           <title>Anselm&#39;s God in Isabelle/HOL</title>
           <link>https://isa-afp.org/entries/AnselmGod.html</link>
           <pubDate>Wed, 06 Sep 2017 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/AnselmGod.html</guid>
-          <description></description>
+          <description>Anselm&#39;s God in Isabelle/HOL in the AFP</description>
+            <category>Logic/Philosophical aspects</category>
         </item>
+
   </channel>
 </rss>

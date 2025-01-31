@@ -1,66 +1,58 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>diekmann on Archive of Formal Proofs
-    </title>
+    <title>Cornelius Diekmann</title>
     <link>https://isa-afp.org/authors/diekmann/</link>
-    <description>
-        Recent content in diekmann 
-        on Archive of Formal Proofs
-    </description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language>
-    
-      <lastBuildDate>Sat, 07 Mar 2020 00:00:00 +0000</lastBuildDate>
-      <atom:link href="https://isa-afp.org/authors/diekmann/index.xml" rel="self" type="application/rss+xml" />
+    <description>AFP entries of Cornelius Diekmann</description>
         <item>
           <title>Hello World</title>
           <link>https://isa-afp.org/entries/Hello_World.html</link>
           <pubDate>Sat, 07 Mar 2020 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Hello_World.html</guid>
-          <description></description>
+          <description>Hello World in the AFP</description>
+            <category>Computer science/Functional programming</category>
         </item>
         <item>
           <title>LOFT — Verified Migration of Linux Firewalls to SDN</title>
           <link>https://isa-afp.org/entries/LOFT.html</link>
           <pubDate>Fri, 21 Oct 2016 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/LOFT.html</guid>
-          <description></description>
+          <description>LOFT — Verified Migration of Linux Firewalls to SDN in the AFP</description>
+            <category>Computer science/Networks</category>
         </item>
         <item>
           <title>Iptables Semantics</title>
           <link>https://isa-afp.org/entries/Iptables_Semantics.html</link>
           <pubDate>Fri, 09 Sep 2016 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Iptables_Semantics.html</guid>
-          <description></description>
+          <description>Iptables Semantics in the AFP</description>
+            <category>Computer science/Networks</category>
         </item>
         <item>
           <title>Routing</title>
           <link>https://isa-afp.org/entries/Routing.html</link>
           <pubDate>Wed, 31 Aug 2016 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Routing.html</guid>
-          <description></description>
+          <description>Routing in the AFP</description>
+            <category>Computer science/Networks</category>
         </item>
         <item>
           <title>Simple Firewall</title>
           <link>https://isa-afp.org/entries/Simple_Firewall.html</link>
           <pubDate>Wed, 24 Aug 2016 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Simple_Firewall.html</guid>
-          <description></description>
+          <description>Simple Firewall in the AFP</description>
+            <category>Computer science/Networks</category>
         </item>
         <item>
           <title>IP Addresses</title>
           <link>https://isa-afp.org/entries/IP_Addresses.html</link>
           <pubDate>Tue, 28 Jun 2016 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/IP_Addresses.html</guid>
-          <description></description>
+          <description>IP Addresses in the AFP</description>
+            <category>Computer science/Networks</category>
         </item>
         <item>
           <title>Network Security Policy Verification</title>
           <link>https://isa-afp.org/entries/Network_Security_Policy_Verification.html</link>
           <pubDate>Fri, 04 Jul 2014 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Network_Security_Policy_Verification.html</guid>
-          <description></description>
+          <description>Network Security Policy Verification in the AFP</description>
+            <category>Computer science/Security</category>
         </item>
+
   </channel>
 </rss>

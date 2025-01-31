@@ -20,34 +20,31 @@ function build_indexes(entries, authors, topics, keywords) {
     encoder: 'advanced',
     tokenize: 'forward',
     document: {
-      id: 'id',
-      index: ['shortname', 'title', 'abstract', 'date', 'topics[]', 'authors[]'],
+      index: ['shortname', 'title', 'abstract', 'topics[]', 'authors[]'],
       store: true,
     },
   })
-  entries.forEach(entry => entry_index.add(entry))
+  entries.forEach((entry, id) => entry_index.add(id, entry))
 
   const author_index = new FlexSearch.Document({
     encoder: 'advanced',
     tokenize: 'forward',
     document: {
-      id: 'id',
       index: 'name',
       store: true
     },
   })
-  authors.forEach(author => author_index.add(author))
+  authors.forEach((author, id) => author_index.add(id, author))
 
   const topic_index = new FlexSearch.Document({
     encoder: 'icase',
     tokenize: 'forward',
     document: {
-      id: 'id',
       index: 'name',
       store: true
     },
   })
-  topics.forEach(topic => topic_index.add(topic))
+  topics.forEach((topic, id) => topic_index.add(id, topic))
 
   const suggest_index = get_suggest_index(keywords)
 
@@ -133,10 +130,11 @@ async function findfacts_search(index, query) {
 /* result handling */
 
 function render_entry(entry) {
+console.log(entry)
   const authors = entry.authors.join(', ')
   const topics = entry.topics.map((topic, key) =>
-    `<a href=/topics/${entry.topic_links[key]}>${topic}</a>`).join(', ')
-  const year = entry.date.substring(0, 4)
+    `<a href='${entry.topic_links[key]}'>${topic}</a>`).join(', ')
+  const year = entry.year
 
   return `
   <div>
@@ -229,7 +227,7 @@ const init_search = async () => {
   if (search_query) input.value = search_query.replace('+', ' ')
 
   const index_data = await Promise.all([
-    fetch('/index.json'),
+    fetch('/entries/index.json'),
     fetch('/authors/index.json'),
     fetch('/topics/index.json'),
     fetch('/data/keywords.json')

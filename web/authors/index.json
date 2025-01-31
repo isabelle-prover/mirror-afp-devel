@@ -1,2577 +1,2062 @@
 [
  {
-  "id": 0,
-  "link": "https://isa-afp.org/authors/abdulaziz/",
-  "name": "Mohammad Abdulaziz"
- },
- {
-  "id": 1,
-  "link": "https://isa-afp.org/authors/adelsberger/",
-  "name": "Stephan Adelsberger"
- },
- {
-  "id": 2,
-  "link": "https://isa-afp.org/authors/aehlig/",
-  "name": "Klaus Aehlig"
- },
- {
-  "id": 3,
-  "link": "https://isa-afp.org/authors/aissat/",
-  "name": "Romain Aissat"
- },
- {
-  "id": 4,
-  "link": "https://isa-afp.org/authors/amani/",
-  "name": "Sidney Amani"
- },
- {
-  "id": 5,
-  "link": "https://isa-afp.org/authors/amjad/",
-  "name": "Rayhana Amjad"
- },
- {
-  "id": 6,
-  "link": "https://isa-afp.org/authors/ammer/",
-  "name": "Thomas Ammer"
- },
- {
-  "id": 7,
-  "link": "https://isa-afp.org/authors/andreka/",
-  "name": "Hajnal Andreka"
- },
- {
-  "id": 8,
-  "link": "https://isa-afp.org/authors/andronick/",
-  "name": "June Andronick"
- },
- {
-  "id": 9,
-  "link": "https://isa-afp.org/authors/aransay/",
-  "name": "Jesús Aransay"
- },
- {
-  "id": 10,
-  "link": "https://isa-afp.org/authors/argyraki/",
-  "name": "Angeliki Koutsoukou-Argyraki"
- },
- {
-  "id": 11,
-  "link": "https://isa-afp.org/authors/armstrong/",
-  "name": "Alasdair Armstrong"
- },
- {
-  "id": 12,
-  "link": "https://isa-afp.org/authors/aspinall/",
-  "name": "David Aspinall"
- },
- {
-  "id": 13,
-  "link": "https://isa-afp.org/authors/ausaf/",
-  "name": "Fahad Ausaf"
- },
- {
-  "id": 14,
-  "link": "https://isa-afp.org/authors/avigad/",
-  "name": "Jeremy Avigad"
- },
- {
-  "id": 15,
-  "link": "https://isa-afp.org/authors/back/",
-  "name": "Ralph-Johan Back"
- },
- {
-  "id": 16,
-  "link": "https://isa-afp.org/authors/baksys/",
-  "name": "Mantas Bakšys"
- },
- {
-  "id": 17,
-  "link": "https://isa-afp.org/authors/balbach/",
-  "name": "Frank J. Balbach"
- },
- {
-  "id": 18,
-  "link": "https://isa-afp.org/authors/ballarin/",
-  "name": "Clemens Ballarin"
- },
- {
-  "id": 19,
-  "link": "https://isa-afp.org/authors/ballenghien/",
-  "name": "Benoît Ballenghien"
- },
- {
-  "id": 20,
-  "link": "https://isa-afp.org/authors/barsotti/",
-  "name": "Damián Barsotti"
- },
- {
-  "id": 21,
-  "link": "https://isa-afp.org/authors/bauer/",
-  "name": "Gertrud Bauer"
- },
- {
-  "id": 22,
-  "link": "https://isa-afp.org/authors/bauereiss/",
-  "name": "Thomas Bauereiss"
- },
- {
-  "id": 23,
-  "link": "https://isa-afp.org/authors/baxter/",
-  "name": "James Baxter"
- },
- {
-  "id": 24,
-  "link": "https://isa-afp.org/authors/bayer/",
-  "name": "Jonas Bayer"
- },
- {
-  "id": 25,
-  "link": "https://isa-afp.org/authors/becker/",
-  "name": "Heiko Becker"
- },
- {
-  "id": 26,
-  "link": "https://isa-afp.org/authors/beeren/",
-  "name": "Joel Beeren"
- },
- {
-  "id": 27,
-  "link": "https://isa-afp.org/authors/bella/",
-  "name": "Giampaolo Bella"
- },
- {
-  "id": 28,
-  "link": "https://isa-afp.org/authors/bengtson/",
-  "name": "Jesper Bengtson"
- },
- {
-  "id": 29,
-  "link": "https://isa-afp.org/authors/bentkamp/",
-  "name": "Alexander Bentkamp"
- },
- {
-  "id": 30,
-  "link": "https://isa-afp.org/authors/benzmueller/",
-  "name": "Christoph Benzmüller"
- },
- {
-  "id": 31,
-  "link": "https://isa-afp.org/authors/beresford/",
-  "name": "Alastair R. Beresford"
- },
- {
-  "id": 32,
-  "link": "https://isa-afp.org/authors/berghofer/",
-  "name": "Stefan Berghofer"
- },
- {
-  "id": 33,
-  "link": "https://isa-afp.org/authors/bergstroem/",
-  "name": "Axel Bergström"
- },
- {
-  "id": 34,
-  "link": "https://isa-afp.org/authors/beringer/",
-  "name": "Lennart Beringer"
- },
- {
-  "id": 35,
-  "link": "https://isa-afp.org/authors/bharadwaj/",
-  "name": "Abhijith Bharadwaj"
- },
- {
-  "id": 36,
-  "link": "https://isa-afp.org/authors/bhatt/",
-  "name": "Bhargav Bhatt"
- },
- {
-  "id": 37,
-  "link": "https://isa-afp.org/authors/biendarra/",
-  "name": "Julian Biendarra"
- },
- {
-  "id": 38,
-  "link": "https://isa-afp.org/authors/binder/",
-  "name": "Sage Binder"
- },
- {
-  "id": 39,
-  "link": "https://isa-afp.org/authors/bisping/",
-  "name": "Benjamin Bisping"
- },
- {
-  "id": 40,
-  "link": "https://isa-afp.org/authors/blanchette/",
-  "name": "Jasmin Christian Blanchette"
- },
- {
-  "id": 41,
-  "link": "https://isa-afp.org/authors/blasum/",
-  "name": "Holger Blasum"
- },
- {
-  "id": 42,
-  "link": "https://isa-afp.org/authors/blumson/",
-  "name": "Ben Blumson"
- },
- {
-  "id": 43,
-  "link": "https://isa-afp.org/authors/bockenek/",
-  "name": "Joshua Bockenek"
- },
- {
-  "id": 44,
-  "link": "https://isa-afp.org/authors/boehme/",
-  "name": "Sascha Böhme"
- },
- {
-  "id": 45,
-  "link": "https://isa-afp.org/authors/bohrer/",
-  "name": "Rose Bohrer"
- },
- {
-  "id": 46,
-  "link": "https://isa-afp.org/authors/bootle/",
-  "name": "Jonathan Bootle"
- },
- {
-  "id": 47,
-  "link": "https://isa-afp.org/authors/bordg/",
-  "name": "Anthony Bordg"
- },
- {
-  "id": 48,
-  "link": "https://isa-afp.org/authors/borgstroem/",
-  "name": "Johannes Borgström"
- },
- {
-  "id": 49,
-  "link": "https://isa-afp.org/authors/bortin/",
-  "name": "Maksym Bortin"
- },
- {
-  "id": 50,
-  "link": "https://isa-afp.org/authors/bottesch/",
-  "name": "Ralph Bottesch"
- },
- {
-  "id": 51,
-  "link": "https://isa-afp.org/authors/boulanger/",
-  "name": "Frédéric Boulanger"
- },
- {
-  "id": 52,
-  "link": "https://isa-afp.org/authors/bourke/",
-  "name": "Timothy Bourke"
- },
- {
-  "id": 53,
-  "link": "https://isa-afp.org/authors/boutry/",
-  "name": "Pierre Boutry"
- },
- {
-  "id": 54,
-  "link": "https://isa-afp.org/authors/boyton/",
-  "name": "Andrew Boyton"
- },
- {
-  "id": 55,
-  "link": "https://isa-afp.org/authors/bracevac/",
-  "name": "Oliver Bračevac"
- },
- {
-  "id": 56,
-  "link": "https://isa-afp.org/authors/brandt/",
-  "name": "Felix Brandt"
- },
- {
-  "id": 57,
-  "link": "https://isa-afp.org/authors/brecknell/",
-  "name": "Matthew Brecknell"
- },
- {
-  "id": 58,
-  "link": "https://isa-afp.org/authors/breitner/",
-  "name": "Joachim Breitner"
- },
- {
-  "id": 59,
-  "link": "https://isa-afp.org/authors/brien/",
-  "name": "Nicolas Robinson-O'Brien"
- },
- {
-  "id": 60,
-  "link": "https://isa-afp.org/authors/brinkop/",
-  "name": "Hauke Brinkop"
- },
- {
-  "id": 61,
-  "link": "https://isa-afp.org/authors/brodmann/",
-  "name": "Paul-David Brodmann"
- },
- {
-  "id": 62,
-  "link": "https://isa-afp.org/authors/brucker/",
-  "name": "Achim D. Brucker"
- },
- {
-  "id": 63,
-  "link": "https://isa-afp.org/authors/bruegger/",
-  "name": "Lukas Brügger"
- },
- {
-  "id": 64,
-  "link": "https://isa-afp.org/authors/brun/",
-  "name": "Matthias Brun"
- },
- {
-  "id": 65,
-  "link": "https://isa-afp.org/authors/brunner/",
-  "name": "Julian Brunner"
- },
- {
-  "id": 66,
-  "link": "https://isa-afp.org/authors/bryant/",
-  "name": "Dustin Bryant"
- },
- {
-  "id": 67,
-  "link": "https://isa-afp.org/authors/buday/",
-  "name": "Gergely Buday"
- },
- {
-  "id": 68,
-  "link": "https://isa-afp.org/authors/bulwahn/",
-  "name": "Lukas Bulwahn"
- },
- {
-  "id": 69,
-  "link": "https://isa-afp.org/authors/buss/",
-  "name": "Sebastián Buss"
- },
- {
-  "id": 70,
-  "link": "https://isa-afp.org/authors/butler/",
-  "name": "David Butler"
- },
- {
-  "id": 71,
-  "link": "https://isa-afp.org/authors/buyse/",
-  "name": "Maxime Buyse"
- },
- {
-  "id": 72,
-  "link": "https://isa-afp.org/authors/caballero/",
-  "name": "José Manuel Rodríguez Caballero"
- },
- {
-  "id": 73,
-  "link": "https://isa-afp.org/authors/calk/",
-  "name": "Cameron Calk"
- },
- {
-  "id": 74,
-  "link": "https://isa-afp.org/authors/caminati/",
-  "name": "Marco B. Caminati"
- },
- {
-  "id": 75,
-  "link": "https://isa-afp.org/authors/campo/",
-  "name": "Alejandro del Campo"
- },
- {
-  "id": 76,
-  "link": "https://isa-afp.org/authors/chapman/",
-  "name": "Peter Chapman"
- },
- {
-  "id": 77,
-  "link": "https://isa-afp.org/authors/chen/",
-  "name": "L. Chen"
- },
- {
-  "id": 78,
-  "link": "https://isa-afp.org/authors/chenj/",
-  "name": "Jamie Chen"
- },
- {
-  "id": 79,
-  "link": "https://isa-afp.org/authors/cheung/",
-  "name": "Louis Cheung"
- },
- {
-  "id": 80,
-  "link": "https://isa-afp.org/authors/chevalier/",
-  "name": "Loïc Chevalier"
- },
- {
-  "id": 81,
-  "link": "https://isa-afp.org/authors/christfort/",
-  "name": "Axel Christfort"
- },
- {
-  "id": 82,
-  "link": "https://isa-afp.org/authors/clouston/",
-  "name": "Ranald Clouston"
- },
- {
-  "id": 83,
-  "link": "https://isa-afp.org/authors/cock/",
-  "name": "David Cock"
- },
- {
-  "id": 84,
-  "link": "https://isa-afp.org/authors/coghetto/",
-  "name": "Roland Coghetto"
- },
- {
-  "id": 85,
-  "link": "https://isa-afp.org/authors/coglio/",
-  "name": "Alessandro Coglio"
- },
- {
-  "id": 86,
-  "link": "https://isa-afp.org/authors/cohen/",
-  "name": "Ernie Cohen"
- },
- {
-  "id": 87,
-  "link": "https://isa-afp.org/authors/connor/",
-  "name": "Liam O'Connor"
- },
- {
-  "id": 88,
-  "link": "https://isa-afp.org/authors/cordwell/",
-  "name": "Katherine Kosaian"
- },
- {
-  "id": 89,
-  "link": "https://isa-afp.org/authors/cousin/",
-  "name": "Marie Cousin"
- },
- {
-  "id": 90,
-  "link": "https://isa-afp.org/authors/cremer/",
-  "name": "Nils Cremer"
- },
- {
-  "id": 91,
-  "link": "https://isa-afp.org/authors/crighton/",
-  "name": "Aaron Crighton"
- },
- {
-  "id": 92,
-  "link": "https://isa-afp.org/authors/dalvit/",
-  "name": "Christian Dalvit"
- },
- {
-  "id": 93,
-  "link": "https://isa-afp.org/authors/danilkin/",
-  "name": "Anton Danilkin"
- },
- {
-  "id": 94,
-  "link": "https://isa-afp.org/authors/dardinier/",
-  "name": "Thibault Dardinier"
- },
- {
-  "id": 95,
-  "link": "https://isa-afp.org/authors/david/",
-  "name": "Marco David"
- },
- {
-  "id": 96,
-  "link": "https://isa-afp.org/authors/debois/",
-  "name": "Søren Debois"
- },
- {
-  "id": 97,
-  "link": "https://isa-afp.org/authors/debrat/",
-  "name": "Henri Debrat"
- },
- {
-  "id": 98,
-  "link": "https://isa-afp.org/authors/decova/",
-  "name": "Sára Decova"
- },
- {
-  "id": 99,
-  "link": "https://isa-afp.org/authors/delemazure/",
-  "name": "Théo Delemazure"
- },
- {
-  "id": 100,
-  "link": "https://isa-afp.org/authors/demeulemeester/",
-  "name": "Tom Demeulemeester"
- },
- {
-  "id": 101,
-  "link": "https://isa-afp.org/authors/derrick/",
-  "name": "John Derrick"
- },
- {
-  "id": 102,
-  "link": "https://isa-afp.org/authors/desharnais/",
-  "name": "Martin Desharnais"
- },
- {
-  "id": 103,
-  "link": "https://isa-afp.org/authors/diaz/",
-  "name": "Javier Díaz"
- },
- {
-  "id": 104,
-  "link": "https://isa-afp.org/authors/diekmann/",
-  "name": "Cornelius Diekmann"
- },
- {
-  "id": 105,
-  "link": "https://isa-afp.org/authors/dirix/",
-  "name": "Stefan Dirix"
- },
- {
-  "id": 106,
-  "link": "https://isa-afp.org/authors/dittmann/",
-  "name": "Christoph Dittmann"
- },
- {
-  "id": 107,
-  "link": "https://isa-afp.org/authors/divason/",
-  "name": "Jose Divasón"
- },
- {
-  "id": 108,
-  "link": "https://isa-afp.org/authors/doczkal/",
-  "name": "Christian Doczkal"
- },
- {
-  "id": 109,
-  "link": "https://isa-afp.org/authors/dongol/",
-  "name": "Brijesh Dongol"
- },
- {
-  "id": 110,
-  "link": "https://isa-afp.org/authors/doty/",
-  "name": "Matthew Doty"
- },
- {
-  "id": 111,
-  "link": "https://isa-afp.org/authors/dubut/",
-  "name": "Jérémy Dubut"
- },
- {
-  "id": 112,
-  "link": "https://isa-afp.org/authors/dunaev/",
-  "name": "Georgy Dunaev"
- },
- {
-  "id": 113,
-  "link": "https://isa-afp.org/authors/dyckhoff/",
-  "name": "Roy Dyckhoff"
- },
- {
-  "id": 114,
-  "link": "https://isa-afp.org/authors/eberl/",
-  "name": "Manuel Eberl"
- },
- {
-  "id": 115,
-  "link": "https://isa-afp.org/authors/echenim/",
-  "name": "Mnacho Echenim"
- },
- {
-  "id": 116,
-  "link": "https://isa-afp.org/authors/edmonds/",
-  "name": "Chelsea Edmonds"
- },
- {
-  "id": 117,
-  "link": "https://isa-afp.org/authors/engelhardt/",
-  "name": "Kai Engelhardt"
- },
- {
-  "id": 118,
-  "link": "https://isa-afp.org/authors/eriksson/",
-  "name": "Lars-Henrik Eriksson"
- },
- {
-  "id": 119,
-  "link": "https://isa-afp.org/authors/esparza/",
-  "name": "Javier Esparza"
- },
- {
-  "id": 120,
-  "link": "https://isa-afp.org/authors/essmann/",
-  "name": "Robin Eßmann"
- },
- {
-  "id": 121,
-  "link": "https://isa-afp.org/authors/fan/",
-  "name": "Zixuan Fan"
- },
- {
-  "id": 122,
-  "link": "https://isa-afp.org/authors/felgenhauer/",
-  "name": "Bertram Felgenhauer"
- },
- {
-  "id": 123,
-  "link": "https://isa-afp.org/authors/feliachi/",
-  "name": "Abderrahmane Feliachi"
- },
- {
-  "id": 124,
-  "link": "https://isa-afp.org/authors/fell/",
-  "name": "Julian Fell"
- },
- {
-  "id": 125,
-  "link": "https://isa-afp.org/authors/fernandez/",
-  "name": "Matthew Fernandez"
- },
- {
-  "id": 126,
-  "link": "https://isa-afp.org/authors/fiedler/",
-  "name": "Ben Fiedler"
- },
- {
-  "id": 127,
-  "link": "https://isa-afp.org/authors/fleuriot/",
-  "name": "Jacques D. Fleuriot"
- },
- {
-  "id": 128,
-  "link": "https://isa-afp.org/authors/fleury/",
-  "name": "Mathias Fleury"
- },
- {
-  "id": 129,
-  "link": "https://isa-afp.org/authors/foster/",
-  "name": "Michael Foster"
- },
- {
-  "id": 130,
-  "link": "https://isa-afp.org/authors/fosterj/",
-  "name": "J. Nathan Foster"
- },
- {
-  "id": 131,
-  "link": "https://isa-afp.org/authors/fosters/",
-  "name": "Simon Foster"
- },
- {
-  "id": 132,
-  "link": "https://isa-afp.org/authors/fouillard/",
-  "name": "Valentin Fouillard"
- },
- {
-  "id": 133,
-  "link": "https://isa-afp.org/authors/friedrich/",
-  "name": "Stefan Friedrich"
- },
- {
-  "id": 134,
-  "link": "https://isa-afp.org/authors/from/",
-  "name": "Asta Halkjær From"
- },
- {
-  "id": 135,
-  "link": "https://isa-afp.org/authors/fuenmayor/",
-  "name": "David Fuenmayor"
- },
- {
-  "id": 136,
-  "link": "https://isa-afp.org/authors/furusawa/",
-  "name": "Hitoshi Furusawa"
- },
- {
-  "id": 137,
-  "link": "https://isa-afp.org/authors/gammie/",
-  "name": "Peter Gammie"
- },
- {
-  "id": 138,
-  "link": "https://isa-afp.org/authors/gao/",
-  "name": "Xin Gao"
- },
- {
-  "id": 139,
-  "link": "https://isa-afp.org/authors/garvia/",
-  "name": "Azucena Garvia"
- },
- {
-  "id": 140,
-  "link": "https://isa-afp.org/authors/gaudel/",
-  "name": "Marie-Claude Gaudel"
- },
- {
-  "id": 141,
-  "link": "https://isa-afp.org/authors/gay/",
-  "name": "Richard Gay"
- },
- {
-  "id": 142,
-  "link": "https://isa-afp.org/authors/georgescu/",
-  "name": "George Georgescu"
- },
- {
-  "id": 143,
-  "link": "https://isa-afp.org/authors/gheri/",
-  "name": "Lorenzo Gheri"
- },
- {
-  "id": 144,
-  "link": "https://isa-afp.org/authors/ghourabi/",
-  "name": "Fadoua Ghourabi"
- },
- {
-  "id": 145,
-  "link": "https://isa-afp.org/authors/gioiosa/",
-  "name": "Gianpaolo Gioiosa"
- },
- {
-  "id": 146,
-  "link": "https://isa-afp.org/authors/glabbeek/",
-  "name": "Rob van Glabbeek"
- },
- {
-  "id": 147,
-  "link": "https://isa-afp.org/authors/gomes/",
-  "name": "Victor B. F. Gomes"
- },
- {
-  "id": 148,
-  "link": "https://isa-afp.org/authors/gonzalez/",
-  "name": "Edgar Gonzàlez"
- },
- {
-  "id": 149,
-  "link": "https://isa-afp.org/authors/gore/",
-  "name": "Rajeev Gore"
- },
- {
-  "id": 150,
-  "link": "https://isa-afp.org/authors/gouezel/",
-  "name": "Sebastien Gouezel"
- },
- {
-  "id": 151,
-  "link": "https://isa-afp.org/authors/grechuk/",
-  "name": "Bogdan Grechuk"
- },
- {
-  "id": 152,
-  "link": "https://isa-afp.org/authors/greenaway/",
-  "name": "David Greenaway"
- },
- {
-  "id": 153,
-  "link": "https://isa-afp.org/authors/grewe/",
-  "name": "Sylvia Grewe"
- },
- {
-  "id": 154,
-  "link": "https://isa-afp.org/authors/griebel/",
-  "name": "Simon Griebel"
- },
- {
-  "id": 155,
-  "link": "https://isa-afp.org/authors/griffin/",
-  "name": "Matthew Griffin"
- },
- {
-  "id": 156,
-  "link": "https://isa-afp.org/authors/grov/",
-  "name": "Gudmund Grov"
- },
- {
-  "id": 157,
-  "link": "https://isa-afp.org/authors/guerraoui/",
-  "name": "Rachid Guerraoui"
- },
- {
-  "id": 158,
-  "link": "https://isa-afp.org/authors/guiol/",
-  "name": "Hervé Guiol"
- },
- {
-  "id": 159,
-  "link": "https://isa-afp.org/authors/gunther/",
-  "name": "Emmanuel Gunther"
- },
- {
-  "id": 160,
-  "link": "https://isa-afp.org/authors/gutkovas/",
-  "name": "Ramunas Gutkovas"
- },
- {
-  "id": 161,
-  "link": "https://isa-afp.org/authors/guttmann/",
-  "name": "Walter Guttmann"
- },
- {
-  "id": 162,
-  "link": "https://isa-afp.org/authors/guzman/",
-  "name": "Laura P. Gamboa Guzman"
- },
- {
-  "id": 163,
-  "link": "https://isa-afp.org/authors/haftmann/",
-  "name": "Florian Haftmann"
- },
- {
-  "id": 164,
-  "link": "https://isa-afp.org/authors/haslbeck/",
-  "name": "Max W. Haslbeck"
- },
- {
-  "id": 165,
-  "link": "https://isa-afp.org/authors/haslbeckm/",
-  "name": "Maximilian P. L. Haslbeck"
- },
- {
-  "id": 166,
-  "link": "https://isa-afp.org/authors/havle/",
-  "name": "Oto Havle"
- },
- {
-  "id": 167,
-  "link": "https://isa-afp.org/authors/hayes/",
-  "name": "Ian J. Hayes"
- },
- {
-  "id": 168,
-  "link": "https://isa-afp.org/authors/he/",
-  "name": "Yijun He"
- },
- {
-  "id": 169,
-  "link": "https://isa-afp.org/authors/heimes/",
-  "name": "Lukas Heimes"
- },
- {
-  "id": 170,
-  "link": "https://isa-afp.org/authors/helke/",
-  "name": "Steffen Helke"
- },
- {
-  "id": 171,
-  "link": "https://isa-afp.org/authors/hellauer/",
-  "name": "Fabian Hellauer"
- },
- {
-  "id": 172,
-  "link": "https://isa-afp.org/authors/heller/",
-  "name": "Armin Heller"
- },
- {
-  "id": 173,
-  "link": "https://isa-afp.org/authors/henrio/",
-  "name": "Ludovic Henrio"
- },
- {
-  "id": 174,
-  "link": "https://isa-afp.org/authors/herasimau/",
-  "name": "Andrei Herasimau"
- },
- {
-  "id": 175,
-  "link": "https://isa-afp.org/authors/herzberg/",
-  "name": "Michael Herzberg"
- },
- {
-  "id": 176,
-  "link": "https://isa-afp.org/authors/hess/",
-  "name": "Andreas V. Hess"
- },
- {
-  "id": 177,
-  "link": "https://isa-afp.org/authors/hetzl/",
-  "name": "Stefan Hetzl"
- },
- {
-  "id": 178,
-  "link": "https://isa-afp.org/authors/hibon/",
-  "name": "Quentin Hibon"
- },
- {
-  "id": 179,
-  "link": "https://isa-afp.org/authors/higgins/",
-  "name": "Edward Higgins"
- },
- {
-  "id": 180,
-  "link": "https://isa-afp.org/authors/hirata/",
-  "name": "Michikazu Hirata"
- },
- {
-  "id": 181,
-  "link": "https://isa-afp.org/authors/hoefner/",
-  "name": "Peter Höfner"
- },
- {
-  "id": 182,
-  "link": "https://isa-afp.org/authors/hoelzl/",
-  "name": "Johannes Hölzl"
- },
- {
-  "id": 183,
-  "link": "https://isa-afp.org/authors/hofmann/",
-  "name": "Martin Hofmann"
- },
- {
-  "id": 184,
-  "link": "https://isa-afp.org/authors/hofmeier/",
-  "name": "Paul Hofmeier"
- },
- {
-  "id": 185,
-  "link": "https://isa-afp.org/authors/holub/",
-  "name": "Štěpán Holub"
- },
- {
-  "id": 186,
-  "link": "https://isa-afp.org/authors/hosking/",
-  "name": "Tony Hosking"
- },
- {
-  "id": 187,
-  "link": "https://isa-afp.org/authors/hou/",
-  "name": "Zhe Hou"
- },
- {
-  "id": 188,
-  "link": "https://isa-afp.org/authors/hu/",
-  "name": "Shuwei Hu"
- },
- {
-  "id": 189,
-  "link": "https://isa-afp.org/authors/huffman/",
-  "name": "Brian Huffman"
- },
- {
-  "id": 190,
-  "link": "https://isa-afp.org/authors/hupel/",
-  "name": "Lars Hupel"
- },
- {
-  "id": 191,
-  "link": "https://isa-afp.org/authors/ijbema/",
-  "name": "Mark Ijbema"
- },
- {
-  "id": 192,
-  "link": "https://isa-afp.org/authors/immler/",
-  "name": "Fabian Immler"
- },
- {
-  "id": 193,
-  "link": "https://isa-afp.org/authors/israel/",
-  "name": "Jonas Israel"
- },
- {
-  "id": 194,
-  "link": "https://isa-afp.org/authors/ito/",
-  "name": "Yosuke Ito"
- },
- {
-  "id": 195,
-  "link": "https://isa-afp.org/authors/iwama/",
-  "name": "Fumiya Iwama"
- },
- {
-  "id": 196,
-  "link": "https://isa-afp.org/authors/jacobsen/",
-  "name": "Frederik Krogsdal Jacobsen"
- },
- {
-  "id": 197,
-  "link": "https://isa-afp.org/authors/jaskelioff/",
-  "name": "Mauro Jaskelioff"
- },
- {
-  "id": 198,
-  "link": "https://isa-afp.org/authors/jaskolka/",
-  "name": "Jason Jaskolka"
- },
- {
-  "id": 199,
-  "link": "https://isa-afp.org/authors/jensen/",
-  "name": "Alexander Birch Jensen"
- },
- {
-  "id": 200,
-  "link": "https://isa-afp.org/authors/jiang/",
-  "name": "Nan Jiang"
- },
- {
-  "id": 201,
-  "link": "https://isa-afp.org/authors/jiangd/",
-  "name": "Dongchen Jiang"
- },
- {
-  "id": 202,
-  "link": "https://isa-afp.org/authors/jiangz/",
-  "name": "Zilin Jiang"
- },
- {
-  "id": 203,
-  "link": "https://isa-afp.org/authors/joosten/",
-  "name": "Sebastiaan J. C. Joosten"
- },
- {
-  "id": 204,
-  "link": "https://isa-afp.org/authors/jungnickel/",
-  "name": "Tim Jungnickel"
- },
- {
-  "id": 205,
-  "link": "https://isa-afp.org/authors/kadzioka/",
-  "name": "Maya Kądziołka"
- },
- {
-  "id": 206,
-  "link": "https://isa-afp.org/authors/kaliszyk/",
-  "name": "Cezary Kaliszyk"
- },
- {
-  "id": 207,
-  "link": "https://isa-afp.org/authors/kammueller/",
-  "name": "Florian Kammüller"
- },
- {
-  "id": 208,
-  "link": "https://isa-afp.org/authors/kappelmann/",
-  "name": "Kevin Kappelmann"
- },
- {
-  "id": 209,
-  "link": "https://isa-afp.org/authors/karayel/",
-  "name": "Emin Karayel"
- },
- {
-  "id": 210,
-  "link": "https://isa-afp.org/authors/kastermans/",
-  "name": "Bart Kastermans"
- },
- {
-  "id": 211,
-  "link": "https://isa-afp.org/authors/katovsky/",
-  "name": "Alexander Katovsky"
- },
- {
-  "id": 212,
-  "link": "https://isa-afp.org/authors/kaufmann/",
-  "name": "Daniela Kaufmann"
- },
- {
-  "id": 213,
-  "link": "https://isa-afp.org/authors/keefe/",
-  "name": "Greg O'Keefe"
- },
- {
-  "id": 214,
-  "link": "https://isa-afp.org/authors/keinholz/",
-  "name": "Jonas Keinholz"
- },
- {
-  "id": 215,
-  "link": "https://isa-afp.org/authors/kerber/",
-  "name": "Manfred Kerber"
- },
- {
-  "id": 216,
-  "link": "https://isa-afp.org/authors/keskin/",
-  "name": "Ata Keskin"
- },
- {
-  "id": 217,
-  "link": "https://isa-afp.org/authors/ketland/",
-  "name": "Jeffrey Ketland"
- },
- {
-  "id": 218,
-  "link": "https://isa-afp.org/authors/kim/",
-  "name": "Sunpill Kim"
- },
- {
-  "id": 219,
-  "link": "https://isa-afp.org/authors/kirchner/",
-  "name": "Daniel Kirchner"
- },
- {
-  "id": 220,
-  "link": "https://isa-afp.org/authors/klein/",
-  "name": "Gerwin Klein"
- },
- {
-  "id": 221,
-  "link": "https://isa-afp.org/authors/klenze/",
-  "name": "Tobias Klenze"
- },
- {
-  "id": 222,
-  "link": "https://isa-afp.org/authors/kleppmann/",
-  "name": "Martin Kleppmann"
- },
- {
-  "id": 223,
-  "link": "https://isa-afp.org/authors/kobayashi/",
-  "name": "Hidetsune Kobayashi"
- },
- {
-  "id": 224,
-  "link": "https://isa-afp.org/authors/koerner/",
-  "name": "Stefan Körner"
- },
- {
-  "id": 225,
-  "link": "https://isa-afp.org/authors/kolanski/",
-  "name": "Rafal Kolanski"
- },
- {
-  "id": 226,
-  "link": "https://isa-afp.org/authors/koller/",
-  "name": "Lukas Koller"
- },
- {
-  "id": 227,
-  "link": "https://isa-afp.org/authors/krauss/",
-  "name": "Alexander Krauss"
- },
- {
-  "id": 228,
-  "link": "https://isa-afp.org/authors/kreuzer/",
-  "name": "Katharina Kreuzer"
- },
- {
-  "id": 229,
-  "link": "https://isa-afp.org/authors/krofta/",
-  "name": "Niklas Krofta"
- },
- {
-  "id": 230,
-  "link": "https://isa-afp.org/authors/kuncak/",
-  "name": "Viktor Kuncak"
- },
- {
-  "id": 231,
-  "link": "https://isa-afp.org/authors/kuncar/",
-  "name": "Ondřej Kunčar"
- },
- {
-  "id": 232,
-  "link": "https://isa-afp.org/authors/kurz/",
-  "name": "Friedrich Kurz"
- },
- {
-  "id": 233,
-  "link": "https://isa-afp.org/authors/lachnitt/",
-  "name": "Hanna Lachnitt"
- },
- {
-  "id": 234,
-  "link": "https://isa-afp.org/authors/lallemand/",
-  "name": "Joseph Lallemand"
- },
- {
-  "id": 235,
-  "link": "https://isa-afp.org/authors/lameris/",
-  "name": "Cárolos Laméris"
- },
- {
-  "id": 236,
-  "link": "https://isa-afp.org/authors/lammich/",
-  "name": "Peter Lammich"
- },
- {
-  "id": 237,
-  "link": "https://isa-afp.org/authors/lange/",
-  "name": "Christoph Lange"
- },
- {
-  "id": 238,
-  "link": "https://isa-afp.org/authors/langenstein/",
-  "name": "Bruno Langenstein"
- },
- {
-  "id": 239,
-  "link": "https://isa-afp.org/authors/lattuada/",
-  "name": "Andrea Lattuada"
- },
- {
-  "id": 240,
-  "link": "https://isa-afp.org/authors/lauermann/",
-  "name": "Nils Lauermann"
- },
- {
-  "id": 241,
-  "link": "https://isa-afp.org/authors/laursen/",
-  "name": "Christian Pardillo-Laursen"
- },
- {
-  "id": 242,
-  "link": "https://isa-afp.org/authors/lederer/",
-  "name": "Patrick Lederer"
- },
- {
-  "id": 243,
-  "link": "https://isa-afp.org/authors/lee/",
-  "name": "Holden Lee"
- },
- {
-  "id": 244,
-  "link": "https://isa-afp.org/authors/leek/",
-  "name": "Kevin Lee"
- },
- {
-  "id": 245,
-  "link": "https://isa-afp.org/authors/leustean/",
-  "name": "Laurentiu Leustean"
- },
- {
-  "id": 246,
-  "link": "https://isa-afp.org/authors/lewis/",
-  "name": "Corey Lewis"
- },
- {
-  "id": 247,
-  "link": "https://isa-afp.org/authors/li/",
-  "name": "Wenda Li"
- },
- {
-  "id": 248,
-  "link": "https://isa-afp.org/authors/lim/",
-  "name": "Japheth Lim"
- },
- {
-  "id": 249,
-  "link": "https://isa-afp.org/authors/lima/",
-  "name": "Leonardo Lima"
- },
- {
-  "id": 250,
-  "link": "https://isa-afp.org/authors/limat/",
-  "name": "Thaynara Arielly de Lima"
- },
- {
-  "id": 251,
-  "link": "https://isa-afp.org/authors/lindenberg/",
-  "name": "Christina Lindenberg"
- },
- {
-  "id": 252,
-  "link": "https://isa-afp.org/authors/linker/",
-  "name": "Sven Linker"
- },
- {
-  "id": 253,
-  "link": "https://isa-afp.org/authors/liu/",
-  "name": "Junyi Liu"
- },
- {
-  "id": 254,
-  "link": "https://isa-afp.org/authors/liut/",
-  "name": "Tao Liu"
- },
- {
-  "id": 255,
-  "link": "https://isa-afp.org/authors/liuy/",
-  "name": "Yang Liu"
- },
- {
-  "id": 256,
-  "link": "https://isa-afp.org/authors/liy/",
-  "name": "Yangjia Li"
- },
- {
-  "id": 257,
-  "link": "https://isa-afp.org/authors/lochbihler/",
-  "name": "Andreas Lochbihler"
- },
- {
-  "id": 258,
-  "link": "https://isa-afp.org/authors/lochmann/",
-  "name": "Alexander Lochmann"
- },
- {
-  "id": 259,
-  "link": "https://isa-afp.org/authors/lohner/",
-  "name": "Denis Lohner"
- },
- {
-  "id": 260,
-  "link": "https://isa-afp.org/authors/loibl/",
-  "name": "Matthias Loibl"
- },
- {
-  "id": 261,
-  "link": "https://isa-afp.org/authors/londono/",
-  "name": "Alejandro Gómez-Londoño"
- },
- {
-  "id": 262,
-  "link": "https://isa-afp.org/authors/losa/",
-  "name": "Giuliano Losa"
- },
- {
-  "id": 263,
-  "link": "https://isa-afp.org/authors/lutz/",
-  "name": "Bianca Lutz"
- },
- {
-  "id": 264,
-  "link": "https://isa-afp.org/authors/lux/",
-  "name": "Alexander Lux"
- },
- {
-  "id": 265,
-  "link": "https://isa-afp.org/authors/madarasz/",
-  "name": "Judit Madarasz"
- },
- {
-  "id": 266,
-  "link": "https://isa-afp.org/authors/makarios/",
-  "name": "T. J. M. Makarios"
- },
- {
-  "id": 267,
-  "link": "https://isa-afp.org/authors/maletzky/",
-  "name": "Alexander Maletzky"
- },
- {
-  "id": 268,
-  "link": "https://isa-afp.org/authors/mansky/",
-  "name": "Susannah Mansky"
- },
- {
-  "id": 269,
-  "link": "https://isa-afp.org/authors/mantel/",
-  "name": "Heiko Mantel"
- },
- {
-  "id": 270,
-  "link": "https://isa-afp.org/authors/margetson/",
-  "name": "James Margetson"
- },
- {
-  "id": 271,
-  "link": "https://isa-afp.org/authors/maric/",
-  "name": "Ognjen Marić"
- },
- {
-  "id": 272,
-  "link": "https://isa-afp.org/authors/maricf/",
-  "name": "Filip Marić"
- },
- {
-  "id": 273,
-  "link": "https://isa-afp.org/authors/marmsoler/",
-  "name": "Diego Marmsoler"
- },
- {
-  "id": 274,
-  "link": "https://isa-afp.org/authors/massacrier/",
-  "name": "Tanguy Massacrier"
- },
- {
-  "id": 275,
-  "link": "https://isa-afp.org/authors/matache/",
-  "name": "Cristina Matache"
- },
- {
-  "id": 276,
-  "link": "https://isa-afp.org/authors/mateo/",
-  "name": "Adrián Doña Mateo"
- },
- {
-  "id": 277,
-  "link": "https://isa-afp.org/authors/matichuk/",
-  "name": "Daniel Matichuk"
- },
- {
-  "id": 278,
-  "link": "https://isa-afp.org/authors/matiyasevich/",
-  "name": "Yuri Matiyasevich"
- },
- {
-  "id": 279,
-  "link": "https://isa-afp.org/authors/maximova/",
-  "name": "Alexandra Maximova"
- },
- {
-  "id": 280,
-  "link": "https://isa-afp.org/authors/meis/",
-  "name": "Rene Meis"
- },
- {
-  "id": 281,
-  "link": "https://isa-afp.org/authors/meric/",
-  "name": "Nicolas Méric"
- },
- {
-  "id": 282,
-  "link": "https://isa-afp.org/authors/merz/",
-  "name": "Stephan Merz"
- },
- {
-  "id": 283,
-  "link": "https://isa-afp.org/authors/messner/",
-  "name": "Florian Messner"
- },
- {
-  "id": 284,
-  "link": "https://isa-afp.org/authors/mhalla/",
-  "name": "Mehdi Mhalla"
- },
- {
-  "id": 285,
-  "link": "https://isa-afp.org/authors/michaelis/",
-  "name": "Julius Michaelis"
- },
- {
-  "id": 286,
-  "link": "https://isa-afp.org/authors/middeldorp/",
-  "name": "Aart Middeldorp"
- },
- {
-  "id": 287,
-  "link": "https://isa-afp.org/authors/milehins/",
-  "name": "Mihails Milehins"
- },
- {
-  "id": 288,
-  "link": "https://isa-afp.org/authors/minamide/",
-  "name": "Yasuhiko Minamide"
- },
- {
-  "id": 289,
-  "link": "https://isa-afp.org/authors/mitchell/",
-  "name": "Neil Mitchell"
- },
- {
-  "id": 290,
-  "link": "https://isa-afp.org/authors/mitsch/",
-  "name": "Stefan Mitsch"
- },
- {
-  "id": 291,
-  "link": "https://isa-afp.org/authors/mitterwallner/",
-  "name": "Fabian Mitterwallner"
- },
- {
-  "id": 292,
-  "link": "https://isa-afp.org/authors/moedersheim/",
-  "name": "Sebastian Mödersheim"
- },
- {
-  "id": 293,
-  "link": "https://isa-afp.org/authors/moeller/",
-  "name": "Bernhard Möller"
- },
- {
-  "id": 294,
-  "link": "https://isa-afp.org/authors/montanari/",
-  "name": "Luisa Montanari"
- },
- {
-  "id": 295,
-  "link": "https://isa-afp.org/authors/mori/",
-  "name": "Coraline Mori"
- },
- {
-  "id": 296,
-  "link": "https://isa-afp.org/authors/muendler/",
-  "name": "Niels Mündler"
- },
- {
-  "id": 297,
-  "link": "https://isa-afp.org/authors/mulligan/",
-  "name": "Dominic P. Mulligan"
- },
- {
-  "id": 298,
-  "link": "https://isa-afp.org/authors/munive/",
-  "name": "Jonathan Julian Huerta y Munive"
- },
- {
-  "id": 299,
-  "link": "https://isa-afp.org/authors/murao/",
-  "name": "H. Murao"
- },
- {
-  "id": 300,
-  "link": "https://isa-afp.org/authors/murray/",
-  "name": "Toby Murray"
- },
- {
-  "id": 301,
-  "link": "https://isa-afp.org/authors/myreen/",
-  "name": "Magnus O. Myreen"
- },
- {
-  "id": 302,
-  "link": "https://isa-afp.org/authors/nagashima/",
-  "name": "Yutaka Nagashima"
- },
- {
-  "id": 303,
-  "link": "https://isa-afp.org/authors/nagele/",
-  "name": "Julian Nagele"
- },
- {
-  "id": 304,
-  "link": "https://isa-afp.org/authors/naraschewski/",
-  "name": "Wolfgang Naraschewski"
- },
- {
-  "id": 305,
-  "link": "https://isa-afp.org/authors/nedzelsky/",
-  "name": "Michael Nedzelsky"
- },
- {
-  "id": 306,
-  "link": "https://isa-afp.org/authors/nemeti/",
-  "name": "István Németi"
- },
- {
-  "id": 307,
-  "link": "https://isa-afp.org/authors/nemouchi/",
-  "name": "Yakoub Nemouchi"
- },
- {
-  "id": 308,
-  "link": "https://isa-afp.org/authors/nestmann/",
-  "name": "Uwe Nestmann"
- },
- {
-  "id": 309,
-  "link": "https://isa-afp.org/authors/neumann/",
-  "name": "René Neumann"
- },
- {
-  "id": 310,
-  "link": "https://isa-afp.org/authors/nielsen/",
-  "name": "Finn Nielsen"
- },
- {
-  "id": 311,
-  "link": "https://isa-afp.org/authors/nikiforov/",
-  "name": "Denis Nikiforov"
- },
- {
-  "id": 312,
-  "link": "https://isa-afp.org/authors/nipkow/",
-  "name": "Tobias Nipkow"
- },
- {
-  "id": 313,
-  "link": "https://isa-afp.org/authors/nishihara/",
-  "name": "Toshiaki Nishihara"
- },
- {
-  "id": 314,
-  "link": "https://isa-afp.org/authors/noce/",
-  "name": "Pasquale Noce"
- },
- {
-  "id": 315,
-  "link": "https://isa-afp.org/authors/nordhoff/",
-  "name": "Benedikt Nordhoff"
- },
- {
-  "id": 316,
-  "link": "https://isa-afp.org/authors/norrish/",
-  "name": "Michael Norrish"
- },
- {
-  "id": 317,
-  "link": "https://isa-afp.org/authors/noschinski/",
-  "name": "Lars Noschinski"
- },
- {
-  "id": 318,
-  "link": "https://isa-afp.org/authors/obua/",
-  "name": "Steven Obua"
- },
- {
-  "id": 319,
-  "link": "https://isa-afp.org/authors/ogawa/",
-  "name": "Mizuhito Ogawa"
- },
- {
-  "id": 320,
-  "link": "https://isa-afp.org/authors/oldenburg/",
-  "name": "Lennart Oldenburg"
- },
- {
-  "id": 321,
-  "link": "https://isa-afp.org/authors/olm/",
-  "name": "Markus Müller-Olm"
- },
- {
-  "id": 322,
-  "link": "https://isa-afp.org/authors/oosterhuis/",
-  "name": "Roelof Oosterhuis"
- },
- {
-  "id": 323,
-  "link": "https://isa-afp.org/authors/oostrom/",
-  "name": "Vincent van Oostrom"
- },
- {
-  "id": 324,
-  "link": "https://isa-afp.org/authors/ortner/",
-  "name": "Veronika Ortner"
- },
- {
-  "id": 325,
-  "link": "https://isa-afp.org/authors/overbeek/",
-  "name": "Roy Overbeek"
- },
- {
-  "id": 326,
-  "link": "https://isa-afp.org/authors/pagano/",
-  "name": "Miguel Pagano"
- },
- {
-  "id": 327,
-  "link": "https://isa-afp.org/authors/pal/",
-  "name": "Abhik Pal"
- },
- {
-  "id": 328,
-  "link": "https://isa-afp.org/authors/paleo/",
-  "name": "Bruno Woltzenlogel Paleo"
- },
- {
-  "id": 329,
-  "link": "https://isa-afp.org/authors/palmer/",
-  "name": "Jake Palmer"
- },
- {
-  "id": 330,
-  "link": "https://isa-afp.org/authors/parent/",
-  "name": "Xavier Parent"
- },
- {
-  "id": 331,
-  "link": "https://isa-afp.org/authors/park/",
-  "name": "Seung Hoon Park"
- },
- {
-  "id": 332,
-  "link": "https://isa-afp.org/authors/parkinson/",
-  "name": "Matthew Parkinson"
- },
- {
-  "id": 333,
-  "link": "https://isa-afp.org/authors/parrow/",
-  "name": "Joachim Parrow"
- },
- {
-  "id": 334,
-  "link": "https://isa-afp.org/authors/parsert/",
-  "name": "Julian Parsert"
- },
- {
-  "id": 335,
-  "link": "https://isa-afp.org/authors/paulson/",
-  "name": "Lawrence C. Paulson"
- },
- {
-  "id": 336,
-  "link": "https://isa-afp.org/authors/peltier/",
-  "name": "Nicolas Peltier"
- },
- {
-  "id": 337,
-  "link": "https://isa-afp.org/authors/peters/",
-  "name": "Kirstin Peters"
- },
- {
-  "id": 338,
-  "link": "https://isa-afp.org/authors/petrovic/",
-  "name": "Danijela Petrovic"
- },
- {
-  "id": 339,
-  "link": "https://isa-afp.org/authors/pierzchalski/",
-  "name": "Edward Pierzchalski"
- },
- {
-  "id": 340,
-  "link": "https://isa-afp.org/authors/platzer/",
-  "name": "André Platzer"
- },
- {
-  "id": 341,
-  "link": "https://isa-afp.org/authors/pohjola/",
-  "name": "Johannes Åman Pohjola"
- },
- {
-  "id": 342,
-  "link": "https://isa-afp.org/authors/pollak/",
-  "name": "Florian Pollak"
- },
- {
-  "id": 343,
-  "link": "https://isa-afp.org/authors/popescu/",
-  "name": "Andrei Popescu"
- },
- {
-  "id": 344,
-  "link": "https://isa-afp.org/authors/porter/",
-  "name": "Benjamin Porter"
- },
- {
-  "id": 345,
-  "link": "https://isa-afp.org/authors/prathamesh/",
-  "name": "T.V.H. Prathamesh"
- },
- {
-  "id": 346,
-  "link": "https://isa-afp.org/authors/preoteasa/",
-  "name": "Viorel Preoteasa"
- },
- {
-  "id": 347,
-  "link": "https://isa-afp.org/authors/pusch/",
-  "name": "Cornelia Pusch"
- },
- {
-  "id": 348,
-  "link": "https://isa-afp.org/authors/qiu/",
-  "name": "Qi Qiu"
- },
- {
-  "id": 349,
-  "link": "https://isa-afp.org/authors/raabjerg/",
-  "name": "Palle Raabjerg"
- },
- {
-  "id": 350,
-  "link": "https://isa-afp.org/authors/rabe/",
-  "name": "Markus N. Rabe"
- },
- {
-  "id": 351,
-  "link": "https://isa-afp.org/authors/rabing/",
-  "name": "Mathias Schack Rabing"
- },
- {
-  "id": 352,
-  "link": "https://isa-afp.org/authors/raedle/",
-  "name": "Jonas Rädle"
- },
- {
-  "id": 353,
-  "link": "https://isa-afp.org/authors/raska/",
-  "name": "Martin Raška"
- },
- {
-  "id": 354,
-  "link": "https://isa-afp.org/authors/raszyk/",
-  "name": "Martin Raszyk"
- },
- {
-  "id": 355,
-  "link": "https://isa-afp.org/authors/rau/",
-  "name": "Martin Rau"
- },
- {
-  "id": 356,
-  "link": "https://isa-afp.org/authors/rauch/",
-  "name": "Nicole Rauch"
- },
- {
-  "id": 357,
-  "link": "https://isa-afp.org/authors/raumer/",
-  "name": "Jakob von Raumer"
- },
- {
-  "id": 358,
-  "link": "https://isa-afp.org/authors/ravindran/",
-  "name": "Binoy Ravindran"
- },
- {
-  "id": 359,
-  "link": "https://isa-afp.org/authors/rawson/",
-  "name": "Michael Rawson"
- },
- {
-  "id": 360,
-  "link": "https://isa-afp.org/authors/raya/",
-  "name": "Rodrigo Raya"
- },
- {
-  "id": 361,
-  "link": "https://isa-afp.org/authors/regensburger/",
-  "name": "Franz Regensburger"
- },
- {
-  "id": 362,
-  "link": "https://isa-afp.org/authors/reiche/",
-  "name": "Sebastian Reiche"
- },
- {
-  "id": 363,
-  "link": "https://isa-afp.org/authors/reiter/",
-  "name": "Markus Reiter"
- },
- {
-  "id": 364,
-  "link": "https://isa-afp.org/authors/ren/",
-  "name": "Eric Ren"
- },
- {
-  "id": 365,
-  "link": "https://isa-afp.org/authors/reynaud/",
-  "name": "Alban Reynaud"
- },
- {
-  "id": 366,
-  "link": "https://isa-afp.org/authors/ribeiro/",
-  "name": "Pedro Ribeiro"
- },
- {
-  "id": 367,
-  "link": "https://isa-afp.org/authors/richter/",
-  "name": "Stefan Richter"
- },
- {
-  "id": 368,
-  "link": "https://isa-afp.org/authors/rickmann/",
-  "name": "Christina Rickmann"
- },
- {
-  "id": 369,
-  "link": "https://isa-afp.org/authors/ridge/",
-  "name": "Tom Ridge"
- },
- {
-  "id": 370,
-  "link": "https://isa-afp.org/authors/rincon/",
-  "name": "Mauricio Ayala-Rincón"
- },
- {
-  "id": 371,
-  "link": "https://isa-afp.org/authors/rizaldi/",
-  "name": "Albert Rizaldi"
- },
- {
-  "id": 372,
-  "link": "https://isa-afp.org/authors/rizkallah/",
-  "name": "Christine Rizkallah"
- },
- {
-  "id": 373,
-  "link": "https://isa-afp.org/authors/robillard/",
-  "name": "Simon Robillard"
- },
- {
-  "id": 374,
-  "link": "https://isa-afp.org/authors/roessle/",
-  "name": "Ian Roessle"
- },
- {
-  "id": 375,
-  "link": "https://isa-afp.org/authors/romanos/",
-  "name": "Ralph Romanos"
- },
- {
-  "id": 376,
-  "link": "https://isa-afp.org/authors/rosskopf/",
-  "name": "Simon Roßkopf"
- },
- {
-  "id": 377,
-  "link": "https://isa-afp.org/authors/rowat/",
-  "name": "Colin Rowat"
- },
- {
-  "id": 378,
-  "link": "https://isa-afp.org/authors/sabouret/",
-  "name": "Nicolas Sabouret"
- },
- {
-  "id": 379,
-  "link": "https://isa-afp.org/authors/sachtleben/",
-  "name": "Robert Sachtleben"
- },
- {
-  "id": 380,
-  "link": "https://isa-afp.org/authors/saile/",
-  "name": "Christian Saile"
- },
- {
-  "id": 381,
-  "link": "https://isa-afp.org/authors/sanan/",
-  "name": "David Sanan"
- },
- {
-  "id": 382,
-  "link": "https://isa-afp.org/authors/sato/",
-  "name": "Tetsuya Sato"
- },
- {
-  "id": 383,
-  "link": "https://isa-afp.org/authors/sauer/",
-  "name": "Jens Sauer"
- },
- {
-  "id": 384,
-  "link": "https://isa-afp.org/authors/schaeffeler/",
-  "name": "Maximilian Schäffeler"
- },
- {
-  "id": 385,
-  "link": "https://isa-afp.org/authors/scharager/",
-  "name": "Matias Scharager"
- },
- {
-  "id": 386,
-  "link": "https://isa-afp.org/authors/schimpf/",
-  "name": "Alexander Schimpf"
- },
- {
-  "id": 387,
-  "link": "https://isa-afp.org/authors/schirmer/",
-  "name": "Norbert Schirmer"
- },
- {
-  "id": 388,
-  "link": "https://isa-afp.org/authors/schleicher/",
-  "name": "Dierk Schleicher"
- },
- {
-  "id": 389,
-  "link": "https://isa-afp.org/authors/schlichtkrull/",
-  "name": "Anders Schlichtkrull"
- },
- {
-  "id": 390,
-  "link": "https://isa-afp.org/authors/schmaltz/",
-  "name": "Julien Schmaltz"
- },
- {
-  "id": 391,
-  "link": "https://isa-afp.org/authors/schmidinger/",
-  "name": "Lukas Schmidinger"
- },
- {
-  "id": 392,
-  "link": "https://isa-afp.org/authors/schmoetten/",
-  "name": "Richard Schmoetten"
- },
- {
-  "id": 393,
-  "link": "https://isa-afp.org/authors/schneider/",
-  "name": "Joshua Schneider"
- },
- {
-  "id": 394,
-  "link": "https://isa-afp.org/authors/schoepe/",
-  "name": "Daniel Schoepe"
- },
- {
-  "id": 395,
-  "link": "https://isa-afp.org/authors/schoepf/",
-  "name": "Jonas Schöpf"
- },
- {
-  "id": 396,
-  "link": "https://isa-afp.org/authors/schou/",
-  "name": "Morten Konggaard Schou"
- },
- {
-  "id": 397,
-  "link": "https://isa-afp.org/authors/schulz/",
-  "name": "Jakob Schulz"
- },
- {
-  "id": 398,
-  "link": "https://isa-afp.org/authors/scott/",
-  "name": "Dana Scott"
- },
- {
-  "id": 399,
-  "link": "https://isa-afp.org/authors/sefidgar/",
-  "name": "S. Reza Sefidgar"
- },
- {
-  "id": 400,
-  "link": "https://isa-afp.org/authors/seidl/",
-  "name": "Benedikt Seidl"
- },
- {
-  "id": 401,
-  "link": "https://isa-afp.org/authors/seidler/",
-  "name": "Henning Seidler"
- },
- {
-  "id": 402,
-  "link": "https://isa-afp.org/authors/seidlh/",
-  "name": "Helmut Seidl"
- },
- {
-  "id": 403,
-  "link": "https://isa-afp.org/authors/sewell/",
-  "name": "Thomas Sewell"
- },
- {
-  "id": 404,
-  "link": "https://isa-afp.org/authors/sickert/",
-  "name": "Salomon Sickert"
- },
- {
-  "id": 405,
-  "link": "https://isa-afp.org/authors/siek/",
-  "name": "Jeremy Siek"
- },
- {
-  "id": 406,
-  "link": "https://isa-afp.org/authors/simic/",
-  "name": "Danijela Simić"
- },
- {
-  "id": 407,
-  "link": "https://isa-afp.org/authors/sison/",
-  "name": "Robert Sison"
- },
- {
-  "id": 408,
-  "link": "https://isa-afp.org/authors/smaus/",
-  "name": "Jan-Georg Smaus"
- },
- {
-  "id": 409,
-  "link": "https://isa-afp.org/authors/smola/",
-  "name": "Filip Smola"
- },
- {
-  "id": 410,
-  "link": "https://isa-afp.org/authors/snelting/",
-  "name": "Gregor Snelting"
- },
- {
-  "id": 411,
-  "link": "https://isa-afp.org/authors/somaini/",
-  "name": "Ivano Somaini"
- },
- {
-  "id": 412,
-  "link": "https://isa-afp.org/authors/somogyi/",
-  "name": "Dániel Somogyi"
- },
- {
-  "id": 413,
-  "link": "https://isa-afp.org/authors/song/",
-  "name": "Shuhao Song"
- },
- {
-  "id": 414,
-  "link": "https://isa-afp.org/authors/spasic/",
-  "name": "Mirko Spasić"
- },
- {
-  "id": 415,
-  "link": "https://isa-afp.org/authors/spichkova/",
-  "name": "Maria Spichkova"
- },
- {
-  "id": 416,
-  "link": "https://isa-afp.org/authors/spitz/",
-  "name": "Maximilian Spitz"
- },
- {
-  "id": 417,
-  "link": "https://isa-afp.org/authors/sprenger/",
-  "name": "Christoph Sprenger"
- },
- {
-  "id": 418,
-  "link": "https://isa-afp.org/authors/srba/",
-  "name": "Jiří Srba"
- },
- {
-  "id": 419,
-  "link": "https://isa-afp.org/authors/staats/",
-  "name": "Charles Staats"
- },
- {
-  "id": 420,
-  "link": "https://isa-afp.org/authors/stade/",
-  "name": "Yannick Stade"
- },
- {
-  "id": 421,
-  "link": "https://isa-afp.org/authors/stannett/",
-  "name": "Mike Stannett"
- },
- {
-  "id": 422,
-  "link": "https://isa-afp.org/authors/stark/",
-  "name": "Eugene W. Stark"
- },
- {
-  "id": 423,
-  "link": "https://isa-afp.org/authors/starosta/",
-  "name": "Štěpán Starosta"
- },
- {
-  "id": 424,
-  "link": "https://isa-afp.org/authors/steen/",
-  "name": "Alexander Steen"
- },
- {
-  "id": 425,
-  "link": "https://isa-afp.org/authors/steinberg/",
-  "name": "Matías Steinberg"
- },
- {
-  "id": 426,
-  "link": "https://isa-afp.org/authors/stell/",
-  "name": "Amy Stell"
- },
- {
-  "id": 427,
-  "link": "https://isa-afp.org/authors/stephan/",
-  "name": "Werner Stephan"
- },
- {
-  "id": 428,
-  "link": "https://isa-afp.org/authors/sternagel/",
-  "name": "Christian Sternagel"
- },
- {
-  "id": 429,
-  "link": "https://isa-afp.org/authors/sternagelt/",
-  "name": "Thomas Sternagel"
- },
- {
-  "id": 430,
-  "link": "https://isa-afp.org/authors/stevens/",
-  "name": "Lukas Stevens"
- },
- {
-  "id": 431,
-  "link": "https://isa-afp.org/authors/stock/",
-  "name": "Benedikt Stock"
- },
- {
-  "id": 432,
-  "link": "https://isa-afp.org/authors/stoeckl/",
-  "name": "Bernhard Stöckl"
- },
- {
-  "id": 433,
-  "link": "https://isa-afp.org/authors/stricker/",
-  "name": "Christian Stricker"
- },
- {
-  "id": 434,
-  "link": "https://isa-afp.org/authors/strnisa/",
-  "name": "Rok Strniša"
- },
- {
-  "id": 435,
-  "link": "https://isa-afp.org/authors/struth/",
-  "name": "Georg Struth"
- },
- {
-  "id": 436,
-  "link": "https://isa-afp.org/authors/stueber/",
-  "name": "Anke Stüber"
- },
- {
-  "id": 437,
-  "link": "https://isa-afp.org/authors/stuebinger/",
-  "name": "Terru Stübinger"
- },
- {
-  "id": 438,
-  "link": "https://isa-afp.org/authors/stuewe/",
-  "name": "Daniel Stüwe"
- },
- {
-  "id": 439,
-  "link": "https://isa-afp.org/authors/suarez/",
-  "name": "Fabián Fernando Serran Suárez"
- },
- {
-  "id": 440,
-  "link": "https://isa-afp.org/authors/sudbrock/",
-  "name": "Henning Sudbrock"
- },
- {
-  "id": 441,
-  "link": "https://isa-afp.org/authors/sudhof/",
-  "name": "Henry Sudhof"
- },
- {
-  "id": 442,
-  "link": "https://isa-afp.org/authors/sulejmani/",
-  "name": "Ujkan Sulejmani"
- },
- {
-  "id": 443,
-  "link": "https://isa-afp.org/authors/surlykke/",
-  "name": "Thomas Holme Surlykke"
- },
- {
-  "id": 444,
-  "link": "https://isa-afp.org/authors/sutcliffe/",
-  "name": "Geoff Sutcliffe"
- },
- {
-  "id": 445,
-  "link": "https://isa-afp.org/authors/sylvestre/",
-  "name": "Jeremy Sylvestre"
- },
- {
-  "id": 446,
-  "link": "https://isa-afp.org/authors/szekely/",
-  "name": "Gergely Szekely"
- },
- {
-  "id": 447,
-  "link": "https://isa-afp.org/authors/taha/",
-  "name": "Safouan Taha"
- },
- {
-  "id": 448,
-  "link": "https://isa-afp.org/authors/tan/",
-  "name": "Yong Kiam Tan"
- },
- {
-  "id": 449,
-  "link": "https://isa-afp.org/authors/tanaka/",
-  "name": "Miki Tanaka"
- },
- {
-  "id": 450,
-  "link": "https://isa-afp.org/authors/tasch/",
-  "name": "Markus Tasch"
- },
- {
-  "id": 451,
-  "link": "https://isa-afp.org/authors/taylor/",
-  "name": "Ramsay G. Taylor"
- },
- {
-  "id": 452,
-  "link": "https://isa-afp.org/authors/terraf/",
-  "name": "Pedro Sánchez Terraf"
- },
- {
-  "id": 453,
-  "link": "https://isa-afp.org/authors/thiemann/",
-  "name": "René Thiemann"
- },
- {
-  "id": 454,
-  "link": "https://isa-afp.org/authors/thommes/",
-  "name": "Joseph Thommes"
- },
- {
-  "id": 455,
-  "link": "https://isa-afp.org/authors/thomson/",
-  "name": "Fox Thomson"
- },
- {
-  "id": 456,
-  "link": "https://isa-afp.org/authors/tilscher/",
-  "name": "Sarah Tilscher"
- },
- {
-  "id": 457,
-  "link": "https://isa-afp.org/authors/tiu/",
-  "name": "Alwen Tiu"
- },
- {
-  "id": 458,
-  "link": "https://isa-afp.org/authors/toth/",
-  "name": "Balazs Toth"
- },
- {
-  "id": 459,
-  "link": "https://isa-afp.org/authors/tourret/",
-  "name": "Sophie Tourret"
- },
- {
-  "id": 460,
-  "link": "https://isa-afp.org/authors/trachtenherz/",
-  "name": "David Trachtenherz"
- },
- {
-  "id": 461,
-  "link": "https://isa-afp.org/authors/traut/",
-  "name": "Christoph Traut"
- },
- {
-  "id": 462,
-  "link": "https://isa-afp.org/authors/traytel/",
-  "name": "Dmitriy Traytel"
- },
- {
-  "id": 463,
-  "link": "https://isa-afp.org/authors/trelat/",
-  "name": "Vincent Trélat"
- },
- {
-  "id": 464,
-  "link": "https://isa-afp.org/authors/treml/",
-  "name": "Alexander Treml"
- },
- {
-  "id": 465,
-  "link": "https://isa-afp.org/authors/tuch/",
-  "name": "Harvey Tuch"
- },
- {
-  "id": 466,
-  "link": "https://isa-afp.org/authors/tuong/",
-  "name": "Frédéric Tuong"
- },
- {
-  "id": 467,
-  "link": "https://isa-afp.org/authors/tuongj/",
-  "name": "Joseph Tuong"
- },
- {
-  "id": 468,
-  "link": "https://isa-afp.org/authors/tverdyshev/",
-  "name": "Sergey Tverdyshev"
- },
- {
-  "id": 469,
-  "link": "https://isa-afp.org/authors/ullrich/",
-  "name": "Sebastian Ullrich"
- },
- {
-  "id": 470,
-  "link": "https://isa-afp.org/authors/unruh/",
-  "name": "Dominique Unruh"
- },
- {
-  "id": 471,
-  "link": "https://isa-afp.org/authors/urban/",
-  "name": "Christian Urban"
- },
- {
-  "id": 472,
-  "link": "https://isa-afp.org/authors/van/",
-  "name": "Hai Nguyen Van"
- },
- {
-  "id": 473,
-  "link": "https://isa-afp.org/authors/velykis/",
-  "name": "Andrius Velykis"
- },
- {
-  "id": 474,
-  "link": "https://isa-afp.org/authors/verbeek/",
-  "name": "Freek Verbeek"
- },
- {
-  "id": 475,
-  "link": "https://isa-afp.org/authors/villadsen/",
-  "name": "Jørgen Villadsen"
- },
- {
-  "id": 476,
-  "link": "https://isa-afp.org/authors/voisin/",
-  "name": "Frederic Voisin"
- },
- {
-  "id": 477,
-  "link": "https://isa-afp.org/authors/vytiniotis/",
-  "name": "Dimitrios Vytiniotis"
- },
- {
-  "id": 478,
-  "link": "https://isa-afp.org/authors/wagner/",
-  "name": "Max Wagner"
- },
- {
-  "id": 479,
-  "link": "https://isa-afp.org/authors/waldmann/",
-  "name": "Uwe Waldmann"
- },
- {
-  "id": 480,
-  "link": "https://isa-afp.org/authors/wand/",
-  "name": "Daniel Wand"
- },
- {
-  "id": 481,
-  "link": "https://isa-afp.org/authors/wang/",
-  "name": "Shuling Wang"
- },
- {
-  "id": 482,
-  "link": "https://isa-afp.org/authors/wassell/",
-  "name": "Mark Wassell"
- },
- {
-  "id": 483,
-  "link": "https://isa-afp.org/authors/wasserrab/",
-  "name": "Daniel Wasserrab"
- },
- {
-  "id": 484,
-  "link": "https://isa-afp.org/authors/watt/",
-  "name": "Conrad Watt"
- },
- {
-  "id": 485,
-  "link": "https://isa-afp.org/authors/weber/",
-  "name": "Tjark Weber"
- },
- {
-  "id": 486,
-  "link": "https://isa-afp.org/authors/weerwag/",
-  "name": "Timmy Weerwag"
- },
- {
-  "id": 487,
-  "link": "https://isa-afp.org/authors/weidner/",
-  "name": "Arno Wilhelm-Weidner"
- },
- {
-  "id": 488,
-  "link": "https://isa-afp.org/authors/wenninger/",
-  "name": "Elias Wenninger"
- },
- {
-  "id": 489,
-  "link": "https://isa-afp.org/authors/wenzel/",
-  "name": "Makarius Wenzel"
- },
- {
-  "id": 490,
-  "link": "https://isa-afp.org/authors/whitley/",
+  "link": "/authors/whitley/",
   "name": "A Whitley"
  },
  {
-  "id": 491,
-  "link": "https://isa-afp.org/authors/wickerson/",
-  "name": "John Wickerson"
+  "link": "/authors/crighton/",
+  "name": "Aaron Crighton"
  },
  {
-  "id": 492,
-  "link": "https://isa-afp.org/authors/willenbrink/",
-  "name": "Sebastian Willenbrink"
+  "link": "/authors/middeldorp/",
+  "name": "Aart Middeldorp"
  },
  {
-  "id": 493,
-  "link": "https://isa-afp.org/authors/wimmer/",
-  "name": "Simon Wimmer"
+  "link": "/authors/feliachi/",
+  "name": "Abderrahmane Feliachi"
  },
  {
-  "id": 494,
-  "link": "https://isa-afp.org/authors/wirt/",
-  "name": "Kai Wirt"
+  "link": "/authors/bharadwaj/",
+  "name": "Abhijith Bharadwaj"
  },
  {
-  "id": 495,
-  "link": "https://isa-afp.org/authors/wolff/",
-  "name": "Burkhart Wolff"
+  "link": "/authors/pal/",
+  "name": "Abhik Pal"
  },
  {
-  "id": 496,
-  "link": "https://isa-afp.org/authors/wright/",
-  "name": "Jamie Wright"
+  "link": "/authors/brucker/",
+  "name": "Achim D. Brucker"
  },
  {
-  "id": 497,
-  "link": "https://isa-afp.org/authors/wu/",
-  "name": "Chunhan Wu"
+  "link": "/authors/mateo/",
+  "name": "Adrián Doña Mateo"
  },
  {
-  "id": 498,
-  "link": "https://isa-afp.org/authors/xu/",
-  "name": "Jian Xu"
- },
- {
-  "id": 499,
-  "link": "https://isa-afp.org/authors/yamada/",
+  "link": "/authors/yamada/",
   "name": "Akihisa Yamada"
  },
  {
-  "id": 500,
-  "link": "https://isa-afp.org/authors/yang/",
-  "name": "Jiong Yang"
+  "link": "/authors/armstrong/",
+  "name": "Alasdair Armstrong"
  },
  {
-  "id": 501,
-  "link": "https://isa-afp.org/authors/yao/",
-  "name": "Bowen Yao"
+  "link": "/authors/beresford/",
+  "name": "Alastair R. Beresford"
  },
  {
-  "id": 502,
-  "link": "https://isa-afp.org/authors/ye/",
-  "name": "Lina Ye"
+  "link": "/authors/reynaud/",
+  "name": "Alban Reynaud"
  },
  {
-  "id": 503,
-  "link": "https://isa-afp.org/authors/yez/",
-  "name": "Zhengkun Ye"
+  "link": "/authors/rizaldi/",
+  "name": "Albert Rizaldi"
  },
  {
-  "id": 504,
-  "link": "https://isa-afp.org/authors/ying/",
-  "name": "Shenggang Ying"
+  "link": "/authors/campo/",
+  "name": "Alejandro del Campo"
  },
  {
-  "id": 505,
-  "link": "https://isa-afp.org/authors/yingm/",
-  "name": "Mingsheng Ying"
+  "link": "/authors/londono/",
+  "name": "Alejandro Gómez-Londoño"
  },
  {
-  "id": 506,
-  "link": "https://isa-afp.org/authors/yu/",
-  "name": "Lei Yu"
+  "link": "/authors/coglio/",
+  "name": "Alessandro Coglio"
  },
  {
-  "id": 507,
-  "link": "https://isa-afp.org/authors/zankl/",
-  "name": "Harald Zankl"
+  "link": "/authors/bentkamp/",
+  "name": "Alexander Bentkamp"
  },
  {
-  "id": 508,
-  "link": "https://isa-afp.org/authors/zee/",
-  "name": "Karen Zee"
+  "link": "/authors/jensen/",
+  "name": "Alexander Birch Jensen"
  },
  {
-  "id": 509,
-  "link": "https://isa-afp.org/authors/zeller/",
-  "name": "Peter Zeller"
+  "link": "/authors/katovsky/",
+  "name": "Alexander Katovsky"
  },
  {
-  "id": 510,
-  "link": "https://isa-afp.org/authors/zeyda/",
-  "name": "Frank Zeyda"
+  "link": "/authors/krauss/",
+  "name": "Alexander Krauss"
  },
  {
-  "id": 511,
-  "link": "https://isa-afp.org/authors/zhan/",
+  "link": "/authors/lochmann/",
+  "name": "Alexander Lochmann"
+ },
+ {
+  "link": "/authors/lux/",
+  "name": "Alexander Lux"
+ },
+ {
+  "link": "/authors/maletzky/",
+  "name": "Alexander Maletzky"
+ },
+ {
+  "link": "/authors/schimpf/",
+  "name": "Alexander Schimpf"
+ },
+ {
+  "link": "/authors/steen/",
+  "name": "Alexander Steen"
+ },
+ {
+  "link": "/authors/treml/",
+  "name": "Alexander Treml"
+ },
+ {
+  "link": "/authors/maximova/",
+  "name": "Alexandra Maximova"
+ },
+ {
+  "link": "/authors/tiu/",
+  "name": "Alwen Tiu"
+ },
+ {
+  "link": "/authors/stell/",
+  "name": "Amy Stell"
+ },
+ {
+  "link": "/authors/schlichtkrull/",
+  "name": "Anders Schlichtkrull"
+ },
+ {
+  "link": "/authors/platzer/",
+  "name": "André Platzer"
+ },
+ {
+  "link": "/authors/lattuada/",
+  "name": "Andrea Lattuada"
+ },
+ {
+  "link": "/authors/lochbihler/",
+  "name": "Andreas Lochbihler"
+ },
+ {
+  "link": "/authors/hess/",
+  "name": "Andreas V. Hess"
+ },
+ {
+  "link": "/authors/herasimau/",
+  "name": "Andrei Herasimau"
+ },
+ {
+  "link": "/authors/popescu/",
+  "name": "Andrei Popescu"
+ },
+ {
+  "link": "/authors/boyton/",
+  "name": "Andrew Boyton"
+ },
+ {
+  "link": "/authors/velykis/",
+  "name": "Andrius Velykis"
+ },
+ {
+  "link": "/authors/argyraki/",
+  "name": "Angeliki Koutsoukou-Argyraki"
+ },
+ {
+  "link": "/authors/stueber/",
+  "name": "Anke Stüber"
+ },
+ {
+  "link": "/authors/bordg/",
+  "name": "Anthony Bordg"
+ },
+ {
+  "link": "/authors/danilkin/",
+  "name": "Anton Danilkin"
+ },
+ {
+  "link": "/authors/heller/",
+  "name": "Armin Heller"
+ },
+ {
+  "link": "/authors/weidner/",
+  "name": "Arno Wilhelm-Weidner"
+ },
+ {
+  "link": "/authors/from/",
+  "name": "Asta Halkjær From"
+ },
+ {
+  "link": "/authors/keskin/",
+  "name": "Ata Keskin"
+ },
+ {
+  "link": "/authors/bergstroem/",
+  "name": "Axel Bergström"
+ },
+ {
+  "link": "/authors/christfort/",
+  "name": "Axel Christfort"
+ },
+ {
+  "link": "/authors/garvia/",
+  "name": "Azucena Garvia"
+ },
+ {
+  "link": "/authors/toth/",
+  "name": "Balazs Toth"
+ },
+ {
+  "link": "/authors/kastermans/",
+  "name": "Bart Kastermans"
+ },
+ {
+  "link": "/authors/blumson/",
+  "name": "Ben Blumson"
+ },
+ {
+  "link": "/authors/fiedler/",
+  "name": "Ben Fiedler"
+ },
+ {
+  "link": "/authors/nordhoff/",
+  "name": "Benedikt Nordhoff"
+ },
+ {
+  "link": "/authors/seidl/",
+  "name": "Benedikt Seidl"
+ },
+ {
+  "link": "/authors/stock/",
+  "name": "Benedikt Stock"
+ },
+ {
+  "link": "/authors/bisping/",
+  "name": "Benjamin Bisping"
+ },
+ {
+  "link": "/authors/porter/",
+  "name": "Benjamin Porter"
+ },
+ {
+  "link": "/authors/ballenghien/",
+  "name": "Benoît Ballenghien"
+ },
+ {
+  "link": "/authors/moeller/",
+  "name": "Bernhard Möller"
+ },
+ {
+  "link": "/authors/stoeckl/",
+  "name": "Bernhard Stöckl"
+ },
+ {
+  "link": "/authors/felgenhauer/",
+  "name": "Bertram Felgenhauer"
+ },
+ {
+  "link": "/authors/bhatt/",
+  "name": "Bhargav Bhatt"
+ },
+ {
+  "link": "/authors/lutz/",
+  "name": "Bianca Lutz"
+ },
+ {
+  "link": "/authors/ravindran/",
+  "name": "Binoy Ravindran"
+ },
+ {
+  "link": "/authors/grechuk/",
+  "name": "Bogdan Grechuk"
+ },
+ {
+  "link": "/authors/zhan/",
   "name": "Bohua Zhan"
  },
  {
-  "id": 512,
-  "link": "https://isa-afp.org/authors/zhang/",
-  "name": "Yu Zhang"
+  "link": "/authors/yao/",
+  "name": "Bowen Yao"
  },
  {
-  "id": 513,
-  "link": "https://isa-afp.org/authors/zhangx/",
+  "link": "/authors/huffman/",
+  "name": "Brian Huffman"
+ },
+ {
+  "link": "/authors/dongol/",
+  "name": "Brijesh Dongol"
+ },
+ {
+  "link": "/authors/langenstein/",
+  "name": "Bruno Langenstein"
+ },
+ {
+  "link": "/authors/paleo/",
+  "name": "Bruno Woltzenlogel Paleo"
+ },
+ {
+  "link": "/authors/wolff/",
+  "name": "Burkhart Wolff"
+ },
+ {
+  "link": "/authors/calk/",
+  "name": "Cameron Calk"
+ },
+ {
+  "link": "/authors/lameris/",
+  "name": "Cárolos Laméris"
+ },
+ {
+  "link": "/authors/kaliszyk/",
+  "name": "Cezary Kaliszyk"
+ },
+ {
+  "link": "/authors/staats/",
+  "name": "Charles Staats"
+ },
+ {
+  "link": "/authors/edmonds/",
+  "name": "Chelsea Edmonds"
+ },
+ {
+  "link": "/authors/dalvit/",
+  "name": "Christian Dalvit"
+ },
+ {
+  "link": "/authors/doczkal/",
+  "name": "Christian Doczkal"
+ },
+ {
+  "link": "/authors/laursen/",
+  "name": "Christian Pardillo-Laursen"
+ },
+ {
+  "link": "/authors/saile/",
+  "name": "Christian Saile"
+ },
+ {
+  "link": "/authors/sternagel/",
+  "name": "Christian Sternagel"
+ },
+ {
+  "link": "/authors/stricker/",
+  "name": "Christian Stricker"
+ },
+ {
+  "link": "/authors/urban/",
+  "name": "Christian Urban"
+ },
+ {
+  "link": "/authors/lindenberg/",
+  "name": "Christina Lindenberg"
+ },
+ {
+  "link": "/authors/rickmann/",
+  "name": "Christina Rickmann"
+ },
+ {
+  "link": "/authors/rizkallah/",
+  "name": "Christine Rizkallah"
+ },
+ {
+  "link": "/authors/benzmueller/",
+  "name": "Christoph Benzmüller"
+ },
+ {
+  "link": "/authors/dittmann/",
+  "name": "Christoph Dittmann"
+ },
+ {
+  "link": "/authors/lange/",
+  "name": "Christoph Lange"
+ },
+ {
+  "link": "/authors/sprenger/",
+  "name": "Christoph Sprenger"
+ },
+ {
+  "link": "/authors/traut/",
+  "name": "Christoph Traut"
+ },
+ {
+  "link": "/authors/wu/",
+  "name": "Chunhan Wu"
+ },
+ {
+  "link": "/authors/ballarin/",
+  "name": "Clemens Ballarin"
+ },
+ {
+  "link": "/authors/rowat/",
+  "name": "Colin Rowat"
+ },
+ {
+  "link": "/authors/watt/",
+  "name": "Conrad Watt"
+ },
+ {
+  "link": "/authors/mori/",
+  "name": "Coraline Mori"
+ },
+ {
+  "link": "/authors/lewis/",
+  "name": "Corey Lewis"
+ },
+ {
+  "link": "/authors/pusch/",
+  "name": "Cornelia Pusch"
+ },
+ {
+  "link": "/authors/diekmann/",
+  "name": "Cornelius Diekmann"
+ },
+ {
+  "link": "/authors/matache/",
+  "name": "Cristina Matache"
+ },
+ {
+  "link": "/authors/barsotti/",
+  "name": "Damián Barsotti"
+ },
+ {
+  "link": "/authors/scott/",
+  "name": "Dana Scott"
+ },
+ {
+  "link": "/authors/kirchner/",
+  "name": "Daniel Kirchner"
+ },
+ {
+  "link": "/authors/matichuk/",
+  "name": "Daniel Matichuk"
+ },
+ {
+  "link": "/authors/schoepe/",
+  "name": "Daniel Schoepe"
+ },
+ {
+  "link": "/authors/somogyi/",
+  "name": "Dániel Somogyi"
+ },
+ {
+  "link": "/authors/stuewe/",
+  "name": "Daniel Stüwe"
+ },
+ {
+  "link": "/authors/wand/",
+  "name": "Daniel Wand"
+ },
+ {
+  "link": "/authors/wasserrab/",
+  "name": "Daniel Wasserrab"
+ },
+ {
+  "link": "/authors/kaufmann/",
+  "name": "Daniela Kaufmann"
+ },
+ {
+  "link": "/authors/petrovic/",
+  "name": "Danijela Petrovic"
+ },
+ {
+  "link": "/authors/simic/",
+  "name": "Danijela Simić"
+ },
+ {
+  "link": "/authors/aspinall/",
+  "name": "David Aspinall"
+ },
+ {
+  "link": "/authors/butler/",
+  "name": "David Butler"
+ },
+ {
+  "link": "/authors/cock/",
+  "name": "David Cock"
+ },
+ {
+  "link": "/authors/fuenmayor/",
+  "name": "David Fuenmayor"
+ },
+ {
+  "link": "/authors/greenaway/",
+  "name": "David Greenaway"
+ },
+ {
+  "link": "/authors/sanan/",
+  "name": "David Sanan"
+ },
+ {
+  "link": "/authors/trachtenherz/",
+  "name": "David Trachtenherz"
+ },
+ {
+  "link": "/authors/lohner/",
+  "name": "Denis Lohner"
+ },
+ {
+  "link": "/authors/nikiforov/",
+  "name": "Denis Nikiforov"
+ },
+ {
+  "link": "/authors/marmsoler/",
+  "name": "Diego Marmsoler"
+ },
+ {
+  "link": "/authors/schleicher/",
+  "name": "Dierk Schleicher"
+ },
+ {
+  "link": "/authors/vytiniotis/",
+  "name": "Dimitrios Vytiniotis"
+ },
+ {
+  "link": "/authors/traytel/",
+  "name": "Dmitriy Traytel"
+ },
+ {
+  "link": "/authors/mulligan/",
+  "name": "Dominic P. Mulligan"
+ },
+ {
+  "link": "/authors/unruh/",
+  "name": "Dominique Unruh"
+ },
+ {
+  "link": "/authors/jiangd/",
+  "name": "Dongchen Jiang"
+ },
+ {
+  "link": "/authors/bryant/",
+  "name": "Dustin Bryant"
+ },
+ {
+  "link": "/authors/gonzalez/",
+  "name": "Edgar Gonzàlez"
+ },
+ {
+  "link": "/authors/higgins/",
+  "name": "Edward Higgins"
+ },
+ {
+  "link": "/authors/pierzchalski/",
+  "name": "Edward Pierzchalski"
+ },
+ {
+  "link": "/authors/wenninger/",
+  "name": "Elias Wenninger"
+ },
+ {
+  "link": "/authors/karayel/",
+  "name": "Emin Karayel"
+ },
+ {
+  "link": "/authors/gunther/",
+  "name": "Emmanuel Gunther"
+ },
+ {
+  "link": "/authors/ren/",
+  "name": "Eric Ren"
+ },
+ {
+  "link": "/authors/cohen/",
+  "name": "Ernie Cohen"
+ },
+ {
+  "link": "/authors/stark/",
+  "name": "Eugene W. Stark"
+ },
+ {
+  "link": "/authors/suarez/",
+  "name": "Fabián Fernando Serran Suárez"
+ },
+ {
+  "link": "/authors/hellauer/",
+  "name": "Fabian Hellauer"
+ },
+ {
+  "link": "/authors/immler/",
+  "name": "Fabian Immler"
+ },
+ {
+  "link": "/authors/mitterwallner/",
+  "name": "Fabian Mitterwallner"
+ },
+ {
+  "link": "/authors/ghourabi/",
+  "name": "Fadoua Ghourabi"
+ },
+ {
+  "link": "/authors/ausaf/",
+  "name": "Fahad Ausaf"
+ },
+ {
+  "link": "/authors/brandt/",
+  "name": "Felix Brandt"
+ },
+ {
+  "link": "/authors/maricf/",
+  "name": "Filip Marić"
+ },
+ {
+  "link": "/authors/smola/",
+  "name": "Filip Smola"
+ },
+ {
+  "link": "/authors/nielsen/",
+  "name": "Finn Nielsen"
+ },
+ {
+  "link": "/authors/haftmann/",
+  "name": "Florian Haftmann"
+ },
+ {
+  "link": "/authors/kammueller/",
+  "name": "Florian Kammüller"
+ },
+ {
+  "link": "/authors/messner/",
+  "name": "Florian Messner"
+ },
+ {
+  "link": "/authors/pollak/",
+  "name": "Florian Pollak"
+ },
+ {
+  "link": "/authors/thomson/",
+  "name": "Fox Thomson"
+ },
+ {
+  "link": "/authors/balbach/",
+  "name": "Frank J. Balbach"
+ },
+ {
+  "link": "/authors/zeyda/",
+  "name": "Frank Zeyda"
+ },
+ {
+  "link": "/authors/regensburger/",
+  "name": "Franz Regensburger"
+ },
+ {
+  "link": "/authors/boulanger/",
+  "name": "Frédéric Boulanger"
+ },
+ {
+  "link": "/authors/tuong/",
+  "name": "Frédéric Tuong"
+ },
+ {
+  "link": "/authors/voisin/",
+  "name": "Frederic Voisin"
+ },
+ {
+  "link": "/authors/jacobsen/",
+  "name": "Frederik Krogsdal Jacobsen"
+ },
+ {
+  "link": "/authors/verbeek/",
+  "name": "Freek Verbeek"
+ },
+ {
+  "link": "/authors/kurz/",
+  "name": "Friedrich Kurz"
+ },
+ {
+  "link": "/authors/iwama/",
+  "name": "Fumiya Iwama"
+ },
+ {
+  "link": "/authors/sutcliffe/",
+  "name": "Geoff Sutcliffe"
+ },
+ {
+  "link": "/authors/struth/",
+  "name": "Georg Struth"
+ },
+ {
+  "link": "/authors/georgescu/",
+  "name": "George Georgescu"
+ },
+ {
+  "link": "/authors/dunaev/",
+  "name": "Georgy Dunaev"
+ },
+ {
+  "link": "/authors/buday/",
+  "name": "Gergely Buday"
+ },
+ {
+  "link": "/authors/szekely/",
+  "name": "Gergely Szekely"
+ },
+ {
+  "link": "/authors/bauer/",
+  "name": "Gertrud Bauer"
+ },
+ {
+  "link": "/authors/klein/",
+  "name": "Gerwin Klein"
+ },
+ {
+  "link": "/authors/bella/",
+  "name": "Giampaolo Bella"
+ },
+ {
+  "link": "/authors/gioiosa/",
+  "name": "Gianpaolo Gioiosa"
+ },
+ {
+  "link": "/authors/losa/",
+  "name": "Giuliano Losa"
+ },
+ {
+  "link": "/authors/keefe/",
+  "name": "Greg O'Keefe"
+ },
+ {
+  "link": "/authors/snelting/",
+  "name": "Gregor Snelting"
+ },
+ {
+  "link": "/authors/grov/",
+  "name": "Gudmund Grov"
+ },
+ {
+  "link": "/authors/murao/",
+  "name": "H. Murao"
+ },
+ {
+  "link": "/authors/van/",
+  "name": "Hai Nguyen Van"
+ },
+ {
+  "link": "/authors/andreka/",
+  "name": "Hajnal Andreka"
+ },
+ {
+  "link": "/authors/lachnitt/",
+  "name": "Hanna Lachnitt"
+ },
+ {
+  "link": "/authors/zankl/",
+  "name": "Harald Zankl"
+ },
+ {
+  "link": "/authors/tuch/",
+  "name": "Harvey Tuch"
+ },
+ {
+  "link": "/authors/brinkop/",
+  "name": "Hauke Brinkop"
+ },
+ {
+  "link": "/authors/becker/",
+  "name": "Heiko Becker"
+ },
+ {
+  "link": "/authors/mantel/",
+  "name": "Heiko Mantel"
+ },
+ {
+  "link": "/authors/seidlh/",
+  "name": "Helmut Seidl"
+ },
+ {
+  "link": "/authors/seidler/",
+  "name": "Henning Seidler"
+ },
+ {
+  "link": "/authors/sudbrock/",
+  "name": "Henning Sudbrock"
+ },
+ {
+  "link": "/authors/debrat/",
+  "name": "Henri Debrat"
+ },
+ {
+  "link": "/authors/sudhof/",
+  "name": "Henry Sudhof"
+ },
+ {
+  "link": "/authors/guiol/",
+  "name": "Hervé Guiol"
+ },
+ {
+  "link": "/authors/kobayashi/",
+  "name": "Hidetsune Kobayashi"
+ },
+ {
+  "link": "/authors/furusawa/",
+  "name": "Hitoshi Furusawa"
+ },
+ {
+  "link": "/authors/lee/",
+  "name": "Holden Lee"
+ },
+ {
+  "link": "/authors/blasum/",
+  "name": "Holger Blasum"
+ },
+ {
+  "link": "/authors/hayes/",
+  "name": "Ian J. Hayes"
+ },
+ {
+  "link": "/authors/roessle/",
+  "name": "Ian Roessle"
+ },
+ {
+  "link": "/authors/nemeti/",
+  "name": "István Németi"
+ },
+ {
+  "link": "/authors/somaini/",
+  "name": "Ivano Somaini"
+ },
+ {
+  "link": "/authors/fosterj/",
+  "name": "J. Nathan Foster"
+ },
+ {
+  "link": "/authors/fleuriot/",
+  "name": "Jacques D. Fleuriot"
+ },
+ {
+  "link": "/authors/palmer/",
+  "name": "Jake Palmer"
+ },
+ {
+  "link": "/authors/schulz/",
+  "name": "Jakob Schulz"
+ },
+ {
+  "link": "/authors/raumer/",
+  "name": "Jakob von Raumer"
+ },
+ {
+  "link": "/authors/baxter/",
+  "name": "James Baxter"
+ },
+ {
+  "link": "/authors/margetson/",
+  "name": "James Margetson"
+ },
+ {
+  "link": "/authors/chenj/",
+  "name": "Jamie Chen"
+ },
+ {
+  "link": "/authors/wright/",
+  "name": "Jamie Wright"
+ },
+ {
+  "link": "/authors/smaus/",
+  "name": "Jan-Georg Smaus"
+ },
+ {
+  "link": "/authors/lim/",
+  "name": "Japheth Lim"
+ },
+ {
+  "link": "/authors/blanchette/",
+  "name": "Jasmin Christian Blanchette"
+ },
+ {
+  "link": "/authors/jaskolka/",
+  "name": "Jason Jaskolka"
+ },
+ {
+  "link": "/authors/diaz/",
+  "name": "Javier Díaz"
+ },
+ {
+  "link": "/authors/esparza/",
+  "name": "Javier Esparza"
+ },
+ {
+  "link": "/authors/ketland/",
+  "name": "Jeffrey Ketland"
+ },
+ {
+  "link": "/authors/sauer/",
+  "name": "Jens Sauer"
+ },
+ {
+  "link": "/authors/avigad/",
+  "name": "Jeremy Avigad"
+ },
+ {
+  "link": "/authors/dubut/",
+  "name": "Jérémy Dubut"
+ },
+ {
+  "link": "/authors/siek/",
+  "name": "Jeremy Siek"
+ },
+ {
+  "link": "/authors/sylvestre/",
+  "name": "Jeremy Sylvestre"
+ },
+ {
+  "link": "/authors/bengtson/",
+  "name": "Jesper Bengtson"
+ },
+ {
+  "link": "/authors/aransay/",
+  "name": "Jesús Aransay"
+ },
+ {
+  "link": "/authors/xu/",
+  "name": "Jian Xu"
+ },
+ {
+  "link": "/authors/yang/",
+  "name": "Jiong Yang"
+ },
+ {
+  "link": "/authors/srba/",
+  "name": "Jiří Srba"
+ },
+ {
+  "link": "/authors/breitner/",
+  "name": "Joachim Breitner"
+ },
+ {
+  "link": "/authors/parrow/",
+  "name": "Joachim Parrow"
+ },
+ {
+  "link": "/authors/beeren/",
+  "name": "Joel Beeren"
+ },
+ {
+  "link": "/authors/pohjola/",
+  "name": "Johannes Åman Pohjola"
+ },
+ {
+  "link": "/authors/borgstroem/",
+  "name": "Johannes Borgström"
+ },
+ {
+  "link": "/authors/hoelzl/",
+  "name": "Johannes Hölzl"
+ },
+ {
+  "link": "/authors/derrick/",
+  "name": "John Derrick"
+ },
+ {
+  "link": "/authors/wickerson/",
+  "name": "John Wickerson"
+ },
+ {
+  "link": "/authors/bayer/",
+  "name": "Jonas Bayer"
+ },
+ {
+  "link": "/authors/israel/",
+  "name": "Jonas Israel"
+ },
+ {
+  "link": "/authors/keinholz/",
+  "name": "Jonas Keinholz"
+ },
+ {
+  "link": "/authors/raedle/",
+  "name": "Jonas Rädle"
+ },
+ {
+  "link": "/authors/schoepf/",
+  "name": "Jonas Schöpf"
+ },
+ {
+  "link": "/authors/bootle/",
+  "name": "Jonathan Bootle"
+ },
+ {
+  "link": "/authors/munive/",
+  "name": "Jonathan Julian Huerta y Munive"
+ },
+ {
+  "link": "/authors/villadsen/",
+  "name": "Jørgen Villadsen"
+ },
+ {
+  "link": "/authors/divason/",
+  "name": "Jose Divasón"
+ },
+ {
+  "link": "/authors/caballero/",
+  "name": "José Manuel Rodríguez Caballero"
+ },
+ {
+  "link": "/authors/lallemand/",
+  "name": "Joseph Lallemand"
+ },
+ {
+  "link": "/authors/thommes/",
+  "name": "Joseph Thommes"
+ },
+ {
+  "link": "/authors/tuongj/",
+  "name": "Joseph Tuong"
+ },
+ {
+  "link": "/authors/bockenek/",
+  "name": "Joshua Bockenek"
+ },
+ {
+  "link": "/authors/schneider/",
+  "name": "Joshua Schneider"
+ },
+ {
+  "link": "/authors/madarasz/",
+  "name": "Judit Madarasz"
+ },
+ {
+  "link": "/authors/biendarra/",
+  "name": "Julian Biendarra"
+ },
+ {
+  "link": "/authors/brunner/",
+  "name": "Julian Brunner"
+ },
+ {
+  "link": "/authors/fell/",
+  "name": "Julian Fell"
+ },
+ {
+  "link": "/authors/nagele/",
+  "name": "Julian Nagele"
+ },
+ {
+  "link": "/authors/parsert/",
+  "name": "Julian Parsert"
+ },
+ {
+  "link": "/authors/schmaltz/",
+  "name": "Julien Schmaltz"
+ },
+ {
+  "link": "/authors/michaelis/",
+  "name": "Julius Michaelis"
+ },
+ {
+  "link": "/authors/andronick/",
+  "name": "June Andronick"
+ },
+ {
+  "link": "/authors/liu/",
+  "name": "Junyi Liu"
+ },
+ {
+  "link": "/authors/engelhardt/",
+  "name": "Kai Engelhardt"
+ },
+ {
+  "link": "/authors/wirt/",
+  "name": "Kai Wirt"
+ },
+ {
+  "link": "/authors/zee/",
+  "name": "Karen Zee"
+ },
+ {
+  "link": "/authors/kreuzer/",
+  "name": "Katharina Kreuzer"
+ },
+ {
+  "link": "/authors/cordwell/",
+  "name": "Katherine Kosaian"
+ },
+ {
+  "link": "/authors/kappelmann/",
+  "name": "Kevin Kappelmann"
+ },
+ {
+  "link": "/authors/leek/",
+  "name": "Kevin Lee"
+ },
+ {
+  "link": "/authors/peters/",
+  "name": "Kirstin Peters"
+ },
+ {
+  "link": "/authors/aehlig/",
+  "name": "Klaus Aehlig"
+ },
+ {
+  "link": "/authors/chen/",
+  "name": "L. Chen"
+ },
+ {
+  "link": "/authors/hupel/",
+  "name": "Lars Hupel"
+ },
+ {
+  "link": "/authors/noschinski/",
+  "name": "Lars Noschinski"
+ },
+ {
+  "link": "/authors/eriksson/",
+  "name": "Lars-Henrik Eriksson"
+ },
+ {
+  "link": "/authors/guzman/",
+  "name": "Laura P. Gamboa Guzman"
+ },
+ {
+  "link": "/authors/leustean/",
+  "name": "Laurentiu Leustean"
+ },
+ {
+  "link": "/authors/paulson/",
+  "name": "Lawrence C. Paulson"
+ },
+ {
+  "link": "/authors/yu/",
+  "name": "Lei Yu"
+ },
+ {
+  "link": "/authors/beringer/",
+  "name": "Lennart Beringer"
+ },
+ {
+  "link": "/authors/oldenburg/",
+  "name": "Lennart Oldenburg"
+ },
+ {
+  "link": "/authors/lima/",
+  "name": "Leonardo Lima"
+ },
+ {
+  "link": "/authors/connor/",
+  "name": "Liam O'Connor"
+ },
+ {
+  "link": "/authors/ye/",
+  "name": "Lina Ye"
+ },
+ {
+  "link": "/authors/chevalier/",
+  "name": "Loïc Chevalier"
+ },
+ {
+  "link": "/authors/gheri/",
+  "name": "Lorenzo Gheri"
+ },
+ {
+  "link": "/authors/cheung/",
+  "name": "Louis Cheung"
+ },
+ {
+  "link": "/authors/henrio/",
+  "name": "Ludovic Henrio"
+ },
+ {
+  "link": "/authors/montanari/",
+  "name": "Luisa Montanari"
+ },
+ {
+  "link": "/authors/bruegger/",
+  "name": "Lukas Brügger"
+ },
+ {
+  "link": "/authors/bulwahn/",
+  "name": "Lukas Bulwahn"
+ },
+ {
+  "link": "/authors/heimes/",
+  "name": "Lukas Heimes"
+ },
+ {
+  "link": "/authors/koller/",
+  "name": "Lukas Koller"
+ },
+ {
+  "link": "/authors/schmidinger/",
+  "name": "Lukas Schmidinger"
+ },
+ {
+  "link": "/authors/stevens/",
+  "name": "Lukas Stevens"
+ },
+ {
+  "link": "/authors/myreen/",
+  "name": "Magnus O. Myreen"
+ },
+ {
+  "link": "/authors/wenzel/",
+  "name": "Makarius Wenzel"
+ },
+ {
+  "link": "/authors/bortin/",
+  "name": "Maksym Bortin"
+ },
+ {
+  "link": "/authors/kerber/",
+  "name": "Manfred Kerber"
+ },
+ {
+  "link": "/authors/baksys/",
+  "name": "Mantas Bakšys"
+ },
+ {
+  "link": "/authors/eberl/",
+  "name": "Manuel Eberl"
+ },
+ {
+  "link": "/authors/caminati/",
+  "name": "Marco B. Caminati"
+ },
+ {
+  "link": "/authors/david/",
+  "name": "Marco David"
+ },
+ {
+  "link": "/authors/spichkova/",
+  "name": "Maria Spichkova"
+ },
+ {
+  "link": "/authors/cousin/",
+  "name": "Marie Cousin"
+ },
+ {
+  "link": "/authors/gaudel/",
+  "name": "Marie-Claude Gaudel"
+ },
+ {
+  "link": "/authors/ijbema/",
+  "name": "Mark Ijbema"
+ },
+ {
+  "link": "/authors/wassell/",
+  "name": "Mark Wassell"
+ },
+ {
+  "link": "/authors/olm/",
+  "name": "Markus Müller-Olm"
+ },
+ {
+  "link": "/authors/rabe/",
+  "name": "Markus N. Rabe"
+ },
+ {
+  "link": "/authors/reiter/",
+  "name": "Markus Reiter"
+ },
+ {
+  "link": "/authors/tasch/",
+  "name": "Markus Tasch"
+ },
+ {
+  "link": "/authors/desharnais/",
+  "name": "Martin Desharnais"
+ },
+ {
+  "link": "/authors/hofmann/",
+  "name": "Martin Hofmann"
+ },
+ {
+  "link": "/authors/kleppmann/",
+  "name": "Martin Kleppmann"
+ },
+ {
+  "link": "/authors/raska/",
+  "name": "Martin Raška"
+ },
+ {
+  "link": "/authors/raszyk/",
+  "name": "Martin Raszyk"
+ },
+ {
+  "link": "/authors/rau/",
+  "name": "Martin Rau"
+ },
+ {
+  "link": "/authors/fleury/",
+  "name": "Mathias Fleury"
+ },
+ {
+  "link": "/authors/rabing/",
+  "name": "Mathias Schack Rabing"
+ },
+ {
+  "link": "/authors/scharager/",
+  "name": "Matias Scharager"
+ },
+ {
+  "link": "/authors/steinberg/",
+  "name": "Matías Steinberg"
+ },
+ {
+  "link": "/authors/brecknell/",
+  "name": "Matthew Brecknell"
+ },
+ {
+  "link": "/authors/doty/",
+  "name": "Matthew Doty"
+ },
+ {
+  "link": "/authors/fernandez/",
+  "name": "Matthew Fernandez"
+ },
+ {
+  "link": "/authors/griffin/",
+  "name": "Matthew Griffin"
+ },
+ {
+  "link": "/authors/parkinson/",
+  "name": "Matthew Parkinson"
+ },
+ {
+  "link": "/authors/brun/",
+  "name": "Matthias Brun"
+ },
+ {
+  "link": "/authors/loibl/",
+  "name": "Matthias Loibl"
+ },
+ {
+  "link": "/authors/rincon/",
+  "name": "Mauricio Ayala-Rincón"
+ },
+ {
+  "link": "/authors/jaskelioff/",
+  "name": "Mauro Jaskelioff"
+ },
+ {
+  "link": "/authors/haslbeck/",
+  "name": "Max W. Haslbeck"
+ },
+ {
+  "link": "/authors/wagner/",
+  "name": "Max Wagner"
+ },
+ {
+  "link": "/authors/buyse/",
+  "name": "Maxime Buyse"
+ },
+ {
+  "link": "/authors/haslbeckm/",
+  "name": "Maximilian P. L. Haslbeck"
+ },
+ {
+  "link": "/authors/schaeffeler/",
+  "name": "Maximilian Schäffeler"
+ },
+ {
+  "link": "/authors/spitz/",
+  "name": "Maximilian Spitz"
+ },
+ {
+  "link": "/authors/kadzioka/",
+  "name": "Maya Kądziołka"
+ },
+ {
+  "link": "/authors/mhalla/",
+  "name": "Mehdi Mhalla"
+ },
+ {
+  "link": "/authors/foster/",
+  "name": "Michael Foster"
+ },
+ {
+  "link": "/authors/herzberg/",
+  "name": "Michael Herzberg"
+ },
+ {
+  "link": "/authors/nedzelsky/",
+  "name": "Michael Nedzelsky"
+ },
+ {
+  "link": "/authors/norrish/",
+  "name": "Michael Norrish"
+ },
+ {
+  "link": "/authors/rawson/",
+  "name": "Michael Rawson"
+ },
+ {
+  "link": "/authors/hirata/",
+  "name": "Michikazu Hirata"
+ },
+ {
+  "link": "/authors/pagano/",
+  "name": "Miguel Pagano"
+ },
+ {
+  "link": "/authors/milehins/",
+  "name": "Mihails Milehins"
+ },
+ {
+  "link": "/authors/stannett/",
+  "name": "Mike Stannett"
+ },
+ {
+  "link": "/authors/tanaka/",
+  "name": "Miki Tanaka"
+ },
+ {
+  "link": "/authors/yingm/",
+  "name": "Mingsheng Ying"
+ },
+ {
+  "link": "/authors/spasic/",
+  "name": "Mirko Spasić"
+ },
+ {
+  "link": "/authors/ogawa/",
+  "name": "Mizuhito Ogawa"
+ },
+ {
+  "link": "/authors/echenim/",
+  "name": "Mnacho Echenim"
+ },
+ {
+  "link": "/authors/abdulaziz/",
+  "name": "Mohammad Abdulaziz"
+ },
+ {
+  "link": "/authors/schou/",
+  "name": "Morten Konggaard Schou"
+ },
+ {
+  "link": "/authors/zhann/",
+  "name": "Naijun Zhan"
+ },
+ {
+  "link": "/authors/jiang/",
+  "name": "Nan Jiang"
+ },
+ {
+  "link": "/authors/mitchell/",
+  "name": "Neil Mitchell"
+ },
+ {
+  "link": "/authors/meric/",
+  "name": "Nicolas Méric"
+ },
+ {
+  "link": "/authors/peltier/",
+  "name": "Nicolas Peltier"
+ },
+ {
+  "link": "/authors/brien/",
+  "name": "Nicolas Robinson-O'Brien"
+ },
+ {
+  "link": "/authors/sabouret/",
+  "name": "Nicolas Sabouret"
+ },
+ {
+  "link": "/authors/rauch/",
+  "name": "Nicole Rauch"
+ },
+ {
+  "link": "/authors/muendler/",
+  "name": "Niels Mündler"
+ },
+ {
+  "link": "/authors/krofta/",
+  "name": "Niklas Krofta"
+ },
+ {
+  "link": "/authors/cremer/",
+  "name": "Nils Cremer"
+ },
+ {
+  "link": "/authors/lauermann/",
+  "name": "Nils Lauermann"
+ },
+ {
+  "link": "/authors/schirmer/",
+  "name": "Norbert Schirmer"
+ },
+ {
+  "link": "/authors/maric/",
+  "name": "Ognjen Marić"
+ },
+ {
+  "link": "/authors/bracevac/",
+  "name": "Oliver Bračevac"
+ },
+ {
+  "link": "/authors/kuncar/",
+  "name": "Ondřej Kunčar"
+ },
+ {
+  "link": "/authors/havle/",
+  "name": "Oto Havle"
+ },
+ {
+  "link": "/authors/raabjerg/",
+  "name": "Palle Raabjerg"
+ },
+ {
+  "link": "/authors/noce/",
+  "name": "Pasquale Noce"
+ },
+ {
+  "link": "/authors/lederer/",
+  "name": "Patrick Lederer"
+ },
+ {
+  "link": "/authors/hofmeier/",
+  "name": "Paul Hofmeier"
+ },
+ {
+  "link": "/authors/brodmann/",
+  "name": "Paul-David Brodmann"
+ },
+ {
+  "link": "/authors/ribeiro/",
+  "name": "Pedro Ribeiro"
+ },
+ {
+  "link": "/authors/terraf/",
+  "name": "Pedro Sánchez Terraf"
+ },
+ {
+  "link": "/authors/chapman/",
+  "name": "Peter Chapman"
+ },
+ {
+  "link": "/authors/gammie/",
+  "name": "Peter Gammie"
+ },
+ {
+  "link": "/authors/hoefner/",
+  "name": "Peter Höfner"
+ },
+ {
+  "link": "/authors/lammich/",
+  "name": "Peter Lammich"
+ },
+ {
+  "link": "/authors/zeller/",
+  "name": "Peter Zeller"
+ },
+ {
+  "link": "/authors/boutry/",
+  "name": "Pierre Boutry"
+ },
+ {
+  "link": "/authors/qiu/",
+  "name": "Qi Qiu"
+ },
+ {
+  "link": "/authors/hibon/",
+  "name": "Quentin Hibon"
+ },
+ {
+  "link": "/authors/guerraoui/",
+  "name": "Rachid Guerraoui"
+ },
+ {
+  "link": "/authors/kolanski/",
+  "name": "Rafal Kolanski"
+ },
+ {
+  "link": "/authors/gore/",
+  "name": "Rajeev Gore"
+ },
+ {
+  "link": "/authors/bottesch/",
+  "name": "Ralph Bottesch"
+ },
+ {
+  "link": "/authors/romanos/",
+  "name": "Ralph Romanos"
+ },
+ {
+  "link": "/authors/back/",
+  "name": "Ralph-Johan Back"
+ },
+ {
+  "link": "/authors/taylor/",
+  "name": "Ramsay G. Taylor"
+ },
+ {
+  "link": "/authors/gutkovas/",
+  "name": "Ramunas Gutkovas"
+ },
+ {
+  "link": "/authors/clouston/",
+  "name": "Ranald Clouston"
+ },
+ {
+  "link": "/authors/amjad/",
+  "name": "Rayhana Amjad"
+ },
+ {
+  "link": "/authors/meis/",
+  "name": "Rene Meis"
+ },
+ {
+  "link": "/authors/neumann/",
+  "name": "René Neumann"
+ },
+ {
+  "link": "/authors/thiemann/",
+  "name": "René Thiemann"
+ },
+ {
+  "link": "/authors/gay/",
+  "name": "Richard Gay"
+ },
+ {
+  "link": "/authors/schmoetten/",
+  "name": "Richard Schmoetten"
+ },
+ {
+  "link": "/authors/glabbeek/",
+  "name": "Rob van Glabbeek"
+ },
+ {
+  "link": "/authors/sachtleben/",
+  "name": "Robert Sachtleben"
+ },
+ {
+  "link": "/authors/sison/",
+  "name": "Robert Sison"
+ },
+ {
+  "link": "/authors/essmann/",
+  "name": "Robin Eßmann"
+ },
+ {
+  "link": "/authors/raya/",
+  "name": "Rodrigo Raya"
+ },
+ {
+  "link": "/authors/oosterhuis/",
+  "name": "Roelof Oosterhuis"
+ },
+ {
+  "link": "/authors/strnisa/",
+  "name": "Rok Strniša"
+ },
+ {
+  "link": "/authors/coghetto/",
+  "name": "Roland Coghetto"
+ },
+ {
+  "link": "/authors/aissat/",
+  "name": "Romain Aissat"
+ },
+ {
+  "link": "/authors/bohrer/",
+  "name": "Rose Bohrer"
+ },
+ {
+  "link": "/authors/dyckhoff/",
+  "name": "Roy Dyckhoff"
+ },
+ {
+  "link": "/authors/overbeek/",
+  "name": "Roy Overbeek"
+ },
+ {
+  "link": "/authors/sefidgar/",
+  "name": "S. Reza Sefidgar"
+ },
+ {
+  "link": "/authors/taha/",
+  "name": "Safouan Taha"
+ },
+ {
+  "link": "/authors/binder/",
+  "name": "Sage Binder"
+ },
+ {
+  "link": "/authors/sickert/",
+  "name": "Salomon Sickert"
+ },
+ {
+  "link": "/authors/decova/",
+  "name": "Sára Decova"
+ },
+ {
+  "link": "/authors/tilscher/",
+  "name": "Sarah Tilscher"
+ },
+ {
+  "link": "/authors/boehme/",
+  "name": "Sascha Böhme"
+ },
+ {
+  "link": "/authors/joosten/",
+  "name": "Sebastiaan J. C. Joosten"
+ },
+ {
+  "link": "/authors/buss/",
+  "name": "Sebastián Buss"
+ },
+ {
+  "link": "/authors/moedersheim/",
+  "name": "Sebastian Mödersheim"
+ },
+ {
+  "link": "/authors/reiche/",
+  "name": "Sebastian Reiche"
+ },
+ {
+  "link": "/authors/ullrich/",
+  "name": "Sebastian Ullrich"
+ },
+ {
+  "link": "/authors/willenbrink/",
+  "name": "Sebastian Willenbrink"
+ },
+ {
+  "link": "/authors/gouezel/",
+  "name": "Sebastien Gouezel"
+ },
+ {
+  "link": "/authors/tverdyshev/",
+  "name": "Sergey Tverdyshev"
+ },
+ {
+  "link": "/authors/park/",
+  "name": "Seung Hoon Park"
+ },
+ {
+  "link": "/authors/ying/",
+  "name": "Shenggang Ying"
+ },
+ {
+  "link": "/authors/song/",
+  "name": "Shuhao Song"
+ },
+ {
+  "link": "/authors/wang/",
+  "name": "Shuling Wang"
+ },
+ {
+  "link": "/authors/hu/",
+  "name": "Shuwei Hu"
+ },
+ {
+  "link": "/authors/amani/",
+  "name": "Sidney Amani"
+ },
+ {
+  "link": "/authors/fosters/",
+  "name": "Simon Foster"
+ },
+ {
+  "link": "/authors/griebel/",
+  "name": "Simon Griebel"
+ },
+ {
+  "link": "/authors/robillard/",
+  "name": "Simon Robillard"
+ },
+ {
+  "link": "/authors/rosskopf/",
+  "name": "Simon Roßkopf"
+ },
+ {
+  "link": "/authors/wimmer/",
+  "name": "Simon Wimmer"
+ },
+ {
+  "link": "/authors/tourret/",
+  "name": "Sophie Tourret"
+ },
+ {
+  "link": "/authors/debois/",
+  "name": "Søren Debois"
+ },
+ {
+  "link": "/authors/berghofer/",
+  "name": "Stefan Berghofer"
+ },
+ {
+  "link": "/authors/dirix/",
+  "name": "Stefan Dirix"
+ },
+ {
+  "link": "/authors/friedrich/",
+  "name": "Stefan Friedrich"
+ },
+ {
+  "link": "/authors/hetzl/",
+  "name": "Stefan Hetzl"
+ },
+ {
+  "link": "/authors/koerner/",
+  "name": "Stefan Körner"
+ },
+ {
+  "link": "/authors/mitsch/",
+  "name": "Stefan Mitsch"
+ },
+ {
+  "link": "/authors/richter/",
+  "name": "Stefan Richter"
+ },
+ {
+  "link": "/authors/helke/",
+  "name": "Steffen Helke"
+ },
+ {
+  "link": "/authors/holub/",
+  "name": "Štěpán Holub"
+ },
+ {
+  "link": "/authors/starosta/",
+  "name": "Štěpán Starosta"
+ },
+ {
+  "link": "/authors/adelsberger/",
+  "name": "Stephan Adelsberger"
+ },
+ {
+  "link": "/authors/merz/",
+  "name": "Stephan Merz"
+ },
+ {
+  "link": "/authors/obua/",
+  "name": "Steven Obua"
+ },
+ {
+  "link": "/authors/kim/",
+  "name": "Sunpill Kim"
+ },
+ {
+  "link": "/authors/mansky/",
+  "name": "Susannah Mansky"
+ },
+ {
+  "link": "/authors/linker/",
+  "name": "Sven Linker"
+ },
+ {
+  "link": "/authors/grewe/",
+  "name": "Sylvia Grewe"
+ },
+ {
+  "link": "/authors/makarios/",
+  "name": "T. J. M. Makarios"
+ },
+ {
+  "link": "/authors/prathamesh/",
+  "name": "T.V.H. Prathamesh"
+ },
+ {
+  "link": "/authors/massacrier/",
+  "name": "Tanguy Massacrier"
+ },
+ {
+  "link": "/authors/liut/",
+  "name": "Tao Liu"
+ },
+ {
+  "link": "/authors/stuebinger/",
+  "name": "Terru Stübinger"
+ },
+ {
+  "link": "/authors/sato/",
+  "name": "Tetsuya Sato"
+ },
+ {
+  "link": "/authors/limat/",
+  "name": "Thaynara Arielly de Lima"
+ },
+ {
+  "link": "/authors/delemazure/",
+  "name": "Théo Delemazure"
+ },
+ {
+  "link": "/authors/dardinier/",
+  "name": "Thibault Dardinier"
+ },
+ {
+  "link": "/authors/ammer/",
+  "name": "Thomas Ammer"
+ },
+ {
+  "link": "/authors/bauereiss/",
+  "name": "Thomas Bauereiss"
+ },
+ {
+  "link": "/authors/surlykke/",
+  "name": "Thomas Holme Surlykke"
+ },
+ {
+  "link": "/authors/sewell/",
+  "name": "Thomas Sewell"
+ },
+ {
+  "link": "/authors/sternagelt/",
+  "name": "Thomas Sternagel"
+ },
+ {
+  "link": "/authors/jungnickel/",
+  "name": "Tim Jungnickel"
+ },
+ {
+  "link": "/authors/weerwag/",
+  "name": "Timmy Weerwag"
+ },
+ {
+  "link": "/authors/bourke/",
+  "name": "Timothy Bourke"
+ },
+ {
+  "link": "/authors/weber/",
+  "name": "Tjark Weber"
+ },
+ {
+  "link": "/authors/klenze/",
+  "name": "Tobias Klenze"
+ },
+ {
+  "link": "/authors/nipkow/",
+  "name": "Tobias Nipkow"
+ },
+ {
+  "link": "/authors/murray/",
+  "name": "Toby Murray"
+ },
+ {
+  "link": "/authors/demeulemeester/",
+  "name": "Tom Demeulemeester"
+ },
+ {
+  "link": "/authors/ridge/",
+  "name": "Tom Ridge"
+ },
+ {
+  "link": "/authors/hosking/",
+  "name": "Tony Hosking"
+ },
+ {
+  "link": "/authors/nishihara/",
+  "name": "Toshiaki Nishihara"
+ },
+ {
+  "link": "/authors/sulejmani/",
+  "name": "Ujkan Sulejmani"
+ },
+ {
+  "link": "/authors/nestmann/",
+  "name": "Uwe Nestmann"
+ },
+ {
+  "link": "/authors/waldmann/",
+  "name": "Uwe Waldmann"
+ },
+ {
+  "link": "/authors/fouillard/",
+  "name": "Valentin Fouillard"
+ },
+ {
+  "link": "/authors/ortner/",
+  "name": "Veronika Ortner"
+ },
+ {
+  "link": "/authors/gomes/",
+  "name": "Victor B. F. Gomes"
+ },
+ {
+  "link": "/authors/kuncak/",
+  "name": "Viktor Kuncak"
+ },
+ {
+  "link": "/authors/trelat/",
+  "name": "Vincent Trélat"
+ },
+ {
+  "link": "/authors/oostrom/",
+  "name": "Vincent van Oostrom"
+ },
+ {
+  "link": "/authors/preoteasa/",
+  "name": "Viorel Preoteasa"
+ },
+ {
+  "link": "/authors/guttmann/",
+  "name": "Walter Guttmann"
+ },
+ {
+  "link": "/authors/li/",
+  "name": "Wenda Li"
+ },
+ {
+  "link": "/authors/stephan/",
+  "name": "Werner Stephan"
+ },
+ {
+  "link": "/authors/naraschewski/",
+  "name": "Wolfgang Naraschewski"
+ },
+ {
+  "link": "/authors/parent/",
+  "name": "Xavier Parent"
+ },
+ {
+  "link": "/authors/gao/",
+  "name": "Xin Gao"
+ },
+ {
+  "link": "/authors/zhangx/",
   "name": "Xingyuan Zhang"
  },
  {
-  "id": 514,
-  "link": "https://isa-afp.org/authors/zhann/",
-  "name": "Naijun Zhan"
+  "link": "/authors/nemouchi/",
+  "name": "Yakoub Nemouchi"
+ },
+ {
+  "link": "/authors/liuy/",
+  "name": "Yang Liu"
+ },
+ {
+  "link": "/authors/liy/",
+  "name": "Yangjia Li"
+ },
+ {
+  "link": "/authors/stade/",
+  "name": "Yannick Stade"
+ },
+ {
+  "link": "/authors/minamide/",
+  "name": "Yasuhiko Minamide"
+ },
+ {
+  "link": "/authors/he/",
+  "name": "Yijun He"
+ },
+ {
+  "link": "/authors/tan/",
+  "name": "Yong Kiam Tan"
+ },
+ {
+  "link": "/authors/ito/",
+  "name": "Yosuke Ito"
+ },
+ {
+  "link": "/authors/zhang/",
+  "name": "Yu Zhang"
+ },
+ {
+  "link": "/authors/matiyasevich/",
+  "name": "Yuri Matiyasevich"
+ },
+ {
+  "link": "/authors/nagashima/",
+  "name": "Yutaka Nagashima"
+ },
+ {
+  "link": "/authors/hou/",
+  "name": "Zhe Hou"
+ },
+ {
+  "link": "/authors/yez/",
+  "name": "Zhengkun Ye"
+ },
+ {
+  "link": "/authors/jiangz/",
+  "name": "Zilin Jiang"
+ },
+ {
+  "link": "/authors/fan/",
+  "name": "Zixuan Fan"
  }
 ]

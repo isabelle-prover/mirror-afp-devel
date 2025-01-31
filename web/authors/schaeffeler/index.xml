@@ -1,31 +1,24 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>schaeffeler on Archive of Formal Proofs
-    </title>
+    <title>Maximilian Schäffeler</title>
     <link>https://isa-afp.org/authors/schaeffeler/</link>
-    <description>
-        Recent content in schaeffeler 
-        on Archive of Formal Proofs
-    </description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language>
-    
-      <lastBuildDate>Thu, 16 Dec 2021 00:00:00 +0000</lastBuildDate>
-      <atom:link href="https://isa-afp.org/authors/schaeffeler/index.xml" rel="self" type="application/rss+xml" />
+    <description>AFP entries of Maximilian Schäffeler</description>
         <item>
           <title>Markov Decision Processes with Rewards</title>
           <link>https://isa-afp.org/entries/MDP-Rewards.html</link>
           <pubDate>Thu, 16 Dec 2021 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/MDP-Rewards.html</guid>
-          <description></description>
+          <description>Markov Decision Processes with Rewards in the AFP</description>
+            <category>Mathematics/Probability theory</category>
         </item>
         <item>
           <title>Verified Algorithms for Solving Markov Decision Processes</title>
           <link>https://isa-afp.org/entries/MDP-Algorithms.html</link>
           <pubDate>Thu, 16 Dec 2021 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/MDP-Algorithms.html</guid>
-          <description></description>
+          <description>Verified Algorithms for Solving Markov Decision Processes in the AFP</description>
+            <category>Mathematics/Probability theory</category>
+            <category>Computer science/Algorithms</category>
         </item>
+
   </channel>
 </rss>

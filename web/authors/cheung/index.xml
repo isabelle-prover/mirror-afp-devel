@@ -1,24 +1,17 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>cheung on Archive of Formal Proofs
-    </title>
+    <title>Louis Cheung</title>
     <link>https://isa-afp.org/authors/cheung/</link>
-    <description>
-        Recent content in cheung 
-        on Archive of Formal Proofs
-    </description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language>
-    
-      <lastBuildDate>Wed, 25 Sep 2024 00:00:00 +0000</lastBuildDate>
-      <atom:link href="https://isa-afp.org/authors/cheung/index.xml" rel="self" type="application/rss+xml" />
+    <description>AFP entries of Louis Cheung</description>
         <item>
           <title>Formally Verified Suffix Array Construction</title>
           <link>https://isa-afp.org/entries/SuffixArray.html</link>
           <pubDate>Wed, 25 Sep 2024 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/SuffixArray.html</guid>
-          <description></description>
+          <description>Formally Verified Suffix Array Construction in the AFP</description>
+            <category>Computer science/Algorithms</category>
+            <category>Computer science/Data structures</category>
         </item>
+
   </channel>
 </rss>

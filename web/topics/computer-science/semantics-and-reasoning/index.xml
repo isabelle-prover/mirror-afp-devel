@@ -1,380 +1,226 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Computer science/Semantics and reasoning on Archive of Formal Proofs
-    </title>
+    <title>Computer science/Semantics and reasoning</title>
     <link>https://isa-afp.org/topics/computer-science/semantics-and-reasoning/</link>
-    <description>
-        Recent content in Computer science/Semantics and reasoning 
-        on Archive of Formal Proofs
-    </description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language>
-    
-      <atom:link href="https://isa-afp.org/topics/computer-science/semantics-and-reasoning/index.xml" rel="self" type="application/rss+xml" />
-        <item>
+    <description>AFP entries in Semantics and reasoning</description>
+         <item>
           <title>NREST: Nondeterministc RESult monad with Time</title>
           <link>https://isa-afp.org/entries/NREST.html</link>
           <pubDate>Mon, 16 Sep 2024 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/NREST.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>NREST: Nondeterministc RESult monad with Time</title>
-          <link>https://isa-afp.org/entries/NREST.html</link>
-          <pubDate>Mon, 16 Sep 2024 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/NREST.html</guid>
-          <description></description>
+          <description>NREST: Nondeterministc RESult monad with Time in the AFP</description>
+            <category>Computer science/Semantics and reasoning</category>
         </item>
         <item>
           <title>Extension of Stateful Intransitive Noninterference with Inputs, Outputs, and Nondeterminism in Language IMP</title>
           <link>https://isa-afp.org/entries/IMP_Noninterference_Extension.html</link>
           <pubDate>Mon, 02 Sep 2024 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/IMP_Noninterference_Extension.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Extension of Stateful Intransitive Noninterference with Inputs, Outputs, and Nondeterminism in Language IMP</title>
-          <link>https://isa-afp.org/entries/IMP_Noninterference_Extension.html</link>
-          <pubDate>Mon, 02 Sep 2024 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/IMP_Noninterference_Extension.html</guid>
-          <description></description>
+          <description>Extension of Stateful Intransitive Noninterference with Inputs, Outputs, and Nondeterminism in Language IMP in the AFP</description>
+            <category>Computer science/Programming languages/Type systems</category>
+            <category>Computer science/Programming languages/Static analysis</category>
+            <category>Computer science/Security</category>
+            <category>Computer science/Semantics and reasoning</category>
         </item>
         <item>
           <title>A formalized programming language with speculative execution</title>
           <link>https://isa-afp.org/entries/IMP_With_Speculation.html</link>
           <pubDate>Fri, 16 Aug 2024 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/IMP_With_Speculation.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>A formalized programming language with speculative execution</title>
-          <link>https://isa-afp.org/entries/IMP_With_Speculation.html</link>
-          <pubDate>Fri, 16 Aug 2024 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/IMP_With_Speculation.html</guid>
-          <description></description>
+          <description>A formalized programming language with speculative execution in the AFP</description>
+            <category>Computer science/Programming languages</category>
+            <category>Computer science/Security</category>
+            <category>Computer science/Semantics and reasoning</category>
         </item>
         <item>
           <title>Definitive Set Semantics for LTL3</title>
           <link>https://isa-afp.org/entries/LTL3_Semantics.html</link>
           <pubDate>Mon, 12 Aug 2024 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/LTL3_Semantics.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Definitive Set Semantics for LTL3</title>
-          <link>https://isa-afp.org/entries/LTL3_Semantics.html</link>
-          <pubDate>Mon, 12 Aug 2024 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/LTL3_Semantics.html</guid>
-          <description></description>
+          <description>Definitive Set Semantics for LTL3 in the AFP</description>
+            <category>Logic/General logic/Temporal logic</category>
+            <category>Computer science/Concurrency</category>
+            <category>Computer science/Semantics and reasoning</category>
         </item>
         <item>
           <title>Isabelle/DOF</title>
           <link>https://isa-afp.org/entries/Isabelle_DOF.html</link>
           <pubDate>Fri, 26 Apr 2024 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Isabelle_DOF.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Isabelle/DOF</title>
-          <link>https://isa-afp.org/entries/Isabelle_DOF.html</link>
-          <pubDate>Fri, 26 Apr 2024 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Isabelle_DOF.html</guid>
-          <description></description>
+          <description>Isabelle/DOF in the AFP</description>
+            <category>Computer science/Semantics and reasoning</category>
         </item>
         <item>
           <title>AutoCorres2</title>
           <link>https://isa-afp.org/entries/AutoCorres2.html</link>
           <pubDate>Wed, 17 Apr 2024 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/AutoCorres2.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>AutoCorres2</title>
-          <link>https://isa-afp.org/entries/AutoCorres2.html</link>
-          <pubDate>Wed, 17 Apr 2024 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/AutoCorres2.html</guid>
-          <description></description>
+          <description>AutoCorres2 in the AFP</description>
+            <category>Computer science/Programming languages/Logics</category>
+            <category>Computer science/Semantics and reasoning</category>
+            <category>Tools</category>
+            <category>Computer science/Programming languages/Language definitions</category>
         </item>
         <item>
           <title>Operational Semantics formally proven in HOL-CSP</title>
           <link>https://isa-afp.org/entries/HOL-CSP_OpSem.html</link>
           <pubDate>Sun, 24 Dec 2023 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/HOL-CSP_OpSem.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Operational Semantics formally proven in HOL-CSP</title>
-          <link>https://isa-afp.org/entries/HOL-CSP_OpSem.html</link>
-          <pubDate>Sun, 24 Dec 2023 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/HOL-CSP_OpSem.html</guid>
-          <description></description>
+          <description>Operational Semantics formally proven in HOL-CSP in the AFP</description>
+            <category>Computer science/Concurrency/Process calculi</category>
+            <category>Computer science/Semantics and reasoning</category>
         </item>
         <item>
           <title>HOL-CSPM - Architectural operators for HOL-CSP</title>
           <link>https://isa-afp.org/entries/HOL-CSPM.html</link>
           <pubDate>Tue, 05 Dec 2023 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/HOL-CSPM.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>HOL-CSPM - Architectural operators for HOL-CSP</title>
-          <link>https://isa-afp.org/entries/HOL-CSPM.html</link>
-          <pubDate>Tue, 05 Dec 2023 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/HOL-CSPM.html</guid>
-          <description></description>
+          <description>HOL-CSPM - Architectural operators for HOL-CSP in the AFP</description>
+            <category>Computer science/Concurrency/Process calculi</category>
+            <category>Computer science/Semantics and reasoning</category>
         </item>
         <item>
           <title>Transport via Partial Galois Connections and Equivalences</title>
           <link>https://isa-afp.org/entries/Transport.html</link>
           <pubDate>Wed, 11 Oct 2023 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Transport.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Transport via Partial Galois Connections and Equivalences</title>
-          <link>https://isa-afp.org/entries/Transport.html</link>
-          <pubDate>Wed, 11 Oct 2023 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Transport.html</guid>
-          <description></description>
+          <description>Transport via Partial Galois Connections and Equivalences in the AFP</description>
+            <category>Computer science/Programming languages/Lambda calculi</category>
+            <category>Computer science/Programming languages/Type systems</category>
+            <category>Computer science/Semantics and reasoning</category>
+            <category>Mathematics/Order</category>
         </item>
         <item>
           <title>S-Finite Measure Monad on Quasi-Borel Spaces</title>
           <link>https://isa-afp.org/entries/S_Finite_Measure_Monad.html</link>
           <pubDate>Tue, 08 Aug 2023 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/S_Finite_Measure_Monad.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>S-Finite Measure Monad on Quasi-Borel Spaces</title>
-          <link>https://isa-afp.org/entries/S_Finite_Measure_Monad.html</link>
-          <pubDate>Tue, 08 Aug 2023 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/S_Finite_Measure_Monad.html</guid>
-          <description></description>
+          <description>S-Finite Measure Monad on Quasi-Borel Spaces in the AFP</description>
+            <category>Computer science/Semantics and reasoning</category>
+            <category>Mathematics/Measure and integration</category>
+            <category>Mathematics/Probability theory</category>
         </item>
         <item>
           <title>Modal quantales, involutive quantales, Dedekind Quantales</title>
           <link>https://isa-afp.org/entries/Quantales_Converse.html</link>
           <pubDate>Tue, 25 Jul 2023 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Quantales_Converse.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Modal quantales, involutive quantales, Dedekind Quantales</title>
-          <link>https://isa-afp.org/entries/Quantales_Converse.html</link>
-          <pubDate>Tue, 25 Jul 2023 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Quantales_Converse.html</guid>
-          <description></description>
+          <description>Modal quantales, involutive quantales, Dedekind Quantales in the AFP</description>
+            <category>Computer science/Semantics and reasoning</category>
+            <category>Mathematics/Algebra</category>
+            <category>Mathematics/Order</category>
         </item>
         <item>
           <title>A Formal CHERI-C Memory Model</title>
           <link>https://isa-afp.org/entries/CHERI-C_Memory_Model.html</link>
           <pubDate>Fri, 25 Nov 2022 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/CHERI-C_Memory_Model.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>A Formal CHERI-C Memory Model</title>
-          <link>https://isa-afp.org/entries/CHERI-C_Memory_Model.html</link>
-          <pubDate>Fri, 25 Nov 2022 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/CHERI-C_Memory_Model.html</guid>
-          <description></description>
+          <description>A Formal CHERI-C Memory Model in the AFP</description>
+            <category>Computer science/Semantics and reasoning</category>
         </item>
         <item>
           <title>Isabelle/Solidity: A deep Embedding of Solidity in Isabelle/HOL</title>
           <link>https://isa-afp.org/entries/Solidity.html</link>
           <pubDate>Mon, 18 Jul 2022 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Solidity.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Isabelle/Solidity: A deep Embedding of Solidity in Isabelle/HOL</title>
-          <link>https://isa-afp.org/entries/Solidity.html</link>
-          <pubDate>Mon, 18 Jul 2022 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Solidity.html</guid>
-          <description></description>
+          <description>Isabelle/Solidity: A deep Embedding of Solidity in Isabelle/HOL in the AFP</description>
+            <category>Computer science/Programming languages</category>
+            <category>Computer science/Semantics and reasoning</category>
         </item>
         <item>
           <title>Quasi-Borel Spaces</title>
           <link>https://isa-afp.org/entries/Quasi_Borel_Spaces.html</link>
           <pubDate>Thu, 03 Feb 2022 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Quasi_Borel_Spaces.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Quasi-Borel Spaces</title>
-          <link>https://isa-afp.org/entries/Quasi_Borel_Spaces.html</link>
-          <pubDate>Thu, 03 Feb 2022 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Quasi_Borel_Spaces.html</guid>
-          <description></description>
+          <description>Quasi-Borel Spaces in the AFP</description>
+            <category>Mathematics/Probability theory</category>
+            <category>Computer science/Semantics and reasoning</category>
         </item>
         <item>
           <title>Quantum and Classical Registers</title>
           <link>https://isa-afp.org/entries/Registers.html</link>
           <pubDate>Thu, 28 Oct 2021 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Registers.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Quantum and Classical Registers</title>
-          <link>https://isa-afp.org/entries/Registers.html</link>
-          <pubDate>Thu, 28 Oct 2021 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Registers.html</guid>
-          <description></description>
+          <description>Quantum and Classical Registers in the AFP</description>
+            <category>Computer science/Algorithms/Quantum computing</category>
+            <category>Computer science/Programming languages/Logics</category>
+            <category>Computer science/Semantics and reasoning</category>
         </item>
         <item>
           <title>X86 instruction semantics and basic block symbolic execution</title>
           <link>https://isa-afp.org/entries/X86_Semantics.html</link>
           <pubDate>Wed, 13 Oct 2021 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/X86_Semantics.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>X86 instruction semantics and basic block symbolic execution</title>
-          <link>https://isa-afp.org/entries/X86_Semantics.html</link>
-          <pubDate>Wed, 13 Oct 2021 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/X86_Semantics.html</guid>
-          <description></description>
+          <description>X86 instruction semantics and basic block symbolic execution in the AFP</description>
+            <category>Computer science/Hardware</category>
+            <category>Computer science/Semantics and reasoning</category>
         </item>
         <item>
           <title>The HOL-CSP Refinement Toolkit</title>
           <link>https://isa-afp.org/entries/CSP_RefTK.html</link>
           <pubDate>Thu, 19 Nov 2020 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/CSP_RefTK.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>The HOL-CSP Refinement Toolkit</title>
-          <link>https://isa-afp.org/entries/CSP_RefTK.html</link>
-          <pubDate>Thu, 19 Nov 2020 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/CSP_RefTK.html</guid>
-          <description></description>
+          <description>The HOL-CSP Refinement Toolkit in the AFP</description>
+            <category>Computer science/Concurrency/Process calculi</category>
+            <category>Computer science/Semantics and reasoning</category>
         </item>
         <item>
           <title>Isabelle/C</title>
           <link>https://isa-afp.org/entries/Isabelle_C.html</link>
           <pubDate>Tue, 22 Oct 2019 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Isabelle_C.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Isabelle/C</title>
-          <link>https://isa-afp.org/entries/Isabelle_C.html</link>
-          <pubDate>Tue, 22 Oct 2019 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Isabelle_C.html</guid>
-          <description></description>
+          <description>Isabelle/C in the AFP</description>
+            <category>Computer science/Programming languages/Language definitions</category>
+            <category>Computer science/Semantics and reasoning</category>
+            <category>Tools</category>
         </item>
         <item>
           <title>Clean - An Abstract Imperative Programming Language and its Theory</title>
           <link>https://isa-afp.org/entries/Clean.html</link>
           <pubDate>Fri, 04 Oct 2019 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Clean.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Clean - An Abstract Imperative Programming Language and its Theory</title>
-          <link>https://isa-afp.org/entries/Clean.html</link>
-          <pubDate>Fri, 04 Oct 2019 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Clean.html</guid>
-          <description></description>
+          <description>Clean - An Abstract Imperative Programming Language and its Theory in the AFP</description>
+            <category>Computer science/Programming languages</category>
+            <category>Computer science/Semantics and reasoning</category>
         </item>
         <item>
           <title>A Formal Development of a Polychronous Polytimed Coordination Language</title>
           <link>https://isa-afp.org/entries/TESL_Language.html</link>
           <pubDate>Tue, 30 Jul 2019 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/TESL_Language.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>A Formal Development of a Polychronous Polytimed Coordination Language</title>
-          <link>https://isa-afp.org/entries/TESL_Language.html</link>
-          <pubDate>Tue, 30 Jul 2019 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/TESL_Language.html</guid>
-          <description></description>
+          <description>A Formal Development of a Polychronous Polytimed Coordination Language in the AFP</description>
+            <category>Computer science/System description languages</category>
+            <category>Computer science/Semantics and reasoning</category>
+            <category>Computer science/Concurrency</category>
         </item>
         <item>
           <title>HOL-CSP Version 2.0</title>
           <link>https://isa-afp.org/entries/HOL-CSP.html</link>
           <pubDate>Fri, 26 Apr 2019 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/HOL-CSP.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>HOL-CSP Version 2.0</title>
-          <link>https://isa-afp.org/entries/HOL-CSP.html</link>
-          <pubDate>Fri, 26 Apr 2019 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/HOL-CSP.html</guid>
-          <description></description>
+          <description>HOL-CSP Version 2.0 in the AFP</description>
+            <category>Computer science/Concurrency/Process calculi</category>
+            <category>Computer science/Semantics and reasoning</category>
         </item>
         <item>
           <title>Quantum Hoare Logic</title>
           <link>https://isa-afp.org/entries/QHLProver.html</link>
           <pubDate>Sun, 24 Mar 2019 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/QHLProver.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Quantum Hoare Logic</title>
-          <link>https://isa-afp.org/entries/QHLProver.html</link>
-          <pubDate>Sun, 24 Mar 2019 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/QHLProver.html</guid>
-          <description></description>
+          <description>Quantum Hoare Logic in the AFP</description>
+            <category>Computer science/Programming languages/Logics</category>
+            <category>Computer science/Semantics and reasoning</category>
         </item>
         <item>
           <title>Transformer Semantics</title>
           <link>https://isa-afp.org/entries/Transformer_Semantics.html</link>
           <pubDate>Tue, 11 Dec 2018 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Transformer_Semantics.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Transformer Semantics</title>
-          <link>https://isa-afp.org/entries/Transformer_Semantics.html</link>
-          <pubDate>Tue, 11 Dec 2018 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Transformer_Semantics.html</guid>
-          <description></description>
+          <description>Transformer Semantics in the AFP</description>
+            <category>Mathematics/Algebra</category>
+            <category>Computer science/Semantics and reasoning</category>
         </item>
         <item>
           <title>The Imperative Refinement Framework</title>
           <link>https://isa-afp.org/entries/Refine_Imperative_HOL.html</link>
           <pubDate>Mon, 08 Aug 2016 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Refine_Imperative_HOL.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>The Imperative Refinement Framework</title>
-          <link>https://isa-afp.org/entries/Refine_Imperative_HOL.html</link>
-          <pubDate>Mon, 08 Aug 2016 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Refine_Imperative_HOL.html</guid>
-          <description></description>
+          <description>The Imperative Refinement Framework in the AFP</description>
+            <category>Computer science/Semantics and reasoning</category>
+            <category>Computer science/Data structures</category>
         </item>
         <item>
           <title>The Correctness of Launchbury&#39;s Natural Semantics for Lazy Evaluation</title>
           <link>https://isa-afp.org/entries/Launchbury.html</link>
           <pubDate>Thu, 31 Jan 2013 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Launchbury.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>The Correctness of Launchbury&#39;s Natural Semantics for Lazy Evaluation</title>
-          <link>https://isa-afp.org/entries/Launchbury.html</link>
-          <pubDate>Thu, 31 Jan 2013 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Launchbury.html</guid>
-          <description></description>
+          <description>The Correctness of Launchbury&#39;s Natural Semantics for Lazy Evaluation in the AFP</description>
+            <category>Computer science/Programming languages/Lambda calculi</category>
+            <category>Computer science/Semantics and reasoning</category>
         </item>
         <item>
           <title>Refinement for Monadic Programs</title>
           <link>https://isa-afp.org/entries/Refine_Monadic.html</link>
           <pubDate>Mon, 30 Jan 2012 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Refine_Monadic.html</guid>
-          <description></description>
+          <description>Refinement for Monadic Programs in the AFP</description>
+            <category>Computer science/Semantics and reasoning</category>
         </item>
-        <item>
-          <title>Refinement for Monadic Programs</title>
-          <link>https://isa-afp.org/entries/Refine_Monadic.html</link>
-          <pubDate>Mon, 30 Jan 2012 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Refine_Monadic.html</guid>
-          <description></description>
-        </item>
+
   </channel>
 </rss>

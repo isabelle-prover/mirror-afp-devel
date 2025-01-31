@@ -1,59 +1,53 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>cordwell on Archive of Formal Proofs
-    </title>
+    <title>Katherine Kosaian</title>
     <link>https://isa-afp.org/authors/cordwell/</link>
-    <description>
-        Recent content in cordwell 
-        on Archive of Formal Proofs
-    </description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language>
-    
-      <lastBuildDate>Thu, 26 Sep 2024 00:00:00 +0000</lastBuildDate>
-      <atom:link href="https://isa-afp.org/authors/cordwell/index.xml" rel="self" type="application/rss+xml" />
+    <description>AFP entries of Katherine Kosaian</description>
         <item>
           <title>Babai&#39;s Nearest Plane Algorithm</title>
           <link>https://isa-afp.org/entries/Babai_Nearest_Plane.html</link>
           <pubDate>Thu, 26 Sep 2024 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Babai_Nearest_Plane.html</guid>
-          <description></description>
+          <description>Babai&#39;s Nearest Plane Algorithm in the AFP</description>
+            <category>Computer science/Security/Cryptography</category>
+            <category>Computer science/Algorithms/Mathematical</category>
         </item>
         <item>
           <title>Formalizing Coppersmith&#39;s Method</title>
           <link>https://isa-afp.org/entries/Coppersmith_Method.html</link>
           <pubDate>Mon, 10 Jun 2024 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Coppersmith_Method.html</guid>
-          <description></description>
+          <description>Formalizing Coppersmith&#39;s Method in the AFP</description>
+            <category>Computer science/Algorithms</category>
+            <category>Computer science/Security/Cryptography</category>
         </item>
         <item>
           <title>Pick&#39;s Theorem</title>
           <link>https://isa-afp.org/entries/Picks_Theorem.html</link>
           <pubDate>Fri, 26 Apr 2024 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Picks_Theorem.html</guid>
-          <description></description>
+          <description>Pick&#39;s Theorem in the AFP</description>
+            <category>Mathematics/Geometry</category>
         </item>
         <item>
           <title>A First Complete Algorithm for Real Quantifier Elimination in Isabelle/HOL</title>
           <link>https://isa-afp.org/entries/Quantifier_Elimination_Hybrid.html</link>
           <pubDate>Thu, 15 Dec 2022 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Quantifier_Elimination_Hybrid.html</guid>
-          <description></description>
+          <description>A First Complete Algorithm for Real Quantifier Elimination in Isabelle/HOL in the AFP</description>
+            <category>Computer science/Algorithms/Mathematical</category>
         </item>
         <item>
           <title>Verified Quadratic Virtual Substitution for Real Arithmetic</title>
           <link>https://isa-afp.org/entries/Virtual_Substitution.html</link>
           <pubDate>Sat, 02 Oct 2021 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Virtual_Substitution.html</guid>
-          <description></description>
+          <description>Verified Quadratic Virtual Substitution for Real Arithmetic in the AFP</description>
+            <category>Computer science/Algorithms/Mathematical</category>
         </item>
         <item>
           <title>The BKR Decision Procedure for Univariate Real Arithmetic</title>
           <link>https://isa-afp.org/entries/BenOr_Kozen_Reif.html</link>
           <pubDate>Sat, 24 Apr 2021 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/BenOr_Kozen_Reif.html</guid>
-          <description></description>
+          <description>The BKR Decision Procedure for Univariate Real Arithmetic in the AFP</description>
+            <category>Computer science/Algorithms/Mathematical</category>
         </item>
+
   </channel>
 </rss>

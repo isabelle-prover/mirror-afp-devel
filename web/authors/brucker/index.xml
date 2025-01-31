@@ -1,136 +1,133 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>brucker on Archive of Formal Proofs
-    </title>
+    <title>Achim D. Brucker</title>
     <link>https://isa-afp.org/authors/brucker/</link>
-    <description>
-        Recent content in brucker 
-        on Archive of Formal Proofs
-    </description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language>
-    
-      <lastBuildDate>Fri, 26 Apr 2024 00:00:00 +0000</lastBuildDate>
-      <atom:link href="https://isa-afp.org/authors/brucker/index.xml" rel="self" type="application/rss+xml" />
+    <description>AFP entries of Achim D. Brucker</description>
         <item>
           <title>Isabelle/DOF</title>
           <link>https://isa-afp.org/entries/Isabelle_DOF.html</link>
           <pubDate>Fri, 26 Apr 2024 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Isabelle_DOF.html</guid>
-          <description></description>
+          <description>Isabelle/DOF in the AFP</description>
+            <category>Computer science/Semantics and reasoning</category>
         </item>
         <item>
           <title>(Extended) Interval Analysis</title>
           <link>https://isa-afp.org/entries/Interval_Analysis.html</link>
           <pubDate>Sun, 21 Jan 2024 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Interval_Analysis.html</guid>
-          <description></description>
+          <description>(Extended) Interval Analysis in the AFP</description>
+            <category>Mathematics/Analysis</category>
+            <category>Mathematics</category>
         </item>
         <item>
           <title>Nano JSON: Working with JSON formatted data in Isabelle/HOL and Isabelle/ML</title>
           <link>https://isa-afp.org/entries/Nano_JSON.html</link>
           <pubDate>Fri, 29 Jul 2022 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Nano_JSON.html</guid>
-          <description></description>
+          <description>Nano JSON: Working with JSON formatted data in Isabelle/HOL and Isabelle/ML in the AFP</description>
+            <category>Tools</category>
+            <category>Computer science/Data structures</category>
         </item>
         <item>
           <title>Isabelle/Solidity: A deep Embedding of Solidity in Isabelle/HOL</title>
           <link>https://isa-afp.org/entries/Solidity.html</link>
           <pubDate>Mon, 18 Jul 2022 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Solidity.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>A Formal Model of the Document Object Model with Shadow Roots</title>
-          <link>https://isa-afp.org/entries/Shadow_DOM.html</link>
-          <pubDate>Mon, 28 Sep 2020 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Shadow_DOM.html</guid>
-          <description></description>
+          <description>Isabelle/Solidity: A deep Embedding of Solidity in Isabelle/HOL in the AFP</description>
+            <category>Computer science/Programming languages</category>
+            <category>Computer science/Semantics and reasoning</category>
         </item>
         <item>
           <title>A Formal Model of the Safely Composable Document Object Model with Shadow Roots</title>
           <link>https://isa-afp.org/entries/Shadow_SC_DOM.html</link>
           <pubDate>Mon, 28 Sep 2020 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Shadow_SC_DOM.html</guid>
-          <description></description>
+          <description>A Formal Model of the Safely Composable Document Object Model with Shadow Roots in the AFP</description>
+            <category>Computer science/Data structures</category>
+        </item>
+        <item>
+          <title>A Formal Model of the Document Object Model with Shadow Roots</title>
+          <link>https://isa-afp.org/entries/Shadow_DOM.html</link>
+          <pubDate>Mon, 28 Sep 2020 00:00:00 +0000</pubDate>
+          <description>A Formal Model of the Document Object Model with Shadow Roots in the AFP</description>
+            <category>Computer science/Data structures</category>
         </item>
         <item>
           <title>A Formalization of Safely Composable Web Components</title>
           <link>https://isa-afp.org/entries/SC_DOM_Components.html</link>
           <pubDate>Mon, 28 Sep 2020 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/SC_DOM_Components.html</guid>
-          <description></description>
+          <description>A Formalization of Safely Composable Web Components in the AFP</description>
+            <category>Computer science/Data structures</category>
         </item>
         <item>
           <title>A Formalization of Web Components</title>
           <link>https://isa-afp.org/entries/DOM_Components.html</link>
           <pubDate>Mon, 28 Sep 2020 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/DOM_Components.html</guid>
-          <description></description>
+          <description>A Formalization of Web Components in the AFP</description>
+            <category>Computer science/Data structures</category>
         </item>
         <item>
           <title>The Safely Composable DOM</title>
           <link>https://isa-afp.org/entries/Core_SC_DOM.html</link>
           <pubDate>Mon, 28 Sep 2020 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Core_SC_DOM.html</guid>
-          <description></description>
+          <description>The Safely Composable DOM in the AFP</description>
+            <category>Computer science/Data structures</category>
         </item>
         <item>
           <title>A Formal Model of Extended Finite State Machines</title>
           <link>https://isa-afp.org/entries/Extended_Finite_State_Machines.html</link>
           <pubDate>Mon, 07 Sep 2020 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Extended_Finite_State_Machines.html</guid>
-          <description></description>
+          <description>A Formal Model of Extended Finite State Machines in the AFP</description>
+            <category>Computer science/Automata and formal languages</category>
         </item>
         <item>
           <title>Inference of Extended Finite State Machines</title>
           <link>https://isa-afp.org/entries/Extended_Finite_State_Machine_Inference.html</link>
           <pubDate>Mon, 07 Sep 2020 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Extended_Finite_State_Machine_Inference.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Automated Stateful Protocol Verification</title>
-          <link>https://isa-afp.org/entries/Automated_Stateful_Protocol_Verification.html</link>
-          <pubDate>Wed, 08 Apr 2020 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Automated_Stateful_Protocol_Verification.html</guid>
-          <description></description>
+          <description>Inference of Extended Finite State Machines in the AFP</description>
+            <category>Computer science/Automata and formal languages</category>
         </item>
         <item>
           <title>Stateful Protocol Composition and Typing</title>
           <link>https://isa-afp.org/entries/Stateful_Protocol_Composition_and_Typing.html</link>
           <pubDate>Wed, 08 Apr 2020 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Stateful_Protocol_Composition_and_Typing.html</guid>
-          <description></description>
+          <description>Stateful Protocol Composition and Typing in the AFP</description>
+            <category>Computer science/Security</category>
+        </item>
+        <item>
+          <title>Automated Stateful Protocol Verification</title>
+          <link>https://isa-afp.org/entries/Automated_Stateful_Protocol_Verification.html</link>
+          <pubDate>Wed, 08 Apr 2020 00:00:00 +0000</pubDate>
+          <description>Automated Stateful Protocol Verification in the AFP</description>
+            <category>Computer science/Security</category>
+            <category>Tools</category>
         </item>
         <item>
           <title>A Formal Model of the Document Object Model</title>
           <link>https://isa-afp.org/entries/Core_DOM.html</link>
           <pubDate>Wed, 26 Dec 2018 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Core_DOM.html</guid>
-          <description></description>
+          <description>A Formal Model of the Document Object Model in the AFP</description>
+            <category>Computer science/Data structures</category>
         </item>
         <item>
           <title>Formal Network Models and Their Application to Firewall Policies</title>
           <link>https://isa-afp.org/entries/UPF_Firewall.html</link>
           <pubDate>Sun, 08 Jan 2017 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/UPF_Firewall.html</guid>
-          <description></description>
+          <description>Formal Network Models and Their Application to Firewall Policies in the AFP</description>
+            <category>Computer science/Security</category>
+            <category>Computer science/Networks</category>
         </item>
         <item>
           <title>The Unified Policy Framework (UPF)</title>
           <link>https://isa-afp.org/entries/UPF.html</link>
           <pubDate>Fri, 28 Nov 2014 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/UPF.html</guid>
-          <description></description>
+          <description>The Unified Policy Framework (UPF) in the AFP</description>
+            <category>Computer science/Security</category>
         </item>
         <item>
           <title>Featherweight OCL: A Proposal for a Machine-Checked Formal Semantics for OCL 2.5</title>
           <link>https://isa-afp.org/entries/Featherweight_OCL.html</link>
           <pubDate>Thu, 16 Jan 2014 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Featherweight_OCL.html</guid>
-          <description></description>
+          <description>Featherweight OCL: A Proposal for a Machine-Checked Formal Semantics for OCL 2.5 in the AFP</description>
+            <category>Computer science/System description languages</category>
         </item>
+
   </channel>
 </rss>

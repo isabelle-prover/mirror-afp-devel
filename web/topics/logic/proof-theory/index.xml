@@ -1,338 +1,186 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Logic/Proof theory on Archive of Formal Proofs
-    </title>
+    <title>Logic/Proof theory</title>
     <link>https://isa-afp.org/topics/logic/proof-theory/</link>
-    <description>
-        Recent content in Logic/Proof theory 
-        on Archive of Formal Proofs
-    </description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language>
-    
-      <atom:link href="https://isa-afp.org/topics/logic/proof-theory/index.xml" rel="self" type="application/rss+xml" />
-        <item>
+    <description>AFP entries in Proof theory</description>
+         <item>
           <title>Synthetic Completeness</title>
           <link>https://isa-afp.org/entries/Synthetic_Completeness.html</link>
           <pubDate>Mon, 09 Jan 2023 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Synthetic_Completeness.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Synthetic Completeness</title>
-          <link>https://isa-afp.org/entries/Synthetic_Completeness.html</link>
-          <pubDate>Mon, 09 Jan 2023 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Synthetic_Completeness.html</guid>
-          <description></description>
+          <description>Synthetic Completeness in the AFP</description>
+            <category>Logic/General logic</category>
+            <category>Logic/Proof theory</category>
         </item>
         <item>
           <title>Class-based Classical Propositional Logic</title>
           <link>https://isa-afp.org/entries/Propositional_Logic_Class.html</link>
           <pubDate>Thu, 15 Dec 2022 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Propositional_Logic_Class.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Class-based Classical Propositional Logic</title>
-          <link>https://isa-afp.org/entries/Propositional_Logic_Class.html</link>
-          <pubDate>Thu, 15 Dec 2022 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Propositional_Logic_Class.html</guid>
-          <description></description>
+          <description>Class-based Classical Propositional Logic in the AFP</description>
+            <category>Logic/General logic/Classical propositional logic</category>
+            <category>Logic/Proof theory</category>
         </item>
         <item>
           <title>Automation of Boolos&#39; Curious Inference in Isabelle/HOL</title>
           <link>https://isa-afp.org/entries/Boolos_Curious_Inference_Automated.html</link>
           <pubDate>Mon, 05 Dec 2022 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Boolos_Curious_Inference_Automated.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Automation of Boolos&#39; Curious Inference in Isabelle/HOL</title>
-          <link>https://isa-afp.org/entries/Boolos_Curious_Inference_Automated.html</link>
-          <pubDate>Mon, 05 Dec 2022 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Boolos_Curious_Inference_Automated.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Soundness and Completeness of Implicational Logic</title>
-          <link>https://isa-afp.org/entries/Implicational_Logic.html</link>
-          <pubDate>Tue, 13 Sep 2022 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Implicational_Logic.html</guid>
-          <description></description>
+          <description>Automation of Boolos&#39; Curious Inference in Isabelle/HOL in the AFP</description>
+            <category>Logic</category>
+            <category>Logic/Philosophical aspects</category>
+            <category>Logic/Computability</category>
+            <category>Logic/Proof theory</category>
+            <category>Logic/General logic</category>
+            <category>Computer science/Artificial intelligence</category>
+            <category>Tools</category>
         </item>
         <item>
           <title>Soundness and Completeness of Implicational Logic</title>
           <link>https://isa-afp.org/entries/Implicational_Logic.html</link>
           <pubDate>Tue, 13 Sep 2022 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Implicational_Logic.html</guid>
-          <description></description>
+          <description>Soundness and Completeness of Implicational Logic in the AFP</description>
+            <category>Logic/General logic/Classical propositional logic</category>
+            <category>Logic/Proof theory</category>
         </item>
         <item>
           <title>A Naive Prover for First-Order Logic</title>
           <link>https://isa-afp.org/entries/FOL_Seq_Calc3.html</link>
           <pubDate>Tue, 22 Mar 2022 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/FOL_Seq_Calc3.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>A Naive Prover for First-Order Logic</title>
-          <link>https://isa-afp.org/entries/FOL_Seq_Calc3.html</link>
-          <pubDate>Tue, 22 Mar 2022 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/FOL_Seq_Calc3.html</guid>
-          <description></description>
+          <description>A Naive Prover for First-Order Logic in the AFP</description>
+            <category>Logic/General logic/Classical first-order logic</category>
+            <category>Logic/Proof theory</category>
+            <category>Logic/General logic/Mechanization of proofs</category>
         </item>
         <item>
           <title>First-Order Theory of Rewriting</title>
           <link>https://isa-afp.org/entries/FO_Theory_Rewriting.html</link>
           <pubDate>Wed, 02 Feb 2022 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/FO_Theory_Rewriting.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>First-Order Theory of Rewriting</title>
-          <link>https://isa-afp.org/entries/FO_Theory_Rewriting.html</link>
-          <pubDate>Wed, 02 Feb 2022 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/FO_Theory_Rewriting.html</guid>
-          <description></description>
+          <description>First-Order Theory of Rewriting in the AFP</description>
+            <category>Computer science/Automata and formal languages</category>
+            <category>Logic/Rewriting</category>
+            <category>Logic/Proof theory</category>
         </item>
         <item>
           <title>A Sequent Calculus Prover for First-Order Logic with Functions</title>
           <link>https://isa-afp.org/entries/FOL_Seq_Calc2.html</link>
           <pubDate>Mon, 31 Jan 2022 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/FOL_Seq_Calc2.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>A Sequent Calculus Prover for First-Order Logic with Functions</title>
-          <link>https://isa-afp.org/entries/FOL_Seq_Calc2.html</link>
-          <pubDate>Mon, 31 Jan 2022 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/FOL_Seq_Calc2.html</guid>
-          <description></description>
+          <description>A Sequent Calculus Prover for First-Order Logic with Functions in the AFP</description>
+            <category>Logic/General logic/Classical first-order logic</category>
+            <category>Logic/Proof theory</category>
+            <category>Logic/General logic/Mechanization of proofs</category>
         </item>
         <item>
           <title>Soundness and Completeness of an Axiomatic System for First-Order Logic</title>
           <link>https://isa-afp.org/entries/FOL_Axiomatic.html</link>
           <pubDate>Fri, 24 Sep 2021 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/FOL_Axiomatic.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Soundness and Completeness of an Axiomatic System for First-Order Logic</title>
-          <link>https://isa-afp.org/entries/FOL_Axiomatic.html</link>
-          <pubDate>Fri, 24 Sep 2021 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/FOL_Axiomatic.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>An Abstract Formalization of G&amp;ouml;del&#39;s Incompleteness Theorems</title>
-          <link>https://isa-afp.org/entries/Goedel_Incompleteness.html</link>
-          <pubDate>Wed, 16 Sep 2020 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Goedel_Incompleteness.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>An Abstract Formalization of G&amp;ouml;del&#39;s Incompleteness Theorems</title>
-          <link>https://isa-afp.org/entries/Goedel_Incompleteness.html</link>
-          <pubDate>Wed, 16 Sep 2020 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Goedel_Incompleteness.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>From Abstract to Concrete G&amp;ouml;del&#39;s Incompleteness Theorems&amp;mdash;Part I</title>
-          <link>https://isa-afp.org/entries/Goedel_HFSet_Semantic.html</link>
-          <pubDate>Wed, 16 Sep 2020 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Goedel_HFSet_Semantic.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>From Abstract to Concrete G&amp;ouml;del&#39;s Incompleteness Theorems&amp;mdash;Part I</title>
-          <link>https://isa-afp.org/entries/Goedel_HFSet_Semantic.html</link>
-          <pubDate>Wed, 16 Sep 2020 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Goedel_HFSet_Semantic.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>From Abstract to Concrete G&amp;ouml;del&#39;s Incompleteness Theorems&amp;mdash;Part II</title>
-          <link>https://isa-afp.org/entries/Goedel_HFSet_Semanticless.html</link>
-          <pubDate>Wed, 16 Sep 2020 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Goedel_HFSet_Semanticless.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>From Abstract to Concrete G&amp;ouml;del&#39;s Incompleteness Theorems&amp;mdash;Part II</title>
-          <link>https://isa-afp.org/entries/Goedel_HFSet_Semanticless.html</link>
-          <pubDate>Wed, 16 Sep 2020 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Goedel_HFSet_Semanticless.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Robinson Arithmetic</title>
-          <link>https://isa-afp.org/entries/Robinson_Arithmetic.html</link>
-          <pubDate>Wed, 16 Sep 2020 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Robinson_Arithmetic.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Robinson Arithmetic</title>
-          <link>https://isa-afp.org/entries/Robinson_Arithmetic.html</link>
-          <pubDate>Wed, 16 Sep 2020 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Robinson_Arithmetic.html</guid>
-          <description></description>
+          <description>Soundness and Completeness of an Axiomatic System for First-Order Logic in the AFP</description>
+            <category>Logic/General logic/Classical first-order logic</category>
+            <category>Logic/Proof theory</category>
         </item>
         <item>
           <title>Syntax-Independent Logic Infrastructure</title>
           <link>https://isa-afp.org/entries/Syntax_Independent_Logic.html</link>
           <pubDate>Wed, 16 Sep 2020 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Syntax_Independent_Logic.html</guid>
-          <description></description>
+          <description>Syntax-Independent Logic Infrastructure in the AFP</description>
+            <category>Logic/Proof theory</category>
         </item>
         <item>
-          <title>Syntax-Independent Logic Infrastructure</title>
-          <link>https://isa-afp.org/entries/Syntax_Independent_Logic.html</link>
+          <title>Robinson Arithmetic</title>
+          <link>https://isa-afp.org/entries/Robinson_Arithmetic.html</link>
           <pubDate>Wed, 16 Sep 2020 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Syntax_Independent_Logic.html</guid>
-          <description></description>
+          <description>Robinson Arithmetic in the AFP</description>
+            <category>Logic/Proof theory</category>
+        </item>
+        <item>
+          <title>An Abstract Formalization of G&ouml;del&#39;s Incompleteness Theorems</title>
+          <link>https://isa-afp.org/entries/Goedel_Incompleteness.html</link>
+          <pubDate>Wed, 16 Sep 2020 00:00:00 +0000</pubDate>
+          <description>An Abstract Formalization of G&amp;ouml;del&#39;s Incompleteness Theorems in the AFP</description>
+            <category>Logic/Proof theory</category>
+        </item>
+        <item>
+          <title>From Abstract to Concrete G&ouml;del&#39;s Incompleteness Theorems&mdash;Part II</title>
+          <link>https://isa-afp.org/entries/Goedel_HFSet_Semanticless.html</link>
+          <pubDate>Wed, 16 Sep 2020 00:00:00 +0000</pubDate>
+          <description>From Abstract to Concrete G&amp;ouml;del&#39;s Incompleteness Theorems&amp;mdash;Part II in the AFP</description>
+            <category>Logic/Proof theory</category>
+        </item>
+        <item>
+          <title>From Abstract to Concrete G&ouml;del&#39;s Incompleteness Theorems&mdash;Part I</title>
+          <link>https://isa-afp.org/entries/Goedel_HFSet_Semantic.html</link>
+          <pubDate>Wed, 16 Sep 2020 00:00:00 +0000</pubDate>
+          <description>From Abstract to Concrete G&amp;ouml;del&#39;s Incompleteness Theorems&amp;mdash;Part I in the AFP</description>
+            <category>Logic/Proof theory</category>
         </item>
         <item>
           <title>A Sequent Calculus for First-Order Logic</title>
           <link>https://isa-afp.org/entries/FOL_Seq_Calc1.html</link>
           <pubDate>Thu, 18 Jul 2019 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/FOL_Seq_Calc1.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>A Sequent Calculus for First-Order Logic</title>
-          <link>https://isa-afp.org/entries/FOL_Seq_Calc1.html</link>
-          <pubDate>Thu, 18 Jul 2019 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/FOL_Seq_Calc1.html</guid>
-          <description></description>
+          <description>A Sequent Calculus for First-Order Logic in the AFP</description>
+            <category>Logic/Proof theory</category>
         </item>
         <item>
           <title>Propositional Proof Systems</title>
           <link>https://isa-afp.org/entries/Propositional_Proof_Systems.html</link>
           <pubDate>Wed, 21 Jun 2017 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Propositional_Proof_Systems.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Propositional Proof Systems</title>
-          <link>https://isa-afp.org/entries/Propositional_Proof_Systems.html</link>
-          <pubDate>Wed, 21 Jun 2017 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Propositional_Proof_Systems.html</guid>
-          <description></description>
+          <description>Propositional Proof Systems in the AFP</description>
+            <category>Logic/Proof theory</category>
         </item>
         <item>
           <title>Abstract Soundness</title>
           <link>https://isa-afp.org/entries/Abstract_Soundness.html</link>
           <pubDate>Fri, 10 Feb 2017 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Abstract_Soundness.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Abstract Soundness</title>
-          <link>https://isa-afp.org/entries/Abstract_Soundness.html</link>
-          <pubDate>Fri, 10 Feb 2017 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Abstract_Soundness.html</guid>
-          <description></description>
+          <description>Abstract Soundness in the AFP</description>
+            <category>Logic/Proof theory</category>
         </item>
         <item>
           <title>A Variant of the Superposition Calculus</title>
           <link>https://isa-afp.org/entries/SuperCalc.html</link>
           <pubDate>Tue, 06 Sep 2016 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/SuperCalc.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>A Variant of the Superposition Calculus</title>
-          <link>https://isa-afp.org/entries/SuperCalc.html</link>
-          <pubDate>Tue, 06 Sep 2016 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/SuperCalc.html</guid>
-          <description></description>
+          <description>A Variant of the Superposition Calculus in the AFP</description>
+            <category>Logic/Proof theory</category>
         </item>
         <item>
           <title>Surprise Paradox</title>
           <link>https://isa-afp.org/entries/Surprise_Paradox.html</link>
           <pubDate>Sun, 17 Jul 2016 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Surprise_Paradox.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Surprise Paradox</title>
-          <link>https://isa-afp.org/entries/Surprise_Paradox.html</link>
-          <pubDate>Sun, 17 Jul 2016 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Surprise_Paradox.html</guid>
-          <description></description>
+          <description>Surprise Paradox in the AFP</description>
+            <category>Logic/Proof theory</category>
         </item>
         <item>
           <title>The meta theory of the Incredible Proof Machine</title>
           <link>https://isa-afp.org/entries/Incredible_Proof_Machine.html</link>
           <pubDate>Fri, 20 May 2016 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Incredible_Proof_Machine.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>The meta theory of the Incredible Proof Machine</title>
-          <link>https://isa-afp.org/entries/Incredible_Proof_Machine.html</link>
-          <pubDate>Fri, 20 May 2016 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Incredible_Proof_Machine.html</guid>
-          <description></description>
+          <description>The meta theory of the Incredible Proof Machine in the AFP</description>
+            <category>Logic/Proof theory</category>
         </item>
         <item>
           <title>Abstract Completeness</title>
           <link>https://isa-afp.org/entries/Abstract_Completeness.html</link>
           <pubDate>Wed, 16 Apr 2014 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Abstract_Completeness.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Abstract Completeness</title>
-          <link>https://isa-afp.org/entries/Abstract_Completeness.html</link>
-          <pubDate>Wed, 16 Apr 2014 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Abstract_Completeness.html</guid>
-          <description></description>
+          <description>Abstract Completeness in the AFP</description>
+            <category>Logic/Proof theory</category>
         </item>
         <item>
           <title>Gödel&#39;s Incompleteness Theorems</title>
           <link>https://isa-afp.org/entries/Incompleteness.html</link>
           <pubDate>Sun, 17 Nov 2013 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Incompleteness.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Gödel&#39;s Incompleteness Theorems</title>
-          <link>https://isa-afp.org/entries/Incompleteness.html</link>
-          <pubDate>Sun, 17 Nov 2013 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Incompleteness.html</guid>
-          <description></description>
+          <description>Gödel&#39;s Incompleteness Theorems in the AFP</description>
+            <category>Logic/Proof theory</category>
         </item>
         <item>
           <title>Invertibility in Sequent Calculi</title>
           <link>https://isa-afp.org/entries/SequentInvertibility.html</link>
           <pubDate>Fri, 28 Aug 2009 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/SequentInvertibility.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Invertibility in Sequent Calculi</title>
-          <link>https://isa-afp.org/entries/SequentInvertibility.html</link>
-          <pubDate>Fri, 28 Aug 2009 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/SequentInvertibility.html</guid>
-          <description></description>
+          <description>Invertibility in Sequent Calculi in the AFP</description>
+            <category>Logic/Proof theory</category>
         </item>
         <item>
           <title>Completeness theorem</title>
           <link>https://isa-afp.org/entries/Completeness.html</link>
           <pubDate>Mon, 20 Sep 2004 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Completeness.html</guid>
-          <description></description>
+          <description>Completeness theorem in the AFP</description>
+            <category>Logic/Proof theory</category>
         </item>
-        <item>
-          <title>Completeness theorem</title>
-          <link>https://isa-afp.org/entries/Completeness.html</link>
-          <pubDate>Mon, 20 Sep 2004 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Completeness.html</guid>
-          <description></description>
-        </item>
+
   </channel>
 </rss>

@@ -1,38 +1,30 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>tourret on Archive of Formal Proofs
-    </title>
+    <title>Sophie Tourret</title>
     <link>https://isa-afp.org/authors/tourret/</link>
-    <description>
-        Recent content in tourret 
-        on Archive of Formal Proofs
-    </description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language>
-    
-      <lastBuildDate>Wed, 25 Jan 2023 00:00:00 +0000</lastBuildDate>
-      <atom:link href="https://isa-afp.org/authors/tourret/index.xml" rel="self" type="application/rss+xml" />
+    <description>AFP entries of Sophie Tourret</description>
         <item>
           <title>Given Clause Loops</title>
           <link>https://isa-afp.org/entries/Given_Clause_Loops.html</link>
           <pubDate>Wed, 25 Jan 2023 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Given_Clause_Loops.html</guid>
-          <description></description>
+          <description>Given Clause Loops in the AFP</description>
+            <category>Logic/General logic/Classical first-order logic</category>
         </item>
         <item>
           <title>Extensions to the Comprehensive Framework for Saturation Theorem Proving</title>
           <link>https://isa-afp.org/entries/Saturation_Framework_Extensions.html</link>
           <pubDate>Tue, 25 Aug 2020 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Saturation_Framework_Extensions.html</guid>
-          <description></description>
+          <description>Extensions to the Comprehensive Framework for Saturation Theorem Proving in the AFP</description>
+            <category>Logic/General logic/Mechanization of proofs</category>
         </item>
         <item>
           <title>A Comprehensive Framework for Saturation Theorem Proving</title>
           <link>https://isa-afp.org/entries/Saturation_Framework.html</link>
           <pubDate>Thu, 09 Apr 2020 00:00:00 +0000</pubDate>
-          <guid>https://isa-afp.org/entries/Saturation_Framework.html</guid>
-          <description></description>
+          <description>A Comprehensive Framework for Saturation Theorem Proving in the AFP</description>
+            <category>Logic/General logic/Mechanization of proofs</category>
         </item>
+
   </channel>
 </rss>
