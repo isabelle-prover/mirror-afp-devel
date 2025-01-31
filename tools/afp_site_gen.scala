@@ -576,7 +576,7 @@ object AFP_Site_Gen {
         if (!path.is_file || !path.file.exists()) error("Invalid status file: " + path))
 
       val afp = AFP_Structure()
-      val progress = new Console_Progress()
+      val progress = new Console_Progress(verbose = devel)
 
       afp_site_gen(out_dir, read_dir = read_dir, write_dir = write_dir, afp = afp, status_file =
         status_file, clean = clean, devel = devel, progress = progress)
