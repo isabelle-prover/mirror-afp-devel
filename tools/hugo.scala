@@ -17,6 +17,10 @@ object Hugo {
 
   /* hugo content */
 
+  case class Menu_Item(name: String, weight: Int, menu: String = "main") {
+    def json: JSON.Object.T = JSON.Object(menu -> JSON.Object("name" -> name, "weight" -> weight))
+  }
+
   case class Metadata(
     title: String = "",
     description: String = "",
@@ -27,6 +31,7 @@ object Hugo {
     keywords: List[String] = Nil,
     draft: Boolean = false,
     outputs: List[String] = Nil,
+    menu: Option[Menu_Item] = None,
     params: JSON.Object.T = JSON.Object.empty
   ) {
     def json: JSON.Object.T = {
@@ -39,7 +44,8 @@ object Hugo {
       JSON.optional("weight", if (weight > 0) Some(weight) else None) ++
       JSON.optional("keywords", proper_list(keywords)) ++
       JSON.optional("draft", proper_bool(draft)) ++
-      JSON.optional("outputs", proper_list(outputs))
+      JSON.optional("outputs", proper_list(outputs)) ++
+      JSON.optional("menu", menu.map(_.json))
     }
   }
 
