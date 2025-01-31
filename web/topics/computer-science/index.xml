@@ -3,7 +3,7 @@
   <channel>
     <title>Computer science on Archive of Formal Proofs
     </title>
-    <link>/topics/computer-science/</link>
+    <link>https://isa-afp.org/topics/computer-science/</link>
     <description>
         Recent content in Computer science 
         on Archive of Formal Proofs
@@ -12,26 +12,26 @@
     <language>en-gb</language>
     
       <lastBuildDate>Tue, 14 Jan 2025 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/topics/computer-science/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/topics/computer-science/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Labeled Transition Systems</title>
-          <link>/entries/Labeled_Transition_Systems.html</link>
+          <link>https://isa-afp.org/entries/Labeled_Transition_Systems.html</link>
           <pubDate>Tue, 31 Oct 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/Labeled_Transition_Systems.html</guid>
+          <guid>https://isa-afp.org/entries/Labeled_Transition_Systems.html</guid>
           <description></description>
         </item>
         <item>
           <title>Pushdown Systems</title>
-          <link>/entries/Pushdown_Systems.html</link>
+          <link>https://isa-afp.org/entries/Pushdown_Systems.html</link>
           <pubDate>Tue, 31 Oct 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/Pushdown_Systems.html</guid>
+          <guid>https://isa-afp.org/entries/Pushdown_Systems.html</guid>
           <description></description>
         </item>
         <item>
           <title>The Halting Problem is Soluble in Malament-Hogarth Spacetimes</title>
-          <link>/entries/MHComputation.html</link>
+          <link>https://isa-afp.org/entries/MHComputation.html</link>
           <pubDate>Sat, 29 Apr 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/MHComputation.html</guid>
+          <guid>https://isa-afp.org/entries/MHComputation.html</guid>
           <description></description>
         </item>
   </channel>

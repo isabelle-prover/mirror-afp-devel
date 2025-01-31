@@ -3,7 +3,7 @@
   <channel>
     <title>buss on Archive of Formal Proofs
     </title>
-    <link>/authors/buss/</link>
+    <link>https://isa-afp.org/authors/buss/</link>
     <description>
         Recent content in buss 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Mon, 22 Jan 2024 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/buss/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/buss/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Decomposition of totally ordered hoops</title>
-          <link>/entries/Isabelle_hoops.html</link>
+          <link>https://isa-afp.org/entries/Isabelle_hoops.html</link>
           <pubDate>Mon, 22 Jan 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Isabelle_hoops.html</guid>
+          <guid>https://isa-afp.org/entries/Isabelle_hoops.html</guid>
           <description></description>
         </item>
   </channel>

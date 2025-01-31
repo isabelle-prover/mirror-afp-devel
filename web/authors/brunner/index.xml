@@ -3,7 +3,7 @@
   <channel>
     <title>brunner on Archive of Formal Proofs
     </title>
-    <link>/authors/brunner/</link>
+    <link>https://isa-afp.org/authors/brunner/</link>
     <description>
         Recent content in brunner 
         on Archive of Formal Proofs
@@ -12,26 +12,26 @@
     <language>en-gb</language>
     
       <lastBuildDate>Tue, 05 Jun 2018 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/brunner/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/brunner/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Partial Order Reduction</title>
-          <link>/entries/Partial_Order_Reduction.html</link>
+          <link>https://isa-afp.org/entries/Partial_Order_Reduction.html</link>
           <pubDate>Tue, 05 Jun 2018 00:00:00 +0000</pubDate>
-          <guid>/entries/Partial_Order_Reduction.html</guid>
+          <guid>https://isa-afp.org/entries/Partial_Order_Reduction.html</guid>
           <description></description>
         </item>
         <item>
           <title>Büchi Complementation</title>
-          <link>/entries/Buchi_Complementation.html</link>
+          <link>https://isa-afp.org/entries/Buchi_Complementation.html</link>
           <pubDate>Thu, 19 Oct 2017 00:00:00 +0000</pubDate>
-          <guid>/entries/Buchi_Complementation.html</guid>
+          <guid>https://isa-afp.org/entries/Buchi_Complementation.html</guid>
           <description></description>
         </item>
         <item>
           <title>Transition Systems and Automata</title>
-          <link>/entries/Transition_Systems_and_Automata.html</link>
+          <link>https://isa-afp.org/entries/Transition_Systems_and_Automata.html</link>
           <pubDate>Thu, 19 Oct 2017 00:00:00 +0000</pubDate>
-          <guid>/entries/Transition_Systems_and_Automata.html</guid>
+          <guid>https://isa-afp.org/entries/Transition_Systems_and_Automata.html</guid>
           <description></description>
         </item>
   </channel>

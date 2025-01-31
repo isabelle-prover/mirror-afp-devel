@@ -3,7 +3,7 @@
   <channel>
     <title>Splay_Tree on Archive of Formal Proofs
     </title>
-    <link>/dependencies/splay_tree/</link>
+    <link>https://isa-afp.org/dependencies/splay_tree/</link>
     <description>
         Recent content in Splay_Tree 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Mon, 07 Jul 2014 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/dependencies/splay_tree/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/dependencies/splay_tree/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Amortized Complexity Verified</title>
-          <link>/entries/Amortized_Complexity.html</link>
+          <link>https://isa-afp.org/entries/Amortized_Complexity.html</link>
           <pubDate>Mon, 07 Jul 2014 00:00:00 +0000</pubDate>
-          <guid>/entries/Amortized_Complexity.html</guid>
+          <guid>https://isa-afp.org/entries/Amortized_Complexity.html</guid>
           <description></description>
         </item>
   </channel>

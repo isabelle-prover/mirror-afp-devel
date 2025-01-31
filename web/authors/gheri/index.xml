@@ -3,7 +3,7 @@
   <channel>
     <title>gheri on Archive of Formal Proofs
     </title>
-    <link>/authors/gheri/</link>
+    <link>https://isa-afp.org/authors/gheri/</link>
     <description>
         Recent content in gheri 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Sat, 06 Apr 2019 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/gheri/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/gheri/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>A General Theory of Syntax with Bindings</title>
-          <link>/entries/Binding_Syntax_Theory.html</link>
+          <link>https://isa-afp.org/entries/Binding_Syntax_Theory.html</link>
           <pubDate>Sat, 06 Apr 2019 00:00:00 +0000</pubDate>
-          <guid>/entries/Binding_Syntax_Theory.html</guid>
+          <guid>https://isa-afp.org/entries/Binding_Syntax_Theory.html</guid>
           <description></description>
         </item>
   </channel>

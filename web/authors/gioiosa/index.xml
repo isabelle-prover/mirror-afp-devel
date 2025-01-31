@@ -3,7 +3,7 @@
   <channel>
     <title>gioiosa on Archive of Formal Proofs
     </title>
-    <link>/authors/gioiosa/</link>
+    <link>https://isa-afp.org/authors/gioiosa/</link>
     <description>
         Recent content in gioiosa 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Thu, 26 Oct 2017 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/gioiosa/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/gioiosa/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>The Kuratowski Closure-Complement Theorem</title>
-          <link>/entries/Kuratowski_Closure_Complement.html</link>
+          <link>https://isa-afp.org/entries/Kuratowski_Closure_Complement.html</link>
           <pubDate>Thu, 26 Oct 2017 00:00:00 +0000</pubDate>
-          <guid>/entries/Kuratowski_Closure_Complement.html</guid>
+          <guid>https://isa-afp.org/entries/Kuratowski_Closure_Complement.html</guid>
           <description></description>
         </item>
   </channel>

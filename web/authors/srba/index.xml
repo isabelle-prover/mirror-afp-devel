@@ -3,7 +3,7 @@
   <channel>
     <title>srba on Archive of Formal Proofs
     </title>
-    <link>/authors/srba/</link>
+    <link>https://isa-afp.org/authors/srba/</link>
     <description>
         Recent content in srba 
         on Archive of Formal Proofs
@@ -12,19 +12,19 @@
     <language>en-gb</language>
     
       <lastBuildDate>Tue, 31 Oct 2023 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/srba/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/srba/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Labeled Transition Systems</title>
-          <link>/entries/Labeled_Transition_Systems.html</link>
+          <link>https://isa-afp.org/entries/Labeled_Transition_Systems.html</link>
           <pubDate>Tue, 31 Oct 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/Labeled_Transition_Systems.html</guid>
+          <guid>https://isa-afp.org/entries/Labeled_Transition_Systems.html</guid>
           <description></description>
         </item>
         <item>
           <title>Pushdown Systems</title>
-          <link>/entries/Pushdown_Systems.html</link>
+          <link>https://isa-afp.org/entries/Pushdown_Systems.html</link>
           <pubDate>Tue, 31 Oct 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/Pushdown_Systems.html</guid>
+          <guid>https://isa-afp.org/entries/Pushdown_Systems.html</guid>
           <description></description>
         </item>
   </channel>

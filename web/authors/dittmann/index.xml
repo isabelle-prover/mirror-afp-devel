@@ -3,7 +3,7 @@
   <channel>
     <title>dittmann on Archive of Formal Proofs
     </title>
-    <link>/authors/dittmann/</link>
+    <link>https://isa-afp.org/authors/dittmann/</link>
     <description>
         Recent content in dittmann 
         on Archive of Formal Proofs
@@ -12,26 +12,26 @@
     <language>en-gb</language>
     
       <lastBuildDate>Sun, 26 Feb 2017 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/dittmann/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/dittmann/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Menger&#39;s Theorem</title>
-          <link>/entries/Menger.html</link>
+          <link>https://isa-afp.org/entries/Menger.html</link>
           <pubDate>Sun, 26 Feb 2017 00:00:00 +0000</pubDate>
-          <guid>/entries/Menger.html</guid>
+          <guid>https://isa-afp.org/entries/Menger.html</guid>
           <description></description>
         </item>
         <item>
           <title>Tree Decomposition</title>
-          <link>/entries/Tree_Decomposition.html</link>
+          <link>https://isa-afp.org/entries/Tree_Decomposition.html</link>
           <pubDate>Tue, 31 May 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/Tree_Decomposition.html</guid>
+          <guid>https://isa-afp.org/entries/Tree_Decomposition.html</guid>
           <description></description>
         </item>
         <item>
           <title>Positional Determinacy of Parity Games</title>
-          <link>/entries/Parity_Game.html</link>
+          <link>https://isa-afp.org/entries/Parity_Game.html</link>
           <pubDate>Mon, 02 Nov 2015 00:00:00 +0000</pubDate>
-          <guid>/entries/Parity_Game.html</guid>
+          <guid>https://isa-afp.org/entries/Parity_Game.html</guid>
           <description></description>
         </item>
   </channel>

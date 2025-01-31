@@ -3,7 +3,7 @@
   <channel>
     <title>herzberg on Archive of Formal Proofs
     </title>
-    <link>/authors/herzberg/</link>
+    <link>https://isa-afp.org/authors/herzberg/</link>
     <description>
         Recent content in herzberg 
         on Archive of Formal Proofs
@@ -12,47 +12,47 @@
     <language>en-gb</language>
     
       <lastBuildDate>Mon, 28 Sep 2020 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/herzberg/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/herzberg/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>A Formal Model of the Document Object Model with Shadow Roots</title>
-          <link>/entries/Shadow_DOM.html</link>
+          <link>https://isa-afp.org/entries/Shadow_DOM.html</link>
           <pubDate>Mon, 28 Sep 2020 00:00:00 +0000</pubDate>
-          <guid>/entries/Shadow_DOM.html</guid>
+          <guid>https://isa-afp.org/entries/Shadow_DOM.html</guid>
           <description></description>
         </item>
         <item>
           <title>A Formal Model of the Safely Composable Document Object Model with Shadow Roots</title>
-          <link>/entries/Shadow_SC_DOM.html</link>
+          <link>https://isa-afp.org/entries/Shadow_SC_DOM.html</link>
           <pubDate>Mon, 28 Sep 2020 00:00:00 +0000</pubDate>
-          <guid>/entries/Shadow_SC_DOM.html</guid>
+          <guid>https://isa-afp.org/entries/Shadow_SC_DOM.html</guid>
           <description></description>
         </item>
         <item>
           <title>A Formalization of Safely Composable Web Components</title>
-          <link>/entries/SC_DOM_Components.html</link>
+          <link>https://isa-afp.org/entries/SC_DOM_Components.html</link>
           <pubDate>Mon, 28 Sep 2020 00:00:00 +0000</pubDate>
-          <guid>/entries/SC_DOM_Components.html</guid>
+          <guid>https://isa-afp.org/entries/SC_DOM_Components.html</guid>
           <description></description>
         </item>
         <item>
           <title>A Formalization of Web Components</title>
-          <link>/entries/DOM_Components.html</link>
+          <link>https://isa-afp.org/entries/DOM_Components.html</link>
           <pubDate>Mon, 28 Sep 2020 00:00:00 +0000</pubDate>
-          <guid>/entries/DOM_Components.html</guid>
+          <guid>https://isa-afp.org/entries/DOM_Components.html</guid>
           <description></description>
         </item>
         <item>
           <title>The Safely Composable DOM</title>
-          <link>/entries/Core_SC_DOM.html</link>
+          <link>https://isa-afp.org/entries/Core_SC_DOM.html</link>
           <pubDate>Mon, 28 Sep 2020 00:00:00 +0000</pubDate>
-          <guid>/entries/Core_SC_DOM.html</guid>
+          <guid>https://isa-afp.org/entries/Core_SC_DOM.html</guid>
           <description></description>
         </item>
         <item>
           <title>A Formal Model of the Document Object Model</title>
-          <link>/entries/Core_DOM.html</link>
+          <link>https://isa-afp.org/entries/Core_DOM.html</link>
           <pubDate>Wed, 26 Dec 2018 00:00:00 +0000</pubDate>
-          <guid>/entries/Core_DOM.html</guid>
+          <guid>https://isa-afp.org/entries/Core_DOM.html</guid>
           <description></description>
         </item>
   </channel>

@@ -3,7 +3,7 @@
   <channel>
     <title>doczkal on Archive of Formal Proofs
     </title>
-    <link>/authors/doczkal/</link>
+    <link>https://isa-afp.org/authors/doczkal/</link>
     <description>
         Recent content in doczkal 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Sun, 29 Aug 2010 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/doczkal/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/doczkal/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Strong Normalization of Moggis&#39;s Computational Metalanguage</title>
-          <link>/entries/Lam-ml-Normalization.html</link>
+          <link>https://isa-afp.org/entries/Lam-ml-Normalization.html</link>
           <pubDate>Sun, 29 Aug 2010 00:00:00 +0000</pubDate>
-          <guid>/entries/Lam-ml-Normalization.html</guid>
+          <guid>https://isa-afp.org/entries/Lam-ml-Normalization.html</guid>
           <description></description>
         </item>
   </channel>

@@ -3,7 +3,7 @@
   <channel>
     <title>Hermite_Lindemann on Archive of Formal Proofs
     </title>
-    <link>/dependencies/hermite_lindemann/</link>
+    <link>https://isa-afp.org/dependencies/hermite_lindemann/</link>
     <description>
         Recent content in Hermite_Lindemann 
         on Archive of Formal Proofs
@@ -12,19 +12,19 @@
     <language>en-gb</language>
     
       <lastBuildDate>Sat, 16 Nov 2024 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/dependencies/hermite_lindemann/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/dependencies/hermite_lindemann/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Two Theorems on Hermitian Matrices</title>
-          <link>/entries/Two_Hermitian_Results.html</link>
+          <link>https://isa-afp.org/entries/Two_Hermitian_Results.html</link>
           <pubDate>Sat, 16 Nov 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Two_Hermitian_Results.html</guid>
+          <guid>https://isa-afp.org/entries/Two_Hermitian_Results.html</guid>
           <description></description>
         </item>
         <item>
           <title>Factorization of Polynomials with Algebraic Coefficients</title>
-          <link>/entries/Factor_Algebraic_Polynomial.html</link>
+          <link>https://isa-afp.org/entries/Factor_Algebraic_Polynomial.html</link>
           <pubDate>Mon, 08 Nov 2021 00:00:00 +0000</pubDate>
-          <guid>/entries/Factor_Algebraic_Polynomial.html</guid>
+          <guid>https://isa-afp.org/entries/Factor_Algebraic_Polynomial.html</guid>
           <description></description>
         </item>
   </channel>

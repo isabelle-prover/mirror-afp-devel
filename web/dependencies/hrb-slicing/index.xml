@@ -3,7 +3,7 @@
   <channel>
     <title>HRB-Slicing on Archive of Formal Proofs
     </title>
-    <link>/dependencies/hrb-slicing/</link>
+    <link>https://isa-afp.org/dependencies/hrb-slicing/</link>
     <description>
         Recent content in HRB-Slicing 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Tue, 23 Mar 2010 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/dependencies/hrb-slicing/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/dependencies/hrb-slicing/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Inter-Procedural Information Flow Noninterference via Slicing</title>
-          <link>/entries/InformationFlowSlicing_Inter.html</link>
+          <link>https://isa-afp.org/entries/InformationFlowSlicing_Inter.html</link>
           <pubDate>Tue, 23 Mar 2010 00:00:00 +0000</pubDate>
-          <guid>/entries/InformationFlowSlicing_Inter.html</guid>
+          <guid>https://isa-afp.org/entries/InformationFlowSlicing_Inter.html</guid>
           <description></description>
         </item>
   </channel>

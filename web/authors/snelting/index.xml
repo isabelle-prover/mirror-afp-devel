@@ -3,7 +3,7 @@
   <channel>
     <title>snelting on Archive of Formal Proofs
     </title>
-    <link>/authors/snelting/</link>
+    <link>https://isa-afp.org/authors/snelting/</link>
     <description>
         Recent content in snelting 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Tue, 02 Sep 2008 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/snelting/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/snelting/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>A Correctness Proof for the Volpano/Smith Security Typing System</title>
-          <link>/entries/VolpanoSmith.html</link>
+          <link>https://isa-afp.org/entries/VolpanoSmith.html</link>
           <pubDate>Tue, 02 Sep 2008 00:00:00 +0000</pubDate>
-          <guid>/entries/VolpanoSmith.html</guid>
+          <guid>https://isa-afp.org/entries/VolpanoSmith.html</guid>
           <description></description>
         </item>
   </channel>

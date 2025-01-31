@@ -3,7 +3,7 @@
   <channel>
     <title>Random_BSTs on Archive of Formal Proofs
     </title>
-    <link>/dependencies/random_bsts/</link>
+    <link>https://isa-afp.org/dependencies/random_bsts/</link>
     <description>
         Recent content in Random_BSTs 
         on Archive of Formal Proofs
@@ -12,19 +12,19 @@
     <language>en-gb</language>
     
       <lastBuildDate>Fri, 19 Oct 2018 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/dependencies/random_bsts/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/dependencies/random_bsts/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Randomised Binary Search Trees</title>
-          <link>/entries/Randomised_BSTs.html</link>
+          <link>https://isa-afp.org/entries/Randomised_BSTs.html</link>
           <pubDate>Fri, 19 Oct 2018 00:00:00 +0000</pubDate>
-          <guid>/entries/Randomised_BSTs.html</guid>
+          <guid>https://isa-afp.org/entries/Randomised_BSTs.html</guid>
           <description></description>
         </item>
         <item>
           <title>Treaps</title>
-          <link>/entries/Treaps.html</link>
+          <link>https://isa-afp.org/entries/Treaps.html</link>
           <pubDate>Tue, 06 Feb 2018 00:00:00 +0000</pubDate>
-          <guid>/entries/Treaps.html</guid>
+          <guid>https://isa-afp.org/entries/Treaps.html</guid>
           <description></description>
         </item>
   </channel>

@@ -3,7 +3,7 @@
   <channel>
     <title>olm on Archive of Formal Proofs
     </title>
-    <link>/authors/olm/</link>
+    <link>https://isa-afp.org/authors/olm/</link>
     <description>
         Recent content in olm 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Fri, 14 Dec 2007 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/olm/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/olm/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Formalization of Conflict Analysis of Programs with Procedures, Thread Creation, and Monitors</title>
-          <link>/entries/Program-Conflict-Analysis.html</link>
+          <link>https://isa-afp.org/entries/Program-Conflict-Analysis.html</link>
           <pubDate>Fri, 14 Dec 2007 00:00:00 +0000</pubDate>
-          <guid>/entries/Program-Conflict-Analysis.html</guid>
+          <guid>https://isa-afp.org/entries/Program-Conflict-Analysis.html</guid>
           <description></description>
         </item>
   </channel>

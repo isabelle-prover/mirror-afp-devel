@@ -3,7 +3,7 @@
   <channel>
     <title>chapman on Archive of Formal Proofs
     </title>
-    <link>/authors/chapman/</link>
+    <link>https://isa-afp.org/authors/chapman/</link>
     <description>
         Recent content in chapman 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Fri, 28 Aug 2009 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/chapman/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/chapman/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Invertibility in Sequent Calculi</title>
-          <link>/entries/SequentInvertibility.html</link>
+          <link>https://isa-afp.org/entries/SequentInvertibility.html</link>
           <pubDate>Fri, 28 Aug 2009 00:00:00 +0000</pubDate>
-          <guid>/entries/SequentInvertibility.html</guid>
+          <guid>https://isa-afp.org/entries/SequentInvertibility.html</guid>
           <description></description>
         </item>
   </channel>

@@ -3,7 +3,7 @@
   <channel>
     <title>back on Archive of Formal Proofs
     </title>
-    <link>/authors/back/</link>
+    <link>https://isa-afp.org/authors/back/</link>
     <description>
         Recent content in back 
         on Archive of Formal Proofs
@@ -12,19 +12,19 @@
     <language>en-gb</language>
     
       <lastBuildDate>Fri, 28 May 2010 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/back/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/back/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Semantics and Data Refinement of Invariant Based Programs</title>
-          <link>/entries/DataRefinementIBP.html</link>
+          <link>https://isa-afp.org/entries/DataRefinementIBP.html</link>
           <pubDate>Fri, 28 May 2010 00:00:00 +0000</pubDate>
-          <guid>/entries/DataRefinementIBP.html</guid>
+          <guid>https://isa-afp.org/entries/DataRefinementIBP.html</guid>
           <description></description>
         </item>
         <item>
           <title>Verification of the Deutsch-Schorr-Waite Graph Marking Algorithm using Data Refinement</title>
-          <link>/entries/GraphMarkingIBP.html</link>
+          <link>https://isa-afp.org/entries/GraphMarkingIBP.html</link>
           <pubDate>Fri, 28 May 2010 00:00:00 +0000</pubDate>
-          <guid>/entries/GraphMarkingIBP.html</guid>
+          <guid>https://isa-afp.org/entries/GraphMarkingIBP.html</guid>
           <description></description>
         </item>
   </channel>

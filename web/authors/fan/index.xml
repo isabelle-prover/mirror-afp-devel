@@ -3,7 +3,7 @@
   <channel>
     <title>fan on Archive of Formal Proofs
     </title>
-    <link>/authors/fan/</link>
+    <link>https://isa-afp.org/authors/fan/</link>
     <description>
         Recent content in fan 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Sun, 08 Sep 2024 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/fan/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/fan/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Rabin&#39;s Closest Pair of Points Algorithm</title>
-          <link>/entries/Randomized_Closest_Pair.html</link>
+          <link>https://isa-afp.org/entries/Randomized_Closest_Pair.html</link>
           <pubDate>Sun, 08 Sep 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Randomized_Closest_Pair.html</guid>
+          <guid>https://isa-afp.org/entries/Randomized_Closest_Pair.html</guid>
           <description></description>
         </item>
   </channel>

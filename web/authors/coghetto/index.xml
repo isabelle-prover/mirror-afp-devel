@@ -3,7 +3,7 @@
   <channel>
     <title>coghetto on Archive of Formal Proofs
     </title>
-    <link>/authors/coghetto/</link>
+    <link>https://isa-afp.org/authors/coghetto/</link>
     <description>
         Recent content in coghetto 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Sun, 31 Jan 2021 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/coghetto/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/coghetto/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Tarski&#39;s Parallel Postulate implies the 5th Postulate of Euclid, the Postulate of Playfair and the original Parallel Postulate of Euclid</title>
-          <link>/entries/IsaGeoCoq.html</link>
+          <link>https://isa-afp.org/entries/IsaGeoCoq.html</link>
           <pubDate>Sun, 31 Jan 2021 00:00:00 +0000</pubDate>
-          <guid>/entries/IsaGeoCoq.html</guid>
+          <guid>https://isa-afp.org/entries/IsaGeoCoq.html</guid>
           <description></description>
         </item>
   </channel>

@@ -3,7 +3,7 @@
   <channel>
     <title>rizaldi on Archive of Formal Proofs
     </title>
-    <link>/authors/rizaldi/</link>
+    <link>https://isa-afp.org/authors/rizaldi/</link>
     <description>
         Recent content in rizaldi 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Mon, 01 Jun 2020 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/rizaldi/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/rizaldi/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>A Formally Verified Checker of the Safe Distance Traffic Rules for Autonomous Vehicles</title>
-          <link>/entries/Safe_Distance.html</link>
+          <link>https://isa-afp.org/entries/Safe_Distance.html</link>
           <pubDate>Mon, 01 Jun 2020 00:00:00 +0000</pubDate>
-          <guid>/entries/Safe_Distance.html</guid>
+          <guid>https://isa-afp.org/entries/Safe_Distance.html</guid>
           <description></description>
         </item>
   </channel>

@@ -3,7 +3,7 @@
   <channel>
     <title>iwama on Archive of Formal Proofs
     </title>
-    <link>/authors/iwama/</link>
+    <link>https://isa-afp.org/authors/iwama/</link>
     <description>
         Recent content in iwama 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Mon, 22 Nov 2021 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/iwama/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/iwama/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Foundation of geometry in planes, and some complements: Excluding the parallel axioms</title>
-          <link>/entries/Foundation_of_geometry.html</link>
+          <link>https://isa-afp.org/entries/Foundation_of_geometry.html</link>
           <pubDate>Mon, 22 Nov 2021 00:00:00 +0000</pubDate>
-          <guid>/entries/Foundation_of_geometry.html</guid>
+          <guid>https://isa-afp.org/entries/Foundation_of_geometry.html</guid>
           <description></description>
         </item>
   </channel>

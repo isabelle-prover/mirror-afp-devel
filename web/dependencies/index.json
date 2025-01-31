@@ -1,1707 +1,1707 @@
 [
  {
   "id": 0,
-  "link": "/dependencies/abstract_completeness/",
+  "link": "https://isa-afp.org/dependencies/abstract_completeness/",
   "name": "Abstract_Completeness"
  },
  {
   "id": 1,
-  "link": "/dependencies/abstract_soundness/",
+  "link": "https://isa-afp.org/dependencies/abstract_soundness/",
   "name": "Abstract_Soundness"
  },
  {
   "id": 2,
-  "link": "/dependencies/abstract_substitution/",
+  "link": "https://isa-afp.org/dependencies/abstract_substitution/",
   "name": "Abstract_Substitution"
  },
  {
   "id": 3,
-  "link": "/dependencies/abstract-rewriting/",
+  "link": "https://isa-afp.org/dependencies/abstract-rewriting/",
   "name": "Abstract-Rewriting"
  },
  {
   "id": 4,
-  "link": "/dependencies/affine_arithmetic/",
+  "link": "https://isa-afp.org/dependencies/affine_arithmetic/",
   "name": "Affine_Arithmetic"
  },
  {
   "id": 5,
-  "link": "/dependencies/aggregation_algebras/",
+  "link": "https://isa-afp.org/dependencies/aggregation_algebras/",
   "name": "Aggregation_Algebras"
  },
  {
   "id": 6,
-  "link": "/dependencies/ai_planning_languages_semantics/",
+  "link": "https://isa-afp.org/dependencies/ai_planning_languages_semantics/",
   "name": "AI_Planning_Languages_Semantics"
  },
  {
   "id": 7,
-  "link": "/dependencies/akra_bazzi/",
+  "link": "https://isa-afp.org/dependencies/akra_bazzi/",
   "name": "Akra_Bazzi"
  },
  {
   "id": 8,
-  "link": "/dependencies/algebraic_numbers/",
+  "link": "https://isa-afp.org/dependencies/algebraic_numbers/",
   "name": "Algebraic_Numbers"
  },
  {
   "id": 9,
-  "link": "/dependencies/amortized_complexity/",
+  "link": "https://isa-afp.org/dependencies/amortized_complexity/",
   "name": "Amortized_Complexity"
  },
  {
   "id": 10,
-  "link": "/dependencies/applicative_lifting/",
+  "link": "https://isa-afp.org/dependencies/applicative_lifting/",
   "name": "Applicative_Lifting"
  },
  {
   "id": 11,
-  "link": "/dependencies/approximate_model_counting/",
+  "link": "https://isa-afp.org/dependencies/approximate_model_counting/",
   "name": "Approximate_Model_Counting"
  },
  {
   "id": 12,
-  "link": "/dependencies/auto2_hol/",
+  "link": "https://isa-afp.org/dependencies/auto2_hol/",
   "name": "Auto2_HOL"
  },
  {
   "id": 13,
-  "link": "/dependencies/automatic_refinement/",
+  "link": "https://isa-afp.org/dependencies/automatic_refinement/",
   "name": "Automatic_Refinement"
  },
  {
   "id": 14,
-  "link": "/dependencies/awn/",
+  "link": "https://isa-afp.org/dependencies/awn/",
   "name": "AWN"
  },
  {
   "id": 15,
-  "link": "/dependencies/banach_steinhaus/",
+  "link": "https://isa-afp.org/dependencies/banach_steinhaus/",
   "name": "Banach_Steinhaus"
  },
  {
   "id": 16,
-  "link": "/dependencies/bd_security_compositional/",
+  "link": "https://isa-afp.org/dependencies/bd_security_compositional/",
   "name": "BD_Security_Compositional"
  },
  {
   "id": 17,
-  "link": "/dependencies/bell_numbers_spivey/",
+  "link": "https://isa-afp.org/dependencies/bell_numbers_spivey/",
   "name": "Bell_Numbers_Spivey"
  },
  {
   "id": 18,
-  "link": "/dependencies/benor_kozen_reif/",
+  "link": "https://isa-afp.org/dependencies/benor_kozen_reif/",
   "name": "BenOr_Kozen_Reif"
  },
  {
   "id": 19,
-  "link": "/dependencies/berlekamp_zassenhaus/",
+  "link": "https://isa-afp.org/dependencies/berlekamp_zassenhaus/",
   "name": "Berlekamp_Zassenhaus"
  },
  {
   "id": 20,
-  "link": "/dependencies/bernoulli/",
+  "link": "https://isa-afp.org/dependencies/bernoulli/",
   "name": "Bernoulli"
  },
  {
   "id": 21,
-  "link": "/dependencies/bertrands_postulate/",
+  "link": "https://isa-afp.org/dependencies/bertrands_postulate/",
   "name": "Bertrands_Postulate"
  },
  {
   "id": 22,
-  "link": "/dependencies/binomial-heaps/",
+  "link": "https://isa-afp.org/dependencies/binomial-heaps/",
   "name": "Binomial-Heaps"
  },
  {
   "id": 23,
-  "link": "/dependencies/boolean_expression_checkers/",
+  "link": "https://isa-afp.org/dependencies/boolean_expression_checkers/",
   "name": "Boolean_Expression_Checkers"
  },
  {
   "id": 24,
-  "link": "/dependencies/bounded_deducibility_security/",
+  "link": "https://isa-afp.org/dependencies/bounded_deducibility_security/",
   "name": "Bounded_Deducibility_Security"
  },
  {
   "id": 25,
-  "link": "/dependencies/budan_fourier/",
+  "link": "https://isa-afp.org/dependencies/budan_fourier/",
   "name": "Budan_Fourier"
  },
  {
   "id": 26,
-  "link": "/dependencies/cakeml/",
+  "link": "https://isa-afp.org/dependencies/cakeml/",
   "name": "CakeML"
  },
  {
   "id": 27,
-  "link": "/dependencies/card_equiv_relations/",
+  "link": "https://isa-afp.org/dependencies/card_equiv_relations/",
   "name": "Card_Equiv_Relations"
  },
  {
   "id": 28,
-  "link": "/dependencies/card_multisets/",
+  "link": "https://isa-afp.org/dependencies/card_multisets/",
   "name": "Card_Multisets"
  },
  {
   "id": 29,
-  "link": "/dependencies/card_number_partitions/",
+  "link": "https://isa-afp.org/dependencies/card_number_partitions/",
   "name": "Card_Number_Partitions"
  },
  {
   "id": 30,
-  "link": "/dependencies/card_partitions/",
+  "link": "https://isa-afp.org/dependencies/card_partitions/",
   "name": "Card_Partitions"
  },
  {
   "id": 31,
-  "link": "/dependencies/cardinality_continuum/",
+  "link": "https://isa-afp.org/dependencies/cardinality_continuum/",
   "name": "Cardinality_Continuum"
  },
  {
   "id": 32,
-  "link": "/dependencies/case_labeling/",
+  "link": "https://isa-afp.org/dependencies/case_labeling/",
   "name": "Case_Labeling"
  },
  {
   "id": 33,
-  "link": "/dependencies/category3/",
+  "link": "https://isa-afp.org/dependencies/category3/",
   "name": "Category3"
  },
  {
   "id": 34,
-  "link": "/dependencies/catoids/",
+  "link": "https://isa-afp.org/dependencies/catoids/",
   "name": "Catoids"
  },
  {
   "id": 35,
-  "link": "/dependencies/cauchy/",
+  "link": "https://isa-afp.org/dependencies/cauchy/",
   "name": "Cauchy"
  },
  {
   "id": 36,
-  "link": "/dependencies/cava_automata/",
+  "link": "https://isa-afp.org/dependencies/cava_automata/",
   "name": "CAVA_Automata"
  },
  {
   "id": 37,
-  "link": "/dependencies/cayley_hamilton/",
+  "link": "https://isa-afp.org/dependencies/cayley_hamilton/",
   "name": "Cayley_Hamilton"
  },
  {
   "id": 38,
-  "link": "/dependencies/certification_monads/",
+  "link": "https://isa-afp.org/dependencies/certification_monads/",
   "name": "Certification_Monads"
  },
  {
   "id": 39,
-  "link": "/dependencies/closest_pair_points/",
+  "link": "https://isa-afp.org/dependencies/closest_pair_points/",
   "name": "Closest_Pair_Points"
  },
  {
   "id": 40,
-  "link": "/dependencies/coinductive/",
+  "link": "https://isa-afp.org/dependencies/coinductive/",
   "name": "Coinductive"
  },
  {
   "id": 41,
-  "link": "/dependencies/coinductive_languages/",
+  "link": "https://isa-afp.org/dependencies/coinductive_languages/",
   "name": "Coinductive_Languages"
  },
  {
   "id": 42,
-  "link": "/dependencies/collections/",
+  "link": "https://isa-afp.org/dependencies/collections/",
   "name": "Collections"
  },
  {
   "id": 43,
-  "link": "/dependencies/combinatorics_words/",
+  "link": "https://isa-afp.org/dependencies/combinatorics_words/",
   "name": "Combinatorics_Words"
  },
  {
   "id": 44,
-  "link": "/dependencies/combinatorics_words_graph_lemma/",
+  "link": "https://isa-afp.org/dependencies/combinatorics_words_graph_lemma/",
   "name": "Combinatorics_Words_Graph_Lemma"
  },
  {
   "id": 45,
-  "link": "/dependencies/commuting_hermitian/",
+  "link": "https://isa-afp.org/dependencies/commuting_hermitian/",
   "name": "Commuting_Hermitian"
  },
  {
   "id": 46,
-  "link": "/dependencies/comparison_sort_lower_bound/",
+  "link": "https://isa-afp.org/dependencies/comparison_sort_lower_bound/",
   "name": "Comparison_Sort_Lower_Bound"
  },
  {
   "id": 47,
-  "link": "/dependencies/complete_non_orders/",
+  "link": "https://isa-afp.org/dependencies/complete_non_orders/",
   "name": "Complete_Non_Orders"
  },
  {
   "id": 48,
-  "link": "/dependencies/complex_bounded_operators/",
+  "link": "https://isa-afp.org/dependencies/complex_bounded_operators/",
   "name": "Complex_Bounded_Operators"
  },
  {
   "id": 49,
-  "link": "/dependencies/complex_geometry/",
+  "link": "https://isa-afp.org/dependencies/complex_geometry/",
   "name": "Complex_Geometry"
  },
  {
   "id": 50,
-  "link": "/dependencies/concentration_inequalities/",
+  "link": "https://isa-afp.org/dependencies/concentration_inequalities/",
   "name": "Concentration_Inequalities"
  },
  {
   "id": 51,
-  "link": "/dependencies/concurrentimp/",
+  "link": "https://isa-afp.org/dependencies/concurrentimp/",
   "name": "ConcurrentIMP"
  },
  {
   "id": 52,
-  "link": "/dependencies/conditional_simplification/",
+  "link": "https://isa-afp.org/dependencies/conditional_simplification/",
   "name": "Conditional_Simplification"
  },
  {
   "id": 53,
-  "link": "/dependencies/conditional_transfer_rule/",
+  "link": "https://isa-afp.org/dependencies/conditional_transfer_rule/",
   "name": "Conditional_Transfer_Rule"
  },
  {
   "id": 54,
-  "link": "/dependencies/constructive_cryptography/",
+  "link": "https://isa-afp.org/dependencies/constructive_cryptography/",
   "name": "Constructive_Cryptography"
  },
  {
   "id": 55,
-  "link": "/dependencies/constructor_funs/",
+  "link": "https://isa-afp.org/dependencies/constructor_funs/",
   "name": "Constructor_Funs"
  },
  {
   "id": 56,
-  "link": "/dependencies/containers/",
+  "link": "https://isa-afp.org/dependencies/containers/",
   "name": "Containers"
  },
  {
   "id": 57,
-  "link": "/dependencies/core_dom/",
+  "link": "https://isa-afp.org/dependencies/core_dom/",
   "name": "Core_DOM"
  },
  {
   "id": 58,
-  "link": "/dependencies/core_sc_dom/",
+  "link": "https://isa-afp.org/dependencies/core_sc_dom/",
   "name": "Core_SC_DOM"
  },
  {
   "id": 59,
-  "link": "/dependencies/count_complex_roots/",
+  "link": "https://isa-afp.org/dependencies/count_complex_roots/",
   "name": "Count_Complex_Roots"
  },
  {
   "id": 60,
-  "link": "/dependencies/crdt/",
+  "link": "https://isa-afp.org/dependencies/crdt/",
   "name": "CRDT"
  },
  {
   "id": 61,
-  "link": "/dependencies/crypthol/",
+  "link": "https://isa-afp.org/dependencies/crypthol/",
   "name": "CryptHOL"
  },
  {
   "id": 62,
-  "link": "/dependencies/crystals-kyber/",
+  "link": "https://isa-afp.org/dependencies/crystals-kyber/",
   "name": "CRYSTALS-Kyber"
  },
  {
   "id": 63,
-  "link": "/dependencies/czh_elementary_categories/",
+  "link": "https://isa-afp.org/dependencies/czh_elementary_categories/",
   "name": "CZH_Elementary_Categories"
  },
  {
   "id": 64,
-  "link": "/dependencies/czh_foundations/",
+  "link": "https://isa-afp.org/dependencies/czh_foundations/",
   "name": "CZH_Foundations"
  },
  {
   "id": 65,
-  "link": "/dependencies/datarefinementibp/",
+  "link": "https://isa-afp.org/dependencies/datarefinementibp/",
   "name": "DataRefinementIBP"
  },
  {
   "id": 66,
-  "link": "/dependencies/datatype_order_generator/",
+  "link": "https://isa-afp.org/dependencies/datatype_order_generator/",
   "name": "Datatype_Order_Generator"
  },
  {
   "id": 67,
-  "link": "/dependencies/deep_learning/",
+  "link": "https://isa-afp.org/dependencies/deep_learning/",
   "name": "Deep_Learning"
  },
  {
   "id": 68,
-  "link": "/dependencies/delta_system_lemma/",
+  "link": "https://isa-afp.org/dependencies/delta_system_lemma/",
   "name": "Delta_System_Lemma"
  },
  {
   "id": 69,
-  "link": "/dependencies/dependent_sifum_type_systems/",
+  "link": "https://isa-afp.org/dependencies/dependent_sifum_type_systems/",
   "name": "Dependent_SIFUM_Type_Systems"
  },
  {
   "id": 70,
-  "link": "/dependencies/deriving/",
+  "link": "https://isa-afp.org/dependencies/deriving/",
   "name": "Deriving"
  },
  {
   "id": 71,
-  "link": "/dependencies/descartes_sign_rule/",
+  "link": "https://isa-afp.org/dependencies/descartes_sign_rule/",
   "name": "Descartes_Sign_Rule"
  },
  {
   "id": 72,
-  "link": "/dependencies/design_theory/",
+  "link": "https://isa-afp.org/dependencies/design_theory/",
   "name": "Design_Theory"
  },
  {
   "id": 73,
-  "link": "/dependencies/dfs_framework/",
+  "link": "https://isa-afp.org/dependencies/dfs_framework/",
   "name": "DFS_Framework"
  },
  {
   "id": 74,
-  "link": "/dependencies/dict_construction/",
+  "link": "https://isa-afp.org/dependencies/dict_construction/",
   "name": "Dict_Construction"
  },
  {
   "id": 75,
-  "link": "/dependencies/difference_bound_matrices/",
+  "link": "https://isa-afp.org/dependencies/difference_bound_matrices/",
   "name": "Difference_Bound_Matrices"
  },
  {
   "id": 76,
-  "link": "/dependencies/digit_expansions/",
+  "link": "https://isa-afp.org/dependencies/digit_expansions/",
   "name": "Digit_Expansions"
  },
  {
   "id": 77,
-  "link": "/dependencies/dijkstra_shortest_path/",
+  "link": "https://isa-afp.org/dependencies/dijkstra_shortest_path/",
   "name": "Dijkstra_Shortest_Path"
  },
  {
   "id": 78,
-  "link": "/dependencies/dirichlet_l/",
+  "link": "https://isa-afp.org/dependencies/dirichlet_l/",
   "name": "Dirichlet_L"
  },
  {
   "id": 79,
-  "link": "/dependencies/dirichlet_series/",
+  "link": "https://isa-afp.org/dependencies/dirichlet_series/",
   "name": "Dirichlet_Series"
  },
  {
   "id": 80,
-  "link": "/dependencies/discrete_summation/",
+  "link": "https://isa-afp.org/dependencies/discrete_summation/",
   "name": "Discrete_Summation"
  },
  {
   "id": 81,
-  "link": "/dependencies/distributed_distinct_elements/",
+  "link": "https://isa-afp.org/dependencies/distributed_distinct_elements/",
   "name": "Distributed_Distinct_Elements"
  },
  {
   "id": 82,
-  "link": "/dependencies/dynamicarchitectures/",
+  "link": "https://isa-afp.org/dependencies/dynamicarchitectures/",
   "name": "DynamicArchitectures"
  },
  {
   "id": 83,
-  "link": "/dependencies/e_transcendental/",
+  "link": "https://isa-afp.org/dependencies/e_transcendental/",
   "name": "E_Transcendental"
  },
  {
   "id": 84,
-  "link": "/dependencies/echelon_form/",
+  "link": "https://isa-afp.org/dependencies/echelon_form/",
   "name": "Echelon_Form"
  },
  {
   "id": 85,
-  "link": "/dependencies/edmondskarp_maxflow/",
+  "link": "https://isa-afp.org/dependencies/edmondskarp_maxflow/",
   "name": "EdmondsKarp_Maxflow"
  },
  {
   "id": 86,
-  "link": "/dependencies/efficient-mergesort/",
+  "link": "https://isa-afp.org/dependencies/efficient-mergesort/",
   "name": "Efficient-Mergesort"
  },
  {
   "id": 87,
-  "link": "/dependencies/elliptic_curves_group_law/",
+  "link": "https://isa-afp.org/dependencies/elliptic_curves_group_law/",
   "name": "Elliptic_Curves_Group_Law"
  },
  {
   "id": 88,
-  "link": "/dependencies/enrichedcategorybasics/",
+  "link": "https://isa-afp.org/dependencies/enrichedcategorybasics/",
   "name": "EnrichedCategoryBasics"
  },
  {
   "id": 89,
-  "link": "/dependencies/epistemic_logic/",
+  "link": "https://isa-afp.org/dependencies/epistemic_logic/",
   "name": "Epistemic_Logic"
  },
  {
   "id": 90,
-  "link": "/dependencies/equivalence_relation_enumeration/",
+  "link": "https://isa-afp.org/dependencies/equivalence_relation_enumeration/",
   "name": "Equivalence_Relation_Enumeration"
  },
  {
   "id": 91,
-  "link": "/dependencies/ergodic_theory/",
+  "link": "https://isa-afp.org/dependencies/ergodic_theory/",
   "name": "Ergodic_Theory"
  },
  {
   "id": 92,
-  "link": "/dependencies/euler_maclaurin/",
+  "link": "https://isa-afp.org/dependencies/euler_maclaurin/",
   "name": "Euler_MacLaurin"
  },
  {
   "id": 93,
-  "link": "/dependencies/executable_randomized_algorithms/",
+  "link": "https://isa-afp.org/dependencies/executable_randomized_algorithms/",
   "name": "Executable_Randomized_Algorithms"
  },
  {
   "id": 94,
-  "link": "/dependencies/expander_graphs/",
+  "link": "https://isa-afp.org/dependencies/expander_graphs/",
   "name": "Expander_Graphs"
  },
  {
   "id": 95,
-  "link": "/dependencies/extended_finite_state_machines/",
+  "link": "https://isa-afp.org/dependencies/extended_finite_state_machines/",
   "name": "Extended_Finite_State_Machines"
  },
  {
   "id": 96,
-  "link": "/dependencies/factor_algebraic_polynomial/",
+  "link": "https://isa-afp.org/dependencies/factor_algebraic_polynomial/",
   "name": "Factor_Algebraic_Polynomial"
  },
  {
   "id": 97,
-  "link": "/dependencies/falling_factorial_sum/",
+  "link": "https://isa-afp.org/dependencies/falling_factorial_sum/",
   "name": "Falling_Factorial_Sum"
  },
  {
   "id": 98,
-  "link": "/dependencies/farkas/",
+  "link": "https://isa-afp.org/dependencies/farkas/",
   "name": "Farkas"
  },
  {
   "id": 99,
-  "link": "/dependencies/finfun/",
+  "link": "https://isa-afp.org/dependencies/finfun/",
   "name": "FinFun"
  },
  {
   "id": 100,
-  "link": "/dependencies/finger-trees/",
+  "link": "https://isa-afp.org/dependencies/finger-trees/",
   "name": "Finger-Trees"
  },
  {
   "id": 101,
-  "link": "/dependencies/finite_fields/",
+  "link": "https://isa-afp.org/dependencies/finite_fields/",
   "name": "Finite_Fields"
  },
  {
   "id": 102,
-  "link": "/dependencies/finite-map-extras/",
+  "link": "https://isa-afp.org/dependencies/finite-map-extras/",
   "name": "Finite-Map-Extras"
  },
  {
   "id": 103,
-  "link": "/dependencies/finitely_generated_abelian_groups/",
+  "link": "https://isa-afp.org/dependencies/finitely_generated_abelian_groups/",
   "name": "Finitely_Generated_Abelian_Groups"
  },
  {
   "id": 104,
-  "link": "/dependencies/first_order_clause/",
+  "link": "https://isa-afp.org/dependencies/first_order_clause/",
   "name": "First_Order_Clause"
  },
  {
   "id": 105,
-  "link": "/dependencies/first_order_terms/",
+  "link": "https://isa-afp.org/dependencies/first_order_terms/",
   "name": "First_Order_Terms"
  },
  {
   "id": 106,
-  "link": "/dependencies/first_welfare_theorem/",
+  "link": "https://isa-afp.org/dependencies/first_welfare_theorem/",
   "name": "First_Welfare_Theorem"
  },
  {
   "id": 107,
-  "link": "/dependencies/fishers_inequality/",
+  "link": "https://isa-afp.org/dependencies/fishers_inequality/",
   "name": "Fishers_Inequality"
  },
  {
   "id": 108,
-  "link": "/dependencies/flow_networks/",
+  "link": "https://isa-afp.org/dependencies/flow_networks/",
   "name": "Flow_Networks"
  },
  {
   "id": 109,
-  "link": "/dependencies/floyd_warshall/",
+  "link": "https://isa-afp.org/dependencies/floyd_warshall/",
   "name": "Floyd_Warshall"
  },
  {
   "id": 110,
-  "link": "/dependencies/fol_seq_calc1/",
+  "link": "https://isa-afp.org/dependencies/fol_seq_calc1/",
   "name": "FOL_Seq_Calc1"
  },
  {
   "id": 111,
-  "link": "/dependencies/fol-fitting/",
+  "link": "https://isa-afp.org/dependencies/fol-fitting/",
   "name": "FOL-Fitting"
  },
  {
   "id": 112,
-  "link": "/dependencies/formal_ssa/",
+  "link": "https://isa-afp.org/dependencies/formal_ssa/",
   "name": "Formal_SSA"
  },
  {
   "id": 113,
-  "link": "/dependencies/frequency_moments/",
+  "link": "https://isa-afp.org/dependencies/frequency_moments/",
   "name": "Frequency_Moments"
  },
  {
   "id": 114,
-  "link": "/dependencies/fresh_identifiers/",
+  "link": "https://isa-afp.org/dependencies/fresh_identifiers/",
   "name": "Fresh_Identifiers"
  },
  {
   "id": 115,
-  "link": "/dependencies/functional_ordered_resolution_prover/",
+  "link": "https://isa-afp.org/dependencies/functional_ordered_resolution_prover/",
   "name": "Functional_Ordered_Resolution_Prover"
  },
  {
   "id": 116,
-  "link": "/dependencies/functional-automata/",
+  "link": "https://isa-afp.org/dependencies/functional-automata/",
   "name": "Functional-Automata"
  },
  {
   "id": 117,
-  "link": "/dependencies/gabow_scc/",
+  "link": "https://isa-afp.org/dependencies/gabow_scc/",
   "name": "Gabow_SCC"
  },
  {
   "id": 118,
-  "link": "/dependencies/game_based_crypto/",
+  "link": "https://isa-afp.org/dependencies/game_based_crypto/",
   "name": "Game_Based_Crypto"
  },
  {
   "id": 119,
-  "link": "/dependencies/gauss_jordan/",
+  "link": "https://isa-afp.org/dependencies/gauss_jordan/",
   "name": "Gauss_Jordan"
  },
  {
   "id": 120,
-  "link": "/dependencies/gauss-jordan-elim-fun/",
+  "link": "https://isa-afp.org/dependencies/gauss-jordan-elim-fun/",
   "name": "Gauss-Jordan-Elim-Fun"
  },
  {
   "id": 121,
-  "link": "/dependencies/gaussian_integers/",
+  "link": "https://isa-afp.org/dependencies/gaussian_integers/",
   "name": "Gaussian_Integers"
  },
  {
   "id": 122,
-  "link": "/dependencies/generic_join/",
+  "link": "https://isa-afp.org/dependencies/generic_join/",
   "name": "Generic_Join"
  },
  {
   "id": 123,
-  "link": "/dependencies/girth_chromatic/",
+  "link": "https://isa-afp.org/dependencies/girth_chromatic/",
   "name": "Girth_Chromatic"
  },
  {
   "id": 124,
-  "link": "/dependencies/goedel_incompleteness/",
+  "link": "https://isa-afp.org/dependencies/goedel_incompleteness/",
   "name": "Goedel_Incompleteness"
  },
  {
   "id": 125,
-  "link": "/dependencies/graph_theory/",
+  "link": "https://isa-afp.org/dependencies/graph_theory/",
   "name": "Graph_Theory"
  },
  {
   "id": 126,
-  "link": "/dependencies/groebner_bases/",
+  "link": "https://isa-afp.org/dependencies/groebner_bases/",
   "name": "Groebner_Bases"
  },
  {
   "id": 127,
-  "link": "/dependencies/group-ring-module/",
+  "link": "https://isa-afp.org/dependencies/group-ring-module/",
   "name": "Group-Ring-Module"
  },
  {
   "id": 128,
-  "link": "/dependencies/heard_of/",
+  "link": "https://isa-afp.org/dependencies/heard_of/",
   "name": "Heard_Of"
  },
  {
   "id": 129,
-  "link": "/dependencies/hereditarilyfinite/",
+  "link": "https://isa-afp.org/dependencies/hereditarilyfinite/",
   "name": "HereditarilyFinite"
  },
  {
   "id": 130,
-  "link": "/dependencies/hermite/",
+  "link": "https://isa-afp.org/dependencies/hermite/",
   "name": "Hermite"
  },
  {
   "id": 131,
-  "link": "/dependencies/hermite_lindemann/",
+  "link": "https://isa-afp.org/dependencies/hermite_lindemann/",
   "name": "Hermite_Lindemann"
  },
  {
   "id": 132,
-  "link": "/dependencies/higher_order_terms/",
+  "link": "https://isa-afp.org/dependencies/higher_order_terms/",
   "name": "Higher_Order_Terms"
  },
  {
   "id": 133,
-  "link": "/dependencies/hilbert_space_tensor_product/",
+  "link": "https://isa-afp.org/dependencies/hilbert_space_tensor_product/",
   "name": "Hilbert_Space_Tensor_Product"
  },
  {
   "id": 134,
-  "link": "/dependencies/hol-csp/",
+  "link": "https://isa-afp.org/dependencies/hol-csp/",
   "name": "HOL-CSP"
  },
  {
   "id": 135,
-  "link": "/dependencies/hol-cspm/",
+  "link": "https://isa-afp.org/dependencies/hol-cspm/",
   "name": "HOL-CSPM"
  },
  {
   "id": 136,
-  "link": "/dependencies/holcf-prelude/",
+  "link": "https://isa-afp.org/dependencies/holcf-prelude/",
   "name": "HOLCF-Prelude"
  },
  {
   "id": 137,
-  "link": "/dependencies/hrb-slicing/",
+  "link": "https://isa-afp.org/dependencies/hrb-slicing/",
   "name": "HRB-Slicing"
  },
  {
   "id": 138,
-  "link": "/dependencies/huffman/",
+  "link": "https://isa-afp.org/dependencies/huffman/",
   "name": "Huffman"
  },
  {
   "id": 139,
-  "link": "/dependencies/hybrid_systems_vcs/",
+  "link": "https://isa-afp.org/dependencies/hybrid_systems_vcs/",
   "name": "Hybrid_Systems_VCs"
  },
  {
   "id": 140,
-  "link": "/dependencies/hypergraph_basics/",
+  "link": "https://isa-afp.org/dependencies/hypergraph_basics/",
   "name": "Hypergraph_Basics"
  },
  {
   "id": 141,
-  "link": "/dependencies/ieee_floating_point/",
+  "link": "https://isa-afp.org/dependencies/ieee_floating_point/",
   "name": "IEEE_Floating_Point"
  },
  {
   "id": 142,
-  "link": "/dependencies/ill/",
+  "link": "https://isa-afp.org/dependencies/ill/",
   "name": "ILL"
  },
  {
   "id": 143,
-  "link": "/dependencies/imp2/",
+  "link": "https://isa-afp.org/dependencies/imp2/",
   "name": "IMP2"
  },
  {
   "id": 144,
-  "link": "/dependencies/incompleteness/",
+  "link": "https://isa-afp.org/dependencies/incompleteness/",
   "name": "Incompleteness"
  },
  {
   "id": 145,
-  "link": "/dependencies/interpolation_polynomials_hol_algebra/",
+  "link": "https://isa-afp.org/dependencies/interpolation_polynomials_hol_algebra/",
   "name": "Interpolation_Polynomials_HOL_Algebra"
  },
  {
   "id": 146,
-  "link": "/dependencies/intro_dest_elim/",
+  "link": "https://isa-afp.org/dependencies/intro_dest_elim/",
   "name": "Intro_Dest_Elim"
  },
  {
   "id": 147,
-  "link": "/dependencies/ip_addresses/",
+  "link": "https://isa-afp.org/dependencies/ip_addresses/",
   "name": "IP_Addresses"
  },
  {
   "id": 148,
-  "link": "/dependencies/iptables_semantics/",
+  "link": "https://isa-afp.org/dependencies/iptables_semantics/",
   "name": "Iptables_Semantics"
  },
  {
   "id": 149,
-  "link": "/dependencies/isabelle_marries_dirac/",
+  "link": "https://isa-afp.org/dependencies/isabelle_marries_dirac/",
   "name": "Isabelle_Marries_Dirac"
  },
  {
   "id": 150,
-  "link": "/dependencies/jacobson_basic_algebra/",
+  "link": "https://isa-afp.org/dependencies/jacobson_basic_algebra/",
   "name": "Jacobson_Basic_Algebra"
  },
  {
   "id": 151,
-  "link": "/dependencies/jinja/",
+  "link": "https://isa-afp.org/dependencies/jinja/",
   "name": "Jinja"
  },
  {
   "id": 152,
-  "link": "/dependencies/jinjadci/",
+  "link": "https://isa-afp.org/dependencies/jinjadci/",
   "name": "JinjaDCI"
  },
  {
   "id": 153,
-  "link": "/dependencies/jordan_normal_form/",
+  "link": "https://isa-afp.org/dependencies/jordan_normal_form/",
   "name": "Jordan_Normal_Form"
  },
  {
   "id": 154,
-  "link": "/dependencies/kad/",
+  "link": "https://isa-afp.org/dependencies/kad/",
   "name": "KAD"
  },
  {
   "id": 155,
-  "link": "/dependencies/karatsuba/",
+  "link": "https://isa-afp.org/dependencies/karatsuba/",
   "name": "Karatsuba"
  },
  {
   "id": 156,
-  "link": "/dependencies/kat_and_dra/",
+  "link": "https://isa-afp.org/dependencies/kat_and_dra/",
   "name": "KAT_and_DRA"
  },
  {
   "id": 157,
-  "link": "/dependencies/kbps/",
+  "link": "https://isa-afp.org/dependencies/kbps/",
   "name": "KBPs"
  },
  {
   "id": 158,
-  "link": "/dependencies/kleene_algebra/",
+  "link": "https://isa-afp.org/dependencies/kleene_algebra/",
   "name": "Kleene_Algebra"
  },
  {
   "id": 159,
-  "link": "/dependencies/knuth_bendix_order/",
+  "link": "https://isa-afp.org/dependencies/knuth_bendix_order/",
   "name": "Knuth_Bendix_Order"
  },
  {
   "id": 160,
-  "link": "/dependencies/labeled_transition_systems/",
+  "link": "https://isa-afp.org/dependencies/labeled_transition_systems/",
   "name": "Labeled_Transition_Systems"
  },
  {
   "id": 161,
-  "link": "/dependencies/lambda_free_rpos/",
+  "link": "https://isa-afp.org/dependencies/lambda_free_rpos/",
   "name": "Lambda_Free_RPOs"
  },
  {
   "id": 162,
-  "link": "/dependencies/landau_symbols/",
+  "link": "https://isa-afp.org/dependencies/landau_symbols/",
   "name": "Landau_Symbols"
  },
  {
   "id": 163,
-  "link": "/dependencies/latticeproperties/",
+  "link": "https://isa-afp.org/dependencies/latticeproperties/",
   "name": "LatticeProperties"
  },
  {
   "id": 164,
-  "link": "/dependencies/launchbury/",
+  "link": "https://isa-afp.org/dependencies/launchbury/",
   "name": "Launchbury"
  },
  {
   "id": 165,
-  "link": "/dependencies/lazy_case/",
+  "link": "https://isa-afp.org/dependencies/lazy_case/",
   "name": "Lazy_Case"
  },
  {
   "id": 166,
-  "link": "/dependencies/lazy-lists-ii/",
+  "link": "https://isa-afp.org/dependencies/lazy-lists-ii/",
   "name": "Lazy-Lists-II"
  },
  {
   "id": 167,
-  "link": "/dependencies/lehmer/",
+  "link": "https://isa-afp.org/dependencies/lehmer/",
   "name": "Lehmer"
  },
  {
   "id": 168,
-  "link": "/dependencies/linear_inequalities/",
+  "link": "https://isa-afp.org/dependencies/linear_inequalities/",
   "name": "Linear_Inequalities"
  },
  {
   "id": 169,
-  "link": "/dependencies/linear_recurrences/",
+  "link": "https://isa-afp.org/dependencies/linear_recurrences/",
   "name": "Linear_Recurrences"
  },
  {
   "id": 170,
-  "link": "/dependencies/list_interleaving/",
+  "link": "https://isa-afp.org/dependencies/list_interleaving/",
   "name": "List_Interleaving"
  },
  {
   "id": 171,
-  "link": "/dependencies/list-index/",
+  "link": "https://isa-afp.org/dependencies/list-index/",
   "name": "List-Index"
  },
  {
   "id": 172,
-  "link": "/dependencies/list-infinite/",
+  "link": "https://isa-afp.org/dependencies/list-infinite/",
   "name": "List-Infinite"
  },
  {
   "id": 173,
-  "link": "/dependencies/lll_basis_reduction/",
+  "link": "https://isa-afp.org/dependencies/lll_basis_reduction/",
   "name": "LLL_Basis_Reduction"
  },
  {
   "id": 174,
-  "link": "/dependencies/lll_factorization/",
+  "link": "https://isa-afp.org/dependencies/lll_factorization/",
   "name": "LLL_Factorization"
  },
  {
   "id": 175,
-  "link": "/dependencies/localization_ring/",
+  "link": "https://isa-afp.org/dependencies/localization_ring/",
   "name": "Localization_Ring"
  },
  {
   "id": 176,
-  "link": "/dependencies/lovasz_local/",
+  "link": "https://isa-afp.org/dependencies/lovasz_local/",
   "name": "Lovasz_Local"
  },
  {
   "id": 177,
-  "link": "/dependencies/lp/",
+  "link": "https://isa-afp.org/dependencies/lp/",
   "name": "Lp"
  },
  {
   "id": 178,
-  "link": "/dependencies/lp_duality/",
+  "link": "https://isa-afp.org/dependencies/lp_duality/",
   "name": "LP_Duality"
  },
  {
   "id": 179,
-  "link": "/dependencies/ltl/",
+  "link": "https://isa-afp.org/dependencies/ltl/",
   "name": "LTL"
  },
  {
   "id": 180,
-  "link": "/dependencies/ltl_master_theorem/",
+  "link": "https://isa-afp.org/dependencies/ltl_master_theorem/",
   "name": "LTL_Master_Theorem"
  },
  {
   "id": 181,
-  "link": "/dependencies/ltl_to_gba/",
+  "link": "https://isa-afp.org/dependencies/ltl_to_gba/",
   "name": "LTL_to_GBA"
  },
  {
   "id": 182,
-  "link": "/dependencies/lucas_theorem/",
+  "link": "https://isa-afp.org/dependencies/lucas_theorem/",
   "name": "Lucas_Theorem"
  },
  {
   "id": 183,
-  "link": "/dependencies/markov_models/",
+  "link": "https://isa-afp.org/dependencies/markov_models/",
   "name": "Markov_Models"
  },
  {
   "id": 184,
-  "link": "/dependencies/marriage/",
+  "link": "https://isa-afp.org/dependencies/marriage/",
   "name": "Marriage"
  },
  {
   "id": 185,
-  "link": "/dependencies/martingales/",
+  "link": "https://isa-afp.org/dependencies/martingales/",
   "name": "Martingales"
  },
  {
   "id": 186,
-  "link": "/dependencies/mason_stothers/",
+  "link": "https://isa-afp.org/dependencies/mason_stothers/",
   "name": "Mason_Stothers"
  },
  {
   "id": 187,
-  "link": "/dependencies/matrix/",
+  "link": "https://isa-afp.org/dependencies/matrix/",
   "name": "Matrix"
  },
  {
   "id": 188,
-  "link": "/dependencies/matrix_tensor/",
+  "link": "https://isa-afp.org/dependencies/matrix_tensor/",
   "name": "Matrix_Tensor"
  },
  {
   "id": 189,
-  "link": "/dependencies/matroids/",
+  "link": "https://isa-afp.org/dependencies/matroids/",
   "name": "Matroids"
  },
  {
   "id": 190,
-  "link": "/dependencies/mdp-rewards/",
+  "link": "https://isa-afp.org/dependencies/mdp-rewards/",
   "name": "MDP-Rewards"
  },
  {
   "id": 191,
-  "link": "/dependencies/median_method/",
+  "link": "https://isa-afp.org/dependencies/median_method/",
   "name": "Median_Method"
  },
  {
   "id": 192,
-  "link": "/dependencies/median_of_medians_selection/",
+  "link": "https://isa-afp.org/dependencies/median_of_medians_selection/",
   "name": "Median_Of_Medians_Selection"
  },
  {
   "id": 193,
-  "link": "/dependencies/mersenne_primes/",
+  "link": "https://isa-afp.org/dependencies/mersenne_primes/",
   "name": "Mersenne_Primes"
  },
  {
   "id": 194,
-  "link": "/dependencies/mfmc_countable/",
+  "link": "https://isa-afp.org/dependencies/mfmc_countable/",
   "name": "MFMC_Countable"
  },
  {
   "id": 195,
-  "link": "/dependencies/mfotl_monitor/",
+  "link": "https://isa-afp.org/dependencies/mfotl_monitor/",
   "name": "MFOTL_Monitor"
  },
  {
   "id": 196,
-  "link": "/dependencies/min_max_least_greatest/",
+  "link": "https://isa-afp.org/dependencies/min_max_least_greatest/",
   "name": "Min_Max_Least_Greatest"
  },
  {
   "id": 197,
-  "link": "/dependencies/ml_unification/",
+  "link": "https://isa-afp.org/dependencies/ml_unification/",
   "name": "ML_Unification"
  },
  {
   "id": 198,
-  "link": "/dependencies/monad_memo_dp/",
+  "link": "https://isa-afp.org/dependencies/monad_memo_dp/",
   "name": "Monad_Memo_DP"
  },
  {
   "id": 199,
-  "link": "/dependencies/monad_normalisation/",
+  "link": "https://isa-afp.org/dependencies/monad_normalisation/",
   "name": "Monad_Normalisation"
  },
  {
   "id": 200,
-  "link": "/dependencies/monobooltranalgebra/",
+  "link": "https://isa-afp.org/dependencies/monobooltranalgebra/",
   "name": "MonoBoolTranAlgebra"
  },
  {
   "id": 201,
-  "link": "/dependencies/monoidalcategory/",
+  "link": "https://isa-afp.org/dependencies/monoidalcategory/",
   "name": "MonoidalCategory"
  },
  {
   "id": 202,
-  "link": "/dependencies/monomorphic_monad/",
+  "link": "https://isa-afp.org/dependencies/monomorphic_monad/",
   "name": "Monomorphic_Monad"
  },
  {
   "id": 203,
-  "link": "/dependencies/more_lazylists/",
+  "link": "https://isa-afp.org/dependencies/more_lazylists/",
   "name": "More_LazyLists"
  },
  {
   "id": 204,
-  "link": "/dependencies/nash_williams/",
+  "link": "https://isa-afp.org/dependencies/nash_williams/",
   "name": "Nash_Williams"
  },
  {
   "id": 205,
-  "link": "/dependencies/nat-interval-logic/",
+  "link": "https://isa-afp.org/dependencies/nat-interval-logic/",
   "name": "Nat-Interval-Logic"
  },
  {
   "id": 206,
-  "link": "/dependencies/native_word/",
+  "link": "https://isa-afp.org/dependencies/native_word/",
   "name": "Native_Word"
  },
  {
   "id": 207,
-  "link": "/dependencies/nested_multisets_ordinals/",
+  "link": "https://isa-afp.org/dependencies/nested_multisets_ordinals/",
   "name": "Nested_Multisets_Ordinals"
  },
  {
   "id": 208,
-  "link": "/dependencies/nominal2/",
+  "link": "https://isa-afp.org/dependencies/nominal2/",
   "name": "Nominal2"
  },
  {
   "id": 209,
-  "link": "/dependencies/noninterference_csp/",
+  "link": "https://isa-afp.org/dependencies/noninterference_csp/",
   "name": "Noninterference_CSP"
  },
  {
   "id": 210,
-  "link": "/dependencies/noninterference_ipurge_unwinding/",
+  "link": "https://isa-afp.org/dependencies/noninterference_ipurge_unwinding/",
   "name": "Noninterference_Ipurge_Unwinding"
  },
  {
   "id": 211,
-  "link": "/dependencies/noninterference_sequential_composition/",
+  "link": "https://isa-afp.org/dependencies/noninterference_sequential_composition/",
   "name": "Noninterference_Sequential_Composition"
  },
  {
   "id": 212,
-  "link": "/dependencies/number_theoretic_transform/",
+  "link": "https://isa-afp.org/dependencies/number_theoretic_transform/",
   "name": "Number_Theoretic_Transform"
  },
  {
   "id": 213,
-  "link": "/dependencies/open_induction/",
+  "link": "https://isa-afp.org/dependencies/open_induction/",
   "name": "Open_Induction"
  },
  {
   "id": 214,
-  "link": "/dependencies/optics/",
+  "link": "https://isa-afp.org/dependencies/optics/",
   "name": "Optics"
  },
  {
   "id": 215,
-  "link": "/dependencies/order_lattice_props/",
+  "link": "https://isa-afp.org/dependencies/order_lattice_props/",
   "name": "Order_Lattice_Props"
  },
  {
   "id": 216,
-  "link": "/dependencies/ordered_resolution_prover/",
+  "link": "https://isa-afp.org/dependencies/ordered_resolution_prover/",
   "name": "Ordered_Resolution_Prover"
  },
  {
   "id": 217,
-  "link": "/dependencies/ordinal/",
+  "link": "https://isa-afp.org/dependencies/ordinal/",
   "name": "Ordinal"
  },
  {
   "id": 218,
-  "link": "/dependencies/ordinary_differential_equations/",
+  "link": "https://isa-afp.org/dependencies/ordinary_differential_equations/",
   "name": "Ordinary_Differential_Equations"
  },
  {
   "id": 219,
-  "link": "/dependencies/package_logic/",
+  "link": "https://isa-afp.org/dependencies/package_logic/",
   "name": "Package_logic"
  },
  {
   "id": 220,
-  "link": "/dependencies/padic_ints/",
+  "link": "https://isa-afp.org/dependencies/padic_ints/",
   "name": "Padic_Ints"
  },
  {
   "id": 221,
-  "link": "/dependencies/pairing_heap/",
+  "link": "https://isa-afp.org/dependencies/pairing_heap/",
   "name": "Pairing_Heap"
  },
  {
   "id": 222,
-  "link": "/dependencies/parity_game/",
+  "link": "https://isa-afp.org/dependencies/parity_game/",
   "name": "Parity_Game"
  },
  {
   "id": 223,
-  "link": "/dependencies/partial_function_mr/",
+  "link": "https://isa-afp.org/dependencies/partial_function_mr/",
   "name": "Partial_Function_MR"
  },
  {
   "id": 224,
-  "link": "/dependencies/partial_order_reduction/",
+  "link": "https://isa-afp.org/dependencies/partial_order_reduction/",
   "name": "Partial_Order_Reduction"
  },
  {
   "id": 225,
-  "link": "/dependencies/pell/",
+  "link": "https://isa-afp.org/dependencies/pell/",
   "name": "Pell"
  },
  {
   "id": 226,
-  "link": "/dependencies/perfect_fields/",
+  "link": "https://isa-afp.org/dependencies/perfect_fields/",
   "name": "Perfect_Fields"
  },
  {
   "id": 227,
-  "link": "/dependencies/perron_frobenius/",
+  "link": "https://isa-afp.org/dependencies/perron_frobenius/",
   "name": "Perron_Frobenius"
  },
  {
   "id": 228,
-  "link": "/dependencies/pi_transcendental/",
+  "link": "https://isa-afp.org/dependencies/pi_transcendental/",
   "name": "Pi_Transcendental"
  },
  {
   "id": 229,
-  "link": "/dependencies/pluennecke_ruzsa_inequality/",
+  "link": "https://isa-afp.org/dependencies/pluennecke_ruzsa_inequality/",
   "name": "Pluennecke_Ruzsa_Inequality"
  },
  {
   "id": 230,
-  "link": "/dependencies/poincare_bendixson/",
+  "link": "https://isa-afp.org/dependencies/poincare_bendixson/",
   "name": "Poincare_Bendixson"
  },
  {
   "id": 231,
-  "link": "/dependencies/polylog/",
+  "link": "https://isa-afp.org/dependencies/polylog/",
   "name": "Polylog"
  },
  {
   "id": 232,
-  "link": "/dependencies/polynomial_factorization/",
+  "link": "https://isa-afp.org/dependencies/polynomial_factorization/",
   "name": "Polynomial_Factorization"
  },
  {
   "id": 233,
-  "link": "/dependencies/polynomial_interpolation/",
+  "link": "https://isa-afp.org/dependencies/polynomial_interpolation/",
   "name": "Polynomial_Interpolation"
  },
  {
   "id": 234,
-  "link": "/dependencies/polynomials/",
+  "link": "https://isa-afp.org/dependencies/polynomials/",
   "name": "Polynomials"
  },
  {
   "id": 235,
-  "link": "/dependencies/power_sum_polynomials/",
+  "link": "https://isa-afp.org/dependencies/power_sum_polynomials/",
   "name": "Power_Sum_Polynomials"
  },
  {
   "id": 236,
-  "link": "/dependencies/pratt_certificate/",
+  "link": "https://isa-afp.org/dependencies/pratt_certificate/",
   "name": "Pratt_Certificate"
  },
  {
   "id": 237,
-  "link": "/dependencies/prefix_free_code_combinators/",
+  "link": "https://isa-afp.org/dependencies/prefix_free_code_combinators/",
   "name": "Prefix_Free_Code_Combinators"
  },
  {
   "id": 238,
-  "link": "/dependencies/prime_distribution_elementary/",
+  "link": "https://isa-afp.org/dependencies/prime_distribution_elementary/",
   "name": "Prime_Distribution_Elementary"
  },
  {
   "id": 239,
-  "link": "/dependencies/prime_number_theorem/",
+  "link": "https://isa-afp.org/dependencies/prime_number_theorem/",
   "name": "Prime_Number_Theorem"
  },
  {
   "id": 240,
-  "link": "/dependencies/priority_search_trees/",
+  "link": "https://isa-afp.org/dependencies/priority_search_trees/",
   "name": "Priority_Search_Trees"
  },
  {
   "id": 241,
-  "link": "/dependencies/probabilistic_prime_tests/",
+  "link": "https://isa-afp.org/dependencies/probabilistic_prime_tests/",
   "name": "Probabilistic_Prime_Tests"
  },
  {
   "id": 242,
-  "link": "/dependencies/probabilistic_timed_automata/",
+  "link": "https://isa-afp.org/dependencies/probabilistic_timed_automata/",
   "name": "Probabilistic_Timed_Automata"
  },
  {
   "id": 243,
-  "link": "/dependencies/probabilistic_while/",
+  "link": "https://isa-afp.org/dependencies/probabilistic_while/",
   "name": "Probabilistic_While"
  },
  {
   "id": 244,
-  "link": "/dependencies/program-conflict-analysis/",
+  "link": "https://isa-afp.org/dependencies/program-conflict-analysis/",
   "name": "Program-Conflict-Analysis"
  },
  {
   "id": 245,
-  "link": "/dependencies/projective_measurements/",
+  "link": "https://isa-afp.org/dependencies/projective_measurements/",
   "name": "Projective_Measurements"
  },
  {
   "id": 246,
-  "link": "/dependencies/promela/",
+  "link": "https://isa-afp.org/dependencies/promela/",
   "name": "Promela"
  },
  {
   "id": 247,
-  "link": "/dependencies/propositional_logic_class/",
+  "link": "https://isa-afp.org/dependencies/propositional_logic_class/",
   "name": "Propositional_Logic_Class"
  },
  {
   "id": 248,
-  "link": "/dependencies/propositional_proof_systems/",
+  "link": "https://isa-afp.org/dependencies/propositional_proof_systems/",
   "name": "Propositional_Proof_Systems"
  },
  {
   "id": 249,
-  "link": "/dependencies/psi_calculi/",
+  "link": "https://isa-afp.org/dependencies/psi_calculi/",
   "name": "Psi_Calculi"
  },
  {
   "id": 250,
-  "link": "/dependencies/qhlprover/",
+  "link": "https://isa-afp.org/dependencies/qhlprover/",
   "name": "QHLProver"
  },
  {
   "id": 251,
-  "link": "/dependencies/quantales/",
+  "link": "https://isa-afp.org/dependencies/quantales/",
   "name": "Quantales"
  },
  {
   "id": 252,
-  "link": "/dependencies/quantales_converse/",
+  "link": "https://isa-afp.org/dependencies/quantales_converse/",
   "name": "Quantales_Converse"
  },
  {
   "id": 253,
-  "link": "/dependencies/quick_sort_cost/",
+  "link": "https://isa-afp.org/dependencies/quick_sort_cost/",
   "name": "Quick_Sort_Cost"
  },
  {
   "id": 254,
-  "link": "/dependencies/ramsey_bounds/",
+  "link": "https://isa-afp.org/dependencies/ramsey_bounds/",
   "name": "Ramsey_Bounds"
  },
  {
   "id": 255,
-  "link": "/dependencies/random_bsts/",
+  "link": "https://isa-afp.org/dependencies/random_bsts/",
   "name": "Random_BSTs"
  },
  {
   "id": 256,
-  "link": "/dependencies/random_graph_subgraph_threshold/",
+  "link": "https://isa-afp.org/dependencies/random_graph_subgraph_threshold/",
   "name": "Random_Graph_Subgraph_Threshold"
  },
  {
   "id": 257,
-  "link": "/dependencies/randomised_social_choice/",
+  "link": "https://isa-afp.org/dependencies/randomised_social_choice/",
   "name": "Randomised_Social_Choice"
  },
  {
   "id": 258,
-  "link": "/dependencies/rank_nullity_theorem/",
+  "link": "https://isa-afp.org/dependencies/rank_nullity_theorem/",
   "name": "Rank_Nullity_Theorem"
  },
  {
   "id": 259,
-  "link": "/dependencies/real_impl/",
+  "link": "https://isa-afp.org/dependencies/real_impl/",
   "name": "Real_Impl"
  },
  {
   "id": 260,
-  "link": "/dependencies/recursion-theory-i/",
+  "link": "https://isa-afp.org/dependencies/recursion-theory-i/",
   "name": "Recursion-Theory-I"
  },
  {
   "id": 261,
-  "link": "/dependencies/refine_imperative_hol/",
+  "link": "https://isa-afp.org/dependencies/refine_imperative_hol/",
   "name": "Refine_Imperative_HOL"
  },
  {
   "id": 262,
-  "link": "/dependencies/refine_monadic/",
+  "link": "https://isa-afp.org/dependencies/refine_monadic/",
   "name": "Refine_Monadic"
  },
  {
   "id": 263,
-  "link": "/dependencies/regular_tree_relations/",
+  "link": "https://isa-afp.org/dependencies/regular_tree_relations/",
   "name": "Regular_Tree_Relations"
  },
  {
   "id": 264,
-  "link": "/dependencies/regular-sets/",
+  "link": "https://isa-afp.org/dependencies/regular-sets/",
   "name": "Regular-Sets"
  },
  {
   "id": 265,
-  "link": "/dependencies/relation_algebra/",
+  "link": "https://isa-afp.org/dependencies/relation_algebra/",
   "name": "Relation_Algebra"
  },
  {
   "id": 266,
-  "link": "/dependencies/relational_disjoint_set_forests/",
+  "link": "https://isa-afp.org/dependencies/relational_disjoint_set_forests/",
   "name": "Relational_Disjoint_Set_Forests"
  },
  {
   "id": 267,
-  "link": "/dependencies/relative_security/",
+  "link": "https://isa-afp.org/dependencies/relative_security/",
   "name": "Relative_Security"
  },
  {
   "id": 268,
-  "link": "/dependencies/residuatedtransitionsystem/",
+  "link": "https://isa-afp.org/dependencies/residuatedtransitionsystem/",
   "name": "ResiduatedTransitionSystem"
  },
  {
   "id": 269,
-  "link": "/dependencies/riesz_representation/",
+  "link": "https://isa-afp.org/dependencies/riesz_representation/",
   "name": "Riesz_Representation"
  },
  {
   "id": 270,
-  "link": "/dependencies/robdd/",
+  "link": "https://isa-afp.org/dependencies/robdd/",
   "name": "ROBDD"
  },
  {
   "id": 271,
-  "link": "/dependencies/root_balanced_tree/",
+  "link": "https://isa-afp.org/dependencies/root_balanced_tree/",
   "name": "Root_Balanced_Tree"
  },
  {
   "id": 272,
-  "link": "/dependencies/routing/",
+  "link": "https://isa-afp.org/dependencies/routing/",
   "name": "Routing"
  },
  {
   "id": 273,
-  "link": "/dependencies/s_finite_measure_monad/",
+  "link": "https://isa-afp.org/dependencies/s_finite_measure_monad/",
   "name": "S_Finite_Measure_Monad"
  },
  {
   "id": 274,
-  "link": "/dependencies/saturation_framework/",
+  "link": "https://isa-afp.org/dependencies/saturation_framework/",
   "name": "Saturation_Framework"
  },
  {
   "id": 275,
-  "link": "/dependencies/saturation_framework_extensions/",
+  "link": "https://isa-afp.org/dependencies/saturation_framework_extensions/",
   "name": "Saturation_Framework_Extensions"
  },
  {
   "id": 276,
-  "link": "/dependencies/secondary_sylow/",
+  "link": "https://isa-afp.org/dependencies/secondary_sylow/",
   "name": "Secondary_Sylow"
  },
  {
   "id": 277,
-  "link": "/dependencies/secret_directed_unwinding/",
+  "link": "https://isa-afp.org/dependencies/secret_directed_unwinding/",
   "name": "Secret_Directed_Unwinding"
  },
  {
   "id": 278,
-  "link": "/dependencies/separation_algebra/",
+  "link": "https://isa-afp.org/dependencies/separation_algebra/",
   "name": "Separation_Algebra"
  },
  {
   "id": 279,
-  "link": "/dependencies/separation_logic_imperative_hol/",
+  "link": "https://isa-afp.org/dependencies/separation_logic_imperative_hol/",
   "name": "Separation_Logic_Imperative_HOL"
  },
  {
   "id": 280,
-  "link": "/dependencies/shadow_dom/",
+  "link": "https://isa-afp.org/dependencies/shadow_dom/",
   "name": "Shadow_DOM"
  },
  {
   "id": 281,
-  "link": "/dependencies/shadow_sc_dom/",
+  "link": "https://isa-afp.org/dependencies/shadow_sc_dom/",
   "name": "Shadow_SC_DOM"
  },
  {
   "id": 282,
-  "link": "/dependencies/show/",
+  "link": "https://isa-afp.org/dependencies/show/",
   "name": "Show"
  },
  {
   "id": 283,
-  "link": "/dependencies/sigma_commit_crypto/",
+  "link": "https://isa-afp.org/dependencies/sigma_commit_crypto/",
   "name": "Sigma_Commit_Crypto"
  },
  {
   "id": 284,
-  "link": "/dependencies/simpl/",
+  "link": "https://isa-afp.org/dependencies/simpl/",
   "name": "Simpl"
  },
  {
   "id": 285,
-  "link": "/dependencies/simple_clause_learning/",
+  "link": "https://isa-afp.org/dependencies/simple_clause_learning/",
   "name": "Simple_Clause_Learning"
  },
  {
   "id": 286,
-  "link": "/dependencies/simple_firewall/",
+  "link": "https://isa-afp.org/dependencies/simple_firewall/",
   "name": "Simple_Firewall"
  },
  {
   "id": 287,
-  "link": "/dependencies/simplex/",
+  "link": "https://isa-afp.org/dependencies/simplex/",
   "name": "Simplex"
  },
  {
   "id": 288,
-  "link": "/dependencies/skew_heap/",
+  "link": "https://isa-afp.org/dependencies/skew_heap/",
   "name": "Skew_Heap"
  },
  {
   "id": 289,
-  "link": "/dependencies/skip_lists/",
+  "link": "https://isa-afp.org/dependencies/skip_lists/",
   "name": "Skip_Lists"
  },
  {
   "id": 290,
-  "link": "/dependencies/slicing/",
+  "link": "https://isa-afp.org/dependencies/slicing/",
   "name": "Slicing"
  },
  {
   "id": 291,
-  "link": "/dependencies/smith_normal_form/",
+  "link": "https://isa-afp.org/dependencies/smith_normal_form/",
   "name": "Smith_Normal_Form"
  },
  {
   "id": 292,
-  "link": "/dependencies/smooth_manifolds/",
+  "link": "https://isa-afp.org/dependencies/smooth_manifolds/",
   "name": "Smooth_Manifolds"
  },
  {
   "id": 293,
-  "link": "/dependencies/sorted_terms/",
+  "link": "https://isa-afp.org/dependencies/sorted_terms/",
   "name": "Sorted_Terms"
  },
  {
   "id": 294,
-  "link": "/dependencies/speccheck/",
+  "link": "https://isa-afp.org/dependencies/speccheck/",
   "name": "SpecCheck"
  },
  {
   "id": 295,
-  "link": "/dependencies/splay_tree/",
+  "link": "https://isa-afp.org/dependencies/splay_tree/",
   "name": "Splay_Tree"
  },
  {
   "id": 296,
-  "link": "/dependencies/sqrt_babylonian/",
+  "link": "https://isa-afp.org/dependencies/sqrt_babylonian/",
   "name": "Sqrt_Babylonian"
  },
  {
   "id": 297,
-  "link": "/dependencies/standard_borel_spaces/",
+  "link": "https://isa-afp.org/dependencies/standard_borel_spaces/",
   "name": "Standard_Borel_Spaces"
  },
  {
   "id": 298,
-  "link": "/dependencies/stateful_protocol_composition_and_typing/",
+  "link": "https://isa-afp.org/dependencies/stateful_protocol_composition_and_typing/",
   "name": "Stateful_Protocol_Composition_and_Typing"
  },
  {
   "id": 299,
-  "link": "/dependencies/stirling_formula/",
+  "link": "https://isa-afp.org/dependencies/stirling_formula/",
   "name": "Stirling_Formula"
  },
  {
   "id": 300,
-  "link": "/dependencies/stone_algebras/",
+  "link": "https://isa-afp.org/dependencies/stone_algebras/",
   "name": "Stone_Algebras"
  },
  {
   "id": 301,
-  "link": "/dependencies/stone_kleene_relation_algebras/",
+  "link": "https://isa-afp.org/dependencies/stone_kleene_relation_algebras/",
   "name": "Stone_Kleene_Relation_Algebras"
  },
  {
   "id": 302,
-  "link": "/dependencies/stone_relation_algebras/",
+  "link": "https://isa-afp.org/dependencies/stone_relation_algebras/",
   "name": "Stone_Relation_Algebras"
  },
  {
   "id": 303,
-  "link": "/dependencies/strong_security/",
+  "link": "https://isa-afp.org/dependencies/strong_security/",
   "name": "Strong_Security"
  },
  {
   "id": 304,
-  "link": "/dependencies/sturm_sequences/",
+  "link": "https://isa-afp.org/dependencies/sturm_sequences/",
   "name": "Sturm_Sequences"
  },
  {
   "id": 305,
-  "link": "/dependencies/sturm_tarski/",
+  "link": "https://isa-afp.org/dependencies/sturm_tarski/",
   "name": "Sturm_Tarski"
  },
  {
   "id": 306,
-  "link": "/dependencies/stuttering_equivalence/",
+  "link": "https://isa-afp.org/dependencies/stuttering_equivalence/",
   "name": "Stuttering_Equivalence"
  },
  {
   "id": 307,
-  "link": "/dependencies/subresultants/",
+  "link": "https://isa-afp.org/dependencies/subresultants/",
   "name": "Subresultants"
  },
  {
   "id": 308,
-  "link": "/dependencies/subset_boolean_algebras/",
+  "link": "https://isa-afp.org/dependencies/subset_boolean_algebras/",
   "name": "Subset_Boolean_Algebras"
  },
  {
   "id": 309,
-  "link": "/dependencies/sunflowers/",
+  "link": "https://isa-afp.org/dependencies/sunflowers/",
   "name": "Sunflowers"
  },
  {
   "id": 310,
-  "link": "/dependencies/superposition_calculus/",
+  "link": "https://isa-afp.org/dependencies/superposition_calculus/",
   "name": "Superposition_Calculus"
  },
  {
   "id": 311,
-  "link": "/dependencies/suppes_theorem/",
+  "link": "https://isa-afp.org/dependencies/suppes_theorem/",
   "name": "Suppes_Theorem"
  },
  {
   "id": 312,
-  "link": "/dependencies/symmetric_polynomials/",
+  "link": "https://isa-afp.org/dependencies/symmetric_polynomials/",
   "name": "Symmetric_Polynomials"
  },
  {
   "id": 313,
-  "link": "/dependencies/syntax_independent_logic/",
+  "link": "https://isa-afp.org/dependencies/syntax_independent_logic/",
   "name": "Syntax_Independent_Logic"
  },
  {
   "id": 314,
-  "link": "/dependencies/szemeredi_regularity/",
+  "link": "https://isa-afp.org/dependencies/szemeredi_regularity/",
   "name": "Szemeredi_Regularity"
  },
  {
   "id": 315,
-  "link": "/dependencies/szpilrajn/",
+  "link": "https://isa-afp.org/dependencies/szpilrajn/",
   "name": "Szpilrajn"
  },
  {
   "id": 316,
-  "link": "/dependencies/three_squares/",
+  "link": "https://isa-afp.org/dependencies/three_squares/",
   "name": "Three_Squares"
  },
  {
   "id": 317,
-  "link": "/dependencies/timed_automata/",
+  "link": "https://isa-afp.org/dependencies/timed_automata/",
   "name": "Timed_Automata"
  },
  {
   "id": 318,
-  "link": "/dependencies/transformer_semantics/",
+  "link": "https://isa-afp.org/dependencies/transformer_semantics/",
   "name": "Transformer_Semantics"
  },
  {
   "id": 319,
-  "link": "/dependencies/transition_systems_and_automata/",
+  "link": "https://isa-afp.org/dependencies/transition_systems_and_automata/",
   "name": "Transition_Systems_and_Automata"
  },
  {
   "id": 320,
-  "link": "/dependencies/transitive_models/",
+  "link": "https://isa-afp.org/dependencies/transitive_models/",
   "name": "Transitive_Models"
  },
  {
   "id": 321,
-  "link": "/dependencies/transitive-closure/",
+  "link": "https://isa-afp.org/dependencies/transitive-closure/",
   "name": "Transitive-Closure"
  },
  {
   "id": 322,
-  "link": "/dependencies/triangle/",
+  "link": "https://isa-afp.org/dependencies/triangle/",
   "name": "Triangle"
  },
  {
   "id": 323,
-  "link": "/dependencies/trie/",
+  "link": "https://isa-afp.org/dependencies/trie/",
   "name": "Trie"
  },
  {
   "id": 324,
-  "link": "/dependencies/twelvefold_way/",
+  "link": "https://isa-afp.org/dependencies/twelvefold_way/",
   "name": "Twelvefold_Way"
  },
  {
   "id": 325,
-  "link": "/dependencies/types_to_sets_extension/",
+  "link": "https://isa-afp.org/dependencies/types_to_sets_extension/",
   "name": "Types_To_Sets_Extension"
  },
  {
   "id": 326,
-  "link": "/dependencies/undirected_graph_theory/",
+  "link": "https://isa-afp.org/dependencies/undirected_graph_theory/",
   "name": "Undirected_Graph_Theory"
  },
  {
   "id": 327,
-  "link": "/dependencies/universal_hash_families/",
+  "link": "https://isa-afp.org/dependencies/universal_hash_families/",
   "name": "Universal_Hash_Families"
  },
  {
   "id": 328,
-  "link": "/dependencies/upf/",
+  "link": "https://isa-afp.org/dependencies/upf/",
   "name": "UPF"
  },
  {
   "id": 329,
-  "link": "/dependencies/vectorspace/",
+  "link": "https://isa-afp.org/dependencies/vectorspace/",
   "name": "VectorSpace"
  },
  {
   "id": 330,
-  "link": "/dependencies/vericomp/",
+  "link": "https://isa-afp.org/dependencies/vericomp/",
   "name": "VeriComp"
  },
  {
   "id": 331,
-  "link": "/dependencies/virtual_substitution/",
+  "link": "https://isa-afp.org/dependencies/virtual_substitution/",
   "name": "Virtual_Substitution"
  },
  {
   "id": 332,
-  "link": "/dependencies/weighted_arithmetic_geometric_mean/",
+  "link": "https://isa-afp.org/dependencies/weighted_arithmetic_geometric_mean/",
   "name": "Weighted_Arithmetic_Geometric_Mean"
  },
  {
   "id": 333,
-  "link": "/dependencies/weighted_path_order/",
+  "link": "https://isa-afp.org/dependencies/weighted_path_order/",
   "name": "Weighted_Path_Order"
  },
  {
   "id": 334,
-  "link": "/dependencies/well_quasi_orders/",
+  "link": "https://isa-afp.org/dependencies/well_quasi_orders/",
   "name": "Well_Quasi_Orders"
  },
  {
   "id": 335,
-  "link": "/dependencies/winding_number_eval/",
+  "link": "https://isa-afp.org/dependencies/winding_number_eval/",
   "name": "Winding_Number_Eval"
  },
  {
   "id": 336,
-  "link": "/dependencies/with_type/",
+  "link": "https://isa-afp.org/dependencies/with_type/",
   "name": "With_Type"
  },
  {
   "id": 337,
-  "link": "/dependencies/wlog/",
+  "link": "https://isa-afp.org/dependencies/wlog/",
   "name": "Wlog"
  },
  {
   "id": 338,
-  "link": "/dependencies/word_lib/",
+  "link": "https://isa-afp.org/dependencies/word_lib/",
   "name": "Word_Lib"
  },
  {
   "id": 339,
-  "link": "/dependencies/zeta_function/",
+  "link": "https://isa-afp.org/dependencies/zeta_function/",
   "name": "Zeta_Function"
  },
  {
   "id": 340,
-  "link": "/dependencies/zfc_in_hol/",
+  "link": "https://isa-afp.org/dependencies/zfc_in_hol/",
   "name": "ZFC_in_HOL"
  }
 ]

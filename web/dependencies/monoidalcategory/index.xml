@@ -3,7 +3,7 @@
   <channel>
     <title>MonoidalCategory on Archive of Formal Proofs
     </title>
-    <link>/dependencies/monoidalcategory/</link>
+    <link>https://isa-afp.org/dependencies/monoidalcategory/</link>
     <description>
         Recent content in MonoidalCategory 
         on Archive of Formal Proofs
@@ -12,19 +12,19 @@
     <language>en-gb</language>
     
       <lastBuildDate>Sun, 16 Jun 2024 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/dependencies/monoidalcategory/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/dependencies/monoidalcategory/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Enriched Category Basics</title>
-          <link>/entries/EnrichedCategoryBasics.html</link>
+          <link>https://isa-afp.org/entries/EnrichedCategoryBasics.html</link>
           <pubDate>Sun, 16 Jun 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/EnrichedCategoryBasics.html</guid>
+          <guid>https://isa-afp.org/entries/EnrichedCategoryBasics.html</guid>
           <description></description>
         </item>
         <item>
           <title>Bicategories</title>
-          <link>/entries/Bicategory.html</link>
+          <link>https://isa-afp.org/entries/Bicategory.html</link>
           <pubDate>Mon, 06 Jan 2020 00:00:00 +0000</pubDate>
-          <guid>/entries/Bicategory.html</guid>
+          <guid>https://isa-afp.org/entries/Bicategory.html</guid>
           <description></description>
         </item>
   </channel>

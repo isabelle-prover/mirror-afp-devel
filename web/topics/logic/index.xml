@@ -3,7 +3,7 @@
   <channel>
     <title>Logic on Archive of Formal Proofs
     </title>
-    <link>/topics/logic/</link>
+    <link>https://isa-afp.org/topics/logic/</link>
     <description>
         Recent content in Logic 
         on Archive of Formal Proofs
@@ -12,19 +12,19 @@
     <language>en-gb</language>
     
       <lastBuildDate>Fri, 17 Jan 2025 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/topics/logic/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/topics/logic/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Abstract Substitution</title>
-          <link>/entries/Abstract_Substitution.html</link>
+          <link>https://isa-afp.org/entries/Abstract_Substitution.html</link>
           <pubDate>Mon, 16 Sep 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Abstract_Substitution.html</guid>
+          <guid>https://isa-afp.org/entries/Abstract_Substitution.html</guid>
           <description></description>
         </item>
         <item>
           <title>Automation of Boolos&#39; Curious Inference in Isabelle/HOL</title>
-          <link>/entries/Boolos_Curious_Inference_Automated.html</link>
+          <link>https://isa-afp.org/entries/Boolos_Curious_Inference_Automated.html</link>
           <pubDate>Mon, 05 Dec 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/Boolos_Curious_Inference_Automated.html</guid>
+          <guid>https://isa-afp.org/entries/Boolos_Curious_Inference_Automated.html</guid>
           <description></description>
         </item>
   </channel>

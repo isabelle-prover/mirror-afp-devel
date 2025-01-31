@@ -3,7 +3,7 @@
   <channel>
     <title>Probabilistic_While on Archive of Formal Proofs
     </title>
-    <link>/dependencies/probabilistic_while/</link>
+    <link>https://isa-afp.org/dependencies/probabilistic_while/</link>
     <description>
         Recent content in Probabilistic_While 
         on Archive of Formal Proofs
@@ -12,26 +12,26 @@
     <language>en-gb</language>
     
       <lastBuildDate>Mon, 19 Jun 2023 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/dependencies/probabilistic_while/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/dependencies/probabilistic_while/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Executable Randomized Algorithms</title>
-          <link>/entries/Executable_Randomized_Algorithms.html</link>
+          <link>https://isa-afp.org/entries/Executable_Randomized_Algorithms.html</link>
           <pubDate>Mon, 19 Jun 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/Executable_Randomized_Algorithms.html</guid>
+          <guid>https://isa-afp.org/entries/Executable_Randomized_Algorithms.html</guid>
           <description></description>
         </item>
         <item>
           <title>Finite Fields</title>
-          <link>/entries/Finite_Fields.html</link>
+          <link>https://isa-afp.org/entries/Finite_Fields.html</link>
           <pubDate>Wed, 08 Jun 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/Finite_Fields.html</guid>
+          <guid>https://isa-afp.org/entries/Finite_Fields.html</guid>
           <description></description>
         </item>
         <item>
           <title>CryptHOL</title>
-          <link>/entries/CryptHOL.html</link>
+          <link>https://isa-afp.org/entries/CryptHOL.html</link>
           <pubDate>Fri, 05 May 2017 00:00:00 +0000</pubDate>
-          <guid>/entries/CryptHOL.html</guid>
+          <guid>https://isa-afp.org/entries/CryptHOL.html</guid>
           <description></description>
         </item>
   </channel>

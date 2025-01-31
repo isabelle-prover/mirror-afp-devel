@@ -3,7 +3,7 @@
   <channel>
     <title>nipkow on Archive of Formal Proofs
     </title>
-    <link>/authors/nipkow/</link>
+    <link>https://isa-afp.org/authors/nipkow/</link>
     <description>
         Recent content in nipkow 
         on Archive of Formal Proofs
@@ -12,341 +12,341 @@
     <language>en-gb</language>
     
       <lastBuildDate>Thu, 13 Jun 2024 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/nipkow/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/nipkow/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Alpha-Beta Pruning</title>
-          <link>/entries/Alpha_Beta_Pruning.html</link>
+          <link>https://isa-afp.org/entries/Alpha_Beta_Pruning.html</link>
           <pubDate>Thu, 13 Jun 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Alpha_Beta_Pruning.html</guid>
+          <guid>https://isa-afp.org/entries/Alpha_Beta_Pruning.html</guid>
           <description></description>
         </item>
         <item>
           <title>Region Quadtrees</title>
-          <link>/entries/Region_Quadtrees.html</link>
+          <link>https://isa-afp.org/entries/Region_Quadtrees.html</link>
           <pubDate>Fri, 26 Jan 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Region_Quadtrees.html</guid>
+          <guid>https://isa-afp.org/entries/Region_Quadtrees.html</guid>
           <description></description>
         </item>
         <item>
           <title>Real-Time Double-Ended Queue</title>
-          <link>/entries/Real_Time_Deque.html</link>
+          <link>https://isa-afp.org/entries/Real_Time_Deque.html</link>
           <pubDate>Thu, 23 Jun 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/Real_Time_Deque.html</guid>
+          <guid>https://isa-afp.org/entries/Real_Time_Deque.html</guid>
           <description></description>
         </item>
         <item>
           <title>Gale-Shapley Algorithm</title>
-          <link>/entries/Gale_Shapley.html</link>
+          <link>https://isa-afp.org/entries/Gale_Shapley.html</link>
           <pubDate>Wed, 29 Dec 2021 00:00:00 +0000</pubDate>
-          <guid>/entries/Gale_Shapley.html</guid>
+          <guid>https://isa-afp.org/entries/Gale_Shapley.html</guid>
           <description></description>
         </item>
         <item>
           <title>Isabelle&#39;s Metalogic: Formalization and Proof Checker</title>
-          <link>/entries/Metalogic_ProofChecker.html</link>
+          <link>https://isa-afp.org/entries/Metalogic_ProofChecker.html</link>
           <pubDate>Tue, 27 Apr 2021 00:00:00 +0000</pubDate>
-          <guid>/entries/Metalogic_ProofChecker.html</guid>
+          <guid>https://isa-afp.org/entries/Metalogic_ProofChecker.html</guid>
           <description></description>
         </item>
         <item>
           <title>Verified Approximation Algorithms</title>
-          <link>/entries/Approximation_Algorithms.html</link>
+          <link>https://isa-afp.org/entries/Approximation_Algorithms.html</link>
           <pubDate>Thu, 16 Jan 2020 00:00:00 +0000</pubDate>
-          <guid>/entries/Approximation_Algorithms.html</guid>
+          <guid>https://isa-afp.org/entries/Approximation_Algorithms.html</guid>
           <description></description>
         </item>
         <item>
           <title>Closest Pair of Points Algorithms</title>
-          <link>/entries/Closest_Pair_Points.html</link>
+          <link>https://isa-afp.org/entries/Closest_Pair_Points.html</link>
           <pubDate>Mon, 13 Jan 2020 00:00:00 +0000</pubDate>
-          <guid>/entries/Closest_Pair_Points.html</guid>
+          <guid>https://isa-afp.org/entries/Closest_Pair_Points.html</guid>
           <description></description>
         </item>
         <item>
           <title>Priority Search Trees</title>
-          <link>/entries/Priority_Search_Trees.html</link>
+          <link>https://isa-afp.org/entries/Priority_Search_Trees.html</link>
           <pubDate>Tue, 25 Jun 2019 00:00:00 +0000</pubDate>
-          <guid>/entries/Priority_Search_Trees.html</guid>
+          <guid>https://isa-afp.org/entries/Priority_Search_Trees.html</guid>
           <description></description>
         </item>
         <item>
           <title>Purely Functional, Simple, and Efficient Implementation of Prim and Dijkstra</title>
-          <link>/entries/Prim_Dijkstra_Simple.html</link>
+          <link>https://isa-afp.org/entries/Prim_Dijkstra_Simple.html</link>
           <pubDate>Tue, 25 Jun 2019 00:00:00 +0000</pubDate>
-          <guid>/entries/Prim_Dijkstra_Simple.html</guid>
+          <guid>https://isa-afp.org/entries/Prim_Dijkstra_Simple.html</guid>
           <description></description>
         </item>
         <item>
           <title>Optimal Binary Search Trees</title>
-          <link>/entries/Optimal_BST.html</link>
+          <link>https://isa-afp.org/entries/Optimal_BST.html</link>
           <pubDate>Sun, 27 May 2018 00:00:00 +0000</pubDate>
-          <guid>/entries/Optimal_BST.html</guid>
+          <guid>https://isa-afp.org/entries/Optimal_BST.html</guid>
           <description></description>
         </item>
         <item>
           <title>Monadification, Memoization and Dynamic Programming</title>
-          <link>/entries/Monad_Memo_DP.html</link>
+          <link>https://isa-afp.org/entries/Monad_Memo_DP.html</link>
           <pubDate>Tue, 22 May 2018 00:00:00 +0000</pubDate>
-          <guid>/entries/Monad_Memo_DP.html</guid>
+          <guid>https://isa-afp.org/entries/Monad_Memo_DP.html</guid>
           <description></description>
         </item>
         <item>
           <title>Weight-Balanced Trees</title>
-          <link>/entries/Weight_Balanced_Trees.html</link>
+          <link>https://isa-afp.org/entries/Weight_Balanced_Trees.html</link>
           <pubDate>Tue, 13 Mar 2018 00:00:00 +0000</pubDate>
-          <guid>/entries/Weight_Balanced_Trees.html</guid>
+          <guid>https://isa-afp.org/entries/Weight_Balanced_Trees.html</guid>
           <description></description>
         </item>
         <item>
           <title>Hoare Logics for Time Bounds</title>
-          <link>/entries/Hoare_Time.html</link>
+          <link>https://isa-afp.org/entries/Hoare_Time.html</link>
           <pubDate>Mon, 26 Feb 2018 00:00:00 +0000</pubDate>
-          <guid>/entries/Hoare_Time.html</guid>
+          <guid>https://isa-afp.org/entries/Hoare_Time.html</guid>
           <description></description>
         </item>
         <item>
           <title>Treaps</title>
-          <link>/entries/Treaps.html</link>
+          <link>https://isa-afp.org/entries/Treaps.html</link>
           <pubDate>Tue, 06 Feb 2018 00:00:00 +0000</pubDate>
-          <guid>/entries/Treaps.html</guid>
+          <guid>https://isa-afp.org/entries/Treaps.html</guid>
           <description></description>
         </item>
         <item>
           <title>Root-Balanced Tree</title>
-          <link>/entries/Root_Balanced_Tree.html</link>
+          <link>https://isa-afp.org/entries/Root_Balanced_Tree.html</link>
           <pubDate>Sun, 20 Aug 2017 00:00:00 +0000</pubDate>
-          <guid>/entries/Root_Balanced_Tree.html</guid>
+          <guid>https://isa-afp.org/entries/Root_Balanced_Tree.html</guid>
           <description></description>
         </item>
         <item>
           <title>Propositional Proof Systems</title>
-          <link>/entries/Propositional_Proof_Systems.html</link>
+          <link>https://isa-afp.org/entries/Propositional_Proof_Systems.html</link>
           <pubDate>Wed, 21 Jun 2017 00:00:00 +0000</pubDate>
-          <guid>/entries/Propositional_Proof_Systems.html</guid>
+          <guid>https://isa-afp.org/entries/Propositional_Proof_Systems.html</guid>
           <description></description>
         </item>
         <item>
           <title>Abstract Interpretation of Annotated Commands</title>
-          <link>/entries/Abs_Int_ITP2012.html</link>
+          <link>https://isa-afp.org/entries/Abs_Int_ITP2012.html</link>
           <pubDate>Wed, 23 Nov 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/Abs_Int_ITP2012.html</guid>
+          <guid>https://isa-afp.org/entries/Abs_Int_ITP2012.html</guid>
           <description></description>
         </item>
         <item>
           <title>Pairing Heap</title>
-          <link>/entries/Pairing_Heap.html</link>
+          <link>https://isa-afp.org/entries/Pairing_Heap.html</link>
           <pubDate>Thu, 14 Jul 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/Pairing_Heap.html</guid>
+          <guid>https://isa-afp.org/entries/Pairing_Heap.html</guid>
           <description></description>
         </item>
         <item>
           <title>Analysis of List Update Algorithms</title>
-          <link>/entries/List_Update.html</link>
+          <link>https://isa-afp.org/entries/List_Update.html</link>
           <pubDate>Wed, 17 Feb 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/List_Update.html</guid>
+          <guid>https://isa-afp.org/entries/List_Update.html</guid>
           <description></description>
         </item>
         <item>
           <title>Parameterized Dynamic Tables</title>
-          <link>/entries/Dynamic_Tables.html</link>
+          <link>https://isa-afp.org/entries/Dynamic_Tables.html</link>
           <pubDate>Sun, 07 Jun 2015 00:00:00 +0000</pubDate>
-          <guid>/entries/Dynamic_Tables.html</guid>
+          <guid>https://isa-afp.org/entries/Dynamic_Tables.html</guid>
           <description></description>
         </item>
         <item>
           <title>Trie</title>
-          <link>/entries/Trie.html</link>
+          <link>https://isa-afp.org/entries/Trie.html</link>
           <pubDate>Mon, 30 Mar 2015 00:00:00 +0000</pubDate>
-          <guid>/entries/Trie.html</guid>
+          <guid>https://isa-afp.org/entries/Trie.html</guid>
           <description></description>
         </item>
         <item>
           <title>A Verified Compiler for Probability Density Functions</title>
-          <link>/entries/Density_Compiler.html</link>
+          <link>https://isa-afp.org/entries/Density_Compiler.html</link>
           <pubDate>Thu, 09 Oct 2014 00:00:00 +0000</pubDate>
-          <guid>/entries/Density_Compiler.html</guid>
+          <guid>https://isa-afp.org/entries/Density_Compiler.html</guid>
           <description></description>
         </item>
         <item>
           <title>Priority Queues Based on Braun Trees</title>
-          <link>/entries/Priority_Queue_Braun.html</link>
+          <link>https://isa-afp.org/entries/Priority_Queue_Braun.html</link>
           <pubDate>Thu, 04 Sep 2014 00:00:00 +0000</pubDate>
-          <guid>/entries/Priority_Queue_Braun.html</guid>
+          <guid>https://isa-afp.org/entries/Priority_Queue_Braun.html</guid>
           <description></description>
         </item>
         <item>
           <title>Skew Heap</title>
-          <link>/entries/Skew_Heap.html</link>
+          <link>https://isa-afp.org/entries/Skew_Heap.html</link>
           <pubDate>Wed, 13 Aug 2014 00:00:00 +0000</pubDate>
-          <guid>/entries/Skew_Heap.html</guid>
+          <guid>https://isa-afp.org/entries/Skew_Heap.html</guid>
           <description></description>
         </item>
         <item>
           <title>Splay Tree</title>
-          <link>/entries/Splay_Tree.html</link>
+          <link>https://isa-afp.org/entries/Splay_Tree.html</link>
           <pubDate>Tue, 12 Aug 2014 00:00:00 +0000</pubDate>
-          <guid>/entries/Splay_Tree.html</guid>
+          <guid>https://isa-afp.org/entries/Splay_Tree.html</guid>
           <description></description>
         </item>
         <item>
           <title>Amortized Complexity Verified</title>
-          <link>/entries/Amortized_Complexity.html</link>
+          <link>https://isa-afp.org/entries/Amortized_Complexity.html</link>
           <pubDate>Mon, 07 Jul 2014 00:00:00 +0000</pubDate>
-          <guid>/entries/Amortized_Complexity.html</guid>
+          <guid>https://isa-afp.org/entries/Amortized_Complexity.html</guid>
           <description></description>
         </item>
         <item>
           <title>Decision Procedures for MSO on Words Based on Derivatives of Regular Expressions</title>
-          <link>/entries/MSO_Regex_Equivalence.html</link>
+          <link>https://isa-afp.org/entries/MSO_Regex_Equivalence.html</link>
           <pubDate>Thu, 12 Jun 2014 00:00:00 +0000</pubDate>
-          <guid>/entries/MSO_Regex_Equivalence.html</guid>
+          <guid>https://isa-afp.org/entries/MSO_Regex_Equivalence.html</guid>
           <description></description>
         </item>
         <item>
           <title>Boolean Expression Checkers</title>
-          <link>/entries/Boolean_Expression_Checkers.html</link>
+          <link>https://isa-afp.org/entries/Boolean_Expression_Checkers.html</link>
           <pubDate>Sun, 08 Jun 2014 00:00:00 +0000</pubDate>
-          <guid>/entries/Boolean_Expression_Checkers.html</guid>
+          <guid>https://isa-afp.org/entries/Boolean_Expression_Checkers.html</guid>
           <description></description>
         </item>
         <item>
           <title>A Fully Verified Executable LTL Model Checker</title>
-          <link>/entries/CAVA_LTL_Modelchecker.html</link>
+          <link>https://isa-afp.org/entries/CAVA_LTL_Modelchecker.html</link>
           <pubDate>Wed, 28 May 2014 00:00:00 +0000</pubDate>
-          <guid>/entries/CAVA_LTL_Modelchecker.html</guid>
+          <guid>https://isa-afp.org/entries/CAVA_LTL_Modelchecker.html</guid>
           <description></description>
         </item>
         <item>
           <title>Unified Decision Procedures for Regular Expression Equivalence</title>
-          <link>/entries/Regex_Equivalence.html</link>
+          <link>https://isa-afp.org/entries/Regex_Equivalence.html</link>
           <pubDate>Thu, 30 Jan 2014 00:00:00 +0000</pubDate>
-          <guid>/entries/Regex_Equivalence.html</guid>
+          <guid>https://isa-afp.org/entries/Regex_Equivalence.html</guid>
           <description></description>
         </item>
         <item>
           <title>Markov Models</title>
-          <link>/entries/Markov_Models.html</link>
+          <link>https://isa-afp.org/entries/Markov_Models.html</link>
           <pubDate>Tue, 03 Jan 2012 00:00:00 +0000</pubDate>
-          <guid>/entries/Markov_Models.html</guid>
+          <guid>https://isa-afp.org/entries/Markov_Models.html</guid>
           <description></description>
         </item>
         <item>
           <title>Gauss-Jordan Elimination for Matrices Represented as Functions</title>
-          <link>/entries/Gauss-Jordan-Elim-Fun.html</link>
+          <link>https://isa-afp.org/entries/Gauss-Jordan-Elim-Fun.html</link>
           <pubDate>Fri, 19 Aug 2011 00:00:00 +0000</pubDate>
-          <guid>/entries/Gauss-Jordan-Elim-Fun.html</guid>
+          <guid>https://isa-afp.org/entries/Gauss-Jordan-Elim-Fun.html</guid>
           <description></description>
         </item>
         <item>
           <title>Hall&#39;s Marriage Theorem</title>
-          <link>/entries/Marriage.html</link>
+          <link>https://isa-afp.org/entries/Marriage.html</link>
           <pubDate>Fri, 17 Dec 2010 00:00:00 +0000</pubDate>
-          <guid>/entries/Marriage.html</guid>
+          <guid>https://isa-afp.org/entries/Marriage.html</guid>
           <description></description>
         </item>
         <item>
           <title>Regular Sets and Expressions</title>
-          <link>/entries/Regular-Sets.html</link>
+          <link>https://isa-afp.org/entries/Regular-Sets.html</link>
           <pubDate>Wed, 12 May 2010 00:00:00 +0000</pubDate>
-          <guid>/entries/Regular-Sets.html</guid>
+          <guid>https://isa-afp.org/entries/Regular-Sets.html</guid>
           <description></description>
         </item>
         <item>
           <title>List Index</title>
-          <link>/entries/List-Index.html</link>
+          <link>https://isa-afp.org/entries/List-Index.html</link>
           <pubDate>Sat, 20 Feb 2010 00:00:00 +0000</pubDate>
-          <guid>/entries/List-Index.html</guid>
+          <guid>https://isa-afp.org/entries/List-Index.html</guid>
           <description></description>
         </item>
         <item>
           <title>Fun With Tilings</title>
-          <link>/entries/FunWithTilings.html</link>
+          <link>https://isa-afp.org/entries/FunWithTilings.html</link>
           <pubDate>Fri, 07 Nov 2008 00:00:00 +0000</pubDate>
-          <guid>/entries/FunWithTilings.html</guid>
+          <guid>https://isa-afp.org/entries/FunWithTilings.html</guid>
           <description></description>
         </item>
         <item>
           <title>Arrow and Gibbard-Satterthwaite</title>
-          <link>/entries/ArrowImpossibilityGS.html</link>
+          <link>https://isa-afp.org/entries/ArrowImpossibilityGS.html</link>
           <pubDate>Mon, 01 Sep 2008 00:00:00 +0000</pubDate>
-          <guid>/entries/ArrowImpossibilityGS.html</guid>
+          <guid>https://isa-afp.org/entries/ArrowImpossibilityGS.html</guid>
           <description></description>
         </item>
         <item>
           <title>Fun With Functions</title>
-          <link>/entries/FunWithFunctions.html</link>
+          <link>https://isa-afp.org/entries/FunWithFunctions.html</link>
           <pubDate>Tue, 26 Aug 2008 00:00:00 +0000</pubDate>
-          <guid>/entries/FunWithFunctions.html</guid>
+          <guid>https://isa-afp.org/entries/FunWithFunctions.html</guid>
           <description></description>
         </item>
         <item>
           <title>Normalization by Evaluation</title>
-          <link>/entries/NormByEval.html</link>
+          <link>https://isa-afp.org/entries/NormByEval.html</link>
           <pubDate>Mon, 18 Feb 2008 00:00:00 +0000</pubDate>
-          <guid>/entries/NormByEval.html</guid>
+          <guid>https://isa-afp.org/entries/NormByEval.html</guid>
           <description></description>
         </item>
         <item>
           <title>Quantifier Elimination for Linear Arithmetic</title>
-          <link>/entries/LinearQuantifierElim.html</link>
+          <link>https://isa-afp.org/entries/LinearQuantifierElim.html</link>
           <pubDate>Fri, 11 Jan 2008 00:00:00 +0000</pubDate>
-          <guid>/entries/LinearQuantifierElim.html</guid>
+          <guid>https://isa-afp.org/entries/LinearQuantifierElim.html</guid>
           <description></description>
         </item>
         <item>
           <title>Hotel Key Card System</title>
-          <link>/entries/HotelKeyCards.html</link>
+          <link>https://isa-afp.org/entries/HotelKeyCards.html</link>
           <pubDate>Sat, 09 Sep 2006 00:00:00 +0000</pubDate>
-          <guid>/entries/HotelKeyCards.html</guid>
+          <guid>https://isa-afp.org/entries/HotelKeyCards.html</guid>
           <description></description>
         </item>
         <item>
           <title>Abstract Hoare Logics</title>
-          <link>/entries/Abstract-Hoare-Logics.html</link>
+          <link>https://isa-afp.org/entries/Abstract-Hoare-Logics.html</link>
           <pubDate>Tue, 08 Aug 2006 00:00:00 +0000</pubDate>
-          <guid>/entries/Abstract-Hoare-Logics.html</guid>
+          <guid>https://isa-afp.org/entries/Abstract-Hoare-Logics.html</guid>
           <description></description>
         </item>
         <item>
           <title>Flyspeck I: Tame Graphs</title>
-          <link>/entries/Flyspeck-Tame.html</link>
+          <link>https://isa-afp.org/entries/Flyspeck-Tame.html</link>
           <pubDate>Mon, 22 May 2006 00:00:00 +0000</pubDate>
-          <guid>/entries/Flyspeck-Tame.html</guid>
+          <guid>https://isa-afp.org/entries/Flyspeck-Tame.html</guid>
           <description></description>
         </item>
         <item>
           <title>Jinja is not Java</title>
-          <link>/entries/Jinja.html</link>
+          <link>https://isa-afp.org/entries/Jinja.html</link>
           <pubDate>Wed, 01 Jun 2005 00:00:00 +0000</pubDate>
-          <guid>/entries/Jinja.html</guid>
+          <guid>https://isa-afp.org/entries/Jinja.html</guid>
           <description></description>
         </item>
         <item>
           <title>Compiling Exceptions Correctly</title>
-          <link>/entries/Compiling-Exceptions-Correctly.html</link>
+          <link>https://isa-afp.org/entries/Compiling-Exceptions-Correctly.html</link>
           <pubDate>Fri, 09 Jul 2004 00:00:00 +0000</pubDate>
-          <guid>/entries/Compiling-Exceptions-Correctly.html</guid>
+          <guid>https://isa-afp.org/entries/Compiling-Exceptions-Correctly.html</guid>
           <description></description>
         </item>
         <item>
           <title>Functional Automata</title>
-          <link>/entries/Functional-Automata.html</link>
+          <link>https://isa-afp.org/entries/Functional-Automata.html</link>
           <pubDate>Tue, 30 Mar 2004 00:00:00 +0000</pubDate>
-          <guid>/entries/Functional-Automata.html</guid>
+          <guid>https://isa-afp.org/entries/Functional-Automata.html</guid>
           <description></description>
         </item>
         <item>
           <title>AVL Trees</title>
-          <link>/entries/AVL-Trees.html</link>
+          <link>https://isa-afp.org/entries/AVL-Trees.html</link>
           <pubDate>Fri, 19 Mar 2004 00:00:00 +0000</pubDate>
-          <guid>/entries/AVL-Trees.html</guid>
+          <guid>https://isa-afp.org/entries/AVL-Trees.html</guid>
           <description></description>
         </item>
         <item>
           <title>Mini ML</title>
-          <link>/entries/MiniML.html</link>
+          <link>https://isa-afp.org/entries/MiniML.html</link>
           <pubDate>Fri, 19 Mar 2004 00:00:00 +0000</pubDate>
-          <guid>/entries/MiniML.html</guid>
+          <guid>https://isa-afp.org/entries/MiniML.html</guid>
           <description></description>
         </item>
   </channel>

@@ -3,7 +3,7 @@
   <channel>
     <title>Poincare_Bendixson on Archive of Formal Proofs
     </title>
-    <link>/dependencies/poincare_bendixson/</link>
+    <link>https://isa-afp.org/dependencies/poincare_bendixson/</link>
     <description>
         Recent content in Poincare_Bendixson 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Fri, 26 Apr 2024 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/dependencies/poincare_bendixson/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/dependencies/poincare_bendixson/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Pick&#39;s Theorem</title>
-          <link>/entries/Picks_Theorem.html</link>
+          <link>https://isa-afp.org/entries/Picks_Theorem.html</link>
           <pubDate>Fri, 26 Apr 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Picks_Theorem.html</guid>
+          <guid>https://isa-afp.org/entries/Picks_Theorem.html</guid>
           <description></description>
         </item>
   </channel>

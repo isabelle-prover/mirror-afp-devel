@@ -3,7 +3,7 @@
   <channel>
     <title>voisin on Archive of Formal Proofs
     </title>
-    <link>/authors/voisin/</link>
+    <link>https://isa-afp.org/authors/voisin/</link>
     <description>
         Recent content in voisin 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Thu, 18 Aug 2016 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/voisin/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/voisin/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Infeasible Paths Elimination by Symbolic Execution Techniques: Proof of Correctness and Preservation of Paths</title>
-          <link>/entries/InfPathElimination.html</link>
+          <link>https://isa-afp.org/entries/InfPathElimination.html</link>
           <pubDate>Thu, 18 Aug 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/InfPathElimination.html</guid>
+          <guid>https://isa-afp.org/entries/InfPathElimination.html</guid>
           <description></description>
         </item>
   </channel>

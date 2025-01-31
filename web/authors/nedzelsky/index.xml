@@ -3,7 +3,7 @@
   <channel>
     <title>nedzelsky on Archive of Formal Proofs
     </title>
-    <link>/authors/nedzelsky/</link>
+    <link>https://isa-afp.org/authors/nedzelsky/</link>
     <description>
         Recent content in nedzelsky 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Sat, 05 Apr 2008 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/nedzelsky/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/nedzelsky/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Recursion Theory I</title>
-          <link>/entries/Recursion-Theory-I.html</link>
+          <link>https://isa-afp.org/entries/Recursion-Theory-I.html</link>
           <pubDate>Sat, 05 Apr 2008 00:00:00 +0000</pubDate>
-          <guid>/entries/Recursion-Theory-I.html</guid>
+          <guid>https://isa-afp.org/entries/Recursion-Theory-I.html</guid>
           <description></description>
         </item>
   </channel>

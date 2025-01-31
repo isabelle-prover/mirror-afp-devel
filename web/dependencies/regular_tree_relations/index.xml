@@ -3,7 +3,7 @@
   <channel>
     <title>Regular_Tree_Relations on Archive of Formal Proofs
     </title>
-    <link>/dependencies/regular_tree_relations/</link>
+    <link>https://isa-afp.org/dependencies/regular_tree_relations/</link>
     <description>
         Recent content in Regular_Tree_Relations 
         on Archive of Formal Proofs
@@ -12,26 +12,26 @@
     <language>en-gb</language>
     
       <lastBuildDate>Fri, 17 Jan 2025 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/dependencies/regular_tree_relations/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/dependencies/regular_tree_relations/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>First Order Clause</title>
-          <link>/entries/First_Order_Clause.html</link>
+          <link>https://isa-afp.org/entries/First_Order_Clause.html</link>
           <pubDate>Fri, 17 Jan 2025 00:00:00 +0000</pubDate>
-          <guid>/entries/First_Order_Clause.html</guid>
+          <guid>https://isa-afp.org/entries/First_Order_Clause.html</guid>
           <description></description>
         </item>
         <item>
           <title>Reducing Rewrite Properties to Properties on Ground Terms</title>
-          <link>/entries/Rewrite_Properties_Reduction.html</link>
+          <link>https://isa-afp.org/entries/Rewrite_Properties_Reduction.html</link>
           <pubDate>Thu, 02 Jun 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/Rewrite_Properties_Reduction.html</guid>
+          <guid>https://isa-afp.org/entries/Rewrite_Properties_Reduction.html</guid>
           <description></description>
         </item>
         <item>
           <title>First-Order Theory of Rewriting</title>
-          <link>/entries/FO_Theory_Rewriting.html</link>
+          <link>https://isa-afp.org/entries/FO_Theory_Rewriting.html</link>
           <pubDate>Wed, 02 Feb 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/FO_Theory_Rewriting.html</guid>
+          <guid>https://isa-afp.org/entries/FO_Theory_Rewriting.html</guid>
           <description></description>
         </item>
   </channel>

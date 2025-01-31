@@ -3,7 +3,7 @@
   <channel>
     <title>liut on Archive of Formal Proofs
     </title>
-    <link>/authors/liut/</link>
+    <link>https://isa-afp.org/authors/liut/</link>
     <description>
         Recent content in liut 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Sun, 24 Mar 2019 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/liut/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/liut/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Quantum Hoare Logic</title>
-          <link>/entries/QHLProver.html</link>
+          <link>https://isa-afp.org/entries/QHLProver.html</link>
           <pubDate>Sun, 24 Mar 2019 00:00:00 +0000</pubDate>
-          <guid>/entries/QHLProver.html</guid>
+          <guid>https://isa-afp.org/entries/QHLProver.html</guid>
           <description></description>
         </item>
   </channel>

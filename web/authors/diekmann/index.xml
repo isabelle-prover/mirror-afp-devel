@@ -3,7 +3,7 @@
   <channel>
     <title>diekmann on Archive of Formal Proofs
     </title>
-    <link>/authors/diekmann/</link>
+    <link>https://isa-afp.org/authors/diekmann/</link>
     <description>
         Recent content in diekmann 
         on Archive of Formal Proofs
@@ -12,54 +12,54 @@
     <language>en-gb</language>
     
       <lastBuildDate>Sat, 07 Mar 2020 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/diekmann/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/diekmann/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Hello World</title>
-          <link>/entries/Hello_World.html</link>
+          <link>https://isa-afp.org/entries/Hello_World.html</link>
           <pubDate>Sat, 07 Mar 2020 00:00:00 +0000</pubDate>
-          <guid>/entries/Hello_World.html</guid>
+          <guid>https://isa-afp.org/entries/Hello_World.html</guid>
           <description></description>
         </item>
         <item>
           <title>LOFT — Verified Migration of Linux Firewalls to SDN</title>
-          <link>/entries/LOFT.html</link>
+          <link>https://isa-afp.org/entries/LOFT.html</link>
           <pubDate>Fri, 21 Oct 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/LOFT.html</guid>
+          <guid>https://isa-afp.org/entries/LOFT.html</guid>
           <description></description>
         </item>
         <item>
           <title>Iptables Semantics</title>
-          <link>/entries/Iptables_Semantics.html</link>
+          <link>https://isa-afp.org/entries/Iptables_Semantics.html</link>
           <pubDate>Fri, 09 Sep 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/Iptables_Semantics.html</guid>
+          <guid>https://isa-afp.org/entries/Iptables_Semantics.html</guid>
           <description></description>
         </item>
         <item>
           <title>Routing</title>
-          <link>/entries/Routing.html</link>
+          <link>https://isa-afp.org/entries/Routing.html</link>
           <pubDate>Wed, 31 Aug 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/Routing.html</guid>
+          <guid>https://isa-afp.org/entries/Routing.html</guid>
           <description></description>
         </item>
         <item>
           <title>Simple Firewall</title>
-          <link>/entries/Simple_Firewall.html</link>
+          <link>https://isa-afp.org/entries/Simple_Firewall.html</link>
           <pubDate>Wed, 24 Aug 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/Simple_Firewall.html</guid>
+          <guid>https://isa-afp.org/entries/Simple_Firewall.html</guid>
           <description></description>
         </item>
         <item>
           <title>IP Addresses</title>
-          <link>/entries/IP_Addresses.html</link>
+          <link>https://isa-afp.org/entries/IP_Addresses.html</link>
           <pubDate>Tue, 28 Jun 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/IP_Addresses.html</guid>
+          <guid>https://isa-afp.org/entries/IP_Addresses.html</guid>
           <description></description>
         </item>
         <item>
           <title>Network Security Policy Verification</title>
-          <link>/entries/Network_Security_Policy_Verification.html</link>
+          <link>https://isa-afp.org/entries/Network_Security_Policy_Verification.html</link>
           <pubDate>Fri, 04 Jul 2014 00:00:00 +0000</pubDate>
-          <guid>/entries/Network_Security_Policy_Verification.html</guid>
+          <guid>https://isa-afp.org/entries/Network_Security_Policy_Verification.html</guid>
           <description></description>
         </item>
   </channel>

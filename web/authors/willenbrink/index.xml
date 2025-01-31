@@ -3,7 +3,7 @@
   <channel>
     <title>willenbrink on Archive of Formal Proofs
     </title>
-    <link>/authors/willenbrink/</link>
+    <link>https://isa-afp.org/authors/willenbrink/</link>
     <description>
         Recent content in willenbrink 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Thu, 01 Jul 2021 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/willenbrink/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/willenbrink/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>SpecCheck - Specification-Based Testing for Isabelle/ML</title>
-          <link>/entries/SpecCheck.html</link>
+          <link>https://isa-afp.org/entries/SpecCheck.html</link>
           <pubDate>Thu, 01 Jul 2021 00:00:00 +0000</pubDate>
-          <guid>/entries/SpecCheck.html</guid>
+          <guid>https://isa-afp.org/entries/SpecCheck.html</guid>
           <description></description>
         </item>
   </channel>

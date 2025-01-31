@@ -3,7 +3,7 @@
   <channel>
     <title>bruegger on Archive of Formal Proofs
     </title>
-    <link>/authors/bruegger/</link>
+    <link>https://isa-afp.org/authors/bruegger/</link>
     <description>
         Recent content in bruegger 
         on Archive of Formal Proofs
@@ -12,19 +12,19 @@
     <language>en-gb</language>
     
       <lastBuildDate>Sun, 08 Jan 2017 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/bruegger/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/bruegger/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Formal Network Models and Their Application to Firewall Policies</title>
-          <link>/entries/UPF_Firewall.html</link>
+          <link>https://isa-afp.org/entries/UPF_Firewall.html</link>
           <pubDate>Sun, 08 Jan 2017 00:00:00 +0000</pubDate>
-          <guid>/entries/UPF_Firewall.html</guid>
+          <guid>https://isa-afp.org/entries/UPF_Firewall.html</guid>
           <description></description>
         </item>
         <item>
           <title>The Unified Policy Framework (UPF)</title>
-          <link>/entries/UPF.html</link>
+          <link>https://isa-afp.org/entries/UPF.html</link>
           <pubDate>Fri, 28 Nov 2014 00:00:00 +0000</pubDate>
-          <guid>/entries/UPF.html</guid>
+          <guid>https://isa-afp.org/entries/UPF.html</guid>
           <description></description>
         </item>
   </channel>

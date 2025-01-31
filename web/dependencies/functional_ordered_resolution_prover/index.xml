@@ -3,7 +3,7 @@
   <channel>
     <title>Functional_Ordered_Resolution_Prover on Archive of Formal Proofs
     </title>
-    <link>/dependencies/functional_ordered_resolution_prover/</link>
+    <link>https://isa-afp.org/dependencies/functional_ordered_resolution_prover/</link>
     <description>
         Recent content in Functional_Ordered_Resolution_Prover 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Thu, 20 Apr 2023 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/dependencies/functional_ordered_resolution_prover/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/dependencies/functional_ordered_resolution_prover/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>A Formalization of the SCL(FOL) Calculus: Simple Clause Learning for First-Order Logic</title>
-          <link>/entries/Simple_Clause_Learning.html</link>
+          <link>https://isa-afp.org/entries/Simple_Clause_Learning.html</link>
           <pubDate>Thu, 20 Apr 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/Simple_Clause_Learning.html</guid>
+          <guid>https://isa-afp.org/entries/Simple_Clause_Learning.html</guid>
           <description></description>
         </item>
   </channel>

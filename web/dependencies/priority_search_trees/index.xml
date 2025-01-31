@@ -3,7 +3,7 @@
   <channel>
     <title>Priority_Search_Trees on Archive of Formal Proofs
     </title>
-    <link>/dependencies/priority_search_trees/</link>
+    <link>https://isa-afp.org/dependencies/priority_search_trees/</link>
     <description>
         Recent content in Priority_Search_Trees 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Tue, 25 Jun 2019 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/dependencies/priority_search_trees/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/dependencies/priority_search_trees/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Purely Functional, Simple, and Efficient Implementation of Prim and Dijkstra</title>
-          <link>/entries/Prim_Dijkstra_Simple.html</link>
+          <link>https://isa-afp.org/entries/Prim_Dijkstra_Simple.html</link>
           <pubDate>Tue, 25 Jun 2019 00:00:00 +0000</pubDate>
-          <guid>/entries/Prim_Dijkstra_Simple.html</guid>
+          <guid>https://isa-afp.org/entries/Prim_Dijkstra_Simple.html</guid>
           <description></description>
         </item>
   </channel>

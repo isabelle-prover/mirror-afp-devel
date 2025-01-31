@@ -3,7 +3,7 @@
   <channel>
     <title>SpecCheck on Archive of Formal Proofs
     </title>
-    <link>/dependencies/speccheck/</link>
+    <link>https://isa-afp.org/dependencies/speccheck/</link>
     <description>
         Recent content in SpecCheck 
         on Archive of Formal Proofs
@@ -12,33 +12,33 @@
     <language>en-gb</language>
     
       <lastBuildDate>Tue, 19 Sep 2023 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/dependencies/speccheck/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/dependencies/speccheck/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Unification Utilities for Isabelle/ML</title>
-          <link>/entries/ML_Unification.html</link>
+          <link>https://isa-afp.org/entries/ML_Unification.html</link>
           <pubDate>Tue, 19 Sep 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/ML_Unification.html</guid>
+          <guid>https://isa-afp.org/entries/ML_Unification.html</guid>
           <description></description>
         </item>
         <item>
           <title>Conditional Transfer Rule</title>
-          <link>/entries/Conditional_Transfer_Rule.html</link>
+          <link>https://isa-afp.org/entries/Conditional_Transfer_Rule.html</link>
           <pubDate>Mon, 06 Sep 2021 00:00:00 +0000</pubDate>
-          <guid>/entries/Conditional_Transfer_Rule.html</guid>
+          <guid>https://isa-afp.org/entries/Conditional_Transfer_Rule.html</guid>
           <description></description>
         </item>
         <item>
           <title>Extension of Types-To-Sets</title>
-          <link>/entries/Types_To_Sets_Extension.html</link>
+          <link>https://isa-afp.org/entries/Types_To_Sets_Extension.html</link>
           <pubDate>Mon, 06 Sep 2021 00:00:00 +0000</pubDate>
-          <guid>/entries/Types_To_Sets_Extension.html</guid>
+          <guid>https://isa-afp.org/entries/Types_To_Sets_Extension.html</guid>
           <description></description>
         </item>
         <item>
           <title>Unified Decision Procedures for Regular Expression Equivalence</title>
-          <link>/entries/Regex_Equivalence.html</link>
+          <link>https://isa-afp.org/entries/Regex_Equivalence.html</link>
           <pubDate>Thu, 30 Jan 2014 00:00:00 +0000</pubDate>
-          <guid>/entries/Regex_Equivalence.html</guid>
+          <guid>https://isa-afp.org/entries/Regex_Equivalence.html</guid>
           <description></description>
         </item>
   </channel>

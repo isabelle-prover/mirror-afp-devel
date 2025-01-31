@@ -3,7 +3,7 @@
   <channel>
     <title>rabing on Archive of Formal Proofs
     </title>
-    <link>/authors/rabing/</link>
+    <link>https://isa-afp.org/authors/rabing/</link>
     <description>
         Recent content in rabing 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Wed, 16 Aug 2023 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/rabing/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/rabing/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Ceva&#39;s Theorem</title>
-          <link>/entries/Ceva.html</link>
+          <link>https://isa-afp.org/entries/Ceva.html</link>
           <pubDate>Wed, 16 Aug 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/Ceva.html</guid>
+          <guid>https://isa-afp.org/entries/Ceva.html</guid>
           <description></description>
         </item>
   </channel>

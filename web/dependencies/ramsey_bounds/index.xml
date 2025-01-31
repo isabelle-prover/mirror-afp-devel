@@ -3,7 +3,7 @@
   <channel>
     <title>Ramsey_Bounds on Archive of Formal Proofs
     </title>
-    <link>/dependencies/ramsey_bounds/</link>
+    <link>https://isa-afp.org/dependencies/ramsey_bounds/</link>
     <description>
         Recent content in Ramsey_Bounds 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Mon, 02 Sep 2024 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/dependencies/ramsey_bounds/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/dependencies/ramsey_bounds/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>An Exponential Improvement for Diagonal Ramsey</title>
-          <link>/entries/Diagonal_Ramsey.html</link>
+          <link>https://isa-afp.org/entries/Diagonal_Ramsey.html</link>
           <pubDate>Mon, 02 Sep 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Diagonal_Ramsey.html</guid>
+          <guid>https://isa-afp.org/entries/Diagonal_Ramsey.html</guid>
           <description></description>
         </item>
   </channel>

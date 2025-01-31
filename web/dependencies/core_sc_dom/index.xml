@@ -3,7 +3,7 @@
   <channel>
     <title>Core_SC_DOM on Archive of Formal Proofs
     </title>
-    <link>/dependencies/core_sc_dom/</link>
+    <link>https://isa-afp.org/dependencies/core_sc_dom/</link>
     <description>
         Recent content in Core_SC_DOM 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Mon, 28 Sep 2020 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/dependencies/core_sc_dom/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/dependencies/core_sc_dom/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>A Formal Model of the Safely Composable Document Object Model with Shadow Roots</title>
-          <link>/entries/Shadow_SC_DOM.html</link>
+          <link>https://isa-afp.org/entries/Shadow_SC_DOM.html</link>
           <pubDate>Mon, 28 Sep 2020 00:00:00 +0000</pubDate>
-          <guid>/entries/Shadow_SC_DOM.html</guid>
+          <guid>https://isa-afp.org/entries/Shadow_SC_DOM.html</guid>
           <description></description>
         </item>
   </channel>

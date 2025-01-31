@@ -3,7 +3,7 @@
   <channel>
     <title>treml on Archive of Formal Proofs
     </title>
-    <link>/authors/treml/</link>
+    <link>https://isa-afp.org/authors/treml/</link>
     <description>
         Recent content in treml 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Tue, 26 Mar 2024 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/treml/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/treml/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Uncertainty Principle</title>
-          <link>/entries/Uncertainty_Principle.html</link>
+          <link>https://isa-afp.org/entries/Uncertainty_Principle.html</link>
           <pubDate>Tue, 26 Mar 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Uncertainty_Principle.html</guid>
+          <guid>https://isa-afp.org/entries/Uncertainty_Principle.html</guid>
           <description></description>
         </item>
   </channel>

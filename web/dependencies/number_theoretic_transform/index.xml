@@ -3,7 +3,7 @@
   <channel>
     <title>Number_Theoretic_Transform on Archive of Formal Proofs
     </title>
-    <link>/dependencies/number_theoretic_transform/</link>
+    <link>https://isa-afp.org/dependencies/number_theoretic_transform/</link>
     <description>
         Recent content in Number_Theoretic_Transform 
         on Archive of Formal Proofs
@@ -12,19 +12,19 @@
     <language>en-gb</language>
     
       <lastBuildDate>Fri, 10 May 2024 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/dependencies/number_theoretic_transform/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/dependencies/number_theoretic_transform/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Schönhage-Strassen Multiplication</title>
-          <link>/entries/Schoenhage_Strassen.html</link>
+          <link>https://isa-afp.org/entries/Schoenhage_Strassen.html</link>
           <pubDate>Fri, 10 May 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Schoenhage_Strassen.html</guid>
+          <guid>https://isa-afp.org/entries/Schoenhage_Strassen.html</guid>
           <description></description>
         </item>
         <item>
           <title>CRYSTALS-Kyber</title>
-          <link>/entries/CRYSTALS-Kyber.html</link>
+          <link>https://isa-afp.org/entries/CRYSTALS-Kyber.html</link>
           <pubDate>Thu, 08 Sep 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/CRYSTALS-Kyber.html</guid>
+          <guid>https://isa-afp.org/entries/CRYSTALS-Kyber.html</guid>
           <description></description>
         </item>
   </channel>

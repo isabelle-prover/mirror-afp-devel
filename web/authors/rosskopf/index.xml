@@ -3,7 +3,7 @@
   <channel>
     <title>rosskopf on Archive of Formal Proofs
     </title>
-    <link>/authors/rosskopf/</link>
+    <link>https://isa-afp.org/authors/rosskopf/</link>
     <description>
         Recent content in rosskopf 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Tue, 27 Apr 2021 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/rosskopf/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/rosskopf/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Isabelle&#39;s Metalogic: Formalization and Proof Checker</title>
-          <link>/entries/Metalogic_ProofChecker.html</link>
+          <link>https://isa-afp.org/entries/Metalogic_ProofChecker.html</link>
           <pubDate>Tue, 27 Apr 2021 00:00:00 +0000</pubDate>
-          <guid>/entries/Metalogic_ProofChecker.html</guid>
+          <guid>https://isa-afp.org/entries/Metalogic_ProofChecker.html</guid>
           <description></description>
         </item>
   </channel>

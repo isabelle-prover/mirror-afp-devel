@@ -3,7 +3,7 @@
   <channel>
     <title>Superposition_Calculus on Archive of Formal Proofs
     </title>
-    <link>/dependencies/superposition_calculus/</link>
+    <link>https://isa-afp.org/dependencies/superposition_calculus/</link>
     <description>
         Recent content in Superposition_Calculus 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Thu, 31 Oct 2024 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/dependencies/superposition_calculus/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/dependencies/superposition_calculus/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>SCL Simulates Nonredundant Ground Resolution</title>
-          <link>/entries/SCL_Simulates_Ground_Resolution.html</link>
+          <link>https://isa-afp.org/entries/SCL_Simulates_Ground_Resolution.html</link>
           <pubDate>Thu, 31 Oct 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/SCL_Simulates_Ground_Resolution.html</guid>
+          <guid>https://isa-afp.org/entries/SCL_Simulates_Ground_Resolution.html</guid>
           <description></description>
         </item>
   </channel>

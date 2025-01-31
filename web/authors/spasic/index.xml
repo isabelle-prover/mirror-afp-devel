@@ -3,7 +3,7 @@
   <channel>
     <title>spasic on Archive of Formal Proofs
     </title>
-    <link>/authors/spasic/</link>
+    <link>https://isa-afp.org/authors/spasic/</link>
     <description>
         Recent content in spasic 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Fri, 24 Aug 2018 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/spasic/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/spasic/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>An Incremental Simplex Algorithm with Unsatisfiable Core Generation</title>
-          <link>/entries/Simplex.html</link>
+          <link>https://isa-afp.org/entries/Simplex.html</link>
           <pubDate>Fri, 24 Aug 2018 00:00:00 +0000</pubDate>
-          <guid>/entries/Simplex.html</guid>
+          <guid>https://isa-afp.org/entries/Simplex.html</guid>
           <description></description>
         </item>
   </channel>

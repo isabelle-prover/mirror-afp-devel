@@ -3,7 +3,7 @@
   <channel>
     <title>raumer on Archive of Formal Proofs
     </title>
-    <link>/authors/raumer/</link>
+    <link>https://isa-afp.org/authors/raumer/</link>
     <description>
         Recent content in raumer 
         on Archive of Formal Proofs
@@ -12,19 +12,19 @@
     <language>en-gb</language>
     
       <lastBuildDate>Tue, 09 Sep 2014 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/raumer/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/raumer/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>The Jordan-Hölder Theorem</title>
-          <link>/entries/Jordan_Hoelder.html</link>
+          <link>https://isa-afp.org/entries/Jordan_Hoelder.html</link>
           <pubDate>Tue, 09 Sep 2014 00:00:00 +0000</pubDate>
-          <guid>/entries/Jordan_Hoelder.html</guid>
+          <guid>https://isa-afp.org/entries/Jordan_Hoelder.html</guid>
           <description></description>
         </item>
         <item>
           <title>Secondary Sylow Theorems</title>
-          <link>/entries/Secondary_Sylow.html</link>
+          <link>https://isa-afp.org/entries/Secondary_Sylow.html</link>
           <pubDate>Tue, 28 Jan 2014 00:00:00 +0000</pubDate>
-          <guid>/entries/Secondary_Sylow.html</guid>
+          <guid>https://isa-afp.org/entries/Secondary_Sylow.html</guid>
           <description></description>
         </item>
   </channel>

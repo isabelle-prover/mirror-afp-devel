@@ -3,7 +3,7 @@
   <channel>
     <title>lachnitt on Archive of Formal Proofs
     </title>
-    <link>/authors/lachnitt/</link>
+    <link>https://isa-afp.org/authors/lachnitt/</link>
     <description>
         Recent content in lachnitt 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Sun, 22 Nov 2020 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/lachnitt/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/lachnitt/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Isabelle Marries Dirac: a Library for Quantum Computation and Quantum Information</title>
-          <link>/entries/Isabelle_Marries_Dirac.html</link>
+          <link>https://isa-afp.org/entries/Isabelle_Marries_Dirac.html</link>
           <pubDate>Sun, 22 Nov 2020 00:00:00 +0000</pubDate>
-          <guid>/entries/Isabelle_Marries_Dirac.html</guid>
+          <guid>https://isa-afp.org/entries/Isabelle_Marries_Dirac.html</guid>
           <description></description>
         </item>
   </channel>

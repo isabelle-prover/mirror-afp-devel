@@ -3,7 +3,7 @@
   <channel>
     <title>gouezel on Archive of Formal Proofs
     </title>
-    <link>/authors/gouezel/</link>
+    <link>https://isa-afp.org/authors/gouezel/</link>
     <description>
         Recent content in gouezel 
         on Archive of Formal Proofs
@@ -12,26 +12,26 @@
     <language>en-gb</language>
     
       <lastBuildDate>Tue, 16 Jan 2018 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/gouezel/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/gouezel/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Gromov Hyperbolicity</title>
-          <link>/entries/Gromov_Hyperbolicity.html</link>
+          <link>https://isa-afp.org/entries/Gromov_Hyperbolicity.html</link>
           <pubDate>Tue, 16 Jan 2018 00:00:00 +0000</pubDate>
-          <guid>/entries/Gromov_Hyperbolicity.html</guid>
+          <guid>https://isa-afp.org/entries/Gromov_Hyperbolicity.html</guid>
           <description></description>
         </item>
         <item>
           <title>Lp spaces</title>
-          <link>/entries/Lp.html</link>
+          <link>https://isa-afp.org/entries/Lp.html</link>
           <pubDate>Wed, 05 Oct 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/Lp.html</guid>
+          <guid>https://isa-afp.org/entries/Lp.html</guid>
           <description></description>
         </item>
         <item>
           <title>Ergodic Theory</title>
-          <link>/entries/Ergodic_Theory.html</link>
+          <link>https://isa-afp.org/entries/Ergodic_Theory.html</link>
           <pubDate>Tue, 01 Dec 2015 00:00:00 +0000</pubDate>
-          <guid>/entries/Ergodic_Theory.html</guid>
+          <guid>https://isa-afp.org/entries/Ergodic_Theory.html</guid>
           <description></description>
         </item>
   </channel>

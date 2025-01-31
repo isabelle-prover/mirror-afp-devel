@@ -3,7 +3,7 @@
   <channel>
     <title>maric on Archive of Formal Proofs
     </title>
-    <link>/authors/maric/</link>
+    <link>https://isa-afp.org/authors/maric/</link>
     <description>
         Recent content in maric 
         on Archive of Formal Proofs
@@ -12,19 +12,19 @@
     <language>en-gb</language>
     
       <lastBuildDate>Thu, 16 Apr 2020 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/maric/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/maric/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Authenticated Data Structures As Functors</title>
-          <link>/entries/ADS_Functor.html</link>
+          <link>https://isa-afp.org/entries/ADS_Functor.html</link>
           <pubDate>Thu, 16 Apr 2020 00:00:00 +0000</pubDate>
-          <guid>/entries/ADS_Functor.html</guid>
+          <guid>https://isa-afp.org/entries/ADS_Functor.html</guid>
           <description></description>
         </item>
         <item>
           <title>Consensus Refined</title>
-          <link>/entries/Consensus_Refined.html</link>
+          <link>https://isa-afp.org/entries/Consensus_Refined.html</link>
           <pubDate>Wed, 18 Mar 2015 00:00:00 +0000</pubDate>
-          <guid>/entries/Consensus_Refined.html</guid>
+          <guid>https://isa-afp.org/entries/Consensus_Refined.html</guid>
           <description></description>
         </item>
   </channel>

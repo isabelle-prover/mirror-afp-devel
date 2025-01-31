@@ -3,7 +3,7 @@
   <channel>
     <title>ML_Unification on Archive of Formal Proofs
     </title>
-    <link>/dependencies/ml_unification/</link>
+    <link>https://isa-afp.org/dependencies/ml_unification/</link>
     <description>
         Recent content in ML_Unification 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Wed, 11 Oct 2023 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/dependencies/ml_unification/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/dependencies/ml_unification/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Transport via Partial Galois Connections and Equivalences</title>
-          <link>/entries/Transport.html</link>
+          <link>https://isa-afp.org/entries/Transport.html</link>
           <pubDate>Wed, 11 Oct 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/Transport.html</guid>
+          <guid>https://isa-afp.org/entries/Transport.html</guid>
           <description></description>
         </item>
   </channel>

@@ -3,7 +3,7 @@
   <channel>
     <title>Matroids on Archive of Formal Proofs
     </title>
-    <link>/dependencies/matroids/</link>
+    <link>https://isa-afp.org/dependencies/matroids/</link>
     <description>
         Recent content in Matroids 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Thu, 14 Feb 2019 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/dependencies/matroids/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/dependencies/matroids/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Kruskal&#39;s Algorithm for Minimum Spanning Forest</title>
-          <link>/entries/Kruskal.html</link>
+          <link>https://isa-afp.org/entries/Kruskal.html</link>
           <pubDate>Thu, 14 Feb 2019 00:00:00 +0000</pubDate>
-          <guid>/entries/Kruskal.html</guid>
+          <guid>https://isa-afp.org/entries/Kruskal.html</guid>
           <description></description>
         </item>
   </channel>

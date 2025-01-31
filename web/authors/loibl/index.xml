@@ -3,7 +3,7 @@
   <channel>
     <title>loibl on Archive of Formal Proofs
     </title>
-    <link>/authors/loibl/</link>
+    <link>https://isa-afp.org/authors/loibl/</link>
     <description>
         Recent content in loibl 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Thu, 09 Nov 2017 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/loibl/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/loibl/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>The IMAP CmRDT</title>
-          <link>/entries/IMAP-CRDT.html</link>
+          <link>https://isa-afp.org/entries/IMAP-CRDT.html</link>
           <pubDate>Thu, 09 Nov 2017 00:00:00 +0000</pubDate>
-          <guid>/entries/IMAP-CRDT.html</guid>
+          <guid>https://isa-afp.org/entries/IMAP-CRDT.html</guid>
           <description></description>
         </item>
   </channel>

@@ -3,7 +3,7 @@
   <channel>
     <title>gonzalez on Archive of Formal Proofs
     </title>
-    <link>/authors/gonzalez/</link>
+    <link>https://isa-afp.org/authors/gonzalez/</link>
     <description>
         Recent content in gonzalez 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Wed, 25 Mar 2020 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/gonzalez/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/gonzalez/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Strong Eventual Consistency of the Collaborative Editing Framework WOOT</title>
-          <link>/entries/WOOT_Strong_Eventual_Consistency.html</link>
+          <link>https://isa-afp.org/entries/WOOT_Strong_Eventual_Consistency.html</link>
           <pubDate>Wed, 25 Mar 2020 00:00:00 +0000</pubDate>
-          <guid>/entries/WOOT_Strong_Eventual_Consistency.html</guid>
+          <guid>https://isa-afp.org/entries/WOOT_Strong_Eventual_Consistency.html</guid>
           <description></description>
         </item>
   </channel>

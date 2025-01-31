@@ -3,7 +3,7 @@
   <channel>
     <title>Winding_Number_Eval on Archive of Formal Proofs
     </title>
-    <link>/dependencies/winding_number_eval/</link>
+    <link>https://isa-afp.org/dependencies/winding_number_eval/</link>
     <description>
         Recent content in Winding_Number_Eval 
         on Archive of Formal Proofs
@@ -12,19 +12,19 @@
     <language>en-gb</language>
     
       <lastBuildDate>Tue, 17 Oct 2017 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/dependencies/winding_number_eval/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/dependencies/winding_number_eval/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Count the Number of Complex Roots</title>
-          <link>/entries/Count_Complex_Roots.html</link>
+          <link>https://isa-afp.org/entries/Count_Complex_Roots.html</link>
           <pubDate>Tue, 17 Oct 2017 00:00:00 +0000</pubDate>
-          <guid>/entries/Count_Complex_Roots.html</guid>
+          <guid>https://isa-afp.org/entries/Count_Complex_Roots.html</guid>
           <description></description>
         </item>
         <item>
           <title>The Hurwitz and Riemann ζ Functions</title>
-          <link>/entries/Zeta_Function.html</link>
+          <link>https://isa-afp.org/entries/Zeta_Function.html</link>
           <pubDate>Thu, 12 Oct 2017 00:00:00 +0000</pubDate>
-          <guid>/entries/Zeta_Function.html</guid>
+          <guid>https://isa-afp.org/entries/Zeta_Function.html</guid>
           <description></description>
         </item>
   </channel>

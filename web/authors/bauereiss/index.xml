@@ -3,7 +3,7 @@
   <channel>
     <title>bauereiss on Archive of Formal Proofs
     </title>
-    <link>/authors/bauereiss/</link>
+    <link>https://isa-afp.org/authors/bauereiss/</link>
     <description>
         Recent content in bauereiss 
         on Archive of Formal Proofs
@@ -12,47 +12,47 @@
     <language>en-gb</language>
     
       <lastBuildDate>Mon, 16 Aug 2021 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/bauereiss/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/bauereiss/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>CoCon: A Confidentiality-Verified Conference Management System</title>
-          <link>/entries/CoCon.html</link>
+          <link>https://isa-afp.org/entries/CoCon.html</link>
           <pubDate>Mon, 16 Aug 2021 00:00:00 +0000</pubDate>
-          <guid>/entries/CoCon.html</guid>
+          <guid>https://isa-afp.org/entries/CoCon.html</guid>
           <description></description>
         </item>
         <item>
           <title>Compositional BD Security</title>
-          <link>/entries/BD_Security_Compositional.html</link>
+          <link>https://isa-afp.org/entries/BD_Security_Compositional.html</link>
           <pubDate>Mon, 16 Aug 2021 00:00:00 +0000</pubDate>
-          <guid>/entries/BD_Security_Compositional.html</guid>
+          <guid>https://isa-afp.org/entries/BD_Security_Compositional.html</guid>
           <description></description>
         </item>
         <item>
           <title>CoSMed: A confidentiality-verified social media platform</title>
-          <link>/entries/CoSMed.html</link>
+          <link>https://isa-afp.org/entries/CoSMed.html</link>
           <pubDate>Mon, 16 Aug 2021 00:00:00 +0000</pubDate>
-          <guid>/entries/CoSMed.html</guid>
+          <guid>https://isa-afp.org/entries/CoSMed.html</guid>
           <description></description>
         </item>
         <item>
           <title>CoSMeDis: A confidentiality-verified distributed social media platform</title>
-          <link>/entries/CoSMeDis.html</link>
+          <link>https://isa-afp.org/entries/CoSMeDis.html</link>
           <pubDate>Mon, 16 Aug 2021 00:00:00 +0000</pubDate>
-          <guid>/entries/CoSMeDis.html</guid>
+          <guid>https://isa-afp.org/entries/CoSMeDis.html</guid>
           <description></description>
         </item>
         <item>
           <title>Fresh identifiers</title>
-          <link>/entries/Fresh_Identifiers.html</link>
+          <link>https://isa-afp.org/entries/Fresh_Identifiers.html</link>
           <pubDate>Mon, 16 Aug 2021 00:00:00 +0000</pubDate>
-          <guid>/entries/Fresh_Identifiers.html</guid>
+          <guid>https://isa-afp.org/entries/Fresh_Identifiers.html</guid>
           <description></description>
         </item>
         <item>
           <title>Bounded-Deducibility Security</title>
-          <link>/entries/Bounded_Deducibility_Security.html</link>
+          <link>https://isa-afp.org/entries/Bounded_Deducibility_Security.html</link>
           <pubDate>Tue, 22 Apr 2014 00:00:00 +0000</pubDate>
-          <guid>/entries/Bounded_Deducibility_Security.html</guid>
+          <guid>https://isa-afp.org/entries/Bounded_Deducibility_Security.html</guid>
           <description></description>
         </item>
   </channel>

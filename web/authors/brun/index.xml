@@ -3,7 +3,7 @@
   <channel>
     <title>brun on Archive of Formal Proofs
     </title>
-    <link>/authors/brun/</link>
+    <link>https://isa-afp.org/authors/brun/</link>
     <description>
         Recent content in brun 
         on Archive of Formal Proofs
@@ -12,19 +12,19 @@
     <language>en-gb</language>
     
       <lastBuildDate>Tue, 13 Apr 2021 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/brun/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/brun/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Formalization of Timely Dataflow&#39;s Progress Tracking Protocol</title>
-          <link>/entries/Progress_Tracking.html</link>
+          <link>https://isa-afp.org/entries/Progress_Tracking.html</link>
           <pubDate>Tue, 13 Apr 2021 00:00:00 +0000</pubDate>
-          <guid>/entries/Progress_Tracking.html</guid>
+          <guid>https://isa-afp.org/entries/Progress_Tracking.html</guid>
           <description></description>
         </item>
         <item>
           <title>Formalization of Generic Authenticated Data Structures</title>
-          <link>/entries/LambdaAuth.html</link>
+          <link>https://isa-afp.org/entries/LambdaAuth.html</link>
           <pubDate>Tue, 14 May 2019 00:00:00 +0000</pubDate>
-          <guid>/entries/LambdaAuth.html</guid>
+          <guid>https://isa-afp.org/entries/LambdaAuth.html</guid>
           <description></description>
         </item>
   </channel>

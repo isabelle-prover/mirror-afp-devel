@@ -3,7 +3,7 @@
   <channel>
     <title>bhatt on Archive of Formal Proofs
     </title>
-    <link>/authors/bhatt/</link>
+    <link>https://isa-afp.org/authors/bhatt/</link>
     <description>
         Recent content in bhatt 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Fri, 05 May 2017 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/bhatt/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/bhatt/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Game-based cryptography in HOL</title>
-          <link>/entries/Game_Based_Crypto.html</link>
+          <link>https://isa-afp.org/entries/Game_Based_Crypto.html</link>
           <pubDate>Fri, 05 May 2017 00:00:00 +0000</pubDate>
-          <guid>/entries/Game_Based_Crypto.html</guid>
+          <guid>https://isa-afp.org/entries/Game_Based_Crypto.html</guid>
           <description></description>
         </item>
   </channel>

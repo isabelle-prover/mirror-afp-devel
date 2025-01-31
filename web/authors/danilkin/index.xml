@@ -3,7 +3,7 @@
   <channel>
     <title>danilkin on Archive of Formal Proofs
     </title>
-    <link>/authors/danilkin/</link>
+    <link>https://isa-afp.org/authors/danilkin/</link>
     <description>
         Recent content in danilkin 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Wed, 03 May 2023 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/danilkin/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/danilkin/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Three Squares Theorem</title>
-          <link>/entries/Three_Squares.html</link>
+          <link>https://isa-afp.org/entries/Three_Squares.html</link>
           <pubDate>Wed, 03 May 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/Three_Squares.html</guid>
+          <guid>https://isa-afp.org/entries/Three_Squares.html</guid>
           <description></description>
         </item>
   </channel>

@@ -3,7 +3,7 @@
   <channel>
     <title>Gabow_SCC on Archive of Formal Proofs
     </title>
-    <link>/dependencies/gabow_scc/</link>
+    <link>https://isa-afp.org/dependencies/gabow_scc/</link>
     <description>
         Recent content in Gabow_SCC 
         on Archive of Formal Proofs
@@ -12,19 +12,19 @@
     <language>en-gb</language>
     
       <lastBuildDate>Thu, 19 Oct 2017 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/dependencies/gabow_scc/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/dependencies/gabow_scc/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Transition Systems and Automata</title>
-          <link>/entries/Transition_Systems_and_Automata.html</link>
+          <link>https://isa-afp.org/entries/Transition_Systems_and_Automata.html</link>
           <pubDate>Thu, 19 Oct 2017 00:00:00 +0000</pubDate>
-          <guid>/entries/Transition_Systems_and_Automata.html</guid>
+          <guid>https://isa-afp.org/entries/Transition_Systems_and_Automata.html</guid>
           <description></description>
         </item>
         <item>
           <title>A Fully Verified Executable LTL Model Checker</title>
-          <link>/entries/CAVA_LTL_Modelchecker.html</link>
+          <link>https://isa-afp.org/entries/CAVA_LTL_Modelchecker.html</link>
           <pubDate>Wed, 28 May 2014 00:00:00 +0000</pubDate>
-          <guid>/entries/CAVA_LTL_Modelchecker.html</guid>
+          <guid>https://isa-afp.org/entries/CAVA_LTL_Modelchecker.html</guid>
           <description></description>
         </item>
   </channel>

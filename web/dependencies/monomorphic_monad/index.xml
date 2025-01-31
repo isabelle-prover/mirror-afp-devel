@@ -3,7 +3,7 @@
   <channel>
     <title>Monomorphic_Monad on Archive of Formal Proofs
     </title>
-    <link>/dependencies/monomorphic_monad/</link>
+    <link>https://isa-afp.org/dependencies/monomorphic_monad/</link>
     <description>
         Recent content in Monomorphic_Monad 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Fri, 05 May 2017 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/dependencies/monomorphic_monad/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/dependencies/monomorphic_monad/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>CryptHOL</title>
-          <link>/entries/CryptHOL.html</link>
+          <link>https://isa-afp.org/entries/CryptHOL.html</link>
           <pubDate>Fri, 05 May 2017 00:00:00 +0000</pubDate>
-          <guid>/entries/CryptHOL.html</guid>
+          <guid>https://isa-afp.org/entries/CryptHOL.html</guid>
           <description></description>
         </item>
   </channel>

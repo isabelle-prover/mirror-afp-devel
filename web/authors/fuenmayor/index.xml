@@ -3,7 +3,7 @@
   <channel>
     <title>fuenmayor on Archive of Formal Proofs
     </title>
-    <link>/authors/fuenmayor/</link>
+    <link>https://isa-afp.org/authors/fuenmayor/</link>
     <description>
         Recent content in fuenmayor 
         on Archive of Formal Proofs
@@ -12,40 +12,40 @@
     <language>en-gb</language>
     
       <lastBuildDate>Mon, 05 Dec 2022 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/fuenmayor/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/fuenmayor/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Automation of Boolos&#39; Curious Inference in Isabelle/HOL</title>
-          <link>/entries/Boolos_Curious_Inference_Automated.html</link>
+          <link>https://isa-afp.org/entries/Boolos_Curious_Inference_Automated.html</link>
           <pubDate>Mon, 05 Dec 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/Boolos_Curious_Inference_Automated.html</guid>
+          <guid>https://isa-afp.org/entries/Boolos_Curious_Inference_Automated.html</guid>
           <description></description>
         </item>
         <item>
           <title>Topological semantics for paraconsistent and paracomplete logics</title>
-          <link>/entries/Topological_Semantics.html</link>
+          <link>https://isa-afp.org/entries/Topological_Semantics.html</link>
           <pubDate>Thu, 17 Dec 2020 00:00:00 +0000</pubDate>
-          <guid>/entries/Topological_Semantics.html</guid>
+          <guid>https://isa-afp.org/entries/Topological_Semantics.html</guid>
           <description></description>
         </item>
         <item>
           <title>Formalisation and Evaluation of Alan Gewirth&#39;s Proof for the Principle of Generic Consistency in Isabelle/HOL</title>
-          <link>/entries/GewirthPGCProof.html</link>
+          <link>https://isa-afp.org/entries/GewirthPGCProof.html</link>
           <pubDate>Tue, 30 Oct 2018 00:00:00 +0000</pubDate>
-          <guid>/entries/GewirthPGCProof.html</guid>
+          <guid>https://isa-afp.org/entries/GewirthPGCProof.html</guid>
           <description></description>
         </item>
         <item>
           <title>Computer-assisted Reconstruction and Assessment of E. J. Lowe&#39;s Modal Ontological Argument</title>
-          <link>/entries/Lowe_Ontological_Argument.html</link>
+          <link>https://isa-afp.org/entries/Lowe_Ontological_Argument.html</link>
           <pubDate>Thu, 21 Sep 2017 00:00:00 +0000</pubDate>
-          <guid>/entries/Lowe_Ontological_Argument.html</guid>
+          <guid>https://isa-afp.org/entries/Lowe_Ontological_Argument.html</guid>
           <description></description>
         </item>
         <item>
           <title>Types, Tableaus and Gödel’s God in Isabelle/HOL</title>
-          <link>/entries/Types_Tableaus_and_Goedels_God.html</link>
+          <link>https://isa-afp.org/entries/Types_Tableaus_and_Goedels_God.html</link>
           <pubDate>Mon, 01 May 2017 00:00:00 +0000</pubDate>
-          <guid>/entries/Types_Tableaus_and_Goedels_God.html</guid>
+          <guid>https://isa-afp.org/entries/Types_Tableaus_and_Goedels_God.html</guid>
           <description></description>
         </item>
   </channel>

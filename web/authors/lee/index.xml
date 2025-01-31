@@ -3,7 +3,7 @@
   <channel>
     <title>lee on Archive of Formal Proofs
     </title>
-    <link>/authors/lee/</link>
+    <link>https://isa-afp.org/authors/lee/</link>
     <description>
         Recent content in lee 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Fri, 29 Aug 2014 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/lee/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/lee/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Vector Spaces</title>
-          <link>/entries/VectorSpace.html</link>
+          <link>https://isa-afp.org/entries/VectorSpace.html</link>
           <pubDate>Fri, 29 Aug 2014 00:00:00 +0000</pubDate>
-          <guid>/entries/VectorSpace.html</guid>
+          <guid>https://isa-afp.org/entries/VectorSpace.html</guid>
           <description></description>
         </item>
   </channel>

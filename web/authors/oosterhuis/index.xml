@@ -3,7 +3,7 @@
   <channel>
     <title>oosterhuis on Archive of Formal Proofs
     </title>
-    <link>/authors/oosterhuis/</link>
+    <link>https://isa-afp.org/authors/oosterhuis/</link>
     <description>
         Recent content in oosterhuis 
         on Archive of Formal Proofs
@@ -12,19 +12,19 @@
     <language>en-gb</language>
     
       <lastBuildDate>Sun, 12 Aug 2007 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/oosterhuis/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/oosterhuis/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Fermat&#39;s Last Theorem for Exponents 3 and 4 and the Parametrisation of Pythagorean Triples</title>
-          <link>/entries/Fermat3_4.html</link>
+          <link>https://isa-afp.org/entries/Fermat3_4.html</link>
           <pubDate>Sun, 12 Aug 2007 00:00:00 +0000</pubDate>
-          <guid>/entries/Fermat3_4.html</guid>
+          <guid>https://isa-afp.org/entries/Fermat3_4.html</guid>
           <description></description>
         </item>
         <item>
           <title>Sums of Two and Four Squares</title>
-          <link>/entries/SumSquares.html</link>
+          <link>https://isa-afp.org/entries/SumSquares.html</link>
           <pubDate>Sun, 12 Aug 2007 00:00:00 +0000</pubDate>
-          <guid>/entries/SumSquares.html</guid>
+          <guid>https://isa-afp.org/entries/SumSquares.html</guid>
           <description></description>
         </item>
   </channel>

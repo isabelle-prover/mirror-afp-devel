@@ -3,7 +3,7 @@
   <channel>
     <title>wenzel on Archive of Formal Proofs
     </title>
-    <link>/authors/wenzel/</link>
+    <link>https://isa-afp.org/authors/wenzel/</link>
     <description>
         Recent content in wenzel 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Fri, 23 May 2014 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/wenzel/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/wenzel/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Transitive closure according to Roy-Floyd-Warshall</title>
-          <link>/entries/Roy_Floyd_Warshall.html</link>
+          <link>https://isa-afp.org/entries/Roy_Floyd_Warshall.html</link>
           <pubDate>Fri, 23 May 2014 00:00:00 +0000</pubDate>
-          <guid>/entries/Roy_Floyd_Warshall.html</guid>
+          <guid>https://isa-afp.org/entries/Roy_Floyd_Warshall.html</guid>
           <description></description>
         </item>
   </channel>

@@ -3,7 +3,7 @@
   <channel>
     <title>Riesz_Representation on Archive of Formal Proofs
     </title>
-    <link>/dependencies/riesz_representation/</link>
+    <link>https://isa-afp.org/dependencies/riesz_representation/</link>
     <description>
         Recent content in Riesz_Representation 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Tue, 04 Jun 2024 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/dependencies/riesz_representation/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/dependencies/riesz_representation/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>The Lévy-Prokhorov Metric</title>
-          <link>/entries/Levy_Prokhorov_Metric.html</link>
+          <link>https://isa-afp.org/entries/Levy_Prokhorov_Metric.html</link>
           <pubDate>Tue, 04 Jun 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Levy_Prokhorov_Metric.html</guid>
+          <guid>https://isa-afp.org/entries/Levy_Prokhorov_Metric.html</guid>
           <description></description>
         </item>
   </channel>

@@ -3,7 +3,7 @@
   <channel>
     <title>ammer on Archive of Formal Proofs
     </title>
-    <link>/authors/ammer/</link>
+    <link>https://isa-afp.org/authors/ammer/</link>
     <description>
         Recent content in ammer 
         on Archive of Formal Proofs
@@ -12,19 +12,19 @@
     <language>en-gb</language>
     
       <lastBuildDate>Thu, 18 Aug 2022 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/ammer/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/ammer/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Number Theoretic Transform</title>
-          <link>/entries/Number_Theoretic_Transform.html</link>
+          <link>https://isa-afp.org/entries/Number_Theoretic_Transform.html</link>
           <pubDate>Thu, 18 Aug 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/Number_Theoretic_Transform.html</guid>
+          <guid>https://isa-afp.org/entries/Number_Theoretic_Transform.html</guid>
           <description></description>
         </item>
         <item>
           <title>van Emde Boas Trees</title>
-          <link>/entries/Van_Emde_Boas_Trees.html</link>
+          <link>https://isa-afp.org/entries/Van_Emde_Boas_Trees.html</link>
           <pubDate>Tue, 23 Nov 2021 00:00:00 +0000</pubDate>
-          <guid>/entries/Van_Emde_Boas_Trees.html</guid>
+          <guid>https://isa-afp.org/entries/Van_Emde_Boas_Trees.html</guid>
           <description></description>
         </item>
   </channel>

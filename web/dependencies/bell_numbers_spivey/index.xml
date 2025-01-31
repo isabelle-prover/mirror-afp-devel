@@ -3,7 +3,7 @@
   <channel>
     <title>Bell_Numbers_Spivey on Archive of Formal Proofs
     </title>
-    <link>/dependencies/bell_numbers_spivey/</link>
+    <link>https://isa-afp.org/dependencies/bell_numbers_spivey/</link>
     <description>
         Recent content in Bell_Numbers_Spivey 
         on Archive of Formal Proofs
@@ -12,19 +12,19 @@
     <language>en-gb</language>
     
       <lastBuildDate>Thu, 29 Dec 2016 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/dependencies/bell_numbers_spivey/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/dependencies/bell_numbers_spivey/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>The Twelvefold Way</title>
-          <link>/entries/Twelvefold_Way.html</link>
+          <link>https://isa-afp.org/entries/Twelvefold_Way.html</link>
           <pubDate>Thu, 29 Dec 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/Twelvefold_Way.html</guid>
+          <guid>https://isa-afp.org/entries/Twelvefold_Way.html</guid>
           <description></description>
         </item>
         <item>
           <title>Cardinality of Equivalence Relations</title>
-          <link>/entries/Card_Equiv_Relations.html</link>
+          <link>https://isa-afp.org/entries/Card_Equiv_Relations.html</link>
           <pubDate>Tue, 24 May 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/Card_Equiv_Relations.html</guid>
+          <guid>https://isa-afp.org/entries/Card_Equiv_Relations.html</guid>
           <description></description>
         </item>
   </channel>

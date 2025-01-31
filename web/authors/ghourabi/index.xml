@@ -3,7 +3,7 @@
   <channel>
     <title>ghourabi on Archive of Formal Proofs
     </title>
-    <link>/authors/ghourabi/</link>
+    <link>https://isa-afp.org/authors/ghourabi/</link>
     <description>
         Recent content in ghourabi 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Thu, 29 Sep 2016 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/ghourabi/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/ghourabi/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Allen&#39;s Interval Calculus</title>
-          <link>/entries/Allen_Calculus.html</link>
+          <link>https://isa-afp.org/entries/Allen_Calculus.html</link>
           <pubDate>Thu, 29 Sep 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/Allen_Calculus.html</guid>
+          <guid>https://isa-afp.org/entries/Allen_Calculus.html</guid>
           <description></description>
         </item>
   </channel>

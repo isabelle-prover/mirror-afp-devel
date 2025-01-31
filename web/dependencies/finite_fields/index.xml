@@ -3,7 +3,7 @@
   <channel>
     <title>Finite_Fields on Archive of Formal Proofs
     </title>
-    <link>/dependencies/finite_fields/</link>
+    <link>https://isa-afp.org/dependencies/finite_fields/</link>
     <description>
         Recent content in Finite_Fields 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Sun, 20 Feb 2022 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/dependencies/finite_fields/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/dependencies/finite_fields/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Universal Hash Families</title>
-          <link>/entries/Universal_Hash_Families.html</link>
+          <link>https://isa-afp.org/entries/Universal_Hash_Families.html</link>
           <pubDate>Sun, 20 Feb 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/Universal_Hash_Families.html</guid>
+          <guid>https://isa-afp.org/entries/Universal_Hash_Families.html</guid>
           <description></description>
         </item>
   </channel>

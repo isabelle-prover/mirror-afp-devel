@@ -3,7 +3,7 @@
   <channel>
     <title>Computer science/Algorithms/Online on Archive of Formal Proofs
     </title>
-    <link>/topics/computer-science/algorithms/online/</link>
+    <link>https://isa-afp.org/topics/computer-science/algorithms/online/</link>
     <description>
         Recent content in Computer science/Algorithms/Online 
         on Archive of Formal Proofs
@@ -11,26 +11,26 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <atom:link href="/topics/computer-science/algorithms/online/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/topics/computer-science/algorithms/online/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Analysis of List Update Algorithms</title>
-          <link>/entries/List_Update.html</link>
+          <link>https://isa-afp.org/entries/List_Update.html</link>
           <pubDate>Wed, 17 Feb 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/List_Update.html</guid>
+          <guid>https://isa-afp.org/entries/List_Update.html</guid>
           <description></description>
         </item>
         <item>
           <title>Analysis of List Update Algorithms</title>
-          <link>/entries/List_Update.html</link>
+          <link>https://isa-afp.org/entries/List_Update.html</link>
           <pubDate>Wed, 17 Feb 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/List_Update.html</guid>
+          <guid>https://isa-afp.org/entries/List_Update.html</guid>
           <description></description>
         </item>
         <item>
           <title>Analysis of List Update Algorithms</title>
-          <link>/entries/List_Update.html</link>
+          <link>https://isa-afp.org/entries/List_Update.html</link>
           <pubDate>Wed, 17 Feb 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/List_Update.html</guid>
+          <guid>https://isa-afp.org/entries/List_Update.html</guid>
           <description></description>
         </item>
   </channel>

@@ -3,7 +3,7 @@
   <channel>
     <title>Rank_Nullity_Theorem on Archive of Formal Proofs
     </title>
-    <link>/dependencies/rank_nullity_theorem/</link>
+    <link>https://isa-afp.org/dependencies/rank_nullity_theorem/</link>
     <description>
         Recent content in Rank_Nullity_Theorem 
         on Archive of Formal Proofs
@@ -12,26 +12,26 @@
     <language>en-gb</language>
     
       <lastBuildDate>Fri, 20 May 2016 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/dependencies/rank_nullity_theorem/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/dependencies/rank_nullity_theorem/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Perron-Frobenius Theorem for Spectral Radius Analysis</title>
-          <link>/entries/Perron_Frobenius.html</link>
+          <link>https://isa-afp.org/entries/Perron_Frobenius.html</link>
           <pubDate>Fri, 20 May 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/Perron_Frobenius.html</guid>
+          <guid>https://isa-afp.org/entries/Perron_Frobenius.html</guid>
           <description></description>
         </item>
         <item>
           <title>QR Decomposition</title>
-          <link>/entries/QR_Decomposition.html</link>
+          <link>https://isa-afp.org/entries/QR_Decomposition.html</link>
           <pubDate>Thu, 12 Feb 2015 00:00:00 +0000</pubDate>
-          <guid>/entries/QR_Decomposition.html</guid>
+          <guid>https://isa-afp.org/entries/QR_Decomposition.html</guid>
           <description></description>
         </item>
         <item>
           <title>Gauss-Jordan Algorithm and Its Applications</title>
-          <link>/entries/Gauss_Jordan.html</link>
+          <link>https://isa-afp.org/entries/Gauss_Jordan.html</link>
           <pubDate>Wed, 03 Sep 2014 00:00:00 +0000</pubDate>
-          <guid>/entries/Gauss_Jordan.html</guid>
+          <guid>https://isa-afp.org/entries/Gauss_Jordan.html</guid>
           <description></description>
         </item>
   </channel>

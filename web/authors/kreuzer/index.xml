@@ -3,7 +3,7 @@
   <channel>
     <title>kreuzer on Archive of Formal Proofs
     </title>
-    <link>/authors/kreuzer/</link>
+    <link>https://isa-afp.org/authors/kreuzer/</link>
     <description>
         Recent content in kreuzer 
         on Archive of Formal Proofs
@@ -12,61 +12,61 @@
     <language>en-gb</language>
     
       <lastBuildDate>Mon, 18 Dec 2023 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/kreuzer/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/kreuzer/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>CRYSTALS-Kyber_Security</title>
-          <link>/entries/CRYSTALS-Kyber_Security.html</link>
+          <link>https://isa-afp.org/entries/CRYSTALS-Kyber_Security.html</link>
           <pubDate>Mon, 18 Dec 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/CRYSTALS-Kyber_Security.html</guid>
+          <guid>https://isa-afp.org/entries/CRYSTALS-Kyber_Security.html</guid>
           <description></description>
         </item>
         <item>
           <title>Elimination of Repeated Factors Algorithm</title>
-          <link>/entries/Elimination_Of_Repeated_Factors.html</link>
+          <link>https://isa-afp.org/entries/Elimination_Of_Repeated_Factors.html</link>
           <pubDate>Mon, 06 Nov 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/Elimination_Of_Repeated_Factors.html</guid>
+          <guid>https://isa-afp.org/entries/Elimination_Of_Repeated_Factors.html</guid>
           <description></description>
         </item>
         <item>
           <title>Perfect Fields</title>
-          <link>/entries/Perfect_Fields.html</link>
+          <link>https://isa-afp.org/entries/Perfect_Fields.html</link>
           <pubDate>Mon, 06 Nov 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/Perfect_Fields.html</guid>
+          <guid>https://isa-afp.org/entries/Perfect_Fields.html</guid>
           <description></description>
         </item>
         <item>
           <title>Hardness of Lattice Problems</title>
-          <link>/entries/CVP_Hardness.html</link>
+          <link>https://isa-afp.org/entries/CVP_Hardness.html</link>
           <pubDate>Thu, 02 Feb 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/CVP_Hardness.html</guid>
+          <guid>https://isa-afp.org/entries/CVP_Hardness.html</guid>
           <description></description>
         </item>
         <item>
           <title>CRYSTALS-Kyber</title>
-          <link>/entries/CRYSTALS-Kyber.html</link>
+          <link>https://isa-afp.org/entries/CRYSTALS-Kyber.html</link>
           <pubDate>Thu, 08 Sep 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/CRYSTALS-Kyber.html</guid>
+          <guid>https://isa-afp.org/entries/CRYSTALS-Kyber.html</guid>
           <description></description>
         </item>
         <item>
           <title>The Hales–Jewett Theorem</title>
-          <link>/entries/Hales_Jewett.html</link>
+          <link>https://isa-afp.org/entries/Hales_Jewett.html</link>
           <pubDate>Fri, 02 Sep 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/Hales_Jewett.html</guid>
+          <guid>https://isa-afp.org/entries/Hales_Jewett.html</guid>
           <description></description>
         </item>
         <item>
           <title>Number Theoretic Transform</title>
-          <link>/entries/Number_Theoretic_Transform.html</link>
+          <link>https://isa-afp.org/entries/Number_Theoretic_Transform.html</link>
           <pubDate>Thu, 18 Aug 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/Number_Theoretic_Transform.html</guid>
+          <guid>https://isa-afp.org/entries/Number_Theoretic_Transform.html</guid>
           <description></description>
         </item>
         <item>
           <title>Van der Waerden&#39;s Theorem</title>
-          <link>/entries/Van_der_Waerden.html</link>
+          <link>https://isa-afp.org/entries/Van_der_Waerden.html</link>
           <pubDate>Tue, 22 Jun 2021 00:00:00 +0000</pubDate>
-          <guid>/entries/Van_der_Waerden.html</guid>
+          <guid>https://isa-afp.org/entries/Van_der_Waerden.html</guid>
           <description></description>
         </item>
   </channel>

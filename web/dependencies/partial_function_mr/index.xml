@@ -3,7 +3,7 @@
   <channel>
     <title>Partial_Function_MR on Archive of Formal Proofs
     </title>
-    <link>/dependencies/partial_function_mr/</link>
+    <link>https://isa-afp.org/dependencies/partial_function_mr/</link>
     <description>
         Recent content in Partial_Function_MR 
         on Archive of Formal Proofs
@@ -12,19 +12,19 @@
     <language>en-gb</language>
     
       <lastBuildDate>Fri, 29 Jan 2016 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/dependencies/partial_function_mr/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/dependencies/partial_function_mr/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Polynomial Factorization</title>
-          <link>/entries/Polynomial_Factorization.html</link>
+          <link>https://isa-afp.org/entries/Polynomial_Factorization.html</link>
           <pubDate>Fri, 29 Jan 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/Polynomial_Factorization.html</guid>
+          <guid>https://isa-afp.org/entries/Polynomial_Factorization.html</guid>
           <description></description>
         </item>
         <item>
           <title>Certification Monads</title>
-          <link>/entries/Certification_Monads.html</link>
+          <link>https://isa-afp.org/entries/Certification_Monads.html</link>
           <pubDate>Fri, 03 Oct 2014 00:00:00 +0000</pubDate>
-          <guid>/entries/Certification_Monads.html</guid>
+          <guid>https://isa-afp.org/entries/Certification_Monads.html</guid>
           <description></description>
         </item>
   </channel>

@@ -3,7 +3,7 @@
   <channel>
     <title>Complex_Geometry on Archive of Formal Proofs
     </title>
-    <link>/dependencies/complex_geometry/</link>
+    <link>https://isa-afp.org/dependencies/complex_geometry/</link>
     <description>
         Recent content in Complex_Geometry 
         on Archive of Formal Proofs
@@ -12,19 +12,19 @@
     <language>en-gb</language>
     
       <lastBuildDate>Fri, 03 Sep 2021 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/dependencies/complex_geometry/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/dependencies/complex_geometry/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Solving Cubic and Quartic Equations</title>
-          <link>/entries/Cubic_Quartic_Equations.html</link>
+          <link>https://isa-afp.org/entries/Cubic_Quartic_Equations.html</link>
           <pubDate>Fri, 03 Sep 2021 00:00:00 +0000</pubDate>
-          <guid>/entries/Cubic_Quartic_Equations.html</guid>
+          <guid>https://isa-afp.org/entries/Cubic_Quartic_Equations.html</guid>
           <description></description>
         </item>
         <item>
           <title>Poincaré Disc Model</title>
-          <link>/entries/Poincare_Disc.html</link>
+          <link>https://isa-afp.org/entries/Poincare_Disc.html</link>
           <pubDate>Mon, 16 Dec 2019 00:00:00 +0000</pubDate>
-          <guid>/entries/Poincare_Disc.html</guid>
+          <guid>https://isa-afp.org/entries/Poincare_Disc.html</guid>
           <description></description>
         </item>
   </channel>

@@ -3,7 +3,7 @@
   <channel>
     <title>Padic_Ints on Archive of Formal Proofs
     </title>
-    <link>/dependencies/padic_ints/</link>
+    <link>https://isa-afp.org/dependencies/padic_ints/</link>
     <description>
         Recent content in Padic_Ints 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Thu, 22 Sep 2022 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/dependencies/padic_ints/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/dependencies/padic_ints/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>p-adic Fields and p-adic Semialgebraic Sets</title>
-          <link>/entries/Padic_Field.html</link>
+          <link>https://isa-afp.org/entries/Padic_Field.html</link>
           <pubDate>Thu, 22 Sep 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/Padic_Field.html</guid>
+          <guid>https://isa-afp.org/entries/Padic_Field.html</guid>
           <description></description>
         </item>
   </channel>

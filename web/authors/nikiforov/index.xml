@@ -3,7 +3,7 @@
   <channel>
     <title>nikiforov on Archive of Formal Proofs
     </title>
-    <link>/authors/nikiforov/</link>
+    <link>https://isa-afp.org/authors/nikiforov/</link>
     <description>
         Recent content in nikiforov 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Sat, 09 Mar 2019 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/nikiforov/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/nikiforov/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Safe OCL</title>
-          <link>/entries/Safe_OCL.html</link>
+          <link>https://isa-afp.org/entries/Safe_OCL.html</link>
           <pubDate>Sat, 09 Mar 2019 00:00:00 +0000</pubDate>
-          <guid>/entries/Safe_OCL.html</guid>
+          <guid>https://isa-afp.org/entries/Safe_OCL.html</guid>
           <description></description>
         </item>
   </channel>

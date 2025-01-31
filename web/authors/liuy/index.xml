@@ -3,7 +3,7 @@
   <channel>
     <title>liuy on Archive of Formal Proofs
     </title>
-    <link>/authors/liuy/</link>
+    <link>https://isa-afp.org/authors/liuy/</link>
     <description>
         Recent content in liuy 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Wed, 19 Oct 2016 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/liuy/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/liuy/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>A formal model for the SPARCv8 ISA and a proof of non-interference for the LEON3 processor</title>
-          <link>/entries/SPARCv8.html</link>
+          <link>https://isa-afp.org/entries/SPARCv8.html</link>
           <pubDate>Wed, 19 Oct 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/SPARCv8.html</guid>
+          <guid>https://isa-afp.org/entries/SPARCv8.html</guid>
           <description></description>
         </item>
   </channel>

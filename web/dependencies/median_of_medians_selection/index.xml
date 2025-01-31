@@ -3,7 +3,7 @@
   <channel>
     <title>Median_Of_Medians_Selection on Archive of Formal Proofs
     </title>
-    <link>/dependencies/median_of_medians_selection/</link>
+    <link>https://isa-afp.org/dependencies/median_of_medians_selection/</link>
     <description>
         Recent content in Median_Of_Medians_Selection 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Thu, 30 May 2019 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/dependencies/median_of_medians_selection/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/dependencies/median_of_medians_selection/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Multidimensional Binary Search Trees</title>
-          <link>/entries/KD_Tree.html</link>
+          <link>https://isa-afp.org/entries/KD_Tree.html</link>
           <pubDate>Thu, 30 May 2019 00:00:00 +0000</pubDate>
-          <guid>/entries/KD_Tree.html</guid>
+          <guid>https://isa-afp.org/entries/KD_Tree.html</guid>
           <description></description>
         </item>
   </channel>

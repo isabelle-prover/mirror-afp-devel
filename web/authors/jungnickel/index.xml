@@ -3,7 +3,7 @@
   <channel>
     <title>jungnickel on Archive of Formal Proofs
     </title>
-    <link>/authors/jungnickel/</link>
+    <link>https://isa-afp.org/authors/jungnickel/</link>
     <description>
         Recent content in jungnickel 
         on Archive of Formal Proofs
@@ -12,19 +12,19 @@
     <language>en-gb</language>
     
       <lastBuildDate>Thu, 09 Nov 2017 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/jungnickel/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/jungnickel/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>The IMAP CmRDT</title>
-          <link>/entries/IMAP-CRDT.html</link>
+          <link>https://isa-afp.org/entries/IMAP-CRDT.html</link>
           <pubDate>Thu, 09 Nov 2017 00:00:00 +0000</pubDate>
-          <guid>/entries/IMAP-CRDT.html</guid>
+          <guid>https://isa-afp.org/entries/IMAP-CRDT.html</guid>
           <description></description>
         </item>
         <item>
           <title>A Constructive Proof for FLP</title>
-          <link>/entries/FLP.html</link>
+          <link>https://isa-afp.org/entries/FLP.html</link>
           <pubDate>Wed, 18 May 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/FLP.html</guid>
+          <guid>https://isa-afp.org/entries/FLP.html</guid>
           <description></description>
         </item>
   </channel>

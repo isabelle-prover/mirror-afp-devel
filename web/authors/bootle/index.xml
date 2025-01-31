@@ -3,7 +3,7 @@
   <channel>
     <title>bootle on Archive of Formal Proofs
     </title>
-    <link>/authors/bootle/</link>
+    <link>https://isa-afp.org/authors/bootle/</link>
     <description>
         Recent content in bootle 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Fri, 02 Feb 2024 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/bootle/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/bootle/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>The Sumcheck Protocol</title>
-          <link>/entries/Sumcheck_Protocol.html</link>
+          <link>https://isa-afp.org/entries/Sumcheck_Protocol.html</link>
           <pubDate>Fri, 02 Feb 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Sumcheck_Protocol.html</guid>
+          <guid>https://isa-afp.org/entries/Sumcheck_Protocol.html</guid>
           <description></description>
         </item>
   </channel>

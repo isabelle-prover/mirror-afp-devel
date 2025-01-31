@@ -3,7 +3,7 @@
   <channel>
     <title>grechuk on Archive of Formal Proofs
     </title>
-    <link>/authors/grechuk/</link>
+    <link>https://isa-afp.org/authors/grechuk/</link>
     <description>
         Recent content in grechuk 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Sat, 08 Jan 2011 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/grechuk/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/grechuk/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Lower Semicontinuous Functions</title>
-          <link>/entries/Lower_Semicontinuous.html</link>
+          <link>https://isa-afp.org/entries/Lower_Semicontinuous.html</link>
           <pubDate>Sat, 08 Jan 2011 00:00:00 +0000</pubDate>
-          <guid>/entries/Lower_Semicontinuous.html</guid>
+          <guid>https://isa-afp.org/entries/Lower_Semicontinuous.html</guid>
           <description></description>
         </item>
   </channel>

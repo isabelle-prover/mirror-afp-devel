@@ -3,7 +3,7 @@
   <channel>
     <title>thommes on Archive of Formal Proofs
     </title>
-    <link>/authors/thommes/</link>
+    <link>https://isa-afp.org/authors/thommes/</link>
     <description>
         Recent content in thommes 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Wed, 07 Jul 2021 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/thommes/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/thommes/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Finitely Generated Abelian Groups</title>
-          <link>/entries/Finitely_Generated_Abelian_Groups.html</link>
+          <link>https://isa-afp.org/entries/Finitely_Generated_Abelian_Groups.html</link>
           <pubDate>Wed, 07 Jul 2021 00:00:00 +0000</pubDate>
-          <guid>/entries/Finitely_Generated_Abelian_Groups.html</guid>
+          <guid>https://isa-afp.org/entries/Finitely_Generated_Abelian_Groups.html</guid>
           <description></description>
         </item>
   </channel>

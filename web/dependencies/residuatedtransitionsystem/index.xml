@@ -3,7 +3,7 @@
   <channel>
     <title>ResiduatedTransitionSystem on Archive of Formal Proofs
     </title>
-    <link>/dependencies/residuatedtransitionsystem/</link>
+    <link>https://isa-afp.org/dependencies/residuatedtransitionsystem/</link>
     <description>
         Recent content in ResiduatedTransitionSystem 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Sun, 16 Jun 2024 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/dependencies/residuatedtransitionsystem/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/dependencies/residuatedtransitionsystem/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Residuated Transition Systems II: Categorical Properties</title>
-          <link>/entries/ResiduatedTransitionSystem2.html</link>
+          <link>https://isa-afp.org/entries/ResiduatedTransitionSystem2.html</link>
           <pubDate>Sun, 16 Jun 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/ResiduatedTransitionSystem2.html</guid>
+          <guid>https://isa-afp.org/entries/ResiduatedTransitionSystem2.html</guid>
           <description></description>
         </item>
   </channel>

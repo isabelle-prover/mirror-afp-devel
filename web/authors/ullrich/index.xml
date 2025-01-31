@@ -3,7 +3,7 @@
   <channel>
     <title>ullrich on Archive of Formal Proofs
     </title>
-    <link>/authors/ullrich/</link>
+    <link>https://isa-afp.org/authors/ullrich/</link>
     <description>
         Recent content in ullrich 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Fri, 05 Feb 2016 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/ullrich/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/ullrich/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Verified Construction of Static Single Assignment Form</title>
-          <link>/entries/Formal_SSA.html</link>
+          <link>https://isa-afp.org/entries/Formal_SSA.html</link>
           <pubDate>Fri, 05 Feb 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/Formal_SSA.html</guid>
+          <guid>https://isa-afp.org/entries/Formal_SSA.html</guid>
           <description></description>
         </item>
   </channel>

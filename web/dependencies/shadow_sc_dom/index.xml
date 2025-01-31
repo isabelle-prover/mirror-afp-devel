@@ -3,7 +3,7 @@
   <channel>
     <title>Shadow_SC_DOM on Archive of Formal Proofs
     </title>
-    <link>/dependencies/shadow_sc_dom/</link>
+    <link>https://isa-afp.org/dependencies/shadow_sc_dom/</link>
     <description>
         Recent content in Shadow_SC_DOM 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Mon, 28 Sep 2020 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/dependencies/shadow_sc_dom/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/dependencies/shadow_sc_dom/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>A Formalization of Safely Composable Web Components</title>
-          <link>/entries/SC_DOM_Components.html</link>
+          <link>https://isa-afp.org/entries/SC_DOM_Components.html</link>
           <pubDate>Mon, 28 Sep 2020 00:00:00 +0000</pubDate>
-          <guid>/entries/SC_DOM_Components.html</guid>
+          <guid>https://isa-afp.org/entries/SC_DOM_Components.html</guid>
           <description></description>
         </item>
   </channel>

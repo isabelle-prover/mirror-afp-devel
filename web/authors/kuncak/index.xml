@@ -3,7 +3,7 @@
   <channel>
     <title>kuncak on Archive of Formal Proofs
     </title>
-    <link>/authors/kuncak/</link>
+    <link>https://isa-afp.org/authors/kuncak/</link>
     <description>
         Recent content in kuncak 
         on Archive of Formal Proofs
@@ -12,26 +12,26 @@
     <language>en-gb</language>
     
       <lastBuildDate>Thu, 01 Mar 2012 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/kuncak/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/kuncak/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Abortable Linearizable Modules</title>
-          <link>/entries/Abortable_Linearizable_Modules.html</link>
+          <link>https://isa-afp.org/entries/Abortable_Linearizable_Modules.html</link>
           <pubDate>Thu, 01 Mar 2012 00:00:00 +0000</pubDate>
-          <guid>/entries/Abortable_Linearizable_Modules.html</guid>
+          <guid>https://isa-afp.org/entries/Abortable_Linearizable_Modules.html</guid>
           <description></description>
         </item>
         <item>
           <title>File Refinement</title>
-          <link>/entries/FileRefinement.html</link>
+          <link>https://isa-afp.org/entries/FileRefinement.html</link>
           <pubDate>Thu, 09 Dec 2004 00:00:00 +0000</pubDate>
-          <guid>/entries/FileRefinement.html</guid>
+          <guid>https://isa-afp.org/entries/FileRefinement.html</guid>
           <description></description>
         </item>
         <item>
           <title>Binary Search Trees</title>
-          <link>/entries/BinarySearchTree.html</link>
+          <link>https://isa-afp.org/entries/BinarySearchTree.html</link>
           <pubDate>Mon, 05 Apr 2004 00:00:00 +0000</pubDate>
-          <guid>/entries/BinarySearchTree.html</guid>
+          <guid>https://isa-afp.org/entries/BinarySearchTree.html</guid>
           <description></description>
         </item>
   </channel>

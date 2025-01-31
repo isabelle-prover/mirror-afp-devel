@@ -3,7 +3,7 @@
   <channel>
     <title>DynamicArchitectures on Archive of Formal Proofs
     </title>
-    <link>/dependencies/dynamicarchitectures/</link>
+    <link>https://isa-afp.org/dependencies/dynamicarchitectures/</link>
     <description>
         Recent content in DynamicArchitectures 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Thu, 01 Mar 2018 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/dependencies/dynamicarchitectures/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/dependencies/dynamicarchitectures/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>A Theory of Architectural Design Patterns</title>
-          <link>/entries/Architectural_Design_Patterns.html</link>
+          <link>https://isa-afp.org/entries/Architectural_Design_Patterns.html</link>
           <pubDate>Thu, 01 Mar 2018 00:00:00 +0000</pubDate>
-          <guid>/entries/Architectural_Design_Patterns.html</guid>
+          <guid>https://isa-afp.org/entries/Architectural_Design_Patterns.html</guid>
           <description></description>
         </item>
   </channel>

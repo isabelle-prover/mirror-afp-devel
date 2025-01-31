@@ -3,7 +3,7 @@
   <channel>
     <title>matache on Archive of Formal Proofs
     </title>
-    <link>/authors/matache/</link>
+    <link>https://isa-afp.org/authors/matache/</link>
     <description>
         Recent content in matache 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Wed, 16 Aug 2017 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/matache/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/matache/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>The LambdaMu-calculus</title>
-          <link>/entries/LambdaMu.html</link>
+          <link>https://isa-afp.org/entries/LambdaMu.html</link>
           <pubDate>Wed, 16 Aug 2017 00:00:00 +0000</pubDate>
-          <guid>/entries/LambdaMu.html</guid>
+          <guid>https://isa-afp.org/entries/LambdaMu.html</guid>
           <description></description>
         </item>
   </channel>

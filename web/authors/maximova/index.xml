@@ -3,7 +3,7 @@
   <channel>
     <title>maximova on Archive of Formal Proofs
     </title>
-    <link>/authors/maximova/</link>
+    <link>https://isa-afp.org/authors/maximova/</link>
     <description>
         Recent content in maximova 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Fri, 10 Oct 2014 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/maximova/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/maximova/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Stream Fusion in HOL with Code Generation</title>
-          <link>/entries/Stream_Fusion_Code.html</link>
+          <link>https://isa-afp.org/entries/Stream_Fusion_Code.html</link>
           <pubDate>Fri, 10 Oct 2014 00:00:00 +0000</pubDate>
-          <guid>/entries/Stream_Fusion_Code.html</guid>
+          <guid>https://isa-afp.org/entries/Stream_Fusion_Code.html</guid>
           <description></description>
         </item>
   </channel>

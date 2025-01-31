@@ -3,7 +3,7 @@
   <channel>
     <title>Propositional_Proof_Systems on Archive of Formal Proofs
     </title>
-    <link>/dependencies/propositional_proof_systems/</link>
+    <link>https://isa-afp.org/dependencies/propositional_proof_systems/</link>
     <description>
         Recent content in Propositional_Proof_Systems 
         on Archive of Formal Proofs
@@ -12,19 +12,19 @@
     <language>en-gb</language>
     
       <lastBuildDate>Thu, 29 Oct 2020 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/dependencies/propositional_proof_systems/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/dependencies/propositional_proof_systems/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>AI Planning Languages Semantics</title>
-          <link>/entries/AI_Planning_Languages_Semantics.html</link>
+          <link>https://isa-afp.org/entries/AI_Planning_Languages_Semantics.html</link>
           <pubDate>Thu, 29 Oct 2020 00:00:00 +0000</pubDate>
-          <guid>/entries/AI_Planning_Languages_Semantics.html</guid>
+          <guid>https://isa-afp.org/entries/AI_Planning_Languages_Semantics.html</guid>
           <description></description>
         </item>
         <item>
           <title>Verified SAT-Based AI Planning</title>
-          <link>/entries/Verified_SAT_Based_AI_Planning.html</link>
+          <link>https://isa-afp.org/entries/Verified_SAT_Based_AI_Planning.html</link>
           <pubDate>Thu, 29 Oct 2020 00:00:00 +0000</pubDate>
-          <guid>/entries/Verified_SAT_Based_AI_Planning.html</guid>
+          <guid>https://isa-afp.org/entries/Verified_SAT_Based_AI_Planning.html</guid>
           <description></description>
         </item>
   </channel>

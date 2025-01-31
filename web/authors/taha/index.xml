@@ -3,7 +3,7 @@
   <channel>
     <title>taha on Archive of Formal Proofs
     </title>
-    <link>/authors/taha/</link>
+    <link>https://isa-afp.org/authors/taha/</link>
     <description>
         Recent content in taha 
         on Archive of Formal Proofs
@@ -12,33 +12,33 @@
     <language>en-gb</language>
     
       <lastBuildDate>Tue, 05 Dec 2023 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/taha/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/taha/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>HOL-CSPM - Architectural operators for HOL-CSP</title>
-          <link>/entries/HOL-CSPM.html</link>
+          <link>https://isa-afp.org/entries/HOL-CSPM.html</link>
           <pubDate>Tue, 05 Dec 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/HOL-CSPM.html</guid>
+          <guid>https://isa-afp.org/entries/HOL-CSPM.html</guid>
           <description></description>
         </item>
         <item>
           <title>Belief Revision Theory</title>
-          <link>/entries/Belief_Revision.html</link>
+          <link>https://isa-afp.org/entries/Belief_Revision.html</link>
           <pubDate>Tue, 19 Oct 2021 00:00:00 +0000</pubDate>
-          <guid>/entries/Belief_Revision.html</guid>
+          <guid>https://isa-afp.org/entries/Belief_Revision.html</guid>
           <description></description>
         </item>
         <item>
           <title>The HOL-CSP Refinement Toolkit</title>
-          <link>/entries/CSP_RefTK.html</link>
+          <link>https://isa-afp.org/entries/CSP_RefTK.html</link>
           <pubDate>Thu, 19 Nov 2020 00:00:00 +0000</pubDate>
-          <guid>/entries/CSP_RefTK.html</guid>
+          <guid>https://isa-afp.org/entries/CSP_RefTK.html</guid>
           <description></description>
         </item>
         <item>
           <title>HOL-CSP Version 2.0</title>
-          <link>/entries/HOL-CSP.html</link>
+          <link>https://isa-afp.org/entries/HOL-CSP.html</link>
           <pubDate>Fri, 26 Apr 2019 00:00:00 +0000</pubDate>
-          <guid>/entries/HOL-CSP.html</guid>
+          <guid>https://isa-afp.org/entries/HOL-CSP.html</guid>
           <description></description>
         </item>
   </channel>

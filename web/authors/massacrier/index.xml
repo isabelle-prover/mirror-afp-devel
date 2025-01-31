@@ -3,7 +3,7 @@
   <channel>
     <title>massacrier on Archive of Formal Proofs
     </title>
-    <link>/authors/massacrier/</link>
+    <link>https://isa-afp.org/authors/massacrier/</link>
     <description>
         Recent content in massacrier 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Wed, 24 Jan 2024 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/massacrier/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/massacrier/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Cubical Categories</title>
-          <link>/entries/CubicalCategories.html</link>
+          <link>https://isa-afp.org/entries/CubicalCategories.html</link>
           <pubDate>Wed, 24 Jan 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/CubicalCategories.html</guid>
+          <guid>https://isa-afp.org/entries/CubicalCategories.html</guid>
           <description></description>
         </item>
   </channel>

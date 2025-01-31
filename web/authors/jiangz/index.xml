@@ -3,7 +3,7 @@
   <channel>
     <title>jiangz on Archive of Formal Proofs
     </title>
-    <link>/authors/jiangz/</link>
+    <link>https://isa-afp.org/authors/jiangz/</link>
     <description>
         Recent content in jiangz 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Sat, 16 Nov 2024 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/jiangz/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/jiangz/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Two Theorems on Hermitian Matrices</title>
-          <link>/entries/Two_Hermitian_Results.html</link>
+          <link>https://isa-afp.org/entries/Two_Hermitian_Results.html</link>
           <pubDate>Sat, 16 Nov 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Two_Hermitian_Results.html</guid>
+          <guid>https://isa-afp.org/entries/Two_Hermitian_Results.html</guid>
           <description></description>
         </item>
   </channel>

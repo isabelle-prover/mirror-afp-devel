@@ -3,7 +3,7 @@
   <channel>
     <title>koller on Archive of Formal Proofs
     </title>
-    <link>/authors/koller/</link>
+    <link>https://isa-afp.org/authors/koller/</link>
     <description>
         Recent content in koller 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Tue, 04 Jan 2022 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/koller/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/koller/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Knight&#39;s Tour Revisited Revisited</title>
-          <link>/entries/Knights_Tour.html</link>
+          <link>https://isa-afp.org/entries/Knights_Tour.html</link>
           <pubDate>Tue, 04 Jan 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/Knights_Tour.html</guid>
+          <guid>https://isa-afp.org/entries/Knights_Tour.html</guid>
           <description></description>
         </item>
   </channel>

@@ -3,7 +3,7 @@
   <channel>
     <title>vytiniotis on Archive of Formal Proofs
     </title>
-    <link>/authors/vytiniotis/</link>
+    <link>https://isa-afp.org/authors/vytiniotis/</link>
     <description>
         Recent content in vytiniotis 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Fri, 31 Mar 2006 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/vytiniotis/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/vytiniotis/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>A Theory of Featherweight Java in Isabelle/HOL</title>
-          <link>/entries/FeatherweightJava.html</link>
+          <link>https://isa-afp.org/entries/FeatherweightJava.html</link>
           <pubDate>Fri, 31 Mar 2006 00:00:00 +0000</pubDate>
-          <guid>/entries/FeatherweightJava.html</guid>
+          <guid>https://isa-afp.org/entries/FeatherweightJava.html</guid>
           <description></description>
         </item>
   </channel>

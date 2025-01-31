@@ -3,7 +3,7 @@
   <channel>
     <title>trachtenherz on Archive of Formal Proofs
     </title>
-    <link>/authors/trachtenherz/</link>
+    <link>https://isa-afp.org/authors/trachtenherz/</link>
     <description>
         Recent content in trachtenherz 
         on Archive of Formal Proofs
@@ -12,26 +12,26 @@
     <language>en-gb</language>
     
       <lastBuildDate>Wed, 23 Feb 2011 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/trachtenherz/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/trachtenherz/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>AutoFocus Stream Processing for Single-Clocking and Multi-Clocking Semantics</title>
-          <link>/entries/AutoFocus-Stream.html</link>
+          <link>https://isa-afp.org/entries/AutoFocus-Stream.html</link>
           <pubDate>Wed, 23 Feb 2011 00:00:00 +0000</pubDate>
-          <guid>/entries/AutoFocus-Stream.html</guid>
+          <guid>https://isa-afp.org/entries/AutoFocus-Stream.html</guid>
           <description></description>
         </item>
         <item>
           <title>Infinite Lists</title>
-          <link>/entries/List-Infinite.html</link>
+          <link>https://isa-afp.org/entries/List-Infinite.html</link>
           <pubDate>Wed, 23 Feb 2011 00:00:00 +0000</pubDate>
-          <guid>/entries/List-Infinite.html</guid>
+          <guid>https://isa-afp.org/entries/List-Infinite.html</guid>
           <description></description>
         </item>
         <item>
           <title>Interval Temporal Logic on Natural Numbers</title>
-          <link>/entries/Nat-Interval-Logic.html</link>
+          <link>https://isa-afp.org/entries/Nat-Interval-Logic.html</link>
           <pubDate>Wed, 23 Feb 2011 00:00:00 +0000</pubDate>
-          <guid>/entries/Nat-Interval-Logic.html</guid>
+          <guid>https://isa-afp.org/entries/Nat-Interval-Logic.html</guid>
           <description></description>
         </item>
   </channel>

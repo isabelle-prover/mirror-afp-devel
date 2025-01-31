@@ -3,7 +3,7 @@
   <channel>
     <title>hetzl on Archive of Formal Proofs
     </title>
-    <link>/authors/hetzl/</link>
+    <link>https://isa-afp.org/authors/hetzl/</link>
     <description>
         Recent content in hetzl 
         on Archive of Formal Proofs
@@ -12,19 +12,19 @@
     <language>en-gb</language>
     
       <lastBuildDate>Mon, 15 Sep 2014 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/hetzl/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/hetzl/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>The Cayley-Hamilton Theorem</title>
-          <link>/entries/Cayley_Hamilton.html</link>
+          <link>https://isa-afp.org/entries/Cayley_Hamilton.html</link>
           <pubDate>Mon, 15 Sep 2014 00:00:00 +0000</pubDate>
-          <guid>/entries/Cayley_Hamilton.html</guid>
+          <guid>https://isa-afp.org/entries/Cayley_Hamilton.html</guid>
           <description></description>
         </item>
         <item>
           <title>Bondy&#39;s Theorem</title>
-          <link>/entries/Bondy.html</link>
+          <link>https://isa-afp.org/entries/Bondy.html</link>
           <pubDate>Sat, 27 Oct 2012 00:00:00 +0000</pubDate>
-          <guid>/entries/Bondy.html</guid>
+          <guid>https://isa-afp.org/entries/Bondy.html</guid>
           <description></description>
         </item>
   </channel>

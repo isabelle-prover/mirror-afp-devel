@@ -3,7 +3,7 @@
   <channel>
     <title>nemouchi on Archive of Formal Proofs
     </title>
-    <link>/authors/nemouchi/</link>
+    <link>https://isa-afp.org/authors/nemouchi/</link>
     <description>
         Recent content in nemouchi 
         on Archive of Formal Proofs
@@ -12,19 +12,19 @@
     <language>en-gb</language>
     
       <lastBuildDate>Fri, 01 Feb 2019 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/nemouchi/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/nemouchi/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Isabelle/UTP: Mechanised Theory Engineering for Unifying Theories of Programming</title>
-          <link>/entries/UTP.html</link>
+          <link>https://isa-afp.org/entries/UTP.html</link>
           <pubDate>Fri, 01 Feb 2019 00:00:00 +0000</pubDate>
-          <guid>/entries/UTP.html</guid>
+          <guid>https://isa-afp.org/entries/UTP.html</guid>
           <description></description>
         </item>
         <item>
           <title>Formal Specification of a Generic Separation Kernel</title>
-          <link>/entries/CISC-Kernel.html</link>
+          <link>https://isa-afp.org/entries/CISC-Kernel.html</link>
           <pubDate>Fri, 18 Jul 2014 00:00:00 +0000</pubDate>
-          <guid>/entries/CISC-Kernel.html</guid>
+          <guid>https://isa-afp.org/entries/CISC-Kernel.html</guid>
           <description></description>
         </item>
   </channel>

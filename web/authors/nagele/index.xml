@@ -3,7 +3,7 @@
   <channel>
     <title>nagele on Archive of Formal Proofs
     </title>
-    <link>/authors/nagele/</link>
+    <link>https://isa-afp.org/authors/nagele/</link>
     <description>
         Recent content in nagele 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Thu, 30 Jun 2016 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/nagele/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/nagele/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>The Z Property</title>
-          <link>/entries/Rewriting_Z.html</link>
+          <link>https://isa-afp.org/entries/Rewriting_Z.html</link>
           <pubDate>Thu, 30 Jun 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/Rewriting_Z.html</guid>
+          <guid>https://isa-afp.org/entries/Rewriting_Z.html</guid>
           <description></description>
         </item>
   </channel>

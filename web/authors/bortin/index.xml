@@ -3,7 +3,7 @@
   <channel>
     <title>bortin on Archive of Formal Proofs
     </title>
-    <link>/authors/bortin/</link>
+    <link>https://isa-afp.org/authors/bortin/</link>
     <description>
         Recent content in bortin 
         on Archive of Formal Proofs
@@ -12,26 +12,26 @@
     <language>en-gb</language>
     
       <lastBuildDate>Mon, 15 Aug 2022 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/bortin/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/bortin/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>From THE BOOK: Two Squares via Involutions</title>
-          <link>/entries/Involutions2Squares.html</link>
+          <link>https://isa-afp.org/entries/Involutions2Squares.html</link>
           <pubDate>Mon, 15 Aug 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/Involutions2Squares.html</guid>
+          <guid>https://isa-afp.org/entries/Involutions2Squares.html</guid>
           <description></description>
         </item>
         <item>
           <title>COMPLX: A Verification Framework for Concurrent Imperative Programs</title>
-          <link>/entries/Complx.html</link>
+          <link>https://isa-afp.org/entries/Complx.html</link>
           <pubDate>Tue, 29 Nov 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/Complx.html</guid>
+          <guid>https://isa-afp.org/entries/Complx.html</guid>
           <description></description>
         </item>
         <item>
           <title>A formalisation of the Cocke-Younger-Kasami algorithm</title>
-          <link>/entries/CYK.html</link>
+          <link>https://isa-afp.org/entries/CYK.html</link>
           <pubDate>Wed, 27 Apr 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/CYK.html</guid>
+          <guid>https://isa-afp.org/entries/CYK.html</guid>
           <description></description>
         </item>
   </channel>

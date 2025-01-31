@@ -3,7 +3,7 @@
   <channel>
     <title>biendarra on Archive of Formal Proofs
     </title>
-    <link>/authors/biendarra/</link>
+    <link>https://isa-afp.org/authors/biendarra/</link>
     <description>
         Recent content in biendarra 
         on Archive of Formal Proofs
@@ -12,19 +12,19 @@
     <language>en-gb</language>
     
       <lastBuildDate>Thu, 14 Feb 2019 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/biendarra/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/biendarra/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Kruskal&#39;s Algorithm for Minimum Spanning Forest</title>
-          <link>/entries/Kruskal.html</link>
+          <link>https://isa-afp.org/entries/Kruskal.html</link>
           <pubDate>Thu, 14 Feb 2019 00:00:00 +0000</pubDate>
-          <guid>/entries/Kruskal.html</guid>
+          <guid>https://isa-afp.org/entries/Kruskal.html</guid>
           <description></description>
         </item>
         <item>
           <title>Bertrand&#39;s postulate</title>
-          <link>/entries/Bertrands_Postulate.html</link>
+          <link>https://isa-afp.org/entries/Bertrands_Postulate.html</link>
           <pubDate>Tue, 17 Jan 2017 00:00:00 +0000</pubDate>
-          <guid>/entries/Bertrands_Postulate.html</guid>
+          <guid>https://isa-afp.org/entries/Bertrands_Postulate.html</guid>
           <description></description>
         </item>
   </channel>

@@ -3,7 +3,7 @@
   <channel>
     <title>hu on Archive of Formal Proofs
     </title>
-    <link>/authors/hu/</link>
+    <link>https://isa-afp.org/authors/hu/</link>
     <description>
         Recent content in hu 
         on Archive of Formal Proofs
@@ -12,19 +12,19 @@
     <language>en-gb</language>
     
       <lastBuildDate>Fri, 27 Jan 2023 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/hu/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/hu/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>ABY3 Multiplication and Array Shuffling</title>
-          <link>/entries/ABY3_Protocols.html</link>
+          <link>https://isa-afp.org/entries/ABY3_Protocols.html</link>
           <pubDate>Fri, 27 Jan 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/ABY3_Protocols.html</guid>
+          <guid>https://isa-afp.org/entries/ABY3_Protocols.html</guid>
           <description></description>
         </item>
         <item>
           <title>Monadification, Memoization and Dynamic Programming</title>
-          <link>/entries/Monad_Memo_DP.html</link>
+          <link>https://isa-afp.org/entries/Monad_Memo_DP.html</link>
           <pubDate>Tue, 22 May 2018 00:00:00 +0000</pubDate>
-          <guid>/entries/Monad_Memo_DP.html</guid>
+          <guid>https://isa-afp.org/entries/Monad_Memo_DP.html</guid>
           <description></description>
         </item>
   </channel>

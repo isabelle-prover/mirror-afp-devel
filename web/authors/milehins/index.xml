@@ -3,7 +3,7 @@
   <channel>
     <title>milehins on Archive of Formal Proofs
     </title>
-    <link>/authors/milehins/</link>
+    <link>https://isa-afp.org/authors/milehins/</link>
     <description>
         Recent content in milehins 
         on Archive of Formal Proofs
@@ -12,54 +12,54 @@
     <language>en-gb</language>
     
       <lastBuildDate>Mon, 06 Sep 2021 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/milehins/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/milehins/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Category Theory for ZFC in HOL I: Foundations: Design Patterns, Set Theory, Digraphs, Semicategories</title>
-          <link>/entries/CZH_Foundations.html</link>
+          <link>https://isa-afp.org/entries/CZH_Foundations.html</link>
           <pubDate>Mon, 06 Sep 2021 00:00:00 +0000</pubDate>
-          <guid>/entries/CZH_Foundations.html</guid>
+          <guid>https://isa-afp.org/entries/CZH_Foundations.html</guid>
           <description></description>
         </item>
         <item>
           <title>Category Theory for ZFC in HOL II: Elementary Theory of 1-Categories</title>
-          <link>/entries/CZH_Elementary_Categories.html</link>
+          <link>https://isa-afp.org/entries/CZH_Elementary_Categories.html</link>
           <pubDate>Mon, 06 Sep 2021 00:00:00 +0000</pubDate>
-          <guid>/entries/CZH_Elementary_Categories.html</guid>
+          <guid>https://isa-afp.org/entries/CZH_Elementary_Categories.html</guid>
           <description></description>
         </item>
         <item>
           <title>Category Theory for ZFC in HOL III: Universal Constructions</title>
-          <link>/entries/CZH_Universal_Constructions.html</link>
+          <link>https://isa-afp.org/entries/CZH_Universal_Constructions.html</link>
           <pubDate>Mon, 06 Sep 2021 00:00:00 +0000</pubDate>
-          <guid>/entries/CZH_Universal_Constructions.html</guid>
+          <guid>https://isa-afp.org/entries/CZH_Universal_Constructions.html</guid>
           <description></description>
         </item>
         <item>
           <title>Conditional Simplification</title>
-          <link>/entries/Conditional_Simplification.html</link>
+          <link>https://isa-afp.org/entries/Conditional_Simplification.html</link>
           <pubDate>Mon, 06 Sep 2021 00:00:00 +0000</pubDate>
-          <guid>/entries/Conditional_Simplification.html</guid>
+          <guid>https://isa-afp.org/entries/Conditional_Simplification.html</guid>
           <description></description>
         </item>
         <item>
           <title>Conditional Transfer Rule</title>
-          <link>/entries/Conditional_Transfer_Rule.html</link>
+          <link>https://isa-afp.org/entries/Conditional_Transfer_Rule.html</link>
           <pubDate>Mon, 06 Sep 2021 00:00:00 +0000</pubDate>
-          <guid>/entries/Conditional_Transfer_Rule.html</guid>
+          <guid>https://isa-afp.org/entries/Conditional_Transfer_Rule.html</guid>
           <description></description>
         </item>
         <item>
           <title>Extension of Types-To-Sets</title>
-          <link>/entries/Types_To_Sets_Extension.html</link>
+          <link>https://isa-afp.org/entries/Types_To_Sets_Extension.html</link>
           <pubDate>Mon, 06 Sep 2021 00:00:00 +0000</pubDate>
-          <guid>/entries/Types_To_Sets_Extension.html</guid>
+          <guid>https://isa-afp.org/entries/Types_To_Sets_Extension.html</guid>
           <description></description>
         </item>
         <item>
           <title>IDE: Introduction, Destruction, Elimination</title>
-          <link>/entries/Intro_Dest_Elim.html</link>
+          <link>https://isa-afp.org/entries/Intro_Dest_Elim.html</link>
           <pubDate>Mon, 06 Sep 2021 00:00:00 +0000</pubDate>
-          <guid>/entries/Intro_Dest_Elim.html</guid>
+          <guid>https://isa-afp.org/entries/Intro_Dest_Elim.html</guid>
           <description></description>
         </item>
   </channel>

@@ -3,7 +3,7 @@
   <channel>
     <title>grov on Archive of Formal Proofs
     </title>
-    <link>/authors/grov/</link>
+    <link>https://isa-afp.org/authors/grov/</link>
     <description>
         Recent content in grov 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Sat, 19 Nov 2011 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/grov/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/grov/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>A Definitional Encoding of TLA* in Isabelle/HOL</title>
-          <link>/entries/TLA.html</link>
+          <link>https://isa-afp.org/entries/TLA.html</link>
           <pubDate>Sat, 19 Nov 2011 00:00:00 +0000</pubDate>
-          <guid>/entries/TLA.html</guid>
+          <guid>https://isa-afp.org/entries/TLA.html</guid>
           <description></description>
         </item>
   </channel>

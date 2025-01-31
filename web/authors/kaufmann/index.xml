@@ -3,7 +3,7 @@
   <channel>
     <title>kaufmann on Archive of Formal Proofs
     </title>
-    <link>/authors/kaufmann/</link>
+    <link>https://isa-afp.org/authors/kaufmann/</link>
     <description>
         Recent content in kaufmann 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Mon, 31 Aug 2020 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/kaufmann/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/kaufmann/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Practical Algebraic Calculus Checker</title>
-          <link>/entries/PAC_Checker.html</link>
+          <link>https://isa-afp.org/entries/PAC_Checker.html</link>
           <pubDate>Mon, 31 Aug 2020 00:00:00 +0000</pubDate>
-          <guid>/entries/PAC_Checker.html</guid>
+          <guid>https://isa-afp.org/entries/PAC_Checker.html</guid>
           <description></description>
         </item>
   </channel>

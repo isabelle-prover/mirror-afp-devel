@@ -3,7 +3,7 @@
   <channel>
     <title>Equivalence_Relation_Enumeration on Archive of Formal Proofs
     </title>
-    <link>/dependencies/equivalence_relation_enumeration/</link>
+    <link>https://isa-afp.org/dependencies/equivalence_relation_enumeration/</link>
     <description>
         Recent content in Equivalence_Relation_Enumeration 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Fri, 08 Apr 2022 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/dependencies/equivalence_relation_enumeration/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/dependencies/equivalence_relation_enumeration/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Formalization of Randomized Approximation Algorithms for Frequency Moments</title>
-          <link>/entries/Frequency_Moments.html</link>
+          <link>https://isa-afp.org/entries/Frequency_Moments.html</link>
           <pubDate>Fri, 08 Apr 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/Frequency_Moments.html</guid>
+          <guid>https://isa-afp.org/entries/Frequency_Moments.html</guid>
           <description></description>
         </item>
   </channel>

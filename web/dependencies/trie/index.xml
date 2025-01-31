@@ -3,7 +3,7 @@
   <channel>
     <title>Trie on Archive of Formal Proofs
     </title>
-    <link>/dependencies/trie/</link>
+    <link>https://isa-afp.org/dependencies/trie/</link>
     <description>
         Recent content in Trie 
         on Archive of Formal Proofs
@@ -12,40 +12,40 @@
     <language>en-gb</language>
     
       <lastBuildDate>Mon, 15 Apr 2013 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/dependencies/trie/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/dependencies/trie/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Light-weight Containers</title>
-          <link>/entries/Containers.html</link>
+          <link>https://isa-afp.org/entries/Containers.html</link>
           <pubDate>Mon, 15 Apr 2013 00:00:00 +0000</pubDate>
-          <guid>/entries/Containers.html</guid>
+          <guid>https://isa-afp.org/entries/Containers.html</guid>
           <description></description>
         </item>
         <item>
           <title>Knowledge-based programs</title>
-          <link>/entries/KBPs.html</link>
+          <link>https://isa-afp.org/entries/KBPs.html</link>
           <pubDate>Tue, 17 May 2011 00:00:00 +0000</pubDate>
-          <guid>/entries/KBPs.html</guid>
+          <guid>https://isa-afp.org/entries/KBPs.html</guid>
           <description></description>
         </item>
         <item>
           <title>Collections Framework</title>
-          <link>/entries/Collections.html</link>
+          <link>https://isa-afp.org/entries/Collections.html</link>
           <pubDate>Wed, 25 Nov 2009 00:00:00 +0000</pubDate>
-          <guid>/entries/Collections.html</guid>
+          <guid>https://isa-afp.org/entries/Collections.html</guid>
           <description></description>
         </item>
         <item>
           <title>Jinja with Threads</title>
-          <link>/entries/JinjaThreads.html</link>
+          <link>https://isa-afp.org/entries/JinjaThreads.html</link>
           <pubDate>Mon, 03 Dec 2007 00:00:00 +0000</pubDate>
-          <guid>/entries/JinjaThreads.html</guid>
+          <guid>https://isa-afp.org/entries/JinjaThreads.html</guid>
           <description></description>
         </item>
         <item>
           <title>Flyspeck I: Tame Graphs</title>
-          <link>/entries/Flyspeck-Tame.html</link>
+          <link>https://isa-afp.org/entries/Flyspeck-Tame.html</link>
           <pubDate>Mon, 22 May 2006 00:00:00 +0000</pubDate>
-          <guid>/entries/Flyspeck-Tame.html</guid>
+          <guid>https://isa-afp.org/entries/Flyspeck-Tame.html</guid>
           <description></description>
         </item>
   </channel>

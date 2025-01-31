@@ -3,7 +3,7 @@
   <channel>
     <title>Abstract_Substitution on Archive of Formal Proofs
     </title>
-    <link>/dependencies/abstract_substitution/</link>
+    <link>https://isa-afp.org/dependencies/abstract_substitution/</link>
     <description>
         Recent content in Abstract_Substitution 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Fri, 17 Jan 2025 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/dependencies/abstract_substitution/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/dependencies/abstract_substitution/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>First Order Clause</title>
-          <link>/entries/First_Order_Clause.html</link>
+          <link>https://isa-afp.org/entries/First_Order_Clause.html</link>
           <pubDate>Fri, 17 Jan 2025 00:00:00 +0000</pubDate>
-          <guid>/entries/First_Order_Clause.html</guid>
+          <guid>https://isa-afp.org/entries/First_Order_Clause.html</guid>
           <description></description>
         </item>
   </channel>

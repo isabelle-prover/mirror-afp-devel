@@ -3,7 +3,7 @@
   <channel>
     <title>UPF on Archive of Formal Proofs
     </title>
-    <link>/dependencies/upf/</link>
+    <link>https://isa-afp.org/dependencies/upf/</link>
     <description>
         Recent content in UPF 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Sun, 08 Jan 2017 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/dependencies/upf/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/dependencies/upf/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Formal Network Models and Their Application to Firewall Policies</title>
-          <link>/entries/UPF_Firewall.html</link>
+          <link>https://isa-afp.org/entries/UPF_Firewall.html</link>
           <pubDate>Sun, 08 Jan 2017 00:00:00 +0000</pubDate>
-          <guid>/entries/UPF_Firewall.html</guid>
+          <guid>https://isa-afp.org/entries/UPF_Firewall.html</guid>
           <description></description>
         </item>
   </channel>

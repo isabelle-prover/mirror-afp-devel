@@ -3,7 +3,7 @@
   <channel>
     <title>Bertrands_Postulate on Archive of Formal Proofs
     </title>
-    <link>/dependencies/bertrands_postulate/</link>
+    <link>https://isa-afp.org/dependencies/bertrands_postulate/</link>
     <description>
         Recent content in Bertrands_Postulate 
         on Archive of Formal Proofs
@@ -12,19 +12,19 @@
     <language>en-gb</language>
     
       <lastBuildDate>Fri, 08 Apr 2022 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/dependencies/bertrands_postulate/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/dependencies/bertrands_postulate/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Formalization of Randomized Approximation Algorithms for Frequency Moments</title>
-          <link>/entries/Frequency_Moments.html</link>
+          <link>https://isa-afp.org/entries/Frequency_Moments.html</link>
           <pubDate>Fri, 08 Apr 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/Frequency_Moments.html</guid>
+          <guid>https://isa-afp.org/entries/Frequency_Moments.html</guid>
           <description></description>
         </item>
         <item>
           <title>Dirichlet L-Functions and Dirichlet&#39;s Theorem</title>
-          <link>/entries/Dirichlet_L.html</link>
+          <link>https://isa-afp.org/entries/Dirichlet_L.html</link>
           <pubDate>Thu, 21 Dec 2017 00:00:00 +0000</pubDate>
-          <guid>/entries/Dirichlet_L.html</guid>
+          <guid>https://isa-afp.org/entries/Dirichlet_L.html</guid>
           <description></description>
         </item>
   </channel>

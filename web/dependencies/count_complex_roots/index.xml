@@ -3,7 +3,7 @@
   <channel>
     <title>Count_Complex_Roots on Archive of Formal Proofs
     </title>
-    <link>/dependencies/count_complex_roots/</link>
+    <link>https://isa-afp.org/dependencies/count_complex_roots/</link>
     <description>
         Recent content in Count_Complex_Roots 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Thu, 12 Oct 2017 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/dependencies/count_complex_roots/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/dependencies/count_complex_roots/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Linear Recurrences</title>
-          <link>/entries/Linear_Recurrences.html</link>
+          <link>https://isa-afp.org/entries/Linear_Recurrences.html</link>
           <pubDate>Thu, 12 Oct 2017 00:00:00 +0000</pubDate>
-          <guid>/entries/Linear_Recurrences.html</guid>
+          <guid>https://isa-afp.org/entries/Linear_Recurrences.html</guid>
           <description></description>
         </item>
   </channel>

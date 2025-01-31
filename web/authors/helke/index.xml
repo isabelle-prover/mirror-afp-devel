@@ -3,7 +3,7 @@
   <channel>
     <title>helke on Archive of Formal Proofs
     </title>
-    <link>/authors/helke/</link>
+    <link>https://isa-afp.org/authors/helke/</link>
     <description>
         Recent content in helke 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Sun, 08 Aug 2010 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/helke/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/helke/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Formalizing Statecharts using Hierarchical Automata</title>
-          <link>/entries/Statecharts.html</link>
+          <link>https://isa-afp.org/entries/Statecharts.html</link>
           <pubDate>Sun, 08 Aug 2010 00:00:00 +0000</pubDate>
-          <guid>/entries/Statecharts.html</guid>
+          <guid>https://isa-afp.org/entries/Statecharts.html</guid>
           <description></description>
         </item>
   </channel>

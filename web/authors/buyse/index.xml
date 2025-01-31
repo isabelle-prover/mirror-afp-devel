@@ -3,7 +3,7 @@
   <channel>
     <title>buyse on Archive of Formal Proofs
     </title>
-    <link>/authors/buyse/</link>
+    <link>https://isa-afp.org/authors/buyse/</link>
     <description>
         Recent content in buyse 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Tue, 06 Aug 2019 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/buyse/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/buyse/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Communicating Concurrent Kleene Algebra for Distributed Systems Specification</title>
-          <link>/entries/C2KA_DistributedSystems.html</link>
+          <link>https://isa-afp.org/entries/C2KA_DistributedSystems.html</link>
           <pubDate>Tue, 06 Aug 2019 00:00:00 +0000</pubDate>
-          <guid>/entries/C2KA_DistributedSystems.html</guid>
+          <guid>https://isa-afp.org/entries/C2KA_DistributedSystems.html</guid>
           <description></description>
         </item>
   </channel>

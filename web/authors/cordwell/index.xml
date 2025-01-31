@@ -3,7 +3,7 @@
   <channel>
     <title>cordwell on Archive of Formal Proofs
     </title>
-    <link>/authors/cordwell/</link>
+    <link>https://isa-afp.org/authors/cordwell/</link>
     <description>
         Recent content in cordwell 
         on Archive of Formal Proofs
@@ -12,47 +12,47 @@
     <language>en-gb</language>
     
       <lastBuildDate>Thu, 26 Sep 2024 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/cordwell/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/cordwell/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Babai&#39;s Nearest Plane Algorithm</title>
-          <link>/entries/Babai_Nearest_Plane.html</link>
+          <link>https://isa-afp.org/entries/Babai_Nearest_Plane.html</link>
           <pubDate>Thu, 26 Sep 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Babai_Nearest_Plane.html</guid>
+          <guid>https://isa-afp.org/entries/Babai_Nearest_Plane.html</guid>
           <description></description>
         </item>
         <item>
           <title>Formalizing Coppersmith&#39;s Method</title>
-          <link>/entries/Coppersmith_Method.html</link>
+          <link>https://isa-afp.org/entries/Coppersmith_Method.html</link>
           <pubDate>Mon, 10 Jun 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Coppersmith_Method.html</guid>
+          <guid>https://isa-afp.org/entries/Coppersmith_Method.html</guid>
           <description></description>
         </item>
         <item>
           <title>Pick&#39;s Theorem</title>
-          <link>/entries/Picks_Theorem.html</link>
+          <link>https://isa-afp.org/entries/Picks_Theorem.html</link>
           <pubDate>Fri, 26 Apr 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Picks_Theorem.html</guid>
+          <guid>https://isa-afp.org/entries/Picks_Theorem.html</guid>
           <description></description>
         </item>
         <item>
           <title>A First Complete Algorithm for Real Quantifier Elimination in Isabelle/HOL</title>
-          <link>/entries/Quantifier_Elimination_Hybrid.html</link>
+          <link>https://isa-afp.org/entries/Quantifier_Elimination_Hybrid.html</link>
           <pubDate>Thu, 15 Dec 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/Quantifier_Elimination_Hybrid.html</guid>
+          <guid>https://isa-afp.org/entries/Quantifier_Elimination_Hybrid.html</guid>
           <description></description>
         </item>
         <item>
           <title>Verified Quadratic Virtual Substitution for Real Arithmetic</title>
-          <link>/entries/Virtual_Substitution.html</link>
+          <link>https://isa-afp.org/entries/Virtual_Substitution.html</link>
           <pubDate>Sat, 02 Oct 2021 00:00:00 +0000</pubDate>
-          <guid>/entries/Virtual_Substitution.html</guid>
+          <guid>https://isa-afp.org/entries/Virtual_Substitution.html</guid>
           <description></description>
         </item>
         <item>
           <title>The BKR Decision Procedure for Univariate Real Arithmetic</title>
-          <link>/entries/BenOr_Kozen_Reif.html</link>
+          <link>https://isa-afp.org/entries/BenOr_Kozen_Reif.html</link>
           <pubDate>Sat, 24 Apr 2021 00:00:00 +0000</pubDate>
-          <guid>/entries/BenOr_Kozen_Reif.html</guid>
+          <guid>https://isa-afp.org/entries/BenOr_Kozen_Reif.html</guid>
           <description></description>
         </item>
   </channel>

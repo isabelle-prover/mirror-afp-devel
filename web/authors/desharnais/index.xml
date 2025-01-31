@@ -3,7 +3,7 @@
   <channel>
     <title>desharnais on Archive of Formal Proofs
     </title>
-    <link>/authors/desharnais/</link>
+    <link>https://isa-afp.org/authors/desharnais/</link>
     <description>
         Recent content in desharnais 
         on Archive of Formal Proofs
@@ -12,54 +12,54 @@
     <language>en-gb</language>
     
       <lastBuildDate>Thu, 31 Oct 2024 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/desharnais/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/desharnais/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>SCL Simulates Nonredundant Ground Resolution</title>
-          <link>/entries/SCL_Simulates_Ground_Resolution.html</link>
+          <link>https://isa-afp.org/entries/SCL_Simulates_Ground_Resolution.html</link>
           <pubDate>Thu, 31 Oct 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/SCL_Simulates_Ground_Resolution.html</guid>
+          <guid>https://isa-afp.org/entries/SCL_Simulates_Ground_Resolution.html</guid>
           <description></description>
         </item>
         <item>
           <title>A Modular Formalization of Superposition</title>
-          <link>/entries/Superposition_Calculus.html</link>
+          <link>https://isa-afp.org/entries/Superposition_Calculus.html</link>
           <pubDate>Thu, 24 Oct 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Superposition_Calculus.html</guid>
+          <guid>https://isa-afp.org/entries/Superposition_Calculus.html</guid>
           <description></description>
         </item>
         <item>
           <title>Minimal, Maximal, Least, and Greatest Elements w.r.t. Restricted Ordering</title>
-          <link>/entries/Min_Max_Least_Greatest.html</link>
+          <link>https://isa-afp.org/entries/Min_Max_Least_Greatest.html</link>
           <pubDate>Thu, 24 Oct 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Min_Max_Least_Greatest.html</guid>
+          <guid>https://isa-afp.org/entries/Min_Max_Least_Greatest.html</guid>
           <description></description>
         </item>
         <item>
           <title>Abstract Substitution</title>
-          <link>/entries/Abstract_Substitution.html</link>
+          <link>https://isa-afp.org/entries/Abstract_Substitution.html</link>
           <pubDate>Mon, 16 Sep 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Abstract_Substitution.html</guid>
+          <guid>https://isa-afp.org/entries/Abstract_Substitution.html</guid>
           <description></description>
         </item>
         <item>
           <title>A Formalization of the SCL(FOL) Calculus: Simple Clause Learning for First-Order Logic</title>
-          <link>/entries/Simple_Clause_Learning.html</link>
+          <link>https://isa-afp.org/entries/Simple_Clause_Learning.html</link>
           <pubDate>Thu, 20 Apr 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/Simple_Clause_Learning.html</guid>
+          <guid>https://isa-afp.org/entries/Simple_Clause_Learning.html</guid>
           <description></description>
         </item>
         <item>
           <title>Inline Caching and Unboxing Optimization for Interpreters</title>
-          <link>/entries/Interpreter_Optimizations.html</link>
+          <link>https://isa-afp.org/entries/Interpreter_Optimizations.html</link>
           <pubDate>Mon, 07 Dec 2020 00:00:00 +0000</pubDate>
-          <guid>/entries/Interpreter_Optimizations.html</guid>
+          <guid>https://isa-afp.org/entries/Interpreter_Optimizations.html</guid>
           <description></description>
         </item>
         <item>
           <title>A Generic Framework for Verified Compilers</title>
-          <link>/entries/VeriComp.html</link>
+          <link>https://isa-afp.org/entries/VeriComp.html</link>
           <pubDate>Mon, 10 Feb 2020 00:00:00 +0000</pubDate>
-          <guid>/entries/VeriComp.html</guid>
+          <guid>https://isa-afp.org/entries/VeriComp.html</guid>
           <description></description>
         </item>
   </channel>

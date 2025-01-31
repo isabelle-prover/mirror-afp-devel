@@ -3,7 +3,7 @@
   <channel>
     <title>berghofer on Archive of Formal Proofs
     </title>
-    <link>/authors/berghofer/</link>
+    <link>https://isa-afp.org/authors/berghofer/</link>
     <description>
         Recent content in berghofer 
         on Archive of Formal Proofs
@@ -12,40 +12,40 @@
     <language>en-gb</language>
     
       <lastBuildDate>Tue, 28 Feb 2017 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/berghofer/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/berghofer/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>The Group Law for Elliptic Curves</title>
-          <link>/entries/Elliptic_Curves_Group_Law.html</link>
+          <link>https://isa-afp.org/entries/Elliptic_Curves_Group_Law.html</link>
           <pubDate>Tue, 28 Feb 2017 00:00:00 +0000</pubDate>
-          <guid>/entries/Elliptic_Curves_Group_Law.html</guid>
+          <guid>https://isa-afp.org/entries/Elliptic_Curves_Group_Law.html</guid>
           <description></description>
         </item>
         <item>
           <title>Nominal 2</title>
-          <link>/entries/Nominal2.html</link>
+          <link>https://isa-afp.org/entries/Nominal2.html</link>
           <pubDate>Thu, 21 Feb 2013 00:00:00 +0000</pubDate>
-          <guid>/entries/Nominal2.html</guid>
+          <guid>https://isa-afp.org/entries/Nominal2.html</guid>
           <description></description>
         </item>
         <item>
           <title>Formalizing the Logic-Automaton Connection</title>
-          <link>/entries/Presburger-Automata.html</link>
+          <link>https://isa-afp.org/entries/Presburger-Automata.html</link>
           <pubDate>Thu, 03 Dec 2009 00:00:00 +0000</pubDate>
-          <guid>/entries/Presburger-Automata.html</guid>
+          <guid>https://isa-afp.org/entries/Presburger-Automata.html</guid>
           <description></description>
         </item>
         <item>
           <title>First-Order Logic According to Fitting</title>
-          <link>/entries/FOL-Fitting.html</link>
+          <link>https://isa-afp.org/entries/FOL-Fitting.html</link>
           <pubDate>Thu, 02 Aug 2007 00:00:00 +0000</pubDate>
-          <guid>/entries/FOL-Fitting.html</guid>
+          <guid>https://isa-afp.org/entries/FOL-Fitting.html</guid>
           <description></description>
         </item>
         <item>
           <title>POPLmark Challenge Via de Bruijn Indices</title>
-          <link>/entries/POPLmark-deBruijn.html</link>
+          <link>https://isa-afp.org/entries/POPLmark-deBruijn.html</link>
           <pubDate>Thu, 02 Aug 2007 00:00:00 +0000</pubDate>
-          <guid>/entries/POPLmark-deBruijn.html</guid>
+          <guid>https://isa-afp.org/entries/POPLmark-deBruijn.html</guid>
           <description></description>
         </item>
   </channel>

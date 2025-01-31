@@ -3,7 +3,7 @@
   <channel>
     <title>merz on Archive of Formal Proofs
     </title>
-    <link>/authors/merz/</link>
+    <link>https://isa-afp.org/authors/merz/</link>
     <description>
         Recent content in merz 
         on Archive of Formal Proofs
@@ -12,40 +12,40 @@
     <language>en-gb</language>
     
       <lastBuildDate>Wed, 17 Aug 2022 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/merz/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/merz/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Correctness of a Set-based Algorithm for Computing Strongly Connected Components of a Graph</title>
-          <link>/entries/SCC_Bloemen_Sequential.html</link>
+          <link>https://isa-afp.org/entries/SCC_Bloemen_Sequential.html</link>
           <pubDate>Wed, 17 Aug 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/SCC_Bloemen_Sequential.html</guid>
+          <guid>https://isa-afp.org/entries/SCC_Bloemen_Sequential.html</guid>
           <description></description>
         </item>
         <item>
           <title>Verifying Fault-Tolerant Distributed Algorithms in the Heard-Of Model</title>
-          <link>/entries/Heard_Of.html</link>
+          <link>https://isa-afp.org/entries/Heard_Of.html</link>
           <pubDate>Fri, 27 Jul 2012 00:00:00 +0000</pubDate>
-          <guid>/entries/Heard_Of.html</guid>
+          <guid>https://isa-afp.org/entries/Heard_Of.html</guid>
           <description></description>
         </item>
         <item>
           <title>Stuttering Equivalence</title>
-          <link>/entries/Stuttering_Equivalence.html</link>
+          <link>https://isa-afp.org/entries/Stuttering_Equivalence.html</link>
           <pubDate>Mon, 07 May 2012 00:00:00 +0000</pubDate>
-          <guid>/entries/Stuttering_Equivalence.html</guid>
+          <guid>https://isa-afp.org/entries/Stuttering_Equivalence.html</guid>
           <description></description>
         </item>
         <item>
           <title>A Definitional Encoding of TLA* in Isabelle/HOL</title>
-          <link>/entries/TLA.html</link>
+          <link>https://isa-afp.org/entries/TLA.html</link>
           <pubDate>Sat, 19 Nov 2011 00:00:00 +0000</pubDate>
-          <guid>/entries/TLA.html</guid>
+          <guid>https://isa-afp.org/entries/TLA.html</guid>
           <description></description>
         </item>
         <item>
           <title>Proving the Correctness of Disk Paxos</title>
-          <link>/entries/DiskPaxos.html</link>
+          <link>https://isa-afp.org/entries/DiskPaxos.html</link>
           <pubDate>Wed, 22 Jun 2005 00:00:00 +0000</pubDate>
-          <guid>/entries/DiskPaxos.html</guid>
+          <guid>https://isa-afp.org/entries/DiskPaxos.html</guid>
           <description></description>
         </item>
   </channel>

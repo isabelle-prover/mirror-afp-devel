@@ -3,7 +3,7 @@
   <channel>
     <title>Root_Balanced_Tree on Archive of Formal Proofs
     </title>
-    <link>/dependencies/root_balanced_tree/</link>
+    <link>https://isa-afp.org/dependencies/root_balanced_tree/</link>
     <description>
         Recent content in Root_Balanced_Tree 
         on Archive of Formal Proofs
@@ -12,40 +12,40 @@
     <language>en-gb</language>
     
       <lastBuildDate>Sun, 08 Sep 2024 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/dependencies/root_balanced_tree/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/dependencies/root_balanced_tree/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Rabin&#39;s Closest Pair of Points Algorithm</title>
-          <link>/entries/Randomized_Closest_Pair.html</link>
+          <link>https://isa-afp.org/entries/Randomized_Closest_Pair.html</link>
           <pubDate>Sun, 08 Sep 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Randomized_Closest_Pair.html</guid>
+          <guid>https://isa-afp.org/entries/Randomized_Closest_Pair.html</guid>
           <description></description>
         </item>
         <item>
           <title>Schönhage-Strassen Multiplication</title>
-          <link>/entries/Schoenhage_Strassen.html</link>
+          <link>https://isa-afp.org/entries/Schoenhage_Strassen.html</link>
           <pubDate>Fri, 10 May 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Schoenhage_Strassen.html</guid>
+          <guid>https://isa-afp.org/entries/Schoenhage_Strassen.html</guid>
           <description></description>
         </item>
         <item>
           <title>Karatsuba Multiplication on Integers</title>
-          <link>/entries/Karatsuba.html</link>
+          <link>https://isa-afp.org/entries/Karatsuba.html</link>
           <pubDate>Mon, 19 Feb 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Karatsuba.html</guid>
+          <guid>https://isa-afp.org/entries/Karatsuba.html</guid>
           <description></description>
         </item>
         <item>
           <title>Closest Pair of Points Algorithms</title>
-          <link>/entries/Closest_Pair_Points.html</link>
+          <link>https://isa-afp.org/entries/Closest_Pair_Points.html</link>
           <pubDate>Mon, 13 Jan 2020 00:00:00 +0000</pubDate>
-          <guid>/entries/Closest_Pair_Points.html</guid>
+          <guid>https://isa-afp.org/entries/Closest_Pair_Points.html</guid>
           <description></description>
         </item>
         <item>
           <title>A Verified Code Generator from Isabelle/HOL to CakeML</title>
-          <link>/entries/CakeML_Codegen.html</link>
+          <link>https://isa-afp.org/entries/CakeML_Codegen.html</link>
           <pubDate>Mon, 08 Jul 2019 00:00:00 +0000</pubDate>
-          <guid>/entries/CakeML_Codegen.html</guid>
+          <guid>https://isa-afp.org/entries/CakeML_Codegen.html</guid>
           <description></description>
         </item>
   </channel>

@@ -3,7 +3,7 @@
   <channel>
     <title>cohen on Archive of Formal Proofs
     </title>
-    <link>/authors/cohen/</link>
+    <link>https://isa-afp.org/authors/cohen/</link>
     <description>
         Recent content in cohen 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Mon, 07 Jan 2019 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/cohen/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/cohen/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>A Reduction Theorem for Store Buffers</title>
-          <link>/entries/Store_Buffer_Reduction.html</link>
+          <link>https://isa-afp.org/entries/Store_Buffer_Reduction.html</link>
           <pubDate>Mon, 07 Jan 2019 00:00:00 +0000</pubDate>
-          <guid>/entries/Store_Buffer_Reduction.html</guid>
+          <guid>https://isa-afp.org/entries/Store_Buffer_Reduction.html</guid>
           <description></description>
         </item>
   </channel>

@@ -3,7 +3,7 @@
   <channel>
     <title>fell on Archive of Formal Proofs
     </title>
-    <link>/authors/fell/</link>
+    <link>https://isa-afp.org/authors/fell/</link>
     <description>
         Recent content in fell 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Fri, 30 Dec 2016 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/fell/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/fell/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Concurrent Refinement Algebra and Rely Quotients</title>
-          <link>/entries/Concurrent_Ref_Alg.html</link>
+          <link>https://isa-afp.org/entries/Concurrent_Ref_Alg.html</link>
           <pubDate>Fri, 30 Dec 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/Concurrent_Ref_Alg.html</guid>
+          <guid>https://isa-afp.org/entries/Concurrent_Ref_Alg.html</guid>
           <description></description>
         </item>
   </channel>

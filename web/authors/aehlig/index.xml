@@ -3,7 +3,7 @@
   <channel>
     <title>aehlig on Archive of Formal Proofs
     </title>
-    <link>/authors/aehlig/</link>
+    <link>https://isa-afp.org/authors/aehlig/</link>
     <description>
         Recent content in aehlig 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Mon, 18 Feb 2008 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/aehlig/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/aehlig/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Normalization by Evaluation</title>
-          <link>/entries/NormByEval.html</link>
+          <link>https://isa-afp.org/entries/NormByEval.html</link>
           <pubDate>Mon, 18 Feb 2008 00:00:00 +0000</pubDate>
-          <guid>/entries/NormByEval.html</guid>
+          <guid>https://isa-afp.org/entries/NormByEval.html</guid>
           <description></description>
         </item>
   </channel>

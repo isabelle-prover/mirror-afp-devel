@@ -3,7 +3,7 @@
   <channel>
     <title>wagner on Archive of Formal Proofs
     </title>
-    <link>/authors/wagner/</link>
+    <link>https://isa-afp.org/authors/wagner/</link>
     <description>
         Recent content in wagner 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Tue, 17 Jan 2017 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/wagner/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/wagner/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Minimal Static Single Assignment Form</title>
-          <link>/entries/Minimal_SSA.html</link>
+          <link>https://isa-afp.org/entries/Minimal_SSA.html</link>
           <pubDate>Tue, 17 Jan 2017 00:00:00 +0000</pubDate>
-          <guid>/entries/Minimal_SSA.html</guid>
+          <guid>https://isa-afp.org/entries/Minimal_SSA.html</guid>
           <description></description>
         </item>
   </channel>

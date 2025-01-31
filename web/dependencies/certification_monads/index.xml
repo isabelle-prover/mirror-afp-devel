@@ -3,7 +3,7 @@
   <channel>
     <title>Certification_Monads on Archive of Formal Proofs
     </title>
-    <link>/dependencies/certification_monads/</link>
+    <link>https://isa-afp.org/dependencies/certification_monads/</link>
     <description>
         Recent content in Certification_Monads 
         on Archive of Formal Proofs
@@ -12,33 +12,33 @@
     <language>en-gb</language>
     
       <lastBuildDate>Mon, 27 May 2024 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/dependencies/certification_monads/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/dependencies/certification_monads/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Verifying a Decision Procedure for Pattern Completeness</title>
-          <link>/entries/Pattern_Completeness.html</link>
+          <link>https://isa-afp.org/entries/Pattern_Completeness.html</link>
           <pubDate>Mon, 27 May 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Pattern_Completeness.html</guid>
+          <guid>https://isa-afp.org/entries/Pattern_Completeness.html</guid>
           <description></description>
         </item>
         <item>
           <title>AI Planning Languages Semantics</title>
-          <link>/entries/AI_Planning_Languages_Semantics.html</link>
+          <link>https://isa-afp.org/entries/AI_Planning_Languages_Semantics.html</link>
           <pubDate>Thu, 29 Oct 2020 00:00:00 +0000</pubDate>
-          <guid>/entries/AI_Planning_Languages_Semantics.html</guid>
+          <guid>https://isa-afp.org/entries/AI_Planning_Languages_Semantics.html</guid>
           <description></description>
         </item>
         <item>
           <title>Strong Eventual Consistency of the Collaborative Editing Framework WOOT</title>
-          <link>/entries/WOOT_Strong_Eventual_Consistency.html</link>
+          <link>https://isa-afp.org/entries/WOOT_Strong_Eventual_Consistency.html</link>
           <pubDate>Wed, 25 Mar 2020 00:00:00 +0000</pubDate>
-          <guid>/entries/WOOT_Strong_Eventual_Consistency.html</guid>
+          <guid>https://isa-afp.org/entries/WOOT_Strong_Eventual_Consistency.html</guid>
           <description></description>
         </item>
         <item>
           <title>XML</title>
-          <link>/entries/XML.html</link>
+          <link>https://isa-afp.org/entries/XML.html</link>
           <pubDate>Fri, 03 Oct 2014 00:00:00 +0000</pubDate>
-          <guid>/entries/XML.html</guid>
+          <guid>https://isa-afp.org/entries/XML.html</guid>
           <description></description>
         </item>
   </channel>

@@ -3,7 +3,7 @@
   <channel>
     <title>reynaud on Archive of Formal Proofs
     </title>
-    <link>/authors/reynaud/</link>
+    <link>https://isa-afp.org/authors/reynaud/</link>
     <description>
         Recent content in reynaud 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Fri, 21 Jun 2019 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/reynaud/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/reynaud/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Linear Inequalities</title>
-          <link>/entries/Linear_Inequalities.html</link>
+          <link>https://isa-afp.org/entries/Linear_Inequalities.html</link>
           <pubDate>Fri, 21 Jun 2019 00:00:00 +0000</pubDate>
-          <guid>/entries/Linear_Inequalities.html</guid>
+          <guid>https://isa-afp.org/entries/Linear_Inequalities.html</guid>
           <description></description>
         </item>
   </channel>

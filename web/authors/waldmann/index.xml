@@ -3,7 +3,7 @@
   <channel>
     <title>waldmann on Archive of Formal Proofs
     </title>
-    <link>/authors/waldmann/</link>
+    <link>https://isa-afp.org/authors/waldmann/</link>
     <description>
         Recent content in waldmann 
         on Archive of Formal Proofs
@@ -12,26 +12,26 @@
     <language>en-gb</language>
     
       <lastBuildDate>Thu, 18 Jan 2018 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/waldmann/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/waldmann/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Formalization of Bachmair and Ganzinger&#39;s Ordered Resolution Prover</title>
-          <link>/entries/Ordered_Resolution_Prover.html</link>
+          <link>https://isa-afp.org/entries/Ordered_Resolution_Prover.html</link>
           <pubDate>Thu, 18 Jan 2018 00:00:00 +0000</pubDate>
-          <guid>/entries/Ordered_Resolution_Prover.html</guid>
+          <guid>https://isa-afp.org/entries/Ordered_Resolution_Prover.html</guid>
           <description></description>
         </item>
         <item>
           <title>Formalization of Knuth–Bendix Orders for Lambda-Free Higher-Order Terms</title>
-          <link>/entries/Lambda_Free_KBOs.html</link>
+          <link>https://isa-afp.org/entries/Lambda_Free_KBOs.html</link>
           <pubDate>Sat, 12 Nov 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/Lambda_Free_KBOs.html</guid>
+          <guid>https://isa-afp.org/entries/Lambda_Free_KBOs.html</guid>
           <description></description>
         </item>
         <item>
           <title>Formalization of Recursive Path Orders for Lambda-Free Higher-Order Terms</title>
-          <link>/entries/Lambda_Free_RPOs.html</link>
+          <link>https://isa-afp.org/entries/Lambda_Free_RPOs.html</link>
           <pubDate>Fri, 23 Sep 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/Lambda_Free_RPOs.html</guid>
+          <guid>https://isa-afp.org/entries/Lambda_Free_RPOs.html</guid>
           <description></description>
         </item>
   </channel>

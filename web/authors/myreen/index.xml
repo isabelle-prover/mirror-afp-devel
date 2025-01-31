@@ -3,7 +3,7 @@
   <channel>
     <title>myreen on Archive of Formal Proofs
     </title>
-    <link>/authors/myreen/</link>
+    <link>https://isa-afp.org/authors/myreen/</link>
     <description>
         Recent content in myreen 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Fri, 20 Jan 2023 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/myreen/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/myreen/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>A Hoare Logic for Diverging Programs</title>
-          <link>/entries/HoareForDivergence.html</link>
+          <link>https://isa-afp.org/entries/HoareForDivergence.html</link>
           <pubDate>Fri, 20 Jan 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/HoareForDivergence.html</guid>
+          <guid>https://isa-afp.org/entries/HoareForDivergence.html</guid>
           <description></description>
         </item>
   </channel>

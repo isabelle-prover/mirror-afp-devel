@@ -3,7 +3,7 @@
   <channel>
     <title>CZH_Elementary_Categories on Archive of Formal Proofs
     </title>
-    <link>/dependencies/czh_elementary_categories/</link>
+    <link>https://isa-afp.org/dependencies/czh_elementary_categories/</link>
     <description>
         Recent content in CZH_Elementary_Categories 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Mon, 06 Sep 2021 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/dependencies/czh_elementary_categories/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/dependencies/czh_elementary_categories/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Category Theory for ZFC in HOL III: Universal Constructions</title>
-          <link>/entries/CZH_Universal_Constructions.html</link>
+          <link>https://isa-afp.org/entries/CZH_Universal_Constructions.html</link>
           <pubDate>Mon, 06 Sep 2021 00:00:00 +0000</pubDate>
-          <guid>/entries/CZH_Universal_Constructions.html</guid>
+          <guid>https://isa-afp.org/entries/CZH_Universal_Constructions.html</guid>
           <description></description>
         </item>
   </channel>

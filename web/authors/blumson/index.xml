@@ -3,7 +3,7 @@
   <channel>
     <title>blumson on Archive of Formal Proofs
     </title>
-    <link>/authors/blumson/</link>
+    <link>https://isa-afp.org/authors/blumson/</link>
     <description>
         Recent content in blumson 
         on Archive of Formal Proofs
@@ -12,19 +12,19 @@
     <language>en-gb</language>
     
       <lastBuildDate>Mon, 01 Mar 2021 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/blumson/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/blumson/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Mereology</title>
-          <link>/entries/Mereology.html</link>
+          <link>https://isa-afp.org/entries/Mereology.html</link>
           <pubDate>Mon, 01 Mar 2021 00:00:00 +0000</pubDate>
-          <guid>/entries/Mereology.html</guid>
+          <guid>https://isa-afp.org/entries/Mereology.html</guid>
           <description></description>
         </item>
         <item>
           <title>Anselm&#39;s God in Isabelle/HOL</title>
-          <link>/entries/AnselmGod.html</link>
+          <link>https://isa-afp.org/entries/AnselmGod.html</link>
           <pubDate>Wed, 06 Sep 2017 00:00:00 +0000</pubDate>
-          <guid>/entries/AnselmGod.html</guid>
+          <guid>https://isa-afp.org/entries/AnselmGod.html</guid>
           <description></description>
         </item>
   </channel>

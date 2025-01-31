@@ -3,7 +3,7 @@
   <channel>
     <title>Gauss_Jordan on Archive of Formal Proofs
     </title>
-    <link>/dependencies/gauss_jordan/</link>
+    <link>https://isa-afp.org/dependencies/gauss_jordan/</link>
     <description>
         Recent content in Gauss_Jordan 
         on Archive of Formal Proofs
@@ -12,33 +12,33 @@
     <language>en-gb</language>
     
       <lastBuildDate>Thu, 16 Dec 2021 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/dependencies/gauss_jordan/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/dependencies/gauss_jordan/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Verified Algorithms for Solving Markov Decision Processes</title>
-          <link>/entries/MDP-Algorithms.html</link>
+          <link>https://isa-afp.org/entries/MDP-Algorithms.html</link>
           <pubDate>Thu, 16 Dec 2021 00:00:00 +0000</pubDate>
-          <guid>/entries/MDP-Algorithms.html</guid>
+          <guid>https://isa-afp.org/entries/MDP-Algorithms.html</guid>
           <description></description>
         </item>
         <item>
           <title>Polynomial Factorization</title>
-          <link>/entries/Polynomial_Factorization.html</link>
+          <link>https://isa-afp.org/entries/Polynomial_Factorization.html</link>
           <pubDate>Fri, 29 Jan 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/Polynomial_Factorization.html</guid>
+          <guid>https://isa-afp.org/entries/Polynomial_Factorization.html</guid>
           <description></description>
         </item>
         <item>
           <title>Echelon Form</title>
-          <link>/entries/Echelon_Form.html</link>
+          <link>https://isa-afp.org/entries/Echelon_Form.html</link>
           <pubDate>Thu, 12 Feb 2015 00:00:00 +0000</pubDate>
-          <guid>/entries/Echelon_Form.html</guid>
+          <guid>https://isa-afp.org/entries/Echelon_Form.html</guid>
           <description></description>
         </item>
         <item>
           <title>QR Decomposition</title>
-          <link>/entries/QR_Decomposition.html</link>
+          <link>https://isa-afp.org/entries/QR_Decomposition.html</link>
           <pubDate>Thu, 12 Feb 2015 00:00:00 +0000</pubDate>
-          <guid>/entries/QR_Decomposition.html</guid>
+          <guid>https://isa-afp.org/entries/QR_Decomposition.html</guid>
           <description></description>
         </item>
   </channel>

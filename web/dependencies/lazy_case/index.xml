@@ -3,7 +3,7 @@
   <channel>
     <title>Lazy_Case on Archive of Formal Proofs
     </title>
-    <link>/dependencies/lazy_case/</link>
+    <link>https://isa-afp.org/dependencies/lazy_case/</link>
     <description>
         Recent content in Lazy_Case 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Wed, 24 May 2017 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/dependencies/lazy_case/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/dependencies/lazy_case/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Dictionary Construction</title>
-          <link>/entries/Dict_Construction.html</link>
+          <link>https://isa-afp.org/entries/Dict_Construction.html</link>
           <pubDate>Wed, 24 May 2017 00:00:00 +0000</pubDate>
-          <guid>/entries/Dict_Construction.html</guid>
+          <guid>https://isa-afp.org/entries/Dict_Construction.html</guid>
           <description></description>
         </item>
   </channel>

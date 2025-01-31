@@ -3,7 +3,7 @@
   <channel>
     <title>schlichtkrull on Archive of Formal Proofs
     </title>
-    <link>/authors/schlichtkrull/</link>
+    <link>https://isa-afp.org/authors/schlichtkrull/</link>
     <description>
         Recent content in schlichtkrull 
         on Archive of Formal Proofs
@@ -12,68 +12,68 @@
     <language>en-gb</language>
     
       <lastBuildDate>Mon, 20 Nov 2023 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/schlichtkrull/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/schlichtkrull/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Soundness of the Q0 proof system for higher-order logic</title>
-          <link>/entries/Q0_Soundness.html</link>
+          <link>https://isa-afp.org/entries/Q0_Soundness.html</link>
           <pubDate>Mon, 20 Nov 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/Q0_Soundness.html</guid>
+          <guid>https://isa-afp.org/entries/Q0_Soundness.html</guid>
           <description></description>
         </item>
         <item>
           <title>Labeled Transition Systems</title>
-          <link>/entries/Labeled_Transition_Systems.html</link>
+          <link>https://isa-afp.org/entries/Labeled_Transition_Systems.html</link>
           <pubDate>Tue, 31 Oct 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/Labeled_Transition_Systems.html</guid>
+          <guid>https://isa-afp.org/entries/Labeled_Transition_Systems.html</guid>
           <description></description>
         </item>
         <item>
           <title>Pushdown Systems</title>
-          <link>/entries/Pushdown_Systems.html</link>
+          <link>https://isa-afp.org/entries/Pushdown_Systems.html</link>
           <pubDate>Tue, 31 Oct 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/Pushdown_Systems.html</guid>
+          <guid>https://isa-afp.org/entries/Pushdown_Systems.html</guid>
           <description></description>
         </item>
         <item>
           <title>Automated Stateful Protocol Verification</title>
-          <link>/entries/Automated_Stateful_Protocol_Verification.html</link>
+          <link>https://isa-afp.org/entries/Automated_Stateful_Protocol_Verification.html</link>
           <pubDate>Wed, 08 Apr 2020 00:00:00 +0000</pubDate>
-          <guid>/entries/Automated_Stateful_Protocol_Verification.html</guid>
+          <guid>https://isa-afp.org/entries/Automated_Stateful_Protocol_Verification.html</guid>
           <description></description>
         </item>
         <item>
           <title>A Verified Functional Implementation of Bachmair and Ganzinger&#39;s Ordered Resolution Prover</title>
-          <link>/entries/Functional_Ordered_Resolution_Prover.html</link>
+          <link>https://isa-afp.org/entries/Functional_Ordered_Resolution_Prover.html</link>
           <pubDate>Fri, 23 Nov 2018 00:00:00 +0000</pubDate>
-          <guid>/entries/Functional_Ordered_Resolution_Prover.html</guid>
+          <guid>https://isa-afp.org/entries/Functional_Ordered_Resolution_Prover.html</guid>
           <description></description>
         </item>
         <item>
           <title>Formalization of Bachmair and Ganzinger&#39;s Ordered Resolution Prover</title>
-          <link>/entries/Ordered_Resolution_Prover.html</link>
+          <link>https://isa-afp.org/entries/Ordered_Resolution_Prover.html</link>
           <pubDate>Thu, 18 Jan 2018 00:00:00 +0000</pubDate>
-          <guid>/entries/Ordered_Resolution_Prover.html</guid>
+          <guid>https://isa-afp.org/entries/Ordered_Resolution_Prover.html</guid>
           <description></description>
         </item>
         <item>
           <title>First-Order Logic According to Harrison</title>
-          <link>/entries/FOL_Harrison.html</link>
+          <link>https://isa-afp.org/entries/FOL_Harrison.html</link>
           <pubDate>Sun, 01 Jan 2017 00:00:00 +0000</pubDate>
-          <guid>/entries/FOL_Harrison.html</guid>
+          <guid>https://isa-afp.org/entries/FOL_Harrison.html</guid>
           <description></description>
         </item>
         <item>
           <title>Paraconsistency</title>
-          <link>/entries/Paraconsistency.html</link>
+          <link>https://isa-afp.org/entries/Paraconsistency.html</link>
           <pubDate>Wed, 07 Dec 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/Paraconsistency.html</guid>
+          <guid>https://isa-afp.org/entries/Paraconsistency.html</guid>
           <description></description>
         </item>
         <item>
           <title>The Resolution Calculus for First-Order Logic</title>
-          <link>/entries/Resolution_FOL.html</link>
+          <link>https://isa-afp.org/entries/Resolution_FOL.html</link>
           <pubDate>Thu, 30 Jun 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/Resolution_FOL.html</guid>
+          <guid>https://isa-afp.org/entries/Resolution_FOL.html</guid>
           <description></description>
         </item>
   </channel>

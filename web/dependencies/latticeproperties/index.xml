@@ -3,7 +3,7 @@
   <channel>
     <title>LatticeProperties on Archive of Formal Proofs
     </title>
-    <link>/dependencies/latticeproperties/</link>
+    <link>https://isa-afp.org/dependencies/latticeproperties/</link>
     <description>
         Recent content in LatticeProperties 
         on Archive of Formal Proofs
@@ -12,26 +12,26 @@
     <language>en-gb</language>
     
       <lastBuildDate>Thu, 22 Sep 2011 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/dependencies/latticeproperties/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/dependencies/latticeproperties/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Algebra of Monotonic Boolean Transformers</title>
-          <link>/entries/MonoBoolTranAlgebra.html</link>
+          <link>https://isa-afp.org/entries/MonoBoolTranAlgebra.html</link>
           <pubDate>Thu, 22 Sep 2011 00:00:00 +0000</pubDate>
-          <guid>/entries/MonoBoolTranAlgebra.html</guid>
+          <guid>https://isa-afp.org/entries/MonoBoolTranAlgebra.html</guid>
           <description></description>
         </item>
         <item>
           <title>Pseudo Hoops</title>
-          <link>/entries/PseudoHoops.html</link>
+          <link>https://isa-afp.org/entries/PseudoHoops.html</link>
           <pubDate>Thu, 22 Sep 2011 00:00:00 +0000</pubDate>
-          <guid>/entries/PseudoHoops.html</guid>
+          <guid>https://isa-afp.org/entries/PseudoHoops.html</guid>
           <description></description>
         </item>
         <item>
           <title>Semantics and Data Refinement of Invariant Based Programs</title>
-          <link>/entries/DataRefinementIBP.html</link>
+          <link>https://isa-afp.org/entries/DataRefinementIBP.html</link>
           <pubDate>Fri, 28 May 2010 00:00:00 +0000</pubDate>
-          <guid>/entries/DataRefinementIBP.html</guid>
+          <guid>https://isa-afp.org/entries/DataRefinementIBP.html</guid>
           <description></description>
         </item>
   </channel>

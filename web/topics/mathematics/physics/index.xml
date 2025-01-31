@@ -3,7 +3,7 @@
   <channel>
     <title>Mathematics/Physics on Archive of Formal Proofs
     </title>
-    <link>/topics/mathematics/physics/</link>
+    <link>https://isa-afp.org/topics/mathematics/physics/</link>
     <description>
         Recent content in Mathematics/Physics 
         on Archive of Formal Proofs
@@ -11,89 +11,89 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <atom:link href="/topics/mathematics/physics/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/topics/mathematics/physics/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>The Halting Problem is Soluble in Malament-Hogarth Spacetimes</title>
-          <link>/entries/MHComputation.html</link>
+          <link>https://isa-afp.org/entries/MHComputation.html</link>
           <pubDate>Sat, 29 Apr 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/MHComputation.html</guid>
+          <guid>https://isa-afp.org/entries/MHComputation.html</guid>
           <description></description>
         </item>
         <item>
           <title>The Halting Problem is Soluble in Malament-Hogarth Spacetimes</title>
-          <link>/entries/MHComputation.html</link>
+          <link>https://isa-afp.org/entries/MHComputation.html</link>
           <pubDate>Sat, 29 Apr 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/MHComputation.html</guid>
+          <guid>https://isa-afp.org/entries/MHComputation.html</guid>
           <description></description>
         </item>
         <item>
           <title>No Faster-Than-Light Observers (GenRel)</title>
-          <link>/entries/No_FTL_observers_Gen_Rel.html</link>
+          <link>https://isa-afp.org/entries/No_FTL_observers_Gen_Rel.html</link>
           <pubDate>Sun, 05 Mar 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/No_FTL_observers_Gen_Rel.html</guid>
+          <guid>https://isa-afp.org/entries/No_FTL_observers_Gen_Rel.html</guid>
           <description></description>
         </item>
         <item>
           <title>No Faster-Than-Light Observers (GenRel)</title>
-          <link>/entries/No_FTL_observers_Gen_Rel.html</link>
+          <link>https://isa-afp.org/entries/No_FTL_observers_Gen_Rel.html</link>
           <pubDate>Sun, 05 Mar 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/No_FTL_observers_Gen_Rel.html</guid>
+          <guid>https://isa-afp.org/entries/No_FTL_observers_Gen_Rel.html</guid>
           <description></description>
         </item>
         <item>
           <title>Schutz&#39; Independent Axioms for Minkowski Spacetime</title>
-          <link>/entries/Schutz_Spacetime.html</link>
+          <link>https://isa-afp.org/entries/Schutz_Spacetime.html</link>
           <pubDate>Tue, 27 Jul 2021 00:00:00 +0000</pubDate>
-          <guid>/entries/Schutz_Spacetime.html</guid>
+          <guid>https://isa-afp.org/entries/Schutz_Spacetime.html</guid>
           <description></description>
         </item>
         <item>
           <title>Schutz&#39; Independent Axioms for Minkowski Spacetime</title>
-          <link>/entries/Schutz_Spacetime.html</link>
+          <link>https://isa-afp.org/entries/Schutz_Spacetime.html</link>
           <pubDate>Tue, 27 Jul 2021 00:00:00 +0000</pubDate>
-          <guid>/entries/Schutz_Spacetime.html</guid>
+          <guid>https://isa-afp.org/entries/Schutz_Spacetime.html</guid>
           <description></description>
         </item>
         <item>
           <title>A Sound Type System for Physical Quantities, Units, and Measurements</title>
-          <link>/entries/Physical_Quantities.html</link>
+          <link>https://isa-afp.org/entries/Physical_Quantities.html</link>
           <pubDate>Tue, 20 Oct 2020 00:00:00 +0000</pubDate>
-          <guid>/entries/Physical_Quantities.html</guid>
+          <guid>https://isa-afp.org/entries/Physical_Quantities.html</guid>
           <description></description>
         </item>
         <item>
           <title>A Sound Type System for Physical Quantities, Units, and Measurements</title>
-          <link>/entries/Physical_Quantities.html</link>
+          <link>https://isa-afp.org/entries/Physical_Quantities.html</link>
           <pubDate>Tue, 20 Oct 2020 00:00:00 +0000</pubDate>
-          <guid>/entries/Physical_Quantities.html</guid>
+          <guid>https://isa-afp.org/entries/Physical_Quantities.html</guid>
           <description></description>
         </item>
         <item>
           <title>A Formally Verified Checker of the Safe Distance Traffic Rules for Autonomous Vehicles</title>
-          <link>/entries/Safe_Distance.html</link>
+          <link>https://isa-afp.org/entries/Safe_Distance.html</link>
           <pubDate>Mon, 01 Jun 2020 00:00:00 +0000</pubDate>
-          <guid>/entries/Safe_Distance.html</guid>
+          <guid>https://isa-afp.org/entries/Safe_Distance.html</guid>
           <description></description>
         </item>
         <item>
           <title>A Formally Verified Checker of the Safe Distance Traffic Rules for Autonomous Vehicles</title>
-          <link>/entries/Safe_Distance.html</link>
+          <link>https://isa-afp.org/entries/Safe_Distance.html</link>
           <pubDate>Mon, 01 Jun 2020 00:00:00 +0000</pubDate>
-          <guid>/entries/Safe_Distance.html</guid>
+          <guid>https://isa-afp.org/entries/Safe_Distance.html</guid>
           <description></description>
         </item>
         <item>
           <title>No Faster-Than-Light Observers</title>
-          <link>/entries/No_FTL_observers.html</link>
+          <link>https://isa-afp.org/entries/No_FTL_observers.html</link>
           <pubDate>Thu, 28 Apr 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/No_FTL_observers.html</guid>
+          <guid>https://isa-afp.org/entries/No_FTL_observers.html</guid>
           <description></description>
         </item>
         <item>
           <title>No Faster-Than-Light Observers</title>
-          <link>/entries/No_FTL_observers.html</link>
+          <link>https://isa-afp.org/entries/No_FTL_observers.html</link>
           <pubDate>Thu, 28 Apr 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/No_FTL_observers.html</guid>
+          <guid>https://isa-afp.org/entries/No_FTL_observers.html</guid>
           <description></description>
         </item>
   </channel>

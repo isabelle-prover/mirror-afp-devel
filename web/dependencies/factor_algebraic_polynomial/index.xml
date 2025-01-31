@@ -3,7 +3,7 @@
   <channel>
     <title>Factor_Algebraic_Polynomial on Archive of Formal Proofs
     </title>
-    <link>/dependencies/factor_algebraic_polynomial/</link>
+    <link>https://isa-afp.org/dependencies/factor_algebraic_polynomial/</link>
     <description>
         Recent content in Factor_Algebraic_Polynomial 
         on Archive of Formal Proofs
@@ -12,40 +12,40 @@
     <language>en-gb</language>
     
       <lastBuildDate>Thu, 25 Apr 2024 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/dependencies/factor_algebraic_polynomial/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/dependencies/factor_algebraic_polynomial/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Undecidability Results on Orienting Single Rewrite Rules</title>
-          <link>/entries/Orient_Rewrite_Rule_Undecidable.html</link>
+          <link>https://isa-afp.org/entries/Orient_Rewrite_Rule_Undecidable.html</link>
           <pubDate>Thu, 25 Apr 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Orient_Rewrite_Rule_Undecidable.html</guid>
+          <guid>https://isa-afp.org/entries/Orient_Rewrite_Rule_Undecidable.html</guid>
           <description></description>
         </item>
         <item>
           <title>The Schwartz-Zippel Lemma</title>
-          <link>/entries/Schwartz_Zippel.html</link>
+          <link>https://isa-afp.org/entries/Schwartz_Zippel.html</link>
           <pubDate>Thu, 27 Apr 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/Schwartz_Zippel.html</guid>
+          <guid>https://isa-afp.org/entries/Schwartz_Zippel.html</guid>
           <description></description>
         </item>
         <item>
           <title>A First Complete Algorithm for Real Quantifier Elimination in Isabelle/HOL</title>
-          <link>/entries/Quantifier_Elimination_Hybrid.html</link>
+          <link>https://isa-afp.org/entries/Quantifier_Elimination_Hybrid.html</link>
           <pubDate>Thu, 15 Dec 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/Quantifier_Elimination_Hybrid.html</guid>
+          <guid>https://isa-afp.org/entries/Quantifier_Elimination_Hybrid.html</guid>
           <description></description>
         </item>
         <item>
           <title>Solving Cubic and Quartic Equations</title>
-          <link>/entries/Cubic_Quartic_Equations.html</link>
+          <link>https://isa-afp.org/entries/Cubic_Quartic_Equations.html</link>
           <pubDate>Fri, 03 Sep 2021 00:00:00 +0000</pubDate>
-          <guid>/entries/Cubic_Quartic_Equations.html</guid>
+          <guid>https://isa-afp.org/entries/Cubic_Quartic_Equations.html</guid>
           <description></description>
         </item>
         <item>
           <title>Linear Recurrences</title>
-          <link>/entries/Linear_Recurrences.html</link>
+          <link>https://isa-afp.org/entries/Linear_Recurrences.html</link>
           <pubDate>Thu, 12 Oct 2017 00:00:00 +0000</pubDate>
-          <guid>/entries/Linear_Recurrences.html</guid>
+          <guid>https://isa-afp.org/entries/Linear_Recurrences.html</guid>
           <description></description>
         </item>
   </channel>

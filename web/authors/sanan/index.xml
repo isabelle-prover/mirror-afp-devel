@@ -3,7 +3,7 @@
   <channel>
     <title>sanan on Archive of Formal Proofs
     </title>
-    <link>/authors/sanan/</link>
+    <link>https://isa-afp.org/authors/sanan/</link>
     <description>
         Recent content in sanan 
         on Archive of Formal Proofs
@@ -12,19 +12,19 @@
     <language>en-gb</language>
     
       <lastBuildDate>Wed, 16 Nov 2016 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/sanan/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/sanan/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Separata: Isabelle tactics for Separation Algebra</title>
-          <link>/entries/Separata.html</link>
+          <link>https://isa-afp.org/entries/Separata.html</link>
           <pubDate>Wed, 16 Nov 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/Separata.html</guid>
+          <guid>https://isa-afp.org/entries/Separata.html</guid>
           <description></description>
         </item>
         <item>
           <title>A formal model for the SPARCv8 ISA and a proof of non-interference for the LEON3 processor</title>
-          <link>/entries/SPARCv8.html</link>
+          <link>https://isa-afp.org/entries/SPARCv8.html</link>
           <pubDate>Wed, 19 Oct 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/SPARCv8.html</guid>
+          <guid>https://isa-afp.org/entries/SPARCv8.html</guid>
           <description></description>
         </item>
   </channel>

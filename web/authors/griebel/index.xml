@@ -3,7 +3,7 @@
   <channel>
     <title>griebel on Archive of Formal Proofs
     </title>
-    <link>/authors/griebel/</link>
+    <link>https://isa-afp.org/authors/griebel/</link>
     <description>
         Recent content in griebel 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Thu, 13 Jun 2019 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/griebel/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/griebel/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Binary Heaps for IMP2</title>
-          <link>/entries/IMP2_Binary_Heap.html</link>
+          <link>https://isa-afp.org/entries/IMP2_Binary_Heap.html</link>
           <pubDate>Thu, 13 Jun 2019 00:00:00 +0000</pubDate>
-          <guid>/entries/IMP2_Binary_Heap.html</guid>
+          <guid>https://isa-afp.org/entries/IMP2_Binary_Heap.html</guid>
           <description></description>
         </item>
   </channel>

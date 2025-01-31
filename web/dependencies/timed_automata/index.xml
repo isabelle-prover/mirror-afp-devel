@@ -3,7 +3,7 @@
   <channel>
     <title>Timed_Automata on Archive of Formal Proofs
     </title>
-    <link>/dependencies/timed_automata/</link>
+    <link>https://isa-afp.org/dependencies/timed_automata/</link>
     <description>
         Recent content in Timed_Automata 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Thu, 24 May 2018 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/dependencies/timed_automata/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/dependencies/timed_automata/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Probabilistic Timed Automata</title>
-          <link>/entries/Probabilistic_Timed_Automata.html</link>
+          <link>https://isa-afp.org/entries/Probabilistic_Timed_Automata.html</link>
           <pubDate>Thu, 24 May 2018 00:00:00 +0000</pubDate>
-          <guid>/entries/Probabilistic_Timed_Automata.html</guid>
+          <guid>https://isa-afp.org/entries/Probabilistic_Timed_Automata.html</guid>
           <description></description>
         </item>
   </channel>

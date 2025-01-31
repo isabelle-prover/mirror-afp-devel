@@ -3,7 +3,7 @@
   <channel>
     <title>Concentration_Inequalities on Archive of Formal Proofs
     </title>
-    <link>/dependencies/concentration_inequalities/</link>
+    <link>https://isa-afp.org/dependencies/concentration_inequalities/</link>
     <description>
         Recent content in Concentration_Inequalities 
         on Archive of Formal Proofs
@@ -12,26 +12,26 @@
     <language>en-gb</language>
     
       <lastBuildDate>Fri, 15 Mar 2024 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/dependencies/concentration_inequalities/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/dependencies/concentration_inequalities/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Approximate Model Counting</title>
-          <link>/entries/Approximate_Model_Counting.html</link>
+          <link>https://isa-afp.org/entries/Approximate_Model_Counting.html</link>
           <pubDate>Fri, 15 Mar 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Approximate_Model_Counting.html</guid>
+          <guid>https://isa-afp.org/entries/Approximate_Model_Counting.html</guid>
           <description></description>
         </item>
         <item>
           <title>Formalization of Randomized Approximation Algorithms for Frequency Moments</title>
-          <link>/entries/Frequency_Moments.html</link>
+          <link>https://isa-afp.org/entries/Frequency_Moments.html</link>
           <pubDate>Fri, 08 Apr 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/Frequency_Moments.html</guid>
+          <guid>https://isa-afp.org/entries/Frequency_Moments.html</guid>
           <description></description>
         </item>
         <item>
           <title>Universal Hash Families</title>
-          <link>/entries/Universal_Hash_Families.html</link>
+          <link>https://isa-afp.org/entries/Universal_Hash_Families.html</link>
           <pubDate>Sun, 20 Feb 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/Universal_Hash_Families.html</guid>
+          <guid>https://isa-afp.org/entries/Universal_Hash_Families.html</guid>
           <description></description>
         </item>
   </channel>

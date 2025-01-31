@@ -3,7 +3,7 @@
   <channel>
     <title>schirmer on Archive of Formal Proofs
     </title>
-    <link>/authors/schirmer/</link>
+    <link>https://isa-afp.org/authors/schirmer/</link>
     <description>
         Recent content in schirmer 
         on Archive of Formal Proofs
@@ -12,40 +12,40 @@
     <language>en-gb</language>
     
       <lastBuildDate>Wed, 17 Apr 2024 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/schirmer/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/schirmer/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>AutoCorres2</title>
-          <link>/entries/AutoCorres2.html</link>
+          <link>https://isa-afp.org/entries/AutoCorres2.html</link>
           <pubDate>Wed, 17 Apr 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/AutoCorres2.html</guid>
+          <guid>https://isa-afp.org/entries/AutoCorres2.html</guid>
           <description></description>
         </item>
         <item>
           <title>A Reduction Theorem for Store Buffers</title>
-          <link>/entries/Store_Buffer_Reduction.html</link>
+          <link>https://isa-afp.org/entries/Store_Buffer_Reduction.html</link>
           <pubDate>Mon, 07 Jan 2019 00:00:00 +0000</pubDate>
-          <guid>/entries/Store_Buffer_Reduction.html</guid>
+          <guid>https://isa-afp.org/entries/Store_Buffer_Reduction.html</guid>
           <description></description>
         </item>
         <item>
           <title>A Sequential Imperative Programming Language Syntax, Semantics, Hoare Logics and Verification Environment</title>
-          <link>/entries/Simpl.html</link>
+          <link>https://isa-afp.org/entries/Simpl.html</link>
           <pubDate>Fri, 29 Feb 2008 00:00:00 +0000</pubDate>
-          <guid>/entries/Simpl.html</guid>
+          <guid>https://isa-afp.org/entries/Simpl.html</guid>
           <description></description>
         </item>
         <item>
           <title>BDD Normalisation</title>
-          <link>/entries/BDD.html</link>
+          <link>https://isa-afp.org/entries/BDD.html</link>
           <pubDate>Fri, 29 Feb 2008 00:00:00 +0000</pubDate>
-          <guid>/entries/BDD.html</guid>
+          <guid>https://isa-afp.org/entries/BDD.html</guid>
           <description></description>
         </item>
         <item>
           <title>Jive Data and Store Model</title>
-          <link>/entries/JiveDataStoreModel.html</link>
+          <link>https://isa-afp.org/entries/JiveDataStoreModel.html</link>
           <pubDate>Mon, 20 Jun 2005 00:00:00 +0000</pubDate>
-          <guid>/entries/JiveDataStoreModel.html</guid>
+          <guid>https://isa-afp.org/entries/JiveDataStoreModel.html</guid>
           <description></description>
         </item>
   </channel>

@@ -3,7 +3,7 @@
   <channel>
     <title>muendler on Archive of Formal Proofs
     </title>
-    <link>/authors/muendler/</link>
+    <link>https://isa-afp.org/authors/muendler/</link>
     <description>
         Recent content in muendler 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Wed, 24 Feb 2021 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/muendler/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/muendler/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>A Verified Imperative Implementation of B-Trees</title>
-          <link>/entries/BTree.html</link>
+          <link>https://isa-afp.org/entries/BTree.html</link>
           <pubDate>Wed, 24 Feb 2021 00:00:00 +0000</pubDate>
-          <guid>/entries/BTree.html</guid>
+          <guid>https://isa-afp.org/entries/BTree.html</guid>
           <description></description>
         </item>
   </channel>

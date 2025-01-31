@@ -3,7 +3,7 @@
   <channel>
     <title>Saturation_Framework_Extensions on Archive of Formal Proofs
     </title>
-    <link>/dependencies/saturation_framework_extensions/</link>
+    <link>https://isa-afp.org/dependencies/saturation_framework_extensions/</link>
     <description>
         Recent content in Saturation_Framework_Extensions 
         on Archive of Formal Proofs
@@ -12,26 +12,26 @@
     <language>en-gb</language>
     
       <lastBuildDate>Fri, 17 Jan 2025 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/dependencies/saturation_framework_extensions/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/dependencies/saturation_framework_extensions/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>First Order Clause</title>
-          <link>/entries/First_Order_Clause.html</link>
+          <link>https://isa-afp.org/entries/First_Order_Clause.html</link>
           <pubDate>Fri, 17 Jan 2025 00:00:00 +0000</pubDate>
-          <guid>/entries/First_Order_Clause.html</guid>
+          <guid>https://isa-afp.org/entries/First_Order_Clause.html</guid>
           <description></description>
         </item>
         <item>
           <title>A Modular Formalization of Superposition</title>
-          <link>/entries/Superposition_Calculus.html</link>
+          <link>https://isa-afp.org/entries/Superposition_Calculus.html</link>
           <pubDate>Thu, 24 Oct 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Superposition_Calculus.html</guid>
+          <guid>https://isa-afp.org/entries/Superposition_Calculus.html</guid>
           <description></description>
         </item>
         <item>
           <title>A Formalization of the SCL(FOL) Calculus: Simple Clause Learning for First-Order Logic</title>
-          <link>/entries/Simple_Clause_Learning.html</link>
+          <link>https://isa-afp.org/entries/Simple_Clause_Learning.html</link>
           <pubDate>Thu, 20 Apr 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/Simple_Clause_Learning.html</guid>
+          <guid>https://isa-afp.org/entries/Simple_Clause_Learning.html</guid>
           <description></description>
         </item>
   </channel>

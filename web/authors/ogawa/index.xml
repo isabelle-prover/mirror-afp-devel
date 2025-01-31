@@ -3,7 +3,7 @@
   <channel>
     <title>ogawa on Archive of Formal Proofs
     </title>
-    <link>/authors/ogawa/</link>
+    <link>https://isa-afp.org/authors/ogawa/</link>
     <description>
         Recent content in ogawa 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Fri, 02 Nov 2012 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/ogawa/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/ogawa/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Open Induction</title>
-          <link>/entries/Open_Induction.html</link>
+          <link>https://isa-afp.org/entries/Open_Induction.html</link>
           <pubDate>Fri, 02 Nov 2012 00:00:00 +0000</pubDate>
-          <guid>/entries/Open_Induction.html</guid>
+          <guid>https://isa-afp.org/entries/Open_Induction.html</guid>
           <description></description>
         </item>
   </channel>

@@ -3,7 +3,7 @@
   <channel>
     <title>LLL_Factorization on Archive of Formal Proofs
     </title>
-    <link>/dependencies/lll_factorization/</link>
+    <link>https://isa-afp.org/dependencies/lll_factorization/</link>
     <description>
         Recent content in LLL_Factorization 
         on Archive of Formal Proofs
@@ -12,19 +12,19 @@
     <language>en-gb</language>
     
       <lastBuildDate>Thu, 26 Sep 2024 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/dependencies/lll_factorization/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/dependencies/lll_factorization/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Babai&#39;s Nearest Plane Algorithm</title>
-          <link>/entries/Babai_Nearest_Plane.html</link>
+          <link>https://isa-afp.org/entries/Babai_Nearest_Plane.html</link>
           <pubDate>Thu, 26 Sep 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Babai_Nearest_Plane.html</guid>
+          <guid>https://isa-afp.org/entries/Babai_Nearest_Plane.html</guid>
           <description></description>
         </item>
         <item>
           <title>Formalizing Coppersmith&#39;s Method</title>
-          <link>/entries/Coppersmith_Method.html</link>
+          <link>https://isa-afp.org/entries/Coppersmith_Method.html</link>
           <pubDate>Mon, 10 Jun 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Coppersmith_Method.html</guid>
+          <guid>https://isa-afp.org/entries/Coppersmith_Method.html</guid>
           <description></description>
         </item>
   </channel>

@@ -3,7 +3,7 @@
   <channel>
     <title>Symmetric_Polynomials on Archive of Formal Proofs
     </title>
-    <link>/dependencies/symmetric_polynomials/</link>
+    <link>https://isa-afp.org/dependencies/symmetric_polynomials/</link>
     <description>
         Recent content in Symmetric_Polynomials 
         on Archive of Formal Proofs
@@ -12,19 +12,19 @@
     <language>en-gb</language>
     
       <lastBuildDate>Fri, 24 Apr 2020 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/dependencies/symmetric_polynomials/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/dependencies/symmetric_polynomials/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Power Sum Polynomials</title>
-          <link>/entries/Power_Sum_Polynomials.html</link>
+          <link>https://isa-afp.org/entries/Power_Sum_Polynomials.html</link>
           <pubDate>Fri, 24 Apr 2020 00:00:00 +0000</pubDate>
-          <guid>/entries/Power_Sum_Polynomials.html</guid>
+          <guid>https://isa-afp.org/entries/Power_Sum_Polynomials.html</guid>
           <description></description>
         </item>
         <item>
           <title>The Transcendence of π</title>
-          <link>/entries/Pi_Transcendental.html</link>
+          <link>https://isa-afp.org/entries/Pi_Transcendental.html</link>
           <pubDate>Fri, 28 Sep 2018 00:00:00 +0000</pubDate>
-          <guid>/entries/Pi_Transcendental.html</guid>
+          <guid>https://isa-afp.org/entries/Pi_Transcendental.html</guid>
           <description></description>
         </item>
   </channel>

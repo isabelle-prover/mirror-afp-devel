@@ -3,7 +3,7 @@
   <channel>
     <title>Program-Conflict-Analysis on Archive of Formal Proofs
     </title>
-    <link>/dependencies/program-conflict-analysis/</link>
+    <link>https://isa-afp.org/dependencies/program-conflict-analysis/</link>
     <description>
         Recent content in Program-Conflict-Analysis 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Thu, 01 Jun 2017 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/dependencies/program-conflict-analysis/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/dependencies/program-conflict-analysis/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Flow Networks and the Min-Cut-Max-Flow Theorem</title>
-          <link>/entries/Flow_Networks.html</link>
+          <link>https://isa-afp.org/entries/Flow_Networks.html</link>
           <pubDate>Thu, 01 Jun 2017 00:00:00 +0000</pubDate>
-          <guid>/entries/Flow_Networks.html</guid>
+          <guid>https://isa-afp.org/entries/Flow_Networks.html</guid>
           <description></description>
         </item>
   </channel>

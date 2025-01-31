@@ -3,7 +3,7 @@
   <channel>
     <title>losa on Archive of Formal Proofs
     </title>
-    <link>/authors/losa/</link>
+    <link>https://isa-afp.org/authors/losa/</link>
     <description>
         Recent content in losa 
         on Archive of Formal Proofs
@@ -12,19 +12,19 @@
     <language>en-gb</language>
     
       <lastBuildDate>Thu, 01 Aug 2019 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/losa/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/losa/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Stellar Quorum Systems</title>
-          <link>/entries/Stellar_Quorums.html</link>
+          <link>https://isa-afp.org/entries/Stellar_Quorums.html</link>
           <pubDate>Thu, 01 Aug 2019 00:00:00 +0000</pubDate>
-          <guid>/entries/Stellar_Quorums.html</guid>
+          <guid>https://isa-afp.org/entries/Stellar_Quorums.html</guid>
           <description></description>
         </item>
         <item>
           <title>Abortable Linearizable Modules</title>
-          <link>/entries/Abortable_Linearizable_Modules.html</link>
+          <link>https://isa-afp.org/entries/Abortable_Linearizable_Modules.html</link>
           <pubDate>Thu, 01 Mar 2012 00:00:00 +0000</pubDate>
-          <guid>/entries/Abortable_Linearizable_Modules.html</guid>
+          <guid>https://isa-afp.org/entries/Abortable_Linearizable_Modules.html</guid>
           <description></description>
         </item>
   </channel>

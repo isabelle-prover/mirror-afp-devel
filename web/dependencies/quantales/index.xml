@@ -3,7 +3,7 @@
   <channel>
     <title>Quantales on Archive of Formal Proofs
     </title>
-    <link>/dependencies/quantales/</link>
+    <link>https://isa-afp.org/dependencies/quantales/</link>
     <description>
         Recent content in Quantales 
         on Archive of Formal Proofs
@@ -12,26 +12,26 @@
     <language>en-gb</language>
     
       <lastBuildDate>Mon, 14 Aug 2023 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/dependencies/quantales/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/dependencies/quantales/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Catoids, Categories, Groupoids</title>
-          <link>/entries/Catoids.html</link>
+          <link>https://isa-afp.org/entries/Catoids.html</link>
           <pubDate>Mon, 14 Aug 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/Catoids.html</guid>
+          <guid>https://isa-afp.org/entries/Catoids.html</guid>
           <description></description>
         </item>
         <item>
           <title>Modal quantales, involutive quantales, Dedekind Quantales</title>
-          <link>/entries/Quantales_Converse.html</link>
+          <link>https://isa-afp.org/entries/Quantales_Converse.html</link>
           <pubDate>Tue, 25 Jul 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/Quantales_Converse.html</guid>
+          <guid>https://isa-afp.org/entries/Quantales_Converse.html</guid>
           <description></description>
         </item>
         <item>
           <title>Transformer Semantics</title>
-          <link>/entries/Transformer_Semantics.html</link>
+          <link>https://isa-afp.org/entries/Transformer_Semantics.html</link>
           <pubDate>Tue, 11 Dec 2018 00:00:00 +0000</pubDate>
-          <guid>/entries/Transformer_Semantics.html</guid>
+          <guid>https://isa-afp.org/entries/Transformer_Semantics.html</guid>
           <description></description>
         </item>
   </channel>

@@ -3,7 +3,7 @@
   <channel>
     <title>Frequency_Moments on Archive of Formal Proofs
     </title>
-    <link>/dependencies/frequency_moments/</link>
+    <link>https://isa-afp.org/dependencies/frequency_moments/</link>
     <description>
         Recent content in Frequency_Moments 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Mon, 03 Apr 2023 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/dependencies/frequency_moments/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/dependencies/frequency_moments/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Distributed Distinct Elements</title>
-          <link>/entries/Distributed_Distinct_Elements.html</link>
+          <link>https://isa-afp.org/entries/Distributed_Distinct_Elements.html</link>
           <pubDate>Mon, 03 Apr 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/Distributed_Distinct_Elements.html</guid>
+          <guid>https://isa-afp.org/entries/Distributed_Distinct_Elements.html</guid>
           <description></description>
         </item>
   </channel>

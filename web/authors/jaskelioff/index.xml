@@ -3,7 +3,7 @@
   <channel>
     <title>jaskelioff on Archive of Formal Proofs
     </title>
-    <link>/authors/jaskelioff/</link>
+    <link>https://isa-afp.org/authors/jaskelioff/</link>
     <description>
         Recent content in jaskelioff 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Wed, 22 Jun 2005 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/jaskelioff/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/jaskelioff/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Proving the Correctness of Disk Paxos</title>
-          <link>/entries/DiskPaxos.html</link>
+          <link>https://isa-afp.org/entries/DiskPaxos.html</link>
           <pubDate>Wed, 22 Jun 2005 00:00:00 +0000</pubDate>
-          <guid>/entries/DiskPaxos.html</guid>
+          <guid>https://isa-afp.org/entries/DiskPaxos.html</guid>
           <description></description>
         </item>
   </channel>

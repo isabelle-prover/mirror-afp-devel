@@ -3,7 +3,7 @@
   <channel>
     <title>brien on Archive of Formal Proofs
     </title>
-    <link>/authors/brien/</link>
+    <link>https://isa-afp.org/authors/brien/</link>
     <description>
         Recent content in brien 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Tue, 08 Dec 2020 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/brien/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/brien/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Relational Minimum Spanning Tree Algorithms</title>
-          <link>/entries/Relational_Minimum_Spanning_Trees.html</link>
+          <link>https://isa-afp.org/entries/Relational_Minimum_Spanning_Trees.html</link>
           <pubDate>Tue, 08 Dec 2020 00:00:00 +0000</pubDate>
-          <guid>/entries/Relational_Minimum_Spanning_Trees.html</guid>
+          <guid>https://isa-afp.org/entries/Relational_Minimum_Spanning_Trees.html</guid>
           <description></description>
         </item>
   </channel>

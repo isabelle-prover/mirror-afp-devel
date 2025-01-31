@@ -3,7 +3,7 @@
   <channel>
     <title>andronick on Archive of Formal Proofs
     </title>
-    <link>/authors/andronick/</link>
+    <link>https://isa-afp.org/authors/andronick/</link>
     <description>
         Recent content in andronick 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Tue, 29 Nov 2016 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/andronick/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/andronick/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>COMPLX: A Verification Framework for Concurrent Imperative Programs</title>
-          <link>/entries/Complx.html</link>
+          <link>https://isa-afp.org/entries/Complx.html</link>
           <pubDate>Tue, 29 Nov 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/Complx.html</guid>
+          <guid>https://isa-afp.org/entries/Complx.html</guid>
           <description></description>
         </item>
   </channel>

@@ -3,7 +3,7 @@
   <channel>
     <title>Nat-Interval-Logic on Archive of Formal Proofs
     </title>
-    <link>/dependencies/nat-interval-logic/</link>
+    <link>https://isa-afp.org/dependencies/nat-interval-logic/</link>
     <description>
         Recent content in Nat-Interval-Logic 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Wed, 23 Feb 2011 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/dependencies/nat-interval-logic/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/dependencies/nat-interval-logic/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>AutoFocus Stream Processing for Single-Clocking and Multi-Clocking Semantics</title>
-          <link>/entries/AutoFocus-Stream.html</link>
+          <link>https://isa-afp.org/entries/AutoFocus-Stream.html</link>
           <pubDate>Wed, 23 Feb 2011 00:00:00 +0000</pubDate>
-          <guid>/entries/AutoFocus-Stream.html</guid>
+          <guid>https://isa-afp.org/entries/AutoFocus-Stream.html</guid>
           <description></description>
         </item>
   </channel>

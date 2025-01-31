@@ -3,7 +3,7 @@
   <channel>
     <title>ortner on Archive of Formal Proofs
     </title>
-    <link>/authors/ortner/</link>
+    <link>https://isa-afp.org/authors/ortner/</link>
     <description>
         Recent content in ortner 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Fri, 29 Feb 2008 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/ortner/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/ortner/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>BDD Normalisation</title>
-          <link>/entries/BDD.html</link>
+          <link>https://isa-afp.org/entries/BDD.html</link>
           <pubDate>Fri, 29 Feb 2008 00:00:00 +0000</pubDate>
-          <guid>/entries/BDD.html</guid>
+          <guid>https://isa-afp.org/entries/BDD.html</guid>
           <description></description>
         </item>
   </channel>

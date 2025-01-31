@@ -3,7 +3,7 @@
   <channel>
     <title>schmidinger on Archive of Formal Proofs
     </title>
-    <link>/authors/schmidinger/</link>
+    <link>https://isa-afp.org/authors/schmidinger/</link>
     <description>
         Recent content in schmidinger 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Wed, 20 Apr 2022 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/schmidinger/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/schmidinger/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>The Generalized Multiset Ordering is NP-Complete</title>
-          <link>/entries/Multiset_Ordering_NPC.html</link>
+          <link>https://isa-afp.org/entries/Multiset_Ordering_NPC.html</link>
           <pubDate>Wed, 20 Apr 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/Multiset_Ordering_NPC.html</guid>
+          <guid>https://isa-afp.org/entries/Multiset_Ordering_NPC.html</guid>
           <description></description>
         </item>
   </channel>

@@ -3,7 +3,7 @@
   <channel>
     <title>moeller on Archive of Formal Proofs
     </title>
-    <link>/authors/moeller/</link>
+    <link>https://isa-afp.org/authors/moeller/</link>
     <description>
         Recent content in moeller 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Fri, 31 Jan 2020 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/moeller/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/moeller/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>A Hierarchy of Algebras for Boolean Subsets</title>
-          <link>/entries/Subset_Boolean_Algebras.html</link>
+          <link>https://isa-afp.org/entries/Subset_Boolean_Algebras.html</link>
           <pubDate>Fri, 31 Jan 2020 00:00:00 +0000</pubDate>
-          <guid>/entries/Subset_Boolean_Algebras.html</guid>
+          <guid>https://isa-afp.org/entries/Subset_Boolean_Algebras.html</guid>
           <description></description>
         </item>
   </channel>

@@ -3,7 +3,7 @@
   <channel>
     <title>scott on Archive of Formal Proofs
     </title>
-    <link>/authors/scott/</link>
+    <link>https://isa-afp.org/authors/scott/</link>
     <description>
         Recent content in scott 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Wed, 23 May 2018 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/scott/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/scott/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Axiom Systems for Category Theory in Free Logic</title>
-          <link>/entries/AxiomaticCategoryTheory.html</link>
+          <link>https://isa-afp.org/entries/AxiomaticCategoryTheory.html</link>
           <pubDate>Wed, 23 May 2018 00:00:00 +0000</pubDate>
-          <guid>/entries/AxiomaticCategoryTheory.html</guid>
+          <guid>https://isa-afp.org/entries/AxiomaticCategoryTheory.html</guid>
           <description></description>
         </item>
   </channel>

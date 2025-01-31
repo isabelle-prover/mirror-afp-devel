@@ -3,7 +3,7 @@
   <channel>
     <title>wickerson on Archive of Formal Proofs
     </title>
-    <link>/authors/wickerson/</link>
+    <link>https://isa-afp.org/authors/wickerson/</link>
     <description>
         Recent content in wickerson 
         on Archive of Formal Proofs
@@ -12,19 +12,19 @@
     <language>en-gb</language>
     
       <lastBuildDate>Thu, 03 Apr 2014 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/wickerson/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/wickerson/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Syntax and semantics of a GPU kernel programming language</title>
-          <link>/entries/GPU_Kernel_PL.html</link>
+          <link>https://isa-afp.org/entries/GPU_Kernel_PL.html</link>
           <pubDate>Thu, 03 Apr 2014 00:00:00 +0000</pubDate>
-          <guid>/entries/GPU_Kernel_PL.html</guid>
+          <guid>https://isa-afp.org/entries/GPU_Kernel_PL.html</guid>
           <description></description>
         </item>
         <item>
           <title>Ribbon Proofs</title>
-          <link>/entries/Ribbon_Proofs.html</link>
+          <link>https://isa-afp.org/entries/Ribbon_Proofs.html</link>
           <pubDate>Sat, 19 Jan 2013 00:00:00 +0000</pubDate>
-          <guid>/entries/Ribbon_Proofs.html</guid>
+          <guid>https://isa-afp.org/entries/Ribbon_Proofs.html</guid>
           <description></description>
         </item>
   </channel>

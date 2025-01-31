@@ -3,7 +3,7 @@
   <channel>
     <title>overbeek on Archive of Formal Proofs
     </title>
-    <link>/authors/overbeek/</link>
+    <link>https://isa-afp.org/authors/overbeek/</link>
     <description>
         Recent content in overbeek 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Tue, 25 Dec 2018 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/overbeek/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/overbeek/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Formalization of Concurrent Revisions</title>
-          <link>/entries/Concurrent_Revisions.html</link>
+          <link>https://isa-afp.org/entries/Concurrent_Revisions.html</link>
           <pubDate>Tue, 25 Dec 2018 00:00:00 +0000</pubDate>
-          <guid>/entries/Concurrent_Revisions.html</guid>
+          <guid>https://isa-afp.org/entries/Concurrent_Revisions.html</guid>
           <description></description>
         </item>
   </channel>

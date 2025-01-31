@@ -3,7 +3,7 @@
   <channel>
     <title>naraschewski on Archive of Formal Proofs
     </title>
-    <link>/authors/naraschewski/</link>
+    <link>https://isa-afp.org/authors/naraschewski/</link>
     <description>
         Recent content in naraschewski 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Fri, 19 Mar 2004 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/naraschewski/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/naraschewski/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Mini ML</title>
-          <link>/entries/MiniML.html</link>
+          <link>https://isa-afp.org/entries/MiniML.html</link>
           <pubDate>Fri, 19 Mar 2004 00:00:00 +0000</pubDate>
-          <guid>/entries/MiniML.html</guid>
+          <guid>https://isa-afp.org/entries/MiniML.html</guid>
           <description></description>
         </item>
   </channel>

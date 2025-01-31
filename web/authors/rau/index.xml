@@ -3,7 +3,7 @@
   <channel>
     <title>rau on Archive of Formal Proofs
     </title>
-    <link>/authors/rau/</link>
+    <link>https://isa-afp.org/authors/rau/</link>
     <description>
         Recent content in rau 
         on Archive of Formal Proofs
@@ -12,26 +12,26 @@
     <language>en-gb</language>
     
       <lastBuildDate>Sun, 16 Jul 2023 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/rau/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/rau/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Earley Parser</title>
-          <link>/entries/Earley_Parser.html</link>
+          <link>https://isa-afp.org/entries/Earley_Parser.html</link>
           <pubDate>Sun, 16 Jul 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/Earley_Parser.html</guid>
+          <guid>https://isa-afp.org/entries/Earley_Parser.html</guid>
           <description></description>
         </item>
         <item>
           <title>Closest Pair of Points Algorithms</title>
-          <link>/entries/Closest_Pair_Points.html</link>
+          <link>https://isa-afp.org/entries/Closest_Pair_Points.html</link>
           <pubDate>Mon, 13 Jan 2020 00:00:00 +0000</pubDate>
-          <guid>/entries/Closest_Pair_Points.html</guid>
+          <guid>https://isa-afp.org/entries/Closest_Pair_Points.html</guid>
           <description></description>
         </item>
         <item>
           <title>Multidimensional Binary Search Trees</title>
-          <link>/entries/KD_Tree.html</link>
+          <link>https://isa-afp.org/entries/KD_Tree.html</link>
           <pubDate>Thu, 30 May 2019 00:00:00 +0000</pubDate>
-          <guid>/entries/KD_Tree.html</guid>
+          <guid>https://isa-afp.org/entries/KD_Tree.html</guid>
           <description></description>
         </item>
   </channel>

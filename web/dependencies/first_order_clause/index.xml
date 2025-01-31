@@ -3,7 +3,7 @@
   <channel>
     <title>First_Order_Clause on Archive of Formal Proofs
     </title>
-    <link>/dependencies/first_order_clause/</link>
+    <link>https://isa-afp.org/dependencies/first_order_clause/</link>
     <description>
         Recent content in First_Order_Clause 
         on Archive of Formal Proofs
@@ -12,19 +12,19 @@
     <language>en-gb</language>
     
       <lastBuildDate>Thu, 31 Oct 2024 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/dependencies/first_order_clause/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/dependencies/first_order_clause/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>SCL Simulates Nonredundant Ground Resolution</title>
-          <link>/entries/SCL_Simulates_Ground_Resolution.html</link>
+          <link>https://isa-afp.org/entries/SCL_Simulates_Ground_Resolution.html</link>
           <pubDate>Thu, 31 Oct 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/SCL_Simulates_Ground_Resolution.html</guid>
+          <guid>https://isa-afp.org/entries/SCL_Simulates_Ground_Resolution.html</guid>
           <description></description>
         </item>
         <item>
           <title>A Modular Formalization of Superposition</title>
-          <link>/entries/Superposition_Calculus.html</link>
+          <link>https://isa-afp.org/entries/Superposition_Calculus.html</link>
           <pubDate>Thu, 24 Oct 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Superposition_Calculus.html</guid>
+          <guid>https://isa-afp.org/entries/Superposition_Calculus.html</guid>
           <description></description>
         </item>
   </channel>

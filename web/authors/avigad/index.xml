@@ -3,7 +3,7 @@
   <channel>
     <title>avigad on Archive of Formal Proofs
     </title>
-    <link>/authors/avigad/</link>
+    <link>https://isa-afp.org/authors/avigad/</link>
     <description>
         Recent content in avigad 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Sat, 27 Oct 2012 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/avigad/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/avigad/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Bondy&#39;s Theorem</title>
-          <link>/entries/Bondy.html</link>
+          <link>https://isa-afp.org/entries/Bondy.html</link>
           <pubDate>Sat, 27 Oct 2012 00:00:00 +0000</pubDate>
-          <guid>/entries/Bondy.html</guid>
+          <guid>https://isa-afp.org/entries/Bondy.html</guid>
           <description></description>
         </item>
   </channel>

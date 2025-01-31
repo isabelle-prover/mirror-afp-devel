@@ -3,7 +3,7 @@
   <channel>
     <title>Computer science/Security/Cryptography on Archive of Formal Proofs
     </title>
-    <link>/topics/computer-science/security/cryptography/</link>
+    <link>https://isa-afp.org/topics/computer-science/security/cryptography/</link>
     <description>
         Recent content in Computer science/Security/Cryptography 
         on Archive of Formal Proofs
@@ -11,257 +11,257 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <atom:link href="/topics/computer-science/security/cryptography/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/topics/computer-science/security/cryptography/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Babai&#39;s Nearest Plane Algorithm</title>
-          <link>/entries/Babai_Nearest_Plane.html</link>
+          <link>https://isa-afp.org/entries/Babai_Nearest_Plane.html</link>
           <pubDate>Thu, 26 Sep 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Babai_Nearest_Plane.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Babai&#39;s Nearest Plane Algorithm</title>
-          <link>/entries/Babai_Nearest_Plane.html</link>
-          <pubDate>Thu, 26 Sep 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Babai_Nearest_Plane.html</guid>
+          <guid>https://isa-afp.org/entries/Babai_Nearest_Plane.html</guid>
           <description></description>
         </item>
         <item>
           <title>Babai&#39;s Nearest Plane Algorithm</title>
-          <link>/entries/Babai_Nearest_Plane.html</link>
+          <link>https://isa-afp.org/entries/Babai_Nearest_Plane.html</link>
           <pubDate>Thu, 26 Sep 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Babai_Nearest_Plane.html</guid>
+          <guid>https://isa-afp.org/entries/Babai_Nearest_Plane.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Babai&#39;s Nearest Plane Algorithm</title>
+          <link>https://isa-afp.org/entries/Babai_Nearest_Plane.html</link>
+          <pubDate>Thu, 26 Sep 2024 00:00:00 +0000</pubDate>
+          <guid>https://isa-afp.org/entries/Babai_Nearest_Plane.html</guid>
           <description></description>
         </item>
         <item>
           <title>Formalizing Coppersmith&#39;s Method</title>
-          <link>/entries/Coppersmith_Method.html</link>
+          <link>https://isa-afp.org/entries/Coppersmith_Method.html</link>
           <pubDate>Mon, 10 Jun 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Coppersmith_Method.html</guid>
+          <guid>https://isa-afp.org/entries/Coppersmith_Method.html</guid>
           <description></description>
         </item>
         <item>
           <title>Formalizing Coppersmith&#39;s Method</title>
-          <link>/entries/Coppersmith_Method.html</link>
+          <link>https://isa-afp.org/entries/Coppersmith_Method.html</link>
           <pubDate>Mon, 10 Jun 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Coppersmith_Method.html</guid>
+          <guid>https://isa-afp.org/entries/Coppersmith_Method.html</guid>
           <description></description>
         </item>
         <item>
           <title>Formalizing Coppersmith&#39;s Method</title>
-          <link>/entries/Coppersmith_Method.html</link>
+          <link>https://isa-afp.org/entries/Coppersmith_Method.html</link>
           <pubDate>Mon, 10 Jun 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Coppersmith_Method.html</guid>
+          <guid>https://isa-afp.org/entries/Coppersmith_Method.html</guid>
           <description></description>
         </item>
         <item>
           <title>CRYSTALS-Kyber_Security</title>
-          <link>/entries/CRYSTALS-Kyber_Security.html</link>
+          <link>https://isa-afp.org/entries/CRYSTALS-Kyber_Security.html</link>
           <pubDate>Mon, 18 Dec 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/CRYSTALS-Kyber_Security.html</guid>
+          <guid>https://isa-afp.org/entries/CRYSTALS-Kyber_Security.html</guid>
           <description></description>
         </item>
         <item>
           <title>CRYSTALS-Kyber_Security</title>
-          <link>/entries/CRYSTALS-Kyber_Security.html</link>
+          <link>https://isa-afp.org/entries/CRYSTALS-Kyber_Security.html</link>
           <pubDate>Mon, 18 Dec 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/CRYSTALS-Kyber_Security.html</guid>
+          <guid>https://isa-afp.org/entries/CRYSTALS-Kyber_Security.html</guid>
           <description></description>
         </item>
         <item>
           <title>CRYSTALS-Kyber_Security</title>
-          <link>/entries/CRYSTALS-Kyber_Security.html</link>
+          <link>https://isa-afp.org/entries/CRYSTALS-Kyber_Security.html</link>
           <pubDate>Mon, 18 Dec 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/CRYSTALS-Kyber_Security.html</guid>
+          <guid>https://isa-afp.org/entries/CRYSTALS-Kyber_Security.html</guid>
           <description></description>
         </item>
         <item>
           <title>Cryptographic Standards</title>
-          <link>/entries/Crypto_Standards.html</link>
+          <link>https://isa-afp.org/entries/Crypto_Standards.html</link>
           <pubDate>Tue, 06 Jun 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/Crypto_Standards.html</guid>
+          <guid>https://isa-afp.org/entries/Crypto_Standards.html</guid>
           <description></description>
         </item>
         <item>
           <title>Cryptographic Standards</title>
-          <link>/entries/Crypto_Standards.html</link>
+          <link>https://isa-afp.org/entries/Crypto_Standards.html</link>
           <pubDate>Tue, 06 Jun 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/Crypto_Standards.html</guid>
+          <guid>https://isa-afp.org/entries/Crypto_Standards.html</guid>
           <description></description>
         </item>
         <item>
           <title>Cryptographic Standards</title>
-          <link>/entries/Crypto_Standards.html</link>
+          <link>https://isa-afp.org/entries/Crypto_Standards.html</link>
           <pubDate>Tue, 06 Jun 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/Crypto_Standards.html</guid>
+          <guid>https://isa-afp.org/entries/Crypto_Standards.html</guid>
           <description></description>
         </item>
         <item>
           <title>Hardness of Lattice Problems</title>
-          <link>/entries/CVP_Hardness.html</link>
+          <link>https://isa-afp.org/entries/CVP_Hardness.html</link>
           <pubDate>Thu, 02 Feb 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/CVP_Hardness.html</guid>
+          <guid>https://isa-afp.org/entries/CVP_Hardness.html</guid>
           <description></description>
         </item>
         <item>
           <title>Hardness of Lattice Problems</title>
-          <link>/entries/CVP_Hardness.html</link>
+          <link>https://isa-afp.org/entries/CVP_Hardness.html</link>
           <pubDate>Thu, 02 Feb 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/CVP_Hardness.html</guid>
+          <guid>https://isa-afp.org/entries/CVP_Hardness.html</guid>
           <description></description>
         </item>
         <item>
           <title>Hardness of Lattice Problems</title>
-          <link>/entries/CVP_Hardness.html</link>
+          <link>https://isa-afp.org/entries/CVP_Hardness.html</link>
           <pubDate>Thu, 02 Feb 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/CVP_Hardness.html</guid>
+          <guid>https://isa-afp.org/entries/CVP_Hardness.html</guid>
           <description></description>
         </item>
         <item>
           <title>Constructive Cryptography in HOL: the Communication Modeling Aspect</title>
-          <link>/entries/Constructive_Cryptography_CM.html</link>
+          <link>https://isa-afp.org/entries/Constructive_Cryptography_CM.html</link>
           <pubDate>Wed, 17 Mar 2021 00:00:00 +0000</pubDate>
-          <guid>/entries/Constructive_Cryptography_CM.html</guid>
+          <guid>https://isa-afp.org/entries/Constructive_Cryptography_CM.html</guid>
           <description></description>
         </item>
         <item>
           <title>Constructive Cryptography in HOL: the Communication Modeling Aspect</title>
-          <link>/entries/Constructive_Cryptography_CM.html</link>
+          <link>https://isa-afp.org/entries/Constructive_Cryptography_CM.html</link>
           <pubDate>Wed, 17 Mar 2021 00:00:00 +0000</pubDate>
-          <guid>/entries/Constructive_Cryptography_CM.html</guid>
+          <guid>https://isa-afp.org/entries/Constructive_Cryptography_CM.html</guid>
           <description></description>
         </item>
         <item>
           <title>Constructive Cryptography in HOL: the Communication Modeling Aspect</title>
-          <link>/entries/Constructive_Cryptography_CM.html</link>
+          <link>https://isa-afp.org/entries/Constructive_Cryptography_CM.html</link>
           <pubDate>Wed, 17 Mar 2021 00:00:00 +0000</pubDate>
-          <guid>/entries/Constructive_Cryptography_CM.html</guid>
+          <guid>https://isa-afp.org/entries/Constructive_Cryptography_CM.html</guid>
           <description></description>
         </item>
         <item>
           <title>Sigma Protocols and Commitment Schemes</title>
-          <link>/entries/Sigma_Commit_Crypto.html</link>
+          <link>https://isa-afp.org/entries/Sigma_Commit_Crypto.html</link>
           <pubDate>Mon, 07 Oct 2019 00:00:00 +0000</pubDate>
-          <guid>/entries/Sigma_Commit_Crypto.html</guid>
+          <guid>https://isa-afp.org/entries/Sigma_Commit_Crypto.html</guid>
           <description></description>
         </item>
         <item>
           <title>Sigma Protocols and Commitment Schemes</title>
-          <link>/entries/Sigma_Commit_Crypto.html</link>
+          <link>https://isa-afp.org/entries/Sigma_Commit_Crypto.html</link>
           <pubDate>Mon, 07 Oct 2019 00:00:00 +0000</pubDate>
-          <guid>/entries/Sigma_Commit_Crypto.html</guid>
+          <guid>https://isa-afp.org/entries/Sigma_Commit_Crypto.html</guid>
           <description></description>
         </item>
         <item>
           <title>Sigma Protocols and Commitment Schemes</title>
-          <link>/entries/Sigma_Commit_Crypto.html</link>
+          <link>https://isa-afp.org/entries/Sigma_Commit_Crypto.html</link>
           <pubDate>Mon, 07 Oct 2019 00:00:00 +0000</pubDate>
-          <guid>/entries/Sigma_Commit_Crypto.html</guid>
+          <guid>https://isa-afp.org/entries/Sigma_Commit_Crypto.html</guid>
           <description></description>
         </item>
         <item>
           <title>Constructive Cryptography in HOL</title>
-          <link>/entries/Constructive_Cryptography.html</link>
+          <link>https://isa-afp.org/entries/Constructive_Cryptography.html</link>
           <pubDate>Mon, 17 Dec 2018 00:00:00 +0000</pubDate>
-          <guid>/entries/Constructive_Cryptography.html</guid>
+          <guid>https://isa-afp.org/entries/Constructive_Cryptography.html</guid>
           <description></description>
         </item>
         <item>
           <title>Constructive Cryptography in HOL</title>
-          <link>/entries/Constructive_Cryptography.html</link>
+          <link>https://isa-afp.org/entries/Constructive_Cryptography.html</link>
           <pubDate>Mon, 17 Dec 2018 00:00:00 +0000</pubDate>
-          <guid>/entries/Constructive_Cryptography.html</guid>
+          <guid>https://isa-afp.org/entries/Constructive_Cryptography.html</guid>
           <description></description>
         </item>
         <item>
           <title>Constructive Cryptography in HOL</title>
-          <link>/entries/Constructive_Cryptography.html</link>
+          <link>https://isa-afp.org/entries/Constructive_Cryptography.html</link>
           <pubDate>Mon, 17 Dec 2018 00:00:00 +0000</pubDate>
-          <guid>/entries/Constructive_Cryptography.html</guid>
+          <guid>https://isa-afp.org/entries/Constructive_Cryptography.html</guid>
           <description></description>
         </item>
         <item>
           <title>CryptHOL</title>
-          <link>/entries/CryptHOL.html</link>
+          <link>https://isa-afp.org/entries/CryptHOL.html</link>
           <pubDate>Fri, 05 May 2017 00:00:00 +0000</pubDate>
-          <guid>/entries/CryptHOL.html</guid>
+          <guid>https://isa-afp.org/entries/CryptHOL.html</guid>
           <description></description>
         </item>
         <item>
           <title>CryptHOL</title>
-          <link>/entries/CryptHOL.html</link>
+          <link>https://isa-afp.org/entries/CryptHOL.html</link>
           <pubDate>Fri, 05 May 2017 00:00:00 +0000</pubDate>
-          <guid>/entries/CryptHOL.html</guid>
+          <guid>https://isa-afp.org/entries/CryptHOL.html</guid>
           <description></description>
         </item>
         <item>
           <title>CryptHOL</title>
-          <link>/entries/CryptHOL.html</link>
+          <link>https://isa-afp.org/entries/CryptHOL.html</link>
           <pubDate>Fri, 05 May 2017 00:00:00 +0000</pubDate>
-          <guid>/entries/CryptHOL.html</guid>
+          <guid>https://isa-afp.org/entries/CryptHOL.html</guid>
           <description></description>
         </item>
         <item>
           <title>Game-based cryptography in HOL</title>
-          <link>/entries/Game_Based_Crypto.html</link>
+          <link>https://isa-afp.org/entries/Game_Based_Crypto.html</link>
           <pubDate>Fri, 05 May 2017 00:00:00 +0000</pubDate>
-          <guid>/entries/Game_Based_Crypto.html</guid>
+          <guid>https://isa-afp.org/entries/Game_Based_Crypto.html</guid>
           <description></description>
         </item>
         <item>
           <title>Game-based cryptography in HOL</title>
-          <link>/entries/Game_Based_Crypto.html</link>
+          <link>https://isa-afp.org/entries/Game_Based_Crypto.html</link>
           <pubDate>Fri, 05 May 2017 00:00:00 +0000</pubDate>
-          <guid>/entries/Game_Based_Crypto.html</guid>
+          <guid>https://isa-afp.org/entries/Game_Based_Crypto.html</guid>
           <description></description>
         </item>
         <item>
           <title>Game-based cryptography in HOL</title>
-          <link>/entries/Game_Based_Crypto.html</link>
+          <link>https://isa-afp.org/entries/Game_Based_Crypto.html</link>
           <pubDate>Fri, 05 May 2017 00:00:00 +0000</pubDate>
-          <guid>/entries/Game_Based_Crypto.html</guid>
+          <guid>https://isa-afp.org/entries/Game_Based_Crypto.html</guid>
           <description></description>
         </item>
         <item>
           <title>The Group Law for Elliptic Curves</title>
-          <link>/entries/Elliptic_Curves_Group_Law.html</link>
+          <link>https://isa-afp.org/entries/Elliptic_Curves_Group_Law.html</link>
           <pubDate>Tue, 28 Feb 2017 00:00:00 +0000</pubDate>
-          <guid>/entries/Elliptic_Curves_Group_Law.html</guid>
+          <guid>https://isa-afp.org/entries/Elliptic_Curves_Group_Law.html</guid>
           <description></description>
         </item>
         <item>
           <title>The Group Law for Elliptic Curves</title>
-          <link>/entries/Elliptic_Curves_Group_Law.html</link>
+          <link>https://isa-afp.org/entries/Elliptic_Curves_Group_Law.html</link>
           <pubDate>Tue, 28 Feb 2017 00:00:00 +0000</pubDate>
-          <guid>/entries/Elliptic_Curves_Group_Law.html</guid>
+          <guid>https://isa-afp.org/entries/Elliptic_Curves_Group_Law.html</guid>
           <description></description>
         </item>
         <item>
           <title>The Group Law for Elliptic Curves</title>
-          <link>/entries/Elliptic_Curves_Group_Law.html</link>
+          <link>https://isa-afp.org/entries/Elliptic_Curves_Group_Law.html</link>
           <pubDate>Tue, 28 Feb 2017 00:00:00 +0000</pubDate>
-          <guid>/entries/Elliptic_Curves_Group_Law.html</guid>
+          <guid>https://isa-afp.org/entries/Elliptic_Curves_Group_Law.html</guid>
           <description></description>
         </item>
         <item>
           <title>SHA1, RSA, PSS and more</title>
-          <link>/entries/RSAPSS.html</link>
+          <link>https://isa-afp.org/entries/RSAPSS.html</link>
           <pubDate>Mon, 02 May 2005 00:00:00 +0000</pubDate>
-          <guid>/entries/RSAPSS.html</guid>
+          <guid>https://isa-afp.org/entries/RSAPSS.html</guid>
           <description></description>
         </item>
         <item>
           <title>SHA1, RSA, PSS and more</title>
-          <link>/entries/RSAPSS.html</link>
+          <link>https://isa-afp.org/entries/RSAPSS.html</link>
           <pubDate>Mon, 02 May 2005 00:00:00 +0000</pubDate>
-          <guid>/entries/RSAPSS.html</guid>
+          <guid>https://isa-afp.org/entries/RSAPSS.html</guid>
           <description></description>
         </item>
         <item>
           <title>SHA1, RSA, PSS and more</title>
-          <link>/entries/RSAPSS.html</link>
+          <link>https://isa-afp.org/entries/RSAPSS.html</link>
           <pubDate>Mon, 02 May 2005 00:00:00 +0000</pubDate>
-          <guid>/entries/RSAPSS.html</guid>
+          <guid>https://isa-afp.org/entries/RSAPSS.html</guid>
           <description></description>
         </item>
   </channel>

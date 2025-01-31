@@ -3,7 +3,7 @@
   <channel>
     <title>rawson on Archive of Formal Proofs
     </title>
-    <link>/authors/rawson/</link>
+    <link>https://isa-afp.org/authors/rawson/</link>
     <description>
         Recent content in rawson 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Sun, 09 Jul 2017 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/rawson/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/rawson/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Verified Metatheory and Type Inference for a Name-Carrying Simply-Typed Lambda Calculus</title>
-          <link>/entries/Name_Carrying_Type_Inference.html</link>
+          <link>https://isa-afp.org/entries/Name_Carrying_Type_Inference.html</link>
           <pubDate>Sun, 09 Jul 2017 00:00:00 +0000</pubDate>
-          <guid>/entries/Name_Carrying_Type_Inference.html</guid>
+          <guid>https://isa-afp.org/entries/Name_Carrying_Type_Inference.html</guid>
           <description></description>
         </item>
   </channel>

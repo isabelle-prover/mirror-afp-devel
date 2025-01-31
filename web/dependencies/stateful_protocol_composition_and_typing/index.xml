@@ -3,7 +3,7 @@
   <channel>
     <title>Stateful_Protocol_Composition_and_Typing on Archive of Formal Proofs
     </title>
-    <link>/dependencies/stateful_protocol_composition_and_typing/</link>
+    <link>https://isa-afp.org/dependencies/stateful_protocol_composition_and_typing/</link>
     <description>
         Recent content in Stateful_Protocol_Composition_and_Typing 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Wed, 08 Apr 2020 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/dependencies/stateful_protocol_composition_and_typing/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/dependencies/stateful_protocol_composition_and_typing/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Automated Stateful Protocol Verification</title>
-          <link>/entries/Automated_Stateful_Protocol_Verification.html</link>
+          <link>https://isa-afp.org/entries/Automated_Stateful_Protocol_Verification.html</link>
           <pubDate>Wed, 08 Apr 2020 00:00:00 +0000</pubDate>
-          <guid>/entries/Automated_Stateful_Protocol_Verification.html</guid>
+          <guid>https://isa-afp.org/entries/Automated_Stateful_Protocol_Verification.html</guid>
           <description></description>
         </item>
   </channel>

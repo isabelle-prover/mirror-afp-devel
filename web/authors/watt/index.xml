@@ -3,7 +3,7 @@
   <channel>
     <title>watt on Archive of Formal Proofs
     </title>
-    <link>/authors/watt/</link>
+    <link>https://isa-afp.org/authors/watt/</link>
     <description>
         Recent content in watt 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Sun, 29 Apr 2018 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/watt/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/watt/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>WebAssembly</title>
-          <link>/entries/WebAssembly.html</link>
+          <link>https://isa-afp.org/entries/WebAssembly.html</link>
           <pubDate>Sun, 29 Apr 2018 00:00:00 +0000</pubDate>
-          <guid>/entries/WebAssembly.html</guid>
+          <guid>https://isa-afp.org/entries/WebAssembly.html</guid>
           <description></description>
         </item>
   </channel>

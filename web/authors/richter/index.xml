@@ -3,7 +3,7 @@
   <channel>
     <title>richter on Archive of Formal Proofs
     </title>
-    <link>/authors/richter/</link>
+    <link>https://isa-afp.org/authors/richter/</link>
     <description>
         Recent content in richter 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Fri, 19 Nov 2004 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/richter/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/richter/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Integration theory and random variables</title>
-          <link>/entries/Integration.html</link>
+          <link>https://isa-afp.org/entries/Integration.html</link>
           <pubDate>Fri, 19 Nov 2004 00:00:00 +0000</pubDate>
-          <guid>/entries/Integration.html</guid>
+          <guid>https://isa-afp.org/entries/Integration.html</guid>
           <description></description>
         </item>
   </channel>

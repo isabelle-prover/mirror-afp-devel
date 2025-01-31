@@ -3,7 +3,7 @@
   <channel>
     <title>zankl on Archive of Formal Proofs
     </title>
-    <link>/authors/zankl/</link>
+    <link>https://isa-afp.org/authors/zankl/</link>
     <description>
         Recent content in zankl 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Fri, 01 Nov 2013 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/zankl/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/zankl/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Decreasing Diagrams</title>
-          <link>/entries/Decreasing-Diagrams.html</link>
+          <link>https://isa-afp.org/entries/Decreasing-Diagrams.html</link>
           <pubDate>Fri, 01 Nov 2013 00:00:00 +0000</pubDate>
-          <guid>/entries/Decreasing-Diagrams.html</guid>
+          <guid>https://isa-afp.org/entries/Decreasing-Diagrams.html</guid>
           <description></description>
         </item>
   </channel>

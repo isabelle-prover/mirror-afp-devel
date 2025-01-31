@@ -3,7 +3,7 @@
   <channel>
     <title>Monad_Normalisation on Archive of Formal Proofs
     </title>
-    <link>/dependencies/monad_normalisation/</link>
+    <link>https://isa-afp.org/dependencies/monad_normalisation/</link>
     <description>
         Recent content in Monad_Normalisation 
         on Archive of Formal Proofs
@@ -12,33 +12,33 @@
     <language>en-gb</language>
     
       <lastBuildDate>Fri, 15 Mar 2024 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/dependencies/monad_normalisation/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/dependencies/monad_normalisation/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Approximate Model Counting</title>
-          <link>/entries/Approximate_Model_Counting.html</link>
+          <link>https://isa-afp.org/entries/Approximate_Model_Counting.html</link>
           <pubDate>Fri, 15 Mar 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Approximate_Model_Counting.html</guid>
+          <guid>https://isa-afp.org/entries/Approximate_Model_Counting.html</guid>
           <description></description>
         </item>
         <item>
           <title>Skip Lists</title>
-          <link>/entries/Skip_Lists.html</link>
+          <link>https://isa-afp.org/entries/Skip_Lists.html</link>
           <pubDate>Thu, 09 Jan 2020 00:00:00 +0000</pubDate>
-          <guid>/entries/Skip_Lists.html</guid>
+          <guid>https://isa-afp.org/entries/Skip_Lists.html</guid>
           <description></description>
         </item>
         <item>
           <title>Randomised Binary Search Trees</title>
-          <link>/entries/Randomised_BSTs.html</link>
+          <link>https://isa-afp.org/entries/Randomised_BSTs.html</link>
           <pubDate>Fri, 19 Oct 2018 00:00:00 +0000</pubDate>
-          <guid>/entries/Randomised_BSTs.html</guid>
+          <guid>https://isa-afp.org/entries/Randomised_BSTs.html</guid>
           <description></description>
         </item>
         <item>
           <title>CryptHOL</title>
-          <link>/entries/CryptHOL.html</link>
+          <link>https://isa-afp.org/entries/CryptHOL.html</link>
           <pubDate>Fri, 05 May 2017 00:00:00 +0000</pubDate>
-          <guid>/entries/CryptHOL.html</guid>
+          <guid>https://isa-afp.org/entries/CryptHOL.html</guid>
           <description></description>
         </item>
   </channel>

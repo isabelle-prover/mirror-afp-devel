@@ -3,7 +3,7 @@
   <channel>
     <title>pusch on Archive of Formal Proofs
     </title>
-    <link>/authors/pusch/</link>
+    <link>https://isa-afp.org/authors/pusch/</link>
     <description>
         Recent content in pusch 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Fri, 19 Mar 2004 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/pusch/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/pusch/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>AVL Trees</title>
-          <link>/entries/AVL-Trees.html</link>
+          <link>https://isa-afp.org/entries/AVL-Trees.html</link>
           <pubDate>Fri, 19 Mar 2004 00:00:00 +0000</pubDate>
-          <guid>/entries/AVL-Trees.html</guid>
+          <guid>https://isa-afp.org/entries/AVL-Trees.html</guid>
           <description></description>
         </item>
   </channel>

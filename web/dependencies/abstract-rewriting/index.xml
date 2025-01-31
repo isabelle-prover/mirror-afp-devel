@@ -3,7 +3,7 @@
   <channel>
     <title>Abstract-Rewriting on Archive of Formal Proofs
     </title>
-    <link>/dependencies/abstract-rewriting/</link>
+    <link>https://isa-afp.org/dependencies/abstract-rewriting/</link>
     <description>
         Recent content in Abstract-Rewriting 
         on Archive of Formal Proofs
@@ -12,82 +12,82 @@
     <language>en-gb</language>
     
       <lastBuildDate>Mon, 25 Nov 2024 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/dependencies/abstract-rewriting/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/dependencies/abstract-rewriting/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Linear Resources and Process Compositions</title>
-          <link>/entries/ProcessComposition.html</link>
+          <link>https://isa-afp.org/entries/ProcessComposition.html</link>
           <pubDate>Mon, 25 Nov 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/ProcessComposition.html</guid>
+          <guid>https://isa-afp.org/entries/ProcessComposition.html</guid>
           <description></description>
         </item>
         <item>
           <title>Minsky Machines</title>
-          <link>/entries/Minsky_Machines.html</link>
+          <link>https://isa-afp.org/entries/Minsky_Machines.html</link>
           <pubDate>Tue, 14 Aug 2018 00:00:00 +0000</pubDate>
-          <guid>/entries/Minsky_Machines.html</guid>
+          <guid>https://isa-afp.org/entries/Minsky_Machines.html</guid>
           <description></description>
         </item>
         <item>
           <title>First-Order Terms</title>
-          <link>/entries/First_Order_Terms.html</link>
+          <link>https://isa-afp.org/entries/First_Order_Terms.html</link>
           <pubDate>Tue, 06 Feb 2018 00:00:00 +0000</pubDate>
-          <guid>/entries/First_Order_Terms.html</guid>
+          <guid>https://isa-afp.org/entries/First_Order_Terms.html</guid>
           <description></description>
         </item>
         <item>
           <title>The Z Property</title>
-          <link>/entries/Rewriting_Z.html</link>
+          <link>https://isa-afp.org/entries/Rewriting_Z.html</link>
           <pubDate>Thu, 30 Jun 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/Rewriting_Z.html</guid>
+          <guid>https://isa-afp.org/entries/Rewriting_Z.html</guid>
           <description></description>
         </item>
         <item>
           <title>Polynomial Factorization</title>
-          <link>/entries/Polynomial_Factorization.html</link>
+          <link>https://isa-afp.org/entries/Polynomial_Factorization.html</link>
           <pubDate>Fri, 29 Jan 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/Polynomial_Factorization.html</guid>
+          <guid>https://isa-afp.org/entries/Polynomial_Factorization.html</guid>
           <description></description>
         </item>
         <item>
           <title>Decreasing Diagrams II</title>
-          <link>/entries/Decreasing-Diagrams-II.html</link>
+          <link>https://isa-afp.org/entries/Decreasing-Diagrams-II.html</link>
           <pubDate>Thu, 20 Aug 2015 00:00:00 +0000</pubDate>
-          <guid>/entries/Decreasing-Diagrams-II.html</guid>
+          <guid>https://isa-afp.org/entries/Decreasing-Diagrams-II.html</guid>
           <description></description>
         </item>
         <item>
           <title>Decreasing Diagrams</title>
-          <link>/entries/Decreasing-Diagrams.html</link>
+          <link>https://isa-afp.org/entries/Decreasing-Diagrams.html</link>
           <pubDate>Fri, 01 Nov 2013 00:00:00 +0000</pubDate>
-          <guid>/entries/Decreasing-Diagrams.html</guid>
+          <guid>https://isa-afp.org/entries/Decreasing-Diagrams.html</guid>
           <description></description>
         </item>
         <item>
           <title>Well-Quasi-Orders</title>
-          <link>/entries/Well_Quasi_Orders.html</link>
+          <link>https://isa-afp.org/entries/Well_Quasi_Orders.html</link>
           <pubDate>Fri, 13 Apr 2012 00:00:00 +0000</pubDate>
-          <guid>/entries/Well_Quasi_Orders.html</guid>
+          <guid>https://isa-afp.org/entries/Well_Quasi_Orders.html</guid>
           <description></description>
         </item>
         <item>
           <title>The Myhill-Nerode Theorem Based on Regular Expressions</title>
-          <link>/entries/Myhill-Nerode.html</link>
+          <link>https://isa-afp.org/entries/Myhill-Nerode.html</link>
           <pubDate>Fri, 26 Aug 2011 00:00:00 +0000</pubDate>
-          <guid>/entries/Myhill-Nerode.html</guid>
+          <guid>https://isa-afp.org/entries/Myhill-Nerode.html</guid>
           <description></description>
         </item>
         <item>
           <title>Executable Multivariate Polynomials</title>
-          <link>/entries/Polynomials.html</link>
+          <link>https://isa-afp.org/entries/Polynomials.html</link>
           <pubDate>Tue, 10 Aug 2010 00:00:00 +0000</pubDate>
-          <guid>/entries/Polynomials.html</guid>
+          <guid>https://isa-afp.org/entries/Polynomials.html</guid>
           <description></description>
         </item>
         <item>
           <title>Executable Matrix Operations on Matrices of Arbitrary Dimensions</title>
-          <link>/entries/Matrix.html</link>
+          <link>https://isa-afp.org/entries/Matrix.html</link>
           <pubDate>Thu, 17 Jun 2010 00:00:00 +0000</pubDate>
-          <guid>/entries/Matrix.html</guid>
+          <guid>https://isa-afp.org/entries/Matrix.html</guid>
           <description></description>
         </item>
   </channel>

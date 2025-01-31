@@ -3,7 +3,7 @@
   <channel>
     <title>chenj on Archive of Formal Proofs
     </title>
-    <link>/authors/chenj/</link>
+    <link>https://isa-afp.org/authors/chenj/</link>
     <description>
         Recent content in chenj 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Wed, 06 Mar 2024 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/chenj/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/chenj/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Wieferich–Kempner Theorem</title>
-          <link>/entries/Wieferich_Kempner.html</link>
+          <link>https://isa-afp.org/entries/Wieferich_Kempner.html</link>
           <pubDate>Wed, 06 Mar 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Wieferich_Kempner.html</guid>
+          <guid>https://isa-afp.org/entries/Wieferich_Kempner.html</guid>
           <description></description>
         </item>
   </channel>

@@ -3,7 +3,7 @@
   <channel>
     <title>sudbrock on Archive of Formal Proofs
     </title>
-    <link>/authors/sudbrock/</link>
+    <link>https://isa-afp.org/authors/sudbrock/</link>
     <description>
         Recent content in sudbrock 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Mon, 07 May 2018 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/sudbrock/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/sudbrock/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>An Isabelle/HOL Formalization of the Modular Assembly Kit for Security Properties</title>
-          <link>/entries/Modular_Assembly_Kit_Security.html</link>
+          <link>https://isa-afp.org/entries/Modular_Assembly_Kit_Security.html</link>
           <pubDate>Mon, 07 May 2018 00:00:00 +0000</pubDate>
-          <guid>/entries/Modular_Assembly_Kit_Security.html</guid>
+          <guid>https://isa-afp.org/entries/Modular_Assembly_Kit_Security.html</guid>
           <description></description>
         </item>
   </channel>

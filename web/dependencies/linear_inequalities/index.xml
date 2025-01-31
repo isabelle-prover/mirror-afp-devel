@@ -3,7 +3,7 @@
   <channel>
     <title>Linear_Inequalities on Archive of Formal Proofs
     </title>
-    <link>/dependencies/linear_inequalities/</link>
+    <link>https://isa-afp.org/dependencies/linear_inequalities/</link>
     <description>
         Recent content in Linear_Inequalities 
         on Archive of Formal Proofs
@@ -12,19 +12,19 @@
     <language>en-gb</language>
     
       <lastBuildDate>Thu, 03 Feb 2022 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/dependencies/linear_inequalities/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/dependencies/linear_inequalities/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Duality of Linear Programming</title>
-          <link>/entries/LP_Duality.html</link>
+          <link>https://isa-afp.org/entries/LP_Duality.html</link>
           <pubDate>Thu, 03 Feb 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/LP_Duality.html</guid>
+          <guid>https://isa-afp.org/entries/LP_Duality.html</guid>
           <description></description>
         </item>
         <item>
           <title>Linear Programming</title>
-          <link>/entries/Linear_Programming.html</link>
+          <link>https://isa-afp.org/entries/Linear_Programming.html</link>
           <pubDate>Tue, 06 Aug 2019 00:00:00 +0000</pubDate>
-          <guid>/entries/Linear_Programming.html</guid>
+          <guid>https://isa-afp.org/entries/Linear_Programming.html</guid>
           <description></description>
         </item>
   </channel>

@@ -3,7 +3,7 @@
   <channel>
     <title>Bounded_Deducibility_Security on Archive of Formal Proofs
     </title>
-    <link>/dependencies/bounded_deducibility_security/</link>
+    <link>https://isa-afp.org/dependencies/bounded_deducibility_security/</link>
     <description>
         Recent content in Bounded_Deducibility_Security 
         on Archive of Formal Proofs
@@ -12,26 +12,26 @@
     <language>en-gb</language>
     
       <lastBuildDate>Mon, 16 Aug 2021 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/dependencies/bounded_deducibility_security/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/dependencies/bounded_deducibility_security/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>CoCon: A Confidentiality-Verified Conference Management System</title>
-          <link>/entries/CoCon.html</link>
+          <link>https://isa-afp.org/entries/CoCon.html</link>
           <pubDate>Mon, 16 Aug 2021 00:00:00 +0000</pubDate>
-          <guid>/entries/CoCon.html</guid>
+          <guid>https://isa-afp.org/entries/CoCon.html</guid>
           <description></description>
         </item>
         <item>
           <title>Compositional BD Security</title>
-          <link>/entries/BD_Security_Compositional.html</link>
+          <link>https://isa-afp.org/entries/BD_Security_Compositional.html</link>
           <pubDate>Mon, 16 Aug 2021 00:00:00 +0000</pubDate>
-          <guid>/entries/BD_Security_Compositional.html</guid>
+          <guid>https://isa-afp.org/entries/BD_Security_Compositional.html</guid>
           <description></description>
         </item>
         <item>
           <title>CoSMed: A confidentiality-verified social media platform</title>
-          <link>/entries/CoSMed.html</link>
+          <link>https://isa-afp.org/entries/CoSMed.html</link>
           <pubDate>Mon, 16 Aug 2021 00:00:00 +0000</pubDate>
-          <guid>/entries/CoSMed.html</guid>
+          <guid>https://isa-afp.org/entries/CoSMed.html</guid>
           <description></description>
         </item>
   </channel>

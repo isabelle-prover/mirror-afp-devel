@@ -3,7 +3,7 @@
   <channel>
     <title>rauch on Archive of Formal Proofs
     </title>
-    <link>/authors/rauch/</link>
+    <link>https://isa-afp.org/authors/rauch/</link>
     <description>
         Recent content in rauch 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Mon, 20 Jun 2005 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/rauch/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/rauch/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Jive Data and Store Model</title>
-          <link>/entries/JiveDataStoreModel.html</link>
+          <link>https://isa-afp.org/entries/JiveDataStoreModel.html</link>
           <pubDate>Mon, 20 Jun 2005 00:00:00 +0000</pubDate>
-          <guid>/entries/JiveDataStoreModel.html</guid>
+          <guid>https://isa-afp.org/entries/JiveDataStoreModel.html</guid>
           <description></description>
         </item>
   </channel>

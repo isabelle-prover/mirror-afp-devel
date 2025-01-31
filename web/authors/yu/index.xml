@@ -3,7 +3,7 @@
   <channel>
     <title>yu on Archive of Formal Proofs
     </title>
-    <link>/authors/yu/</link>
+    <link>https://isa-afp.org/authors/yu/</link>
     <description>
         Recent content in yu 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Sat, 27 Jul 2013 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/yu/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/yu/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>A Formal Model of IEEE Floating Point Arithmetic</title>
-          <link>/entries/IEEE_Floating_Point.html</link>
+          <link>https://isa-afp.org/entries/IEEE_Floating_Point.html</link>
           <pubDate>Sat, 27 Jul 2013 00:00:00 +0000</pubDate>
-          <guid>/entries/IEEE_Floating_Point.html</guid>
+          <guid>https://isa-afp.org/entries/IEEE_Floating_Point.html</guid>
           <description></description>
         </item>
   </channel>

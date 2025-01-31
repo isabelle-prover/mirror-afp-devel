@@ -3,7 +3,7 @@
   <channel>
     <title>ridge on Archive of Formal Proofs
     </title>
-    <link>/authors/ridge/</link>
+    <link>https://isa-afp.org/authors/ridge/</link>
     <description>
         Recent content in ridge 
         on Archive of Formal Proofs
@@ -12,26 +12,26 @@
     <language>en-gb</language>
     
       <lastBuildDate>Tue, 28 Sep 2004 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/ridge/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/ridge/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>A Mechanically Verified, Efficient, Sound and Complete Theorem Prover For First Order Logic</title>
-          <link>/entries/Verified-Prover.html</link>
+          <link>https://isa-afp.org/entries/Verified-Prover.html</link>
           <pubDate>Tue, 28 Sep 2004 00:00:00 +0000</pubDate>
-          <guid>/entries/Verified-Prover.html</guid>
+          <guid>https://isa-afp.org/entries/Verified-Prover.html</guid>
           <description></description>
         </item>
         <item>
           <title>Completeness theorem</title>
-          <link>/entries/Completeness.html</link>
+          <link>https://isa-afp.org/entries/Completeness.html</link>
           <pubDate>Mon, 20 Sep 2004 00:00:00 +0000</pubDate>
-          <guid>/entries/Completeness.html</guid>
+          <guid>https://isa-afp.org/entries/Completeness.html</guid>
           <description></description>
         </item>
         <item>
           <title>Ramsey&#39;s theorem, infinitary version</title>
-          <link>/entries/Ramsey-Infinite.html</link>
+          <link>https://isa-afp.org/entries/Ramsey-Infinite.html</link>
           <pubDate>Mon, 20 Sep 2004 00:00:00 +0000</pubDate>
-          <guid>/entries/Ramsey-Infinite.html</guid>
+          <guid>https://isa-afp.org/entries/Ramsey-Infinite.html</guid>
           <description></description>
         </item>
   </channel>

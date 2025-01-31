@@ -3,7 +3,7 @@
   <channel>
     <title>hofmann on Archive of Formal Proofs
     </title>
-    <link>/authors/hofmann/</link>
+    <link>https://isa-afp.org/authors/hofmann/</link>
     <description>
         Recent content in hofmann 
         on Archive of Formal Proofs
@@ -12,19 +12,19 @@
     <language>en-gb</language>
     
       <lastBuildDate>Fri, 12 Dec 2008 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/hofmann/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/hofmann/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>A Bytecode Logic for JML and Types</title>
-          <link>/entries/BytecodeLogicJmlTypes.html</link>
+          <link>https://isa-afp.org/entries/BytecodeLogicJmlTypes.html</link>
           <pubDate>Fri, 12 Dec 2008 00:00:00 +0000</pubDate>
-          <guid>/entries/BytecodeLogicJmlTypes.html</guid>
+          <guid>https://isa-afp.org/entries/BytecodeLogicJmlTypes.html</guid>
           <description></description>
         </item>
         <item>
           <title>Secure information flow and program logics</title>
-          <link>/entries/SIFPL.html</link>
+          <link>https://isa-afp.org/entries/SIFPL.html</link>
           <pubDate>Mon, 10 Nov 2008 00:00:00 +0000</pubDate>
-          <guid>/entries/SIFPL.html</guid>
+          <guid>https://isa-afp.org/entries/SIFPL.html</guid>
           <description></description>
         </item>
   </channel>

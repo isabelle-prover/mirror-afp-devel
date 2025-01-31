@@ -3,7 +3,7 @@
   <channel>
     <title>makarios on Archive of Formal Proofs
     </title>
-    <link>/authors/makarios/</link>
+    <link>https://isa-afp.org/authors/makarios/</link>
     <description>
         Recent content in makarios 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Tue, 30 Oct 2012 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/makarios/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/makarios/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>The independence of Tarski&#39;s Euclidean axiom</title>
-          <link>/entries/Tarskis_Geometry.html</link>
+          <link>https://isa-afp.org/entries/Tarskis_Geometry.html</link>
           <pubDate>Tue, 30 Oct 2012 00:00:00 +0000</pubDate>
-          <guid>/entries/Tarskis_Geometry.html</guid>
+          <guid>https://isa-afp.org/entries/Tarskis_Geometry.html</guid>
           <description></description>
         </item>
   </channel>

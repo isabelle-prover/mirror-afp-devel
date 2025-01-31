@@ -3,7 +3,7 @@
   <channel>
     <title>Probabilistic_Prime_Tests on Archive of Formal Proofs
     </title>
-    <link>/dependencies/probabilistic_prime_tests/</link>
+    <link>https://isa-afp.org/dependencies/probabilistic_prime_tests/</link>
     <description>
         Recent content in Probabilistic_Prime_Tests 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Fri, 17 Jan 2020 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/dependencies/probabilistic_prime_tests/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/dependencies/probabilistic_prime_tests/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Mersenne primes and the Lucas–Lehmer test</title>
-          <link>/entries/Mersenne_Primes.html</link>
+          <link>https://isa-afp.org/entries/Mersenne_Primes.html</link>
           <pubDate>Fri, 17 Jan 2020 00:00:00 +0000</pubDate>
-          <guid>/entries/Mersenne_Primes.html</guid>
+          <guid>https://isa-afp.org/entries/Mersenne_Primes.html</guid>
           <description></description>
         </item>
   </channel>

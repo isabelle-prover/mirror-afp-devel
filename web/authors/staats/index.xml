@@ -3,7 +3,7 @@
   <channel>
     <title>staats on Archive of Formal Proofs
     </title>
-    <link>/authors/staats/</link>
+    <link>https://isa-afp.org/authors/staats/</link>
     <description>
         Recent content in staats 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Mon, 03 Apr 2023 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/staats/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/staats/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Positional Notation for Natural Numbers in an Arbitrary Base</title>
-          <link>/entries/DigitsInBase.html</link>
+          <link>https://isa-afp.org/entries/DigitsInBase.html</link>
           <pubDate>Mon, 03 Apr 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/DigitsInBase.html</guid>
+          <guid>https://isa-afp.org/entries/DigitsInBase.html</guid>
           <description></description>
         </item>
   </channel>

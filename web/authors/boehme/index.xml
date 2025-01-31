@@ -3,7 +3,7 @@
   <channel>
     <title>boehme on Archive of Formal Proofs
     </title>
-    <link>/authors/boehme/</link>
+    <link>https://isa-afp.org/authors/boehme/</link>
     <description>
         Recent content in boehme 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Tue, 06 Nov 2007 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/boehme/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/boehme/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Much Ado About Two</title>
-          <link>/entries/MuchAdoAboutTwo.html</link>
+          <link>https://isa-afp.org/entries/MuchAdoAboutTwo.html</link>
           <pubDate>Tue, 06 Nov 2007 00:00:00 +0000</pubDate>
-          <guid>/entries/MuchAdoAboutTwo.html</guid>
+          <guid>https://isa-afp.org/entries/MuchAdoAboutTwo.html</guid>
           <description></description>
         </item>
   </channel>

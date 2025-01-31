@@ -3,7 +3,7 @@
   <channel>
     <title>petrovic on Archive of Formal Proofs
     </title>
-    <link>/authors/petrovic/</link>
+    <link>https://isa-afp.org/authors/petrovic/</link>
     <description>
         Recent content in petrovic 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Tue, 11 Feb 2014 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/petrovic/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/petrovic/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Verification of Selection and Heap Sort Using Locales</title>
-          <link>/entries/Selection_Heap_Sort.html</link>
+          <link>https://isa-afp.org/entries/Selection_Heap_Sort.html</link>
           <pubDate>Tue, 11 Feb 2014 00:00:00 +0000</pubDate>
-          <guid>/entries/Selection_Heap_Sort.html</guid>
+          <guid>https://isa-afp.org/entries/Selection_Heap_Sort.html</guid>
           <description></description>
         </item>
   </channel>

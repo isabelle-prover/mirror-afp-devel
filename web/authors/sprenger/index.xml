@@ -3,7 +3,7 @@
   <channel>
     <title>sprenger on Archive of Formal Proofs
     </title>
-    <link>/authors/sprenger/</link>
+    <link>https://isa-afp.org/authors/sprenger/</link>
     <description>
         Recent content in sprenger 
         on Archive of Formal Proofs
@@ -12,40 +12,40 @@
     <language>en-gb</language>
     
       <lastBuildDate>Fri, 02 Feb 2024 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/sprenger/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/sprenger/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>The Sumcheck Protocol</title>
-          <link>/entries/Sumcheck_Protocol.html</link>
+          <link>https://isa-afp.org/entries/Sumcheck_Protocol.html</link>
           <pubDate>Fri, 02 Feb 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Sumcheck_Protocol.html</guid>
+          <guid>https://isa-afp.org/entries/Sumcheck_Protocol.html</guid>
           <description></description>
         </item>
         <item>
           <title>IsaNet: Formalization of a Verification Framework for Secure Data Plane Protocols</title>
-          <link>/entries/IsaNet.html</link>
+          <link>https://isa-afp.org/entries/IsaNet.html</link>
           <pubDate>Wed, 08 Jun 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/IsaNet.html</guid>
+          <guid>https://isa-afp.org/entries/IsaNet.html</guid>
           <description></description>
         </item>
         <item>
           <title>Developing Security Protocols by Refinement</title>
-          <link>/entries/Security_Protocol_Refinement.html</link>
+          <link>https://isa-afp.org/entries/Security_Protocol_Refinement.html</link>
           <pubDate>Wed, 24 May 2017 00:00:00 +0000</pubDate>
-          <guid>/entries/Security_Protocol_Refinement.html</guid>
+          <guid>https://isa-afp.org/entries/Security_Protocol_Refinement.html</guid>
           <description></description>
         </item>
         <item>
           <title>Refining Authenticated Key Agreement with Strong Adversaries</title>
-          <link>/entries/Key_Agreement_Strong_Adversaries.html</link>
+          <link>https://isa-afp.org/entries/Key_Agreement_Strong_Adversaries.html</link>
           <pubDate>Tue, 31 Jan 2017 00:00:00 +0000</pubDate>
-          <guid>/entries/Key_Agreement_Strong_Adversaries.html</guid>
+          <guid>https://isa-afp.org/entries/Key_Agreement_Strong_Adversaries.html</guid>
           <description></description>
         </item>
         <item>
           <title>Consensus Refined</title>
-          <link>/entries/Consensus_Refined.html</link>
+          <link>https://isa-afp.org/entries/Consensus_Refined.html</link>
           <pubDate>Wed, 18 Mar 2015 00:00:00 +0000</pubDate>
-          <guid>/entries/Consensus_Refined.html</guid>
+          <guid>https://isa-afp.org/entries/Consensus_Refined.html</guid>
           <description></description>
         </item>
   </channel>

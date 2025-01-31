@@ -3,7 +3,7 @@
   <channel>
     <title>stoeckl on Archive of Formal Proofs
     </title>
-    <link>/authors/stoeckl/</link>
+    <link>https://isa-afp.org/authors/stoeckl/</link>
     <description>
         Recent content in stoeckl 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Tue, 04 Oct 2022 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/stoeckl/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/stoeckl/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Verification of Query Optimization Algorithms</title>
-          <link>/entries/Query_Optimization.html</link>
+          <link>https://isa-afp.org/entries/Query_Optimization.html</link>
           <pubDate>Tue, 04 Oct 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/Query_Optimization.html</guid>
+          <guid>https://isa-afp.org/entries/Query_Optimization.html</guid>
           <description></description>
         </item>
   </channel>

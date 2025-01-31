@@ -3,7 +3,7 @@
   <channel>
     <title>Dijkstra_Shortest_Path on Archive of Formal Proofs
     </title>
-    <link>/dependencies/dijkstra_shortest_path/</link>
+    <link>https://isa-afp.org/dependencies/dijkstra_shortest_path/</link>
     <description>
         Recent content in Dijkstra_Shortest_Path 
         on Archive of Formal Proofs
@@ -12,26 +12,26 @@
     <language>en-gb</language>
     
       <lastBuildDate>Mon, 08 Aug 2016 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/dependencies/dijkstra_shortest_path/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/dependencies/dijkstra_shortest_path/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>The Imperative Refinement Framework</title>
-          <link>/entries/Refine_Imperative_HOL.html</link>
+          <link>https://isa-afp.org/entries/Refine_Imperative_HOL.html</link>
           <pubDate>Mon, 08 Aug 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/Refine_Imperative_HOL.html</guid>
+          <guid>https://isa-afp.org/entries/Refine_Imperative_HOL.html</guid>
           <description></description>
         </item>
         <item>
           <title>Verified Construction of Static Single Assignment Form</title>
-          <link>/entries/Formal_SSA.html</link>
+          <link>https://isa-afp.org/entries/Formal_SSA.html</link>
           <pubDate>Fri, 05 Feb 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/Formal_SSA.html</guid>
+          <guid>https://isa-afp.org/entries/Formal_SSA.html</guid>
           <description></description>
         </item>
         <item>
           <title>The Königsberg Bridge Problem and the Friendship Theorem</title>
-          <link>/entries/Koenigsberg_Friendship.html</link>
+          <link>https://isa-afp.org/entries/Koenigsberg_Friendship.html</link>
           <pubDate>Fri, 19 Jul 2013 00:00:00 +0000</pubDate>
-          <guid>/entries/Koenigsberg_Friendship.html</guid>
+          <guid>https://isa-afp.org/entries/Koenigsberg_Friendship.html</guid>
           <description></description>
         </item>
   </channel>

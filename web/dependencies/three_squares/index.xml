@@ -3,7 +3,7 @@
   <channel>
     <title>Three_Squares on Archive of Formal Proofs
     </title>
-    <link>/dependencies/three_squares/</link>
+    <link>https://isa-afp.org/dependencies/three_squares/</link>
     <description>
         Recent content in Three_Squares 
         on Archive of Formal Proofs
@@ -12,19 +12,19 @@
     <language>en-gb</language>
     
       <lastBuildDate>Wed, 06 Mar 2024 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/dependencies/three_squares/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/dependencies/three_squares/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Wieferich–Kempner Theorem</title>
-          <link>/entries/Wieferich_Kempner.html</link>
+          <link>https://isa-afp.org/entries/Wieferich_Kempner.html</link>
           <pubDate>Wed, 06 Mar 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Wieferich_Kempner.html</guid>
+          <guid>https://isa-afp.org/entries/Wieferich_Kempner.html</guid>
           <description></description>
         </item>
         <item>
           <title>Polygonal Number Theorem</title>
-          <link>/entries/Polygonal_Number_Theorem.html</link>
+          <link>https://isa-afp.org/entries/Polygonal_Number_Theorem.html</link>
           <pubDate>Thu, 10 Aug 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/Polygonal_Number_Theorem.html</guid>
+          <guid>https://isa-afp.org/entries/Polygonal_Number_Theorem.html</guid>
           <description></description>
         </item>
   </channel>

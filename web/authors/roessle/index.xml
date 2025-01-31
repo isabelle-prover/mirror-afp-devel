@@ -3,7 +3,7 @@
   <channel>
     <title>roessle on Archive of Formal Proofs
     </title>
-    <link>/authors/roessle/</link>
+    <link>https://isa-afp.org/authors/roessle/</link>
     <description>
         Recent content in roessle 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Wed, 13 Oct 2021 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/roessle/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/roessle/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>X86 instruction semantics and basic block symbolic execution</title>
-          <link>/entries/X86_Semantics.html</link>
+          <link>https://isa-afp.org/entries/X86_Semantics.html</link>
           <pubDate>Wed, 13 Oct 2021 00:00:00 +0000</pubDate>
-          <guid>/entries/X86_Semantics.html</guid>
+          <guid>https://isa-afp.org/entries/X86_Semantics.html</guid>
           <description></description>
         </item>
   </channel>

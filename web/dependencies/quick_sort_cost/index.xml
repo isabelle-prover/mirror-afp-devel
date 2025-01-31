@@ -3,7 +3,7 @@
   <channel>
     <title>Quick_Sort_Cost on Archive of Formal Proofs
     </title>
-    <link>/dependencies/quick_sort_cost/</link>
+    <link>https://isa-afp.org/dependencies/quick_sort_cost/</link>
     <description>
         Recent content in Quick_Sort_Cost 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Tue, 04 Apr 2017 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/dependencies/quick_sort_cost/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/dependencies/quick_sort_cost/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Expected Shape of Random Binary Search Trees</title>
-          <link>/entries/Random_BSTs.html</link>
+          <link>https://isa-afp.org/entries/Random_BSTs.html</link>
           <pubDate>Tue, 04 Apr 2017 00:00:00 +0000</pubDate>
-          <guid>/entries/Random_BSTs.html</guid>
+          <guid>https://isa-afp.org/entries/Random_BSTs.html</guid>
           <description></description>
         </item>
   </channel>

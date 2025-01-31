@@ -3,7 +3,7 @@
   <channel>
     <title>siek on Archive of Formal Proofs
     </title>
-    <link>/authors/siek/</link>
+    <link>https://isa-afp.org/authors/siek/</link>
     <description>
         Recent content in siek 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Fri, 21 Jul 2017 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/siek/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/siek/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Declarative Semantics for Functional Languages</title>
-          <link>/entries/Decl_Sem_Fun_PL.html</link>
+          <link>https://isa-afp.org/entries/Decl_Sem_Fun_PL.html</link>
           <pubDate>Fri, 21 Jul 2017 00:00:00 +0000</pubDate>
-          <guid>/entries/Decl_Sem_Fun_PL.html</guid>
+          <guid>https://isa-afp.org/entries/Decl_Sem_Fun_PL.html</guid>
           <description></description>
         </item>
   </channel>

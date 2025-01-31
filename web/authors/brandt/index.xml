@@ -3,7 +3,7 @@
   <channel>
     <title>brandt on Archive of Formal Proofs
     </title>
-    <link>/authors/brandt/</link>
+    <link>https://isa-afp.org/authors/brandt/</link>
     <description>
         Recent content in brandt 
         on Archive of Formal Proofs
@@ -12,12 +12,12 @@
     <language>en-gb</language>
     
       <lastBuildDate>Thu, 22 Mar 2018 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/brandt/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="https://isa-afp.org/authors/brandt/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>The Incompatibility of Fishburn-Strategyproofness and Pareto-Efficiency</title>
-          <link>/entries/Fishburn_Impossibility.html</link>
+          <link>https://isa-afp.org/entries/Fishburn_Impossibility.html</link>
           <pubDate>Thu, 22 Mar 2018 00:00:00 +0000</pubDate>
-          <guid>/entries/Fishburn_Impossibility.html</guid>
+          <guid>https://isa-afp.org/entries/Fishburn_Impossibility.html</guid>
           <description></description>
         </item>
   </channel>
