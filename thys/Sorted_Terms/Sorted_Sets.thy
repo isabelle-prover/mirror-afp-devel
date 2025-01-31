@@ -207,6 +207,9 @@ text \<open>Explicitly sorted sets:\<close>
 
 abbreviation "sort_annotated \<equiv> Some \<circ> snd"
 
+lemma hastype_in_Some[simp]: "a : \<sigma> in (\<lambda>x. Some (f x)) \<longleftrightarrow> \<sigma> = f a"
+  by (auto simp: hastype_def)
+
 text \<open>Listwise type judgement:\<close>
 
 abbreviation hastype_list (\<open>((_) :\<^sub>l/ (_) in/ (_))\<close> [50,61,51]50)
@@ -294,8 +297,6 @@ lemma restrict_map_eq_restrict_sset: "A |` S = {x : \<sigma> in A. x \<in> S}"
 
 lemma hastype_the_simp[simp]: "a : \<sigma> in A \<Longrightarrow> the (A a) = \<sigma>"
   by (auto)
-
-lemma hastype_in_Some[simp]: "x : \<sigma> in Some \<longleftrightarrow> x = \<sigma>" by (auto simp: hastype_def)
 
 lemma hastype_in_upd[simp]: "x : \<sigma> in A(y \<mapsto> \<tau>) \<longleftrightarrow> (if x = y then \<sigma> = \<tau> else x : \<sigma> in A)"
   by (auto simp: hastype_def)

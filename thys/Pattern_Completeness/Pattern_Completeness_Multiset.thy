@@ -74,7 +74,7 @@ inductive pp_step_mset :: "('f,'v,'s)pat_problem_mset \<Rightarrow> ('f,'v,'s)pa
    \<and> (improved \<longrightarrow> s = Var x \<and> is_Fun t) \<Longrightarrow>
   add_mset mp pp \<Rightarrow>\<^sub>m mset (map (\<lambda> \<tau>. subst_pat_problem_mset \<tau> (add_mset mp pp)) (\<tau>s_list n x))"
 | pat_inf_var_conflict: "Ball (pat_mset pp) inf_var_conflict \<Longrightarrow> pp \<noteq> {#}
-    \<Longrightarrow> Ball (tvars_pp (pat_mset pp')) (\<lambda> x. \<not> inf_sort (snd x)) \<Longrightarrow> pp + pp' \<Rightarrow>\<^sub>m {# pp' #}" 
+    \<Longrightarrow> Ball (tvars_pat (pat_mset pp')) (\<lambda> x. \<not> inf_sort (snd x)) \<Longrightarrow> pp + pp' \<Rightarrow>\<^sub>m {# pp' #}" 
 
 
 inductive pat_fail :: "('f,'v,'s)pat_problem_mset \<Rightarrow> bool" where
@@ -375,8 +375,8 @@ next
                   with impr show ?thesis by auto
                 next
                   case False
-                  have "\<forall>x\<in>tvars_pp (pat_mset p_fin). \<not> inf_sort (snd x)" unfolding p_fin_def fin_def
-                    by (auto simp: tvars_pp_def)
+                  have "\<forall>x\<in>tvars_pat (pat_mset p_fin). \<not> inf_sort (snd x)" unfolding p_fin_def fin_def
+                    by (auto simp: tvars_pat_def)
                   from pat_inf_var_conflict[OF _ False this, folded p_split] no_step
                   obtain mp where mp: "mp \<in># p" and inf: "\<not> fin mp" and no_confl: "\<not> inf_var_conflict (mp_mset mp)" 
                     unfolding p_inf_def by fastforce
@@ -427,7 +427,7 @@ next
                 apply (rule exI[of _ s], rule exI[of _ t])
                 apply (intro exI[of _ x] exI[of _ y])
                 using insert inf conf by auto
-            qed (auto simp: tvars_pp_def)
+            qed (auto simp: tvars_pat_def)
             thus ?thesis by auto
           qed
         qed
@@ -623,7 +623,7 @@ definition meas_diff :: "('f,'v,'s)pat_problem_mset \<Rightarrow> nat" where
   "meas_diff = sum_ms (sum_ms (\<lambda> (t,l). fun_diff l t))" 
 
 definition max_size :: "'s \<Rightarrow> nat" where
-  "max_size s = (if s \<in> S \<and> \<not> inf_sort s then Maximum (size ` {t. t : s in \<T>(C,EMPTYn)}) else 0)" 
+  "max_size s = (if s \<in> S \<and> \<not> inf_sort s then Maximum (size ` {t. t : s in \<T>(C)}) else 0)" 
 
 definition meas_finvars :: "('f,'v,'s)pat_problem_mset \<Rightarrow> nat" where
   "meas_finvars = sum_ms (\<lambda> mp. sum (max_size o snd) (tvars_mp (mp_mset mp)))" 
@@ -802,11 +802,10 @@ proof -
 qed
 
 lemma max_size_term_of_sort: assumes sS: "s \<in> S" and inf: "\<not> inf_sort s" 
-  shows "\<exists> t. t : s in \<T>(C,EMPTYn) \<and> max_size s = size t \<and> (\<forall> t'. t' : s in \<T>(C,EMPTYn) \<longrightarrow> size t' \<le> size t)" 
+  shows "\<exists> t. t : s in \<T>(C) \<and> max_size s = size t \<and> (\<forall> t'. t' : s in \<T>(C) \<longrightarrow> size t' \<le> size t)" 
 proof -
-  let ?set = "\<lambda> s. size ` {t. t : s in \<T>(C,EMPTYn)}" 
-  have m: "max_size s = Maximum (?set s)" unfolding o_def max_size_def using inf  sS by auto
-  
+  let ?set = "\<lambda> s. size ` {t. t : s in \<T>(C)}" 
+  have m: "max_size s = Maximum (?set s)" unfolding o_def max_size_def using inf sS by auto
   from inf inf_sort_not_bdd[OF sS] have "bdd_above (?set s)" by auto
   moreover have "?set s \<noteq> {}" by (auto intro!: sorts_non_empty sS) 
   ultimately have "has_Maximum (?set s)" by (rule bdd_above_has_Maximum_nat) 
@@ -815,7 +814,7 @@ qed
 
 lemma max_size_max: assumes sS: "s \<in> S" 
   and inf: "\<not> inf_sort s" 
-  and sort:  "t : s in \<T>(C,EMPTYn)" 
+  and sort: "t : s in \<T>(C)" 
 shows "size t \<le> max_size s"  
   using max_size_term_of_sort[OF sS inf] sort by auto
   
@@ -836,16 +835,16 @@ proof -
       with vsS have v: "snd v \<in> S" by auto
       note sorts_non_empty[OF this]
     }
-    hence "\<forall> v. \<exists> t. v \<in> set vs \<longrightarrow> t : snd v in \<T>(C,EMPTYn)" by auto
+    hence "\<forall> v. \<exists> t. v \<in> set vs \<longrightarrow> t : snd v in \<T>(C)" by auto
     from choice[OF this] obtain t where 
-      t: "\<And> v. v \<in> set vs \<Longrightarrow> t v : snd v in \<T>(C,EMPTYn)" by blast
+      t: "\<And> v. v \<in> set vs \<Longrightarrow> t v : snd v in \<T>(C)" by blast
     from True vsS obtain vl where vl: "vl \<in> set vs" and vlS: "snd vl \<in> S" and inf_vl: "inf_sort (snd vl)" by auto
     note nbdd = inf_sort_not_bdd[OF vlS, THEN iffD2, OF inf_vl]
     from not_bdd_above_natD[OF nbdd, of ?m] t[OF vl]
      obtain tl where 
-      tl: "tl : snd vl in \<T>(C,EMPTYn)" and large: "?m \<le> size tl" by fastforce
+      tl: "tl : snd vl in \<T>(C)" and large: "?m \<le> size tl" by fastforce
     let ?t = "Fun c (map (\<lambda> v. if v = vl then tl else t v) vs)" 
-    have "?t : s in \<T>(C,EMPTYn)" 
+    have "?t : s in \<T>(C)" 
       by (intro Fun_hastypeI[OF c] list_all2_map_map, insert tl t, auto)
     from max_size_max[OF sS inf this] 
     have False using large split_list[OF vl] by auto
@@ -858,13 +857,13 @@ proof -
       with False have inf: "\<not> inf_sort (snd v)" by auto
       from vsS v have "snd v \<in> S" by auto
       from max_size_term_of_sort[OF this inf]
-      have "\<exists> t. t : snd v in \<T>(C,EMPTYn) \<and> size t = max_size (snd v)" by auto
+      have "\<exists> t. t : snd v in \<T>(C) \<and> size t = max_size (snd v)" by auto
     }
-    hence "\<forall> v. \<exists> t. v \<in> set vs \<longrightarrow> t : snd v in \<T>(C,EMPTYn) \<and> size t = max_size (snd v)" by auto
+    hence "\<forall> v. \<exists> t. v \<in> set vs \<longrightarrow> t : snd v in \<T>(C) \<and> size t = max_size (snd v)" by auto
     from choice[OF this] obtain t where 
-      t: "v \<in> set vs \<Longrightarrow> t v : snd v in \<T>(C,EMPTYn) \<and> size (t v) = max_size (snd v)" for v by blast
+      t: "v \<in> set vs \<Longrightarrow> t v : snd v in \<T>(C) \<and> size (t v) = max_size (snd v)" for v by blast
     let ?t = "Fun c (map t vs)" 
-    have "?t : s in \<T>(C,EMPTYn)" 
+    have "?t : s in \<T>(C)" 
       by (intro Fun_hastypeI[OF c] list_all2_map_map, insert t, auto)
     from max_size_max[OF sS inf this]
     have "size ?t \<le> max_size s" . (* the important step *)
@@ -881,7 +880,8 @@ proof -
 qed
 
 lemma rel_pp_step_mset:
-  assumes "p \<Rightarrow>\<^sub>m ps" 
+  fixes p :: "('f,'v,'s) pat_problem_mset"
+  assumes "p \<Rightarrow>\<^sub>m ps"
   and "p' \<in># ps"
 shows "p \<succ> p'" 
   using assms
@@ -913,8 +913,8 @@ next
   from *(3) \<tau>s_list
   obtain \<tau> where \<tau>: "\<tau> \<in> \<tau>s n x" and p': "p' = subst_pat_problem_mset \<tau> ?p" by auto
   
-  let ?tau_mset = "subst_pat_problem_mset \<tau>" 
-  let ?tau = "subst_match_problem_mset \<tau>" 
+  let ?tau_mset = "subst_pat_problem_mset \<tau> :: ('f,'v,'s) pat_problem_mset \<Rightarrow> _"
+  let ?tau = "subst_match_problem_mset \<tau> :: ('f,'v,'s) match_problem_mset \<Rightarrow> _"
   from \<tau>[unfolded \<tau>s_def \<tau>c_def List.maps_def]
   obtain c sorts where c: "c : sorts \<rightarrow> ?s in C" and tau: "\<tau> = subst x (Fun c (map Var (zip [n..<n + length sorts] sorts)))" 
     by auto
@@ -960,12 +960,13 @@ next
         by (auto simp:vars_\<tau> split: if_splits prod.split)
       have id1: "meas_finvars (?tau_mset {#mp#}) = (\<Sum>x\<in> tvars_mp (mp_mset (?tau mp)). max_size (snd x))"  for mp
         unfolding meas_def subst_defs by auto
-      have id2: "meas_finvars {#mp#} = (\<Sum>x\<in>tvars_mp (mp_mset mp). max_size (snd x))" for mp
+      have id2: "meas_finvars {#mp#} = (\<Sum>x\<in>tvars_mp (mp_mset mp). max_size (snd x))"
+        for mp :: "('f,'v,'s) match_problem_mset"
         unfolding meas_def subst_defs by simp
       have eq: "x \<notin> tvars_mp (mp_mset mp) \<Longrightarrow> meas_finvars (?tau_mset {# mp #}) = meas_finvars {#mp#}" for mp
         unfolding id1 id2 by (rule sum.cong[OF _ refl], auto simp: tvars_mp_subst)
       {
-        fix mp
+        fix mp :: "('f,'v,'s) match_problem_mset"
         (* if x occurs in the matching problem, then we get a strict decrease *)
         assume xmp: "x \<in> tvars_mp (mp_mset mp)" 
         let ?mp = "(mp_mset mp)" 
@@ -1126,7 +1127,7 @@ next
     from *(2) have "x \<in> tvars_mp (mp_mset mp)" 
       using conflicts(4)[of s t x] unfolding tvars_mp_def
       by (auto intro!:term.set_intros(3))
-    hence x: "x \<in> tvars_pp (pat_mset (add_mset mp p))" unfolding tvars_pp_def 
+    hence x: "x \<in> tvars_pat (pat_mset (add_mset mp p))" unfolding tvars_pat_def 
       using *(2) by auto
     show ?case unfolding conv \<tau>s_list
       apply (rule P_step_set_cong[OF P_instantiate[OF *(1) x]])
@@ -1135,7 +1136,7 @@ next
     case *: (pat_inf_var_conflict pp pp')
     from pp_inf_var_conflict[OF *(1), of "pat_mset pp'"] 
     have "pat_mset (pp + pp') \<Rightarrow>\<^sub>s pat_mset pp'" 
-      using * by (auto simp: tvars_pp_def image_Un)
+      using * by (auto simp: tvars_pat_def image_Un)
     from P_simp[OF this]
     show ?case by auto
   qed
@@ -1147,7 +1148,7 @@ lemma P_step_pp_trans: assumes "(P,Q) \<in> \<Rrightarrow>"
   by (rule P_step_mset_imp_set, insert assms, unfold P_step_def, auto)
 
 theorem P_step_pcorrect: assumes wf: "wf_pats (pats_mset P)" and step: "(P,Q) \<in> P_step"
-shows "wf_pats (pats_mset Q) \<and> (pats_complete (pats_mset P) = pats_complete (pats_mset Q))" 
+shows "wf_pats (pats_mset Q) \<and> (pats_complete C (pats_mset P) = pats_complete C (pats_mset Q))" 
 proof -
   note step = P_step_pp_trans[OF step]
   from P_step_set_pcorrect[OF step] P_step_set_wf[OF step] wf
@@ -1156,7 +1157,7 @@ qed
 
 corollary P_steps_pcorrect: assumes wf: "wf_pats (pats_mset P)" 
   and step: "(P,Q) \<in> \<Rrightarrow>\<^sup>*" 
-shows "wf_pats (pats_mset Q) \<and> (pats_complete (pats_mset P) \<longleftrightarrow> pats_complete (pats_mset Q))"
+shows "wf_pats (pats_mset Q) \<and> (pats_complete C (pats_mset P) \<longleftrightarrow> pats_complete C (pats_mset Q))"
   using step by induct (insert wf P_step_pcorrect, auto)
 
 text \<open>Gather all results for the multiset-based implementation: 
@@ -1165,13 +1166,13 @@ text \<open>Gather all results for the multiset-based implementation:
 theorem P_step:
   assumes non_improved: "\<not> improved" 
     and wf: "wf_pats (pats_mset P)" and NF: "(P,Q) \<in> \<Rrightarrow>\<^sup>!"
-  shows "Q = {#} \<and> pats_complete (pats_mset P) \<comment> \<open>either the result is {} and input P is complete\<close>
-  \<or> Q = bottom_mset \<and> \<not> pats_complete (pats_mset P) \<comment> \<open>or the result = bot and P is not complete\<close>" 
+  shows "Q = {#} \<and> pats_complete C (pats_mset P) \<comment> \<open>either the result is {} and input P is complete\<close>
+  \<or> Q = bottom_mset \<and> \<not> pats_complete C (pats_mset P) \<comment> \<open>or the result = bot and P is not complete\<close>" 
 proof -
   from NF have steps: "(P,Q) \<in> \<Rrightarrow>^*" and NF: "Q \<in> NF P_step" by auto
   from P_steps_pcorrect[OF wf steps]
   have wf: "wf_pats (pats_mset Q)" and 
-    sound: "pats_complete (pats_mset P) = pats_complete (pats_mset Q)" 
+    sound: "pats_complete C (pats_mset P) = pats_complete C (pats_mset Q)" 
     by blast+
   from P_step_NF[OF non_improved NF] have "Q \<in> {{#},bottom_mset}" .
   thus ?thesis unfolding sound by auto
@@ -1182,12 +1183,12 @@ theorem P_step_improved:
   assumes improved 
     and inf: "infinite (UNIV :: 'v set)" 
     and wf: "wf_pats (pats_mset P)" and NF: "(P,Q) \<in> \<Rrightarrow>\<^sup>!"
-  shows "pats_complete (pats_mset P) \<longleftrightarrow> pats_complete (pats_mset Q)" \<comment> \<open>equivalence\<close>
+  shows "pats_complete C (pats_mset P) \<longleftrightarrow> pats_complete C (pats_mset Q)" \<comment> \<open>equivalence\<close>
     "p \<in># Q \<Longrightarrow> finite_var_form_pp (pat_mset p)" \<comment> \<open>all remaining problems are in finite-var-form\<close>
 proof -
   from NF have steps: "(P,Q) \<in> \<Rrightarrow>^*" and NF: "Q \<in> NF P_step" by auto
   from P_steps_pcorrect[OF wf steps]
-  show "pats_complete (pats_mset P) = pats_complete (pats_mset Q)" ..
+  show "pats_complete C (pats_mset P) = pats_complete C (pats_mset Q)" ..
   from P_step_NF_fvf[OF \<open>improved\<close> inf NF]
   show "p \<in># Q \<Longrightarrow> finite_var_form_pp (pat_mset p)" .
 qed
