@@ -1,5 +1,6 @@
 +++
 title = "Entry Submission"
+description = "Submit to the Archive of Formal Proofs"
 
 [menu.main]
 name = "Submission"

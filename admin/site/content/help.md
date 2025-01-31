@@ -1,5 +1,6 @@
 +++
 title = "Help"
+description = "Help with the Archive of Formal Proofs"
 
 [menu.main]
 name = "Help"

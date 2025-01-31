@@ -1,5 +1,6 @@
 +++
 title = "Download the Archive"
+description = "Download the Archive of Formal Proofs"
 
 [menu.main]
 name = "Download"

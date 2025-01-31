@@ -1,5 +1,6 @@
 +++
 title = "About"
+description = "About the Archive of Formal Proofs"
 
 [menu.main]
 name = "About"

@@ -1,19 +1,19 @@
 <head>
   <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
 
   {{- if .IsHome }}
-    <title>{{ .Site.Title }} </title>
+    <title>{{ .Site.Title }}</title>
+    <meta name="description" content="{{ .Site.Params.Description }}" />
+    <meta name="og:description" content="{{ .Site.Params.Description }}" />
   {{- else }}
     <title>{{ .Title | safeHTML }} - {{ .Site.Title }}</title>
-  {{- end }}
-
-  {{- if (eq .Section "entries") }}
-    <meta name="description" content="{{ .Params.abstract | plainify | truncate "155" "..." }}">
-  {{- else }}
-    <meta name="description" content="A collection of proof libraries, examples, and larger
-     scientific developments, mechanically checked in the theorem prover Isabelle.">
+    {{- $description := default 
+      (printf "%s in the Archive of Formal Proofs" .Title | plainify)
+      .Description }}
+    <meta name="description" content="{{ $description | safeHTMLAttr }}" />
+    <meta property="og:description" content="{{ $description | safeHTMLAttr }}" />
   {{- end }}
 
   {{- with .OutputFormats.Get "rss" }}
@@ -21,8 +21,16 @@
      $.Site.Title | safeHTML }}
   {{- end }}
 
-  {{ template "_internal/opengraph.html" . }}
-  {{ template "_internal/twitter_cards.html" . }}
+  <meta property="og:title" content="{{ .Title | safeHTMLAttr }}" />
+  <meta property="og:url" content="{{ .Permalink }}" />
+  <meta property="og:image" content="{{ "images/afp.png" | absURL }}" />
+  {{ if eq .Section "entries" -}}
+    <meta property="og:type" content="article" />
+  {{ else if eq .Section "authors" -}}
+    <meta property="og:type" content="profile" />
+  {{ else -}}
+    <meta property="og:type" content="website" />
+  {{ end }}
 
   {{- $options := (dict "targetPath" "css/front.css") }}
   {{- $style := resources.Get "sass/main.scss" | toCSS $options | minify }}

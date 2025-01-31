@@ -340,8 +340,10 @@ object AFP_Site_Gen {
           authors(id).copy(emails = seen_emails, homepages = seen_homepages)
       }
 
-    hugo.write_content(
-      Hugo.Index("authors", Hugo.Metadata(title = "Authors", outputs = List("html", "json"))))
+    val authors_meta =
+      Hugo.Metadata(title = "Authors", description = "Authors of the Archive of Formal Proofs",
+        outputs = List("html", "json"))
+    hugo.write_content(Hugo.Index("authors", authors_meta))
     for { 
       author <- seen_authors 
       author_entries = entries1.filter(_.authors.map(_.author).contains(author.id))
