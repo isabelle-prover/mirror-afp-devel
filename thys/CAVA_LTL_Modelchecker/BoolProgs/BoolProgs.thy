@@ -2,6 +2,7 @@ section \<open>Boolean Programs\<close>
 theory BoolProgs
 imports 
   CAVA_Base.CAVA_Base
+  "Word_Lib.Generic_set_bit"
 begin
 
 subsection \<open>Syntax and Semantics\<close>

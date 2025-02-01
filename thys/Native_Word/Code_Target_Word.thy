@@ -65,17 +65,6 @@ testBitUnbounded x b
 testBitBounded :: Data.Bits.Bits a => a -> Integer -> Bool;
 testBitBounded x b = Data.Bits.testBit x (fromInteger b);
 
-genericSetBitUnbounded :: Data.Bits.Bits a => a -> Integer -> Bool -> a;
-genericSetBitUnbounded x n b
-  | n <= toInteger (Prelude.maxBound :: Int) =
-    if b then Data.Bits.setBit x (fromInteger n) else Data.Bits.clearBit x (fromInteger n)
-  | otherwise = error ("Bit index too large: " ++ show n)
-;
-
-genericSetBitBounded :: Data.Bits.Bits a => a -> Integer -> Bool -> a;
-genericSetBitBounded x n True = Data.Bits.setBit x (fromInteger n);
-genericSetBitBounded x n False = Data.Bits.clearBit x (fromInteger n);
-
 shiftlUnbounded :: Data.Bits.Bits a => a -> Integer -> a;
 shiftlUnbounded x n
   | n <= toInteger (Prelude.maxBound :: Int) = Data.Bits.shiftL x (fromInteger n)
@@ -132,14 +121,6 @@ testBitUnbounded = Data.Bits.testBit;
 
 testBitBounded :: Data.Bits.Bits a => a -> Prelude.Int -> Bool;
 testBitBounded = Data.Bits.testBit;
-
-genericSetBitUnbounded :: Data.Bits.Bits a => a -> Prelude.Int -> Bool -> a;
-genericSetBitUnbounded x n True = Data.Bits.setBit x n;
-genericSetBitUnbounded x n False = Data.Bits.clearBit x n;
-
-genericSetBitBounded :: Data.Bits.Bits a => a -> Prelude.Int -> Bool -> a;
-genericSetBitBounded x n True = Data.Bits.setBit x n;
-genericSetBitBounded x n False = Data.Bits.clearBit x n;
 
 shiftlUnbounded :: Data.Bits.Bits a => a -> Prelude.Int -> a;
 shiftlUnbounded = Data.Bits.shiftL;

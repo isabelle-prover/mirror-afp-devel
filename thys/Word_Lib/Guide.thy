@@ -18,10 +18,6 @@ lemma bit_eq_iff:
 
 end
 
-notation (output)  Generic_set_bit.set_bit (\<open>Generic'_set'_bit.set'_bit\<close>)
-
-hide_const (open) Generic_set_bit.set_bit
-
 no_notation bit  (infixl \<open>!!\<close> 100)
 
 (*>*)
@@ -352,7 +348,7 @@ text \<open>
 
   \<^descr>[\<^theory>\<open>Word_Lib.Generic_set_bit\<close>]
 
-    Kind of an alias: @{thm set_bit_eq [no_vars]}
+    A variant of a singleton bit operation: @{thm Generic_set_bit.set_bit_eq [no_vars]}
 
   \<^descr>[\<^theory>\<open>Word_Lib.Typedef_Morphisms\<close>]
 
@@ -392,6 +388,11 @@ text \<open>
 section \<open>Changelog\<close>
 
 text \<open>
+  \<^descr>[Changes since AFP 2025] ~
+
+    \<^item> \<^const>\<open>Generic_set_bit.set_bit\<close> is now a regular derived operation
+      without any special treatment.
+
   \<^descr>[Changes since AFP 2024] ~
 
     \<^item> Theory \<^text>\<open>Strict_part_mono\<close> is not part of text\<open>Word_Lib_Sumo\<close> any longer.
