@@ -11,13 +11,13 @@
     </tr>
     <tr>
       <td class="statsnumber">
-        ~{{ lang.NumFmt 0 (mul (math.Round (div $data.num_lemmas 100)) 100) }}
+        ~{{ lang.FormatNumberCustom 0 (mul (math.Round (div $data.num_lemmas 100)) 100) }}
       </td>
       <td>Lemmas</td>
     </tr>
     <tr>
       <td class="statsnumber">
-        ~{{ lang.NumFmt 0 (mul (math.Round (div $data.num_loc 100)) 100) }}
+        ~{{ lang.FormatNumberCustom 0 (mul (math.Round (div $data.num_loc 100)) 100) }}
       </td>
       <td>Lines of Code</td>
     </tr>

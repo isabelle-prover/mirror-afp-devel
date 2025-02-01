@@ -233,19 +233,12 @@ object AFP_Site_Gen {
     if (symlinks) {
       Isabelle_System.symlink(config_file, hugo.dir)
       Isabelle_System.symlink(theme_dir, hugo.themes_dir + Path.basic(theme))
-
-      Isabelle_System.make_directory(hugo.content_dir)
-      for (entry <- File.read_dir(content_dir)) {
-        Isabelle_System.symlink(
-          content_dir + Path.basic(entry),
-          hugo.content_dir + Path.basic(entry))
-      }
     }
     else {
       Isabelle_System.copy_file(config_file, hugo.dir)
       Isabelle_System.copy_dir(theme_dir, hugo.themes_dir + Path.basic(theme), direct = true)
-      Isabelle_System.copy_dir(content_dir, hugo.content_dir, direct = true)
     }
+    Isabelle_System.copy_dir(content_dir, hugo.content_dir, direct = true)
   }
 
 
