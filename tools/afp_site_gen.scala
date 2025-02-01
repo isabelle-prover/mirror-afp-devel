@@ -549,6 +549,7 @@ object AFP_Site_Gen {
       var write_dir: Option[Path] = None
       var clean = false
       var devel = false
+      var verbose = false
 
       val getopts = Getopts("""
   Usage: isabelle afp_site_gen [OPTIONS]
@@ -560,6 +561,7 @@ object AFP_Site_Gen {
       -W DIR       write hugo project to specified output directory
       -c           clean up output directories
       -d           devel mode (symlinks sources and serves site instead of build)
+      -v           verbose
 
     Generates the AFP website. HTML files of entries are dynamically loaded.
     Providing a status file will build the development version of the archive.
@@ -569,7 +571,8 @@ object AFP_Site_Gen {
         "R:" -> (arg => read_dir = Some(Path.explode(arg))),
         "W:" -> (arg => write_dir = Some(Path.explode(arg))),
         "c" -> (_ => clean = true),
-        "d" -> (_ => devel = true))
+        "d" -> (_ => devel = true),
+        "v" -> (_ => verbose = true))
 
       val more_args = getopts(args)
       if (more_args.nonEmpty) getopts.usage()
@@ -578,7 +581,7 @@ object AFP_Site_Gen {
         if (!path.is_file || !path.file.exists()) error("Invalid status file: " + path))
 
       val afp = AFP_Structure()
-      val progress = new Console_Progress(verbose = devel)
+      val progress = new Console_Progress(verbose = verbose || devel)
 
       afp_site_gen(out_dir, read_dir = read_dir, write_dir = write_dir, afp = afp, status_file =
         status_file, clean = clean, devel = devel, progress = progress)
