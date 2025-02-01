@@ -11,8 +11,15 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Wed, 02 Oct 2024 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Mon, 20 Jan 2025 00:00:00 +0000</lastBuildDate>
       <atom:link href="/authors/argyraki/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Transitive Union-Closed Families</title>
+          <link>/entries/Transitive_Union_Closed_Families.html</link>
+          <pubDate>Mon, 20 Jan 2025 00:00:00 +0000</pubDate>
+          <guid>/entries/Transitive_Union_Closed_Families.html</guid>
+          <description></description>
+        </item>
         <item>
           <title>Wooley&#39;s Discrete Inequality</title>
           <link>/entries/Wooley_Elementary_Discrete_Inequality.html</link>

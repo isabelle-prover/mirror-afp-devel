@@ -41,6 +41,21 @@
     <loc>/authors/wangz/</loc>
     <lastmod>2025-01-24T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>/authors/argyraki/</loc>
+    <lastmod>2025-01-20T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/mathematics/</loc>
+    <lastmod>2025-01-20T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/paulson/</loc>
+    <lastmod>2025-01-20T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/pluennecke_ruzsa_inequality/</loc>
+    <lastmod>2025-01-20T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Transitive_Union_Closed_Families.html</loc>
+    <lastmod>2025-01-20T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>/authors/cheung/</loc>
     <lastmod>2025-01-17T00:00:00+00:00</lastmod>
   </url><url>
@@ -63,9 +78,6 @@
     <lastmod>2025-01-16T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/karayel/</loc>
-    <lastmod>2025-01-16T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/mathematics/</loc>
     <lastmod>2025-01-16T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Negative_Association.html</loc>
@@ -257,9 +269,6 @@
     <loc>/entries/Category_Set.html</loc>
     <lastmod>2024-10-10T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/authors/argyraki/</loc>
-    <lastmod>2024-10-02T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/entries/Wooley_Elementary_Discrete_Inequality.html</loc>
     <lastmod>2024-10-02T00:00:00+00:00</lastmod>
   </url><url>
@@ -363,9 +372,6 @@
     <lastmod>2024-09-02T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/noce/</loc>
-    <lastmod>2024-09-02T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/paulson/</loc>
     <lastmod>2024-09-02T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/ramsey_bounds/</loc>
@@ -1476,9 +1482,6 @@
     <lastmod>2022-11-24T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Kneser_Cauchy_Davenport.html</loc>
-    <lastmod>2022-11-21T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/pluennecke_ruzsa_inequality/</loc>
     <lastmod>2022-11-21T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/lauermann/</loc>
@@ -7339,6 +7342,8 @@
     <loc>/sessions/transition_systems_and_automata/</loc>
   </url><url>
     <loc>/sessions/transitive_models/</loc>
+  </url><url>
+    <loc>/sessions/transitive_union_closed_families/</loc>
   </url><url>
     <loc>/sessions/transitive-closure/</loc>
   </url><url>

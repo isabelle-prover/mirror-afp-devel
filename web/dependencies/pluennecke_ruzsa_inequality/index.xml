@@ -11,8 +11,15 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Mon, 21 Nov 2022 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Mon, 20 Jan 2025 00:00:00 +0000</lastBuildDate>
       <atom:link href="/dependencies/pluennecke_ruzsa_inequality/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Transitive Union-Closed Families</title>
+          <link>/entries/Transitive_Union_Closed_Families.html</link>
+          <pubDate>Mon, 20 Jan 2025 00:00:00 +0000</pubDate>
+          <guid>/entries/Transitive_Union_Closed_Families.html</guid>
+          <description></description>
+        </item>
         <item>
           <title>Kneser&#39;s Theorem and the Cauchy–Davenport Theorem</title>
           <link>/entries/Kneser_Cauchy_Davenport.html</link>
