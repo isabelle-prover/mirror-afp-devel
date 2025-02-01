@@ -93,8 +93,8 @@ object Hugo {
           if_proper(draft, " -D") +
           if_proper(!progress.verbose, " --logLevel error") +
           " -t " + Bash.string(theme) +
-          " -s " + File.bash_path(dir) +
-          " -d " + File.bash_path(out_dir)
+          " -s " + File.bash_platform_path(dir) +
+          " -d " + File.bash_platform_path(out_dir)
       val res =  Isabelle_System.bash(script, progress_stdout = progress.echo(_, verbose = true))
       if (!res.ok) {
         if (!progress.verbose) progress.echo_error_message(cat_lines(res.out_lines))
