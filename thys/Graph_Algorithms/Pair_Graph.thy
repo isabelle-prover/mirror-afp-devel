@@ -6,9 +6,10 @@ begin
 
 section \<open>A Basic Representation of Diraphs\<close>
 
-type_synonym 'a dgraph = "('a \<times> 'a) set"
+type_synonym 'v dgraph = "('v \<times> 'v) set"
 
-definition "dVs G = \<Union> {{v1,v2} | v1 v2. (v1, v2) \<in> G}"
+definition dVs::"('v \<times> 'v) set \<Rightarrow> 'v set" where
+  "dVs G = \<Union> {{v1,v2} | v1 v2. (v1, v2) \<in> G}"
 
 lemma induct_pcpl:
   "\<lbrakk>P []; \<And>x. P [x]; \<And>x y zs. P zs \<Longrightarrow> P (x # y # zs)\<rbrakk> \<Longrightarrow> P xs"
@@ -58,10 +59,10 @@ proof
   qed
 qed
 
-abbreviation reachable1 :: "('a \<times> 'a) set \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" ("_ \<rightarrow>\<^sup>+\<index> _" [100,100] 40) where
+abbreviation reachable1 :: "('v \<times> 'v) set \<Rightarrow> 'v \<Rightarrow> 'v \<Rightarrow> bool" ("_ \<rightarrow>\<^sup>+\<index> _" [100,100] 40) where
   "reachable1 E u v \<equiv> (u,v) \<in> E\<^sup>+"
 
-definition reachable :: "('a \<times> 'a) set \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" ("_ \<rightarrow>\<^sup>*\<index> _" [100,100] 40) where
+definition reachable :: "('v \<times> 'v) set \<Rightarrow> 'v \<Rightarrow> 'v \<Rightarrow> bool" ("_ \<rightarrow>\<^sup>*\<index> _" [100,100] 40) where
   "reachable E u v = ( (u,v) \<in> rtrancl_on (dVs E) E)"
 
 lemma reachableE[elim?]:
@@ -123,7 +124,8 @@ lemmas reachable_neq_reachable1E[elim] = reachable_neq_reachable1[elim_format]
 
 lemma arc_implies_dominates: "e \<in> E \<Longrightarrow> (fst e, snd e) \<in> E" by auto
 
-definition "neighbourhood G u = {v. (u,v) \<in> G}"
+definition neighbourhood::"('v \<times> 'v) set \<Rightarrow> 'v \<Rightarrow> 'v set" where
+  "neighbourhood G u = {v. (u,v) \<in> G}"
 
 lemma 
   neighbourhoodI[intro]: "v \<in> (neighbourhood G u) \<Longrightarrow> (u,v) \<in> G" and

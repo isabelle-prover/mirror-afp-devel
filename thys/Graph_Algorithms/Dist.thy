@@ -6,7 +6,8 @@ section \<open>Distances\<close>
 
 subsection \<open>Distance from a vertex\<close>
 
-definition "distance G u v = ( INF p. if Vwalk.vwalk_bet G u p v then length p - 1 else \<infinity>)"
+definition distance::"('v \<times> 'v) set \<Rightarrow> 'v \<Rightarrow> 'v \<Rightarrow> enat" where
+  "distance G u v = ( INF p. if Vwalk.vwalk_bet G u p v then length p - 1 else \<infinity>)"
 
 lemma vwalk_bet_dist:
   "Vwalk.vwalk_bet G u p v \<Longrightarrow> distance G u v \<le> length p - 1"
@@ -137,7 +138,8 @@ qed
 
 subsection \<open>Shortest Paths\<close>
 
-definition "shortest_path G u p v = (distance G u v = length p -1 \<and> vwalk_bet G u p v)"
+definition shortest_path::"('v \<times> 'v) set \<Rightarrow> 'v \<Rightarrow> 'v list \<Rightarrow> 'v \<Rightarrow> bool" where
+  "shortest_path G u p v = (distance G u v = length p -1 \<and> vwalk_bet G u p v)"
 
 lemma shortest_path_props[elim]:
   "shortest_path G u p v \<Longrightarrow> (\<lbrakk>distance G u v = length p -1; vwalk_bet G u p v\<rbrakk> \<Longrightarrow> P) \<Longrightarrow> P"
@@ -374,7 +376,8 @@ qed
 
 subsection \<open>Distance from a set of vertices\<close>
 
-definition "distance_set G U v = ( INF u\<in>U. distance G u v)"
+definition distance_set::"('v \<times> 'v) set \<Rightarrow> 'v set \<Rightarrow> 'v \<Rightarrow> enat" where 
+  "distance_set G U v = ( INF u\<in>U. distance G u v)"
 
 (*TODO: intro rule*)
 
@@ -475,38 +478,38 @@ lemma dist_not_inf': "distance_set G U v \<noteq> \<infinity> \<Longrightarrow>
   by (metis dist_reachable dist_set_not_inf enat_ord_simps(4))
 
 lemma distance_on_vwalk:
-  "\<lbrakk>distance_set G U v = distance G u v; u \<in> U; shortest_path G u p v; x \<in> set p\<rbrakk>
-       \<Longrightarrow> distance_set G U x = distance G u x"
+  "\<lbrakk>distance_set G U v = distance G u v; u \<in> U; shortest_path G u p v; w \<in> set p\<rbrakk>
+       \<Longrightarrow> distance_set G U w = distance G u w"
 proof(goal_cases)
   case assms: 1
-  hence "distance_set G U x \<le> distance G u x"
+  hence "distance_set G U w \<le> distance G u w"
     by (auto intro: dist_set_mem)
-  moreover have "distance G u x \<le> distance_set G U x"
+  moreover have "distance G u w \<le> distance_set G U w"
   proof(rule ccontr, goal_cases)
     case dist_gt: 1
-    hence "distance_set G U x \<noteq> \<infinity>"
+    hence "distance_set G U w \<noteq> \<infinity>"
       using lt_lt_infnty
       by (auto simp: linorder_class.not_le)
-    then obtain u' where "u' \<in> U" "distance G u' x < distance G u x"
+    then obtain u' where "u' \<in> U" "distance G u' w < distance G u w"
       using dist_gt 
       by (fastforce dest!: dist_set_not_inf)
-    moreover then obtain p' where "shortest_path G u' p' x"
+    moreover then obtain p' where "shortest_path G u' p' w"
       by (fastforce dest: lt_lt_infnty elim!: shortest_path_exists_2)
-    moreover obtain p1 p2 where "p = p1 @ [x] @ p2"
-      using \<open>x \<in> set p\<close>              
+    moreover obtain p1 p2 where "p = p1 @ [w] @ p2"
+      using \<open>w \<in> set p\<close>              
       by(fastforce dest: iffD1[OF in_set_conv_decomp_first])
-    ultimately have "vwalk_bet G u' (p' @ tl ([x] @ p2)) v"
+    ultimately have "vwalk_bet G u' (p' @ tl ([w] @ p2)) v"
       using \<open>shortest_path G u p v\<close> 
       apply -
       apply (rule vwalk_bet_transitive)
       by(auto dest!: shortest_path_vwalk shortest_path_split_1)+
-    moreover have "shortest_path G u (p1 @[x]) x"
+    moreover have "shortest_path G u (p1 @[w]) w"
       using \<open>shortest_path G u p v\<close>
-      by(auto dest!: shortest_path_split_2 simp: \<open>p = p1 @ [x] @ p2\<close>) 
-    hence "length (p' @ tl ([x] @ p2)) - 1 < length p - 1"
-      using \<open>shortest_path G u' p' x\<close> \<open>distance G u' x < distance G u x\<close>
-      by(auto dest!: shortest_path_dist simp: \<open>p = p1 @ [x] @ p2\<close>)
-    hence "length (p' @ tl ([x] @ p2)) - 1 < distance_set G U v"
+      by(auto dest!: shortest_path_split_2 simp: \<open>p = p1 @ [w] @ p2\<close>) 
+    hence "length (p' @ tl ([w] @ p2)) - 1 < length p - 1"
+      using \<open>shortest_path G u' p' w\<close> \<open>distance G u' w < distance G u w\<close>
+      by(auto dest!: shortest_path_dist simp: \<open>p = p1 @ [w] @ p2\<close>)
+    hence "length (p' @ tl ([w] @ p2)) - 1 < distance_set G U v"
       using assms(1,3) shortest_path_dist
       by force
     ultimately show False

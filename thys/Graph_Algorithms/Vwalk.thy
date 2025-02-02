@@ -4,7 +4,7 @@ begin
 
 section \<open>A Theory on Vertex Walks in a Digraph\<close>
 
-context fixes G :: "'a dgraph" begin
+context fixes G :: "'v dgraph" begin
 inductive vwalk where
   vwalk0: "vwalk []" |
   vwalk1: "v \<in> dVs G \<Longrightarrow> vwalk [v]" |
@@ -16,9 +16,10 @@ inductive_simps vwalk_1[simp]: "vwalk E [v]"
 
 inductive_simps vwalk_2[simp]: "vwalk E (v # v' # vs)"
 
-definition "vwalk_bet G v p v' = ( vwalk G p \<and> p \<noteq> [] \<and> hd p = v \<and> last p = v')"
+definition vwalk_bet::"('v \<times> 'v) set \<Rightarrow> 'v \<Rightarrow> 'v list \<Rightarrow> 'v \<Rightarrow> bool" where 
+  "vwalk_bet G u p v = ( vwalk G p \<and> p \<noteq> [] \<and> hd p = u \<and> last p = v)"
 
-lemma vwalk_then_edge: "vwalk_bet dG v p v' \<Longrightarrow> v \<noteq> v' \<Longrightarrow> (\<exists>v''. (v, v'') \<in> dG)"
+lemma vwalk_then_edge: "vwalk_bet dG u p v \<Longrightarrow> u \<noteq> v \<Longrightarrow> (\<exists>v''. (u, v'') \<in> dG)"
   by(cases p; auto split: if_splits simp: neq_Nil_conv vwalk_bet_def)
 
 lemma vwalk_then_in_dVs: "vwalk dG p \<Longrightarrow> v \<in> set p \<Longrightarrow> v \<in> dVs dG"
@@ -543,7 +544,7 @@ proof (induction "length p" arbitrary: p rule: less_induct)
   qed
 qed
 
-abbreviation closed_vwalk_bet :: "('a \<times> 'a) set \<Rightarrow> 'a list \<Rightarrow> 'a  \<Rightarrow> bool" where
+abbreviation closed_vwalk_bet :: "('v \<times> 'v) set \<Rightarrow> 'v list \<Rightarrow> 'v  \<Rightarrow> bool" where
   "closed_vwalk_bet E c v \<equiv> vwalk_bet E v c v \<and> Suc 0 < length c"
 
 lemma edge_iff_vwalk_bet: "(u, v) \<in> E = vwalk_bet E u [u, v] v"
@@ -590,10 +591,10 @@ lemma
   using assms
   by (simp add: edges_of_vwalk_append_3)
 
-fun is_vwalk_bet_vertex_decomp :: "('a \<times> 'a) set \<Rightarrow> 'a list \<Rightarrow> 'a \<Rightarrow> 'a list \<times> 'a list \<Rightarrow> bool" where
+fun is_vwalk_bet_vertex_decomp :: "('v \<times> 'v) set \<Rightarrow> 'v list \<Rightarrow> 'v \<Rightarrow> 'v list \<times> 'v list \<Rightarrow> bool" where
   "is_vwalk_bet_vertex_decomp E p v (q, r) \<longleftrightarrow> p = q @ tl r \<and> (\<exists>u w. vwalk_bet E u q v \<and> vwalk_bet E v r w)"
 
-definition vwalk_bet_vertex_decomp :: "('a \<times> 'a) set \<Rightarrow> 'a list \<Rightarrow> 'a \<Rightarrow> 'a list \<times> 'a list" where
+definition vwalk_bet_vertex_decomp :: "('v \<times> 'v) set \<Rightarrow> 'v list \<Rightarrow> 'v \<Rightarrow> 'v list \<times> 'v list" where
   "vwalk_bet_vertex_decomp E p v = ( SOME qr. is_vwalk_bet_vertex_decomp E p v qr)"
 
 
@@ -658,10 +659,10 @@ proof
 qed
 
 
-definition vtrail :: "('a \<times> 'a) set \<Rightarrow> 'a \<Rightarrow> 'a list \<Rightarrow> 'a \<Rightarrow> bool" where
+definition vtrail :: "('v \<times> 'v) set \<Rightarrow> 'v \<Rightarrow> 'v list \<Rightarrow> 'v \<Rightarrow> bool" where
   "vtrail E u p v = ( vwalk_bet E u p v \<and> distinct (edges_of_vwalk p))"
 
-abbreviation closed_vtrail :: "('a \<times> 'a) set \<Rightarrow> 'a list \<Rightarrow> 'a \<Rightarrow> bool" where
+abbreviation closed_vtrail :: "('v \<times> 'v) set \<Rightarrow> 'v list \<Rightarrow> 'v \<Rightarrow> bool" where
   "closed_vtrail E c v \<equiv> vtrail E v c v \<and> Suc 0 < length c"
 
 lemma closed_vtrail_implies_Cons:
@@ -723,7 +724,7 @@ lemma vtrail_suffix_is_vtrail:
   using assms
   by (auto simp: vwalk_bet_suffix_is_vwalk_bet edges_of_vwalk_append_2[OF \<open>q \<noteq> []\<close>])
 
-definition distinct_vwalk_bet :: "('a \<times> 'a) set \<Rightarrow> 'a \<Rightarrow> 'a list \<Rightarrow> 'a \<Rightarrow> bool" where
+definition distinct_vwalk_bet :: "('v \<times> 'v) set \<Rightarrow> 'v \<Rightarrow> 'v list \<Rightarrow> 'v \<Rightarrow> bool" where
   "distinct_vwalk_bet E u p v = ( vwalk_bet E u p v \<and> distinct p)"
 
 lemma distinct_vwalk_bet_length_le_card_vertices:
@@ -753,13 +754,13 @@ lemma distinct_vwalk_bets_finite:
   by (rule finite_surj[OF  distinct_vwalk_bet_triples_finite]) auto
 
 section\<open>Vwalks to paths (as opposed to arc walks (\<^term>\<open>awalk_to_apath\<close> before)\<close>
-fun is_closed_decomp :: "('a \<times> 'a) set \<Rightarrow> 'a list \<Rightarrow> 'a list \<times> 'a list \<times> 'a list \<Rightarrow> bool" where
+fun is_closed_decomp :: "('v \<times> 'v) set \<Rightarrow> 'v list \<Rightarrow> 'v list \<times> 'v list \<times> 'v list \<Rightarrow> bool" where
   "is_closed_decomp E p (q, r, s) \<longleftrightarrow>
     p = q @ tl r @ tl s \<and>
     (\<exists>u v w. vwalk_bet E u q v \<and> closed_vwalk_bet E r v \<and> vwalk_bet E v s w) \<and>
     distinct q"
 
-definition closed_vwalk_bet_decomp :: "('a \<times> 'a) set \<Rightarrow> 'a list \<Rightarrow> 'a list \<times> 'a list \<times> 'a list" where
+definition closed_vwalk_bet_decomp :: "('v \<times> 'v) set \<Rightarrow> 'v list \<Rightarrow> 'v list \<times> 'v list \<times> 'v list" where
   "closed_vwalk_bet_decomp E p = ( SOME qrs. is_closed_decomp E p qrs)"
 
 lemma closed_vwalk_bet_decompE:
@@ -843,7 +844,7 @@ proof -
   show ?thesis by blast
 qed
 
-function vwalk_bet_to_distinct :: "('a \<times> 'a) set \<Rightarrow> 'a list \<Rightarrow> 'a list" where
+function vwalk_bet_to_distinct :: "('v \<times> 'v) set \<Rightarrow> 'v list \<Rightarrow> 'v list" where
   "vwalk_bet_to_distinct E p =
     (if (\<exists>u v. vwalk_bet E u p v) \<and> \<not> distinct p
      then let (q, r, s) = closed_vwalk_bet_decomp E p in vwalk_bet_to_distinct E (q @ tl s)

@@ -119,7 +119,7 @@ definition DFS_call_2_conds::"('v, 'vset) DFS_state \<Rightarrow> bool" where
      | _ \<Rightarrow> False
     )"
 
-lemma DFS_call_2_conds[call_cond_elims]: 
+lemma DFS_call_2_condsE[call_cond_elims]: 
   "DFS_call_2_conds dfs_state \<Longrightarrow> 
    \<lbrakk>\<lbrakk>\<exists>v stack_tl. stack dfs_state = v # stack_tl;
     hd (stack dfs_state) \<noteq> t;
@@ -241,11 +241,11 @@ qed
 
 subsection \<open>Loop Invariants\<close>
 
-definition invar_1::"('v,'vset) DFS_state \<Rightarrow> bool" where
-  "invar_1 dfs_state = vset_inv (seen dfs_state)"
+definition invar_well_formed::"('v,'vset) DFS_state \<Rightarrow> bool" where
+  "invar_well_formed dfs_state = vset_inv (seen dfs_state)"
 
-definition invar_2::"('v,'vset) DFS_state \<Rightarrow> bool" where 
-  "invar_2 dfs_state = (Vwalk.vwalk (Graph.digraph_abs G) (rev (stack dfs_state)))"
+definition invar_stack_walk::"('v,'vset) DFS_state \<Rightarrow> bool" where 
+  "invar_stack_walk dfs_state = (Vwalk.vwalk (Graph.digraph_abs G) (rev (stack dfs_state)))"
 
 definition invar_seen_stack::"('v,'vset) DFS_state \<Rightarrow> bool" where 
   "invar_seen_stack dfs_state \<longleftrightarrow> 
@@ -268,8 +268,8 @@ definition call_1_measure::"('v,'vset) DFS_state \<Rightarrow> nat" where
 definition call_2_measure::"('v,'vset) DFS_state \<Rightarrow> nat" where
   "call_2_measure dfs_state = card (set (stack dfs_state))"
 
-definition DFS_term_rel'::"(('v,'vset) DFS_state \<times> ('v,'vset) DFS_state) set" where
-  "DFS_term_rel' = (call_1_measure) <*mlex*> (call_2_measure) <*mlex*> {}"
+definition DFS_term_rel::"(('v,'vset) DFS_state \<times> ('v,'vset) DFS_state) set" where
+  "DFS_term_rel = (call_1_measure) <*mlex*> (call_2_measure) <*mlex*> {}"
 
 end
 
@@ -301,33 +301,33 @@ lemma finite_neighbourhoods[simp]:
 
 lemmas simps[simp] = Graph.neighbourhood_abs[OF graph_inv(1)] Graph.are_connected_abs[OF graph_inv(1)]
 
-lemma invar_1_props[invar_props_elims]:
-  "invar_1 dfs_state \<Longrightarrow>
+lemma invar_well_formed_props[invar_props_elims]:
+  "invar_well_formed dfs_state \<Longrightarrow>
      (\<lbrakk>vset_inv (seen dfs_state)\<rbrakk> \<Longrightarrow> P) \<Longrightarrow>
      P"
-  by (auto simp: invar_1_def)
+  by (auto simp: invar_well_formed_def)
 
-lemma invar_1_intro[invar_props_intros]: "\<lbrakk>vset_inv (seen dfs_state)\<rbrakk>
-                     \<Longrightarrow> invar_1 dfs_state"
-  by (auto simp: invar_1_def)
+lemma invar_well_formed_intro[invar_props_intros]: "\<lbrakk>vset_inv (seen dfs_state)\<rbrakk>
+                     \<Longrightarrow> invar_well_formed dfs_state"
+  by (auto simp: invar_well_formed_def)
 
-lemma invar_1_holds_1[invar_holds_intros]:
-  "\<lbrakk>DFS_call_1_conds dfs_state; invar_1 dfs_state\<rbrakk> \<Longrightarrow> 
-      invar_1 (DFS_upd1 dfs_state)"
+lemma invar_well_formed_holds_1[invar_holds_intros]:
+  "\<lbrakk>DFS_call_1_conds dfs_state; invar_well_formed dfs_state\<rbrakk> \<Longrightarrow> 
+      invar_well_formed (DFS_upd1 dfs_state)"
   by (auto simp: Let_def DFS_upd1_def elim!: invar_props_elims intro!: invar_props_intros)
 
-lemma invar_1_holds_2[invar_holds_intros]: "\<lbrakk>DFS_call_2_conds dfs_state; invar_1 dfs_state\<rbrakk> \<Longrightarrow> invar_1 (DFS_upd2 dfs_state)"
+lemma invar_well_formed_holds_2[invar_holds_intros]: "\<lbrakk>DFS_call_2_conds dfs_state; invar_well_formed dfs_state\<rbrakk> \<Longrightarrow> invar_well_formed (DFS_upd2 dfs_state)"
   by (auto simp: DFS_upd2_def elim!: invar_props_elims intro: invar_props_intros)
 
-lemma invar_1_holds_4[invar_holds_intros]: "\<lbrakk>DFS_ret_1_conds dfs_state; invar_1 dfs_state\<rbrakk> \<Longrightarrow> invar_1 (DFS_ret1 dfs_state)"
+lemma invar_well_formed_holds_4[invar_holds_intros]: "\<lbrakk>DFS_ret_1_conds dfs_state; invar_well_formed dfs_state\<rbrakk> \<Longrightarrow> invar_well_formed (DFS_ret1 dfs_state)"
   by (auto elim!: invar_props_elims  intro: invar_props_intros simp: DFS_ret1_def)
 
-lemma invar_1_holds_5[invar_holds_intros]: "\<lbrakk>DFS_ret_2_conds dfs_state; invar_1 dfs_state\<rbrakk> \<Longrightarrow> invar_1 (DFS_ret2 dfs_state)"
+lemma invar_well_formed_holds_5[invar_holds_intros]: "\<lbrakk>DFS_ret_2_conds dfs_state; invar_well_formed dfs_state\<rbrakk> \<Longrightarrow> invar_well_formed (DFS_ret2 dfs_state)"
   by (auto elim!: invar_props_elims intro: invar_props_intros simp: DFS_ret2_def)
 
-lemma invar_1_holds[invar_holds_intros]: 
-   assumes "DFS_dom dfs_state" "invar_1 dfs_state"
-   shows "invar_1 (DFS dfs_state)"
+lemma invar_well_formed_holds[invar_holds_intros]: 
+   assumes "DFS_dom dfs_state" "invar_well_formed dfs_state"
+   shows "invar_well_formed (DFS dfs_state)"
   using assms(2)
 proof(induction rule: DFS_induct[OF assms(1)])
   case IH: (1 dfs_state)
@@ -336,35 +336,35 @@ proof(induction rule: DFS_induct[OF assms(1)])
     by (auto intro!: IH(2-4) invar_holds_intros  simp: DFS_simps[OF IH(1)])
 qed
 
-lemma invar_2_props[invar_props_elims]: 
-  "invar_2 dfs_state \<Longrightarrow>
+lemma invar_stack_walk_props[invar_props_elims]: 
+  "invar_stack_walk dfs_state \<Longrightarrow>
      ((Vwalk.vwalk (Graph.digraph_abs G) (rev (stack dfs_state))) \<Longrightarrow> P) \<Longrightarrow> P"
-  by (auto simp: invar_2_def)
+  by (auto simp: invar_stack_walk_def)
 
-lemma invar_2_intro[invar_props_intros]: "Vwalk.vwalk (Graph.digraph_abs G) (rev (stack dfs_state)) \<Longrightarrow> invar_2 dfs_state"
-  by (auto simp: invar_2_def)
+lemma invar_stack_walk_intro[invar_props_intros]: "Vwalk.vwalk (Graph.digraph_abs G) (rev (stack dfs_state)) \<Longrightarrow> invar_stack_walk dfs_state"
+  by (auto simp: invar_stack_walk_def)
 
 
-lemma invar_2_holds_1[invar_holds_intros]:
-  assumes "DFS_call_1_conds dfs_state" "invar_1 dfs_state" "invar_2 dfs_state"
-  shows "invar_2 (DFS_upd1 dfs_state)"
+lemma invar_stack_walk_holds_1[invar_holds_intros]:
+  assumes "DFS_call_1_conds dfs_state" "invar_well_formed dfs_state" "invar_stack_walk dfs_state"
+  shows "invar_stack_walk (DFS_upd1 dfs_state)"
     using assms graph_inv 
     by (force simp: Let_def DFS_upd1_def elim!: call_cond_elims elim!: invar_props_elims
                 intro!: Vwalk.vwalk_append2 neighbourhoodI invar_props_intros)
 
 
-lemma invar_2_holds_2[invar_holds_intros]: "\<lbrakk>DFS_call_2_conds dfs_state; invar_2 dfs_state\<rbrakk> \<Longrightarrow> invar_2 (DFS_upd2 dfs_state)"
+lemma invar_stack_walk_holds_2[invar_holds_intros]: "\<lbrakk>DFS_call_2_conds dfs_state; invar_stack_walk dfs_state\<rbrakk> \<Longrightarrow> invar_stack_walk (DFS_upd2 dfs_state)"
   by (auto simp: DFS_upd2_def dest!: append_vwalk_pref elim!: invar_props_elims intro!: invar_props_intros elim: call_cond_elims)
 
-lemma invar_2_holds_4[invar_holds_intros]: "\<lbrakk>DFS_ret_1_conds dfs_state; invar_2 dfs_state\<rbrakk> \<Longrightarrow> invar_2 (DFS_ret1 dfs_state)"
+lemma invar_stack_walk_holds_4[invar_holds_intros]: "\<lbrakk>DFS_ret_1_conds dfs_state; invar_stack_walk dfs_state\<rbrakk> \<Longrightarrow> invar_stack_walk (DFS_ret1 dfs_state)"
   by (auto elim!: invar_props_elims intro: invar_props_intros simp: DFS_ret1_def)
 
-lemma invar_2_holds_5[invar_holds_intros]: "\<lbrakk>DFS_ret_2_conds dfs_state; invar_2 dfs_state\<rbrakk> \<Longrightarrow> invar_2 (DFS_ret2 dfs_state)"
+lemma invar_2_holds_5[invar_holds_intros]: "\<lbrakk>DFS_ret_2_conds dfs_state; invar_stack_walk dfs_state\<rbrakk> \<Longrightarrow> invar_stack_walk (DFS_ret2 dfs_state)"
   by (auto elim!: invar_props_elims intro: invar_props_intros simp: DFS_ret2_def)
 
 lemma invar_2_holds[invar_holds_intros]:
-   assumes "DFS_dom dfs_state" "invar_1 dfs_state" "invar_2 dfs_state"
-   shows "invar_2 (DFS dfs_state)"
+   assumes "DFS_dom dfs_state" "invar_well_formed dfs_state" "invar_stack_walk dfs_state"
+   shows "invar_stack_walk (DFS dfs_state)"
   using assms(2-3)
 proof(induction rule: DFS_induct[OF assms(1)])
   case IH: (1 dfs_state)
@@ -384,12 +384,12 @@ lemma invar_seen_stack_intro[invar_props_intros]:
   by (auto simp: invar_seen_stack_def)
 
 lemma invar_seen_stack_holds_1[invar_holds_intros]:
-  "\<lbrakk>DFS_call_1_conds dfs_state; invar_1 dfs_state; invar_seen_stack dfs_state\<rbrakk> \<Longrightarrow> invar_seen_stack (DFS_upd1 dfs_state)"
+  "\<lbrakk>DFS_call_1_conds dfs_state; invar_well_formed dfs_state; invar_seen_stack dfs_state\<rbrakk> \<Longrightarrow> invar_seen_stack (DFS_upd1 dfs_state)"
   by (force simp: Let_def DFS_upd1_def dest!: append_vwalk_pref elim!: call_cond_elims
             elim!: invar_props_elims intro!: invar_props_intros)
 
 lemma invar_seen_stack_holds_2[invar_holds_intros]: 
-  "\<lbrakk>DFS_call_2_conds dfs_state; invar_1 dfs_state; invar_seen_stack dfs_state\<rbrakk> \<Longrightarrow>
+  "\<lbrakk>DFS_call_2_conds dfs_state; invar_well_formed dfs_state; invar_seen_stack dfs_state\<rbrakk> \<Longrightarrow>
      invar_seen_stack (DFS_upd2 dfs_state)"
   by (auto elim!: call_cond_elims simp: DFS_upd2_def elim: vwalk_betE
            elim!: invar_props_elims dest!: Graph.vset.emptyD append_vwalk_pref intro!: invar_props_intros)
@@ -403,7 +403,7 @@ lemma invar_seen_stack_holds_5[invar_holds_intros]: "\<lbrakk>DFS_ret_2_conds df
   by (auto elim!: invar_props_elims intro!: invar_props_intros simp: DFS_ret2_def)
 
 lemma invar_seen_stack_holds[invar_holds_intros]:
-   assumes "DFS_dom dfs_state" "invar_1 dfs_state" "invar_seen_stack dfs_state"
+   assumes "DFS_dom dfs_state" "invar_well_formed dfs_state" "invar_seen_stack dfs_state"
    shows "invar_seen_stack (DFS dfs_state)" 
    using assms(2-)
 proof(induction rule: DFS_induct[OF assms(1)])
@@ -424,12 +424,12 @@ lemma invar_s_in_stack_intro[invar_props_intros]:
   by (auto simp: invar_s_in_stack_def)
 
 lemma invar_s_in_stack_holds_1[invar_holds_intros]:
-  "\<lbrakk>DFS_call_1_conds dfs_state; invar_1 dfs_state; invar_s_in_stack dfs_state\<rbrakk> \<Longrightarrow> invar_s_in_stack (DFS_upd1 dfs_state)"
+  "\<lbrakk>DFS_call_1_conds dfs_state; invar_well_formed dfs_state; invar_s_in_stack dfs_state\<rbrakk> \<Longrightarrow> invar_s_in_stack (DFS_upd1 dfs_state)"
   by (force simp: Let_def DFS_upd1_def dest!: append_vwalk_pref elim!: call_cond_elims
             elim!: invar_props_elims intro!: invar_props_intros)
 
 lemma invar_s_in_stack_holds_2[invar_holds_intros]: 
-  "\<lbrakk>DFS_call_2_conds dfs_state; invar_1 dfs_state; invar_s_in_stack dfs_state\<rbrakk> \<Longrightarrow>
+  "\<lbrakk>DFS_call_2_conds dfs_state; invar_well_formed dfs_state; invar_s_in_stack dfs_state\<rbrakk> \<Longrightarrow>
      invar_s_in_stack (DFS_upd2 dfs_state)"
   by (auto elim!: call_cond_elims simp: DFS_upd2_def elim: vwalk_betE
            elim!: invar_props_elims dest!: Graph.vset.emptyD append_vwalk_pref intro!: invar_props_intros)
@@ -443,7 +443,7 @@ lemma invar_s_in_stack_holds_5[invar_holds_intros]: "\<lbrakk>DFS_ret_2_conds df
   by (auto elim!: invar_props_elims intro!: invar_props_intros simp: DFS_ret2_def)
 
 lemma invar_s_in_stack_holds[invar_holds_intros]: 
-   assumes "DFS_dom dfs_state" "invar_1 dfs_state" "invar_s_in_stack dfs_state"
+   assumes "DFS_dom dfs_state" "invar_well_formed dfs_state" "invar_s_in_stack dfs_state"
    shows "invar_s_in_stack (DFS dfs_state)" 
    using assms(2-)
 proof(induction rule: DFS_induct[OF assms(1)])
@@ -472,7 +472,7 @@ lemma invar_visited_through_seen_intro[invar_props_intros]:
 subsection \<open>Proofs that the Invariants Hold\<close>
 
 lemma invar_visited_through_seen_holds_1[invar_holds_intros]:
-  "\<lbrakk>DFS_call_1_conds dfs_state; invar_1 dfs_state; invar_seen_stack dfs_state;
+  "\<lbrakk>DFS_call_1_conds dfs_state; invar_well_formed dfs_state; invar_seen_stack dfs_state;
     invar_visited_through_seen dfs_state\<rbrakk> 
     \<Longrightarrow> invar_visited_through_seen (DFS_upd1 dfs_state)"
   by(fastforce simp: Let_def DFS_upd1_def dest: append_vwalk_pref hd_of_vwalk_bet''
@@ -480,7 +480,7 @@ lemma invar_visited_through_seen_holds_1[invar_holds_intros]:
 
 
 lemma invar_visited_through_seen_holds_2[invar_holds_intros]: 
-  "\<lbrakk>DFS_call_2_conds dfs_state; invar_1 dfs_state; invar_seen_stack dfs_state;
+  "\<lbrakk>DFS_call_2_conds dfs_state; invar_well_formed dfs_state; invar_seen_stack dfs_state;
     invar_visited_through_seen dfs_state\<rbrakk> \<Longrightarrow> invar_visited_through_seen (DFS_upd2 dfs_state)"
 proof(rule invar_props_intros, elim invar_visited_through_seen_props call_cond_elims exE,  goal_cases)
   case (1 v1 p v2 stack_tl)
@@ -569,7 +569,7 @@ lemma invar_visited_through_seen_holds_5[invar_holds_intros]: "\<lbrakk>DFS_ret_
   by (auto simp: intro: invar_props_intros simp: DFS_ret2_def)
 
 lemma invar_visited_through_seen_holds[invar_holds_intros]: 
-   assumes "DFS_dom dfs_state" "invar_1 dfs_state" "invar_seen_stack dfs_state"
+   assumes "DFS_dom dfs_state" "invar_well_formed dfs_state" "invar_seen_stack dfs_state"
            "invar_visited_through_seen dfs_state"
    shows "invar_visited_through_seen (DFS dfs_state)" 
    using assms(2-)
@@ -599,11 +599,11 @@ lemma state_rel_1_trans:
   by (auto intro!: state_rel_intros)
 
 lemma state_rel_1_holds_1[state_rel_holds_intros]:
-  "\<lbrakk>DFS_call_1_conds dfs_state; invar_1 dfs_state\<rbrakk> \<Longrightarrow> state_rel_1 dfs_state (DFS_upd1 dfs_state)"
+  "\<lbrakk>DFS_call_1_conds dfs_state; invar_well_formed dfs_state\<rbrakk> \<Longrightarrow> state_rel_1 dfs_state (DFS_upd1 dfs_state)"
   by (auto simp: Let_def DFS_upd1_def elim!: invar_props_elims intro!: state_rel_intros)
 
 lemma state_rel_1_holds_2[state_rel_holds_intros]:
-  "\<lbrakk>DFS_call_2_conds dfs_state; invar_1 dfs_state\<rbrakk> \<Longrightarrow> state_rel_1 dfs_state (DFS_upd2 dfs_state)"
+  "\<lbrakk>DFS_call_2_conds dfs_state; invar_well_formed dfs_state\<rbrakk> \<Longrightarrow> state_rel_1 dfs_state (DFS_upd2 dfs_state)"
   by (auto simp: DFS_upd2_def intro!: state_rel_intros elim: call_cond_elims)
 
 lemma state_rel_1_holds_4[state_rel_holds_intros]:
@@ -615,7 +615,7 @@ lemma state_rel_1_holds_5[state_rel_holds_intros]:
   by (auto simp: intro!: state_rel_intros simp: DFS_ret2_def)
 
 lemma state_rel_1_holds[state_rel_holds_intros]:
-   assumes "DFS_dom dfs_state" "invar_1 dfs_state"
+   assumes "DFS_dom dfs_state" "invar_well_formed dfs_state"
    shows "state_rel_1 dfs_state (DFS dfs_state)" 
    using assms(2-)
 proof(induction rule: DFS_induct[OF assms(1)])
@@ -661,7 +661,7 @@ proof(induction  rule: DFS_induct[OF assms(1)])
 qed
 
 lemma DFS_correct_ret_2:
-  "\<lbrakk>invar_2 dfs_state; DFS_ret_2_conds dfs_state\<rbrakk>
+  "\<lbrakk>invar_stack_walk dfs_state; DFS_ret_2_conds dfs_state\<rbrakk>
          \<Longrightarrow> vwalk_bet (Graph.digraph_abs G) (last (stack dfs_state)) (rev (stack dfs_state)) t"
   by (auto elim!: call_cond_elims invar_props_elims simp: hd_rev vwalk_bet_def)
 
@@ -684,7 +684,7 @@ lemma call_1_measure_nonsym[simp]: "(call_1_measure dfs_state, call_1_measure df
   by (auto simp: less_rel_def)
 
 lemma call_1_terminates[termination_intros]:
-  "\<lbrakk>DFS_call_1_conds dfs_state; invar_1 dfs_state; invar_seen_stack dfs_state\<rbrakk> \<Longrightarrow>
+  "\<lbrakk>DFS_call_1_conds dfs_state; invar_well_formed dfs_state; invar_seen_stack dfs_state\<rbrakk> \<Longrightarrow>
      (DFS_upd1 dfs_state, dfs_state) \<in> call_1_measure <*mlex*> r"
   by(fastforce elim!: invar_props_elims call_cond_elims
           simp add: DFS_upd1_def call_1_measure_def Let_def 
@@ -695,42 +695,42 @@ lemma call_2_measure_nonsym[simp]: "(call_2_measure dfs_state, call_2_measure df
   by (auto simp: less_rel_def)
 
 lemma call_2_measure_1[termination_intros]:
-  "\<lbrakk>DFS_call_2_conds dfs_state; invar_1 dfs_state\<rbrakk> \<Longrightarrow>
+  "\<lbrakk>DFS_call_2_conds dfs_state; invar_well_formed dfs_state\<rbrakk> \<Longrightarrow>
     call_1_measure dfs_state = call_1_measure (DFS_upd2 dfs_state)"
   by(auto simp add: DFS_upd2_def call_1_measure_def Let_def
           intro!: psubset_card_mono)
 
 lemma call_2_terminates[termination_intros]:
-  "\<lbrakk>DFS_call_2_conds dfs_state; invar_1 dfs_state; invar_seen_stack dfs_state\<rbrakk> \<Longrightarrow>
+  "\<lbrakk>DFS_call_2_conds dfs_state; invar_well_formed dfs_state; invar_seen_stack dfs_state\<rbrakk> \<Longrightarrow>
      (DFS_upd2 dfs_state, dfs_state) \<in> call_2_measure <*mlex*> r"
   by(auto elim!: invar_props_elims elim!: call_cond_elims
           simp add: DFS_upd2_def call_2_measure_def
           intro!: mlex_less)
 
-lemma wf_term_rel: "wf DFS_term_rel'"
-  by(auto simp: wf_mlex DFS_term_rel'_def)
+lemma wf_term_rel: "wf DFS_term_rel"
+  by(auto simp: wf_mlex DFS_term_rel_def)
 
-lemma in_DFS_term_rel'[termination_intros]:
-  "\<lbrakk>DFS_call_1_conds dfs_state; invar_1 dfs_state; invar_seen_stack dfs_state\<rbrakk> \<Longrightarrow>
-            (DFS_upd1 dfs_state, dfs_state) \<in> DFS_term_rel'" 
-  "\<lbrakk>DFS_call_2_conds dfs_state; invar_1 dfs_state; invar_seen_stack dfs_state\<rbrakk> \<Longrightarrow>
-            (DFS_upd2 dfs_state, dfs_state) \<in> DFS_term_rel'"
-  by (simp add: DFS_term_rel'_def termination_intros)+
+lemma in_DFS_term_rel[termination_intros]:
+  "\<lbrakk>DFS_call_1_conds dfs_state; invar_well_formed dfs_state; invar_seen_stack dfs_state\<rbrakk> \<Longrightarrow>
+            (DFS_upd1 dfs_state, dfs_state) \<in> DFS_term_rel" 
+  "\<lbrakk>DFS_call_2_conds dfs_state; invar_well_formed dfs_state; invar_seen_stack dfs_state\<rbrakk> \<Longrightarrow>
+            (DFS_upd2 dfs_state, dfs_state) \<in> DFS_term_rel"
+  by (simp add: DFS_term_rel_def termination_intros)+
 
 lemma DFS_terminates[termination_intros]:
-  assumes "invar_1 dfs_state" "invar_seen_stack dfs_state"
+  assumes "invar_well_formed dfs_state" "invar_seen_stack dfs_state"
   shows "DFS_dom dfs_state"
   using wf_term_rel assms
 proof(induction rule: wf_induct_rule)
   case (less x)
   show ?case
-    by (rule DFS_domintros) (auto intro!: invar_holds_intros less in_DFS_term_rel')
+    by (rule DFS_domintros) (auto intro!: invar_holds_intros less in_DFS_term_rel)
 qed
 
 subsection \<open>Final Correctness Theorems\<close>
 
 lemma initial_state_props[invar_holds_intros, termination_intros]:
-  "invar_1 (initial_state)" "invar_2 (initial_state)" "invar_seen_stack (initial_state)"
+  "invar_well_formed (initial_state)" "invar_stack_walk (initial_state)" "invar_seen_stack (initial_state)"
   "invar_visited_through_seen (initial_state)" "invar_s_in_stack initial_state" 
   "DFS_dom initial_state"
   by (auto simp: initial_state_def

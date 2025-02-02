@@ -133,7 +133,7 @@ definition "set_of_map (m::'adjmap) = {(u,v). case (lookup m u) of Some vs \<Rig
 
 definition "graph_inv G = (adjmap_inv G \<and> (\<forall>v vset. lookup G v = Some vset \<longrightarrow> vset_inv vset))"
 definition "finite_graph G = (finite {v. (lookup G v) \<noteq> None})"
-definition "finite_vsets = (\<forall>N. finite (t_set N))"
+definition "finite_vsets = (\<forall>vset. finite (t_set vset))"
 
 
 definition neighb::"'adjmap \<Rightarrow> 'v \<Rightarrow> 'vset" where
