@@ -1,11 +1,11 @@
----
-title: Entry Submission
-menu: 
-    main:
-        name: "Submission"
-        weight: 5
-rss: false
----
++++
+title = "Entry Submission"
+description = "Submit to the Archive of Formal Proofs"
+
+[menu.main]
+name = "Submission"
+weight = 5
++++
 
 ## Submission Guidelines
 

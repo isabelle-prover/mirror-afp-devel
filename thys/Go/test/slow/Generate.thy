@@ -15,7 +15,6 @@ text \<open>
   by a corresponding \<open>export_code\<close> command.
 \<close>
 
-
 export_code _ checking Go (infinite_type "stream")
 
 end

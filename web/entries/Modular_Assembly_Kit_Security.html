@@ -2,26 +2,17 @@
 <html lang="en">
   <head>
   <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>An Isabelle/HOL Formalization of the Modular Assembly Kit for Security Properties - Archive of Formal Proofs</title>
-    <meta name="description" content="The &#34;Modular Assembly Kit for Security Properties&#34; (MAKS) is
-a framework for both the definition and verification of possibilistic
-information-flow...">
+    <meta name="description" content="An Isabelle/HOL Formalization of the Modular Assembly Kit for Security Properties in the Archive of Formal Proofs" />
+    <meta property="og:description" content="An Isabelle/HOL Formalization of the Modular Assembly Kit for Security Properties in the Archive of Formal Proofs" />
 
   <meta property="og:title" content="An Isabelle/HOL Formalization of the Modular Assembly Kit for Security Properties" />
-<meta property="og:description" content="" />
-<meta property="og:type" content="article" />
-<meta property="og:url" content="/entries/Modular_Assembly_Kit_Security.html" /><meta property="og:image" content="/images/afp.png"/><meta property="article:section" content="entries" />
-<meta property="article:published_time" content="2018-05-07T00:00:00+00:00" />
-<meta property="article:modified_time" content="2018-05-07T00:00:00+00:00" /><meta property="og:site_name" content="Archive of Formal Proofs" />
-
-  <meta name="twitter:card" content="summary_large_image"/>
-<meta name="twitter:image" content="/images/afp.png"/>
-
-<meta name="twitter:title" content="An Isabelle/HOL Formalization of the Modular Assembly Kit for Security Properties"/>
-<meta name="twitter:description" content=""/>
-
+  <meta property="og:url" content="https://isa-afp.org/entries/Modular_Assembly_Kit_Security.html" />
+  <meta property="og:image" content="https://isa-afp.org/images/afp.png" />
+  <meta property="og:type" content="article" />
+  
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
 
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
@@ -130,7 +121,7 @@ information-flow...">
   </h1>
   <div>
       <p>
-        <a href="../authors/bracevac">Oliver Bračevac</a> <a class="obfuscated" data="eyJob3N0IjpbInN0IiwiaW5mb3JtYXRpayIsInR1LWRhcm1zdGFkdCIsImRlIl0sInVzZXIiOlsiYnJhY2V2YWMiXX0=">📧</a>, <a href="../authors/gay">Richard Gay</a> <a class="obfuscated" data="eyJob3N0IjpbIm1haXMiLCJpbmZvcm1hdGlrIiwidHUtZGFybXN0YWR0IiwiZGUiXSwidXNlciI6WyJnYXkiXX0=">📧</a>, <a href="../authors/grewe">Sylvia Grewe</a> <a class="obfuscated" data="eyJob3N0IjpbImNzIiwidHUtZGFybXN0YWR0IiwiZGUiXSwidXNlciI6WyJncmV3ZSJdfQ==">📧</a>, <a href="../authors/mantel">Heiko Mantel</a> <a class="obfuscated" data="eyJob3N0IjpbIm1haXMiLCJpbmZvcm1hdGlrIiwidHUtZGFybXN0YWR0IiwiZGUiXSwidXNlciI6WyJtYW50ZWwiXX0=">📧</a>, <a href="../authors/sudbrock">Henning Sudbrock</a> <a class="obfuscated" data="eyJob3N0IjpbIm1haXMiLCJpbmZvcm1hdGlrIiwidHUtZGFybXN0YWR0IiwiZGUiXSwidXNlciI6WyJzdWRicm9jayJdfQ==">📧</a> and <a href="../authors/tasch">Markus Tasch</a> <a class="obfuscated" data="eyJob3N0IjpbIm1haXMiLCJpbmZvcm1hdGlrIiwidHUtZGFybXN0YWR0IiwiZGUiXSwidXNlciI6WyJ0YXNjaCJdfQ==">📧</a>
+        <a href="../authors/bracevac/">Oliver Bračevac</a> <a class="obfuscated" data="eyJ1c2VyIjpbImJyYWNldmFjIl0sImhvc3QiOlsic3QiLCJpbmZvcm1hdGlrIiwidHUtZGFybXN0YWR0IiwiZGUiXX0=">📧</a>, <a href="../authors/gay/">Richard Gay</a> <a class="obfuscated" data="eyJ1c2VyIjpbImdheSJdLCJob3N0IjpbIm1haXMiLCJpbmZvcm1hdGlrIiwidHUtZGFybXN0YWR0IiwiZGUiXX0=">📧</a>, <a href="../authors/grewe/">Sylvia Grewe</a> <a class="obfuscated" data="eyJ1c2VyIjpbImdyZXdlIl0sImhvc3QiOlsiY3MiLCJ0dS1kYXJtc3RhZHQiLCJkZSJdfQ==">📧</a>, <a href="../authors/mantel/">Heiko Mantel</a> <a class="obfuscated" data="eyJ1c2VyIjpbIm1hbnRlbCJdLCJob3N0IjpbIm1haXMiLCJpbmZvcm1hdGlrIiwidHUtZGFybXN0YWR0IiwiZGUiXX0=">📧</a>, <a href="../authors/sudbrock/">Henning Sudbrock</a> <a class="obfuscated" data="eyJ1c2VyIjpbInN1ZGJyb2NrIl0sImhvc3QiOlsibWFpcyIsImluZm9ybWF0aWsiLCJ0dS1kYXJtc3RhZHQiLCJkZSJdfQ==">📧</a> and <a href="../authors/tasch/">Markus Tasch</a> <a class="obfuscated" data="eyJ1c2VyIjpbInRhc2NoIl0sImhvc3QiOlsibWFpcyIsImluZm9ybWF0aWsiLCJ0dS1kYXJtc3RhZHQiLCJkZSJdfQ==">📧</a>
 
       </p>
       <p class="date">May 7, 2018</p>
@@ -155,7 +146,7 @@ We provide a formalization of this framework in Isabelle/HOL.</div>
     </div>
       <h3>Topics</h3>
       <ul>
-          <li><a href="../topics/computer-science/security">Computer science/Security</a></li>
+          <li><a href="../topics/computer-science/security/">Computer science/Security</a></li>
       </ul>
       <h3>Session Modular_Assembly_Kit_Security</h3>
       <ul>

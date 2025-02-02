@@ -1564,7 +1564,7 @@ export_code (* Cava MC *)
 
             (* String *)
             String.explode String.implode
-  in SML
+  in SML module_name CAVA_Export
   file \<open>code/CAVA_Export.sml\<close>
 
 end

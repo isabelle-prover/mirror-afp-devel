@@ -814,17 +814,29 @@ lemma ground_Term_iff: "s : \<sigma> in \<T>(F,V) \<and> ground s \<longleftrigh
   using hastype_in_Term_restrict_vars[of s \<sigma> F V]
   by (auto simp: hastype_in_Term_empty_imp_vars ground_vars_term_empty)
 
+lemma hatype_imp_ground: "s : \<sigma> in \<T>(F,\<emptyset>) \<Longrightarrow> ground s"
+  using ground_Term_iff[of s \<sigma>] by auto
+
 lemma hastype_in_Term_empty_imp_subst:
   "s : \<sigma> in \<T>(F,\<emptyset>) \<Longrightarrow> s\<cdot>\<theta> : \<sigma> in \<T>(F,V)"
   by (rule subst_hastype, auto)
 
-lemma hastype_in_Term_empty_imp_subst_id:
-  "s : \<sigma> in \<T>(F,\<emptyset>) \<Longrightarrow> s \<cdot> \<theta> = s"
+lemma hastype_in_Term_empty_imp_subst_eq:
+  "s : \<sigma> in \<T>(F,\<emptyset>) \<Longrightarrow> s\<cdot>\<theta> = s\<cdot>\<rho>"
   apply (induction rule: hastype_in_Term_induct)
   by (auto simp: list_all2_indep2 cong: map_cong)
 
+lemma hastype_in_Term_empty_imp_subst_id:
+  assumes s: "s : \<sigma> in \<T>(F,\<emptyset>)" shows "s\<cdot>\<theta> = s"
+  using hastype_in_Term_empty_imp_subst_eq[OF s, of Var] by simp
+
+lemma hastype_in_Term_empty_imp_subst_subst:
+  "s : \<sigma> in \<T>(F,\<emptyset>) \<Longrightarrow> s\<cdot>\<theta>\<cdot>\<rho> = s\<cdot>undefined"
+  apply (unfold subst_subst)
+  using hastype_in_Term_empty_imp_subst_eq.
+
 lemma in_dom_Term_empty_imp_subst_id:
-  "s \<in> dom \<T>(F,\<emptyset>) \<Longrightarrow> s \<cdot> \<theta> = s"
+  "s \<in> dom \<T>(F,\<emptyset>) \<Longrightarrow> s\<cdot>\<theta> = s"
   by (auto elim: in_dom_hastypeE simp: hastype_in_Term_empty_imp_subst_id)
 
 lemma in_dom_Term_empty_imp_subst:
@@ -834,6 +846,19 @@ proof (elim in_dom_hastypeE)
   from hastype_in_Term_empty_imp_subst[OF this, of \<theta> V]
   show "s\<cdot>\<theta> \<in> dom \<T>(F,V)" by auto
 qed
+
+lemma hastype_in_Term_empty_imp_map_subst_eq:
+  "ss :\<^sub>l \<sigma>s in \<T>(F,\<emptyset>) \<Longrightarrow> [s\<cdot>\<theta>. s \<leftarrow> ss] = [s\<cdot>\<rho>. s \<leftarrow> ss]"
+  by (auto simp: list_eq_iff_nth_eq hastype_in_Term_empty_imp_subst_eq list_all2_conv_all_nth)
+
+lemma hastype_in_Term_empty_imp_map_subst_id:
+  assumes ss: "ss :\<^sub>l \<sigma>s in \<T>(F,\<emptyset>)" shows "[s\<cdot>\<theta>. s \<leftarrow> ss] = ss"
+  using hastype_in_Term_empty_imp_map_subst_eq[OF ss, of \<theta> Var] by simp
+
+lemma hastype_in_Term_empty_imp_map_subst_subst:
+  "ss :\<^sub>l \<sigma>s in \<T>(F,\<emptyset>) \<Longrightarrow> [s\<cdot>\<theta>\<cdot>\<rho>. s \<leftarrow> ss] = [s\<cdot>undefined. s \<leftarrow> ss]"
+  apply (unfold subst_subst)
+  using hastype_in_Term_empty_imp_map_subst_eq.
 
 context fixes \<theta> :: "'v \<Rightarrow> ('f,'w) term" begin
 
@@ -860,19 +885,23 @@ lemma all_in_Term_empty_subst_iff:
 
 end
 
+text \<open>Canonically, let us use unit as the type of variables for ground terms.\<close>
+
+abbreviation gTerm (\<open>\<T>'(_')\<close>) where "\<T>(F) \<equiv> \<T>(F, \<lambda>x::unit. None)"
+
 subsubsection \<open>Cardinality of Sorts\<close>
 
 text \<open>The emptiness, finiteness, and cardinality of a sort w.r.t. a signature is
   those of the set of ground terms of that sort.\<close>
 
 definition empty_sort where
-  "empty_sort F \<sigma> \<longleftrightarrow> {s :: ('f,unit) term. s : \<sigma> in \<T>(F,\<emptyset>)} = {}"
+  "empty_sort F \<sigma> \<longleftrightarrow> {s. s : \<sigma> in \<T>(F)} = {}"
 
 definition finite_sort where
-  "finite_sort F \<sigma> \<longleftrightarrow> finite {s :: ('f,unit) term. s : \<sigma> in \<T>(F,\<emptyset>)}"
+  "finite_sort F \<sigma> \<longleftrightarrow> finite {s. s : \<sigma> in \<T>(F)}"
 
 definition card_of_sort where
-  "card_of_sort F \<sigma> = card {s :: ('f,unit) term. s : \<sigma> in \<T>(F,\<emptyset>)}"
+  "card_of_sort F \<sigma> = card {s. s : \<sigma> in \<T>(F)}"
 
 text \<open>The definitions fix the type of the variables (that never occur) to unit.
 We prove that the choice of the type is irrelevant.\<close>
@@ -910,7 +939,7 @@ lemma finite_sort_bij:
 proof-
   from ex_bij_betw_finite_nat[OF fin[unfolded finite_sort_def]]
   obtain h where
-    "bij_betw h {t::(_, unit) term. t : \<sigma> in \<T>(F,\<emptyset>)} {0..<card_of_sort F \<sigma>}"
+    "bij_betw h {t. t : \<sigma> in \<T>(F)} {0..<card_of_sort F \<sigma>}"
     by (auto simp add: card_of_sort)
   from bij_betw_trans[OF bij_betw_sort_Term_empty this]
   show ?thesis by auto

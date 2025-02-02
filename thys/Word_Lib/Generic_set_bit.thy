@@ -15,64 +15,25 @@ theory Generic_set_bit
     Most_significant_bit
 begin
 
-class set_bit = semiring_bits +
-  fixes set_bit :: \<open>'a \<Rightarrow> nat \<Rightarrow> bool \<Rightarrow> 'a\<close>
-  assumes bit_set_bit_iff_2n:
-  \<open>bit (set_bit a m b) n \<longleftrightarrow>
-    (if m = n then b else bit a n) \<and> 2 ^ n \<noteq> 0\<close>
-begin
+definition set_bit :: \<open>'a \<Rightarrow> nat \<Rightarrow> bool \<Rightarrow> 'a::semiring_bit_operations\<close>
+  where set_bit_eq: \<open>set_bit a n b = (if b then Bit_Operations.set_bit else unset_bit) n a\<close>
 
 lemma bit_set_bit_iff [bit_simps]:
-    \<open>bit (set_bit a m b) n \<longleftrightarrow>
-      (if m = n then b else bit a n) \<and> possible_bit TYPE('a) n\<close>
-  by (simp add: bit_set_bit_iff_2n fold_possible_bit) 
-
-end
-
-lemma set_bit_eq:
-  \<open>set_bit a n b = (if b then Bit_Operations.set_bit else unset_bit) n a\<close>
-  for a :: \<open>'a::{semiring_bit_operations, set_bit}\<close>
-  by (rule bit_eqI) (simp add: bit_simps)
-
-instantiation nat :: set_bit
-begin
-
-definition set_bit_nat :: \<open>nat \<Rightarrow> nat \<Rightarrow> bool \<Rightarrow> nat\<close>
-  where \<open>set_bit m n b = (if b then Bit_Operations.set_bit else unset_bit) n m\<close> for m n :: nat
-
-instance
-  by standard (simp add: set_bit_nat_def bit_simps)
-
-end
-
-
-instantiation int :: set_bit
-begin
-
-definition set_bit_int :: \<open>int \<Rightarrow> nat \<Rightarrow> bool \<Rightarrow> int\<close>
-  where \<open>set_bit_int i n b = (if b then Bit_Operations.set_bit else Bit_Operations.unset_bit) n i\<close>
-
-instance
-  by standard (simp add: set_bit_int_def bit_simps)
-
-end
-
-instantiation word :: (len) set_bit
-begin
-
-definition set_bit_word :: \<open>'a word \<Rightarrow> nat \<Rightarrow> bool \<Rightarrow> 'a word\<close>
-  where set_bit_unfold: \<open>set_bit w n b = (if b then Bit_Operations.set_bit n w else unset_bit n w)\<close>
-  for w :: \<open>'a::len word\<close>
-
-instance
-  by standard (auto simp add: set_bit_unfold bit_simps dest: bit_imp_le_length)
-
-end
+  \<open>bit (set_bit a m b) n \<longleftrightarrow>
+    (if m = n then possible_bit TYPE('a) n \<and> b else bit a n)\<close>
+  for a :: \<open>'a::semiring_bit_operations\<close>
+  by (auto simp add: set_bit_eq bit_simps bit_imp_possible_bit)
 
 lemma bit_set_bit_word_iff [bit_simps]:
-  \<open>bit (set_bit w m b) n \<longleftrightarrow> (if m = n then n < LENGTH('a) \<and> b else bit w n)\<close>
-  for w :: \<open>'a::len word\<close>
-  by (auto simp add: bit_simps dest: bit_imp_le_length)
+  \<open>bit (set_bit w m b) n \<longleftrightarrow>
+    (if m = n then n < LENGTH('a) \<and> b else bit w n)\<close> for w :: \<open>'a::len word\<close>
+  by (simp add: bit_simps bit_imp_le_length)
+
+lemma bit_set_bit_iff_2n:
+  \<open>bit (set_bit a m b) n \<longleftrightarrow>
+    (if m = n then b else bit a n) \<and> 2 ^ n \<noteq> (0 :: 'a)\<close>
+  for a :: \<open>'a::semiring_bit_operations\<close>
+  by (auto simp add: bit_simps fold_possible_bit bit_imp_possible_bit)
 
 context
   includes bit_operations_syntax
@@ -119,7 +80,7 @@ lemma fixes i :: int
 
 lemma msb_set_bit [simp]:
   "msb (set_bit (x :: int) n b) \<longleftrightarrow> msb x"
-  by (simp add: msb_int_def set_bit_int_def)
+  by (simp add: msb_int_def set_bit_eq)
 
 lemmas msb_bin_sc = msb_set_bit
 
@@ -156,19 +117,19 @@ lemma bin_sc_nth [simp]: "bin_sc n ((bit :: int \<Rightarrow> nat \<Rightarrow> 
 
 lemma bin_sc_bintr [simp]:
   "(take_bit :: nat \<Rightarrow> int \<Rightarrow> int) m (bin_sc n x ((take_bit :: nat \<Rightarrow> int \<Rightarrow> int) m w)) = (take_bit :: nat \<Rightarrow> int \<Rightarrow> int) m (bin_sc n x w)"
-  by (simp add: Generic_set_bit.set_bit_int_def take_bit_set_bit_eq take_bit_unset_bit_eq)
+  by (simp add: set_bit_eq take_bit_set_bit_eq take_bit_unset_bit_eq)
 
 lemma bin_clr_le: "bin_sc n False w \<le> w"
-  by (simp add: set_bit_int_def unset_bit_less_eq)
+  by (simp add: set_bit_eq unset_bit_less_eq)
 
 lemma bin_set_ge: "bin_sc n True w \<ge> w"
-  by (simp add: set_bit_int_def set_bit_greater_eq)
+  by (simp add: set_bit_eq set_bit_greater_eq)
 
 lemma bintr_bin_clr_le: "(take_bit :: nat \<Rightarrow> int \<Rightarrow> int) n (bin_sc m False w) \<le> (take_bit :: nat \<Rightarrow> int \<Rightarrow> int) n w"
-  by (simp add: set_bit_int_def take_bit_unset_bit_eq unset_bit_less_eq)
+  by (simp add: set_bit_eq take_bit_unset_bit_eq unset_bit_less_eq)
 
 lemma bintr_bin_set_ge: "(take_bit :: nat \<Rightarrow> int \<Rightarrow> int) n (bin_sc m True w) \<ge> (take_bit :: nat \<Rightarrow> int \<Rightarrow> int) n w"
-  by (simp add: set_bit_int_def take_bit_set_bit_eq set_bit_greater_eq)
+  by (simp add: set_bit_eq take_bit_set_bit_eq set_bit_greater_eq)
 
 lemma bin_sc_FP [simp]: "bin_sc n False 0 = 0"
   by (induct n) auto
@@ -206,7 +167,7 @@ lemma bin_set_conv_OR:
 
 lemma word_set_bit_def:
   \<open>set_bit a n x = word_of_int (bin_sc n x (uint a))\<close>
-  by (rule bit_word_eqI) (simp add: bit_of_int_iff bit_uint_iff set_bit_class.bit_set_bit_iff)
+  by (rule bit_word_eqI) (simp add: bit_simps)
 
 lemma set_bit_word_of_int:
   "set_bit (word_of_int x) n b = word_of_int (bin_sc n b x)"
@@ -282,31 +243,5 @@ lemma one_bit_shiftl: "set_bit 0 n True = (1 :: 'a :: len word) << n"
 
 lemma one_bit_pow: "set_bit 0 n True = (2 :: 'a :: len word) ^ n"
   by (rule word_eqI) (simp add: bit_simps)
-
-instantiation integer :: set_bit
-begin
-
-context
-  includes integer.lifting
-begin
-
-lift_definition set_bit_integer :: \<open>integer \<Rightarrow> nat \<Rightarrow> bool \<Rightarrow> integer\<close>
-  is set_bit .
-
-instance
-  by (standard; transfer) (simp add: bit_simps)
-
-end
-
-end
-
-context
-begin
-
-qualified lemma set_bit_integer_code [code]:
-  \<open>set_bit k n b = (if b then Bit_Operations.set_bit n k else Bit_Operations.unset_bit n k)\<close> for k :: integer
-  by (simp add: set_bit_eq)
-
-end
 
 end

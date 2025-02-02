@@ -1,0 +1,10 @@
+        <item>
+          <title>{{ .Title | safeHTML }}</title>
+          <link>{{ .Permalink }}</link>
+          <pubDate>{{ .Date.Format "Mon, 02 Jan 2006 15:04:05 -0700" | safeHTML }}</pubDate>
+          <description>{{ .Title | html }} in the AFP</description>
+          {{- range .Params.topics }}
+          {{- $topic := page.GetPage (printf "/topics/%s" .) }}
+            <category>{{ $topic.Params.Title }}</category>
+          {{- end }}
+        </item>

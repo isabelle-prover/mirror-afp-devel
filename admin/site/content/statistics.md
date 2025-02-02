@@ -1,10 +1,9 @@
----
-title: Statistics
-menu: 
-    main:
-        name: "Statistics"
-        weight: 6
-rss: false
----
++++
+layout = "statistics"
+title = "Statistics"
+description = "Statistics about the Archive of Formal Proofs"
 
-{{< statistics >}}
+[menu.main]
+name = "Statistics"
+weight = 6
++++

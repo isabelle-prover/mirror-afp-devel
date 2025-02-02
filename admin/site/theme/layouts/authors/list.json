@@ -1,0 +1,8 @@
+{{- $index := slice -}}
+{{- range .Pages -}}
+  {{- $index = $index | append (dict
+    "name" .Params.name
+    "link" .RelPermalink)
+  -}}
+{{- end -}}
+{{- $index | jsonify (dict "indent" " ") -}}

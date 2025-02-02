@@ -120,9 +120,28 @@ func Abs(a Int) Int {
   b.Abs(&a)
   return b
 }
+
+func And(a, b Int) Int {
+  var c Int
+  c.And(&a, &b)
+  return c
+}
+
+func Or(a, b Int) Int {
+  var c Int
+  c.Or(&a, &b)
+  return c
+}
+
+func Xor(a, b Int) Int {
+  var c Int
+  c.Xor(&a, &b)
+  return c
+}
 \<close> for constant "uminus :: integer \<Rightarrow> _" "minus :: integer \<Rightarrow> _" "Code_Numeral.dup" "Code_Numeral.sub"
   "(*) :: integer \<Rightarrow> _" "(+) :: integer \<Rightarrow> _" "Code_Numeral.divmod_abs" "HOL.equal :: integer \<Rightarrow> _"
   "less_eq :: integer \<Rightarrow> _" "less :: integer \<Rightarrow> _" "abs :: integer \<Rightarrow> _"
+  "and :: integer \<Rightarrow> _" "or :: integer \<Rightarrow> _" "xor :: integer \<Rightarrow> _"
   "String.literal_of_asciis" "String.asciis_of_literal"
   | type_constructor "integer" \<rightharpoonup> (Go) "Bigint.Int"
   | constant "uminus :: integer \<Rightarrow> integer" \<rightharpoonup> (Go) "Bigint.Uminus( _ )"
@@ -137,7 +156,9 @@ func Abs(a Int) Int {
   | constant "less_eq :: integer \<Rightarrow> integer \<Rightarrow> bool " \<rightharpoonup> (Go) "Bigint.Less'_eq( _, _)"
   | constant "less :: integer \<Rightarrow> _ " \<rightharpoonup> (Go) "Bigint.Less( _, _)"
   | constant "abs :: integer \<Rightarrow> _" \<rightharpoonup> (Go) "Bigint.Abs( _ )"
-
+  | constant "and :: integer \<Rightarrow> _" \<rightharpoonup> (Go) "Bigint.And( _, _ )"
+  | constant "or :: integer \<Rightarrow> _" \<rightharpoonup> (Go) "Bigint.Or( _, _ )"
+  | constant "xor :: integer \<Rightarrow> _" \<rightharpoonup> (Go) "Bigint.Xor( _, _ )"
 
 code_printing
   constant "0::integer" \<rightharpoonup> (Go) "Bigint.MkInt(\"0\")"

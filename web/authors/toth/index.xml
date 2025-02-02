@@ -1,38 +1,31 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>toth on Archive of Formal Proofs
-    </title>
-    <link>/authors/toth/</link>
-    <description>
-        Recent content in toth 
-        on Archive of Formal Proofs
-    </description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language>
-    
-      <lastBuildDate>Fri, 17 Jan 2025 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/toth/index.xml" rel="self" type="application/rss+xml" />
+    <title>Balazs Toth</title>
+    <link>https://isa-afp.org/authors/toth/</link>
+    <description>AFP entries of Balazs Toth</description>
         <item>
           <title>First Order Clause</title>
-          <link>/entries/First_Order_Clause.html</link>
+          <link>https://isa-afp.org/entries/First_Order_Clause.html</link>
           <pubDate>Fri, 17 Jan 2025 00:00:00 +0000</pubDate>
-          <guid>/entries/First_Order_Clause.html</guid>
-          <description></description>
+          <description>First Order Clause in the AFP</description>
+            <category>Logic/General logic/Classical first-order logic</category>
+            <category>Logic/General logic</category>
         </item>
         <item>
           <title>A Modular Formalization of Superposition</title>
-          <link>/entries/Superposition_Calculus.html</link>
+          <link>https://isa-afp.org/entries/Superposition_Calculus.html</link>
           <pubDate>Thu, 24 Oct 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Superposition_Calculus.html</guid>
-          <description></description>
+          <description>A Modular Formalization of Superposition in the AFP</description>
+            <category>Logic/General logic/Mechanization of proofs</category>
         </item>
         <item>
           <title>Real-Time Double-Ended Queue</title>
-          <link>/entries/Real_Time_Deque.html</link>
+          <link>https://isa-afp.org/entries/Real_Time_Deque.html</link>
           <pubDate>Thu, 23 Jun 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/Real_Time_Deque.html</guid>
-          <description></description>
+          <description>Real-Time Double-Ended Queue in the AFP</description>
+            <category>Computer science/Data structures</category>
         </item>
+
   </channel>
 </rss>

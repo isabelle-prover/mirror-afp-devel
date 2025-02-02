@@ -1,11 +1,11 @@
----
-title: "About"
-menu:
-    main:
-        name: "About"
-        weight: 7
-rss: false
----
++++
+title = "About"
+description = "About the Archive of Formal Proofs"
+
+[menu.main]
+name = "About"
+weight = 7
++++
 
 The Archive of Formal Proofs is a collection of proof libraries, examples, and larger scientific developments,
 mechanically checked in the theorem prover Isabelle.

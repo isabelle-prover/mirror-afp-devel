@@ -1,0 +1,12 @@
+{{- define "main" }}
+  <main id="theories">
+    {{- range .Params.theories }}
+      {{- if $.Site.Params.status }}
+      <a id="{{ .name }}" href="{{ $.Site.Params.afpUrls.htmlDevel }}/{{ .path }}">
+      {{- else }}
+      <a id="{{ .name }}" href="{{ $.Site.Params.afpUrls.html }}/{{ .path }}">
+      {{- end -}}
+        <h2>{{ .name }}</h2></a>
+    {{- end }}
+  </main>
+{{- end }}

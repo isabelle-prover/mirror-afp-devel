@@ -2,26 +2,17 @@
 <html lang="en">
   <head>
   <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>A Fully Verified Executable LTL Model Checker - Archive of Formal Proofs</title>
-    <meta name="description" content="We present an LTL model checker whose code has been completely verified
-using the Isabelle theorem prover. The checker consists of over 4000
-lines of ML...">
+    <meta name="description" content="A Fully Verified Executable LTL Model Checker in the Archive of Formal Proofs" />
+    <meta property="og:description" content="A Fully Verified Executable LTL Model Checker in the Archive of Formal Proofs" />
 
   <meta property="og:title" content="A Fully Verified Executable LTL Model Checker" />
-<meta property="og:description" content="" />
-<meta property="og:type" content="article" />
-<meta property="og:url" content="/entries/CAVA_LTL_Modelchecker.html" /><meta property="og:image" content="/images/afp.png"/><meta property="article:section" content="entries" />
-<meta property="article:published_time" content="2014-05-28T00:00:00+00:00" />
-<meta property="article:modified_time" content="2014-05-28T00:00:00+00:00" /><meta property="og:site_name" content="Archive of Formal Proofs" />
-
-  <meta name="twitter:card" content="summary_large_image"/>
-<meta name="twitter:image" content="/images/afp.png"/>
-
-<meta name="twitter:title" content="A Fully Verified Executable LTL Model Checker"/>
-<meta name="twitter:description" content=""/>
-
+  <meta property="og:url" content="https://isa-afp.org/entries/CAVA_LTL_Modelchecker.html" />
+  <meta property="og:image" content="https://isa-afp.org/images/afp.png" />
+  <meta property="og:type" content="article" />
+  
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
 
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
@@ -130,7 +121,7 @@ lines of ML...">
   </h1>
   <div>
       <p>
-        <a href="../authors/esparza">Javier Esparza</a> <a href="https://www7.in.tum.de/~esparza/">🌐</a>, <a href="../authors/lammich">Peter Lammich</a> <a href="http://www21.in.tum.de/~lammich">🌐</a>, <a href="../authors/neumann">René Neumann</a> <a class="obfuscated" data="eyJob3N0IjpbImluIiwidHVtIiwiZGUiXSwidXNlciI6WyJyZW5lIiwibmV1bWFubiJdfQ==">📧</a>, <a href="../authors/nipkow">Tobias Nipkow</a> <a href="https://www.in.tum.de/~nipkow/">🌐</a>, <a href="../authors/schimpf">Alexander Schimpf</a> <a class="obfuscated" data="eyJob3N0IjpbImluZm9ybWF0aWsiLCJ1bmktZnJlaWJ1cmciLCJkZSJdLCJ1c2VyIjpbInNjaGltcGZhIl19">📧</a> and <a href="../authors/smaus">Jan-Georg Smaus</a> <a href="http://www.irit.fr/~Jan-Georg.Smaus">🌐</a>
+        <a href="../authors/esparza/">Javier Esparza</a> <a href="https://www7.in.tum.de/~esparza/">🌐</a>, <a href="../authors/lammich/">Peter Lammich</a> <a href="http://www21.in.tum.de/~lammich">🌐</a>, <a href="../authors/neumann/">René Neumann</a> <a class="obfuscated" data="eyJ1c2VyIjpbInJlbmUiLCJuZXVtYW5uIl0sImhvc3QiOlsiaW4iLCJ0dW0iLCJkZSJdfQ==">📧</a>, <a href="../authors/nipkow/">Tobias Nipkow</a> <a href="https://www.in.tum.de/~nipkow/">🌐</a>, <a href="../authors/schimpf/">Alexander Schimpf</a> <a class="obfuscated" data="eyJ1c2VyIjpbInNjaGltcGZhIl0sImhvc3QiOlsiaW5mb3JtYXRpayIsInVuaS1mcmVpYnVyZyIsImRlIl19">📧</a> and <a href="../authors/smaus/">Jan-Georg Smaus</a> <a href="http://www.irit.fr/~Jan-Georg.Smaus">🌐</a>
 
       </p>
       <p class="date">May 28, 2014</p>
@@ -160,11 +151,11 @@ can be tested.</div>
     </div>
       <h3>Topics</h3>
       <ul>
-          <li><a href="../topics/computer-science/automata-and-formal-languages">Computer science/Automata and formal languages</a></li>
+          <li><a href="../topics/computer-science/automata-and-formal-languages/">Computer science/Automata and formal languages</a></li>
       </ul>
       <h3>Related publications</h3>
       <ul>
-        <li>Esparza, J., Lammich, P., Neumann, R., Nipkow, T., Schimpf, A., & Smaus, J.-G. (2013). A Fully Verified Executable LTL Model Checker. Lecture Notes in Computer Science, 463–478. <a href="https://doi.org/10.1007/978-3-642-39799-8_31">https://doi.org/10.1007/978-3-642-39799-8_31</a>
+        <li>Esparza, J., Lammich, P., Neumann, R., Nipkow, T., Schimpf, A., & Smaus, J.-G. (2013). A Fully Verified Executable LTL Model Checker. Computer Aided Verification, 463–478. <a href="https://doi.org/10.1007/978-3-642-39799-8_31">https://doi.org/10.1007/978-3-642-39799-8_31</a>
 
         </li>
         <li><a href="https://www.proof.cit.tum.de/~nipkow/pubs/cav13.html">author's copy</a>
@@ -232,7 +223,7 @@ can be tested.</div>
               <li><a href="../entries/DFS_Framework.html">A Framework for Verifying Depth-First Search Algorithms</a></li>
               <li><a href="../entries/Partial_Order_Reduction.html">Partial Order Reduction</a></li>
               <li><a href="../entries/Stuttering_Equivalence.html">Stuttering Equivalence</a></li>
-              <li><a href="../entries/Gabow_SCC.html">Verified Efficient Implementation of Gabow&rsquo;s Strongly Connected Components Algorithm</a></li>
+              <li><a href="../entries/Gabow_SCC.html">Verified Efficient Implementation of Gabow's Strongly Connected Components Algorithm</a></li>
               <li><a href="../entries/LTL_to_GBA.html">Converting Linear-Time Temporal Logic to Generalized Büchi Automata</a></li>
               <li><a href="../entries/Promela.html">Promela Formalization</a></li>
         </ul>

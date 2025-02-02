@@ -1,11 +1,11 @@
----
-title: Help
-menu:
-    main:
-        name: "Help"
-        weight: 4
-rss: false
----
++++
+title = "Help"
+description = "Help with the Archive of Formal Proofs"
+
+[menu.main]
+name = "Help"
+weight = 4
++++
 
 This section focuses on the Archive of Formal Proofs. For help with Isabelle, see the [Isabelle Documentation](https://isabelle.in.tum.de/documentation.html). More resources are listed in the [Isabelle Quick Access Links](https://isabelle.systems).
 

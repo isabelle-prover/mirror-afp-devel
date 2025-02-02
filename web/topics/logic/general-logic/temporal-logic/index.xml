@@ -1,184 +1,75 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Logic/General logic/Temporal logic on Archive of Formal Proofs
-    </title>
-    <link>/topics/logic/general-logic/temporal-logic/</link>
-    <description>
-        Recent content in Logic/General logic/Temporal logic 
-        on Archive of Formal Proofs
-    </description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language>
-    
-      <atom:link href="/topics/logic/general-logic/temporal-logic/index.xml" rel="self" type="application/rss+xml" />
-        <item>
+    <title>Logic/General logic/Temporal logic</title>
+    <link>https://isa-afp.org/topics/logic/general-logic/temporal-logic/</link>
+    <description>AFP entries in Temporal logic</description>
+         <item>
           <title>Definitive Set Semantics for LTL3</title>
-          <link>/entries/LTL3_Semantics.html</link>
+          <link>https://isa-afp.org/entries/LTL3_Semantics.html</link>
           <pubDate>Mon, 12 Aug 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/LTL3_Semantics.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Definitive Set Semantics for LTL3</title>
-          <link>/entries/LTL3_Semantics.html</link>
-          <pubDate>Mon, 12 Aug 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/LTL3_Semantics.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Definitive Set Semantics for LTL3</title>
-          <link>/entries/LTL3_Semantics.html</link>
-          <pubDate>Mon, 12 Aug 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/LTL3_Semantics.html</guid>
-          <description></description>
+          <description>Definitive Set Semantics for LTL3 in the AFP</description>
+            <category>Logic/General logic/Temporal logic</category>
+            <category>Computer science/Concurrency</category>
+            <category>Computer science/Semantics and reasoning</category>
         </item>
         <item>
           <title>A Verified Proof Checker for Metric First-Order Temporal Logic</title>
-          <link>/entries/MFOTL_Checker.html</link>
+          <link>https://isa-afp.org/entries/MFOTL_Checker.html</link>
           <pubDate>Tue, 16 Apr 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/MFOTL_Checker.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>A Verified Proof Checker for Metric First-Order Temporal Logic</title>
-          <link>/entries/MFOTL_Checker.html</link>
-          <pubDate>Tue, 16 Apr 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/MFOTL_Checker.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>A Verified Proof Checker for Metric First-Order Temporal Logic</title>
-          <link>/entries/MFOTL_Checker.html</link>
-          <pubDate>Tue, 16 Apr 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/MFOTL_Checker.html</guid>
-          <description></description>
+          <description>A Verified Proof Checker for Metric First-Order Temporal Logic in the AFP</description>
+            <category>Computer science/Data management systems</category>
+            <category>Computer science/Algorithms</category>
+            <category>Logic/General logic/Temporal logic</category>
         </item>
         <item>
           <title>An Efficient Normalisation Procedure for Linear Temporal Logic: Isabelle/HOL Formalisation</title>
-          <link>/entries/LTL_Normal_Form.html</link>
+          <link>https://isa-afp.org/entries/LTL_Normal_Form.html</link>
           <pubDate>Fri, 08 May 2020 00:00:00 +0000</pubDate>
-          <guid>/entries/LTL_Normal_Form.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>An Efficient Normalisation Procedure for Linear Temporal Logic: Isabelle/HOL Formalisation</title>
-          <link>/entries/LTL_Normal_Form.html</link>
-          <pubDate>Fri, 08 May 2020 00:00:00 +0000</pubDate>
-          <guid>/entries/LTL_Normal_Form.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>An Efficient Normalisation Procedure for Linear Temporal Logic: Isabelle/HOL Formalisation</title>
-          <link>/entries/LTL_Normal_Form.html</link>
-          <pubDate>Fri, 08 May 2020 00:00:00 +0000</pubDate>
-          <guid>/entries/LTL_Normal_Form.html</guid>
-          <description></description>
+          <description>An Efficient Normalisation Procedure for Linear Temporal Logic: Isabelle/HOL Formalisation in the AFP</description>
+            <category>Computer science/Automata and formal languages</category>
+            <category>Logic/General logic/Temporal logic</category>
         </item>
         <item>
           <title>Formalization of a Monitoring Algorithm for Metric First-Order Temporal Logic</title>
-          <link>/entries/MFOTL_Monitor.html</link>
+          <link>https://isa-afp.org/entries/MFOTL_Monitor.html</link>
           <pubDate>Thu, 04 Jul 2019 00:00:00 +0000</pubDate>
-          <guid>/entries/MFOTL_Monitor.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Formalization of a Monitoring Algorithm for Metric First-Order Temporal Logic</title>
-          <link>/entries/MFOTL_Monitor.html</link>
-          <pubDate>Thu, 04 Jul 2019 00:00:00 +0000</pubDate>
-          <guid>/entries/MFOTL_Monitor.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Formalization of a Monitoring Algorithm for Metric First-Order Temporal Logic</title>
-          <link>/entries/MFOTL_Monitor.html</link>
-          <pubDate>Thu, 04 Jul 2019 00:00:00 +0000</pubDate>
-          <guid>/entries/MFOTL_Monitor.html</guid>
-          <description></description>
+          <description>Formalization of a Monitoring Algorithm for Metric First-Order Temporal Logic in the AFP</description>
+            <category>Computer science/Algorithms</category>
+            <category>Logic/General logic/Temporal logic</category>
+            <category>Computer science/Automata and formal languages</category>
         </item>
         <item>
           <title>Allen&#39;s Interval Calculus</title>
-          <link>/entries/Allen_Calculus.html</link>
+          <link>https://isa-afp.org/entries/Allen_Calculus.html</link>
           <pubDate>Thu, 29 Sep 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/Allen_Calculus.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Allen&#39;s Interval Calculus</title>
-          <link>/entries/Allen_Calculus.html</link>
-          <pubDate>Thu, 29 Sep 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/Allen_Calculus.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Allen&#39;s Interval Calculus</title>
-          <link>/entries/Allen_Calculus.html</link>
-          <pubDate>Thu, 29 Sep 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/Allen_Calculus.html</guid>
-          <description></description>
+          <description>Allen&#39;s Interval Calculus in the AFP</description>
+            <category>Logic/General logic/Temporal logic</category>
+            <category>Mathematics/Order</category>
         </item>
         <item>
           <title>Linear Temporal Logic</title>
-          <link>/entries/LTL.html</link>
+          <link>https://isa-afp.org/entries/LTL.html</link>
           <pubDate>Tue, 01 Mar 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/LTL.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Linear Temporal Logic</title>
-          <link>/entries/LTL.html</link>
-          <pubDate>Tue, 01 Mar 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/LTL.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Linear Temporal Logic</title>
-          <link>/entries/LTL.html</link>
-          <pubDate>Tue, 01 Mar 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/LTL.html</guid>
-          <description></description>
+          <description>Linear Temporal Logic in the AFP</description>
+            <category>Logic/General logic/Temporal logic</category>
+            <category>Computer science/Automata and formal languages</category>
         </item>
         <item>
           <title>A shallow embedding of HyperCTL*</title>
-          <link>/entries/HyperCTL.html</link>
+          <link>https://isa-afp.org/entries/HyperCTL.html</link>
           <pubDate>Wed, 16 Apr 2014 00:00:00 +0000</pubDate>
-          <guid>/entries/HyperCTL.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>A shallow embedding of HyperCTL*</title>
-          <link>/entries/HyperCTL.html</link>
-          <pubDate>Wed, 16 Apr 2014 00:00:00 +0000</pubDate>
-          <guid>/entries/HyperCTL.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>A shallow embedding of HyperCTL*</title>
-          <link>/entries/HyperCTL.html</link>
-          <pubDate>Wed, 16 Apr 2014 00:00:00 +0000</pubDate>
-          <guid>/entries/HyperCTL.html</guid>
-          <description></description>
+          <description>A shallow embedding of HyperCTL* in the AFP</description>
+            <category>Computer science/Security</category>
+            <category>Logic/General logic/Temporal logic</category>
         </item>
         <item>
           <title>Interval Temporal Logic on Natural Numbers</title>
-          <link>/entries/Nat-Interval-Logic.html</link>
+          <link>https://isa-afp.org/entries/Nat-Interval-Logic.html</link>
           <pubDate>Wed, 23 Feb 2011 00:00:00 +0000</pubDate>
-          <guid>/entries/Nat-Interval-Logic.html</guid>
-          <description></description>
+          <description>Interval Temporal Logic on Natural Numbers in the AFP</description>
+            <category>Logic/General logic/Temporal logic</category>
         </item>
-        <item>
-          <title>Interval Temporal Logic on Natural Numbers</title>
-          <link>/entries/Nat-Interval-Logic.html</link>
-          <pubDate>Wed, 23 Feb 2011 00:00:00 +0000</pubDate>
-          <guid>/entries/Nat-Interval-Logic.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Interval Temporal Logic on Natural Numbers</title>
-          <link>/entries/Nat-Interval-Logic.html</link>
-          <pubDate>Wed, 23 Feb 2011 00:00:00 +0000</pubDate>
-          <guid>/entries/Nat-Interval-Logic.html</guid>
-          <description></description>
-        </item>
+
   </channel>
 </rss>

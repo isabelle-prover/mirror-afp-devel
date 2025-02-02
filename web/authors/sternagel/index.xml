@@ -1,150 +1,148 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>sternagel on Archive of Formal Proofs
-    </title>
-    <link>/authors/sternagel/</link>
-    <description>
-        Recent content in sternagel 
-        on Archive of Formal Proofs
-    </description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language>
-    
-      <lastBuildDate>Wed, 15 Dec 2021 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/sternagel/index.xml" rel="self" type="application/rss+xml" />
+    <title>Christian Sternagel</title>
+    <link>https://isa-afp.org/authors/sternagel/</link>
+    <description>AFP entries of Christian Sternagel</description>
         <item>
           <title>Regular Tree Relations</title>
-          <link>/entries/Regular_Tree_Relations.html</link>
+          <link>https://isa-afp.org/entries/Regular_Tree_Relations.html</link>
           <pubDate>Wed, 15 Dec 2021 00:00:00 +0000</pubDate>
-          <guid>/entries/Regular_Tree_Relations.html</guid>
-          <description></description>
+          <description>Regular Tree Relations in the AFP</description>
+            <category>Computer science/Automata and formal languages</category>
         </item>
         <item>
           <title>A Formalization of Weighted Path Orders and Recursive Path Orders</title>
-          <link>/entries/Weighted_Path_Order.html</link>
+          <link>https://isa-afp.org/entries/Weighted_Path_Order.html</link>
           <pubDate>Thu, 16 Sep 2021 00:00:00 +0000</pubDate>
-          <guid>/entries/Weighted_Path_Order.html</guid>
-          <description></description>
+          <description>A Formalization of Weighted Path Orders and Recursive Path Orders in the AFP</description>
+            <category>Logic/Rewriting</category>
         </item>
         <item>
           <title>A Formalization of Knuth–Bendix Orders</title>
-          <link>/entries/Knuth_Bendix_Order.html</link>
+          <link>https://isa-afp.org/entries/Knuth_Bendix_Order.html</link>
           <pubDate>Wed, 13 May 2020 00:00:00 +0000</pubDate>
-          <guid>/entries/Knuth_Bendix_Order.html</guid>
-          <description></description>
+          <description>A Formalization of Knuth–Bendix Orders in the AFP</description>
+            <category>Logic/Rewriting</category>
         </item>
         <item>
           <title>First-Order Terms</title>
-          <link>/entries/First_Order_Terms.html</link>
+          <link>https://isa-afp.org/entries/First_Order_Terms.html</link>
           <pubDate>Tue, 06 Feb 2018 00:00:00 +0000</pubDate>
-          <guid>/entries/First_Order_Terms.html</guid>
-          <description></description>
+          <description>First-Order Terms in the AFP</description>
+            <category>Logic/Rewriting</category>
+            <category>Computer science/Algorithms</category>
         </item>
         <item>
           <title>Homogeneous Linear Diophantine Equations</title>
-          <link>/entries/Diophantine_Eqns_Lin_Hom.html</link>
+          <link>https://isa-afp.org/entries/Diophantine_Eqns_Lin_Hom.html</link>
           <pubDate>Sat, 14 Oct 2017 00:00:00 +0000</pubDate>
-          <guid>/entries/Diophantine_Eqns_Lin_Hom.html</guid>
-          <description></description>
+          <description>Homogeneous Linear Diophantine Equations in the AFP</description>
+            <category>Computer science/Algorithms/Mathematical</category>
+            <category>Mathematics/Number theory</category>
+            <category>Tools</category>
         </item>
         <item>
           <title>HOLCF-Prelude</title>
-          <link>/entries/HOLCF-Prelude.html</link>
+          <link>https://isa-afp.org/entries/HOLCF-Prelude.html</link>
           <pubDate>Sat, 15 Jul 2017 00:00:00 +0000</pubDate>
-          <guid>/entries/HOLCF-Prelude.html</guid>
-          <description></description>
+          <description>HOLCF-Prelude in the AFP</description>
+            <category>Computer science/Functional programming</category>
         </item>
         <item>
           <title>The Z Property</title>
-          <link>/entries/Rewriting_Z.html</link>
+          <link>https://isa-afp.org/entries/Rewriting_Z.html</link>
           <pubDate>Thu, 30 Jun 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/Rewriting_Z.html</guid>
-          <description></description>
+          <description>The Z Property in the AFP</description>
+            <category>Logic/Rewriting</category>
         </item>
         <item>
           <title>Deriving class instances for datatypes</title>
-          <link>/entries/Deriving.html</link>
+          <link>https://isa-afp.org/entries/Deriving.html</link>
           <pubDate>Wed, 11 Mar 2015 00:00:00 +0000</pubDate>
-          <guid>/entries/Deriving.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Certification Monads</title>
-          <link>/entries/Certification_Monads.html</link>
-          <pubDate>Fri, 03 Oct 2014 00:00:00 +0000</pubDate>
-          <guid>/entries/Certification_Monads.html</guid>
-          <description></description>
+          <description>Deriving class instances for datatypes in the AFP</description>
+            <category>Computer science/Data structures</category>
         </item>
         <item>
           <title>XML</title>
-          <link>/entries/XML.html</link>
+          <link>https://isa-afp.org/entries/XML.html</link>
           <pubDate>Fri, 03 Oct 2014 00:00:00 +0000</pubDate>
-          <guid>/entries/XML.html</guid>
-          <description></description>
+          <description>XML in the AFP</description>
+            <category>Computer science/Functional programming</category>
+            <category>Computer science/Data structures</category>
+        </item>
+        <item>
+          <title>Certification Monads</title>
+          <link>https://isa-afp.org/entries/Certification_Monads.html</link>
+          <pubDate>Fri, 03 Oct 2014 00:00:00 +0000</pubDate>
+          <description>Certification Monads in the AFP</description>
+            <category>Computer science/Functional programming</category>
         </item>
         <item>
           <title>Imperative Insertion Sort</title>
-          <link>/entries/Imperative_Insertion_Sort.html</link>
+          <link>https://isa-afp.org/entries/Imperative_Insertion_Sort.html</link>
           <pubDate>Thu, 25 Sep 2014 00:00:00 +0000</pubDate>
-          <guid>/entries/Imperative_Insertion_Sort.html</guid>
-          <description></description>
+          <description>Imperative Insertion Sort in the AFP</description>
+            <category>Computer science/Algorithms</category>
         </item>
         <item>
           <title>Haskell&#39;s Show Class in Isabelle/HOL</title>
-          <link>/entries/Show.html</link>
+          <link>https://isa-afp.org/entries/Show.html</link>
           <pubDate>Tue, 29 Jul 2014 00:00:00 +0000</pubDate>
-          <guid>/entries/Show.html</guid>
-          <description></description>
+          <description>Haskell&#39;s Show Class in Isabelle/HOL in the AFP</description>
+            <category>Computer science/Functional programming</category>
         </item>
         <item>
           <title>Open Induction</title>
-          <link>/entries/Open_Induction.html</link>
+          <link>https://isa-afp.org/entries/Open_Induction.html</link>
           <pubDate>Fri, 02 Nov 2012 00:00:00 +0000</pubDate>
-          <guid>/entries/Open_Induction.html</guid>
-          <description></description>
+          <description>Open Induction in the AFP</description>
+            <category>Mathematics/Combinatorics</category>
         </item>
         <item>
           <title>Well-Quasi-Orders</title>
-          <link>/entries/Well_Quasi_Orders.html</link>
+          <link>https://isa-afp.org/entries/Well_Quasi_Orders.html</link>
           <pubDate>Fri, 13 Apr 2012 00:00:00 +0000</pubDate>
-          <guid>/entries/Well_Quasi_Orders.html</guid>
-          <description></description>
+          <description>Well-Quasi-Orders in the AFP</description>
+            <category>Mathematics/Combinatorics</category>
         </item>
         <item>
           <title>Efficient Mergesort</title>
-          <link>/entries/Efficient-Mergesort.html</link>
+          <link>https://isa-afp.org/entries/Efficient-Mergesort.html</link>
           <pubDate>Wed, 09 Nov 2011 00:00:00 +0000</pubDate>
-          <guid>/entries/Efficient-Mergesort.html</guid>
-          <description></description>
+          <description>Efficient Mergesort in the AFP</description>
+            <category>Computer science/Algorithms</category>
         </item>
         <item>
           <title>Executable Transitive Closures of Finite Relations</title>
-          <link>/entries/Transitive-Closure.html</link>
+          <link>https://isa-afp.org/entries/Transitive-Closure.html</link>
           <pubDate>Mon, 14 Mar 2011 00:00:00 +0000</pubDate>
-          <guid>/entries/Transitive-Closure.html</guid>
-          <description></description>
+          <description>Executable Transitive Closures of Finite Relations in the AFP</description>
+            <category>Computer science/Algorithms/Graph</category>
         </item>
         <item>
           <title>Executable Multivariate Polynomials</title>
-          <link>/entries/Polynomials.html</link>
+          <link>https://isa-afp.org/entries/Polynomials.html</link>
           <pubDate>Tue, 10 Aug 2010 00:00:00 +0000</pubDate>
-          <guid>/entries/Polynomials.html</guid>
-          <description></description>
+          <description>Executable Multivariate Polynomials in the AFP</description>
+            <category>Mathematics/Analysis</category>
+            <category>Mathematics/Algebra</category>
+            <category>Computer science/Algorithms/Mathematical</category>
         </item>
         <item>
           <title>Executable Matrix Operations on Matrices of Arbitrary Dimensions</title>
-          <link>/entries/Matrix.html</link>
+          <link>https://isa-afp.org/entries/Matrix.html</link>
           <pubDate>Thu, 17 Jun 2010 00:00:00 +0000</pubDate>
-          <guid>/entries/Matrix.html</guid>
-          <description></description>
+          <description>Executable Matrix Operations on Matrices of Arbitrary Dimensions in the AFP</description>
+            <category>Computer science/Data structures</category>
         </item>
         <item>
           <title>Abstract Rewriting</title>
-          <link>/entries/Abstract-Rewriting.html</link>
+          <link>https://isa-afp.org/entries/Abstract-Rewriting.html</link>
           <pubDate>Mon, 14 Jun 2010 00:00:00 +0000</pubDate>
-          <guid>/entries/Abstract-Rewriting.html</guid>
-          <description></description>
+          <description>Abstract Rewriting in the AFP</description>
+            <category>Logic/Rewriting</category>
         </item>
+
   </channel>
 </rss>

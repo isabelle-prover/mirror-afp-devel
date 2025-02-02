@@ -10,11 +10,11 @@ begin
 
 (* ----- Configure sledgehammer ------ *)
 sledgehammer_params[minimize=false,preplay_timeout=10,timeout=30,strict=true,
-                    provers="e z3 cvc4 vampire "]
+                    provers="e z3 cvc5 vampire "]
 
 (*
 sledgehammer_params[minimize=false,preplay_timeout=10,timeout=30,verbose=true,strict=true,
-                    provers="spass e z3 cvc4 vampire "]
+                    provers="spass e z3 cvc5 vampire "]
 *)
 (* ----------------------------------- *)
 
