@@ -49,6 +49,20 @@
           <description></description>
         </item>
         <item>
+          <title>Differential Privacy</title>
+          <link>/entries/Differential_Privacy.html</link>
+          <pubDate>Tue, 07 Jan 2025 00:00:00 +0000</pubDate>
+          <guid>/entries/Differential_Privacy.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Diﬀerential Privacy using Quasi-Borel Spaces</title>
+          <link>/entries/DP_QBS.html</link>
+          <pubDate>Tue, 07 Jan 2025 00:00:00 +0000</pubDate>
+          <guid>/entries/DP_QBS.html</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Notes on Gödel’s and Scott’s Variants of the Ontological Argument (Isabelle/HOL dataset)</title>
           <link>/entries/Notes_On_Goedels_Ontological_Argument.html</link>
           <pubDate>Tue, 07 Jan 2025 00:00:00 +0000</pubDate>

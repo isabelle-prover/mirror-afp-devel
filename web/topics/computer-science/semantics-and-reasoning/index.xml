@@ -13,6 +13,34 @@
     
       <atom:link href="/topics/computer-science/semantics-and-reasoning/index.xml" rel="self" type="application/rss+xml" />
         <item>
+          <title>Differential Privacy</title>
+          <link>/entries/Differential_Privacy.html</link>
+          <pubDate>Tue, 07 Jan 2025 00:00:00 +0000</pubDate>
+          <guid>/entries/Differential_Privacy.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Differential Privacy</title>
+          <link>/entries/Differential_Privacy.html</link>
+          <pubDate>Tue, 07 Jan 2025 00:00:00 +0000</pubDate>
+          <guid>/entries/Differential_Privacy.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Diﬀerential Privacy using Quasi-Borel Spaces</title>
+          <link>/entries/DP_QBS.html</link>
+          <pubDate>Tue, 07 Jan 2025 00:00:00 +0000</pubDate>
+          <guid>/entries/DP_QBS.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Diﬀerential Privacy using Quasi-Borel Spaces</title>
+          <link>/entries/DP_QBS.html</link>
+          <pubDate>Tue, 07 Jan 2025 00:00:00 +0000</pubDate>
+          <guid>/entries/DP_QBS.html</guid>
+          <description></description>
+        </item>
+        <item>
           <title>NREST: Nondeterministc RESult monad with Time</title>
           <link>/entries/NREST.html</link>
           <pubDate>Mon, 16 Sep 2024 00:00:00 +0000</pubDate>

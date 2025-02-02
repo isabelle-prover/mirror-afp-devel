@@ -13,6 +13,20 @@
     
       <atom:link href="/topics/computer-science/security/index.xml" rel="self" type="application/rss+xml" />
         <item>
+          <title>Differential Privacy</title>
+          <link>/entries/Differential_Privacy.html</link>
+          <pubDate>Tue, 07 Jan 2025 00:00:00 +0000</pubDate>
+          <guid>/entries/Differential_Privacy.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Differential Privacy</title>
+          <link>/entries/Differential_Privacy.html</link>
+          <pubDate>Tue, 07 Jan 2025 00:00:00 +0000</pubDate>
+          <guid>/entries/Differential_Privacy.html</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Extension of Stateful Intransitive Noninterference with Inputs, Outputs, and Nondeterminism in Language IMP</title>
           <link>/entries/IMP_Noninterference_Extension.html</link>
           <pubDate>Mon, 02 Sep 2024 00:00:00 +0000</pubDate>

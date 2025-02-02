@@ -181,6 +181,7 @@ DFS_Framework
 DOM_Components
 DPRM_Theorem
 DPT-SAT-Solver
+DP_QBS
 DataRefinementIBP
 Datatype_Order_Generator
 Decl_Sem_Fun_PL
@@ -202,6 +203,7 @@ Dict_Construction
 Difference_Bound_Matrices
 Differential_Dynamic_Logic
 Differential_Game_Logic
+Differential_Privacy
 DigitsInBase
 Digit_Expansions
 Dijkstra_Shortest_Path
