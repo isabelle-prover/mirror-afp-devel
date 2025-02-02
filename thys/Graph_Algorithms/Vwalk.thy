@@ -8,13 +8,13 @@ context fixes G :: "'v dgraph" begin
 inductive vwalk where
   vwalk0: "vwalk []" |
   vwalk1: "v \<in> dVs G \<Longrightarrow> vwalk [v]" |
-  vwalk2: "(v,v') \<in> G \<Longrightarrow> vwalk (v'#vs) \<Longrightarrow> vwalk (v#v'#vs)"
+  vwalk2: "(u,v) \<in> G \<Longrightarrow> vwalk (v#vs) \<Longrightarrow> vwalk (u#v#vs)"
 end
 declare vwalk0[simp]
 
 inductive_simps vwalk_1[simp]: "vwalk E [v]"
 
-inductive_simps vwalk_2[simp]: "vwalk E (v # v' # vs)"
+inductive_simps vwalk_2[simp]: "vwalk E (u # v # vs)"
 
 definition vwalk_bet::"('v \<times> 'v) set \<Rightarrow> 'v \<Rightarrow> 'v list \<Rightarrow> 'v \<Rightarrow> bool" where 
   "vwalk_bet G u p v = ( vwalk G p \<and> p \<noteq> [] \<and> hd p = u \<and> last p = v)"
