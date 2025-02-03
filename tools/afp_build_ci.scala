@@ -259,7 +259,7 @@ Last 50 lines from stderr (if available):
           results: Build.Results,
           progress: Progress
         ): Unit = {
-          val dirs = AFP.main_dirs(None)
+          val dirs = AFP.main_dirs(Some(AFP.BASE))
           val afp = AFP_Structure(options)
           val database = "afp-" + afp.hg_id
           val find_facts_options =
