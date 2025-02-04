@@ -71,7 +71,7 @@ lemma ground_subst_extension:
     "base.is_ground_subst \<gamma>'" 
     "base.is_typed_on UNIV \<V> \<gamma>'" 
     "\<forall>x \<in> vars expr. \<gamma> x = \<gamma>' x"
-proof standard
+proof (rule that)
 
   define \<gamma>' where 
     "\<And>x. \<gamma>' x \<equiv>
@@ -114,6 +114,19 @@ proof standard
   show "\<forall>x \<in> vars expr. \<gamma> x = \<gamma>' x"
     by (simp add: \<gamma>'_def)
 qed
+
+lemma grounding_extension:
+  assumes
+    grounding: "is_ground (expr \<cdot> \<gamma>)" and
+    \<gamma>_is_typed_on: "base.is_typed_on (vars expr) \<V> \<gamma>"
+  obtains \<gamma>'
+  where
+    "is_ground (expr' \<cdot> \<gamma>')" 
+    "base.is_typed_on (vars expr') \<V> \<gamma>'"
+    "\<forall>x \<in> vars expr. \<gamma> x = \<gamma>' x"
+  using ground_subst_extension[OF grounding \<gamma>_is_typed_on]
+  unfolding base.is_ground_subst_def is_grounding_iff_vars_grounded
+  by (metis UNIV_I base.comp_subst_iff base.left_neutral)
 
 end
 

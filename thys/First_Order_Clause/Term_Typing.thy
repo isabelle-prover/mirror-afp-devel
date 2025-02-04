@@ -51,5 +51,11 @@ locale term_typing =
   welltyped: context_compatible_typing where typed = welltyped +
   welltyped: subterm_typing where typed = welltyped +
 assumes all_terms_are_typed: "\<And>t. is_typed t"
+begin
+
+sublocale typed: subterm_typing
+  by unfold_locales (auto intro: all_terms_are_typed)
+
+end
 
 end

@@ -4,6 +4,7 @@ theory Superposition
     First_Order_Clause.Nonground_Selection_Function
     First_Order_Clause.Nonground_Typing
     First_Order_Clause.Typed_Tiebreakers
+    First_Order_Clause.Welltyped_IMGU
 
     Ground_Superposition
 begin
@@ -38,11 +39,11 @@ inductive eq_resolution :: "('f, 'v, 'ty) typed_clause \<Rightarrow> ('f, 'v, 't
     eq_resolution (D, \<V>) (C, \<V>)"
 
 inductive eq_factoring :: "('f, 'v, 'ty) typed_clause \<Rightarrow> ('f, 'v, 'ty) typed_clause \<Rightarrow> bool" where
-  eq_factoringI: "
-    D = add_mset l\<^sub>1 (add_mset l\<^sub>2 D') \<Longrightarrow>
+  eq_factoringI: 
+   "D = add_mset l\<^sub>1 (add_mset l\<^sub>2 D') \<Longrightarrow>
     l\<^sub>1 = t\<^sub>1 \<approx> t\<^sub>1' \<Longrightarrow>
     l\<^sub>2 = t\<^sub>2 \<approx> t\<^sub>2' \<Longrightarrow>
-    select D = {#} \<Longrightarrow> 
+    select D = {#} \<Longrightarrow>
     is_maximal (l\<^sub>1 \<cdot>l \<mu>) (D \<cdot> \<mu>) \<Longrightarrow>
     \<not> (t\<^sub>1 \<cdot>t \<mu> \<preceq>\<^sub>t t\<^sub>1' \<cdot>t \<mu>) \<Longrightarrow>
     welltyped_imgu_on (clause.vars D) \<V> t\<^sub>1 t\<^sub>2 \<mu> \<Longrightarrow>
@@ -71,7 +72,7 @@ where
     term.subst.is_welltyped_on (clause.vars D) \<V>\<^sub>2 \<rho>\<^sub>2 \<Longrightarrow>
     (\<And>\<tau> \<tau>'. typed \<V>\<^sub>2 t\<^sub>2 \<tau> \<Longrightarrow> typed \<V>\<^sub>2 t\<^sub>2' \<tau>' \<Longrightarrow> \<tau> = \<tau>') \<Longrightarrow>
     \<not> (E \<cdot> \<rho>\<^sub>1 \<odot> \<mu> \<preceq>\<^sub>c D \<cdot> \<rho>\<^sub>2 \<odot> \<mu>) \<Longrightarrow>
-    (\<P> = Pos \<Longrightarrow> select E = {#})  \<Longrightarrow>
+    (\<P> = Pos \<Longrightarrow> select E = {#}) \<Longrightarrow>
     (\<P> = Pos \<Longrightarrow> is_strictly_maximal (l\<^sub>1 \<cdot>l \<rho>\<^sub>1 \<odot> \<mu>) (E \<cdot> \<rho>\<^sub>1 \<odot> \<mu>)) \<Longrightarrow>
     (\<P> = Neg \<Longrightarrow> select E = {#} \<Longrightarrow> is_maximal (l\<^sub>1 \<cdot>l \<rho>\<^sub>1 \<odot> \<mu>) (E \<cdot> \<rho>\<^sub>1 \<odot> \<mu>)) \<Longrightarrow>
     (\<P> = Neg \<Longrightarrow> select E \<noteq> {#} \<Longrightarrow> is_maximal (l\<^sub>1 \<cdot>l \<rho>\<^sub>1 \<odot> \<mu>) ((select E) \<cdot> \<rho>\<^sub>1 \<odot> \<mu>)) \<Longrightarrow>
