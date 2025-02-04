@@ -10,12 +10,11 @@ mechanically checked in the theorem prover Isabelle.\
 """
 images = [ "/images/afp.png" ]
 title = "Archive of Formal Proofs"
-submissionUrl = "https://afp-submit.proof.cit.tum.de"
-
-[params.afpUrls]
-releases = "https://www.isa-afp.org/release"
-html = "https://www.isa-afp.org/browser_info/current"
-htmlDevel = "https://devel.isa-afp.org/browser_info/current"
+release_dir = "release"
+html_dir = "browser_info/current"
+submission_url = "https://afp-submit.proof.cit.tum.de"
+devel_url = "https://devel.isa-afp.org"
+url = "https://www.isa-afp.org" # NB: .Site.BaseURL changes url (trailing slash)
 
 [outputs]
 home = [ "html", "rss" ]

@@ -1,4 +1,5 @@
 {{- define "main" }}
+  {{- $base_url := cond .Site.Data.status .Site.Params.devel_url .Site.Params.url }}
   <main>
     {{- if .Site.Data.status }}
       <strong>
@@ -13,9 +14,9 @@
     <h3>License</h3>
     <div>
       {{- if (eq .Params.license "BSD") }}
-        <a href="https://isa-afp.org/LICENSE">BSD License</a>
+        <a href="{{ .Site.BaseURL }}LICENSE">BSD License</a>
       {{- else if (eq .Params.license "LGPL") }}
-        <a href="https://isa-afp.org/LICENSE.LGPL">GNU Lesser General Public License (LGPL)</a>
+        <a href="{{ .Site.BaseURL }}LICENSE.LGPL">GNU Lesser General Public License (LGPL)</a>
       {{- else }}
         {{ printf "%s License" .Params.license }}
       {{- end }}
@@ -117,15 +118,9 @@
     <a class='popup-button' href="#cite-popup">Cite</a>
     <a class='popup-button' href="#download-popup">Download</a>
     <h4>PDFs</h4>
-    {{- if .Site.Data.status }}
-    <a href="{{ .Site.Params.afpUrls.htmlDevel }}/AFP/{{ .Params.name }}/outline.pdf">Proof outline</a>
-    <a href="{{ .Site.Params.afpUrls.htmlDevel }}/AFP/{{ .Params.name }}/document.pdf">Proof document</a>
-    <a href="{{ .Site.Params.afpUrls.htmlDevel }}/AFP/{{ .Params.name }}/session_graph.pdf">Dependencies</a>
-    {{- else }}
-    <a href="{{ .Site.Params.afpUrls.html }}/AFP/{{ .Params.name }}/outline.pdf">Proof outline</a>
-    <a href="{{ .Site.Params.afpUrls.html }}/AFP/{{ .Params.name }}/document.pdf">Proof document</a>
-    <a href="{{ .Site.Params.afpUrls.html }}/AFP/{{ .Params.name }}/session_graph.pdf">Dependencies</a>
-    {{- end }}
+    <a href="{{ $base_url }}/{{ .Site.Params.html_dir }}/AFP/{{ .Params.name }}/outline.pdf">Proof outline</a>
+    <a href="{{ $base_url }}/{{ .Site.Params.html_dir }}/AFP/{{ .Params.name }}/document.pdf">Proof document</a>
+    <a href="{{ $base_url }}/{{ .Site.Params.html_dir }}/AFP/{{ .Params.name }}/session_graph.pdf">Dependencies</a>
 
     {{- if .Site.Data.status }}
       {{- $status := "none" }}
@@ -174,14 +169,14 @@
     <div class="popup">
       <h2>Download</h2>
       <a class="close" href="#">&times;</a>
-      <a href="{{ .Site.Params.afpUrls.releases }}/afp-{{ .Params.name }}-current.tar.gz"
+      <a href="{{ $base_url }}/{{ .Site.Params.release_dir }}/afp-{{ .Params.name }}-current.tar.gz"
          download>Download latest</a>
       {{- with .Params.releases }}
         <p>Older releases:</p>
         <ul>
           {{- range . }}
             <li>
-              <a href="{{ $.Site.Params.afpUrls.releases }}/afp-{{ $.Params.name }}-{{ .date }}.tar.gz">
+              <a href="{{ $base_url }}/{{ $.Site.Params.release_dir }}/afp-{{ $.Params.name }}-{{ .date }}.tar.gz">
                 {{ dateFormat "Jan 2, 2006" .date }}
               </a>
               : Isabelle{{ .isabelle }}
