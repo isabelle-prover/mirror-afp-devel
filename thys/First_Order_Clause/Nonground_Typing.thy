@@ -4,7 +4,6 @@ theory Nonground_Typing
     Nonground_Term_Typing
     Typed_Functional_Substitution_Lifting
     Nonground_Clause
-    Nonground_Order
 begin
 
 type_synonym ('f, 'v, 'ty) typed_clause = "('f, 'v) atom clause \<times> ('v, 'ty) var_types"

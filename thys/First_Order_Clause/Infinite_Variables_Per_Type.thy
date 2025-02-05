@@ -6,14 +6,14 @@ theory Infinite_Variables_Per_Type
 begin
 
 lemma infinite_prods: 
-  assumes"infinite (UNIV :: 'a set)"
-  shows "infinite {p :: 'a \<times> 'a. fst p = y}"
-proof-
-  have "{p :: 'a \<times> 'a . fst p = y} = {y} \<times> UNIV"
+  fixes x :: "'a :: infinite"
+  shows "infinite {p :: 'a \<times> 'a. fst p = x}"
+proof -
+  have "{p :: 'a \<times> 'a . fst p = x} = {x} \<times> UNIV"
     by auto
 
   then show ?thesis
-    using finite_cartesian_productD2 assms 
+    using finite_cartesian_productD2 infinite_UNIV
     by auto
 qed
 
@@ -26,7 +26,6 @@ definition infinite_variables_per_type :: "('v \<Rightarrow> 'ty) \<Rightarrow> 
 lemma obtain_type_preserving_inj:
   fixes \<V> :: "'v \<Rightarrow> 'ty"
   assumes 
-    infinite_UNIV: "infinite (UNIV :: 'v set)" and
     finite_X: "finite X" and
     \<V>: "infinite_variables_per_type \<V>"
   obtains f :: "'v \<Rightarrow> 'v" where
@@ -90,7 +89,6 @@ qed
 lemma obtain_type_preserving_injs:
   fixes \<V>\<^sub>1 \<V>\<^sub>2 :: "'v \<Rightarrow> 'ty"
   assumes 
-    infinite_UNIV: "infinite (UNIV :: 'v set)" and
     finite_X: "finite X" and
     \<V>\<^sub>2: "infinite_variables_per_type \<V>\<^sub>2"
   obtains f f' :: "'v \<Rightarrow> 'v" where
@@ -113,7 +111,6 @@ qed
 lemma obtain_type_preserving_injs':
   fixes \<V>\<^sub>1 \<V>\<^sub>2 :: "'v \<Rightarrow> 'ty"
   assumes 
-    infinite_UNIV: "infinite (UNIV :: 'v set)" and
     finite_Y: "finite Y" and
     \<V>\<^sub>1: "infinite_variables_per_type \<V>\<^sub>1"
   obtains f f' :: "'v \<Rightarrow> 'v" where
@@ -126,7 +123,7 @@ lemma obtain_type_preserving_injs':
 
 lemma exists_infinite_variables_per_type:
   assumes "|UNIV :: 'ty set| \<le>o |UNIV :: ('v :: infinite) set|"
-  shows "\<exists>\<V> :: ('v :: infinite \<Rightarrow> 'ty). infinite_variables_per_type \<V>"
+  shows "\<exists>\<V> :: 'v \<Rightarrow> 'ty. infinite_variables_per_type \<V>"
 proof-
   obtain g :: "'v \<Rightarrow> 'v \<times> 'v" where bij_g: "bij g"
     using Times_same_infinite_bij_betw_types bij_betw_inv infinite_UNIV 
@@ -143,7 +140,7 @@ proof-
 
     then have "infinite {x. f x = y}"
       unfolding f_def
-      using infinite_prods[OF infinite_UNIV]
+      using infinite_prods
       by (metis bij_g bij_is_surj finite_imageI image_f_inv_f)
   }
 
@@ -158,5 +155,11 @@ proof-
     unfolding infinite_variables_per_type_def
     by meson
 qed
+
+lemma obtain_infinite_variables_per_type:
+  assumes "|UNIV :: 'ty set| \<le>o |UNIV :: 'v set|"
+  obtains \<V> :: "'v :: infinite \<Rightarrow> 'ty" where "infinite_variables_per_type \<V>"
+  using exists_infinite_variables_per_type[OF assms]
+  by blast
 
 end

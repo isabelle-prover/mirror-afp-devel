@@ -1571,7 +1571,7 @@ proof-
     \<gamma>\<^sub>2_\<gamma>: "\<forall>X \<subseteq> clause.vars D. \<forall>x\<in> X. \<gamma>\<^sub>2 x = (\<rho>\<^sub>2 \<odot> \<gamma>) x"
     using
       clause.is_welltyped.obtain_merged_grounding[OF \<gamma>\<^sub>1_is_welltyped \<gamma>\<^sub>2_is_welltyped E_grounding
-        D_grounding \<V>\<^sub>2 infinite_UNIV clause.finite_vars].
+        D_grounding \<V>\<^sub>2 clause.finite_vars].
 
   have E_grounding: "clause.is_ground (E \<cdot> \<rho>\<^sub>1 \<odot> \<gamma>)"
     using clause.subst_eq \<gamma>\<^sub>1_\<gamma> E_grounding
