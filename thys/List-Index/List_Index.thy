@@ -29,206 +29,217 @@ lists to a mapping from elements to their indices, almost the inverse of
 function \<open>nth\<close>.\<close>
 
 primrec find_index :: "('a \<Rightarrow> bool) \<Rightarrow> 'a list \<Rightarrow> nat" where
-"find_index _ [] = 0" |
-"find_index P (x#xs) = (if P x then 0 else find_index P xs + 1)"
+  "find_index _ [] = 0" |
+  "find_index P (x#xs) = (if P x then 0 else find_index P xs + 1)"
 
 definition index :: "'a list \<Rightarrow> 'a \<Rightarrow> nat" where
-"index xs = (\<lambda>a. find_index (\<lambda>x. x=a) xs)"
+  "index xs = (\<lambda>a. find_index (\<lambda>x. x=a) xs)"
 
 definition last_index :: "'a list \<Rightarrow> 'a \<Rightarrow> nat" where
-"last_index xs x =
+  "last_index xs x =
  (let i = index (rev xs) x; n = size xs
   in if i = n then i else n - (i+1))"
 
 lemma find_index_append: "find_index P (xs @ ys) =
   (if \<exists>x\<in>set xs. P x then find_index P xs else size xs + find_index P ys)"
   by (induct xs) simp_all
-  
+
 lemma find_index_le_size: "find_index P xs <= size xs"
-by(induct xs) simp_all
+  by(induct xs) simp_all
 
 lemma index_le_size: "index xs x <= size xs"
-by(simp add: index_def find_index_le_size)
+  by(simp add: index_def find_index_le_size)
 
 lemma last_index_le_size: "last_index xs x <= size xs"
-by(simp add: last_index_def Let_def index_le_size)
+  by(simp add: last_index_def Let_def index_le_size)
 
 lemma index_Nil[simp]: "index [] a = 0"
-by(simp add: index_def)
+  by(simp add: index_def)
 
 lemma index_Cons[simp]: "index (x#xs) a = (if x=a then 0 else index xs a + 1)"
-by(simp add: index_def)
+  by(simp add: index_def)
 
 lemma index_append: "index (xs @ ys) x =
   (if x : set xs then index xs x else size xs + index ys x)"
-by (induct xs) simp_all
+  by (induct xs) simp_all
 
 lemma index_conv_size_if_notin[simp]: "x \<notin> set xs \<Longrightarrow> index xs x = size xs"
-by (induct xs) auto
+  by (induct xs) auto
 
 lemma find_index_eq_size_conv:
   "size xs = n \<Longrightarrow> (find_index P xs = n) = (\<forall>x \<in> set xs. ~ P x)"
-by(induct xs arbitrary: n) auto
+  by(induct xs arbitrary: n) auto
 
 lemma size_eq_find_index_conv:
   "size xs = n \<Longrightarrow> (n = find_index P xs) = (\<forall>x \<in> set xs. ~ P x)"
-by(metis find_index_eq_size_conv)
+  by(metis find_index_eq_size_conv)
 
 lemma index_size_conv: "size xs = n \<Longrightarrow> (index xs x = n) = (x \<notin> set xs)"
-by(auto simp: index_def find_index_eq_size_conv)
+  by(auto simp: index_def find_index_eq_size_conv)
 
 lemma size_index_conv: "size xs = n \<Longrightarrow> (n = index xs x) = (x \<notin> set xs)"
-by (metis index_size_conv)
+  by (metis index_size_conv)
 
 lemma last_index_size_conv:
-  "size xs = n \<Longrightarrow> (last_index xs x = n) = (x \<notin> set xs)"
-apply(auto simp: last_index_def index_size_conv)
-apply(drule length_pos_if_in_set)
-apply arith
-done
+  assumes "size xs = n" 
+  shows "(last_index xs x = n) = (x \<notin> set xs)"
+proof
+  assume n: "last_index xs x = n"
+  have "\<lbrakk>x \<in> set xs; length xs - Suc (index (rev xs) x) = n\<rbrakk> \<Longrightarrow> False"
+    by (metis assms diff_Suc_less length_pos_if_in_set order_less_irrefl)
+  with n show "x \<notin> set xs"
+    by (simp add: last_index_def index_size_conv Let_def split: if_splits)
+qed (simp add: assms last_index_def)
+
 
 lemma size_last_index_conv:
   "size xs = n \<Longrightarrow> (n = last_index xs x) = (x \<notin> set xs)"
-by (metis last_index_size_conv)
+  by (metis last_index_size_conv)
 
 lemma find_index_less_size_conv:
   "(find_index P xs < size xs) = (\<exists>x \<in> set xs. P x)"
-by (induct xs) auto
+  by (induct xs) auto
 
 lemma index_less_size_conv:
   "(index xs x < size xs) = (x \<in> set xs)"
-by(auto simp: index_def find_index_less_size_conv)
+  by(auto simp: index_def find_index_less_size_conv)
 
 lemma last_index_less_size_conv:
   "(last_index xs x < size xs) = (x : set xs)"
-by(simp add: last_index_def Let_def index_size_conv length_pos_if_in_set
-        del:length_greater_0_conv)
+  by(simp add: last_index_def Let_def index_size_conv length_pos_if_in_set
+      del:length_greater_0_conv)
 
 lemma index_less[simp]:
   "x : set xs \<Longrightarrow> size xs <= n \<Longrightarrow> index xs x < n"
-apply(induct xs) apply auto
-apply (metis index_less_size_conv less_eq_Suc_le less_trans_Suc)
-done
+proof (induct xs)
+  case Nil
+  then show ?case by auto
+next
+  case (Cons a xs)
+  then show ?case
+    by (meson index_less_size_conv order_less_le_trans)
+qed
 
 lemma last_index_less[simp]:
   "x : set xs \<Longrightarrow> size xs <= n \<Longrightarrow> last_index xs x < n"
-by(simp add: last_index_less_size_conv[symmetric])
+  by(simp add: last_index_less_size_conv[symmetric])
 
-lemma last_index_Cons: "last_index (x#xs) y =
-  (if x=y then
-      if x \<in> set xs then last_index xs y + 1 else 0
-   else last_index xs y + 1)"
-using index_le_size[of "rev xs" y]
-apply(auto simp add: last_index_def index_append Let_def)
-apply(simp add: index_size_conv)
-done
+lemma last_index_Cons: 
+  "last_index (x#xs) y =
+        (if x=y then
+            if x \<in> set xs then last_index xs y + 1 else 0
+         else last_index xs y + 1)"
+  using index_le_size[of "rev xs" y]
+  apply(auto simp add: last_index_def index_append Let_def)
+  apply(simp add: index_size_conv)
+  done
 
 lemma last_index_append: "last_index (xs @ ys) x =
   (if x : set ys then size xs + last_index ys x
    else if x : set xs then last_index xs x else size xs + size ys)"
-by (induct xs) (simp_all add: last_index_Cons last_index_size_conv)
+  by (induct xs) (simp_all add: last_index_Cons last_index_size_conv)
 
 lemma last_index_Snoc[simp]:
   "last_index (xs @ [x]) y =
   (if x=y then size xs
    else if y : set xs then last_index xs y else size xs + 1)"
-by(simp add: last_index_append last_index_Cons)
+  by(simp add: last_index_append last_index_Cons)
 
 lemma nth_find_index: "find_index P xs < size xs \<Longrightarrow> P(xs ! find_index P xs)"
-by (induct xs) auto
+  by (induct xs) auto
 
 lemma nth_index[simp]: "x \<in> set xs \<Longrightarrow> xs ! index xs x = x"
-by (induct xs) auto
+  by (induct xs) auto
 
 lemma nth_last_index[simp]: "x \<in> set xs \<Longrightarrow> xs ! last_index xs x = x"
-by(simp add:last_index_def index_size_conv Let_def rev_nth[symmetric])
+  by(simp add:last_index_def index_size_conv Let_def rev_nth[symmetric])
 
 lemma index_rev: "\<lbrakk> distinct xs; x \<in> set xs \<rbrakk> \<Longrightarrow>
   index (rev xs) x = length xs - index xs x - 1"
-by (induct xs) (auto simp: index_append)
+  by (induct xs) (auto simp: index_append)
 
 lemma index_nth_id:
   "\<lbrakk> distinct xs;  n < length xs \<rbrakk> \<Longrightarrow> index xs (xs ! n) = n"
-by (metis in_set_conv_nth index_less_size_conv nth_eq_iff_index_eq nth_index)
+  by (metis in_set_conv_nth index_less_size_conv nth_eq_iff_index_eq nth_index)
 
 lemma index_upt[simp]: "m \<le> i \<Longrightarrow> i < n \<Longrightarrow> index [m..<n] i = i-m"
-by (induction n) (auto simp add: index_append)
+  by (induction n) (auto simp add: index_append)
 
 lemma index_eq_index_conv[simp]: "x \<in> set xs \<or> y \<in> set xs \<Longrightarrow>
   (index xs x = index xs y) = (x = y)"
-by (induct xs) auto
+  by (induct xs) auto
 
 lemma last_index_eq_index_conv[simp]: "x \<in> set xs \<or> y \<in> set xs \<Longrightarrow>
   (last_index xs x = last_index xs y) = (x = y)"
-by (induct xs) (auto simp:last_index_Cons)
+  by (induct xs) (auto simp:last_index_Cons)
 
 lemma inj_on_index: "inj_on (index xs) (set xs)"
-by (simp add:inj_on_def)
+  by (simp add:inj_on_def)
 
 lemma inj_on_index2: "I \<subseteq> set xs \<Longrightarrow> inj_on (index xs) I"
-by (rule inj_onI) auto
+  by (rule inj_onI) auto
 
 lemma inj_on_last_index: "inj_on (last_index xs) (set xs)"
-by (simp add:inj_on_def)
+  by (simp add:inj_on_def)
 
 lemma find_index_conv_takeWhile: 
   "find_index P xs = size(takeWhile (Not o P) xs)"
-by(induct xs) auto
+  by(induct xs) auto
 
 lemma index_conv_takeWhile: "index xs x = size(takeWhile (\<lambda>y. x\<noteq>y) xs)"
-by(induct xs) auto
+  by(induct xs) auto
 
 lemma find_index_first: "i < find_index P xs \<Longrightarrow> \<not>P (xs!i)"
-unfolding find_index_conv_takeWhile
-by (metis comp_apply nth_mem set_takeWhileD takeWhile_nth)
+  unfolding find_index_conv_takeWhile
+  by (metis comp_apply nth_mem set_takeWhileD takeWhile_nth)
 
 lemma index_first: "i<index xs x \<Longrightarrow> x\<noteq>xs!i"
-using find_index_first unfolding index_def by blast
+  using find_index_first unfolding index_def by blast
 
 lemma find_index_eqI:
   assumes "i\<le>length xs"  
   assumes "\<forall>j<i. \<not>P (xs!j)"
   assumes "i<length xs \<Longrightarrow> P (xs!i)"
   shows "find_index P xs = i"
-by (metis (mono_tags, lifting) antisym_conv2 assms find_index_eq_size_conv 
-  find_index_first find_index_less_size_conv linorder_neqE_nat nth_find_index)
-  
+  by (metis (mono_tags, lifting) antisym_conv2 assms find_index_eq_size_conv 
+      find_index_first find_index_less_size_conv linorder_neqE_nat nth_find_index)
+
 lemma find_index_eq_iff:
   "find_index P xs = i 
   \<longleftrightarrow> (i\<le>length xs \<and> (\<forall>j<i. \<not>P (xs!j)) \<and> (i<length xs \<longrightarrow> P (xs!i)))"  
-by (auto intro: find_index_eqI 
-         simp: nth_find_index find_index_le_size find_index_first)
-  
+  by (auto intro: find_index_eqI 
+      simp: nth_find_index find_index_le_size find_index_first)
+
 lemma index_eqI:
   assumes "i\<le>length xs"  
   assumes "\<forall>j<i. xs!j \<noteq> x"
   assumes "i<length xs \<Longrightarrow> xs!i = x"
   shows "index xs x = i"
-unfolding index_def by (simp add: find_index_eqI assms)
-  
+  unfolding index_def by (simp add: find_index_eqI assms)
+
 lemma index_eq_iff:
   "index xs x = i 
   \<longleftrightarrow> (i\<le>length xs \<and> (\<forall>j<i. xs!j \<noteq> x) \<and> (i<length xs \<longrightarrow> xs!i = x))"  
-by (auto intro: index_eqI 
-         simp: index_le_size index_less_size_conv 
-         dest: index_first)
+  by (auto intro: index_eqI 
+      simp: index_le_size index_less_size_conv 
+      dest: index_first)
 
 lemma index_take: "index xs x >= i \<Longrightarrow> x \<notin> set(take i xs)"
-apply(subst (asm) index_conv_takeWhile)
-apply(subgoal_tac "set(take i xs) <= set(takeWhile ((\<noteq>) x) xs)")
- apply(blast dest: set_takeWhileD)
-apply(metis set_take_subset_set_take takeWhile_eq_take)
-done
+  apply(subst (asm) index_conv_takeWhile)
+  apply(subgoal_tac "set(take i xs) <= set(takeWhile ((\<noteq>) x) xs)")
+   apply(blast dest: set_takeWhileD)
+  apply(metis set_take_subset_set_take takeWhile_eq_take)
+  done
 
 lemma last_index_drop:
   "last_index xs x < i \<Longrightarrow> x \<notin> set(drop i xs)"
-apply(subgoal_tac "set(drop i xs) = set(take (size xs - i) (rev xs))")
- apply(simp add: last_index_def index_take Let_def split:if_split_asm)
-apply (metis rev_drop set_rev)
-done
+  apply(subgoal_tac "set(drop i xs) = set(take (size xs - i) (rev xs))")
+   apply(simp add: last_index_def index_take Let_def split:if_split_asm)
+  apply (metis rev_drop set_rev)
+  done
 
 lemma set_take_if_index: assumes "index xs x < i" and "i \<le> length xs"
-shows "x \<in> set (take i xs)"
+  shows "x \<in> set (take i xs)"
 proof -
   have "index (take i xs @ drop i xs) x < i"
     using append_take_drop_id[of i xs] assms(1) by simp
@@ -237,59 +248,55 @@ proof -
 qed
 
 lemma index_take_if_index:
-assumes "index xs x \<le> n" shows "index (take n xs) x = index xs x"
+  assumes "index xs x \<le> n" shows "index (take n xs) x = index xs x"
 proof cases
   assume "x : set(take n xs)" with assms show ?thesis
     by (metis append_take_drop_id index_append)
 next
   assume "x \<notin> set(take n xs)" with assms show ?thesis
-   by (metis order_le_less set_take_if_index le_cases length_take min_def size_index_conv take_all)
+    by (metis order_le_less set_take_if_index le_cases length_take min_def size_index_conv take_all)
 qed
 
 lemma index_take_if_set:
   "x : set(take n xs) \<Longrightarrow> index (take n xs) x = index xs x"
-by (metis index_take index_take_if_index linear)
+  by (metis index_take index_take_if_index linear)
 
 lemma index_last[simp]:
   "xs \<noteq> [] \<Longrightarrow> distinct xs \<Longrightarrow> index xs (last xs) = length xs - 1"
-by (induction xs) auto
+  by (induction xs) auto
 
 lemma index_update_if_diff2:
   "n < length xs \<Longrightarrow> x \<noteq> xs!n \<Longrightarrow> x \<noteq> y \<Longrightarrow> index (xs[n := y]) x = index xs x"
-by(subst (2) id_take_nth_drop[of n xs])
-  (auto simp: upd_conv_take_nth_drop index_append min_def)
+  by(subst (2) id_take_nth_drop[of n xs])
+    (auto simp: upd_conv_take_nth_drop index_append min_def)
 
 lemma set_drop_if_index: "distinct xs \<Longrightarrow> index xs x < i \<Longrightarrow> x \<notin> set(drop i xs)"
-by (metis in_set_dropD index_nth_id last_index_drop last_index_less_size_conv nth_last_index)
+  by (metis in_set_dropD index_nth_id last_index_drop last_index_less_size_conv nth_last_index)
 
 lemma index_swap_if_distinct: assumes "distinct xs" "i < size xs" "j < size xs"
-shows "index (xs[i := xs!j, j := xs!i]) x =
-  (if x = xs!i then j else if x = xs!j then i else index xs x)"
+  shows "index (xs[i := xs!j, j := xs!i]) x =
+         (if x = xs!i then j else if x = xs!j then i else index xs x)"
 proof-
   have "distinct(xs[i := xs!j, j := xs!i])" using assms by simp
   with assms show ?thesis
-    apply (auto simp: simp del: distinct_swap)
-    apply (metis index_nth_id list_update_same_conv)
-    apply (metis (erased, opaque_lifting) index_nth_id length_list_update list_update_swap nth_list_update_eq)
-    apply (metis index_nth_id length_list_update nth_list_update_eq)
-    by (metis index_update_if_diff2 length_list_update nth_list_update)
+    by (metis index_nth_id index_update_if_diff2 length_list_update nth_list_update_eq nth_list_update_neq)
 qed
 
 lemma bij_betw_index:
   "distinct xs \<Longrightarrow> X = set xs \<Longrightarrow> l = size xs \<Longrightarrow> bij_betw (index xs) X {0..<l}"
-apply simp
-apply(rule bij_betw_imageI[OF inj_on_index])
-by (auto simp: image_def) (metis index_nth_id nth_mem)
+  apply simp
+  apply(rule bij_betw_imageI[OF inj_on_index])
+  by (auto simp: image_def) (metis index_nth_id nth_mem)
 
 lemma index_image: "distinct xs \<Longrightarrow> set xs = X \<Longrightarrow> index xs ` X = {0..<size xs}"
-by (simp add: bij_betw_imp_surj_on bij_betw_index)
+  by (simp add: bij_betw_imp_surj_on bij_betw_index)
 
 lemma index_map_inj_on:
   "\<lbrakk> inj_on f S; y \<in> S; set xs \<subseteq> S \<rbrakk> \<Longrightarrow> index (map f xs) (f y) = index xs y"
-by (induct xs) (auto simp: inj_on_eq_iff)
+  by (induct xs) (auto simp: inj_on_eq_iff)
 
 lemma index_map_inj: "inj f \<Longrightarrow> index (map f xs) (f y) = index xs y"
-by (simp add: index_map_inj_on[where S=UNIV])
+  by (simp add: index_map_inj_on[where S=UNIV])
 
 subsection \<open>Map with index\<close>
 
@@ -337,8 +344,9 @@ lemma nth_map_index[simp]: "p < length xs \<Longrightarrow> map_index f xs ! p =
   unfolding map_index by auto
 
 lemma map_index_cong:
-  "\<forall>p < length xs. f p (xs ! p) = g p (xs ! p) \<Longrightarrow> map_index f xs = map_index g xs"
-  unfolding map_index by (auto simp: set_zip)
+  assumes "length xs = length ys" "\<And>i. i < length xs \<Longrightarrow> f i (xs ! i) = g i (ys ! i)"
+  shows   "map_index f xs = map_index g ys"
+  by (rule nth_equalityI) (use assms in auto)
 
 lemma map_index_id: "map_index (curry snd) xs = xs"
   unfolding map_index by auto
@@ -395,13 +403,13 @@ lemma length_insert_nth: "length (insert_nth n x xs) = Suc (length xs)"
 
 lemma set_insert_nth:
   "set (insert_nth i x xs) = insert x (set xs)"
-by (simp add: set_append[symmetric])
+  by (simp add: set_append[symmetric])
 
 lemma distinct_insert_nth:
   assumes "distinct xs"
   assumes "x \<notin> set xs"
   shows "distinct (insert_nth i x xs)"
-using assms proof (induct xs arbitrary: i)
+  using assms proof (induct xs arbitrary: i)
   case Nil
   then show ?case by (cases i) auto
 next
@@ -413,22 +421,22 @@ qed
 lemma nth_insert_nth_front:
   assumes "i < j" "j \<le> length xs"
   shows "insert_nth j x xs ! i = xs ! i"
-using assms by (simp add: nth_append)
+  using assms by (simp add: nth_append)
 
 lemma nth_insert_nth_index_eq:
   assumes "i \<le> length xs"
   shows "insert_nth i x xs ! i = x"
-using assms by (simp add: nth_append)
+  using assms by (simp add: nth_append)
 
 lemma nth_insert_nth_back:
   assumes "j < i" "i \<le> length xs"
   shows "insert_nth j x xs ! i = xs ! (i - 1)"
-using assms by (cases i) (auto simp add: nth_append min_def)
+  using assms by (cases i) (auto simp add: nth_append min_def)
 
 lemma nth_insert_nth:
   assumes "i \<le> length xs" "j \<le> length xs"
   shows "insert_nth j x xs ! i = (if i = j then x else if i < j then xs ! i else xs ! (i - 1))"
-using assms by (simp add: nth_insert_nth_front nth_insert_nth_index_eq nth_insert_nth_back del: insert_nth_take_drop)
+  using assms by (simp add: nth_insert_nth_front nth_insert_nth_index_eq nth_insert_nth_back del: insert_nth_take_drop)
 
 lemma insert_nth_inverse:
   assumes "j \<le> length xs" "j' \<le> length xs'"
@@ -473,7 +481,7 @@ proof (induct pxs arbitrary: xs i p b)
       with snoc.prems show ?case by (intro snoc(1)) (auto simp: sorted_append)
     qed auto
     with 0 Cons.prems show ?thesis unfolding fold.simps o_apply
-    by (intro invar_fold_insert_nth) (auto simp: image_iff le_eq_less_or_eq nth_append)
+      by (intro invar_fold_insert_nth) (auto simp: image_iff le_eq_less_or_eq nth_append)
   next
     case (Suc n) with Cons.prems show ?thesis unfolding fold.simps
       by (auto intro!: Cons(1))
@@ -483,10 +491,10 @@ qed simp
 subsection \<open>Remove at position\<close>
 
 fun remove_nth :: "nat \<Rightarrow> 'a list \<Rightarrow> 'a list"
-where
-  "remove_nth i [] = []"
-| "remove_nth 0 (x # xs) = xs"
-| "remove_nth (Suc i) (x # xs) = x # remove_nth i xs"
+  where
+    "remove_nth i [] = []"
+  | "remove_nth 0 (x # xs) = xs"
+  | "remove_nth (Suc i) (x # xs) = x # remove_nth i xs"
 
 lemma remove_nth_take_drop:
   "remove_nth i xs = take i xs @ drop (Suc i) xs"
@@ -501,7 +509,7 @@ qed
 lemma remove_nth_insert_nth:
   assumes "i \<le> length xs"
   shows "remove_nth i (insert_nth i x xs) = xs"
-using assms proof (induct xs arbitrary: i)
+  using assms proof (induct xs arbitrary: i)
   case Nil
   then show ?case by simp
 next
@@ -512,7 +520,7 @@ qed
 lemma insert_nth_remove_nth:
   assumes "i < length xs"
   shows "insert_nth i (xs ! i) (remove_nth i xs) = xs"
-using assms proof (induct xs arbitrary: i)
+  using assms proof (induct xs arbitrary: i)
   case Nil
   then show ?case by simp
 next
@@ -523,7 +531,7 @@ qed
 lemma length_remove_nth:
   assumes "i < length xs"
   shows "length (remove_nth i xs) = length xs - 1"
-using assms unfolding remove_nth_take_drop by simp
+  using assms unfolding remove_nth_take_drop by simp
 
 lemma set_remove_nth_subset:
   "set (remove_nth j xs) \<subseteq> set xs"
@@ -538,7 +546,7 @@ qed
 lemma set_remove_nth:
   assumes "distinct xs" "j < length xs"
   shows "set (remove_nth j xs) = set xs - {xs ! j}"
-using assms proof (induct xs arbitrary: j)
+  using assms proof (induct xs arbitrary: j)
   case Nil
   then show ?case by simp
 next
@@ -549,13 +557,65 @@ qed
 lemma distinct_remove_nth:
   assumes "distinct xs"
   shows "distinct (remove_nth i xs)"
-using assms proof (induct xs arbitrary: i)
+  using assms proof (induct xs arbitrary: i)
   case Nil
   then show ?case by simp
 next
   case (Cons a xs)
   then show ?case
     by (cases i) (auto simp add: set_remove_nth_subset rev_subsetD)
+qed
+
+subsection \<open>Additional lemmas contributed by Manuel Eberl\<close>
+
+lemma map_index_idI: "(\<And>i. f i (xs ! i) = xs ! i) \<Longrightarrow> map_index f xs = xs"
+  by (rule nth_equalityI) auto
+
+lemma map_index_transfer [transfer_rule]:
+  "rel_fun (rel_fun (=) (rel_fun R1 R2)) (rel_fun (list_all2 R1) (list_all2 R2))
+     map_index map_index"
+  unfolding map_index by transfer_prover
+
+lemma map_index_Cons: "map_index f (x # xs) = f 0 x # map_index (\<lambda>i x. f (Suc i) x) xs"
+  by (rule nth_equalityI) (auto simp: nth_Cons simp del: map_index'.simps split: nat.splits)
+
+lemma map_index_rev: "map_index f (rev xs) = rev (map_index (\<lambda>i. f (length xs - i - 1)) xs)"
+  by (rule nth_equalityI) (auto simp: rev_nth)
+
+lemma map_conv_map_index: "map f xs = map_index (\<lambda>i x. f x) xs"
+  by (rule nth_equalityI) auto
+
+lemma map_index_map_index: "map_index f (map_index g xs) = map_index (\<lambda>i x. f i (g i x)) xs"
+  by (rule nth_equalityI) auto
+
+lemma map_index_replicate [simp]: "map_index f (replicate n x) = map (\<lambda>i. f i x) [0..<n]"
+  by (rule nth_equalityI) auto
+
+lemma zip_map_index:
+  "zip (map_index f xs) (map_index g ys) = map_index (\<lambda>i. map_prod (f i) (g i)) (zip xs ys)"
+  by (rule nth_equalityI) auto
+
+lemma map_index_conv_fold:
+  "map_index f xs = rev (snd (fold (\<lambda>x (i,ys). (i+1, f i x # ys)) xs (0, [])))"
+proof -
+  have "rev (snd (fold (\<lambda>x (i,ys). (i+1, f i x # ys)) xs (n, zs))) =
+        rev zs @ map_index (\<lambda>i. f (i + n)) xs" for n zs
+    by (induction xs arbitrary: n zs f) (simp_all add: map_index_Cons del: map_index'.simps(2))
+  from this[of 0 "[]"] show ?thesis
+    by simp
+qed
+
+lemma map_index_code_conv_foldr:
+  "map_index f xs = snd (foldr (\<lambda>x (i,ys). (i-1, f i x # ys)) xs (length xs - 1, []))"
+proof -
+  have "foldr (\<lambda>x (i,ys). (i-1, f i x # ys)) xs (n, []) = 
+          (n - length xs, map_index (\<lambda>i. f (i + 1 + n - length xs)) xs)" for n
+    by (induction xs arbitrary: f n) (auto simp: map_index_Cons simp del: map_index'.simps(2))
+  note this[of "length xs - 1"]
+  also have "map_index (\<lambda>i. f (i + 1 + (length xs - 1) - length xs)) xs = map_index f xs"
+    by (intro map_index_cong) auto
+  finally show ?thesis
+    by (simp add: case_prod_unfold)
 qed
 
 end

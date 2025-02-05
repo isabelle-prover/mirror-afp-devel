@@ -680,6 +680,9 @@ proof -
   thus ?thesis by (simp add: gauss_int_norm_mult)
 qed
 
+lemma gauss_int_norm_power: "gauss_int_norm (x ^ n) = gauss_int_norm x ^ n"
+  by (metis gauss_cnj_mult_self gauss_cnj_power of_nat_eq_of_nat_power_cancel_iff power_mult_distrib)
+
 text \<open>
   A Gaussian integer is a unit iff its norm is 1, and this is the case precisely for the four
   elements \<open>\<plusminus>1\<close> and \<open>\<plusminus>\<i>\<close>:
@@ -984,6 +987,18 @@ instance
      (simp_all add: gcd_gauss_int_def lcm_gauss_int_def Gcd_gauss_int_def Lcm_gauss_int_def)
 
 end
+
+lemma gcd_gauss_cnj: "gcd (gauss_cnj x) (gauss_cnj y) = normalize (gauss_cnj (gcd x y))"
+proof (rule sym, rule gcdI)
+  show "\<And>d. \<lbrakk>d dvd gauss_cnj x; d dvd gauss_cnj y\<rbrakk> \<Longrightarrow> d dvd normalize (gauss_cnj (gcd x y))"
+    by (auto simp: gauss_cnj_dvd_right_iff)
+qed (auto simp: gauss_cnj_dvd_left_iff)
+
+lemma gcd_gauss_cnj_left: "gcd (gauss_cnj x) y = normalize (gauss_cnj (gcd x (gauss_cnj y)))"
+  by (metis gauss_cnj_cnj gcd_gauss_cnj)
+
+lemma gcd_gauss_cnj_right: "gcd x (gauss_cnj y) = normalize (gauss_cnj (gcd (gauss_cnj x) y))"
+  by (subst gcd_gauss_cnj [symmetric]) auto
 
 lemma multiplicity_gauss_cnj: "multiplicity (gauss_cnj a) (gauss_cnj b) = multiplicity a b"
   unfolding multiplicity_def gauss_cnj_power [symmetric] gauss_cnj_dvd_iff ..
