@@ -1937,7 +1937,7 @@ proof (atomize(full), goal_cases)
             case False
             have "pat_lr p' \<Rightarrow>\<^sub>m {# pat_lr no_ivc #}" 
               unfolding split_p'
-            proof (rule pat_inf_var_conflict[OF _ False]; intro ballI)
+            proof (rule pat_inf_var_conflict[OF _ False]; (intro ballI)?)
               fix Mp
               assume "Mp \<in> pat_mset (pat_lr ivc)" 
               from this[unfolded pat_lr_def]
@@ -1960,8 +1960,8 @@ proof (atomize(full), goal_cases)
               obtain x t where "(t,x) \<in># mp_rx (rx, False)" and y: "y \<in> vars t" by auto
               from this(1)[unfolded mp_rx_def List.maps_def] obtain ts x' where 
                 "(x',ts) \<in> set rx" "t \<in> set ts" by auto
-              from no_inf[OF this] y show "\<not> inf_sort (snd y)" by auto
-            qed
+              from no_inf[OF this] y show "\<not> inf_sort (snd y)" by auto              
+            qed (insert \<open>improved\<close>, auto)
             from P_simp_pp[OF this, of P]
             show ?thesis by (auto simp: P_step_def)
           qed

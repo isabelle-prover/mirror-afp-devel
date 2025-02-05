@@ -74,7 +74,9 @@ inductive pp_step_mset :: "('f,'v,'s)pat_problem_mset \<Rightarrow> ('f,'v,'s)pa
    \<and> (improved \<longrightarrow> s = Var x \<and> is_Fun t) \<Longrightarrow>
   add_mset mp pp \<Rightarrow>\<^sub>m mset (map (\<lambda> \<tau>. subst_pat_problem_mset \<tau> (add_mset mp pp)) (\<tau>s_list n x))"
 | pat_inf_var_conflict: "Ball (pat_mset pp) inf_var_conflict \<Longrightarrow> pp \<noteq> {#}
-    \<Longrightarrow> Ball (tvars_pat (pat_mset pp')) (\<lambda> x. \<not> inf_sort (snd x)) \<Longrightarrow> pp + pp' \<Rightarrow>\<^sub>m {# pp' #}" 
+    \<Longrightarrow> Ball (tvars_pat (pat_mset pp')) (\<lambda> x. \<not> inf_sort (snd x)) \<Longrightarrow> 
+    (\<not> improved \<Longrightarrow> pp' = {#})
+    \<Longrightarrow> pp + pp' \<Rightarrow>\<^sub>m {# pp' #}" 
 
 
 inductive pat_fail :: "('f,'v,'s)pat_problem_mset \<Rightarrow> bool" where
@@ -379,7 +381,7 @@ next
                     by (auto simp: tvars_pat_def)
                   from pat_inf_var_conflict[OF _ False this, folded p_split] no_step
                   obtain mp where mp: "mp \<in># p" and inf: "\<not> fin mp" and no_confl: "\<not> inf_var_conflict (mp_mset mp)" 
-                    unfolding p_inf_def by fastforce
+                    unfolding p_inf_def using impr by fastforce
                   from inf[unfolded fin_def tvars_mp_def]
                   obtain t l x where tl: "(t,l) \<in># mp" and x: "x \<in> vars t" and inf: "inf_sort (snd x)" by auto
                   from get_var[OF _ tl] mp tl obtain y where ty: "(t, Var y) \<in># mp" by auto

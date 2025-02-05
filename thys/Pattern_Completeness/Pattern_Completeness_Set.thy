@@ -468,6 +468,7 @@ inductive pp_step :: "('f,'v,'s)pat_problem_set \<Rightarrow> ('f,'v,'s)pat_prob
   if "Ball pp inf_var_conflict" 
     "finite pp" 
     "Ball (tvars_pat pp') (\<lambda> x. \<not> inf_sort (snd x))" 
+    "\<not> improved \<Longrightarrow> pp' = {}" (* no pp' allowed in FSCD algorithm *)
 
 text \<open>Note that in @{thm[source] pp_inf_var_conflict} the conflicts have to be simultaneously occurring. 
   If just some matching problem has such a conflict, then this cannot be deleted immediately!
@@ -1338,7 +1339,7 @@ next
           fix x
           assume x: "x \<in> vars ti"
           from *(3) x tl mp show "\<not> inf_sort (snd x)" by (auto simp: tvars_pat_def tvars_mp_def) 
-          from *(4) x tl mp show "snd x \<in> S" 
+          from *(5) x tl mp show "snd x \<in> S" 
             unfolding wf_pat_def wf_match_def tvars_mp_def by auto
         qed
         also have "\<dots> = li \<cdot> \<mu>" using match[OF tl] .
