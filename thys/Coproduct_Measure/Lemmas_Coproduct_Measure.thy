@@ -8,6 +8,7 @@ theory Lemmas_Coproduct_Measure
           "Standard_Borel_Spaces.Abstract_Metrizable_Topology"
 begin
 
+subsection \<open>Metrics and Metrizability\<close>
 (* TODO: Move the following to Standard_Borel_Spaces.Abstract_Metrizable_Topology *)
 lemma metrizable_space_metric_space:
   assumes d:"Metric_space UNIV d" "Metric_space.mtopology UNIV d = euclidean"
@@ -68,172 +69,373 @@ proof -
     by blast
 qed
 
-subsection \<open> Polishness of Extended Reals and Non-Negative Extended Reals\<close>
-text \<open> We instantiate @{class polish_space} for @{typ ereal} and @{typ ennreal} with
-       \emph{non-canonical} metrics in order to change the order of @{term infsum}
-       using the lemma \isa{infsum{\isacharunderscore}Sigma}.\<close>
-instantiation ereal :: metric_space
+subsection \<open> Copy of Extended non-negative reals\<close>
+text \<open> In the proof of the change of ordering of the infinite sum (@{term infsum}) for @{typ ennreal},
+we use \texttt{infsum\_Sigma} and \texttt{compact\_uniformly\_continuous}. Thus, we need to interpret
+@{typ ennreal} as a metric space. However, there is no standard metric on @{typ ennreal} even though
+it is a Polish space (thus, a metrizable space). Hence, we do not want to give a metric on @{typ ennreal}
+globally. Instead of defining a metric on @{typ ennreal}, we define a type copy of @{typ ennreal},
+then define a metric on the copy and prove the change of ordering of the infinite sum.
+Finally, we transfer the theorems to the ones for @{typ ennreal}.\<close>
+typedef ennreal' = "UNIV :: ennreal set"
+  by simp
+
+lemma bij_Abs_ennreal': "bij Abs_ennreal'"
+  by (metis Abs_ennreal'_cases Abs_ennreal'_inject UNIV_I bij_iff)
+
+lemma inj_Abs_ennreal': "inj Abs_ennreal'"
+  by (simp add: Abs_ennreal'_inject inj_on_def)
+
+setup_lifting type_definition_ennreal'
+
+instantiation ennreal' :: complete_linorder
 begin
 
-definition dist_ereal :: "ereal \<Rightarrow> ereal \<Rightarrow> real"
-  where "dist_ereal \<equiv> SOME d. Metric_space UNIV d \<and>
-                               Metric_space.mtopology UNIV d = euclidean \<and>
-                               Metric_space.mcomplete UNIV d"
+lift_definition top_ennreal' :: ennreal' is top .
+lift_definition bot_ennreal' :: ennreal' is 0 .
+lift_definition sup_ennreal' :: "ennreal' \<Rightarrow> ennreal' \<Rightarrow> ennreal'" is sup .
+lift_definition inf_ennreal' :: "ennreal' \<Rightarrow> ennreal' \<Rightarrow> ennreal'" is inf .
+lift_definition Inf_ennreal' :: "ennreal' set \<Rightarrow> ennreal'" is "Inf" .
+lift_definition Sup_ennreal' :: "ennreal' set \<Rightarrow> ennreal'" is "sup 0 \<circ> Sup" .
 
-definition uniformity_ereal :: "(ereal \<times> ereal) filter"
-  where "uniformity_ereal \<equiv> \<Sqinter>e\<in>{0<..}. principal {(x,y). dist x y < e}"
+lift_definition less_eq_ennreal' :: "ennreal' \<Rightarrow> ennreal' \<Rightarrow> bool" is "(\<le>)" .
+lift_definition less_ennreal' :: "ennreal' \<Rightarrow> ennreal' \<Rightarrow> bool" is "(<)" .
 
 instance
+  by standard
+     (transfer, auto simp: Inf_lower Inf_greatest Sup_upper sup.coboundedI2 Sup_least)+
+
+end
+
+instantiation ennreal' :: infinity
+begin
+
+definition infinity_ennreal' :: ennreal'
+where
+  [simp]: "\<infinity> = (top::ennreal')"
+
+instance ..
+
+end
+
+instantiation ennreal' :: "{semiring_1_no_zero_divisors, comm_semiring_1}"
+begin
+
+lift_definition one_ennreal' :: ennreal' is 1 .
+lift_definition zero_ennreal' :: ennreal' is 0 .
+lift_definition plus_ennreal' :: "ennreal' \<Rightarrow> ennreal' \<Rightarrow> ennreal'" is "(+)" .
+lift_definition times_ennreal' :: "ennreal' \<Rightarrow> ennreal' \<Rightarrow> ennreal'" is "(*)" .
+
+instance
+  by standard (transfer; auto simp: field_simps)+
+
+end
+
+instantiation ennreal' :: minus
+begin
+
+lift_definition minus_ennreal' :: "ennreal' \<Rightarrow> ennreal' \<Rightarrow> ennreal'" is minus .
+
+instance ..
+
+end
+
+instance ennreal' :: numeral ..
+
+instance ennreal' :: ordered_comm_monoid_add
+  by (standard, transfer) (use ennreal_add_left_cancel_le in auto)
+
+lemma ennreal'_nonneg[simp]: "\<And>r :: ennreal'. 0 \<le> r"
+  by transfer simp
+
+lemma sum_Rep_ennreal'[simp]: "(\<Sum>i\<in>I. Rep_ennreal' (f i)) = Rep_ennreal' (sum f I)"
+  by (induction I rule: infinite_finite_induct) (auto simp: sum_nonneg zero_ennreal'.rep_eq plus_ennreal'.rep_eq)
+
+lemma transfer_sum_ennreal' [transfer_rule]:
+  "rel_fun (rel_fun (=) pcr_ennreal') (rel_fun (=) pcr_ennreal') sum sum"
+  using rel_funD by(fastforce simp:  comp_def ennreal'.pcr_cr_eq cr_ennreal'_def)
+
+lemma pcr_ennreal'_eq:"pcr_ennreal' a b \<longleftrightarrow> b = Abs_ennreal' a"
+  by (metis Abs_ennreal'_inverse Rep_ennreal'_inverse UNIV_I cr_ennreal'_def ennreal'.pcr_cr_eq)
+
+lemma rel_set_pcr_ennreal'_eq:"rel_set pcr_ennreal' A B \<longleftrightarrow> B = Abs_ennreal' ` A"
+  by(auto simp: rel_set_def pcr_ennreal'_eq)
+
+lemma transfer_lessThan_ennreal'[transfer_rule]:
+ "rel_fun pcr_ennreal' (rel_set pcr_ennreal') lessThan lessThan"
 proof -
-  let ?open = "open :: ereal set \<Rightarrow> bool"
-  interpret c:complete_space dist uniformity ?open
-  proof -
-    have "\<exists>d. Metric_space (UNIV :: ereal set) d \<and>
-              Metric_space.mtopology UNIV d = euclidean \<and>
-              Metric_space.mcomplete UNIV d"
-      by (metis Polish_space_ereal Metric_space.topspace_mtopology Polish_space_def completely_metrizable_space_def topspace_euclidean)
-    hence "Metric_space (UNIV :: ereal set) dist \<and>
-           Metric_space.mtopology (UNIV :: ereal set) dist = euclidean \<and>
-           Metric_space.mcomplete (UNIV :: ereal set) dist"
-      unfolding dist_ereal_def by(rule someI_ex)
-    with completely_metrizable_space_metric_space show "class.complete_space dist uniformity ?open"
-      by(fastforce simp: uniformity_ereal_def)
-  qed
-  have [simp]:"topological_space.convergent ?open = convergent"
-  proof
-    fix x :: "nat \<Rightarrow> ereal"
-    have *:"class.topological_space ?open"
-      by standard auto
-    show "topological_space.convergent open x = convergent x"
-      by(simp add: topological_space.convergent_def topological_space.nhds_def * convergent_def nhds_def)
-  qed
-  show "OFCLASS(ereal, metric_space_class)"
-    by standard (use uniformity_ereal_def c.open_uniformity c.dist_triangle2 c.Cauchy_convergent in auto)
+  have [simp]: "\<And>x xa. xa < Abs_ennreal' x \<Longrightarrow> xa \<in> Abs_ennreal' ` {..<x} "
+    by (metis Abs_ennreal'_cases imageI lessThan_iff less_ennreal'.abs_eq)
+  show ?thesis
+    by(fastforce simp: rel_set_pcr_ennreal'_eq pcr_ennreal'_eq  less_ennreal'.abs_eq)
 qed
 
-end
+lemma transfer_greaterThan_ennreal'[transfer_rule]:
+ "rel_fun pcr_ennreal' (rel_set pcr_ennreal') greaterThan greaterThan"
+proof -
+  have [simp]: "\<And>x xa. Abs_ennreal' x < xa \<Longrightarrow> xa \<in> Abs_ennreal' ` {x<..}"
+    by (metis Abs_ennreal'_cases greaterThan_iff image_eqI less_ennreal'.abs_eq)
+  show ?thesis
+    by(fastforce simp: rel_set_pcr_ennreal'_eq pcr_ennreal'_eq  less_ennreal'.abs_eq)
+qed
 
-instantiation ereal :: polish_space
+text \<open> The transfer rule for @{term generate_topology}. \<close>
+lemma homeomorphism_generating_topology_imp:
+  assumes bj:"bij f"
+    and "generate_topology S a"
+  shows "generate_topology ((`) f ` S) (f ` a)"
+proof -
+  have [simp]:"f ` UNIV = UNIV"
+    by (simp add: assms(1) bij_betw_imp_surj_on)
+  have [simp]:"f ` (a \<inter> b) = f ` a \<inter> f ` b" for a b
+    by(intro image_Int bij_betw_imp_inj_on[OF bj])
+  have [simp]: "(f ` \<Union> K) = (\<Union> ((`) f ` K))" for K
+    by blast 
+  show ?thesis
+    using assms(2)
+  proof(induct rule: generate_topology.induct)
+    case (Basis s)
+    then show ?case
+      by(auto intro!: generate_topology.Basis)
+  qed (auto intro!: generate_topology.Int generate_topology.UNIV generate_topology.UN)
+qed  
+
+corollary homeomorphism_generating_topology_eq:
+  assumes bjf: "bij f"
+  shows "generate_topology S a = generate_topology ((`) f ` S) (f ` a)"
+proof -
+  define g where "g \<equiv> the_inv f"
+  have bjg: "bij g"
+    using assms bij_betw_the_inv_into g_def by blast
+  have gf: "g (f x) = x" for x
+    by (metis assms bij_betw_imp_inj_on g_def the_inv_f_f)
+  show ?thesis
+  proof
+    assume "generate_topology ((`) f ` S) (f ` a) "
+    then have "generate_topology ((`) g ` ((`) f ` S)) (g ` f ` a)"
+      by(auto intro!: homeomorphism_generating_topology_imp[OF bjg])
+    moreover have "((`) g ` ((`) f ` S)) = S" "g ` f ` a = a"
+      using gf by(auto simp: image_comp)
+    ultimately show "generate_topology S a"
+      by argo
+  qed(auto intro!: bjf homeomorphism_generating_topology_imp)
+qed
+
+lemma transfer_generate_topology_ennreal'[transfer_rule]:
+ "rel_fun (rel_set (rel_set pcr_ennreal')) (rel_fun (rel_set pcr_ennreal') (=)) generate_topology generate_topology"
+proof(intro rel_funI)
+  fix S S' a b
+  assume h:"rel_set (rel_set pcr_ennreal') S S'" "rel_set pcr_ennreal' a b"
+  then have [simp]:"S' = (`) Abs_ennreal' ` S"
+    by(auto simp: rel_set_def[of "rel_set pcr_ennreal'"] rel_set_pcr_ennreal'_eq)
+  show "generate_topology S a =  generate_topology S' b"
+    using h(2) by(auto simp: rel_set_pcr_ennreal'_eq homeomorphism_generating_topology_eq[OF bij_Abs_ennreal'])
+qed
+
+instantiation ennreal' :: topological_space
 begin
+
+lift_definition open_ennreal' :: "ennreal' set \<Rightarrow> bool" is "open" .
 
 instance
-proof
-  let ?open = "open :: ereal set \<Rightarrow> bool"
-  interpret c:complete_space dist uniformity ?open
-  proof -
-    have "\<exists>d. Metric_space (UNIV :: ereal set) d \<and>
-              Metric_space.mtopology UNIV d = euclidean \<and>
-              Metric_space.mcomplete UNIV d"
-      by (metis Polish_space_ereal Metric_space.topspace_mtopology Polish_space_def completely_metrizable_space_def topspace_euclidean)
-    hence "Metric_space (UNIV :: ereal set) dist \<and>
-           Metric_space.mtopology (UNIV :: ereal set) dist = euclidean \<and>
-           Metric_space.mcomplete (UNIV :: ereal set) dist"
-      unfolding dist_ereal_def by(rule someI_ex)
-    with completely_metrizable_space_metric_space show "class.complete_space dist uniformity ?open"
-      by(fastforce simp: uniformity_ereal_def)
-  qed
-  have [simp]:"topological_space.convergent ?open = convergent"
-  proof
-    fix x :: "nat \<Rightarrow> ereal"
-    have *:"class.topological_space ?open"
-      by standard auto
-    show "topological_space.convergent open x = convergent x"
-      by(simp add: topological_space.convergent_def topological_space.nhds_def * convergent_def nhds_def)
-  qed
-  have [simp]:"uniform_space.Cauchy (uniformity :: (ereal \<times> ereal) filter) = Cauchy"
-    by(auto simp add: metric_space.Cauchy_def[OF metric_space_axioms] Cauchy_def)
-  fix x :: "nat \<Rightarrow> ereal"
-  show "Cauchy x \<Longrightarrow> convergent x"
-    using c.Cauchy_convergent by(auto simp: Cauchy_def)
-qed
+  by standard (transfer, auto)+
 
 end
 
-instantiation ennreal :: metric_space
+instance ennreal' :: second_countable_topology
+proof
+  obtain B :: "ennreal set set" where B:
+    "countable B" "open = generate_topology B"
+    using ex_countable_subbasis by blast
+  have "open = generate_topology ((`) Abs_ennreal' ` B)"
+    using B(2) by transfer auto
+  with B(1) show "\<exists>B':: ennreal' set set. countable B' \<and> open = generate_topology B'"
+    by(auto intro!: exI[where x="(\<lambda>b. Abs_ennreal' ` b) ` B"])
+qed
+
+instance ennreal' :: linorder_topology
+  by (standard, transfer) (use open_ennreal_def in auto)
+
+lemma continuous_map_Abs_ennreal':"continuous_on UNIV Abs_ennreal'"
+  by (metis continuous_on_open_vimage image_vimage_eq open_Int open_UNIV open_ennreal'.abs_eq)
+
+lemma continuous_map_Rep_ennreal':"continuous_on UNIV Rep_ennreal'"
+  by (metis continuous_on_open_vimage image_vimage_eq open_Int open_UNIV open_ennreal'.rep_eq)
+
+corollary continuous_map_ennreal'_eq: "continuous_on A f \<longleftrightarrow> continuous_on A (\<lambda>x. Rep_ennreal' (f x))"
+proof
+  have "(\<lambda>x. Abs_ennreal' (Rep_ennreal' (f x))) = f"
+    by (simp add: Rep_ennreal'_inverse)
+  thus "continuous_on A f" if h:"continuous_on A (\<lambda>x. Rep_ennreal' (f x))"
+    using continuous_on_compose[OF h continuous_on_subset[OF continuous_map_Abs_ennreal']]
+    by(simp add: comp_def)
+qed(simp add: continuous_on_compose[OF _ continuous_on_subset[OF continuous_map_Rep_ennreal'],simplified comp_def])
+
+lemma ennreal_ennreal'_homeomorphic:
+  "(euclidean :: ennreal topology) homeomorphic_space (euclidean :: ennreal' topology)"
+  by(auto simp: homeomorphic_space_def homeomorphic_maps_def continuous_map_Abs_ennreal'
+                continuous_map_Rep_ennreal' Abs_ennreal'_inverse Rep_ennreal'_inverse
+        intro!: exI[where x=Rep_ennreal'] exI[where x=Abs_ennreal'])
+
+corollary Polish_space_ennreal': "Polish_space (euclidean :: ennreal' topology)"
+  using Polish_space_ennreal ennreal_ennreal'_homeomorphic homeomorphic_Polish_space_aux by blast
+
+instantiation ennreal' :: metric_space
 begin
 
-definition dist_ennreal :: "ennreal \<Rightarrow> ennreal \<Rightarrow> real"
-  where "dist_ennreal \<equiv> SOME d. Metric_space UNIV d \<and>
+definition dist_ennreal' :: "ennreal' \<Rightarrow> ennreal' \<Rightarrow> real"
+  where "dist_ennreal' \<equiv> SOME d. Metric_space UNIV d \<and>
                                  Metric_space.mtopology UNIV d = euclidean \<and>
                                  Metric_space.mcomplete UNIV d"
 
-definition uniformity_ennreal :: "(ennreal \<times> ennreal) filter"
-  where "uniformity_ennreal \<equiv> \<Sqinter>e\<in>{0<..}. principal {(x,y). dist x y < e}"
+definition uniformity_ennreal' :: "(ennreal' \<times> ennreal') filter"
+  where "uniformity_ennreal' \<equiv> \<Sqinter>e\<in>{0<..}. principal {(x,y). dist x y < e}"
 
 instance
 proof -
-  let ?open = "open :: ennreal set \<Rightarrow> bool"
+  let ?open = "open :: ennreal' set \<Rightarrow> bool"
   interpret c:complete_space dist uniformity ?open
   proof -
-    have "\<exists>d. Metric_space (UNIV :: ennreal set) d \<and>
+    have "\<exists>d. Metric_space (UNIV :: ennreal' set) d \<and>
               Metric_space.mtopology UNIV d = euclidean \<and>
               Metric_space.mcomplete UNIV d"
-      by (metis Polish_space_ennreal Metric_space.topspace_mtopology Polish_space_def completely_metrizable_space_def topspace_euclidean)
-    hence "Metric_space (UNIV :: ennreal set) dist \<and>
-           Metric_space.mtopology (UNIV :: ennreal set) dist = euclidean \<and>
-           Metric_space.mcomplete (UNIV :: ennreal set) dist"
-      unfolding dist_ennreal_def by(rule someI_ex)
+      by (metis Polish_space_ennreal' Metric_space.topspace_mtopology Polish_space_def completely_metrizable_space_def topspace_euclidean)
+    hence "Metric_space (UNIV :: ennreal' set) dist \<and>
+           Metric_space.mtopology (UNIV :: ennreal' set) dist = euclidean \<and>
+           Metric_space.mcomplete (UNIV :: ennreal' set) dist"
+      unfolding dist_ennreal'_def by(rule someI_ex)
     with completely_metrizable_space_metric_space show "class.complete_space dist uniformity ?open"
-      by(fastforce simp: uniformity_ennreal_def)
+      by(fastforce simp: uniformity_ennreal'_def)
   qed
   have [simp]:"topological_space.convergent ?open = convergent"
   proof
-    fix x :: "nat \<Rightarrow> ennreal"
+    fix x :: "nat \<Rightarrow> ennreal'"
     have *:"class.topological_space ?open"
       by standard auto
     show "topological_space.convergent open x = convergent x"
       by(simp add: topological_space.convergent_def[OF *] topological_space.nhds_def[OF *] convergent_def nhds_def)
   qed
-  show "OFCLASS(ennreal, metric_space_class)"
-    by standard (use uniformity_ennreal_def c.open_uniformity c.dist_triangle2 c.Cauchy_convergent in auto)
-qed
-
-end
-
-instantiation ennreal :: polish_space
-begin
-
-instance
-proof
-  let ?open = "open :: ennreal set \<Rightarrow> bool"
-  interpret c:complete_space dist uniformity ?open
-  proof -
-    have "\<exists>d. Metric_space (UNIV :: ennreal set) d \<and>
-              Metric_space.mtopology UNIV d = euclidean \<and>
-              Metric_space.mcomplete UNIV d"
-      by (metis Polish_space_ennreal Metric_space.topspace_mtopology Polish_space_def completely_metrizable_space_def topspace_euclidean)
-    hence "Metric_space (UNIV :: ennreal set) dist \<and>
-           Metric_space.mtopology (UNIV :: ennreal set) dist = euclidean \<and>
-           Metric_space.mcomplete (UNIV :: ennreal set) dist"
-      unfolding dist_ennreal_def by(rule someI_ex)
-    with completely_metrizable_space_metric_space show "class.complete_space dist uniformity ?open"
-      by(fastforce simp: uniformity_ennreal_def)
-  qed
-  have [simp]:"topological_space.convergent ?open = convergent"
-  proof
-    fix x :: "nat \<Rightarrow> ennreal"
-    have *:"class.topological_space ?open"
-      by standard auto
-    show "topological_space.convergent open x = convergent x"
-      by(simp add: topological_space.convergent_def topological_space.nhds_def * convergent_def nhds_def)
-  qed
-  have [simp]:"uniform_space.Cauchy (uniformity :: (ennreal \<times> ennreal) filter) = Cauchy"
-    by(auto simp add: metric_space.Cauchy_def[OF metric_space_axioms] Cauchy_def)
-  fix x :: "nat \<Rightarrow> ennreal"
-  show "Cauchy x \<Longrightarrow> convergent x"
-    using c.Cauchy_convergent by(auto simp: Cauchy_def)
+  show "OFCLASS(ennreal', metric_space_class)"
+    by standard (use uniformity_ennreal'_def c.open_uniformity c.dist_triangle2 c.Cauchy_convergent in auto)
 qed
 
 end
 
 subsection \<open> Lemmas for Infinite Sum \<close>
-lemma uniformly_continuous_add_ennreal: "isUCont (\<lambda>(x::ennreal, y). x + y)"
+lemma transfer_nhds_ennreal'[transfer_rule]: "rel_fun pcr_ennreal' (rel_filter pcr_ennreal') nhds nhds"
+proof(rule rel_funI)
+  fix x x'
+  assume h:"pcr_ennreal' x x'"
+  then have b:"nhds (x, x') \<sqinter> principal {(y, y'). pcr_ennreal' y y'} \<noteq> \<bottom>" (is "?F \<noteq> _")
+    by(auto simp: eventually_False[symmetric] eventually_inf_principal dest: eventually_nhds_x_imp_x)
+  have ev_eq1:"(\<forall>\<^sub>F xx' in nhds (x, x'). pcr_ennreal' (fst xx') (snd xx') \<longrightarrow> P (fst xx'))
+                \<longleftrightarrow> eventually P (nhds x)" for P
+  proof
+    assume "\<forall>\<^sub>F xx' in nhds (x, x'). pcr_ennreal' (fst xx') (snd xx') \<longrightarrow> P (fst xx')"
+    then obtain S where
+      S:"open S" "(x, x') \<in> S" "\<And>xx'. xx' \<in> S \<Longrightarrow> pcr_ennreal' (fst xx') (snd xx') \<Longrightarrow> P (fst xx')"
+      unfolding eventually_nhds by blast
+    then obtain A B where AB: "open A" "open (Abs_ennreal' ` B)" "(x,x') \<in> A \<times> Abs_ennreal' ` B" "A \<times> Abs_ennreal' ` B \<subseteq> S"
+      by (metis ennreal'.type_definition_ennreal' open_prod_elim surj_image_vimage_eq type_definition.univ)
+    have AB1:"open (A \<inter> B)" "x \<in> A \<inter> B"
+      using AB h by(auto simp: open_ennreal'.abs_eq pcr_ennreal'_eq dest: injD[OF inj_Abs_ennreal'])
+    have AB2: "(y, Abs_ennreal' y) \<in> S" "pcr_ennreal' (fst (y, Abs_ennreal' y)) (snd (y, Abs_ennreal' y))"
+      if y:"y \<in> A" "y \<in> B" for y
+      using AB y by(auto simp: pcr_ennreal'_eq)
+    show "eventually P (nhds x)"
+      using S(3)[OF AB2] AB1 by(auto intro!: exI[where x="A \<inter> B"] simp: eventually_nhds)
+  next
+    assume "eventually P (nhds x)"
+    then obtain S where "open S" "x \<in> S" "\<And>y. y \<in> S \<Longrightarrow> P y"
+      by(auto simp: eventually_nhds)
+    thus "\<forall>\<^sub>F xx' in nhds (x, x'). pcr_ennreal' (fst xx') (snd xx') \<longrightarrow> P (fst xx')"
+      unfolding eventually_nhds by(auto intro!: exI[where x="S \<times> UNIV"] simp: open_Times)
+  qed
+  have ev_eq2:"(\<forall>\<^sub>F xx' in nhds (x, x'). pcr_ennreal' (fst xx') (snd xx') \<longrightarrow> P (snd xx'))
+                \<longleftrightarrow> eventually P (nhds x')" for P
+  proof
+    assume "\<forall>\<^sub>F xx' in nhds (x, x'). pcr_ennreal' (fst xx') (snd xx') \<longrightarrow> P (snd xx')"
+    then obtain S where
+      S:"open S" "(x, x') \<in> S" "\<And>xx'. xx' \<in> S \<Longrightarrow> pcr_ennreal' (fst xx') (snd xx') \<Longrightarrow> P (snd xx')"
+      unfolding eventually_nhds by blast
+    then obtain A B where AB: "open A" "open (Abs_ennreal' ` B)" "(x,x') \<in> A \<times> Abs_ennreal' ` B" "A \<times> Abs_ennreal' ` B \<subseteq> S"
+      by (metis ennreal'.type_definition_ennreal' open_prod_elim surj_image_vimage_eq type_definition.univ)
+    have AB1:"open (A \<inter> B)" "x \<in> A \<inter> B"
+      using AB h by(auto simp: open_ennreal'.abs_eq pcr_ennreal'_eq dest: injD[OF inj_Abs_ennreal'])
+    have AB2: "(y, Abs_ennreal' y) \<in> S" "pcr_ennreal' (fst (y, Abs_ennreal' y)) (snd (y, Abs_ennreal' y))"
+      if y:"y \<in> A" "y \<in> B" for y
+      using AB y by(auto simp: pcr_ennreal'_eq)
+    show "eventually P (nhds x')"
+      using S(3)[OF AB2] AB1 h
+      by(auto intro!: exI[where x="Abs_ennreal' ` (A \<inter> B)"] simp: eventually_nhds pcr_ennreal'_eq open_ennreal'.abs_eq)
+  next
+    assume "eventually P (nhds x')"
+    then obtain S where "open S" "x' \<in> S" "\<And>y. y \<in> S \<Longrightarrow> P y"
+      by(auto simp: eventually_nhds)
+    thus "\<forall>\<^sub>F xx' in nhds (x, x'). pcr_ennreal' (fst xx') (snd xx') \<longrightarrow> P (snd xx')"
+      unfolding eventually_nhds by(auto intro!: exI[where x="UNIV \<times> S"] simp: open_Times)
+  qed
+  show "rel_filter pcr_ennreal' (nhds x) (nhds x')"
+  proof(rule rel_filter.intros)
+    show "\<forall>\<^sub>F (x, y) in nhds (x, x') \<sqinter> principal {(y, y'). pcr_ennreal' y y'}. pcr_ennreal' x y"
+      unfolding eventually_inf_principal using h by(auto intro!: eventuallyI simp: pcr_ennreal'_eq)
+  qed (auto intro!: filter_eqI simp: eventually_inf_principal eventually_map_filter_on  split_beta' ev_eq1 ev_eq2)
+qed
+
+lemmas transfer_filtermap_ennreal'[transfer_rule] = filtermap_parametric[where A=HOL.eq and B=pcr_ennreal']
+
+lemma transfer_filterlim_ennreal'[transfer_rule]:
+ "rel_fun (rel_fun (=) pcr_ennreal') (rel_fun (rel_filter pcr_ennreal') (rel_fun (rel_filter (=)) (=))) filterlim filterlim"
+  unfolding filterlim_def by transfer_prover
+
+lemma transfer_The_ennreal:
+  assumes P:"\<exists>!x. P x"
+    and "rel_fun pcr_ennreal' (=) P P'"
+  shows "The P' = Abs_ennreal' (The P)" 
+proof -
+  have P':"\<exists>!x'. P' x'"
+    by (metis Rep_ennreal'_inverse pcr_ennreal'_eq rel_funD[OF assms(2)] P)
+  show ?thesis
+  proof(rule the1I2)
+    fix x
+    assume h:"P x"
+    show "(THE a. P' a) = Abs_ennreal' x"
+      by(rule the1I2[OF P']) (metis (full_types) h P' assms(2) ennreal'.id_abs_transfer rel_funD)
+  qed fact
+qed
+
+lemma transfer_infsum_ennreal'[transfer_rule]:
+ "rel_fun (rel_fun (=) pcr_ennreal') (rel_fun (=) pcr_ennreal') infsum (infsum :: ('a \<Rightarrow> _) \<Rightarrow> _ \<Rightarrow> _)"
+proof -
+  have *:"rel_fun pcr_ennreal' (=) (\<lambda>l. (sum x \<longlongrightarrow> l) (finite_subsets_at_top A))
+                                   (\<lambda>l. (sum y \<longlongrightarrow> l) (finite_subsets_at_top A))"
+    if [transfer_rule]: "rel_fun (=) pcr_ennreal' x y" for x :: "'a \<Rightarrow> ennreal" and y and A
+    by transfer_prover
+  show ?thesis
+    apply(simp add: nonneg_summable_on_complete infsum_def[abs_def])
+    apply(intro rel_funI)
+    apply(simp add: pcr_ennreal'_eq Topological_Spaces.Lim_def)
+    apply(intro transfer_The_ennreal)
+     apply (meson has_sum_def has_sum_unique nonneg_has_sum_complete zero_le)
+    using * by auto
+qed
+
+lemma inf_sum_Rep_Abs_ennreal':"infsum f A = Rep_ennreal' (infsum ((\<lambda>x. Abs_ennreal' (f x))) A)"
+  by transfer (simp add: comp_def)
+
+lemma continuous_on_add_ennreal':
+  fixes f g :: "'a::topological_space \<Rightarrow> ennreal'"
+  shows "continuous_on A f \<Longrightarrow> continuous_on A g \<Longrightarrow> continuous_on A (\<lambda>x. f x + g x)"
+  unfolding continuous_map_ennreal'_eq plus_ennreal'.rep_eq
+  by(rule continuous_on_add_ennreal)
+
+lemma uniformly_continuous_add_ennreal': "isUCont (\<lambda>(x::ennreal', y). x + y)"
 proof(safe intro!: compact_uniformly_continuous)
-  have "compact (UNIV \<times> UNIV :: (ennreal \<times> ennreal) set)"
+  have "compact (UNIV \<times> UNIV :: (ennreal' \<times> ennreal') set)"
     by(intro compact_Times compact_UNIV)
-  thus "compact (UNIV :: (ennreal \<times> ennreal) set)"
+  thus "compact (UNIV :: (ennreal' \<times> ennreal') set)"
     by simp
-qed(auto intro!: continuous_on_add_ennreal continuous_on_fst continuous_on_snd simp: split_beta')
+qed(auto intro!: continuous_on_add_ennreal' continuous_on_fst continuous_on_snd simp: split_beta')
 
 lemma infsum_eq_suminf:
   assumes "f summable_on UNIV"
@@ -241,15 +443,25 @@ lemma infsum_eq_suminf:
   using has_sum_imp_sums[OF has_sum_infsum[OF assms]]
   by (simp add: sums_iff)
 
+lemma infsum_Sigma_ennreal':
+  fixes f :: "_ \<Rightarrow> ennreal'"
+  shows "infsum f (Sigma A B) = infsum (\<lambda>x. infsum (\<lambda>y. f (x, y)) (B x)) A"
+  by(auto intro!: uniformly_continuous_add_ennreal' infsum_Sigma nonneg_summable_on_complete)
+
+lemma infsum_swap_ennreal':
+  fixes f :: "_ \<Rightarrow> _ \<Rightarrow> ennreal'"
+  shows "infsum (\<lambda>x. infsum (\<lambda>y. f x y) B) A = infsum (\<lambda>y. infsum (\<lambda>x. f x y) A) B"
+  by(auto intro!: infsum_swap uniformly_continuous_add_ennreal' nonneg_summable_on_complete)
+
 lemma infsum_Sigma_ennreal:
   fixes f :: "_ \<Rightarrow> ennreal"
   shows "infsum f (Sigma A B) = infsum (\<lambda>x. infsum (\<lambda>y. f (x, y)) (B x)) A"
-  by(auto intro!: uniformly_continuous_add_ennreal infsum_Sigma nonneg_summable_on_complete)
+  by (simp add: inf_sum_Rep_Abs_ennreal' infsum_Sigma_ennreal' Rep_ennreal'_inverse)
 
 lemma infsum_swap_ennreal:
   fixes f :: "_ \<Rightarrow> _ \<Rightarrow> ennreal"
   shows "infsum (\<lambda>x. infsum (\<lambda>y. f x y) B) A = infsum (\<lambda>y. infsum (\<lambda>x. f x y) A) B"
-  by(auto intro!: infsum_swap uniformly_continuous_add_ennreal nonneg_summable_on_complete)
+  by (simp add: inf_sum_Rep_Abs_ennreal' Rep_ennreal'_inverse infsum_swap_ennreal'[where A=A])
 
 lemma has_sum_cmult_right_ennreal:
   fixes f :: "_ \<Rightarrow> ennreal"
