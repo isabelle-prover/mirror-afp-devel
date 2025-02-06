@@ -48,6 +48,36 @@ sublocale typed_functional_substitution where
 
 end
 
+locale uniform_typed_grounding_functional_substitution_lifting = 
+  uniform_typed_functional_substitution_lifting +
+  grounding_lifting where sub_subst = base_subst and sub_vars = base_vars +
+  base: explicitly_typed_grounding_functional_substitution where 
+  vars = base_vars and subst = base_subst and typed = base_typed and 
+  to_ground = sub_to_ground and from_ground = sub_from_ground
+begin
+
+sublocale typed_grounding_functional_substitution where 
+  vars = vars and subst = subst and is_typed = lifted_is_typed and to_ground = to_ground and 
+  from_ground = from_ground
+  by unfold_locales
+
+end
+
+locale typed_grounding_functional_substitution_lifting = 
+  typed_functional_substitution_lifting +
+  grounding_lifting +
+  sub: typed_grounding_functional_substitution where 
+  vars = sub_vars and subst = sub_subst and is_typed = sub_is_typed and 
+  to_ground = sub_to_ground and from_ground = sub_from_ground
+begin
+
+sublocale typed_grounding_functional_substitution where 
+  vars = vars and subst = subst and is_typed = lifted_is_typed and to_ground = to_ground and 
+  from_ground = from_ground
+  by unfold_locales
+
+end
+
 locale uniform_inhabited_typed_functional_substitution_lifting = 
   uniform_typed_functional_substitution_lifting +
   base: inhabited_explicitly_typed_functional_substitution where 
@@ -172,7 +202,9 @@ begin
 
 sublocale replaceable_\<V> where 
   is_typed = lifted_is_typed and subst = subst and vars = vars
-  by unfold_locales (auto 4 4 simp: vars_def uniform_typed_lifting_def intro: sub.explicit_replace_\<V>)
+  by 
+    unfold_locales 
+    (auto 4 4 simp: vars_def uniform_typed_lifting_def intro: sub.explicit_replace_\<V>)
 
 end
 

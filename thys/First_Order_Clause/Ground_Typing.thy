@@ -73,7 +73,7 @@ proof unfold_locales
       using More.prems 
       by simp
 
-    hence "welltyped (GFun f (ss1 @ c\<langle>t'\<rangle>\<^sub>G # ss2)) \<tau>"
+    then have "welltyped (GFun f (ss1 @ c\<langle>t'\<rangle>\<^sub>G # ss2)) \<tau>"
     proof (cases \<F> "GFun f (ss1 @ c\<langle>t\<rangle>\<^sub>G # ss2)" \<tau> rule: welltyped.cases)
       case (GFun \<tau>s)
 

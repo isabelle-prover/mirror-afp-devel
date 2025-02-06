@@ -153,8 +153,13 @@ locale grounding = functional_substitution where vars = vars and id_subst = id_s
     from_ground_inverse [simp]: "\<And>expr\<^sub>G. to_ground (from_ground expr\<^sub>G) = expr\<^sub>G"
 begin
 
-definition groundings ::"'expr \<Rightarrow> 'expr\<^sub>G set" where
-  "groundings expr = { to_ground (expr \<cdot> \<gamma>) | \<gamma>. is_ground (expr \<cdot> \<gamma>) }"
+definition ground_instances' ::"'expr \<Rightarrow> 'expr\<^sub>G set" where
+  "ground_instances' expr = { to_ground (expr \<cdot> \<gamma>) | \<gamma>. is_ground (expr \<cdot> \<gamma>) }"
+
+lemma ground_instances'_eq_ground_instances: 
+  "ground_instances' expr = (to_ground ` ground_instances expr)"
+  unfolding ground_instances'_def ground_instances_def generalizes_def instances_def 
+  by blast
 
 lemma to_ground_from_ground_id [simp]: "to_ground \<circ> from_ground = id"
   using from_ground_inverse

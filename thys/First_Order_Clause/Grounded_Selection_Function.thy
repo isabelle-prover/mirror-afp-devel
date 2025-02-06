@@ -12,11 +12,11 @@ abbreviation select_subst_stability_on_clause where
   "select_subst_stability_on_clause select select\<^sub>G C\<^sub>G C \<V> \<gamma> \<equiv> 
     C \<cdot> \<gamma> = clause.from_ground C\<^sub>G \<and> 
     select\<^sub>G C\<^sub>G = clause.to_ground ((select C) \<cdot> \<gamma>) \<and>
-    is_welltyped_grounding C \<V> \<gamma>"
+    clause.is_welltyped_ground_instance C \<V> \<gamma>"
 
 abbreviation select_subst_stability_on where
   "select_subst_stability_on select select\<^sub>G N \<equiv>
-    \<forall>C\<^sub>G \<in> \<Union> (clause_groundings ` N). \<exists>(C, \<V>) \<in> N. \<exists>\<gamma>.
+    \<forall>C\<^sub>G \<in> \<Union> (clause.welltyped_ground_instances ` N). \<exists>(C, \<V>) \<in> N. \<exists>\<gamma>.
     select_subst_stability_on_clause select select\<^sub>G C\<^sub>G C \<V> \<gamma>"
 
 lemma obtain_subst_stable_on_select_grounding:
@@ -25,13 +25,13 @@ lemma obtain_subst_stable_on_select_grounding:
     "select_subst_stability_on select select\<^sub>G N"
     "is_select_grounding select select\<^sub>G"
 proof-
-  let ?N\<^sub>G = "\<Union>(clause_groundings ` N)"
+  let ?N\<^sub>G = "\<Union>(clause.welltyped_ground_instances ` N)"
 
   {
     fix C \<V> \<gamma>
     assume
       "(C, \<V>) \<in> N" 
-      "is_welltyped_grounding C \<V> \<gamma>"
+      "clause.is_welltyped_ground_instance C \<V> \<gamma>"
 
     then have 
       "\<exists>\<gamma>'. \<exists>(C', \<V>')\<in>N. \<exists>select\<^sub>G. 
@@ -42,7 +42,7 @@ proof-
   then have
      "\<forall>C\<^sub>G \<in> ?N\<^sub>G. \<exists>\<gamma>. \<exists>(C, \<V>) \<in> N. \<exists>select\<^sub>G.
          select_subst_stability_on_clause select select\<^sub>G C\<^sub>G C \<V> \<gamma>"
-    unfolding clause_groundings_def
+    unfolding clause.welltyped_ground_instances_def
     by auto
 
   then have select\<^sub>G_exists_for_premises: 

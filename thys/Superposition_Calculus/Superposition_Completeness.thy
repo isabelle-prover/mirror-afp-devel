@@ -474,7 +474,8 @@ lemma superposition_lifting:
     [simp]: "E\<^sub>G \<equiv> clause.to_ground (E \<cdot> \<rho>\<^sub>1 \<odot> \<gamma>)" and
     [simp]: "D\<^sub>G \<equiv> clause.to_ground (D \<cdot> \<rho>\<^sub>2 \<odot> \<gamma>)" and
     [simp]: "C\<^sub>G \<equiv> clause.to_ground (C \<cdot> \<gamma>)" and
-    [simp]: "N\<^sub>G \<equiv> clause_groundings (E, \<V>\<^sub>1) \<union> clause_groundings (D, \<V>\<^sub>2)" and
+    [simp]: "N\<^sub>G \<equiv> clause.welltyped_ground_instances (E, \<V>\<^sub>1) \<union>
+                    clause.welltyped_ground_instances (D, \<V>\<^sub>2)" and
     [simp]: "\<iota>\<^sub>G \<equiv> Infer [D\<^sub>G, E\<^sub>G] C\<^sub>G"
   assumes
     ground_superposition: "ground.superposition D\<^sub>G E\<^sub>G C\<^sub>G" and
@@ -781,8 +782,8 @@ proof(cases D\<^sub>G E\<^sub>G C\<^sub>G rule: ground.superposition.cases)
         show "?E\<^sub>G' \<in> N\<^sub>G"
         proof-
 
-          have "?E\<^sub>G' \<in> clause_groundings (E, \<V>\<^sub>1)"
-          proof(unfold clause_groundings_def mem_Collect_eq fst_conv snd_conv, 
+          have "?E\<^sub>G' \<in> clause.welltyped_ground_instances (E, \<V>\<^sub>1)"
+          proof(unfold clause.welltyped_ground_instances_def mem_Collect_eq fst_conv snd_conv, 
               intro exI conjI E_is_welltyped \<V>\<^sub>1, 
               rule refl)
 
@@ -1408,7 +1409,7 @@ context
   fixes \<iota>\<^sub>G N
   assumes 
     subst_stability: "subst_stability_on N" and
-    \<iota>\<^sub>G_Inf_from: "\<iota>\<^sub>G \<in> ground.Inf_from_q select\<^sub>G (\<Union>(clause_groundings ` N))" 
+    \<iota>\<^sub>G_Inf_from: "\<iota>\<^sub>G \<in> ground.Inf_from_q select\<^sub>G (\<Union>(clause.welltyped_ground_instances ` N))" 
 begin
 
 lemma single_premise_ground_instance:
@@ -1438,7 +1439,7 @@ proof-
     using ground_inference
     by blast
 
-  have D\<^sub>G_in_groundings: "D\<^sub>G \<in> \<Union>(clause_groundings ` N)"
+  have D\<^sub>G_in_groundings: "D\<^sub>G \<in> \<Union>(clause.welltyped_ground_instances ` N)"
     using \<iota>\<^sub>G_Inf_from
     unfolding \<iota>\<^sub>G ground.Inf_from_q_def ground.Inf_from_def
     by simp
@@ -1511,7 +1512,7 @@ lemma eq_factoring_ground_instance:
 lemma superposition_ground_instance:
   assumes 
     ground_superposition: "\<iota>\<^sub>G \<in> ground.superposition_inferences" and
-    not_redundant: "\<iota>\<^sub>G \<notin> ground.GRed_I (\<Union> (clause_groundings ` N))"
+    not_redundant: "\<iota>\<^sub>G \<notin> ground.GRed_I (\<Union> (clause.welltyped_ground_instances ` N))"
   obtains \<iota> where 
     "\<iota> \<in> Inf_from N" 
     "\<iota>\<^sub>G \<in> inference_groundings \<iota>"
@@ -1523,8 +1524,8 @@ proof-
     by blast
 
   have
-    E\<^sub>G_in_groundings: "E\<^sub>G \<in> \<Union> (clause_groundings ` N)" and
-    D\<^sub>G_in_groundings: "D\<^sub>G \<in> \<Union> (clause_groundings ` N)"
+    E\<^sub>G_in_groundings: "E\<^sub>G \<in> \<Union> (clause.welltyped_ground_instances ` N)" and
+    D\<^sub>G_in_groundings: "D\<^sub>G \<in> \<Union> (clause.welltyped_ground_instances ` N)"
     using \<iota>\<^sub>G_Inf_from
     unfolding \<iota>\<^sub>G ground.Inf_from_q_def ground.Inf_from_def
     by simp_all
@@ -1636,12 +1637,14 @@ proof-
     C\<^sub>G: "C\<^sub>G = clause.to_ground (C \<cdot> \<gamma>)"
     by (metis clause.all_subst_ident_if_ground clause.from_ground_inverse clause.ground_is_ground)
 
-  have "clause_groundings (E, \<V>\<^sub>1) \<union> clause_groundings (D, \<V>\<^sub>2) \<subseteq> \<Union> (clause_groundings ` N)"
+  have "clause.welltyped_ground_instances (E, \<V>\<^sub>1) \<union> clause.welltyped_ground_instances (D, \<V>\<^sub>2) \<subseteq> 
+          \<Union> (clause.welltyped_ground_instances ` N)"
     using E_in_N D_in_N 
     by blast
 
   then have \<iota>\<^sub>G_not_redundant:
-    "\<iota>\<^sub>G \<notin> ground.GRed_I (clause_groundings (E, \<V>\<^sub>1) \<union> clause_groundings (D, \<V>\<^sub>2))"
+    "\<iota>\<^sub>G \<notin> ground.GRed_I
+          (clause.welltyped_ground_instances (E, \<V>\<^sub>1) \<union> clause.welltyped_ground_instances (D, \<V>\<^sub>2))"
     using not_redundant ground.Red_I_of_subset
     by blast
 
@@ -1677,7 +1680,7 @@ proof-
 qed  
 
 lemma ground_instances: 
-  assumes not_redundant: "\<iota>\<^sub>G \<notin> ground.Red_I (\<Union> (clause_groundings ` N))"
+  assumes not_redundant: "\<iota>\<^sub>G \<notin> ground.Red_I (\<Union> (clause.welltyped_ground_instances ` N))"
   obtains \<iota> where 
     "\<iota> \<in> Inf_from N" 
     "\<iota>\<^sub>G \<in> inference_groundings \<iota>"

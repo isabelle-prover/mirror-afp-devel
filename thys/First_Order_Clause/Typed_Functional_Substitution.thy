@@ -55,6 +55,49 @@ for
   vars :: "'expr \<Rightarrow> 'var set" and
   is_typed :: "('var, 'ty) var_types \<Rightarrow> 'expr \<Rightarrow> bool" and
   base_typed :: "('var, 'ty) var_types \<Rightarrow> 'base \<Rightarrow> 'ty \<Rightarrow> bool"
+begin
+
+(* TODO: Quite specific definition *)
+abbreviation is_typed_ground_instance where
+  "is_typed_ground_instance expr \<V> \<gamma> \<equiv>
+    is_ground (expr \<cdot> \<gamma>) \<and>
+    is_typed \<V> expr \<and>
+    base.is_typed_on (vars expr) \<V> \<gamma> \<and>
+    infinite_variables_per_type \<V>"
+
+end
+
+sublocale explicitly_typed_functional_substitution \<subseteq> typed_functional_substitution where 
+  base_subst = subst and base_vars = vars and is_typed = is_typed and 
+  base_typed = typed                                
+  by unfold_locales
+
+locale typed_grounding_functional_substitution = 
+  typed_functional_substitution + grounding
+begin
+
+definition typed_ground_instances where
+  "typed_ground_instances typed_expr =
+    { to_ground (fst typed_expr \<cdot> \<gamma>) | \<gamma>. 
+      is_typed_ground_instance (fst typed_expr) (snd typed_expr) \<gamma> }"
+
+lemma typed_ground_instances_ground_instances':
+  "typed_ground_instances (expr, \<V>) \<subseteq> ground_instances' expr"
+  unfolding typed_ground_instances_def ground_instances'_def
+  by auto
+
+end
+
+locale explicitly_typed_grounding_functional_substitution = 
+  explicitly_typed_functional_substitution + grounding
+begin
+
+sublocale typed_grounding_functional_substitution where 
+  base_subst = subst and base_vars = vars and is_typed = is_typed and 
+  base_typed = typed
+  by unfold_locales
+
+end
 
 locale inhabited_typed_functional_substitution = 
   typed_functional_substitution + 
@@ -173,7 +216,9 @@ begin
 sublocale base: typing "is_typed \<V>" "is_welltyped \<V>"
   by (rule typing)
 
+
 sublocale subst: subst_is_typed_abbreviations 
+  where is_typed' = is_typed and is_welltyped' = is_welltyped
   by unfold_locales
 
 end
@@ -190,15 +235,6 @@ begin
 sublocale base: explicit_typing "typed \<V>" "welltyped \<V>"
   using explicit_typing .
 
-sublocale functional_substitution_typing where 
-  is_typed = base.is_typed and is_welltyped = base.is_welltyped and base_typed = typed and 
-  base_welltyped = welltyped and base_vars = vars and base_subst = subst
-  by unfold_locales
-
-sublocale subst: typing "subst.is_typed_on X \<V>" "subst.is_welltyped_on X \<V>"
-  using base.typed_if_welltyped
-  by unfold_locales blast
-
 lemma typed_id_subst [intro]: "typed \<V> (id_subst x) (\<V> x)"
   using welltyped.typed_id_subst
   by (simp add: base.typed_if_welltyped)
@@ -210,6 +246,15 @@ lemmas is_welltyped_id_subst = welltyped.is_typed_id_subst
 lemmas is_typed_on_subset = typed.is_typed_on_subset
 
 lemmas is_welltyped_on_subset = welltyped.is_typed_on_subset
+
+sublocale functional_substitution_typing where 
+  is_typed = base.is_typed and is_welltyped = base.is_welltyped and base_typed = typed and 
+  base_welltyped = welltyped and base_vars = vars and base_subst = subst
+  by unfold_locales
+
+sublocale subst: typing "subst.is_typed_on X \<V>" "subst.is_welltyped_on X \<V>"
+  using base.typed_if_welltyped
+  by unfold_locales blast
 
 end
 

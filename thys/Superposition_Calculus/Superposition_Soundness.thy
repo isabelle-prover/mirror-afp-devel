@@ -27,7 +27,7 @@ proof (cases D C rule: eq_resolution.cases)
 
     assume
       refl_I: "refl I" and
-      entails_groundings: "\<forall>D\<^sub>G \<in> clause_groundings (D, \<V>). ?I \<TTurnstile> D\<^sub>G" and
+      entails_ground_instances: "\<forall>D\<^sub>G \<in> clause.welltyped_ground_instances (D, \<V>). ?I \<TTurnstile> D\<^sub>G" and
       C_is_ground: "clause.is_ground (C \<cdot> \<gamma>)" and
       C_is_welltyped: "clause.is_welltyped \<V> C" and
       \<gamma>_is_welltyped: "term.subst.is_welltyped_on (clause.vars C) \<V> \<gamma>" and
@@ -49,8 +49,9 @@ proof (cases D C rule: eq_resolution.cases)
       using eq_resolutionI
       by meson
 
-    have "?D\<^sub>G \<in> clause_groundings (D, \<V>)"
-    proof(unfold clause_groundings_def mem_Collect_eq fst_conv snd_conv, intro exI conjI \<V>)
+    have "?D\<^sub>G \<in> clause.welltyped_ground_instances (D, \<V>)"
+    proof(unfold clause.welltyped_ground_instances_def mem_Collect_eq fst_conv snd_conv, 
+          intro exI conjI \<V>)
       show "clause.to_ground (D \<cdot> \<mu> \<cdot> \<gamma>') = clause.to_ground (D \<cdot> \<mu> \<odot> \<gamma>')"
         by simp
     next
@@ -69,7 +70,7 @@ proof (cases D C rule: eq_resolution.cases)
     qed
 
     then have "?I \<TTurnstile> ?D\<^sub>G"
-      using entails_groundings
+      using entails_ground_instances
       by auto 
 
     then obtain l\<^sub>G where l\<^sub>G_in_D: "l\<^sub>G \<in># ?D\<^sub>G" and I_models_l\<^sub>G: "?I \<TTurnstile>l l\<^sub>G"
@@ -113,7 +114,7 @@ proof (cases D C rule: eq_resolution.cases)
     unfolding
       true_clss_def 
       eq_resolutionI(1,2)
-      clause_groundings_def
+      clause.welltyped_ground_instances_def
       ground.G_entails_def
     by auto
 qed
@@ -133,7 +134,7 @@ proof (cases D C rule: eq_factoring.cases)
     assume
       trans_I: "trans I" and
       sym_I: "sym I" and
-      entails_groundings: "\<forall>D\<^sub>G \<in> clause_groundings (D, \<V>). ?I \<TTurnstile> D\<^sub>G" and
+      entails_ground_instances: "\<forall>D\<^sub>G \<in> clause.welltyped_ground_instances (D, \<V>). ?I \<TTurnstile> D\<^sub>G" and
       C_is_ground: "clause.is_ground (C \<cdot> \<gamma>)" and
       C_is_welltyped: "clause.is_welltyped \<V> C" and
       \<gamma>_is_welltyped: "term.subst.is_welltyped_on (clause.vars C) \<V> \<gamma>" and
@@ -159,8 +160,9 @@ proof (cases D C rule: eq_factoring.cases)
       using eq_factoringI(9)
       by blast
 
-    have "?D\<^sub>G \<in> clause_groundings (D, \<V>)"
-    proof(unfold clause_groundings_def mem_Collect_eq fst_conv snd_conv, intro exI conjI \<V>)
+    have "?D\<^sub>G \<in> clause.welltyped_ground_instances (D, \<V>)"
+    proof(unfold clause.welltyped_ground_instances_def mem_Collect_eq fst_conv snd_conv, 
+          intro exI conjI \<V>)
       show "clause.to_ground (D \<cdot> \<mu> \<cdot> \<gamma>') = clause.to_ground (D \<cdot> \<mu> \<odot> \<gamma>')"
         by simp
     next
@@ -178,7 +180,7 @@ proof (cases D C rule: eq_factoring.cases)
     qed
 
     then have "?I \<TTurnstile> ?D\<^sub>G"
-      using entails_groundings
+      using entails_ground_instances
       by blast
 
     then obtain l\<^sub>G where l\<^sub>G_in_D\<^sub>G: "l\<^sub>G \<in># ?D\<^sub>G" and I_models_l\<^sub>G: "?I \<TTurnstile>l l\<^sub>G"
@@ -238,7 +240,7 @@ proof (cases D C rule: eq_factoring.cases)
       eq_factoringI(1, 2)
       ground.G_entails_def
       true_clss_def
-      clause_groundings_def
+      clause.welltyped_ground_instances_def
     by auto
 qed
 
@@ -259,8 +261,8 @@ proof (cases D E C rule: superposition.cases)
       trans_I: "trans I" and
       sym_I: "sym I" and
       compatible_with_ground_context_I: "compatible_with_gctxt I" and
-      E_entails_groundings: "\<forall>E\<^sub>G \<in> clause_groundings (E, \<V>\<^sub>1). ?I \<TTurnstile> E\<^sub>G" and
-      D_entails_groundings: "\<forall>D\<^sub>G \<in> clause_groundings (D, \<V>\<^sub>2). ?I \<TTurnstile> D\<^sub>G" and
+      E_entails_ground_instances: "\<forall>E\<^sub>G \<in> clause.welltyped_ground_instances (E, \<V>\<^sub>1). ?I \<TTurnstile> E\<^sub>G" and
+      D_entails_ground_instances: "\<forall>D\<^sub>G \<in> clause.welltyped_ground_instances (D, \<V>\<^sub>2). ?I \<TTurnstile> D\<^sub>G" and
       C_is_ground: "clause.is_ground (C \<cdot> \<gamma>)" and
       C_is_welltyped: "clause.is_welltyped \<V>\<^sub>3 C" and
       \<gamma>_is_welltyped: "term.subst.is_welltyped_on (clause.vars C) \<V>\<^sub>3 \<gamma>"
@@ -328,9 +330,9 @@ proof (cases D E C rule: superposition.cases)
 
     note is_welltyped_\<rho>_\<mu>_\<gamma> = term.welltyped.renaming_ground_subst[OF _ _ _ \<mu>_\<gamma>'_is_ground_subst]
 
-    have "?E\<^sub>G \<in> clause_groundings (E, \<V>\<^sub>1)"
+    have "?E\<^sub>G \<in> clause.welltyped_ground_instances (E, \<V>\<^sub>1)"
     proof(
-        unfold clause_groundings_def mem_Collect_eq fst_conv snd_conv, 
+        unfold clause.welltyped_ground_instances_def mem_Collect_eq fst_conv snd_conv, 
         intro exI conjI E_is_welltyped superpositionI)
 
       show "clause.to_ground (E \<cdot> \<rho>\<^sub>1 \<cdot> \<mu> \<cdot> \<gamma>') = clause.to_ground (E \<cdot> \<rho>\<^sub>1 \<odot> \<mu> \<odot> \<gamma>')"
@@ -351,12 +353,12 @@ proof (cases D E C rule: superposition.cases)
     qed
 
     then have entails_E\<^sub>G: "?I \<TTurnstile> ?E\<^sub>G"
-      using E_entails_groundings
+      using E_entails_ground_instances
       by blast
 
-    have "?D\<^sub>G \<in> clause_groundings (D, \<V>\<^sub>2)"
+    have "?D\<^sub>G \<in> clause.welltyped_ground_instances (D, \<V>\<^sub>2)"
     proof(
-        unfold clause_groundings_def mem_Collect_eq fst_conv snd_conv, 
+        unfold clause.welltyped_ground_instances_def mem_Collect_eq fst_conv snd_conv, 
         intro exI conjI D_is_welltyped superpositionI)
 
       show "clause.to_ground (D \<cdot> \<rho>\<^sub>2 \<cdot> \<mu> \<cdot> \<gamma>') = clause.to_ground (D \<cdot> \<rho>\<^sub>2 \<odot> \<mu> \<odot> \<gamma>')"
@@ -376,7 +378,7 @@ proof (cases D E C rule: superposition.cases)
     qed
 
     then have entails_D\<^sub>G: "?I \<TTurnstile> ?D\<^sub>G"
-      using D_entails_groundings
+      using D_entails_ground_instances
       by blast
 
     have "?I \<TTurnstile> clause.to_ground (C \<cdot> \<gamma>')"
@@ -435,7 +437,8 @@ proof (cases D E C rule: superposition.cases)
   }
 
   then show ?thesis
-    unfolding ground.G_entails_def clause_groundings_def true_clss_def superpositionI(1-3)
+    unfolding
+      ground.G_entails_def clause.welltyped_ground_instances_def true_clss_def superpositionI(1-3)
     by auto
 qed
 

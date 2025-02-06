@@ -12,7 +12,9 @@ locale nonground_term_typing_properties =
   typed: explicitly_replaceable_\<V> + 
   welltyped: explicitly_replaceable_\<V> where typed = welltyped +
   typed: explicitly_typed_renaming +
-  welltyped: explicitly_typed_renaming where typed = welltyped
+  welltyped: explicitly_typed_renaming where typed = welltyped +
+  typed: explicitly_typed_grounding_functional_substitution +
+  welltyped: explicitly_typed_grounding_functional_substitution where typed = welltyped
 
 locale nonground_term_inhabited_typing_properties = 
   nonground_term_typing_properties + 
@@ -35,7 +37,7 @@ inductive welltyped :: "('v, 'ty) var_types \<Rightarrow> ('f,'v) term \<Rightar
     Var: "\<V> x = \<tau> \<Longrightarrow> welltyped \<V> (Var x) \<tau>"
   | Fun: "\<F> f = (\<tau>s, \<tau>) \<Longrightarrow> list_all2 (welltyped \<V>) ts \<tau>s \<Longrightarrow> welltyped \<V> (Fun f ts) \<tau>"
 
-sublocale "term": explicit_typing "typed \<V>" "welltyped \<V>"
+sublocale "term": explicit_typing "typed (\<V> :: ('v, 'ty) var_types)" "welltyped \<V>"
 proof unfold_locales
   show "right_unique (typed \<V>)"
   proof (rule right_uniqueI)
@@ -145,7 +147,8 @@ qed
 
 sublocale "term": nonground_term_typing_properties where 
   id_subst = "Var :: 'v \<Rightarrow> ('f, 'v) term" and comp_subst = "(\<odot>)" and subst = "(\<cdot>t)" and 
-  vars = term.vars and welltyped = welltyped and typed = typed
+  vars = term.vars and welltyped = welltyped and typed = typed and to_ground = term.to_ground and
+  from_ground = term.from_ground
 proof(unfold_locales; (intro typed.Var welltyped.Var)?)
   fix \<tau> and \<V> and t :: "('f, 'v) term" and \<sigma>
   assume is_typed_on: "\<forall>x \<in> term.vars t. typed \<V> (\<sigma> x) (\<V> x)"
@@ -353,7 +356,8 @@ begin
 
 sublocale nonground_term_inhabited_typing_properties where
   id_subst = "Var :: 'v \<Rightarrow> ('f, 'v) term" and comp_subst = "(\<odot>)" and subst = "(\<cdot>t)" and 
-  vars = term.vars and welltyped = welltyped and typed = typed
+  vars = term.vars and welltyped = welltyped and typed = typed and to_ground = term.to_ground and
+  from_ground = term.from_ground
 proof unfold_locales
   fix \<V> :: "('v, 'ty) var_types" and \<tau>
  

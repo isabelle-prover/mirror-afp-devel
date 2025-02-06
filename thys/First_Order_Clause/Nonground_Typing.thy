@@ -19,9 +19,28 @@ locale nonground_typing_lifting =
 
   is_typed: typed_renaming_lifting where base_typed = base_typed +
   is_welltyped: typed_renaming_lifting where
+  sub_is_typed = sub_is_welltyped and base_typed = base_welltyped +
+
+  is_typed: typed_grounding_functional_substitution_lifting where base_typed = base_typed +
+  is_welltyped: typed_grounding_functional_substitution_lifting where
   sub_is_typed = sub_is_welltyped and base_typed = base_welltyped
 for base_typed base_welltyped :: "('var, 'ty) var_types \<Rightarrow> 'base \<Rightarrow> 'ty \<Rightarrow> bool" and
     sub_is_welltyped
+begin
+
+abbreviation "is_typed_ground_instance \<equiv> is_typed.is_typed_ground_instance"
+
+abbreviation "is_welltyped_ground_instance \<equiv> is_welltyped.is_typed_ground_instance"
+
+abbreviation "typed_ground_instances \<equiv> is_typed.typed_ground_instances"
+
+abbreviation "welltyped_ground_instances \<equiv> is_welltyped.typed_ground_instances"
+
+lemmas typed_ground_instances_def = is_typed.typed_ground_instances_def
+
+lemmas welltyped_ground_instances_def = is_welltyped.typed_ground_instances_def
+
+end
 
 locale nonground_inhabited_typing_lifting =
   nonground_typing_lifting +
@@ -37,8 +56,27 @@ locale nonground_uniform_typing_lifting =
   is_welltyped: uniform_replaceable_\<V>_lifting where base_typed = base_welltyped +
 
   is_typed: uniform_typed_renaming_lifting where base_typed = base_typed +
-  is_welltyped: uniform_typed_renaming_lifting where base_typed = base_welltyped
+  is_welltyped: uniform_typed_renaming_lifting where base_typed = base_welltyped +
+
+  is_typed: uniform_typed_grounding_functional_substitution_lifting where base_typed = base_typed +
+  is_welltyped: uniform_typed_grounding_functional_substitution_lifting where 
+  base_typed = base_welltyped 
 for base_typed base_welltyped :: "('var, 'ty) var_types \<Rightarrow> 'base \<Rightarrow> 'ty \<Rightarrow> bool"
+begin
+
+abbreviation "is_typed_ground_instance \<equiv> is_typed.is_typed_ground_instance"
+
+abbreviation "is_welltyped_ground_instance \<equiv> is_welltyped.is_typed_ground_instance"
+
+abbreviation "typed_ground_instances \<equiv> is_typed.typed_ground_instances"
+
+abbreviation "welltyped_ground_instances \<equiv> is_welltyped.typed_ground_instances"
+
+lemmas typed_ground_instances_def = is_typed.typed_ground_instances_def
+
+lemmas welltyped_ground_instances_def = is_welltyped.typed_ground_instances_def
+
+end
 
 locale nonground_uniform_inhabited_typing_lifting =
   nonground_uniform_typing_lifting +
@@ -53,20 +91,25 @@ locale term_based_nonground_typing_lifting =
 
 locale term_based_nonground_inhabited_typing_lifting =
   "term": nonground_term +
-  nonground_inhabited_typing_lifting where  
+  nonground_inhabited_typing_lifting where
   id_subst = Var and comp_subst = "(\<odot>)" and base_subst = "(\<cdot>t)" and base_vars = term.vars
 
+(* TODO: Try to reduce places where so many parameters need to be provided *)
 locale term_based_nonground_uniform_typing_lifting =
   "term": nonground_term +
   nonground_uniform_typing_lifting where
   id_subst = Var and comp_subst = "(\<odot>)" and map = map_uprod and to_set = set_uprod and
-  base_vars = term.vars and base_subst = "(\<cdot>t)"
+  base_vars = term.vars and base_subst = "(\<cdot>t)" and sub_to_ground = term.to_ground and 
+  sub_from_ground = term.from_ground and to_ground_map = map_uprod and 
+  from_ground_map = map_uprod and ground_map = map_uprod and to_set_ground = set_uprod
 
 locale term_based_nonground_uniform_inhabited_typing_lifting =
   "term": nonground_term +
   nonground_uniform_inhabited_typing_lifting where
   id_subst = Var and comp_subst = "(\<odot>)" and map = map_uprod and to_set = set_uprod and
-  base_vars = term.vars and base_subst = "(\<cdot>t)"
+  base_vars = term.vars and base_subst = "(\<cdot>t)" and sub_to_ground = term.to_ground and
+  sub_from_ground = term.from_ground and to_ground_map = map_uprod and 
+  from_ground_map = map_uprod and ground_map = map_uprod and to_set_ground = set_uprod
 
 locale nonground_typing =
   nonground_clause +
@@ -82,29 +125,23 @@ sublocale atom: term_based_nonground_uniform_typing_lifting where
   base_welltyped = welltyped
   by unfold_locales
 
-sublocale literal: term_based_nonground_typing_lifting where 
+sublocale literal: term_based_nonground_typing_lifting where
   base_typed = "typed :: ('v \<Rightarrow> 'ty) \<Rightarrow> ('f, 'v) Term.term \<Rightarrow> 'ty \<Rightarrow> bool" and 
-  base_welltyped = welltyped and sub_vars = atom.vars and sub_subst = "(\<cdot>a)" and 
+  base_welltyped = welltyped and sub_vars = atom.vars and sub_subst = "(\<cdot>a)" and
   map = map_literal and to_set = set_literal and sub_is_typed = atom.is_typed and
-  sub_is_welltyped = atom.is_welltyped
+  sub_is_welltyped = atom.is_welltyped and sub_to_ground = atom.to_ground and
+  sub_from_ground = atom.from_ground and to_ground_map = map_literal and
+  from_ground_map = map_literal and ground_map = map_literal and to_set_ground = set_literal
   by unfold_locales
 
 sublocale clause: term_based_nonground_typing_lifting where
   base_typed = typed and base_welltyped = welltyped and
   sub_vars = literal.vars and sub_subst = "(\<cdot>l)" and map = image_mset and to_set = set_mset and
-  sub_is_typed = literal.is_typed and sub_is_welltyped = literal.is_welltyped
+  sub_is_typed = literal.is_typed and sub_is_welltyped = literal.is_welltyped and 
+  sub_to_ground = literal.to_ground and sub_from_ground = literal.from_ground and 
+  to_ground_map = image_mset and from_ground_map = image_mset and ground_map = image_mset and 
+  to_set_ground = set_mset
   by unfold_locales
-
-abbreviation is_welltyped_grounding where
-  "is_welltyped_grounding C \<V> \<gamma> \<equiv>
-    clause.is_ground (C \<cdot> \<gamma>) \<and>
-    clause.is_welltyped \<V> C \<and>
-    term.subst.is_welltyped_on (clause.vars C) \<V> \<gamma> \<and>
-    infinite_variables_per_type \<V>"
-
-definition clause_groundings :: "('f, 'v, 'ty) typed_clause \<Rightarrow> 'f ground_atom clause set" where
-  "clause_groundings C =
-    { clause.to_ground (fst C \<cdot> \<gamma>) | \<gamma>. is_welltyped_grounding (fst C) (snd C) \<gamma> }"
 
 end
 
@@ -123,13 +160,18 @@ sublocale literal: term_based_nonground_inhabited_typing_lifting where
   base_typed = "typed :: ('v \<Rightarrow> 'ty) \<Rightarrow> ('f, 'v) Term.term \<Rightarrow> 'ty \<Rightarrow> bool" and 
   base_welltyped = welltyped and sub_vars = atom.vars and sub_subst = "(\<cdot>a)" and 
   map = map_literal and to_set = set_literal and sub_is_typed = atom.is_typed and
-  sub_is_welltyped = atom.is_welltyped
+  sub_is_welltyped = atom.is_welltyped and sub_to_ground = atom.to_ground and
+  sub_from_ground = atom.from_ground and to_ground_map = map_literal and
+  from_ground_map = map_literal and ground_map = map_literal and to_set_ground = set_literal
   by unfold_locales
 
 sublocale clause: term_based_nonground_inhabited_typing_lifting where
   base_typed = typed and base_welltyped = welltyped and
   sub_vars = literal.vars and sub_subst = "(\<cdot>l)" and map = image_mset and to_set = set_mset and
-  sub_is_typed = literal.is_typed and sub_is_welltyped = literal.is_welltyped
+  sub_is_typed = literal.is_typed and sub_is_welltyped = literal.is_welltyped and 
+  sub_to_ground = literal.to_ground and sub_from_ground = literal.from_ground and 
+  to_ground_map = image_mset and from_ground_map = image_mset and ground_map = image_mset and 
+  to_set_ground = set_mset
   by unfold_locales
 
 end
