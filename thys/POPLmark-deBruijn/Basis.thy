@@ -18,17 +18,7 @@ lemma True_simps:
   "(True \<Longrightarrow> PROP P) \<equiv> PROP P"
   "(PROP P \<Longrightarrow> True) \<equiv> PROP Trueprop True"
   "(\<And>x. True) \<equiv> PROP Trueprop True"
-  apply -
-  apply rule
-  apply (erule meta_mp)
-  apply (rule TrueI)
-  apply assumption
-  apply rule
-  apply (rule TrueI)
-  apply assumption
-  apply rule
-  apply (rule TrueI)+
-  done
+  by auto
 
 text \<open>
 Unfortunately, the standard introduction and elimination rules for bounded
@@ -80,19 +70,25 @@ where
   "[]\<langle>i\<rangle> = \<bottom>"
 | "(x # xs)\<langle>i\<rangle> = (case i of 0 \<Rightarrow> \<lfloor>x\<rfloor> | Suc j \<Rightarrow> xs \<langle>j\<rangle>)"
 
-lemma [simp]: "i < \<parallel>xs\<parallel> \<Longrightarrow> (xs @ ys)\<langle>i\<rangle> = xs\<langle>i\<rangle>"
-  apply (induct xs arbitrary: i)
-  apply simp
-  apply (case_tac i)
-  apply simp_all
-  done
+lemma nth_el_append1 [simp]: "i < \<parallel>xs\<parallel> \<Longrightarrow> (xs @ ys)\<langle>i\<rangle> = xs\<langle>i\<rangle>"
+proof (induct xs arbitrary: i)
+  case Nil
+  then show ?case
+    by simp
+next
+  case (Cons a xs i)
+  then show ?case by (cases i) auto
+qed
 
-lemma [simp]: "\<parallel>xs\<parallel> \<le> i \<Longrightarrow> (xs @ ys)\<langle>i\<rangle> = ys\<langle>i - \<parallel>xs\<parallel>\<rangle>"
-  apply (induct xs arbitrary: i)
-  apply simp
-  apply (case_tac i)
-  apply simp_all
-  done
+lemma nth_el_append2 [simp]: "\<parallel>xs\<parallel> \<le> i \<Longrightarrow> (xs @ ys)\<langle>i\<rangle> = ys\<langle>i - \<parallel>xs\<parallel>\<rangle>"
+proof (induct xs arbitrary: i)
+  case Nil
+  then show ?case
+    by simp
+next
+  case (Cons a xs i)
+  then show ?case by (cases i) auto
+qed
 
 text \<open>Association lists\<close>
 
