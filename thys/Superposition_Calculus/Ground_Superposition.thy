@@ -23,8 +23,8 @@ subsection \<open>Ground Rules\<close>
 inductive superposition ::
   "'f gatom clause \<Rightarrow> 'f gatom clause \<Rightarrow> 'f gatom clause \<Rightarrow> bool"
 where
-  superpositionI: "
-    E = add_mset L\<^sub>E E' \<Longrightarrow>
+  superpositionI: 
+     "E = add_mset L\<^sub>E E' \<Longrightarrow>
     D = add_mset L\<^sub>D D' \<Longrightarrow>
     D \<prec>\<^sub>c E \<Longrightarrow>
     \<P> \<in> {Pos, Neg} \<Longrightarrow>
@@ -40,16 +40,16 @@ where
     superposition D E C"
 
 inductive eq_resolution :: "'f gatom clause \<Rightarrow> 'f gatom clause \<Rightarrow> bool" where
-  eq_resolutionI: "
-    D = add_mset L D' \<Longrightarrow>
+  eq_resolutionI: 
+   "D = add_mset L D' \<Longrightarrow>
     L = t !\<approx> t \<Longrightarrow>
     select D = {#} \<and> is_maximal L D \<or> is_maximal L (select D) \<Longrightarrow>
     C = D' \<Longrightarrow>
     eq_resolution D C"
 
 inductive eq_factoring :: "'f gatom clause \<Rightarrow> 'f gatom clause \<Rightarrow> bool" where
-  eq_factoringI: "
-    D = add_mset L\<^sub>1 (add_mset L\<^sub>2 D') \<Longrightarrow>
+  eq_factoringI: 
+   "D = add_mset L\<^sub>1 (add_mset L\<^sub>2 D') \<Longrightarrow>
     L\<^sub>1 = t \<approx> t' \<Longrightarrow>
     L\<^sub>2 = t \<approx> t'' \<Longrightarrow>
     select D = {#} \<Longrightarrow>

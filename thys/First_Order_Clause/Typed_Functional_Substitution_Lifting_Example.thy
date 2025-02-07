@@ -1,23 +1,32 @@
 theory Typed_Functional_Substitution_Lifting_Example
-  imports 
+  imports
+    Functional_Substitution_Typing_Lifting
     Typed_Functional_Substitution_Lifting
-    Typed_Functional_Substitution_Example 
+    Typed_Functional_Substitution_Example
     Abstract_Substitution.Functional_Substitution_Lifting_Example
 begin
 
 text \<open>All property locales have corresponding lifting locales\<close>
 locale nonground_uniform_typing_lifting =
+  functional_substitution_uniform_typing_lifting where 
+  base_typed = "typed \<F>" and base_welltyped = "welltyped \<F>" +
+
   is_typed: uniform_typed_subst_stability_lifting where 
-  base_typed = "typed \<F>" + 
+  base_typed = "typed \<F>" +
+
   is_welltyped: uniform_typed_subst_stability_lifting where 
   base_typed = "welltyped \<F>"
 for \<F> :: "('f, 'ty) fun_types"
 
 locale nonground_typing_lifting =
+  functional_substitution_typing_lifting where
+  base_typed = "typed \<F>" and base_welltyped = "welltyped \<F>" +
+
   is_typed: typed_subst_stability_lifting where base_typed = "typed \<F>" +
+
   is_welltyped: typed_subst_stability_lifting where 
   sub_is_typed = sub_is_welltyped and base_typed = "welltyped \<F>"
-for \<F> :: "('f, 'ty) fun_types" and sub_is_welltyped
+for \<F> :: "('f, 'ty) fun_types"
 
 
 locale example_typing_lifting =

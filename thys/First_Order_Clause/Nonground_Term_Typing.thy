@@ -2,22 +2,23 @@ theory Nonground_Term_Typing
   imports 
     Term_Typing
     Typed_Functional_Substitution
+    Functional_Substitution_Typing
     Nonground_Term
 begin
 
-locale nonground_term_typing_properties = 
-  base_functional_substitution_typing + 
-  typed: explicitly_typed_subst_stability + 
-  welltyped: explicitly_typed_subst_stability where typed = welltyped +
-  typed: explicitly_replaceable_\<V> + 
-  welltyped: explicitly_replaceable_\<V> where typed = welltyped +
-  typed: explicitly_typed_renaming +
-  welltyped: explicitly_typed_renaming where typed = welltyped +
-  typed: explicitly_typed_grounding_functional_substitution +
-  welltyped: explicitly_typed_grounding_functional_substitution where typed = welltyped
+locale base_typed_properties =
+  explicitly_typed_subst_stability + 
+  explicitly_replaceable_\<V> + 
+  explicitly_typed_renaming +
+  explicitly_typed_grounding_functional_substitution
 
-locale nonground_term_inhabited_typing_properties = 
-  nonground_term_typing_properties + 
+locale base_typing_properties =
+  base_functional_substitution_typing +
+  typed: base_typed_properties +
+  welltyped: base_typed_properties where typed = welltyped
+
+locale base_inhabited_typing_properties = 
+  base_typing_properties + 
   typed: inhabited_explicitly_typed_functional_substitution +
   welltyped: inhabited_explicitly_typed_functional_substitution where typed = welltyped
 
@@ -145,11 +146,11 @@ next
     by (metis term.exhaust prod.exhaust typed.simps)
 qed
 
-sublocale "term": nonground_term_typing_properties where 
+sublocale "term": base_typing_properties where 
   id_subst = "Var :: 'v \<Rightarrow> ('f, 'v) term" and comp_subst = "(\<odot>)" and subst = "(\<cdot>t)" and 
   vars = term.vars and welltyped = welltyped and typed = typed and to_ground = term.to_ground and
   from_ground = term.from_ground
-proof(unfold_locales; (intro typed.Var welltyped.Var)?)
+proof(unfold_locales; (intro typed.Var welltyped.Var refl)?)
   fix \<tau> and \<V> and t :: "('f, 'v) term" and \<sigma>
   assume is_typed_on: "\<forall>x \<in> term.vars t. typed \<V> (\<sigma> x) (\<V> x)"
 
@@ -354,8 +355,8 @@ locale nonground_term_inhabited_typing =
   assumes types_inhabited: "\<And>\<tau>. \<exists>f. \<F> f = ([], \<tau>)"
 begin
 
-sublocale nonground_term_inhabited_typing_properties where
-  id_subst = "Var :: 'v \<Rightarrow> ('f, 'v) term" and comp_subst = "(\<odot>)" and subst = "(\<cdot>t)" and 
+sublocale base_inhabited_typing_properties where
+  id_subst = "Var :: 'v \<Rightarrow> ('f, 'v) term" and comp_subst = "(\<odot>)" and subst = "(\<cdot>t)" and
   vars = term.vars and welltyped = welltyped and typed = typed and to_ground = term.to_ground and
   from_ground = term.from_ground
 proof unfold_locales

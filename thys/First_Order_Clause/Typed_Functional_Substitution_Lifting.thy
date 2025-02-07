@@ -4,6 +4,7 @@ theory Typed_Functional_Substitution_Lifting
     Abstract_Substitution.Functional_Substitution_Lifting
 begin
 
+(* TODO: *)
 lemma ext_equiv: "(\<And>x. f x \<equiv> g x) \<Longrightarrow> f \<equiv> g"
   by presburger
 
@@ -20,6 +21,8 @@ begin
 
 abbreviation (input) lifted_is_typed where 
   "lifted_is_typed \<V> \<equiv> is_typed_lifting to_set (sub_is_typed \<V>)"
+
+lemmas lifted_is_typed_def = is_typed_lifting_def[of to_set, THEN ext_equiv, of sub_is_typed]
 
 sublocale typed_functional_substitution where 
   vars = vars and subst = subst and is_typed = lifted_is_typed
@@ -102,46 +105,6 @@ sublocale inhabited_typed_functional_substitution where
 
 end
 
-locale functional_substitution_typing_lifting =
-  sub: functional_substitution_typing where 
-  vars = sub_vars and subst = sub_subst and is_typed = sub_is_typed and 
-  is_welltyped = sub_is_welltyped +
-  based_functional_substitution_lifting where to_set = to_set
-for
-  to_set :: "'expr \<Rightarrow> 'sub set" and 
-  sub_is_typed sub_is_welltyped :: "('var, 'ty) var_types \<Rightarrow> 'sub \<Rightarrow> bool"
-begin
-
-sublocale typing_lifting where 
-  sub_is_typed = "sub_is_typed \<V>" and sub_is_welltyped = "sub_is_welltyped \<V>" 
-  by unfold_locales
-
-sublocale functional_substitution_typing where 
-  is_typed = is_typed and is_welltyped = is_welltyped and vars = vars and subst = subst 
-  by unfold_locales
-
-end
-
-locale functional_substitution_uniform_typing_lifting =
-  base: base_functional_substitution_typing where 
-  vars = base_vars and subst = base_subst and typed = base_typed and welltyped = base_welltyped +
-  based_functional_substitution_lifting where 
-  to_set = to_set and sub_vars = base_vars and sub_subst = base_subst
-for
-  to_set :: "'expr \<Rightarrow> 'base set" and
-  base_typed base_welltyped :: "('var, 'ty) var_types \<Rightarrow> 'base \<Rightarrow> 'ty \<Rightarrow> bool"
-begin
-
-sublocale uniform_typing_lifting where 
-  sub_typed = "base_typed \<V>" and sub_welltyped = "base_welltyped \<V>"
-  by unfold_locales
-
-sublocale functional_substitution_typing where 
-  is_typed = is_typed and is_welltyped = is_welltyped and vars = vars and subst = subst
-  by unfold_locales
-
-end
-
 locale typed_subst_stability_lifting =
   typed_functional_substitution_lifting +  
   sub: typed_subst_stability where is_typed = sub_is_typed and vars = sub_vars and subst = sub_subst
@@ -219,22 +182,22 @@ sublocale based_typed_renaming where subst = subst and vars = vars
 
 end
 
-locale typed_renaming_lifting = 
-  typed_functional_substitution_lifting where 
+locale typed_renaming_lifting =
+  typed_functional_substitution_lifting where
   base_typed = "base_typed :: ('v \<Rightarrow> 'ty) \<Rightarrow> 'base \<Rightarrow> 'ty \<Rightarrow> bool" +
   based_typed_renaming_lifting where typed = base_typed +
-  sub: typed_renaming where 
+  sub: typed_renaming where
   subst = sub_subst and vars = sub_vars and is_typed = sub_is_typed
 begin
                   
-sublocale typed_renaming where 
+sublocale typed_renaming where
   subst = subst and vars = vars and is_typed = lifted_is_typed
-proof unfold_locales 
+proof unfold_locales
   fix \<rho> expr and \<V> \<V>' :: "'v \<Rightarrow> 'ty"
   assume "sub.base.is_renaming \<rho>" "\<forall>x\<in>vars expr. \<V> x = \<V>' (rename \<rho> x)"
 
   then show "lifted_is_typed \<V>' (expr \<cdot> \<rho>) = lifted_is_typed \<V> expr"
-    using sub.typed_renaming 
+    using sub.typed_renaming
     unfolding vars_def subst_def is_typed_lifting_def
     by force
 qed

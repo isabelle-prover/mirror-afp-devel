@@ -7,7 +7,7 @@ begin
 context ground_superposition_calculus
 begin
 
-sublocale ground_typing where \<F> = "\<F> ::  ('f, 'ty) fun_types"
+sublocale ground_typing where \<F> = "\<F> :: ('f, 'ty) fun_types"
   by unfold_locales
 
 context

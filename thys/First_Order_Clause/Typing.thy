@@ -2,11 +2,6 @@ theory Typing
   imports Main
 begin
 
-locale typing =
-  fixes is_typed is_welltyped
-  assumes is_typed_if_is_welltyped: 
-    "\<And>expr. is_welltyped expr \<Longrightarrow> is_typed expr"
-
 locale predicate_typed = 
   fixes typed :: "'expr \<Rightarrow> 'ty \<Rightarrow> bool"
   assumes right_unique: "right_unique typed"
@@ -18,6 +13,17 @@ abbreviation is_typed where
 lemmas right_uniqueD [dest] = right_uniqueD[OF right_unique] 
 
 end
+
+definition uniform_typed_lifting where
+  "uniform_typed_lifting to_set sub_typed expr \<equiv> \<exists>\<tau>. \<forall>sub \<in> to_set expr. sub_typed sub \<tau>"
+
+definition is_typed_lifting where
+  "is_typed_lifting to_set sub_is_typed expr \<equiv> \<forall>sub \<in> to_set expr. sub_is_typed sub"
+
+locale typing =
+  fixes is_typed is_welltyped
+  assumes is_typed_if_is_welltyped: 
+    "\<And>expr. is_welltyped expr \<Longrightarrow> is_typed expr"
 
 locale explicit_typing =
   typed: predicate_typed where typed = typed +
@@ -43,12 +49,6 @@ lemma typed_welltyped_same_type:
   by blast
 
 end
-
-definition uniform_typed_lifting where 
-  "uniform_typed_lifting to_set sub_typed expr \<equiv> \<exists>\<tau>. \<forall>sub \<in> to_set expr. sub_typed sub \<tau>"
-
-definition is_typed_lifting where 
-  "is_typed_lifting to_set sub_is_typed expr \<equiv> \<forall>sub \<in> to_set expr. sub_is_typed sub"
 
 locale uniform_typing_lifting = 
   sub: explicit_typing where typed = sub_typed and welltyped = sub_welltyped

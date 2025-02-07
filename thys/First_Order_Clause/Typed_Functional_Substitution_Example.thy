@@ -1,5 +1,6 @@
 theory Typed_Functional_Substitution_Example
-  imports 
+  imports
+    Functional_Substitution_Typing
     Typed_Functional_Substitution
     Abstract_Substitution.Functional_Substitution_Example
 begin
@@ -45,17 +46,7 @@ global_interpretation "term": base_functional_substitution_typing where
   typed = "typed (\<F> :: ('f, 'ty) fun_types)" and welltyped = "welltyped \<F>" and 
   subst = subst_apply_term and id_subst = Var and comp_subst = subst_compose and
   vars = "vars_term :: ('f, 'v) term \<Rightarrow> 'v set"
-proof unfold_locales
-  fix \<V> :: "('v, 'ty) var_types" and x \<tau>
-  assume "\<V> x = \<tau>"
-  then show "welltyped \<F> \<V> (Var x) \<tau>"
-    by (rule welltyped.Var)
-next
-  fix \<V> :: "('v, 'ty) var_types" and x \<tau>
-  assume "\<V> x = \<tau>"
-  then show "typed \<F> \<V> (Var x) \<tau>"
-    by (rule typed.Var)
-qed
+  by (unfold_locales; intro typed.Var welltyped.Var refl)
 
 text \<open>A selection of substitution properties for typed terms.\<close>
 locale typed_term_subst_properties =
@@ -67,7 +58,7 @@ global_interpretation "term": typed_term_subst_properties where
   subst = subst_apply_term and id_subst = Var and comp_subst = subst_compose and
   vars = "vars_term :: ('f, 'v) term \<Rightarrow> 'v set" and \<F> = \<F> 
 for \<F> :: "'f \<Rightarrow> 'ty list \<times> 'ty"
-proof unfold_locales
+proof (unfold_locales)
   fix \<tau> and \<V> and t :: "('f, 'v) term" and \<sigma>
   assume is_typed_on: "\<forall>x \<in> vars_term t. typed \<F> \<V> (\<sigma> x) (\<V> x)"
 
