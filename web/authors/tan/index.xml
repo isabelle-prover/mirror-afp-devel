@@ -11,8 +11,15 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Mon, 10 Jun 2024 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Wed, 05 Feb 2025 00:00:00 +0000</lastBuildDate>
       <atom:link href="/authors/tan/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Verification of the CVM algorithm with a New Recursive Analysis Technique</title>
+          <link>/entries/CVM_Distinct_Elements.html</link>
+          <pubDate>Wed, 05 Feb 2025 00:00:00 +0000</pubDate>
+          <guid>/entries/CVM_Distinct_Elements.html</guid>
+          <description></description>
+        </item>
         <item>
           <title>Formalizing Coppersmith&#39;s Method</title>
           <link>/entries/Coppersmith_Method.html</link>

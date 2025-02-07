@@ -3570,6 +3570,25 @@ host = [
 
 [ketland.homepages]
 
+[khu]
+name = "Derek Khu"
+orcid = "0009-0000-0293-0664"
+
+[khu.emails]
+
+[khu.emails.khu_email]
+user = [
+  "Derek_Khu",
+]
+host = [
+  "i2r",
+  "a-star",
+  "edu",
+  "sg",
+]
+
+[khu.homepages]
+
 [kim]
 name = "Sunpill Kim"
 orcid = "0000-0002-7767-4084"
@@ -4534,6 +4553,24 @@ host = [
 ]
 
 [maximova.homepages]
+
+[meel]
+name = "Kuldeep S. Meel"
+orcid = "0000-0001-9423-5270"
+
+[meel.emails]
+
+[meel.emails.meel_email]
+user = [
+  "meel",
+]
+host = [
+  "cs",
+  "toronto",
+  "edu",
+]
+
+[meel.homepages]
 
 [meis]
 name = "Rene Meis"
@@ -7822,6 +7859,25 @@ host = [
 
 [watt.homepages]
 watt_homepage = "http://www.cl.cam.ac.uk/~caw77/"
+
+[watts]
+name = "Seng Joe Watt"
+orcid = "0000-0002-6883-4736"
+
+[watts.emails]
+
+[watts.emails.watts_email]
+user = [
+  "Watt_Seng_Joe",
+]
+host = [
+  "i2r",
+  "a-star",
+  "edu",
+  "sg",
+]
+
+[watts.homepages]
 
 [weber]
 name = "Tjark Weber"

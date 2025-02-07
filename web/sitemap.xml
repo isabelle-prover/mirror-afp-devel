@@ -3,21 +3,54 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>/</loc>
-    <lastmod>2025-01-24T00:00:00+00:00</lastmod>
+    <lastmod>2025-02-05T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/</loc>
-    <lastmod>2025-01-24T00:00:00+00:00</lastmod>
+    <lastmod>2025-02-05T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/topics/computer-science/</loc>
-    <lastmod>2025-01-24T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/cordwell/</loc>
-    <lastmod>2025-01-24T00:00:00+00:00</lastmod>
+    <lastmod>2025-02-05T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/</loc>
-    <lastmod>2025-01-24T00:00:00+00:00</lastmod>
+    <lastmod>2025-02-05T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/</loc>
+    <lastmod>2025-02-05T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/finite_fields/</loc>
+    <lastmod>2025-02-05T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/karayel/</loc>
+    <lastmod>2025-02-05T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/khu/</loc>
+    <lastmod>2025-02-05T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/meel/</loc>
+    <lastmod>2025-02-05T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/negative_association/</loc>
+    <lastmod>2025-02-05T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/probabilistic_prime_tests/</loc>
+    <lastmod>2025-02-05T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/tan/</loc>
+    <lastmod>2025-02-05T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/</loc>
+    <lastmod>2025-02-05T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/universal_hash_families/</loc>
+    <lastmod>2025-02-05T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/CVM_Distinct_Elements.html</loc>
+    <lastmod>2025-02-05T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/watts/</loc>
+    <lastmod>2025-02-05T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/cordwell/</loc>
     <lastmod>2025-01-24T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/topics/logic/</loc>
@@ -33,9 +66,6 @@
     <lastmod>2025-01-24T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/sloan/</loc>
-    <lastmod>2025-01-24T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/</loc>
     <lastmod>2025-01-24T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/wangz/</loc>
@@ -77,16 +107,10 @@
     <loc>/dependencies/executable_randomized_algorithms/</loc>
     <lastmod>2025-01-16T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/authors/karayel/</loc>
-    <lastmod>2025-01-16T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/entries/Negative_Association.html</loc>
     <lastmod>2025-01-16T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/twelvefold_way/</loc>
-    <lastmod>2025-01-16T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/universal_hash_families/</loc>
     <lastmod>2025-01-16T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/weighted_arithmetic_geometric_mean/</loc>
@@ -531,9 +555,6 @@
     <lastmod>2024-06-13T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Coppersmith_Method.html</loc>
-    <lastmod>2024-06-10T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/tan/</loc>
     <lastmod>2024-06-10T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Coproduct_Measure.html</loc>
@@ -1796,9 +1817,6 @@
     <loc>/entries/ResiduatedTransitionSystem.html</loc>
     <lastmod>2022-02-28T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/dependencies/finite_fields/</loc>
-    <lastmod>2022-02-20T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/entries/Universal_Hash_Families.html</loc>
     <lastmod>2022-02-20T00:00:00+00:00</lastmod>
   </url><url>
@@ -2676,9 +2694,6 @@
     <lastmod>2020-01-31T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Mersenne_Primes.html</loc>
-    <lastmod>2020-01-17T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/probabilistic_prime_tests/</loc>
     <lastmod>2020-01-17T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/essmann/</loc>
@@ -5706,6 +5721,8 @@
     <loc>/sessions/cubic_quartic_equations/</loc>
   </url><url>
     <loc>/sessions/cubicalcategories/</loc>
+  </url><url>
+    <loc>/sessions/cvm_distinct_elements/</loc>
   </url><url>
     <loc>/sessions/cvp_hardness/</loc>
   </url><url>

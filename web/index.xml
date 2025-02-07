@@ -11,8 +11,15 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Fri, 24 Jan 2025 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Wed, 05 Feb 2025 00:00:00 +0000</lastBuildDate>
       <atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Verification of the CVM algorithm with a New Recursive Analysis Technique</title>
+          <link>/entries/CVM_Distinct_Elements.html</link>
+          <pubDate>Wed, 05 Feb 2025 00:00:00 +0000</pubDate>
+          <guid>/entries/CVM_Distinct_Elements.html</guid>
+          <description></description>
+        </item>
         <item>
           <title>Mission-time Linear Temporal Logic</title>
           <link>/entries/Mission_Time_LTL.html</link>
@@ -7445,6 +7452,13 @@
           <link>/sessions/cubicalcategories/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
           <guid>/sessions/cubicalcategories/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>CVM_Distinct_Elements</title>
+          <link>/sessions/cvm_distinct_elements/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/cvm_distinct_elements/</guid>
           <description></description>
         </item>
         <item>

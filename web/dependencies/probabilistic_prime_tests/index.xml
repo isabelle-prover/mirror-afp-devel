@@ -11,8 +11,15 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Fri, 17 Jan 2020 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Wed, 05 Feb 2025 00:00:00 +0000</lastBuildDate>
       <atom:link href="/dependencies/probabilistic_prime_tests/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Verification of the CVM algorithm with a New Recursive Analysis Technique</title>
+          <link>/entries/CVM_Distinct_Elements.html</link>
+          <pubDate>Wed, 05 Feb 2025 00:00:00 +0000</pubDate>
+          <guid>/entries/CVM_Distinct_Elements.html</guid>
+          <description></description>
+        </item>
         <item>
           <title>Mersenne primes and the Lucas–Lehmer test</title>
           <link>/entries/Mersenne_Primes.html</link>

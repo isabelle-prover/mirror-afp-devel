@@ -1,30 +1,23 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Finite_Fields on Archive of Formal Proofs
+    <title>khu on Archive of Formal Proofs
     </title>
-    <link>/dependencies/finite_fields/</link>
+    <link>/authors/khu/</link>
     <description>
-        Recent content in Finite_Fields 
+        Recent content in khu 
         on Archive of Formal Proofs
     </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
       <lastBuildDate>Wed, 05 Feb 2025 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/dependencies/finite_fields/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="/authors/khu/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Verification of the CVM algorithm with a New Recursive Analysis Technique</title>
           <link>/entries/CVM_Distinct_Elements.html</link>
           <pubDate>Wed, 05 Feb 2025 00:00:00 +0000</pubDate>
           <guid>/entries/CVM_Distinct_Elements.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Universal Hash Families</title>
-          <link>/entries/Universal_Hash_Families.html</link>
-          <pubDate>Sun, 20 Feb 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/Universal_Hash_Families.html</guid>
           <description></description>
         </item>
   </channel>
