@@ -33,7 +33,7 @@ lemma eq_resolution_lifting:
   obtains C'
   where
     "eq_resolution (D, \<V>) (C', \<V>)"
-    "Infer [D\<^sub>G] C\<^sub>G \<in> inference_groundings (Infer [(D, \<V>)] (C', \<V>))"
+    "Infer [D\<^sub>G] C\<^sub>G \<in> inference_ground_instances (Infer [(D, \<V>)] (C', \<V>))"
     "C' \<cdot> \<gamma> = C \<cdot> \<gamma>"
   using ground_eq_resolution
 proof(cases D\<^sub>G C\<^sub>G rule: ground.eq_resolution.cases)
@@ -213,16 +213,16 @@ proof(cases D\<^sub>G C\<^sub>G rule: ground.eq_resolution.cases)
         unfolding clause.subst_comp_subst[symmetric] \<mu>_\<gamma>.
     qed
 
-    show "Infer [D\<^sub>G] C\<^sub>G \<in> inference_groundings (Infer [(D, \<V>)] (C' \<cdot> \<mu>, \<V>))"
-    proof (rule is_inference_grounding_one_premise_inference_groundings)
+    show "Infer [D\<^sub>G] C\<^sub>G \<in> inference_ground_instances (Infer [(D, \<V>)] (C' \<cdot> \<mu>, \<V>))"
+    proof (rule is_inference_ground_instance_one_premise)
 
-      show "is_inference_grounding_one_premise (D, \<V>) (C' \<cdot> \<mu>, \<V>) (Infer [D\<^sub>G] C\<^sub>G) \<gamma>"
-      proof(unfold split, intro conjI; (rule D_grounding D_is_welltyped refl \<V>)?)
-        show "clause.is_ground (C' \<cdot> \<mu> \<cdot> \<gamma>)"
-          using C_grounding C'_\<mu>_\<gamma>
-          by argo
+      show "is_inference_ground_instance_one_premise (D, \<V>) (C' \<cdot> \<mu>, \<V>) (Infer [D\<^sub>G] C\<^sub>G) \<gamma>"
+      proof(unfold split, intro conjI; (rule D_is_welltyped refl \<V>)?)
+        show "inference.is_ground (Infer [D] (C' \<cdot> \<mu>) \<cdot>\<iota> \<gamma>)"
+          using D_grounding C_grounding C'_\<mu>_\<gamma>
+          by auto
       next
-        show "Infer [D\<^sub>G] C\<^sub>G = Infer [clause.to_ground (D \<cdot> \<gamma>)] (clause.to_ground (C' \<cdot> \<mu> \<cdot> \<gamma>))"
+        show "Infer [D\<^sub>G] C\<^sub>G = inference.to_ground (Infer [D] (C' \<cdot> \<mu>) \<cdot>\<iota> \<gamma>)"
           using C'_\<mu>_\<gamma>
           by simp
       next
@@ -267,7 +267,7 @@ lemma eq_factoring_lifting:
   obtains C' 
   where
     "eq_factoring (D, \<V>) (C', \<V>)"
-    "Infer [D\<^sub>G] C\<^sub>G \<in> inference_groundings (Infer [(D, \<V>)] (C', \<V>))"
+    "Infer [D\<^sub>G] C\<^sub>G \<in> inference_ground_instances (Infer [(D, \<V>)] (C', \<V>))"
     "C' \<cdot> \<gamma> = C \<cdot> \<gamma>"
   using ground_eq_factoring
 proof(cases D\<^sub>G C\<^sub>G rule: ground.eq_factoring.cases)
@@ -425,16 +425,16 @@ proof(cases D\<^sub>G C\<^sub>G rule: ground.eq_factoring.cases)
       finally show ?thesis ..
     qed
 
-    show "Infer [D\<^sub>G] C\<^sub>G \<in> inference_groundings (Infer [(D, \<V>)] (?C', \<V>))"
-    proof (rule is_inference_grounding_one_premise_inference_groundings)
+    show "Infer [D\<^sub>G] C\<^sub>G \<in> inference_ground_instances (Infer [(D, \<V>)] (?C', \<V>))"
+    proof (rule is_inference_ground_instance_one_premise)
 
-      show "is_inference_grounding_one_premise (D, \<V>) (?C', \<V>) (Infer [D\<^sub>G] C\<^sub>G) \<gamma>"
-      proof(unfold split, intro conjI; (rule D_grounding D_is_welltyped refl \<V>)?)
-        show "clause.is_ground (?C' \<cdot> \<gamma>)"
-          using C_grounding C'_\<gamma>
-          by argo
+      show "is_inference_ground_instance_one_premise (D, \<V>) (?C', \<V>) (Infer [D\<^sub>G] C\<^sub>G) \<gamma>"
+      proof(unfold split, intro conjI; (rule D_is_welltyped refl \<V>)?)
+        show "inference.is_ground (Infer [D] ?C' \<cdot>\<iota> \<gamma>)"
+          using C_grounding D_grounding C'_\<gamma>
+          by auto
       next
-        show "Infer [D\<^sub>G] C\<^sub>G = Infer [clause.to_ground (D \<cdot> \<gamma>)] (clause.to_ground (?C' \<cdot> \<gamma>))"
+        show "Infer [D\<^sub>G] C\<^sub>G = inference.to_ground (Infer [D] ?C' \<cdot>\<iota> \<gamma>)"
           using C'_\<gamma>
           by simp
       next
@@ -499,7 +499,7 @@ lemma superposition_lifting:
   obtains C' \<V>\<^sub>3
   where
     "superposition (D, \<V>\<^sub>2) (E, \<V>\<^sub>1) (C', \<V>\<^sub>3)"
-    "\<iota>\<^sub>G \<in> inference_groundings (Infer [(D, \<V>\<^sub>2), (E, \<V>\<^sub>1)] (C', \<V>\<^sub>3))"
+    "\<iota>\<^sub>G \<in> inference_ground_instances (Infer [(D, \<V>\<^sub>2), (E, \<V>\<^sub>1)] (C', \<V>\<^sub>3))"
     "C' \<cdot> \<gamma> = C \<cdot> \<gamma>"
   using ground_superposition
 proof(cases D\<^sub>G E\<^sub>G C\<^sub>G rule: ground.superposition.cases)
@@ -697,9 +697,9 @@ proof(cases D\<^sub>G E\<^sub>G C\<^sub>G rule: ground.superposition.cases)
             by (simp add: ts)
 
           moreover have
-            "\<nexists>c\<^sub>1 t\<^sub>1. t = c\<^sub>1\<langle>t\<^sub>1\<rangle> \<and> 
-                t\<^sub>1 \<cdot>t \<rho>\<^sub>1 \<odot> \<gamma> = term.from_ground t\<^sub>G\<^sub>1 \<and> 
-                c\<^sub>1 \<cdot>t\<^sub>c \<rho>\<^sub>1 \<odot> \<gamma> = context.from_ground c\<^sub>G' \<and> 
+            "\<nexists>c\<^sub>1 t\<^sub>1. t = c\<^sub>1\<langle>t\<^sub>1\<rangle> \<and>
+                t\<^sub>1 \<cdot>t \<rho>\<^sub>1 \<odot> \<gamma> = term.from_ground t\<^sub>G\<^sub>1 \<and>
+                c\<^sub>1 \<cdot>t\<^sub>c \<rho>\<^sub>1 \<odot> \<gamma> = context.from_ground c\<^sub>G' \<and>
                 is_Fun t\<^sub>1"
           proof(rule notI, elim exE conjE)
             fix c\<^sub>1 t\<^sub>1
@@ -744,7 +744,7 @@ proof(cases D\<^sub>G E\<^sub>G C\<^sub>G rule: ground.superposition.cases)
         by auto
 
       have \<iota>\<^sub>G_parts: 
-        "set (side_prems_of \<iota>\<^sub>G) = {D\<^sub>G}" 
+        "set (side_prems_of \<iota>\<^sub>G) = {D\<^sub>G}"
         "main_prem_of \<iota>\<^sub>G = E\<^sub>G"
         "concl_of \<iota>\<^sub>G = C\<^sub>G"
         by simp_all
@@ -1307,22 +1307,20 @@ proof(cases D\<^sub>G E\<^sub>G C\<^sub>G rule: ground.superposition.cases)
         by simp
     qed
 
-    show "\<iota>\<^sub>G \<in> inference_groundings (Infer [(D, \<V>\<^sub>2), (E, \<V>\<^sub>1)] (C', \<V>\<^sub>3))"
-    proof(rule is_inference_grounding_two_premises_inference_groundings)
+    show "\<iota>\<^sub>G \<in> inference_ground_instances (Infer [(D, \<V>\<^sub>2), (E, \<V>\<^sub>1)] (C', \<V>\<^sub>3))"
+    proof (rule is_inference_ground_instance_two_premises)
 
-      show "is_inference_grounding_two_premises (D, \<V>\<^sub>2) (E, \<V>\<^sub>1) (C', \<V>\<^sub>3) \<iota>\<^sub>G \<gamma> \<rho>\<^sub>1 \<rho>\<^sub>2"
+      show "is_inference_ground_instance_two_premises (D, \<V>\<^sub>2) (E, \<V>\<^sub>1) (C', \<V>\<^sub>3) \<iota>\<^sub>G \<gamma> \<rho>\<^sub>1 \<rho>\<^sub>2"
       proof(unfold split, intro conjI; 
-          (rule \<rho>\<^sub>1 \<rho>\<^sub>2 rename_apart D_grounding E_grounding D_is_welltyped E_is_welltyped refl \<V>\<^sub>1
+          (rule \<rho>\<^sub>1 \<rho>\<^sub>2 rename_apart D_is_welltyped E_is_welltyped refl \<V>\<^sub>1
             \<V>\<^sub>2 \<V>\<^sub>3)?)
 
-        show "clause.is_ground (C' \<cdot> \<gamma>)"
-          using C_grounding C'_\<gamma>
-          by argo
+        show "inference.is_ground (Infer [D \<cdot> \<rho>\<^sub>2, E \<cdot> \<rho>\<^sub>1] C' \<cdot>\<iota> \<gamma>)"
+          using  D_grounding E_grounding C_grounding C'_\<gamma>
+          by auto
       next
 
-        show "\<iota>\<^sub>G = Infer
-                    [clause.to_ground (D \<cdot> \<rho>\<^sub>2 \<odot> \<gamma>), clause.to_ground (E \<cdot> \<rho>\<^sub>1 \<odot> \<gamma>)]
-                    (clause.to_ground (C' \<cdot> \<gamma>))"
+        show "\<iota>\<^sub>G = inference.to_ground (Infer [D \<cdot> \<rho>\<^sub>2, E \<cdot> \<rho>\<^sub>1] C' \<cdot>\<iota> \<gamma>)"
           using C'_\<gamma>
           by simp
       next
@@ -1425,13 +1423,13 @@ lemma single_premise_ground_instance:
     \<And>C'. \<lbrakk>
         inference (D, \<V>) (C', \<V>);
         Infer [clause.to_ground (D \<cdot> \<gamma>)] (clause.to_ground (C \<cdot> \<gamma>))
-        \<in> inference_groundings (Infer [(D, \<V>)] (C', \<V>));
+        \<in> inference_ground_instances (Infer [(D, \<V>)] (C', \<V>));
         C' \<cdot> \<gamma> = C \<cdot> \<gamma>\<rbrakk> \<Longrightarrow> thesis\<rbrakk>
        \<Longrightarrow> thesis" and
     inference_eq: "inference = eq_factoring \<or> inference = eq_resolution"
   obtains \<iota> where 
     "\<iota> \<in> Inf_from N" 
-    "\<iota>\<^sub>G \<in> inference_groundings \<iota>"
+    "\<iota>\<^sub>G \<in> inference_ground_instances \<iota>"
 proof-
   obtain D\<^sub>G C\<^sub>G where 
     \<iota>\<^sub>G: "\<iota>\<^sub>G = Infer [D\<^sub>G] C\<^sub>G" and
@@ -1460,18 +1458,18 @@ proof-
     select: "clause.from_ground (select\<^sub>G D\<^sub>G) = select D \<cdot> \<gamma>"
     by (simp_all add: select_ground_subst)
 
-  obtain C where 
+  obtain C where
     C\<^sub>G: "C\<^sub>G = clause.to_ground (C \<cdot> \<gamma>)" and 
     C_grounding: "clause.is_ground (C \<cdot> \<gamma>)"
     by (metis clause.all_subst_ident_iff_ground clause.from_ground_inverse 
         clause.ground_is_ground)
 
-  obtain C' where 
+  obtain C' where
     inference: "inference (D, \<V>) (C', \<V>)" and
-    inference_groundings: "\<iota>\<^sub>G \<in> inference_groundings (Infer [(D, \<V>)] (C', \<V>))" and  
+    inference_ground_instances: "\<iota>\<^sub>G \<in> inference_ground_instances (Infer [(D, \<V>)] (C', \<V>))" and
     C'_C: "C' \<cdot> \<gamma> = C \<cdot> \<gamma>"
     using
-      lifting[OF 
+      lifting[OF
         ground_inference[unfolded D\<^sub>G C\<^sub>G]
         D_grounding
         C_grounding
@@ -1484,7 +1482,7 @@ proof-
   let ?\<iota> = "Infer [(D, \<V>)] (C', \<V>)"
 
   show ?thesis
-  proof(rule that[OF _ inference_groundings])
+  proof(rule that[OF _ inference_ground_instances])
 
     show "?\<iota> \<in> Inf_from N"
       using D_in_N inference inference_eq
@@ -1497,7 +1495,7 @@ lemma eq_resolution_ground_instance:
   assumes ground_eq_resolution: "\<iota>\<^sub>G \<in> ground.eq_resolution_inferences" 
   obtains \<iota> where             
     "\<iota> \<in> Inf_from N" 
-    "\<iota>\<^sub>G \<in> inference_groundings \<iota>"
+    "\<iota>\<^sub>G \<in> inference_ground_instances \<iota>"
   using eq_resolution_lifting single_premise_ground_instance[OF ground_eq_resolution]
   by blast
   
@@ -1505,7 +1503,7 @@ lemma eq_factoring_ground_instance:
   assumes ground_eq_factoring: "\<iota>\<^sub>G \<in> ground.eq_factoring_inferences" 
   obtains \<iota> where 
     "\<iota> \<in> Inf_from N" 
-    "\<iota>\<^sub>G \<in> inference_groundings \<iota>"
+    "\<iota>\<^sub>G \<in> inference_ground_instances \<iota>"
   using eq_factoring_lifting single_premise_ground_instance[OF ground_eq_factoring]
   by blast
 
@@ -1515,7 +1513,7 @@ lemma superposition_ground_instance:
     not_redundant: "\<iota>\<^sub>G \<notin> ground.GRed_I (\<Union> (clause.welltyped_ground_instances ` N))"
   obtains \<iota> where 
     "\<iota> \<in> Inf_from N" 
-    "\<iota>\<^sub>G \<in> inference_groundings \<iota>"
+    "\<iota>\<^sub>G \<in> inference_ground_instances \<iota>"
 proof-
   obtain E\<^sub>G D\<^sub>G C\<^sub>G where 
     \<iota>\<^sub>G : "\<iota>\<^sub>G = Infer [D\<^sub>G, E\<^sub>G] C\<^sub>G" and
@@ -1650,7 +1648,7 @@ proof-
 
   obtain C' \<V>\<^sub>3 where 
     superposition: "superposition (D, \<V>\<^sub>2) (E, \<V>\<^sub>1) (C', \<V>\<^sub>3)" and
-    inference_groundings: "\<iota>\<^sub>G \<in> inference_groundings (Infer [(D, \<V>\<^sub>2), (E, \<V>\<^sub>1)] (C', \<V>\<^sub>3))" and  
+    inference_groundings: "\<iota>\<^sub>G \<in> inference_ground_instances (Infer [(D, \<V>\<^sub>2), (E, \<V>\<^sub>1)] (C', \<V>\<^sub>3))" and  
     C'_\<gamma>_C_\<gamma>: "C' \<cdot> \<gamma> = C \<cdot> \<gamma>"
     using 
       superposition_lifting[OF 
@@ -1683,7 +1681,7 @@ lemma ground_instances:
   assumes not_redundant: "\<iota>\<^sub>G \<notin> ground.Red_I (\<Union> (clause.welltyped_ground_instances ` N))"
   obtains \<iota> where 
     "\<iota> \<in> Inf_from N" 
-    "\<iota>\<^sub>G \<in> inference_groundings \<iota>"
+    "\<iota>\<^sub>G \<in> inference_ground_instances \<iota>"
 proof-
   consider 
     (superposition) "\<iota>\<^sub>G \<in> ground.superposition_inferences" |

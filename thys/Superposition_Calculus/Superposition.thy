@@ -269,7 +269,7 @@ proof (rule iffI)
       case True
       then have "pos_superposition (D, \<V>\<^sub>2) (E, \<V>\<^sub>1) (C, \<V>\<^sub>3)"
         using 
-          superpositionI 
+          superpositionI
           pos_superpositionI[of \<V>\<^sub>1 \<V>\<^sub>2 \<rho>\<^sub>1 \<rho>\<^sub>2 E D l\<^sub>1 E' l\<^sub>2 D' c\<^sub>1 t\<^sub>1 t\<^sub>1' t\<^sub>2 t\<^sub>2' \<V>\<^sub>3 \<mu> C]
         by argo
 

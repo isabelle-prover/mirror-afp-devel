@@ -16,6 +16,7 @@ session First_Order_Clause = Abstract_Substitution +
     Ground_Typing
     Grounded_Selection_Function
     Nonground_Entailment
+    Nonground_Inference
     Nonground_Order
     Typed_Functional_Substitution_Example
     Typed_Functional_Substitution_Lifting_Example
