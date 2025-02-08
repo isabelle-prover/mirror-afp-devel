@@ -1,6 +1,6 @@
 (*<*)
 theory Checker
-  imports Prelim Proof_System Proof_Object "HOL-Library.Simps_Case_Conv"
+  imports Proof_System Proof_Object Regex_Checker "HOL-Library.Simps_Case_Conv"
 begin
 (*>*)
 
@@ -15,7 +15,7 @@ begin
 fun s_check :: "('n, 'd) env \<Rightarrow> ('n, 'd) formula \<Rightarrow> ('n, 'd) sproof \<Rightarrow> bool"
 and v_check :: "('n, 'd) env \<Rightarrow> ('n, 'd) formula \<Rightarrow> ('n, 'd) vproof \<Rightarrow> bool" where
   "s_check v f p = (case (f, p) of
-    (\<top>, STT i) \<Rightarrow> True
+    (\<^bold>\<top>, STT i) \<Rightarrow> True
   | (r \<dagger> ts, SPred i s ts') \<Rightarrow>
     (r = s \<and> ts = ts' \<and> (r, v\<^bold>\<lbrakk>ts\<^bold>\<rbrakk>) \<in> \<Gamma> \<sigma> i)
   | (x \<^bold>\<approx> c, SEq_Const i x' c') \<Rightarrow>
@@ -66,9 +66,13 @@ and v_check :: "('n, 'd) env \<Rightarrow> ('n, 'd) formula \<Rightarrow> ('n, '
     j \<ge> i \<and> mem (\<tau> \<sigma> j - \<tau> \<sigma> i) I
     \<and> map s_at sp1s = [i ..< j] \<and> s_check v \<psi> sp2
     \<and> (\<forall>sp1 \<in> set sp1s. s_check v \<phi> sp1))
+  | (\<^bold>\<triangleleft> I r, SMatchP rsp) \<Rightarrow> 
+    (let (j, i) = rs_at s_at rsp in j \<le> i \<and> mem (\<tau> \<sigma> i - \<tau> \<sigma> j) I \<and> rs_check (s_check v) s_at r rsp)
+  | (\<^bold>\<triangleright> I r, SMatchF rsp) \<Rightarrow> 
+    (let (i, j) = rs_at s_at rsp in i \<le> j \<and> mem (\<tau> \<sigma> j - \<tau> \<sigma> i) I \<and> rs_check (s_check v) s_at r rsp)
   | ( _ , _) \<Rightarrow> False)"
 | "v_check v f p = (case (f, p) of
-    (\<bottom>, VFF i) \<Rightarrow> True
+    (\<^bold>\<bottom>, VFF i) \<Rightarrow> True
   | (r \<dagger> ts, VPred i pred ts') \<Rightarrow>
     (r = pred \<and> ts = ts' \<and> (r, v\<^bold>\<lbrakk>ts\<^bold>\<rbrakk>) \<notin> \<Gamma> \<sigma> i)
   | (x \<^bold>\<approx> c, VEq_Const i x' c') \<Rightarrow>
@@ -137,6 +141,15 @@ and v_check :: "('n, 'd) env \<Rightarrow> ('n, 'd) formula \<Rightarrow> ('n, '
     (hi = (case right I of enat b \<Rightarrow> LTP_f \<sigma> i b) \<and> right I \<noteq> \<infinity>
     \<and> map v_at vp2s = [ETP_f \<sigma> i I ..< hi + 1]
     \<and> (\<forall>vp2 \<in> set vp2s. v_check v \<psi> vp2))
+  | (\<^bold>\<triangleleft> I r, VMatchPOut i) \<Rightarrow> \<tau> \<sigma> i < \<tau> \<sigma> 0 + left I
+  | (\<^bold>\<triangleleft> I r, VMatchP i rvps) \<Rightarrow> 
+    (let j = ETP \<sigma> (case right I of \<infinity> \<Rightarrow> 0 | enat n \<Rightarrow> \<tau> \<sigma> i - n)
+    in \<tau> \<sigma> i \<ge> \<tau> \<sigma> 0 + left I \<and> map (fst \<circ> rv_at v_at) rvps = [j ..< Suc (LTP_p \<sigma> i I)] \<and>
+    (\<forall>rvp \<in> set rvps. rv_check (v_check v) v_at r rvp \<and> snd (rv_at v_at rvp) = i))
+  | (\<^bold>\<triangleright> I r, VMatchF i rvps) \<Rightarrow> 
+    (let j = LTP \<sigma> (case right I of \<infinity> \<Rightarrow> 0 | enat n \<Rightarrow> \<tau> \<sigma> i + n)
+    in map (snd \<circ> rv_at v_at) rvps = [ETP_f \<sigma> i I ..< Suc j] \<and> right I \<noteq> \<infinity> \<and>
+    (\<forall>rvp \<in> set rvps. rv_check (v_check v) v_at r rvp \<and> fst (rv_at v_at rvp) = i))
   | ( _ , _) \<Rightarrow> False)"
 
 declare s_check.simps[simp del] v_check.simps[simp del]
@@ -308,6 +321,14 @@ next
 next
   case (SPrev sp)
   then show ?case by (cases \<phi>) (auto simp add: Let_def SAT_VIO.SPrev)
+next
+  case (SMatchP rsp)
+  then show ?case
+    by (cases \<phi>) (auto intro: SAT_VIO.SMatchP dest!: rs_check_sound[rotated, where sat="SAT \<sigma> v"])
+next
+  case (SMatchF rsp)
+  then show ?case
+    by (cases \<phi>) (auto intro: SAT_VIO.SMatchF dest!: rs_check_sound[rotated, where sat="SAT \<sigma> v"])
 next
   case VFF
   then show ?case by (cases \<phi>) (auto intro: SAT_VIO.VFF)
@@ -544,6 +565,54 @@ next
       unfolding Until
       by (auto simp: Let_def n_def intro: SAT_VIO.VUntilInf split: if_splits enat.splits)
   qed(auto intro: SAT_VIO.intros)
+next
+  case (VMatchPOut i rvps)
+  then show ?case by (cases \<phi>) (auto intro: SAT_VIO.VMatchPOut)
+next
+  case (VMatchP i rvps)
+  then show ?case
+  proof (cases \<phi>)
+    case (MatchP I r)
+    then have vio: "\<And>rvp. rvp \<in> set rvps \<Longrightarrow> Regex_Proof_System.VIO (VIO \<sigma> v) (fst (rv_at v_at rvp)) (snd (rv_at v_at rvp)) r"
+      using rv_check_sound[of r _ "v_check v" "VIO \<sigma> v" v_at] VMatchP MatchP
+      by (auto simp: Let_def)
+    { fix k
+      define j where j_def: "j \<equiv> ETP \<sigma> (case right I of \<infinity> \<Rightarrow> 0 | enat n \<Rightarrow> \<tau> \<sigma> i - n)"
+      assume k_def: "k \<ge> j \<and> k \<le> i \<and> k \<le> LTP \<sigma> (\<tau> \<sigma> i - left I)"
+      from VMatchP MatchP j_def have map: "set (map (fst \<circ> rv_at v_at) rvps) = set [j ..< Suc (LTP_p \<sigma> i I)]"
+        by (auto simp: Let_def)
+      then have kset: "k \<in> set ([j ..< Suc (LTP_p \<sigma> i I)])" using k_def j_def by auto
+      then obtain rvp where rvp: "rvp \<in> set rvps" "fst (rv_at v_at rvp) = k"
+        using k_def kset map
+        by (auto simp: i_LTP_tau set_eq_iff image_iff dest: spec[of _ k] simp del: upt.simps)
+      then have "Regex_Proof_System.VIO (VIO \<sigma> v) k i r" using VMatchP MatchP vio[of rvp]
+        by (auto simp: Let_def)
+      } note * = this
+    then show ?thesis using VMatchP MatchP
+      by (auto simp: i_ETP_tau intro!: SAT_VIO.VMatchP split: enat.splits)
+  qed(auto intro: SAT_VIO.intros)
+next
+  case (VMatchF i rvps)  then show ?case
+  proof (cases \<phi>)
+    case (MatchF I r)
+    then have vio: "\<And>rvp. rvp \<in> set rvps \<Longrightarrow> Regex_Proof_System.VIO (VIO \<sigma> v) (fst (rv_at v_at rvp)) (snd (rv_at v_at rvp)) r"
+      using rv_check_sound[of r _ "v_check v" "VIO \<sigma> v" v_at] VMatchF MatchF
+      by (auto simp: Let_def)
+    { fix k
+      define j where j_def: "j \<equiv> LTP \<sigma> (case right I of \<infinity> \<Rightarrow> 0 | enat n \<Rightarrow> \<tau> \<sigma> i + n)"
+      assume k_def: "k \<le> j \<and> k \<ge> i \<and> k \<ge> ETP \<sigma> (\<tau> \<sigma> i + left I)"
+      from VMatchF MatchF j_def have map: "set (map (snd \<circ> rv_at v_at) rvps) = set [ETP_f \<sigma> i I ..< Suc j]"
+        by (auto simp: Let_def)
+      then have kset: "k \<in> set ([ETP_f \<sigma> i I ..< Suc j])" using k_def j_def by auto
+      then obtain rvp where rvp: "rvp \<in> set rvps" "snd (rv_at v_at rvp) = k"
+        using k_def kset map
+        by (auto simp: i_LTP_tau set_eq_iff image_iff dest: spec[of _ k] simp del: upt.simps)
+      then have "Regex_Proof_System.VIO (VIO \<sigma> v) i k r" using VMatchF MatchF vio[of rvp]
+        by (auto simp: Let_def)
+      } note * = this
+    then show ?thesis using VMatchF MatchF
+      by (auto simp: Let_def intro!: SAT_VIO.VMatchF)
+  qed(auto intro: SAT_VIO.intros)
 qed
 
 definition "compatible X vs v \<longleftrightarrow> (\<forall>x\<in>X. v x \<in> vs x)"
@@ -566,6 +635,10 @@ lemma compatible_union_iff:
 
 lemma compatible_vals_union_eq:
   "compatible_vals (X \<union> Y) vs = compatible_vals X vs \<inter> compatible_vals Y vs"
+  by (auto simp: compatible_vals_def)
+
+lemma compatible_vals_Union_eq:
+  "compatible_vals (\<Union>x\<in>X. Y x) vs = (\<Inter>x \<in> X. compatible_vals (Y x) vs)"
   by (auto simp: compatible_vals_def)
 
 lemma compatible_antimono:
@@ -1042,7 +1115,7 @@ subsection \<open>Executable Variant of the Checker\<close>
 fun s_check_exec :: "('n, 'd) envset \<Rightarrow> ('n, 'd) formula \<Rightarrow> ('n, 'd) sproof \<Rightarrow> bool"
 and v_check_exec :: "('n, 'd) envset \<Rightarrow> ('n, 'd) formula \<Rightarrow> ('n, 'd) vproof \<Rightarrow> bool" where
   "s_check_exec vs f p = (case (f, p) of
-    (\<top>, STT i) \<Rightarrow> True
+    (\<^bold>\<top>, STT i) \<Rightarrow> True
   | (r \<dagger> ts, SPred i s ts') \<Rightarrow>
     (r = s \<and> ts = ts' \<and> mk_values_subset r (vs\<^bold>\<lbrace>ts\<^bold>\<rbrace>) (\<Gamma> \<sigma> i))
   | (x \<^bold>\<approx> c, SEq_Const i x' c') \<Rightarrow>
@@ -1093,9 +1166,13 @@ and v_check_exec :: "('n, 'd) envset \<Rightarrow> ('n, 'd) formula \<Rightarrow
     j \<ge> i \<and> mem (\<tau> \<sigma> j - \<tau> \<sigma> i) I
     \<and> map s_at sp1s = [i ..< j] \<and> s_check_exec vs \<psi> sp2
     \<and> (\<forall>sp1 \<in> set sp1s. s_check_exec vs \<phi> sp1))
+  | (\<^bold>\<triangleleft> I r, SMatchP rsp) \<Rightarrow> 
+    (let (j, i) = rs_at s_at rsp in j \<le> i \<and> mem (\<tau> \<sigma> i - \<tau> \<sigma> j) I \<and> rs_check (s_check_exec vs) s_at r rsp)
+  | (\<^bold>\<triangleright> I r, SMatchF rsp) \<Rightarrow> 
+    (let (i, j) = rs_at s_at rsp in i \<le> j \<and> mem (\<tau> \<sigma> j - \<tau> \<sigma> i) I \<and> rs_check (s_check_exec vs) s_at r rsp)
   | ( _ , _) \<Rightarrow> False)"
 | "v_check_exec vs f p = (case (f, p) of
-    (\<bottom>, VFF i) \<Rightarrow> True
+    (\<^bold>\<bottom>, VFF i) \<Rightarrow> True
   | (r \<dagger> ts, VPred i pred ts') \<Rightarrow>
     (r = pred \<and> ts = ts' \<and> mk_values_subset_Compl r vs ts i)
   | (x \<^bold>\<approx> c, VEq_Const i x' c') \<Rightarrow>
@@ -1164,12 +1241,20 @@ and v_check_exec :: "('n, 'd) envset \<Rightarrow> ('n, 'd) formula \<Rightarrow
     (hi = (case right I of enat b \<Rightarrow> LTP_f \<sigma> i b) \<and> right I \<noteq> \<infinity>
     \<and> map v_at vp2s = [ETP_f \<sigma> i I ..< hi + 1]
     \<and> (\<forall>vp2 \<in> set vp2s. v_check_exec vs \<psi> vp2))
+  | (\<^bold>\<triangleleft> I r, VMatchPOut i) \<Rightarrow> \<tau> \<sigma> i < \<tau> \<sigma> 0 + left I
+  | (\<^bold>\<triangleleft> I r, VMatchP i rvps) \<Rightarrow> 
+    (let j = ETP \<sigma> (case right I of \<infinity> \<Rightarrow> 0 | enat n \<Rightarrow> \<tau> \<sigma> i - n)
+    in \<tau> \<sigma> i \<ge> \<tau> \<sigma> 0 + left I \<and> map (fst \<circ> rv_at v_at) rvps = [j ..< Suc (LTP_p \<sigma> i I)] \<and>
+    (\<forall>rvp \<in> set rvps. rv_check (v_check_exec vs) v_at r rvp \<and> snd (rv_at v_at rvp) = i))
+  | (\<^bold>\<triangleright> I r, VMatchF i rvps) \<Rightarrow> 
+    (let j = LTP \<sigma> (case right I of \<infinity> \<Rightarrow> 0 | enat n \<Rightarrow> \<tau> \<sigma> i + n)
+    in map (snd \<circ> rv_at v_at) rvps = [ETP_f \<sigma> i I ..< Suc j] \<and> right I \<noteq> \<infinity> \<and>
+    (\<forall>rvp \<in> set rvps. rv_check (v_check_exec vs) v_at r rvp \<and> fst (rv_at v_at rvp) = i))
   | ( _ , _) \<Rightarrow> False)"
 
 declare s_check_exec.simps[simp del] v_check_exec.simps[simp del]
 simps_of_case s_check_exec_simps[simp, code]: s_check_exec.simps[unfolded prod.case] (splits: formula.split sproof.split)
 simps_of_case v_check_exec_simps[simp, code]: v_check_exec.simps[unfolded prod.case] (splits: formula.split vproof.split)
-
 
 lemma check_fv_cong:
   assumes "\<forall>x \<in> fv \<phi>. v x = v' x"
@@ -1382,6 +1467,28 @@ next
     case 2
     with Until[of v v'] show ?case
       by (cases vp) auto
+  }
+next
+  case (MatchP I r)
+  {
+    case 1
+    with MatchP[of _ v v'] show ?case
+      by (cases sp) (auto simp: collect_alt elim!: rs_check_cong[THEN iffD1, rotated -1])
+  next
+    case 2
+    with MatchP[of _ v v'] show ?case
+      by (cases vp) (auto simp: collect_alt Let_def elim!: rv_check_cong[THEN iffD1, rotated -1])
+  }
+next
+  case (MatchF I r)
+  {
+    case 1
+    with MatchF[of _ v v'] show ?case
+      by (cases sp) (auto simp: collect_alt elim!: rs_check_cong[THEN iffD1, rotated -1])
+  next
+    case 2
+    with MatchF[of _ v v'] show ?case
+      by (cases vp) (auto simp: collect_alt Let_def elim!: rv_check_cong[THEN iffD1, rotated -1])
   }
 qed
 
@@ -1919,6 +2026,68 @@ next
       qed
     qed (auto simp: compatible_vals_union_eq)
   }
+next
+  case (MatchP I r)
+  {
+    case 1
+    with compatible_vals_nonemptyI[OF 1, of "Regex.collect fv r"] show ?case
+    proof (cases sp)
+      case (SMatchP rsp)
+      show ?thesis
+        unfolding SMatchP s_check_exec_simps s_check_simps fv.simps Let_def split_beta ball_conj_distrib
+          ball_triv_nonempty[OF compatible_vals_nonemptyI[OF 1, of "Regex.collect fv r"]]
+        unfolding collect_alt compatible_vals_Union_eq
+        by (intro conj_cong refl
+          rs_check_exec_rs_check compatible_vals_nonemptyI 1
+          compatible_vals_union_eq compatible_vals_Union_eq
+          compatible_vals_extensible check_fv_cong(1) MatchP(1)[OF _ 1])
+    qed auto
+  next
+    case 2
+    with compatible_vals_nonemptyI[OF 2, of "Regex.collect fv r"] show ?case
+    proof (cases vp)
+      case (VMatchP i rvps)
+      show ?thesis
+        unfolding VMatchP v_check_exec_simps v_check_simps fv.simps Let_def split_beta ball_conj_distrib
+          ball_triv_nonempty[OF compatible_vals_nonemptyI[OF 2, of "Regex.collect fv r"]]
+        unfolding collect_alt compatible_vals_Union_eq ball_swap[of _ "set rvps"]
+        by (intro conj_cong refl ball_cong
+          rv_check_exec_rv_check compatible_vals_nonemptyI 2
+          compatible_vals_union_eq compatible_vals_Union_eq
+          compatible_vals_extensible check_fv_cong(2) MatchP(2)[OF _ 2])
+    qed auto
+  }
+next
+  case (MatchF I r)
+  {
+    case 1
+    with compatible_vals_nonemptyI[OF 1, of "Regex.collect fv r"] show ?case
+    proof (cases sp)
+      case (SMatchF rsp)
+      show ?thesis
+        unfolding SMatchF s_check_exec_simps s_check_simps fv.simps Let_def split_beta ball_conj_distrib
+          ball_triv_nonempty[OF compatible_vals_nonemptyI[OF 1, of "Regex.collect fv r"]]
+        unfolding collect_alt compatible_vals_Union_eq
+        by (intro arg_cong2[of _ _ _ _ "(\<and>)"] refl
+          rs_check_exec_rs_check compatible_vals_nonemptyI 1
+          compatible_vals_union_eq compatible_vals_Union_eq
+          compatible_vals_extensible check_fv_cong(1) MatchF(1)[OF _ 1])
+    qed auto
+  next
+    case 2
+    with compatible_vals_nonemptyI[OF 2, of "Regex.collect fv r"] show ?case
+    proof (cases vp)
+      case (VMatchF i rvps)
+      show ?thesis
+        unfolding VMatchF v_check_exec_simps v_check_simps fv.simps Let_def split_beta ball_conj_distrib
+          ball_triv_nonempty[OF compatible_vals_nonemptyI[OF 2, of "Regex.collect fv r"]]
+        unfolding collect_alt compatible_vals_Union_eq ball_swap[of _ "set rvps"]
+        by (intro conj_cong refl ball_cong
+          rv_check_exec_rv_check compatible_vals_nonemptyI 2
+          compatible_vals_union_eq compatible_vals_Union_eq
+          compatible_vals_extensible check_fv_cong(2) MatchF(2)[OF _ 2])
+    qed auto
+  }
 qed
 
 lemma s_check_code[code]: "s_check v \<phi> sp = s_check_exec (\<lambda>x. {v x}) \<phi> sp"
@@ -1931,9 +2100,25 @@ lemma v_check_code[code]: "v_check v \<phi> vp = v_check_exec (\<lambda>x. {v x}
 
 subsection \<open>Latest Relevant Time-Point\<close>
 
+fun rLRTP :: "('a \<Rightarrow> nat \<Rightarrow> nat option) \<Rightarrow> 'a Regex.regex \<Rightarrow> nat \<Rightarrow> nat option" where
+  "rLRTP LRTP (Regex.Skip n) i = Some i"
+| "rLRTP LRTP (Regex.Test x) i = LRTP x i"
+| "rLRTP LRTP (Regex.Plus r s) i = max_opt (rLRTP LRTP r i) (rLRTP LRTP s i)"
+| "rLRTP LRTP (Regex.Times r s) i = max_opt (rLRTP LRTP r i) (rLRTP LRTP s i)"
+| "rLRTP LRTP (Regex.Star r) i = rLRTP LRTP r i"
+
+lemma rLRTP_cong[fundef_cong]: 
+  "(\<And>x. x \<in> regex.atms r \<Longrightarrow> LRTP x i = LRTP' x i) \<Longrightarrow> rLRTP LRTP r i = rLRTP LRTP' r i"
+  by (induct r) auto
+
+lemma fb_rLRTP: 
+  assumes "\<forall>\<phi> \<in> regex.atms r. future_bounded \<phi> \<and> \<not> Option.is_none (LRTP \<phi> i)"
+  shows "\<not> Option.is_none (rLRTP LRTP r i)"
+  using assms by (induct r) (auto simp: max_opt_def Option.is_none_def)
+
 fun LRTP :: "('n, 'd) formula \<Rightarrow> nat \<Rightarrow> nat option" where
-  "LRTP \<top> i = Some i"
-| "LRTP \<bottom> i = Some i"
+  "LRTP \<^bold>\<top> i = Some i"
+| "LRTP \<^bold>\<bottom> i = Some i"
 | "LRTP (_ \<dagger> _) i = Some i"
 | "LRTP (_ \<^bold>\<approx> _) i = Some i"
 | "LRTP (\<not>\<^sub>F \<phi>) i = LRTP \<phi> i"
@@ -1948,16 +2133,29 @@ fun LRTP :: "('n, 'd) formula \<Rightarrow> nat \<Rightarrow> nat option" where
 | "LRTP (\<^bold>P I \<phi>) i = LRTP \<phi> (LTP_p_safe \<sigma> i I)"
 | "LRTP (\<^bold>H I \<phi>) i = LRTP \<phi> (LTP_p_safe \<sigma> i I)"
 | "LRTP (\<^bold>F I \<phi>) i = (case right I of \<infinity> \<Rightarrow> None | enat b \<Rightarrow> LRTP \<phi> (LTP_f \<sigma> i b))"
-| "LRTP (\<^bold>G I \<phi>) i = (case right I of \<infinity> \<Rightarrow> None | enat b \<Rightarrow> LRTP \<phi> (LTP_f \<sigma> i b))" 
+| "LRTP (\<^bold>G I \<phi>) i = (case right I of \<infinity> \<Rightarrow> None | enat b \<Rightarrow> LRTP \<phi> (LTP_f \<sigma> i b))"
 | "LRTP (\<phi> \<^bold>S I \<psi>) i = max_opt (LRTP \<phi> i) (LRTP \<psi> (LTP_p_safe \<sigma> i I))"
 | "LRTP (\<phi> \<^bold>U I \<psi>) i = (case right I of \<infinity> \<Rightarrow> None | enat b \<Rightarrow> max_opt (LRTP \<phi> ((LTP_f \<sigma> i b)-1)) (LRTP \<psi> (LTP_f \<sigma> i b)))"
+| "LRTP (\<^bold>\<triangleleft> I r) i = 
+    (let X = (\<lambda>\<phi>. LRTP \<phi> i) ` regex.atms r in
+    if X = {} then Some i else if None \<in> X then None else Some (Max (the ` X)))"
+| "LRTP (\<^bold>\<triangleright> I r) i = (case right I of \<infinity> \<Rightarrow> None | enat b \<Rightarrow> 
+    let X = (\<lambda>\<phi>. LRTP \<phi> (LTP_f \<sigma> i b)) ` regex.atms r in
+    if X = {} then Some (LTP_f \<sigma> i b) else if None \<in> X then None else Some (Max (the ` X)))"
 
 lemma fb_LRTP: 
   assumes "future_bounded \<phi>"
   shows "\<not> Option.is_none (LRTP \<phi> i)"
   using assms
-  by (induction \<phi> i rule: LRTP.induct) 
-    (auto simp add: max_opt_def Option.is_none_def)
+proof (induction \<phi> i rule: LRTP.induct)
+  case (20 I r i)
+  from 20(2) show ?case
+    by (auto 0 4 simp add: max_opt_def Option.is_none_def Let_def regex.pred_set dest: 20(1)[rotated])
+next
+  case (21 I r i)
+  from 21(2) show ?case
+    by (auto 0 4 simp add: max_opt_def Option.is_none_def Let_def regex.pred_set dest: 21(1)[rotated])
+qed (auto simp: max_opt_def Option.is_none_def)
 
 lemma not_none_fb_LRTP:
   assumes "future_bounded \<phi>"
@@ -2039,12 +2237,29 @@ lemma AD_simps[simp]:
   "AD (\<^bold>H I \<phi>) i = AD \<phi> (LTP_p_safe \<sigma> i I)"
   "future_bounded (\<phi> \<^bold>S I \<psi>) \<Longrightarrow> AD (\<phi> \<^bold>S I \<psi>) i = AD \<phi> i \<union> AD \<psi> (LTP_p_safe \<sigma> i I)"
   "future_bounded (\<phi> \<^bold>U I \<psi>) \<Longrightarrow> AD (\<phi> \<^bold>U I \<psi>) i = AD \<phi> (LTP_f \<sigma> i (the_enat (right I)) - 1) \<union> AD \<psi> (LTP_f \<sigma> i (the_enat (right I)))"
-  by (auto 0 3 simp: AD_def max_opt_def not_none_fb_LRTP le_max_iff_disj Bex_def split: option.splits)
+  by (auto 0 3 simp:  AD_def max_opt_def not_none_fb_LRTP le_max_iff_disj Bex_def split: option.splits)
 
+lemma AD_simps_regex[simp]:
+  "future_bounded (\<^bold>\<triangleleft> I r) \<Longrightarrow> regex.atms r \<noteq> {} \<Longrightarrow> AD (\<^bold>\<triangleleft> I r) i = (\<Union>\<phi> \<in> regex.atms r. AD \<phi> i)"
+  "future_bounded (\<^bold>\<triangleright> I r) \<Longrightarrow> regex.atms r \<noteq> {} \<Longrightarrow> AD (\<^bold>\<triangleright> I r) i = (\<Union>\<phi> \<in> regex.atms r. AD \<phi> (LTP_f \<sigma> i (the_enat (right I))))"
+  unfolding AD_def
+  by (auto 0 6 simp: Let_def collect_alt regex.pred_set image_image Ball_def not_none_fb_LRTP
+    dest!: Max_ge_iff[THEN iffD1, rotated -1] sym[of None]
+    dest: spec[where P = "\<lambda>x. x \<le> Max _ \<longrightarrow> _ x", THEN mp, OF _ Max_ge_iff[THEN iffD2]] split: if_splits)
 
 lemma LTP_p_mono: "i \<le> j \<Longrightarrow> LTP_p_safe \<sigma> i I \<le> LTP_p_safe \<sigma> j I"
   unfolding LTP_p_safe_def
   by (smt (verit, ccfv_threshold) \<tau>_mono bot_nat_0.extremum diff_le_mono order.trans i_LTP_tau le_cases3 min.bounded_iff)
+
+lemma LTP_\<tau>_mono:
+  assumes "\<tau> \<sigma> i \<le> u"
+  shows"LTP \<sigma> (\<tau> \<sigma> i) \<le> LTP \<sigma> u"
+  using assms unfolding LTP_def
+proof (intro Max_mono)
+  show "finite {i. \<tau> \<sigma> i \<le> u}"
+    unfolding finite_nat_set_iff_bounded_le Ball_def mem_Collect_eq
+    by (meson \<tau>_mono ex_le_\<tau> nle_le order_trans)
+qed auto
 
 lemma LTP_f_mono:
   assumes "i \<le> j"
@@ -2084,6 +2299,40 @@ next
     Until(2)[of "LTP_f \<sigma> i (the_enat (right I))" "LTP_f \<sigma> j (the_enat (right I))"] Until(3-)
   show ?case
     by (auto simp: max_opt_def not_none_fb_LRTP LTP_f_mono diff_le_mono split: option.splits)
+next
+  case (MatchP I r)
+  { assume ne: "regex.atms r \<noteq> {}" and fb: "\<And>\<phi>. \<phi>\<in>regex.atms r \<Longrightarrow> future_bounded \<phi>"
+    then obtain \<phi> where \<phi>: "\<phi> \<in> regex.atms r" "the (LRTP \<phi> j) = (MAX \<phi> \<in> regex.atms r. the (LRTP \<phi> j))"
+      using obtains_MAX[of "regex.atms r" "\<lambda>\<phi>. the (LRTP \<phi> j)" thesis] by auto
+    assume "\<forall>x\<in>regex.atms r. \<exists>a\<in>regex.atms r. \<not> the (LRTP a i) \<le> the (LRTP x j)"
+    with \<phi>(1) obtain \<psi> where \<psi>: "\<psi> \<in> regex.atms r" "\<not> the (LRTP \<psi> i) \<le> the (LRTP \<phi> j)"
+      by blast
+    moreover have "the (LRTP \<psi> i) \<le> the (LRTP \<psi> j)"
+      using MatchP(1)[OF \<psi>(1) fb[OF \<psi>(1)] MatchP(3)] .
+    moreover have "the (LRTP \<psi> j) \<le> the (LRTP \<phi> j)"
+      unfolding \<phi>(2) by (subst Max_ge_iff) (auto simp: ne \<psi>(1))
+    ultimately have "False" by auto
+  }
+  with MatchP(2-) show ?case
+    by (force simp: Let_def regex.pred_set not_none_fb_LRTP Max_ge_iff dest!: sym[of None])
+next
+  case (MatchF I r)
+  let ?j = "LTP_f \<sigma> j (the_enat (right I))"
+  let ?i = "LTP_f \<sigma> i (the_enat (right I))"
+  { assume ne: "regex.atms r \<noteq> {}" and fb: "\<And>\<phi>. \<phi>\<in>regex.atms r \<Longrightarrow> future_bounded \<phi>"
+    then obtain \<phi> where \<phi>: "\<phi> \<in> regex.atms r" "the (LRTP \<phi> ?j) = (MAX \<phi> \<in> regex.atms r. the (LRTP \<phi> ?j))"
+      using obtains_MAX[of "regex.atms r" "\<lambda>\<phi>. the (LRTP \<phi> ?j)" thesis] by auto
+    assume "\<forall>x\<in>regex.atms r. \<exists>a\<in>regex.atms r. \<not> the (LRTP a ?i) \<le> the (LRTP x ?j)"
+    with \<phi>(1) obtain \<psi> where \<psi>: "\<psi> \<in> regex.atms r" "\<not> the (LRTP \<psi> ?i) \<le> the (LRTP \<phi> ?j)"
+      by blast
+    moreover have "the (LRTP \<psi> ?i) \<le> the (LRTP \<psi> ?j)"
+      using MatchF(1)[OF \<psi>(1) fb[OF \<psi>(1)] LTP_f_mono[OF MatchF(3)]] .
+    moreover have "the (LRTP \<psi> ?j) \<le> the (LRTP \<phi> ?j)"
+      unfolding \<phi>(2) by (subst Max_ge_iff) (auto simp: ne \<psi>(1))
+    ultimately have "False" by auto
+  }
+  with MatchF(2-) show ?case
+    by (auto simp: Let_def regex.pred_set not_none_fb_LRTP Max_ge_iff LTP_f_mono dest!: sym[of None] elim!: meta_mp)
 qed (auto simp: LTP_p_mono LTP_f_mono)
 
 lemma AD_mono: "future_bounded \<phi> \<Longrightarrow> i \<le> j \<Longrightarrow> AD \<phi> i \<subseteq> AD \<phi> j"
@@ -2100,7 +2349,7 @@ lemma check_AD_cong:
   using assms
 proof (induction v \<phi> sp and v \<phi> vp arbitrary: i v' and i v' rule: s_check_v_check.induct)
   case (1 v f sp)
-  note IH = 1(1-23)[OF refl] and hyps = 1(24-26)
+  note IH = 1(1-25)[OF refl] and hyps = 1(26-28)
   show ?case
   proof (cases sp)
     case (SPred j r ts)
@@ -2337,10 +2586,77 @@ proof (induction v \<phi> sp and v \<phi> vp arbitrary: i v' and i v' rule: s_ch
         using Until SUntil IH(22)[OF Until SUntil refl refl refl, of v'] IH(23)[OF Until SUntil refl refl _ refl, of _ v'] hyps(1,2)
         by (auto simp: Let_def le_diff_conv2 simp del: upt.simps)
     qed auto
+  next
+    case (SMatchP rsp)
+    then show ?thesis
+    proof (cases "\<forall>sp' \<in> spatms rsp. s_at sp' \<le> s_at sp")
+      case True
+      with SMatchP show ?thesis
+      proof (cases f)
+        case (MatchP I r)
+        show ?thesis unfolding SMatchP MatchP s_check_simps Let_def split_beta
+        proof ((rule conj_cong refl rs_check_cong IH(24) prod.collapse refl SMatchP MatchP | assumption)+, goal_cases fb AD _)
+          case (fb x sp)
+          with MatchP hyps show ?case by (auto simp: regex.pred_set collect_alt)
+        next
+          case (AD x sp)
+          with hyps True show ?case unfolding MatchP
+            by (subst (asm) (1 2) AD_simps_regex)
+               (auto simp: regex.pred_set collect_alt dest!: bspec dest: AD_mono[THEN set_mp, rotated -1])
+        qed simp
+      qed simp_all
+    next
+      case False
+      with SMatchP show ?thesis
+        by (cases f) (auto dest: rs_check_le2[rotated 2])
+    qed
+  next
+    case (SMatchF rsp)
+    then show ?thesis
+    proof (cases f)
+      case (MatchF I r)
+      show ?thesis
+      proof (cases "\<forall>sp' \<in> spatms rsp. s_at sp' \<le> LTP_f \<sigma> (s_at sp) (the_enat (right I))")
+        case True
+        show ?thesis unfolding SMatchF MatchF s_check_simps Let_def split_beta
+        proof ((rule conj_cong refl rs_check_cong IH(25) prod.collapse refl SMatchF MatchF | assumption)+, goal_cases fb AD _)
+          case (fb x sp)
+          with MatchF hyps show ?case by (auto simp: regex.pred_set collect_alt)
+        next
+          case (AD x sp)
+          with hyps True show ?case unfolding MatchF
+            by (subst (asm) (1 2) AD_simps_regex)
+              (auto simp: regex.pred_set collect_alt dest!: bspec
+                dest: AD_mono[THEN set_mp, rotated -1] order_trans[OF _ i_le_LTPi_add])
+        qed simp
+      next
+        case False
+        then obtain sp' where sp': "sp' \<in> spatms rsp" "\<not> s_at sp' \<le> LTP_f \<sigma> (s_at sp) (the_enat (right I))"
+          by auto
+        show ?thesis unfolding SMatchF MatchF s_check_simps Let_def split_beta
+        proof (intro conj_cong refl iffI, goal_cases LR RL)
+          case LR
+          have "\<forall>sp \<in> spatms rsp. s_at sp \<le> snd (rs_at s_at rsp)"
+            using rs_check_le2[OF _ _ LR(3)] by auto
+          with LR(2) sp' hyps(2) show ?case
+            using i_le_LTPi_add[of "snd (rs_at s_at rsp)" \<sigma> 0]
+            unfolding SMatchF MatchF s_at.simps future_bounded.simps
+            by (elim notE order_trans) (auto intro!: LTP_\<tau>_mono elim!: order_trans)
+        next
+          case RL
+          have "\<forall>sp \<in> spatms rsp. s_at sp \<le> snd (rs_at s_at rsp)"
+            using rs_check_le2[OF _ _ RL(3)] by auto
+          with RL(2) sp' hyps(2) show ?case
+            using i_le_LTPi_add[of "snd (rs_at s_at rsp)" \<sigma> 0]
+            unfolding SMatchF MatchF s_at.simps future_bounded.simps
+            by (elim notE order_trans) (auto intro!: LTP_\<tau>_mono elim!: order_trans)
+        qed
+      qed
+    qed simp_all
   qed (cases f; simp_all)+
 next
   case (2 v f vp)
-  note IH = 2(1-25)[OF refl] and hyps = 2(26-28)
+  note IH = 2(1-27)[OF refl] and hyps = 2(28-30)
   show ?case
   proof (cases vp)
     case (VPred j r ts)
@@ -2615,6 +2931,62 @@ next
         using IH(25)[OF Until VUntilInf _ refl, of _ v'] hyps(1,2)
         by auto
     qed auto
+  next
+    case (VMatchP i rvps)
+    then show ?thesis
+    proof (cases "\<forall>rvp \<in> set rvps. \<forall>vp' \<in> vpatms rvp. v_at vp' \<le> v_at vp")
+      case True
+      with VMatchP show ?thesis
+      proof (cases f)
+        case (MatchP I r)
+        show ?thesis unfolding VMatchP MatchP v_check_simps Let_def split_beta
+        proof ((rule conj_cong ball_cong refl rv_check_cong IH(26) prod.collapse refl VMatchP MatchP | assumption)+, goal_cases fb AD _ _)
+          case (fb x sp)
+          with MatchP hyps show ?case by (auto simp: regex.pred_set collect_alt)
+        next
+          case (AD x sp)
+          with hyps True show ?case unfolding MatchP
+            by (subst (asm) (1 2) AD_simps_regex)
+               (auto simp: regex.pred_set collect_alt dest!: bspec dest: AD_mono[THEN set_mp, rotated -1])
+        qed simp_all
+      qed simp_all
+    next
+      case False
+      with VMatchP show ?thesis
+        by (cases f) (auto simp: Let_def dest: rv_check_le2)
+    qed
+  next
+    case (VMatchF ii rvps)
+    then show ?thesis
+    proof (cases f)
+      case (MatchF I r)
+      show ?thesis
+      proof (cases "\<forall>rvp \<in> set rvps. \<forall>vp' \<in> vpatms rvp. v_at vp' \<le> LTP_f \<sigma> (v_at vp) (the_enat (right I))")
+        case True
+        show ?thesis unfolding VMatchF MatchF v_check_simps Let_def split_beta
+        proof ((rule conj_cong ball_cong refl rv_check_cong IH(27) prod.collapse refl VMatchF MatchF | assumption)+, goal_cases fb AD _ _)
+          case (fb x sp)
+          with MatchF hyps show ?case by (auto simp: regex.pred_set collect_alt)
+        next
+          case (AD x sp)
+          with hyps True show ?case unfolding MatchF
+            by (subst (asm) (1 2) AD_simps_regex)
+              (auto simp: regex.pred_set collect_alt dest!: bspec
+                dest: AD_mono[THEN set_mp, rotated -1] order_trans[OF _ i_le_LTPi_add])
+        qed simp_all
+      next
+        case False
+        then obtain k rvp vp' where vp': "rvp = rvps ! k" "k < length rvps" "vp' \<in> vpatms rvp" "\<not> v_at vp' \<le> LTP_f \<sigma> (v_at vp) (the_enat (right I))"
+          by (auto simp: in_set_conv_nth)
+        moreover from vp' hyps(1) have "v_check v f vp \<Longrightarrow> v_at vp' \<le> LTP_f \<sigma> (v_at vp) (the_enat (right I))" for v
+           unfolding  VMatchF MatchF v_at.simps v_check_simps
+          using [[linarith_split_limit=15]]
+          by (auto simp: Let_def in_set_conv_nth nth_append nth_Cons'
+             dest!: rv_check_le2[of _ _ _ _ vp'] bspec[of _ _ rvp]
+             dest: arg_cong[where f="\<lambda>xs. (length xs, nth xs k)"] split: if_splits)
+        ultimately show ?thesis by auto
+      qed
+    qed simp_all
   qed (cases f; simp_all)+
 qed
 
@@ -2649,7 +3021,7 @@ proof (transfer fixing: \<sigma> \<phi> mypick i v x, goal_cases 1)
       and s_check_assm: "\<forall>z. s_check (v(x := z)) \<phi> (mypick z)"
       and fb_assm: "future_bounded \<phi>"
       and z_notin_AD: "z \<notin> (AD \<phi> i)"
-    have s_at_mypick: "s_at (mypick (SOME z. z \<notin> local.AD \<phi> i)) = i"
+    have s_at_mypick: "s_at (mypick (SOME z. z \<notin> AD \<phi> i)) = i"
       using s_at_assm by simp
     have s_check_mypick: "Checker.s_check \<sigma> (v(x := SOME z. z \<notin> AD \<phi> i)) \<phi> (mypick (SOME z. z \<notin> AD \<phi> i))"
       using s_check_assm by simp
@@ -2676,7 +3048,7 @@ proof (transfer fixing: \<sigma> \<phi> mypick i v x, goal_cases 1)
       and v_check_assm: "\<forall>z. v_check (v(x := z)) \<phi> (mypick z)"
       and fb_assm: "future_bounded \<phi>"
       and z_notin_AD: "z \<notin> (AD \<phi> i)"
-    have v_at_mypick: "v_at (mypick (SOME z. z \<notin> local.AD \<phi> i)) = i"
+    have v_at_mypick: "v_at (mypick (SOME z. z \<notin> AD \<phi> i)) = i"
       using v_at_assm by simp
     have v_check_mypick: "Checker.v_check \<sigma> (v(x := SOME z. z \<notin> AD \<phi> i)) \<phi> (mypick (SOME z. z \<notin> AD \<phi> i))"
       using v_check_assm by simp
@@ -3126,6 +3498,59 @@ next
     then show "\<exists>vp. v_at vp = i \<and> v_check v (\<phi> \<^bold>U I \<psi>) vp"
       by blast
   qed
+next
+  case (SMatchP j i I v r)
+  then show ?case
+    by (safe dest!: rs_check_complete[rotated, where test="s_check v" and testi=s_at])
+      (force simp: regex.pred_set intro: exI[of _ "SMatchP _"])+
+next
+  case (VMatchPOut i I v r)
+  then show ?case
+    by (auto intro: exI[of _ "VMatchPOut i"])
+next
+  case (VMatchP k I i v r)
+  { fix j
+    assume fb: "regex.pred_regex future_bounded r" and j: "j \<in> {k..LTP_p \<sigma> i I}"
+    then have "j \<le> i"
+      by auto
+    with j have "\<exists>p. rv_check (v_check v) v_at r p \<and> rv_at v_at p = (j, i)"
+      by (rule rv_check_complete[rotated, where test="v_check v" and testi=v_at, OF VMatchP(3)])
+        (use fb in \<open>auto simp: regex.pred_set\<close>)
+  } note * = this
+  { assume fb: "regex.pred_regex future_bounded r"
+    from *[OF this] obtain f where "rv_check (v_check v) v_at r (f j)" "rv_at v_at (f j) = (j, i)"
+      if "j \<in> {k..LTP_p \<sigma> i I}" for j by metis
+    with VMatchP(1,2) fb have "\<exists>vp. v_at vp = i \<and> v_check v (\<^bold>\<triangleleft> I r) vp"
+      by (intro exI[of _ "VMatchP i (map f [k ..< Suc (LTP_p \<sigma> i I)])"])
+        (auto simp: Let_def o_def intro: map_idI split: enat.splits)
+  }
+  then show ?case
+    by simp
+next
+  case (SMatchF i j I v r)
+  then show ?case
+    by (safe dest!: rs_check_complete[rotated, where test="s_check v" and testi=s_at])
+      (force simp: regex.pred_set intro: exI[of _ "SMatchF _"])+
+next
+  case (VMatchF I i v r)
+  let ?J = "case right I of enat b \<Rightarrow> {ETP_f \<sigma> i I..LTP_f \<sigma> i b} | \<infinity> \<Rightarrow> {ETP_f \<sigma> i I..}"
+  { fix j
+  assume fb: "regex.pred_regex future_bounded r" and j: "j \<in> ?J"
+  then have "i \<le> j"
+    by (auto split: enat.splits)
+  with j have "\<exists>p. rv_check (v_check v) v_at r p \<and> rv_at v_at p = (i, j)"
+    by (rule rv_check_complete[rotated, where test="v_check v" and testi=v_at, OF VMatchF(1)])
+      (use fb in \<open>auto simp: regex.pred_set\<close>)
+  } note * = this
+  { assume fb: "regex.pred_regex future_bounded r" "right I \<noteq> \<infinity>"
+    from *[OF this(1)] obtain f where "rv_check (v_check v) v_at r (f j)" "rv_at v_at (f j) = (i, j)"
+      if "j \<in> ?J" for j by metis
+    with fb have "\<exists>vp. v_at vp = i \<and> v_check v (\<^bold>\<triangleright> I r) vp"
+      by (intro exI[of _ "VMatchF i (map f [ETP_f \<sigma> i I ..< Suc (LTP_f \<sigma> i (the_enat (right I)))])"])
+        (auto simp: Let_def o_def intro: map_idI split: enat.splits)
+  }
+  then show ?case
+    by simp
 qed
 
 lemmas check_completeness =
