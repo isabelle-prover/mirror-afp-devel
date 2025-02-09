@@ -1,5 +1,5 @@
 subsection\<open>GoedelVariantHOML3.thy (Figure 8 of \cite{J75})\<close>
-text\<open>After an appropriate modification of the notion of necessary property inclusion in Gödel’s 1970
+text\<open>After an appropriate modification of the notion of necessary property inclusion in Gödel's 1970
 ontological proof, the inconsistency revealed in Figure 6 is avoided, and the argument can be successfully
 verified in modal logic S5 (indeed, as shown, only symmetry of the accessibility relation is actually
 needed). Actualist quantifiers (avoiding existential import) are used for quantification over entities, otherwise possibilist quantifiers 

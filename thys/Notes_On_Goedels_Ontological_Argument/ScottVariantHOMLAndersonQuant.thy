@@ -1,5 +1,5 @@
 subsection\<open>ScottVariantHOMLAndersonQuant.thy (Figure 15 of \cite{J75})\<close>
-text\<open>Verification of Scott’s variant of Gödel’s argument with a mixed use of actualist and possibilist quantifiers 
+text\<open>Verification of Scott's variant of Gödel's argument with a mixed use of actualist and possibilist quantifiers 
 for entities; cf. Footnote 20 in \cite{J75}.\<close>
 theory ScottVariantHOMLAndersonQuant imports HOMLinHOL ModalFilter
 begin 

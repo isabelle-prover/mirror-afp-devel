@@ -1,9 +1,9 @@
 subsection\<open>EvilDerivable.thy (Figure 20 of \cite{J75})\<close>
 text\<open>The necessary existence of an Evil-like entity proved from (controversially) modified assumptions.
-By rejecting Gödel’s assumptions and instead postulating corresponding negative versions of them, 
+By rejecting Gödel's assumptions and instead postulating corresponding negative versions of them, 
 as shown in the Figure 20, the necessary existence of Evil becomes derivable. 
 The non-positive properties of this Evil-like entity are however identical to the positive 
-properties of Gödel’s God-like entity.\<close>
+properties of Gödel's God-like entity.\<close>
 theory EvilDerivable imports HOMLinHOL ModalFilter
 begin 
 

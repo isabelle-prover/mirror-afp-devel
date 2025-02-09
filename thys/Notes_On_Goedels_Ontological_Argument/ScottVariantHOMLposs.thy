@@ -1,5 +1,5 @@
 subsection\<open>ScottVariantHOMLposs.thy (Figure 19 of \cite{J75})\<close>
-text\<open>Scott’s variant of Gödel’s ontological proof is still valid when using possibilist quantifiers only.\<close>
+text\<open>Scott's variant of Gödel's ontological proof is still valid when using possibilist quantifiers only.\<close>
 theory ScottVariantHOMLposs imports HOMLinHOL ModalFilter
 begin 
 
