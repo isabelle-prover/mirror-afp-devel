@@ -30,6 +30,10 @@ homepage = "traytel_homepage"
 traytel = "traytel_email2"
 
 [history]
+2025-02-08 = """
+The checker now supports regular expressions, effectively constituting an upgrade from MFOTL to metric first-order dynamic logic (MFODL)
+(revision 45805f4c0bec)<br>
+"""
 
 [extra]
 
