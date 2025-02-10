@@ -4,6 +4,8 @@
     Author:     Martin Raška, Charles University
 
 Part of Combinatorics on Words Formalized. See https://gitlab.com/formalcow/combinatorics-on-words-formalized/
+
+A version of the theory is included in the AFP. See https://www.isa-afp.org/entries/Binary_Code_Imprimitive.html
 *)
 
 theory Binary_Code_Imprimitive
@@ -14,9 +16,9 @@ begin
 
 text \<open>This theory focuses on the characterization of imprimitive words which are concatenations
 of copies of  two words (forming a binary code).
-We follow the article @{cite lerest} (mainly Th\'eor\`eme 2.1 and Lemme 3.1),
-while substantially optimizing the proof. See also @{cite spehner} for an earlier result on this question,
-and @{cite Manuch} for another proof.\<close>
+We follow the article \cite{ lerest} (mainly Th\'eor\`eme 2.1 and Lemme 3.1),
+while substantially optimizing the proof. See also \cite{ spehner} for an earlier result on this question,
+and \cite{ Manuch} for another proof.\<close>
 
 section \<open>General primitivity not preserving codes\<close>
 
@@ -71,7 +73,7 @@ proof-
   have "ws' \<cdot> ws' \<in> lists \<C>"
     using \<open>ws' \<in> lists \<C>\<close> by inlists
   have "concat us \<noteq> \<epsilon>"
-    using \<open>us \<noteq> \<epsilon>\<close> unfolding code_concat_eq_emp_iff[OF pref_in_lists[OF \<open>us \<le>p ws\<close> \<open>ws \<in> lists \<C>\<close>]].
+    using \<open>us \<noteq> \<epsilon>\<close> unfolding concat_eq_emp_conv[OF pref_in_lists[OF \<open>us \<le>p ws\<close> \<open>ws \<in> lists \<C>\<close>]].
   have "\<^bold>|concat ws'\<^bold>| = \<^bold>|concat ws\<^bold>|"
     using lenarg[OF conjug, unfolded lenmorph] by linarith
   have "z \<cdot> concat(ws \<cdot> ws) = concat (ws' \<cdot> ws') \<cdot> z"
@@ -84,7 +86,7 @@ proof-
   from prefixE[OF pref_shorten[OF pref_concat_pref[OF \<open>us \<le>p ws\<close>] this], unfolded rassoc]
   obtain su where fac_u[symmetric]: "concat (ws' \<cdot> ws') = z \<cdot> concat us \<cdot> su".
 
-  from obtain_fac_interp[OF fac_u \<open>concat us \<noteq> \<epsilon>\<close>]
+  from fac_fac_interpE[OF fac_u \<open>concat us \<noteq> \<epsilon>\<close>]
   obtain ps ss' p s vs where "p (concat us) s \<sim>\<^sub>\<I> vs" and
     "ps \<cdot> vs \<cdot> ss' = ws' \<cdot> ws'" and "concat ps \<cdot> p = z" and "s \<cdot> concat ss' = su".
   note fac_interpD[OF \<open>p (concat us) s \<sim>\<^sub>\<I> vs\<close>]
@@ -134,7 +136,7 @@ proof-
   have "s \<noteq> \<epsilon>"
     using \<open>p \<cdot> concat us \<cdot> s = concat vs\<close> disjoint by auto
 
-  from disjoint_interpI[OF \<open>p (concat us) s \<sim>\<^sub>\<I> vs\<close>] disjoint
+  from disj_interpI[OF \<open>p (concat us) s \<sim>\<^sub>\<I> vs\<close>] disjoint
   have "p us s \<sim>\<^sub>\<D> vs"
     by blast
 
@@ -197,7 +199,7 @@ lemma cover_xy_xxy: assumes "\<^bold>|x\<^bold>| = \<^bold>|y\<^bold>|" and "s \
   shows "x = y"
 proof-
   have "\<^bold>|p\<^bold>| < \<^bold>|x\<^bold>|"
-    using lenarg[OF eq] nemp_pos_len[OF \<open>s \<noteq> \<epsilon>\<close>] unfolding lenmorph by linarith
+    using lenarg[OF eq] nemp_len[OF \<open>s \<noteq> \<epsilon>\<close>] unfolding lenmorph by linarith
   then obtain t where x: "x = p \<cdot> t" and "t \<noteq> \<epsilon>"
     using eqd[OF eq] by force
   from eq[unfolded this rassoc cancel]
@@ -252,44 +254,24 @@ lemma cover_xy_yxy: assumes "\<^bold>|x\<^bold>| = \<^bold>|y\<^bold>|" and "p \
   shows "\<not> primitive (x \<cdot> y)"
   using cover_xy_xyx[reversed, unfolded rassoc, OF assms(1)[symmetric] assms(3) assms(2) eq].
 
-theorem uniform_square_interp: assumes "x\<cdot>y \<noteq> y\<cdot>x" and  "\<^bold>|x\<^bold>| = \<^bold>|y\<^bold>|" and "vs \<in> lists {x,y}"
-  and "p  (x \<cdot> y)  s \<sim>\<^sub>\<I> vs" and "p \<noteq> \<epsilon>"
-shows "\<not> primitive (x\<cdot>y)" and  "vs = [x,y,x] \<or> vs = [y,x,y]"
-proof-
-  note fac_interpD[OF \<open>p  (x \<cdot> y)  s \<sim>\<^sub>\<I> vs\<close>]
-
-  have "vs \<noteq> \<epsilon>"
-    using \<open>p \<cdot> (x \<cdot> y) \<cdot> s = concat vs\<close> assms(5) by force
-  have "\<^bold>|p\<^bold>| < \<^bold>|x\<^bold>|"
-    using prefix_length_less[OF \<open>p <p hd vs\<close>] lists_hd_in_set[OF \<open>vs \<noteq> \<epsilon>\<close> \<open>vs \<in> lists {x,y}\<close>]
-     \<open>\<^bold>|x\<^bold>| = \<^bold>|y\<^bold>|\<close>
-    by fastforce
-  have "\<^bold>|s\<^bold>| < \<^bold>|x\<^bold>|"
-    using suffix_length_less[OF \<open>s <s last vs\<close>] \<open>\<^bold>|x\<^bold>| = \<^bold>|y\<^bold>|\<close> lists_hd_in_set[reversed, OF \<open>vs \<noteq> \<epsilon>\<close> \<open>vs \<in> lists {x,y}\<close>]
-    by fastforce
-  have "\<^bold>|concat vs\<^bold>| = \<^bold>|x\<^bold>| * \<^bold>|vs\<^bold>|"
-    using assms(2-3)
-  proof (induction vs)
-    case (Cons a vs)
-    have "\<^bold>|a\<^bold>| = \<^bold>|x\<^bold>|" and "\<^bold>|a # vs\<^bold>| = Suc \<^bold>|vs\<^bold>|" and
-      "\<^bold>|concat (a # vs)\<^bold>| = \<^bold>|a\<^bold>| + \<^bold>|concat vs\<^bold>|" and "\<^bold>|concat vs\<^bold>| = \<^bold>|x\<^bold>| * \<^bold>|vs\<^bold>|"
-      using \<open>a#vs \<in> lists {x,y}\<close> \<open>\<^bold>|x\<^bold>| = \<^bold>|y\<^bold>|\<close> Cons.IH Cons.prems by auto
-    then show ?case by force
-  qed simp
-  note leneq = lenarg[OF \<open>p \<cdot> (x \<cdot> y) \<cdot> s = concat vs\<close>, unfolded this lenmorph \<open>\<^bold>|x\<^bold>| = \<^bold>|y\<^bold>|\<close>[symmetric]]
-  hence "\<^bold>|x\<^bold>| * \<^bold>|vs\<^bold>| < \<^bold>|x\<^bold>| * 4" and  "2 * \<^bold>|x\<^bold>| < \<^bold>|x\<^bold>| * \<^bold>|vs\<^bold>| "
-    using \<open>\<^bold>|p\<^bold>| < \<^bold>|x\<^bold>|\<close> \<open>\<^bold>|s\<^bold>| < \<^bold>|x\<^bold>|\<close> nemp_pos_len[OF \<open>p \<noteq> \<epsilon>\<close>] by linarith+
-  hence "\<^bold>|vs\<^bold>| = 3"
-    by force
-  hence "s \<noteq> \<epsilon>"
-    using leneq \<open>\<^bold>|p\<^bold>| < \<^bold>|x\<^bold>|\<close> by force
-
-  have "x \<noteq> y"
-    using assms(1) by blast
-  with \<open>\<^bold>|vs\<^bold>| = 3\<close> \<open>vs \<in> lists {x,y}\<close> \<open>p \<cdot> (x \<cdot> y) \<cdot> s = concat vs\<close>
-  have "(\<not> primitive (x\<cdot>y)) \<and> (vs = [x,y,x] \<or> vs = [y,x,y])"
+lemma cover_xy_three: assumes "\<^bold>|ws\<^bold>| = 3" "ws \<in> lists {x,y}" "\<^bold>|x\<^bold>| = \<^bold>|y\<^bold>|"
+    "p \<cdot> (x \<cdot> y) \<cdot> s = concat ws" "p \<noteq> \<epsilon>" "s \<noteq> \<epsilon>"
+  shows "\<not> primitive (x\<cdot>y) \<and> (ws = [x,y,x] \<or> ws = [y,x,y])"
+proof (cases "x = y")
+  assume "x = y"
+  hence "~ primitive (x \<cdot> y)"
+    using eq_append_not_prim by blast
+  moreover have "ws = [x,y,x] \<or> ws = [y,x,y]"
+    using \<open>ws \<in> lists {x,y}\<close> sing_pow_exp[of ws x, unfolded \<open>\<^bold>|ws\<^bold>| = 3\<close>]
+     unfolding \<open>x = y\<close> by auto
+   ultimately show ?thesis
+     by blast
+ next
+  assume "x \<noteq> y"
+  with assms
+  show "\<not> primitive (x\<cdot>y) \<and> (ws = [x,y,x] \<or> ws = [y,x,y])"
   proof(list_inspection, simp_all)
-    assume "p \<cdot> x \<cdot> y \<cdot> s = x \<cdot> x \<cdot> x"
+  assume "p \<cdot> x \<cdot> y \<cdot> s = x \<cdot> x \<cdot> x"
     from cover_xy_xxx[OF \<open>\<^bold>|x\<^bold>| = \<^bold>|y\<^bold>|\<close> this]
     show False
       using \<open>x \<noteq> y\<close> by blast
@@ -315,9 +297,9 @@ proof-
       using \<open>x \<noteq> y\<close> by blast
   next
     assume "p \<cdot> x \<cdot> y \<cdot> s = y \<cdot> x \<cdot> y"
-    from cover_xy_yxy[OF \<open>\<^bold>|x\<^bold>| = \<^bold>|y\<^bold>|\<close> \<open>p \<noteq> \<epsilon>\<close> \<open>s \<noteq> \<epsilon>\<close> this]
+    from cover_xy_yxy[OF  \<open>\<^bold>|x\<^bold>| = \<^bold>|y\<^bold>|\<close> \<open>p \<noteq> \<epsilon>\<close> \<open>s \<noteq> \<epsilon>\<close> this]
     show "\<not> primitive (x \<cdot> y)"
-      by blast
+      using \<open>x \<noteq> y\<close> by blast
   next
     assume "p \<cdot> x \<cdot> y \<cdot> s = y \<cdot> y \<cdot> x"
     from cover_xy_yyx[OF \<open>\<^bold>|x\<^bold>| = \<^bold>|y\<^bold>|\<close> this]
@@ -329,7 +311,39 @@ proof-
     show False
       using \<open>x \<noteq> y\<close> by blast
   qed
-  thus "\<not> primitive (x\<cdot>y)" "vs = [x,y,x] \<or> vs = [y,x,y]"
+qed
+
+lemma bin_uniform_len: assumes "ws \<in> lists {x,y}" "\<^bold>|x\<^bold>| = \<^bold>|y\<^bold>|"
+  shows "\<^bold>|concat ws\<^bold>| = \<^bold>|ws\<^bold>| * \<^bold>|x\<^bold>|"
+  using assms by (induct ws, simp_all) blast
+
+theorem uniform_square_interp: assumes "x\<cdot>y \<noteq> y\<cdot>x" and  "\<^bold>|x\<^bold>| = \<^bold>|y\<^bold>|" and "vs \<in> lists {x,y}"
+  and "p  (x \<cdot> y)  s \<sim>\<^sub>\<I> vs" and "p \<noteq> \<epsilon>"
+shows "\<not> primitive (x\<cdot>y)" and  "vs = [x,y,x] \<or> vs = [y,x,y]"
+proof-
+  note fac_interpD[OF \<open>p  (x \<cdot> y)  s \<sim>\<^sub>\<I> vs\<close>]
+
+  have "vs \<noteq> \<epsilon>"
+    using \<open>p \<cdot> (x \<cdot> y) \<cdot> s = concat vs\<close> assms(5) by force
+  have "\<^bold>|p\<^bold>| < \<^bold>|x\<^bold>|"
+    using prefix_length_less[OF \<open>p <p hd vs\<close>] lists_hd_in_set[OF \<open>vs \<noteq> \<epsilon>\<close> \<open>vs \<in> lists {x,y}\<close>]
+     \<open>\<^bold>|x\<^bold>| = \<^bold>|y\<^bold>|\<close>
+    by fastforce
+  have "\<^bold>|s\<^bold>| < \<^bold>|x\<^bold>|"
+    using suffix_length_less[OF \<open>s <s last vs\<close>] \<open>\<^bold>|x\<^bold>| = \<^bold>|y\<^bold>|\<close> lists_hd_in_set[reversed, OF \<open>vs \<noteq> \<epsilon>\<close> \<open>vs \<in> lists {x,y}\<close>]
+    by fastforce
+  have "\<^bold>|concat vs\<^bold>| = \<^bold>|x\<^bold>| * \<^bold>|vs\<^bold>|"
+    using bin_uniform_len[OF assms(3,2)] by simp
+  note leneq = lenarg[OF \<open>p \<cdot> (x \<cdot> y) \<cdot> s = concat vs\<close>, unfolded this lenmorph \<open>\<^bold>|x\<^bold>| = \<^bold>|y\<^bold>|\<close>[symmetric]]
+  hence  "2 * \<^bold>|x\<^bold>| < \<^bold>|x\<^bold>| * \<^bold>|vs\<^bold>|" and "\<^bold>|x\<^bold>| * \<^bold>|vs\<^bold>| < \<^bold>|x\<^bold>| * 4"
+    using \<open>\<^bold>|p\<^bold>| < \<^bold>|x\<^bold>|\<close> \<open>\<^bold>|s\<^bold>| < \<^bold>|x\<^bold>|\<close> nemp_len[OF \<open>p \<noteq> \<epsilon>\<close>] by linarith+
+  hence "\<^bold>|vs\<^bold>| = 3"
+    by force
+  hence "s \<noteq> \<epsilon>"
+    using leneq \<open>\<^bold>|p\<^bold>| < \<^bold>|x\<^bold>|\<close> by force
+
+  show "\<not> primitive (x\<cdot>y)" "vs = [x,y,x] \<or> vs = [y,x,y]"
+    using cover_xy_three[OF \<open>\<^bold>|vs\<^bold>| = 3\<close> \<open>vs \<in> lists {x,y}\<close> \<open>\<^bold>|x\<^bold>| = \<^bold>|y\<^bold>|\<close> \<open>p \<cdot> (x \<cdot> y) \<cdot> s = concat vs\<close> \<open>p \<noteq> \<epsilon>\<close> \<open>s \<noteq> \<epsilon>\<close> ]
     by blast+
 qed
 
@@ -361,8 +375,9 @@ proof (standard, rule ccontr)
   obtain p s vs ps where "p [x, y] s \<sim>\<^sub>\<D> vs" "vs \<in> lists {x, y}" "s \<le>p concat ([x, y]\<inverse>\<^sup>>(ws' \<cdot> ws'))"
         "p \<le>s concat ws'" "ps \<cdot> vs \<le>p ws' \<cdot> ws'" "concat ps \<cdot> p = z".
   from uniform_square_interp(1)[OF \<open>x \<cdot> y \<noteq> y \<cdot> x\<close> \<open>\<^bold>|x\<^bold>| = \<^bold>|y\<^bold>|\<close> \<open>vs \<in> lists {x,y}\<close> _ _]
-       \<open>primitive (x \<cdot> y)\<close> disj_interpD[OF this(1), simplified] disj_interp_nemp(1)[OF this(1)]
-  show False by force
+       \<open>primitive (x \<cdot> y)\<close> disj_interpD0[OF this(1), simplified] disj_interp_nemp(1)[OF this(1)]
+  show False
+    by auto
 qed (simp add: prim_concat_prim)
 
 \<comment> \<open>A stronger version is implied by the following lemma.\<close>
@@ -384,7 +399,7 @@ proof-
   have "u \<noteq> \<epsilon>" and "v \<noteq> \<epsilon>" and "u \<noteq> v"
     using \<open>u \<cdot> v \<noteq> v \<cdot> u\<close> by blast+
   have "m = l" and "\<^bold>|u\<^bold>| = \<^bold>|v\<^bold>|"
-    using almost_equal_equal[OF nemp_len[OF \<open>u \<noteq> \<epsilon>\<close>] nemp_len[OF \<open>v \<noteq> \<epsilon>\<close>], of l m] lenarg[OF \<open>x = (u\<cdot>v)\<^sup>@l \<cdot> u\<close>, unfolded \<open>\<^bold>|x\<^bold>| =\<^bold>|y\<^bold>|\<close>, unfolded lenarg[OF \<open>y = (v \<cdot> u) \<^sup>@ m \<cdot> v\<close>]]
+    using almost_equal_equal[OF nemp_len_not0[OF \<open>u \<noteq> \<epsilon>\<close>] nemp_len_not0[OF \<open>v \<noteq> \<epsilon>\<close>], of l m] lenarg[OF \<open>x = (u\<cdot>v)\<^sup>@l \<cdot> u\<close>, unfolded \<open>\<^bold>|x\<^bold>| =\<^bold>|y\<^bold>|\<close>, unfolded lenarg[OF \<open>y = (v \<cdot> u) \<^sup>@ m \<cdot> v\<close>]]
     unfolding lenmorph pow_len lenarg[OF \<open>u \<cdot> v = z\<close>, symmetric] by algebra+
   from \<open>k = l + m + 1\<close>[folded Suc_eq_plus1, symmetric]
   have "l \<noteq> 0"
@@ -432,9 +447,10 @@ proof-
   have "count_list ws y \<noteq> 0"
   proof
     assume "count_list ws y = 0"
-    from bin_lists_count_zero'[OF \<open>ws \<in> lists {x,y}\<close> this]
-    have "ws \<in> lists {x}".
-    from  prim_exp_one[OF \<open>primitive ws\<close> sing_lists_exp_count[OF this]]
+    with \<open>ws \<in> lists {x,y}\<close>
+    have "ws \<in> lists {x}"
+      unfolding count_list_0_iff by blast
+    from  prim_exp_one[OF \<open>primitive ws\<close> this[unfolded sing_lists_exp_count]]
     show False
       using \<open>2 \<le> count_list ws x\<close> by simp
   qed
@@ -574,13 +590,17 @@ proof-
     have "[x,x]\<inverse>\<^sup>>(ws'\<cdot>ws') \<in> lists {x,y}"
       using \<open>ws' \<in> lists {x,y}\<close> by inlists
     have "p x \<cdot> x s \<sim>\<^sub>\<I> vs"
-      using disj_interpD[OF \<open>p [x,x] s \<sim>\<^sub>\<D> vs\<close>] by simp
+      using disj_interpD0[OF \<open>p [x,x] s \<sim>\<^sub>\<D> vs\<close>] by simp
 
     interpret square_interp_ext x y p s vs
     proof (rule square_interp_ext.intro[OF square_interp.intro, unfolded square_interp_ext_axioms_def])
       show "(\<exists>pe. pe \<in> \<langle>{x, y}\<rangle> \<and> p \<le>s pe) \<and> (\<exists>se. se \<in> \<langle>{x, y}\<rangle> \<and> s \<le>p se)"
         using \<open>s \<le>p concat ([x,x]\<inverse>\<^sup>>(ws'\<cdot>ws'))\<close> \<open>p \<le>s concat ws'\<close>
          \<open>[x, x]\<inverse>\<^sup>>(ws' \<cdot> ws') \<in> lists {x, y}\<close> \<open>ws' \<in> lists {x, y}\<close> concat_in_hull' by meson
+      show "\<not> \<rho> x \<sim> \<rho> y"
+        using \<open>\<not> x \<sim> y\<close> unfolding  prim_primroot[OF \<open>primitive y\<close>] prim_primroot[OF \<open>primitive x\<close>].
+      show "p Ref {\<rho> x, y} [x, x] s \<sim>\<^sub>\<D> vs"
+        unfolding prim_primroot[OF \<open>primitive x\<close>] using dis xy.code_ref_list[of "[x,x]"] by force
     qed fact+
 
 \<comment> \<open>Establishing the connection between ws' = [x,x,y] and z = xp.\<close>
@@ -596,8 +616,8 @@ proof-
     have "z \<cdot> xp \<noteq> xp \<cdot> z"
     proof
       assume "z \<cdot> xp = xp \<cdot> z"
-      from comm_add_exp[symmetric, OF this[symmetric], of 2,
-          THEN comm_add_exp, of n, unfolded pow_two]
+      from comm_add_exp'[symmetric, OF this[symmetric], of 2,
+          THEN comm_add_exp', of n, unfolded pow_two]
       have "z\<^sup>@n \<cdot> xp \<cdot> xp = xp \<cdot> xp \<cdot> z\<^sup>@n"
         unfolding  rassoc.
       hence "concat ws' \<cdot> concat [x,x,y] = concat [x,x,y] \<cdot> concat ws'"
@@ -776,13 +796,13 @@ proof (rule bin_imprim_both_squares_prim)
   have "x \<noteq> \<epsilon>" and "y \<noteq> \<epsilon>" and "x \<noteq> y"
     using \<open>x \<cdot> y \<noteq> y \<cdot> x\<close> by blast+
   let ?R = "\<lambda> x. [\<rho> x]\<^sup>@(e\<^sub>\<rho> x)"
-  define ws' where "ws' = concat (map ?R ws)"
+  define ws' where "ws' = Ref\<^sub>\<rho> ws"
   show "\<rho> x \<cdot> \<rho> y \<noteq> \<rho> y \<cdot> \<rho> x"
-    using  \<open>x \<cdot> y \<noteq> y \<cdot> x\<close>[unfolded comp_primroot_conv'[of x y]].
+    using  \<open>x \<cdot> y \<noteq> y \<cdot> x\<close>[unfolded comm_primroot_conv'[of x y]].
   have [simp]: "a = x \<or> a = y \<Longrightarrow> [\<rho> a] \<^sup>@ e\<^sub>\<rho> a \<in> lists {\<rho> x, \<rho> y}" for a
     using insert_iff sing_pow_lists[of _ "{\<rho> x, \<rho> y}"] by metis
   show "ws' \<in> lists {\<rho> x, \<rho> y}"
-    unfolding ws'_def using \<open>ws \<in> lists {x,y}\<close>
+    unfolding ws'_def root_ref_def using \<open>ws \<in> lists {x,y}\<close>
     by (induction ws, simp_all)
 
 \<comment> \<open>The primitivity of ws' is obtained from the fact that the decompositions into
@@ -795,34 +815,36 @@ proof (rule bin_imprim_both_squares_prim)
   from this[OF _ \<open> ws \<in> lists {x,y}\<close> \<open>x \<noteq> y\<close> \<open>[x, x] \<le>f ws \<cdot> ws\<close> \<open>[y, y] \<le>f ws \<cdot> ws\<close>]
       roots_prim_morph[OF \<open>ws \<in> lists {x,y}\<close> _ \<open>primitive ws\<close>]
   show "primitive ws'"
-    unfolding ws'_def  by fastforce
+    unfolding ws'_def root_ref_def  by fastforce
 
   show "\<not> primitive (concat ws')"
-    unfolding ws'_def concat_root_dec_eq_concat[OF \<open>ws \<in> lists{x,y}\<close>] by fact
+    unfolding ws'_def root_ref_refines by fact
 
-  have "concat(map ?R [x,x]) \<le>f ws' \<cdot> ws'" and "concat(map ?R [y,y]) \<le>f ws' \<cdot> ws'"
-    unfolding ws'_def
+  have "Ref\<^sub>\<rho> [x,x] \<le>f ws' \<cdot> ws'" and "Ref\<^sub>\<rho> [y,y] \<le>f ws' \<cdot> ws'"
+    unfolding ws'_def root_ref_def
     using concat_mono_fac[OF map_mono_sublist[OF \<open>[x,x] \<le>f ws \<cdot> ws\<close>]]
           concat_mono_fac[OF map_mono_sublist[OF \<open>[y,y] \<le>f ws \<cdot> ws\<close>]]
     unfolding concat_morph  map_append.
 
   have "Suc (Suc (e\<^sub>\<rho> x + e\<^sub>\<rho> x - 2)) = e\<^sub>\<rho> x + e\<^sub>\<rho> x"
     using Suc_minus2 primroot_exp_nemp[OF \<open>x \<noteq> \<epsilon>\<close>] by simp
-  have "concat (map ?R [x,x]) = [\<rho> x] \<^sup>@ (Suc (e\<^sub>\<rho> x -1) + Suc (e\<^sub>\<rho> x - 1))"
-    unfolding  Suc_minus_pos[OF primroot_exp_nemp[OF \<open>x \<noteq> \<epsilon>\<close>]] by (simp add: add_exps)
-  hence "[\<rho> x, \<rho> x] \<le>f concat (map ?R [x,x])"
+  have "Ref\<^sub>\<rho> [x,x] = [\<rho> x] \<^sup>@ (Suc (e\<^sub>\<rho> x -1) + Suc (e\<^sub>\<rho> x - 1))"
+    unfolding  Suc_minus_pos[OF primroot_exp_nemp[OF \<open>x \<noteq> \<epsilon>\<close>]]
+      root_ref_def by (simp add: add_exps)
+  hence "[\<rho> x, \<rho> x] \<le>f Ref\<^sub>\<rho> [x,x]"
     by auto
   thus "[\<rho> x, \<rho> x] \<le>f ws' \<cdot> ws'"
-    using fac_trans[OF _ \<open>concat(map ?R [x,x]) \<le>f ws' \<cdot> ws'\<close>] by blast
+    using fac_trans[OF _ \<open>Ref\<^sub>\<rho> [x,x] \<le>f ws' \<cdot> ws'\<close>] by blast
 
   have "Suc (Suc (e\<^sub>\<rho> y + e\<^sub>\<rho> y - 2)) = e\<^sub>\<rho> y + e\<^sub>\<rho> y"
     using Suc_minus2 primroot_exp_nemp[OF \<open>y \<noteq> \<epsilon>\<close>] by simp
-  have "concat (map ?R [y,y]) = [\<rho> y] \<^sup>@ (Suc (e\<^sub>\<rho> y -1) + Suc (e\<^sub>\<rho> y - 1))"
-    unfolding  Suc_minus_pos[OF primroot_exp_nemp[OF \<open>y \<noteq> \<epsilon>\<close>]] by (simp add: add_exps)
-  hence "[\<rho> y, \<rho> y] \<le>f concat (map ?R [y,y])"
+  have "Ref\<^sub>\<rho> [y,y] = [\<rho> y] \<^sup>@ (Suc (e\<^sub>\<rho> y -1) + Suc (e\<^sub>\<rho> y - 1))"
+    unfolding  Suc_minus_pos[OF primroot_exp_nemp[OF \<open>y \<noteq> \<epsilon>\<close>]] root_ref_def
+    by (simp add: add_exps)
+  hence "[\<rho> y, \<rho> y] \<le>f Ref\<^sub>\<rho> [y,y]"
     by auto
   thus "[\<rho> y, \<rho> y] \<le>f ws' \<cdot> ws'"
-    using fac_trans[OF _ \<open>concat(map ?R [y,y]) \<le>f ws' \<cdot> ws'\<close>] by blast
+    using fac_trans[OF _ \<open>Ref\<^sub>\<rho> [y,y] \<le>f ws' \<cdot> ws'\<close>] by blast
 
   show "primitive (\<rho> x)" and "primitive (\<rho> y)"
     using  primroot_prim \<open>x \<noteq> \<epsilon>\<close> \<open>y \<noteq> \<epsilon>\<close> by blast+
@@ -1016,17 +1038,17 @@ obtains j k where "1 \<le> j" "1 \<le> k" "j = 1 \<or> k = 1"
 proof-
   note \<open>ws \<in> lists {x,y}\<close>[unfolded insert_commute[of x]]
 
-  from bin_lists_count_zero[OF \<open>ws \<in> lists {x,y}\<close>]
+  from \<open>ws \<in> lists {x,y}\<close>
     sing_lists_exp_len[of ws y]
     prim_exp_one[OF \<open>primitive ws\<close>, of "[y]" "\<^bold>|ws\<^bold>|"]
   have "count_list ws x \<noteq> 0"
-    using \<open>2 \<le> \<^bold>|ws\<^bold>|\<close> by fastforce
+    using \<open>2 \<le> \<^bold>|ws\<^bold>|\<close> unfolding count_list_0_iff by fastforce
 
-  from bin_lists_count_zero[OF \<open>ws \<in> lists {y,x}\<close>]
+  from \<open>ws \<in> lists {y,x}\<close>
     sing_lists_exp_len[of ws x]
     prim_exp_one[OF \<open>primitive ws\<close>, of "[x]" "\<^bold>|ws\<^bold>|"]
   have "count_list ws y \<noteq> 0"
-    using \<open>2 \<le> \<^bold>|ws\<^bold>|\<close> by fastforce
+    using \<open>2 \<le> \<^bold>|ws\<^bold>|\<close> unfolding count_list_0_iff by fastforce
 
   consider "count_list ws x = 1" | "count_list ws y = 1"
     using bin_imprim_both_twice[OF \<open>x \<cdot> y \<noteq> y \<cdot> x\<close> \<open>ws \<in> lists {x,y}\<close> _ _
@@ -1098,8 +1120,8 @@ proof-
 
       have "j = j'" "k = k'"
         using LS_unique[OF \<open>x \<cdot> y \<noteq> y \<cdot> x\<close>
-            \<open>1 \<le> j\<close> \<open>1 \<le> k\<close>  \<open>\<not> primitive (x \<^sup>@ j \<cdot> y \<^sup>@ k)\<close>
-            \<open>1 \<le> j'\<close> \<open>1 \<le> k'\<close> \<open>\<not> primitive (x \<^sup>@ j'\<cdot> y \<^sup>@ k')\<close>].
+            _ _  \<open>\<not> primitive (x \<^sup>@ j \<cdot> y \<^sup>@ k)\<close>
+            _ _ \<open>\<not> primitive (x \<^sup>@ j'\<cdot> y \<^sup>@ k')\<close>] \<open>1 \<le> j\<close> \<open>1 \<le> k\<close> \<open>1 \<le> j'\<close> \<open>1 \<le> k'\<close> by force+
 
       show "ws' \<sim> [x] \<^sup>@ j \<cdot> [y] \<^sup>@ k"
         unfolding \<open>j = j'\<close> \<open>k = k'\<close> by fact
@@ -1146,11 +1168,10 @@ proof-
   thm bin_imprim_code
   obtain ws where "x \<cdot> y \<noteq> y \<cdot> x"
   and "ws \<in> lists {x,y}" and  "2 \<le> \<^bold>|ws\<^bold>|" and "primitive ws" and  "\<not> primitive (concat ws)"
-    using assms  unfolding bin_imprim_code_def bin_prim_altdef2 by blast
+    using assms  unfolding bin_imprim_code_def bin_prim_altdef2 by metis
   from bin_imprim_code[OF this] that
   show thesis
     by blast
 qed
-
 
 end

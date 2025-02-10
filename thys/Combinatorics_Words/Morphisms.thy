@@ -3,6 +3,8 @@
     Author:     Štěpán Holub, Charles University
 
 Part of Combinatorics on Words Formalized. See https://gitlab.com/formalcow/combinatorics-on-words-formalized/
+
+A version of the theory is included in the AFP. See https://www.isa-afp.org/entries/Combinatorics_Words.html
 *)
 
 theory Morphisms
@@ -17,10 +19,10 @@ section \<open>One morphism\<close>
 
 subsection  \<open>Morphism, core map and extension\<close>
 
-definition list_extension :: "('a \<Rightarrow> 'b list) \<Rightarrow> ('a list \<Rightarrow> 'b list)" (\<open>_\<^sup>\<L>\<close> [1000] 1000)
+definition list_extension :: "('a \<Rightarrow> 'b list) \<Rightarrow> ('a list \<Rightarrow> 'b list)" ("_\<^sup>\<L>" [1000] 1000)
   where "t\<^sup>\<L> \<equiv> (\<lambda> x. concat (map t x))"
 
-definition morphism_core :: "('a list \<Rightarrow> 'b list) \<Rightarrow> ('a  \<Rightarrow> 'b list)" (\<open>_\<^sup>\<C>\<close> [1000] 1000)
+definition morphism_core :: "('a list \<Rightarrow> 'b list) \<Rightarrow> ('a  \<Rightarrow> 'b list)" ("_\<^sup>\<C>" [1000] 1000)
   where core_def: "f\<^sup>\<C> \<equiv> (\<lambda> x. f [x])"
 
 (*QUESTION simp? abbereviation?
@@ -32,12 +34,15 @@ lemma range_map_core: "range (map f\<^sup>\<C>) = lists (range f\<^sup>\<C>)"
     using lists_image[of "\<lambda>x. f [x]" UNIV, folded core_def, symmetric]
     unfolding lists_UNIV.
 
-lemma map_core_lists: "(map f\<^sup>\<C> w) \<in> lists (range f\<^sup>\<C>)"
+lemma map_core_lists[simp]: "(map f\<^sup>\<C> w) \<in> lists (range f\<^sup>\<C>)"
   by auto
 
 lemma comp_core: "(f \<circ> g)\<^sup>\<C> = f \<circ> g\<^sup>\<C>"
   unfolding core_def
   by auto
+
+lemma ext_core_id [simp]: "f\<^sup>\<L>\<^sup>\<C> = f"
+  unfolding list_extension_def core_def by simp
 
 locale morphism_on =
   fixes f :: "'a list \<Rightarrow> 'b list" and A :: "'a list set"
@@ -45,47 +50,27 @@ locale morphism_on =
 
 begin
 
-lemma emp_to_emp[simp]: "f \<epsilon> = \<epsilon>"
+lemma emp_to_emp_on[simp]: "f \<epsilon> = \<epsilon>"
   using morph_on[of \<epsilon> \<epsilon>] self_append_conv2[of "f \<epsilon>" "f \<epsilon>"] by simp
 
 lemma emp_to_emp': "w = \<epsilon> \<Longrightarrow> f w = \<epsilon>"
   using morph_on[of \<epsilon> \<epsilon>] self_append_conv2[of "f \<epsilon>" "f \<epsilon>"] by simp
 
-lemma morph_concat_concat_map: "ws \<in> lists \<langle>A\<rangle> \<Longrightarrow> f (concat ws) = concat (map f ws)"
+lemma morph_concat_concat_map_on: "ws \<in> lists \<langle>A\<rangle> \<Longrightarrow> f (concat ws) = concat (map f ws)"
   by (induct ws, simp_all add: morph_on hull_closed_lists)
 
 lemma hull_im_hull:
   shows "\<langle>f ` A\<rangle> = f ` \<langle>A\<rangle>"
+  unfolding set_eq_iff
 proof
-  show " \<langle>f ` A\<rangle> \<subseteq> f ` \<langle>A\<rangle>"
-  proof (rule subsetI)
-    fix x
-    show "x \<in> \<langle>f ` A\<rangle> \<Longrightarrow> x \<in> f ` \<langle>A\<rangle>"
-    proof (induction rule: hull.induct)
-      show "\<epsilon> \<in> f ` \<langle>A\<rangle>"
-        using  hull.emp_in emp_to_emp by force
-      show "w1 \<cdot> w2 \<in> f ` \<langle>A\<rangle>" if "w1 \<in> f ` A" and  "w2 \<in> f ` \<langle>A\<rangle>" for w1 w2
-      proof-
-        from that
-        obtain pre1 pre2 where "pre1 \<in> \<langle>A\<rangle>" and "pre2 \<in> \<langle>A\<rangle>" and "f pre1 = w1" and "f pre2 = w2"
-          using imageE by blast+
-        from hull_closed[OF this(1-2)] morph_on[OF \<open>pre1 \<in> \<langle>A\<rangle>\<close> \<open>pre2 \<in> \<langle>A\<rangle>\<close>, unfolded this(3-4)]
-        show "w1 \<cdot> w2 \<in> f ` \<langle>A\<rangle>"
-          by force
-      qed
-    qed
-  qed
-  show "f ` \<langle>A\<rangle> \<subseteq> \<langle>f ` A\<rangle>"
-  proof
-    fix x
-    assume "x \<in> f ` \<langle>A\<rangle>"
-    then obtain xs where "f (concat xs) = x" and "xs \<in> lists A"
-      using hull_concat_lists0 by blast
-    from this[unfolded morph_concat_concat_map]
-        morph_concat_concat_map[OF genset_sub_lists[OF this(2)]]
-    show "x \<in> \<langle>f ` A\<rangle>"
-      by fastforce
-  qed
+  have elem1: "x \<in> \<langle>f ` A\<rangle> \<longleftrightarrow> (\<exists> ws. ws \<in> lists A \<and> x = concat (map f ws))" for x
+  unfolding hull_concat_lists unfolding lists_image
+  by blast
+  have elem2: "x \<in> f ` \<langle>A\<rangle> \<longleftrightarrow> (\<exists> ws. ws \<in> lists A \<and> x = f (concat ws))" for x
+    by blast
+  show "x \<in> \<langle>f ` A\<rangle> \<longleftrightarrow> x \<in> f ` \<langle>A\<rangle>" for x
+    unfolding elem1 elem2
+    using morph_concat_concat_map_on by force
 qed
 
 lemma inj_basis_to_basis: assumes "inj_on f \<langle>A\<rangle>"
@@ -95,34 +80,34 @@ proof
     by (rule morph_on morphism_on.intro, unfold basis_gen_hull'[of A])
     (simp only: morph_on)
   show "\<BB> (f ` \<langle>A\<rangle>) \<subseteq> f ` \<BB> \<langle>A\<rangle>"
-    using basis.hull_im_hull unfolding basis_gen_hull unfolding self_gen using basis_hull_sub[of "f ` \<BB> \<langle>A\<rangle>"] by argo
+    using basis.hull_im_hull unfolding basis_gen_hull unfolding gen_idemp using basis_hull_sub[of "f ` \<BB> \<langle>A\<rangle>"] by argo
   show "f ` \<BB> \<langle>A\<rangle> \<subseteq> \<BB> (f ` \<langle>A\<rangle>)"
   proof
     fix x
     assume "x \<in> f ` \<BB> \<langle>A\<rangle>"
     then obtain y where "y \<in> \<BB> \<langle>A\<rangle>" and "x = f y" by blast
     hence "x \<in> f ` \<langle>A\<rangle>"
-      using basis_sub by blast
+      using basis_sub_gen by blast
     from basis_concat_listsE[OF this]
     obtain xs where "xs \<in> lists \<BB> (f `\<langle>A\<rangle>)" and "concat xs = x".
     hence "\<epsilon> \<notin>  set xs"
       using emp_not_basis  by blast
     have "xs \<in> lists (f `\<langle>A\<rangle>)"
-      using \<open>xs \<in> lists \<BB> (f `\<langle>A\<rangle>)\<close> basis_sub by blast
+      using \<open>xs \<in> lists \<BB> (f `\<langle>A\<rangle>)\<close> basis_sub_gen by blast
     then obtain ys where "map f ys = xs" and "ys \<in> lists \<langle>A\<rangle>"
       unfolding lists_image by blast
     have "\<epsilon> \<notin> set ys"
-      using emp_to_emp \<open>\<epsilon> \<notin>  set xs\<close>
+      using emp_to_emp_on \<open>\<epsilon> \<notin>  set xs\<close>
        imageI[of \<epsilon> "set ys" f] unfolding list.set_map[of f ys, unfolded \<open>map f ys = xs\<close>] by presburger
     hence "ys \<in> lists (\<langle>A\<rangle> - {\<epsilon>}) "
       using \<open>ys \<in> lists \<langle>A\<rangle>\<close> by fast
     have "f (concat ys) = x"
-      unfolding morph_concat_concat_map[OF \<open>ys \<in> lists \<langle>A\<rangle>\<close>] \<open>map f ys = xs\<close> by fact
+      unfolding morph_concat_concat_map_on[OF \<open>ys \<in> lists \<langle>A\<rangle>\<close>] \<open>map f ys = xs\<close> by fact
     from \<open>inj_on f \<langle>A\<rangle>\<close> this[unfolded  \<open>x = f y\<close>]
     have "concat ys = y"
-      unfolding inj_on_def using subsetD[OF basis_sub \<open>y \<in> \<BB> \<langle>A\<rangle>\<close>] hull_closed_lists[OF \<open>ys \<in> lists \<langle>A\<rangle>\<close>] by blast
+      unfolding inj_on_def using subsetD[OF basis_sub_gen \<open>y \<in> \<BB> \<langle>A\<rangle>\<close>] hull_closed_lists[OF \<open>ys \<in> lists \<langle>A\<rangle>\<close>] by blast
     hence "\<^bold>|ys\<^bold>| = 1"
-      using \<open>y \<in> \<BB> \<langle>A\<rangle>\<close>  \<open>ys \<in> lists (\<langle>A\<rangle> - {\<epsilon>})\<close> unfolding basis_def simple_element_def mem_Collect_eq by fast
+      using basisD[OF \<open>y \<in> \<BB> \<langle>A\<rangle>\<close>] ungen_dec_triv'[OF \<open>ys \<in> lists (\<langle>A\<rangle> - {\<epsilon>})\<close>] by simp
     hence "\<^bold>|xs\<^bold>| = 1"
       using \<open>map f ys = xs\<close> by fastforce
     with \<open>concat xs = x\<close> \<open>xs \<in> lists \<BB> (f `\<langle>A\<rangle>)\<close>
@@ -136,17 +121,19 @@ lemma inj_code_to_code: assumes "inj_on f \<langle>A\<rangle>" and "code A"
 proof
   fix xs ys
   assume "xs \<in> lists (f ` A)" and "ys \<in> lists (f ` A)"
-  then obtain xs' ys' where "xs' \<in> lists A" and "map f xs' = xs" and "ys' \<in> lists A" and "map f ys' = ys"
+  then obtain xs' ys' where "xs' \<in> lists A" and "xs = map f xs'" and "ys' \<in> lists A" and "ys = map f ys'"
     unfolding lists_image by blast
   assume "concat xs = concat ys"
   hence "f (concat xs') = f (concat ys')"
-    by (simp add: \<open>map f xs' = xs\<close> \<open>map f ys' = ys\<close> \<open>xs' \<in> lists A\<close> \<open>ys' \<in> lists A\<close> genset_sub_lists morph_concat_concat_map)
+    using morph_concat_concat_map_on lists_mono[OF genset_sub]
+    \<open>xs' \<in> lists A\<close> \<open>ys' \<in> lists A\<close>
+    unfolding  \<open>xs = map f xs'\<close> \<open>ys = map f ys'\<close> subset_iff by metis
   hence "concat xs' = concat ys'"
     using \<open>inj_on f \<langle>A\<rangle>\<close>[unfolded inj_on_def] \<open>xs' \<in> lists A\<close> \<open>ys' \<in> lists A\<close> by auto
   hence "xs' = ys'"
     using \<open>code A\<close>[unfolded code_def] \<open>xs' \<in> lists A\<close> \<open>ys' \<in> lists A\<close> by simp
   thus "xs = ys"
-    using \<open>map f xs' = xs\<close> \<open>map f ys' = ys\<close> by blast
+    using \<open>xs = map f xs'\<close> \<open>ys = map f ys'\<close> by blast
 qed
 
 end
@@ -159,8 +146,7 @@ begin
 sublocale morphism_on f UNIV
   by (simp add: morph morphism_on.intro)
 
-lemma map_core_lists[simp]: "map f\<^sup>\<C> xs \<in> lists (range f\<^sup>\<C>)"
-  by auto
+lemmas emp_to_emp = emp_to_emp_on
 
 lemma pow_morph: "f (x\<^sup>@k) = (f x)\<^sup>@k"
   by (induction k) (simp add: morph)+
@@ -259,7 +245,7 @@ qed
 lemma morph_concat_concat_map: "f (concat ws) = concat (map f ws)"
   by (induct ws, simp_all add: morph)
 
-lemma morph_on: "morphism_on f A"
+lemma morph_on_all: "morphism_on f A"
   unfolding morphism_on_def using morph by blast
 
 lemma noner_sings_conv: "(\<forall> w. w = \<epsilon> \<longleftrightarrow> f w = \<epsilon>) \<longleftrightarrow> (\<forall> a. f [a] \<noteq> \<epsilon>)"
@@ -283,7 +269,7 @@ lemma morph_map: "morphism (map f)"
 lemma list_ext_morph: "morphism t\<^sup>\<L>"
   unfolding list_extension_def by (simp add: morphism_def)
 
-lemma ext_def_on_set: "(\<And> a. a \<in> set u \<Longrightarrow> g a = f a) \<Longrightarrow> g\<^sup>\<L> u = f\<^sup>\<L> u"
+lemma ext_def_on_set[intro]: "(\<And> a. a \<in> set u \<Longrightarrow> g a = f a) \<Longrightarrow> g\<^sup>\<L> u = f\<^sup>\<L> u"
   unfolding list_extension_def using map_ext by metis
 
 lemma morph_def_on_set: "morphism f \<Longrightarrow> morphism g \<Longrightarrow> (\<And> a. a \<in> set u \<Longrightarrow> g\<^sup>\<C> a = f\<^sup>\<C> a) \<Longrightarrow> g u = f u"
@@ -311,20 +297,21 @@ proof-
 qed
 
 definition mroot where "mroot \<equiv> (SOME r. (\<forall> u. \<exists> n. f u = r\<^sup>@n) \<and> primitive r)"
-definition mexp :: "'a \<Rightarrow> nat" where "mexp c \<equiv> (SOME n. f [c] = mroot\<^sup>@n)"
+definition im_exp :: "'a list \<Rightarrow> nat" where "im_exp u \<equiv> (SOME n. f u = mroot\<^sup>@n)"
 
 lemma per_morph_rootI: "\<forall> u. \<exists> n. f u = mroot\<^sup>@n" and
   per_morph_root_prim: "primitive mroot"
   using per_morph_root_ex exE_some[of "\<lambda> r. \<forall>u. \<exists>n. f u = r \<^sup>@ n \<and> primitive r", of mroot]
   unfolding mroot_def by auto
 
-lemma per_morph_expI': "f [c] = mroot\<^sup>@(mexp c)"
-  using per_morph_rootI exE_some[of "\<lambda> n. f [c] = mroot \<^sup>@ n", of "mexp c"]
-  unfolding mexp_def by blast
+lemma per_morph_im_exp:
+   "f u = mroot\<^sup>@im_exp u"
+  unfolding im_exp_def
+  using per_morph_rootI tfl_some by meson
 
-lemma per_morph_expE:
-  obtains n where "f u = mroot\<^sup>@n"
-  using per_morph_rootI by auto
+lemma mroot_primroot: assumes "f u \<noteq> \<epsilon>"
+  shows "mroot = \<rho> (f u)"
+  using per_morph_rootI  primroot_unique[OF \<open>f u \<noteq> \<epsilon>\<close> per_morph_root_prim, symmetric] by blast
 
 interpretation mirror: periodic_morphism "rev_map f"
 proof
@@ -336,26 +323,23 @@ proof
     using not_triv_emp unfolding rev_map_sing by blast
 qed
 
+lemma per_morph_rev_map: "rev_map f u = rev (f u)"
+proof (induct u, simp)
+  case (Cons a u)
+  show ?case
+    unfolding hd_word[of a u] morph  morphism.morph[OF rev_map_morph] rev_append Cons.hyps
+    ims_comm cancel_right rev_map_sing..
+qed
+
 lemma mroot_rev: "mirror.mroot = rev mroot"
 proof-
-  have "primitive (rev mroot)"
-    using per_morph_root_prim prim_rev_iff by blast
   obtain u where "f u \<noteq> \<epsilon>"
     using not_triv_emp by auto
-  obtain n where "f u = mroot\<^sup>@n"
-    using per_morph_expE[of u].
-  hence "0 < n"
-    using \<open>f u \<noteq> \<epsilon>\<close> by blast
-  obtain n' where "rev (f u) = mirror.mroot\<^sup>@n'" "0 < n'"
-    using mirror.per_morph_expE rev_map_arg_rev
-     \<open>f u \<noteq> \<epsilon>\<close>[folded Nil_is_rev_conv, symmetric]
-    using bot_nat_0.not_eq_extremum zero_exp by metis
-  from this(1)[unfolded \<open>f u = mroot\<^sup>@ n\<close>, unfolded rev_pow]
-  have *: "rev mroot \<^sup>@  n = mirror.mroot \<^sup>@ n'".
-  have "(rev mroot) \<cdot> mirror.mroot = mirror.mroot \<cdot> (rev mroot)"
-    by (rule comm_drop_exps[OF _ \<open>0 < n\<close> \<open>0 < n'\<close>]) (use * in blast)
-  thus ?thesis
-    using comm_prim[OF \<open>primitive (rev mroot)\<close> mirror.per_morph_root_prim] by force
+  hence "rev (f u) \<noteq> \<epsilon>"
+    by blast
+  show ?thesis
+   unfolding per_morph_rev_map mirror.mroot_primroot[unfolded per_morph_rev_map, OF \<open>rev (f u) \<noteq> \<epsilon>\<close>]
+   mroot_primroot[OF \<open>f u \<noteq> \<epsilon>\<close>] primroot_rev..
 qed
 
 end
@@ -394,7 +378,8 @@ proof
   show "rev_map f (u \<cdot> v) = rev_map f u \<cdot> rev_map f v" for u v
     by (simp add: morphism.morph rev_map_morph)
   show "rev_map f w = \<epsilon> \<Longrightarrow> w = \<epsilon>" for w
-    unfolding rev_map_arg using rev_is_Nil_conv nonerasing by fast
+    using nonerasing[of "rev w"]
+    unfolding rev_map_arg rev_is_Nil_conv.
 qed
 
 lemma first_of_first: "(f (a # ws))!0 = f [a]!0"
@@ -571,13 +556,13 @@ qed
 
 subsection \<open>Prefix code morphism\<close>
 
-locale pref_code_morphism = nonerasing_morphism  +
+locale prefix_code_morphism = nonerasing_morphism  +
   assumes
           pref_free: "f\<^sup>\<C> a \<le>p f\<^sup>\<C> b \<Longrightarrow> a = b"
 
 begin
 
-interpretation prefrange: pref_code "(range f\<^sup>\<C>)"
+interpretation prefrange: prefix_code "(range f\<^sup>\<C>)"
   by (unfold_locales, unfold image_iff)
   (use core_nemp in metis, use pref_free in fast)
 
@@ -599,18 +584,12 @@ proof
   qed
 qed
 
-thm nonerasing
-
 lemma pref_free_morph: assumes "f r \<le>p f s" shows "r \<le>p s"
   using assms
 proof (induction r s rule: list_induct2')
   case (2 x xs)
   then show ?case
     using emp_to_emp nonerasing prefix_bot.extremum_unique by auto
-next
-  case (3 y ys)
-  then show ?case
-    using emp_to_emp nonerasing prefix_bot.extremum_unique by blast
 next
   case (4 x xs y ys)
   then show ?case
@@ -624,7 +603,7 @@ next
       using "4.IH" "4.prems" unfolding  pop_hd[of x xs] pop_hd[of y ys]
       unfolding \<open>x = y\<close> by fastforce
   qed
-qed simp
+qed simp_all
 
 end
 
@@ -645,7 +624,7 @@ interpretation marked_code "(range f\<^sup>\<C>)"
 
 lemmas marked_morph = marked_core[unfolded core_sing]
 
-sublocale pref_code_morphism
+sublocale prefix_code_morphism
   by (unfold_locales, simp_all add: core_nemp marked_core pref_hd_eq)
 
 lemma hd_im_eq_hd_eq: assumes "u \<noteq> \<epsilon>" and "v \<noteq> \<epsilon>"  and "hd (f u) = hd (f v)"
@@ -670,10 +649,10 @@ lemma (in morphism) marked_morphismI:
 
 subsection "Image length"
 
-definition max_image_length:: "('a list \<Rightarrow> 'b list) \<Rightarrow> nat" (\<open>\<lceil>_\<rceil>\<close>)
+definition max_image_length:: "('a list \<Rightarrow> 'b list) \<Rightarrow> nat" ("\<lceil>_\<rceil>")
   where "max_image_length f = Max (length`(range f\<^sup>\<C>))"
 
-definition min_image_length::"('a list \<Rightarrow> 'b list) \<Rightarrow> nat" (\<open>\<lfloor>_\<rfloor>\<close> )
+definition min_image_length::"('a list \<Rightarrow> 'b list) \<Rightarrow> nat" ("\<lfloor>_\<rfloor>" )
   where "min_image_length f = Min (length`(range f\<^sup>\<C>))"
 
 lemma max_im_len_id: "\<lceil>id::('a list \<Rightarrow> 'a list)\<rceil> = 1" and min_im_len_id: "\<lfloor>id::('a list \<Rightarrow> 'a list)\<rfloor> = 1"
@@ -750,13 +729,21 @@ qed
 
 lemma max_im_len_emp: assumes "finite (length ` range f\<^sup>\<C>)"
   shows "\<lceil>f\<rceil> = 0 \<longleftrightarrow> (f = (\<lambda>w. \<epsilon>))"
-  by (rule iffI, use max_im_len_le[OF assms] npos_len in force, simp add: core_def max_image_length_def)
+proof
+  show "\<lceil>f\<rceil> = 0 \<Longrightarrow> f = (\<lambda>w. \<epsilon>)"
+    using  max_im_len_le[OF assms] by fastforce
+  show "f = (\<lambda>w. \<epsilon>) \<Longrightarrow> \<lceil>f\<rceil> = 0"
+    unfolding max_image_length_def core_def by force
+qed
 
 lemmas max_im_len_le_dom = max_im_len_le[OF finite_imageI, OF finite_imageI] and
   max_im_len_le_sing_dom = max_im_len_le_sing[OF finite_imageI, OF finite_imageI] and
   min_im_len_ge_dom = min_im_len_ge[OF finite_imageI, OF finite_imageI] and
   max_im_len_comp_le_dom = max_im_len_comp_le[OF finite_imageI, OF finite_imageI] and
   max_im_len_emp_dom = max_im_len_emp[OF finite_imageI, OF finite_imageI]
+
+lemma Cons_im: "f (x#xs) = f\<^sup>\<C> x \<cdot> f xs"
+  unfolding core_sing using pop_hd.
 
 end
 subsection "Endomorphism"
@@ -836,6 +823,171 @@ lemma rev_map_endomorph: "endomorphism (rev_map f)"
   by (simp add: endomorphism.intro rev_map_morph)
 
 end
+subsection \<open>Decomposition into primitive roots\<close>
+
+definition root_refine ("Ref\<^sub>\<rho> _" [55] 56) where "root_refine = (\<lambda> x. [\<rho> x]\<^sup>@e\<^sub>\<rho> x)\<^sup>\<L>"
+
+lemma root_ref_morph:  "morphism root_refine"
+  unfolding root_refine_def using list_ext_morph.
+
+
+thm morphism.morph_concat_concat_map
+
+interpretation rr_morph: morphism root_refine
+  using root_ref_morph by blast
+
+lemma root_ref_def: "Ref\<^sub>\<rho> us = concat (map (\<lambda> x. [\<rho> x]\<^sup>@e\<^sub>\<rho> x) us)"
+  unfolding root_refine_def list_extension_def..
+
+lemma root_ref_refines: "concat (Ref\<^sub>\<rho> ws) = concat ws"
+proof (induct ws)
+  case (Cons a ws)
+  show ?case
+    unfolding rr_morph.Cons_im concat_morph concat.simps Cons.hyps
+      by (simp add: root_refine_def)
+qed simp
+
+lemmas root_ref_emp = rr_morph.emp_to_emp
+
+lemma "Ref\<^sub>\<rho> [\<epsilon>,\<epsilon>] = \<epsilon>"
+  unfolding root_ref_def by force
+
+lemma root_ref_empty_conv: "Ref\<^sub>\<rho> us = \<epsilon> \<longleftrightarrow> set us \<subseteq> {\<epsilon>}"
+proof
+  show "set us \<subseteq> {\<epsilon>}  \<Longrightarrow> Ref\<^sub>\<rho> us = \<epsilon>"
+    unfolding root_ref_def by auto
+  show "Ref\<^sub>\<rho> us = \<epsilon> \<Longrightarrow> set us \<subseteq> {\<epsilon>}"
+    unfolding root_ref_def
+  proof (induction us, force)
+    case (Cons a us)
+    hence "[\<rho> a] \<^sup>@ e\<^sub>\<rho> a = \<epsilon>" and hyp: "concat (map (\<lambda>x. [\<rho> x] \<^sup>@ e\<^sub>\<rho> x) us) = \<epsilon>"
+    unfolding list.simps concat.simps by fast+
+    hence "a = \<epsilon>"
+      by blast
+    from Cons.IH[OF hyp]
+    obtain k where "[\<epsilon>]\<^sup>@k = us"
+      by blast
+    show ?case
+      using \<open>a = \<epsilon>\<close> \<open>set us \<subseteq> {\<epsilon>}\<close> by simp
+  qed
+qed
+
+lemma root_ref_hd: assumes "x \<noteq> \<epsilon>"
+  shows "hd (Ref\<^sub>\<rho> (x#xs)) = \<rho> x"
+  unfolding root_ref_def by (simp_all add: hd_append \<open>x \<noteq> \<epsilon>\<close>  hd_sing_pow)
+
+lemma root_ref_injective:
+  assumes
+    emp_not_in: "\<epsilon> \<notin> \<C>" and
+    comm_eq: "\<And> x y. x \<in> \<C> \<Longrightarrow> y \<in> \<C> \<Longrightarrow> x \<cdot> y = y \<cdot> x \<Longrightarrow> x = y" and
+    "us \<in> lists \<C>" "vs \<in> lists \<C>"
+  shows "Ref\<^sub>\<rho> us = Ref\<^sub>\<rho> vs \<Longrightarrow> us = vs"
+  using assms(3-4)
+proof (induction rule: list_induct2')
+  case (4 x xs y ys)
+  show ?case
+  proof (rule arg_cong2[of x y xs ys])
+    have "x \<noteq> \<epsilon>" "y \<noteq> \<epsilon>" "x \<in> \<C>" "y \<in> \<C>" "xs \<in> lists \<C>" "ys \<in> lists \<C>"
+      using \<open>x # xs \<in> lists \<C>\<close> \<open>y # ys \<in> lists \<C>\<close> emp_not_in by auto
+    from root_ref_hd[OF \<open>x \<noteq> \<epsilon>\<close>, of xs] root_ref_hd[OF \<open>y \<noteq> \<epsilon>\<close>, of ys]
+    have "\<rho> x = \<rho> y"
+      unfolding "4.prems"(1) by presburger
+    from same_primroots_comm[OF this, THEN comm_eq[OF \<open>x \<in> \<C>\<close> \<open>y \<in> \<C>\<close>]]
+    show "x = y".
+    from "4.prems"(1)[unfolded this] "4.IH"[OF _ \<open>xs \<in> lists \<C>\<close> \<open>ys \<in> lists \<C>\<close>]
+    show "xs = ys"
+      unfolding rr_morph.Cons_im cancel by blast
+  qed
+qed (simp_all add: root_ref_def emp_not_in)
+
+lemma (in code) code_root_ref_injective:
+  assumes "us \<in> lists \<C>" "vs \<in> lists \<C>"
+  shows "Ref\<^sub>\<rho> us = Ref\<^sub>\<rho> vs \<Longrightarrow> us = vs"
+  using root_ref_injective[OF emp_not_in code_comm_eq assms].
+
+find_theorems "set ?w = {?a}"
+
+lemma (in code) code_roots_non_overlapping: "non_overlapping ((\<lambda> x. [\<rho> x]\<^sup>@(e\<^sub>\<rho> x)) ` \<C>)"
+proof
+  show nemp_dec: "\<epsilon> \<notin> (\<lambda>x. [\<rho> x] \<^sup>@ e\<^sub>\<rho> x) ` \<C>"
+  proof
+    assume "\<epsilon> \<in> (\<lambda>x. [\<rho> x] \<^sup>@ e\<^sub>\<rho> x) ` \<C> "
+    from this[unfolded image_iff]
+    obtain u where "u \<in> \<C>" and "\<epsilon> = [\<rho> u] \<^sup>@ e\<^sub>\<rho> u"
+      by blast
+    from arg_cong[OF this(2), of concat]
+    show False
+      unfolding concat.simps(1) concat_sing_pow primroot_exp_eq
+      using emp_not_in \<open>u \<in> \<C>\<close> by blast
+  qed
+  fix us vs
+  assume us': "us \<in> (\<lambda>x. [\<rho> x] \<^sup>@ e\<^sub>\<rho> x) ` \<C>" and vs': "vs \<in> (\<lambda>x. [\<rho> x] \<^sup>@ e\<^sub>\<rho> x) ` \<C>"
+  have "us \<noteq> \<epsilon>" "vs \<noteq> \<epsilon>"
+    using us' vs' nemp_dec by blast+
+  from us'[unfolded image_iff]
+  obtain u where "u \<in> \<C>" and us: "us = [\<rho> u] \<^sup>@ e\<^sub>\<rho> u" and  "0 < e\<^sub>\<rho> u"
+    using \<open>us \<noteq> \<epsilon>\<close> by fastforce
+  from vs'[unfolded image_iff]
+  obtain v where "v \<in> \<C>" and vs: "vs = [\<rho> v] \<^sup>@ e\<^sub>\<rho> v" and "0 < e\<^sub>\<rho> v"
+    using \<open>vs \<noteq> \<epsilon>\<close> by fastforce
+  have "set us = {\<rho> u}"
+    using us \<open>0 < e\<^sub>\<rho> u\<close> ..
+  have "set vs = {\<rho> v}"
+    using vs \<open>0 < e\<^sub>\<rho> v\<close> ..
+  show "us = vs" if "zs \<le>p us" and "zs \<le>s vs" and "zs \<noteq> \<epsilon>" for zs
+  proof-
+    have "set zs = {\<rho> u}"
+      using set_mono_prefix[OF \<open>zs \<le>p us\<close>]  \<open>zs \<noteq> \<epsilon>\<close> unfolding \<open>set us = {\<rho> u}\<close> by auto
+    have "set zs = {\<rho> v}"
+      using set_mono_suffix[OF \<open>zs \<le>s vs\<close>]  \<open>zs \<noteq> \<epsilon>\<close> unfolding \<open>set vs = {\<rho> v}\<close> by auto
+    hence "\<rho> u = \<rho> v"
+      unfolding \<open>set zs = {\<rho> u}\<close> by simp
+    from same_primroots_comm[OF this]
+    have "u = v"
+      using code_comm_eq [OF \<open>u \<in> \<C>\<close> \<open>v \<in> \<C>\<close>] by blast
+    thus "us = vs"
+      unfolding \<open>us = [\<rho> u] \<^sup>@ e\<^sub>\<rho> u\<close> \<open>vs = [\<rho> v] \<^sup>@ e\<^sub>\<rho> v\<close> by blast
+  qed
+  show "us = vs"  if  "us \<le>f vs"
+  proof-
+    from \<open>set us = {\<rho> u}\<close> \<open>set vs = {\<rho> v}\<close>
+    have "\<rho> u = \<rho> v"
+      using set_mono_sublist[OF \<open>us \<le>f vs\<close>] by force
+    from same_primroots_comm[OF this]
+    have "u = v"
+      using code_comm_eq [OF \<open>u \<in> \<C>\<close> \<open>v \<in> \<C>\<close>] by blast
+    thus "us = vs"
+      unfolding \<open>us = [\<rho> u] \<^sup>@ e\<^sub>\<rho> u\<close> \<open>vs = [\<rho> v] \<^sup>@ e\<^sub>\<rho> v\<close> by blast
+  qed
+qed
+
+lemma (in binary_code) bin_roots_sings_code: "non_overlapping {Dec {\<rho> u\<^sub>0, \<rho> u\<^sub>1} u\<^sub>0, Dec {\<rho> u\<^sub>0, \<rho> u\<^sub>1} u\<^sub>1}"
+  using code_roots_non_overlapping unfolding primroot_dec  by force
+
+theorem (in code) roots_prim_morph:
+  assumes "ws \<in> lists \<C>"
+    and "\<^bold>|ws\<^bold>| \<noteq> 1"
+    and "primitive ws"
+  shows "primitive (Ref\<^sub>\<rho> ws)"
+proof-
+  let ?R = "\<lambda> x. [\<rho> x]\<^sup>@(e\<^sub>\<rho> x)"
+  interpret rc: non_overlapping "?R ` \<C>"
+    using code_roots_non_overlapping.
+
+  show ?thesis
+    unfolding root_ref_def
+  proof (rule rc.prim_morph)
+    show "primitive (map ?R ws)"
+      using  inj_map_prim[OF root_dec_inj_on
+          \<open>ws \<in> lists \<C>\<close> \<open>primitive ws\<close>].
+    show "map ?R ws \<in> lists (?R ` \<C>)"
+      using \<open>ws \<in> lists \<C>\<close> lists_image[of ?R \<C>] by force
+    show "\<^bold>|map (\<lambda>x. [\<rho> x] \<^sup>@ e\<^sub>\<rho> x) ws\<^bold>| \<noteq> 1"
+      using \<open>\<^bold>|ws\<^bold>| \<noteq> 1\<close> by simp
+  qed
+qed
+
+
 section \<open>Primitivity preserving morphisms\<close>
 
 locale primitivity_preserving_morphism = nonerasing_morphism +
@@ -868,7 +1020,7 @@ text \<open>Solutions and the coincidence pairs are defined for any two mappings
 subsection \<open>Solutions\<close>
 
 definition minimal_solution :: "'a list \<Rightarrow> ('a list \<Rightarrow> 'b list) \<Rightarrow> ('a list \<Rightarrow> 'b list) \<Rightarrow> bool"
-  (\<open>_ \<in> _ =\<^sub>M _\<close> [80,80,80] 51 )
+  ("_ \<in> _ =\<^sub>M _" [80,80,80] 51 )
   where min_sol_def:  "minimal_solution s g h \<equiv> s \<noteq> \<epsilon> \<and> g s = h s
       \<and> (\<forall> s'. s' \<noteq> \<epsilon> \<and> s' \<le>p s \<and> g s' = h s' \<longrightarrow> s' = s)"
 
@@ -927,7 +1079,7 @@ qed
 
 subsection \<open>Coincidence pairs\<close>
 
-definition coincidence_set :: "('a list \<Rightarrow> 'b list) \<Rightarrow> ('a list \<Rightarrow> 'b list) \<Rightarrow> ('a list \<times> 'a list) set" (\<open>\<CC>\<close>)
+definition coincidence_set :: "('a list \<Rightarrow> 'b list) \<Rightarrow> ('a list \<Rightarrow> 'b list) \<Rightarrow> ('a list \<times> 'a list) set" ("\<CC>")
   where "coincidence_set g h \<equiv> {(r,s). g r = h s}"
 
 lemma coin_set_eq: "(g \<circ> fst)`(\<CC> g h) = (h \<circ> snd)`(\<CC> g h)"
@@ -967,14 +1119,14 @@ qed
 
 lemmas coin_set_inter_snd = coin_set_inter_fst[unfolded coin_set_eq]
 
-definition minimal_coincidence :: "('a list \<Rightarrow> 'b list) \<Rightarrow> 'a list \<Rightarrow> ('a list \<Rightarrow> 'b list) \<Rightarrow>  'a list \<Rightarrow> bool" (\<open>(_ _) =\<^sub>m (_ _)\<close> [80,81,80,81] 51 )
-  where min_coin_def:  "minimal_coincidence g r h s \<equiv> r \<noteq> \<epsilon> \<and> s \<noteq> \<epsilon> \<and> g r = h s \<and> (\<forall> r' s'. r' \<le>np r \<and> s' \<le>np s \<and> g r' = h s' \<longrightarrow> r' = r \<and> s' = s)"
+definition minimal_coincidence :: "('a list \<Rightarrow> 'b list) \<Rightarrow> 'a list \<Rightarrow> ('a list \<Rightarrow> 'b list) \<Rightarrow>  'a list \<Rightarrow> bool" ("(_ _) =\<^sub>m (_ _)" [80,81,80,81] 51 )
+  where min_coin_def:  "minimal_coincidence g r h s \<equiv> r \<noteq> \<epsilon> \<and> s \<noteq> \<epsilon> \<and> g r = h s \<and> (\<forall> r' s'. r' \<le>p r \<and> r' \<noteq> \<epsilon> \<and> s' \<le>p s \<and> s' \<noteq> \<epsilon> \<and> g r' = h s' \<longrightarrow> r' = r \<and> s' = s)"
 
-definition min_coincidence_set :: "('a list \<Rightarrow> 'b list) \<Rightarrow> ('a list \<Rightarrow> 'b list) \<Rightarrow> ('a list \<times> 'a list) set" (\<open>\<CC>\<^sub>m\<close>)
+definition min_coincidence_set :: "('a list \<Rightarrow> 'b list) \<Rightarrow> ('a list \<Rightarrow> 'b list) \<Rightarrow> ('a list \<times> 'a list) set" ("\<CC>\<^sub>m")
   where "min_coincidence_set g h \<equiv> ({(r,s) . g r =\<^sub>m h s})"
 
-lemma min_coin_minD: "g r =\<^sub>m h s \<Longrightarrow> r' \<le>np r \<Longrightarrow> s' \<le>np s \<Longrightarrow>  g r' = h s' \<Longrightarrow> r' = r \<and> s' = s"
-  using min_coin_def by blast
+lemma min_coin_minD: "g r =\<^sub>m h s \<Longrightarrow> r' \<le>p r \<Longrightarrow> r' \<noteq> \<epsilon> \<Longrightarrow> s' \<le>p s \<Longrightarrow> s' \<noteq> \<epsilon> \<Longrightarrow>  g r' = h s' \<Longrightarrow> r' = r \<and> s' = s"
+  unfolding min_coin_def by blast
 
 lemma min_coin_setD: "p \<in> \<CC>\<^sub>m g h \<Longrightarrow> g (fst p) =\<^sub>m h (snd p)"
   unfolding min_coincidence_set_def by force
@@ -990,9 +1142,9 @@ lemma min_coin_sub: "\<CC>\<^sub>m g h \<subseteq> \<CC> g h"
   using  min_coinD by blast
 
 lemma min_coin_defI: assumes "r \<noteq> \<epsilon>" and "s \<noteq> \<epsilon>" and  "g r = h s" and
-      "(\<And> r' s'. r' \<le>np r \<Longrightarrow> s' \<le>np s \<Longrightarrow> g r' = h s' \<Longrightarrow> r' = r \<and> s' = s)"
+      "(\<And> r' s'. r' \<le>p r \<Longrightarrow> r' \<noteq> \<epsilon> \<Longrightarrow> s' \<le>p s \<Longrightarrow> s' \<noteq> \<epsilon> \<Longrightarrow> g r' = h s' \<Longrightarrow> r' = r \<and> s' = s)"
    shows "g r =\<^sub>m h s"
-  unfolding min_coin_def[rule_format] using assms by blast
+  unfolding min_coin_def[rule_format] using assms by auto
 
 lemma min_coin_sym[sym]: "g r =\<^sub>m h s \<Longrightarrow> h s =\<^sub>m g r"
   unfolding min_coin_def eq_commute[of "g _" "h _"] by blast
@@ -1209,7 +1361,7 @@ proof-
       from pow_eq_eq[of "g (\<rho> u')" exp "h (\<rho> u')", folded g.pow_morph h.pow_morph, unfolded this(1), OF \<open>g u' = h u'\<close> \<open>0 < exp\<close>]
       have "g (\<rho> u') = h (\<rho> u')".
       have "\<^bold>|\<rho> u'\<^bold>| < \<^bold>|u\<^bold>|"
-        using add_strict_increasing[OF nemp_pos_len [OF min_solD'[OF \<open>s1 \<in> g =\<^sub>M h\<close>]] primroot_len_le[OF \<open>u' \<noteq> \<epsilon>\<close>]]
+        using add_strict_increasing[OF nemp_len [OF min_solD'[OF \<open>s1 \<in> g =\<^sub>M h\<close>]] primroot_len_le[OF \<open>u' \<noteq> \<epsilon>\<close>]]
         unfolding lenarg[OF \<open>s1 \<cdot> u' = u\<close>, unfolded lenmorph].
       show thesis
       proof (cases)
@@ -1232,6 +1384,88 @@ lemma prim_sols_two_sols:
   assumes "g r = h r" and "g s = h s" and "primitive s" and "primitive r" and "r \<noteq> s"
   obtains s1 s2 where "s1 \<in> g =\<^sub>M h" and "s2 \<in> g =\<^sub>M h" and "s1 \<noteq> s2"
   using prim_sol_two_sols assms by blast
+
+end
+
+subsection "Factor intepretation of morphic images"
+
+context morphism
+begin
+
+lemma image_fac_interp': assumes "w \<le>f f z" "w \<noteq> \<epsilon>"
+  obtains p w_pred s where "w_pred \<le>f z" "p w s \<sim>\<^sub>\<I> (map f\<^sup>\<C> w_pred)"
+proof-
+  let ?fzs = "map f\<^sup>\<C> z"
+  have "w \<le>f concat (map f\<^sup>\<C> z)"
+    by (simp add: assms(1) morph_concat_map)
+
+  from fac_fac_interpE'[OF \<open>w \<le>f concat (map f\<^sup>\<C> z)\<close> \<open>w \<noteq> \<epsilon>\<close>]
+  obtain p s ws where "p w s \<sim>\<^sub>\<I> ws" "ws \<le>f ?fzs"
+    by blast
+
+  obtain w_pred where "ws = map f\<^sup>\<C> w_pred" "w_pred \<le>f z"
+    using \<open>ws \<le>f map f\<^sup>\<C> z\<close> sublist_map_rightE by blast
+
+  show ?thesis
+    using \<open>p w s \<sim>\<^sub>\<I> ws\<close> \<open>w_pred \<le>f z\<close> \<open>ws = map f\<^sup>\<C> w_pred\<close> that by blast
+qed
+
+lemma image_fac_interp: assumes "u\<cdot>w\<cdot>v = f z" "w \<noteq> \<epsilon>"
+  obtains p w_pred s u_pred v_pred where
+    "u_pred\<cdot>w_pred\<cdot>v_pred = z" "p w s \<sim>\<^sub>\<I> (map f\<^sup>\<C> w_pred)"
+    "u = (f u_pred)\<cdot>p" "v = s\<cdot>(f v_pred)"
+proof-
+  let ?fzs = "map f\<^sup>\<C> z"
+
+  have "u\<cdot>w\<cdot>v = concat (map f\<^sup>\<C> z)"
+    by (simp add: assms(1) morph_concat_map)
+
+  from fac_fac_interpE[OF \<open>u\<cdot>w\<cdot>v = concat (map f\<^sup>\<C> z)\<close> \<open>w \<noteq> \<epsilon>\<close>]
+  obtain ps ss p s ws where "p w s \<sim>\<^sub>\<I> ws" "ps\<cdot>ws\<cdot>ss = ?fzs" "concat ps \<cdot> p = u"  "s \<cdot> concat ss = v"
+    by metis
+
+  obtain w_pred u_pred v_pred where "ws = map f\<^sup>\<C> w_pred" "ps = map f\<^sup>\<C> u_pred"
+    "ss = map f\<^sup>\<C> v_pred" "u_pred\<cdot>w_pred\<cdot>v_pred = z"
+    using \<open>ps \<cdot> ws \<cdot> ss = map f\<^sup>\<C> z\<close>[unfolded append_eq_map_conv]
+    by blast
+
+  show ?thesis
+    using \<open>concat ps \<cdot> p = u\<close> \<open>p w s \<sim>\<^sub>\<I> ws\<close> \<open>ps = map f\<^sup>\<C> u_pred\<close> \<open>s \<cdot> concat ss = v\<close> \<open>ss = map f\<^sup>\<C> v_pred\<close> \<open>u_pred \<cdot> w_pred \<cdot> v_pred = z\<close> \<open>ws = map f\<^sup>\<C> w_pred\<close> morph_concat_map that by blast
+qed
+
+lemma image_fac_interp_mid: assumes "p w s \<sim>\<^sub>\<I> map f\<^sup>\<C> w_pred" "2 \<le> \<^bold>|w_pred\<^bold>|"
+  obtains pw sw where
+    "w = pw \<cdot> (f (butlast (tl w_pred))) \<cdot> sw" "p\<cdot>pw = f [hd w_pred]" "sw\<cdot>s = f [last w_pred]"
+proof-
+
+  note fac_interpD[OF \<open>p w s \<sim>\<^sub>\<I> map f\<^sup>\<C> w_pred\<close>, unfolded morph_concat_map]
+  note butl = hd_middle_last[OF \<open>2 \<le> \<^bold>|w_pred\<^bold>|\<close>[folded One_less_Two_le_iff]]
+
+  have "w_pred \<noteq> \<epsilon>"
+    using assms(2) by force
+
+  obtain pw' where
+    "p \<cdot> pw' = hd (map f\<^sup>\<C> w_pred)"
+    using sprefE[OF \<open>p <p hd (map f\<^sup>\<C> w_pred)\<close>] prefixE by metis
+  hence pw': "p \<cdot> pw' = f [hd w_pred]"
+    unfolding core_def
+    unfolding hd_map[OF \<open>w_pred \<noteq> \<epsilon>\<close>, of "f\<^sup>\<C>", unfolded core_def].
+
+  obtain sw' where
+    "sw' \<cdot> s = last (map f\<^sup>\<C> (w_pred))"
+    using sprefE[reversed, OF \<open>s <s last (map f\<^sup>\<C> w_pred)\<close>] suffix_def by metis
+  hence sw' : "sw' \<cdot> s = f [last (w_pred)]"
+    unfolding core_def
+    unfolding last_map[OF \<open>w_pred \<noteq> \<epsilon>\<close>, of "f\<^sup>\<C>", unfolded core_def].
+
+  have "w = pw' \<cdot> f (butlast (tl w_pred)) \<cdot> sw'"
+    using \<open>p \<cdot> w \<cdot> s = f w_pred\<close>[unfolded arg_cong[OF butl[symmetric], of f]]
+    unfolding morph
+    unfolding pw'[symmetric] sw'[symmetric]
+  by simp
+  thus ?thesis
+    using pw' sw' that by blast
+qed
 
 end
 
@@ -1263,9 +1497,9 @@ proof (rule min_coin_defI)
   show "rev_map g (rev r) = rev_map h (rev s)"
     unfolding rev_map_def using min_coinD[OF \<open>g r =\<^sub>m h s\<close>] by auto
 next
-  fix r' s' assume "r' \<le>np rev r" "s' \<le>np rev s" "rev_map g r' = rev_map h s'"
+  fix r' s' assume "r' \<le>p rev r" "r' \<noteq> \<epsilon>" "s' \<le>p rev s" "s' \<noteq> \<epsilon>" "rev_map g r' = rev_map h s'"
   then obtain r'' s'' where "r''\<cdot> rev r' = r" and "s''\<cdot> rev s' = s"
-    using npD[OF \<open>s' \<le>np rev s\<close>] npD[OF \<open>r' \<le>np rev r\<close>]
+    using \<open>s' \<le>p rev s\<close> \<open>r' \<le>p rev r\<close>
     unfolding pref_rev_suf_iff rev_rev_ident using sufD by (auto simp add: suffix_def)
   have "g (rev r') = h (rev s')"
     using \<open>rev_map g r' = rev_map h s'\<close>[unfolded rev_map_def rev_is_rev_conv] by simp
@@ -1273,11 +1507,10 @@ next
     using min_coinD[OF \<open>g r =\<^sub>m h s\<close>, folded \<open>r''\<cdot> rev r' = r\<close> \<open>s''\<cdot> rev s' = s\<close>,
         unfolded  g.morph h.morph] by simp
   have "r'' \<noteq> r"
-    using \<open>r' \<le>np rev r\<close> \<open>r'' \<cdot> rev r' = r\<close> by auto
+    using \<open>r' \<le>p rev r\<close> \<open>r' \<noteq> \<epsilon>\<close> \<open>r'' \<cdot> rev r' = r\<close> by auto
   hence "r'' = \<epsilon> \<or> s'' = \<epsilon>"
-    using \<open>g r =\<^sub>m h s\<close>[unfolded min_coin_def nonempty_prefix_def]
-      \<open>r''\<cdot> rev r' = r\<close> \<open>s''\<cdot> rev s' = s\<close> \<open>g r'' = h s''\<close>
-    by blast
+    using min_coin_minD[OF \<open>g r =\<^sub>m h s\<close> _ _  _ _ \<open>g r'' = h s''\<close>, THEN conjunct1]
+      \<open>r''\<cdot> rev r' = r\<close> \<open>s''\<cdot> rev s' = s\<close> \<open>g r'' = h s''\<close> by blast
   hence "r'' = \<epsilon>" and  "s'' = \<epsilon>"
     using noner_eq_emp_iff[OF \<open>g r'' = h s''\<close>] by force+
   thus "r' = rev r \<and> s' = rev s"
@@ -1285,10 +1518,9 @@ next
 qed
 
 lemma min_coin_pref_eq:
-  assumes "g e =\<^sub>m h f" and "g e' = h f'" and "e' \<le>np e" and "f' \<bowtie> f"
+  assumes "g e =\<^sub>m h f" and "g e' = h f'" and "e' \<le>p e" and "e' \<noteq> \<epsilon>" and "f' \<bowtie> f"
   shows "e' = e" and "f' = f"
 proof-
-  note npD'[OF \<open>e' \<le>np e\<close>] npD[OF \<open>e' \<le>np e\<close>]
   have "f \<noteq> \<epsilon>" and "g e  = h f"
     using \<open>g e =\<^sub>m h f\<close>[unfolded min_coin_def] by blast+
   have "f' \<noteq> \<epsilon>"
@@ -1296,11 +1528,9 @@ proof-
   from g.pref_mono[OF \<open>e' \<le>p e\<close>, unfolded \<open>g e = h f\<close> \<open>g e' = h f'\<close>]
   have "f' \<le>p f"
     using pref_compE[OF \<open>f' \<bowtie> f\<close>] \<open>f' \<noteq> \<epsilon>\<close> h.pref_mono h.pref_morph_pref_eq  by metis
-  hence "f' \<le>np f"
-    using \<open>f' \<noteq> \<epsilon>\<close> by blast
   with \<open>g e =\<^sub>m h f\<close>[unfolded min_coin_def]
   show "e' = e" and "f' = f"
-    using \<open>g e' = h f'\<close> \<open>e' \<le>np e\<close> by blast+
+    using \<open>g e' = h f'\<close> \<open>e' \<le>p e\<close> \<open>e' \<noteq> \<epsilon>\<close> \<open>f' \<noteq> \<epsilon>\<close> by blast+
 qed
 
 lemma min_coin_prefE:
@@ -1313,19 +1543,19 @@ proof-
     using \<open>g r = h s\<close> LeastI[of P "\<^bold>|r\<^bold>|"]  P_def assms(2) d_def by blast
   hence "f \<noteq> \<epsilon>"
     using noner_eq_emp_iff by blast
-  have "r' \<le>np e \<Longrightarrow> s' \<le>np f \<Longrightarrow> g r' = h s' \<Longrightarrow> r' = e \<and> s' = f" for r' s'
+  have "r' \<le>p e \<Longrightarrow> r'\<noteq> \<epsilon>\<Longrightarrow> s' \<le>p f \<Longrightarrow> s' \<noteq> \<epsilon> \<Longrightarrow> g r' = h s' \<Longrightarrow> r' = e \<and> s' = f" for r' s'
   proof-
-    assume "r' \<le>np e" and "s' \<le>np f" and "g r' = h s'"
+    assume "r' \<le>p e" and "r' \<noteq> \<epsilon>" and "s' \<le>p f" and "s' \<noteq> \<epsilon>" and "g r' = h s'"
     hence "P \<^bold>|r'\<^bold>|"
-      unfolding P_def using \<open>e \<le>p r\<close> \<open>f \<le>p s\<close> npD'[OF \<open>r' \<le>np e\<close>]
-          pref_trans[OF npD[OF \<open>r' \<le>np e\<close>] \<open>e \<le>p r\<close>]
-          pref_trans[OF npD[OF \<open>s' \<le>np f\<close>] \<open>f \<le>p s\<close>] by blast
+      unfolding P_def using \<open>e \<le>p r\<close> \<open>f \<le>p s\<close> \<open>r' \<noteq> \<epsilon>\<close>
+          pref_trans[OF \<open>r' \<le>p e\<close> \<open>e \<le>p r\<close>]
+          pref_trans[OF \<open>s' \<le>p f\<close> \<open>f \<le>p s\<close>] by blast
     from Least_le[of P, OF this, folded \<open>\<^bold>|e\<^bold>| = d\<close> d_def]
     have "r' = e"
-      using  long_pref[OF npD[OF \<open>r' \<le>np e\<close>]] by blast
+      using  long_pref[OF \<open>r' \<le>p e\<close>] by blast
     from \<open>g e = h f\<close>[folded this, unfolded \<open>g r' = h s'\<close>] this
     show  ?thesis
-      using conjunct2[OF \<open>s' \<le>np f\<close>[unfolded nonempty_prefix_def]] h.pref_morph_pref_eq
+      using \<open>s' \<le>p f\<close> h.pref_morph_pref_eq
       by simp
   qed
   hence "g e =\<^sub>m h f"
@@ -1357,7 +1587,7 @@ proof (induct "\<^bold>|e\<^bold>|" arbitrary: e f thesis rule: less_induct)
       have "g e\<^sub>2 = h f\<^sub>2"
         using \<open>g e  = h f\<close>[folded \<open>e\<^sub>1 \<cdot> e\<^sub>2 = e\<close> \<open>f\<^sub>1 \<cdot> f\<^sub>2 = f\<close>, unfolded g.morph h.morph min_coinD[OF \<open>g e\<^sub>1 =\<^sub>m h f\<^sub>1\<close>] cancel].
       have "\<^bold>|e\<^sub>2\<^bold>| < \<^bold>|e\<^bold>|"
-        using lenarg[OF \<open>e\<^sub>1 \<cdot> e\<^sub>2 = e\<close>] nemp_pos_len[OF \<open>e\<^sub>1 \<noteq> \<epsilon>\<close>] unfolding lenmorph by linarith
+        using lenarg[OF \<open>e\<^sub>1 \<cdot> e\<^sub>2 = e\<close>] nemp_len[OF \<open>e\<^sub>1 \<noteq> \<epsilon>\<close>] unfolding lenmorph by linarith
       from less.hyps[OF \<open>\<^bold>|e\<^sub>2\<^bold>| < \<^bold>|e\<^bold>|\<close> _ \<open>g e\<^sub>2 = h f\<^sub>2\<close>]
       obtain ps' where "concat (map fst ps') = e\<^sub>2" and "concat (map snd ps') = f\<^sub>2" and "\<And>p. p \<in> set ps' \<Longrightarrow> g (fst p) =\<^sub>m h (snd p)"
         by blast
@@ -1402,10 +1632,10 @@ next
     have "g (fst y) =\<^sub>m h (snd y)" and "g (fst x) =\<^sub>m h (snd x)"
       by  (use min_coin_setD  listsE[OF \<open>y # ys \<in> lists (\<CC>\<^sub>m g h)\<close>] in blast)
           (use  min_coin_setD listsE[OF \<open>x # xs \<in> lists (\<CC>\<^sub>m g h)\<close>] in blast)
-    from min_coin_pref_eq[OF this(1) min_coinD[OF this(2)] _ \<open>snd x \<bowtie> snd y\<close>]
-         min_coin_pref_eq[OF this(2) min_coinD[OF this(1)] _ pref_comp_sym[OF \<open>snd x \<bowtie> snd y\<close>]] min_coinD'[OF this(1)] min_coinD'[OF this(2)]
+    from min_coin_pref_eq[OF this(1) min_coinD[OF this(2)] _ _ \<open>snd x \<bowtie> snd y\<close>]
+         min_coin_pref_eq[OF this(2) min_coinD[OF this(1)] _ _ pref_comp_sym[OF \<open>snd x \<bowtie> snd y\<close>]] min_coinD'[OF this(1)] min_coinD'[OF this(2)]
     have "fst x = fst y" and "snd x = snd y"
-      using  npI pref_compE[OF \<open>fst x \<bowtie> fst y\<close>] by metis+
+      using  pref_compE[OF \<open>fst x \<bowtie> fst y\<close>] by metis+
     hence eq: "concat (map fst xs) = concat (map fst ys)"
                   "concat (map snd xs) = concat (map snd ys)"
       using "4.prems"(3-4) by fastforce+
@@ -1567,7 +1797,7 @@ lemma range_inter_code:
   unfolding range_inter_basis_snd
   thm morphism_on.inj_code_to_code
   by (rule morphism_on.inj_code_to_code)
-   (simp_all add:  h.morph_on  h.morph_on_inj_on(2) code_morphs(1) min_coin_code_snd)
+  (simp_all add:  h.morph_on_all  h.morph_on_inj_on(2) code_morphs(1) min_coin_code_snd)
 
 end
 
@@ -1599,7 +1829,7 @@ proof-
     unfolding min_coinD[OF \<open>g r =\<^sub>m h s\<close>] min_coinD[OF \<open>g r' =\<^sub>m h s'\<close>] by simp
   thus "r = r'"and "s = s'"
     using \<open>g r' =\<^sub>m h s'\<close>[unfolded  min_coin_def] min_coinD[OF \<open>g r =\<^sub>m h s\<close>] min_coinD'[OF \<open>g r =\<^sub>m h s\<close>] \<open>r \<le>p r'\<close>
-     by blast+
+    by force+
 qed
 
 lemma first_letter_determines:
@@ -1616,9 +1846,8 @@ proof-
   from this
   have "f \<and>\<^sub>p f' \<noteq> \<epsilon>"
     using \<open>g (e \<and>\<^sub>p e') = h (f \<and>\<^sub>p f')\<close> g.nonerasing h.emp_to_emp by force
-  from npI[OF \<open>e \<and>\<^sub>p e' \<noteq> \<epsilon>\<close> lcp_pref] npI[OF \<open>f \<and>\<^sub>p f' \<noteq> \<epsilon>\<close> lcp_pref]
   show  "e \<le>p e'" and  "f \<le>p f'"
-    using min_coin_minD[OF assms(1) \<open>e \<and>\<^sub>p e' \<le>np e\<close> \<open>f \<and>\<^sub>p f' \<le>np f\<close> \<open>g (e \<and>\<^sub>p e') = h (f \<and>\<^sub>p f')\<close>,
+    using min_coin_minD[OF assms(1) lcp_pref \<open>e \<and>\<^sub>p e' \<noteq> \<epsilon>\<close> lcp_pref \<open>f \<and>\<^sub>p f' \<noteq> \<epsilon>\<close> \<open>g (e \<and>\<^sub>p e') = h (f \<and>\<^sub>p f')\<close>,
           unfolded lcp_sym[of e] lcp_sym[of f]] lcp_pref by metis+
 qed
 
@@ -1676,23 +1905,23 @@ qed
 lemma hd_im_comm_eq_aux:
   assumes "g w = h w" and "w \<noteq> \<epsilon>" and comm: "g\<^sup>\<C> (hd w) \<cdot> h\<^sup>\<C>(hd w) = h\<^sup>\<C> (hd w) \<cdot> g\<^sup>\<C>(hd w)" and len: "\<^bold>|g\<^sup>\<C> (hd w)\<^bold>| \<le> \<^bold>|h\<^sup>\<C>(hd w)\<^bold>|"
   shows "g\<^sup>\<C> (hd w) = h\<^sup>\<C> (hd w)"
-proof(cases "w \<in> [hd w]*")
-  assume  "w \<in> [hd w]*"
+proof(cases "set w \<subseteq> {hd w}")
+  assume  "set w \<subseteq> {hd w}"
   then obtain l where "w = [hd w]\<^sup>@l"
-    unfolding root_def by metis
+    by blast
   from nemp_exp_pos[OF \<open>w \<noteq> \<epsilon>\<close>, of "[hd w]" l, folded this]
-  have "l \<noteq> 0"
+  have "0 < l"
     by fast
   from \<open>g w = h w\<close>
   have "(g [hd w])\<^sup>@l = (h [hd w])\<^sup>@l"
     unfolding g.pow_morph[symmetric] h.pow_morph[symmetric] \<open>w = [hd w]\<^sup>@l\<close>[symmetric].
-  with \<open>l \<noteq> 0\<close>
+  with \<open>0 < l\<close>
   have "g [hd w] = h [hd w]"
     using pow_eq_eq by blast
   thus "g\<^sup>\<C> (hd w) = h\<^sup>\<C> (hd w)"
     unfolding core_def.
 next
-  assume  "w \<notin> [hd w]*"
+  assume  "\<not> set w \<subseteq> {hd w}"
   from distinct_letter_in_hd[OF this]
   obtain b l w' where "[hd w]\<^sup>@l \<cdot> [b] \<cdot> w' = w" and "b \<noteq> hd w" and "l \<noteq> 0".
   from commE[OF comm]
@@ -1735,7 +1964,7 @@ next
 qed
 
 lemma hd_im_comm_eq:
-  assumes "g w = h w" and "w \<noteq> \<epsilon>" and comm: "g\<^sup>\<C> (hd w) \<cdot> h\<^sup>\<C>(hd w) = h\<^sup>\<C> (hd w) \<cdot> g\<^sup>\<C>(hd w)"
+  assumes "g w = h w" and "w \<noteq> \<epsilon>" and comm: "g\<^sup>\<C>(hd w) \<cdot> h\<^sup>\<C>(hd w) = h\<^sup>\<C>(hd w) \<cdot> g\<^sup>\<C>(hd w)"
   shows "g\<^sup>\<C> (hd w) = h\<^sup>\<C> (hd w)"
 proof-
   interpret swap: two_marked_morphisms h g by unfold_locales
@@ -1849,7 +2078,7 @@ proof
   show "hd (suc_snd\<^sup>\<C> a) = hd (suc_snd\<^sup>\<C> b) \<Longrightarrow> a = b" for a b
     using blockP_D_hd_hd[OF all_blocks, folded core_sing] g.marked_core by metis
   show "suc_fst w = \<epsilon> \<Longrightarrow> w = \<epsilon>" for w
-    using assms blockP_D min_coinD' sucs.g.noner_sings_conv by blast
+    using blockP_D[OF assms, THEN min_coinD'] sucs.g.noner_sings_conv by blast
   show  "suc_snd w = \<epsilon> \<Longrightarrow> w = \<epsilon>" for w
     using blockP_D[OF assms(1), THEN min_coinD'] sucs.h.noner_sings_conv by blast
 qed
@@ -1894,7 +2123,7 @@ proof (induct "\<^bold>|e\<^bold>|" arbitrary: e f thesis rule: less_induct)
       using   \<open>e\<^sub>1 \<cdot> e\<^sub>2 = e\<close> \<open>f\<^sub>1 \<cdot> f\<^sub>2 = f\<close>
       unfolding hd_word[of "hd e" \<tau>'] sucs.g.morph sucs.h.morph \<open>suc_fst \<tau>' = e\<^sub>2\<close> \<open>suc_snd \<tau>' = f\<^sub>2\<close> \<open>suc_fst [hd e] = e\<^sub>1\<close> \<open>suc_snd [hd e] = f\<^sub>1\<close> by force+
     have "blocks (hd e # \<tau>')"
-      using \<open>blocks \<tau>'\<close> \<open>e\<^sub>1 \<cdot> e\<^sub>2 = e\<close> \<open>e\<^sub>1 \<noteq> \<epsilon>\<close> \<open>g e\<^sub>1 =\<^sub>m h f\<^sub>1\<close> block_ex by force
+      using \<open>blocks \<tau>'\<close> \<open>e\<^sub>1 \<cdot> e\<^sub>2 = e\<close> \<open>e\<^sub>1 \<noteq> \<epsilon>\<close> \<open>g e\<^sub>1 =\<^sub>m h f\<^sub>1\<close> block_ex by auto
     from less.prems(1)[OF _ _ this]
     show thesis
       by (simp add: \<open>suc_fst (hd e # \<tau>') = e\<close> \<open>suc_snd (hd e # \<tau>') = f\<close>)
@@ -1929,9 +2158,10 @@ lemma comm_sings_block: assumes "g[a] \<cdot> h[b] = h[b] \<cdot> g[a]"
   obtains m n where "suc_fst [a] = [a]\<^sup>@Suc m" and "suc_snd [a] = [b]\<^sup>@Suc n"
 proof-
   have "[a] \<^sup>@ \<^bold>|h [b]\<^bold>| \<noteq> \<epsilon>"
-    using nemp_len[OF h.sing_to_nemp, of b, folded sing_pow_empty[of a "\<^bold>|h [b]\<^bold>|"]].
+    using nemp_len[OF h.sing_to_nemp, of b] by simp
   obtain e f where "g e =\<^sub>m h f" and "e \<le>p [a] \<^sup>@ \<^bold>|h [b]\<^bold>|" and "f \<le>p [b] \<^sup>@ \<^bold>|g [a]\<^bold>|"
-    using   min_coin_prefE[OF comm_common_power[OF assms,folded g.pow_morph h.pow_morph] \<open>[a] \<^sup>@ \<^bold>|h [b]\<^bold>| \<noteq> \<epsilon>\<close>, of thesis] by blast
+    using   min_coin_prefE[OF comm_common_power[OF assms,folded g.pow_morph h.pow_morph]
+     \<open>[a] \<^sup>@ \<^bold>|h [b]\<^bold>| \<noteq> \<epsilon>\<close>, of thesis] by blast
   note e =  pref_sing_pow[OF \<open>e \<le>p [a] \<^sup>@ \<^bold>|h [b]\<^bold>|\<close>]
   note f = pref_sing_pow[OF \<open>f \<le>p [b] \<^sup>@ \<^bold>|g [a]\<^bold>|\<close>]
   from min_coinD'[OF \<open>g e =\<^sub>m h f\<close>]
@@ -1978,9 +2208,12 @@ proof-
   interpret sucs: two_marked_morphisms suc_fst suc_snd
     by force
   interpret nonerasing_morphism "(map sucs_encoding) \<circ> suc_fst"
-    unfolding comp_apply  by (standard, simp add: sucs.g.morph, use  sucs.g.nemp_to_nemp in fast)
+    unfolding comp_apply
+    by unfold_locales
+    (use sucs.g.morph sucs.g.nemp_to_nemp in auto)
   interpret nonerasing_morphism "(map sucs_encoding) \<circ> suc_snd"
-    unfolding comp_apply  by (standard, simp add: sucs.h.morph, use  sucs.h.nemp_to_nemp in fast)
+    by unfold_locales
+    (use sucs.h.morph sucs.h.nemp_to_nemp in auto)
   interpret marked_morphism "(map sucs_encoding) \<circ> suc_fst"
   proof
     show "hd ((map sucs_encoding \<circ> suc_fst)\<^sup>\<C> a) = hd ((map sucs_encoding \<circ> suc_fst)\<^sup>\<C> b) \<Longrightarrow> a = b" for a b

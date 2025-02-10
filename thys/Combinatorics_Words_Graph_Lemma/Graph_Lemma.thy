@@ -4,6 +4,8 @@
     Author:     Martin Raška, Charles University
 
 Part of Combinatorics on Words Formalized. See https://gitlab.com/formalcow/combinatorics-on-words-formalized/
+
+A version of the theory is included in the AFP. See https://www.isa-afp.org/entries/Combinatorics_Words_Graph_Lemma.html
 *)
 
 theory Graph_Lemma
@@ -21,7 +23,7 @@ in particular holds for any nontrivial equation over two words.
 The name refers to a graph whose vertices are the unknowns of the system, and edges connect front letters of the left- and right-
 hand sides of equations. The bound mentioned above is then the number of connected components of the graph.
 
-We formalize the algebraic proof from @{cite Berstel1979}. Key ingredients of the proof are in the @{theory "Combinatorics_Words_Graph_Lemma.Glued_Codes"}.\<close>
+We formalize the algebraic proof from \cite{Berstel1979}. Key ingredients of the proof are in the theory Combinatorics_Words_Graph_Lemma.Glued_Codes\<close>
 
 section \<open>Graph lemma\<close>
 
@@ -65,7 +67,7 @@ qed
 section \<open>Binary code\<close>
 
 text \<open>We illustrate the use of the Graph Lemma in an alternative proof of the fact that two non-commuting words form a code.
-See also @{thm no_comm_bin_code [no_vars]} in @{theory "Combinatorics_Words.CoWBasic"}.
+See also @{thm no_comm_bin_code [no_vars]} in Combinatorics_Words.CoWBasic.
 
 First, we prove a lemma which is the core of the alternative proof.\<close>
 
@@ -75,12 +77,12 @@ using assms proof (rule contrapos_nn)
   have **: "\<BB>\<^sub>F {u,v} = {hd (Dec \<BB>\<^sub>F {u,v} u)}"
     using graph_lemma by (rule trans) (use assms in \<open>auto intro: hds_eq[symmetric]\<close>)
   show "u \<cdot> v = v \<cdot> u"
-    by (intro comm_rootI[of _ "hd (Dec \<BB>\<^sub>F {u,v} u)"] sing_gen)
-       (simp_all add: **[symmetric] gen_in_free_hull)
+    by(intro comm_rootI[of _ "hd (Dec \<BB>\<^sub>F {u,v} u)"])
+    (simp_all add: **[symmetric] gen_in_free_hull)
 qed
 
 theorem assumes "u \<cdot> v \<noteq> v \<cdot> u" shows "code {u, v}"
-proof
+proof (rule code.intro)
   have *: "w \<in> {u, v} \<Longrightarrow> w \<noteq> \<epsilon>" for w
     using \<open>u \<cdot> v \<noteq> v \<cdot> u\<close> by blast
   fix xs ys

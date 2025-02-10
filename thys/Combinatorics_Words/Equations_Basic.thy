@@ -4,6 +4,8 @@
     Author:     Štěpán Starosta, CTU in Prague
 
 Part of Combinatorics on Words Formalized. See https://gitlab.com/formalcow/combinatorics-on-words-formalized/
+
+A version of the theory is included in the AFP. See https://www.isa-afp.org/entries/Combinatorics_Words.html
 *)
 
 theory Equations_Basic
@@ -20,339 +22,6 @@ text
 \<open>Contains various nontrivial auxiliary or rudimentary facts related to equations. Often moderately advanced or even fairly advanced.
  May change significantly in the future.\<close>
 
-section \<open>Factor interpretation\<close>
-
-definition factor_interpretation :: "'a list \<Rightarrow> 'a list \<Rightarrow> 'a list \<Rightarrow> 'a list list \<Rightarrow> bool" (\<open>_ _ _ \<sim>\<^sub>\<I> _\<close> [51,51,51,51] 60)
-  where "factor_interpretation p u s ws = (p <p hd ws \<and> s <s last ws \<and> p \<cdot> u \<cdot> s = concat ws)"
-
-
-lemma fac_interp_nemp:  "u \<noteq> \<epsilon> \<Longrightarrow> p u s \<sim>\<^sub>\<I> ws \<Longrightarrow> ws \<noteq> \<epsilon>"
-  unfolding factor_interpretation_def by auto
-
-lemma fac_interpD: assumes "p u s \<sim>\<^sub>\<I> ws"
-  shows "p <p hd ws" and "s <s last ws" and "p \<cdot> u \<cdot> s = concat ws"
-  using assms unfolding factor_interpretation_def by blast+
-
-lemma fac_interpI:
-  "p <p hd ws \<Longrightarrow> s <s last ws \<Longrightarrow> p \<cdot> u \<cdot> s = concat ws \<Longrightarrow> p u s \<sim>\<^sub>\<I> ws"
-  unfolding factor_interpretation_def by blast
-
-lemma obtain_fac_interp: assumes  "pu \<cdot> u \<cdot> su = concat ws" and "u \<noteq> \<epsilon>"
-  obtains ps ss p s vs where "p u s \<sim>\<^sub>\<I> vs" and "ps \<cdot> vs \<cdot> ss = ws" and "concat ps \<cdot> p = pu" and
-    "s \<cdot> concat ss = su"
-  using assms
-proof (induction "\<^bold>|ws\<^bold>|" arbitrary: ws pu su thesis rule: less_induct)
-  case less
-  then show ?case
-  proof-
-    have "ws \<noteq> \<epsilon>"
-      using \<open>u \<noteq> \<epsilon>\<close> \<open>pu \<cdot> u \<cdot> su = concat ws\<close> by force
-    have "\<^bold>|tl ws\<^bold>| < \<^bold>|ws\<^bold>|" and "\<^bold>|butlast ws\<^bold>| < \<^bold>|ws\<^bold>|"
-      using \<open>ws \<noteq> \<epsilon>\<close> by force+
-    show thesis
-    proof (cases)
-      assume "hd ws \<le>p pu \<or> last ws \<le>s su"
-      then show thesis
-      proof
-        assume "hd ws \<le>p pu"
-        from prefixE[OF this]
-        obtain pu' where "pu = hd ws \<cdot> pu'".
-        from \<open>pu \<cdot> u \<cdot> su = concat ws\<close>[unfolded this, folded arg_cong[OF hd_tl[OF \<open>ws \<noteq> \<epsilon>\<close>], of concat]]
-        have "pu' \<cdot> u \<cdot> su = concat (tl ws)"
-          by force
-        from less.hyps[OF \<open>\<^bold>|tl ws\<^bold>| < \<^bold>|ws\<^bold>|\<close> _ \<open>pu' \<cdot> u \<cdot> su = concat (tl ws)\<close> \<open>u \<noteq> \<epsilon>\<close>]
-        obtain p s vs ps' ss where "p u s \<sim>\<^sub>\<I> vs" and  "ps' \<cdot> vs \<cdot> ss = tl ws" and  "concat ps' \<cdot> p = pu'"
-          and "s \<cdot> concat ss = su".
-        have "(hd ws # ps') \<cdot> vs \<cdot> ss = ws"
-          using \<open>ws \<noteq> \<epsilon>\<close> \<open>ps' \<cdot> vs \<cdot> ss = tl ws\<close> by auto
-        have "concat (hd ws # ps') \<cdot> p = pu"
-          using \<open>concat ps' \<cdot> p = pu'\<close> unfolding \<open>pu = hd ws \<cdot> pu'\<close> by fastforce
-        from less.prems(1)[OF \<open>p u s \<sim>\<^sub>\<I> vs\<close> \<open>(hd ws # ps') \<cdot> vs \<cdot> ss = ws\<close> \<open>concat (hd ws # ps') \<cdot> p = pu\<close> \<open>s \<cdot> concat ss = su\<close>]
-        show thesis.
-      next
-        assume "last ws \<le>s su"
-        from suffixE[OF this]
-        obtain su' where "su = su' \<cdot> last ws".
-        from \<open>pu \<cdot> u \<cdot> su = concat ws\<close>[unfolded this, folded arg_cong[OF hd_tl[reversed, OF \<open>ws \<noteq> \<epsilon>\<close>], of concat]]
-        have "pu \<cdot> u \<cdot> su' = concat (butlast ws)"
-          by force
-        from less.hyps[OF \<open>\<^bold>|butlast ws\<^bold>| < \<^bold>|ws\<^bold>|\<close> _ \<open>pu \<cdot> u \<cdot> su' = concat (butlast ws)\<close> \<open>u \<noteq> \<epsilon>\<close>]
-        obtain p s vs ps ss' where "p u s \<sim>\<^sub>\<I> vs" and  "ps \<cdot> vs \<cdot> ss' = butlast ws" and "concat ps \<cdot> p = pu" and "s \<cdot> concat ss' = su'".
-        have "ps \<cdot> vs \<cdot> (ss' \<cdot> [last ws]) = ws"
-          using  append_butlast_last_id[OF \<open>ws \<noteq> \<epsilon>\<close>, folded \<open>ps \<cdot> vs \<cdot> ss' = butlast ws\<close>] unfolding rassoc.
-        have "s \<cdot> concat (ss' \<cdot> [last ws]) = su"
-          using \<open>s \<cdot> concat ss' = su'\<close> \<open>su = su' \<cdot> last ws\<close> by fastforce
-        from less.prems(1)[OF \<open>p u s \<sim>\<^sub>\<I> vs\<close> \<open>ps \<cdot> vs \<cdot> (ss' \<cdot> [last ws]) = ws\<close> \<open>concat ps \<cdot> p = pu\<close>  \<open>s \<cdot> concat (ss' \<cdot> [last ws]) = su\<close>]
-        show thesis.
-      qed
-    next
-      assume not_or: "\<not> (hd ws \<le>p pu \<or> last ws \<le>s su)"
-      hence "pu <p hd ws" and "su <s last ws"
-        using ruler[OF concat_hd_pref[OF \<open>ws \<noteq> \<epsilon>\<close>] prefI'[OF \<open>pu \<cdot> u \<cdot> su = concat ws\<close>[symmetric]]]
-          ruler[reversed, OF concat_hd_pref[reversed, OF \<open>ws \<noteq> \<epsilon>\<close>] prefI'[reversed, OF \<open>pu \<cdot> u \<cdot> su = concat ws\<close>[symmetric, unfolded lassoc]]] by auto
-      from fac_interpI[OF this \<open>pu \<cdot> u \<cdot> su = concat ws\<close>]
-      have "pu u su \<sim>\<^sub>\<I> ws".
-      from less.prems(1)[OF this, of \<epsilon> \<epsilon>]
-      show thesis by simp
-    qed
-  qed
-qed
-
-lemma obtain_fac_interp': assumes "u \<le>f concat ws" and "u \<noteq> \<epsilon>"
-  obtains p s vs where "p u s \<sim>\<^sub>\<I> vs" and "vs \<le>f ws"
-proof-
-  from facE[OF \<open>u \<le>f concat ws\<close>]
-  obtain pu su where "concat ws = pu \<cdot> u \<cdot> su".
-  from obtain_fac_interp[OF this[symmetric] \<open>u \<noteq> \<epsilon>\<close>] that
-  show thesis
-    using facI' by metis
-qed
-
-lemma fac_pow_longE:  assumes "w \<le>f v\<^sup>@k" and "\<^bold>|v\<^bold>| \<le> \<^bold>|w\<^bold>|"
-  obtains m v1 v2 where "v1 \<le>s v" "v2 \<le>p v" "w = v1 \<cdot> v\<^sup>@m \<cdot> v2"
-  using assms
-proof (cases "w = \<epsilon> \<or> w = v")
-  assume "w = \<epsilon> \<or> w = v"
-  then show thesis
-    by (rule disjE) (use that[of \<epsilon> \<epsilon> 0] in fastforce, use that[of \<epsilon> \<epsilon> 1] in auto)
-next
-  assume "\<not> (w = \<epsilon> \<or> w = v)"
-  hence "w \<noteq> \<epsilon>" and "w \<noteq> v" by blast+
-  have "v\<^sup>@k = concat ([v]\<^sup>@k)"
-    by auto
-  from obtain_fac_interp'[OF \<open>w \<le>f v\<^sup>@k\<close>[unfolded this] \<open>w \<noteq> \<epsilon>\<close>]
-  obtain p vs s where "p w s \<sim>\<^sub>\<I> vs" "vs \<le>f [v] \<^sup>@ k".
-  note fac_interpD[OF this(1)]
-  obtain m where "vs = [v]\<^sup>@m"
-    using \<open>vs \<le>f [v] \<^sup>@ k\<close> unique_letter_fac_expE by meson
-  hence "concat vs = v\<^sup>@m"
-    by simp
-  from lenarg[OF \<open>p \<cdot> w \<cdot> s = concat vs\<close>, unfolded this lenmorph pow_len]
-  have "0 < m"
-    using \<open>\<^bold>|v\<^bold>| \<le> \<^bold>|w\<^bold>|\<close> \<open>\<not> (w = \<epsilon> \<or> w = v)\<close> by force
-  hence "hd vs = v" and "last vs = v"
-    using \<open>vs = [v]\<^sup>@m\<close>
-    by (simp_all add: hd_pow hd_pow[reversed])
-  obtain v1 where "v = p \<cdot> v1"
-    using \<open>p <p hd vs\<close> unfolding \<open>hd vs = v\<close>  strict_prefix_def prefix_def by force
-  obtain v2 where "v = v2 \<cdot> s"
-    using \<open>s <s last vs\<close> unfolding \<open>last vs = v\<close>  strict_suffix_def suffix_def by force
-  have "m \<noteq> 1"
-    using \<open>p \<cdot> w \<cdot> s = concat vs\<close> unfolding \<open>concat vs = v\<^sup>@m\<close>
-    using \<open>w \<noteq> v\<close>  \<open>\<^bold>|v\<^bold>| \<le> \<^bold>|w\<^bold>|\<close> by force
-  hence "2 \<le> m"
-    using \<open>0 < m\<close> by linarith
-  from Suc_minus2[OF this]
-  have "concat vs = v \<cdot> v\<^sup>@(m-2) \<cdot> v"
-    unfolding pow_Suc'[symmetric] pow_Suc[symmetric] \<open>concat vs = v\<^sup>@m\<close> by argo
-  hence "w = v1 \<cdot> v\<^sup>@(m-2) \<cdot> v2"
-    by (subst(asm) \<open>v = p \<cdot> v1\<close>, subst(asm) (2) \<open>v = v2 \<cdot> s\<close>)
-    (simp add: \<open>p \<cdot> w \<cdot> s = concat vs\<close>[symmetric])
-  from that[OF _ _ this]
-  show thesis
-    using \<open>v = p \<cdot> v1\<close> \<open>v = v2 \<cdot> s\<close> by blast
-qed
-
-lemma obtain_fac_interp_dec: assumes  "w \<in> \<langle>G\<rangle>"  "u \<le>f w" "u \<noteq> \<epsilon>"
-  obtains p s ws where "ws \<in> lists (G - {\<epsilon>})" "p u s \<sim>\<^sub>\<I> ws" "ws \<le>f Dec G w"
-proof-
-  from obtain_fac_interp'[OF  _  \<open>u \<noteq> \<epsilon>\<close>, of "Dec G w", unfolded concat_dec[OF \<open>w \<in> \<langle>G\<rangle>\<close>], OF \<open>u \<le>f w\<close>]
-  obtain p s ws where *: "p u s \<sim>\<^sub>\<I> ws" "ws \<le>f Dec G w".
-  have "ws \<in> lists (G - {\<epsilon>})"
-    using  fac_in_lists[OF dec_in_lists'[OF \<open>w \<in> \<langle>G\<rangle>\<close>] \<open>ws \<le>f Dec G w\<close>].
-  from that[OF this *]
-  show thesis.
-qed
-
-
-lemma fac_interp_inner: assumes "u \<noteq> \<epsilon>" and  "p u s \<sim>\<^sub>\<I> ws" and "1 < \<^bold>|ws\<^bold>|"
-shows "p\<inverse>\<^sup>>(hd ws)\<cdot>concat(butlast (tl ws))\<cdot>(last ws)\<^sup><\<inverse>s = u"
-proof-
-have "p <p hd ws" and  "s <s last ws" and  "p \<cdot> u \<cdot> s = concat ws"
-using assms[unfolded factor_interpretation_def]  by blast+
-have "last (tl ws) = last ws"
-using  last_tl long_list_tl[OF \<open>1 < \<^bold>|ws\<^bold>|\<close>] by blast
-have ws_eq: "[hd ws] \<cdot> butlast (tl ws) \<cdot> [last ws] = ws"
-using hd_tl[OF fac_interp_nemp[OF \<open>u \<noteq> \<epsilon>\<close> \<open>p u s \<sim>\<^sub>\<I> ws\<close>]] append_butlast_last_id[OF long_list_tl[OF \<open>1 < \<^bold>|ws\<^bold>|\<close>], unfolded \<open>last (tl ws) = last ws\<close>] by simp
-from arg_cong[OF this, of concat, unfolded concat_morph, unfolded concat_sing', folded \<open>p \<cdot> u \<cdot> s = concat ws\<close>]
-have "(hd ws)\<cdot>concat(butlast (tl ws))\<cdot>(last ws) = p \<cdot> u \<cdot> s".
-thus "p\<inverse>\<^sup>>(hd ws)\<cdot>concat(butlast (tl ws))\<cdot>(last ws)\<^sup><\<inverse>s = u"
-unfolding cancel_right[of "p\<inverse>\<^sup>>(hd ws)\<cdot>concat (butlast (tl ws)) \<cdot> last ws\<^sup><\<inverse>s" s u, symmetric]
-unfolding rassoc rq_suf[OF ssufD1[OF \<open>s <s last ws\<close>]]
-unfolding cancel[of p "p\<inverse>\<^sup>>hd ws \<cdot> concat (butlast (tl ws)) \<cdot> last ws" "u\<cdot>s", symmetric]
-unfolding lassoc lq_pref[OF sprefD1[OF \<open>p <p hd ws\<close>]].
-qed
-
-
-lemma fac_interp_inner_len: assumes "u \<noteq> \<epsilon>" and  "p u s \<sim>\<^sub>\<I> ws"
-shows  "\<^bold>|concat(butlast (tl ws))\<^bold>| < \<^bold>|u\<^bold>|"
-proof (cases "\<^bold>|ws\<^bold>| \<le> 1")
-assume "\<^bold>|ws\<^bold>| \<le> 1"
-hence "tl ws = \<epsilon>"
-using nemp_le_len by fastforce
-thus ?thesis
-using \<open>u \<noteq> \<epsilon>\<close> by simp
-next
-assume neg: "\<not> \<^bold>|ws\<^bold>| \<le> 1"  hence "1 < \<^bold>|ws\<^bold>|" by auto
-from lenarg[OF fac_interp_inner[OF \<open>u \<noteq> \<epsilon>\<close> \<open>p u s \<sim>\<^sub>\<I> ws\<close> this]] \<open>p u s \<sim>\<^sub>\<I> ws\<close>
-show ?thesis
-unfolding factor_interpretation_def lenmorph
-using rq_ssuf[of s "last ws", folded length_greater_0_conv]
-by linarith
-qed
-
-lemma rev_in_set_map_rev_conv: "rev u \<in> set (map rev ws) \<longleftrightarrow> u \<in> set ws"
-  by auto
-
-lemma rev_fac_interp: assumes "p u s \<sim>\<^sub>\<I> ws" shows "(rev s) (rev u) (rev p) \<sim>\<^sub>\<I> rev (map rev ws)"
-proof (rule fac_interpI)
-  note fac_interpD[OF assms]
-  show \<open>rev s <p hd (rev (map rev ws))\<close>
-    using \<open>s <s last ws\<close>
-    by (metis \<open>p <p hd ws\<close> \<open>p \<cdot> u \<cdot> s = concat ws\<close> append_is_Nil_conv concat.simps(1) hd_rev last_map list.simps(8) rev_is_Nil_conv strict_suffix_to_prefix)
-  show "rev p <s last (rev (map rev ws))"
-    using \<open> p <p hd ws\<close>
-    by (metis \<open>p \<cdot> u \<cdot> s = concat ws\<close> \<open>s <s last ws\<close> append_is_Nil_conv concat.simps(1) last_rev list.map_sel(1) list.simps(8) rev_is_Nil_conv spref_rev_suf_iff)
-  show "rev s \<cdot> rev u \<cdot> rev p = concat (rev (map rev ws))"
-    using \<open>p \<cdot> u \<cdot> s = concat ws\<close>
-    by (metis append_assoc rev_append rev_concat rev_map)
-qed
-
-lemma rev_fac_interp_iff [reversal_rule]: "(rev s) (rev u) (rev p) \<sim>\<^sub>\<I> rev (map rev ws) \<longleftrightarrow> p u s \<sim>\<^sub>\<I> ws"
-  using rev_fac_interp
-  by (metis (no_types, lifting) map_rev_involution rev_map rev_rev_ident)
-
-lemma fac_interp_mid_fac: assumes "p u s \<sim>\<^sub>\<I> ws"
-  shows "concat (butlast (tl ws)) \<le>f u"
-proof(rule le_cases)
-  assume "2 \<le> \<^bold>|ws\<^bold>|"
-  note fac_interpD[OF \<open>p u s \<sim>\<^sub>\<I> ws\<close>]
-       mid_fac_ex[OF \<open>2 \<le> \<^bold>|ws\<^bold>|\<close>]
-  note ex = sprefD1[OF this(1)] sprefE[reversed, OF this(2)]
-  obtain p' where "hd ws = p \<cdot> p'"
-    using ex(1) prefixE
-    by blast
-  obtain s' where "last ws = s' \<cdot> s"
-    using \<open>s <s last ws\<close> by (blast elim: ssufE sufE)
-  show ?thesis
-    using \<open>p \<cdot> u \<cdot> s = concat ws\<close>
-    unfolding arg_cong[OF \<open>ws = [hd ws] \<cdot> butlast (tl ws) \<cdot> [last ws]\<close>, of concat]
-    unfolding concat_morph concat_sing'
-    unfolding \<open>hd ws = p \<cdot> p'\<close> \<open>last ws = s' \<cdot> s\<close>
-    by simp
-next
-  assume "\<^bold>|ws\<^bold>| \<le> 2"
-  hence "butlast (tl ws) = \<epsilon>"
-    using nemp_le_len by fastforce
-  thus ?thesis
-    by simp
-qed
-
-definition disjoint_interpretation :: "'a list \<Rightarrow> 'a list list \<Rightarrow> 'a list \<Rightarrow> 'a list list \<Rightarrow> bool" (\<open>_ _ _ \<sim>\<^sub>\<D> _\<close> [51,51,51,51] 60)
-  where "p us s \<sim>\<^sub>\<D> ws \<equiv> p (concat us) s \<sim>\<^sub>\<I> ws \<and>
-                                             (\<forall> u v. u \<le>p us \<and> v \<le>p ws \<longrightarrow> p \<cdot> concat u \<noteq> concat v)"
-
-lemma disjoint_interpI: "p (concat us) s \<sim>\<^sub>\<I> ws \<Longrightarrow>
-      (\<forall> u v. u \<le>p us \<and> v \<le>p ws \<longrightarrow> p \<cdot> concat u \<noteq> concat v) \<Longrightarrow> p us s \<sim>\<^sub>\<D> ws"
-  unfolding disjoint_interpretation_def by blast
-
-lemma disjoint_interpI'[intro]: "p (concat us) s \<sim>\<^sub>\<I> ws \<Longrightarrow>
-      (\<And> u v. u \<le>p us \<Longrightarrow> v \<le>p ws \<Longrightarrow>  p \<cdot> concat u \<noteq> concat v) \<Longrightarrow> p us s \<sim>\<^sub>\<D> ws"
-  unfolding disjoint_interpretation_def by blast
-
-lemma disj_interpD: "p us s \<sim>\<^sub>\<D> ws \<Longrightarrow> p (concat us) s \<sim>\<^sub>\<I> ws"
-  unfolding disjoint_interpretation_def by blast
-
-lemma disj_interpD1: assumes "p us s \<sim>\<^sub>\<D> ws" and "us' \<le>p us" and "ws' \<le>p ws"
-  shows "p \<cdot> concat us' \<noteq> concat ws'"
-  using assms unfolding disjoint_interpretation_def by blast
-
-lemma disj_interp_nemp: assumes "p us s \<sim>\<^sub>\<D> ws"
-  shows "p \<noteq> \<epsilon>" and "s \<noteq> \<epsilon>"
-  using disj_interpD1[OF assms emp_pref emp_pref]
-       disj_interpD1[OF assms self_pref self_pref, folded
-       fac_interpD(3)[OF disj_interpD, OF assms], unfolded cancel] by blast+
-
-subsection "Factor intepretation of morphic images"
-
-context morphism
-begin
-
-lemma image_fac_interp': assumes "w \<le>f f z" "w \<noteq> \<epsilon>"
-  obtains p w_pred s where "w_pred \<le>f z" "p w s \<sim>\<^sub>\<I> (map f\<^sup>\<C> w_pred)"
-proof-
-  let ?fzs = "map f\<^sup>\<C> z"
-  have "w \<le>f concat (map f\<^sup>\<C> z)"
-    by (simp add: assms(1) morph_concat_map)
-
-  from obtain_fac_interp'[OF \<open>w \<le>f concat (map f\<^sup>\<C> z)\<close> \<open>w \<noteq> \<epsilon>\<close>]
-  obtain p s ws where "p w s \<sim>\<^sub>\<I> ws" "ws \<le>f ?fzs"
-    by blast
-
-  obtain w_pred where "ws = map f\<^sup>\<C> w_pred" "w_pred \<le>f z"
-    using \<open>ws \<le>f map f\<^sup>\<C> z\<close> sublist_map_rightE by blast
-
-  show ?thesis
-    using \<open>p w s \<sim>\<^sub>\<I> ws\<close> \<open>w_pred \<le>f z\<close> \<open>ws = map f\<^sup>\<C> w_pred\<close> that by blast
-qed
-
-lemma image_fac_interp: assumes "u\<cdot>w\<cdot>v = f z" "w \<noteq> \<epsilon>"
-  obtains p w_pred s u_pred v_pred where
-    "u_pred\<cdot>w_pred\<cdot>v_pred = z" "p w s \<sim>\<^sub>\<I> (map f\<^sup>\<C> w_pred)"
-    "u = (f u_pred)\<cdot>p" "v = s\<cdot>(f v_pred)"
-proof-
-  let ?fzs = "map f\<^sup>\<C> z"
-
-  have "u\<cdot>w\<cdot>v = concat (map f\<^sup>\<C> z)"
-    by (simp add: assms(1) morph_concat_map)
-
-  from obtain_fac_interp[OF \<open>u\<cdot>w\<cdot>v = concat (map f\<^sup>\<C> z)\<close> \<open>w \<noteq> \<epsilon>\<close>]
-  obtain ps ss p s ws where "p w s \<sim>\<^sub>\<I> ws" "ps\<cdot>ws\<cdot>ss = ?fzs" "concat ps \<cdot> p = u"  "s \<cdot> concat ss = v"
-    by metis
-
-  obtain w_pred u_pred v_pred where "ws = map f\<^sup>\<C> w_pred" "ps = map f\<^sup>\<C> u_pred"
-    "ss = map f\<^sup>\<C> v_pred" "u_pred\<cdot>w_pred\<cdot>v_pred = z"
-    using \<open>ps \<cdot> ws \<cdot> ss = map f\<^sup>\<C> z\<close>[unfolded append_eq_map_conv]
-    by blast
-
-  show ?thesis
-    using \<open>concat ps \<cdot> p = u\<close> \<open>p w s \<sim>\<^sub>\<I> ws\<close> \<open>ps = map f\<^sup>\<C> u_pred\<close> \<open>s \<cdot> concat ss = v\<close> \<open>ss = map f\<^sup>\<C> v_pred\<close> \<open>u_pred \<cdot> w_pred \<cdot> v_pred = z\<close> \<open>ws = map f\<^sup>\<C> w_pred\<close> morph_concat_map that by blast
-qed
-
-lemma image_fac_interp_mid: assumes "p w s \<sim>\<^sub>\<I> map f\<^sup>\<C> w_pred" "2 \<le> \<^bold>|w_pred\<^bold>|"
-  obtains pw sw where
-    "w = pw \<cdot> (f (butlast (tl w_pred))) \<cdot> sw" "p\<cdot>pw = f [hd w_pred]" "sw\<cdot>s = f [last w_pred]"
-proof-
-  note fac_interpD[OF \<open>p w s \<sim>\<^sub>\<I> map f\<^sup>\<C> w_pred\<close>, unfolded morph_concat_map]
-  note butl = mid_fac_ex[OF \<open>2 \<le> \<^bold>|w_pred\<^bold>|\<close>]
-
-  have "w_pred \<noteq> \<epsilon>"
-    using assms(2) by force
-
-  obtain pw' where
-    "p \<cdot> pw' = hd (map f\<^sup>\<C> w_pred)"
-    using sprefE[OF \<open>p <p hd (map f\<^sup>\<C> w_pred)\<close>] prefixE by metis
-  hence pw': "p \<cdot> pw' = f [hd w_pred]"
-    unfolding core_def
-    unfolding hd_map[OF \<open>w_pred \<noteq> \<epsilon>\<close>, of "f\<^sup>\<C>", unfolded core_def].
-
-  obtain sw' where
-    "sw' \<cdot> s = last (map f\<^sup>\<C> (w_pred))"
-    using sprefE[reversed, OF \<open>s <s last (map f\<^sup>\<C> w_pred)\<close>] suffix_def by metis
-  hence sw' : "sw' \<cdot> s = f [last (w_pred)]"
-    unfolding core_def
-    unfolding last_map[OF \<open>w_pred \<noteq> \<epsilon>\<close>, of "f\<^sup>\<C>", unfolded core_def].
-
-  have "w = pw' \<cdot> f (butlast (tl w_pred)) \<cdot> sw'"
-    using \<open>p \<cdot> w \<cdot> s = f w_pred\<close>[unfolded arg_cong[OF butl, of f]]
-    unfolding morph
-    unfolding pw'[symmetric] sw'[symmetric]
-  by simp
-  thus ?thesis
-    using pw' sw' that by blast
-qed
-
-end
 
 section Miscellanea
 
@@ -521,18 +190,13 @@ proof (rule nemp_comm)
   from this comm_primroots[OF \<open>v \<noteq> \<epsilon>\<close> \<open>p' \<noteq> \<epsilon>\<close>]
   have "\<rho> v = \<rho> p'"
     by simp
-  have "w \<in> \<langle>{u, \<rho> v}\<rangle>"
-     using gen_prim[OF \<open>w \<in> \<langle>{u, v}\<rangle>\<close>].
   obtain m where "p' = \<rho> v\<^sup>@m" "0 < m"
     using primroot_expE unfolding \<open>\<rho> v = \<rho> p'\<close> by metis
   have "(u \<cdot> \<rho> v\<^sup>@(m-1)) \<cdot> \<rho> v \<le>s (\<rho> v \<cdot> w) \<cdot> u"
     using \<open>p \<le>s w\<close>
     unfolding rassoc pow_pos'[OF \<open>0 < m\<close>, symmetric] \<open>p' = \<rho> v\<^sup>@m\<close>[symmetric] \<open>u \<cdot> p' = p \<cdot> u\<close> suffix_def by force
-  hence "u \<cdot> \<rho> v = \<rho> v \<cdot> u"
-    using \<open>w \<in> \<langle>{u, \<rho> v}\<rangle>\<close> by mismatch
-
   thus "u \<cdot> v = v \<cdot> u"
-    unfolding comm_primroot_conv[symmetric].
+    using \<open>w \<in> \<langle>{u, v}\<rangle>\<close> by mismatch
 qed
 
 lemmas uv_fac_uvv_suf = uv_fac_uvv[reversed, unfolded rassoc]
@@ -550,9 +214,9 @@ proof (rule ccontr)
   assume "u \<cdot> v \<noteq> v \<cdot> u"
   then interpret binary_code u v
     by unfold_locales
-  write bin_code_lcp (\<open>\<alpha>\<close>) and
-    bin_code_mismatch_fst (\<open>c\<^sub>0\<close>) and
-    bin_code_mismatch_snd (\<open>c\<^sub>1\<close>)
+  write bin_code_lcp ("\<alpha>") and
+    bin_code_mismatch_fst ("c\<^sub>0") and
+    bin_code_mismatch_snd ("c\<^sub>1")
   have "\<^bold>|\<alpha>\<^bold>| < \<^bold>|v \<cdot> s\<^bold>|"
     using \<open>\<^bold>|u\<^bold>| \<le> \<^bold>|s\<^bold>|\<close> bin_lcp_short by force
   show False
@@ -844,17 +508,18 @@ definition commutes :: "'a list set \<Rightarrow> bool"
 lemma commutesE: "commutes A \<Longrightarrow> x \<in> A \<Longrightarrow> y \<in> A \<Longrightarrow> x\<cdot>y = y\<cdot>x"
   using commutes_def by blast
 
+
 lemma commutes_root: assumes "commutes A"
-  obtains r where "\<And>x. x \<in> A \<Longrightarrow> x \<in> r*"
-  using assms comm_primroots emp_all_roots primroot_is_root
+  obtains r where "\<And>x. x \<in> A \<Longrightarrow> x \<in> \<langle>{r}\<rangle>"
+  using assms comm_primroots emp_in sing_gen_primroot
   unfolding commutes_def
   by metis
 
 lemma commutes_primroot: assumes "commutes A"
-  obtains r where "\<And>x. x \<in> A \<Longrightarrow> x \<in> r*" and "primitive r"
-  using commutes_root[OF assms] emp_all_roots prim_sing
-    primroot_is_root primroot_prim root_trans
-  by metis
+  obtains r where "\<And>x. x \<in> A \<Longrightarrow> x \<in> \<langle>{r}\<rangle>" and "primitive r"
+  by (cases "\<forall> x \<in> A. x = \<epsilon>", fast)
+  (use assms[unfolded commutes_def] comm_primroots emp_in sing_gen_primroot
+    primroot_prim in metis)
 
 lemma commutesI [intro]: "(\<And>x y. x \<in> A \<Longrightarrow> y \<in> A \<Longrightarrow> x\<cdot>y = y\<cdot>x) \<Longrightarrow> commutes A"
   unfolding commutes_def
@@ -876,8 +541,11 @@ proof-
     by (simp add: commutesI)
 qed
 
-lemma commutesI_root[intro]: "\<forall>x \<in> A. x \<in> t* \<Longrightarrow> commutes A"
-  by (meson comm_root commutesI)
+lemma commutesI_root[intro]: "(\<And> x. x \<in> A \<Longrightarrow> x \<in> \<langle>{t}\<rangle>) \<Longrightarrow> commutes A"
+  by (meson comm_rootI commutesI)
+
+lemma commutesI_ex_root: "\<exists> t. \<forall> x \<in> A. x \<in> \<langle>{t}\<rangle> \<Longrightarrow> commutes A"
+  by fast
 
 lemma commutes_sub: "commutes A \<Longrightarrow> B \<subseteq> A \<Longrightarrow> commutes B"
   by (simp add: commutes_def subsetD)
@@ -896,28 +564,28 @@ lemma commutes_cancel: assumes "y \<in> A" and "x \<cdot> y \<in> A" and "commut
   shows "commutes (insert x A)"
 proof-
   from commutes_root[OF \<open>commutes A\<close>]
-  obtain r where "(\<And>x. x \<in> A \<Longrightarrow> x \<in> r*)"
+  obtain r where "(\<And>x. x \<in> A \<Longrightarrow> x \<in> \<langle>{r}\<rangle>)"
     by metis
-  hence "y \<in> r*" and "x \<cdot> y \<in> r*"
+  hence "y \<in> \<langle>{r}\<rangle>" and "(x \<cdot> y) \<in> \<langle>{r}\<rangle>"
     using \<open>y \<in> A\<close> \<open>x \<cdot> y \<in> A\<close> by blast+
-  hence "x \<in> r*"
-    using root_suf_cancel by auto
+  hence "x \<in> \<langle>{r}\<rangle>"
+    by force
   thus "commutes (insert x A)"
-    using \<open>\<And>x. x \<in> A \<Longrightarrow> x \<in> r*\<close> by blast
+    using \<open>\<And>x. x \<in> A \<Longrightarrow> x \<in> \<langle>{r}\<rangle>\<close> by blast
 qed
 
 lemma commutes_cancel': assumes "x \<in> A" and "x \<cdot> y \<in> A" and "commutes A"
   shows "commutes (insert y A)"
 proof-
   from commutes_root[OF \<open>commutes A\<close>]
-  obtain r where "(\<And>x. x \<in> A \<Longrightarrow> x \<in> r*)"
+  obtain r where "(\<And>x. x \<in> A \<Longrightarrow> x \<in> \<langle>{r}\<rangle>)"
     by metis
-  hence "x \<in> r*" and "x \<cdot> y \<in> r*"
+  hence "x \<in> \<langle>{r}\<rangle>" and "x \<cdot> y \<in> \<langle>{r}\<rangle>"
     using \<open>x \<in> A\<close> \<open>x \<cdot> y \<in> A\<close> by blast+
-  hence "y \<in> r*"
-    using root_pref_cancel by auto
+  hence "y \<in> \<langle>{r}\<rangle>"
+    using sing_gen_pref_cancel by auto
   thus "commutes (insert y A)"
-    using \<open>\<And>x. x \<in> A \<Longrightarrow> x \<in> r*\<close> by blast
+    using \<open>\<And>x. x \<in> A \<Longrightarrow>  x \<in> \<langle>{r}\<rangle>\<close> by blast
 qed
 
 
@@ -1007,9 +675,6 @@ proof (induction ws)
   qed
 qed simp
 
-lemma hd_Cons_append[intro,simp]: "hd ((a#v) \<cdot> u) = a"
-  by simp
-
 lemma no_repetition_list_bin:
   fixes ws :: "binA list"
   assumes not_square:  "\<And> c. \<not> [c,c] \<le>f ws"
@@ -1026,7 +691,7 @@ proof (cases "ws = \<epsilon>")
 qed simp
 
 lemma per_root_hd_last_root: assumes "ws \<le>p [a,b] \<cdot> ws" and "hd ws \<noteq> last ws"
-  shows "ws \<in> [a,b]*"
+  shows "ws \<in> \<langle>{[a,b]}\<rangle>"
   using assms
 proof (induction "\<^bold>|ws\<^bold>|" arbitrary: ws rule: less_induct)
   case less
@@ -1044,7 +709,7 @@ proof (induction "\<^bold>|ws\<^bold>|" arbitrary: ws rule: less_induct)
     have "tl (tl ws) \<le>p [a,b] \<cdot> tl (tl ws)"
       unfolding pref_cancel_conv[of "[a,b]" "tl (tl ws)", symmetric] \<open>[a,b] = [hd ws, hd (tl ws)]\<close> *
       using \<open>ws \<le>p [a, b] \<cdot> ws\<close>[unfolded \<open>[a,b] = [hd ws, hd (tl ws)]\<close>].
-    have "tl (tl ws) \<in> [a, b]*"
+    have "(tl (tl ws)) \<in> \<langle>{[a, b]}\<rangle> "
     proof (cases "tl (tl ws) = \<epsilon>")
       assume "tl (tl ws) \<noteq> \<epsilon>"
       from pref_hd_eq[OF \<open>tl (tl ws) \<le>p [a, b] \<cdot> tl (tl ws)\<close> this]
@@ -1054,19 +719,19 @@ proof (induction "\<^bold>|ws\<^bold>|" arbitrary: ws rule: less_induct)
       from \<open>hd ws \<noteq> last ws\<close>[unfolded \<open>hd ws =a\<close>, folded this \<open>hd (tl (tl ws)) = a\<close>]
       have "hd (tl (tl ws)) \<noteq> last (tl (tl ws))".
       from less.hyps[OF ind \<open>tl (tl ws) \<le>p [a,b] \<cdot> tl (tl ws)\<close> this]
-      show "tl (tl ws) \<in> [a, b]*".
+      show "(tl (tl ws)) \<in> \<langle>{[a, b]}\<rangle>".
     qed simp
-    thus "ws \<in> [a,b]*"
-      unfolding add_root[of "[a,b]" "tl(tl ws)", symmetric]
-       *[folded \<open>[a,b] = [hd ws, hd (tl ws)]\<close> ].
+    from prod_cl[OF singletonI this]
+    show "ws \<in> \<langle>{[a,b]}\<rangle>"
+      unfolding  *[folded \<open>[a,b] = [hd ws, hd (tl ws)]\<close>].
   qed simp
 qed
 
 lemma no_cyclic_repetition_list:
-  assumes  "set ws \<subseteq> {a,b}" "ws \<notin> [a,b]*" "ws \<notin> [b,a]*" "hd ws \<noteq> last ws"
+  assumes  "set ws \<subseteq> {a,b}" "ws \<notin> \<langle>{[a,b]}\<rangle>" "ws \<notin> \<langle>{[b,a]}\<rangle>" "hd ws \<noteq> last ws"
     "\<not> [a,a] \<le>f ws" "\<not> [b,b] \<le>f ws"
   shows False
-  using per_root_hd_last_root[OF _ \<open>hd ws \<noteq> last ws\<close>] \<open>ws \<notin> [a,b]*\<close> \<open>ws \<notin> [b,a]*\<close>
+  using per_root_hd_last_root[OF _ \<open>hd ws \<noteq> last ws\<close>] \<open>ws \<notin> \<langle>{[a,b]}\<rangle>\<close> \<open>ws \<notin> \<langle>{[b,a]}\<rangle>\<close>
         no_repetition_list[OF assms(1) _ _ assms(5-6)] by blast
 
 subsection \<open>Three covers\<close>
@@ -1134,7 +799,7 @@ proof-
   have "\<^bold>|t'\<^bold>| < \<^bold>|t\<^bold>|"
     using prefix_length_less[OF \<open>t' <p t\<close>].
   obtain t'' where "t' \<cdot> t'' = t" and "t'' \<noteq> \<epsilon>"
-    using \<open>t' <p t\<close> by (blast elim: spref_exE)
+    using \<open>t' <p t\<close> by blast
   have "w <s w \<cdot> t''"
     using per_rootI[reversed, OF _ \<open>t'' \<noteq> \<epsilon>\<close>, of w]
      \<open>w = v \<cdot> t\<close> \<open>w = r' \<cdot> v \<^sup>@ j \<cdot> t'\<close> \<open>t' \<cdot> t'' = t\<close>
@@ -1200,7 +865,7 @@ proof (induct "\<^bold>|w\<^bold>|" arbitrary: w t r t' r' v rule: less_induct)
       proof (cases)
         assume "\<^bold>|r'\<^bold>| = \<^bold>|t'\<^bold>|" \<comment> \<open>The trivial case\<close>
         hence "\<^bold>|t\<^bold>| - \<^bold>|t'\<^bold>| = \<^bold>|r\<^bold>| - \<^bold>|r'\<^bold>|"
-          using conj_len[OF \<open>w = v \<cdot> t\<close>[unfolded \<open>w = r \<cdot> v\<close>]] by force
+          using eq_conjug_len[OF \<open>w = v \<cdot> t\<close>[unfolded \<open>w = r \<cdot> v\<close>]] by force
         show "period w (gcd (\<^bold>|t\<^bold>| - \<^bold>|t'\<^bold>|) (\<^bold>|r\<^bold>| - \<^bold>|r'\<^bold>|))"
           unfolding \<open>\<^bold>|t\<^bold>| - \<^bold>|t'\<^bold>| = \<^bold>|r\<^bold>| - \<^bold>|r'\<^bold>|\<close>  gcd_idem_nat using \<open>period w (\<^bold>|r\<^bold>| - \<^bold>|r'\<^bold>|)\<close>.
       next
@@ -1221,7 +886,7 @@ proof (induct "\<^bold>|w\<^bold>|" arbitrary: w t r t' r' v rule: less_induct)
         have "v \<cdot> p \<le>s w" \<comment> \<open>r'v is a long border of w\<close>
           using \<open>r' \<cdot> v = v \<cdot> p\<close> \<open>w = r \<cdot> v\<close> \<open>r' <s r\<close> same_suffix_suffix ssufD by metis
         have "\<^bold>|r'\<^bold>| = \<^bold>|p\<^bold>|"
-          using conj_len[OF \<open>r' \<cdot> v = v \<cdot> p\<close>].
+          using eq_conjug_len[OF \<open>r' \<cdot> v = v \<cdot> p\<close>].
         note \<open>\<^bold>|t'\<^bold>| \<le> \<^bold>|r'\<^bold>|\<close>[unfolded \<open>\<^bold>|r'\<^bold>| = \<^bold>|p\<^bold>|\<close>]
         hence "t' <p p"
           using \<open>t = p \<cdot> v \<^sup>@ (j - 1) \<cdot> t'\<close> \<open>t' \<cdot> t'' = t\<close> \<open>\<^bold>|r'\<^bold>| = \<^bold>|p\<^bold>|\<close> \<open>\<^bold>|t'\<^bold>| < \<^bold>|r'\<^bold>|\<close> \<open>p \<le>p t\<close> pref_prod_long_less by metis
@@ -1236,7 +901,7 @@ proof (induct "\<^bold>|w\<^bold>|" arbitrary: w t r t' r' v rule: less_induct)
           from pref_marker_ext[reversed, OF \<open>\<^bold>|t'\<^bold>| \<le> \<^bold>|p\<^bold>|\<close> \<open>v \<noteq> \<epsilon>\<close>]
             suf_prod_le[OF \<open>v \<cdot> p \<le>s w\<close>[unfolded \<open>w = r' \<cdot> v\<^sup>@j \<cdot> t'\<close>] \<open>\<^bold>|v \<cdot> p\<^bold>| \<le> \<^bold>|v\<^sup>@j \<cdot> t'\<^bold>|\<close>]
           obtain k where "p = v\<^sup>@k \<cdot> t'"
-            unfolding  prim_self_root[OF \<open>primitive v\<close>].
+            unfolding  prim_primroot[OF \<open>primitive v\<close>].
           hence "p \<le>p v\<^sup>@k \<cdot> p"
             using \<open>t' <p p\<close> by simp
           from root_comm_root[OF this pow_comm[symmetric]]
@@ -1537,12 +1202,11 @@ proof-
   have "\<^bold>|(p \<cdot> q)\<^sup>@e\<^bold>| = ?d"
     unfolding \<open>(p \<cdot> q)\<^sup>@e = take ?d w\<close>
     by (rule take_len, unfold lenarg[OF \<open>w = r' \<cdot> v \<cdot> t'\<close>, unfolded lenmorph],
-    use gcd_le1_nat[OF nemp_len[OF \<open>r' \<noteq> \<epsilon>\<close>]] trans_le_add1 in blast)
+    use gcd_le1_nat[OF nemp_len_not0[OF \<open>r' \<noteq> \<epsilon>\<close>]] trans_le_add1 in blast)
 
   hence "(p \<cdot> q)\<^sup>@e \<le>p r'"
-    using \<open>\<^bold>|(p \<cdot> q)\<^sup>@e\<^bold>| = ?d\<close>
     unfolding pref_take_conv[of "(p \<cdot> q)\<^sup>@e" r', symmetric] using \<open>w = r' \<cdot> v \<cdot> t'\<close>
-     \<open>(p \<cdot> q)\<^sup>@e = take ?d w\<close>[symmetric]  gcd_le1_nat nemp_len[OF \<open>r' \<noteq> \<epsilon>\<close>] short_take_append by metis
+     \<open>(p \<cdot> q)\<^sup>@e = take ?d w\<close>[symmetric]  gcd_le1_nat[OF nemp_len_not0[OF \<open>r' \<noteq> \<epsilon>\<close>]] short_take_append by metis
   hence "(p \<cdot> q)\<^sup>@e = take ?d  r'"
     using pref_take_conv \<open>\<^bold>|(p \<cdot> q)\<^sup>@e\<^bold>| = ?d\<close> by metis
   have "r' \<le>p (p \<cdot> q)\<^sup>@e \<cdot> r'"
@@ -1561,7 +1225,7 @@ proof-
     using suf_prod_suf_short[OF _ \<open>p \<le>s (q \<cdot> p) \<^sup>@ e\<close> \<open> \<^bold>|(q \<cdot> p) \<^sup>@ e\<^bold>| \<le> \<^bold>|p \<cdot> (q \<cdot> p) \<^sup>@ l\<^bold>|\<close>]
     unfolding pows_comm[of "(q \<cdot> p)" e l] by blast
   have "\<^bold>|(q \<cdot> p) \<^sup>@ e\<^bold>| \<le> \<^bold>|t'\<^bold>|"
-    using gcd_le2_nat[OF nemp_len[OF \<open>t' \<noteq> \<epsilon>\<close>], of "\<^bold>|r'\<^bold>|", folded \<open>\<^bold>|(p \<cdot> q)\<^sup>@e\<^bold>| = ?d\<close>]
+    using gcd_le2_nat[OF nemp_len_not0[OF \<open>t' \<noteq> \<epsilon>\<close>], of "\<^bold>|r'\<^bold>|", folded \<open>\<^bold>|(p \<cdot> q)\<^sup>@e\<^bold>| = ?d\<close>]
     unfolding swap_len[of p q] pow_len.
   have "(q \<cdot> p)\<^sup>@e \<le>s t'"
     unfolding \<open>w = r' \<cdot> v \<cdot> t'\<close>[unfolded lassoc]
@@ -1639,10 +1303,67 @@ subsection \<open>Binary Equality Words\<close>
 
 \<comment> \<open>translation of a combinatorial lemma into the language of "something is not BEW"\<close>
 
-definition binary_equality_word :: "binA list \<Rightarrow> bool" where
-  "binary_equality_word w = (\<exists> (g :: binA list \<Rightarrow> nat list) h. binary_code_morphism g \<and> binary_code_morphism h \<and> g \<noteq> h \<and> w \<in> g =\<^sub>M h)"
+definition binary_equality_generator :: "binA list \<Rightarrow> bool" where
+  "binary_equality_generator w \<equiv> (set w = UNIV) \<and> (\<exists> (g :: binA list \<Rightarrow> nat list) h. binary_code_morphism g \<and> binary_code_morphism h \<and> g \<noteq> h \<and> w \<in> g =\<^sub>M h)"
 
-lemma not_bew_baiba: assumes  "\<^bold>|y\<^bold>| < \<^bold>|v\<^bold>|" and  "x \<le>s y" and "u \<le>s v" and
+definition canonical_binary_equality_generator :: "binA list \<Rightarrow> bool" where
+  "canonical_binary_equality_generator w = (\<exists> (g :: binA list \<Rightarrow> nat list) h. binary_code_morphism g \<and> binary_code_morphism h \<and> w \<in> g =\<^sub>M h \<and> \<^bold>|h \<aa>\<^bold>| < \<^bold>|g \<aa>\<^bold>| \<and> \<^bold>|g \<bb>\<^bold>| < \<^bold>|h \<bb>\<^bold>| \<and> \<^bold>|g \<aa>\<^bold>| \<le> \<^bold>|h \<bb>\<^bold>|)"
+
+lemma begE: assumes "binary_equality_generator w"
+  obtains g h where "binary_code_morphism (g :: binA list \<Rightarrow> nat list)" and "binary_code_morphism h" and "g \<noteq> h" and "w \<in> g =\<^sub>M h" and "set w = UNIV"
+  using assms binary_equality_generator_def by auto
+
+lemma cbegE: assumes "canonical_binary_equality_generator w"
+  obtains g h where "binary_code_morphism (g :: binA list \<Rightarrow> nat list)" and "binary_code_morphism h" and "w \<in> g =\<^sub>M h" and "\<^bold>|h \<aa>\<^bold>| < \<^bold>|g \<aa>\<^bold>|" and "\<^bold>|g \<bb>\<^bold>| < \<^bold>|h \<bb>\<^bold>|" and "\<^bold>|g \<aa>\<^bold>| \<le> \<^bold>|h \<bb>\<^bold>|"
+  using assms canonical_binary_equality_generator_def by auto
+
+lemma cbeg_is_beg: assumes "canonical_binary_equality_generator w" shows "binary_equality_generator w"
+proof-
+  from cbegE[OF assms]
+  obtain g h where gh:  "binary_code_morphism (g :: binA list \<Rightarrow> nat list)" "binary_code_morphism h" "w \<in> g =\<^sub>M h" and "\<^bold>|h \<aa>\<^bold>| < \<^bold>|g \<aa>\<^bold>|" "\<^bold>|g \<bb>\<^bold>| < \<^bold>|h \<bb>\<^bold>|" "\<^bold>|g \<aa>\<^bold>| \<le> \<^bold>|h \<bb>\<^bold>|".
+  interpret g: binary_code_morphism g
+    by fact
+  interpret h: binary_code_morphism h
+    by fact
+  interpret two_binary_morphisms g h
+    using two_binary_morphisms_def two_morphisms_def g.morphism_axioms h.morphism_axioms by blast
+  have "g \<noteq> h"
+    using \<open>\<^bold>|h \<aa>\<^bold>| < \<^bold>|g \<aa>\<^bold>|\<close> by blast
+  have "set w = UNIV"
+    using \<open>\<^bold>|h \<aa>\<^bold>| < \<^bold>|g \<aa>\<^bold>|\<close> \<open>\<^bold>|g \<bb>\<^bold>| < \<^bold>|h \<bb>\<^bold>|\<close> solution_UNIV[OF min_solD'[OF \<open>w \<in> g =\<^sub>M h\<close>] min_solD[OF \<open>w \<in> g =\<^sub>M h\<close>] bin_induct[of "\<lambda> c. g[c] \<noteq> h[c]"]] by force
+  then show "binary_equality_generator w"
+    unfolding binary_equality_generator_def using gh \<open>g \<noteq> h\<close> by blast
+qed
+
+lemma beg_productE: assumes "binary_equality_generator (u\<cdot>v)" and "u \<noteq> \<epsilon>" and "v \<noteq> \<epsilon>"
+  obtains g h where "binary_code_morphism (g :: binA list \<Rightarrow> nat list)" and "binary_code_morphism h" and "g \<noteq> h" and " (u\<cdot>v) \<in> g =\<^sub>M h" and "\<^bold>|g u\<^bold>| < \<^bold>|h u\<^bold>|" and "\<^bold>|h v\<^bold>| < \<^bold>|g v\<^bold>|"
+proof-
+  from begE[OF assms(1)]
+  obtain g h where gh: "binary_code_morphism (g :: binA list \<Rightarrow> nat list)" "binary_code_morphism h" "g \<noteq> h" "(u \<cdot> v) \<in> g =\<^sub>M h".
+  interpret g: binary_code_morphism g
+    by fact
+  interpret h: binary_code_morphism h
+    by fact
+  have "\<^bold>|g u\<^bold>| \<noteq> \<^bold>|h u\<^bold>|"
+    using  min_solD_min[OF \<open>(u \<cdot> v) \<in> g =\<^sub>M h\<close> \<open>u \<noteq> \<epsilon>\<close> triv_pref] \<open>v \<noteq> \<epsilon>\<close> eqd_eq(1)[OF min_solD[OF \<open>(u \<cdot> v) \<in> g =\<^sub>M h\<close>, unfolded g.morph h.morph]] by blast
+  let ?g = "if \<^bold>|g u\<^bold>| \<le> \<^bold>|h u\<^bold>| then g else h"
+  let ?h = "if \<^bold>|g u\<^bold>| \<le> \<^bold>|h u\<^bold>| then h else g"
+  have "?g \<noteq> ?h" "binary_code_morphism ?g" "binary_code_morphism ?h" "(u\<cdot>v) \<in> ?g =\<^sub>M ?h"
+    using gh by (simp_all add: min_sol_sym)
+  interpret g': binary_code_morphism ?g
+    by fact
+  interpret h': binary_code_morphism ?h
+    by fact
+  have "\<^bold>|?g u\<^bold>| < \<^bold>|?h u\<^bold>|"
+    using \<open>\<^bold>|g u\<^bold>| \<noteq> \<^bold>|h u\<^bold>|\<close> by simp
+  with  lenarg[OF min_solD[OF \<open>(u \<cdot> v) \<in> ?g =\<^sub>M ?h\<close>, unfolded g'.morph h'.morph]]
+  have "\<^bold>|?h v\<^bold>| < \<^bold>|?g v\<^bold>|"
+    unfolding lenmorph by linarith
+  show thesis
+    by (rule that[of ?g ?h]) fact+
+qed
+
+lemma bew_baiba_eq': assumes  "\<^bold>|y\<^bold>| < \<^bold>|v\<^bold>|" and  "x \<le>s y" and "u \<le>s v" and
   "y \<cdot> x \<^sup>@ k \<cdot> y = v \<cdot> u \<^sup>@ k \<cdot> v"
 shows "commutes {x,y,u,v}"
 proof-
@@ -1697,7 +1418,7 @@ proof-
       unfolding p_def pow_pos'[OF \<open>0 < q\<close>] suffix_append by blast
     from root_suf_comm[OF _ suf_ext[OF this]]
     have "x\<cdot>p = p\<cdot>x"
-      using pref_prod_root[OF prefI[OF \<open>x \<^sup>@ k = p \<cdot> u \<^sup>@ k \<cdot> s\<close>[symmetric]]] by blast
+      using pref_pow_root[OF prefI[OF \<open>x \<^sup>@ k = p \<cdot> u \<^sup>@ k \<cdot> s\<close>[symmetric]]] by blast
     from  comm_drop_exp[OF _ this[unfolded \<open>p = (w' \<cdot> w) \<^sup>@ q\<close>]]
     have "x \<cdot> (w' \<cdot> w) = (w' \<cdot> w) \<cdot> x"
       using \<open>0 < q\<close> by force
@@ -1726,262 +1447,231 @@ proof-
 
   have "0 < k"
     using \<open>\<^bold>|y\<^bold>| < \<^bold>|v\<^bold>|\<close> lenarg[OF \<open>y \<cdot> x \<^sup>@ k \<cdot> y = v \<cdot> u \<^sup>@ k \<cdot> v\<close>, unfolded lenmorph pow_len]
-    gr_zeroI by fastforce
+    by (intro gr_zeroI) force
 
   have "y = w'\<^sup>@t"
     using y_def \<open>w = \<epsilon>\<close>  by force
-  hence "y \<in> w'*"
-    using rootI by blast
+  hence "y\<in> \<langle>{w'}\<rangle>"
+    by blast
 
-  have "s \<in> w'*"
-    using s_def \<open>w = \<epsilon>\<close> rootI by force
-  hence "v \<in> w'*"
-    using \<open>s \<cdot> y = v\<close>  \<open>y \<in> w'*\<close> add_roots by blast
+  have "s \<in> \<langle>{w'}\<rangle>"
+    using s_def \<open>w = \<epsilon>\<close> by blast
+  hence "v \<in> \<langle>{w'}\<rangle>"
+    using \<open>s \<cdot> y = v\<close>  \<open>y \<in> \<langle>{w'}\<rangle>\<close>  by blast
   have "w' \<le>p x"
     using \<open>x\<^sup>@k = p\<cdot>u\<^sup>@k\<cdot>s\<close>[symmetric] eq_le_pref[OF _ \<open>\<^bold>|w\<cdot>w'\<^bold>| \<le> \<^bold>|x\<^bold>|\<close>, of "w' \<^sup>@ (q -1) \<cdot> u \<cdot> u \<^sup>@ (k - 1) \<cdot> s" "x \<^sup>@ (k - 1)"]
     unfolding p_def \<open>w = \<epsilon>\<close> emp_simps pow_pos[OF \<open>0 < k\<close>] pow_pos[OF \<open>0 < q\<close>]  pow_pos rassoc by argo
 
   have "x \<cdot> w' = w' \<cdot> x"
-    using  \<open>x \<le>s y\<close>  \<open>w' \<le>p x\<close> y_def[unfolded \<open>w = \<epsilon>\<close> \<open>t = Suc t'\<close> emp_simps]
-      pref_suf_pows_comm[of w' x 0 0 0 t', unfolded pow_zero emp_simps, folded y_def[unfolded \<open>w = \<epsilon>\<close> \<open>t = Suc t'\<close>, unfolded emp_simps]]
-    by force
-  hence "x \<in> w'*"
-    using  prim_comm_exp[OF \<open>primitive w'\<close>, of x]
-    unfolding root_def
-    by metis
-
-  have "p \<in> w'*"
-    using \<open>s \<in> w'*\<close> \<open>y \<in> w'*\<close> \<open>s \<cdot> y = v\<close>[folded \<open>y \<cdot> p = v\<close>]
-    by (simp add: \<open>s \<cdot> y = y \<cdot> p\<close> \<open>s \<in> w'*\<close> \<open>y \<in> w'*\<close> \<open>w \<cdot> w' = w' \<cdot> w\<close> p_def s_def)
+    using  \<open>x \<le>s y\<close> \<open>w' \<le>p x\<close> unfolding   y_def[unfolded \<open>w = \<epsilon>\<close> \<open>t = Suc t'\<close> emp_simps]
+    using suf_prod_root[THEN suf_root_pref_comm] by meson
+  from prim_comm_exp[OF \<open>primitive w'\<close> this]
+  have "x \<in> \<langle>{w'}\<rangle>"
+    unfolding sing_gen_pow_ex_conv by blast
 
 
-  have "u\<^sup>@k \<in> w'*"
-    using root_pow_root[OF \<open>x \<in> w'*\<close>, of k, unfolded \<open>x\<^sup>@k = p\<cdot>u\<^sup>@k\<cdot>s\<close>]
-      root_pref_cancel[OF _ \<open>p \<in> w'*\<close>] root_suf_cancel[OF _ \<open>s \<in> w'*\<close>] by blast
+  have "p \<in> \<langle>{w'}\<rangle>"
+    using \<open>s \<in> \<langle>{w'}\<rangle>\<close> \<open>y \<in> \<langle>{w'}\<rangle>\<close> \<open>s \<cdot> y = v\<close>[folded \<open>y \<cdot> p = v\<close>] \<open>w \<cdot> w' = w' \<cdot> w\<close>
+    unfolding p_def s_def by argo
+
+  have "v \<cdot> u\<^sup>@k \<cdot> v \<in> \<langle>{w'}\<rangle>"
+    unfolding \<open>y \<cdot> x \<^sup>@ k \<cdot> y = v \<cdot> u \<^sup>@ k \<cdot> v\<close>[symmetric]
+    using \<open>y \<in> \<langle>{w'}\<rangle>\<close>  \<open>v \<in> \<langle>{w'}\<rangle>\<close> hull_closed power_in[OF \<open>x \<in> \<langle>{w'}\<rangle>\<close>] by meson
+  have "u\<^sup>@k \<in> \<langle>{w'}\<rangle>"
+    using sing_gen_pref_cancel[OF \<open>v \<cdot> u\<^sup>@k \<cdot> v \<in> \<langle>{w'}\<rangle>\<close> \<open>v \<in> \<langle>{w'}\<rangle>\<close>] sing_gen_suf_cancel[OF _ \<open>v \<in> \<langle>{w'}\<rangle>\<close>] by blast
+
   from prim_root_drop_exp[OF this \<open>0 < k\<close> \<open>primitive w'\<close>]
-  have "u \<in> w'*".
+  have "u \<in> \<langle>{w'}\<rangle>".
 
-  show "commutes {x,y,u,v}"
-    by (intro commutesI_root[of _ w'], unfold Set.ball_simps(7), simp add: \<open>x \<in> w'*\<close> \<open>y \<in> w'*\<close> \<open>u \<in> w'*\<close> \<open>v \<in> w'*\<close>)
+  have "\<forall>x\<in>{x,y,u,v}. x \<in> \<langle>{w'}\<rangle>"
+    using \<open>x \<in> \<langle>{w'}\<rangle>\<close> \<open>y \<in> \<langle>{w'}\<rangle>\<close> \<open>u \<in> \<langle>{w'}\<rangle>\<close> \<open>v \<in> \<langle>{w'}\<rangle>\<close> by blast
+  then show "commutes {x,y,u,v}"
+    using commutesI_ex_root by auto
 qed
 
-lemma not_bew_baibaib: assumes "\<^bold>|x\<^bold>| < \<^bold>|u\<^bold>|" and "1 < i" and
-  "x \<cdot> y\<^sup>@i\<cdot> x \<cdot> y\<^sup>@i \<cdot> x = u \<cdot> v\<^sup>@i\<cdot> u \<cdot> v\<^sup>@i \<cdot> u"
+lemma bew_baiba_eq: assumes  "y \<cdot> x \<noteq> v \<cdot> u" and
+  "y \<cdot> x \<^sup>@ (k+1) \<cdot> y \<cdot> x = v \<cdot> u \<^sup>@ (k+1) \<cdot> v \<cdot> u"
 shows "commutes {x,y,u,v}"
 proof-
-  have "0 < i"
-    using assms(2) by auto
-
-  from lenarg[OF \<open>x \<cdot> y\<^sup>@i\<cdot> x \<cdot> y\<^sup>@i \<cdot> x = u \<cdot> v\<^sup>@i\<cdot> u \<cdot> v\<^sup>@i \<cdot> u\<close>]
-  have "2*\<^bold>|x \<cdot> y\<^sup>@i\<^bold>| + \<^bold>|x\<^bold>| = 2*\<^bold>|u \<cdot> v\<^sup>@i\<^bold>| + \<^bold>|u\<^bold>|"
-    by auto
-  hence "\<^bold>|u \<cdot> v\<^sup>@i\<^bold>| < \<^bold>|x \<cdot> y\<^sup>@i\<^bold>|"
-    using \<open>\<^bold>|x\<^bold>| < \<^bold>|u\<^bold>|\<close> by fastforce
-  hence "u \<cdot> v\<^sup>@i <p x \<cdot> y\<^sup>@i"
-    using assms(3) eq_le_pref less_or_eq_imp_le rassoc sprefI2 by metis
-
-  have "x\<cdot>y\<^sup>@i \<noteq> \<epsilon>"
-    by (metis \<open>u \<cdot> v \<^sup>@ i <p x \<cdot> y \<^sup>@ i\<close> strict_prefix_simps(1))
-  have "u\<cdot>v\<^sup>@i \<noteq> \<epsilon>"
-    using assms(1) gr_implies_not0 by blast
-
-  have "(u\<cdot>v\<^sup>@i) \<cdot> (x\<cdot>y\<^sup>@i) = (x\<cdot>y\<^sup>@i) \<cdot> (u\<cdot>v\<^sup>@i)"
-  proof(rule sq_short_per)
-    have eq: "(x \<cdot> y \<^sup>@ i) \<cdot> (x \<cdot> y \<^sup>@ i) \<cdot> x = (u \<cdot> v \<^sup>@ i) \<cdot> (u \<cdot> v \<^sup>@ i) \<cdot> u"
-      using assms(3) by auto
-    from lenarg[OF this]
-    have "\<^bold>|u \<cdot> v\<^sup>@i \<cdot> u\<^bold>| < \<^bold>|x \<cdot> y\<^sup>@i \<cdot> x \<cdot> y\<^sup>@i\<^bold>|"
-      unfolding lenmorph using \<open>\<^bold>|x\<^bold>| < \<^bold>|u\<^bold>|\<close> by linarith
-    from eq_le_pref[OF _ less_imp_le[OF this]]
-    have "(u \<cdot> v\<^sup>@i)\<cdot>u \<le>p (x \<cdot> y\<^sup>@i) \<cdot> (x \<cdot> y\<^sup>@i)"
-      using eq[symmetric] unfolding rassoc by blast
-    hence "(u \<cdot> v \<^sup>@ i) \<cdot> (u \<cdot> v\<^sup>@i) \<cdot> u \<le>p (u \<cdot> v \<^sup>@ i) \<cdot> ((x \<cdot> y\<^sup>@i) \<cdot> (x \<cdot> y\<^sup>@i))"
-      unfolding same_prefix_prefix.
-    from pref_trans[OF prefI[of "(x \<cdot> y \<^sup>@ i) \<cdot> (x \<cdot> y \<^sup>@ i)" x "(x \<cdot> y \<^sup>@ i) \<cdot> (x \<cdot> y \<^sup>@ i) \<cdot> x"]
-        this[folded \<open>(x \<cdot> y \<^sup>@ i) \<cdot> (x \<cdot> y \<^sup>@ i) \<cdot> x = (u \<cdot> v \<^sup>@ i) \<cdot> (u \<cdot> v \<^sup>@ i) \<cdot> u\<close>],
-        unfolded rassoc, OF refl]
-    show "(x \<cdot> y\<^sup>@i)\<cdot>(x \<cdot> y\<^sup>@i) \<le>p (u \<cdot> v\<^sup>@i) \<cdot> ((x \<cdot> y\<^sup>@i) \<cdot> (x \<cdot> y\<^sup>@i))"
-      by fastforce
-    show "\<^bold>|u \<cdot> v \<^sup>@ i\<^bold>| \<le> \<^bold>|x \<cdot> y \<^sup>@ i\<^bold>|"
-      using less_imp_le_nat[OF \<open>\<^bold>|u \<cdot> v \<^sup>@ i\<^bold>| < \<^bold>|x \<cdot> y \<^sup>@ i\<^bold>|\<close>].
-  qed
-
-  obtain r m k where "x\<cdot>y\<^sup>@i = r\<^sup>@k" "u\<cdot>v\<^sup>@i = r\<^sup>@m" "primitive r"
-    using \<open>(u \<cdot> v \<^sup>@ i) \<cdot> x \<cdot> y \<^sup>@ i = (x \<cdot> y \<^sup>@ i) \<cdot> u \<cdot> v \<^sup>@ i\<close>[unfolded
-        comm_primroots[OF \<open>u \<cdot> v \<^sup>@ i \<noteq> \<epsilon>\<close> \<open>x \<cdot> y \<^sup>@ i \<noteq> \<epsilon>\<close>]]
-      \<open>u \<cdot> v \<^sup>@ i \<noteq> \<epsilon>\<close> \<open>x \<cdot> y \<^sup>@ i \<noteq> \<epsilon>\<close> primroot_expE primroot_prim by metis
-
-  have "m < k"
-    using \<open>\<^bold>|u \<cdot> v \<^sup>@ i\<^bold>| < \<^bold>|x \<cdot> y \<^sup>@ i\<^bold>|\<close>
-    unfolding strict_prefix_def \<open>u \<cdot> v \<^sup>@ i = r \<^sup>@ m\<close> \<open>x \<cdot> y \<^sup>@ i = r \<^sup>@ k\<close>
-      pow_len
-    by simp
-
-  have "x\<cdot>y\<^sup>@i = u\<cdot>v\<^sup>@i\<cdot>r\<^sup>@(k-m)"
-    by (simp add: \<open>m < k\<close> \<open>u \<cdot> v \<^sup>@ i = r \<^sup>@ m\<close> \<open>x \<cdot> y \<^sup>@ i = r \<^sup>@ k\<close> lassoc less_imp_le_nat pop_pow)
-
-  have "\<^bold>|y \<^sup>@ i\<^bold>| = \<^bold>|v \<^sup>@ i\<^bold>| + 3 * \<^bold>|r \<^sup>@ (k - m)\<^bold>|" and "\<^bold>|r\<^bold>| \<le> \<^bold>|y\<^sup>@(i-1)\<^bold>|"
-  proof-
-    have "\<^bold>|x \<cdot> y\<^sup>@i\<^bold>| = \<^bold>|r\<^sup>@(k-m)\<^bold>| + \<^bold>|u \<cdot> v\<^sup>@i\<^bold>|"
-      using lenarg[OF \<open>x\<cdot>y\<^sup>@i = u\<cdot>v\<^sup>@i\<cdot>r\<^sup>@(k-m)\<close>]
-      by auto
-
-    have "\<^bold>|u\<^bold>| = 2 * \<^bold>|r \<^sup>@ (k - m)\<^bold>| + \<^bold>|x\<^bold>|"
-      using \<open>2*\<^bold>|x \<cdot> y\<^sup>@i\<^bold>| + \<^bold>|x\<^bold>| = 2*\<^bold>|u \<cdot> v\<^sup>@i\<^bold>| + \<^bold>|u\<^bold>|\<close>
-      unfolding \<open>\<^bold>|x \<cdot> y\<^sup>@i\<^bold>| = \<^bold>|r\<^sup>@(k-m)\<^bold>| + \<^bold>|u \<cdot> v\<^sup>@i\<^bold>|\<close>
-        add_mult_distrib2
-      by simp
-
-    have "2*\<^bold>|y\<^sup>@i\<^bold>| + 3*\<^bold>|x\<^bold>| = 2*\<^bold>|v\<^sup>@i\<^bold>| + 3*\<^bold>|u\<^bold>|"
-      using lenarg[OF \<open>x \<cdot> y\<^sup>@i\<cdot> x \<cdot> y\<^sup>@i \<cdot> x = u \<cdot> v\<^sup>@i\<cdot> u \<cdot> v\<^sup>@i \<cdot> u\<close>]
-      unfolding lenmorph numeral_3_eq_3 numerals(2)
-      by linarith
-
-    have "2 * \<^bold>|y \<^sup>@ i\<^bold>| = 2 * \<^bold>|v \<^sup>@ i\<^bold>| + 3 * (2 * \<^bold>|r \<^sup>@ (k - m)\<^bold>|)"
-      using \<open>2*\<^bold>|y\<^sup>@i\<^bold>| + 3*\<^bold>|x\<^bold>| = 2*\<^bold>|v\<^sup>@i\<^bold>| + 3*\<^bold>|u\<^bold>|\<close>
-      unfolding \<open>\<^bold>|u\<^bold>| = 2 * \<^bold>|r \<^sup>@ (k - m)\<^bold>| + \<^bold>|x\<^bold>|\<close> add_mult_distrib2
-      by simp
-    hence "2 * \<^bold>|y \<^sup>@ i\<^bold>| = 2 * \<^bold>|v \<^sup>@ i\<^bold>| + 2 * (3 * \<^bold>|r \<^sup>@ (k - m)\<^bold>|)"
-      by presburger
-    hence "2 * \<^bold>|y \<^sup>@ i\<^bold>| = 2 * (\<^bold>|v \<^sup>@ i\<^bold>| + (3 * \<^bold>|r \<^sup>@ (k - m)\<^bold>|))"
-      by simp
-    thus "\<^bold>|y \<^sup>@ i\<^bold>| = \<^bold>|v \<^sup>@ i\<^bold>| + 3 * \<^bold>|r \<^sup>@ (k - m)\<^bold>|"
-      using nat_mult_eq_cancel1[of 2] zero_less_numeral
-      by force
-    hence "3 * \<^bold>|r \<^sup>@ (k - m)\<^bold>| \<le> \<^bold>|y \<^sup>@ i\<^bold>|"
-      using le_add2 by presburger
-    moreover have "\<^bold>|r\<^bold>| \<le> \<^bold>|r \<^sup>@ (k - m)\<^bold>|"
-      by (metis pow_Suc pow_Suc' \<open>primitive r\<close> \<open>u \<cdot> v \<^sup>@ i <p x \<cdot> y \<^sup>@ i\<close>
-          \<open>x \<cdot> y \<^sup>@ i = u \<cdot> v \<^sup>@ i \<cdot> r \<^sup>@ (k - m)\<close> not_le prim_comm_short_emp
-          self_append_conv strict_prefix_def)
-    ultimately have "3 * \<^bold>|r\<^bold>| \<le> \<^bold>|y \<^sup>@ i\<^bold>|"
-      by (meson le_trans mult_le_mono2)
-    hence "3 * \<^bold>|r\<^bold>| \<le> i*\<^bold>|y\<^bold>|"
-      by (simp add: pow_len)
-    moreover have "i \<le> 3*(i-1)"
-      using assms(2) by linarith
-    ultimately have "3*\<^bold>|r\<^bold>| \<le> 3*((i-1)*\<^bold>|y\<^bold>|)"
-      by (metis (no_types, lifting) le_trans mult.assoc mult_le_mono1)
-    hence "\<^bold>|r\<^bold>| \<le> (i-1)*\<^bold>|y\<^bold>|"
-      by (meson nat_mult_le_cancel1 zero_less_numeral)
-    thus "\<^bold>|r\<^bold>| \<le> \<^bold>|y\<^sup>@(i-1)\<^bold>|"
-      unfolding pow_len.
-  qed
-  have "\<^bold>|r\<^bold>| + \<^bold>|y\<^bold>| \<le> \<^bold>|y \<^sup>@ i\<^bold>|"
-    using \<open>\<^bold>|r\<^bold>| \<le> \<^bold>|y\<^sup>@(i-1)\<^bold>|\<close>
-    unfolding pow_len nat_add_left_cancel_le[of "\<^bold>|y\<^bold>|" "\<^bold>|r\<^bold>|", symmetric]
-    using add.commute \<open>0 < i\<close> mult_eq_if
-    by force
-
-  have "y\<^sup>@i \<le>s y\<^sup>@i\<cdot>r"
-    using triv_suf[of "y \<^sup>@ i" x, unfolded \<open>x \<cdot> y \<^sup>@ i = r \<^sup>@ k\<close>,
-        THEN suf_prod_root].
-  have "y\<^sup>@i \<le>s y\<^sup>@i\<cdot>y"
-    by (simp add: suf_pow_ext')
-
-  from two_pers[reversed, OF \<open>y\<^sup>@i \<le>s y\<^sup>@i\<cdot>r\<close> \<open>y\<^sup>@i \<le>s y\<^sup>@i\<cdot>y\<close> \<open>\<^bold>|r\<^bold>| + \<^bold>|y\<^bold>| \<le> \<^bold>|y \<^sup>@ i\<^bold>|\<close>]
-  have "y \<cdot> r = r \<cdot> y".
-
-  have "x \<cdot> y \<^sup>@ i \<cdot> r = r \<cdot> x \<cdot> y \<^sup>@ i"
-    by (simp add: pow_comm \<open>x \<cdot> y \<^sup>@ i = r \<^sup>@ k\<close> lassoc)
-  hence "x \<cdot> r \<cdot> y \<^sup>@ i  = r \<cdot> x \<cdot> y \<^sup>@ i"
-    by (simp add: \<open>y \<cdot> r = r \<cdot> y\<close> comm_add_exp)
-  hence "x \<cdot> r = r \<cdot> x"
-    by auto
-
-  obtain n where "y = r\<^sup>@n"
-    using \<open>primitive r\<close> \<open>y \<cdot> r = r \<cdot> y\<close> by blast
-  hence "\<^bold>|y\<^sup>@i\<^bold>| = i*n*\<^bold>|r\<^bold>|"
-    by (simp add: pow_len)
-  hence "\<^bold>|v \<^sup>@ i\<^bold>| = i*n*\<^bold>|r\<^bold>| - 3 * \<^bold>|r \<^sup>@ (k - m)\<^bold>|"
-    using \<open>\<^bold>|y \<^sup>@ i\<^bold>| = \<^bold>|v \<^sup>@ i\<^bold>| + 3 * \<^bold>|r \<^sup>@ (k - m)\<^bold>|\<close>
-      diff_add_inverse2 by presburger
-  hence "\<^bold>|v \<^sup>@ i\<^bold>| = (i*n - 3*(k-m))*\<^bold>|r\<^bold>|"
-    by (simp add: \<open>\<^bold>|v \<^sup>@ i\<^bold>| = i * n * \<^bold>|r\<^bold>| - 3 * \<^bold>|r \<^sup>@ (k - m)\<^bold>|\<close> ab_semigroup_mult_class.mult_ac(1) left_diff_distrib' pow_len)
-
-  have "v\<^sup>@i \<in> r*"
-    using per_exp_eq[reversed, OF _ \<open>\<^bold>|v \<^sup>@ i\<^bold>| = (i*n - 3*(k-m))*\<^bold>|r\<^bold>|\<close>]
-      \<open>u \<cdot> v \<^sup>@ i = r \<^sup>@ m\<close> suf_prod_root triv_suf by metis
-
-  have "u \<cdot> r = r \<cdot> u"
-    using  root_suf_cancel[OF rootI[of r m, folded \<open>u \<cdot> v \<^sup>@ i = r \<^sup>@ m\<close>] \<open>v \<^sup>@ i \<in> r*\<close>]
-      self_root[of r] unfolding comm_root
+  have eq':"(y \<cdot> x) \<cdot> x \<^sup>@ k \<cdot> y \<cdot> x = (v \<cdot> u)\<cdot> u \<^sup>@ k \<cdot> v \<cdot> u" and
+       eq: "(y \<cdot> x \<^sup>@ (k+1)) \<cdot> y \<cdot> x = (v \<cdot> u \<^sup>@ (k+1)) \<cdot> v \<cdot> u" and
+       perm: "{u, v \<cdot> u, x, y \<cdot> x} = {x, y \<cdot> x, u, v \<cdot> u}"
+    using assms(2) unfolding rassoc by (simp_all add: insert_commute)
+  from eqd_eq(1)[reversed,OF eq]
+  have "\<^bold>|y \<cdot> x\<^bold>| \<noteq> \<^bold>|v \<cdot> u\<^bold>|"
+    using assms(1) by blast
+  hence "commutes {x, y \<cdot> x, u, v \<cdot> u}"
+     using bew_baiba_eq'[OF _ triv_suf triv_suf eq']
+     bew_baiba_eq'[OF _ triv_suf triv_suf eq'[symmetric], unfolded perm] by linarith
+  from commutes_root[OF this]
+  obtain t where roots: "\<And> z. z \<in>{x, y \<cdot> x, u, v \<cdot> u} \<Longrightarrow> z \<in> \<langle>{t}\<rangle>"
     by blast
-
-  have "v \<cdot> r = r \<cdot> v"
-    thm comm_drop_exp
-    using comm_drop_exp[OF \<open>0 < i\<close>,
-        OF comm_rootI[OF self_root \<open>v\<^sup>@i \<in> r*\<close>]].
-
-  show ?thesis
-    using commutesI_root[of "{x, y, u, v}" r]
-      prim_comm_root[OF \<open>primitive r\<close> \<open>u \<cdot> r = r \<cdot> u\<close>]
-      prim_comm_root[OF \<open>primitive r\<close> \<open>v \<cdot> r = r \<cdot> v\<close>]
-      prim_comm_root[OF \<open>primitive r\<close> \<open>x \<cdot> r = r \<cdot> x\<close>]
-      prim_comm_root[OF \<open>primitive r\<close> \<open>y \<cdot> r = r \<cdot> y\<close>]
-    by auto
+  have "y \<in> \<langle>{t}\<rangle>"
+    using roots[of x] roots[of "y\<cdot>x"] by force
+  have "v \<in> \<langle>{t}\<rangle>"
+    using roots[of u] roots[of "v\<cdot>u"] by force
+  have "\<forall> z \<in> {x, y, u, v}. z \<in> \<langle>{t}\<rangle>"
+    using  roots[of u] roots[of x] \<open>v \<in> \<langle>{t}\<rangle>\<close>  \<open>y \<in> \<langle>{t}\<rangle>\<close> by blast
+  thus "commutes {x,y,u,v}"
+    using commutesI_ex_root[of "{x, y \<cdot> x, u, v \<cdot> u}"] by auto
 qed
 
-theorem "\<not> binary_equality_word (\<aa> \<cdot> \<bb>\<^sup>@Suc k \<cdot> \<aa> \<cdot> \<bb>)"
-proof
-  assume "binary_equality_word (\<aa> \<cdot> \<bb> \<^sup>@ Suc k \<cdot> \<aa> \<cdot> \<bb>)"
-  then obtain g' h' where g'_morph: "binary_code_morphism (g' :: binA list \<Rightarrow> nat list)" and h'_morph: "binary_code_morphism h'" and "g' \<noteq> h'" and
-    msol': "(\<aa> \<cdot> \<bb> \<^sup>@ Suc k \<cdot> \<aa> \<cdot> \<bb>) \<in> g' =\<^sub>M h'"
-    using binary_equality_word_def by blast
-  interpret g': binary_code_morphism g'
-    by fact
-  interpret h': binary_code_morphism h'
-    by fact
-  interpret gh: two_morphisms g' h'
-    by (simp add: g'.morphism_axioms h'.morphism_axioms two_morphisms_def)
-  have "\<^bold>|g'(\<aa> \<cdot> \<bb>)\<^bold>| \<noteq> \<^bold>|h'(\<aa> \<cdot> \<bb>)\<^bold>|"
-  proof
-    assume len: "\<^bold>|g'(\<aa> \<cdot> \<bb>)\<^bold>| = \<^bold>|h'(\<aa> \<cdot> \<bb>)\<^bold>|"
-    hence eq1: "g'(\<aa> \<cdot> \<bb>) = h'(\<aa> \<cdot> \<bb>)" and eq2: "g' (\<bb>\<^sup>@k \<cdot> \<aa> \<cdot> \<bb>) = h' (\<bb>\<^sup>@k \<cdot> \<aa> \<cdot> \<bb>)"
-      using msol' eqd_eq[OF _ len, of "g' (\<bb>\<^sup>@k \<cdot> \<aa> \<cdot> \<bb>)" "h' (\<bb>\<^sup>@k \<cdot> \<aa> \<cdot> \<bb>) "]
-      unfolding min_sol_def pow_Suc pow_one g'.morph[symmetric] h'.morph[symmetric] rassoc
-      by blast+
-    hence "g' (\<bb>\<^sup>@k) = h' (\<bb>\<^sup>@k)"
-      by (simp add: g'.morph h'.morph)
-    show False
-    proof (cases "k = 0")
-      assume "k = 0"
-      from min_solD_min[OF msol' _ _ eq1, unfolded \<open>k = 0\<close> pow_one]
-      show False by simp
-    next
-      assume "k \<noteq> 0"
-      hence "g' (\<bb>) = h' (\<bb>)"
-        using \<open>g' (\<bb>\<^sup>@k) = h' (\<bb>\<^sup>@k)\<close>
-        unfolding g'.pow_morph h'.pow_morph using  pow_eq_eq by blast
-      hence "g' (\<aa>) = h' (\<aa>)"
-        using \<open>g'(\<aa> \<cdot> \<bb>) = h'(\<aa> \<cdot> \<bb>)\<close> unfolding g'.morph h'.morph
-        by simp
-      show False
-        using gh.def_on_sings_eq[OF finite_2.induct[of "\<lambda> a. g'[a] = h'[a]", OF \<open>g' (\<aa>) = h' (\<aa>)\<close> \<open>g' (\<bb>) = h' (\<bb>)\<close>]]
-          \<open>g' \<noteq> h'\<close> by blast
-    qed
+lemmas less_mult_le [intro] = mult_le_mono1[OF Suc_leI, unfolded mult_Suc]
+lemma less_mult_le' [intro]: "m < (k::nat) \<Longrightarrow> m*r + r \<le> k*r"
+  by (simp add: add.commute less_mult_le)
+
+lemma bew_baibaib_eq_aux: assumes "\<^bold>|x\<^bold>| < \<^bold>|u\<^bold>|" and "1 < i" and
+ eq: "x \<cdot> y\<^sup>@i\<cdot> x \<cdot> y\<^sup>@i \<cdot> x = u \<cdot> v\<^sup>@i\<cdot> u \<cdot> v\<^sup>@i \<cdot> u"
+shows "commutes {x,y,u,v}"
+proof-
+  from lenarg[OF \<open>x \<cdot> y\<^sup>@i\<cdot> x \<cdot> y\<^sup>@i \<cdot> x = u \<cdot> v\<^sup>@i\<cdot> u \<cdot> v\<^sup>@i \<cdot> u\<close>]
+  have "\<^bold>|u \<cdot> v\<^sup>@i\<^bold>| < \<^bold>|x \<cdot> y\<^sup>@i\<^bold>|"
+    using \<open>\<^bold>|x\<^bold>| < \<^bold>|u\<^bold>|\<close> by fastforce
+  have "0 < i"
+    using \<open>1 < i\<close> by force
+
+  have "(x\<cdot>y\<^sup>@i) \<cdot> (u\<cdot>v\<^sup>@i) = (u\<cdot>v\<^sup>@i) \<cdot> (x\<cdot>y\<^sup>@i)"
+  proof (rule two_pers)
+    show "x \<cdot> y\<^sup>@i\<cdot> x \<cdot> y\<^sup>@i \<cdot> x \<le>p (u \<cdot> v \<^sup>@ i) \<cdot> (x \<cdot> y\<^sup>@i\<cdot> x \<cdot> y\<^sup>@i \<cdot> x)"
+      unfolding eq rassoc pref_cancel_conv by blast
+    show "x \<cdot> y\<^sup>@i\<cdot> x \<cdot> y\<^sup>@i \<cdot> x \<le>p (x \<cdot> y \<^sup>@ i) \<cdot> x \<cdot> y\<^sup>@i\<cdot> x \<cdot> y\<^sup>@i \<cdot> x"
+      unfolding rassoc pref_cancel_conv by blast
+    show "\<^bold>|x \<cdot> y \<^sup>@ i\<^bold>| + \<^bold>|u \<cdot> v \<^sup>@ i\<^bold>| \<le> \<^bold>|x \<cdot> y \<^sup>@ i \<cdot> x \<cdot> y \<^sup>@ i \<cdot> x\<^bold>|"
+      using \<open>\<^bold>|u \<cdot> v\<^sup>@i\<^bold>| < \<^bold>|x \<cdot> y\<^sup>@i\<^bold>|\<close> unfolding lenmorph by auto
   qed
-  then have less': "\<^bold>|(if \<^bold>|g' (\<aa> \<cdot> \<bb>)\<^bold>| < \<^bold>|h' (\<aa> \<cdot> \<bb>)\<^bold>| then g' else h') (\<aa> \<cdot> \<bb>)\<^bold>|
-    < \<^bold>|(if \<^bold>|g' (\<aa> \<cdot> \<bb>)\<^bold>| < \<^bold>|h' (\<aa> \<cdot> \<bb>)\<^bold>| then h' else g') (\<aa> \<cdot> \<bb>)\<^bold>|"
-    by simp
-  obtain g h where g_morph: "binary_code_morphism (g :: binA list \<Rightarrow> nat list)" and h_morph: "binary_code_morphism h"
-    and msol: "g (\<aa> \<cdot> \<bb> \<^sup>@ Suc k \<cdot> \<aa> \<cdot> \<bb>) = h (\<aa> \<cdot> \<bb> \<^sup>@ Suc k \<cdot> \<aa> \<cdot> \<bb>)" and less: "\<^bold>|g(\<aa> \<cdot> \<bb>)\<^bold>| < \<^bold>|h(\<aa> \<cdot> \<bb>)\<^bold>|"
-    using that[of "(if \<^bold>|g' (\<aa> \<cdot> \<bb>)\<^bold>| < \<^bold>|h' (\<aa> \<cdot> \<bb>)\<^bold>| then g' else h')" "(if \<^bold>|g' (\<aa> \<cdot> \<bb>)\<^bold>| < \<^bold>|h' (\<aa> \<cdot> \<bb>)\<^bold>| then h' else g')", OF _ _ _ less']
-      g'_morph h'_morph min_solD[OF msol']  by presburger
-  interpret g: binary_code_morphism g
-    using g_morph by blast
-  interpret h: binary_code_morphism h
-    using h_morph by blast
-  have "g \<bb> \<le>s g (\<aa> \<cdot> \<bb>)" and "h \<bb> \<le>s h (\<aa> \<cdot> \<bb>)"
-    unfolding g.morph h.morph by blast+
-  from not_bew_baiba[OF less this, of k] msol
-  have "commutes {g \<bb>, g (\<aa> \<cdot> \<bb>), h \<bb>, h (\<aa> \<cdot> \<bb>)}"
-    unfolding g.morph h.morph g.pow_morph h.pow_morph pow_Suc rassoc by blast
-  hence "g \<bb> \<cdot> g (\<aa> \<cdot> \<bb>) = g (\<aa> \<cdot> \<bb>) \<cdot> g \<bb>"
-    unfolding commutes_def by blast
-  from this[unfolded g.morph lassoc cancel_right]
-  show False
-    using g.non_comm_morph by simp
+
+  from comm_primrootE'[OF this]
+  obtain r m k where "x\<cdot>y\<^sup>@i = r\<^sup>@k" "u\<cdot>v\<^sup>@i = r\<^sup>@m"  "primitive r".
+  note prim_nemp[OF \<open>primitive r\<close>]
+
+  have "\<^bold>|y\<^bold>| + \<^bold>|r\<^bold>| \<le> \<^bold>|y \<^sup>@ i\<^bold>|"
+  proof-
+    have "\<^bold>|u \<cdot> v \<^sup>@ i \<cdot> u \<cdot> v \<^sup>@ i\<^bold>| \<le> \<^bold>|x \<cdot> y \<^sup>@ i \<cdot> x \<cdot> y \<^sup>@ i\<^bold>|" "\<^bold>|v \<^sup>@ i \<cdot> u\<^bold>| \<le> \<^bold>|y \<^sup>@ i \<cdot> x\<^bold>|"
+      using \<open>\<^bold>|u \<cdot> v \<^sup>@ i\<^bold>| < \<^bold>|x \<cdot> y \<^sup>@ i\<^bold>|\<close> unfolding lenmorph by linarith+
+    from eqdE[of  "u \<cdot> v\<^sup>@i \<cdot> u \<cdot> v\<^sup>@i" u "x \<cdot> y\<^sup>@i \<cdot> x \<cdot> y\<^sup>@i" "x",
+        unfolded rassoc, OF eq[symmetric] this(1)]
+    obtain t' where t': "u \<cdot> v \<^sup>@ i \<cdot> u \<cdot> v \<^sup>@ i \<cdot> t' = x \<cdot> y \<^sup>@ i \<cdot> x \<cdot> y \<^sup>@ i" "t' \<cdot> x = u".
+    from eqdE[reversed, of "u \<cdot> v\<^sup>@i \<cdot> u" "v\<^sup>@i \<cdot> u" "x \<cdot> y\<^sup>@i \<cdot> x" "y\<^sup>@i\<cdot>x",
+        unfolded rassoc, OF eq[symmetric] \<open>\<^bold>|v \<^sup>@ i \<cdot> u\<^bold>| \<le> \<^bold>|y \<^sup>@ i \<cdot> x\<^bold>|\<close>]
+    obtain t where t: "t \<cdot> v \<^sup>@ i \<cdot> u = y \<^sup>@ i \<cdot> x" "x \<cdot> y \<^sup>@ i \<cdot> x \<cdot> t = u \<cdot> v \<^sup>@ i \<cdot> u".
+    have "(x \<cdot> y \<^sup>@ i \<cdot> x \<cdot> t) \<cdot> (v \<^sup>@ i \<cdot> t' \<cdot> x) = x \<cdot> y \<^sup>@ i \<cdot> x \<cdot> y \<^sup>@ i \<cdot> x"
+      unfolding t' t rassoc eq..
+    hence "y\<^sup>@i = t\<cdot>v\<^sup>@i\<cdot>t'"
+      by force
+
+    have "m < k"
+      using \<open>\<^bold>|u \<cdot> v \<^sup>@ i\<^bold>| < \<^bold>|x \<cdot> y \<^sup>@ i\<^bold>|\<close>
+      unfolding \<open>u \<cdot> v \<^sup>@ i = r \<^sup>@ m\<close> \<open>x \<cdot> y \<^sup>@ i = r \<^sup>@ k\<close> pow_len
+      by simp
+    hence "\<^bold>|u \<cdot> v \<^sup>@ i\<^bold>| + \<^bold>|r\<^bold>| \<le> \<^bold>|x \<cdot> y \<^sup>@ i\<^bold>|"
+      unfolding \<open>u \<cdot> v \<^sup>@ i = r \<^sup>@ m\<close> \<open>x \<cdot> y \<^sup>@ i = r \<^sup>@ k\<close> pow_len by blast
+    hence "2*\<^bold>|r\<^bold>| \<le> \<^bold>|y\<^sup>@i\<^bold>|"
+      using \<open>\<^bold>|u \<cdot> v \<^sup>@ i\<^bold>| + \<^bold>|r\<^bold>| \<le> \<^bold>|x \<cdot> y \<^sup>@ i\<^bold>|\<close> lenarg[OF t'(1)]
+      unfolding lenarg[OF \<open>y\<^sup>@i = t\<cdot>v\<^sup>@i\<cdot>t'\<close>] lenmorph by force
+    thus ?thesis
+      using mult_le_mono1[OF Suc_leI[OF \<open>1 < i\<close>], of "\<^bold>|y\<^bold>|"]
+      unfolding pow_len mult_Suc by force
+  qed
+
+  have "r \<cdot> y = y \<cdot> r"
+  proof (rule two_pers[reversed])
+  show "y\<^sup>@i \<le>s y\<^sup>@i\<cdot>r"
+    using triv_suf[of "y \<^sup>@ i" x, unfolded \<open>x \<cdot> y \<^sup>@ i = r \<^sup>@ k\<close>, THEN suf_prod_root].
+  show "y\<^sup>@i \<le>s y\<^sup>@i\<cdot>y"
+    by (simp add: suf_pow_ext')
+  qed fact
+  note comm_add_exp[OF this, of i]
+
+  have "r \<cdot> x = x \<cdot> r"
+  proof (rule comm_cancel_suf)
+    show "r \<cdot> x \<cdot> y\<^sup>@i = x \<cdot> y\<^sup>@i \<cdot> r"
+      using \<open>x\<cdot>y\<^sup>@i = r\<^sup>@k\<close>
+      by (simp add: lassoc pow_comm)
+    show "r \<cdot> y \<^sup>@ i = y \<^sup>@ i \<cdot> r"
+      by fact
+  qed
+
+  have "r \<cdot> u = u \<cdot> r"
+  proof (rule comm_cancel_pref)
+    show "r \<cdot> ((u \<cdot> v\<^sup>@i) \<cdot> (u \<cdot> v\<^sup>@i)) = ((u \<cdot> v\<^sup>@i) \<cdot> (u \<cdot> v\<^sup>@i)) \<cdot> r"
+      unfolding \<open>u\<cdot>v\<^sup>@i = r\<^sup>@m\<close> by comparison
+    have comm_aux: "r \<cdot> (u \<cdot> v \<^sup>@ i \<cdot> u \<cdot> v \<^sup>@ i \<cdot> u) = (u \<cdot> v \<^sup>@ i \<cdot> u \<cdot> v \<^sup>@ i \<cdot> u) \<cdot> r"
+      unfolding eq[symmetric]
+      using \<open>x\<cdot>y\<^sup>@i = r\<^sup>@k\<close> \<open>r \<cdot> x = x \<cdot> r\<close> \<open>r \<cdot> y \<^sup>@ i = y \<^sup>@ i \<cdot> r\<close> rassoc by metis
+    show "r \<cdot> ((u \<cdot> v \<^sup>@ i) \<cdot> u \<cdot> v \<^sup>@ i) \<cdot> u = ((u \<cdot> v \<^sup>@ i) \<cdot> u \<cdot> v \<^sup>@ i) \<cdot> u \<cdot> r"
+      using comm_aux unfolding rassoc.
+  qed
+
+  have "r \<cdot> v = v \<cdot> r"
+  proof(rule comm_drop_exp[OF \<open>0 < i\<close>, symmetric])
+    show "r \<cdot> v\<^sup>@i = v\<^sup>@i \<cdot> r"
+    proof (rule comm_cancel_pref)
+      show "r \<cdot> u \<cdot> v\<^sup>@i = u \<cdot> v\<^sup>@i \<cdot> r"
+        using \<open>u\<cdot>v\<^sup>@i = r\<^sup>@m\<close> pow_comm rassoc by metis
+    qed fact
+  qed
+
+  show "commutes {x,y,u,v}"
+    by (rule commutesI'[OF \<open>r \<noteq> \<epsilon>\<close>])
+    (auto simp: \<open>r \<cdot> u = u \<cdot> r\<close> \<open>r \<cdot> v = v \<cdot> r\<close> \<open>r \<cdot> x = x \<cdot> r\<close> \<open>r \<cdot> y = y \<cdot> r\<close>)
 qed
+
+lemma bew_baibaib_eq: assumes "1 < i" and "x \<noteq> u" and
+ eq: "x \<cdot> y\<^sup>@i\<cdot> x \<cdot> y\<^sup>@i \<cdot> x = u \<cdot> v\<^sup>@i\<cdot> u \<cdot> v\<^sup>@i \<cdot> u"
+shows "commutes {x,y,u,v}"
+proof (rule linorder_cases[of "\<^bold>|x\<^bold>|" "\<^bold>|u\<^bold>|"])
+  assume "\<^bold>|x\<^bold>| < \<^bold>|u\<^bold>|"
+  from bew_baibaib_eq_aux[OF this assms(1,3)]
+  show "commutes {x,y,u,v}".
+next
+  assume "\<^bold>|u\<^bold>| < \<^bold>|x\<^bold>|"
+  from bew_baibaib_eq_aux[OF this \<open>1 < i\<close> eq[symmetric]]
+  show "commutes {x,y,u,v}"
+    by (simp add: insert_commute)
+qed (use eqd_eq(1)[OF eq] \<open>x \<noteq> u\<close> in blast)
+
+theorem not_beg_abiab: "\<not> binary_equality_generator (\<aa> \<cdot> \<bb>\<^sup>@(i+1) \<cdot> \<aa> \<cdot> \<bb>)"
+proof
+  have nemp: "\<aa> \<cdot> \<bb> \<^sup>@ (i + 1) \<noteq> \<epsilon>" "\<aa> \<cdot> \<bb> \<noteq> \<epsilon>"
+    by simp_all
+  assume "binary_equality_generator (\<aa> \<cdot> \<bb> \<^sup>@ (i+1) \<cdot> \<aa> \<cdot> \<bb>)"
+  from beg_productE[of "\<aa> \<cdot> \<bb>\<^sup>@(i+1)" "\<aa> \<cdot> \<bb>", unfolded rassoc, OF this nemp]
+   obtain g h where "binary_code_morphism (g :: binA list \<Rightarrow> nat list)" "binary_code_morphism h" "g \<noteq> h" "(\<aa> \<cdot> \<bb> \<^sup>@ (i + 1) \<cdot> \<aa> \<cdot> \<bb>) \<in> g =\<^sub>M h" "\<^bold>|g (\<aa> \<cdot> \<bb> \<^sup>@ (i + 1))\<^bold>| < \<^bold>|h (\<aa> \<cdot> \<bb> \<^sup>@ (i + 1))\<^bold>|" "\<^bold>|h (\<aa> \<cdot> \<bb>)\<^bold>| < \<^bold>|g (\<aa> \<cdot> \<bb>)\<^bold>|".
+  interpret g: binary_code_morphism g
+    by fact
+  interpret h: binary_code_morphism h
+    by fact
+  have " g \<aa> \<cdot> g \<bb> \<noteq> h \<aa> \<cdot> h \<bb>"
+    using \<open>\<^bold>|h (\<aa> \<cdot> \<bb>)\<^bold>| < \<^bold>|g (\<aa> \<cdot> \<bb>)\<^bold>|\<close> unfolding g.morph h.morph by fastforce
+  from bew_baiba_eq[OF this]  min_solD[OF \<open>(\<aa> \<cdot> \<bb> \<^sup>@ (i + 1) \<cdot> \<aa> \<cdot> \<bb>) \<in> g =\<^sub>M h\<close>]
+  have "commutes {g \<bb>, g \<aa>, h \<bb>, h \<aa>}"
+    unfolding g.morph h.morph g.pow_morph h.pow_morph by blast
+  from commutesE[OF this, of "g \<aa>" "g \<bb>"]
+  show False
+    using g.non_comm_morph[of bina] by simp
+qed
+
+theorem not_beg_baibaib: assumes "1 < i"
+  shows "\<not> binary_equality_generator (\<bb> \<cdot> \<aa>\<^sup>@i \<cdot> \<bb> \<cdot> \<aa>\<^sup>@i \<cdot> \<bb>)"
+proof
+  have nemp: "\<bb> \<cdot> \<aa>\<^sup>@i \<cdot> \<bb> \<cdot> \<aa>\<^sup>@i \<noteq> \<epsilon>" "\<bb> \<noteq> \<epsilon>"
+    by simp_all
+  assume "binary_equality_generator (\<bb> \<cdot> \<aa>\<^sup>@i \<cdot> \<bb> \<cdot> \<aa>\<^sup>@i \<cdot> \<bb>)"
+  from beg_productE[of "\<bb> \<cdot> \<aa>\<^sup>@i \<cdot> \<bb> \<cdot> \<aa>\<^sup>@i" "\<bb>", unfolded rassoc, OF this nemp]
+  obtain g h where "binary_code_morphism (g :: binA list \<Rightarrow> nat list)" "binary_code_morphism h" "g \<noteq> h" "(\<bb> \<cdot> \<aa> \<^sup>@ i \<cdot> \<bb> \<cdot> \<aa> \<^sup>@ i \<cdot> \<bb>) \<in> g =\<^sub>M h" "\<^bold>|g (\<bb> \<cdot> \<aa> \<^sup>@ i \<cdot> \<bb> \<cdot> \<aa> \<^sup>@ i)\<^bold>| < \<^bold>|h (\<bb> \<cdot> \<aa> \<^sup>@ i \<cdot> \<bb> \<cdot> \<aa> \<^sup>@ i)\<^bold>|" "\<^bold>|h \<bb>\<^bold>| < \<^bold>|g \<bb>\<^bold>|".
+   interpret g: binary_code_morphism g
+    by fact
+  interpret h: binary_code_morphism h
+    by fact
+  have "g \<bb> \<noteq> h \<bb>"
+    using \<open>\<^bold>|h \<bb>\<^bold>| < \<^bold>|g \<bb>\<^bold>|\<close> by fastforce
+  from bew_baibaib_eq[OF assms this]  min_solD[OF \<open>(\<bb> \<cdot> \<aa> \<^sup>@ i \<cdot> \<bb> \<cdot> \<aa> \<^sup>@ i \<cdot> \<bb>) \<in> g =\<^sub>M h\<close>]
+  have "commutes {g \<bb>, g \<aa>, h \<bb>, h \<aa>}"
+    unfolding g.morph h.morph g.pow_morph h.pow_morph by blast
+  from commutesE[OF this, of "g \<aa>" "g \<bb>"]
+  show False
+    using g.non_comm_morph[of bina] by simp
+qed
+
 
 end
