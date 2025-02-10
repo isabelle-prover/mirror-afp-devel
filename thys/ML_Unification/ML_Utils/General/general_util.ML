@@ -21,6 +21,9 @@ sig
   val succ : int -> int
   val pred : int -> int
 
+  (*strings*)
+  val replace : string -> string -> string -> string
+
   (* sequences *)
   (*raises exception if sequence is empty and returns the sequence otherwise*)
   val seq_try : exn -> 'a Seq.seq -> 'a Seq.seq
@@ -54,6 +57,11 @@ fun fold_rev_index f =
 (*integers*)
 fun succ x = x + 1
 fun pred x = x - 1
+
+(*strings*)
+fun replace needle new s = case first_field needle s of
+    NONE => s
+  | SOME (s1, s2) => s1 ^ new ^ replace needle new s2
 
 (* sequences *)
 fun seq_is_empty sq = case Seq.pull sq of
