@@ -8,13 +8,13 @@ begin
 
 text \<open>All property locales have corresponding lifting locales\<close>
 locale nonground_uniform_typing_lifting =
-  functional_substitution_uniform_typing_lifting where 
+  functional_substitution_uniform_typing_lifting where
   base_typed = "typed \<F>" and base_welltyped = "welltyped \<F>" +
 
-  is_typed: uniform_typed_subst_stability_lifting where 
+  is_typed: uniform_typed_subst_stability_lifting where
   base_typed = "typed \<F>" +
 
-  is_welltyped: uniform_typed_subst_stability_lifting where 
+  is_welltyped: uniform_typed_subst_stability_lifting where
   base_typed = "welltyped \<F>"
 for \<F> :: "('f, 'ty) fun_types"
 
@@ -24,7 +24,7 @@ locale nonground_typing_lifting =
 
   is_typed: typed_subst_stability_lifting where base_typed = "typed \<F>" +
 
-  is_welltyped: typed_subst_stability_lifting where 
+  is_welltyped: typed_subst_stability_lifting where
   sub_is_typed = sub_is_welltyped and base_typed = "welltyped \<F>"
 for \<F> :: "('f, 'ty) fun_types"
 
@@ -33,9 +33,9 @@ locale example_typing_lifting =
   fixes \<F> :: "('f, 'ty) fun_types"
 begin
 
-sublocale equation: 
-  uniform_typing_lifting where 
-  sub_typed = "typed \<F> \<V>" and sub_welltyped = "welltyped \<F> \<V>" and 
+sublocale equation:
+  uniform_typing_lifting where
+  sub_typed = "typed \<F> \<V>" and sub_welltyped = "welltyped \<F> \<V>" and
   to_set = "set_prod"
   by unfold_locales
 
@@ -55,16 +55,16 @@ thm
   equation.is_typed_if_is_welltyped
 
 text \<open>We can lift multiple levels\<close>
-sublocale equation_set: 
-  typing_lifting where 
-  sub_is_typed = "equation.is_typed \<V>" and sub_is_welltyped = "equation.is_welltyped \<V>" and 
+sublocale equation_set:
+  typing_lifting where
+  sub_is_typed = "equation.is_typed \<V>" and sub_is_welltyped = "equation.is_welltyped \<V>" and
   to_set = fset
   by unfold_locales
 
 sublocale equation_set:
   nonground_typing_lifting where
   base_vars = vars_term and base_subst = subst_apply_term and map = fimage and
-  to_set = fset and comp_subst = subst_compose and id_subst = Var and 
+  to_set = fset and comp_subst = subst_compose and id_subst = Var and
   sub_vars = equation_subst.vars and sub_subst = equation_subst.subst and
   sub_is_welltyped = equation.is_welltyped and sub_is_typed = equation.is_typed
   by unfold_locales

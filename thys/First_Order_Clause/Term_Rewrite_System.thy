@@ -178,7 +178,7 @@ proof (rule Set.subsetI)
     unfolding mem_Collect_eq
   proof (intro exI conjI)
     show "e = (\<box>\<langle>s\<rangle>\<^sub>G, \<box>\<langle>t\<rangle>\<^sub>G)"
-      unfolding e_def 
+      unfolding e_def
       by simp
   next
     show "(s, t) \<in> E"

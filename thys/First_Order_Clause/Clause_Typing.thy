@@ -12,11 +12,11 @@ locale clause_typing =
   for term_typed term_welltyped
 begin
 
-sublocale atom: uniform_typing_lifting where 
-  sub_typed = term_typed and 
+sublocale atom: uniform_typing_lifting where
+  sub_typed = term_typed and
   sub_welltyped = term_welltyped and
   to_set = set_uprod
-  by unfold_locales 
+  by unfold_locales
 
 lemma atom_is_typed_iff [simp]:
   "atom.is_typed (Upair t t') \<longleftrightarrow> (\<exists>\<tau>. term_typed t \<tau> \<and> term_typed t' \<tau>)"
@@ -28,8 +28,8 @@ lemma atom_is_welltyped_iff [simp]:
   unfolding atom.is_welltyped_def
   by auto
 
-sublocale literal: typing_lifting where 
-  sub_is_typed = atom.is_typed and 
+sublocale literal: typing_lifting where
+  sub_is_typed = atom.is_typed and
   sub_is_welltyped = atom.is_welltyped and
   to_set = set_literal
   by unfold_locales

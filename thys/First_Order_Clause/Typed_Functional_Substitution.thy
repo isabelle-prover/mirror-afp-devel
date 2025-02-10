@@ -8,13 +8,13 @@ begin
 
 type_synonym ('var, 'ty) var_types = "'var \<Rightarrow> 'ty"
 
-locale explicitly_typed_functional_substitution = 
+locale explicitly_typed_functional_substitution =
   base_functional_substitution where vars = vars and id_subst = id_subst
 for
   id_subst :: "'var \<Rightarrow> 'base" and
   vars :: "'base \<Rightarrow> 'var set" and
   typed :: "('var, 'ty) var_types \<Rightarrow> 'base \<Rightarrow> 'ty \<Rightarrow> bool" +
-assumes 
+assumes
   predicate_typed: "\<And>\<V>. predicate_typed (typed \<V>)" and
   typed_id_subst [intro]: "\<And>\<V> x. typed \<V> (id_subst x) (\<V> x)"
 begin
@@ -22,11 +22,11 @@ begin
 sublocale predicate_typed "typed \<V>"
   using predicate_typed .
 
-abbreviation is_typed_on :: "'var set \<Rightarrow> ('var, 'ty) var_types \<Rightarrow> ('var \<Rightarrow> 'base) \<Rightarrow> bool" where 
+abbreviation is_typed_on :: "'var set \<Rightarrow> ('var, 'ty) var_types \<Rightarrow> ('var \<Rightarrow> 'base) \<Rightarrow> bool" where
   "\<And>\<V>. is_typed_on X \<V> \<sigma> \<equiv> \<forall>x \<in> X. typed \<V> (\<sigma> x) (\<V> x)"
 
 lemma subst_update:
-  assumes "typed \<V> (id_subst var) \<tau>" "typed \<V> update \<tau>"  "is_typed_on X \<V> \<gamma>" 
+  assumes "typed \<V> (id_subst var) \<tau>" "typed \<V> update \<tau>"  "is_typed_on X \<V> \<gamma>"
   shows "is_typed_on X \<V> (\<gamma>(var := update))"
   using assms typed_id_subst
   by fastforce
@@ -43,12 +43,12 @@ lemma is_typed_id_subst [intro]: "is_typed_on X \<V> id_subst"
 
 end
 
-locale inhabited_explicitly_typed_functional_substitution = 
+locale inhabited_explicitly_typed_functional_substitution =
  explicitly_typed_functional_substitution +
  assumes types_inhabited: "\<And>\<tau>. \<exists>b. is_ground b \<and> typed \<V> b \<tau>"
 
-locale typed_functional_substitution = 
-  base: explicitly_typed_functional_substitution where 
+locale typed_functional_substitution =
+  base: explicitly_typed_functional_substitution where
   vars = base_vars and subst = base_subst and typed = base_typed +
   based_functional_substitution where vars = vars
 for
@@ -67,18 +67,18 @@ abbreviation is_typed_ground_instance where
 
 end
 
-sublocale explicitly_typed_functional_substitution \<subseteq> typed_functional_substitution where 
-  base_subst = subst and base_vars = vars and is_typed = is_typed and 
-  base_typed = typed                                
+sublocale explicitly_typed_functional_substitution \<subseteq> typed_functional_substitution where
+  base_subst = subst and base_vars = vars and is_typed = is_typed and
+  base_typed = typed
   by unfold_locales
 
-locale typed_grounding_functional_substitution = 
+locale typed_grounding_functional_substitution =
   typed_functional_substitution + grounding
 begin
 
 definition typed_ground_instances where
   "typed_ground_instances typed_expr =
-    { to_ground (fst typed_expr \<cdot> \<gamma>) | \<gamma>. 
+    { to_ground (fst typed_expr \<cdot> \<gamma>) | \<gamma>.
       is_typed_ground_instance (fst typed_expr) (snd typed_expr) \<gamma> }"
 
 lemma typed_ground_instances_ground_instances':
@@ -88,19 +88,19 @@ lemma typed_ground_instances_ground_instances':
 
 end
 
-locale explicitly_typed_grounding_functional_substitution = 
+locale explicitly_typed_grounding_functional_substitution =
   explicitly_typed_functional_substitution + grounding
 begin
 
-sublocale typed_grounding_functional_substitution where 
-  base_subst = subst and base_vars = vars and is_typed = is_typed and 
+sublocale typed_grounding_functional_substitution where
+  base_subst = subst and base_vars = vars and is_typed = is_typed and
   base_typed = typed
   by unfold_locales
 
 end
 
-locale inhabited_typed_functional_substitution = 
-  typed_functional_substitution + 
+locale inhabited_typed_functional_substitution =
+  typed_functional_substitution +
   base: inhabited_explicitly_typed_functional_substitution where
   subst = base_subst and vars = base_vars and typed = base_typed
 begin
@@ -110,13 +110,13 @@ lemma ground_subst_extension:
     grounding: "is_ground (expr \<cdot> \<gamma>)" and
     \<gamma>_is_typed_on: "base.is_typed_on (vars expr) \<V> \<gamma>"
   obtains \<gamma>'
-  where 
-    "base.is_ground_subst \<gamma>'" 
-    "base.is_typed_on UNIV \<V> \<gamma>'" 
+  where
+    "base.is_ground_subst \<gamma>'"
+    "base.is_typed_on UNIV \<V> \<gamma>'"
     "\<forall>x \<in> vars expr. \<gamma> x = \<gamma>' x"
 proof (rule that)
 
-  define \<gamma>' where 
+  define \<gamma>' where
     "\<And>x. \<gamma>' x \<equiv>
       if x \<in> vars expr
       then \<gamma> x
@@ -132,7 +132,7 @@ proof (rule that)
       have "base.is_ground (\<gamma>' x)"
       proof(cases "x \<in> vars expr")
         case True
-        then show ?thesis 
+        then show ?thesis
           unfolding \<gamma>'_def
           using variable_grounding[OF grounding]
           by auto
@@ -145,7 +145,7 @@ proof (rule that)
     }
 
     then show "base.is_ground (base_subst b \<gamma>')"
-      using base.is_grounding_iff_vars_grounded 
+      using base.is_grounding_iff_vars_grounded
       by auto
   qed
 
@@ -164,7 +164,7 @@ lemma grounding_extension:
     \<gamma>_is_typed_on: "base.is_typed_on (vars expr) \<V> \<gamma>"
   obtains \<gamma>'
   where
-    "is_ground (expr' \<cdot> \<gamma>')" 
+    "is_ground (expr' \<cdot> \<gamma>')"
     "base.is_typed_on (vars expr') \<V> \<gamma>'"
     "\<forall>x \<in> vars expr. \<gamma> x = \<gamma>' x"
   using ground_subst_extension[OF grounding \<gamma>_is_typed_on]
@@ -173,18 +173,18 @@ lemma grounding_extension:
 
 end
 
-sublocale explicitly_typed_functional_substitution \<subseteq> typed_functional_substitution where 
-  base_subst = subst and base_vars = vars and is_typed = is_typed and 
-  base_typed = typed                                
+sublocale explicitly_typed_functional_substitution \<subseteq> typed_functional_substitution where
+  base_subst = subst and base_vars = vars and is_typed = is_typed and
+  base_typed = typed
   by unfold_locales
 
 locale typed_subst_stability = typed_functional_substitution +
 assumes
-  subst_stability [simp]: 
+  subst_stability [simp]:
     "\<And>\<V> expr \<sigma>. base.is_typed_on (vars expr) \<V> \<sigma> \<Longrightarrow> is_typed \<V> (expr \<cdot> \<sigma>) \<longleftrightarrow> is_typed \<V> expr"
 begin
 
-lemma subst_stability_UNIV [simp]: 
+lemma subst_stability_UNIV [simp]:
   "\<And>\<V> expr \<sigma>. base.is_typed_on UNIV \<V> \<sigma> \<Longrightarrow> is_typed \<V> (expr \<cdot> \<sigma>) \<longleftrightarrow> is_typed \<V> expr"
   by simp
 
@@ -192,22 +192,22 @@ end
 
 locale explicitly_typed_subst_stability = explicitly_typed_functional_substitution +
 assumes
-  explicit_subst_stability [simp]: 
+  explicit_subst_stability [simp]:
     "\<And>\<V> expr \<sigma> \<tau>. is_typed_on (vars expr) \<V> \<sigma> \<Longrightarrow> typed \<V> (expr \<cdot> \<sigma>) \<tau> \<longleftrightarrow> typed \<V> expr \<tau>"
 begin
 
-lemma explicit_subst_stability_UNIV [simp]: 
+lemma explicit_subst_stability_UNIV [simp]:
   "\<And>\<V> expr \<sigma>. is_typed_on UNIV \<V> \<sigma> \<Longrightarrow> typed \<V> (expr \<cdot> \<sigma>) \<tau> \<longleftrightarrow> typed \<V> expr \<tau>"
   by simp
 
-sublocale typed_subst_stability where 
+sublocale typed_subst_stability where
   base_vars = vars and base_subst = subst and base_typed = typed and is_typed = is_typed
   using explicit_subst_stability
   by unfold_locales blast
 
 lemma typed_subst_compose [intro]:
   assumes
-    "is_typed_on X \<V> \<sigma>" 
+    "is_typed_on X \<V> \<sigma>"
     "is_typed_on (\<Union>(vars ` \<sigma> ` X)) \<V> \<sigma>'"
   shows "is_typed_on X \<V> (\<sigma> \<odot> \<sigma>')"
   using assms
@@ -216,7 +216,7 @@ lemma typed_subst_compose [intro]:
 
 lemma typed_subst_compose_UNIV [intro]:
   assumes
-    "is_typed_on UNIV \<V> \<sigma>" 
+    "is_typed_on UNIV \<V> \<sigma>"
     "is_typed_on UNIV \<V> \<sigma>'"
   shows "is_typed_on UNIV \<V> (\<sigma> \<odot> \<sigma>')"
   using assms
@@ -226,18 +226,18 @@ lemma typed_subst_compose_UNIV [intro]:
 end
 
 locale replaceable_\<V> = typed_functional_substitution +
-  assumes replace_\<V>: 
+  assumes replace_\<V>:
     "\<And>expr \<V> \<V>'. \<forall>x\<in> vars expr. \<V> x = \<V>' x \<Longrightarrow> is_typed \<V> expr \<Longrightarrow> is_typed \<V>' expr"
 begin
 
 lemma replace_\<V>_iff:
-  assumes "\<forall>x\<in> vars expr. \<V> x = \<V>' x" 
+  assumes "\<forall>x\<in> vars expr. \<V> x = \<V>' x"
   shows "is_typed \<V> expr \<longleftrightarrow> is_typed \<V>' expr"
   using assms
   by (metis replace_\<V>)
 
 lemma is_ground_typed:
-  assumes "is_ground expr" 
+  assumes "is_ground expr"
   shows "is_typed \<V> expr \<longleftrightarrow> is_typed \<V>' expr"
   using replace_\<V>_iff assms
   by blast
@@ -245,23 +245,23 @@ lemma is_ground_typed:
 end
 
 locale explicitly_replaceable_\<V> = explicitly_typed_functional_substitution +
-  assumes explicit_replace_\<V>: 
+  assumes explicit_replace_\<V>:
     "\<And>expr \<V> \<V>' \<tau>. \<forall>x\<in> vars expr. \<V> x = \<V>' x \<Longrightarrow> typed \<V> expr \<tau> \<Longrightarrow>  typed \<V>' expr \<tau>"
 begin
 
 lemma explicit_replace_\<V>_iff:
-  assumes "\<forall>x\<in> vars expr. \<V> x = \<V>' x" 
+  assumes "\<forall>x\<in> vars expr. \<V> x = \<V>' x"
   shows "typed \<V> expr \<tau> \<longleftrightarrow> typed \<V>' expr \<tau>"
   using assms
   by (metis explicit_replace_\<V>)
 
 lemma explicit_is_ground_typed:
-  assumes "is_ground expr" 
+  assumes "is_ground expr"
   shows "typed \<V> expr \<tau> \<longleftrightarrow> typed \<V>' expr \<tau>"
   using explicit_replace_\<V>_iff assms
   by blast
 
-sublocale replaceable_\<V> where 
+sublocale replaceable_\<V> where
   base_vars = vars and base_subst = subst and base_typed = typed and is_typed = is_typed
   using explicit_replace_\<V>
   by unfold_locales blast
@@ -270,34 +270,34 @@ end
 
 locale typed_renaming = typed_functional_substitution + renaming_variables +
 assumes
-  typed_renaming [simp]: 
-    "\<And>\<V> \<V>' expr \<rho>. base.is_renaming \<rho> \<Longrightarrow> 
+  typed_renaming [simp]:
+    "\<And>\<V> \<V>' expr \<rho>. base.is_renaming \<rho> \<Longrightarrow>
       \<forall>x \<in> vars expr. \<V> x = \<V>' (rename \<rho> x) \<Longrightarrow>
       is_typed \<V>' (expr \<cdot> \<rho>) \<longleftrightarrow> is_typed \<V> expr"
 
-locale explicitly_typed_renaming = 
-  explicitly_typed_functional_substitution where typed = typed + 
+locale explicitly_typed_renaming =
+  explicitly_typed_functional_substitution where typed = typed +
   renaming_variables +
-  explicitly_replaceable_\<V> where typed = typed 
+  explicitly_replaceable_\<V> where typed = typed
 for typed :: "('var \<Rightarrow> 'ty) \<Rightarrow> 'expr \<Rightarrow> 'ty \<Rightarrow> bool" +
 assumes
-  explicit_typed_renaming [simp]: 
-  "\<And>\<V> \<V>' expr \<rho> \<tau>. is_renaming \<rho> \<Longrightarrow> 
+  explicit_typed_renaming [simp]:
+  "\<And>\<V> \<V>' expr \<rho> \<tau>. is_renaming \<rho> \<Longrightarrow>
       \<forall>x \<in> vars expr. \<V> x = \<V>' (rename \<rho> x) \<Longrightarrow>
       typed \<V>' (expr \<cdot> \<rho>) \<tau> \<longleftrightarrow> typed \<V> expr \<tau>"
 begin
 
-sublocale typed_renaming 
+sublocale typed_renaming
   where base_vars = vars and base_subst = subst and base_typed = typed and is_typed = is_typed
   using explicit_typed_renaming
   by unfold_locales blast
 
-lemma renaming_ground_subst: 
-  assumes 
+lemma renaming_ground_subst:
+  assumes
     "is_renaming \<rho>"
-    "is_typed_on (\<Union>(vars ` \<rho> ` X)) \<V>' \<gamma>" 
-    "is_typed_on X \<V> \<rho>" 
-    "is_ground_subst \<gamma>" 
+    "is_typed_on (\<Union>(vars ` \<rho> ` X)) \<V>' \<gamma>"
+    "is_typed_on X \<V> \<rho>"
+    "is_ground_subst \<gamma>"
     "\<forall>x \<in> X. \<V> x = \<V>' (rename \<rho> x)"
   shows "is_typed_on X \<V> (\<rho> \<odot> \<gamma>)"
 proof(intro ballI)
@@ -317,14 +317,14 @@ proof(intro ballI)
   moreover then have "typed \<V> (\<gamma> y) (\<V>' y)"
     using explicit_replace_\<V>
     by (metis assms(2,4) left_neutral emptyE is_ground_subst_is_ground comp_subst_iff)
-   
+
   ultimately have "typed \<V> (\<gamma> y) (\<V> x)"
     unfolding y_def
     using assms(5) x_in_X
     by fastforce
 
   moreover have "\<gamma> y = (\<rho> \<odot> \<gamma>) x"
-    unfolding y_def 
+    unfolding y_def
     by (metis assms(1) comp_subst_iff id_subst_rename left_neutral)
 
   ultimately show "typed \<V> ((\<rho> \<odot> \<gamma>) x) (\<V> x)"
@@ -332,13 +332,13 @@ proof(intro ballI)
 qed
 
 lemma inj_id_subst: "inj id_subst"
-  using is_renaming_id_subst is_renaming_iff 
+  using is_renaming_id_subst is_renaming_iff
   by blast
 
 lemma obtain_typed_renaming:
   fixes \<V> :: "'var \<Rightarrow> 'ty"
   assumes
-    "finite X" 
+    "finite X"
     "infinite_variables_per_type \<V>"
   obtains \<rho> :: "'var \<Rightarrow> 'expr" where
     "is_renaming \<rho>"
@@ -349,7 +349,7 @@ proof-
   obtain renaming :: "'var \<Rightarrow> 'var" where
     inj: "inj renaming" and
     rename_apart: "X \<inter> renaming ` Y = {}" and
-    preserve_type: "\<forall>x \<in> Y. \<V> (renaming x) = \<V> x" 
+    preserve_type: "\<forall>x \<in> Y. \<V> (renaming x) = \<V> x"
     using obtain_type_preserving_inj[OF assms].
 
   define \<rho> :: "'var \<Rightarrow> 'expr" where
@@ -361,7 +361,7 @@ proof-
     show "is_renaming \<rho>"
       using inj inj_id_subst
       unfolding \<rho>_def is_renaming_iff inj_def
-      by blast    
+      by blast
   next
 
     show "id_subst ` X \<inter> \<rho> ` Y = {}"
@@ -376,15 +376,15 @@ proof-
       by (metis typed_id_subst)
   qed
 qed
-    
+
 lemma obtain_typed_renamings:
   fixes \<V>\<^sub>1 \<V>\<^sub>2 :: "'var \<Rightarrow> 'ty"
   assumes
-    "finite X" 
+    "finite X"
     "infinite_variables_per_type \<V>\<^sub>2"
   obtains \<rho>\<^sub>1 \<rho>\<^sub>2 :: "'var \<Rightarrow> 'expr" where
     "is_renaming \<rho>\<^sub>1"
-    "is_renaming \<rho>\<^sub>2" 
+    "is_renaming \<rho>\<^sub>2"
     "\<rho>\<^sub>1 ` X \<inter> \<rho>\<^sub>2 ` Y = {}"
     "is_typed_on X \<V>\<^sub>1 \<rho>\<^sub>1"
     "is_typed_on Y \<V>\<^sub>2 \<rho>\<^sub>2"
@@ -394,11 +394,11 @@ lemma obtain_typed_renamings:
 lemma obtain_typed_renamings':
   fixes \<V>\<^sub>1 \<V>\<^sub>2 :: "'var \<Rightarrow> 'ty"
   assumes
-    "finite Y" 
+    "finite Y"
     "infinite_variables_per_type \<V>\<^sub>1"
   obtains \<rho>\<^sub>1 \<rho>\<^sub>2 :: "'var \<Rightarrow> 'expr" where
     "is_renaming \<rho>\<^sub>1"
-    "is_renaming \<rho>\<^sub>2" 
+    "is_renaming \<rho>\<^sub>2"
     "\<rho>\<^sub>1 ` X \<inter> \<rho>\<^sub>2 ` Y = {}"
     "is_typed_on X \<V>\<^sub>1 \<rho>\<^sub>1"
     "is_typed_on Y \<V>\<^sub>2 \<rho>\<^sub>2"
@@ -413,30 +413,30 @@ lemma renaming_subst_compose:
   shows "is_typed_on (\<Union> (vars ` \<rho> ` X)) \<V> \<sigma>"
    using assms
    unfolding is_renaming_iff
-   by (smt (verit) UN_E comp_subst_iff image_iff is_typed_id_subst left_neutral right_uniqueD 
+   by (smt (verit) UN_E comp_subst_iff image_iff is_typed_id_subst left_neutral right_uniqueD
        singletonD vars_id_subst)
 
 end
 
 lemma (in renaming_variables) obtain_merged_\<V>:
-  assumes 
+  assumes
     \<rho>\<^sub>1: "is_renaming \<rho>\<^sub>1" and
     \<rho>\<^sub>2: "is_renaming \<rho>\<^sub>2" and
     rename_apart: "vars (expr \<cdot> \<rho>\<^sub>1) \<inter> vars (expr' \<cdot> \<rho>\<^sub>2) = {}" and
     \<V>\<^sub>2: "infinite_variables_per_type \<V>\<^sub>2" and
     finite_vars: "finite (vars expr)"
-  obtains \<V>\<^sub>3 where 
-    "\<forall>x\<in>vars expr. \<V>\<^sub>1 x = \<V>\<^sub>3 (rename \<rho>\<^sub>1 x)"  
+  obtains \<V>\<^sub>3 where
+    "\<forall>x\<in>vars expr. \<V>\<^sub>1 x = \<V>\<^sub>3 (rename \<rho>\<^sub>1 x)"
     "\<forall>x\<in>vars expr'. \<V>\<^sub>2 x = \<V>\<^sub>3 (rename \<rho>\<^sub>2 x)"
     "infinite_variables_per_type \<V>\<^sub>3"
 proof (rule that)
 
-  define \<V>\<^sub>3 where 
+  define \<V>\<^sub>3 where
     "\<And>x. \<V>\<^sub>3 x \<equiv>
         if x \<in> vars (expr \<cdot> \<rho>\<^sub>1)
         then \<V>\<^sub>1 (inv \<rho>\<^sub>1 (id_subst x))
         else \<V>\<^sub>2 (inv \<rho>\<^sub>2 (id_subst x))"
-  
+
   show "\<forall>x\<in>vars expr. \<V>\<^sub>1 x = \<V>\<^sub>3 (rename \<rho>\<^sub>1 x)"
   proof (intro ballI)
     fix x
@@ -473,7 +473,7 @@ proof (rule that)
   moreover {
     fix \<tau>
 
-    have "infinite {x. \<V>\<^sub>2 (inv \<rho>\<^sub>2 (id_subst x)) = \<tau>}" 
+    have "infinite {x. \<V>\<^sub>2 (inv \<rho>\<^sub>2 (id_subst x)) = \<tau>}"
     proof(rule surj_infinite_set[OF surj_inv_renaming, OF \<rho>\<^sub>2])
 
       show "infinite {x. \<V>\<^sub>2 x = \<tau>}"
@@ -484,30 +484,30 @@ proof (rule that)
   }
 
   ultimately show "infinite_variables_per_type \<V>\<^sub>3"
-    unfolding infinite_variables_per_type_def \<V>\<^sub>3_def if_distrib if_distribR Collect_if_eq 
+    unfolding infinite_variables_per_type_def \<V>\<^sub>3_def if_distrib if_distribR Collect_if_eq
       Collect_not_mem_conj_eq
     by auto
 qed
 
 lemma (in renaming_variables) obtain_merged_\<V>':
-  assumes 
+  assumes
     \<rho>\<^sub>1: "is_renaming \<rho>\<^sub>1" and
     \<rho>\<^sub>2: "is_renaming \<rho>\<^sub>2" and
     rename_apart: "vars (expr \<cdot> \<rho>\<^sub>1) \<inter> vars (expr' \<cdot> \<rho>\<^sub>2) = {}" and
     \<V>\<^sub>1: "infinite_variables_per_type \<V>\<^sub>1" and
     finite_vars: "finite (vars expr')"
-  obtains \<V>\<^sub>3 where 
-    "\<forall>x\<in>vars expr. \<V>\<^sub>1 x = \<V>\<^sub>3 (rename \<rho>\<^sub>1 x)"  
+  obtains \<V>\<^sub>3 where
+    "\<forall>x\<in>vars expr. \<V>\<^sub>1 x = \<V>\<^sub>3 (rename \<rho>\<^sub>1 x)"
     "\<forall>x\<in>vars expr'. \<V>\<^sub>2 x = \<V>\<^sub>3 (rename \<rho>\<^sub>2 x)"
     "infinite_variables_per_type \<V>\<^sub>3"
   using obtain_merged_\<V>[OF \<rho>\<^sub>2 \<rho>\<^sub>1 _ \<V>\<^sub>1 finite_vars] rename_apart
   by (metis disjoint_iff)
 
 locale based_typed_renaming =
-  base: explicitly_typed_renaming where 
-  subst = base_subst and vars = "base_vars :: 'base \<Rightarrow> 'v set" and 
+  base: explicitly_typed_renaming where
+  subst = base_subst and vars = "base_vars :: 'base \<Rightarrow> 'v set" and
   typed = "typed :: ('v \<Rightarrow> 'ty) \<Rightarrow> 'base \<Rightarrow> 'ty \<Rightarrow> bool" +
-  base: explicitly_typed_functional_substitution where 
+  base: explicitly_typed_functional_substitution where
   vars = base_vars and subst = base_subst +
   based_functional_substitution +
   renaming_variables
@@ -551,14 +551,14 @@ proof(intro ballI)
 
   ultimately show "typed \<V>' (\<gamma> x) (\<V>' x)"
     using \<V>_\<V>'[rule_format]
-    by (metis base.right_uniqueD base.typed_id_subst id_subst_rename renaming renaming_inv_into 
+    by (metis base.right_uniqueD base.typed_id_subst id_subst_rename renaming renaming_inv_into
         x_in_expr y_def y_in_vars)
 qed
 
 lemma obtain_merged_grounding:
   fixes \<V>\<^sub>1 \<V>\<^sub>2 :: "'v \<Rightarrow> 'ty"
-  assumes 
-    "base.is_typed_on (vars expr) \<V>\<^sub>1 \<gamma>\<^sub>1" 
+  assumes
+    "base.is_typed_on (vars expr) \<V>\<^sub>1 \<gamma>\<^sub>1"
     "base.is_typed_on (vars expr') \<V>\<^sub>2 \<gamma>\<^sub>2"
     "is_ground (expr \<cdot> \<gamma>\<^sub>1)"
     "is_ground (expr' \<cdot> \<gamma>\<^sub>2)" and
@@ -592,7 +592,7 @@ proof-
     unfolding base.is_renaming_def
     by blast
 
-  define \<gamma> where 
+  define \<gamma> where
     "\<And>x. \<gamma> x \<equiv>
        if x \<in> vars (expr \<cdot> \<rho>\<^sub>1)
        then (\<rho>\<^sub>1_inv \<odot> \<gamma>\<^sub>1) x
@@ -600,7 +600,7 @@ proof-
 
   show ?thesis
   proof(rule that[OF \<rho>\<^sub>1 \<rho>\<^sub>2 rename_apart \<rho>\<^sub>1_is_welltyped \<rho>\<^sub>2_is_welltyped])
-    
+
     have "\<forall>x\<in> vars expr.  \<gamma>\<^sub>1 x = (\<rho>\<^sub>1 \<odot> \<gamma>) x"
     proof(intro ballI)
       fix x
@@ -610,7 +610,7 @@ proof-
         using obtain_renamed_variable[OF \<rho>\<^sub>1].
 
       then have "y \<in> vars (expr \<cdot> \<rho>\<^sub>1)"
-        using x_in_vars \<rho>\<^sub>1 rename_variables_id_subst 
+        using x_in_vars \<rho>\<^sub>1 rename_variables_id_subst
         by (metis base.inj_id_subst image_eqI inj_image_mem_iff)
 
       then have "\<gamma> y = base_subst (\<rho>\<^sub>1_inv y) \<gamma>\<^sub>1"
@@ -636,12 +636,12 @@ proof-
         using obtain_renamed_variable[OF \<rho>\<^sub>2].
 
       then have "y \<in> vars (expr' \<cdot> \<rho>\<^sub>2)"
-        using x_in_vars \<rho>\<^sub>2 rename_variables_id_subst 
+        using x_in_vars \<rho>\<^sub>2 rename_variables_id_subst
         by (metis base.inj_id_subst imageI inj_image_mem_iff)
 
       then have "\<gamma> y = base_subst (\<rho>\<^sub>2_inv y) \<gamma>\<^sub>2"
         unfolding \<gamma>_def
-        using base.comp_subst_iff rename_apart 
+        using base.comp_subst_iff rename_apart
         by auto
 
       then show "\<gamma>\<^sub>2 x = (\<rho>\<^sub>2 \<odot> \<gamma>) x"
@@ -655,7 +655,7 @@ qed
 
 lemma obtain_merged_grounding':
   fixes \<V>\<^sub>1 \<V>\<^sub>2 :: "'v \<Rightarrow> 'ty"
-  assumes 
+  assumes
     typed_\<gamma>\<^sub>1: "base.is_typed_on (vars expr) \<V>\<^sub>1 \<gamma>\<^sub>1" and
     typed_\<gamma>\<^sub>2: "base.is_typed_on (vars expr') \<V>\<^sub>2 \<gamma>\<^sub>2" and
     expr_grounding: "is_ground (expr \<cdot> \<gamma>\<^sub>1)" and
@@ -675,7 +675,7 @@ lemma obtain_merged_grounding':
 
 end
 
-sublocale explicitly_typed_renaming \<subseteq> 
+sublocale explicitly_typed_renaming \<subseteq>
   based_typed_renaming where base_vars = vars and base_subst = subst
   by unfold_locales
 

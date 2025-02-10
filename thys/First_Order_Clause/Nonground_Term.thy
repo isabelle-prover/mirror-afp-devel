@@ -1,5 +1,5 @@
 theory Nonground_Term
- imports 
+ imports
     Abstract_Substitution.Substitution_First_Order_Term
     Abstract_Substitution.Functional_Substitution_Lifting
     Ground_Term_Extra
@@ -22,18 +22,18 @@ type_synonym 'f ground_term = "'f gterm"
 subsection \<open>Unified naming\<close>
 
 locale vars_def =
-  fixes vars_def :: "'expr \<Rightarrow> 'var" 
-begin 
+  fixes vars_def :: "'expr \<Rightarrow> 'var"
+begin
 
 abbreviation "vars \<equiv> vars_def"
 
 end
 
-locale grounding_def = 
-  fixes 
+locale grounding_def =
+  fixes
     to_ground_def :: "'expr \<Rightarrow> 'expr\<^sub>G" and
     from_ground_def :: "'expr\<^sub>G \<Rightarrow> 'expr"
-begin 
+begin
 
 abbreviation "to_ground \<equiv> to_ground_def"
 
@@ -52,13 +52,13 @@ locale term_grounding =
   variables_in_base_imgu where base_vars = vars and base_subst = subst +
   grounding
 
-(* TODO: Is there a better way for this? *) 
+(* TODO: Is there a better way for this? *)
 locale nonground_term
 begin
 
 sublocale vars_def where vars_def = vars_term.
 
-sublocale grounding_def where 
+sublocale grounding_def where
   to_ground_def = gterm_of_term and from_ground_def = term_of_gterm .
 
 lemma infinite_terms [intro]: "infinite (UNIV :: ('f, 'v) term set)"
@@ -73,8 +73,8 @@ proof-
     using infinite_super top_greatest by blast
 qed
 
-sublocale nonground_term_properties where 
-  subst = "(\<cdot>t)" and id_subst = Var and comp_subst = "(\<odot>)" and 
+sublocale nonground_term_properties where
+  subst = "(\<cdot>t)" and id_subst = Var and comp_subst = "(\<odot>)" and
   vars = "vars :: ('f, 'v) term \<Rightarrow> 'v set"
 proof unfold_locales
   fix t :: "('f, 'v) term"  and \<sigma> \<tau> :: "('f, 'v) subst"
@@ -119,16 +119,16 @@ next
     case (Fun f args)
 
     obtain a where a: "a \<in> set args" and a_vars: "vars a \<noteq> {}"
-      using Fun.prems 
+      using Fun.prems
       by fastforce
 
-    then obtain \<sigma> where 
+    then obtain \<sigma> where
       \<sigma>: "a \<cdot>t \<sigma> \<noteq> a" and
       a_\<sigma>_not_in_args: "a \<cdot>t \<sigma> \<notin> \<Union> (set `  term.args ` ts)"
       by (metis Fun.IH Fun.prems(1) List.finite_set finite_UN finite_imageI)
 
     then have "Fun f args \<cdot>t \<sigma> \<noteq> Fun f args"
-      by (metis a subsetI term.set_intros(4) term_subst.comp_subst.left.action_neutral 
+      by (metis a subsetI term.set_intros(4) term_subst.comp_subst.left.action_neutral
           vars_term_subset_subst_eq)
 
     moreover have "Fun f args \<cdot>t \<sigma> \<notin> ts"
@@ -158,18 +158,18 @@ next
     unfolding subst_compose_def ..
 qed
 
-sublocale renaming_variables where 
-  vars = "vars :: ('f, 'v) term \<Rightarrow> 'v set" and subst = "(\<cdot>t)" and id_subst = Var and 
-  comp_subst = "(\<odot>)" 
+sublocale renaming_variables where
+  vars = "vars :: ('f, 'v) term \<Rightarrow> 'v set" and subst = "(\<cdot>t)" and id_subst = Var and
+  comp_subst = "(\<odot>)"
 proof unfold_locales
   fix \<rho> :: "('f, 'v) subst"
 
   show "term_subst.is_renaming \<rho> \<longleftrightarrow> inj \<rho> \<and> (\<forall>x. \<exists>x'. \<rho> x = Var x')"
-    using term_subst_is_renaming_iff 
+    using term_subst_is_renaming_iff
     unfolding is_Var_def.
 next
   fix \<rho> :: "('f, 'v) subst" and t
-  assume \<rho>: "term_subst.is_renaming \<rho>" 
+  assume \<rho>: "term_subst.is_renaming \<rho>"
   show "vars (t \<cdot>t \<rho>) = rename \<rho> ` vars t"
   proof(induction t)
     case (Var x)
@@ -187,17 +187,17 @@ next
   qed
 qed
 
-sublocale term_grounding where 
-  subst = "(\<cdot>t)" and id_subst = Var and comp_subst = "(\<odot>)" and 
-  vars = "vars :: ('f, 'v) term \<Rightarrow> 'v set" and from_ground = from_ground and 
+sublocale term_grounding where
+  subst = "(\<cdot>t)" and id_subst = Var and comp_subst = "(\<odot>)" and
+  vars = "vars :: ('f, 'v) term \<Rightarrow> 'v set" and from_ground = from_ground and
   to_ground = to_ground
 proof unfold_locales
    fix t :: "('f, 'v) term" and \<mu> :: "('f, 'v) subst" and unifications
 
   assume imgu:
-    "term_subst.is_imgu \<mu> unifications" 
+    "term_subst.is_imgu \<mu> unifications"
     "\<forall>unification\<in>unifications. finite unification"
-    "finite unifications" 
+    "finite unifications"
 
   show "vars (t \<cdot>t \<mu>) \<subseteq> vars t \<union> \<Union> (vars ` \<Union> unifications)"
     using range_vars_subset_if_is_imgu[OF imgu] vars_term_subst_apply_term_subset
@@ -210,7 +210,7 @@ next
     have "\<exists>g. from_ground g = t"
     proof(intro exI)
 
-      from t_is_ground 
+      from t_is_ground
       show "from_ground (to_ground t) = t"
         by(induction t)(simp_all add: map_idI)
 
@@ -249,7 +249,7 @@ locale lifting =
 
 locale term_based_lifting =
   "term": nonground_term +
-  lifting where 
+  lifting where
   comp_subst = "(\<odot>)" and id_subst = Var and base_subst = "(\<cdot>t)" and base_vars = term.vars
 
 end

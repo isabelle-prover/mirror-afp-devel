@@ -1,11 +1,11 @@
-theory Welltyped_IMGU 
+theory Welltyped_IMGU
   imports Nonground_Term_Typing
 begin
 
 context nonground_term_typing
 begin
 
-lemma is_welltyped_subst: 
+lemma is_welltyped_subst:
   assumes "welltyped \<V> (Var x) \<tau>" "welltyped \<V> t \<tau>"
   shows "term.subst.is_welltyped \<V> (subst x t)"
   using assms
@@ -13,26 +13,26 @@ lemma is_welltyped_subst:
   by (simp add: welltyped.simps)
 
 lemma Fun_arg_types:
-  assumes 
-    "welltyped \<V> (Fun f fs) \<tau>" 
-    "welltyped \<V> (Fun f gs) \<tau>" 
-  obtains \<tau>s where 
-    "\<F> f = (\<tau>s, \<tau>)" 
+  assumes
+    "welltyped \<V> (Fun f fs) \<tau>"
+    "welltyped \<V> (Fun f gs) \<tau>"
+  obtains \<tau>s where
+    "\<F> f = (\<tau>s, \<tau>)"
     "list_all2 (welltyped \<V>) fs \<tau>s"
     "list_all2 (welltyped \<V>) gs \<tau>s"
   using assms
   by (metis Pair_inject term.distinct(1) term.inject(2) welltyped.simps)
 
 lemma welltyped_zip_option:
-  assumes 
-    "welltyped \<V> (Fun f ts) \<tau>" 
-    "welltyped \<V> (Fun f ss) \<tau>" 
-    "zip_option ts ss = Some es" 
-  shows 
+  assumes
+    "welltyped \<V> (Fun f ts) \<tau>"
+    "welltyped \<V> (Fun f ss) \<tau>"
+    "zip_option ts ss = Some es"
+  shows
     "\<forall>(t, t') \<in> set es. \<exists>\<tau>. welltyped \<V> t \<tau> \<and> welltyped \<V> t' \<tau>"
 proof -
 
-  obtain \<tau>s where 
+  obtain \<tau>s where
     "list_all2 (welltyped \<V>) ts \<tau>s"
     "list_all2 (welltyped \<V>) ss \<tau>s"
     using Fun_arg_types[OF assms(1, 2)].
@@ -43,21 +43,21 @@ proof -
     then obtain \<tau>' \<tau>s' where \<tau>s: "\<tau>s = \<tau>' # \<tau>s'"
       by (meson list_all2_Cons1)
 
-    from Cons_Cons(2) 
+    from Cons_Cons(2)
     obtain e es' where es: "es = e # es'"
       by auto
 
     have "zip_option ts ss = Some es'"
-      using Cons_Cons(2) 
+      using Cons_Cons(2)
       unfolding es
       by fastforce
 
-    moreover have "list_all2 (welltyped \<V>) ts \<tau>s'" 
-      using Cons_Cons.prems(2) \<tau>s 
+    moreover have "list_all2 (welltyped \<V>) ts \<tau>s'"
+      using Cons_Cons.prems(2) \<tau>s
       by blast
 
     moreover have "list_all2 (welltyped \<V>) ss \<tau>s'"
-      using Cons_Cons.prems(3) \<tau>s 
+      using Cons_Cons.prems(3) \<tau>s
       by blast
 
     ultimately have "\<forall>(t, s)\<in>set es'. \<exists>\<tau>. welltyped \<V> t \<tau> \<and> welltyped \<V> s \<tau>"
@@ -75,7 +75,7 @@ qed
 
 lemma welltyped_decompose_Fun:
   assumes
-    "welltyped \<V> (Fun f fs) \<tau>" 
+    "welltyped \<V> (Fun f fs) \<tau>"
     "welltyped \<V> (Fun f gs) \<tau>"
     "decompose (Fun f fs) (Fun g gs) = Some es"
   shows "\<forall>(t, t') \<in> set es. \<exists>\<tau>. welltyped \<V> t \<tau> \<and> welltyped \<V> t' \<tau>"
@@ -144,7 +144,7 @@ next
   proof(cases "t = Var x")
     case True
 
-    then show ?thesis 
+    then show ?thesis
       using 3
       by simp
   next
@@ -200,7 +200,7 @@ next
   proof (rule 4(1))
 
     show "x \<notin> term.vars ?t"
-      using "4.prems" 
+      using "4.prems"
       by fastforce
   next
 
@@ -276,10 +276,10 @@ lemma obtain_welltyped_imgu:
 proof (rule that)
 
   show "\<upsilon> = (the_mgu t t') \<odot> \<upsilon>"
-    using the_mgu[OF unified]  
+    using the_mgu[OF unified]
     by blast
 
-  show "welltyped_imgu \<V> t t' (the_mgu t t')"  
+  show "welltyped_imgu \<V> t t' (the_mgu t t')"
     using welltyped welltyped_the_mgu the_mgu_term_subst_is_imgu[OF unified]
     by blast
 qed

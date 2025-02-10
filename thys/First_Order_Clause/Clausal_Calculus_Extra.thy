@@ -7,11 +7,11 @@ begin
 lemma literal_cases: "\<lbrakk>\<P> \<in> {Pos, Neg}; \<P> = Pos \<Longrightarrow> P; \<P> = Neg \<Longrightarrow> P\<rbrakk> \<Longrightarrow> P"
   by blast
 
-lemma map_literal_inverse: 
+lemma map_literal_inverse:
   "(\<And>x. f (g x) = x) \<Longrightarrow> (\<And>l. map_literal f (map_literal g l) = l)"
   by (simp add: literal.map_comp literal.map_ident_strong)
 
-lemma map_literal_comp: 
+lemma map_literal_comp:
   "map_literal f (map_literal g l) = map_literal (\<lambda>a. f (g a)) l"
   using literal.map_comp
   unfolding comp_def.
@@ -55,8 +55,8 @@ lemma finite_set_literal [intro]: "finite (set_literal l)"
   unfolding set_literal_atm_of
   by simp
 
-lemma map_literal_map_uprod_cong: 
-  assumes "\<And>t. t \<in># mset_lit l \<Longrightarrow> f t = g t"  
+lemma map_literal_map_uprod_cong:
+  assumes "\<And>t. t \<in># mset_lit l \<Longrightarrow> f t = g t"
   shows "map_literal (map_uprod f) l = map_literal (map_uprod g) l"
   using assms
   by(cases l)(auto cong: uprod.map_cong0)
@@ -72,7 +72,7 @@ lemma inj_mset_lit: "inj mset_lit"
 proof(unfold inj_def, intro allI impI)
   fix l l' :: "'a uprod literal"
   assume mset_lit: "mset_lit l = mset_lit l'"
-  
+
   show "l = l'"
   proof(cases l)
     case l: (Pos a)
@@ -89,7 +89,7 @@ proof(unfold inj_def, intro allI impI)
 
       show ?thesis
         using mset_lit mset_uprod_plus_neq
-        unfolding l l' 
+        unfolding l l'
         by auto
     qed
   next
@@ -116,11 +116,11 @@ qed
 global_interpretation literal_functor: finite_natural_functor where
   map = map_literal and to_set = set_literal
   by
-    unfold_locales 
+    unfold_locales
     (auto simp: literal.map_comp literal.map_ident literal.set_map intro: literal.map_cong)
 
-global_interpretation literal_functor: natural_functor_conversion where 
-  map = map_literal and to_set = set_literal and map_to = map_literal and map_from = map_literal and 
+global_interpretation literal_functor: natural_functor_conversion where
+  map = map_literal and to_set = set_literal and map_to = map_literal and map_from = map_literal and
   map' = map_literal and to_set' = set_literal
   by unfold_locales
     (auto simp: literal.set_map literal.map_comp)
@@ -129,12 +129,12 @@ abbreviation uprod_literal_to_set where "uprod_literal_to_set l \<equiv> set_mse
 
 abbreviation map_uprod_literal where "map_uprod_literal f \<equiv> map_literal (map_uprod f)"
 
-global_interpretation uprod_literal_functor: finite_natural_functor where 
+global_interpretation uprod_literal_functor: finite_natural_functor where
   map = map_uprod_literal and to_set = uprod_literal_to_set
   by unfold_locales (auto simp: mset_lit_image_mset intro: map_literal_map_uprod_cong)
 
-global_interpretation uprod_literal_functor: natural_functor_conversion where 
-  map = map_uprod_literal and to_set = uprod_literal_to_set and map_to = map_uprod_literal and 
+global_interpretation uprod_literal_functor: natural_functor_conversion where
+  map = map_uprod_literal and to_set = uprod_literal_to_set and map_to = map_uprod_literal and
   map_from = map_uprod_literal and map' = map_uprod_literal and to_set' = uprod_literal_to_set
   by unfold_locales (auto simp: mset_lit_image_mset)
 
@@ -147,13 +147,13 @@ lemma finite_set_inference [intro]: "finite (set_inference \<iota>)"
 global_interpretation inference_functor: finite_natural_functor where
   map = map_inference and to_set = set_inference
   by
-    unfold_locales 
+    unfold_locales
     (auto simp: inference.map_comp inference.map_ident inference.set_map intro: inference.map_cong)
 
-global_interpretation inference_functor: natural_functor_conversion where 
-  map = map_inference and to_set = set_inference and map_to = map_inference and 
+global_interpretation inference_functor: natural_functor_conversion where
+  map = map_inference and to_set = set_inference and map_to = map_inference and
   map_from = map_inference and map' = map_inference and to_set' = set_inference
  by unfold_locales
     (auto simp: inference.set_map inference.map_comp)
- 
+
 end

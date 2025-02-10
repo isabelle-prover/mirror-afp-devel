@@ -1,5 +1,5 @@
 theory Nonground_Term_Typing
-  imports 
+  imports
     Term_Typing
     Typed_Functional_Substitution
     Functional_Substitution_Typing
@@ -7,8 +7,8 @@ theory Nonground_Term_Typing
 begin
 
 locale base_typed_properties =
-  explicitly_typed_subst_stability + 
-  explicitly_replaceable_\<V> + 
+  explicitly_typed_subst_stability +
+  explicitly_replaceable_\<V> +
   explicitly_typed_renaming +
   explicitly_typed_grounding_functional_substitution
 
@@ -17,8 +17,8 @@ locale base_typing_properties =
   typed: base_typed_properties +
   welltyped: base_typed_properties where typed = welltyped
 
-locale base_inhabited_typing_properties = 
-  base_typing_properties + 
+locale base_inhabited_typing_properties =
+  base_typing_properties +
   typed: inhabited_explicitly_typed_functional_substitution +
   welltyped: inhabited_explicitly_typed_functional_substitution where typed = welltyped
 
@@ -27,13 +27,13 @@ locale nonground_term_typing =
   fixes \<F> :: "('f, 'ty) fun_types"
 begin
 
-inductive typed :: "('v, 'ty) var_types \<Rightarrow> ('f,'v) term \<Rightarrow> 'ty \<Rightarrow> bool" 
+inductive typed :: "('v, 'ty) var_types \<Rightarrow> ('f,'v) term \<Rightarrow> 'ty \<Rightarrow> bool"
   for \<V> where
     Var: "\<V> x = \<tau> \<Longrightarrow> typed \<V> (Var x) \<tau>"
   | Fun: "\<F> f = (\<tau>s, \<tau>) \<Longrightarrow> typed \<V> (Fun f ts) \<tau>"
 
 text\<open>Note: Implicitly implies that every function symbol has a fixed arity\<close>
-inductive welltyped :: "('v, 'ty) var_types \<Rightarrow> ('f,'v) term \<Rightarrow> 'ty \<Rightarrow> bool" 
+inductive welltyped :: "('v, 'ty) var_types \<Rightarrow> ('f,'v) term \<Rightarrow> 'ty \<Rightarrow> bool"
   for \<V> where
     Var: "\<V> x = \<tau> \<Longrightarrow> welltyped \<V> (Var x) \<tau>"
   | Fun: "\<F> f = (\<tau>s, \<tau>) \<Longrightarrow> list_all2 (welltyped \<V>) ts \<tau>s \<Longrightarrow> welltyped \<V> (Fun f ts) \<tau>"
@@ -56,19 +56,19 @@ next
       by (auto elim!: welltyped.cases)
   qed
 next
-  fix t \<tau> 
+  fix t \<tau>
   assume "welltyped \<V> t \<tau>"
   then show "typed \<V> t \<tau>"
     by (metis (full_types) typed.simps welltyped.cases)
 qed
 
-sublocale "term": term_typing where 
+sublocale "term": term_typing where
   typed = "typed (\<V> :: 'v \<Rightarrow> 'ty)" and welltyped = "welltyped \<V>" and Fun = Fun
 proof unfold_locales
   fix t t' c \<tau> \<tau>'
 
-  assume 
-    t_type: "welltyped \<V> t \<tau>'" and 
+  assume
+    t_type: "welltyped \<V> t \<tau>'" and
     t'_type: "welltyped \<V> t' \<tau>'" and
     c_type: "welltyped \<V> c\<langle>t\<rangle> \<tau>"
 
@@ -82,7 +82,7 @@ proof unfold_locales
     case (More f ss1 c ss2)
 
     have "welltyped \<V> (Fun f (ss1 @ c\<langle>t\<rangle> # ss2)) \<tau>"
-      using More.prems 
+      using More.prems
       by simp
 
     hence "welltyped \<V> (Fun f (ss1 @ c\<langle>t'\<rangle> # ss2)) \<tau>"
@@ -107,7 +107,7 @@ proof unfold_locales
 next
   fix t t' c \<tau> \<tau>'
   assume
-    t_type: "typed \<V> t \<tau>'" and 
+    t_type: "typed \<V> t \<tau>'" and
     t'_type: "typed \<V> t' \<tau>'" and
     c_type: "typed \<V> c\<langle>t\<rangle> \<tau>"
 
@@ -115,13 +115,13 @@ next
   proof (induction c arbitrary: \<tau>)
     case Hole
     then show ?case
-      using t'_type t_type 
+      using t'_type t_type
       by auto
   next
     case (More f ss1 c ss2)
 
     have "typed \<V> (Fun f (ss1 @ c\<langle>t\<rangle> # ss2)) \<tau>"
-      using More.prems 
+      using More.prems
       by simp
 
     hence "typed \<V> (Fun f (ss1 @ c\<langle>t'\<rangle> # ss2)) \<tau>"
@@ -146,8 +146,8 @@ next
     by (metis term.exhaust prod.exhaust typed.simps)
 qed
 
-sublocale "term": base_typing_properties where 
-  id_subst = "Var :: 'v \<Rightarrow> ('f, 'v) term" and comp_subst = "(\<odot>)" and subst = "(\<cdot>t)" and 
+sublocale "term": base_typing_properties where
+  id_subst = "Var :: 'v \<Rightarrow> ('f, 'v) term" and comp_subst = "(\<odot>)" and subst = "(\<cdot>t)" and
   vars = term.vars and welltyped = welltyped and typed = typed and to_ground = term.to_ground and
   from_ground = term.from_ground
 proof(unfold_locales; (intro typed.Var welltyped.Var refl)?)
@@ -195,7 +195,7 @@ next
         by (metis subst_apply_eq_Var)
 
       have "welltyped \<V> t (\<V> x')"
-        unfolding t 
+        unfolding t
         by (simp add: welltyped.Var)
 
       moreover have "welltyped \<V> t (\<V> x)"
@@ -207,13 +207,13 @@ next
         using Var.hyps
         by blast
 
-      show ?case 
+      show ?case
         unfolding t \<V>_x'
         by (simp add: welltyped.Var)
     next
       case (Fun f \<tau>s \<tau> ts)
 
-      then show ?case 
+      then show ?case
         by (cases t) (simp_all add: list.rel_mono_strong list_all2_map1 welltyped.simps)
     qed
   qed
@@ -232,7 +232,7 @@ next
   then show "welltyped \<V>' t \<tau>"
     by (induction rule: welltyped.induct) (simp_all add: welltyped.simps list.rel_mono_strong)
 next
-  fix \<V> \<V>' :: "('v, 'ty) var_types" and t :: "('f, 'v) term" and \<rho> :: "('f, 'v) subst" and \<tau> 
+  fix \<V> \<V>' :: "('v, 'ty) var_types" and t :: "('f, 'v) term" and \<rho> :: "('f, 'v) subst" and \<tau>
 
   assume renaming: "term_subst.is_renaming \<rho>" and \<V>: "\<forall>x\<in>term.vars t. \<V> x = \<V>' (term.rename \<rho> x)"
 
@@ -242,7 +242,7 @@ next
     with \<V> show "typed \<V> t \<tau>"
     proof(induction t arbitrary: \<tau>)
       case (Var x)
-      
+
       have "\<V>' (term.rename \<rho> x) = \<tau>"
         using Var term.id_subst_rename[OF renaming]
         by (metis eval_term.simps(1) term.typed.right_uniqueD typed.Var)
@@ -265,7 +265,7 @@ next
       case (Var x \<tau>)
 
       have "\<V>' (term.rename \<rho> x) = \<tau>"
-        using Var.hyps Var.prems 
+        using Var.hyps Var.prems
         by auto
 
       then show ?case
@@ -280,7 +280,7 @@ next
 next
   fix \<V> \<V>' :: "('v, 'ty) var_types" and t :: "('f, 'v) term" and \<rho> :: "('f, 'v) subst" and \<tau>
 
-  assume 
+  assume
     renaming: "term_subst.is_renaming \<rho>" and
     \<V>: "\<forall>x\<in>term.vars t. \<V> x = \<V>' (term.rename \<rho> x)"
 
@@ -310,9 +310,9 @@ next
 
       then obtain \<tau>s where \<tau>s:
         "list_all2 (welltyped \<V>') (map (\<lambda>s. s \<cdot>t \<rho>) ts) \<tau>s" "\<F> f = (\<tau>s, \<tau>)"
-        using welltyped.simps 
+        using welltyped.simps
         by blast
-     
+
       show ?case
       proof(rule welltyped.Fun[OF \<tau>s(2)])
 
@@ -361,7 +361,7 @@ sublocale base_inhabited_typing_properties where
   from_ground = term.from_ground
 proof unfold_locales
   fix \<V> :: "('v, 'ty) var_types" and \<tau>
- 
+
   obtain f where f: "\<F> f = ([], \<tau>)"
     using types_inhabited
     by blast
@@ -381,7 +381,7 @@ proof unfold_locales
       by simp
   qed
 
-  then show "\<exists>t. term.is_ground t \<and> typed \<V> t \<tau>"  
+  then show "\<exists>t. term.is_ground t \<and> typed \<V> t \<tau>"
     using term.typed_if_welltyped
     by blast
 qed

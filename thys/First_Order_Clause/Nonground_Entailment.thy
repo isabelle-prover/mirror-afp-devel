@@ -9,7 +9,7 @@ begin
 
 section \<open>Entailment\<close>
 
-context nonground_term 
+context nonground_term
 begin
 
 lemma var_in_term:
@@ -32,14 +32,14 @@ next
   moreover then have "(More f args1 \<box> args2)\<langle>t'\<rangle> = Fun f args"
     by simp
 
-  ultimately show ?case 
+  ultimately show ?case
     using Fun(1)
     by (meson assms supteq_ctxtE that vars_term_supteq)
 qed
 
 lemma vars_term_ms_count:
   assumes "is_ground t"
-  shows 
+  shows
     "size {#x' \<in># vars_term_ms c\<langle>Var x\<rangle>. x' = x#} = Suc (size {#x' \<in># vars_term_ms c\<langle>t\<rangle>. x' = x#})"
   by(induction c)(auto simp: assms filter_mset_empty_conv)
 
@@ -60,7 +60,7 @@ end
 
 locale clause_entailment = nonground_clause +
   fixes I :: "('f gterm \<times> 'f gterm) set"
-  assumes 
+  assumes
     trans: "trans I" and
     sym: "sym I" and
     compatible_with_gctxt: "compatible_with_gctxt I"
@@ -83,13 +83,13 @@ lemma upair_compatible_with_gctxtI [intro]:
   unfolding compatible_with_gctxt_def
   by (simp add: sym)
 
-sublocale "term": symmetric_base_entailment where vars = "term.vars :: ('f, 'v) term \<Rightarrow> 'v set" and 
-  id_subst = Var and comp_subst = "(\<odot>)" and subst = "(\<cdot>t)" and to_ground = term.to_ground and 
+sublocale "term": symmetric_base_entailment where vars = "term.vars :: ('f, 'v) term \<Rightarrow> 'v set" and
+  id_subst = Var and comp_subst = "(\<odot>)" and subst = "(\<cdot>t)" and to_ground = term.to_ground and
   from_ground = term.from_ground
 proof unfold_locales
   fix \<gamma> :: "('f, 'v) subst" and t t' update var
 
-  assume 
+  assume
     update_is_ground: "term.is_ground update" and
     var_grounding: "term.is_ground (\<gamma> var)" and
     var_update: "(term.to_ground (\<gamma> var), term.to_ground update) \<in> I" and
@@ -102,11 +102,11 @@ proof unfold_locales
     case 0
 
     then have "var \<notin> term.vars t"
-      by (metis (mono_tags, lifting) filter_mset_empty_conv set_mset_vars_term_ms 
+      by (metis (mono_tags, lifting) filter_mset_empty_conv set_mset_vars_term_ms
           size_eq_0_iff_empty)
 
     then have "t \<cdot>t \<gamma>(var := update) = t \<cdot>t \<gamma>"
-      using term.subst_reduntant_upd 
+      using term.subst_reduntant_upd
       by (simp add: eval_with_fresh_var)
 
     with 0 show ?case
@@ -118,18 +118,18 @@ proof unfold_locales
 
     have "var \<in> term.vars t"
       using Suc.hyps(2)
-      by (metis (full_types) filter_mset_empty_conv nonempty_has_size set_mset_vars_term_ms 
+      by (metis (full_types) filter_mset_empty_conv nonempty_has_size set_mset_vars_term_ms
           zero_less_Suc)
 
     then obtain c where t [simp]: "t = c\<langle>Var var\<rangle>"
       by (meson term.var_in_term)
 
-    have [simp]: 
+    have [simp]:
       "(?context_to_ground (c \<cdot>t\<^sub>c \<gamma>))\<langle>term.to_ground (\<gamma> var)\<rangle>\<^sub>G = term.to_ground (c\<langle>Var var\<rangle> \<cdot>t \<gamma>)"
-      using Suc 
+      using Suc
       by(induction c) simp_all
 
-    have context_update [simp]: 
+    have context_update [simp]:
       "(?context_to_ground (c \<cdot>t\<^sub>c \<gamma>))\<langle>term.to_ground update\<rangle>\<^sub>G = term.to_ground (c\<langle>update\<rangle> \<cdot>t \<gamma>)"
       using Suc update_is_ground
       by(induction c) auto
@@ -139,7 +139,7 @@ proof unfold_locales
       by auto
 
     moreover have "term.is_ground (c\<langle>update\<rangle> \<cdot>t \<gamma>)"
-      using Suc.prems update_is_ground 
+      using Suc.prems update_is_ground
       by auto
 
     moreover have "(term.to_ground (c\<langle>update\<rangle> \<cdot>t \<gamma>(var := update)), t') \<in> I"
@@ -158,22 +158,22 @@ proof unfold_locales
       using symmetric_context_congruence context_update
       by metis
 
-    then show ?case 
+    then show ?case
       by simp
   qed
 qed (rule sym)
 
-sublocale atom: symmetric_entailment 
-  where comp_subst = "(\<odot>)" and id_subst = Var 
+sublocale atom: symmetric_entailment
+  where comp_subst = "(\<odot>)" and id_subst = Var
     and base_subst = "(\<cdot>t)" and base_vars = term.vars and subst = "(\<cdot>a)" and vars = atom.vars
-    and base_to_ground = term.to_ground and base_from_ground = term.from_ground and I = I 
+    and base_to_ground = term.to_ground and base_from_ground = term.from_ground and I = I
     and entails_def = "\<lambda>a. atom.to_ground a \<in> upair ` I"
-proof unfold_locales  
+proof unfold_locales
   fix a :: "('f, 'v) atom" and  \<gamma> var update P
 
-  assume assms: 
+  assume assms:
     "term.is_ground update"
-    "term.is_ground (\<gamma> var)" 
+    "term.is_ground (\<gamma> var)"
     "(term.to_ground (\<gamma> var), term.to_ground update) \<in> I"
     "atom.is_ground (a \<cdot>a \<gamma>)"
     "(atom.to_ground (a \<cdot>a \<gamma>(var := update)) \<in> upair ` I)"
@@ -182,8 +182,8 @@ proof unfold_locales
   proof(cases a)
     case (Upair t t')
 
-    moreover have 
-      "(term.to_ground (t' \<cdot>t \<gamma>), term.to_ground (t \<cdot>t \<gamma>)) \<in> I \<longleftrightarrow> 
+    moreover have
+      "(term.to_ground (t' \<cdot>t \<gamma>), term.to_ground (t \<cdot>t \<gamma>)) \<in> I \<longleftrightarrow>
        (term.to_ground (t \<cdot>t \<gamma>), term.to_ground (t' \<cdot>t \<gamma>)) \<in> I"
       by (metis local.sym symD)
 
@@ -195,33 +195,33 @@ proof unfold_locales
 qed (simp_all add: sym)
 
 sublocale literal: entailment_lifting_conj
-  where comp_subst = "(\<odot>)" and id_subst = Var 
+  where comp_subst = "(\<odot>)" and id_subst = Var
     and base_subst = "(\<cdot>t)" and base_vars = term.vars and sub_subst = "(\<cdot>a)" and sub_vars = atom.vars
-    and base_to_ground = term.to_ground and base_from_ground = term.from_ground and I = I 
-    and sub_entails = atom.entails and map = "map_literal" and to_set = "set_literal" 
+    and base_to_ground = term.to_ground and base_from_ground = term.from_ground and I = I
+    and sub_entails = atom.entails and map = "map_literal" and to_set = "set_literal"
     and is_negated = is_neg and entails_def = "\<lambda>l. upair ` I \<TTurnstile>l literal.to_ground l"
-proof unfold_locales 
-  fix l :: "('f, 'v) atom literal" 
+proof unfold_locales
+  fix l :: "('f, 'v) atom literal"
 
-  show "(upair ` I \<TTurnstile>l literal.to_ground l) = 
+  show "(upair ` I \<TTurnstile>l literal.to_ground l) =
     (if is_neg l then Not else (\<lambda>x. x))
-      (Finite_Set.fold (\<and>) True ((\<lambda>a. atom.to_ground a \<in> upair ` I) ` set_literal l))" 
+      (Finite_Set.fold (\<and>) True ((\<lambda>a. atom.to_ground a \<in> upair ` I) ` set_literal l))"
     unfolding literal.vars_def literal.to_ground_def
     by(cases l)(auto)
 
 qed auto
 
 sublocale clause: entailment_lifting_disj
-  where comp_subst = "(\<odot>)" and id_subst = Var 
-    and base_subst = "(\<cdot>t)" and base_vars = term.vars 
+  where comp_subst = "(\<odot>)" and id_subst = Var
+    and base_subst = "(\<cdot>t)" and base_vars = term.vars
     and base_to_ground = term.to_ground and base_from_ground = term.from_ground and I = I
-    and sub_subst = "(\<cdot>l)" and sub_vars = literal.vars and sub_entails = literal.entails 
-    and map = image_mset and to_set = set_mset and is_negated = "\<lambda>_. False" 
+    and sub_subst = "(\<cdot>l)" and sub_vars = literal.vars and sub_entails = literal.entails
+    and map = image_mset and to_set = set_mset and is_negated = "\<lambda>_. False"
     and entails_def = "\<lambda>C. upair ` I \<TTurnstile> clause.to_ground C"
 proof unfold_locales
   fix C :: "('f, 'v) atom clause"
 
-  show "upair ` I \<TTurnstile> clause.to_ground C \<longleftrightarrow> 
+  show "upair ` I \<TTurnstile> clause.to_ground C \<longleftrightarrow>
     (if False then Not else (\<lambda>x. x)) (Finite_Set.fold (\<or>) False (literal.entails ` set_mset C))"
     unfolding clause.to_ground_def
     by(induction C) auto
@@ -234,10 +234,10 @@ lemma literal_compatible_with_gctxtI [intro]:
 
 lemma symmetric_literal_context_congruence:
   assumes "Upair t t' \<in> upair ` I"
-  shows 
+  shows
     "upair ` I \<TTurnstile>l c\<langle>t\<rangle>\<^sub>G \<approx> t'' \<longleftrightarrow> upair ` I \<TTurnstile>l c\<langle>t'\<rangle>\<^sub>G \<approx> t''"
     "upair ` I \<TTurnstile>l c\<langle>t\<rangle>\<^sub>G !\<approx> t'' \<longleftrightarrow> upair ` I \<TTurnstile>l c\<langle>t'\<rangle>\<^sub>G !\<approx> t''"
-  using assms symmetric_upair_context_congruence 
+  using assms symmetric_upair_context_congruence
   by auto
 
 end
