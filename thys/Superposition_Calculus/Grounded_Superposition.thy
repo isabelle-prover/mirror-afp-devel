@@ -20,15 +20,15 @@ sublocale nonground_inference.
 
 sublocale ground: ground_superposition_calculus where
   less\<^sub>t = "(\<prec>\<^sub>t\<^sub>G)" and select = select\<^sub>G
-rewrites 
-  "multiset_extension.multiset_extension (\<prec>\<^sub>t\<^sub>G) mset_lit = (\<prec>\<^sub>l\<^sub>G)" and 
+rewrites
+  "multiset_extension.multiset_extension (\<prec>\<^sub>t\<^sub>G) mset_lit = (\<prec>\<^sub>l\<^sub>G)" and
   "multiset_extension.multiset_extension (\<prec>\<^sub>l\<^sub>G) (\<lambda>x. x) = (\<prec>\<^sub>c\<^sub>G)" and
   "\<And>l C. ground.is_maximal l C \<longleftrightarrow> is_maximal (literal.from_ground l) (clause.from_ground C)" and
   "\<And>l C. ground.is_strictly_maximal l C \<longleftrightarrow>
     is_strictly_maximal (literal.from_ground l) (clause.from_ground C)"
   by unfold_locales simp_all
 
-abbreviation is_inference_ground_instance_one_premise where 
+abbreviation is_inference_ground_instance_one_premise where
   "is_inference_ground_instance_one_premise D C \<iota>\<^sub>G \<gamma> \<equiv>
      case (D, C) of ((D, \<V>'), (C, \<V>)) \<Rightarrow>
       inference.is_ground (Infer [D] C \<cdot>\<iota> \<gamma>) \<and>
@@ -39,8 +39,8 @@ abbreviation is_inference_ground_instance_one_premise where
       \<V> = \<V>' \<and>
       infinite_variables_per_type \<V>"
 
-abbreviation is_inference_ground_instance_two_premises where 
-  "is_inference_ground_instance_two_premises D E C \<iota>\<^sub>G \<gamma> \<rho>\<^sub>1 \<rho>\<^sub>2 \<equiv> 
+abbreviation is_inference_ground_instance_two_premises where
+  "is_inference_ground_instance_two_premises D E C \<iota>\<^sub>G \<gamma> \<rho>\<^sub>1 \<rho>\<^sub>2 \<equiv>
     case (D, E, C) of ((D, \<V>\<^sub>2), (E, \<V>\<^sub>1), (C, \<V>\<^sub>3)) \<Rightarrow>
           term_subst.is_renaming \<rho>\<^sub>1
         \<and> term_subst.is_renaming \<rho>\<^sub>2
@@ -63,34 +63,34 @@ abbreviation is_inference_ground_instance where
     | _ \<Rightarrow> False)
   \<and> \<iota>\<^sub>G \<in> ground.G_Inf"
 
-definition inference_ground_instances where 
+definition inference_ground_instances where
   "inference_ground_instances \<iota> = { \<iota>\<^sub>G | \<iota>\<^sub>G \<gamma>. is_inference_ground_instance \<iota> \<iota>\<^sub>G \<gamma> }"
 
-lemma is_inference_ground_instance: 
+lemma is_inference_ground_instance:
   "is_inference_ground_instance \<iota> \<iota>\<^sub>G \<gamma> \<Longrightarrow> \<iota>\<^sub>G \<in> inference_ground_instances \<iota>"
   unfolding inference_ground_instances_def
   by blast
 
-lemma is_inference_ground_instance_one_premise: 
-  assumes "is_inference_ground_instance_one_premise D C \<iota>\<^sub>G \<gamma>" "\<iota>\<^sub>G \<in> ground.G_Inf" 
+lemma is_inference_ground_instance_one_premise:
+  assumes "is_inference_ground_instance_one_premise D C \<iota>\<^sub>G \<gamma>" "\<iota>\<^sub>G \<in> ground.G_Inf"
   shows "\<iota>\<^sub>G \<in> inference_ground_instances (Infer [D] C)"
   using assms
   unfolding inference_ground_instances_def
   by auto
 
-lemma is_inference_ground_instance_two_premises: 
-  assumes "is_inference_ground_instance_two_premises D E C \<iota>\<^sub>G \<gamma> \<rho>\<^sub>1 \<rho>\<^sub>2" "\<iota>\<^sub>G \<in> ground.G_Inf" 
+lemma is_inference_ground_instance_two_premises:
+  assumes "is_inference_ground_instance_two_premises D E C \<iota>\<^sub>G \<gamma> \<rho>\<^sub>1 \<rho>\<^sub>2" "\<iota>\<^sub>G \<in> ground.G_Inf"
   shows "\<iota>\<^sub>G \<in> inference_ground_instances (Infer [D, E] C)"
   using assms
   unfolding inference_ground_instances_def
   by auto
 
-lemma ground_inference\<^sub>_concl_in_welltyped_ground_instances: 
+lemma ground_inference\<^sub>_concl_in_welltyped_ground_instances:
   assumes "\<iota>\<^sub>G \<in> inference_ground_instances \<iota>"
   shows "concl_of \<iota>\<^sub>G \<in> clause.welltyped_ground_instances (concl_of \<iota>)"
 proof-
   obtain "premises" C \<V> where
-    \<iota>: "\<iota> = Infer premises (C, \<V>)" 
+    \<iota>: "\<iota> = Infer premises (C, \<V>)"
     using Calculus.inference.exhaust
     by (metis prod.collapse)
 
@@ -98,9 +98,9 @@ proof-
     using assms
     unfolding \<iota> inference_ground_instances_def clause.welltyped_ground_instances_def
     by (cases "premises" rule: list_4_cases) auto
-qed  
+qed
 
-lemma ground_inference_red_in_welltyped_ground_instances_of_concl: 
+lemma ground_inference_red_in_welltyped_ground_instances_of_concl:
   assumes "\<iota>\<^sub>G \<in> inference_ground_instances \<iota>"
   shows "\<iota>\<^sub>G \<in> ground.Red_I (clause.welltyped_ground_instances (concl_of \<iota>))"
 proof-
@@ -117,10 +117,12 @@ proof-
     by blast
 qed
 
+thm option.sel
+
 sublocale lifting:
   tiebreaker_lifting
     "\<bottom>\<^sub>F"
-    inferences 
+    inferences
     ground.G_Bot
     ground.G_entails
     ground.G_Inf
@@ -133,7 +135,7 @@ proof(unfold_locales; (intro impI typed_tiebreakers.wfp typed_tiebreakers.transp
 
   show "\<bottom>\<^sub>F \<noteq> {}"
     using exists_infinite_variables_per_type[OF types_ordLeq_variables]
-    by blast                   
+    by blast
 next
   fix bottom
   assume "bottom \<in> \<bottom>\<^sub>F"
@@ -195,10 +197,10 @@ proof(unfold_locales; (intro ballI)?)
     using select\<^sub>G_simple
     unfolding select\<^sub>G\<^sub>s_def
     by blast
-next 
+next
   fix select\<^sub>G
   assume "select\<^sub>G \<in> select\<^sub>G\<^sub>s"
- 
+
   then interpret grounded_superposition_calculus
     where select\<^sub>G = select\<^sub>G
     by unfold_locales (simp add: select\<^sub>G\<^sub>s_def)

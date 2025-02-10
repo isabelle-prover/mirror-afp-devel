@@ -20,7 +20,7 @@ interpretation selection_function trivial_select
   by unfold_locales auto
 
 (* TODO: We have to get the ground_critical_pair_theorem into the afp *)
-locale superposition_example = 
+locale superposition_example =
   ground_critical_pair_theorem "TYPE('f :: weighted)"
 begin
 
@@ -48,12 +48,12 @@ next
     by simp
 next
    show "transp less_kbo"
-    using KBO.S_trans 
+    using KBO.S_trans
     unfolding transp_def less_kbo_def
     by blast
 next
   show "asymp less_kbo"
-    using wfp_imp_asymp wfP_less_kbo 
+    using wfp_imp_asymp wfP_less_kbo
     by blast
 next
   show "wfp_on (range term.from_ground) less_kbo"
@@ -66,12 +66,12 @@ next
 next
   fix
     c :: "('f, 'v) context" and
-    t\<^sub>1 t\<^sub>2 :: "('f, 'v) term" 
+    t\<^sub>1 t\<^sub>2 :: "('f, 'v) term"
 
   assume "less_kbo t\<^sub>1 t\<^sub>2"
 
   then show "less_kbo c\<langle>t\<^sub>1\<rangle> c\<langle>t\<^sub>2\<rangle>"
-    using KBO.S_ctxt less_kbo_def 
+    using KBO.S_ctxt less_kbo_def
     by blast
 next
   fix
@@ -90,7 +90,7 @@ next
     "term.is_ground t"
     "context.is_ground c"
     "c \<noteq> \<box>"
-  
+
   then show "less_kbo t c\<langle>t\<rangle>"
     by (simp add: KBO.S_supt less_kbo_def nectxt_imp_supt_ctxt)
 qed

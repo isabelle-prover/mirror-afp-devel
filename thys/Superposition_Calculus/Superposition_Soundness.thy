@@ -1,7 +1,7 @@
 theory Superposition_Soundness
   imports
     First_Order_Clause.Nonground_Entailment
-    
+
     Grounded_Superposition
     Superposition_Welltypedness_Preservation
 begin
@@ -50,7 +50,7 @@ proof (cases D C rule: eq_resolution.cases)
       by meson
 
     have "?D\<^sub>G \<in> clause.welltyped_ground_instances (D, \<V>)"
-    proof(unfold clause.welltyped_ground_instances_def mem_Collect_eq fst_conv snd_conv, 
+    proof(unfold clause.welltyped_ground_instances_def mem_Collect_eq fst_conv snd_conv,
           intro exI conjI \<V>)
       show "clause.to_ground (D \<cdot> \<mu> \<cdot> \<gamma>') = clause.to_ground (D \<cdot> \<mu> \<odot> \<gamma>')"
         by simp
@@ -61,7 +61,7 @@ proof (cases D C rule: eq_resolution.cases)
     next
       show "clause.is_welltyped \<V> D"
        using C_is_welltyped
-       unfolding 
+       unfolding
          eq_resolution_preserves_typing[OF eq_resolution[unfolded eq_resolutionI(1, 2)]].
     next
       show "term.subst.is_welltyped_on (clause.vars D) \<V> (\<mu> \<odot> \<gamma>')"
@@ -71,7 +71,7 @@ proof (cases D C rule: eq_resolution.cases)
 
     then have "?I \<TTurnstile> ?D\<^sub>G"
       using entails_ground_instances
-      by auto 
+      by auto
 
     then obtain l\<^sub>G where l\<^sub>G_in_D: "l\<^sub>G \<in># ?D\<^sub>G" and I_models_l\<^sub>G: "?I \<TTurnstile>l l\<^sub>G"
       by (auto simp: true_cls_def)
@@ -109,10 +109,10 @@ proof (cases D C rule: eq_resolution.cases)
       using clause.subst_eq[OF \<gamma>'_\<gamma>[rule_format]] I_models_l\<^sub>G
       by auto
   }
-  
+
   then show ?thesis
     unfolding
-      true_clss_def 
+      true_clss_def
       eq_resolutionI(1,2)
       clause.welltyped_ground_instances_def
       ground.G_entails_def
@@ -161,7 +161,7 @@ proof (cases D C rule: eq_factoring.cases)
       by blast
 
     have "?D\<^sub>G \<in> clause.welltyped_ground_instances (D, \<V>)"
-    proof(unfold clause.welltyped_ground_instances_def mem_Collect_eq fst_conv snd_conv, 
+    proof(unfold clause.welltyped_ground_instances_def mem_Collect_eq fst_conv snd_conv,
           intro exI conjI \<V>)
       show "clause.to_ground (D \<cdot> \<mu> \<cdot> \<gamma>') = clause.to_ground (D \<cdot> \<mu> \<odot> \<gamma>')"
         by simp
@@ -199,7 +199,7 @@ proof (cases D C rule: eq_factoring.cases)
       by simp
 
     have [simp]: "?C\<^sub>G = add_mset (?t\<^sub>G\<^sub>1 \<approx> ?t\<^sub>G\<^sub>2') (add_mset (?t\<^sub>G\<^sub>1' !\<approx> ?t\<^sub>G\<^sub>2') ?D\<^sub>G')"
-      unfolding eq_factoringI 
+      unfolding eq_factoringI
       by simp
 
     have "?I \<TTurnstile> clause.to_ground (C \<cdot> \<gamma>)"
@@ -230,7 +230,7 @@ proof (cases D C rule: eq_factoring.cases)
         by simp
 
       then show ?thesis
-        using I_models_l\<^sub>G 
+        using I_models_l\<^sub>G
         by blast
     qed
   }
@@ -314,16 +314,16 @@ proof (cases D E C rule: superposition.cases)
       by blast
 
     have D_is_welltyped: "clause.is_welltyped \<V>\<^sub>2 D"
-      using superposition_preserves_typing_D[OF 
-          superposition[unfolded superpositionI(1-3)] 
+      using superposition_preserves_typing_D[OF
+          superposition[unfolded superpositionI(1-3)]
           C_is_welltyped].
 
     have E_is_welltyped: "clause.is_welltyped \<V>\<^sub>1 E"
-      using superposition_preserves_typing_E[OF 
-          superposition[unfolded superpositionI(1-3)] 
+      using superposition_preserves_typing_E[OF
+          superposition[unfolded superpositionI(1-3)]
           C_is_welltyped].
 
-    have is_welltyped_\<mu>_\<gamma>: 
+    have is_welltyped_\<mu>_\<gamma>:
       "term.subst.is_welltyped_on (clause.vars (E \<cdot> \<rho>\<^sub>1) \<union> clause.vars (D \<cdot> \<rho>\<^sub>2)) \<V>\<^sub>3 (\<mu> \<odot> \<gamma>')"
       using \<gamma>'_is_welltyped \<mu>_is_welltyped
       by (simp add: term.welltyped.typed_subst_compose)
@@ -332,14 +332,14 @@ proof (cases D E C rule: superposition.cases)
 
     have "?E\<^sub>G \<in> clause.welltyped_ground_instances (E, \<V>\<^sub>1)"
     proof(
-        unfold clause.welltyped_ground_instances_def mem_Collect_eq fst_conv snd_conv, 
+        unfold clause.welltyped_ground_instances_def mem_Collect_eq fst_conv snd_conv,
         intro exI conjI E_is_welltyped superpositionI)
 
       show "clause.to_ground (E \<cdot> \<rho>\<^sub>1 \<cdot> \<mu> \<cdot> \<gamma>') = clause.to_ground (E \<cdot> \<rho>\<^sub>1 \<odot> \<mu> \<odot> \<gamma>')"
         by simp
     next
 
-      show "clause.is_ground (E \<cdot> \<rho>\<^sub>1 \<odot> \<mu> \<odot> \<gamma>')"  
+      show "clause.is_ground (E \<cdot> \<rho>\<^sub>1 \<odot> \<mu> \<odot> \<gamma>')"
         using \<gamma>'_is_ground_subst clause.is_ground_subst_is_ground
         by auto
     next
@@ -358,19 +358,19 @@ proof (cases D E C rule: superposition.cases)
 
     have "?D\<^sub>G \<in> clause.welltyped_ground_instances (D, \<V>\<^sub>2)"
     proof(
-        unfold clause.welltyped_ground_instances_def mem_Collect_eq fst_conv snd_conv, 
+        unfold clause.welltyped_ground_instances_def mem_Collect_eq fst_conv snd_conv,
         intro exI conjI D_is_welltyped superpositionI)
 
       show "clause.to_ground (D \<cdot> \<rho>\<^sub>2 \<cdot> \<mu> \<cdot> \<gamma>') = clause.to_ground (D \<cdot> \<rho>\<^sub>2 \<odot> \<mu> \<odot> \<gamma>')"
         by simp
     next
-      show "clause.is_ground (D \<cdot> \<rho>\<^sub>2 \<odot> \<mu> \<odot> \<gamma>')"  
+      show "clause.is_ground (D \<cdot> \<rho>\<^sub>2 \<odot> \<mu> \<odot> \<gamma>')"
         using \<gamma>'_is_ground_subst clause.is_ground_subst_is_ground
         by auto
     next
 
       show "term.subst.is_welltyped_on (clause.vars D) \<V>\<^sub>2 (\<rho>\<^sub>2 \<odot> \<mu> \<odot> \<gamma>')"
-        using 
+        using
           is_welltyped_\<mu>_\<gamma>
           is_welltyped_\<rho>_\<mu>_\<gamma>[OF
             superpositionI(7) _ superpositionI(19, 17)[unfolded clause.vars_subst]]
