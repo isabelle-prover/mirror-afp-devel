@@ -3842,26 +3842,24 @@ name = "Peter Lammich"
 
 [lammich.emails.lammich_email]
 user = [
-  "lammich",
+  "p.lammich",
 ]
 host = [
-  "in",
-  "tum",
-  "de",
+  "utwente",
+  "nl",
 ]
 
 [lammich.emails.lammich_email1]
 user = [
-  "peter",
-  "lammich",
+  "plammich",
 ]
 host = [
-  "uni-muenster",
-  "de",
+  "gmail",
+  "com",
 ]
 
 [lammich.homepages]
-lammich_homepage = "http://www21.in.tum.de/~lammich"
+lammich_homepage = "https://people.utwente.nl/p.lammich"
 
 [lange]
 name = "Christoph Lange"
