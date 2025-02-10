@@ -38,18 +38,18 @@ translations
   "(x : P | B) \<Rrightarrow> R" \<rightleftharpoons> "CONST Dep_Fun_Rel P (\<lambda>x. CONST rel_if B R)"
 
 definition "Dep_Fun_Rel_rel R S f g \<equiv> \<forall>x y. R x y \<longrightarrow> S x y (f x) (g y)"
-adhoc_overloading Dep_Fun_Rel Dep_Fun_Rel_rel
+adhoc_overloading Dep_Fun_Rel \<rightleftharpoons> Dep_Fun_Rel_rel
 
 definition "Fun_Rel_rel (R :: 'a \<Rightarrow> 'b \<Rightarrow> bool) (S :: 'c \<Rightarrow> 'd \<Rightarrow> bool) \<equiv>
   ((_ _ \<Colon> R) \<Rrightarrow> S) :: ('a \<Rightarrow> 'c) \<Rightarrow> ('b \<Rightarrow> 'd) \<Rightarrow> bool"
-adhoc_overloading Fun_Rel Fun_Rel_rel
+adhoc_overloading Fun_Rel \<rightleftharpoons> Fun_Rel_rel
 
 definition "Dep_Fun_Rel_pred P R f g \<equiv> \<forall>x. P x \<longrightarrow> R x (f x) (g x)"
-adhoc_overloading Dep_Fun_Rel Dep_Fun_Rel_pred
+adhoc_overloading Dep_Fun_Rel \<rightleftharpoons> Dep_Fun_Rel_pred
 
 definition "Fun_Rel_pred (P :: 'a \<Rightarrow> bool) (R :: 'b \<Rightarrow> 'c \<Rightarrow> bool) \<equiv>
   ((_ : P) \<Rrightarrow> R) :: ('a \<Rightarrow> 'b) \<Rightarrow> ('a \<Rightarrow> 'c) \<Rightarrow> bool"
-adhoc_overloading Fun_Rel Fun_Rel_pred
+adhoc_overloading Fun_Rel \<rightleftharpoons> Fun_Rel_pred
 
 lemma Fun_Rel_rel_eq_Dep_Fun_Rel_rel:
   "((R :: 'a \<Rightarrow> 'b \<Rightarrow> bool) \<Rrightarrow> (S :: 'c \<Rightarrow> 'd \<Rightarrow> bool)) = ((_ _ \<Colon> R) \<Rrightarrow> S)"

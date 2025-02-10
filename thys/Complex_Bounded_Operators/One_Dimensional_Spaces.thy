@@ -318,4 +318,7 @@ qed
 lemma scaleC_1_right[simp]: \<open>scaleC x (1::'a::one_dim) = of_complex x\<close>
   unfolding of_complex_def by simp
 
+lemma canonical_basis_length_one_dim[simp]: \<open>canonical_basis_length TYPE('a::one_dim) = 1\<close>
+  by (simp add: canonical_basis_length)
+
 end

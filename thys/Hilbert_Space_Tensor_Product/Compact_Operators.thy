@@ -9,7 +9,8 @@ theory Compact_Operators
     Eigenvalues
 begin
 
-unbundle cblinfun_notation
+
+unbundle cblinfun_syntax
 
 subsection \<open>Finite rank operators\<close>
 
@@ -1387,7 +1388,7 @@ proof -
     have *: \<open>(\<lambda>i. Im (h i \<bullet>\<^sub>C a (h i))) \<longlonglongrightarrow> Im e\<close>
       by -
     have **: \<open>Im (h i \<bullet>\<^sub>C a (h i)) = 0\<close> for i
-      using assms(2) selfadjoint_def cinner_hermitian_real complex_is_Real_iff by auto
+      using assms(2) selfadjoint_def cinner_selfadjoint_real complex_is_Real_iff by auto
     have \<open>Im e = 0\<close>
       using _ * by (rule tendsto_unique) (use ** in auto)
     then show ?thesis
@@ -1517,5 +1518,6 @@ proof -
     using compact_op_finite_rank by blast
 qed
 
+unbundle no cblinfun_syntax
 
 end

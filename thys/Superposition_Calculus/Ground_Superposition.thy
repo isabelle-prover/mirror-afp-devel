@@ -1,40 +1,21 @@
 theory Ground_Superposition
   imports
-    (* Theories from the Isabelle distribution *)
-    Main
-
-    (* Theories from the AFP *)
-    "Saturation_Framework.Calculus"
-    "Saturation_Framework_Extensions.Clausal_Calculus"
-    "Abstract-Rewriting.Abstract_Rewriting"
-
-    (* Theories from this formalization *)
-    Abstract_Rewriting_Extra
     Ground_Critical_Pairs
-    Multiset_Extra
-    Term_Rewrite_System
-    Transitive_Closure_Extra
-    Uprod_Extra
-    HOL_Extra
-    Clausal_Calculus_Extra
-    Selection_Function
-    Ground_Order 
+    First_Order_Clause.Selection_Function
+    First_Order_Clause.Ground_Order
+    First_Order_Clause.Ground_Clause
 begin
-
-no_notation subst_compose (infixl "\<circ>\<^sub>s" 75)
-no_notation subst_apply_term (infixl "\<cdot>" 67) (* TODO: Just have these once *)
 
 section \<open>Superposition Calculus\<close>
 
 
 locale ground_superposition_calculus = 
   ground_order_with_equality where less\<^sub>t = less\<^sub>t +
-  selection_function select
+  selection_function select +
+  ground_critical_pair_theorem "TYPE('f)"
 for
   less\<^sub>t :: "'f gterm \<Rightarrow> 'f gterm \<Rightarrow> bool" and
-  select :: "'f gatom clause \<Rightarrow> 'f gatom clause"  +
-assumes
-  ground_critical_pair_theorem: "\<And>(R :: 'f gterm rel). ground_critical_pair_theorem R"
+  select :: "'f gatom clause \<Rightarrow> 'f gatom clause"
 begin
 
 subsection \<open>Ground Rules\<close>
@@ -42,8 +23,8 @@ subsection \<open>Ground Rules\<close>
 inductive superposition ::
   "'f gatom clause \<Rightarrow> 'f gatom clause \<Rightarrow> 'f gatom clause \<Rightarrow> bool"
 where
-  superpositionI: "
-    E = add_mset L\<^sub>E E' \<Longrightarrow>
+  superpositionI: 
+     "E = add_mset L\<^sub>E E' \<Longrightarrow>
     D = add_mset L\<^sub>D D' \<Longrightarrow>
     D \<prec>\<^sub>c E \<Longrightarrow>
     \<P> \<in> {Pos, Neg} \<Longrightarrow>
@@ -59,29 +40,29 @@ where
     superposition D E C"
 
 inductive eq_resolution :: "'f gatom clause \<Rightarrow> 'f gatom clause \<Rightarrow> bool" where
-  eq_resolutionI: "
-    D = add_mset L D' \<Longrightarrow>
-    L = Neg (Upair t t) \<Longrightarrow>
+  eq_resolutionI: 
+   "D = add_mset L D' \<Longrightarrow>
+    L = t !\<approx> t \<Longrightarrow>
     select D = {#} \<and> is_maximal L D \<or> is_maximal L (select D) \<Longrightarrow>
     C = D' \<Longrightarrow>
     eq_resolution D C"
 
 inductive eq_factoring :: "'f gatom clause \<Rightarrow> 'f gatom clause \<Rightarrow> bool" where
-  eq_factoringI: "
-    D = add_mset L\<^sub>1 (add_mset L\<^sub>2 D') \<Longrightarrow>
+  eq_factoringI: 
+   "D = add_mset L\<^sub>1 (add_mset L\<^sub>2 D') \<Longrightarrow>
     L\<^sub>1 = t \<approx> t' \<Longrightarrow>
     L\<^sub>2 = t \<approx> t'' \<Longrightarrow>
     select D = {#} \<Longrightarrow>
     is_maximal L\<^sub>1 D \<Longrightarrow>
     t' \<prec>\<^sub>t t \<Longrightarrow>
-    C = add_mset (Neg (Upair t' t'')) (add_mset (t \<approx> t'') D') \<Longrightarrow>
+    C = add_mset (t' !\<approx> t'') (add_mset (t \<approx> t'') D') \<Longrightarrow>
     eq_factoring D C"
 
 abbreviation eq_resolution_inferences where
   "eq_resolution_inferences \<equiv> {Infer [D] C | D C. eq_resolution D C}"
 
 abbreviation eq_factoring_inferences where
-  "eq_factoring_inferences \<equiv> {Infer [D] C | D C.  eq_factoring D C}"
+  "eq_factoring_inferences \<equiv> {Infer [D] C | D C. eq_factoring D C}"
 
 abbreviation superposition_inferences where
   "superposition_inferences \<equiv> {Infer [D, E] C | D E C. superposition D E C}"
@@ -166,7 +147,7 @@ where
    "P\<^sub>1 = add_mset L\<^sub>1 P\<^sub>1' \<Longrightarrow>
     P\<^sub>2 = add_mset L\<^sub>2 P\<^sub>2' \<Longrightarrow>
     P\<^sub>2 \<prec>\<^sub>c P\<^sub>1 \<Longrightarrow>
-    L\<^sub>1 = Neg (Upair s\<langle>t\<rangle>\<^sub>G s') \<Longrightarrow>
+    L\<^sub>1 = s\<langle>t\<rangle>\<^sub>G !\<approx> s' \<Longrightarrow>
     L\<^sub>2 = t \<approx> t' \<Longrightarrow>
     s' \<prec>\<^sub>t s\<langle>t\<rangle>\<^sub>G \<Longrightarrow>
     t' \<prec>\<^sub>t t \<Longrightarrow>

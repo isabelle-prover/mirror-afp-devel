@@ -1,6 +1,6 @@
 section\<open>Appendix\<close>
 subsection\<open>GoedelVariantHOML1poss.thy (Figure 16 of \cite{J75})\<close>
-text\<open>Gödel’s axioms and definitions, as presented in the 1970 manuscript, are inconsistent. 
+text\<open>Gödel's axioms and definitions, as presented in the 1970 manuscript, are inconsistent. 
 In contrast to Figure 6 we here use only possibilist quantifiers and still derive falsity.\<close>
 theory GoedelVariantHOML1poss imports HOMLinHOL
 begin 

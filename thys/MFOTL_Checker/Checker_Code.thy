@@ -128,7 +128,7 @@ end
 
 subsection \<open>Progress\<close>
 
-primrec progress :: "('n, 'd) trace \<Rightarrow> ('n, 'd) Formula.formula \<Rightarrow> nat \<Rightarrow> nat" where
+fun progress :: "('n, 'd) trace \<Rightarrow> ('n, 'd) Formula.formula \<Rightarrow> nat \<Rightarrow> nat" where
   "progress \<sigma> Formula.TT j = j"
 | "progress \<sigma> Formula.FF j = j"
 | "progress \<sigma> (Formula.Eq_Const _ _) j = j"
@@ -151,6 +151,8 @@ primrec progress :: "('n, 'd) trace \<Rightarrow> ('n, 'd) Formula.formula \<Rig
 | "progress \<sigma> (Formula.Since \<phi> I \<psi>) j = min (progress \<sigma> \<phi> j) (progress \<sigma> \<psi> j)"
 | "progress \<sigma> (Formula.Until \<phi> I \<psi>) j =
     Inf {i. \<forall>k. k < j \<and> k \<le> min (progress \<sigma> \<phi> j) (progress \<sigma> \<psi> j) \<longrightarrow> (\<tau> \<sigma> k - \<tau> \<sigma> i) \<le> right I}"
+| "progress \<sigma> (Formula.MatchP I r) j = min_regex_default (progress \<sigma>) r j"
+| "progress \<sigma> (Formula.MatchF I r) j = Inf {i. \<forall>k. k < j \<and> k \<le> min_regex_default (progress \<sigma>) r j \<longrightarrow> \<tau> \<sigma> i + right I \<ge> \<tau> \<sigma> k}"
 
 lemma Inf_Min:
   fixes P :: "nat \<Rightarrow> bool"
@@ -857,8 +859,11 @@ lift_definition abs_part :: "(event_data set \<times> 'a) list \<Rightarrow> (ev
    \<or> (\<Union>D \<in> set Ds. D) \<noteq> UNIV then [(UNIV, undefined)] else xs"
   by (auto simp: partition_on_def disjoint_def)
 
+lemma rm_code[code_unfold]: "rm S = Set.filter (\<lambda>(i,j). i < j) S"
+  unfolding Set.filter_def by auto
+
 export_code interval enat nat_of_integer integer_of_nat
-  STT Formula.TT Inl EInt Formula.Var Leaf set part_hd sum_nat sub_nat subsvals
+  STT SSkip VSkip Formula.TT Regex.Skip Inl EInt Formula.Var Leaf set part_hd sum_nat sub_nat subsvals
   check trace_of_list_specialized specialized_set ed_set abs_part 
   collect_paths_specialized
   in OCaml module_name Checker file_prefix "checker"

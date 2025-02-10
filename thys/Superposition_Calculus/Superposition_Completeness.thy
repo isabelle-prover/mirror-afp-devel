@@ -1,9 +1,10 @@
 theory Superposition_Completeness
   imports
-    Ground_Superposition_Completeness
     Grounded_Superposition
-    Nonground_Entailment
+    Ground_Superposition_Completeness
     Superposition_Welltypedness_Preservation
+
+    First_Order_Clause.Nonground_Entailment
 begin
 
 section \<open>Completeness\<close>
@@ -27,12 +28,12 @@ lemma eq_resolution_lifting:
     C_grounding: "clause.is_ground (C \<cdot> \<gamma>)" and
     select: "clause.from_ground (select\<^sub>G D\<^sub>G) = (select D) \<cdot> \<gamma>" and
     D_is_welltyped: "clause.is_welltyped \<V> D" and
-    \<gamma>_is_welltyped: "is_welltyped_on (clause.vars D) \<V> \<gamma>" and
+    \<gamma>_is_welltyped: "term.subst.is_welltyped_on (clause.vars D) \<V> \<gamma>" and
     \<V>: "infinite_variables_per_type \<V>"
   obtains C'
   where
     "eq_resolution (D, \<V>) (C', \<V>)"
-    "Infer [D\<^sub>G] C\<^sub>G \<in> inference_groundings (Infer [(D, \<V>)] (C', \<V>))"
+    "Infer [D\<^sub>G] C\<^sub>G \<in> inference_ground_instances (Infer [(D, \<V>)] (C', \<V>))"
     "C' \<cdot> \<gamma> = C \<cdot> \<gamma>"
   using ground_eq_resolution
 proof(cases D\<^sub>G C\<^sub>G rule: ground.eq_resolution.cases)
@@ -96,7 +97,7 @@ proof(cases D\<^sub>G C\<^sub>G rule: ground.eq_resolution.cases)
           that
           obtain_maximal_literal[OF _ select_ground_subst[OF D_grounding]]
           unique_maximal_in_ground_clause[OF select_ground_subst[OF D_grounding]]
-        by (metis is_maximal_not_empty clause_subst_empty)
+        by (metis is_maximal_not_empty clause.magma_subst_empty)
     qed
 
     moreover then have "selected_l \<in># D" if ?select\<^sub>G_not_empty
@@ -115,7 +116,7 @@ proof(cases D\<^sub>G C\<^sub>G rule: ground.eq_resolution.cases)
     using l_\<gamma> obtain_from_neg_literal_subst
     by meson
 
-  obtain \<mu> \<sigma> where \<gamma>: "\<gamma> = \<mu> \<odot> \<sigma>" and imgu: "welltyped_imgu \<V> t t' \<mu>"
+  obtain \<mu> \<sigma> where \<gamma>: "\<gamma> = \<mu> \<odot> \<sigma>" and imgu: "welltyped_imgu_on (clause.vars D) \<V> t t' \<mu>"
   proof-
     have unified: "t \<cdot>t \<gamma> = t' \<cdot>t \<gamma>"
       using l_\<gamma>
@@ -128,7 +129,7 @@ proof(cases D\<^sub>G C\<^sub>G rule: ground.eq_resolution.cases)
       by auto
 
     show ?thesis
-      using obtain_welltyped_imgu[OF unified welltyped] that
+      using obtain_welltyped_imgu_on[OF unified welltyped] that
       by metis
   qed
 
@@ -212,16 +213,16 @@ proof(cases D\<^sub>G C\<^sub>G rule: ground.eq_resolution.cases)
         unfolding clause.subst_comp_subst[symmetric] \<mu>_\<gamma>.
     qed
 
-    show "Infer [D\<^sub>G] C\<^sub>G \<in> inference_groundings (Infer [(D, \<V>)] (C' \<cdot> \<mu>, \<V>))"
-    proof (rule is_inference_grounding_one_premise_inference_groundings)
+    show "Infer [D\<^sub>G] C\<^sub>G \<in> inference_ground_instances (Infer [(D, \<V>)] (C' \<cdot> \<mu>, \<V>))"
+    proof (rule is_inference_ground_instance_one_premise)
 
-      show "is_inference_grounding_one_premise (D, \<V>) (C' \<cdot> \<mu>, \<V>) (Infer [D\<^sub>G] C\<^sub>G) \<gamma>"
-      proof(unfold split, intro conjI; (rule D_grounding D_is_welltyped refl \<V>)?)
-        show "clause.is_ground (C' \<cdot> \<mu> \<cdot> \<gamma>)"
-          using C_grounding C'_\<mu>_\<gamma>
-          by argo
+      show "is_inference_ground_instance_one_premise (D, \<V>) (C' \<cdot> \<mu>, \<V>) (Infer [D\<^sub>G] C\<^sub>G) \<gamma>"
+      proof(unfold split, intro conjI; (rule D_is_welltyped refl \<V>)?)
+        show "inference.is_ground (Infer [D] (C' \<cdot> \<mu>) \<cdot>\<iota> \<gamma>)"
+          using D_grounding C_grounding C'_\<mu>_\<gamma>
+          by auto
       next
-        show "Infer [D\<^sub>G] C\<^sub>G = Infer [clause.to_ground (D \<cdot> \<gamma>)] (clause.to_ground (C' \<cdot> \<mu> \<cdot> \<gamma>))"
+        show "Infer [D\<^sub>G] C\<^sub>G = inference.to_ground (Infer [D] (C' \<cdot> \<mu>) \<cdot>\<iota> \<gamma>)"
           using C'_\<mu>_\<gamma>
           by simp
       next
@@ -230,7 +231,7 @@ proof(cases D\<^sub>G C\<^sub>G rule: ground.eq_resolution.cases)
           unfolding D l
           by auto
 
-        then show "is_welltyped_on (clause.vars (C' \<cdot> \<mu>)) \<V> \<gamma>"
+        then show "term.subst.is_welltyped_on (clause.vars (C' \<cdot> \<mu>)) \<V> \<gamma>"
           using D_is_welltyped \<gamma>_is_welltyped
           by blast
       next
@@ -261,12 +262,12 @@ lemma eq_factoring_lifting:
     C_grounding: "clause.is_ground (C \<cdot> \<gamma>)" and
     select: "clause.from_ground (select\<^sub>G D\<^sub>G) = (select D) \<cdot> \<gamma>" and
     D_is_welltyped: "clause.is_welltyped \<V> D" and
-    \<gamma>_is_welltyped: "is_welltyped_on (clause.vars D) \<V> \<gamma>" and
+    \<gamma>_is_welltyped: "term.subst.is_welltyped_on (clause.vars D) \<V> \<gamma>" and
     \<V>: "infinite_variables_per_type \<V>"
   obtains C' 
   where
     "eq_factoring (D, \<V>) (C', \<V>)"
-    "Infer [D\<^sub>G] C\<^sub>G \<in> inference_groundings (Infer [(D, \<V>)] (C', \<V>))"
+    "Infer [D\<^sub>G] C\<^sub>G \<in> inference_ground_instances (Infer [(D, \<V>)] (C', \<V>))"
     "C' \<cdot> \<gamma> = C \<cdot> \<gamma>"
   using ground_eq_factoring
 proof(cases D\<^sub>G C\<^sub>G rule: ground.eq_factoring.cases)
@@ -342,7 +343,7 @@ proof(cases D\<^sub>G C\<^sub>G rule: ground.eq_factoring.cases)
     using D D_grounding ground_eq_factoringI(1,2,3) l\<^sub>1_\<gamma> l\<^sub>2_\<gamma> 
     by force
 
-  obtain \<mu> \<sigma> where \<gamma>: "\<gamma> = \<mu> \<odot> \<sigma>" and imgu: "welltyped_imgu \<V> t\<^sub>1 t\<^sub>2 \<mu>"
+  obtain \<mu> \<sigma> where \<gamma>: "\<gamma> = \<mu> \<odot> \<sigma>" and imgu: "welltyped_imgu_on (clause.vars D) \<V> t\<^sub>1 t\<^sub>2 \<mu>"
   proof-
     have unified: "t\<^sub>1 \<cdot>t \<gamma> = t\<^sub>2 \<cdot>t \<gamma>"
       unfolding t\<^sub>1_\<gamma> t\<^sub>2_\<gamma> ..
@@ -358,7 +359,7 @@ proof(cases D\<^sub>G C\<^sub>G rule: ground.eq_factoring.cases)
       by simp_all
 
     then show ?thesis
-      using obtain_welltyped_imgu[OF unified welltyped] that
+      using obtain_welltyped_imgu_on[OF unified welltyped] that
       by metis
   qed
 
@@ -424,16 +425,16 @@ proof(cases D\<^sub>G C\<^sub>G rule: ground.eq_factoring.cases)
       finally show ?thesis ..
     qed
 
-    show "Infer [D\<^sub>G] C\<^sub>G \<in> inference_groundings (Infer [(D, \<V>)] (?C', \<V>))"
-    proof (rule is_inference_grounding_one_premise_inference_groundings)
+    show "Infer [D\<^sub>G] C\<^sub>G \<in> inference_ground_instances (Infer [(D, \<V>)] (?C', \<V>))"
+    proof (rule is_inference_ground_instance_one_premise)
 
-      show "is_inference_grounding_one_premise (D, \<V>) (?C', \<V>) (Infer [D\<^sub>G] C\<^sub>G) \<gamma>"
-      proof(unfold split, intro conjI; (rule D_grounding D_is_welltyped refl \<V>)?)
-        show "clause.is_ground (?C' \<cdot> \<gamma>)"
-          using C_grounding C'_\<gamma>
-          by argo
+      show "is_inference_ground_instance_one_premise (D, \<V>) (?C', \<V>) (Infer [D\<^sub>G] C\<^sub>G) \<gamma>"
+      proof(unfold split, intro conjI; (rule D_is_welltyped refl \<V>)?)
+        show "inference.is_ground (Infer [D] ?C' \<cdot>\<iota> \<gamma>)"
+          using C_grounding D_grounding C'_\<gamma>
+          by auto
       next
-        show "Infer [D\<^sub>G] C\<^sub>G = Infer [clause.to_ground (D \<cdot> \<gamma>)] (clause.to_ground (?C' \<cdot> \<gamma>))"
+        show "Infer [D\<^sub>G] C\<^sub>G = inference.to_ground (Infer [D] ?C' \<cdot>\<iota> \<gamma>)"
           using C'_\<gamma>
           by simp
       next
@@ -446,7 +447,7 @@ proof(cases D\<^sub>G C\<^sub>G rule: ground.eq_factoring.cases)
           unfolding D l\<^sub>1 l\<^sub>2
           by auto
 
-        then show "is_welltyped_on (clause.vars ?C') \<V> \<gamma>"
+        then show "term.subst.is_welltyped_on (clause.vars ?C') \<V> \<gamma>"
           using D_is_welltyped \<gamma>_is_welltyped
           by blast
       next
@@ -473,7 +474,8 @@ lemma superposition_lifting:
     [simp]: "E\<^sub>G \<equiv> clause.to_ground (E \<cdot> \<rho>\<^sub>1 \<odot> \<gamma>)" and
     [simp]: "D\<^sub>G \<equiv> clause.to_ground (D \<cdot> \<rho>\<^sub>2 \<odot> \<gamma>)" and
     [simp]: "C\<^sub>G \<equiv> clause.to_ground (C \<cdot> \<gamma>)" and
-    [simp]: "N\<^sub>G \<equiv> clause_groundings (E, \<V>\<^sub>1) \<union> clause_groundings (D, \<V>\<^sub>2)" and
+    [simp]: "N\<^sub>G \<equiv> clause.welltyped_ground_instances (E, \<V>\<^sub>1) \<union>
+                    clause.welltyped_ground_instances (D, \<V>\<^sub>2)" and
     [simp]: "\<iota>\<^sub>G \<equiv> Infer [D\<^sub>G, E\<^sub>G] C\<^sub>G"
   assumes
     ground_superposition: "ground.superposition D\<^sub>G E\<^sub>G C\<^sub>G" and
@@ -487,17 +489,17 @@ lemma superposition_lifting:
     select_from_D: "clause.from_ground (select\<^sub>G D\<^sub>G) = (select D) \<cdot> \<rho>\<^sub>2 \<odot> \<gamma>" and
     E_is_welltyped: "clause.is_welltyped \<V>\<^sub>1 E" and
     D_is_welltyped: "clause.is_welltyped \<V>\<^sub>2 D" and
-    \<rho>\<^sub>1_\<gamma>_is_welltyped: "is_welltyped_on (clause.vars E) \<V>\<^sub>1 (\<rho>\<^sub>1 \<odot> \<gamma>)" and
-    \<rho>\<^sub>2_\<gamma>_is_welltyped: "is_welltyped_on (clause.vars D) \<V>\<^sub>2 (\<rho>\<^sub>2 \<odot> \<gamma>)" and
-    \<rho>\<^sub>1_is_welltyped: "is_welltyped_on (clause.vars E) \<V>\<^sub>1 \<rho>\<^sub>1" and
-    \<rho>\<^sub>2_is_welltyped: "is_welltyped_on (clause.vars D) \<V>\<^sub>2 \<rho>\<^sub>2" and
+    \<rho>\<^sub>1_\<gamma>_is_welltyped: "term.subst.is_welltyped_on (clause.vars E) \<V>\<^sub>1 (\<rho>\<^sub>1 \<odot> \<gamma>)" and
+    \<rho>\<^sub>2_\<gamma>_is_welltyped: "term.subst.is_welltyped_on (clause.vars D) \<V>\<^sub>2 (\<rho>\<^sub>2 \<odot> \<gamma>)" and
+    \<rho>\<^sub>1_is_welltyped: "term.subst.is_welltyped_on (clause.vars E) \<V>\<^sub>1 \<rho>\<^sub>1" and
+    \<rho>\<^sub>2_is_welltyped: "term.subst.is_welltyped_on (clause.vars D) \<V>\<^sub>2 \<rho>\<^sub>2" and
     \<V>\<^sub>1: "infinite_variables_per_type \<V>\<^sub>1" and
     \<V>\<^sub>2: "infinite_variables_per_type \<V>\<^sub>2" and
     not_redundant: "\<iota>\<^sub>G \<notin> ground.Red_I N\<^sub>G"
   obtains C' \<V>\<^sub>3
   where
     "superposition (D, \<V>\<^sub>2) (E, \<V>\<^sub>1) (C', \<V>\<^sub>3)"
-    "\<iota>\<^sub>G \<in> inference_groundings (Infer [(D, \<V>\<^sub>2), (E, \<V>\<^sub>1)] (C', \<V>\<^sub>3))"
+    "\<iota>\<^sub>G \<in> inference_ground_instances (Infer [(D, \<V>\<^sub>2), (E, \<V>\<^sub>1)] (C', \<V>\<^sub>3))"
     "C' \<cdot> \<gamma> = C \<cdot> \<gamma>"
   using ground_superposition
 proof(cases D\<^sub>G E\<^sub>G C\<^sub>G rule: ground.superposition.cases)
@@ -572,8 +574,8 @@ proof(cases D\<^sub>G E\<^sub>G C\<^sub>G rule: ground.superposition.cases)
         unique_maximal_in_ground_clause
         obtain_maximal_literal
       unfolding E\<^sub>G_def
-      by (metis (no_types, lifting) clause.ground_is_ground clause_from_ground_empty 
-          clause_subst_empty)
+      by (metis (no_types, lifting) clause.ground_is_ground clause.from_ground_empty' 
+          clause.magma_subst_empty)
 
     moreover then have "negative_selected_l\<^sub>1 \<in># E" if "\<P>\<^sub>G = Neg" ?select\<^sub>G_not_empty 
       using that
@@ -601,7 +603,7 @@ proof(cases D\<^sub>G E\<^sub>G C\<^sub>G rule: ground.superposition.cases)
     by auto
 
   have [simp]: "\<And>\<V> a. literal.is_welltyped \<V> (?\<P> a) \<longleftrightarrow> atom.is_welltyped \<V> a"
-    by(auto simp: literal_is_welltyped_iff_atm_of)
+    by (auto simp: literal_is_welltyped_iff_atm_of)
 
   have [simp]: "\<And>a. literal.vars (?\<P> a) = atom.vars a"
     by auto
@@ -695,9 +697,9 @@ proof(cases D\<^sub>G E\<^sub>G C\<^sub>G rule: ground.superposition.cases)
             by (simp add: ts)
 
           moreover have
-            "\<nexists>c\<^sub>1 t\<^sub>1. t = c\<^sub>1\<langle>t\<^sub>1\<rangle> \<and> 
-                t\<^sub>1 \<cdot>t \<rho>\<^sub>1 \<odot> \<gamma> = term.from_ground t\<^sub>G\<^sub>1 \<and> 
-                c\<^sub>1 \<cdot>t\<^sub>c \<rho>\<^sub>1 \<odot> \<gamma> = context.from_ground c\<^sub>G' \<and> 
+            "\<nexists>c\<^sub>1 t\<^sub>1. t = c\<^sub>1\<langle>t\<^sub>1\<rangle> \<and>
+                t\<^sub>1 \<cdot>t \<rho>\<^sub>1 \<odot> \<gamma> = term.from_ground t\<^sub>G\<^sub>1 \<and>
+                c\<^sub>1 \<cdot>t\<^sub>c \<rho>\<^sub>1 \<odot> \<gamma> = context.from_ground c\<^sub>G' \<and>
                 is_Fun t\<^sub>1"
           proof(rule notI, elim exE conjE)
             fix c\<^sub>1 t\<^sub>1
@@ -742,7 +744,7 @@ proof(cases D\<^sub>G E\<^sub>G C\<^sub>G rule: ground.superposition.cases)
         by auto
 
       have \<iota>\<^sub>G_parts: 
-        "set (side_prems_of \<iota>\<^sub>G) = {D\<^sub>G}" 
+        "set (side_prems_of \<iota>\<^sub>G) = {D\<^sub>G}"
         "main_prem_of \<iota>\<^sub>G = E\<^sub>G"
         "concl_of \<iota>\<^sub>G = C\<^sub>G"
         by simp_all
@@ -780,8 +782,8 @@ proof(cases D\<^sub>G E\<^sub>G C\<^sub>G rule: ground.superposition.cases)
         show "?E\<^sub>G' \<in> N\<^sub>G"
         proof-
 
-          have "?E\<^sub>G' \<in> clause_groundings (E, \<V>\<^sub>1)"
-          proof(unfold clause_groundings_def mem_Collect_eq fst_conv snd_conv, 
+          have "?E\<^sub>G' \<in> clause.welltyped_ground_instances (E, \<V>\<^sub>1)"
+          proof(unfold clause.welltyped_ground_instances_def mem_Collect_eq fst_conv snd_conv, 
               intro exI conjI E_is_welltyped \<V>\<^sub>1, 
               rule refl)
 
@@ -790,8 +792,8 @@ proof(cases D\<^sub>G E\<^sub>G C\<^sub>G rule: ground.superposition.cases)
               using E_grounding
               by simp
 
-            show "is_welltyped_on (clause.vars E) \<V>\<^sub>1 (\<rho>\<^sub>1 \<odot> \<gamma>')"
-            proof(intro is_welltyped_on_subst_compose \<rho>\<^sub>1_is_welltyped)
+            show "term.subst.is_welltyped_on (clause.vars E) \<V>\<^sub>1 (\<rho>\<^sub>1 \<odot> \<gamma>')"
+            proof(intro term.welltyped.typed_subst_compose \<rho>\<^sub>1_is_welltyped)
               
               have "welltyped \<V>\<^sub>1 ?t\<^sub>G (\<V>\<^sub>1 x)"
               proof-
@@ -841,7 +843,7 @@ proof(cases D\<^sub>G E\<^sub>G C\<^sub>G rule: ground.superposition.cases)
                     by auto
 
                   then show ?thesis
-                    using that welltyped.explicit_replace_\<V>_iff[of _ \<V>\<^sub>2 \<V>\<^sub>1]
+                    using that term.welltyped.explicit_replace_\<V>_iff[of _ \<V>\<^sub>2 \<V>\<^sub>1]
                     by simp
                 qed
 
@@ -849,11 +851,11 @@ proof(cases D\<^sub>G E\<^sub>G C\<^sub>G rule: ground.superposition.cases)
                   by auto              
               qed
 
-              moreover have "is_welltyped_on (\<Union> (term.vars ` \<rho>\<^sub>1 ` clause.vars E)) \<V>\<^sub>1 \<gamma>"
-                by (intro is_welltyped_on_subst_compose_renaming \<rho>\<^sub>1_\<gamma>_is_welltyped
-                    \<rho>\<^sub>1_is_welltyped \<rho>\<^sub>1)
+              moreover have "term.subst.is_welltyped_on (\<Union> (term.vars ` \<rho>\<^sub>1 ` clause.vars E)) \<V>\<^sub>1 \<gamma>"
+                by (intro term.welltyped.renaming_subst_compose \<rho>\<^sub>1_\<gamma>_is_welltyped \<rho>\<^sub>1_is_welltyped \<rho>\<^sub>1)
 
-              ultimately show "is_welltyped_on (\<Union> (term.vars ` \<rho>\<^sub>1 ` clause.vars E)) \<V>\<^sub>1 \<gamma>'"
+              ultimately show 
+                "term.subst.is_welltyped_on (\<Union> (term.vars ` \<rho>\<^sub>1 ` clause.vars E)) \<V>\<^sub>1 \<gamma>'"
                 unfolding \<gamma>'_def
                 by simp
             qed
@@ -1019,7 +1021,7 @@ proof(cases D\<^sub>G E\<^sub>G C\<^sub>G rule: ground.superposition.cases)
 
   then obtain t\<^sub>2 t\<^sub>2' where
     l\<^sub>2: "l\<^sub>2 = t\<^sub>2 \<approx> t\<^sub>2'" and
-    t\<^sub>2_\<gamma>: "t\<^sub>2 \<cdot>t \<rho>\<^sub>2 \<odot> \<gamma> = term.from_ground t\<^sub>G\<^sub>1" and     
+    t\<^sub>2_\<gamma>: "t\<^sub>2 \<cdot>t \<rho>\<^sub>2 \<odot> \<gamma> = term.from_ground t\<^sub>G\<^sub>1" and
     t\<^sub>2'_\<gamma>: "t\<^sub>2' \<cdot>t \<rho>\<^sub>2 \<odot> \<gamma> = term.from_ground t\<^sub>G\<^sub>3"
     using obtain_from_pos_literal_subst
     by metis
@@ -1032,36 +1034,27 @@ proof(cases D\<^sub>G E\<^sub>G C\<^sub>G rule: ground.superposition.cases)
     unfolding ground_superpositionI
     by auto
 
-  (* TODO: inv *) 
-  define \<V>\<^sub>3 where 
-    "\<And>x. \<V>\<^sub>3 x \<equiv>
-        if x \<in> clause.vars (E \<cdot> \<rho>\<^sub>1)
-        then \<V>\<^sub>1 (inv \<rho>\<^sub>1 (Var x))
-        else \<V>\<^sub>2 (inv \<rho>\<^sub>2 (Var x))"
+  obtain \<V>\<^sub>3 where  
+    \<V>\<^sub>1_\<V>\<^sub>3: "\<forall>x\<in>clause.vars E. \<V>\<^sub>1 x = \<V>\<^sub>3 (clause.rename \<rho>\<^sub>1 x)" and
+    \<V>\<^sub>2_\<V>\<^sub>3: "\<forall>x\<in>clause.vars D. \<V>\<^sub>2 x = \<V>\<^sub>3 (clause.rename \<rho>\<^sub>2 x)" and
+    \<V>\<^sub>3: "infinite_variables_per_type \<V>\<^sub>3"
+    using clause.obtain_merged_\<V>[OF \<rho>\<^sub>1 \<rho>\<^sub>2 rename_apart \<V>\<^sub>2 clause.finite_vars].
 
-  have \<gamma>_is_welltyped: "is_welltyped_on (clause.vars (E \<cdot> \<rho>\<^sub>1) \<union> clause.vars (D \<cdot> \<rho>\<^sub>2)) \<V>\<^sub>3 \<gamma>"
+  have \<gamma>_is_welltyped: 
+    "term.subst.is_welltyped_on (clause.vars (E \<cdot> \<rho>\<^sub>1) \<union> clause.vars (D \<cdot> \<rho>\<^sub>2)) \<V>\<^sub>3 \<gamma>"
   proof(unfold Set.ball_Un, intro conjI)
 
-    show "is_welltyped_on (clause.vars (E \<cdot> \<rho>\<^sub>1)) \<V>\<^sub>3 \<gamma>"
-      unfolding \<V>\<^sub>3_def
-      using clause.is_welltyped.renaming_grounding[OF \<rho>\<^sub>1 \<rho>\<^sub>1_\<gamma>_is_welltyped E_grounding]
-      by simp
-
+    show "term.subst.is_welltyped_on (clause.vars (E \<cdot> \<rho>\<^sub>1)) \<V>\<^sub>3 \<gamma>"
+      using clause.is_welltyped.renaming_grounding[OF \<rho>\<^sub>1 \<rho>\<^sub>1_\<gamma>_is_welltyped E_grounding \<V>\<^sub>1_\<V>\<^sub>3].
   next
-    have "\<forall>x\<in>clause.vars (D \<cdot> \<rho>\<^sub>2). \<V>\<^sub>3 x = \<V>\<^sub>2 (inv \<rho>\<^sub>2 (Var x))"
-      unfolding \<V>\<^sub>3_def
-      using rename_apart
-      by auto
-
-    then show "is_welltyped_on (clause.vars (D \<cdot> \<rho>\<^sub>2)) \<V>\<^sub>3 \<gamma>"
-      unfolding \<V>\<^sub>3_def
-      using clause.is_welltyped.renaming_grounding[OF \<rho>\<^sub>2 \<rho>\<^sub>2_\<gamma>_is_welltyped D_grounding]
-      by simp
+ 
+    show "term.subst.is_welltyped_on (clause.vars (D \<cdot> \<rho>\<^sub>2)) \<V>\<^sub>3 \<gamma>"
+      using clause.is_welltyped.renaming_grounding[OF \<rho>\<^sub>2 \<rho>\<^sub>2_\<gamma>_is_welltyped D_grounding \<V>\<^sub>2_\<V>\<^sub>3].
   qed
 
   obtain \<mu> \<sigma> where
     \<gamma>: "\<gamma> = \<mu> \<odot> \<sigma>" and
-    imgu: "welltyped_imgu \<V>\<^sub>3 (t\<^sub>1 \<cdot>t \<rho>\<^sub>1) (t\<^sub>2 \<cdot>t \<rho>\<^sub>2) \<mu>"
+    imgu: "welltyped_imgu_on (clause.vars (E \<cdot> \<rho>\<^sub>1) \<union> clause.vars (D \<cdot> \<rho>\<^sub>2)) \<V>\<^sub>3 (t\<^sub>1 \<cdot>t \<rho>\<^sub>1) (t\<^sub>2 \<cdot>t \<rho>\<^sub>2) \<mu>"
   proof-
 
     have unified: "t\<^sub>1 \<cdot>t \<rho>\<^sub>1 \<cdot>t \<gamma> = t\<^sub>2 \<cdot>t \<rho>\<^sub>2 \<cdot>t \<gamma>"
@@ -1080,8 +1073,8 @@ proof(cases D\<^sub>G E\<^sub>G C\<^sub>G rule: ground.superposition.cases)
         by auto
 
       then have "welltyped \<V>\<^sub>3 (term.from_ground t\<^sub>G\<^sub>1) \<tau>" 
-        using welltyped.is_ground_typed
-        by (meson term.ground_is_ground welltyped.explicit_is_ground_typed)
+        using term.welltyped.is_ground_typed
+        by (meson term.ground_is_ground term.welltyped.explicit_is_ground_typed)
 
       then have "welltyped \<V>\<^sub>3 (t\<^sub>1 \<cdot>t \<rho>\<^sub>1 \<odot> \<gamma>) \<tau>" "welltyped \<V>\<^sub>3 (t\<^sub>2 \<cdot>t \<rho>\<^sub>2 \<odot> \<gamma>) \<tau>"
         using t\<^sub>1_\<gamma> t\<^sub>2_\<gamma>
@@ -1103,7 +1096,7 @@ proof(cases D\<^sub>G E\<^sub>G C\<^sub>G rule: ground.superposition.cases)
     qed
 
     show ?thesis
-      using obtain_welltyped_imgu[OF unified welltyped] that
+      using obtain_welltyped_imgu_on[OF unified welltyped] that
       by metis
   qed
 
@@ -1114,8 +1107,9 @@ proof(cases D\<^sub>G E\<^sub>G C\<^sub>G rule: ground.superposition.cases)
   proof(rule that)
 
     show superposition: "superposition (D, \<V>\<^sub>2) (E, \<V>\<^sub>1) (C', \<V>\<^sub>3)"
-    proof(rule superpositionI, rule \<rho>\<^sub>1, rule \<rho>\<^sub>2; 
-        ((rule E D l\<^sub>1 l\<^sub>2 t\<^sub>1_is_Fun imgu rename_apart \<rho>\<^sub>1_is_welltyped \<rho>\<^sub>2_is_welltyped \<V>\<^sub>1 \<V>\<^sub>2 C')+)?)
+    proof(rule superpositionI; 
+           ((rule \<rho>\<^sub>1 \<rho>\<^sub>2 E D l\<^sub>1 l\<^sub>2 t\<^sub>1_is_Fun imgu rename_apart \<rho>\<^sub>1_is_welltyped \<rho>\<^sub>2_is_welltyped \<V>\<^sub>1 \<V>\<^sub>2 C'
+               \<V>\<^sub>1_\<V>\<^sub>3 \<V>\<^sub>2_\<V>\<^sub>3)+)?)
 
       show "?\<P> \<in> {Pos, Neg}"
         by simp
@@ -1140,40 +1134,36 @@ proof(cases D\<^sub>G E\<^sub>G C\<^sub>G rule: ground.superposition.cases)
           by simp
       qed
     next
-      have "select E = {#}" "is_strictly_maximal (l\<^sub>1 \<cdot>l \<rho>\<^sub>1 \<odot> \<mu>) (E \<cdot> \<rho>\<^sub>1 \<odot> \<mu>)" if "?\<P> = Pos"
-      proof -
+      assume "?\<P> = Pos"
 
-        show "select E = {#}"
-          using that ground_superpositionI(9) select_from_E
-          by fastforce
+      then show "select E = {#}"
+        using ground_superpositionI(9) select_from_E
+        by fastforce
 
-        show "is_strictly_maximal (l\<^sub>1 \<cdot>l \<rho>\<^sub>1 \<odot> \<mu>) (E \<cdot> \<rho>\<^sub>1 \<odot> \<mu>)"
-        proof(rule is_strictly_maximal_if_grounding_is_strictly_maximal)
+    next
+      assume Pos: "?\<P> = Pos"
 
-          show "l\<^sub>1 \<cdot>l \<rho>\<^sub>1 \<odot> \<mu> \<in># E \<cdot> \<rho>\<^sub>1 \<odot> \<mu>"
-            using l\<^sub>1_in_E
-            by blast
+      show "is_strictly_maximal (l\<^sub>1 \<cdot>l \<rho>\<^sub>1 \<odot> \<mu>) (E \<cdot> \<rho>\<^sub>1 \<odot> \<mu>)"
+      proof(rule is_strictly_maximal_if_grounding_is_strictly_maximal)
 
-          show "clause.is_ground (E \<cdot> \<rho>\<^sub>1 \<odot> \<mu> \<cdot> \<sigma>)"
-            using E_grounding[unfolded \<gamma>]
-            by simp
+        show "l\<^sub>1 \<cdot>l \<rho>\<^sub>1 \<odot> \<mu> \<in># E \<cdot> \<rho>\<^sub>1 \<odot> \<mu>"
+          using l\<^sub>1_in_E
+          by blast
 
-          show "is_strictly_maximal (l\<^sub>1 \<cdot>l \<rho>\<^sub>1 \<odot> \<mu> \<cdot>l \<sigma>) (E \<cdot> \<rho>\<^sub>1 \<odot> \<mu> \<cdot> \<sigma>)"
-            using that l\<^sub>1_\<gamma> E_\<gamma> ground_superpositionI(9)
-            unfolding \<gamma> ground_superpositionI
-            by fastforce
-        qed
-      qed
-
-      moreover have "select E = {#}" "is_maximal (l\<^sub>1 \<cdot>l \<rho>\<^sub>1 \<odot> \<mu>) (E \<cdot> \<rho>\<^sub>1 \<odot> \<mu>)" 
-        if "?\<P> = Neg" ?select\<^sub>G_empty
-      proof-
-        show "select E = {#}"
-          using clause_subst_empty select_from_E ground_superpositionI(9) that
+        show "clause.is_ground (E \<cdot> \<rho>\<^sub>1 \<odot> \<mu> \<cdot> \<sigma>)"
+          using E_grounding[unfolded \<gamma>]
           by simp
-      next
-        show "is_maximal (l\<^sub>1 \<cdot>l \<rho>\<^sub>1 \<odot> \<mu>) (E \<cdot> \<rho>\<^sub>1 \<odot> \<mu>)"
-        proof(rule is_maximal_if_grounding_is_maximal)
+
+        show "is_strictly_maximal (l\<^sub>1 \<cdot>l \<rho>\<^sub>1 \<odot> \<mu> \<cdot>l \<sigma>) (E \<cdot> \<rho>\<^sub>1 \<odot> \<mu> \<cdot> \<sigma>)"
+          using Pos l\<^sub>1_\<gamma> E_\<gamma> ground_superpositionI(9)
+          unfolding \<gamma> ground_superpositionI
+          by fastforce
+      qed
+    next
+      assume Neg: "?\<P> = Neg" "select E = {#}"
+
+      show "is_maximal (l\<^sub>1 \<cdot>l \<rho>\<^sub>1 \<odot> \<mu>) (E \<cdot> \<rho>\<^sub>1 \<odot> \<mu>)"
+      proof(rule is_maximal_if_grounding_is_maximal)
 
           show "l\<^sub>1 \<cdot>l \<rho>\<^sub>1 \<odot> \<mu> \<in># E \<cdot> \<rho>\<^sub>1 \<odot> \<mu>"
             using l\<^sub>1_in_E
@@ -1186,18 +1176,18 @@ proof(cases D\<^sub>G E\<^sub>G C\<^sub>G rule: ground.superposition.cases)
         next
 
           show "is_maximal (l\<^sub>1 \<cdot>l \<rho>\<^sub>1 \<odot> \<mu> \<cdot>l \<sigma>) (E \<cdot> \<rho>\<^sub>1 \<odot> \<mu> \<cdot> \<sigma>) "
-            using l\<^sub>1_\<gamma> \<gamma> E_\<gamma> ground_superpositionI(5,9) is_maximal_not_empty that
+            using l\<^sub>1_\<gamma> \<gamma> E_\<gamma> ground_superpositionI(5,9) is_maximal_not_empty Neg select_from_E
             by auto
         qed
-      qed
-
-      moreover have "is_maximal (l\<^sub>1 \<cdot>l \<rho>\<^sub>1 \<odot> \<mu>) ((select E) \<cdot> \<rho>\<^sub>1 \<odot> \<mu>)" 
-        if "?\<P> = Neg" "\<not>?select\<^sub>G_empty"
+    next 
+      assume Neg: "?\<P> = Neg" "select E \<noteq> {#}"
+     
+      show "is_maximal (l\<^sub>1 \<cdot>l \<rho>\<^sub>1 \<odot> \<mu>) ((select E) \<cdot> \<rho>\<^sub>1 \<odot> \<mu>)"
       proof(rule is_maximal_if_grounding_is_maximal)
 
         show "l\<^sub>1 \<cdot>l \<rho>\<^sub>1 \<odot> \<mu> \<in># select E \<cdot> \<rho>\<^sub>1 \<odot> \<mu>"
-          using ground_superpositionI(9) l\<^sub>1_selected maximal_in_clause that 
-          by auto
+          using ground_superpositionI(9) l\<^sub>1_selected maximal_in_clause Neg select_from_E
+          by force
       next
 
         show "clause.is_ground (select E \<cdot> \<rho>\<^sub>1 \<odot> \<mu> \<cdot> \<sigma>)"
@@ -1206,17 +1196,9 @@ proof(cases D\<^sub>G E\<^sub>G C\<^sub>G rule: ground.superposition.cases)
           by simp
       next
         show "is_maximal (l\<^sub>1 \<cdot>l \<rho>\<^sub>1 \<odot> \<mu> \<cdot>l \<sigma>) (select E \<cdot> \<rho>\<^sub>1 \<odot> \<mu> \<cdot> \<sigma>)"
-          using \<gamma> ground_superpositionI(5,9) l\<^sub>1_\<gamma> that select_from_E 
+          using \<gamma> ground_superpositionI(5,9) l\<^sub>1_\<gamma> that select_from_E Neg
           by fastforce
       qed
-
-      ultimately show "?\<P> = Pos
-              \<and> select E = {#}
-              \<and> is_strictly_maximal (l\<^sub>1 \<cdot>l \<rho>\<^sub>1 \<odot> \<mu>) (E \<cdot> \<rho>\<^sub>1 \<odot> \<mu>)
-          \<or> ?\<P> = Neg
-              \<and> (select E = {#} \<and> is_maximal (l\<^sub>1 \<cdot>l \<rho>\<^sub>1 \<odot> \<mu>) (E \<cdot> \<rho>\<^sub>1 \<odot> \<mu>)
-                 \<or> is_maximal (l\<^sub>1 \<cdot>l \<rho>\<^sub>1 \<odot> \<mu>) ((select E) \<cdot> \<rho>\<^sub>1 \<odot> \<mu>))"
-        by meson
     next
 
       show "select D = {#}"
@@ -1284,17 +1266,6 @@ proof(cases D\<^sub>G E\<^sub>G C\<^sub>G rule: ground.superposition.cases)
       qed
     next
 
-      show "\<forall>x\<in>clause.vars (E \<cdot> \<rho>\<^sub>1). \<V>\<^sub>1 (inv \<rho>\<^sub>1 (Var x)) = \<V>\<^sub>3 x"
-        unfolding \<V>\<^sub>3_def
-        by auto
-    next
-
-      show "\<forall>x\<in>clause.vars (D \<cdot> \<rho>\<^sub>2). \<V>\<^sub>2 (inv \<rho>\<^sub>2 (Var x)) = \<V>\<^sub>3 x"
-        unfolding \<V>\<^sub>3_def
-        using rename_apart
-        by auto
-    next
-
       have "\<exists>\<tau>. welltyped \<V>\<^sub>2 t\<^sub>2 \<tau> \<and> welltyped \<V>\<^sub>2 t\<^sub>2' \<tau>"
         using D_is_welltyped
         unfolding D l\<^sub>2
@@ -1336,28 +1307,26 @@ proof(cases D\<^sub>G E\<^sub>G C\<^sub>G rule: ground.superposition.cases)
         by simp
     qed
 
-    show "\<iota>\<^sub>G \<in> inference_groundings (Infer [(D, \<V>\<^sub>2), (E, \<V>\<^sub>1)] (C', \<V>\<^sub>3))"
-    proof(rule is_inference_grounding_two_premises_inference_groundings)
+    show "\<iota>\<^sub>G \<in> inference_ground_instances (Infer [(D, \<V>\<^sub>2), (E, \<V>\<^sub>1)] (C', \<V>\<^sub>3))"
+    proof (rule is_inference_ground_instance_two_premises)
 
-      show "is_inference_grounding_two_premises (D, \<V>\<^sub>2) (E, \<V>\<^sub>1) (C', \<V>\<^sub>3) \<iota>\<^sub>G \<gamma> \<rho>\<^sub>1 \<rho>\<^sub>2"
+      show "is_inference_ground_instance_two_premises (D, \<V>\<^sub>2) (E, \<V>\<^sub>1) (C', \<V>\<^sub>3) \<iota>\<^sub>G \<gamma> \<rho>\<^sub>1 \<rho>\<^sub>2"
       proof(unfold split, intro conjI; 
-          (rule \<rho>\<^sub>1 \<rho>\<^sub>2 rename_apart D_grounding E_grounding D_is_welltyped E_is_welltyped refl \<V>\<^sub>1 
-            \<V>\<^sub>2)?)
+          (rule \<rho>\<^sub>1 \<rho>\<^sub>2 rename_apart D_is_welltyped E_is_welltyped refl \<V>\<^sub>1
+            \<V>\<^sub>2 \<V>\<^sub>3)?)
 
-        show "clause.is_ground (C' \<cdot> \<gamma>)"
-          using C_grounding C'_\<gamma>
-          by argo
+        show "inference.is_ground (Infer [D \<cdot> \<rho>\<^sub>2, E \<cdot> \<rho>\<^sub>1] C' \<cdot>\<iota> \<gamma>)"
+          using  D_grounding E_grounding C_grounding C'_\<gamma>
+          by auto
       next
 
-        show "\<iota>\<^sub>G = Infer
-                    [clause.to_ground (D \<cdot> \<rho>\<^sub>2 \<odot> \<gamma>), clause.to_ground (E \<cdot> \<rho>\<^sub>1 \<odot> \<gamma>)]
-                    (clause.to_ground (C' \<cdot> \<gamma>))"
+        show "\<iota>\<^sub>G = inference.to_ground (Infer [D \<cdot> \<rho>\<^sub>2, E \<cdot> \<rho>\<^sub>1] C' \<cdot>\<iota> \<gamma>)"
           using C'_\<gamma>
           by simp
       next
 
-        show "is_welltyped_on (clause.vars C') \<V>\<^sub>3 \<gamma>"
-        proof(rule is_welltyped_on_subset[OF \<gamma>_is_welltyped])
+        show "term.subst.is_welltyped_on (clause.vars C') \<V>\<^sub>3 \<gamma>"
+        proof(rule term.is_welltyped_on_subset[OF \<gamma>_is_welltyped])
 
           show "clause.vars C' \<subseteq> clause.vars (E \<cdot> \<rho>\<^sub>1) \<union> clause.vars (D \<cdot> \<rho>\<^sub>2)"
           proof (unfold subset_eq, intro ballI)
@@ -1422,29 +1391,6 @@ proof(cases D\<^sub>G E\<^sub>G C\<^sub>G rule: ground.superposition.cases)
         show "clause.is_welltyped \<V>\<^sub>3 C'"
           using superposition superposition_preserves_typing E_is_welltyped D_is_welltyped
           by blast
-      next
-
-        have "finite {x. x \<in> clause.vars (E \<cdot> \<rho>\<^sub>1)}"
-          using clause.finite_vars
-          by simp
-
-        moreover {
-          fix \<tau>
-
-          have "infinite {x. \<V>\<^sub>2 (inv \<rho>\<^sub>2 (Var x)) = \<tau>}" 
-          proof(rule surj_infinite_set[OF term.surj_inv_renaming, OF \<rho>\<^sub>2])
-
-            show "infinite {x. \<V>\<^sub>2 x = \<tau>}"
-              using \<V>\<^sub>2
-              unfolding infinite_variables_per_type_def
-              by blast
-          qed
-        }
-
-        ultimately show "infinite_variables_per_type \<V>\<^sub>3"
-          unfolding infinite_variables_per_type_def \<V>\<^sub>3_def if_distrib if_distribR Collect_if_eq 
-            Collect_not_mem_conj_eq
-          by auto
       qed
           
       show "\<iota>\<^sub>G \<in> ground.G_Inf"
@@ -1461,7 +1407,7 @@ context
   fixes \<iota>\<^sub>G N
   assumes 
     subst_stability: "subst_stability_on N" and
-    \<iota>\<^sub>G_Inf_from: "\<iota>\<^sub>G \<in> ground.Inf_from_q select\<^sub>G (\<Union>(clause_groundings ` N))" 
+    \<iota>\<^sub>G_Inf_from: "\<iota>\<^sub>G \<in> ground.Inf_from_q select\<^sub>G (\<Union>(clause.welltyped_ground_instances ` N))" 
 begin
 
 lemma single_premise_ground_instance:
@@ -1472,18 +1418,18 @@ lemma single_premise_ground_instance:
     clause.is_ground (D \<cdot> \<gamma>); 
     clause.is_ground (C \<cdot> \<gamma>);
     clause.from_ground (select\<^sub>G (clause.to_ground (D \<cdot> \<gamma>))) = select D \<cdot> \<gamma>; 
-    clause.is_welltyped \<V> D; is_welltyped_on (clause.vars D) \<V> \<gamma>;
+    clause.is_welltyped \<V> D; term.subst.is_welltyped_on (clause.vars D) \<V> \<gamma>;
     infinite_variables_per_type \<V>;
     \<And>C'. \<lbrakk>
         inference (D, \<V>) (C', \<V>);
         Infer [clause.to_ground (D \<cdot> \<gamma>)] (clause.to_ground (C \<cdot> \<gamma>))
-        \<in> inference_groundings (Infer [(D, \<V>)] (C', \<V>));
+        \<in> inference_ground_instances (Infer [(D, \<V>)] (C', \<V>));
         C' \<cdot> \<gamma> = C \<cdot> \<gamma>\<rbrakk> \<Longrightarrow> thesis\<rbrakk>
        \<Longrightarrow> thesis" and
     inference_eq: "inference = eq_factoring \<or> inference = eq_resolution"
   obtains \<iota> where 
     "\<iota> \<in> Inf_from N" 
-    "\<iota>\<^sub>G \<in> inference_groundings \<iota>"
+    "\<iota>\<^sub>G \<in> inference_ground_instances \<iota>"
 proof-
   obtain D\<^sub>G C\<^sub>G where 
     \<iota>\<^sub>G: "\<iota>\<^sub>G = Infer [D\<^sub>G] C\<^sub>G" and
@@ -1491,7 +1437,7 @@ proof-
     using ground_inference
     by blast
 
-  have D\<^sub>G_in_groundings: "D\<^sub>G \<in> \<Union>(clause_groundings ` N)"
+  have D\<^sub>G_in_groundings: "D\<^sub>G \<in> \<Union>(clause.welltyped_ground_instances ` N)"
     using \<iota>\<^sub>G_Inf_from
     unfolding \<iota>\<^sub>G ground.Inf_from_q_def ground.Inf_from_def
     by simp
@@ -1499,7 +1445,7 @@ proof-
   obtain D \<gamma> \<V> where
     D_grounding: "clause.is_ground (D \<cdot> \<gamma>)" and
     D_is_welltyped: "clause.is_welltyped \<V> D" and
-    \<gamma>_is_welltyped: "is_welltyped_on (clause.vars D) \<V> \<gamma>" and
+    \<gamma>_is_welltyped: "term.subst.is_welltyped_on (clause.vars D) \<V> \<gamma>" and
     \<V>: "infinite_variables_per_type \<V>" and
     D_in_N: "(D, \<V>)\<in>N" and 
     "select\<^sub>G D\<^sub>G = clause.to_ground (select D \<cdot> \<gamma>)"
@@ -1512,18 +1458,18 @@ proof-
     select: "clause.from_ground (select\<^sub>G D\<^sub>G) = select D \<cdot> \<gamma>"
     by (simp_all add: select_ground_subst)
 
-  obtain C where 
+  obtain C where
     C\<^sub>G: "C\<^sub>G = clause.to_ground (C \<cdot> \<gamma>)" and 
     C_grounding: "clause.is_ground (C \<cdot> \<gamma>)"
     by (metis clause.all_subst_ident_iff_ground clause.from_ground_inverse 
         clause.ground_is_ground)
 
-  obtain C' where 
+  obtain C' where
     inference: "inference (D, \<V>) (C', \<V>)" and
-    inference_groundings: "\<iota>\<^sub>G \<in> inference_groundings (Infer [(D, \<V>)] (C', \<V>))" and  
+    inference_ground_instances: "\<iota>\<^sub>G \<in> inference_ground_instances (Infer [(D, \<V>)] (C', \<V>))" and
     C'_C: "C' \<cdot> \<gamma> = C \<cdot> \<gamma>"
     using
-      lifting[OF 
+      lifting[OF
         ground_inference[unfolded D\<^sub>G C\<^sub>G]
         D_grounding
         C_grounding
@@ -1536,7 +1482,7 @@ proof-
   let ?\<iota> = "Infer [(D, \<V>)] (C', \<V>)"
 
   show ?thesis
-  proof(rule that[OF _ inference_groundings])
+  proof(rule that[OF _ inference_ground_instances])
 
     show "?\<iota> \<in> Inf_from N"
       using D_in_N inference inference_eq
@@ -1549,7 +1495,7 @@ lemma eq_resolution_ground_instance:
   assumes ground_eq_resolution: "\<iota>\<^sub>G \<in> ground.eq_resolution_inferences" 
   obtains \<iota> where             
     "\<iota> \<in> Inf_from N" 
-    "\<iota>\<^sub>G \<in> inference_groundings \<iota>"
+    "\<iota>\<^sub>G \<in> inference_ground_instances \<iota>"
   using eq_resolution_lifting single_premise_ground_instance[OF ground_eq_resolution]
   by blast
   
@@ -1557,17 +1503,17 @@ lemma eq_factoring_ground_instance:
   assumes ground_eq_factoring: "\<iota>\<^sub>G \<in> ground.eq_factoring_inferences" 
   obtains \<iota> where 
     "\<iota> \<in> Inf_from N" 
-    "\<iota>\<^sub>G \<in> inference_groundings \<iota>"
+    "\<iota>\<^sub>G \<in> inference_ground_instances \<iota>"
   using eq_factoring_lifting single_premise_ground_instance[OF ground_eq_factoring]
   by blast
 
-lemma superposition_ground_instance: 
+lemma superposition_ground_instance:
   assumes 
     ground_superposition: "\<iota>\<^sub>G \<in> ground.superposition_inferences" and
-    not_redundant: "\<iota>\<^sub>G \<notin> ground.GRed_I (\<Union> (clause_groundings ` N))"
+    not_redundant: "\<iota>\<^sub>G \<notin> ground.GRed_I (\<Union> (clause.welltyped_ground_instances ` N))"
   obtains \<iota> where 
     "\<iota> \<in> Inf_from N" 
-    "\<iota>\<^sub>G \<in> inference_groundings \<iota>"
+    "\<iota>\<^sub>G \<in> inference_ground_instances \<iota>"
 proof-
   obtain E\<^sub>G D\<^sub>G C\<^sub>G where 
     \<iota>\<^sub>G : "\<iota>\<^sub>G = Infer [D\<^sub>G, E\<^sub>G] C\<^sub>G" and
@@ -1575,9 +1521,9 @@ proof-
     using assms(1)
     by blast
 
-  have 
-    E\<^sub>G_in_groundings: "E\<^sub>G \<in> \<Union> (clause_groundings ` N)" and  
-    D\<^sub>G_in_groundings: "D\<^sub>G \<in> \<Union> (clause_groundings ` N)"
+  have
+    E\<^sub>G_in_groundings: "E\<^sub>G \<in> \<Union> (clause.welltyped_ground_instances ` N)" and
+    D\<^sub>G_in_groundings: "D\<^sub>G \<in> \<Union> (clause.welltyped_ground_instances ` N)"
     using \<iota>\<^sub>G_Inf_from
     unfolding \<iota>\<^sub>G ground.Inf_from_q_def ground.Inf_from_def
     by simp_all
@@ -1585,15 +1531,15 @@ proof-
   obtain E \<V>\<^sub>1 \<gamma>\<^sub>1 where
     E_grounding: "clause.is_ground (E \<cdot> \<gamma>\<^sub>1)" and
     E_is_welltyped: "clause.is_welltyped \<V>\<^sub>1 E" and
-    \<gamma>\<^sub>1_is_welltyped: "is_welltyped_on (clause.vars E) \<V>\<^sub>1 \<gamma>\<^sub>1" and
+    \<gamma>\<^sub>1_is_welltyped: "term.subst.is_welltyped_on (clause.vars E) \<V>\<^sub>1 \<gamma>\<^sub>1" and
     \<V>\<^sub>1: "infinite_variables_per_type \<V>\<^sub>1" and
-    E_in_N: "(E, \<V>\<^sub>1)\<in>N" and 
+    E_in_N: "(E, \<V>\<^sub>1)\<in>N" and
     "select\<^sub>G E\<^sub>G = clause.to_ground (select E \<cdot> \<gamma>\<^sub>1)"
     "E \<cdot> \<gamma>\<^sub>1 = clause.from_ground E\<^sub>G"
     using subst_stability[rule_format, OF E\<^sub>G_in_groundings]
     by blast
 
-  then have 
+  then have
     E\<^sub>G: "E\<^sub>G = clause.to_ground (E \<cdot> \<gamma>\<^sub>1)" and
     select_from_E: "clause.from_ground (select\<^sub>G E\<^sub>G) = select E \<cdot> \<gamma>\<^sub>1"
     by (simp_all add: select_ground_subst)
@@ -1601,15 +1547,15 @@ proof-
   obtain D \<V>\<^sub>2 \<gamma>\<^sub>2 where
     D_grounding: "clause.is_ground (D \<cdot> \<gamma>\<^sub>2)" and
     D_is_welltyped: "clause.is_welltyped \<V>\<^sub>2 D" and
-    \<gamma>\<^sub>2_is_welltyped: "is_welltyped_on (clause.vars D) \<V>\<^sub>2 \<gamma>\<^sub>2" and
+    \<gamma>\<^sub>2_is_welltyped: "term.subst.is_welltyped_on (clause.vars D) \<V>\<^sub>2 \<gamma>\<^sub>2" and
     \<V>\<^sub>2: "infinite_variables_per_type \<V>\<^sub>2" and
-    D_in_N: "(D, \<V>\<^sub>2)\<in>N" and 
+    D_in_N: "(D, \<V>\<^sub>2)\<in>N" and
     "select\<^sub>G D\<^sub>G = clause.to_ground (select D \<cdot> \<gamma>\<^sub>2)"
     "D \<cdot> \<gamma>\<^sub>2 = clause.from_ground D\<^sub>G"
     using subst_stability[rule_format, OF D\<^sub>G_in_groundings] 
     by blast
 
-  then have 
+  then have
     D\<^sub>G: "D\<^sub>G = clause.to_ground (D \<cdot> \<gamma>\<^sub>2)" and
     select_from_D: "clause.from_ground (select\<^sub>G D\<^sub>G) = select D \<cdot> \<gamma>\<^sub>2"
     by (simp_all add: select_ground_subst)
@@ -1618,17 +1564,13 @@ proof-
     \<rho>\<^sub>1: "term_subst.is_renaming \<rho>\<^sub>1" and
     \<rho>\<^sub>2: "term_subst.is_renaming \<rho>\<^sub>2" and
     rename_apart:  "clause.vars (E \<cdot> \<rho>\<^sub>1) \<inter> clause.vars (D \<cdot> \<rho>\<^sub>2) = {}" and
-    \<rho>\<^sub>1_is_welltyped: "is_welltyped_on (clause.vars E) \<V>\<^sub>1 \<rho>\<^sub>1" and
-    \<rho>\<^sub>2_is_welltyped: "is_welltyped_on (clause.vars D) \<V>\<^sub>2 \<rho>\<^sub>2" and
+    \<rho>\<^sub>1_is_welltyped: "term.subst.is_welltyped_on (clause.vars E) \<V>\<^sub>1 \<rho>\<^sub>1" and
+    \<rho>\<^sub>2_is_welltyped: "term.subst.is_welltyped_on (clause.vars D) \<V>\<^sub>2 \<rho>\<^sub>2" and
     \<gamma>\<^sub>1_\<gamma>: "\<forall>X \<subseteq> clause.vars E. \<forall>x\<in> X. \<gamma>\<^sub>1 x = (\<rho>\<^sub>1 \<odot> \<gamma>) x" and
     \<gamma>\<^sub>2_\<gamma>: "\<forall>X \<subseteq> clause.vars D. \<forall>x\<in> X. \<gamma>\<^sub>2 x = (\<rho>\<^sub>2 \<odot> \<gamma>) x"
-    using 
-      clause.finite_vars 
-      \<V>\<^sub>1 \<V>\<^sub>2
-      clause.is_welltyped.obtain_welltyped_merged_grounding[OF 
-        \<gamma>\<^sub>1_is_welltyped \<gamma>\<^sub>2_is_welltyped E_grounding D_grounding _ _ infinite_UNIV]
-    unfolding infinite_variables_per_type_def
-    by blast
+    using
+      clause.is_welltyped.obtain_merged_grounding[OF \<gamma>\<^sub>1_is_welltyped \<gamma>\<^sub>2_is_welltyped E_grounding
+        D_grounding \<V>\<^sub>2 clause.finite_vars].
 
   have E_grounding: "clause.is_ground (E \<cdot> \<rho>\<^sub>1 \<odot> \<gamma>)"
     using clause.subst_eq \<gamma>\<^sub>1_\<gamma> E_grounding
@@ -1646,16 +1588,13 @@ proof-
     using clause.subst_eq \<gamma>\<^sub>2_\<gamma> D\<^sub>G
     by fastforce
 
-  have \<rho>\<^sub>1_\<gamma>_is_welltyped: "is_welltyped_on (clause.vars E) \<V>\<^sub>1 (\<rho>\<^sub>1 \<odot> \<gamma>)"
+  have \<rho>\<^sub>1_\<gamma>_is_welltyped: "term.subst.is_welltyped_on (clause.vars E) \<V>\<^sub>1 (\<rho>\<^sub>1 \<odot> \<gamma>)"
     using \<gamma>\<^sub>1_is_welltyped \<gamma>\<^sub>1_\<gamma>
     by fastforce
 
-  have \<rho>\<^sub>2_\<gamma>_is_welltyped: "is_welltyped_on (clause.vars D) \<V>\<^sub>2 (\<rho>\<^sub>2 \<odot> \<gamma>)"
+  have \<rho>\<^sub>2_\<gamma>_is_welltyped: "term.subst.is_welltyped_on (clause.vars D) \<V>\<^sub>2 (\<rho>\<^sub>2 \<odot> \<gamma>)"
     using \<gamma>\<^sub>2_is_welltyped \<gamma>\<^sub>2_\<gamma>
     by fastforce
-
-  have select_vars_subset: "\<And>C. clause.vars (select C) \<subseteq> clause.vars C"
-    by (simp add: clause_submset_vars_clause_subset select_subset)
 
   have select_from_E:
     "clause.from_ground (select\<^sub>G (clause.to_ground (E \<cdot> \<rho>\<^sub>1 \<odot> \<gamma>))) = select E \<cdot> \<rho>\<^sub>1 \<odot> \<gamma>"
@@ -1696,18 +1635,20 @@ proof-
     C\<^sub>G: "C\<^sub>G = clause.to_ground (C \<cdot> \<gamma>)"
     by (metis clause.all_subst_ident_if_ground clause.from_ground_inverse clause.ground_is_ground)
 
-  have "clause_groundings (E, \<V>\<^sub>1) \<union> clause_groundings (D, \<V>\<^sub>2) \<subseteq> \<Union> (clause_groundings ` N)"
+  have "clause.welltyped_ground_instances (E, \<V>\<^sub>1) \<union> clause.welltyped_ground_instances (D, \<V>\<^sub>2) \<subseteq> 
+          \<Union> (clause.welltyped_ground_instances ` N)"
     using E_in_N D_in_N 
     by blast
 
   then have \<iota>\<^sub>G_not_redundant:
-    "\<iota>\<^sub>G \<notin> ground.GRed_I (clause_groundings (E, \<V>\<^sub>1) \<union> clause_groundings (D, \<V>\<^sub>2))"
+    "\<iota>\<^sub>G \<notin> ground.GRed_I
+          (clause.welltyped_ground_instances (E, \<V>\<^sub>1) \<union> clause.welltyped_ground_instances (D, \<V>\<^sub>2))"
     using not_redundant ground.Red_I_of_subset
     by blast
 
   obtain C' \<V>\<^sub>3 where 
     superposition: "superposition (D, \<V>\<^sub>2) (E, \<V>\<^sub>1) (C', \<V>\<^sub>3)" and
-    inference_groundings: "\<iota>\<^sub>G \<in> inference_groundings (Infer [(D, \<V>\<^sub>2), (E, \<V>\<^sub>1)] (C', \<V>\<^sub>3))" and  
+    inference_groundings: "\<iota>\<^sub>G \<in> inference_ground_instances (Infer [(D, \<V>\<^sub>2), (E, \<V>\<^sub>1)] (C', \<V>\<^sub>3))" and  
     C'_\<gamma>_C_\<gamma>: "C' \<cdot> \<gamma> = C \<cdot> \<gamma>"
     using 
       superposition_lifting[OF 
@@ -1737,10 +1678,10 @@ proof-
 qed  
 
 lemma ground_instances: 
-  assumes not_redundant: "\<iota>\<^sub>G \<notin> ground.Red_I (\<Union> (clause_groundings ` N))"
+  assumes not_redundant: "\<iota>\<^sub>G \<notin> ground.Red_I (\<Union> (clause.welltyped_ground_instances ` N))"
   obtains \<iota> where 
     "\<iota> \<in> Inf_from N" 
-    "\<iota>\<^sub>G \<in> inference_groundings \<iota>"
+    "\<iota>\<^sub>G \<in> inference_ground_instances \<iota>"
 proof-
   consider 
     (superposition) "\<iota>\<^sub>G \<in> ground.superposition_inferences" |
@@ -1807,8 +1748,8 @@ proof-
 qed
 
 sublocale statically_complete_calculus "\<bottom>\<^sub>F" inferences entails_\<G> Red_I_\<G> Red_F_\<G>
-proof(unfold static_empty_ord_inter_equiv_static_inter, 
-    rule stat_ref_comp_to_non_ground_fam_inter, 
+proof(unfold static_empty_ord_inter_equiv_static_inter,
+    rule stat_ref_comp_to_non_ground_fam_inter,
     rule ballI)
   fix select\<^sub>G
   assume "select\<^sub>G \<in> select\<^sub>G\<^sub>s"
@@ -1822,7 +1763,7 @@ proof(unfold static_empty_ord_inter_equiv_static_inter,
           ground.G_entails
           ground.Red_I
           ground.Red_F"
-    using ground.statically_complete_calculus_axioms.
+    by unfold_locales
 next
 
   show "\<And>N. \<exists>select\<^sub>G \<in> select\<^sub>G\<^sub>s. ground_Inf_overapproximated select\<^sub>G N" 

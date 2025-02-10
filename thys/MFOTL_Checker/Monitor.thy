@@ -564,6 +564,8 @@ function (sequential) eval :: "'n list \<Rightarrow> nat \<Rightarrow> ('n, 'd) 
             apply_pdt3 vs (\<lambda>p1 p2 p'. min_list_wrt cmp (do_until i (left I) p1 p2 p')) expl1 expl2
                              (eval vs (i+1) (Formula.Until \<phi> (subtract (\<Delta> \<sigma> (i+1)) I) \<psi>))
           else apply_pdt2 vs (\<lambda>p1 p2. min_list_wrt cmp (do_until_base i (left I) p1 p2)) expl1 expl2)))"
+| "eval vs i (Formula.MatchP I r) = undefined"
+| "eval vs i (Formula.MatchF I r) = undefined"
   by pat_completeness auto
 
 fun dist where

@@ -10,7 +10,6 @@ theory Uint_Common
     "HOL-Library.Word"
     "Word_Lib.Signed_Division_Word"
     "Word_Lib.Most_significant_bit"
-    "Word_Lib.Generic_set_bit"
     "Word_Lib.Bit_Comprehension"
 begin
 
@@ -77,7 +76,7 @@ declaration \<open>
        \<^term>\<open>Bit_Operations.not\<close>, \<^term>\<open>Bit_Operations.and\<close>, \<^term>\<open>Bit_Operations.or\<close>, \<^term>\<open>Bit_Operations.xor\<close>, \<^term>\<open>mask\<close>,
        \<^term>\<open>push_bit\<close>, \<^term>\<open>drop_bit\<close>, \<^term>\<open>take_bit\<close>,
        \<^term>\<open>Bit_Operations.set_bit\<close>, \<^term>\<open>unset_bit\<close>, \<^term>\<open>flip_bit\<close>,
-       \<^term>\<open>msb\<close>, \<^term>\<open>size\<close>, \<^term>\<open>Generic_set_bit.set_bit\<close>, \<^term>\<open>set_bits\<close>]
+       \<^term>\<open>msb\<close>, \<^term>\<open>size\<close>, \<^term>\<open>set_bits\<close>]
   in
     K (Context.mapping I (fold Proof_Context.add_const_constraint cs))
   end
@@ -320,7 +319,6 @@ locale word_type_copy_misc = word_type_copy_more
     assumes size_eq_length: \<open>size = LENGTH('b::len)\<close>
     and msb_iff_word_of [code]: \<open>msb p \<longleftrightarrow> msb (word_of p)\<close>
     and size_eq_word_of: \<open>Nat.size (p :: 'a) = Nat.size (word_of p)\<close>
-    and word_of_generic_set_bit [code]: \<open>word_of (Generic_set_bit.set_bit p n b) = Generic_set_bit.set_bit (word_of p) n b\<close>
     and word_of_set_bits: \<open>word_of (set_bits P) = set_bits P\<close>
     and word_of_set_bits_aux: \<open>word_of (set_bits_aux P n p) = Bit_Comprehension.set_bits_aux P n (word_of p)\<close>
 begin
@@ -338,10 +336,6 @@ lemma set_bits_aux_code [code]:
 lemma set_bits_code [code]: \<open>set_bits P = set_bits_aux P size 0\<close>
   by (simp add: fun_eq_iff eq_iff_word_of word_of_set_bits word_of_set_bits_aux word_of_0 size_eq_length set_bits_conv_set_bits_aux)
 
-lemma of_class_set_bit:
-  \<open>OFCLASS('a, set_bit_class)\<close>
-  by standard (simp add: eq_iff_word_of word_of_generic_set_bit bit_eq_word_of word_of_power word_of_0 bit_simps linorder_not_le)
-
 lemma of_class_bit_comprehension:
   \<open>OFCLASS('a, bit_comprehension_class)\<close>
   by standard (simp add: eq_iff_word_of word_of_set_bits bit_eq_word_of set_bits_bit_eq)
@@ -351,7 +345,7 @@ end
 section \<open>Establishing operation variants tailored towards target languages\<close>
 
 locale word_type_copy_target_language = word_type_copy_misc +
-  constrains word_of :: \<open>'a::{ring_bit_operations, equal, linorder, Generic_set_bit.set_bit} \<Rightarrow> 'b::len word\<close>
+  constrains word_of :: \<open>'a::{ring_bit_operations, equal, linorder} \<Rightarrow> 'b::len word\<close>
   fixes size_integer :: integer
     and almost_size :: nat
   assumes size_integer_eq_length: \<open>size_integer = Nat.of_nat LENGTH('b::len)\<close>
@@ -419,23 +413,6 @@ lemma bit_code [code]:
   \<open>bit w n \<longleftrightarrow> n < size \<and> test_bit w (integer_of_nat n)\<close>
   by (simp add: test_bit_def integer_of_nat_eq_of_nat)
     (simp add: bit_eq_word_of size_eq_length size_integer_eq_length impossible_bit)
-
-definition gen_set_bit :: \<open>'a \<Rightarrow> integer \<Rightarrow> bool \<Rightarrow> 'a\<close>
-  where \<open>gen_set_bit w k b =
-  (if k < 0 \<or> size_integer \<le> k then undefined (Generic_set_bit.set_bit :: 'a \<Rightarrow> _) w k b
-   else Generic_set_bit.set_bit w (nat_of_integer k) b)\<close>
-
-lemma word_of_gen_set_bit [code abstract]:
-  \<open>word_of (gen_set_bit w k b) =
-  (if k < 0 \<or> size_integer \<le> k then word_of (undefined (Generic_set_bit.set_bit :: 'a \<Rightarrow> _) w k b)
-   else Generic_set_bit.set_bit (word_of w) (nat_of_integer k) b)\<close>
-  by (simp add: gen_set_bit_def word_of_generic_set_bit)
-
-lemma generic_set_bit_code [code]:
-  \<open>Generic_set_bit.set_bit w n b = (if n < size then gen_set_bit w (integer_of_nat n) b else w)\<close>
-  by (rule word_of_eqI)
-    (simp add: gen_set_bit_def word_of_generic_set_bit, simp add: integer_of_nat_eq_of_nat
-     size_eq_length size_integer_eq_length set_bit_beyond word_size)
 
 end
 

@@ -1,6 +1,6 @@
-section\<open>Scott’s variant\<close>
+section\<open>Scott's variant\<close>
 subsection\<open>ScottVariantHOML.thy (Figure 12 of \cite{J75})\<close>
-text\<open>Verification of Scott’s variant of Gödel’s ontological argument. Actualist 
+text\<open>Verification of Scott's variant of Gödel's ontological argument. Actualist 
 quantifiers (avoiding existential import) are used for quantification over entities, otherwise possibilist quantifiers 
 are used.\<close>
 theory ScottVariantHOML imports HOMLinHOL ModalFilter

@@ -28,7 +28,7 @@ where
 
 declare bind_resumption.sel [simp del]
 
-adhoc_overloading Monad_Syntax.bind bind_resumption
+adhoc_overloading Monad_Syntax.bind \<rightleftharpoons> bind_resumption
 
 lemma is_Done_bind_resumption [simp]:
   "is_Done (x \<bind> f) \<longleftrightarrow> is_Done x \<and> (result x \<noteq> None \<longrightarrow> is_Done (f (the (result x))))"

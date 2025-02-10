@@ -51,7 +51,7 @@ locale fair_zipperposition_loop =
   fixes
     Prec_S :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix \<open>\<prec>S\<close> 50)
   assumes
-    wf_Prec_S: "minimal_element (\<prec>S) UNIV" and
+    wfp_Prec_S: "wfp (\<prec>S)" and
     transp_Prec_S: "transp (\<prec>S)" and
     countable_Inf_between: "finite A \<Longrightarrow> countable (no_labels.Inf_between A {C})"
 begin
@@ -60,7 +60,7 @@ lemma trans_Prec_S: "trans {(x, y). x \<prec>S y}"
   using transp_Prec_S transp_trans by blast
 
 lemma irreflp_Prec_S: "irreflp (\<prec>S)"
-  using minimal_element.wf wfp_imp_irreflp wf_Prec_S wfp_on_UNIV by blast
+  using wfp_imp_irreflp wfp_Prec_S by blast
 
 lemma irrefl_Prec_S: "irrefl {(x, y). x \<prec>S y}"
   by (metis CollectD case_prod_conv irrefl_def irreflp_Prec_S irreflp_def)
@@ -478,7 +478,7 @@ abbreviation Precprec_S :: "'f multiset \<Rightarrow> 'f multiset \<Rightarrow> 
   "(\<prec>\<prec>S) \<equiv> multp (\<prec>S)"
 
 lemma wfP_Precprec_S: "wfP (\<prec>\<prec>S)"
-  using minimal_element_def wfp_multp wf_Prec_S wfp_on_UNIV by blast
+  using wfp_multp wfp_Prec_S by blast
 
 definition Less_state :: "('t, 'p, 'f) ZLf_state \<Rightarrow> ('t, 'p, 'f) ZLf_state \<Rightarrow> bool" (infix \<open>\<sqsubset>\<close> 50)
 where

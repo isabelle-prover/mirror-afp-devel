@@ -267,7 +267,7 @@ lemma [Presb_simps]:
   "len (upshift P) = (case len P of 0 \<Rightarrow> 0 | Suc n \<Rightarrow> Suc (Suc n))"
   "len (downshift P) = (case len P of 0 \<Rightarrow> 0 | Suc n \<Rightarrow> n)"
   by (simp_all add: downshift_def upshift_def test_bit_eq_bit extend_def cut_bits_def
-    bit_simps mult.commute [of _ 2] len_le_iff len_eq0_iff split: nat.split)
+    bit_simps mult.commute [of _ 2] len_le_iff len_eq0_iff set_bit_0 split: nat.split)
     (simp add: bit_iff_odd)
 
 lemma Suc0_div_pow2_eq: "Suc 0 div 2 ^ i = (if i = 0 then 1 else 0)"
@@ -661,7 +661,6 @@ global_interpretation Presb: Formula
   apply standard apply (auto simp: Presb_simps \<sigma>_def set_n_lists distinct_n_lists
     Formula_Operations.lformula.simps Formula_Operations.satisfies_gen.simps Formula_Operations.wf.simps
     dest: satisfies0_cong split: presb.splits if_splits)
-  apply (simp add: downshift_def)
   done
 
 (*Workaround for code generation*)

@@ -1,6 +1,6 @@
 (*<*)
 theory Proof_System
-  imports Formula Partition
+  imports Formula Partition Regex_Proof_System
 begin
 (*>*)
 
@@ -71,7 +71,7 @@ inductive SAT and VIO :: "('n, 'd) trace \<Rightarrow> ('n, 'd) env \<Rightarrow
 | VSince: "(case right I of \<infinity> \<Rightarrow> True 
             | enat b \<Rightarrow> ETP \<sigma> ((\<tau> \<sigma> i) - b) \<le> j) \<Longrightarrow> 
            j \<le> i \<Longrightarrow> (\<tau> \<sigma> 0) + left I \<le> (\<tau> \<sigma> i) \<Longrightarrow> VIO \<sigma> v j \<phi> \<Longrightarrow>
-           (\<And>k. k \<in> {j .. (LTP_p \<sigma> i I)} \<Longrightarrow> VIO \<sigma> v k \<psi>) \<Longrightarrow> VIO \<sigma> v i (\<phi> \<^bold>S I \<psi>)"
+           (\<And>k. k \<in> {j .. LTP_p \<sigma> i I} \<Longrightarrow> VIO \<sigma> v k \<psi>) \<Longrightarrow> VIO \<sigma> v i (\<phi> \<^bold>S I \<psi>)"
 | VSinceInf: "j = (case right I of \<infinity> \<Rightarrow> 0 
                    | enat b \<Rightarrow> ETP_p \<sigma> i b) \<Longrightarrow>
              (\<tau> \<sigma> i) \<ge> (\<tau> \<sigma> 0) + left I \<Longrightarrow> 
@@ -85,6 +85,17 @@ inductive SAT and VIO :: "('n, 'd) trace \<Rightarrow> ('n, 'd) env \<Rightarrow
 | VUntilInf: "(\<And>k. k \<in> (case right I of \<infinity> \<Rightarrow> {ETP_f \<sigma> i I ..} 
                          | enat b \<Rightarrow> {ETP_f \<sigma> i I .. LTP_f \<sigma> i b}) \<Longrightarrow> VIO \<sigma> v k \<psi>) \<Longrightarrow>
               VIO \<sigma> v i (\<phi> \<^bold>U I \<psi>)"
+| SMatchP: "j \<le> i \<Longrightarrow> mem (\<delta> \<sigma> i j) I \<Longrightarrow> Regex_Proof_System.SAT (SAT \<sigma> v) j i r \<Longrightarrow>
+            SAT \<sigma> v i (MatchP I r)"
+| VMatchPOut: "\<tau> \<sigma> i < \<tau> \<sigma> 0 + left I \<Longrightarrow> VIO \<sigma> v i (MatchP I r)"
+| VMatchP: "k = (case right I of \<infinity> \<Rightarrow> 0 | enat b \<Rightarrow> ETP_p \<sigma> i b) \<Longrightarrow>
+            \<tau> \<sigma> i \<ge> \<tau> \<sigma> 0 + left I \<Longrightarrow> (\<And>j. j \<in> {k .. LTP_p \<sigma> i I} \<Longrightarrow> Regex_Proof_System.VIO (VIO \<sigma> v) j i r) \<Longrightarrow>
+            VIO \<sigma> v i (MatchP I r)"
+| SMatchF: "i \<le> j \<Longrightarrow> mem (\<delta> \<sigma> j i) I \<Longrightarrow> Regex_Proof_System.SAT (SAT \<sigma> v) i j r \<Longrightarrow>
+            SAT \<sigma> v i (MatchF I r)"
+| VMatchF: "(\<And>j. j \<in> (case right I of \<infinity> \<Rightarrow> {ETP_f \<sigma> i I ..} 
+                       | enat b \<Rightarrow> {ETP_f \<sigma> i I .. LTP_f \<sigma> i b}) \<Longrightarrow> Regex_Proof_System.VIO (VIO \<sigma> v) i j r) \<Longrightarrow>
+            VIO \<sigma> v i (MatchF I r)"
 
 subsection \<open>Soundness and Completeness\<close>
 
@@ -395,6 +406,33 @@ next
       using VUntilInf
       by (auto simp: infinity i_ETP_tau le_diff_conv2)
   qed
+next
+  case (SMatchP j i I v r)
+  then show ?case
+    by (auto dest: Regex_Proof_System.soundness_SAT[rotated])
+next
+  case (VMatchPOut i I v r)
+  { fix j
+    from \<tau>_mono have j0: "\<tau> \<sigma> 0 \<le> \<tau> \<sigma> j" by auto
+    then have "\<tau> \<sigma> i < \<tau> \<sigma> j + left I" using VMatchPOut by linarith
+    then have "\<delta> \<sigma> i j < left I" using VMatchPOut j0
+      by (metis add.commute gr_zeroI leI less_\<tau>D less_diff_conv2 order_less_imp_not_less zero_less_diff)
+    then have "\<not> mem (\<delta> \<sigma> i j) I" by auto }
+  then show ?case using VSinceOut by auto
+next
+  case (VMatchP k I i v r)
+  then show ?case
+    by (cases "right I"; force dest: Regex_Proof_System.soundness_VIO[rotated 2]
+      simp: i_ETP_tau i_LTP_tau le_diff_conv le_diff_conv2 add.commute)
+next
+  case (SMatchF i j I v r)
+  then show ?case
+    by (auto dest: Regex_Proof_System.soundness_SAT[rotated])
+next
+  case (VMatchF I i v r)
+  from VMatchF show ?case
+    by (cases "right I"; force dest: Regex_Proof_System.soundness_VIO[rotated 2]
+      simp: i_ETP_tau i_LTP_tau le_diff_conv le_diff_conv2 add.commute trans_le_add2)
 qed (auto simp: fun_upd_def split: nat.splits)
 
 lemmas soundness = soundness_raw[THEN conjunct1, THEN mp] soundness_raw[THEN conjunct2, THEN mp]
@@ -518,6 +556,37 @@ next
           split: enat.splits)
   }
   ultimately show ?case by auto
+next
+  case (MatchP I r)
+  show ?case
+  proof safe
+    assume "\<langle>\<sigma>, v, i\<rangle> \<Turnstile> \<^bold>\<triangleleft> I r"
+    with MatchP show "SAT \<sigma> v i (\<^bold>\<triangleleft> I r)"
+      by (auto intro!: SMatchP Regex_Proof_System.completeness_SAT[of _ "sat \<sigma> v"])
+  next
+    assume unsat: "\<not> \<langle>\<sigma>, v, i\<rangle> \<Turnstile> \<^bold>\<triangleleft> I r"
+    show "VIO \<sigma> v i (\<^bold>\<triangleleft> I r)"
+    proof (cases "\<tau> \<sigma> i < \<tau> \<sigma> 0 + left I")
+      case False
+      with unsat MatchP show ?thesis
+        by (auto intro!: VMatchP Regex_Proof_System.completeness_VIO[of _ "sat \<sigma> v"]
+          simp: i_ETP_tau i_LTP_tau split: enat.splits)
+    qed (auto intro: VMatchPOut)
+  qed
+next
+  case (MatchF I r)
+
+  show ?case
+  proof safe
+    assume "\<langle>\<sigma>, v, i\<rangle> \<Turnstile> \<^bold>\<triangleright> I r"
+    with MatchF show "SAT \<sigma> v i (\<^bold>\<triangleright> I r)"
+      by (auto intro!: SMatchF Regex_Proof_System.completeness_SAT[of _ "sat \<sigma> v"])
+  next
+    assume unsat: "\<not> \<langle>\<sigma>, v, i\<rangle> \<Turnstile> \<^bold>\<triangleright> I r"
+    with MatchF show "VIO \<sigma> v i (\<^bold>\<triangleright> I r)"
+      by (auto intro!: VMatchF Regex_Proof_System.completeness_VIO[of _ "sat \<sigma> v"]
+        simp: i_ETP_tau i_LTP_tau trans_le_add2 add.commute split: enat.splits)
+  qed
 qed (auto intro: SAT_VIO.intros)
 
 lemmas completeness = completeness_raw[THEN conjunct1, THEN mp] completeness_raw[THEN conjunct2, THEN mp]

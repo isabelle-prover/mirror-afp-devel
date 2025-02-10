@@ -1059,6 +1059,9 @@ abbreviation trail_propagate ::
     ('f, 'v) trail" where
   "trail_propagate \<Gamma> L C \<gamma> \<equiv> propagate_lit L C \<gamma> # \<Gamma>"
 
+lemma fst_propagate_lit[simp]: "fst (propagate_lit L C \<sigma>) = L \<cdot>l \<sigma>"
+  by (simp add: propagate_lit_def)
+
 lemma suffix_trail_propagate[simp]: "suffix \<Gamma> (trail_propagate \<Gamma> L C \<delta>)"
   unfolding suffix_def propagate_lit_def
   by simp
@@ -1072,6 +1075,9 @@ definition decide_lit where
 
 abbreviation trail_decide :: "('f, 'v) trail \<Rightarrow> ('f, 'v) term literal \<Rightarrow> ('f, 'v) trail" where
   "trail_decide \<Gamma> L \<equiv> decide_lit L # \<Gamma>"
+
+lemma fst_decide_lit[simp]: "fst (decide_lit L) = L"
+  by (simp add: decide_lit_def)
 
 lemma clss_of_trail_trail_decide[simp]:
   "clss_of_trail (trail_decide \<Gamma> L) = clss_of_trail \<Gamma>"

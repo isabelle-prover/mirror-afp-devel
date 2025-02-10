@@ -1,31 +1,24 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>sylvestre on Archive of Formal Proofs
-    </title>
-    <link>/authors/sylvestre/</link>
-    <description>
-        Recent content in sylvestre 
-        on Archive of Formal Proofs
-    </description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language>
-    
-      <lastBuildDate>Fri, 01 Jul 2016 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/sylvestre/index.xml" rel="self" type="application/rss+xml" />
+    <title>Jeremy Sylvestre</title>
+    <link>https://isa-afp.org/authors/sylvestre/</link>
+    <description>AFP entries of Jeremy Sylvestre</description>
         <item>
           <title>Chamber Complexes, Coxeter Systems, and Buildings</title>
-          <link>/entries/Buildings.html</link>
+          <link>https://isa-afp.org/entries/Buildings.html</link>
           <pubDate>Fri, 01 Jul 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/Buildings.html</guid>
-          <description></description>
+          <description>Chamber Complexes, Coxeter Systems, and Buildings in the AFP</description>
+            <category>Mathematics/Algebra</category>
+            <category>Mathematics/Geometry</category>
         </item>
         <item>
           <title>Representations of Finite Groups</title>
-          <link>/entries/Rep_Fin_Groups.html</link>
+          <link>https://isa-afp.org/entries/Rep_Fin_Groups.html</link>
           <pubDate>Wed, 12 Aug 2015 00:00:00 +0000</pubDate>
-          <guid>/entries/Rep_Fin_Groups.html</guid>
-          <description></description>
+          <description>Representations of Finite Groups in the AFP</description>
+            <category>Mathematics/Algebra</category>
         </item>
+
   </channel>
 </rss>

@@ -1,6 +1,6 @@
 (*<*)
 theory Formula
-  imports Trace
+  imports Trace Regex
 begin
 (*>*)
 
@@ -21,8 +21,8 @@ lemma in_fv_trm_conv: "x \<in> fv_trm t \<longleftrightarrow> t = \<^bold>v x"
   by (cases t) auto
 
 datatype ('n, 'a) formula = 
-  TT                                            (\<open>\<top>\<close>)
-| FF                                            (\<open>\<bottom>\<close>)
+  TT                                            (\<open>\<^bold>\<top>\<close>)
+| FF                                            (\<open>\<^bold>\<bottom>\<close>)
 | Eq_Const 'n 'a                                (\<open>_ \<^bold>\<approx> _\<close> [85, 85] 85)
 | Pred 'n "('n, 'a) trm list"                   (\<open>_ \<dagger> _\<close> [85, 85] 85)
 | Neg "('n, 'a) formula"                        (\<open>\<not>\<^sub>F _\<close> [82] 82)
@@ -40,11 +40,13 @@ datatype ('n, 'a) formula =
 | Always \<I> "('n, 'a) formula"                   (\<open>\<^bold>G _ _\<close> [1000, 65] 65)
 | Since "('n, 'a) formula" \<I> "('n, 'a) formula" (\<open>_ \<^bold>S _ _\<close> [60,1000,60] 60)
 | Until "('n, 'a) formula" \<I> "('n, 'a) formula" (\<open>_ \<^bold>U _ _\<close> [60,1000,60] 60)
+| MatchP \<I> "('n, 'a) formula Regex.regex" (\<open>\<^bold>\<triangleleft> _ _\<close> [1000,60] 60)
+| MatchF \<I> "('n, 'a) formula Regex.regex" (\<open>\<^bold>\<triangleright> _ _\<close> [1000,60] 60)
 
-primrec fv :: "('n, 'a) formula \<Rightarrow> 'n set" where
+fun fv :: "('n, 'a) formula \<Rightarrow> 'n set" where
   "fv (r \<dagger> ts) = \<Union> (fv_trm ` set ts)"
-| "fv \<top> = {}"
-| "fv \<bottom> = {}"
+| "fv \<^bold>\<top> = {}"
+| "fv \<^bold>\<bottom> = {}"
 | "fv (x \<^bold>\<approx> c) = {x}"
 | "fv (\<not>\<^sub>F \<phi>) = fv \<phi>"
 | "fv (\<phi> \<or>\<^sub>F \<psi>) = fv \<phi> \<union> fv \<psi>"
@@ -61,13 +63,15 @@ primrec fv :: "('n, 'a) formula \<Rightarrow> 'n set" where
 | "fv (\<^bold>G I \<phi>) = fv \<phi>"
 | "fv (\<phi> \<^bold>S I \<psi>) = fv \<phi> \<union> fv \<psi>"
 | "fv (\<phi> \<^bold>U I \<psi>) = fv \<phi> \<union> fv \<psi>"
+| "fv (\<^bold>\<triangleleft> I r) = Regex.collect fv r"
+| "fv (\<^bold>\<triangleright> I r) = Regex.collect fv r"
 
-primrec "consts" :: "('n, 'a) formula \<Rightarrow> 'a set" where
+fun "consts" :: "('n, 'a) formula \<Rightarrow> 'a set" where
   "consts (r \<dagger> ts) = {}" \<comment> \<open>terms may also contain constants,
      but these only filter out values from the trace and do not introduce
      new values of interest (i.e., do not extend the active domain)\<close>
-| "consts \<top> = {}"
-| "consts \<bottom> = {}"
+| "consts \<^bold>\<top> = {}"
+| "consts \<^bold>\<bottom> = {}"
 | "consts (x \<^bold>\<approx> c) = {c}"
 | "consts (\<not>\<^sub>F \<phi>) = consts \<phi>"
 | "consts (\<phi> \<or>\<^sub>F \<psi>) = consts \<phi> \<union> consts \<psi>"
@@ -84,6 +88,8 @@ primrec "consts" :: "('n, 'a) formula \<Rightarrow> 'a set" where
 | "consts (\<^bold>G I \<phi>) = consts \<phi>"
 | "consts (\<phi> \<^bold>S I \<psi>) = consts \<phi> \<union> consts \<psi>"
 | "consts (\<phi> \<^bold>U I \<psi>) = consts \<phi> \<union> consts \<psi>"
+| "consts (\<^bold>\<triangleleft> I r) = Regex.collect consts r"
+| "consts (\<^bold>\<triangleright> I r) = Regex.collect consts r"
 
 lemma finite_fv_trm[simp]: "finite (fv_trm t)"
   by (cases t) simp_all
@@ -98,8 +104,8 @@ definition nfv :: "('n, 'a) formula \<Rightarrow> nat" where
   "nfv \<phi> = card (fv \<phi>)"
 
 fun future_bounded :: "('n, 'a) formula \<Rightarrow> bool" where
-  "future_bounded \<top> = True"
-| "future_bounded \<bottom> = True"
+  "future_bounded \<^bold>\<top> = True"
+| "future_bounded \<^bold>\<bottom> = True"
 | "future_bounded (_ \<dagger> _) = True"
 | "future_bounded (_ \<^bold>\<approx> _) = True"
 | "future_bounded (\<not>\<^sub>F \<phi>) = future_bounded \<phi>"
@@ -117,6 +123,8 @@ fun future_bounded :: "('n, 'a) formula \<Rightarrow> bool" where
 | "future_bounded (\<^bold>G I \<phi>) = (future_bounded \<phi> \<and> right I \<noteq> \<infinity>)"
 | "future_bounded (\<phi> \<^bold>S I \<psi>) = (future_bounded \<phi> \<and> future_bounded \<psi>)"
 | "future_bounded (\<phi> \<^bold>U I \<psi>) = (future_bounded \<phi> \<and> future_bounded \<psi> \<and> right I \<noteq> \<infinity>)"
+| "future_bounded (\<^bold>\<triangleleft> I r) = Regex.pred_regex future_bounded r"
+| "future_bounded (\<^bold>\<triangleright> I r) = (Regex.pred_regex future_bounded r \<and> right I \<noteq> \<infinity>)"
 
 subsection \<open>Semantics\<close>
 
@@ -150,9 +158,9 @@ lemma eval_trms_set_Cons:
   "vs\<^bold>\<lbrace>(t # ts)\<^bold>\<rbrace> = vs\<lbrace>t\<rbrace> # vs\<^bold>\<lbrace>ts\<^bold>\<rbrace>"
   by (simp add: eval_trms_set_def)
 
-primrec sat :: "('n, 'a) trace \<Rightarrow> ('n, 'a) env \<Rightarrow> nat \<Rightarrow> ('n, 'a) formula \<Rightarrow> bool" (\<open>\<langle>_, _, _\<rangle> \<Turnstile> _\<close> [56, 56, 56, 56] 55) where
-  "\<langle>\<sigma>, v, i\<rangle> \<Turnstile> \<top> = True"
-| "\<langle>\<sigma>, v, i\<rangle> \<Turnstile> \<bottom> = False"
+fun sat :: "('n, 'a) trace \<Rightarrow> ('n, 'a) env \<Rightarrow> nat \<Rightarrow> ('n, 'a) formula \<Rightarrow> bool" (\<open>\<langle>_, _, _\<rangle> \<Turnstile> _\<close> [56, 56, 56, 56] 55) where
+  "\<langle>\<sigma>, v, i\<rangle> \<Turnstile> \<^bold>\<top> = True"
+| "\<langle>\<sigma>, v, i\<rangle> \<Turnstile> \<^bold>\<bottom> = False"
 | "\<langle>\<sigma>, v, i\<rangle> \<Turnstile> r \<dagger> ts = ((r, v\<^bold>\<lbrakk>ts\<^bold>\<rbrakk>) \<in> \<Gamma> \<sigma> i)"
 | "\<langle>\<sigma>, v, i\<rangle> \<Turnstile> x \<^bold>\<approx> c = (v x = c)"
 | "\<langle>\<sigma>, v, i\<rangle> \<Turnstile> \<not>\<^sub>F \<phi> = (\<not> \<langle>\<sigma>, v, i\<rangle> \<Turnstile> \<phi>)"
@@ -170,6 +178,8 @@ primrec sat :: "('n, 'a) trace \<Rightarrow> ('n, 'a) env \<Rightarrow> nat \<Ri
 | "\<langle>\<sigma>, v, i\<rangle> \<Turnstile> \<^bold>G I \<phi> = (\<forall>j\<ge>i. mem (\<tau> \<sigma> j - \<tau> \<sigma> i) I \<longrightarrow> \<langle>\<sigma>, v, j\<rangle> \<Turnstile> \<phi>)"
 | "\<langle>\<sigma>, v, i\<rangle> \<Turnstile> \<phi> \<^bold>S I \<psi> = (\<exists>j\<le>i. mem (\<tau> \<sigma> i - \<tau> \<sigma> j) I \<and> \<langle>\<sigma>, v, j\<rangle> \<Turnstile> \<psi> \<and> (\<forall>k\<in>{j<..i}. \<langle>\<sigma>, v, k\<rangle> \<Turnstile> \<phi>))"
 | "\<langle>\<sigma>, v, i\<rangle> \<Turnstile> \<phi> \<^bold>U I \<psi> = (\<exists>j\<ge>i. mem (\<tau> \<sigma> j - \<tau> \<sigma> i) I \<and> \<langle>\<sigma>, v, j\<rangle> \<Turnstile> \<psi> \<and> (\<forall>k\<in>{i..<j}. \<langle>\<sigma>, v, k\<rangle> \<Turnstile> \<phi>))"
+| "\<langle>\<sigma>, v, i\<rangle> \<Turnstile> (\<^bold>\<triangleleft> I r) = (\<exists>j\<le>i. mem (\<tau> \<sigma> i - \<tau> \<sigma> j) I \<and> Regex.match (\<lambda>k \<phi>. \<langle>\<sigma>, v, k\<rangle> \<Turnstile> \<phi>) r j i)"
+| "\<langle>\<sigma>, v, i\<rangle> \<Turnstile> (\<^bold>\<triangleright> I r) = (\<exists>j\<ge>i. mem (\<tau> \<sigma> j - \<tau> \<sigma> i) I \<and> Regex.match (\<lambda>k \<phi>. \<langle>\<sigma>, v, k\<rangle> \<Turnstile> \<phi>) r i j)"
 
 lemma sat_fv_cong: "\<forall>x\<in>fv \<phi>. v x = v' x \<Longrightarrow> \<langle>\<sigma>, v, i\<rangle> \<Turnstile> \<phi> = \<langle>\<sigma>, v', i\<rangle> \<Turnstile> \<phi>"
 proof (induct \<phi> arbitrary: v v' i)
@@ -185,7 +195,8 @@ next
   case (Forall t \<phi>)
   then show ?case unfolding sat.simps 
     by (intro iff_allI) (simp add: nth_Cons')
-qed (auto 10 0 simp: Let_def split: nat.splits intro!: iff_exI eval_trm_fv_cong)
+qed (auto 10 0 simp: Let_def collect_alt split: nat.splits intro!: iff_exI eval_trm_fv_cong
+  elim!: match_cong_strong[THEN iffD1, rotated])
 
 lemma sat_Until_rec: "\<langle>\<sigma>, v, i\<rangle> \<Turnstile> \<phi> \<^bold>U I \<psi> \<longleftrightarrow>
   (mem 0 I \<and> \<langle>\<sigma>, v, i\<rangle> \<Turnstile> \<psi> \<or>
@@ -257,7 +268,7 @@ lemma sat_Since_point: "\<langle>\<sigma>, v, i\<rangle> \<Turnstile> \<phi> \<^
 lemma sat_Since_pointD: "\<langle>\<sigma>, v, i\<rangle> \<Turnstile> \<phi> \<^bold>S (point t) \<psi> \<Longrightarrow> mem t I \<Longrightarrow> \<langle>\<sigma>, v, i\<rangle> \<Turnstile> \<phi> \<^bold>S I \<psi>"
   by auto
 
-lemma sat_Once_Since: "\<langle>\<sigma>, v, i\<rangle> \<Turnstile> \<^bold>P I \<phi> = \<langle>\<sigma>, v, i\<rangle> \<Turnstile> \<top> \<^bold>S I \<phi>"
+lemma sat_Once_Since: "\<langle>\<sigma>, v, i\<rangle> \<Turnstile> \<^bold>P I \<phi> = \<langle>\<sigma>, v, i\<rangle> \<Turnstile> \<^bold>\<top> \<^bold>S I \<phi>"
   by auto
 
 lemma sat_Once_rec: "\<langle>\<sigma>, v, i\<rangle> \<Turnstile> \<^bold>P I \<phi> \<longleftrightarrow>
@@ -275,7 +286,7 @@ lemma sat_Historically_rec: "\<langle>\<sigma>, v, i\<rangle> \<Turnstile> \<^bo
   unfolding sat_Historically_Once sat.simps(5)
   by (subst sat_Once_rec) auto
 
-lemma sat_Eventually_Until: "\<langle>\<sigma>, v, i\<rangle> \<Turnstile> \<^bold>F I \<phi> = \<langle>\<sigma>, v, i\<rangle> \<Turnstile> \<top> \<^bold>U I \<phi>"
+lemma sat_Eventually_Until: "\<langle>\<sigma>, v, i\<rangle> \<Turnstile> \<^bold>F I \<phi> = \<langle>\<sigma>, v, i\<rangle> \<Turnstile> \<^bold>\<top> \<^bold>U I \<phi>"
   by auto
 
 lemma sat_Eventually_rec: "\<langle>\<sigma>, v, i\<rangle> \<Turnstile> \<^bold>F I \<phi> \<longleftrightarrow>
@@ -301,8 +312,8 @@ notation Var (\<open>\<^bold>v\<close>)
      and Const (\<open>\<^bold>c\<close>)
 
 text \<open> For subscripts type ``backslash'' followed by ``sub''  \<close>
-notation TT (\<open>\<top>\<close>)
-     and FF (\<open>\<bottom>\<close>)
+notation TT (\<open>\<^bold>\<top>\<close>)
+     and FF (\<open>\<^bold>\<bottom>\<close>)
      and Pred (\<open>_ \<dagger> _\<close> [85, 85] 85)
      and Eq_Const (\<open>_ \<^bold>\<approx> _\<close> [85, 85] 85)
      and Neg (\<open>\<not>\<^sub>F _\<close> [82] 82)

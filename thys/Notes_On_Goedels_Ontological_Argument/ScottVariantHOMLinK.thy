@@ -1,5 +1,5 @@
 subsection\<open>ScottVariantHOMLinK.thy (Figure 13 of \cite{J75})\<close>
-text\<open>Scott’s variant of Gödel’s argument fails for base logic K (but only it the last step).\<close>
+text\<open>Scott's variant of Gödel's argument fails for base logic K (but only it the last step).\<close>
 theory ScottVariantHOMLinK imports HOMLinHOLonlyK
 begin 
 

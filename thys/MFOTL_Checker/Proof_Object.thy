@@ -1,6 +1,6 @@
 (*<*)
 theory Proof_Object
-  imports Formula Partition
+  imports Formula Partition Regex_Proof_Object
 begin
 (*>*)
 
@@ -26,8 +26,10 @@ datatype (dead 'n, dead 'd) sproof = STT nat
   | SHistorically nat nat "('n, 'd) sproof list" 
   | SHistoricallyOut nat
   | SAlways nat nat "('n, 'd) sproof list"
-  | SSince "('n, 'd) sproof" "('n, 'd) sproof list" 
-  | SUntil "('n, 'd) sproof list" "('n, 'd) sproof" 
+  | SSince "('n, 'd) sproof" "('n, 'd) sproof list"
+  | SUntil "('n, 'd) sproof list" "('n, 'd) sproof"
+  | SMatchP "('n, 'd) sproof Regex_Proof_Object.rsproof"
+  | SMatchF "('n, 'd) sproof Regex_Proof_Object.rsproof"
   and ('n, 'd) vproof = VFF nat 
   | VPred nat 'n "('n, 'd) Formula.trm list"
   | VEq_Const nat 'n 'd
@@ -57,6 +59,9 @@ datatype (dead 'n, dead 'd) sproof = STT nat
   | VSinceInf nat nat "('n, 'd) vproof list" 
   | VUntil nat "('n, 'd) vproof list" "('n, 'd) vproof"
   | VUntilInf nat nat "('n, 'd) vproof list"
+  | VMatchPOut nat
+  | VMatchP nat "('n, 'd) vproof Regex_Proof_Object.rvproof list"
+  | VMatchF nat "('n, 'd) vproof Regex_Proof_Object.rvproof list"
 
 type_synonym ('n, 'd) "proof" = "('n, 'd) sproof + ('n, 'd) vproof"
 
@@ -86,6 +91,8 @@ fun s_at :: "('n, 'd) sproof \<Rightarrow> nat" and
 | "s_at (SAlways i _ _) = i"
 | "s_at (SSince sp2 sp1s) = (case sp1s of [] \<Rightarrow> s_at sp2 | _ \<Rightarrow> s_at (last sp1s))"
 | "s_at (SUntil sp1s sp2) = (case sp1s of [] \<Rightarrow> s_at sp2 | sp1 # _ \<Rightarrow> s_at sp1)"
+| "s_at (SMatchP rsp) = (snd (rs_at s_at rsp))"
+| "s_at (SMatchF rsp) = (fst (rs_at s_at rsp))"
 | "v_at (VFF i) = i"
 | "v_at (VPred i _ _) = i"
 | "v_at (VEq_Const i _ _) = i"
@@ -115,6 +122,9 @@ fun s_at :: "('n, 'd) sproof \<Rightarrow> nat" and
 | "v_at (VSinceInf i _ _) = i"
 | "v_at (VUntil i _ _) = i"
 | "v_at (VUntilInf i _ _) = i"
+| "v_at (VMatchPOut i) = i"
+| "v_at (VMatchP i _) = i"
+| "v_at (VMatchF i _) = i"
 
 definition p_at :: "('n, 'd) proof \<Rightarrow> nat" where "p_at p = case_sum s_at v_at p" 
 

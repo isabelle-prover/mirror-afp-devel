@@ -1,11 +1,11 @@
----
-title: Download the Archive
-menu: 
-    main:
-        name: "Download"
-        weight: 3
-rss: false
----
++++
+title = "Download the Archive"
+description = "Download the Archive of Formal Proofs"
+
+[menu.main]
+name = "Download"
+weight = 3
++++
 
 ### **Current stable version** (for most recent Isabelle release):
 

@@ -1,5 +1,5 @@
 subsection\<open>GoedelVariantHOML2.thy (Figure 7 of \cite{J75})\<close>
-text\<open>After an appropriate modification of the definition of essence in Gödel’s 1970 ontological proof,
+text\<open>After an appropriate modification of the definition of essence in Gödel's 1970 ontological proof,
 the inconsistency revealed in Figure 6 is avoided, and the argument can be successfully verified in modal
 logic S5 (indeed, as shown, only symmetry of the accessibility relation is actually needed). Actualist 
 quantifiers (avoiding existential import) are used for quantification over entities, otherwise possibilist quantifiers 

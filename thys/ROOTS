@@ -266,6 +266,7 @@ Finite_Automata_HF
 Finite_Fields
 Finitely_Generated_Abelian_Groups
 First_Order_Terms
+First_Order_Clause
 First_Welfare_Theorem
 Fishburn_Impossibility
 Fisher_Yates
@@ -315,6 +316,7 @@ Goedel_HFSet_Semanticless
 Goedel_Incompleteness
 Goodstein_Lambda
 GraphMarkingIBP
+Graph_Algorithms
 Graph_Saturation
 Graph_Theory
 Gray_Codes

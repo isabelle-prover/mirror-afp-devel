@@ -1,5 +1,5 @@
 theory MLSS_Semantics
-  imports MLSS_Logic HereditarilyFinite.Finitary "HOL-Library.Adhoc_Overloading"
+  imports MLSS_Logic HereditarilyFinite.Finitary
 begin
 
 section \<open>Definition of MLSS\<close>
@@ -62,10 +62,10 @@ definition vars_branch :: "'a branch \<Rightarrow> 'a set" where
 
 consts vars :: "'b \<Rightarrow> 'a set"
 adhoc_overloading
-  vars vars_term and
-  vars vars_atom and
-  vars vars_fm and
-  vars vars_branch
+  vars \<rightleftharpoons> vars_term and
+  vars \<rightleftharpoons> vars_atom and
+  vars \<rightleftharpoons> vars_fm and
+  vars \<rightleftharpoons> vars_branch
 
 lemma vars_fm_simps[simp]:
   "vars (Atom a) = vars a"
@@ -161,10 +161,10 @@ definition subterms_branch :: "'a branch \<Rightarrow> 'a pset_term set" where
 
 consts subterms :: "'a \<Rightarrow> 'b set"
 adhoc_overloading 
-  subterms subterms_term and
-  subterms subterms_atom and
-  subterms subterms_fm and
-  subterms subterms_branch
+  subterms \<rightleftharpoons> subterms_term and
+  subterms \<rightleftharpoons> subterms_atom and
+  subterms \<rightleftharpoons> subterms_fm and
+  subterms \<rightleftharpoons> subterms_branch
 
 lemma subterms_fm_simps[simp]:
   "subterms (Atom a) = subterms a"

@@ -4,7 +4,7 @@ theory HS2Ell2
   imports Complex_Bounded_Operators.Complex_L2 Misc_Tensor_Product_BO
 begin
 
-unbundle cblinfun_notation
+unbundle cblinfun_syntax
 
 typedef (overloaded) 'a::\<open>{chilbert_space, not_singleton}\<close> chilbert2ell2 = \<open>some_chilbert_basis :: 'a set\<close>
   using some_chilbert_basis_nonempty by auto
@@ -207,6 +207,6 @@ lemma c2l2l2_is_onb[c2l2l2]:
   using c2l2l2[where 'a='a, transfer_rule] apply fail?
   by transfer_prover
 
-unbundle no_cblinfun_notation
+unbundle no cblinfun_syntax
 
 end

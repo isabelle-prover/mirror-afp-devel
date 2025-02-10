@@ -4,21 +4,24 @@ theory QHoare
   imports Quantum_Extra
 begin
 
-no_notation Order.top (\<open>\<top>\<index>\<close>)
+unbundle register_syntax
+unbundle cblinfun_syntax
+unbundle lattice_syntax
+no_notation Order.top ("\<top>\<index>")
 
 locale qhoare =
-  fixes memory_type :: "'mem::finite itself"
+  fixes memory_type :: "'mem itself"
 begin
 
 definition "apply U R = R U" for R :: \<open>'a update \<Rightarrow> 'mem update\<close>
-definition "ifthen R x = R (butterket x x)" for R :: \<open>'a update \<Rightarrow> 'mem update\<close>
+definition "ifthen R x = R (butterfly (ket x) (ket x))" for R :: \<open>'a update \<Rightarrow> 'mem update\<close>
 definition "program S = fold (o\<^sub>C\<^sub>L) S id_cblinfun" for S :: \<open>'mem update list\<close>
 
 
 definition hoare :: \<open>'mem ell2 ccsubspace \<Rightarrow> ('mem ell2 \<Rightarrow>\<^sub>C\<^sub>L 'mem ell2) list \<Rightarrow> 'mem ell2 ccsubspace \<Rightarrow> bool\<close> where
   "hoare C p D \<longleftrightarrow> (\<forall>\<psi>\<in>space_as_set C. program p *\<^sub>V \<psi> \<in> space_as_set D)" for C p D
 
-definition EQ :: "('a update \<Rightarrow> 'mem update) \<Rightarrow> 'a ell2 \<Rightarrow> 'mem ell2 ccsubspace" (infix \<open>=\<^sub>q\<close> 75) where
+definition EQ :: "('a update \<Rightarrow> 'mem update) \<Rightarrow> 'a ell2 \<Rightarrow> 'mem ell2 ccsubspace" (infix "=\<^sub>q" 75) where
   "EQ R \<psi> = R (selfbutter \<psi>) *\<^sub>S \<top>"
 
 lemma program_skip[simp]: "program [] = id_cblinfun"
@@ -46,18 +49,27 @@ lemma hoare_skip: "C \<le> D \<Longrightarrow> hoare C [] D"
 lemma hoare_apply: 
   assumes "R U *\<^sub>S pre \<le> post"
   shows "hoare pre [apply U R] post"
-  using assms 
-  apply (auto simp: hoare_def program_def apply_def)
-  by (metis (no_types, lifting) cblinfun_image.rep_eq closure_subset imageI less_eq_ccsubspace.rep_eq subsetD)
+proof -
+  from assms have \<open>\<psi> \<in> space_as_set pre \<Longrightarrow> R U *\<^sub>V \<psi> \<in> space_as_set post\<close> for \<psi>
+    by (metis (no_types, lifting) cblinfun_image.rep_eq closure_subset imageI less_eq_ccsubspace.rep_eq subsetD)
+  then show ?thesis
+    by (auto simp: hoare_def program_def apply_def)
+qed
 
 lemma hoare_ifthen: 
   fixes R :: \<open>'a update \<Rightarrow> 'mem update\<close>
   assumes "R (selfbutter (ket x)) *\<^sub>S pre \<le> post"
   shows "hoare pre [ifthen R x] post"
-  using assms 
-  apply (auto simp: hoare_def program_def ifthen_def butterfly_def)
-  by (metis (no_types, lifting) cblinfun_image.rep_eq closure_subset imageI less_eq_ccsubspace.rep_eq subsetD)
-
+proof -
+  from assms have \<open>\<psi> \<in> space_as_set pre \<Longrightarrow> R (vector_to_cblinfun (ket x) o\<^sub>C\<^sub>L bra x) *\<^sub>V \<psi> \<in> space_as_set post\<close> for \<psi>
+    by (metis butterfly_def_one_dim cblinfun_apply_in_image' less_eq_ccsubspace.rep_eq subsetD)
+  then show ?thesis
+    by (auto simp: hoare_def program_def ifthen_def butterfly_def)
+qed
 end
+
+unbundle no register_syntax
+unbundle no cblinfun_syntax
+unbundle no lattice_syntax
 
 end

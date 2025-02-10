@@ -22,7 +22,7 @@ type_synonym ('val, 'msg) writer_spmf = "('val \<times> 'msg) spmf"
 definition bind_writer_spmf :: "('val1, 'msg1) writer_spmf \<Rightarrow> ('val1 \<Rightarrow> ('val2, 'msg2) writer_spmf) \<Rightarrow> ('val2, ('msg1 \<times> 'msg2)) writer_spmf" where
   "bind_writer_spmf x f = bind_spmf x (\<lambda>(val1, msg1). map_spmf (\<lambda>(val2, msg2). (val2, (msg1, msg2))) (f val1))"
 
-adhoc_overloading Monad_Syntax.bind bind_writer_spmf
+adhoc_overloading Monad_Syntax.bind \<rightleftharpoons> bind_writer_spmf
 
 definition flatten_sharingF :: "natL sharing \<Rightarrow> natL sharing spmf" where
   "flatten_sharingF s = share_nat (reconstruct s)"

@@ -4,13 +4,12 @@ subsection \<open>Set with Cartesian product\<close>
 
 theory Applicative_Set imports
   Applicative
-  "HOL-Library.Adhoc_Overloading"
 begin
 
 definition ap_set :: "('a \<Rightarrow> 'b) set \<Rightarrow> 'a set \<Rightarrow> 'b set"
   where "ap_set F X = {f x | f x. f \<in> F \<and> x \<in> X}"
 
-adhoc_overloading Applicative.ap ap_set
+adhoc_overloading Applicative.ap \<rightleftharpoons> ap_set
 
 lemma ap_set_transfer[transfer_rule]:
   "rel_fun (rel_set (rel_fun A B)) (rel_fun (rel_set A) (rel_set B)) ap_set ap_set"

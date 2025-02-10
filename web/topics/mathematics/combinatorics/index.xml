@@ -1,674 +1,354 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Mathematics/Combinatorics on Archive of Formal Proofs
-    </title>
-    <link>/topics/mathematics/combinatorics/</link>
-    <description>
-        Recent content in Mathematics/Combinatorics 
-        on Archive of Formal Proofs
-    </description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language>
-    
-      <atom:link href="/topics/mathematics/combinatorics/index.xml" rel="self" type="application/rss+xml" />
-        <item>
+    <title>Mathematics/Combinatorics</title>
+    <link>https://isa-afp.org/topics/mathematics/combinatorics/</link>
+    <description>AFP entries in Combinatorics</description>
+         <item>
           <title>A Generalization of the Cauchy–Davenport theorem</title>
-          <link>/entries/Generalized_Cauchy_Davenport.html</link>
+          <link>https://isa-afp.org/entries/Generalized_Cauchy_Davenport.html</link>
           <pubDate>Sat, 23 Nov 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Generalized_Cauchy_Davenport.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>A Generalization of the Cauchy–Davenport theorem</title>
-          <link>/entries/Generalized_Cauchy_Davenport.html</link>
-          <pubDate>Sat, 23 Nov 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Generalized_Cauchy_Davenport.html</guid>
-          <description></description>
+          <description>A Generalization of the Cauchy–Davenport theorem in the AFP</description>
+            <category>Mathematics/Combinatorics</category>
+            <category>Mathematics/Algebra</category>
         </item>
         <item>
           <title>The Boustrophedon Transform, the Entringer Numbers, and Related Sequences</title>
-          <link>/entries/Boustrophedon_Transform.html</link>
+          <link>https://isa-afp.org/entries/Boustrophedon_Transform.html</link>
           <pubDate>Thu, 24 Oct 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Boustrophedon_Transform.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>The Boustrophedon Transform, the Entringer Numbers, and Related Sequences</title>
-          <link>/entries/Boustrophedon_Transform.html</link>
-          <pubDate>Thu, 24 Oct 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Boustrophedon_Transform.html</guid>
-          <description></description>
+          <description>The Boustrophedon Transform, the Entringer Numbers, and Related Sequences in the AFP</description>
+            <category>Mathematics/Combinatorics</category>
         </item>
         <item>
           <title>An Exponential Improvement for Diagonal Ramsey</title>
-          <link>/entries/Diagonal_Ramsey.html</link>
+          <link>https://isa-afp.org/entries/Diagonal_Ramsey.html</link>
           <pubDate>Mon, 02 Sep 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Diagonal_Ramsey.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>An Exponential Improvement for Diagonal Ramsey</title>
-          <link>/entries/Diagonal_Ramsey.html</link>
-          <pubDate>Mon, 02 Sep 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Diagonal_Ramsey.html</guid>
-          <description></description>
+          <description>An Exponential Improvement for Diagonal Ramsey in the AFP</description>
+            <category>Mathematics/Combinatorics</category>
         </item>
         <item>
           <title>Ramsey Number Bounds</title>
-          <link>/entries/Ramsey_Bounds.html</link>
+          <link>https://isa-afp.org/entries/Ramsey_Bounds.html</link>
           <pubDate>Thu, 22 Aug 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Ramsey_Bounds.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Ramsey Number Bounds</title>
-          <link>/entries/Ramsey_Bounds.html</link>
-          <pubDate>Thu, 22 Aug 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Ramsey_Bounds.html</guid>
-          <description></description>
+          <description>Ramsey Number Bounds in the AFP</description>
+            <category>Mathematics/Combinatorics</category>
         </item>
         <item>
           <title>Compactness Theorem for Propositional Logic and Combinatorial Applications</title>
-          <link>/entries/Prop_Compactness.html</link>
+          <link>https://isa-afp.org/entries/Prop_Compactness.html</link>
           <pubDate>Mon, 19 Aug 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Prop_Compactness.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Compactness Theorem for Propositional Logic and Combinatorial Applications</title>
-          <link>/entries/Prop_Compactness.html</link>
-          <pubDate>Mon, 19 Aug 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Prop_Compactness.html</guid>
-          <description></description>
+          <description>Compactness Theorem for Propositional Logic and Combinatorial Applications in the AFP</description>
+            <category>Logic/General logic/Classical propositional logic</category>
+            <category>Mathematics/Combinatorics</category>
         </item>
         <item>
           <title>Hypergraph Colouring Bounds</title>
-          <link>/entries/Hypergraph_Colourings.html</link>
+          <link>https://isa-afp.org/entries/Hypergraph_Colourings.html</link>
           <pubDate>Sat, 23 Sep 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/Hypergraph_Colourings.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Hypergraph Colouring Bounds</title>
-          <link>/entries/Hypergraph_Colourings.html</link>
-          <pubDate>Sat, 23 Sep 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/Hypergraph_Colourings.html</guid>
-          <description></description>
+          <description>Hypergraph Colouring Bounds in the AFP</description>
+            <category>Mathematics/Combinatorics</category>
+            <category>Mathematics/Probability theory</category>
         </item>
         <item>
           <title>General Probabilistic Techniques for Combinatorics and the Lovasz Local Lemma</title>
-          <link>/entries/Lovasz_Local.html</link>
+          <link>https://isa-afp.org/entries/Lovasz_Local.html</link>
           <pubDate>Wed, 20 Sep 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/Lovasz_Local.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>General Probabilistic Techniques for Combinatorics and the Lovasz Local Lemma</title>
-          <link>/entries/Lovasz_Local.html</link>
-          <pubDate>Wed, 20 Sep 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/Lovasz_Local.html</guid>
-          <description></description>
+          <description>General Probabilistic Techniques for Combinatorics and the Lovasz Local Lemma in the AFP</description>
+            <category>Mathematics/Probability theory</category>
+            <category>Mathematics/Combinatorics</category>
         </item>
         <item>
           <title>Hypergraphs</title>
-          <link>/entries/Hypergraph_Basics.html</link>
+          <link>https://isa-afp.org/entries/Hypergraph_Basics.html</link>
           <pubDate>Wed, 20 Sep 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/Hypergraph_Basics.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Hypergraphs</title>
-          <link>/entries/Hypergraph_Basics.html</link>
-          <pubDate>Wed, 20 Sep 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/Hypergraph_Basics.html</guid>
-          <description></description>
+          <description>Hypergraphs in the AFP</description>
+            <category>Mathematics/Combinatorics</category>
         </item>
         <item>
           <title>Polygonal Number Theorem</title>
-          <link>/entries/Polygonal_Number_Theorem.html</link>
+          <link>https://isa-afp.org/entries/Polygonal_Number_Theorem.html</link>
           <pubDate>Thu, 10 Aug 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/Polygonal_Number_Theorem.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Polygonal Number Theorem</title>
-          <link>/entries/Polygonal_Number_Theorem.html</link>
-          <pubDate>Thu, 10 Aug 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/Polygonal_Number_Theorem.html</guid>
-          <description></description>
+          <description>Polygonal Number Theorem in the AFP</description>
+            <category>Mathematics/Number theory</category>
+            <category>Mathematics/Combinatorics</category>
         </item>
         <item>
           <title>Gray Codes for Arbitrary Numeral Systems</title>
-          <link>/entries/Gray_Codes.html</link>
+          <link>https://isa-afp.org/entries/Gray_Codes.html</link>
           <pubDate>Tue, 11 Jul 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/Gray_Codes.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Gray Codes for Arbitrary Numeral Systems</title>
-          <link>/entries/Gray_Codes.html</link>
-          <pubDate>Tue, 11 Jul 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/Gray_Codes.html</guid>
-          <description></description>
+          <description>Gray Codes for Arbitrary Numeral Systems in the AFP</description>
+            <category>Mathematics/Combinatorics</category>
+            <category>Computer science/Algorithms/Mathematical</category>
         </item>
         <item>
           <title>Tree Enumeration</title>
-          <link>/entries/Tree_Enumeration.html</link>
+          <link>https://isa-afp.org/entries/Tree_Enumeration.html</link>
           <pubDate>Tue, 09 May 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/Tree_Enumeration.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Tree Enumeration</title>
-          <link>/entries/Tree_Enumeration.html</link>
-          <pubDate>Tue, 09 May 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/Tree_Enumeration.html</guid>
-          <description></description>
+          <description>Tree Enumeration in the AFP</description>
+            <category>Computer science/Algorithms/Graph</category>
+            <category>Mathematics/Graph theory</category>
+            <category>Mathematics/Combinatorics</category>
         </item>
         <item>
           <title>Sauer-Shelah Lemma</title>
-          <link>/entries/Sauer_Shelah_Lemma.html</link>
+          <link>https://isa-afp.org/entries/Sauer_Shelah_Lemma.html</link>
           <pubDate>Thu, 24 Nov 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/Sauer_Shelah_Lemma.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Sauer-Shelah Lemma</title>
-          <link>/entries/Sauer_Shelah_Lemma.html</link>
-          <pubDate>Thu, 24 Nov 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/Sauer_Shelah_Lemma.html</guid>
-          <description></description>
+          <description>Sauer-Shelah Lemma in the AFP</description>
+            <category>Mathematics/Combinatorics</category>
         </item>
         <item>
           <title>Kneser&#39;s Theorem and the Cauchy–Davenport Theorem</title>
-          <link>/entries/Kneser_Cauchy_Davenport.html</link>
+          <link>https://isa-afp.org/entries/Kneser_Cauchy_Davenport.html</link>
           <pubDate>Mon, 21 Nov 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/Kneser_Cauchy_Davenport.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Kneser&#39;s Theorem and the Cauchy–Davenport Theorem</title>
-          <link>/entries/Kneser_Cauchy_Davenport.html</link>
-          <pubDate>Mon, 21 Nov 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/Kneser_Cauchy_Davenport.html</guid>
-          <description></description>
+          <description>Kneser&#39;s Theorem and the Cauchy–Davenport Theorem in the AFP</description>
+            <category>Mathematics/Combinatorics</category>
         </item>
         <item>
           <title>Combinatorial Enumeration Algorithms</title>
-          <link>/entries/Combinatorial_Enumeration_Algorithms.html</link>
+          <link>https://isa-afp.org/entries/Combinatorial_Enumeration_Algorithms.html</link>
           <pubDate>Fri, 11 Nov 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/Combinatorial_Enumeration_Algorithms.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Combinatorial Enumeration Algorithms</title>
-          <link>/entries/Combinatorial_Enumeration_Algorithms.html</link>
-          <pubDate>Fri, 11 Nov 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/Combinatorial_Enumeration_Algorithms.html</guid>
-          <description></description>
+          <description>Combinatorial Enumeration Algorithms in the AFP</description>
+            <category>Mathematics/Combinatorics</category>
+            <category>Computer science/Algorithms</category>
         </item>
         <item>
           <title>The Balog–Szemerédi–Gowers Theorem</title>
-          <link>/entries/Balog_Szemeredi_Gowers.html</link>
+          <link>https://isa-afp.org/entries/Balog_Szemeredi_Gowers.html</link>
           <pubDate>Fri, 11 Nov 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/Balog_Szemeredi_Gowers.html</guid>
-          <description></description>
+          <description>The Balog–Szemerédi–Gowers Theorem in the AFP</description>
+            <category>Mathematics/Combinatorics</category>
+            <category>Mathematics/Graph theory</category>
         </item>
         <item>
-          <title>The Balog–Szemerédi–Gowers Theorem</title>
-          <link>/entries/Balog_Szemeredi_Gowers.html</link>
-          <pubDate>Fri, 11 Nov 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/Balog_Szemeredi_Gowers.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Khovanskii&amp;#x27;s Theorem</title>
-          <link>/entries/Khovanskii_Theorem.html</link>
+          <title>Khovanskii&#x27;s Theorem</title>
+          <link>https://isa-afp.org/entries/Khovanskii_Theorem.html</link>
           <pubDate>Fri, 02 Sep 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/Khovanskii_Theorem.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Khovanskii&amp;#x27;s Theorem</title>
-          <link>/entries/Khovanskii_Theorem.html</link>
-          <pubDate>Fri, 02 Sep 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/Khovanskii_Theorem.html</guid>
-          <description></description>
+          <description>Khovanskii&amp;#x27;s Theorem in the AFP</description>
+            <category>Mathematics/Combinatorics</category>
         </item>
         <item>
           <title>The Hales–Jewett Theorem</title>
-          <link>/entries/Hales_Jewett.html</link>
+          <link>https://isa-afp.org/entries/Hales_Jewett.html</link>
           <pubDate>Fri, 02 Sep 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/Hales_Jewett.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>The Hales–Jewett Theorem</title>
-          <link>/entries/Hales_Jewett.html</link>
-          <pubDate>Fri, 02 Sep 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/Hales_Jewett.html</guid>
-          <description></description>
+          <description>The Hales–Jewett Theorem in the AFP</description>
+            <category>Mathematics/Combinatorics</category>
         </item>
         <item>
           <title>The Plünnecke-Ruzsa Inequality</title>
-          <link>/entries/Pluennecke_Ruzsa_Inequality.html</link>
+          <link>https://isa-afp.org/entries/Pluennecke_Ruzsa_Inequality.html</link>
           <pubDate>Thu, 26 May 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/Pluennecke_Ruzsa_Inequality.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>The Plünnecke-Ruzsa Inequality</title>
-          <link>/entries/Pluennecke_Ruzsa_Inequality.html</link>
-          <pubDate>Thu, 26 May 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/Pluennecke_Ruzsa_Inequality.html</guid>
-          <description></description>
+          <description>The Plünnecke-Ruzsa Inequality in the AFP</description>
+            <category>Mathematics/Combinatorics</category>
         </item>
         <item>
           <title>Clique is not solvable by monotone circuits of polynomial size</title>
-          <link>/entries/Clique_and_Monotone_Circuits.html</link>
+          <link>https://isa-afp.org/entries/Clique_and_Monotone_Circuits.html</link>
           <pubDate>Sun, 08 May 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/Clique_and_Monotone_Circuits.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Clique is not solvable by monotone circuits of polynomial size</title>
-          <link>/entries/Clique_and_Monotone_Circuits.html</link>
-          <pubDate>Sun, 08 May 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/Clique_and_Monotone_Circuits.html</guid>
-          <description></description>
+          <description>Clique is not solvable by monotone circuits of polynomial size in the AFP</description>
+            <category>Mathematics/Combinatorics</category>
         </item>
         <item>
           <title>Fisher&#39;s Inequality: Linear Algebraic Proof Techniques for Combinatorics</title>
-          <link>/entries/Fishers_Inequality.html</link>
+          <link>https://isa-afp.org/entries/Fishers_Inequality.html</link>
           <pubDate>Thu, 21 Apr 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/Fishers_Inequality.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Fisher&#39;s Inequality: Linear Algebraic Proof Techniques for Combinatorics</title>
-          <link>/entries/Fishers_Inequality.html</link>
-          <pubDate>Thu, 21 Apr 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/Fishers_Inequality.html</guid>
-          <description></description>
+          <description>Fisher&#39;s Inequality: Linear Algebraic Proof Techniques for Combinatorics in the AFP</description>
+            <category>Mathematics/Combinatorics</category>
+            <category>Mathematics/Algebra</category>
         </item>
         <item>
           <title>Enumeration of Equivalence Relations</title>
-          <link>/entries/Equivalence_Relation_Enumeration.html</link>
+          <link>https://isa-afp.org/entries/Equivalence_Relation_Enumeration.html</link>
           <pubDate>Fri, 04 Feb 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/Equivalence_Relation_Enumeration.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Enumeration of Equivalence Relations</title>
-          <link>/entries/Equivalence_Relation_Enumeration.html</link>
-          <pubDate>Fri, 04 Feb 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/Equivalence_Relation_Enumeration.html</guid>
-          <description></description>
+          <description>Enumeration of Equivalence Relations in the AFP</description>
+            <category>Mathematics/Combinatorics</category>
+            <category>Computer science/Algorithms/Mathematical</category>
         </item>
         <item>
           <title>Roth&#39;s Theorem on Arithmetic Progressions</title>
-          <link>/entries/Roth_Arithmetic_Progressions.html</link>
+          <link>https://isa-afp.org/entries/Roth_Arithmetic_Progressions.html</link>
           <pubDate>Tue, 28 Dec 2021 00:00:00 +0000</pubDate>
-          <guid>/entries/Roth_Arithmetic_Progressions.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Roth&#39;s Theorem on Arithmetic Progressions</title>
-          <link>/entries/Roth_Arithmetic_Progressions.html</link>
-          <pubDate>Tue, 28 Dec 2021 00:00:00 +0000</pubDate>
-          <guid>/entries/Roth_Arithmetic_Progressions.html</guid>
-          <description></description>
+          <description>Roth&#39;s Theorem on Arithmetic Progressions in the AFP</description>
+            <category>Mathematics/Graph theory</category>
+            <category>Mathematics/Combinatorics</category>
         </item>
         <item>
           <title>Szemerédi&#39;s Regularity Lemma</title>
-          <link>/entries/Szemeredi_Regularity.html</link>
+          <link>https://isa-afp.org/entries/Szemeredi_Regularity.html</link>
           <pubDate>Fri, 05 Nov 2021 00:00:00 +0000</pubDate>
-          <guid>/entries/Szemeredi_Regularity.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Szemerédi&#39;s Regularity Lemma</title>
-          <link>/entries/Szemeredi_Regularity.html</link>
-          <pubDate>Fri, 05 Nov 2021 00:00:00 +0000</pubDate>
-          <guid>/entries/Szemeredi_Regularity.html</guid>
-          <description></description>
+          <description>Szemerédi&#39;s Regularity Lemma in the AFP</description>
+            <category>Mathematics/Graph theory</category>
+            <category>Mathematics/Combinatorics</category>
         </item>
         <item>
           <title>Combinatorial Design Theory</title>
-          <link>/entries/Design_Theory.html</link>
+          <link>https://isa-afp.org/entries/Design_Theory.html</link>
           <pubDate>Fri, 13 Aug 2021 00:00:00 +0000</pubDate>
-          <guid>/entries/Design_Theory.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Combinatorial Design Theory</title>
-          <link>/entries/Design_Theory.html</link>
-          <pubDate>Fri, 13 Aug 2021 00:00:00 +0000</pubDate>
-          <guid>/entries/Design_Theory.html</guid>
-          <description></description>
+          <description>Combinatorial Design Theory in the AFP</description>
+            <category>Mathematics/Combinatorics</category>
         </item>
         <item>
           <title>Van der Waerden&#39;s Theorem</title>
-          <link>/entries/Van_der_Waerden.html</link>
+          <link>https://isa-afp.org/entries/Van_der_Waerden.html</link>
           <pubDate>Tue, 22 Jun 2021 00:00:00 +0000</pubDate>
-          <guid>/entries/Van_der_Waerden.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Van der Waerden&#39;s Theorem</title>
-          <link>/entries/Van_der_Waerden.html</link>
-          <pubDate>Tue, 22 Jun 2021 00:00:00 +0000</pubDate>
-          <guid>/entries/Van_der_Waerden.html</guid>
-          <description></description>
+          <description>Van der Waerden&#39;s Theorem in the AFP</description>
+            <category>Mathematics/Combinatorics</category>
         </item>
         <item>
           <title>The Sunflower Lemma of Erdős and Rado</title>
-          <link>/entries/Sunflowers.html</link>
+          <link>https://isa-afp.org/entries/Sunflowers.html</link>
           <pubDate>Thu, 25 Feb 2021 00:00:00 +0000</pubDate>
-          <guid>/entries/Sunflowers.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>The Sunflower Lemma of Erdős and Rado</title>
-          <link>/entries/Sunflowers.html</link>
-          <pubDate>Thu, 25 Feb 2021 00:00:00 +0000</pubDate>
-          <guid>/entries/Sunflowers.html</guid>
-          <description></description>
+          <description>The Sunflower Lemma of Erdős and Rado in the AFP</description>
+            <category>Mathematics/Combinatorics</category>
         </item>
         <item>
           <title>Cofinality and the Delta System Lemma</title>
-          <link>/entries/Delta_System_Lemma.html</link>
+          <link>https://isa-afp.org/entries/Delta_System_Lemma.html</link>
           <pubDate>Sun, 27 Dec 2020 00:00:00 +0000</pubDate>
-          <guid>/entries/Delta_System_Lemma.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Cofinality and the Delta System Lemma</title>
-          <link>/entries/Delta_System_Lemma.html</link>
-          <pubDate>Sun, 27 Dec 2020 00:00:00 +0000</pubDate>
-          <guid>/entries/Delta_System_Lemma.html</guid>
-          <description></description>
+          <description>Cofinality and the Delta System Lemma in the AFP</description>
+            <category>Mathematics/Combinatorics</category>
+            <category>Logic/Set theory</category>
         </item>
         <item>
           <title>Ordinal Partitions</title>
-          <link>/entries/Ordinal_Partitions.html</link>
+          <link>https://isa-afp.org/entries/Ordinal_Partitions.html</link>
           <pubDate>Mon, 03 Aug 2020 00:00:00 +0000</pubDate>
-          <guid>/entries/Ordinal_Partitions.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Ordinal Partitions</title>
-          <link>/entries/Ordinal_Partitions.html</link>
-          <pubDate>Mon, 03 Aug 2020 00:00:00 +0000</pubDate>
-          <guid>/entries/Ordinal_Partitions.html</guid>
-          <description></description>
+          <description>Ordinal Partitions in the AFP</description>
+            <category>Mathematics/Combinatorics</category>
+            <category>Logic/Set theory</category>
         </item>
         <item>
           <title>The Nash-Williams Partition Theorem</title>
-          <link>/entries/Nash_Williams.html</link>
+          <link>https://isa-afp.org/entries/Nash_Williams.html</link>
           <pubDate>Sat, 16 May 2020 00:00:00 +0000</pubDate>
-          <guid>/entries/Nash_Williams.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>The Nash-Williams Partition Theorem</title>
-          <link>/entries/Nash_Williams.html</link>
-          <pubDate>Sat, 16 May 2020 00:00:00 +0000</pubDate>
-          <guid>/entries/Nash_Williams.html</guid>
-          <description></description>
+          <description>The Nash-Williams Partition Theorem in the AFP</description>
+            <category>Mathematics/Combinatorics</category>
         </item>
         <item>
           <title>Matroids</title>
-          <link>/entries/Matroids.html</link>
+          <link>https://isa-afp.org/entries/Matroids.html</link>
           <pubDate>Fri, 16 Nov 2018 00:00:00 +0000</pubDate>
-          <guid>/entries/Matroids.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Matroids</title>
-          <link>/entries/Matroids.html</link>
-          <pubDate>Fri, 16 Nov 2018 00:00:00 +0000</pubDate>
-          <guid>/entries/Matroids.html</guid>
-          <description></description>
+          <description>Matroids in the AFP</description>
+            <category>Mathematics/Combinatorics</category>
         </item>
         <item>
           <title>The Falling Factorial of a Sum</title>
-          <link>/entries/Falling_Factorial_Sum.html</link>
+          <link>https://isa-afp.org/entries/Falling_Factorial_Sum.html</link>
           <pubDate>Fri, 22 Dec 2017 00:00:00 +0000</pubDate>
-          <guid>/entries/Falling_Factorial_Sum.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>The Falling Factorial of a Sum</title>
-          <link>/entries/Falling_Factorial_Sum.html</link>
-          <pubDate>Fri, 22 Dec 2017 00:00:00 +0000</pubDate>
-          <guid>/entries/Falling_Factorial_Sum.html</guid>
-          <description></description>
+          <description>The Falling Factorial of a Sum in the AFP</description>
+            <category>Mathematics/Combinatorics</category>
         </item>
         <item>
           <title>The Twelvefold Way</title>
-          <link>/entries/Twelvefold_Way.html</link>
+          <link>https://isa-afp.org/entries/Twelvefold_Way.html</link>
           <pubDate>Thu, 29 Dec 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/Twelvefold_Way.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>The Twelvefold Way</title>
-          <link>/entries/Twelvefold_Way.html</link>
-          <pubDate>Thu, 29 Dec 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/Twelvefold_Way.html</guid>
-          <description></description>
+          <description>The Twelvefold Way in the AFP</description>
+            <category>Mathematics/Combinatorics</category>
         </item>
         <item>
           <title>Cardinality of Multisets</title>
-          <link>/entries/Card_Multisets.html</link>
+          <link>https://isa-afp.org/entries/Card_Multisets.html</link>
           <pubDate>Sun, 26 Jun 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/Card_Multisets.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Cardinality of Multisets</title>
-          <link>/entries/Card_Multisets.html</link>
-          <pubDate>Sun, 26 Jun 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/Card_Multisets.html</guid>
-          <description></description>
+          <description>Cardinality of Multisets in the AFP</description>
+            <category>Mathematics/Combinatorics</category>
         </item>
         <item>
           <title>Catalan Numbers</title>
-          <link>/entries/Catalan_Numbers.html</link>
+          <link>https://isa-afp.org/entries/Catalan_Numbers.html</link>
           <pubDate>Tue, 21 Jun 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/Catalan_Numbers.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Catalan Numbers</title>
-          <link>/entries/Catalan_Numbers.html</link>
-          <pubDate>Tue, 21 Jun 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/Catalan_Numbers.html</guid>
-          <description></description>
+          <description>Catalan Numbers in the AFP</description>
+            <category>Mathematics/Combinatorics</category>
         </item>
         <item>
           <title>Cardinality of Equivalence Relations</title>
-          <link>/entries/Card_Equiv_Relations.html</link>
+          <link>https://isa-afp.org/entries/Card_Equiv_Relations.html</link>
           <pubDate>Tue, 24 May 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/Card_Equiv_Relations.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Cardinality of Equivalence Relations</title>
-          <link>/entries/Card_Equiv_Relations.html</link>
-          <pubDate>Tue, 24 May 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/Card_Equiv_Relations.html</guid>
-          <description></description>
+          <description>Cardinality of Equivalence Relations in the AFP</description>
+            <category>Mathematics/Combinatorics</category>
         </item>
         <item>
           <title>Spivey&#39;s Generalized Recurrence for Bell Numbers</title>
-          <link>/entries/Bell_Numbers_Spivey.html</link>
+          <link>https://isa-afp.org/entries/Bell_Numbers_Spivey.html</link>
           <pubDate>Wed, 04 May 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/Bell_Numbers_Spivey.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Spivey&#39;s Generalized Recurrence for Bell Numbers</title>
-          <link>/entries/Bell_Numbers_Spivey.html</link>
-          <pubDate>Wed, 04 May 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/Bell_Numbers_Spivey.html</guid>
-          <description></description>
+          <description>Spivey&#39;s Generalized Recurrence for Bell Numbers in the AFP</description>
+            <category>Mathematics/Combinatorics</category>
         </item>
         <item>
           <title>Cardinality of Number Partitions</title>
-          <link>/entries/Card_Number_Partitions.html</link>
+          <link>https://isa-afp.org/entries/Card_Number_Partitions.html</link>
           <pubDate>Thu, 14 Jan 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/Card_Number_Partitions.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Cardinality of Number Partitions</title>
-          <link>/entries/Card_Number_Partitions.html</link>
-          <pubDate>Thu, 14 Jan 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/Card_Number_Partitions.html</guid>
-          <description></description>
+          <description>Cardinality of Number Partitions in the AFP</description>
+            <category>Mathematics/Combinatorics</category>
         </item>
         <item>
           <title>Cardinality of Set Partitions</title>
-          <link>/entries/Card_Partitions.html</link>
+          <link>https://isa-afp.org/entries/Card_Partitions.html</link>
           <pubDate>Sat, 12 Dec 2015 00:00:00 +0000</pubDate>
-          <guid>/entries/Card_Partitions.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Cardinality of Set Partitions</title>
-          <link>/entries/Card_Partitions.html</link>
-          <pubDate>Sat, 12 Dec 2015 00:00:00 +0000</pubDate>
-          <guid>/entries/Card_Partitions.html</guid>
-          <description></description>
+          <description>Cardinality of Set Partitions in the AFP</description>
+            <category>Mathematics/Combinatorics</category>
         </item>
         <item>
           <title>Latin Square</title>
-          <link>/entries/Latin_Square.html</link>
+          <link>https://isa-afp.org/entries/Latin_Square.html</link>
           <pubDate>Wed, 02 Dec 2015 00:00:00 +0000</pubDate>
-          <guid>/entries/Latin_Square.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Latin Square</title>
-          <link>/entries/Latin_Square.html</link>
-          <pubDate>Wed, 02 Dec 2015 00:00:00 +0000</pubDate>
-          <guid>/entries/Latin_Square.html</guid>
-          <description></description>
+          <description>Latin Square in the AFP</description>
+            <category>Mathematics/Combinatorics</category>
         </item>
         <item>
           <title>Euler&#39;s Partition Theorem</title>
-          <link>/entries/Euler_Partition.html</link>
+          <link>https://isa-afp.org/entries/Euler_Partition.html</link>
           <pubDate>Thu, 19 Nov 2015 00:00:00 +0000</pubDate>
-          <guid>/entries/Euler_Partition.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Euler&#39;s Partition Theorem</title>
-          <link>/entries/Euler_Partition.html</link>
-          <pubDate>Thu, 19 Nov 2015 00:00:00 +0000</pubDate>
-          <guid>/entries/Euler_Partition.html</guid>
-          <description></description>
+          <description>Euler&#39;s Partition Theorem in the AFP</description>
+            <category>Mathematics/Combinatorics</category>
         </item>
         <item>
           <title>Derangements Formula</title>
-          <link>/entries/Derangements.html</link>
+          <link>https://isa-afp.org/entries/Derangements.html</link>
           <pubDate>Sat, 27 Jun 2015 00:00:00 +0000</pubDate>
-          <guid>/entries/Derangements.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Derangements Formula</title>
-          <link>/entries/Derangements.html</link>
-          <pubDate>Sat, 27 Jun 2015 00:00:00 +0000</pubDate>
-          <guid>/entries/Derangements.html</guid>
-          <description></description>
+          <description>Derangements Formula in the AFP</description>
+            <category>Mathematics/Combinatorics</category>
         </item>
         <item>
           <title>Discrete Summation</title>
-          <link>/entries/Discrete_Summation.html</link>
+          <link>https://isa-afp.org/entries/Discrete_Summation.html</link>
           <pubDate>Sun, 13 Apr 2014 00:00:00 +0000</pubDate>
-          <guid>/entries/Discrete_Summation.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Discrete Summation</title>
-          <link>/entries/Discrete_Summation.html</link>
-          <pubDate>Sun, 13 Apr 2014 00:00:00 +0000</pubDate>
-          <guid>/entries/Discrete_Summation.html</guid>
-          <description></description>
+          <description>Discrete Summation in the AFP</description>
+            <category>Mathematics/Combinatorics</category>
         </item>
         <item>
           <title>Open Induction</title>
-          <link>/entries/Open_Induction.html</link>
+          <link>https://isa-afp.org/entries/Open_Induction.html</link>
           <pubDate>Fri, 02 Nov 2012 00:00:00 +0000</pubDate>
-          <guid>/entries/Open_Induction.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Open Induction</title>
-          <link>/entries/Open_Induction.html</link>
-          <pubDate>Fri, 02 Nov 2012 00:00:00 +0000</pubDate>
-          <guid>/entries/Open_Induction.html</guid>
-          <description></description>
+          <description>Open Induction in the AFP</description>
+            <category>Mathematics/Combinatorics</category>
         </item>
         <item>
           <title>Bondy&#39;s Theorem</title>
-          <link>/entries/Bondy.html</link>
+          <link>https://isa-afp.org/entries/Bondy.html</link>
           <pubDate>Sat, 27 Oct 2012 00:00:00 +0000</pubDate>
-          <guid>/entries/Bondy.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Bondy&#39;s Theorem</title>
-          <link>/entries/Bondy.html</link>
-          <pubDate>Sat, 27 Oct 2012 00:00:00 +0000</pubDate>
-          <guid>/entries/Bondy.html</guid>
-          <description></description>
+          <description>Bondy&#39;s Theorem in the AFP</description>
+            <category>Mathematics/Combinatorics</category>
         </item>
         <item>
           <title>Well-Quasi-Orders</title>
-          <link>/entries/Well_Quasi_Orders.html</link>
+          <link>https://isa-afp.org/entries/Well_Quasi_Orders.html</link>
           <pubDate>Fri, 13 Apr 2012 00:00:00 +0000</pubDate>
-          <guid>/entries/Well_Quasi_Orders.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Well-Quasi-Orders</title>
-          <link>/entries/Well_Quasi_Orders.html</link>
-          <pubDate>Fri, 13 Apr 2012 00:00:00 +0000</pubDate>
-          <guid>/entries/Well_Quasi_Orders.html</guid>
-          <description></description>
+          <description>Well-Quasi-Orders in the AFP</description>
+            <category>Mathematics/Combinatorics</category>
         </item>
         <item>
           <title>Hall&#39;s Marriage Theorem</title>
-          <link>/entries/Marriage.html</link>
+          <link>https://isa-afp.org/entries/Marriage.html</link>
           <pubDate>Fri, 17 Dec 2010 00:00:00 +0000</pubDate>
-          <guid>/entries/Marriage.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Hall&#39;s Marriage Theorem</title>
-          <link>/entries/Marriage.html</link>
-          <pubDate>Fri, 17 Dec 2010 00:00:00 +0000</pubDate>
-          <guid>/entries/Marriage.html</guid>
-          <description></description>
+          <description>Hall&#39;s Marriage Theorem in the AFP</description>
+            <category>Mathematics/Combinatorics</category>
         </item>
         <item>
           <title>Ramsey&#39;s theorem, infinitary version</title>
-          <link>/entries/Ramsey-Infinite.html</link>
+          <link>https://isa-afp.org/entries/Ramsey-Infinite.html</link>
           <pubDate>Mon, 20 Sep 2004 00:00:00 +0000</pubDate>
-          <guid>/entries/Ramsey-Infinite.html</guid>
-          <description></description>
+          <description>Ramsey&#39;s theorem, infinitary version in the AFP</description>
+            <category>Mathematics/Combinatorics</category>
         </item>
-        <item>
-          <title>Ramsey&#39;s theorem, infinitary version</title>
-          <link>/entries/Ramsey-Infinite.html</link>
-          <pubDate>Mon, 20 Sep 2004 00:00:00 +0000</pubDate>
-          <guid>/entries/Ramsey-Infinite.html</guid>
-          <description></description>
-        </item>
+
   </channel>
 </rss>

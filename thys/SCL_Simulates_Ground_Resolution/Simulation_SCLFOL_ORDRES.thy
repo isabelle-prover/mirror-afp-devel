@@ -777,11 +777,8 @@ qed
 
 theorem bisimulation_ord_res_1_ord_res_2:
   defines "match \<equiv> \<lambda>i s1 s2. i = ord_res_1_measure s1 \<and> ord_res_1_matches_ord_res_2 s1 s2"
-  shows "\<exists>(MATCH :: nat \<times> nat \<Rightarrow> 'f ord_res_1_state \<Rightarrow> 'f ord_res_2_state \<Rightarrow> bool) \<R>.
-    bisimulation ord_res_1 ord_res_2_step ord_res_1_final ord_res_2_final \<R> MATCH"  
-(* For AFP-devel
   shows "\<exists>(MATCH :: nat \<times> nat \<Rightarrow> 'f ord_res_1_state \<Rightarrow> 'f ord_res_2_state \<Rightarrow> bool) \<R>\<^sub>f \<R>\<^sub>b.
-    bisimulation ord_res_1 ord_res_1_final ord_res_2_step ord_res_2_final MATCH \<R>\<^sub>f \<R>\<^sub>b" *)
+    bisimulation ord_res_1 ord_res_1_final ord_res_2_step ord_res_2_final MATCH \<R>\<^sub>f \<R>\<^sub>b"
 proof (rule ex_bisimulation_from_forward_simulation)
   show "right_unique ord_res_1"
     using right_unique_ord_res_1 .
@@ -1583,12 +1580,8 @@ qed
 
 theorem bisimulation_ord_res_2_ord_res_3:
   defines "match \<equiv> \<lambda>_ S2 S3. ord_res_2_matches_ord_res_3 S2 S3"
-  shows "\<exists>(MATCH :: nat \<times> nat \<Rightarrow> 'f ord_res_2_state \<Rightarrow> 'f ord_res_3_state \<Rightarrow> bool) \<R>.
-    bisimulation ord_res_2_step ord_res_3_step ord_res_2_final ord_res_3_final \<R> MATCH"
-(* For AFP-devel
   shows "\<exists>(MATCH :: nat \<times> nat \<Rightarrow> 'f ord_res_2_state \<Rightarrow> 'f ord_res_3_state \<Rightarrow> bool) \<R>\<^sub>f \<R>\<^sub>b.
     bisimulation ord_res_2_step ord_res_2_final ord_res_3_step ord_res_3_final MATCH \<R>\<^sub>f \<R>\<^sub>b"
-*)
 proof (rule ex_bisimulation_from_backward_simulation)
   show "right_unique ord_res_2_step"
     using right_unique_ord_res_2_step .
@@ -1852,12 +1845,8 @@ qed
 
 theorem bisimulation_ord_res_3_ord_res_4:
   defines "match \<equiv> \<lambda>_ S3 S4. ord_res_3_matches_ord_res_4 S3 S4"
-  shows "\<exists>(MATCH :: nat \<times> nat \<Rightarrow> 'f ord_res_3_state \<Rightarrow> 'f ord_res_4_state \<Rightarrow> bool) \<R>.
-    bisimulation ord_res_3_step ord_res_4_step ord_res_3_final ord_res_4_final \<R> MATCH"
-(* For AFP-devel
   shows "\<exists>(MATCH :: nat \<times> nat \<Rightarrow> 'f ord_res_3_state \<Rightarrow> 'f ord_res_4_state \<Rightarrow> bool) \<R>\<^sub>f \<R>\<^sub>b.
     bisimulation ord_res_3_step ord_res_3_final ord_res_4_step ord_res_4_final MATCH \<R>\<^sub>f \<R>\<^sub>b"
-*)
 proof (rule ex_bisimulation_from_forward_simulation)
   show "right_unique ord_res_3_step"
     using right_unique_ord_res_3_step .
@@ -2122,12 +2111,8 @@ qed
 
 theorem bisimulation_ord_res_4_ord_res_5:
   defines "match \<equiv> \<lambda>_. ord_res_4_matches_ord_res_5"
-  shows "\<exists>(MATCH :: nat \<times> nat \<Rightarrow> 'f ord_res_4_state \<Rightarrow> 'f ord_res_5_state \<Rightarrow> bool) \<R>.
-    bisimulation ord_res_4_step ord_res_5_step ord_res_4_final ord_res_5_final \<R> MATCH"
-(* For AFP-devel
   shows "\<exists>(MATCH :: nat \<times> nat \<Rightarrow> 'f ord_res_4_state \<Rightarrow> 'f ord_res_5_state \<Rightarrow> bool) \<R>\<^sub>f \<R>\<^sub>b.
     bisimulation ord_res_4_step ord_res_4_final ord_res_5_step ord_res_5_final MATCH \<R>\<^sub>f \<R>\<^sub>b"
-*)
 proof (rule ex_bisimulation_from_forward_simulation)
   show "right_unique ord_res_4_step"
     using right_unique_ord_res_4_step .
@@ -2635,12 +2620,8 @@ qed
 
 theorem bisimulation_ord_res_5_ord_res_6:
   defines "match \<equiv> \<lambda>_. ord_res_5_matches_ord_res_6"
-  shows "\<exists>(MATCH :: nat \<times> nat \<Rightarrow> 'f ord_res_5_state \<Rightarrow> 'f ord_res_6_state \<Rightarrow> bool) \<R>.
-    bisimulation ord_res_5_step ord_res_6_step ord_res_5_final ord_res_6_final \<R> MATCH"
-(* For AFP-devel
   shows "\<exists>(MATCH :: nat \<times> nat \<Rightarrow> 'f ord_res_5_state \<Rightarrow> 'f ord_res_6_state \<Rightarrow> bool) \<R>\<^sub>f \<R>\<^sub>b.
     bisimulation ord_res_5_step ord_res_5_final ord_res_6_step ord_res_6_final MATCH \<R>\<^sub>f \<R>\<^sub>b"
-*)
 proof (rule ex_bisimulation_from_backward_simulation)
   show "right_unique ord_res_5_step"
     using right_unique_ord_res_5_step .
@@ -3762,14 +3743,9 @@ qed
 
 theorem bisimulation_ord_res_6_ord_res_7:
   defines "match \<equiv> ord_res_6_matches_ord_res_7"
-  shows "\<exists>(MATCH :: nat \<times> nat \<Rightarrow> 'f ord_res_6_state \<Rightarrow> 'f ord_res_7_state \<Rightarrow> bool) \<R>.
-    bisimulation ord_res_6_step (constant_context ord_res_7) ord_res_6_final ord_res_7_final
-      \<R> MATCH"
-(* For AFP-devel
   shows "\<exists>(MATCH :: nat \<times> nat \<Rightarrow> 'f ord_res_6_state \<Rightarrow> 'f ord_res_7_state \<Rightarrow> bool) \<R>\<^sub>f \<R>\<^sub>b.
     bisimulation ord_res_6_step ord_res_6_final (constant_context ord_res_7) ord_res_7_final
       MATCH \<R>\<^sub>f \<R>\<^sub>b"
-*)
 proof (rule ex_bisimulation_from_backward_simulation)
   show "right_unique ord_res_6_step"
     using right_unique_ord_res_6_step .
@@ -5525,18 +5501,11 @@ qed
 
 theorem bisimulation_ord_res_7_ord_res_8:
   defines "match \<equiv> \<lambda>_. ord_res_7_matches_ord_res_8"
-  shows "\<exists>(MATCH :: nat \<times> nat \<Rightarrow> 'f ord_res_7_state \<Rightarrow> 'f ord_res_8_state \<Rightarrow> bool) \<R>.
-    bisimulation
-      (constant_context ord_res_7) (constant_context ord_res_8)
-      ord_res_7_final ord_res_8_final
-      \<R> MATCH"
-(* For AFP-devel
   shows "\<exists>(MATCH :: nat \<times> nat \<Rightarrow> 'f ord_res_7_state \<Rightarrow> 'f ord_res_8_state \<Rightarrow> bool) \<R>\<^sub>f \<R>\<^sub>b.
     bisimulation
       (constant_context ord_res_7) ord_res_7_final
       (constant_context ord_res_8) ord_res_8_final
       MATCH \<R>\<^sub>f \<R>\<^sub>b"
-*)
 proof (rule ex_bisimulation_from_backward_simulation)
   show "right_unique (constant_context ord_res_7)"
     using right_unique_constant_context right_unique_ord_res_7 by metis
@@ -5645,18 +5614,11 @@ qed
 
 theorem bisimulation_ord_res_8_ord_res_9:
   defines "match \<equiv> \<lambda>_. ord_res_8_matches_ord_res_9"
-  shows "\<exists>(MATCH :: nat \<times> nat \<Rightarrow> 'f ord_res_8_state \<Rightarrow> 'f ord_res_9_state \<Rightarrow> bool) \<R>.
-    bisimulation
-      (constant_context ord_res_8) (constant_context ord_res_9)
-      ord_res_8_final ord_res_8_final
-      \<R> MATCH"
-(* For AFP-devel
   shows "\<exists>(MATCH :: nat \<times> nat \<Rightarrow> 'f ord_res_8_state \<Rightarrow> 'f ord_res_9_state \<Rightarrow> bool) \<R>\<^sub>f \<R>\<^sub>b.
     bisimulation
       (constant_context ord_res_8) ord_res_8_final
       (constant_context ord_res_9) ord_res_8_final
       MATCH \<R>\<^sub>f \<R>\<^sub>b"
-*)
 proof (rule ex_bisimulation_from_backward_simulation)
   show "right_unique (constant_context ord_res_8)"
     using right_unique_constant_context right_unique_ord_res_8 by metis
@@ -6017,18 +5979,11 @@ qed
 
 theorem bisimulation_ord_res_9_ord_res_10:
   defines "match \<equiv> \<lambda>_. ord_res_9_matches_ord_res_10"
-  shows "\<exists>(MATCH :: nat \<times> nat \<Rightarrow> 'f ord_res_8_state \<Rightarrow> 'f ord_res_9_state \<Rightarrow> bool) \<R>.
-    bisimulation
-      (constant_context ord_res_9) (constant_context ord_res_10)
-      ord_res_8_final ord_res_8_final
-      \<R> MATCH"
-(* For AFP-devel
   shows "\<exists>(MATCH :: nat \<times> nat \<Rightarrow> 'f ord_res_8_state \<Rightarrow> 'f ord_res_9_state \<Rightarrow> bool) \<R>\<^sub>f \<R>\<^sub>b.
     bisimulation
       (constant_context ord_res_9) ord_res_8_final
       (constant_context ord_res_10) ord_res_8_final
       MATCH \<R>\<^sub>f \<R>\<^sub>b"
-*)
 proof (rule ex_bisimulation_from_backward_simulation)
   show "right_unique (constant_context ord_res_9)"
     using right_unique_constant_context right_unique_ord_res_9 by metis
@@ -6742,18 +6697,11 @@ qed
 
 theorem bisimulation_ord_res_10_ord_res_11:
   defines "match \<equiv> \<lambda>_. ord_res_10_matches_ord_res_11"
-  shows "\<exists>(MATCH :: nat \<times> nat \<Rightarrow> 'f ord_res_10_state \<Rightarrow> 'f ord_res_11_state \<Rightarrow> bool) \<R>.
-    bisimulation
-      (constant_context ord_res_10) (constant_context ord_res_11)
-      ord_res_8_final ord_res_11_final
-      \<R> MATCH"
-(* For AFP-devel
   shows "\<exists>(MATCH :: nat \<times> nat \<Rightarrow> 'f ord_res_10_state \<Rightarrow> 'f ord_res_11_state \<Rightarrow> bool) \<R>\<^sub>f \<R>\<^sub>b.
     bisimulation
       (constant_context ord_res_10) ord_res_8_final
       (constant_context ord_res_11) ord_res_11_final
       MATCH \<R>\<^sub>f \<R>\<^sub>b"
-*)
 proof (rule ex_bisimulation_from_forward_simulation)
   show "right_unique (constant_context ord_res_10)"
     using right_unique_constant_context right_unique_ord_res_10 by metis
@@ -6800,99 +6748,6 @@ qed
 
 end
 
-lemma forward_simulation_composition:
-  assumes
-    "forward_simulation step1 step2 final1 final2 order1 match1"
-    "forward_simulation step2 step3 final2 final3 order2 match2"
-  defines "\<R> \<equiv> \<lambda>i i'. lex_prodp order2\<^sup>+\<^sup>+ order1 (prod.swap i) (prod.swap i')"
-  shows "forward_simulation step1 step3 final1 final3 \<R> (rel_comp match1 match2)"
-proof intro_locales
-  show "semantics step1 final1"
-    using assms
-    by (auto intro: forward_simulation.axioms)
-next
-  show "semantics step3 final3"
-    using assms
-    by (auto intro: forward_simulation.axioms)
-next
-  have "well_founded order1" "well_founded order2"
-    using assms
-    by (auto intro: forward_simulation.axioms)
-
-  hence "wfp \<R>"
-    unfolding \<R>_def
-    by (metis (no_types, lifting) lex_prodp_wfP well_founded.wf wfP_trancl
-        wfp_if_convertible_to_wfp)
-
-  thus "well_founded \<R>"
-    by unfold_locales
-next
-  show "forward_simulation_axioms step1 step3 final1 final3 \<R> (rel_comp match1 match2)"
-  proof unfold_locales
-    fix i s1 s3
-    assume
-      match: "rel_comp match1 match2 i s1 s3" and
-      final: "final1 s1"
-    obtain i1 i2 s2 where "match1 i1 s1 s2" and "match2 i2 s2 s3" and "i = (i1, i2)"
-      using match unfolding rel_comp_def by auto
-    thus "final3 s3"
-      using final assms(1,2)[THEN forward_simulation.match_final]
-      by simp
-  next
-    fix i s1 s3 s1'
-    assume
-      match: "rel_comp match1 match2 i s1 s3" and
-      step: "step1 s1 s1'"
-    obtain i1 i2 s2 where "match1 i1 s1 s2" and "match2 i2 s2 s3" and i_def: "i = (i1, i2)"
-      using match unfolding rel_comp_def by auto
-    from forward_simulation.simulation[OF assms(1) \<open>match1 i1 s1 s2\<close> step]
-    show "(\<exists>i' s3'. step3\<^sup>+\<^sup>+ s3 s3' \<and> rel_comp match1 match2 i' s1' s3') \<or>
-       (\<exists>i'. rel_comp match1 match2 i' s1' s3 \<and> \<R> i' i)"
-      (is "(\<exists>i' s1'. ?STEPS i' s1') \<or> (\<exists>i'. ?STALL i')")
-    proof (elim disjE exE conjE)
-      fix i1' s2'
-      assume "step2\<^sup>+\<^sup>+ s2 s2'" and "match1 i1' s1' s2'"
-      from forward_simulation.lift_simulation_plus[OF assms(2) \<open>step2\<^sup>+\<^sup>+ s2 s2'\<close> \<open>match2 i2 s2 s3\<close>]
-      show ?thesis
-      proof (elim disjE exE conjE)
-        fix i2' s3'
-        assume "step3\<^sup>+\<^sup>+ s3 s3'" and "match2 i2' s2' s3'"
-        hence "?STEPS (i1', i2') s3'"
-          by (auto intro: \<open>match1 i1' s1' s2'\<close> simp: rel_comp_def)
-        thus ?thesis by auto
-      next
-        fix i2''
-        assume "match2 i2'' s2' s3" and "order2\<^sup>+\<^sup>+ i2'' i2"
-        hence "?STALL (i1', i2'')"
-          unfolding rel_comp_def i_def comp_def prod.swap_def prod.sel
-        proof (intro conjI)
-          show "(match1 i1' OO match2 i2'') s1' s3"
-            using \<open>match1 i1' s1' s2'\<close> \<open>match2 i2'' s2' s3\<close>
-            by (auto simp add: relcompp_apply)
-        next
-          show "\<R> (i1', i2'') (i1, i2)"
-            unfolding \<R>_def lex_prodp_def prod.swap_def prod.sel
-            using \<open>order2\<^sup>+\<^sup>+ i2'' i2\<close> by argo
-        qed
-        thus ?thesis
-          by metis
-      qed
-    next
-      fix i1'
-      assume "match1 i1' s1' s2" and "order1 i1' i1"
-      hence "?STALL (i1', i2)"
-        unfolding rel_comp_def i_def prod.sel
-        using \<open>match2 i2 s2 s3\<close> by (auto simp: \<R>_def lex_prodp_def)
-      thus ?thesis
-        by metis
-    qed
-  qed
-qed
-
-text \<open>For AFP-devel, delete
-@{thm Simulation_SCLFOL_ORDRES.forward_simulation_composition}
-as it is available in \<^theory>\<open>VeriComp.Simulation\<close>.\<close>
-
 type_synonym bisim_index_1_2 = "nat \<times> nat"
 type_synonym bisim_index_1_3 = "bisim_index_1_2 \<times> (nat \<times> nat)"
 type_synonym bisim_index_1_4 = "bisim_index_1_3 \<times> (nat \<times> nat)"
@@ -6905,72 +6760,6 @@ type_synonym bisim_index_1_10 = "bisim_index_1_9 \<times> (nat \<times> nat)"
 type_synonym bisim_index_1_11 = "bisim_index_1_10 \<times> (nat \<times> nat)"
 
 context simulation_SCLFOL_ground_ordered_resolution begin
-
-theorem forward_simulation_ord_res_1_ord_res_11:
-  obtains
-    MATCH :: "bisim_index_1_11 \<Rightarrow> 'f ord_res_1_state \<Rightarrow> 'f ord_res_11_state \<Rightarrow> bool" and
-    \<R> :: "bisim_index_1_11 \<Rightarrow> bisim_index_1_11 \<Rightarrow> bool"
-  where
-    "forward_simulation
-      ord_res_1 (constant_context ord_res_11)
-      ord_res_1_final ord_res_11_final
-      \<R> MATCH"
-proof -
-  have bi_to_fwd: "\<exists>MATCH (\<R> :: 'a \<Rightarrow> 'a \<Rightarrow> bool).
-    forward_simulation step1 step2 final1 final2 \<R> MATCH"
-    if "\<exists>MATCH (\<R> :: 'a \<Rightarrow> 'a \<Rightarrow> bool). bisimulation step1 step2 final1 final2 \<R> MATCH"
-    for step1 step2 final1 final2
-    using that by (auto intro: bisimulation.axioms)
-
-  show ?thesis
-    using that
-  using bisimulation_ord_res_1_ord_res_2[THEN bi_to_fwd]
-    bisimulation_ord_res_2_ord_res_3[THEN bi_to_fwd]
-    bisimulation_ord_res_3_ord_res_4[THEN bi_to_fwd]
-    bisimulation_ord_res_4_ord_res_5[THEN bi_to_fwd]
-    bisimulation_ord_res_5_ord_res_6[THEN bi_to_fwd]
-    bisimulation_ord_res_6_ord_res_7[THEN bi_to_fwd]
-    bisimulation_ord_res_7_ord_res_8[THEN bi_to_fwd]
-    bisimulation_ord_res_8_ord_res_9[THEN bi_to_fwd]
-    bisimulation_ord_res_9_ord_res_10[THEN bi_to_fwd]
-    bisimulation_ord_res_10_ord_res_11[THEN bi_to_fwd]
-  using forward_simulation_composition by meson
-qed
-
-theorem backward_simulation_ord_res_1_ord_res_11:
-  obtains
-    MATCH :: "bisim_index_1_11 \<Rightarrow> 'f ord_res_1_state \<Rightarrow> 'f ord_res_11_state \<Rightarrow> bool" and
-    \<R> :: "bisim_index_1_11 \<Rightarrow> bisim_index_1_11 \<Rightarrow> bool"
-  where
-    "backward_simulation
-      ord_res_1 (constant_context ord_res_11)
-      ord_res_1_final ord_res_11_final
-      \<R> MATCH"
-proof -
-  have bi_to_bwd: "\<exists>MATCH (\<R> :: 'a \<Rightarrow> 'a \<Rightarrow> bool).
-    backward_simulation step1 step2 final1 final2 \<R> MATCH"
-    if "\<exists>MATCH (\<R> :: 'a \<Rightarrow> 'a \<Rightarrow> bool). bisimulation step1 step2 final1 final2 \<R> MATCH"
-    for step1 step2 final1 final2
-    using that by (auto intro: bisimulation.axioms)
-
-  show ?thesis
-    using that
-  using bisimulation_ord_res_1_ord_res_2[THEN bi_to_bwd]
-    bisimulation_ord_res_2_ord_res_3[THEN bi_to_bwd]
-    bisimulation_ord_res_3_ord_res_4[THEN bi_to_bwd]
-    bisimulation_ord_res_4_ord_res_5[THEN bi_to_bwd]
-    bisimulation_ord_res_5_ord_res_6[THEN bi_to_bwd]
-    bisimulation_ord_res_6_ord_res_7[THEN bi_to_bwd]
-    bisimulation_ord_res_7_ord_res_8[THEN bi_to_bwd]
-    bisimulation_ord_res_8_ord_res_9[THEN bi_to_bwd]
-    bisimulation_ord_res_9_ord_res_10[THEN bi_to_bwd]
-    bisimulation_ord_res_10_ord_res_11[THEN bi_to_bwd]
-  using backward_simulation_composition by meson
-qed
-
-
-(* For AFP-devel, uncomment this theorem; it depends on a changed definition of the locale
-bisimulation.
 
 theorem bisimulation_ord_res_1_ord_res_11:
   obtains
@@ -7006,7 +6795,6 @@ theorem
     "\<And>j S1 S11. MATCH j S1 S11 \<Longrightarrow> ord_res_1_final S1 \<longleftrightarrow> ord_res_11_final S11"
   using bisimulation_ord_res_1_ord_res_11 bisimulation.agree_on_final
   by (metis (no_types, opaque_lifting))
-*)
 
 
 section \<open>ORD-RES-11 is a regular SCL strategy\<close>

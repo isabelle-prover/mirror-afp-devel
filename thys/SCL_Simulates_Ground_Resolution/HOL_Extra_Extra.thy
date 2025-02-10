@@ -1,5 +1,5 @@
 theory HOL_Extra_Extra
-  imports Superposition_Calculus.HOL_Extra
+  imports First_Order_Clause.HOL_Extra
 begin
 
 no_notation restrict_map (infixl "|`"  110)
@@ -23,14 +23,6 @@ lemma finite_if_finite_finite:
     "\<forall>x. finite {y. Q x y}"
   shows "finite {y. \<exists>x. P x \<and> Q x y}"
   using assms by auto
-
-lemma strict_partial_order_wfp_on_finite_set:
-  assumes "transp_on \<X> R" and "asymp_on \<X> R"
-  shows "finite \<X> \<Longrightarrow> Wellfounded.wfp_on \<X> R"
-  unfolding Wellfounded.wfp_on_iff_ex_minimal
-  using assms
-  by (metis (no_types, opaque_lifting) Finite_Set.bex_min_element asymp_onD asymp_on_subset
-      finite_subset transp_on_subset)
 
 lemma (in order) greater_wfp_on_finite_set: "finite \<X> \<Longrightarrow> Wellfounded.wfp_on \<X> (>)"
   using strict_partial_order_wfp_on_finite_set[OF transp_on_greater asymp_on_greater] .
@@ -305,40 +297,8 @@ lemma relpowp_Suc_of_right_unique:
   using assms
   by (metis relpowp_Suc_D2 right_uniqueD)
 
-lemma relpowp_trans[trans]:
-  "(R ^^ i) x y \<Longrightarrow> (R ^^ j) y z \<Longrightarrow> (R ^^ (i + j)) x z"
-proof (induction i arbitrary: x)
-  case 0
-  thus ?case by simp
-next
-  case (Suc i)
-  thus ?case
-  by (metis add_Suc relpowp_Suc_D2 relpowp_Suc_I2)
-qed
-
 lemma tranclp_if_relpowp: "n \<noteq> 0 \<Longrightarrow> (R ^^ n) x y \<Longrightarrow> R\<^sup>+\<^sup>+ x y"
   by (meson bot_nat_0.not_eq_extremum tranclp_power)
-
-lemma ex_terminating_rtranclp_strong:
-  assumes wf: "Wellfounded.wfp_on {x'. R\<^sup>*\<^sup>* x x'} R\<inverse>\<inverse>"
-  shows "\<exists>y. R\<^sup>*\<^sup>* x y \<and> (\<nexists>z. R y z)"
-proof (cases "\<exists>y. R x y")
-  case True
-  with wf show ?thesis
-  proof (induction rule: Wellfounded.wfp_on_induct)
-    case in_set
-    thus ?case
-      by simp
-  next
-    case (less x)
-    then show ?case
-      by (metis (full_types) conversepI mem_Collect_eq r_into_rtranclp rtranclp_trans)
-  qed
-next
-  case False
-  thus ?thesis
-    by blast
-qed
 
 lemma transp_on_singleton[simp]: "transp_on {x} R"
   by (simp add: transp_on_def)
@@ -363,10 +323,5 @@ lemma right_unique_terminating_rtranclp:
   unfolding right_unique_def
   using rtranclp_rtranclp_compose_if_right_unique[OF \<open>right_unique R\<close>]
   by (metis converse_rtranclpE)
-
-lemma ex_terminating_rtranclp:
-  assumes wf: "wfp R\<inverse>\<inverse>"
-  shows "\<exists>y. R\<^sup>*\<^sup>* x y \<and> (\<nexists>z. R y z)"
-  using ex_terminating_rtranclp_strong Wellfounded.wfp_on_subset subset_UNIV wf by metis
 
 end

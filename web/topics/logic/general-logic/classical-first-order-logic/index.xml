@@ -1,184 +1,80 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Logic/General logic/Classical first-order logic on Archive of Formal Proofs
-    </title>
-    <link>/topics/logic/general-logic/classical-first-order-logic/</link>
-    <description>
-        Recent content in Logic/General logic/Classical first-order logic 
-        on Archive of Formal Proofs
-    </description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language>
-    
-      <atom:link href="/topics/logic/general-logic/classical-first-order-logic/index.xml" rel="self" type="application/rss+xml" />
-        <item>
-          <title>SCL Simulates Nonredundant Ground Resolution</title>
-          <link>/entries/SCL_Simulates_Ground_Resolution.html</link>
-          <pubDate>Thu, 31 Oct 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/SCL_Simulates_Ground_Resolution.html</guid>
-          <description></description>
+    <title>Logic/General logic/Classical first-order logic</title>
+    <link>https://isa-afp.org/topics/logic/general-logic/classical-first-order-logic/</link>
+    <description>AFP entries in Classical first-order logic</description>
+         <item>
+          <title>First Order Clause</title>
+          <link>https://isa-afp.org/entries/First_Order_Clause.html</link>
+          <pubDate>Fri, 17 Jan 2025 00:00:00 +0000</pubDate>
+          <description>First Order Clause in the AFP</description>
+            <category>Logic/General logic/Classical first-order logic</category>
+            <category>Logic/General logic</category>
         </item>
         <item>
           <title>SCL Simulates Nonredundant Ground Resolution</title>
-          <link>/entries/SCL_Simulates_Ground_Resolution.html</link>
+          <link>https://isa-afp.org/entries/SCL_Simulates_Ground_Resolution.html</link>
           <pubDate>Thu, 31 Oct 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/SCL_Simulates_Ground_Resolution.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>SCL Simulates Nonredundant Ground Resolution</title>
-          <link>/entries/SCL_Simulates_Ground_Resolution.html</link>
-          <pubDate>Thu, 31 Oct 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/SCL_Simulates_Ground_Resolution.html</guid>
-          <description></description>
+          <description>SCL Simulates Nonredundant Ground Resolution in the AFP</description>
+            <category>Logic/General logic/Classical first-order logic</category>
         </item>
         <item>
           <title>Given Clause Loops</title>
-          <link>/entries/Given_Clause_Loops.html</link>
+          <link>https://isa-afp.org/entries/Given_Clause_Loops.html</link>
           <pubDate>Wed, 25 Jan 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/Given_Clause_Loops.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Given Clause Loops</title>
-          <link>/entries/Given_Clause_Loops.html</link>
-          <pubDate>Wed, 25 Jan 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/Given_Clause_Loops.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Given Clause Loops</title>
-          <link>/entries/Given_Clause_Loops.html</link>
-          <pubDate>Wed, 25 Jan 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/Given_Clause_Loops.html</guid>
-          <description></description>
+          <description>Given Clause Loops in the AFP</description>
+            <category>Logic/General logic/Classical first-order logic</category>
         </item>
         <item>
           <title>Making Arbitrary Relational Calculus Queries Safe-Range</title>
-          <link>/entries/Safe_Range_RC.html</link>
+          <link>https://isa-afp.org/entries/Safe_Range_RC.html</link>
           <pubDate>Wed, 28 Sep 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/Safe_Range_RC.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Making Arbitrary Relational Calculus Queries Safe-Range</title>
-          <link>/entries/Safe_Range_RC.html</link>
-          <pubDate>Wed, 28 Sep 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/Safe_Range_RC.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Making Arbitrary Relational Calculus Queries Safe-Range</title>
-          <link>/entries/Safe_Range_RC.html</link>
-          <pubDate>Wed, 28 Sep 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/Safe_Range_RC.html</guid>
-          <description></description>
+          <description>Making Arbitrary Relational Calculus Queries Safe-Range in the AFP</description>
+            <category>Computer science/Data management systems</category>
+            <category>Logic/General logic/Classical first-order logic</category>
         </item>
         <item>
           <title>A Naive Prover for First-Order Logic</title>
-          <link>/entries/FOL_Seq_Calc3.html</link>
+          <link>https://isa-afp.org/entries/FOL_Seq_Calc3.html</link>
           <pubDate>Tue, 22 Mar 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/FOL_Seq_Calc3.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>A Naive Prover for First-Order Logic</title>
-          <link>/entries/FOL_Seq_Calc3.html</link>
-          <pubDate>Tue, 22 Mar 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/FOL_Seq_Calc3.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>A Naive Prover for First-Order Logic</title>
-          <link>/entries/FOL_Seq_Calc3.html</link>
-          <pubDate>Tue, 22 Mar 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/FOL_Seq_Calc3.html</guid>
-          <description></description>
+          <description>A Naive Prover for First-Order Logic in the AFP</description>
+            <category>Logic/General logic/Classical first-order logic</category>
+            <category>Logic/Proof theory</category>
+            <category>Logic/General logic/Mechanization of proofs</category>
         </item>
         <item>
           <title>First-Order Query Evaluation</title>
-          <link>/entries/Eval_FO.html</link>
+          <link>https://isa-afp.org/entries/Eval_FO.html</link>
           <pubDate>Tue, 15 Feb 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/Eval_FO.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>First-Order Query Evaluation</title>
-          <link>/entries/Eval_FO.html</link>
-          <pubDate>Tue, 15 Feb 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/Eval_FO.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>First-Order Query Evaluation</title>
-          <link>/entries/Eval_FO.html</link>
-          <pubDate>Tue, 15 Feb 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/Eval_FO.html</guid>
-          <description></description>
+          <description>First-Order Query Evaluation in the AFP</description>
+            <category>Computer science/Data management systems</category>
+            <category>Logic/General logic/Classical first-order logic</category>
         </item>
         <item>
           <title>A Sequent Calculus Prover for First-Order Logic with Functions</title>
-          <link>/entries/FOL_Seq_Calc2.html</link>
+          <link>https://isa-afp.org/entries/FOL_Seq_Calc2.html</link>
           <pubDate>Mon, 31 Jan 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/FOL_Seq_Calc2.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>A Sequent Calculus Prover for First-Order Logic with Functions</title>
-          <link>/entries/FOL_Seq_Calc2.html</link>
-          <pubDate>Mon, 31 Jan 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/FOL_Seq_Calc2.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>A Sequent Calculus Prover for First-Order Logic with Functions</title>
-          <link>/entries/FOL_Seq_Calc2.html</link>
-          <pubDate>Mon, 31 Jan 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/FOL_Seq_Calc2.html</guid>
-          <description></description>
+          <description>A Sequent Calculus Prover for First-Order Logic with Functions in the AFP</description>
+            <category>Logic/General logic/Classical first-order logic</category>
+            <category>Logic/Proof theory</category>
+            <category>Logic/General logic/Mechanization of proofs</category>
         </item>
         <item>
           <title>Soundness and Completeness of an Axiomatic System for First-Order Logic</title>
-          <link>/entries/FOL_Axiomatic.html</link>
+          <link>https://isa-afp.org/entries/FOL_Axiomatic.html</link>
           <pubDate>Fri, 24 Sep 2021 00:00:00 +0000</pubDate>
-          <guid>/entries/FOL_Axiomatic.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Soundness and Completeness of an Axiomatic System for First-Order Logic</title>
-          <link>/entries/FOL_Axiomatic.html</link>
-          <pubDate>Fri, 24 Sep 2021 00:00:00 +0000</pubDate>
-          <guid>/entries/FOL_Axiomatic.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Soundness and Completeness of an Axiomatic System for First-Order Logic</title>
-          <link>/entries/FOL_Axiomatic.html</link>
-          <pubDate>Fri, 24 Sep 2021 00:00:00 +0000</pubDate>
-          <guid>/entries/FOL_Axiomatic.html</guid>
-          <description></description>
+          <description>Soundness and Completeness of an Axiomatic System for First-Order Logic in the AFP</description>
+            <category>Logic/General logic/Classical first-order logic</category>
+            <category>Logic/Proof theory</category>
         </item>
         <item>
           <title>First-Order Logic According to Fitting</title>
-          <link>/entries/FOL-Fitting.html</link>
+          <link>https://isa-afp.org/entries/FOL-Fitting.html</link>
           <pubDate>Thu, 02 Aug 2007 00:00:00 +0000</pubDate>
-          <guid>/entries/FOL-Fitting.html</guid>
-          <description></description>
+          <description>First-Order Logic According to Fitting in the AFP</description>
+            <category>Logic/General logic/Classical first-order logic</category>
         </item>
-        <item>
-          <title>First-Order Logic According to Fitting</title>
-          <link>/entries/FOL-Fitting.html</link>
-          <pubDate>Thu, 02 Aug 2007 00:00:00 +0000</pubDate>
-          <guid>/entries/FOL-Fitting.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>First-Order Logic According to Fitting</title>
-          <link>/entries/FOL-Fitting.html</link>
-          <pubDate>Thu, 02 Aug 2007 00:00:00 +0000</pubDate>
-          <guid>/entries/FOL-Fitting.html</guid>
-          <description></description>
-        </item>
+
   </channel>
 </rss>

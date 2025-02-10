@@ -4,6 +4,8 @@ theory Weak_Star_Topology
   imports Trace_Class Weak_Operator_Topology Misc_Tensor_Product_TTS
 begin
 
+unbundle cblinfun_syntax
+
 definition weak_star_topology :: \<open>('a::chilbert_space \<Rightarrow>\<^sub>C\<^sub>L'b::chilbert_space) topology\<close>
   where \<open>weak_star_topology = pullback_topology UNIV (\<lambda>x. \<lambda>t\<in>Collect trace_class. trace (t o\<^sub>C\<^sub>L x))
                               (product_topology (\<lambda>_. euclidean)  (Collect trace_class))\<close>
@@ -807,7 +809,6 @@ lemma infsum_mono_wot:
   by (meson assms has_sum_in_infsum_in has_sum_mono_wot hausdorff_cweak_operator_topology)
 
 
-
-unbundle no_cblinfun_notation
+unbundle no cblinfun_syntax
 
 end

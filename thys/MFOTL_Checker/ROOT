@@ -1,14 +1,18 @@
 chapter AFP
 
 session MFOTL_Checker (AFP) = "MFOTL_Monitor" +
-  options [timeout = 1200]
+  options [timeout = 1800]
   theories
     Trace
+    Regex
     Formula
     Partition
+    Regex_Proof_System
     Proof_System
+    Regex_Proof_Object
     Proof_Object
     Prelim
+    Regex_Checker
     Checker
     Event_Data
     Checker_Code

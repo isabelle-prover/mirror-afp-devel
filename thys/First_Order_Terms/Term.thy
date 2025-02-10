@@ -523,7 +523,7 @@ proof (induct t)
   case (Fun f ts)
   then obtain u where u: "u \<in> set ts" "x \<in> vars_term u" by auto
   then have "num_funs (u \<cdot> \<sigma>) \<le> sum_list (map (num_funs \<circ> (\<lambda>t. t \<cdot> \<sigma>)) ts)"
-    by (intro member_le_sum_list) simp
+    by (intro member_le_sum_list) auto
   moreover have "num_funs (\<sigma> x) \<le> num_funs (u \<cdot> \<sigma>)"
     using Fun.hyps [OF u] and u  by (cases u; simp)
   ultimately show ?case by simp
@@ -787,7 +787,8 @@ lemma eval_map_vars: "I\<lbrakk>map_vars_term f t\<rbrakk>\<alpha> = I\<lbrakk>t
   by (simp add: eval_map_term o_def)
 
 lemma apply_subst_map_vars_term:
-  "map_vars_term m t \<cdot> \<sigma> = t \<cdot> (\<sigma> \<circ> m)" using eval_map_vars.
+  "map_vars_term m t \<cdot> \<sigma> = t \<cdot> (\<sigma> \<circ> m)" 
+  using eval_map_vars.
 
 lemmas eval_o = eval_map_vars[symmetric]
 

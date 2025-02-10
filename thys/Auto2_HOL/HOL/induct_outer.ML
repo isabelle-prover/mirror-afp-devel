@@ -206,7 +206,7 @@ fun apply_simple_induct_th ind_th vars arbitraries prem_only state =
       val ind_th =
           ind_th |> apply_to_thm (Conv.binop_conv (UtilLogic.to_meta_conv ctxt))
 
-      val assum = hd (Drule.cprems_of ind_th)
+      val assum = hd (Thm.take_cprems_of 1 ind_th)
       val ind_th =
           ind_th |> Util.send_first_to_hyps
                  |> fold Thm.forall_elim (map (Thm.cterm_of ctxt) arbitraries)

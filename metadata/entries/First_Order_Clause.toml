@@ -1,0 +1,27 @@
+title = "First Order Clause"
+date = 2025-01-17
+topics = [
+  "Logic/General logic/Classical first-order logic",
+  "Logic/General logic",
+]
+abstract = "This entry provides reusable theories that lift properties of first-order (ground and nonground) terms to atoms, literals, and clauses. These properties include substitutions, orders, entailment, and typing. The sessions AFP/First_Order_Terms and AFP/Abstract_Substitution are the basis of this entry."
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.toth]
+email = "toth_email1"
+
+[contributors]
+
+[notify]
+toth = "toth_email1"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

@@ -1930,7 +1930,7 @@ definition bind :: "('a, 's, 'v) spec \<Rightarrow> ('v \<Rightarrow> ('a, 's, '
   "bind f g = spec.term.none f \<squnion> spec.continue f g"
 
 adhoc_overloading
-  Monad_Syntax.bind spec.bind
+  Monad_Syntax.bind \<rightleftharpoons> spec.bind
 
 setup \<open>Sign.mandatory_path "singleton"\<close>
 

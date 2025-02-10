@@ -16,7 +16,6 @@ theory IsaFoR_Term_Copy
   imports
     First_Order_Terms.Unification
     "HOL-Cardinals.Wellorder_Extension"
-    Open_Induction.Restricted_Predicates
     Knuth_Bendix_Order.KBO
 begin
 
@@ -48,7 +47,7 @@ definition weights_unit :: "unit weights" where "weights_unit =
 
 instance
   by (intro_classes, unfold_locales) (auto simp: weights_unit_def SN_iff_wf irreflp_def
-      intro: asympI intro!: wf_subset[OF wf_inv_image[OF wf], of _ snd])
+      intro!: wf_subset[OF wf_inv_image[OF wf], of _ snd])
 end
 
 global_interpretation KBO:

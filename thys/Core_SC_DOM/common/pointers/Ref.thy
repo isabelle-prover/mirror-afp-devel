@@ -35,7 +35,6 @@ text\<open>
 theory 
   Ref
   imports
-    "HOL-Library.Adhoc_Overloading"
     "../preliminaries/Hiding_Type_Variables"
 begin
 

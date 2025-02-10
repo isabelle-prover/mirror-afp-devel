@@ -31,8 +31,4 @@ echo "Building Isabelle components ..."
 
 echo "Running sitegen ..."
 
-"$ISABELLE_TOOL" afp_site_gen \
-  -f \
-  -H "$AFP_ROOT/out/hugo" \
-  -O "$AFP_ROOT/web" \
-  "$@"
+"$ISABELLE_TOOL" afp_site_gen -c "$@"

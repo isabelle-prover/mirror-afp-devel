@@ -3,7 +3,7 @@ theory Global
 begin
 
 sledgehammer_params [timeout = 30]
-sledgehammer_params [provers = "cvc4 e spass vampire z3 zipperposition"]
+sledgehammer_params [provers = "cvc5 e spass vampire z3 zipperposition"]
 
 declare K_record_comp[simp]
 

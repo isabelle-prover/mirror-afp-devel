@@ -1,12 +1,12 @@
 section "Bitvector based Sets of Naturals"
 theory Impl_Bit_Set
-imports 
-  "../../Iterator/Iterator" 
-  "../Intf/Intf_Set" 
-  Native_Word.Code_Target_Integer_Bit
+  imports
+    "HOL-Library.Code_Target_Bit_Shifts"
+    "../../Iterator/Iterator"
+    "../Intf/Intf_Set"
 begin
   text \<open>
-    Based on the Native-Word library, using bit-operations on arbitrary
+    Using bit-operations on arbitrary
     precision integers. Fast for sets of small numbers, 
     direct and fast implementations of equal, union, inter, diff.
 
@@ -36,17 +36,16 @@ begin
   lemma bs_isEmpty_correct: "bs_isEmpty s \<longleftrightarrow> bs_\<alpha> s = {}"
     unfolding bs_isEmpty_def bs_\<alpha>_def 
     by transfer (auto simp: bit_eq_iff) 
-    
-  term set_bit
+
   definition bs_insert :: "nat \<Rightarrow> bitset \<Rightarrow> bitset" where
-    "bs_insert i s \<equiv> set_bit s i True"
+    "bs_insert \<equiv> set_bit"
 
   lemma bs_insert_correct: "bs_\<alpha> (bs_insert i s) = insert i (bs_\<alpha> s)"
     unfolding bs_\<alpha>_def bs_insert_def
     by transfer (auto simp add: bit_simps)
 
   definition bs_delete :: "nat \<Rightarrow> bitset \<Rightarrow> bitset" where
-    "bs_delete i s \<equiv> set_bit s i False"
+    "bs_delete \<equiv> unset_bit"
 
   lemma bs_delete_correct: "bs_\<alpha> (bs_delete i s) = (bs_\<alpha> s) - {i}"
     unfolding bs_\<alpha>_def bs_delete_def

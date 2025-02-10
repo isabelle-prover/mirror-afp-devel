@@ -9,7 +9,7 @@ begin
 consts eval :: "'a \<Rightarrow> 'b \<Rightarrow> 'c"
 
 definition "eval_rel R x \<equiv> THE y. R x y"
-adhoc_overloading eval eval_rel
+adhoc_overloading eval \<rightleftharpoons> eval_rel
 
 open_bundle eval_syntax
 begin

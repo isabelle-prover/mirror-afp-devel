@@ -3,7 +3,7 @@
 *)
 
 theory POPLmarkRecord
-imports Basis
+  imports Basis
 begin
 
 section \<open>Extending the calculus with records\<close>
@@ -278,23 +278,11 @@ lemma substE_length [simp]: "\<parallel>\<Gamma>[k \<mapsto>\<^sub>\<tau> U]\<^s
 
 lemma liftE_nth [simp]:
   "(\<up>\<^sub>e n k \<Gamma>)\<langle>i\<rangle> = map_option (mapB (\<up>\<^sub>\<tau> n (k + \<parallel>\<Gamma>\<parallel> - i - 1))) (\<Gamma>\<langle>i\<rangle>)"
-  apply (induct \<Gamma> arbitrary: i)
-  apply simp
-  apply simp
-  apply (case_tac i)
-  apply simp
-  apply simp
-  done
+  by (induct \<Gamma> arbitrary: i) (auto split: nat.splits)
 
 lemma substE_nth [simp]:
   "(\<Gamma>[0 \<mapsto>\<^sub>\<tau> T]\<^sub>e)\<langle>i\<rangle> = map_option (mapB (\<lambda>U. U[\<parallel>\<Gamma>\<parallel> - i - 1 \<mapsto>\<^sub>\<tau> T]\<^sub>\<tau>)) (\<Gamma>\<langle>i\<rangle>)"
-  apply (induct \<Gamma> arbitrary: i)
-  apply simp
-  apply simp
-  apply (case_tac i)
-  apply simp
-  apply simp
-  done
+  by (induct \<Gamma> arbitrary: i) (auto split: nat.splits)
 
 lemma liftT_liftT [simp]:
   "i \<le> j \<Longrightarrow> j \<le> i + m \<Longrightarrow> \<up>\<^sub>\<tau> n j (\<up>\<^sub>\<tau> m i T) = \<up>\<^sub>\<tau> (m + n) i T"
@@ -307,14 +295,9 @@ lemma liftT_liftT' [simp]:
   "i + m \<le> j \<Longrightarrow> \<up>\<^sub>\<tau> n j (\<up>\<^sub>\<tau> m i T) = \<up>\<^sub>\<tau> m i (\<up>\<^sub>\<tau> n (j - m) T)"
   "i + m \<le> j \<Longrightarrow> \<up>\<^sub>r\<^sub>\<tau> n j (\<up>\<^sub>r\<^sub>\<tau> m i rT) = \<up>\<^sub>r\<^sub>\<tau> m i (\<up>\<^sub>r\<^sub>\<tau> n (j - m) rT)"
   "i + m \<le> j \<Longrightarrow> \<up>\<^sub>f\<^sub>\<tau> n j (\<up>\<^sub>f\<^sub>\<tau> m i fT) = \<up>\<^sub>f\<^sub>\<tau> m i (\<up>\<^sub>f\<^sub>\<tau> n (j - m) fT)"
-  apply (induct T and rT and fT arbitrary: i j m n and i j m n and i j m n
-    rule: liftT.induct liftrT.induct liftfT.induct)
-  apply simp_all
-  apply arith
-  apply (subgoal_tac "Suc j - m = Suc (j - m)")
-  apply simp
-  apply arith
-  done
+proof (induct T and rT and fT arbitrary: i j m n and i j m n and i j m n
+      rule: liftT.induct liftrT.induct liftfT.induct)
+qed (auto simp: Suc_diff_le)
 
 lemma lift_size [simp]:
   "size (\<up>\<^sub>\<tau> n k T) = size T"
@@ -355,10 +338,8 @@ theorem liftT_substT [simp]:
   "k \<le> k' \<Longrightarrow> \<up>\<^sub>\<tau> n k (T[k' \<mapsto>\<^sub>\<tau> U]\<^sub>\<tau>) = \<up>\<^sub>\<tau> n k T[k' + n \<mapsto>\<^sub>\<tau> U]\<^sub>\<tau>"
   "k \<le> k' \<Longrightarrow> \<up>\<^sub>r\<^sub>\<tau> n k (rT[k' \<mapsto>\<^sub>\<tau> U]\<^sub>r\<^sub>\<tau>) = \<up>\<^sub>r\<^sub>\<tau> n k rT[k' + n \<mapsto>\<^sub>\<tau> U]\<^sub>r\<^sub>\<tau>"
   "k \<le> k' \<Longrightarrow> \<up>\<^sub>f\<^sub>\<tau> n k (fT[k' \<mapsto>\<^sub>\<tau> U]\<^sub>f\<^sub>\<tau>) = \<up>\<^sub>f\<^sub>\<tau> n k fT[k' + n \<mapsto>\<^sub>\<tau> U]\<^sub>f\<^sub>\<tau>"
-  apply (induct T and rT and fT arbitrary: k k' and k k' and k k'
-    rule: liftT.induct liftrT.induct liftfT.induct)
-  apply simp_all
-  done
+  by (induct T and rT and fT arbitrary: k k' and k k' and k k'
+    rule: liftT.induct liftrT.induct liftfT.induct) auto
 
 theorem liftT_substT' [simp]:
   "k' < k \<Longrightarrow>
@@ -367,29 +348,29 @@ theorem liftT_substT' [simp]:
      \<up>\<^sub>r\<^sub>\<tau> n k (rT[k' \<mapsto>\<^sub>\<tau> U]\<^sub>r\<^sub>\<tau>) = \<up>\<^sub>r\<^sub>\<tau> n (k + 1) rT[k' \<mapsto>\<^sub>\<tau> \<up>\<^sub>\<tau> n (k - k') U]\<^sub>r\<^sub>\<tau>"
   "k' < k \<Longrightarrow>
      \<up>\<^sub>f\<^sub>\<tau> n k (fT[k' \<mapsto>\<^sub>\<tau> U]\<^sub>f\<^sub>\<tau>) = \<up>\<^sub>f\<^sub>\<tau> n (k + 1) fT[k' \<mapsto>\<^sub>\<tau> \<up>\<^sub>\<tau> n (k - k') U]\<^sub>f\<^sub>\<tau>"
-  apply (induct T and rT and fT arbitrary: k k' and k k' and k k'
-    rule: liftT.induct liftrT.induct liftfT.induct)
-  apply simp_all
-  apply arith
-  done
+proof (induct T and rT and fT arbitrary: k k' and k k' and k k'
+        rule: liftT.induct liftrT.induct liftfT.induct)
+qed auto
 
 lemma liftT_substT_Top [simp]:
   "k \<le> k' \<Longrightarrow> \<up>\<^sub>\<tau> n k' (T[k \<mapsto>\<^sub>\<tau> Top]\<^sub>\<tau>) = \<up>\<^sub>\<tau> n (Suc k') T[k \<mapsto>\<^sub>\<tau> Top]\<^sub>\<tau>"
   "k \<le> k' \<Longrightarrow> \<up>\<^sub>r\<^sub>\<tau> n k' (rT[k \<mapsto>\<^sub>\<tau> Top]\<^sub>r\<^sub>\<tau>) = \<up>\<^sub>r\<^sub>\<tau> n (Suc k') rT[k \<mapsto>\<^sub>\<tau> Top]\<^sub>r\<^sub>\<tau>"
   "k \<le> k' \<Longrightarrow> \<up>\<^sub>f\<^sub>\<tau> n k' (fT[k \<mapsto>\<^sub>\<tau> Top]\<^sub>f\<^sub>\<tau>) = \<up>\<^sub>f\<^sub>\<tau> n (Suc k') fT[k \<mapsto>\<^sub>\<tau> Top]\<^sub>f\<^sub>\<tau>"
-  apply (induct T and rT and fT arbitrary: k k' and k k' and k k'
+proof (induct T and rT and fT arbitrary: k k' and k k' and k k'
     rule: liftT.induct liftrT.induct liftfT.induct)
-  apply simp_all
-  apply arith
-  done
+qed auto
 
 theorem liftE_substE [simp]:
   "k \<le> k' \<Longrightarrow> \<up>\<^sub>e n k (\<Gamma>[k' \<mapsto>\<^sub>\<tau> U]\<^sub>e) = \<up>\<^sub>e n k \<Gamma>[k' + n \<mapsto>\<^sub>\<tau> U]\<^sub>e"
-  apply (induct \<Gamma> arbitrary: k k' and k k' and k k')
-  apply simp_all
-  apply (case_tac a)
-  apply (simp_all add: ac_simps)
-  done
+proof (induct \<Gamma>)
+  case Nil
+  then show ?case
+    by auto
+next
+  case (Cons a \<Gamma>)
+  then show ?case
+    by (cases a) (simp_all add: ac_simps)
+qed
 
 lemma liftT_decT [simp]:
   "k \<le> k' \<Longrightarrow> \<up>\<^sub>\<tau> n k' (\<down>\<^sub>\<tau> m k T) = \<down>\<^sub>\<tau> m k (\<up>\<^sub>\<tau> n (m + k') T)"
@@ -399,14 +380,12 @@ lemma liftT_substT_strange:
   "\<up>\<^sub>\<tau> n k T[n + k \<mapsto>\<^sub>\<tau> U]\<^sub>\<tau> = \<up>\<^sub>\<tau> n (Suc k) T[k \<mapsto>\<^sub>\<tau> \<up>\<^sub>\<tau> n 0 U]\<^sub>\<tau>"
   "\<up>\<^sub>r\<^sub>\<tau> n k rT[n + k \<mapsto>\<^sub>\<tau> U]\<^sub>r\<^sub>\<tau> = \<up>\<^sub>r\<^sub>\<tau> n (Suc k) rT[k \<mapsto>\<^sub>\<tau> \<up>\<^sub>\<tau> n 0 U]\<^sub>r\<^sub>\<tau>"
   "\<up>\<^sub>f\<^sub>\<tau> n k fT[n + k \<mapsto>\<^sub>\<tau> U]\<^sub>f\<^sub>\<tau> = \<up>\<^sub>f\<^sub>\<tau> n (Suc k) fT[k \<mapsto>\<^sub>\<tau> \<up>\<^sub>\<tau> n 0 U]\<^sub>f\<^sub>\<tau>"
-  apply (induct T and rT and fT arbitrary: n k and n k and n k
+proof (induct T and rT and fT arbitrary: n k and n k and n k
     rule: liftT.induct liftrT.induct liftfT.induct)
-  apply simp_all
-  apply (thin_tac "\<And>x. PROP P x" for P :: "_ \<Rightarrow> prop")
-  apply (drule_tac x=n in meta_spec)
-  apply (drule_tac x="Suc k" in meta_spec)
-  apply simp
-  done
+  case (TyAll x1 x2)
+  then show ?case
+    by (metis add.commute add_Suc liftT.simps(4) plus_1_eq_Suc substTT.simps(4))
+qed auto
 
 lemma liftp_liftp [simp]:
   "k \<le> k' \<Longrightarrow> k' \<le> k + n \<Longrightarrow> \<up>\<^sub>p n' k' (\<up>\<^sub>p n k p) = \<up>\<^sub>p (n + n') k p"
@@ -430,19 +409,25 @@ lemma lift_lift [simp]:
 
 lemma liftE_liftE [simp]:
   "k \<le> k' \<Longrightarrow> k' \<le> k + n \<Longrightarrow> \<up>\<^sub>e n' k' (\<up>\<^sub>e n k \<Gamma>) = \<up>\<^sub>e (n + n') k \<Gamma>"
-  apply (induct \<Gamma> arbitrary: k k')
-  apply simp_all
-  apply (case_tac a)
-  apply simp_all
-  done
+proof (induct \<Gamma> arbitrary: k k')
+  case Nil
+  then show ?case by auto
+next
+  case (Cons a \<Gamma>)
+  then show ?case
+    by (cases a) auto
+qed
 
 lemma liftE_liftE' [simp]:
   "i + m \<le> j \<Longrightarrow> \<up>\<^sub>e n j (\<up>\<^sub>e m i \<Gamma>) = \<up>\<^sub>e m i (\<up>\<^sub>e n (j - m) \<Gamma>)"
-  apply (induct \<Gamma> arbitrary: i j m n)
-  apply simp_all
-  apply (case_tac a)
-  apply simp_all
-  done
+proof (induct \<Gamma> arbitrary: i j m n)
+  case Nil
+  then show ?case by auto
+next
+  case (Cons a \<Gamma>)
+  then show ?case
+    by (cases a) auto
+qed
 
 lemma substT_substT:
   "i \<le> j \<Longrightarrow>
@@ -451,14 +436,12 @@ lemma substT_substT:
      rT[Suc j \<mapsto>\<^sub>\<tau> V]\<^sub>r\<^sub>\<tau>[i \<mapsto>\<^sub>\<tau> U[j - i \<mapsto>\<^sub>\<tau> V]\<^sub>\<tau>]\<^sub>r\<^sub>\<tau> = rT[i \<mapsto>\<^sub>\<tau> U]\<^sub>r\<^sub>\<tau>[j \<mapsto>\<^sub>\<tau> V]\<^sub>r\<^sub>\<tau>"
   "i \<le> j \<Longrightarrow>
      fT[Suc j \<mapsto>\<^sub>\<tau> V]\<^sub>f\<^sub>\<tau>[i \<mapsto>\<^sub>\<tau> U[j - i \<mapsto>\<^sub>\<tau> V]\<^sub>\<tau>]\<^sub>f\<^sub>\<tau> = fT[i \<mapsto>\<^sub>\<tau> U]\<^sub>f\<^sub>\<tau>[j \<mapsto>\<^sub>\<tau> V]\<^sub>f\<^sub>\<tau>"
-  apply (induct T and rT and fT arbitrary: i j U V and i j U V and i j U V
+proof (induct T and rT and fT arbitrary: i j U V and i j U V and i j U V
     rule: liftT.induct liftrT.induct liftfT.induct)
-  apply (simp_all add: diff_Suc split: nat.split)
-  apply (thin_tac "\<And>x. PROP P x" for P :: "_ \<Rightarrow> prop")
-  apply (drule_tac x="Suc i" in meta_spec)
-  apply (drule_tac x="Suc j" in meta_spec)
-  apply simp
-  done
+  case (TyAll x1 x2)
+  then show ?case
+    by (metis Suc_eq_plus1 diff_Suc_Suc not_less_eq_eq substTT.simps(4))
+qed auto
 
 lemma substT_decT [simp]:
   "k \<le> j \<Longrightarrow> (\<down>\<^sub>\<tau> i k T)[j \<mapsto>\<^sub>\<tau> U]\<^sub>\<tau> = \<down>\<^sub>\<tau> i k (T[i + j \<mapsto>\<^sub>\<tau> U]\<^sub>\<tau>)"
@@ -470,10 +453,14 @@ lemma substT_decT' [simp]:
 
 lemma substE_substE:
   "i \<le> j \<Longrightarrow> \<Gamma>[Suc j \<mapsto>\<^sub>\<tau> V]\<^sub>e[i \<mapsto>\<^sub>\<tau> U[j - i \<mapsto>\<^sub>\<tau> V]\<^sub>\<tau>]\<^sub>e = \<Gamma>[i \<mapsto>\<^sub>\<tau> U]\<^sub>e[j \<mapsto>\<^sub>\<tau> V]\<^sub>e"
-  apply (induct \<Gamma>)
-  apply (case_tac [2] a)
-  apply (simp_all add: substT_substT [symmetric])
-  done
+proof (induct \<Gamma>)
+  case Nil
+  then show ?case by auto
+next
+  case (Cons a \<Gamma>)
+  then show ?case
+    by (cases a) (simp_all add: substT_substT [symmetric])
+qed
 
 lemma substT_decE [simp]:
   "i \<le> j \<Longrightarrow> \<down>\<^sub>e k (Suc j) \<Gamma>[i \<mapsto>\<^sub>\<tau> Top]\<^sub>e = \<down>\<^sub>e k j (\<Gamma>[i \<mapsto>\<^sub>\<tau> Top]\<^sub>e)"
@@ -494,11 +481,7 @@ theorem decE_Nil [simp]: "\<down>\<^sub>e n k [] = []"
 
 theorem decE_Cons [simp]:
   "\<down>\<^sub>e n k (B \<Colon> \<Gamma>) = mapB (\<down>\<^sub>\<tau> n (k + \<parallel>\<Gamma>\<parallel>)) B \<Colon> \<down>\<^sub>e n k \<Gamma>"
-  apply (induct n arbitrary: B \<Gamma>)
-  apply (case_tac B)
-  apply (case_tac [3] B)
-  apply simp_all
-  done
+  by (induct n arbitrary: B \<Gamma>; case_tac B; force)
 
 theorem decE_app [simp]:
   "\<down>\<^sub>e n k (\<Gamma> @ \<Delta>) = \<down>\<^sub>e n (k + \<parallel>\<Delta>\<parallel>) \<Gamma> @ \<down>\<^sub>e n k \<Delta>"
@@ -506,23 +489,28 @@ theorem decE_app [simp]:
 
 theorem decT_liftT [simp]:
   "k \<le> k' \<Longrightarrow> k' + m \<le> k + n \<Longrightarrow> \<down>\<^sub>\<tau> m k' (\<up>\<^sub>\<tau> n k \<Gamma>) = \<up>\<^sub>\<tau> (n - m) k \<Gamma>"
-  apply (induct m arbitrary: n)
-  apply (subgoal_tac [2] "k' + m \<le> k + (n - Suc 0)")
-  apply simp_all
-  done
+  by (induct m arbitrary: n) auto
 
 theorem decE_liftE [simp]:
   "k \<le> k' \<Longrightarrow> k' + m \<le> k + n \<Longrightarrow> \<down>\<^sub>e m k' (\<up>\<^sub>e n k \<Gamma>) = \<up>\<^sub>e (n - m) k \<Gamma>"
-  apply (induct \<Gamma> arbitrary: k k')
-  apply (case_tac [2] a)
-  apply simp_all
-  done
+proof (induct \<Gamma> arbitrary: k k')
+  case Nil
+  then show ?case by auto
+next
+  case (Cons a \<Gamma>)
+  then show ?case 
+    by (cases a) auto
+qed
 
 theorem liftE0 [simp]: "\<up>\<^sub>e 0 k \<Gamma> = \<Gamma>"
-  apply (induct \<Gamma>)
-  apply (case_tac [2] a)
-  apply simp_all
-  done
+proof (induct \<Gamma>)
+  case Nil
+  then show ?case by auto
+next
+  case (Cons a \<Gamma>)
+  then show ?case 
+    by (cases a) auto
+qed
 
 lemma decT_decT [simp]: "\<down>\<^sub>\<tau> n k (\<down>\<^sub>\<tau> n' (k + n) T) = \<down>\<^sub>\<tau> (n + n') k T"
   by (induct n arbitrary: k T) simp_all
@@ -627,117 +615,130 @@ lemma wf_VarB: "\<Gamma> \<turnstile>\<^sub>w\<^sub>f T \<Longrightarrow> \<Gamm
 lemma map_is_TVarb:
   "map is_TVarB \<Gamma>' = map is_TVarB \<Gamma> \<Longrightarrow>
     \<Gamma>\<langle>i\<rangle> = \<lfloor>TVarB T\<rfloor> \<Longrightarrow> \<exists>T. \<Gamma>'\<langle>i\<rangle> = \<lfloor>TVarB T\<rfloor>"
-  apply (induct \<Gamma> arbitrary: \<Gamma>' T i)
-  apply simp
-  apply (auto split: nat.split_asm)
-  apply (case_tac z)
-  apply simp_all
-  done
+proof (induct \<Gamma> arbitrary: \<Gamma>' T i)
+  case Nil
+  then show ?case by auto
+next
+  case (Cons a \<Gamma>)
+  then have "\<And>z . \<lbrakk>is_TVarB z\<rbrakk> \<Longrightarrow> \<exists>T. z = TVarB T"
+    by (metis binding.exhaust is_TVarB.simps(1))
+  with Cons show ?case by (auto split: nat.split_asm)
+qed
 
 lemma wf_equallength:
   assumes H: "\<Gamma> \<turnstile>\<^sub>w\<^sub>f T"
   shows "map is_TVarB \<Gamma>' = map is_TVarB \<Gamma> \<Longrightarrow> \<Gamma>' \<turnstile>\<^sub>w\<^sub>f T" using H
-  apply (induct arbitrary: \<Gamma>')
-  apply (auto intro: well_formed.intros dest: map_is_TVarb)+
-  apply (fastforce intro: well_formed.intros)
-  done
+proof (induct arbitrary: \<Gamma>')
+  case (wf_TVar \<Gamma> i T)
+  then show ?case
+    using map_is_TVarb well_formed.wf_TVar by blast
+next
+  case (wf_RcdT fs \<Gamma>)
+  then show ?case
+    by (simp add: split_beta well_formed.wf_RcdT)
+qed (fastforce intro: well_formed.intros)+
 
 lemma wfE_replace:
   "\<Delta> @ B \<Colon> \<Gamma> \<turnstile>\<^sub>w\<^sub>f \<Longrightarrow> \<Gamma> \<turnstile>\<^sub>w\<^sub>f\<^sub>B B' \<Longrightarrow> is_TVarB B' = is_TVarB B \<Longrightarrow>
      \<Delta> @ B' \<Colon> \<Gamma> \<turnstile>\<^sub>w\<^sub>f"
-  apply (induct \<Delta>)
-  apply simp
-  apply (erule wf_Cons)
-  apply (erule well_formedE_cases)
-  apply assumption
-  apply simp
-  apply (erule well_formedE_cases)
-  apply (rule wf_Cons)
-  apply (case_tac a)
-  apply simp
-  apply (rule wf_equallength)
-  apply assumption
-  apply simp
-  apply simp
-  apply (rule wf_equallength)
-  apply assumption
-  apply simp
-  apply simp
-  done
+proof (induct \<Delta>)
+  case Nil
+  then show ?case
+    by (metis append_Nil well_formedE_cases wf_Cons)
+next
+  case (Cons a \<Delta>)
+  have "a \<Colon> \<Delta> @ B' \<Colon> \<Gamma> \<turnstile>\<^sub>w\<^sub>f"
+  proof (rule wf_Cons)
+    have \<section>: "\<Delta> @ B \<Colon> \<Gamma> \<turnstile>\<^sub>w\<^sub>f" "\<Delta> @ B \<Colon> \<Gamma> \<turnstile>\<^sub>w\<^sub>f\<^sub>B a"
+      using Cons.prems(1) well_formedE_cases by auto
+    with Cons.prems wf_equallength show "\<Delta> @ B' \<Colon> \<Gamma> \<turnstile>\<^sub>w\<^sub>f\<^sub>B a"
+      by auto
+    show "\<Delta> @ B' \<Colon> \<Gamma> \<turnstile>\<^sub>w\<^sub>f"
+      by (simp add: "\<section>" Cons)
+  qed
+  with Cons well_formedE_cases show ?case by auto
+qed
 
 lemma wf_weaken:
   assumes H: "\<Delta> @ \<Gamma> \<turnstile>\<^sub>w\<^sub>f T"
   shows "\<up>\<^sub>e (Suc 0) 0 \<Delta> @ B \<Colon> \<Gamma> \<turnstile>\<^sub>w\<^sub>f \<up>\<^sub>\<tau> (Suc 0) \<parallel>\<Delta>\<parallel> T"
   using H
-  apply (induct "\<Delta> @ \<Gamma>" T arbitrary: \<Delta>)
-  apply simp_all
-  apply (rule conjI)
-  apply (rule impI)
-  apply (rule wf_TVar)
-  apply simp
-  apply (rule impI)
-  apply (rule wf_TVar)
-  apply (subgoal_tac "Suc i - \<parallel>\<Delta>\<parallel> = Suc (i - \<parallel>\<Delta>\<parallel>)")
-  apply simp
-  apply arith
-  apply (rule wf_Top)
-  apply (rule wf_arrow)
-  apply simp
-  apply simp
-  apply (rule wf_all)
-  apply simp
-  apply simp
-  \<comment> \<open>records\<close>
-  apply (rule wf_RcdT)
-  apply simp
-  apply (rule ballpI)
-  apply (drule liftrT_setD)
-  apply (erule exE conjE)+
-  apply (drule_tac x=l and y="T[\<parallel>\<Delta>\<parallel> \<mapsto>\<^sub>\<tau> Top]\<^sub>\<tau>" in bpspec)
-  apply simp+
-  done
+proof (induct "\<Delta> @ \<Gamma>" T arbitrary: \<Delta>)
+  case (wf_TVar i T)
+  show ?case
+  proof (cases "i < \<parallel>\<Delta>\<parallel>")
+    case True
+    with wf_TVar show ?thesis
+      by (force intro: well_formed.wf_TVar)
+  next
+    case False
+    then have "Suc i - \<parallel>\<Delta>\<parallel> = Suc (i - \<parallel>\<Delta>\<parallel>)"
+      using Suc_diff_le leI by blast
+    with wf_TVar show ?thesis
+      by (force intro: well_formed.wf_TVar)
+  qed
+next
+  case (wf_RcdT fs)
+  then show ?case
+    by (fastforce dest: liftrT_setD intro: well_formed.wf_RcdT)
+qed (fastforce intro: well_formed.intros)+
 
 lemma wf_weaken': "\<Gamma> \<turnstile>\<^sub>w\<^sub>f T \<Longrightarrow> \<Delta> @ \<Gamma> \<turnstile>\<^sub>w\<^sub>f \<up>\<^sub>\<tau> \<parallel>\<Delta>\<parallel> 0 T"
-  apply (induct \<Delta>)
-  apply simp_all
-  apply (drule_tac B=a in wf_weaken [of "[]", simplified])
-  apply simp
-  done
+proof (induct \<Delta>)
+  case Nil
+  then show ?case
+    by simp
+next
+  case (Cons a \<Delta>)
+  with wf_weaken [of "[]"]  show ?case
+    by fastforce
+qed
 
 lemma wfE_weaken: "\<Delta> @ \<Gamma> \<turnstile>\<^sub>w\<^sub>f \<Longrightarrow> \<Gamma> \<turnstile>\<^sub>w\<^sub>f\<^sub>B B \<Longrightarrow> \<up>\<^sub>e (Suc 0) 0 \<Delta> @ B \<Colon> \<Gamma> \<turnstile>\<^sub>w\<^sub>f"
-  apply (induct \<Delta>)
-  apply simp
-  apply (rule wf_Cons)
-  apply assumption+
-  apply simp
-  apply (rule wf_Cons)
-  apply (erule well_formedE_cases)
-  apply (case_tac a)
-  apply simp
-  apply (rule wf_weaken)
-  apply assumption
-  apply simp
-  apply (rule wf_weaken)
-  apply assumption
-  apply (erule well_formedE_cases)
-  apply simp
-  done
+proof (induct \<Delta>)
+  case Nil
+  then show ?case
+    by (simp add: wf_Cons)
+next
+  case (Cons a \<Delta>)
+  show ?case
+  proof (cases a)
+    case (VarB x1)
+    with Cons have "VarB (\<up>\<^sub>\<tau> (Suc 0) \<parallel>\<Delta>\<parallel> x1) \<Colon> \<up>\<^sub>e (Suc 0) 0 \<Delta> @ B \<Colon> \<Gamma> \<turnstile>\<^sub>w\<^sub>f"
+      by (metis append_Cons type_ofB.simps(1) well_formedE_cases wf_Cons wf_weaken)
+    with VarB show ?thesis 
+      by simp
+  next
+    case (TVarB x2)
+    with Cons have "TVarB (\<up>\<^sub>\<tau> (Suc 0) \<parallel>\<Delta>\<parallel> x2) \<Colon> \<up>\<^sub>e (Suc 0) 0 \<Delta> @ B \<Colon> \<Gamma> \<turnstile>\<^sub>w\<^sub>f"
+      by (metis append_Cons type_ofB.simps(2) well_formedE_cases wf_Cons wf_weaken)
+    with TVarB show ?thesis
+      by simp
+  qed
+qed
 
 lemma wf_liftB:
   assumes H: "\<Gamma> \<turnstile>\<^sub>w\<^sub>f"
   shows "\<Gamma>\<langle>i\<rangle> = \<lfloor>VarB T\<rfloor> \<Longrightarrow> \<Gamma> \<turnstile>\<^sub>w\<^sub>f \<up>\<^sub>\<tau> (Suc i) 0 T"
   using H
-  apply (induct arbitrary: i)
-  apply simp
-  apply (simp split: nat.split_asm)
-  apply (frule_tac B="VarB T" in wf_weaken [of "[]", simplified])
-  apply simp+
-  apply (rename_tac nat)
-  apply (drule_tac x=nat in meta_spec)
-  apply simp
-  apply (frule_tac T="\<up>\<^sub>\<tau> (Suc nat) 0 T" in wf_weaken [of "[]", simplified])
-  apply simp
-  done
+proof (induct arbitrary: i)
+  case wf_Nil
+  then show ?case
+    by simp
+next
+  case (wf_Cons \<Gamma> B i)
+  show ?case
+  proof -
+    have "VarB T \<Colon> \<Gamma> \<turnstile>\<^sub>w\<^sub>f \<up>\<^sub>\<tau> (Suc 0) 0 T" if "\<Gamma> \<turnstile>\<^sub>w\<^sub>f T"
+      by (metis append_self_conv2 liftE.simps(1) list.size(3) wf_weaken that)
+    moreover have "B \<Colon> \<Gamma> \<turnstile>\<^sub>w\<^sub>f \<up>\<^sub>\<tau> (Suc (Suc k)) 0 T" if "\<Gamma>\<langle>k\<rangle> = \<lfloor>VarB T\<rfloor>" for k
+      using that 
+      by (metis One_nat_def Suc_eq_plus1 append_self_conv2 less_eq_nat.simps(1)
+          liftE.simps(1) liftT_liftT(1) list.size(3) wf_Cons.hyps(3) wf_weaken)
+    ultimately show ?thesis
+      using wf_Cons by (auto split: nat.split_asm)
+  qed
+qed
 
 theorem wf_subst:
   "\<Delta> @ B \<Colon> \<Gamma> \<turnstile>\<^sub>w\<^sub>f T \<Longrightarrow> \<Gamma> \<turnstile>\<^sub>w\<^sub>f U \<Longrightarrow> \<Delta>[0 \<mapsto>\<^sub>\<tau> U]\<^sub>e @ \<Gamma> \<turnstile>\<^sub>w\<^sub>f T[\<parallel>\<Delta>\<parallel> \<mapsto>\<^sub>\<tau> U]\<^sub>\<tau>"
@@ -745,84 +746,76 @@ theorem wf_subst:
      \<forall>(l, T) \<in> set rT. \<Delta>[0 \<mapsto>\<^sub>\<tau> U]\<^sub>e @ \<Gamma> \<turnstile>\<^sub>w\<^sub>f T[\<parallel>\<Delta>\<parallel> \<mapsto>\<^sub>\<tau> U]\<^sub>\<tau>"
   "\<Delta> @ B \<Colon> \<Gamma> \<turnstile>\<^sub>w\<^sub>f snd (fT::fldT) \<Longrightarrow> \<Gamma> \<turnstile>\<^sub>w\<^sub>f U \<Longrightarrow>
      \<Delta>[0 \<mapsto>\<^sub>\<tau> U]\<^sub>e @ \<Gamma> \<turnstile>\<^sub>w\<^sub>f snd fT[\<parallel>\<Delta>\<parallel> \<mapsto>\<^sub>\<tau> U]\<^sub>\<tau>"
-  apply (induct T and rT and fT arbitrary: \<Delta> and \<Delta> and \<Delta>
+proof (induct T and rT and fT arbitrary: \<Delta> and \<Delta> and \<Delta>
     rule: liftT.induct liftrT.induct liftfT.induct)
-  apply (rename_tac nat \<Delta>)
-  apply simp_all
-  apply (rule conjI)
-  apply (rule impI)
-  apply (drule_tac \<Gamma>=\<Gamma> and \<Delta>="\<Delta>[0 \<mapsto>\<^sub>\<tau> U]\<^sub>e" in wf_weaken')
-  apply simp
-  apply (rule impI conjI)+
-  apply (erule well_formed_cases)
-  apply (rule wf_TVar)
-  apply (simp split: nat.split_asm)
-  apply (subgoal_tac "\<parallel>\<Delta>\<parallel> \<le> nat - Suc 0")
-  apply (rename_tac nata)
-  apply (subgoal_tac "nat - Suc \<parallel>\<Delta>\<parallel> = nata")
-  apply (simp (no_asm_simp))
-  apply arith
-  apply arith
-  apply (rule impI)
-  apply (erule well_formed_cases)
-  apply (rule wf_TVar)
-  apply simp
-  apply (rule wf_Top)
-  apply (erule well_formed_cases)
-  apply (rule wf_arrow)
-  apply simp+
-  apply (rename_tac type1 type2 \<Delta>)
-  apply (erule well_formed_cases)
-  apply (rule wf_all)
-  apply simp
-  apply (thin_tac "\<And>x. PROP P x" for P :: "_ \<Rightarrow> prop")
-  apply (drule_tac x="TVarB type1 \<Colon> \<Delta>" in meta_spec)
-  apply simp
-  apply (erule well_formed_cases)
-  apply (rule wf_RcdT)
-  apply simp
-  apply (rule ballpI)
-  apply (drule substrT_setD)
-  apply (erule exE conjE)+
-  apply (drule meta_spec)
-  apply (drule meta_mp)
-  apply assumption
-  apply (thin_tac "\<forall>x \<in> S. P x" for S P)
-  apply (drule bpspec)
-  apply assumption
-  apply simp
-  apply (simp add: split_paired_all)
-  done
+  case (TVar i \<Delta>)
+  show ?case
+  proof (cases "i \<le> \<parallel>\<Delta>\<parallel>")
+    case True
+    with TVar.prems have "\<Delta>[0 \<mapsto>\<^sub>\<tau> U]\<^sub>e @ \<Gamma> \<turnstile>\<^sub>w\<^sub>f \<up>\<^sub>\<tau> \<parallel>\<Delta>\<parallel> 0 U"
+      by (metis substE_length wf_weaken')
+    with TVar True show ?thesis
+      by (auto elim!: well_formed_cases simp add: wf_TVar split: nat.split_asm)
+  next
+    case False
+    then have "\<parallel>\<Delta>\<parallel> \<le> i - 1"
+      by simp
+    with TVar False show ?thesis
+      by (auto elim!: well_formed_cases simp: wf_TVar split: nat_diff_split_asm nat.split_asm)
+  qed
+next
+  case Top
+  then show ?case
+    by (simp add: wf_Top)
+next
+  case (Fun x1 x2)
+  then show ?case
+    by (metis substTT.simps(3) well_formed_cases(3) wf_arrow)
+next
+  case (TyAll type1 type2 \<Delta>)
+  then have "(TVarB type1 \<Colon> \<Delta>)[0 \<mapsto>\<^sub>\<tau> U]\<^sub>e @ \<Gamma> \<turnstile>\<^sub>w\<^sub>f type2[\<parallel>TVarB type1 \<Colon> \<Delta>\<parallel> \<mapsto>\<^sub>\<tau> U]\<^sub>\<tau>"
+    by (metis append_Cons well_formed_cases(4))
+  with TyAll show ?case
+    using wf_all by (force simp: elim!: well_formed_cases)
+next
+  case (RcdT x)
+  then show ?case
+    by (force simp: intro!: wf_RcdT dest: substrT_setD elim: well_formed_cases)
+qed (auto simp: split_beta)
 
 theorem wf_dec: "\<Delta> @ \<Gamma> \<turnstile>\<^sub>w\<^sub>f T \<Longrightarrow> \<Gamma> \<turnstile>\<^sub>w\<^sub>f \<down>\<^sub>\<tau> \<parallel>\<Delta>\<parallel> 0 T"
-  apply (induct \<Delta> arbitrary: T)
-  apply simp
-  apply simp
-  apply (drule wf_subst(1) [of "[]", simplified])
-  apply (rule wf_Top)
-  apply simp
-  done
+proof (induct \<Delta> arbitrary: T)
+  case Nil
+  then show ?case by auto
+next
+  case (Cons a \<Delta>)
+  with wf_subst(1) [of "[]"] wf_Top show ?case
+    by force
+qed
 
 theorem wfE_subst: "\<Delta> @ B \<Colon> \<Gamma> \<turnstile>\<^sub>w\<^sub>f \<Longrightarrow> \<Gamma> \<turnstile>\<^sub>w\<^sub>f U \<Longrightarrow> \<Delta>[0 \<mapsto>\<^sub>\<tau> U]\<^sub>e @ \<Gamma> \<turnstile>\<^sub>w\<^sub>f"
-  apply (induct \<Delta>)
-  apply simp
-  apply (erule well_formedE_cases)
-  apply assumption
-  apply simp
-  apply (case_tac a)
-  apply (erule well_formedE_cases)
-  apply (rule wf_Cons)
-  apply simp
-  apply (rule wf_subst)
-  apply assumption+
-  apply simp
-  apply (erule well_formedE_cases)
-  apply (rule wf_Cons)
-  apply simp
-  apply (rule wf_subst)
-  apply assumption+
-  done
-
+proof (induct \<Delta>)
+  case Nil
+  then show ?case
+    using well_formedE_cases by auto
+next
+  case (Cons a \<Delta>)
+  show ?case
+  proof (cases a)
+    case (VarB x)
+    with Cons have "VarB (x[\<parallel>\<Delta>\<parallel> \<mapsto>\<^sub>\<tau> U]\<^sub>\<tau>) \<Colon> \<Delta>[0 \<mapsto>\<^sub>\<tau> U]\<^sub>e @ \<Gamma> \<turnstile>\<^sub>w\<^sub>f"
+      by (metis append_Cons type_ofB.simps(1) well_formedE_cases wf_VarB wf_subst(1))
+    then show ?thesis
+      using VarB by force
+  next
+    case (TVarB x)
+    with Cons have "TVarB (x[\<parallel>\<Delta>\<parallel> \<mapsto>\<^sub>\<tau> U]\<^sub>\<tau>) \<Colon> \<Delta>[0 \<mapsto>\<^sub>\<tau> U]\<^sub>e @ \<Gamma> \<turnstile>\<^sub>w\<^sub>f"
+      by (metis append_Cons type_ofB.simps(2) well_formedE_cases wf_TVarB wf_subst(1))
+    with TVarB show ?thesis
+      by simp
+  qed
+qed
+ 
 subsection \<open>Subtyping\<close>
 
 text \<open>
@@ -843,7 +836,7 @@ are already well-formed.
 \<close>
 
 inductive
-  subtyping :: "env \<Rightarrow> type \<Rightarrow> type \<Rightarrow> bool"  (\<open>_ \<turnstile> _ <: _\<close> [50, 50, 50] 50)
+  subtyping :: "env \<Rightarrow> type \<Rightarrow> type \<Rightarrow> bool"  (\<open>_ /\<turnstile> _ <: _\<close> [50, 50, 50] 50)
 where
   SA_Top: "\<Gamma> \<turnstile>\<^sub>w\<^sub>f \<Longrightarrow> \<Gamma> \<turnstile>\<^sub>w\<^sub>f S \<Longrightarrow> \<Gamma> \<turnstile> S <: Top"
 | SA_refl_TVar: "\<Gamma> \<turnstile>\<^sub>w\<^sub>f \<Longrightarrow> \<Gamma> \<turnstile>\<^sub>w\<^sub>f TVar i \<Longrightarrow> \<Gamma> \<turnstile> TVar i <: TVar i"
@@ -869,12 +862,7 @@ lemma wf_subtypeE:
   assumes H: "\<Gamma> \<turnstile> T <: U"
   and H': "\<Gamma> \<turnstile>\<^sub>w\<^sub>f \<Longrightarrow> \<Gamma> \<turnstile>\<^sub>w\<^sub>f T \<Longrightarrow> \<Gamma> \<turnstile>\<^sub>w\<^sub>f U \<Longrightarrow> P"
   shows "P"
-  apply (rule H')
-  apply (rule wf_subtype_env)
-  apply (rule H)
-  apply (rule wf_subtype [OF H, THEN conjunct1])
-  apply (rule wf_subtype [OF H, THEN conjunct2])
-  done
+  using H H' wf_subtype wf_subtype_env by force
 
 lemma subtype_refl: \<comment> \<open>A.1\<close>
   "\<Gamma> \<turnstile>\<^sub>w\<^sub>f \<Longrightarrow> \<Gamma> \<turnstile>\<^sub>w\<^sub>f T \<Longrightarrow> \<Gamma> \<turnstile> T <: T"
@@ -883,8 +871,7 @@ lemma subtype_refl: \<comment> \<open>A.1\<close>
   by (induct T and fTs and fT arbitrary: \<Gamma> and \<Gamma> and \<Gamma>
     rule: liftT.induct liftrT.induct liftfT.induct,
     simp_all add: split_paired_all, simp_all)
-    (blast intro: subtyping.intros wf_Nil wf_TVarB bexpI intro!: ballpI
-       elim: well_formed_cases ballpE elim!: bexpE)+
+    (blast intro: subtyping.intros wf_Nil wf_TVarB elim: well_formed_cases)+
 
 lemma subtype_weaken:
   assumes H: "\<Delta> @ \<Gamma> \<turnstile> P <: Q"
@@ -966,13 +953,19 @@ qed
 
 lemma subtype_weaken': \<comment> \<open>A.2\<close>
   "\<Gamma> \<turnstile> P <: Q \<Longrightarrow> \<Delta> @ \<Gamma> \<turnstile>\<^sub>w\<^sub>f \<Longrightarrow> \<Delta> @ \<Gamma> \<turnstile> \<up>\<^sub>\<tau> \<parallel>\<Delta>\<parallel> 0 P <: \<up>\<^sub>\<tau> \<parallel>\<Delta>\<parallel> 0 Q"
-  apply (induct \<Delta>)
-  apply simp_all
-  apply (erule well_formedE_cases)
-  apply simp
-  apply (drule_tac B="a" and \<Gamma>="\<Delta> @ \<Gamma>" in subtype_weaken [of "[]", simplified])
-  apply simp_all
-  done
+proof (induct \<Delta>)
+  case Nil
+  then show ?case 
+    by auto
+next
+  case (Cons a \<Delta>)
+  then have "\<Delta> @ \<Gamma> \<turnstile>\<^sub>w\<^sub>f\<^sub>B a" "\<Delta> @ \<Gamma> \<turnstile>\<^sub>w\<^sub>f"
+    using well_formedE_cases by auto
+  with Cons show ?case
+    using subtype_weaken [where B="a" and \<Gamma>="\<Delta> @ \<Gamma>"]
+    by (metis Suc_eq_plus1 append_Cons append_Nil bot_nat_0.extremum length_Cons
+        liftE.simps(1) liftT_liftT(1) list.size(3))
+qed
 
 lemma fieldT_size [simp]:
   "(a, T) \<in> set fs \<Longrightarrow> size T < Suc (size_list (size_prod (\<lambda>x. 0) size) fs)"
@@ -1130,177 +1123,119 @@ qed
 
 lemma substT_subtype: \<comment> \<open>A.10\<close>
   assumes H: "\<Delta> @ TVarB Q \<Colon> \<Gamma> \<turnstile> S <: T"
-  shows "\<Gamma> \<turnstile> P <: Q \<Longrightarrow>
-    \<Delta>[0 \<mapsto>\<^sub>\<tau> P]\<^sub>e @ \<Gamma> \<turnstile> S[\<parallel>\<Delta>\<parallel> \<mapsto>\<^sub>\<tau> P]\<^sub>\<tau> <: T[\<parallel>\<Delta>\<parallel> \<mapsto>\<^sub>\<tau> P]\<^sub>\<tau>"
+  shows "\<Gamma> \<turnstile> P <: Q \<Longrightarrow> \<Delta>[0 \<mapsto>\<^sub>\<tau> P]\<^sub>e @ \<Gamma> \<turnstile> S[\<parallel>\<Delta>\<parallel> \<mapsto>\<^sub>\<tau> P]\<^sub>\<tau> <: T[\<parallel>\<Delta>\<parallel> \<mapsto>\<^sub>\<tau> P]\<^sub>\<tau>"
   using H
-  apply (induct "\<Delta> @ TVarB Q \<Colon> \<Gamma>" S T arbitrary: \<Delta>)
-  apply simp_all
-  apply (rule SA_Top)
-  apply (rule wfE_subst)
-  apply assumption
-  apply (erule wf_subtypeE)
-  apply assumption
-  apply (rule wf_subst)
-  apply assumption
-  apply (erule wf_subtypeE)
-  apply assumption
-  apply (rule impI conjI)+
-  apply (rule subtype_refl)
-  apply (rule wfE_subst)
-  apply assumption
-  apply (erule wf_subtypeE)
-  apply assumption
-  apply (erule wf_subtypeE)
-  apply (drule_tac T=P and \<Delta>="\<Delta>[0 \<mapsto>\<^sub>\<tau> P]\<^sub>e" in wf_weaken')
-  apply simp
-  apply (rule conjI impI)+
-  apply (rule SA_refl_TVar)
-  apply (rule wfE_subst)
-  apply assumption
-  apply (erule wf_subtypeE)
-  apply assumption
-  apply (erule wf_subtypeE)
-  apply (drule wf_subst)
-  apply assumption
-  apply simp
-  apply (rule impI)
-  apply (rule SA_refl_TVar)
-  apply (rule wfE_subst)
-  apply assumption
-  apply (erule wf_subtypeE)
-  apply assumption
-  apply (erule wf_subtypeE)
-  apply (drule wf_subst)
-  apply assumption
-  apply simp
-  apply (rule conjI impI)+
-  apply simp
-  apply (drule_tac \<Gamma>=\<Gamma> and \<Delta>="\<Delta>[0 \<mapsto>\<^sub>\<tau> P]\<^sub>e" in subtype_weaken')
-  apply (erule wf_subtypeE)+
-  apply assumption
-  apply simp
-  apply (rule subtype_trans(1))
-  apply assumption+
-  apply (rule conjI impI)+
-  apply (rule SA_trans_TVar)
-  apply (simp split: nat.split_asm)
-  apply (subgoal_tac "\<parallel>\<Delta>\<parallel> \<le> i - Suc 0")
-  apply (rename_tac nat)
-  apply (subgoal_tac "i - Suc \<parallel>\<Delta>\<parallel> = nat")
-  apply (simp (no_asm_simp))
-  apply arith
-  apply arith
-  apply simp
-  apply (rule impI)
-  apply (rule SA_trans_TVar)
-  apply (simp split: nat.split_asm)
-  apply (subgoal_tac "Suc (\<parallel>\<Delta>\<parallel> - Suc 0) = \<parallel>\<Delta>\<parallel>")
-  apply (simp (no_asm_simp))
-  apply arith
-  apply (rule SA_arrow)
-  apply simp+
-  apply (rule SA_all)
-  apply simp
-  apply simp
-  apply (erule wf_subtypeE)
-  apply (rule SA_Rcd)
-  apply (erule wfE_subst)
-  apply assumption
-  apply (drule wf_subst)
-  apply assumption
-  apply simp
-  apply simp
-  apply (rule ballpI)
-  apply (drule substrT_setD)
-  apply (erule exE conjE)+
-  apply (drule bpspec)
-  apply assumption
-  apply simp
-  apply (erule exE)
-  apply (erule conjE)+
-  apply (rule exI)
-  apply (rule conjI)
-  apply (erule substrT_set)
-  apply assumption
-  done
+proof (induct "\<Delta> @ TVarB Q \<Colon> \<Gamma>" S T arbitrary: \<Delta>)
+  case (SA_Top S)
+  then show ?case
+    by (simp add: subtyping.SA_Top wfE_subst wf_subst(1) wf_subtype)
+next
+  case (SA_refl_TVar i)
+  then show ?case
+    by (meson subtype_refl(1) wfE_subst wf_subst(1) wf_subtypeE)
+next
+  case (SA_trans_TVar i U T \<Delta>)
+  have "\<Delta>[0 \<mapsto>\<^sub>\<tau> P]\<^sub>e @ \<Gamma> \<turnstile> \<up>\<^sub>\<tau> \<parallel>\<Delta>\<parallel> 0 P <: T[\<parallel>\<Delta>\<parallel> \<mapsto>\<^sub>\<tau> P]\<^sub>\<tau>"
+    if "i = \<parallel>\<Delta>\<parallel>"
+  proof -
+    have "\<lbrakk>\<Delta>[0 \<mapsto>\<^sub>\<tau> P]\<^sub>e @ \<Gamma> \<turnstile> \<up>\<^sub>\<tau> \<parallel>\<Delta>\<parallel> 0 U <: T[\<parallel>\<Delta>\<parallel> \<mapsto>\<^sub>\<tau> P]\<^sub>\<tau>; 
+     \<Delta>[0 \<mapsto>\<^sub>\<tau> P]\<^sub>e @ \<Gamma> \<turnstile> \<up>\<^sub>\<tau> \<parallel>\<Delta>[0 \<mapsto>\<^sub>\<tau> P]\<^sub>e\<parallel> 0 P <: \<up>\<^sub>\<tau> \<parallel>\<Delta>[0 \<mapsto>\<^sub>\<tau> P]\<^sub>e\<parallel> 0 U\<rbrakk>
+    \<Longrightarrow> \<Delta>[0 \<mapsto>\<^sub>\<tau> P]\<^sub>e @ \<Gamma> \<turnstile> \<up>\<^sub>\<tau> \<parallel>\<Delta>\<parallel> 0 P <: T[\<parallel>\<Delta>\<parallel> \<mapsto>\<^sub>\<tau> P]\<^sub>\<tau>"
+      by (metis substE_length subtype_trans(1))
+    then show ?thesis
+      using SA_trans_TVar that wf_subtype_env
+      by (fastforce dest: subtype_weaken' [where \<Gamma>=\<Gamma> and \<Delta>="\<Delta>[0 \<mapsto>\<^sub>\<tau> P]\<^sub>e"])
+  qed
+  moreover have "\<Delta>[0 \<mapsto>\<^sub>\<tau> P]\<^sub>e @ \<Gamma> \<turnstile> TVar (i - Suc 0) <: T[\<parallel>\<Delta>\<parallel> \<mapsto>\<^sub>\<tau> P]\<^sub>\<tau>"
+    if "\<parallel>\<Delta>\<parallel> < i"
+  proof (intro subtyping.SA_trans_TVar)
+    show "(\<Delta>[0 \<mapsto>\<^sub>\<tau> P]\<^sub>e @ \<Gamma>)\<langle>i - Suc 0\<rangle> = \<lfloor>TVarB U\<rfloor>"
+      using SA_trans_TVar that
+      by (auto split: nat.split_asm nat_diff_split)
+  next
+    show "\<Delta>[0 \<mapsto>\<^sub>\<tau> P]\<^sub>e @ \<Gamma> \<turnstile> \<up>\<^sub>\<tau> (Suc (i - Suc 0)) 0 U <: T[\<parallel>\<Delta>\<parallel> \<mapsto>\<^sub>\<tau> P]\<^sub>\<tau>"
+      using SA_trans_TVar that by fastforce
+  qed
+  moreover have "\<Delta>[0 \<mapsto>\<^sub>\<tau> P]\<^sub>e @ \<Gamma> \<turnstile> TVar i <: T[\<parallel>\<Delta>\<parallel> \<mapsto>\<^sub>\<tau> P]\<^sub>\<tau>"
+    if "\<parallel>\<Delta>\<parallel> > i"
+  proof (intro subtyping.SA_trans_TVar)
+    show "(\<Delta>[0 \<mapsto>\<^sub>\<tau> P]\<^sub>e @ \<Gamma>)\<langle>i\<rangle> = \<lfloor>TVarB (U[\<parallel>\<Delta>\<parallel> - Suc i \<mapsto>\<^sub>\<tau> P]\<^sub>\<tau>)\<rfloor>"
+      using that SA_trans_TVar by (simp split: nat.split_asm nat_diff_split)
+  next
+    show "\<Delta>[0 \<mapsto>\<^sub>\<tau> P]\<^sub>e @ \<Gamma> \<turnstile> \<up>\<^sub>\<tau> (Suc i) 0 (U[\<parallel>\<Delta>\<parallel> - Suc i \<mapsto>\<^sub>\<tau> P]\<^sub>\<tau>) <: T[\<parallel>\<Delta>\<parallel> \<mapsto>\<^sub>\<tau> P]\<^sub>\<tau>"
+      using SA_trans_TVar 
+      by (metis Suc_leI zero_le le_add_diff_inverse2 liftT_substT(1) that)
+  qed
+  ultimately show ?case
+    by auto
+next
+  case (SA_arrow T\<^sub>1 S\<^sub>1 S\<^sub>2 T\<^sub>2)
+  then show ?case
+    by (simp add: subtyping.SA_arrow)
+next
+  case (SA_all T\<^sub>1 S\<^sub>1 S\<^sub>2 T\<^sub>2)
+  then show ?case
+    by (simp add: subtyping.SA_all)
+next
+  case (SA_Rcd fs fs')
+  have "\<Delta>[0 \<mapsto>\<^sub>\<tau> P]\<^sub>e @ \<Gamma> \<turnstile>\<^sub>w\<^sub>f"
+    using SA_Rcd wfE_subst by (meson wf_subtypeE)
+  moreover have "\<Delta>[0 \<mapsto>\<^sub>\<tau> P]\<^sub>e @ \<Gamma> \<turnstile>\<^sub>w\<^sub>f RcdT (fs[\<parallel>\<Delta>\<parallel> \<mapsto>\<^sub>\<tau> P]\<^sub>r\<^sub>\<tau>)"
+    using SA_Rcd.hyps(2) SA_Rcd.prems wf_subst(1) wf_subtype by fastforce
+  moreover have "unique (fs'[\<parallel>\<Delta>\<parallel> \<mapsto>\<^sub>\<tau> P]\<^sub>r\<^sub>\<tau>)"
+    using SA_Rcd.hyps(3) by auto
+  moreover have "\<forall>(l, T) \<in> set (fs'[\<parallel>\<Delta>\<parallel> \<mapsto>\<^sub>\<tau> P]\<^sub>r\<^sub>\<tau>). \<exists>S. (l, S) \<in> set (fs[\<parallel>\<Delta>\<parallel> \<mapsto>\<^sub>\<tau> P]\<^sub>r\<^sub>\<tau>) \<and> \<Delta>[0 \<mapsto>\<^sub>\<tau> P]\<^sub>e @ \<Gamma> \<turnstile> S <: T"
+    using SA_Rcd by (smt (verit) ballpI case_prodD substrT_set substrT_setD)
+  ultimately show ?case
+    by (simp add: subtyping.SA_Rcd)
+qed
 
 lemma subst_subtype:
   assumes H: "\<Delta> @ VarB V \<Colon> \<Gamma> \<turnstile> T <: U"
   shows "\<down>\<^sub>e 1 0 \<Delta> @ \<Gamma> \<turnstile> \<down>\<^sub>\<tau> 1 \<parallel>\<Delta>\<parallel> T <: \<down>\<^sub>\<tau> 1 \<parallel>\<Delta>\<parallel> U"
   using H
-  apply (induct "\<Delta> @ VarB V \<Colon> \<Gamma>" T U arbitrary: \<Delta>)
-  apply simp_all
-  apply (rule SA_Top)
-  apply (rule wfE_subst)
-  apply assumption
-  apply (rule wf_Top)
-  apply (rule wf_subst)
-  apply assumption
-  apply (rule wf_Top)
-  apply (rule impI conjI)+
-  apply (rule SA_Top)
-  apply (rule wfE_subst)
-  apply assumption
-  apply (rule wf_Top)+
-  apply (rule conjI impI)+
-  apply (rule SA_refl_TVar)
-  apply (rule wfE_subst)
-  apply assumption
-  apply (rule wf_Top)
-  apply (drule wf_subst)
-  apply (rule wf_Top)
-  apply simp
-  apply (rule impI)
-  apply (rule SA_refl_TVar)
-  apply (rule wfE_subst)
-  apply assumption
-  apply (rule wf_Top)
-  apply (drule wf_subst)
-  apply (rule wf_Top)
-  apply simp
-  apply (rule conjI impI)+
-  apply simp
-  apply (rule conjI impI)+
-  apply (simp split: nat.split_asm)
-  apply (rule SA_trans_TVar)
-  apply (subgoal_tac "\<parallel>\<Delta>\<parallel> \<le> i - Suc 0")
-  apply (rename_tac nat)
-  apply (subgoal_tac "i - Suc \<parallel>\<Delta>\<parallel> = nat")
-  apply (simp (no_asm_simp))
-  apply arith
-  apply arith
-  apply simp
-  apply (rule impI)
-  apply (rule SA_trans_TVar)
-  apply simp
-  apply (subgoal_tac "0 < \<parallel>\<Delta>\<parallel>")
-  apply simp
-  apply arith
-  apply (rule SA_arrow)
-  apply simp+
-  apply (rule SA_all)
-  apply simp
-  apply simp
-  apply (rule SA_Rcd)
-  apply (erule wfE_subst)
-  apply (rule wf_Top)
-  apply (drule wf_subst)
-  apply (rule wf_Top)
-  apply simp
-  apply simp
-  apply (rule ballpI)
-  apply (drule substrT_setD)
-  apply (erule exE conjE)+
-  apply (drule bpspec)
-  apply assumption
-  apply simp
-  apply (erule exE)
-  apply (erule conjE)+
-  apply (rule exI)
-  apply (rule conjI)
-  apply (erule substrT_set)
-  apply assumption
-  done
+proof (induct "\<Delta> @ VarB V \<Colon> \<Gamma>" T U arbitrary: \<Delta>)
+  case (SA_Top S)
+  then show ?case
+    by (simp add: subtyping.SA_Top wfE_subst wf_Top wf_subst(1))
+next
+  case (SA_refl_TVar i)
+  then show ?case
+    by (metis One_nat_def decE.simps decT.simps subtype_refl(1) wfE_subst
+        wf_Top wf_subst(1))
+next
+  case (SA_trans_TVar i U T)
+  then have *: "\<parallel>\<Delta>\<parallel> > i
+    \<Longrightarrow> \<Delta>[0 \<mapsto>\<^sub>\<tau> Top]\<^sub>e @ \<Gamma> 
+        \<turnstile> \<up>\<^sub>\<tau> (Suc i) 0 (U[\<parallel>\<Delta>\<parallel> - Suc i \<mapsto>\<^sub>\<tau> Top]\<^sub>\<tau>) <: T[\<parallel>\<Delta>\<parallel> \<mapsto>\<^sub>\<tau> Top]\<^sub>\<tau>"
+    by (metis One_nat_def Suc_leI bot_nat_0.extremum decE.simps(1,2) decT.simps(1,2)
+        le_add_diff_inverse2 liftT_substT(1))
+  show ?case
+    using SA_trans_TVar
+    by (auto simp add: * split: nat_diff_split intro!: subtyping.SA_trans_TVar)
+next
+  case (SA_arrow T\<^sub>1 S\<^sub>1 S\<^sub>2 T\<^sub>2)
+  then show ?case
+    by (simp add: subtyping.SA_arrow)
+next
+  case (SA_all T\<^sub>1 S\<^sub>1 S\<^sub>2 T\<^sub>2)
+  then show ?case
+    by (simp add: subtyping.SA_all)
+next
+  case (SA_Rcd fs fs')
+  have "\<Delta>[0 \<mapsto>\<^sub>\<tau> Top]\<^sub>e @ \<Gamma> \<turnstile>\<^sub>w\<^sub>f"
+    using SA_Rcd.hyps(1) wfE_subst wf_Top by auto
+  moreover have "\<Delta>[0 \<mapsto>\<^sub>\<tau> Top]\<^sub>e @ \<Gamma> \<turnstile>\<^sub>w\<^sub>f RcdT (fs[\<parallel>\<Delta>\<parallel> \<mapsto>\<^sub>\<tau> Top]\<^sub>r\<^sub>\<tau>)"
+    using SA_Rcd.hyps(2) wf_Top wf_subst(1) by fastforce
+  moreover have "unique (fs'[\<parallel>\<Delta>\<parallel> \<mapsto>\<^sub>\<tau> Top]\<^sub>r\<^sub>\<tau>)"
+    by (simp add: SA_Rcd.hyps)
+  moreover have "\<forall>(l, T) \<in>set (fs'[\<parallel>\<Delta>\<parallel> \<mapsto>\<^sub>\<tau> Top]\<^sub>r\<^sub>\<tau>). \<exists>S. (l, S) \<in> set (fs[\<parallel>\<Delta>\<parallel> \<mapsto>\<^sub>\<tau> Top]\<^sub>r\<^sub>\<tau>) \<and> \<Delta>[0 \<mapsto>\<^sub>\<tau> Top]\<^sub>e @ \<Gamma> \<turnstile> S <: T"
+    using SA_Rcd
+    by (smt (verit) One_nat_def ballpI case_prodD decE.simps(1,2) decT.simps(1,2)
+        substrT_set substrT_setD)
+  ultimately show ?case
+    by (simp add: subtyping.SA_Rcd)
+qed
 
 
 subsection \<open>Typing\<close>
@@ -1363,42 +1298,30 @@ theorem wf_typeE2:
   "\<Gamma> \<turnstile> t : T \<Longrightarrow> \<Gamma> \<turnstile>\<^sub>w\<^sub>f T"
   "\<Gamma>' \<turnstile> fs [:] fTs \<Longrightarrow> (\<forall>(l, T) \<in> set fTs. \<Gamma>' \<turnstile>\<^sub>w\<^sub>f T) \<and>
      unique fTs \<and> (\<forall>l. (fs\<langle>l\<rangle>\<^sub>? = \<bottom>) = (fTs\<langle>l\<rangle>\<^sub>? = \<bottom>))"
-  apply (induct set: typing typings)
-  apply simp
-  apply (rule wf_liftB)
-  apply assumption+
-  apply (drule wf_typeE1)+
-  apply (erule well_formedE_cases)+
-  apply (rule wf_arrow)
-  apply simp
-  apply simp
-  apply (rule wf_subst [of "[]", simplified])
-  apply assumption
-  apply (rule wf_Top)
-  apply (erule well_formed_cases)
-  apply assumption
-  apply (rule wf_all)
-  apply (drule wf_typeE1)
-  apply (erule well_formedE_cases)
-  apply simp  
-  apply assumption
-  apply (erule well_formed_cases)
-  apply (rule wf_subst [of "[]", simplified])
-  apply assumption
-  apply (erule wf_subtypeE)
-  apply assumption
-  apply (erule wf_subtypeE)
-  apply assumption
-  \<comment> \<open>records\<close>
-  apply (erule wf_dec)
-  apply (erule conjE)+
-  apply (rule wf_RcdT)
-  apply assumption+
-  apply (erule well_formed_cases)
-  apply (blast dest: assoc_set)
-  apply simp
-  apply simp
-  done
+proof (induct set: typing typings)
+  case (T_Abs T\<^sub>1 \<Gamma> t\<^sub>2 T\<^sub>2)
+  have "\<parallel>[]\<parallel> = 0" and "\<Gamma> \<turnstile>\<^sub>w\<^sub>f T\<^sub>1"
+    using T_Abs.hyps(1) well_formedE_cases wf_typeE1(1) by fastforce+
+  then show ?case
+    by (metis One_nat_def T_Abs.hyps(2) append_Cons append_Nil length_Cons wf_arrow wf_dec)
+next
+  case (T_App \<Gamma> t\<^sub>1 T\<^sub>1\<^sub>1 T\<^sub>1\<^sub>2 t\<^sub>2)
+  then show ?case
+    using well_formed_cases(3) by blast
+next
+  case (T_TAbs T\<^sub>1 \<Gamma> t\<^sub>2 T\<^sub>2)
+  then show ?case
+    by (metis type_ofB.simps(2) well_formedE_cases wf_all wf_typeE1(1))
+next
+  case (T_TApp \<Gamma> t\<^sub>1 T\<^sub>1\<^sub>1 T\<^sub>1\<^sub>2 T\<^sub>2)
+  then show ?case
+    by (metis append_Nil length_0_conv substE_length well_formed_cases(4)
+        wf_subst(1) wf_subtype)
+next
+  case (T_Proj \<Gamma> t fTs l T)
+  then show ?case
+    by (metis assoc_set snd_eqD split_beta well_formed_cases(5))
+qed (auto simp: wf_subtype wf_dec wf_RcdT wf_liftB)
 
 lemmas ptyping_induct = ptyping_ptypings.inducts(1)
   [of _ _ _ _ "\<lambda>x y z. True", simplified True_simps, consumes 1,
@@ -1421,49 +1344,37 @@ lemma narrow_type: \<comment> \<open>A.7\<close>
      \<Gamma> \<turnstile> P <: Q \<Longrightarrow> \<Delta> @ TVarB P \<Colon> \<Gamma> \<turnstile> t : T"
   "\<Delta> @ TVarB Q \<Colon> \<Gamma> \<turnstile> ts [:] Ts \<Longrightarrow>
      \<Gamma> \<turnstile> P <: Q \<Longrightarrow> \<Delta> @ TVarB P \<Colon> \<Gamma> \<turnstile> ts [:] Ts"
-  apply (induct "\<Delta> @ TVarB Q \<Colon> \<Gamma>" t T and "\<Delta> @ TVarB Q \<Colon> \<Gamma>" ts Ts
-    arbitrary: \<Delta> and \<Delta> set: typing typings)
-  apply simp_all
-  apply (rule T_Var)
-  apply (erule wfE_replace)
-  apply (erule wf_subtypeE)
-  apply simp+
-  apply (case_tac "i < \<parallel>\<Delta>\<parallel>")
-  apply simp
-  apply (case_tac "i = \<parallel>\<Delta>\<parallel>")
-  apply simp
-  apply (simp split: nat.split nat.split_asm)+
-  apply (rule T_Abs [simplified])
-  apply simp
-  apply (rule_tac T\<^sub>1\<^sub>1=T\<^sub>1\<^sub>1 in T_App)
-  apply simp+
-  apply (rule T_TAbs)
-  apply simp
-  apply (rule_tac T\<^sub>1\<^sub>1=T\<^sub>1\<^sub>1 in T_TApp)
-  apply simp
-  apply (rule subtype_trans(2))
-  apply assumption+
-  apply (rule_tac S=S in T_Sub)
-  apply simp
-  apply (rule subtype_trans(2))
-  apply assumption+
-  \<comment> \<open>records\<close>
-  apply (rule T_Let)
-  apply blast
-  apply assumption
-  apply simp
-  apply (rule T_Rcd)
-  apply simp
-  apply (rule T_Proj)
-  apply blast
-  apply assumption
-  apply (rule T_Nil)
-  apply (erule wfE_replace)
-  apply (erule wf_subtypeE)
-  apply simp+
-  apply (rule T_Cons)
-  apply simp+
-  done
+proof (induct "\<Delta> @ TVarB Q \<Colon> \<Gamma>" t T and "\<Delta> @ TVarB Q \<Colon> \<Gamma>" ts Ts
+      arbitrary: \<Delta> and \<Delta> set: typing typings)
+  case (T_Var i U T)
+  show ?case 
+  proof (intro typing_typings.T_Var)
+    show "\<Delta> @ TVarB P \<Colon> \<Gamma> \<turnstile>\<^sub>w\<^sub>f"
+      using T_Var by (elim wfE_replace wf_subtypeE; simp)
+    show "(\<Delta> @ TVarB P \<Colon> \<Gamma>)\<langle>i\<rangle> = \<lfloor>VarB U\<rfloor>"
+      using T_Var by (cases "i < \<parallel>\<Delta>\<parallel>") (auto split: nat.splits)
+  next
+    show "T = \<up>\<^sub>\<tau> (Suc i) 0 U"
+      using T_Var.hyps(3) by blast
+  qed
+next
+  case (T_Abs T\<^sub>1 t\<^sub>2 T\<^sub>2)
+  then show ?case
+    using typing_typings.T_Abs by force
+next
+  case (T_TApp t\<^sub>1 T\<^sub>1\<^sub>1 T\<^sub>1\<^sub>2 T\<^sub>2)
+  then show ?case
+    using subtype_trans(2) typing_typings.T_TApp by blast
+next
+  case (T_Sub t S T)
+  then show ?case
+    using subtype_trans(2) typing_typings.T_Sub by blast
+next
+  case T_Nil
+  then show ?case
+    by (metis is_TVarB.simps(2) type_ofB.simps(2) typing_typings.T_Nil wfE_replace
+        wf_subtypeE)
+qed (auto simp: typing_typings.intros)
 
 lemma typings_setD:
   assumes H: "\<Gamma> \<turnstile> fs [:] fTs"
@@ -1474,10 +1385,7 @@ lemma typings_setD:
 lemma subtype_refl':
   assumes t: "\<Gamma> \<turnstile> t : T"
   shows "\<Gamma> \<turnstile> T <: T"
-proof (rule subtype_refl)
-  from t show "\<Gamma> \<turnstile>\<^sub>w\<^sub>f" by (rule wf_typeE1)
-  from t show "\<Gamma> \<turnstile>\<^sub>w\<^sub>f T" by (rule wf_typeE2)
-qed
+  using subtype_refl(1) t wf_typeE1(1) wf_typeE2(1) by force
 
 lemma Abs_type: \<comment> \<open>A.13(1)\<close>
   assumes H: "\<Gamma> \<turnstile> (\<lambda>:S. s) : T"
@@ -1497,15 +1405,14 @@ next
   from \<open>\<Gamma> \<turnstile> S' <: T\<close> and \<open>\<Gamma> \<turnstile> T <: U \<rightarrow> U'\<close>
   have "\<Gamma> \<turnstile> S' <: U \<rightarrow> U'" by (rule subtype_trans(1))
   then show ?case
-    by (rule T_Sub) (rule T_Sub(5))
+    using T_Sub.hyps(2) T_Sub.prems(2) by blast
 qed
 
 lemma Abs_type':
-  assumes H: "\<Gamma> \<turnstile> (\<lambda>:S. s) : U \<rightarrow> U'"
-  and R: "\<And>S'. \<Gamma> \<turnstile> U <: S \<Longrightarrow> VarB S \<Colon> \<Gamma> \<turnstile> s : S' \<Longrightarrow>
-    \<Gamma> \<turnstile> \<down>\<^sub>\<tau> 1 0 S' <: U' \<Longrightarrow> P"
-  shows "P" using H subtype_refl' [OF H]
-  by (rule Abs_type) (rule R)
+  assumes "\<Gamma> \<turnstile> (\<lambda>:S. s) : U \<rightarrow> U'"
+  and "\<And>S'. \<Gamma> \<turnstile> U <: S \<Longrightarrow> VarB S \<Colon> \<Gamma> \<turnstile> s : S' \<Longrightarrow> \<Gamma> \<turnstile> \<down>\<^sub>\<tau> 1 0 S' <: U' \<Longrightarrow> P"
+  shows "P"
+  using Abs_type assms subtype_refl' by blast
 
 lemma TAbs_type: \<comment> \<open>A.13(2)\<close>
   assumes H: "\<Gamma> \<turnstile> (\<lambda><:S. s) : T"
@@ -1521,53 +1428,42 @@ proof (induct \<Gamma> "\<lambda><:S. s" T arbitrary: U U' S s P)
   from \<open>TVarB T\<^sub>1 \<Colon> \<Gamma> \<turnstile> t\<^sub>2 : T\<^sub>2\<close>
   have "TVarB U \<Colon> \<Gamma> \<turnstile> t\<^sub>2 : T\<^sub>2" using ty1
     by (rule narrow_type [of "[]", simplified])
-  with ty1 show ?case using ty2 by (rule T_TAbs)
+  then show ?case
+    using T_TAbs ty1 ty2 by blast
 next
   case (T_Sub \<Gamma> S' T)
   from \<open>\<Gamma> \<turnstile> S' <: T\<close> and \<open>\<Gamma> \<turnstile> T <: (\<forall><:U. U')\<close>
   have "\<Gamma> \<turnstile> S' <: (\<forall><:U. U')" by (rule subtype_trans(1))
-  then show ?case
-    by (rule T_Sub) (rule T_Sub(5))
+  with T_Sub show ?case
+    by metis
 qed
 
 lemma TAbs_type':
-  assumes H: "\<Gamma> \<turnstile> (\<lambda><:S. s) : (\<forall><:U. U')"
-  and R: "\<And>S'. \<Gamma> \<turnstile> U <: S \<Longrightarrow> TVarB U \<Colon> \<Gamma> \<turnstile> s : S' \<Longrightarrow>
-    TVarB U \<Colon> \<Gamma> \<turnstile> S' <: U' \<Longrightarrow> P"
-  shows "P" using H subtype_refl' [OF H]
-  by (rule TAbs_type) (rule R)
+  assumes "\<Gamma> \<turnstile> (\<lambda><:S. s) : (\<forall><:U. U')"
+  and "\<And>S'. \<Gamma> \<turnstile> U <: S \<Longrightarrow> TVarB U \<Colon> \<Gamma> \<turnstile> s : S' \<Longrightarrow> TVarB U \<Colon> \<Gamma> \<turnstile> S' <: U' \<Longrightarrow> P"
+  shows "P"
+  using assms TAbs_type subtype_refl' by blast
 
 text \<open>
 In the proof of the preservation theorem, the following elimination rule
 for typing judgements on record types will be useful:
 \<close>
 
+
 lemma Rcd_type1: \<comment> \<open>A.13(3)\<close>
-  assumes H: "\<Gamma> \<turnstile> t : T"
+  assumes "\<Gamma> \<turnstile> t : T"
   shows "t = Rcd fs \<Longrightarrow> \<Gamma> \<turnstile> T <: RcdT fTs \<Longrightarrow>
      \<forall>(l, U) \<in> set fTs. \<exists>u. fs\<langle>l\<rangle>\<^sub>? = \<lfloor>u\<rfloor> \<and> \<Gamma> \<turnstile> u : U"
-  using H
-  apply (induct arbitrary: fs fTs rule: typing_induct, simp_all)
-  apply (drule meta_spec)+
-  apply (drule meta_mp)
-  apply (rule refl)
-  apply (erule meta_mp)
-  apply (rule subtype_trans(1))
-  apply assumption+
-  apply (erule subtyping.cases)
-  apply simp_all
-  apply (rule ballpI)
-  apply (drule bpspec)
-  apply assumption
-  apply (erule exE conjE)+
-  apply (drule typings_setD)
-  apply assumption
-  apply (erule exE conjE)+
-  apply (rule exI conjI)+
-  apply simp
-  apply (erule T_Sub)
-  apply assumption
-  done
+  using assms
+proof (induct arbitrary: fs fTs rule: typing_induct)
+  case (T_Sub \<Gamma> t S T)
+  then show ?case
+    using subtype_trans(1) by blast
+next
+  case (T_Rcd \<Gamma> gs gTs)
+  then show ?case
+    by (force dest: typings_setD intro: T_Sub elim: subtyping.cases)
+qed blast+
 
 lemma Rcd_type1':
   assumes H: "\<Gamma> \<turnstile> Rcd fs : RcdT fTs"
@@ -1589,46 +1485,48 @@ and exchange the order of the fields @{term "l\<^sub>1"} and @{term "l\<^sub>2"}
 to the following variant of the above elimination rule:
 \<close>
 
+lemma Rcd_type2_aux:
+  "\<lbrakk>\<Gamma> \<turnstile> T <: RcdT fTs; \<forall>(l, U)\<in>set fTs. \<exists>u. fs\<langle>l\<rangle>\<^sub>? = \<lfloor>u\<rfloor> \<and> \<Gamma> \<turnstile> u : U\<rbrakk>
+    \<Longrightarrow> \<Gamma> \<turnstile> map (\<lambda>(l, T). (l, the (fs\<langle>l\<rangle>\<^sub>?))) fTs [:] fTs"
+proof (induct fTs rule: list.induct)
+  case Nil
+  then show ?case
+    using T_Nil wf_subtypeE by force
+next
+  case (Cons p list)
+  have "\<Gamma> \<turnstile> (a, the (fs\<langle>a\<rangle>\<^sub>?)) \<Colon> map (\<lambda>(l, T). (l, the (fs\<langle>l\<rangle>\<^sub>?))) list [:] (a, b) \<Colon> list"
+    if "p = (a, b)"
+    for a b
+  proof (rule T_Cons)
+    show "\<Gamma> \<turnstile> the (fs\<langle>a\<rangle>\<^sub>?) : b"
+      using Cons.prems(2) that by auto
+    have "\<Gamma> \<turnstile> RcdT ((a, b) \<Colon> list) <: RcdT list"
+    proof (intro SA_Rcd)
+      show "\<Gamma> \<turnstile>\<^sub>w\<^sub>f"
+        using Cons.prems(1) wf_subtypeE by blast
+      have *: "\<Gamma> \<turnstile>\<^sub>w\<^sub>f RcdT (p \<Colon> list)"
+        using Cons.prems(1) wf_subtypeE by blast
+      with that show "\<Gamma> \<turnstile>\<^sub>w\<^sub>f RcdT ((a, b) \<Colon> list)"
+        by auto
+      show "unique list"
+        using * well_formed_cases(5) by fastforce
+      show "\<forall>(l, T)\<in>set list. \<exists>S. (l, S) \<in> set ((a, b) \<Colon> list) \<and> \<Gamma> \<turnstile> S <: T"
+        using Cons.prems(2) subtype_refl' by fastforce
+    qed 
+    with Cons
+    show "\<Gamma> \<turnstile> map (\<lambda>(l, T). (l, the (fs\<langle>l\<rangle>\<^sub>?))) list [:] list"
+      by (metis (no_types, lifting) list.set_intros(2) subtype_trans(1) that)
+    then show "map (\<lambda>(l, T). (l, the (fs\<langle>l\<rangle>\<^sub>?))) list\<langle>a\<rangle>\<^sub>? = \<bottom>"
+      using Cons.prems(1) that well_formed_cases(5) wf_subtype by fastforce
+  qed
+  then show ?case
+    by (auto split: prod.splits)
+qed
+
 lemma Rcd_type2:
   "\<Gamma> \<turnstile> Rcd fs : T \<Longrightarrow> \<Gamma> \<turnstile> T <: RcdT fTs \<Longrightarrow>
      \<Gamma> \<turnstile> map (\<lambda>(l, T). (l, the (fs\<langle>l\<rangle>\<^sub>?))) fTs [:] fTs"
-  apply (drule Rcd_type1)
-  apply (rule refl)
-  apply assumption
-  apply (induct fTs rule: list.induct)
-  apply simp
-  apply (rule T_Nil)
-  apply (erule wf_subtypeE)
-  apply assumption
-  apply (simp add: split_paired_all)
-  apply (rule T_Cons)
-  apply (drule_tac x=a and y=b in bpspec)
-  apply simp
-  apply (erule exE conjE)+
-  apply simp
-  apply (rename_tac list)
-  apply (subgoal_tac "\<Gamma> \<turnstile> RcdT ((a, b) \<Colon> list) <: RcdT list")
-  apply (erule meta_mp)
-  apply (erule subtype_trans(1))
-  apply assumption
-  apply (erule wf_subtypeE)
-  apply (rule SA_Rcd)
-  apply assumption+
-  apply (erule well_formed_cases)
-  apply simp
-  apply (rule ballpI)
-  apply (rule exI)
-  apply (rule conjI)
-  apply (rule_tac [2] subtype_refl)
-  apply simp
-  apply assumption
-  apply (erule well_formed_cases)
-  apply (erule_tac x=l and y=Ta in bpspec)
-  apply simp
-  apply (erule wf_subtypeE)
-  apply (erule well_formed_cases)
-  apply simp
-  done
+  by (simp add: Rcd_type1 Rcd_type2_aux)
 
 lemma Rcd_type2':
   assumes H: "\<Gamma> \<turnstile> Rcd fs : RcdT fTs"
@@ -1646,79 +1544,112 @@ lemma ptyping_length [simp]:
 lemma lift_ptyping:
   "\<turnstile> p : T \<Rightarrow> \<Delta> \<Longrightarrow> \<turnstile> \<up>\<^sub>p n k p : \<up>\<^sub>\<tau> n k T \<Rightarrow> \<up>\<^sub>e n k \<Delta>"
   "\<turnstile> fps [:] fTs \<Rightarrow> \<Delta> \<Longrightarrow> \<turnstile> \<up>\<^sub>r\<^sub>p n k fps [:] \<up>\<^sub>r\<^sub>\<tau> n k fTs \<Rightarrow> \<up>\<^sub>e n k \<Delta>"
-  apply (induct set: ptyping ptypings)
-  apply simp_all
-  apply (rule P_Var)
-  apply (erule P_Rcd)
-  apply (rule P_Nil)
-  apply (drule_tac p="\<up>\<^sub>p n k p" and fps="\<up>\<^sub>r\<^sub>p n k fps" in P_Cons)
-  apply simp_all
-  done
+proof (induct set: ptyping ptypings)
+  case P_Nil
+  then show ?case
+    by (simp add: ptyping_ptypings.P_Nil)
+next
+  case (P_Cons p T \<Delta>\<^sub>1 fps fTs \<Delta>\<^sub>2 l)
+  then show ?case
+    using P_Cons.hyps(2) ptyping_ptypings.P_Cons by fastforce
+qed (auto simp: ptyping.simps)
 
 lemma type_weaken:
   "\<Delta> @ \<Gamma> \<turnstile> t : T \<Longrightarrow> \<Gamma> \<turnstile>\<^sub>w\<^sub>f\<^sub>B B \<Longrightarrow>
      \<up>\<^sub>e 1 0 \<Delta> @ B \<Colon> \<Gamma> \<turnstile> \<up> 1 \<parallel>\<Delta>\<parallel> t : \<up>\<^sub>\<tau> 1 \<parallel>\<Delta>\<parallel> T"
   "\<Delta> @ \<Gamma> \<turnstile> fs [:] fTs \<Longrightarrow> \<Gamma> \<turnstile>\<^sub>w\<^sub>f\<^sub>B B \<Longrightarrow>
      \<up>\<^sub>e 1 0 \<Delta> @ B \<Colon> \<Gamma> \<turnstile> \<up>\<^sub>r 1 \<parallel>\<Delta>\<parallel> fs [:] \<up>\<^sub>r\<^sub>\<tau> 1 \<parallel>\<Delta>\<parallel> fTs"
-  apply (induct "\<Delta> @ \<Gamma>" t T and "\<Delta> @ \<Gamma>" fs fTs
-    arbitrary: \<Delta> and \<Delta> set: typing typings)
-  apply simp_all
-  apply (rule conjI)
-  apply (rule impI)
-  apply (rule T_Var)
-  apply (erule wfE_weaken)
-  apply simp+
-  apply (rule impI)
-  apply (rule T_Var)
-  apply (erule wfE_weaken)
-  apply assumption
-  apply (subgoal_tac "Suc i - \<parallel>\<Delta>\<parallel> = Suc (i - \<parallel>\<Delta>\<parallel>)")
-  apply simp
-  apply arith
-  apply (rule refl)
-  apply (rule T_Abs [simplified])
-  apply simp
-  apply (rule_tac T\<^sub>1\<^sub>1="\<up>\<^sub>\<tau> (Suc 0) \<parallel>\<Delta>\<parallel> T\<^sub>1\<^sub>1" in T_App)
-  apply simp
-  apply simp
-  apply (rule T_TAbs)
-  apply simp
-  apply (erule_tac T_TApp [THEN T_eq])
-  apply (drule subtype_weaken)
-  apply simp+
-  apply (case_tac \<Delta>)
-  apply (simp add: liftT_substT_strange [of _ 0, simplified])+
-  apply (rule_tac S="\<up>\<^sub>\<tau> (Suc 0) \<parallel>\<Delta>\<parallel> S" in T_Sub)
-  apply simp
-  apply (drule subtype_weaken)
-  apply simp+
-  \<comment> \<open>records\<close>
-  apply (drule_tac \<Gamma>="\<up>\<^sub>e (Suc 0) 0 \<Delta>' @ B \<Colon> \<Gamma>" in T_Let)
-  apply (erule lift_ptyping)
-  apply assumption
-  apply (simp add: ac_simps)
-  apply (rule T_Rcd)
-  apply simp
-  apply (rule_tac fTs="\<up>\<^sub>r\<^sub>\<tau> (Suc 0) \<parallel>\<Delta>\<parallel> fTs" in T_Proj)
-  apply simp
-  apply (erule_tac liftrT_assoc_Some)
-  apply (rule T_Nil)
-  apply (erule wfE_weaken)
-  apply assumption
-  apply (rule T_Cons)
-  apply simp+
-  done
+proof (induct "\<Delta> @ \<Gamma>" t T and "\<Delta> @ \<Gamma>" fs fTs arbitrary: \<Delta> and \<Delta> set: typing typings)
+  case (T_Var i U T \<Delta>)
+  show ?case 
+  proof -
+    have "\<up>\<^sub>e (Suc 0) 0 \<Delta> @ B \<Colon> \<Gamma> \<turnstile> Var i : \<up>\<^sub>\<tau> (Suc 0) \<parallel>\<Delta>\<parallel> T"
+      if "i < \<parallel>\<Delta>\<parallel>"
+      using that T_Var by (force simp: typing_typings.T_Var wfE_weaken)
+    moreover have "\<up>\<^sub>e (Suc 0) 0 \<Delta> @ B \<Colon> \<Gamma> \<turnstile> Var (Suc i) : \<up>\<^sub>\<tau> (Suc 0) \<parallel>\<Delta>\<parallel> T"
+      if "\<not> i < \<parallel>\<Delta>\<parallel>"
+    proof (intro typing_typings.T_Var)
+      have *: "Suc i - \<parallel>\<Delta>\<parallel> = Suc (i - \<parallel>\<Delta>\<parallel>)"
+        using that by simp
+      show "\<up>\<^sub>e (Suc 0) 0 \<Delta> @ B \<Colon> \<Gamma> \<turnstile>\<^sub>w\<^sub>f"
+        by (simp add: T_Var wfE_weaken)
+      show "(\<up>\<^sub>e (Suc 0) 0 \<Delta> @ B \<Colon> \<Gamma>)\<langle>Suc i\<rangle> = \<lfloor>VarB U\<rfloor>"
+        using T_Var that by (simp add: * split: nat.splits)
+      show "\<up>\<^sub>\<tau> (Suc 0) \<parallel>\<Delta>\<parallel> T = \<up>\<^sub>\<tau> (Suc (Suc i)) 0 U"
+        using T_Var.hyps(3) that by fastforce
+    qed
+    ultimately show ?thesis
+      by auto
+  qed
+next
+  case (T_Abs T\<^sub>1 t\<^sub>2 T\<^sub>2)
+  then show ?case
+    using typing_typings.T_Abs by force
+next
+  case (T_App t\<^sub>1 T\<^sub>1\<^sub>1 T\<^sub>1\<^sub>2 t\<^sub>2)
+  then show ?case
+    by (simp add: typing_typings.T_App)
+next
+  case (T_TAbs T\<^sub>1 t\<^sub>2 T\<^sub>2)
+  then show ?case
+    by (simp add: typing_typings.T_TAbs)
+next
+  case (T_TApp t\<^sub>1 T\<^sub>1\<^sub>1 T\<^sub>1\<^sub>2 T\<^sub>2)
+  have "\<up>\<^sub>e (Suc 0) 0 \<Delta> @ B \<Colon> \<Gamma> \<turnstile> \<up>\<^sub>\<tau> (Suc 0) \<parallel>\<Delta>\<parallel> T\<^sub>2 <: \<up>\<^sub>\<tau> (Suc 0) \<parallel>\<Delta>\<parallel> T\<^sub>1\<^sub>1"
+    using subtype_weaken by (simp add: T_TApp)
+  moreover have "\<up>\<^sub>\<tau> (Suc 0) (Suc \<parallel>\<Delta>\<parallel>) T\<^sub>1\<^sub>2[0 \<mapsto>\<^sub>\<tau> \<up>\<^sub>\<tau> (Suc 0) \<parallel>\<Delta>\<parallel> T\<^sub>2]\<^sub>\<tau> = \<up>\<^sub>\<tau> (Suc 0) \<parallel>\<Delta>\<parallel> (T\<^sub>1\<^sub>2[0 \<mapsto>\<^sub>\<tau> T\<^sub>2]\<^sub>\<tau>)"
+    by (metis Suc_eq_plus1 add.commute diff_zero le_eq_less_or_eq liftT_substT'(1)
+        liftT_substT(1) liftT_substT_strange(1) not_gr_zero)
+  ultimately show ?case
+    using T_TApp
+    by (metis Suc_eq_plus1 add.commute add.right_neutral
+        lift.simps(5) liftT.simps(4) typing_typings.T_TApp)
+next
+  case (T_Sub t S T)
+  then show ?case
+    using subtype_weaken typing_typings.T_Sub by blast
+next
+  case (T_Let t\<^sub>1 T\<^sub>1 p \<Delta> t\<^sub>2 T\<^sub>2 \<Delta>')
+  then have "\<up>\<^sub>e (Suc 0) \<parallel>\<Delta>'\<parallel> \<Delta> @ \<up>\<^sub>e (Suc 0) 0 \<Delta>' @ B \<Colon> \<Gamma> \<turnstile> \<up> (Suc 0) (\<parallel>\<Delta>\<parallel> + \<parallel>\<Delta>'\<parallel>) t\<^sub>2 : \<up>\<^sub>\<tau> (Suc 0) (\<parallel>\<Delta>\<parallel> + \<parallel>\<Delta>'\<parallel>) T\<^sub>2"
+    by simp
+  with T_Let 
+  have "\<up>\<^sub>e (Suc 0) 0 \<Delta>' @ B \<Colon> \<Gamma>
+          \<turnstile> (LET \<up>\<^sub>p (Suc 0) \<parallel>\<Delta>'\<parallel> p = \<up> (Suc 0) \<parallel>\<Delta>'\<parallel> t\<^sub>1 IN \<up> (Suc 0) (\<parallel>\<Delta>'\<parallel> + \<parallel>\<Delta>\<parallel>) t\<^sub>2) : \<down>\<^sub>\<tau> \<parallel>\<Delta>\<parallel> 0 (\<up>\<^sub>\<tau> (Suc 0) (\<parallel>\<Delta>\<parallel> + \<parallel>\<Delta>'\<parallel>) T\<^sub>2)"
+    by (metis add.commute liftE_length lift_ptyping(1) nat_1 nat_one_as_int
+        typing_typings.T_Let)
+  with T_Let show ?case
+    by (simp add: ac_simps)
+next
+  case (T_Rcd fs fTs)
+  then show ?case
+    by (simp add: typing_typings.T_Rcd)
+next
+  case (T_Proj t fTs l T)
+  then show ?case
+    by (simp add: liftrT_assoc_Some typing_typings.T_Proj)
+next
+  case T_Nil
+  then show ?case
+    by (simp add: typing_typings.T_Nil wfE_weaken)
+next
+  case (T_Cons t T fs fTs l)
+  then show ?case
+    by (simp add: typing_typings.T_Cons)
+qed
 
 lemma type_weaken': \<comment> \<open>A.5(6)\<close>
   "\<Gamma> \<turnstile> t : T \<Longrightarrow> \<Delta> @ \<Gamma> \<turnstile>\<^sub>w\<^sub>f \<Longrightarrow> \<Delta> @ \<Gamma> \<turnstile> \<up> \<parallel>\<Delta>\<parallel> 0 t : \<up>\<^sub>\<tau> \<parallel>\<Delta>\<parallel> 0 T"
-  apply (induct \<Delta>)
-  apply simp
-  apply simp
-  apply (erule well_formedE_cases)
-  apply simp
-  apply (drule_tac B=a in type_weaken(1) [of "[]", simplified])
-  apply simp+
-  done
+proof (induct \<Delta>)
+  case Nil
+  then show ?case by auto
+next
+  case (Cons a \<Delta>)
+  then have "\<Delta> @ \<Gamma> \<turnstile>\<^sub>w\<^sub>f\<^sub>B a" "\<Delta> @ \<Gamma> \<turnstile>\<^sub>w\<^sub>f"
+    by (auto elim: well_formedE_cases)
+  with Cons type_weaken(1)[of "[]", where B=a] show ?case
+    by (metis Suc_eq_plus1 append_Cons append_Nil le_add1 le_refl length_Cons
+        liftE.simps(1) liftT_liftT(1) lift_lift(1) list.size(3))
+qed
 
 text \<open>
 The substitution lemmas are now proved by mutual induction on the derivations of
@@ -1728,163 +1659,156 @@ the typing derivations for terms and lists of fields.
 lemma subst_ptyping:
   "\<turnstile> p : T \<Rightarrow> \<Delta> \<Longrightarrow> \<turnstile> p[k \<mapsto>\<^sub>\<tau> U]\<^sub>p : T[k \<mapsto>\<^sub>\<tau> U]\<^sub>\<tau> \<Rightarrow> \<Delta>[k \<mapsto>\<^sub>\<tau> U]\<^sub>e"
   "\<turnstile> fps [:] fTs \<Rightarrow> \<Delta> \<Longrightarrow> \<turnstile> fps[k \<mapsto>\<^sub>\<tau> U]\<^sub>r\<^sub>p [:] fTs[k \<mapsto>\<^sub>\<tau> U]\<^sub>r\<^sub>\<tau> \<Rightarrow> \<Delta>[k \<mapsto>\<^sub>\<tau> U]\<^sub>e"
-  apply (induct set: ptyping ptypings)
-  apply simp_all
-  apply (rule P_Var)
-  apply (erule P_Rcd)
-  apply (rule P_Nil)
-  apply (drule_tac p="p[k \<mapsto>\<^sub>\<tau> U]\<^sub>p" and fps="fps[k \<mapsto>\<^sub>\<tau> U]\<^sub>r\<^sub>p" in P_Cons)
-  apply simp+
-  done
+proof (induct set: ptyping ptypings)
+  case (P_Var T)
+  then show ?case
+    by (simp add: ptyping.simps)
+next
+  case (P_Rcd fps fTs \<Delta>)
+  then show ?case
+    by (simp add: ptyping_ptypings.P_Rcd)
+next
+  case P_Nil
+  then show ?case
+    by (simp add: ptyping_ptypings.P_Nil)
+next
+  case (P_Cons p T \<Delta>\<^sub>1 fps fTs \<Delta>\<^sub>2 l)
+  then show ?case
+    using ptyping_ptypings.P_Cons by fastforce
+qed
 
 theorem subst_type: \<comment> \<open>A.8\<close>
   "\<Delta> @ VarB U \<Colon> \<Gamma> \<turnstile> t : T \<Longrightarrow> \<Gamma> \<turnstile> u : U \<Longrightarrow>
      \<down>\<^sub>e 1 0 \<Delta> @ \<Gamma> \<turnstile> t[\<parallel>\<Delta>\<parallel> \<mapsto> u] : \<down>\<^sub>\<tau> 1 \<parallel>\<Delta>\<parallel> T"
   "\<Delta> @ VarB U \<Colon> \<Gamma> \<turnstile> fs [:] fTs \<Longrightarrow> \<Gamma> \<turnstile> u : U \<Longrightarrow>
      \<down>\<^sub>e 1 0 \<Delta> @ \<Gamma> \<turnstile> fs[\<parallel>\<Delta>\<parallel> \<mapsto> u]\<^sub>r [:] \<down>\<^sub>r\<^sub>\<tau> 1 \<parallel>\<Delta>\<parallel> fTs"
-  apply (induct "\<Delta> @ VarB U \<Colon> \<Gamma>" t T and "\<Delta> @ VarB U \<Colon> \<Gamma>" fs fTs
+proof (induct "\<Delta> @ VarB U \<Colon> \<Gamma>" t T and "\<Delta> @ VarB U \<Colon> \<Gamma>" fs fTs
     arbitrary: \<Delta> and \<Delta> set: typing typings)
-  apply simp
-  apply (rule conjI)
-  apply (rule impI)
-  apply simp
-  apply (drule_tac \<Delta>="\<Delta>[0 \<mapsto>\<^sub>\<tau> Top]\<^sub>e" in type_weaken')
-  apply (rule wfE_subst)
-  apply assumption
-  apply (rule wf_Top)
-  apply simp
-  apply (rule impI conjI)+
-  apply (simp split: nat.split_asm)
-  apply (rule T_Var)
-  apply (erule wfE_subst)
-  apply (rule wf_Top)
-  apply (subgoal_tac "\<parallel>\<Delta>\<parallel> \<le> i - Suc 0")
-  apply (rename_tac nat)
-  apply (subgoal_tac "i - Suc \<parallel>\<Delta>\<parallel> = nat")
-  apply (simp (no_asm_simp))
-  apply arith
-  apply arith
-  apply simp
-  apply (rule impI)
-  apply (rule T_Var)
-  apply (erule wfE_subst)
-  apply (rule wf_Top)
-  apply simp
-  apply (subgoal_tac "Suc (\<parallel>\<Delta>\<parallel> - Suc 0) = \<parallel>\<Delta>\<parallel>")
-  apply (simp (no_asm_simp))
-  apply arith
-  apply simp
-  apply (rule T_Abs [THEN T_eq])
-  apply simp
-  apply (simp add: substT_substT [symmetric])
-  apply simp
-  apply (rule_tac T\<^sub>1\<^sub>1="T\<^sub>1\<^sub>1[\<parallel>\<Delta>\<parallel> \<mapsto>\<^sub>\<tau> Top]\<^sub>\<tau>" in T_App)
-  apply simp+
-  apply (rule T_TAbs)
-  apply simp
-  apply simp
-  apply (rule T_TApp [THEN T_eq])
-  apply simp
-  apply (rule subst_subtype [simplified])
-  apply assumption
-  apply (simp add: substT_substT [symmetric])
-  apply (rule_tac S="S[\<parallel>\<Delta>\<parallel> \<mapsto>\<^sub>\<tau> Top]\<^sub>\<tau>" in T_Sub)
-  apply simp
-  apply simp
-  apply (rule subst_subtype [simplified])
-  apply assumption
-  \<comment> \<open>records\<close>
-  apply simp
-  apply (drule_tac \<Gamma>="\<Delta>'[0 \<mapsto>\<^sub>\<tau> Top]\<^sub>e @ \<Gamma>" in T_Let)
-  apply (erule subst_ptyping)
-  apply simp
-  apply (simp add: ac_simps)
-  apply simp
-  apply (rule T_Rcd)
-  apply simp
-  apply simp
-  apply (rule_tac fTs="fTs[\<parallel>\<Delta>\<parallel> \<mapsto>\<^sub>\<tau> Top]\<^sub>r\<^sub>\<tau>" in T_Proj)
-  apply simp
-  apply (erule_tac substrTT_assoc_Some)
-  apply simp
-  apply (rule T_Nil)
-  apply (erule wfE_subst)
-  apply (rule wf_Top)
-  apply simp
-  apply (rule T_Cons)
-  apply simp+
-  done
+  case (T_Var i U' T  \<Delta>')
+  show ?case
+  proof -
+    have "\<Delta>'[0 \<mapsto>\<^sub>\<tau> Top]\<^sub>e @ \<Gamma> \<turnstile> \<up> \<parallel>\<Delta>'\<parallel> 0 u : T[\<parallel>\<Delta>'\<parallel> \<mapsto>\<^sub>\<tau> Top]\<^sub>\<tau>"
+      if "i = \<parallel>\<Delta>'\<parallel>"
+      using that T_Var type_weaken' wfE_subst wf_Top by fastforce
+    moreover have "\<Delta>'[0 \<mapsto>\<^sub>\<tau> Top]\<^sub>e @ \<Gamma> \<turnstile> Var (i - Suc 0) : T[\<parallel>\<Delta>'\<parallel> \<mapsto>\<^sub>\<tau> Top]\<^sub>\<tau>"
+      if "\<parallel>\<Delta>'\<parallel> < i"
+    proof (intro typing_typings.T_Var)
+      show "\<Delta>'[0 \<mapsto>\<^sub>\<tau> Top]\<^sub>e @ \<Gamma> \<turnstile>\<^sub>w\<^sub>f"
+        using T_Var.hyps(1) wfE_subst wf_Top by force
+      have "\<parallel>\<Delta>'\<parallel> \<le> i - Suc 0"
+        using \<open>\<parallel>\<Delta>'\<parallel> < i\<close> by linarith
+      with T_Var that show "(\<Delta>'[0 \<mapsto>\<^sub>\<tau> Top]\<^sub>e @ \<Gamma>)\<langle>i - Suc 0\<rangle> = \<lfloor>VarB U'\<rfloor>"
+        using Suc_diff_Suc by (fastforce simp: split: nat.split_asm)
+      show "T[\<parallel>\<Delta>'\<parallel> \<mapsto>\<^sub>\<tau> Top]\<^sub>\<tau> = \<up>\<^sub>\<tau> (Suc (i - Suc 0)) 0 U'"
+        using \<open>\<parallel>\<Delta>'\<parallel> < i\<close> T_Var.hyps by auto
+    qed
+    moreover have "\<Delta>'[0 \<mapsto>\<^sub>\<tau> Top]\<^sub>e @ \<Gamma> \<turnstile> Var i : T[\<parallel>\<Delta>'\<parallel> \<mapsto>\<^sub>\<tau> Top]\<^sub>\<tau>"
+      if "\<parallel>\<Delta>'\<parallel> > i"
+    proof (intro typing_typings.T_Var)
+      show "\<Delta>'[0 \<mapsto>\<^sub>\<tau> Top]\<^sub>e @ \<Gamma> \<turnstile>\<^sub>w\<^sub>f"
+        using T_Var wfE_subst wf_Top by blast
+      show "T[\<parallel>\<Delta>'\<parallel> \<mapsto>\<^sub>\<tau> Top]\<^sub>\<tau> = \<up>\<^sub>\<tau> (Suc i) 0 (U'[\<parallel>\<Delta>'\<parallel> - Suc i \<mapsto>\<^sub>\<tau> Top]\<^sub>\<tau>)"
+        using T_Var by (metis that Suc_leI le0 le_add_diff_inverse2 liftT_substT(1))
+    qed (use that T_Var in auto)
+    ultimately show ?thesis
+      by auto
+  qed
+next
+  case (T_Abs T\<^sub>1 t\<^sub>2 T\<^sub>2)
+  then show ?case
+    by (simp add: typing_typings.T_Abs [THEN T_eq] flip: substT_substT)
+next
+  case (T_TApp t\<^sub>1 T\<^sub>1\<^sub>1 T\<^sub>1\<^sub>2 T\<^sub>2)
+  then show ?case
+    using subst_subtype typing_typings.T_TApp
+    apply simp
+    by (metis diff_zero le0 substT_substT(1) typing_typings.T_TApp)
+next
+  case (T_Sub t S T)
+  then show ?case
+    using subst_subtype typing_typings.T_Sub by blast
+next
+  case (T_Let t\<^sub>1 T\<^sub>1 p \<Delta> t\<^sub>2 T\<^sub>2 \<Delta>')
+  then show ?case
+    apply simp
+    by (metis add.commute substE_length subst_ptyping(1) typing_typings.T_Let)
+next
+  case T_Nil
+  then show ?case
+    by (simp add: typing_typings.T_Nil wfE_subst wf_Top)
+qed (auto simp: typing_typings.intros)
 
 theorem substT_type: \<comment> \<open>A.11\<close>
   "\<Delta> @ TVarB Q \<Colon> \<Gamma> \<turnstile> t : T \<Longrightarrow> \<Gamma> \<turnstile> P <: Q \<Longrightarrow>
      \<Delta>[0 \<mapsto>\<^sub>\<tau> P]\<^sub>e @ \<Gamma> \<turnstile> t[\<parallel>\<Delta>\<parallel> \<mapsto>\<^sub>\<tau> P] : T[\<parallel>\<Delta>\<parallel> \<mapsto>\<^sub>\<tau> P]\<^sub>\<tau>"
   "\<Delta> @ TVarB Q \<Colon> \<Gamma> \<turnstile> fs [:] fTs \<Longrightarrow> \<Gamma> \<turnstile> P <: Q \<Longrightarrow>
      \<Delta>[0 \<mapsto>\<^sub>\<tau> P]\<^sub>e @ \<Gamma> \<turnstile> fs[\<parallel>\<Delta>\<parallel> \<mapsto>\<^sub>\<tau> P]\<^sub>r [:] fTs[\<parallel>\<Delta>\<parallel> \<mapsto>\<^sub>\<tau> P]\<^sub>r\<^sub>\<tau>"
-  apply (induct "\<Delta> @ TVarB Q \<Colon> \<Gamma>" t T and "\<Delta> @ TVarB Q \<Colon> \<Gamma>" fs fTs
-    arbitrary: \<Delta> and \<Delta> set: typing typings)
-  apply simp_all
-  apply (rule impI conjI)+
-  apply (rule T_Var)
-  apply (erule wfE_subst)
-  apply (erule wf_subtypeE)
-  apply assumption
-  apply (simp split: nat.split_asm)
-  apply (subgoal_tac "\<parallel>\<Delta>\<parallel> \<le> i - Suc 0")
-  apply (rename_tac nat)
-  apply (subgoal_tac "i - Suc \<parallel>\<Delta>\<parallel> = nat")
-  apply (simp (no_asm_simp))
-  apply arith
-  apply arith
-  apply simp
-  apply (rule impI)
-  apply (case_tac "i = \<parallel>\<Delta>\<parallel>")
-  apply simp
-  apply (rule T_Var)
-  apply (erule wfE_subst)
-  apply (erule wf_subtypeE)
-  apply assumption
-  apply simp
-  apply (subgoal_tac "i < \<parallel>\<Delta>\<parallel>")
-  apply (subgoal_tac "Suc (\<parallel>\<Delta>\<parallel> - Suc 0) = \<parallel>\<Delta>\<parallel>")
-  apply (simp (no_asm_simp))
-  apply arith
-  apply arith
-  apply (rule T_Abs [THEN T_eq])
-  apply simp
-  apply (simp add: substT_substT [symmetric])
-  apply (rule_tac T\<^sub>1\<^sub>1="T\<^sub>1\<^sub>1[\<parallel>\<Delta>\<parallel> \<mapsto>\<^sub>\<tau> P]\<^sub>\<tau>" in T_App)
-  apply simp+
-  apply (rule T_TAbs)
-  apply simp
-  apply (rule T_TApp [THEN T_eq])
-  apply simp
-  apply (rule substT_subtype)
-  apply assumption
-  apply assumption
-  apply (simp add: substT_substT [symmetric])
-  apply (rule_tac S="S[\<parallel>\<Delta>\<parallel> \<mapsto>\<^sub>\<tau> P]\<^sub>\<tau>" in T_Sub)
-  apply simp
-  apply (rule substT_subtype)
-  apply assumption
-  apply assumption
-  \<comment> \<open>records\<close>
-  apply (drule_tac \<Gamma>="\<Delta>'[0 \<mapsto>\<^sub>\<tau> P]\<^sub>e @ \<Gamma>" in T_Let)
-  apply (erule subst_ptyping)
-  apply simp
-  apply (simp add: ac_simps)
-  apply (rule T_Rcd)
-  apply simp
-  apply (rule_tac fTs="fTs[\<parallel>\<Delta>\<parallel> \<mapsto>\<^sub>\<tau> P]\<^sub>r\<^sub>\<tau>" in T_Proj)
-  apply simp
-  apply (erule_tac substrTT_assoc_Some)
-  apply (rule T_Nil)
-  apply (erule wfE_subst)
-  apply (erule wf_subtypeE)
-  apply assumption
-  apply (rule T_Cons)
-  apply simp+
-  done
-
+proof (induct "\<Delta> @ TVarB Q \<Colon> \<Gamma>" t T and "\<Delta> @ TVarB Q \<Colon> \<Gamma>" fs fTs
+              arbitrary: \<Delta> and \<Delta> set: typing typings)
+  case (T_Var i U T \<Delta>)
+  show ?case
+  proof -
+    have "\<Delta>[0 \<mapsto>\<^sub>\<tau> P]\<^sub>e @ \<Gamma> \<turnstile>\<^sub>w\<^sub>f"
+      if "\<parallel>\<Delta>\<parallel> < i"
+      using that
+      by (meson T_Var.hyps(1) T_Var.prems wfE_subst wf_subtypeE)
+    moreover have "(\<Delta>[0 \<mapsto>\<^sub>\<tau> P]\<^sub>e @ \<Gamma>)\<langle>i - Suc 0\<rangle> = \<lfloor>VarB U\<rfloor>"
+      if "\<parallel>\<Delta>\<parallel> < i"
+      using that T_Var Suc_diff_Suc by (force split: nat.split_asm)
+    moreover have "T[\<parallel>\<Delta>\<parallel> \<mapsto>\<^sub>\<tau> P]\<^sub>\<tau> = \<up>\<^sub>\<tau> (Suc (i - Suc 0)) 0 U"
+      if "\<parallel>\<Delta>\<parallel> < i"
+      using that T_Var.hyps by fastforce
+    moreover have "\<Delta>[0 \<mapsto>\<^sub>\<tau> P]\<^sub>e @ \<Gamma> \<turnstile> Var i : T[\<parallel>\<Delta>\<parallel> \<mapsto>\<^sub>\<tau> P]\<^sub>\<tau>"
+      if "\<parallel>\<Delta>\<parallel> = i"
+      using T_Var that by auto
+    moreover have "\<Delta>[0 \<mapsto>\<^sub>\<tau> P]\<^sub>e @ \<Gamma> \<turnstile> Var i : T[\<parallel>\<Delta>\<parallel> \<mapsto>\<^sub>\<tau> P]\<^sub>\<tau>"
+      if "\<parallel>\<Delta>\<parallel> > i"
+    proof -
+      have "Suc (\<parallel>\<Delta>\<parallel> - Suc 0) = \<parallel>\<Delta>\<parallel>"
+        using that by linarith
+      then have \<section>: "\<up>\<^sub>\<tau> (Suc i) 0 U[\<parallel>\<Delta>\<parallel> \<mapsto>\<^sub>\<tau> P]\<^sub>\<tau> = \<up>\<^sub>\<tau> (Suc i) 0 (U[\<parallel>\<Delta>\<parallel> - Suc i \<mapsto>\<^sub>\<tau> P]\<^sub>\<tau>)"
+        using that by fastforce
+      show ?thesis
+      proof (intro typing_typings.T_Var)
+        show "\<Delta>[0 \<mapsto>\<^sub>\<tau> P]\<^sub>e @ \<Gamma> \<turnstile>\<^sub>w\<^sub>f"
+          by (meson T_Var.hyps(1) T_Var.prems wfE_subst wf_subtypeE)
+        show "(\<Delta>[0 \<mapsto>\<^sub>\<tau> P]\<^sub>e @ \<Gamma>)\<langle>i\<rangle> = \<lfloor>VarB (U[\<parallel>\<Delta>\<parallel> - Suc i \<mapsto>\<^sub>\<tau> P]\<^sub>\<tau>)\<rfloor>"
+          using \<section> that T_Var by simp
+        show "T[\<parallel>\<Delta>\<parallel> \<mapsto>\<^sub>\<tau> P]\<^sub>\<tau> = \<up>\<^sub>\<tau> (Suc i) 0 (U[\<parallel>\<Delta>\<parallel> - Suc i \<mapsto>\<^sub>\<tau> P]\<^sub>\<tau>)"
+          using \<section> T_Var by blast
+      qed
+    qed
+    ultimately show ?thesis
+      by (metis One_nat_def linorder_cases substT.simps(1) typing_typings.T_Var)
+  qed
+next
+  case (T_Abs T\<^sub>1 t\<^sub>2 T\<^sub>2)
+  then show ?case     
+    by (simp add: typing_typings.T_Abs [THEN T_eq] flip: substT_substT)
+next
+  case (T_App t\<^sub>1 T\<^sub>1\<^sub>1 T\<^sub>1\<^sub>2 t\<^sub>2)
+  then show ?case
+    using typing_typings.T_App by auto
+next
+  case (T_TApp t\<^sub>1 T\<^sub>1\<^sub>1 T\<^sub>1\<^sub>2 T\<^sub>2)
+  then show ?case
+    apply (simp add: )
+    by (metis minus_nat.diff_0 substT_substT(1) substT_subtype typing_typings.T_TApp
+        zero_le)
+next
+  case (T_Sub t S T)
+  then show ?case
+    using substT_subtype typing_typings.T_Sub by blast
+next
+  case (T_Let t\<^sub>1 T\<^sub>1 p \<Delta> t\<^sub>2 T\<^sub>2)
+  then show ?case
+    apply simp
+    by (metis add.commute substE_length subst_ptyping(1) typing_typings.T_Let)
+next
+  case T_Nil
+  then show ?case
+    by (simp add: typing_typings.T_Nil wfE_subst wf_subtype)
+qed (auto simp: typing_typings.intros)
 
 subsection \<open>Evaluation\<close>
 
@@ -1963,29 +1887,35 @@ lemma matchs_mono:
   assumes H: "\<turnstile> fps [\<rhd>] fs \<Rightarrow> ts"
   shows "fps\<langle>l\<rangle>\<^sub>? = \<bottom> \<Longrightarrow> \<turnstile> fps [\<rhd>] (l, t) \<Colon> fs \<Rightarrow> ts"
   using H
-  apply (induct rule: matchs_induct)
-  apply (rule M_Nil)
-  apply (simp split: if_split_asm)
-  apply (rule M_Cons)
-  apply simp_all
-  done
+proof (induct rule: matchs_induct)
+  case (M_Nil fs)
+  then show ?case
+    by (simp add: match_matchs.M_Nil)
+next
+  case (M_Cons fs l t p ts fps us)
+  then show ?case
+    by (metis assoc.simps(2) fstI match_matchs.M_Cons option.distinct(1))
+qed
 
 lemma matchs_eq:
   assumes H: "\<turnstile> fps [\<rhd>] fs \<Rightarrow> ts"
   shows "\<forall>(l, p) \<in> set fps. fs\<langle>l\<rangle>\<^sub>? = fs'\<langle>l\<rangle>\<^sub>? \<Longrightarrow> \<turnstile> fps [\<rhd>] fs' \<Rightarrow> ts"
   using H
-  apply (induct rule: matchs_induct)
-  apply (rule M_Nil)
-  apply (rule M_Cons)
-  apply auto
-  done
+proof (induct rule: matchs_induct)
+  case (M_Nil fs)
+  then show ?case
+    using match_matchs.M_Nil by auto
+next
+  case (M_Cons fs l t p ts fps us)
+  then show ?case
+    using match_matchs.M_Cons by force
+qed
 
 lemma reorder_eq:
   assumes H: "\<turnstile> fps [:] fTs \<Rightarrow> \<Delta>"
   shows "\<forall>(l, U)\<in>set fTs. \<exists>u. fs\<langle>l\<rangle>\<^sub>? = \<lfloor>u\<rfloor> \<Longrightarrow>
-    \<forall>(l, p) \<in> set fps. fs\<langle>l\<rangle>\<^sub>? = (map (\<lambda>(l, T). (l, the (fs\<langle>l\<rangle>\<^sub>?))) fTs)\<langle>l\<rangle>\<^sub>?"
-  using H
-  by (induct rule: ptypings_induct) auto
+         \<forall>(l, p) \<in> set fps. fs\<langle>l\<rangle>\<^sub>? = (map (\<lambda>(l, T). (l, the (fs\<langle>l\<rangle>\<^sub>?))) fTs)\<langle>l\<rangle>\<^sub>?"
+  using H by (induct rule: ptypings_induct) auto
 
 lemma matchs_reorder:
   "\<turnstile> fps [:] fTs \<Rightarrow> \<Delta> \<Longrightarrow> \<forall>(l, U)\<in>set fTs. \<exists>u. fs\<langle>l\<rangle>\<^sub>? = \<lfloor>u\<rfloor> \<Longrightarrow>
@@ -2001,12 +1931,15 @@ theorem matchs_tl:
   assumes H: "\<turnstile> fps [\<rhd>] (l, t) \<Colon> fs \<Rightarrow> ts"
   shows "fps\<langle>l\<rangle>\<^sub>? = \<bottom> \<Longrightarrow> \<turnstile> fps [\<rhd>] fs \<Rightarrow> ts"
   using H
-  apply (induct fps "(l, t) \<Colon> fs" ts arbitrary: l t fs rule: matchs_induct)
-  apply (simp_all split: if_split_asm)
-  apply (rule M_Nil)
-  apply (rule M_Cons)
-  apply auto
-  done
+proof (induct fps "(l, t) \<Colon> fs" ts arbitrary: l t fs rule: matchs_induct)
+  case M_Nil
+  then show ?case
+    by (simp add: match_matchs.M_Nil)
+next
+  case (M_Cons l t p ts fps us)
+  then show ?case
+    by (metis assoc.simps(2) fst_conv match_matchs.M_Cons not_Some_eq)
+qed
 
 theorem match_length:
   "\<turnstile> p \<rhd> t \<Rightarrow> ts \<Longrightarrow> \<turnstile> p : T \<Rightarrow> \<Delta> \<Longrightarrow> \<parallel>ts\<parallel> = \<parallel>\<Delta>\<parallel>"
@@ -2326,18 +2259,16 @@ qed simp_all
 theorem reorder_prop:
   "\<forall>(l, t) \<in> set fs. P t \<Longrightarrow> \<forall>(l, U)\<in>set fTs. \<exists>u. fs\<langle>l\<rangle>\<^sub>? = \<lfloor>u\<rfloor> \<Longrightarrow>
      \<forall>(l, t) \<in> set (map (\<lambda>(l, T). (l, the (fs\<langle>l\<rangle>\<^sub>?))) fTs). P t"
-  apply (induct fs)
-  apply simp
-  apply (simp add: split_paired_all)
-  apply simp
-  apply (rule ballI)
-  apply (simp add: split_paired_all)
-  apply (drule bpspec)
-  apply assumption
-  apply (erule exE)
-  apply (simp split: if_split_asm)
-  apply (auto dest: assoc_set)
-  done
+proof (induct fs)
+  case Nil
+  then show ?case
+    by auto
+next
+  case (Cons a fs)
+  then show ?case
+    by (smt (verit) assoc_set case_prod_unfold imageE list.set_map option.collapse
+        option.simps(3))
+qed
 
 text \<open>
 Another central property needed in the proof of the progress theorem is

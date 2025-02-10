@@ -43,7 +43,7 @@ qed
 consts wf_rec :: "'a \<Rightarrow> 'b \<Rightarrow> 'c"
 
 definition "wf_rec_rel R step = wft_rec (trans_closure R) (\<lambda>f. wf_rec_step R step (\<lambda>_. f))"
-adhoc_overloading wf_rec wf_rec_rel
+adhoc_overloading wf_rec \<rightleftharpoons> wf_rec_rel
 
 theorem wf_rec_eq_wf_rec_stepI:
   assumes "wellfounded R"
@@ -63,7 +63,7 @@ consts wf_rec_on :: "'a \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> 'd"
 
 definition wf_rec_on_pred :: "('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> (('a \<Rightarrow> 'b) \<Rightarrow> 'a \<Rightarrow> 'b) \<Rightarrow> 'a \<Rightarrow> 'b" where
   "wf_rec_on_pred P R \<equiv> wf_rec R\<up>\<^bsub>P\<^esub>"
-adhoc_overloading wf_rec_on wf_rec_on_pred
+adhoc_overloading wf_rec_on \<rightleftharpoons> wf_rec_on_pred
 
 lemma wf_rec_on_eq_wf_rec_restrict: "wf_rec_on P R = wf_rec R\<up>\<^bsub>P\<^esub>"
   unfolding wf_rec_on_pred_def by simp

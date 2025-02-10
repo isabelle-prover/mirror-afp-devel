@@ -4,11 +4,12 @@
 
 chapter \<open>Unsigned words of 32 bits\<close>
 
-theory Uint32 imports
-  Uint_Common
-  Code_Target_Word
-  Code_Int_Integer_Conversion
-  Code_Target_Integer_Bit
+theory Uint32
+  imports
+    "HOL-Library.Code_Target_Bit_Shifts"
+    Uint_Common
+    Code_Target_Word
+    Code_Int_Integer_Conversion
 begin
 
 section \<open>Type definition and primitive operations\<close>
@@ -117,27 +118,12 @@ global_interpretation uint32: word_type_copy_more Abs_uint32 Rep_uint32 signed_d
          Uint32.rep_eq integer_of_uint32.rep_eq integer_eq_iff)
   done
 
-instantiation uint32 :: "{size, msb, set_bit, bit_comprehension}"
+instantiation uint32 :: "{size, msb, bit_comprehension}"
 begin
 
 lift_definition size_uint32 :: \<open>uint32 \<Rightarrow> nat\<close> is size .
 
 lift_definition msb_uint32 :: \<open>uint32 \<Rightarrow> bool\<close> is msb .
-
-text \<open>Workaround: avoid name space clash by spelling out \<^text>\<open>lift_definition\<close> explicitly.\<close>
-
-definition set_bit_uint32 :: \<open>uint32 \<Rightarrow> nat \<Rightarrow> bool \<Rightarrow> uint32\<close>
-  where set_bit_uint32_eq: \<open>set_bit_uint32 a n b = (if b then Bit_Operations.set_bit else unset_bit) n a\<close>
-
-context
-  includes lifting_syntax
-begin
-
-lemma set_bit_uint32_transfer [transfer_rule]:
-  \<open>(cr_uint32 ===> (=) ===> (\<longleftrightarrow>) ===> cr_uint32) Generic_set_bit.set_bit Generic_set_bit.set_bit\<close>
-  by (simp only: set_bit_eq [abs_def] set_bit_uint32_eq [abs_def]) transfer_prover
-
-end
 
 lift_definition set_bits_uint32 :: \<open>(nat \<Rightarrow> bool) \<Rightarrow> uint32\<close> is set_bits .
 lift_definition set_bits_aux_uint32 :: \<open>(nat \<Rightarrow> bool) \<Rightarrow> nat \<Rightarrow> uint32 \<Rightarrow> uint32\<close> is set_bits_aux .
@@ -147,7 +133,6 @@ global_interpretation uint32: word_type_copy_misc Abs_uint32 Rep_uint32 signed_d
   by (standard; transfer) simp_all
 
 instance using uint32.of_class_bit_comprehension
-  uint32.of_class_set_bit
   by simp_all standard
 
 end
@@ -159,18 +144,11 @@ code_printing code_module Uint32 \<rightharpoonup> (SML)
 val _ = if 5 <= Word.wordSize then () else raise (Fail ("wordSize less than 5"));
 
 structure Uint32 : sig
-  val generic_set_bit : Word32.word -> IntInf.int -> bool -> Word32.word
   val shiftl : Word32.word -> IntInf.int -> Word32.word
   val shiftr : Word32.word -> IntInf.int -> Word32.word
   val shiftr_signed : Word32.word -> IntInf.int -> Word32.word
   val test_bit : Word32.word -> IntInf.int -> bool
 end = struct
-
-fun generic_set_bit x n b =
-  let val mask = Word32.<< (0wx1, Word.fromLargeInt (IntInf.toLarge n))
-  in if b then Word32.orb (x, mask)
-     else Word32.andb (x, Word32.notb mask)
-  end
 
 fun shiftl x n =
   Word32.<< (x, Word.fromLargeInt (IntInf.toLarge n))
@@ -202,7 +180,6 @@ code_printing code_module "Uint32" \<rightharpoonup> (OCaml)
 \<open>module Uint32 : sig
   val less : int32 -> int32 -> bool
   val less_eq : int32 -> int32 -> bool
-  val generic_set_bit : int32 -> Z.t -> bool -> int32
   val shiftl : int32 -> Z.t -> int32
   val shiftr : int32 -> Z.t -> int32
   val shiftr_signed : int32 -> Z.t -> int32
@@ -220,11 +197,6 @@ let less_eq x y =
   if Int32.compare x Int32.zero < 0 then
     Int32.compare y Int32.zero < 0 && Int32.compare x y <= 0
   else Int32.compare y Int32.zero < 0 || Int32.compare x y <= 0;;
-
-let generic_set_bit x n b =
-  let mask = Int32.shift_left Int32.one (Z.to_int n)
-  in if b then Int32.logor x mask
-     else Int32.logand x (Int32.lognot mask);;
 
 let shiftl x n = Int32.shift_left x (Z.to_int n);;
 
@@ -254,12 +226,6 @@ def less_eq(x: Int, y: Int) : Boolean =
   x < 0 match {
     case true => y < 0 && x <= y
     case false => y < 0 || x <= y
-  }
-
-def generic_set_bit(x: Int, n: BigInt, b: Boolean) : Int =
-  b match {
-    case true => x | (1 << n.intValue)
-    case false => x & (1 << n.intValue).unary_~
   }
 
 def shiftl(x: Int, n: BigInt) : Int = x << n.intValue
@@ -502,7 +468,6 @@ global_interpretation uint32: word_type_copy_target_language Abs_uint32 Rep_uint
     and uint32_shiftl = uint32.shiftl
     and uint32_shiftr = uint32.shiftr
     and uint32_sshiftr = uint32.sshiftr
-    and uint32_generic_set_bit = uint32.gen_set_bit
   by standard simp_all
 
 code_printing constant uint32_test_bit \<rightharpoonup>
@@ -511,13 +476,6 @@ code_printing constant uint32_test_bit \<rightharpoonup>
   (OCaml) "Uint32.test'_bit" and
   (Scala) "Uint32.test'_bit" and
   (Eval) "(fn w => fn n => if n < 0 orelse 32 <= n then raise (Fail \"argument to uint32'_test'_bit out of bounds\") else Uint32.test'_bit w n)"
-
-code_printing constant uint32_generic_set_bit \<rightharpoonup>
-  (SML) "Uint32.generic'_set'_bit" and
-  (Haskell) "Data'_Bits.genericSetBitBounded" and
-  (OCaml) "Uint32.generic'_set'_bit" and
-  (Scala) "Uint32.generic'_set'_bit" and
-  (Eval) "(fn w => fn n => fn b => if n < 0 orelse 32 <= n then raise (Fail \"argument to uint32'_generic'_set'_bit out of bounds\") else Uint32.generic'_set'_bit w n b)"
 
 code_printing constant uint32_shiftl \<rightharpoonup>
   (SML) "Uint32.shiftl" and

@@ -50,19 +50,20 @@ proof (intro allI iffI)
     unfolding compatible_def by auto
 next
   assume commute[rule_format, THEN fun_cong, unfolded o_def]: \<open>\<forall>a b. setter F a \<circ> setter G b = setter G b \<circ> setter F a\<close>
+
   have \<open>valid_getter_setter (getter F) (setter F)\<close>
     by auto
+  then have \<open>register_from_getter_setter (getter F) (setter F) a \<circ>\<^sub>m register_from_getter_setter (getter G) (setter G) b =
+    register_from_getter_setter (getter G) (setter G) b \<circ>\<^sub>m register_from_getter_setter (getter F) (setter F) a\<close> for a b
+    unfolding register_from_getter_setter_def valid_getter_setter_def
+    apply (rule_tac ext)
+    by (smt (verit) assms(2) commute map_comp_def option.case(2) option.case_eq_if valid_getter_setter_def valid_getter_setter_getter_setter)
   then have \<open>F a \<circ>\<^sub>m G b = G b \<circ>\<^sub>m F a\<close> for a b
     apply (subst (2) register_from_getter_setter_of_getter_setter[symmetric, of F], simp)
     apply (subst (1) register_from_getter_setter_of_getter_setter[symmetric, of F], simp)
     apply (subst (2) register_from_getter_setter_of_getter_setter[symmetric, of G], simp)
     apply (subst (1) register_from_getter_setter_of_getter_setter[symmetric, of G], simp)
-    unfolding register_from_getter_setter_def valid_getter_setter_def
-    apply (auto intro!: ext simp: option.case_eq_if map_comp_def) (* Sledgehammer: *)
-          apply ((metis commute option.distinct option.simps)+)[4]
-      apply (smt (verit, ccfv_threshold) assms(2) commute valid_getter_setter_def valid_getter_setter_getter_setter)
-     apply (smt (verit, ccfv_threshold) assms(2) commute valid_getter_setter_def valid_getter_setter_getter_setter)
-    by (smt (verit, del_insts) assms(2) commute option.inject valid_getter_setter_def valid_getter_setter_getter_setter)
+    by simp
   then show \<open>compatible F G\<close>
     unfolding compatible_def by auto
 qed
@@ -84,8 +85,9 @@ lemma permutation_register_register[simp]:
   fixes p :: "'b \<Rightarrow> 'a"
   assumes [simp]: "bij p"
   shows "register (permutation_register p)"
-  apply (auto intro!: register_register_from_getter_setter simp: permutation_register_def valid_getter_setter_def bij_inv_eq_iff)
-  by (meson assms bij_inv_eq_iff)
+  using assms
+  by (auto intro!: register_register_from_getter_setter surj_f_inv_f[of p] bij_betw_imp_surj_on
+      simp: permutation_register_def valid_getter_setter_def bij_inv_eq_iff)
 
 lemma getter_permutation_register: \<open>bij p \<Longrightarrow> getter (permutation_register p) = p\<close>
   by (smt (verit, ccfv_threshold) bij_inv_eq_iff getter_of_register_from_getter_setter permutation_register_def valid_getter_setter_def)

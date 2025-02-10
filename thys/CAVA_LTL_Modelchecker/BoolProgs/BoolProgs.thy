@@ -2,6 +2,7 @@ section \<open>Boolean Programs\<close>
 theory BoolProgs
 imports 
   CAVA_Base.CAVA_Base
+  "Word_Lib.Generic_set_bit"
 begin
 
 subsection \<open>Syntax and Semantics\<close>
@@ -372,11 +373,7 @@ proof (clarsimp simp del: exec.simps, intro conjI)
 
       have SB_CNV: "bs_\<alpha> (set_bit s x v) 
         = (if v then (insert x (bs_\<alpha> s)) else (bs_\<alpha> s - {x}))"
-        apply (cases v)
-        apply simp_all
-        apply (fold bs_insert_def bs_delete_def)
-        apply (simp_all add: bs_correct)
-        done
+        by (cases v) (simp_all add: set_bit_eq flip: bs_insert_def bs_delete_def)
 
       from A have "set_bit s x v \<in> state_bound bp s0"
         unfolding state_bound_def

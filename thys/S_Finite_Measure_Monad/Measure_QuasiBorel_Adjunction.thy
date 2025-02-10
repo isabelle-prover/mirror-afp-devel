@@ -231,8 +231,8 @@ qed
 lemma qbs_morphism_imp_measurable: "f \<in> X \<rightarrow>\<^sub>Q Y \<Longrightarrow> f \<in> qbs_to_measure X \<rightarrow>\<^sub>M qbs_to_measure Y"
   using l_preserves_morphisms by blast
 
-abbreviation qbs_borel (\<open>borel\<^sub>Q\<close>)  where "borel\<^sub>Q \<equiv> measure_to_qbs borel"
-abbreviation qbs_count_space (\<open>count'_space\<^sub>Q\<close>) where "qbs_count_space I \<equiv> measure_to_qbs (count_space I)"
+abbreviation qbs_borel ("borel\<^sub>Q")  where "borel\<^sub>Q \<equiv> measure_to_qbs borel"
+abbreviation qbs_count_space ("count'_space\<^sub>Q") where "qbs_count_space I \<equiv> measure_to_qbs (count_space I)"
 
 lemma
   shows qbs_space_qbs_borel[simp]: "qbs_space borel\<^sub>Q = UNIV"
@@ -488,7 +488,7 @@ proof
   finally show "measure_to_qbs M \<rightarrow>\<^sub>Q measure_to_qbs Y \<subseteq> M \<rightarrow>\<^sub>M Y" .
 qed(rule r_preserves_morphisms)
 
-lemma qbs_morphism_dest:
+lemma qbs_morphism_dest[measurable_dest]:
   assumes "f \<in> X \<rightarrow>\<^sub>Q measure_to_qbs Y"
   shows "f \<in> qbs_to_measure X \<rightarrow>\<^sub>M Y"
   using assms lr_adjunction_correspondence by auto

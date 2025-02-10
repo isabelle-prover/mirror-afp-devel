@@ -2,11 +2,7 @@ chapter AFP
 session Superposition_Calculus = Saturation_Framework_Extensions +
   options [timeout = 900]
   sessions
-    Abstract_Substitution
-    Knuth_Bendix_Order
-    Min_Max_Least_Greatest
-    Ordered_Resolution_Prover
-    Regular_Tree_Relations
+    First_Order_Clause
     Saturation_Framework
     Saturation_Framework_Extensions
   theories

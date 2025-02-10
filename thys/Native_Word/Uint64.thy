@@ -4,11 +4,12 @@
 
 chapter \<open>Unsigned words of 64 bits\<close>
 
-theory Uint64 imports
-  Uint_Common
-  Code_Target_Word
-  Code_Int_Integer_Conversion
-  Code_Target_Integer_Bit
+theory Uint64
+  imports
+    "HOL-Library.Code_Target_Bit_Shifts"
+    Uint_Common
+    Code_Target_Word
+    Code_Int_Integer_Conversion
 begin
 
 text \<open>
@@ -128,27 +129,12 @@ global_interpretation uint64: word_type_copy_more Abs_uint64 Rep_uint64 signed_d
          Uint64.rep_eq integer_of_uint64.rep_eq integer_eq_iff)
   done
 
-instantiation uint64 :: "{size, msb, set_bit, bit_comprehension}"
+instantiation uint64 :: "{size, msb, bit_comprehension}"
 begin
 
 lift_definition size_uint64 :: \<open>uint64 \<Rightarrow> nat\<close> is size .
 
 lift_definition msb_uint64 :: \<open>uint64 \<Rightarrow> bool\<close> is msb .
-
-text \<open>Workaround: avoid name space clash by spelling out \<^text>\<open>lift_definition\<close> explicitly.\<close>
-
-definition set_bit_uint64 :: \<open>uint64 \<Rightarrow> nat \<Rightarrow> bool \<Rightarrow> uint64\<close>
-  where set_bit_uint64_eq: \<open>set_bit_uint64 a n b = (if b then Bit_Operations.set_bit else unset_bit) n a\<close>
-
-context
-  includes lifting_syntax
-begin
-
-lemma set_bit_uint64_transfer [transfer_rule]:
-  \<open>(cr_uint64 ===> (=) ===> (\<longleftrightarrow>) ===> cr_uint64) Generic_set_bit.set_bit Generic_set_bit.set_bit\<close>
-  by (simp only: set_bit_eq [abs_def] set_bit_uint64_eq [abs_def]) transfer_prover
-
-end
 
 lift_definition set_bits_uint64 :: \<open>(nat \<Rightarrow> bool) \<Rightarrow> uint64\<close> is set_bits .
 lift_definition set_bits_aux_uint64 :: \<open>(nat \<Rightarrow> bool) \<Rightarrow> nat \<Rightarrow> uint64 \<Rightarrow> uint64\<close> is set_bits_aux .
@@ -158,7 +144,6 @@ global_interpretation uint64: word_type_copy_misc Abs_uint64 Rep_uint64 signed_d
   by (standard; transfer) simp_all
 
 instance using uint64.of_class_bit_comprehension
-  uint64.of_class_set_bit
   by simp_all standard
 
 end
@@ -196,7 +181,6 @@ structure Uint64 : sig
   val shiftl : uint64 -> IntInf.int -> uint64;
   val shiftr : uint64 -> IntInf.int -> uint64;
   val shiftr_signed : uint64 -> IntInf.int -> uint64;
-  val generic_set_bit : uint64 -> IntInf.int -> bool -> uint64;
   val test_bit : uint64 -> IntInf.int -> bool;
 end = struct
 
@@ -264,12 +248,6 @@ fun test_bit x n =
   if n < maxWord then IntInf.andb (x, IntInf.<< (1, Word.fromLargeInt (IntInf.toLarge n))) <> 0
   else false;
 
-fun generic_set_bit x n b =
-  if n < 64 then
-    if b then IntInf.orb (x, IntInf.<< (1, Word.fromLargeInt (IntInf.toLarge n)))
-    else IntInf.andb (x, IntInf.notb (IntInf.<< (1, Word.fromLargeInt (IntInf.toLarge n))))
-  else x;
-
 end
 \<close>
 code_reserved (SML) Uint64
@@ -318,7 +296,6 @@ let
     "  val shiftl : uint64 -> IntInf.int -> uint64;" ^ newline ^
     "  val shiftr : uint64 -> IntInf.int -> uint64;" ^ newline ^
     "  val shiftr_signed : uint64 -> IntInf.int -> uint64;" ^ newline ^
-    "  val generic_set_bit : uint64 -> IntInf.int -> bool -> uint64;" ^ newline ^
     "  val test_bit : uint64 -> IntInf.int -> bool;" ^ newline ^
     "end = struct" ^ newline ^
     "" ^ newline ^
@@ -351,12 +328,6 @@ let
     "fun less_eq x y = Word64.<=(x, y);" ^ newline ^
     "" ^ newline ^
     "fun less x y = Word64.<(x, y);" ^ newline ^
-    "" ^ newline ^
-    "fun generic_set_bit x n b =" ^ newline ^
-    "  let val mask = Word64.<< (0wx1, Word.fromLargeInt (IntInf.toLarge n))" ^ newline ^
-    "  in if b then Word64.orb (x, mask)" ^ newline ^
-    "     else Word64.andb (x, Word64.notb mask)" ^ newline ^
-    "  end" ^ newline ^
     "" ^ newline ^
     "fun shiftl x n =" ^ newline ^
     "  Word64.<< (x, Word.fromLargeInt (IntInf.toLarge n))" ^ newline ^
@@ -401,7 +372,6 @@ code_printing code_module "Uint64" \<rightharpoonup> (OCaml)
 \<open>module Uint64 : sig
   val less : int64 -> int64 -> bool
   val less_eq : int64 -> int64 -> bool
-  val generic_set_bit : int64 -> Z.t -> bool -> int64
   val shiftl : int64 -> Z.t -> int64
   val shiftr : int64 -> Z.t -> int64
   val shiftr_signed : int64 -> Z.t -> int64
@@ -419,11 +389,6 @@ let less_eq x y =
   if Int64.compare x Int64.zero < 0 then
     Int64.compare y Int64.zero < 0 && Int64.compare x y <= 0
   else Int64.compare y Int64.zero < 0 || Int64.compare x y <= 0;;
-
-let generic_set_bit x n b =
-  let mask = Int64.shift_left Int64.one (Z.to_int n)
-  in if b then Int64.logor x mask
-     else Int64.logand x (Int64.lognot mask);;
 
 let shiftl x n = Int64.shift_left x (Z.to_int n);;
 
@@ -453,12 +418,6 @@ def less_eq(x: Long, y: Long) : Boolean =
   x < 0 match {
     case true => y < 0 && x <= y
     case false => y < 0 || x <= y
-  }
-
-def generic_set_bit(x: Long, n: BigInt, b: Boolean) : Long =
-  b match {
-    case true => x | (1L << n.intValue)
-    case false => x & (1L << n.intValue).unary_~
   }
 
 def shiftl(x: Long, n: BigInt) : Long = x << n.intValue
@@ -700,7 +659,6 @@ global_interpretation uint64: word_type_copy_target_language Abs_uint64 Rep_uint
     and uint64_shiftl = uint64.shiftl
     and uint64_shiftr = uint64.shiftr
     and uint64_sshiftr = uint64.sshiftr
-    and uint64_generic_set_bit = uint64.gen_set_bit
   by standard simp_all
 
 code_printing constant uint64_test_bit \<rightharpoonup>
@@ -709,13 +667,6 @@ code_printing constant uint64_test_bit \<rightharpoonup>
   (OCaml) "Uint64.test'_bit" and
   (Scala) "Uint64.test'_bit" and
   (Eval) "(fn x => fn i => if i < 0 orelse i >= 64 then raise (Fail \"argument to uint64'_test'_bit out of bounds\") else Uint64.test'_bit x i)"
-
-code_printing constant uint64_generic_set_bit \<rightharpoonup>
-  (SML) "Uint64.generic'_set'_bit" and
-  (Haskell) "Data'_Bits.genericSetBitBounded" and
-  (OCaml) "Uint64.generic'_set'_bit" and
-  (Scala) "Uint64.generic'_set'_bit" and
-  (Eval) "(fn w => fn i => fn b => if i < 0 orelse i >= 64 then raise (Fail \"argument to uint64'_generic'_set'_bit out of bounds\") else Uint64.generic'_set'_bit w i b)"
 
 code_printing constant uint64_shiftl \<rightharpoonup>
   (SML) "Uint64.shiftl" and

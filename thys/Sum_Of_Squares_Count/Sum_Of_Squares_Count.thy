@@ -4,7 +4,9 @@
    
    Counting the number of ways to write an integer as a sum of k squares of integers.
 *)
+
 section \<open>Sum-of-square decompositions and Jacobi's two-squares Theorem\<close>
+
 theory Sum_Of_Squares_Count
 imports
   "HOL-Library.Discrete_Functions"
@@ -15,128 +17,6 @@ imports
 begin
 
 subsection \<open>Auxiliary material\<close>
-
-(*
-  TODO: Should be moved to List_Index.
-*)
-lemma map_index_cong:
-  assumes "length xs = length ys" "\<And>i. i < length xs \<Longrightarrow> f i (xs ! i) = g i (ys ! i)"
-  shows   "map_index f xs = map_index g ys"
-  by (rule nth_equalityI) (use assms in auto)
-
-lemma map_index_idI: "(\<And>i. f i (xs ! i) = xs ! i) \<Longrightarrow> map_index f xs = xs"
-  by (rule nth_equalityI) auto
-
-lemma map_index_transfer [transfer_rule]:
-  "rel_fun (rel_fun (=) (rel_fun R1 R2)) (rel_fun (list_all2 R1) (list_all2 R2))
-     map_index map_index"
-  unfolding map_index by transfer_prover
-
-lemma map_index_Cons: "map_index f (x # xs) = f 0 x # map_index (\<lambda>i x. f (Suc i) x) xs"
-  by (rule nth_equalityI) (auto simp: nth_Cons simp del: map_index'.simps split: nat.splits)
-
-lemma map_index_rev: "map_index f (rev xs) = rev (map_index (\<lambda>i. f (length xs - i - 1)) xs)"
-  by (rule nth_equalityI) (auto simp: rev_nth)
-
-lemma map_conv_map_index: "map f xs = map_index (\<lambda>i x. f x) xs"
-  by (rule nth_equalityI) auto
-
-lemma map_index_map_index: "map_index f (map_index g xs) = map_index (\<lambda>i x. f i (g i x)) xs"
-  by (rule nth_equalityI) auto
-
-lemma map_index_replicate [simp]: "map_index f (replicate n x) = map (\<lambda>i. f i x) [0..<n]"
-  by (rule nth_equalityI) auto
-
-lemma zip_map_index:
-  "zip (map_index f xs) (map_index g ys) = map_index (\<lambda>i. map_prod (f i) (g i)) (zip xs ys)"
-  by (rule nth_equalityI) auto
-
-lemma map_index_conv_fold:
-  "map_index f xs = rev (snd (fold (\<lambda>x (i,ys). (i+1, f i x # ys)) xs (0, [])))"
-proof -
-  have "rev (snd (fold (\<lambda>x (i,ys). (i+1, f i x # ys)) xs (n, zs))) =
-        rev zs @ map_index (\<lambda>i. f (i + n)) xs" for n zs
-    by (induction xs arbitrary: n zs f) (simp_all add: map_index_Cons del: map_index'.simps(2))
-  from this[of 0 "[]"] show ?thesis
-    by simp
-qed
-
-lemma map_index_code_conv_foldr:
-  "map_index f xs = snd (foldr (\<lambda>x (i,ys). (i-1, f i x # ys)) xs (length xs - 1, []))"
-proof -
-  have "foldr (\<lambda>x (i,ys). (i-1, f i x # ys)) xs (n, []) = 
-          (n - length xs, map_index (\<lambda>i. f (i + 1 + n - length xs)) xs)" for n
-    by (induction xs arbitrary: f n) (auto simp: map_index_Cons simp del: map_index'.simps(2))
-  note this[of "length xs - 1"]
-  also have "map_index (\<lambda>i. f (i + 1 + (length xs - 1) - length xs)) xs = map_index f xs"
-    by (intro map_index_cong) auto
-  finally show ?thesis
-    by (simp add: case_prod_unfold)
-qed
-
-
-(* TODO: general stuff; should be moved to distribution *)
-lemma sum_list_of_nat: "sum_list (map of_nat xs) = of_nat (sum_list xs)"
-  by (induction xs) auto
-
-lemma sum_list_of_int: "sum_list (map of_int xs) = of_int (sum_list xs)"
-  by (induction xs) auto
-
-lemma sum_list_of_real: "sum_list (map of_real xs) = of_real (sum_list xs)"
-  by (induction xs) auto
-
-lemma prime_cong_4_nat_cases [consumes 1, case_names 2 cong_1 cong_3]:
-  assumes "prime (p :: nat)"
-  obtains "p = 2" | "[p = 1] (mod 4)" | "[p = 3] (mod 4)"
-proof -
-  have "[p = 2] (mod 4) \<longleftrightarrow> p = 2"
-  proof
-    assume "[p = 2] (mod 4)"
-    hence "p mod 4 = 2"
-      by (auto simp: cong_def)
-    hence "even p"
-      by (simp add: even_even_mod_4_iff)
-    with assms show "p = 2"
-      unfolding prime_nat_iff by force
-  qed auto
-  moreover have "[p \<noteq> 0] (mod 4)"
-  proof
-    assume "[p = 0] (mod 4)"
-    hence "4 dvd p"
-      by (auto simp: cong_0_iff)
-    with assms have "p = 4"
-      by (subst (asm) prime_nat_iff) auto
-    thus False
-      using assms by simp
-  qed
-  ultimately consider "[p = 3] (mod 4)" | "[p = 1] (mod 4)" | "p = 2"
-    by (fastforce simp: cong_def)
-  thus ?thesis
-    using that by metis
-qed
-
-lemma member_le_sum_list:
-  fixes x :: "'a :: ordered_comm_monoid_add"
-  assumes "x \<in> set xs" "\<And>x. x \<in> set xs \<Longrightarrow> x \<ge> 0"
-  shows   "x \<le> sum_list xs"
-  using assms
-proof (induction xs)
-  case (Cons y xs)
-  show ?case
-  proof (cases "y = x")
-    case True
-    have "x + 0 \<le> x + sum_list xs"
-      by (intro add_mono order.refl sum_list_nonneg) (use Cons in auto)
-    thus ?thesis
-      using True by auto
-  next
-    case False
-    have "0 + x \<le> y + sum_list xs"
-      by (intro add_mono Cons.IH Cons.prems) (use Cons.prems False in auto)
-    thus ?thesis
-      by auto
-  qed
-qed auto
 
 lemma is_square_conv_sqrt: "is_square n \<longleftrightarrow> floor_sqrt n ^ 2 = n"
   by (metis is_nth_power_def floor_sqrt_inverse_power2)
@@ -200,25 +80,6 @@ lemma divisor_coprime_product_decomp:
   shows   "d = gcd d n1 * gcd d n2"
   using divisor_coprime_product_decomp_normalize[of d n1 n2] assms
   by simp
-
-
-(* TODO: stuff about Gaussian integers; should be moved to Gaussian_Integers *)
-lemma gauss_int_norm_power: "gauss_int_norm (x ^ n) = gauss_int_norm x ^ n"
-  by (induction n) (simp_all add: gauss_int_norm_mult)
-
-lemma gcd_gauss_cnj: "gcd (gauss_cnj x) (gauss_cnj y) = normalize (gauss_cnj (gcd x y))"
-proof (rule sym, rule gcdI, goal_cases)
-  case (3 d)
-  thus ?case
-    by (auto simp: gauss_cnj_dvd_right_iff)
-qed (auto simp: gauss_cnj_dvd_left_iff)
-
-lemma gcd_gauss_cnj_left: "gcd (gauss_cnj x) y = normalize (gauss_cnj (gcd x (gauss_cnj y)))"
-  by (metis gauss_cnj_cnj gcd_gauss_cnj)
-
-lemma gcd_gauss_cnj_right: "gcd x (gauss_cnj y) = normalize (gauss_cnj (gcd (gauss_cnj x) y))"
-  by (subst gcd_gauss_cnj [symmetric]) auto
-
 
 subsection \<open>Decompositions into squares of integers\<close>
 

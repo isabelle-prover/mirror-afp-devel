@@ -1,5 +1,5 @@
 subsection\<open>ThereIsNoEvil2.thy (Figure 11 of \cite{J75})\<close>
-text\<open>Importing Gödel’s modified axioms from Figure 8 we can prove that necessarily there exists
+text\<open>Importing Gödel's modified axioms from Figure 8 we can prove that necessarily there exists
 no entity that possesses all non-positive (=negative) properties.\<close>
 theory ThereIsNoEvil2 imports GoedelVariantHOML3
 begin  

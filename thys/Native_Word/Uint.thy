@@ -5,11 +5,12 @@
 
 chapter \<open>Unsigned words of default size\<close>
 
-theory Uint imports
-  Uint_Common
-  Code_Target_Word
-  Code_Int_Integer_Conversion
-  Code_Target_Integer_Bit
+theory Uint
+  imports
+    "HOL-Library.Code_Target_Bit_Shifts"
+    Uint_Common
+    Code_Target_Word
+    Code_Int_Integer_Conversion
 begin
 
 text \<open>
@@ -165,27 +166,12 @@ global_interpretation uint: word_type_copy_more Abs_uint Rep_uint signed_drop_bi
          Uint.rep_eq integer_of_uint.rep_eq integer_eq_iff)
   done
 
-instantiation uint :: "{size, msb, set_bit, bit_comprehension}"
+instantiation uint :: "{size, msb, bit_comprehension}"
 begin
 
 lift_definition size_uint :: \<open>uint \<Rightarrow> nat\<close> is size .
 
 lift_definition msb_uint :: \<open>uint \<Rightarrow> bool\<close> is msb .
-
-text \<open>Workaround: avoid name space clash by spelling out \<^text>\<open>lift_definition\<close> explicitly.\<close>
-
-definition set_bit_uint :: \<open>uint \<Rightarrow> nat \<Rightarrow> bool \<Rightarrow> uint\<close>
-  where set_bit_uint_eq: \<open>set_bit_uint a n b = (if b then Bit_Operations.set_bit else unset_bit) n a\<close>
-
-context
-  includes lifting_syntax
-begin
-
-lemma set_bit_uint_transfer [transfer_rule]:
-  \<open>(cr_uint ===> (=) ===> (\<longleftrightarrow>) ===> cr_uint) Generic_set_bit.set_bit Generic_set_bit.set_bit\<close>
-  by (simp only: set_bit_eq [abs_def] set_bit_uint_eq [abs_def]) transfer_prover
-
-end
 
 lift_definition set_bits_uint :: \<open>(nat \<Rightarrow> bool) \<Rightarrow> uint\<close> is set_bits .
 lift_definition set_bits_aux_uint :: \<open>(nat \<Rightarrow> bool) \<Rightarrow> nat \<Rightarrow> uint \<Rightarrow> uint\<close> is set_bits_aux .
@@ -195,7 +181,6 @@ global_interpretation uint: word_type_copy_misc Abs_uint Rep_uint signed_drop_bi
   by (standard; transfer) simp_all
 
 instance using uint.of_class_bit_comprehension
-  uint.of_class_set_bit
   by simp_all standard
 
 end
@@ -205,18 +190,11 @@ section \<open>Code setup\<close>
 code_printing code_module Uint \<rightharpoonup> (SML)
 \<open>
 structure Uint : sig
-  val generic_set_bit : Word.word -> IntInf.int -> bool -> Word.word
   val shiftl : Word.word -> IntInf.int -> Word.word
   val shiftr : Word.word -> IntInf.int -> Word.word
   val shiftr_signed : Word.word -> IntInf.int -> Word.word
   val test_bit : Word.word -> IntInf.int -> bool
 end = struct
-
-fun generic_set_bit x n b =
-  let val mask = Word.<< (0wx1, Word.fromLargeInt (IntInf.toLarge n))
-  in if b then Word.orb (x, mask)
-     else Word.andb (x, Word.notb mask)
-  end
 
 fun shiftl x n =
   Word.<< (x, Word.fromLargeInt (IntInf.toLarge n))
@@ -271,7 +249,6 @@ code_printing code_module "Uint" \<rightharpoonup> (OCaml)
   val dflt_size : Z.t
   val less : t -> t -> bool
   val less_eq : t -> t -> bool
-  val generic_set_bit : t -> Z.t -> bool -> t
   val shiftl : t -> Z.t -> t
   val shiftr : t -> Z.t -> t
   val shiftr_signed : t -> Z.t -> t
@@ -296,11 +273,6 @@ let less_eq x y =
   if x < 0 then
     y < 0 &&  x <= y
   else y < 0 || x <= y;;
-
-let generic_set_bit x n b =
-  let mask = 1 lsl (Z.to_int n)
-  in if b then x lor mask
-     else x land (lnot mask);;
 
 let shiftl x n = x lsl (Z.to_int n);;
 
@@ -338,12 +310,6 @@ def less_eq(x: Int, y: Int) : Boolean =
   x < 0 match {
     case true => y < 0 && x <= y
     case false => y < 0 || x <= y
-  }
-
-def generic_set_bit(x: Int, n: BigInt, b: Boolean) : Int =
-  b match {
-    case true => x | (1 << n.intValue)
-    case false => x & (1 << n.intValue).unary_~
   }
 
 def shiftl(x: Int, n: BigInt) : Int = x << n.intValue
@@ -678,7 +644,6 @@ global_interpretation uint: word_type_copy_target_language Abs_uint Rep_uint sig
     and uint_shiftl = uint.shiftl
     and uint_shiftr = uint.shiftr
     and uint_sshiftr = uint.sshiftr
-    and uint_generic_set_bit = uint.gen_set_bit
   by standard (simp_all add: wivs_index_def)
 
 code_printing constant uint_test_bit \<rightharpoonup>
@@ -688,14 +653,6 @@ code_printing constant uint_test_bit \<rightharpoonup>
   (Haskell) "Data'_Bits.testBitBounded" and
   (OCaml) "Uint.test'_bit" and
   (Scala) "Uint.test'_bit"
-
-code_printing constant uint_generic_set_bit \<rightharpoonup>
-  (SML) "Uint.generic'_set'_bit" and
-  (Eval) "(raise (Fail \"Machine dependent code\"))" and
-  (Quickcheck) "Uint.generic'_set'_bit" and
-  (Haskell) "Data'_Bits.genericSetBitBounded" and
-  (OCaml) "Uint.generic'_set'_bit" and
-  (Scala) "Uint.generic'_set'_bit"
 
 code_printing constant uint_shiftl \<rightharpoonup>
   (SML) "Uint.shiftl" and

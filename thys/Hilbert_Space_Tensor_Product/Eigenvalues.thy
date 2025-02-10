@@ -6,6 +6,8 @@ theory Eigenvalues
     Misc_Tensor_Product_TTS
 begin
 
+unbundle cblinfun_syntax
+
 definition normal_op :: \<open>('a::chilbert_space \<Rightarrow>\<^sub>C\<^sub>L 'a) \<Rightarrow> bool\<close> where
   \<open>normal_op A  \<longleftrightarrow>  A o\<^sub>C\<^sub>L A* = A* o\<^sub>C\<^sub>L A\<close>
 
@@ -115,7 +117,7 @@ proof -
   also have \<open>\<dots> = h \<bullet>\<^sub>C a h\<close>
     by (simp add: ah_eh)
   also from assms(2) have \<open>\<dots> \<in> \<real>\<close>
-    using cinner_hermitian_real selfadjoint_def by blast
+    using cinner_selfadjoint_real selfadjoint_def by blast
   finally show \<open>e \<in> \<real>\<close>
     by -
 qed
@@ -582,6 +584,6 @@ proof -
     by blast
 qed
 
-
+unbundle no cblinfun_syntax
 
 end

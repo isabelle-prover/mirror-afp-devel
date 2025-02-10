@@ -1,0 +1,45 @@
+title = "Elementary Graph Traversal Algorithms"
+date = 2025-01-14
+topics = [
+  "Computer science/Algorithms/Graph",
+]
+abstract = """
+In this entry, we verify the correctness of: Depth-first search and Breadth-first search
+
+The entry's main aim is pedagogical.
+It has the formal material presented in one chapter of the book Functional Data Structures and Algorithms:
+A Proof Assistant Approach.
+The verification is based on a simple set-based representation of directed graphs. The main feature
+is that a graph's set of vertices is implicitly represented by its edges. The main focus of the
+development is to develop a representation suitable for mathematical reasoning and for executable
+algorithms.
+The entry also shows the verification of executable algorithms that need background mathematical
+libraries with basic Isabelle tools.
+Two main features are its automation setup aimed at verifying executable graph algorithms in 
+a human-readable way and to verify the algorithms w.r.t.\\ the same graph representation, making all
+of them compatible.
+The setup we use here includes using the function package to model loops and reason about their
+termination, using records to model program states, and using locales to implement parametric
+as well as step-wise refinement based verification.
+The material presented here is a part of an ongoing development of formal results on graphs and graph
+algorithms in Isabelle/HOL: https://github.com/mabdula/Isabelle-Graph-Library."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.abdulaziz]
+email = "abdulaziz_email"
+
+[contributors]
+
+[notify]
+abdulaziz = "abdulaziz_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

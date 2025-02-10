@@ -1,6 +1,6 @@
-section\<open>Gödel’s ontological argument -- 1970 manuscript\<close>
+section\<open>Gödel's ontological argument -- 1970 manuscript\<close>
 subsection\<open>GoedelVariantHOML1.thy (Figure 6 of \cite{J75})\<close>
-text\<open>Gödel’s axioms and definitions, as presented in the 1970 manuscript, are inconsistent. Actualist 
+text\<open>Gödel's axioms and definitions, as presented in the 1970 manuscript, are inconsistent. Actualist 
 quantifiers (avoiding existential import) are used for quantification over entities, otherwise possibilist quantifiers 
 are used.\<close>
 theory GoedelVariantHOML1 imports HOMLinHOL

@@ -11,7 +11,7 @@ named_theorems HOL_predicate_alignment
 
 subparagraph \<open>Quantifiers\<close>
 
-adhoc_overloading ball Ball
+adhoc_overloading ball \<rightleftharpoons> Ball
 
 lemma Ball_eq_ball_pred [HOL_predicate_alignment]: "\<forall>\<^bsub>A\<^esub> = \<forall>\<^bsub>mem_of A\<^esub>" by auto
 
@@ -23,7 +23,7 @@ lemma Ball_eq_ball_pred_uhint [uhint]:
 lemma Ball_iff_ball_pred [HOL_predicate_alignment]: "(\<forall>x : A. Q x) \<longleftrightarrow> (\<forall>x : mem_of A. Q x)"
   by (simp add: Ball_eq_ball_pred)
 
-adhoc_overloading bex Bex
+adhoc_overloading bex \<rightleftharpoons> Bex
 
 lemma Bex_eq_bex_pred [HOL_predicate_alignment]: "\<exists>\<^bsub>A\<^esub> = \<exists>\<^bsub>mem_of A\<^esub>" by fast
 

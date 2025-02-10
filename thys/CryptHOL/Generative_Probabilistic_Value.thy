@@ -754,7 +754,7 @@ where
 
 declare bind_gpv.sel [simp del]
 
-adhoc_overloading Monad_Syntax.bind bind_gpv
+adhoc_overloading Monad_Syntax.bind \<rightleftharpoons> bind_gpv
 
 lemma bind_gpv_unfold [code]:
   "r \<bind> f = GPV (
@@ -1013,7 +1013,7 @@ where "bind_rpv rpv f = (\<lambda>input. bind_gpv (rpv input) f)"
 lemma bind_rpv_apply [simp]: "bind_rpv rpv f input = bind_gpv (rpv input) f"
 by(simp add: bind_rpv_def fun_eq_iff)
 
-adhoc_overloading Monad_Syntax.bind bind_rpv
+adhoc_overloading Monad_Syntax.bind \<rightleftharpoons> bind_rpv
 
 lemma bind_rpv_code_cong: "rpv = rpv' \<Longrightarrow> bind_rpv rpv f = bind_rpv rpv' f" by simp
 setup \<open>Code_Simp.map_ss (Simplifier.add_cong @{thm bind_rpv_code_cong})\<close>

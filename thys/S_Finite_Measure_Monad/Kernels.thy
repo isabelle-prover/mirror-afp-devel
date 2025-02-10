@@ -880,7 +880,7 @@ lemma integrable_product_swap_s_finite:
   fixes f :: "_ \<Rightarrow> _::{banach, second_countable_topology}"
   assumes M1:"s_finite_measure M1" and M2:"s_finite_measure M2"
       and "integrable (M1 \<Otimes>\<^sub>M M2) f"
-  shows "integrable (M2 \<Otimes>\<^sub>M M1) (\<lambda>(x,y). f (y,x))"
+    shows "integrable (M2 \<Otimes>\<^sub>M M1) (\<lambda>(x,y). f (y,x))"
 proof -
   have *: "(\<lambda>(x,y). f (y,x)) = (\<lambda>x. f (case x of (x,y)\<Rightarrow>(y,x)))" by (auto simp: fun_eq_iff)
   show ?thesis unfolding *
@@ -1386,7 +1386,7 @@ lemma measurable_s_finite_measure_algebra:
   K \<in> measurable M (s_finite_measure_algebra N)"
   by (auto intro!: measurable_Sup2 measurable_vimage_algebra2 simp: s_finite_measure_algebra_def)
 
-definition bind_kernel :: "'a measure \<Rightarrow> ('a \<Rightarrow> 'b measure) \<Rightarrow> 'b measure" (infixl \<open>\<bind>\<^sub>k\<close> 54) where
+definition bind_kernel :: "'a measure \<Rightarrow> ('a \<Rightarrow> 'b measure) \<Rightarrow> 'b measure" (infixl "\<bind>\<^sub>k" 54) where
 "bind_kernel M k = (if space M = {} then count_space {} else
     let Y = k (SOME x. x \<in> space M) in
      measure_of (space Y) (sets Y) (\<lambda>B. \<integral>\<^sup>+x. (k x B) \<partial>M))"
@@ -1480,19 +1480,26 @@ lemma measure_kernel_comp:
   by(auto simp: measure_kernel_def)
 
 lemma emeasure_bind_kernel:
-  assumes "sets \<mu> = sets X" "B \<in> sets Y" "space X \<noteq> {}"
+  assumes "sets \<mu> = sets X" "B \<in> sets Y"
   shows "(\<mu> \<bind>\<^sub>k \<kappa>) B = (\<integral>\<^sup>+x. (\<kappa> x B) \<partial>\<mu>)"
-proof -
+proof(cases  "space X = {}")
+  assume "space X = {}"
+  then show ?thesis
+    by (metis assms(1) bind_kernel_def emeasure_empty emeasure_space nn_integral_empty sets_eq_imp_space_eq space_bot space_empty zero_order(2))
+next
+  assume h:"space X \<noteq> {}"
   have "sets (\<kappa> (SOME x. x \<in> space \<mu>)) = sets Y"
-    by(rule someI2_ex) (use assms(3) kernel_sets sets_eq_imp_space_eq[OF assms(1)] in auto)
+    by(rule someI2_ex) (use h kernel_sets sets_eq_imp_space_eq[OF assms(1)] in auto)
   with sets_eq_imp_space_eq[OF this] show ?thesis
-    by(simp add: bind_kernel_def sets_eq_imp_space_eq[OF assms(1) ]assms(3) nn_integral_measure[OF assms(1,2)])
+    by(simp add: bind_kernel_def sets_eq_imp_space_eq[OF assms(1)] h nn_integral_measure[OF assms(1,2)])
 qed
 
 lemma measure_bind_kernel:
-  assumes [measurable_cong]:"sets \<mu> = sets X" and [measurable]:"B \<in> sets Y" "space X \<noteq> {}" "AE x in \<mu>. \<kappa> x B < \<infinity>"
+  assumes [measurable_cong]:"sets \<mu> = sets X" and [measurable]:"B \<in> sets Y"
+    and "AE x in \<mu>. \<kappa> x B < \<infinity>"
   shows "measure (\<mu> \<bind>\<^sub>k \<kappa>) B = (\<integral>x. measure (\<kappa> x) B \<partial>\<mu>)"
-  using assms(4) by(auto simp: emeasure_bind_kernel[OF assms(1-3)] measure_def integral_eq_nn_integral intro!: arg_cong[of _ _ enn2real] nn_integral_cong_AE)
+  using assms(3) by(auto simp: emeasure_bind_kernel[OF assms(1,2)] measure_def integral_eq_nn_integral
+                       intro!: arg_cong[of _ _ enn2real] nn_integral_cong_AE)
 
 lemma sets_bind_kernel:
   assumes "space X \<noteq> {}" "sets \<mu> = sets X"
@@ -1512,11 +1519,11 @@ proof -
     have "emeasure (distr (\<mu> \<bind>\<^sub>k \<kappa>) Z f) A = emeasure (\<mu> \<bind>\<^sub>k (\<lambda>x. distr (\<kappa> x) Z f)) A" (is "?lhs = ?rhs")
     proof -
       have "?lhs = (\<integral>\<^sup>+ x. emeasure (\<kappa> x) (f -` A \<inter> space Y) \<partial>\<mu>)"
-        by(simp add: emeasure_distr sets_eq_imp_space_eq[OF sets] emeasure_bind_kernel[OF assms(2) _ assms(1)])
+        by(simp add: emeasure_distr sets_eq_imp_space_eq[OF sets] emeasure_bind_kernel[OF assms(2)])
       also have "... = (\<integral>\<^sup>+ x. emeasure (distr (\<kappa> x) Z f) A \<partial>\<mu>)"
         by(auto simp: emeasure_distr sets_eq_imp_space_eq[OF assms(2)] sets_eq_imp_space_eq[OF kernel_sets] intro!: nn_integral_cong)
       also have "... = ?rhs"
-        by(simp add: measure_kernel.emeasure_bind_kernel[OF distr_measure_kernel[OF assms(3)] assms(2) _ assms(1)])
+        by(simp add: measure_kernel.emeasure_bind_kernel[OF distr_measure_kernel[OF assms(3)] assms(2)])
       finally show ?thesis .
     qed
   }
@@ -1531,7 +1538,9 @@ proof -
   have X: "space X \<noteq> {}"
     using measurable_space[OF assms(1)] assms(2) by auto
   show ?thesis
-    by(rule measure_eqI, insert X) (auto simp: sets_bind_kernel[OF X] measure_kernel.sets_bind_kernel[OF measure_kernel_comp[OF assms(1)] assms(2) refl] emeasure_bind_kernel nn_integral_distr measure_kernel.emeasure_bind_kernel[OF  measure_kernel_comp[OF assms(1)] refl _ assms(2)])
+    by(rule measure_eqI, insert X)
+      (auto simp: sets_bind_kernel[OF X] measure_kernel.sets_bind_kernel[OF measure_kernel_comp[OF assms(1)] assms(2)]
+       emeasure_bind_kernel nn_integral_distr measure_kernel.emeasure_bind_kernel[OF  measure_kernel_comp[OF assms(1)]])
 qed
 
 lemma bind_kernel_return:
@@ -1541,12 +1550,13 @@ proof -
   have X: "space X \<noteq> {}"
     using assms by auto
   show ?thesis
-    by(rule measure_eqI) (auto simp: sets_bind_kernel[OF X sets_return] kernel_sets[OF assms] emeasure_bind_kernel[OF sets_return,simplified,OF _ X] nn_integral_return[OF assms])
+    by(rule measure_eqI)
+      (auto simp: sets_bind_kernel[OF X sets_return] kernel_sets[OF assms] emeasure_bind_kernel[OF sets_return] nn_integral_return[OF assms])
 qed
 
-lemma kernel_nn_integral_measurable:
+lemma nn_integral_measurable_kernel:
   assumes "f \<in> borel_measurable Y"
-  shows "(\<lambda>x. \<integral>\<^sup>+ y. f y \<partial>(\<kappa> x)) \<in> borel_measurable X"
+  shows "(\<lambda>x. (\<integral>\<^sup>+ y. f y \<partial>(\<kappa> x))) \<in> borel_measurable X"
   using assms
 proof induction
   case (cong f g)
@@ -1571,6 +1581,153 @@ next
       (auto simp: nn_integral_monotone_convergence_SUP[of U,simplified SUP_apply[symmetric]])
 qed
 
+corollary integrable_measurable_kernel:
+  fixes f :: "'b \<Rightarrow> 'c::{banach, second_countable_topology}"
+  assumes [measurable]:"f \<in> borel_measurable Y"
+  shows "Measurable.pred X (\<lambda>x. integrable (\<kappa> x) f)"
+proof(subst measurable_cong)
+   show "\<And>x. x \<in> space X \<Longrightarrow> integrable (\<kappa> x) f \<longleftrightarrow> (\<integral>\<^sup>+ y. ennreal (norm (f y)) \<partial>\<kappa> x) < \<infinity>"
+    by(auto simp: integrable_iff_bounded)
+qed(use nn_integral_measurable_kernel in auto)
+
+(* The following proof is similar to integral_measurable_subprob_algebra *)
+lemma integral_measurable_kernel:
+  fixes f :: "'b \<Rightarrow> 'c::{banach, second_countable_topology}"
+  assumes f[measurable]: "f \<in> borel_measurable Y"
+  shows "(\<lambda>x. (\<integral> y. f y \<partial>(\<kappa> x))) \<in> borel_measurable X"
+proof -
+  from borel_measurable_implies_sequence_metric[OF f, of 0]
+  obtain F where F: "\<And>i. simple_function Y (F i)"
+    "\<And>x. x \<in> space Y \<Longrightarrow> (\<lambda>i. F i x) \<longlonglongrightarrow> f x"
+    "\<And>i x. x \<in> space Y \<Longrightarrow> norm (F i x) \<le> 2 * norm (f x)"
+    unfolding norm_conv_dist by blast
+
+  have [measurable]: "F i \<in> Y \<rightarrow>\<^sub>M count_space UNIV" for i
+    using F(1) by (rule measurable_simple_function)
+
+  define F' where [abs_def]:
+    "F' M i = (if integrable M f then integral\<^sup>L M (F i) else 0)" for M i
+
+  have "(\<lambda>x. F' (\<kappa> x) i) \<in> X \<rightarrow>\<^sub>M borel" for i
+  proof (rule measurable_cong[THEN iffD2])
+    fix x
+    assume x:"x \<in> space X"
+    note [simp] = kernel_space[OF x] kernel_sets[OF x]
+    have "F' (\<kappa> x) i = (if integrable (\<kappa> x) f then Bochner_Integration.simple_bochner_integral (\<kappa> x) (F i) else 0)"
+    proof (cases "integrable (\<kappa> x) f")
+      assume f:"integrable (\<kappa> x) f"
+      have "Bochner_Integration.simple_bochner_integral (\<kappa> x) (F i) = integral\<^sup>L (\<kappa> x) (F i)"
+      proof(intro simple_bochner_integrable_eq_integral)
+        have *:"integrable (\<kappa> x) (\<lambda>y. 2 * norm (f y))"
+          using f by simp
+        have "integrable (\<kappa> x) (F i)"
+          by(rule Bochner_Integration.integrable_bound[OF *])
+            (auto simp add: F(1) F(3) borel_measurable_simple_function simple_function_cong_algebra)
+        thus "Bochner_Integration.simple_bochner_integrable (\<kappa> x) (F i)"
+          by (simp add: F(1) integrable_iff_bounded simple_bochner_integrableI_bounded simple_function_cong_algebra)
+      qed
+      thus ?thesis
+        by(simp add: F'_def)
+    qed(simp add: F'_def)
+    then show "F' (\<kappa> x) i = (if integrable (\<kappa> x) f then \<Sum>y\<in>F i ` space Y. measure (\<kappa> x) {x\<in>space Y. F i x = y} *\<^sub>R y else 0)"
+      unfolding simple_bochner_integral_def by simp
+  next
+    have [measurable]: "(\<lambda>x. measure (\<kappa> x) {x\<in>space Y. F i x = y} *\<^sub>R y) \<in> borel_measurable X" if y:"y \<in> F i ` space Y" for y
+      using borel_measurable_simple_function[OF F(1)[of i]]
+      by(auto intro!: borel_measurable_scaleR measure_measurable)
+    show "(\<lambda>x. if integrable (\<kappa> x) f then \<Sum>y\<in>F i ` space Y. measure (\<kappa> x) {x\<in>space Y. F i x = y} *\<^sub>R y else 0) \<in> borel_measurable X"
+      using integrable_measurable_kernel[OF assms] by measurable
+  qed
+  moreover
+  have "F' (\<kappa> x) \<longlonglongrightarrow> integral\<^sup>L (\<kappa> x) f" if x: "x \<in> space X" for x
+  proof cases
+    note [simp] = kernel_space[OF x] kernel_sets[OF x]
+    assume "integrable (\<kappa> x) f" then show ?thesis
+      unfolding F'_def using F(1)[THEN borel_measurable_simple_function] F
+      by (auto intro!: integral_dominated_convergence[where w="\<lambda>x. 2 * norm (f x)"]
+               cong: measurable_cong_sets)
+  qed (auto simp: F'_def not_integrable_integral_eq)
+  ultimately show ?thesis
+    by (rule borel_measurable_LIMSEQ_metric)
+qed
+
+lemma density_measure_kernel':
+  assumes f[measurable]: "f \<in> Y \<rightarrow>\<^sub>M borel"
+  shows "measure_kernel X Y (\<lambda>x. density (\<kappa> x) f)"
+proof(cases "space X = {}")
+  assume "space X = {}"
+  then show ?thesis
+    by(auto simp: measure_kernel_def dest:space_empty)
+next
+  assume X: "space X \<noteq> {}"
+  show "measure_kernel X Y (\<lambda>x. density (\<kappa> x) f)"
+  proof
+    fix B
+    assume [measurable]: "B \<in> sets Y"
+    show "(\<lambda>x. emeasure (density (\<kappa> x) f) B) \<in> borel_measurable X"
+    proof(subst measurable_cong)
+      show "(\<lambda>x. set_nn_integral (\<kappa> x) B f) \<in> borel_measurable X"
+        by(auto intro!: nn_integral_measurable_kernel)
+    qed(auto simp: emeasure_density)
+  qed(auto simp: kernel_sets Y_not_empty)
+qed
+
+lemma nn_integral_bind_kernel:
+  assumes "f \<in> borel_measurable Y" "sets \<mu> = sets X"
+  shows "(\<integral>\<^sup>+ y. f y \<partial>(\<mu> \<bind>\<^sub>k \<kappa>)) = (\<integral>\<^sup>+x. (\<integral>\<^sup>+ y. f y \<partial>(\<kappa> x)) \<partial>\<mu>)"
+proof(cases "space X = {}")
+  case True
+  then show ?thesis
+    by(simp add: sets_eq_imp_space_eq[OF assms(2)] bind_kernel_def nn_integral_empty)
+next
+  case X:False
+  then have \<mu>:"space \<mu> \<noteq> {}" by(simp add: sets_eq_imp_space_eq[OF assms(2)])
+  note 1[measurable_cong] = assms(2) sets_bind_kernel[OF X assms(2)]
+  from assms(1) show ?thesis
+  proof induction
+    case ih:(cong f g)
+    have "(\<integral>\<^sup>+ y. f y \<partial>(\<mu> \<bind>\<^sub>k \<kappa>)) = (\<integral>\<^sup>+ y. g y \<partial>(\<mu> \<bind>\<^sub>k \<kappa>))" "(\<integral>\<^sup>+ x. integral\<^sup>N (\<kappa> x) f \<partial>\<mu>) = (\<integral>\<^sup>+ x. integral\<^sup>N (\<kappa> x) g \<partial>\<mu>)"
+      by(auto intro!: nn_integral_cong simp: sets_eq_imp_space_eq[OF 1(2)] sets_eq_imp_space_eq[OF assms(2)] sets_eq_imp_space_eq[OF kernel_sets] ih(3))
+    then show ?case
+      by(simp add: ih)
+  next
+    case (set A)
+    then show ?case
+      by(auto simp: emeasure_bind_kernel[OF 1(1)] sets_eq_imp_space_eq[OF 1(1)] intro!: nn_integral_cong)
+  next
+    case ih:(mult u c)
+    then have "(\<integral>\<^sup>+ x. \<integral>\<^sup>+ y. c * u y \<partial>\<kappa> x \<partial>\<mu>) = (\<integral>\<^sup>+ x. c * \<integral>\<^sup>+ y. u y \<partial>\<kappa> x \<partial>\<mu>)"
+      by(auto intro!: nn_integral_cong nn_integral_cmult simp: sets_eq_imp_space_eq[OF 1(1)])
+    with ih nn_integral_measurable_kernel[of "\<lambda>y. u y"] show ?case
+      by(auto simp: nn_integral_cmult intro!: nn_integral_cong)
+  next
+    case ih:(add u v)
+    then have "(\<integral>\<^sup>+ x. \<integral>\<^sup>+ y. v y + u y \<partial>\<kappa> x \<partial>\<mu>) = (\<integral>\<^sup>+ x. (\<integral>\<^sup>+ y. v y \<partial>\<kappa> x) + (\<integral>\<^sup>+ y. u y \<partial>\<kappa> x) \<partial>\<mu>)"
+      by(auto intro!: nn_integral_cong simp: nn_integral_add sets_eq_imp_space_eq[OF 1(1)])
+    with ih nn_integral_measurable_kernel[of "\<lambda>y. u y"] nn_integral_measurable_kernel[of "\<lambda>y. v y"]
+    show ?case
+      by(simp add: nn_integral_add)
+  next
+    case ih[measurable]:(seq U)
+    show ?case (is "?lhs = ?rhs")
+    proof -
+      have "?lhs = ((\<Squnion>i. integral\<^sup>N (\<mu> \<bind>\<^sub>k \<kappa>) (U i)))"
+        by(rule nn_integral_monotone_convergence_SUP[of U,simplified SUP_apply[of U UNIV,symmetric]]) (use ih in auto)
+      also have "... = (\<Squnion>i. \<integral>\<^sup>+ x. (\<integral>\<^sup>+ y. U i y \<partial>\<kappa> x) \<partial>\<mu>)"
+        by(simp add: ih)
+      also have "... = (\<integral>\<^sup>+ x. (\<Squnion>i. (\<integral>\<^sup>+ y. U i y \<partial>\<kappa> x)) \<partial>\<mu>)"
+      proof(rule nn_integral_monotone_convergence_SUP[symmetric])
+        show "incseq (\<lambda>i x. \<integral>\<^sup>+ y. U i y \<partial>\<kappa> x)"
+          by standard+ (auto intro!: le_funI nn_integral_mono simp:le_funD[OF incseqD[OF ih(3)]])
+      qed(use nn_integral_measurable_kernel[of "\<lambda>y. U _ y"] in simp)
+      also have "... = ?rhs"
+        by(intro nn_integral_cong nn_integral_monotone_convergence_SUP[of U,simplified SUP_apply[of U UNIV,symmetric],OF ih(3),symmetric])
+          (auto simp: sets_eq_imp_space_eq[OF 1(1)])
+      finally show ?thesis .
+    qed
+  qed
+qed
+
 lemma bind_kernel_measure_kernel:
   assumes "measure_kernel Y Z k'"
   shows "measure_kernel X Z (\<lambda>x. \<kappa> x \<bind>\<^sub>k k')"
@@ -1588,7 +1745,8 @@ next
     fix B
     assume "B \<in> sets Z"
     with k'.emeasure_bind_kernel[OF kernel_sets,of _ B] show "(\<lambda>x. emeasure (\<kappa> x \<bind>\<^sub>k k') B) \<in> borel_measurable X"
-      by(auto intro!: measurable_cong[where f="\<lambda>x. emeasure (\<kappa> x \<bind>\<^sub>k k') B" and g="\<lambda>x. \<integral>\<^sup>+ y. emeasure (k' y) B \<partial>\<kappa> x",THEN iffD2] kernel_nn_integral_measurable simp: sets_eq_imp_space_eq[OF kernel_sets] Y)
+      by(auto intro!: measurable_cong[where f="\<lambda>x. emeasure (\<kappa> x \<bind>\<^sub>k k') B" and g="\<lambda>x. \<integral>\<^sup>+ y. emeasure (k' y) B \<partial>\<kappa> x",THEN iffD2] nn_integral_measurable_kernel
+                simp: sets_eq_imp_space_eq[OF kernel_sets] Y)
   qed(use k'.Y_not_empty Y  k'.sets_bind_kernel[OF Y kernel_sets] in auto)
 qed
 
@@ -1607,6 +1765,11 @@ lemma measure_kernel_cong_sets:
   shows "measure_kernel X Y = measure_kernel X' Y'"
   by standard (simp add: measure_kernel_def measurable_cong_sets[OF assms(1) refl] sets_eq_imp_space_eq[OF assms(1)] assms(2) sets_eq_imp_space_eq[OF assms(2)])
 
+lemma measure_kernel_cong:
+  assumes "\<And>x. x \<in> space X \<Longrightarrow> k x = k' x"
+  shows "measure_kernel X Y k = measure_kernel X Y k'"
+  using assms by(auto cong: measurable_cong simp: measure_kernel_def)
+
 lemma measure_kernel_pair_countble1:
   assumes "countable A" "\<And>i. i \<in> A \<Longrightarrow> measure_kernel X Y (\<lambda>x. k (i,x))"
   shows "measure_kernel (count_space A \<Otimes>\<^sub>M X) Y k"
@@ -1616,6 +1779,9 @@ lemma measure_kernel_empty_trivial:
   assumes "space X = {}"
   shows "measure_kernel X Y k"
   using assms by(auto simp: measure_kernel_def measurable_def)
+
+lemma measure_kernel_const': "space Y \<noteq> {} \<Longrightarrow> sets \<mu> = sets Y \<Longrightarrow> measure_kernel X Y (\<lambda>r. \<mu>)"
+  by(auto simp: measure_kernel_def)
 
 subsection \<open> Finite Kernel \<close>
 locale finite_kernel = measure_kernel +
@@ -1691,7 +1857,8 @@ next
   interpret subprob_kernel M N f
     using assms(1) by(simp add: subprob_kernel_def')
   show ?thesis
-    by(rule measure_eqI,insert sets_kernel[OF assms]) (auto simp: h sets_bind_kernel emeasure_bind_kernel[OF refl _ h] emeasure_bind[OF h assms])
+    by(rule measure_eqI,insert sets_kernel[OF assms])
+      (auto simp: h sets_bind_kernel emeasure_bind_kernel emeasure_bind[OF h assms])
 qed
 
 lemma(in measure_kernel) subprob_kernel_sum:
@@ -1806,7 +1973,7 @@ next
   interpret prob_kernel N N "return N"
     by(simp add: prob_kernel_def')
   show ?thesis
-    by(rule measure_eqI) (auto simp: emeasure_bind_kernel[OF assms _ 1] sets_bind_kernel[OF 1 assms] assms)
+    by(rule measure_eqI) (auto simp: emeasure_bind_kernel sets_bind_kernel[OF 1 assms] assms)
 qed
 
 subsection\<open> S-Finite Kernel \<close>
@@ -1922,7 +2089,7 @@ next
   have emeasure:"(\<mu> \<bind>\<^sub>k \<kappa>) A = (\<Sum>i. (Mi i) A)" (is "?lhs = ?rhs") if "A \<in> sets Y" for A
   proof -
     have "?lhs = (\<integral>\<^sup>+x. (\<kappa> x A) \<partial>\<mu>)"
-      by(simp add: emeasure_bind_kernel[OF assms(2) that 0])
+      by(simp add: emeasure_bind_kernel[OF assms(2) that])
     also have "... = (\<integral>\<^sup>+x. (\<Sum>i. (ki i x A)) \<partial>\<mu>)"
       by(auto intro!: nn_integral_cong simp: ki sets_eq_imp_space_eq[OF assms(2)])
     also have "... = (\<Sum>i. \<integral>\<^sup>+x. (ki i x A) \<partial>\<mu>)"
@@ -2023,6 +2190,12 @@ proof
   thus "\<exists>ki. \<forall>i. finite_kernel X M (ki i) \<and> (\<forall>x\<in>space X. \<forall>A\<in>sets M. M A = (\<Sum>i. (ki i x) A))"
     by(auto intro!: exI[where x="\<lambda>i x. Mi i"] Mi(3) subprob_kernel.finite_kernel)
 qed (auto simp: assms)
+
+corollary(in s_finite_measure) s_finite_kernel_const':
+  assumes "sets M = sets N" "space N \<noteq> {}"
+  shows "s_finite_kernel X N (\<lambda>x. M)"
+  using assms(2) sets_eq_imp_space_eq[OF assms(1)]
+  by(auto simp: s_finite_kernel_cong_sets[OF refl assms(1)[symmetric]] intro!: s_finite_kernel_const)
 
 lemma s_finite_kernel_pair_countble1:
   assumes "countable A" "\<And>i. i \<in> A \<Longrightarrow> s_finite_kernel X Y (\<lambda>x. k (i,x))"
@@ -2379,60 +2552,6 @@ corollary(in s_finite_kernel) bind_kernel_s_finite_kernel:
   shows "s_finite_kernel X Z (\<lambda>x. \<kappa> x \<bind>\<^sub>k k')"
   by(auto intro!: bind_kernel_s_finite_kernel' s_finite_kernel.comp_measurable[OF assms measurable_snd] simp: split_beta')
 
-lemma(in s_finite_kernel) nn_integral_bind_kernel:
-  assumes "f \<in> borel_measurable Y" "sets \<mu> = sets X"
-  shows "(\<integral>\<^sup>+ y. f y \<partial>(\<mu> \<bind>\<^sub>k \<kappa>)) = (\<integral>\<^sup>+x. (\<integral>\<^sup>+ y. f y \<partial>(\<kappa> x)) \<partial>\<mu>)"
-proof(cases "space X = {}")
-  case True
-  then show ?thesis
-    by(simp add: sets_eq_imp_space_eq[OF assms(2)] bind_kernel_def nn_integral_empty)
-next
-  case X:False
-  then have \<mu>:"space \<mu> \<noteq> {}" by(simp add: sets_eq_imp_space_eq[OF assms(2)])
-  note 1[measurable_cong] = assms(2) sets_bind_kernel[OF X assms(2)]
-  from assms(1) show ?thesis
-  proof induction
-    case ih:(cong f g)
-    have "(\<integral>\<^sup>+ y. f y \<partial>(\<mu> \<bind>\<^sub>k \<kappa>)) = (\<integral>\<^sup>+ y. g y \<partial>(\<mu> \<bind>\<^sub>k \<kappa>))" "(\<integral>\<^sup>+ x. integral\<^sup>N (\<kappa> x) f \<partial>\<mu>) = (\<integral>\<^sup>+ x. integral\<^sup>N (\<kappa> x) g \<partial>\<mu>)"
-      by(auto intro!: nn_integral_cong simp: sets_eq_imp_space_eq[OF 1(2)] sets_eq_imp_space_eq[OF assms(2)] sets_eq_imp_space_eq[OF kernel_sets] ih(3))
-    then show ?case
-      by(simp add: ih)
-  next
-    case (set A)
-    then show ?case
-      by(auto simp: emeasure_bind_kernel[OF 1(1) _ X] sets_eq_imp_space_eq[OF 1(1)] intro!: nn_integral_cong)
-  next
-    case ih:(mult u c)
-    then have "(\<integral>\<^sup>+ x. \<integral>\<^sup>+ y. c * u y \<partial>\<kappa> x \<partial>\<mu>) = (\<integral>\<^sup>+ x. c * \<integral>\<^sup>+ y. u y \<partial>\<kappa> x \<partial>\<mu>)"
-      by(auto intro!: nn_integral_cong nn_integral_cmult simp: sets_eq_imp_space_eq[OF 1(1)])
-    with ih nn_integral_measurable_f[of "\<lambda>_ y. u y"] show ?case
-      by(auto simp: nn_integral_cmult intro!: nn_integral_cong)
-  next
-    case ih:(add u v)
-    then have "(\<integral>\<^sup>+ x. \<integral>\<^sup>+ y. v y + u y \<partial>\<kappa> x \<partial>\<mu>) = (\<integral>\<^sup>+ x. (\<integral>\<^sup>+ y. v y \<partial>\<kappa> x) + (\<integral>\<^sup>+ y. u y \<partial>\<kappa> x) \<partial>\<mu>)"
-      by(auto intro!: nn_integral_cong simp: nn_integral_add sets_eq_imp_space_eq[OF 1(1)])
-    with ih nn_integral_measurable_f[of "\<lambda>_ y. u y"] nn_integral_measurable_f[of "\<lambda>_ y. v y"] show ?case
-      by(simp add: nn_integral_add)
-  next
-    case ih[measurable]:(seq U)
-    show ?case (is "?lhs = ?rhs")
-    proof -
-      have "?lhs = ((\<Squnion>i. integral\<^sup>N (\<mu> \<bind>\<^sub>k \<kappa>) (U i)))"
-        by(rule nn_integral_monotone_convergence_SUP[of U,simplified SUP_apply[of U UNIV,symmetric]]) (use ih in auto)
-      also have "... = (\<Squnion>i. \<integral>\<^sup>+ x. (\<integral>\<^sup>+ y. U i y \<partial>\<kappa> x) \<partial>\<mu>)"
-        by(simp add: ih)
-      also have "... = (\<integral>\<^sup>+ x. (\<Squnion>i. (\<integral>\<^sup>+ y. U i y \<partial>\<kappa> x)) \<partial>\<mu>)"
-      proof(rule nn_integral_monotone_convergence_SUP[symmetric])
-        show "incseq (\<lambda>i x. \<integral>\<^sup>+ y. U i y \<partial>\<kappa> x)"
-          by standard+ (auto intro!: le_funI nn_integral_mono simp:le_funD[OF incseqD[OF ih(3)]])
-      qed(use nn_integral_measurable_f[of "\<lambda>_ y. U _ y"] in simp)
-      also have "... = ?rhs"
-        by(rule nn_integral_cong, rule nn_integral_monotone_convergence_SUP[of U,simplified SUP_apply[of U UNIV,symmetric],OF ih(3),symmetric]) (auto simp: sets_eq_imp_space_eq[OF 1(1)])
-      finally show ?thesis .
-    qed
-  qed
-qed
-
 lemma(in s_finite_kernel) bind_kernel_assoc:
   assumes "s_finite_kernel Y Z k'" "sets \<mu> = sets X"
   shows "\<mu> \<bind>\<^sub>k (\<lambda>x. \<kappa> x \<bind>\<^sub>k k') = \<mu> \<bind>\<^sub>k \<kappa> \<bind>\<^sub>k k'"
@@ -2452,7 +2571,7 @@ proof(cases "space X = {}")
     show "emeasure (\<mu> \<bind>\<^sub>k (\<lambda>x. \<kappa> x \<bind>\<^sub>k k')) A = emeasure (\<mu> \<bind>\<^sub>k \<kappa> \<bind>\<^sub>k k') A" (is "?lhs = ?rhs")
     proof -
       have "?lhs = (\<integral>\<^sup>+ x. emeasure (\<kappa> x \<bind>\<^sub>k k') A \<partial>\<mu>)"
-        by(rule k''.emeasure_bind_kernel[OF assms(2) A X])
+        by(rule k''.emeasure_bind_kernel[OF assms(2) A])
       also have "... = (\<integral>\<^sup>+ x. \<integral>\<^sup>+ y. k' y A \<partial>\<kappa> x \<partial>\<mu>)"
         using k'.emeasure_bind_kernel[OF kernel_sets A]
         by(auto intro!: nn_integral_cong simp: sets_eq_imp_space_eq[OF assms(2)] sets_eq_imp_space_eq[OF kernel_sets] Y)
@@ -2533,9 +2652,9 @@ proof -
         have "?lhs = (\<integral>\<^sup>+ x. \<integral>\<^sup>+ y. return (\<mu> \<Otimes>\<^sub>M \<nu>) (x, y) A \<partial>\<nu> \<partial>\<mu>)"
           by(simp add: s_finite_measure.emeasure_pair_measure'[OF assms(2)])
         also have "... = (\<integral>\<^sup>+ x. (\<nu> \<bind>\<^sub>k (\<lambda>y. return (\<mu> \<Otimes>\<^sub>M \<nu>) (x,y))) A \<partial>\<mu>)"
-          by(auto intro!: nn_integral_cong measure_kernel.emeasure_bind_kernel[OF _ _ A 3(2),symmetric] prob_kernel.axioms(1) simp: prob_kernel_def' simp del: emeasure_return)
+          by(auto intro!: nn_integral_cong measure_kernel.emeasure_bind_kernel[OF _ _ A,symmetric] prob_kernel.axioms(1) simp: prob_kernel_def' simp del: emeasure_return)
         also have "... = ?rhs"
-          by(auto intro!: measure_kernel.emeasure_bind_kernel[OF _ _ A 3(1),symmetric] s_finite_kernel.axioms(1) s_finite_kernel.bind_kernel_s_finite_kernel'[where Y=\<nu>] s_finite_measure.s_finite_kernel_const[OF assms(2) 3(2)] prob_kernel.s_finite_kernel_prob_kernel[of "\<mu> \<Otimes>\<^sub>M \<nu>"] simp: prob_kernel_def')
+          by(auto intro!: measure_kernel.emeasure_bind_kernel[OF _ _ A,symmetric] s_finite_kernel.axioms(1) s_finite_kernel.bind_kernel_s_finite_kernel'[where Y=\<nu>] s_finite_measure.s_finite_kernel_const[OF assms(2) 3(2)] prob_kernel.s_finite_kernel_prob_kernel[of "\<mu> \<Otimes>\<^sub>M \<nu>"] simp: prob_kernel_def')
         finally show ?thesis .
       qed
     qed simp
@@ -2575,9 +2694,9 @@ proof -
         also have "... = (\<integral>\<^sup>+ y. \<integral>\<^sup>+ x. return (\<mu> \<Otimes>\<^sub>M \<nu>) (x, y) A \<partial>\<mu> \<partial>\<nu>)"
           by(simp add: nn_integral_snd'[OF assms] s_finite_measure.nn_integral_fst'[OF assms(2)])
         also have "... = (\<integral>\<^sup>+ y. (\<mu> \<bind>\<^sub>k (\<lambda>x. return (\<mu> \<Otimes>\<^sub>M \<nu>) (x, y))) A \<partial>\<nu>)"
-          by(auto intro!: nn_integral_cong measure_kernel.emeasure_bind_kernel[OF _ _  A 3(1),symmetric] prob_kernel.axioms(1) simp add: prob_kernel_def' simp del: emeasure_return)
+          by(auto intro!: nn_integral_cong measure_kernel.emeasure_bind_kernel[OF _ _  A,symmetric] prob_kernel.axioms(1) simp add: prob_kernel_def' simp del: emeasure_return)
         also have "... = ?rhs"
-          by(auto intro!: measure_kernel.emeasure_bind_kernel[OF _ _  A 3(2),symmetric] s_finite_kernel.axioms(1) s_finite_kernel.bind_kernel_s_finite_kernel'[where Y=\<mu>] s_finite_measure.s_finite_kernel_const[OF assms(1) 3(1)] prob_kernel.s_finite_kernel_prob_kernel[of "\<nu> \<Otimes>\<^sub>M \<mu>"] simp: prob_kernel_def')
+          by(auto intro!: measure_kernel.emeasure_bind_kernel[OF _ _  A,symmetric] s_finite_kernel.axioms(1) s_finite_kernel.bind_kernel_s_finite_kernel'[where Y=\<mu>] s_finite_measure.s_finite_kernel_const[OF assms(1) 3(1)] prob_kernel.s_finite_kernel_prob_kernel[of "\<nu> \<Otimes>\<^sub>M \<mu>"] simp: prob_kernel_def')
         finally show ?thesis .
       qed
     qed(auto intro!: sets_bind_kernel[OF _ 3(2),symmetric] sets_bind_kernel[OF _ 3(1)])
@@ -2661,7 +2780,7 @@ lemma(in s_finite_kernel) AE_pred:
   shows "Measurable.pred X (\<lambda>x. AE y in \<kappa> x. P x y)"
 proof -
   have [measurable]:"Measurable.pred X (\<lambda>x. emeasure (\<kappa> x) {y \<in> space Y. \<not> P x y} = 0)"
-  proof(rule pred_eq_const1[where N=borel],rule emeasure_measurable')
+  proof(intro pred_eq_const1[where N=borel] emeasure_measurable')
    have "(SIGMA x:space X. {y \<in> space Y. \<not> P x y}) = {xy\<in>space (X \<Otimes>\<^sub>M Y). \<not> P (fst xy) (snd xy)}"
       by (auto simp: space_pair_measure)
     also have "... \<in> sets (X \<Otimes>\<^sub>M Y)"
@@ -2715,98 +2834,8 @@ lemma(in subprob_kernel) lebesgue_integral_measurable_f_subprob:
   fixes f :: "_ \<Rightarrow> _::{banach, second_countable_topology}"
   assumes [measurable]:"f \<in> borel_measurable (X \<Otimes>\<^sub>M Y)"
   shows "(\<lambda>x. \<integral>y. f (x,y) \<partial>(\<kappa> x)) \<in> borel_measurable X"
-proof -
-  from borel_measurable_implies_sequence_metric[OF assms, of 0]
-  obtain s where s: "\<And>i. simple_function (X \<Otimes>\<^sub>M Y) (s i)"
-    and "\<forall>x\<in>space (X \<Otimes>\<^sub>M Y). (\<lambda>i. s i x) \<longlonglongrightarrow> f x"
-    and "\<forall>i. \<forall>x\<in>space (X \<Otimes>\<^sub>M Y). dist (s i x) 0 \<le> 2 * dist (f x) 0"
-    by auto
-  then have *:
-    "\<And>x y. x \<in> space X \<Longrightarrow> y \<in> space Y \<Longrightarrow> (\<lambda>i. s i (x, y)) \<longlonglongrightarrow> f (x,y)"
-    "\<And>i x y. x \<in> space X \<Longrightarrow> y \<in> space Y \<Longrightarrow> norm (s i (x, y)) \<le> 2 * norm (f (x, y))"
-    by (auto simp: space_pair_measure)
-
-  have [measurable]: "\<And>i. s i \<in> borel_measurable (X \<Otimes>\<^sub>M Y)"
-    by (rule borel_measurable_simple_function) fact
-
-  have s':"\<And>i. s i \<in> X \<Otimes>\<^sub>M Y \<rightarrow>\<^sub>M count_space UNIV"
-    by (rule measurable_simple_function) fact
-
-  define f' where [abs_def]: "f' i x =
-    (if integrable (\<kappa> x) (curry f x) then Bochner_Integration.simple_bochner_integral (\<kappa> x) (\<lambda>y. s i (x, y)) else 0)" for i x
-
-  have eq: "Bochner_Integration.simple_bochner_integral (\<kappa> x) (\<lambda>y. s i (x, y)) =
-      (\<Sum>z\<in>s i ` (space X \<times> space Y). measure (\<kappa> x) {y \<in> space (\<kappa> x). s i (x, y) = z} *\<^sub>R z)" if "x \<in> space X" for x i
-  proof -
-    have [measurable_cong]: "sets (\<kappa> x) = sets Y" and [simp]: "space (\<kappa> x) = space Y"
-      using that  by (simp_all add: kernel_sets kernel_space)
-    with that show ?thesis
-      using s[THEN simple_functionD(1)]
-      unfolding simple_bochner_integral_def
-      by (intro sum.mono_neutral_cong_left)
-         (auto simp: eq_commute space_pair_measure image_iff cong: conj_cong)
-  qed
-
-  show ?thesis
-  proof (rule borel_measurable_LIMSEQ_metric)
-    fix i
-    note [measurable] = integrable_probability_kernel_pred'[OF assms]
-    have [measurable]:"(SIGMA x:space X. {y \<in> space Y. s i (x, y) = s i (a, b)}) \<in> sets (X \<Otimes>\<^sub>M Y)" for a b
-    proof -
-      have "(SIGMA x:space X. {y \<in> space Y. s i (x, y) = s i (a, b)}) = space (X \<Otimes>\<^sub>M Y) \<inter> s i -` {s i (a,b)}"
-        by(auto simp: space_pair_measure)
-      thus ?thesis
-        using s'[of i] by simp
-    qed
-    show "f' i \<in> borel_measurable X"
-      by (auto simp : eq kernel_space f'_def cong: measurable_cong if_cong intro!: borel_measurable_sum measurable_If borel_measurable_scaleR measure_measurable')
-  next
-    fix x
-    assume x:"x \<in> space X"
-    have "(\<lambda>i. Bochner_Integration.simple_bochner_integral (\<kappa> x) (\<lambda>y. s i (x, y))) \<longlonglongrightarrow> (\<integral>y. f (x,y) \<partial>(\<kappa> x))" if int_f:"integrable (\<kappa> x) (curry f x)"
-    proof -
-      have int_2f: "integrable (\<kappa> x) (\<lambda>y. 2 * norm (f (x,y)))"
-        using int_f by(auto simp: curry_def)
-      have "(\<lambda>i. integral\<^sup>L (\<kappa> x) (\<lambda>y. s i (x, y))) \<longlonglongrightarrow> integral\<^sup>L (\<kappa> x) (curry f x)"
-      proof (rule integral_dominated_convergence)
-        show "curry f x \<in> borel_measurable (\<kappa> x)"
-          using int_f by auto
-      next
-        show "\<And>i. (\<lambda>y. s i (x, y)) \<in> borel_measurable (\<kappa> x)"
-          using x kernel_sets by auto
-      next
-        show "AE xa in \<kappa> x. (\<lambda>i. s i (x, xa)) \<longlonglongrightarrow> curry f x xa"
-          using x *(1) kernel_space by(auto simp: curry_def)
-      next
-        show "\<And>i. AE xa in \<kappa> x. norm (s i (x, xa)) \<le> 2 * norm (f (x,xa))"
-          using x * (2) kernel_space by auto
-      qed fact
-      moreover have "integral\<^sup>L (\<kappa> x) (\<lambda>y. s i (x, y)) = Bochner_Integration.simple_bochner_integral (\<kappa> x) (\<lambda>y. s i (x, y))" for i
-      proof -
-        have "Bochner_Integration.simple_bochner_integrable (\<kappa> x) (\<lambda>y. s i (x, y))"
-        proof (rule simple_bochner_integrableI_bounded)
-         have "(\<lambda>y. s i (x, y)) ` space Y \<subseteq> s i ` (space X \<times> space Y)"
-            using x by auto
-          then show "simple_function (\<kappa> x) (\<lambda>y. s i (x, y))"
-            using simple_functionD(1)[OF s(1), of i] x kernel_space
-            by (intro simple_function_borel_measurable) (auto simp: space_pair_measure dest: finite_subset)
-        next
-          have "(\<integral>\<^sup>+ y. ennreal (norm (s i (x, y))) \<partial>\<kappa> x) \<le> (\<integral>\<^sup>+ y. 2 * norm (f (x,y)) \<partial>\<kappa> x)"
-            using x *(2) kernel_space by (intro nn_integral_mono) auto
-          also have "... < \<infinity>"
-            using int_2f unfolding integrable_iff_bounded by simp
-          finally show "(\<integral>\<^sup>+ y. ennreal (norm (s i (x, y))) \<partial>\<kappa> x) < \<infinity>" .
-        qed
-        then show ?thesis
-          by (rule simple_bochner_integrable_eq_integral[symmetric])
-      qed
-      ultimately show ?thesis
-        by(simp add: curry_def)
-    qed
-    thus "(\<lambda>i. f' i x) \<longlonglongrightarrow> (\<integral>y. f (x,y) \<partial>(\<kappa> x))"
-      by (cases "integrable (\<kappa> x) (curry f x)") (simp_all add: f'_def not_integrable_integral_eq curry_def)
-  qed
-qed
+  by(rule integral_measurable_subprob_algebra2[where N=Y])
+    (use subprob_kernel_axioms in "auto simp: subprob_kernel_def'")
 
 lemma(in s_finite_kernel) integrable_measurable_pred[measurable (raw)]:
   fixes f :: "_ \<Rightarrow> _ \<Rightarrow> _::{banach, second_countable_topology}"
@@ -2838,7 +2867,7 @@ proof -
   note [measurable] = integral_measurable_subprob_algebra2
 
   show ?thesis
-  proof(rule measurable_cong[where f="(\<lambda>x. if integrable (\<kappa> x) (f x) then (\<Sum>i. \<integral>y. f x y \<partial>(ki i x)) else 0)",THEN iffD1])
+  proof(rule measurable_cong[THEN iffD1])
     fix x
     assume h:"x \<in> space X"
     {
@@ -2849,7 +2878,7 @@ proof -
     }
     thus "(if integrable (\<kappa> x) (f x) then (\<Sum>i. \<integral>y. f x y \<partial>(ki i x)) else 0) = (\<integral>y. f x y \<partial>(\<kappa> x))"
       using not_integrable_integral_eq by auto
-  qed(insert ki(1), auto simp: subprob_kernel_def')
+  qed(use ki(1) in "auto simp: subprob_kernel_def'")
 qed
 
 lemma(in s_finite_kernel) integral_measurable_f':
@@ -2858,7 +2887,7 @@ lemma(in s_finite_kernel) integral_measurable_f':
   shows "(\<lambda>x. \<integral>y. f (x,y) \<partial>(\<kappa> x)) \<in> borel_measurable X"
   using integral_measurable_f[of "curry f"] by simp
 
-lemma(in s_finite_kernel)
+lemma(in measure_kernel)
   fixes f :: "_ \<Rightarrow> _::{banach, second_countable_topology}"
   assumes [measurable_cong]: "sets \<mu> = sets X"
       and "integrable (\<mu> \<bind>\<^sub>k \<kappa>) f"
@@ -2873,16 +2902,17 @@ proof -
   proof(cases "space X = {}")
     assume ne: "space X \<noteq> {}"
     then have "space \<mu> \<noteq> {}" by(simp add: sets_eq_imp_space_eq[OF assms(1)])
-    note h = integral_measurable_f[measurable] sets_bind_kernel[OF ne assms(1),measurable_cong]
+    note h = integral_measurable_kernel[measurable] sets_bind_kernel[OF ne assms(1),measurable_cong]
+              nn_integral_measurable_kernel[measurable]
     have g2: ?g2
       unfolding integrable_iff_bounded AE_conj_iff
     proof safe
       show "AE x in \<mu>. f \<in> borel_measurable (\<kappa> x)"
         using assms(2) by(auto simp: sets_eq_imp_space_eq[OF assms(1)] measurable_cong_sets[OF kernel_sets])
     next
-      note nn_integral_measurable_f[measurable]
       have "AE x in \<mu>. (\<integral>\<^sup>+ x. ennreal (norm (f x)) \<partial>\<kappa> x) \<noteq> \<infinity>"
-        by(rule nn_integral_PInf_AE,insert assms(2)) (auto simp: integrable_iff_bounded nn_integral_bind_kernel[OF _ assms(1)] intro!: )
+        by(rule nn_integral_PInf_AE)
+          (use assms(2) in "auto simp: integrable_iff_bounded nn_integral_bind_kernel[OF _ assms(1)]")
       thus "AE x in \<mu>. (\<integral>\<^sup>+ x. ennreal (norm (f x)) \<partial>\<kappa> x) < \<infinity>"
         by (simp add: top.not_eq_extremum)
     qed
@@ -2899,7 +2929,7 @@ proof -
     by auto
 qed
 
-lemma(in s_finite_kernel)
+lemma(in measure_kernel)
   fixes f :: "_ \<Rightarrow> _::{banach, second_countable_topology}"
   assumes [measurable_cong]: "sets \<mu> = sets X"
       and [measurable]:"AE x in \<mu>. integrable (\<kappa> x) f" "integrable \<mu> (\<lambda>x. \<integral>y. norm (f y) \<partial>\<kappa> x)" "f \<in> borel_measurable Y"
@@ -2910,7 +2940,7 @@ proof -
   proof(cases "space X = {}")
     assume ne: "space X \<noteq> {}"
     note sets_bind[measurable_cong] = sets_bind_kernel[OF ne assms(1)]
-    note h = integral_measurable_f[measurable]
+    note h[measurable] = integral_measurable_kernel measure_measurable
     have 1:"integrable (\<mu> \<bind>\<^sub>k \<kappa>) f"
       unfolding integrable_iff_bounded
     proof
@@ -2932,7 +2962,7 @@ proof -
         by(rule Bochner_Integration.integrable_cong[where f="\<lambda>x. Sigma_Algebra.measure (\<kappa> x) (A \<inter> space (\<kappa> x))",THEN iffD1,OF refl])
         (insert h integrable_bind_kernelD1[OF assms(1) 1] sets_eq_imp_space_eq[OF kernel_sets], auto simp: sets_eq_imp_space_eq[OF assms(1)] sets_eq_imp_space_eq[OF kernel_sets] sets_bind)
       have "AE x in \<mu>. emeasure (\<kappa> x) A \<noteq> \<infinity>"
-        by(rule nn_integral_PInf_AE,insert h) (auto simp: emeasure_bind_kernel[OF assms(1) _ ne] sets_bind)
+        by(rule nn_integral_PInf_AE,insert h) (auto simp: emeasure_bind_kernel[OF assms(1)] sets_bind)
       hence 0:"AE x in \<mu>. emeasure (\<kappa> x) A < \<infinity>"
         by (simp add: top.not_eq_extremum)
       have "(\<integral>x. (\<integral>y. indicat_real A y *\<^sub>R c \<partial>\<kappa> x)\<partial> \<mu>) = (\<integral>x. measure (\<kappa> x) A *\<^sub>R c\<partial>\<mu>)"
@@ -2941,7 +2971,7 @@ proof -
       also have "... = (\<integral>x. measure (\<kappa> x) A \<partial>\<mu>) *\<^sub>R c"
         using 2 by(auto intro!: integral_scaleR_left)
       finally show ?case
-        using h by(auto simp: measure_bind_kernel[OF assms(1) _ ne 0] sets_bind)
+        using h by(auto simp: measure_bind_kernel[OF assms(1) _ 0] sets_bind)
     next
       case ih:(add f g)
       show ?case

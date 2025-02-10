@@ -7,7 +7,6 @@ chapter \<open>Test cases\<close>
 theory Native_Word_Test
 imports
   Uint64 Uint32 Uint16 Uint8 Uint Native_Cast_Uint
-  "Word_Lib.Least_significant_bit"
   "HOL-Library.Code_Test"
 begin
 
@@ -34,7 +33,6 @@ definition bit_integer_test :: bool
     , Bit_Operations.set_bit 4 5, Bit_Operations.set_bit 2 (- 5)
     , Bit_Operations.unset_bit 0 5, Bit_Operations.unset_bit 1 (- 5)
     , Bit_Operations.flip_bit 4 5, Bit_Operations.flip_bit 1 (- 5)
-    , set_bit 5 4 True, set_bit (- 5) 2 True, set_bit 5 0 False, set_bit (- 5) 1 False
     , push_bit 2 1, push_bit 3 (- 1)
     , drop_bit 3 100, drop_bit 3 (- 100)
     , take_bit 4 100, take_bit 4 (- 100)] :: integer list)
@@ -43,12 +41,11 @@ definition bit_integer_test :: bool
     , -2, 2
     , -4, -4, 6, 6
     , 21, -1, 4, -7, 21, -7
-    , 21, -1, 4, -7
     , 4, -8
     , 12, -13
     , 4, 12] \<and>
     [ bit (5 :: integer) 4, bit (5 :: integer) 2, bit (-5 :: integer) 4, bit (-5 :: integer) 2
-    , lsb (5 :: integer), lsb (4 :: integer), lsb (-1 :: integer), lsb (-2 :: integer),
+    , bit (5 :: integer) 0, bit (4 :: integer) 0, bit (-1 :: integer) 0, bit (-2 :: integer) 0,
       msb (5 :: integer), msb (0 :: integer), msb (-1 :: integer), msb (-2 :: integer)]
   = [ False, True, True, False,
       True, False, True, False,
@@ -106,8 +103,6 @@ definition test_uint8 :: bool
     , Bit_Operations.unset_bit 32 5, Bit_Operations.unset_bit 32 (- 5)
     , Bit_Operations.flip_bit 4 5, Bit_Operations.flip_bit 1 (- 5)
     , Bit_Operations.flip_bit 32 5, Bit_Operations.flip_bit 32 (- 5)
-    , set_bit 5 4 True, set_bit (- 5) 2 True, set_bit 5 0 False, set_bit (- 5) 1 False
-    , set_bit 5 32 True, set_bit 5 32 False, set_bit (- 5) 32 True, set_bit (- 5) 32 False
     , push_bit 2 1, push_bit 3 (- 1), push_bit 8 1, push_bit 0 1
     , drop_bit 3 100, drop_bit 3 (- 100), drop_bit 8 100, drop_bit 8 (- 100)
     , signed_drop_bit_uint8 3 100, signed_drop_bit_uint8 3 (- 100)
@@ -125,8 +120,6 @@ definition test_uint8 :: bool
     , 1, 83, 0, 0
     , 2, 2, 251, 5
     , 21, 255, 5, 251, 4, 249, 5, 251, 21, 249, 5, 251
-    , 21, 255, 4, 249
-    , 5, 5, 251, 251
     , 4, 248, 0, 1
     , 12, 19, 0, 0
     , 12, 243, 0, 255
@@ -203,8 +196,6 @@ definition test_uint16 :: bool
     , Bit_Operations.unset_bit 32 5, Bit_Operations.unset_bit 32 (- 5)
     , Bit_Operations.flip_bit 4 5, Bit_Operations.flip_bit 1 (- 5)
     , Bit_Operations.flip_bit 32 5, Bit_Operations.flip_bit 32 (- 5)
-    , set_bit 5 4 True, set_bit (- 5) 2 True, set_bit 5 0 False, set_bit (- 5) 1 False
-    , set_bit 5 32 True, set_bit 5 32 False, set_bit (- 5) 32 True, set_bit (- 5) 32 False
     , push_bit 2 1, push_bit 3 (- 1), push_bit 16 1, push_bit 0 1
     , drop_bit 3 100, drop_bit 3 (- 100), drop_bit 16 100, drop_bit 16 (- 100)
     , signed_drop_bit_uint16 3 100, signed_drop_bit_uint16 3 (- 100)
@@ -222,8 +213,6 @@ definition test_uint16 :: bool
     , 1, 21843, 0, 0
     , 2, 2, 65531, 5
     , 21, 65535, 5, 65531, 4, 65529, 5, 65531, 21, 65529, 5, 65531
-    , 21, 65535, 4, 65529
-    , 5, 5, 65531, 65531
     , 4, 65528, 0, 1
     , 12, 8179, 0, 0
     , 12, 65523, 0, 65535
@@ -288,8 +277,6 @@ definition test_uint32 :: bool
     , Bit_Operations.unset_bit 32 5, Bit_Operations.unset_bit 32 (- 5)
     , Bit_Operations.flip_bit 4 5, Bit_Operations.flip_bit 1 (- 5)
     , Bit_Operations.flip_bit 32 5, Bit_Operations.flip_bit 32 (- 5)
-    , set_bit 5 4 True, set_bit (- 5) 2 True, set_bit 5 0 False, set_bit (- 5) 1 False
-    , set_bit 5 32 True, set_bit 5 32 False, set_bit (- 5) 32 True, set_bit (- 5) 32 False
     , push_bit 2 1, push_bit 3 (- 1), push_bit 32 1, push_bit 0 1
     , drop_bit 3 100, drop_bit 3 (- 100), drop_bit 32 100, drop_bit 32 (- 100)
     , signed_drop_bit_uint32 3 100, signed_drop_bit_uint32 3 (- 100)
@@ -307,8 +294,6 @@ definition test_uint32 :: bool
     , 1, 1431655763, 0, 0
     , 2, 2, 4294967291, 5
     , 21, 4294967295, 5, 4294967291, 4, 4294967289, 5, 4294967291, 21, 4294967289, 5, 4294967291
-    , 21, 4294967295, 4, 4294967289
-    , 5, 5, 4294967291, 4294967291
     , 4, 4294967288, 0, 1
     , 12, 536870899, 0, 0
     , 12, 4294967283, 0, 4294967295
@@ -385,8 +370,6 @@ definition test_uint64 :: bool
     , Bit_Operations.unset_bit 32 5, Bit_Operations.unset_bit 32 (- 5)
     , Bit_Operations.flip_bit 4 5, Bit_Operations.flip_bit 1 (- 5)
     , Bit_Operations.flip_bit 32 5, Bit_Operations.flip_bit 32 (- 5)
-    , set_bit 5 4 True, set_bit (- 5) 2 True, set_bit 5 0 False, set_bit (- 5) 1 False
-    , set_bit 5 64 True, set_bit 5 64 False, set_bit (- 5) 64 True, set_bit (- 5) 64 False
     , push_bit 2 1, push_bit 3 (- 1), push_bit 64 1, push_bit 0 1
     , drop_bit 3 100, drop_bit 3 (- 100), drop_bit 64 100, drop_bit 64 (- 100)
     , signed_drop_bit_uint64 3 100, signed_drop_bit_uint64 3 (- 100)
@@ -404,8 +387,6 @@ definition test_uint64 :: bool
     , 1, 6148914691236517203, 0, 0
     , 2, 2, 18446744073709551611, 5 
     , 21, 18446744073709551615, 4294967301, 18446744073709551611, 4, 18446744073709551609, 5, 18446744069414584315, 21, 18446744073709551609, 4294967301, 18446744069414584315
-    , 21, 18446744073709551615, 4, 18446744073709551609
-    , 5, 5, 18446744073709551611, 18446744073709551611
     , 4, 18446744073709551608, 0, 1
     , 12, 2305843009213693939, 0, 0
     , 12, 18446744073709551603, 0, 18446744073709551615
@@ -437,8 +418,6 @@ value [nbe] \<open>[0x10000000000000001, -1, -9223372036854775808, 0xFFFFFFFFFFF
     , 5 * 3, -5 * 3, -5 * -4, 0x1234567890ABCDEF * 0xFEDCBA0987654321
     , 5 div 3, -5 div 3, -5 div -3, 5 div -3
     , 5 mod 3, -5 mod 3, -5 mod -3, 5 mod -3
-    , set_bit 5 4 True, set_bit (- 5) 2 True, set_bit 5 0 False, set_bit (- 5) 1 False
-    , set_bit 5 64 True, set_bit 5 64 False, set_bit (- 5) 64 True, set_bit (- 5) 64 False
     , push_bit 2 1, push_bit 3 (- 1), push_bit 64 1, push_bit 0 1
     , drop_bit 3 100, drop_bit 3 (- 100), drop_bit 64 100, drop_bit 64 (- 100)
     , signed_drop_bit_uint64 3 100, signed_drop_bit_uint64 3 (- 100)
@@ -488,8 +467,6 @@ definition test_uint :: bool
       , Bit_Operations.set_bit dflt_size 5, Bit_Operations.set_bit dflt_size (- 5)
       , Bit_Operations.unset_bit dflt_size 5, Bit_Operations.unset_bit dflt_size (- 5)
       , Bit_Operations.flip_bit 0 5, Bit_Operations.flip_bit 0 (- 5)
-      , set_bit 5 4 True, set_bit (- 5) 2 True, set_bit 5 0 False, set_bit (- 5) 1 False
-      , set_bit 5 dflt_size True, set_bit 5 dflt_size False, set_bit (- 5) dflt_size True, set_bit (- 5) dflt_size False
       , push_bit 2 1, push_bit 3 (- 1), push_bit dflt_size 1, push_bit 0 1
       , drop_bit 3 31, drop_bit 3 (- 1), drop_bit dflt_size 31, drop_bit dflt_size (- 1)
       , signed_drop_bit_uint 2 15, signed_drop_bit_uint 3 (- 1)
@@ -512,8 +489,6 @@ definition test_uint :: bool
       [ 5 div 3, (S - 5) div 3, (S - 5) div (S - 3), 5 div (S - 3)
       , 5 mod 3, (S - 5) mod 3, (S - 5) mod (S - 3), 5 mod (S - 3)
       , 5, -5, 5, -5, 4, -6
-      , set_bit 5 4 True, -1, set_bit 5 0 False, -7
-      , 5, 5, -5, -5
       , 4, -8, 0, 1
       , 3, drop_bit 3 S - 1, 0, 0
       , 3, drop_bit 1 S + drop_bit 1 S - 1, 0, -1

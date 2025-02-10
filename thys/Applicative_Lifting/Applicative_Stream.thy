@@ -7,7 +7,6 @@ subsection \<open>Streams as an applicative functor\<close>
 theory Applicative_Stream imports
   Applicative
   "HOL-Library.Stream"
-  "HOL-Library.Adhoc_Overloading"
 begin
 
 primcorec (transfer) ap_stream :: "('a \<Rightarrow> 'b) stream \<Rightarrow> 'a stream \<Rightarrow> 'b stream"
@@ -15,8 +14,8 @@ where
     "shd (ap_stream f x) = shd f (shd x)"
   | "stl (ap_stream f x) = ap_stream (stl f) (stl x)"
 
-adhoc_overloading Applicative.pure sconst
-adhoc_overloading Applicative.ap ap_stream
+adhoc_overloading Applicative.pure \<rightleftharpoons> sconst
+adhoc_overloading Applicative.ap \<rightleftharpoons> ap_stream
 
 context includes lifting_syntax and applicative_syntax
 begin

@@ -137,6 +137,9 @@ lemma ball_swap: "(\<forall>x \<in> A. \<forall>y \<in> B. P x y) = (\<forall>y 
 lemma ball_triv_nonempty: "A \<noteq> {} \<Longrightarrow> (\<forall>x \<in> A. P) = P"
   by auto
 
+lemma ball_if_distrib: "(\<forall>x \<in> B. if p then f x else g x) \<longleftrightarrow> (if p then (\<forall>x \<in> B. f x) else (\<forall>x \<in> B. g x))"
+  by simp
+
 (*<*)
 end
 (*>*)

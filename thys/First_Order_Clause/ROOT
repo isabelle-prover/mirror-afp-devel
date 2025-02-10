@@ -1,0 +1,25 @@
+chapter AFP
+session First_Order_Clause = Abstract_Substitution +
+  options [timeout = 900]
+  sessions
+    Abstract_Substitution
+    First_Order_Terms
+    Fresh_Identifiers
+    "HOL-Cardinals"
+    "HOL-Library"
+    Min_Max_Least_Greatest
+    Nested_Multisets_Ordinals
+    "Regular-Sets"
+    Regular_Tree_Relations
+    Saturation_Framework_Extensions
+  theories
+    Ground_Typing
+    Grounded_Selection_Function
+    Nonground_Entailment
+    Nonground_Inference
+    Nonground_Order
+    Typed_Functional_Substitution_Example
+    Typed_Functional_Substitution_Lifting_Example
+  document_files
+    "root.tex"
+

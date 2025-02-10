@@ -6,6 +6,7 @@ package afp
 
 
 import isabelle.*
+import isabelle.find_facts.Find_Facts
 
 
 object AFP_Build_CI {
@@ -148,11 +149,10 @@ Last 50 lines from stderr (if available):
       val status_file = dir + Path.basic("status").json
       File.write(status_file, JSON.Format(status_json))
 
-      val layout = Hugo.Layout(dir)
       val output_dir = dir + Path.basic("output")
 
-      AFP_Site_Gen.afp_site_gen(layout, Some(status_file), context.afp, progress = progress)
-      AFP_Site_Gen.afp_build_site(output_dir, layout)
+      AFP_Site_Gen.afp_site_gen(output_dir, afp = context.afp, status_file = Some(status_file),
+        progress = progress)
 
       val release_dir = dir + Path.basic("release")
       Isabelle_System.make_directory(release_dir)
@@ -240,6 +240,50 @@ Last 50 lines from stderr (if available):
       other_settings =
         List("ISABELLE_TOOL_JAVA_OPTIONS=\"$ISABELLE_TOOL_JAVA_OPTIONS -Xmx8G -Xss64M\""),
       trigger = Build_CI.Timed.nightly())
+
+
+  /* weekly indexing */
+
+  val indexing =
+    Build_CI.Job("indexing",
+      "weekly build for all of Isabelle/AFP, indexing theories into find_facts",
+      Build_CI.Cluster("cluster.schedule"),
+      Time.hms(8, 0, 0),
+      afp = true,
+      selection = Sessions.Selection(all_sessions = true),
+      build_prefs = List(Options.Spec.eq("build_engine", Build_Schedule.Build_Engine.name)),
+      hook = new Build_CI.Hook {
+        override def post(
+          options: Options,
+          url: Option[Url],
+          results: Build.Results,
+          progress: Progress
+        ): Unit = {
+          val dirs = AFP.main_dirs(Some(AFP.BASE))
+          val afp = AFP_Structure(options)
+          val database = "afp-" + afp.hg_id
+          val find_facts_options =
+            List(
+              Options.Spec.eq("find_facts_database_name", database),
+              Options.Spec.make("build_database"),
+              Options.Spec.make("build_database_server"))
+
+          val cmd = Find_Facts.find_facts_index_command(results.sessions_ok, options =
+            find_facts_options, dirs = dirs, clean = true, no_build = true)
+
+          val isabelle_home = Path.explode("$ISABELLE_HOME")
+          val isabelle_identifier = Isabelle_System.isabelle_identifier() getOrElse ""
+          val script = Bash.context(cmd, SSH.Local.user_home, isabelle_identifier, isabelle_home)
+
+          Isabelle_System.bash(script,
+            progress_stdout = progress.echo(_),
+            progress_stderr = progress.echo_error_message(_)).check
+        }
+      },
+      other_settings =
+        List("ISABELLE_TOOL_JAVA_OPTIONS=\"$ISABELLE_TOOL_JAVA_OPTIONS -Xmx8G -Xss64M\""),
+      trigger = Build_CI.Timed.weekly(start = Time.hms(3, 17, 0)))
 }
 
-class CI_Jobs extends Isabelle_CI_Jobs(AFP_Build_CI.all, AFP_Build_CI.presentation)
+class CI_Jobs extends Isabelle_CI_Jobs(
+  AFP_Build_CI.all, AFP_Build_CI.presentation, AFP_Build_CI.indexing)

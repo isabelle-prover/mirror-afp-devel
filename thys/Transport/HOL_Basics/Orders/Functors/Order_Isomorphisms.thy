@@ -10,7 +10,7 @@ consts order_isomorphism_on :: "'a \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarro
 definition order_isomorphism_on_pred :: "('a \<Rightarrow> bool) \<Rightarrow> ('b \<Rightarrow> bool) \<Rightarrow>
   ('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> ('b \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> ('b \<Rightarrow> 'a) \<Rightarrow> bool" where
   "order_isomorphism_on_pred P Q L R l r \<equiv> bijection_on P Q l r \<and> (\<forall>x y : P. L x y \<longleftrightarrow> R (l x) (l y))"
-adhoc_overloading order_isomorphism_on order_isomorphism_on_pred
+adhoc_overloading order_isomorphism_on \<rightleftharpoons> order_isomorphism_on_pred
 
 context order_functors
 begin
@@ -147,7 +147,7 @@ consts order_isomorphic_on :: "'a \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow
 definition order_isomorphic_on_pred ::
   "('a \<Rightarrow> bool) \<Rightarrow> ('b \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> ('b \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> bool" where
   "order_isomorphic_on_pred P Q L R \<equiv> \<exists>l r. order_isomorphism_on P Q L R l r"
-adhoc_overloading order_isomorphic_on order_isomorphic_on_pred
+adhoc_overloading order_isomorphic_on \<rightleftharpoons> order_isomorphic_on_pred
 
 lemma order_isomorphic_onI [intro]:
   assumes "order_isomorphism_on P Q L R l r"

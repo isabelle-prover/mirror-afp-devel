@@ -1,4 +1,3 @@
----
-outputs:
-- html
----
++++
+outputs = []
++++

@@ -37,8 +37,8 @@ locale given_clause_basis = std?: labeled_lifting_intersection Bot_F Inf_F Bot_G
     active :: "'l"
   assumes
     equiv_equiv_F: "equivp (\<doteq>)" and
-    wf_prec_F: "minimal_element (\<prec>\<cdot>) UNIV" and
-    wf_prec_L: "minimal_element (\<sqsubset>L) UNIV" and
+    wf_prec_F: "wfp (\<prec>\<cdot>)" "transp (\<prec>\<cdot>)" and
+    wf_prec_L: "wfp (\<sqsubset>L)" "transp (\<sqsubset>L)" and
     compat_equiv_prec: "C1 \<doteq> D1 \<Longrightarrow> C2 \<doteq> D2 \<Longrightarrow> C1 \<prec>\<cdot> C2 \<Longrightarrow> D1 \<prec>\<cdot> D2" and
     equiv_F_grounding: "q \<in> Q \<Longrightarrow> C1 \<doteq> C2 \<Longrightarrow> \<G>_F_q q C1 \<subseteq> \<G>_F_q q C2" and
     prec_F_grounding: "q \<in> Q \<Longrightarrow> C2 \<prec>\<cdot> C1 \<Longrightarrow> \<G>_F_q q C1 \<subseteq> \<G>_F_q q C2" and
@@ -58,47 +58,35 @@ definition Prec_FL :: "('f \<times> 'l) \<Rightarrow> ('f \<times> 'l) \<Rightar
   "Cl1 \<sqsubset> Cl2 \<longleftrightarrow> fst Cl1 \<prec>\<cdot> fst Cl2 \<or> (fst Cl1 \<doteq> fst Cl2 \<and> snd Cl1 \<sqsubset>L snd Cl2)"
 
 lemma irrefl_prec_F: "\<not> C \<prec>\<cdot> C"
-  by (simp add: minimal_element.po[OF wf_prec_F, unfolded po_on_def irreflp_on_def])
+  using wf_prec_F
+  by (meson asympD wfp_imp_asymp)
 
 lemma trans_prec_F: "C1 \<prec>\<cdot> C2 \<Longrightarrow> C2 \<prec>\<cdot> C3 \<Longrightarrow> C1 \<prec>\<cdot> C3"
-  by (auto intro: minimal_element.po[OF wf_prec_F, unfolded po_on_def transp_on_def, THEN conjunct2,
-        simplified, rule_format])
+  using wf_prec_F
+  by (meson transpE)
 
-lemma wf_prec_FL: "minimal_element (\<sqsubset>) UNIV"
-proof
-  show "po_on (\<sqsubset>) UNIV" unfolding po_on_def
-  proof
-    show "irreflp (\<sqsubset>)" unfolding irreflp_on_def Prec_FL_def
-    proof
-      fix Cl
-      assume a_in: "Cl \<in> (UNIV::('f \<times> 'l) set)"
-      have "\<not> (fst Cl \<prec>\<cdot> fst Cl)" using wf_prec_F minimal_element.min_elt_ex by force
-      moreover have "\<not> (snd Cl \<sqsubset>L snd Cl)" using wf_prec_L minimal_element.min_elt_ex by force
-      ultimately show "\<not> (fst Cl \<prec>\<cdot> fst Cl \<or> fst Cl \<doteq> fst Cl \<and> snd Cl \<sqsubset>L snd Cl)" by blast
-    qed
-  next
-    show "transp (\<sqsubset>)" unfolding Prec_FL_def
-    proof (rule transpI)
-      fix Cl1 Cl2 Cl3
-      assume trans_hyps:
-        "(fst Cl1 \<prec>\<cdot> fst Cl2 \<or> fst Cl1 \<doteq> fst Cl2 \<and> snd Cl1 \<sqsubset>L snd Cl2)"
-        "(fst Cl2 \<prec>\<cdot> fst Cl3 \<or> fst Cl2 \<doteq> fst Cl3 \<and> snd Cl2 \<sqsubset>L snd Cl3)"
-      have "fst Cl1 \<prec>\<cdot> fst Cl2 \<Longrightarrow> fst Cl2 \<doteq> fst Cl3 \<Longrightarrow> fst Cl1 \<prec>\<cdot> fst Cl3"
-        using compat_equiv_prec by (metis equiv_equiv_F equivp_def)
-      moreover have "fst Cl1 \<doteq> fst Cl2 \<Longrightarrow> fst Cl2 \<prec>\<cdot> fst Cl3 \<Longrightarrow> fst Cl1 \<prec>\<cdot> fst Cl3"
-        using compat_equiv_prec by (metis equiv_equiv_F equivp_def)
-      moreover have "snd Cl1 \<sqsubset>L snd Cl2 \<Longrightarrow> snd Cl2 \<sqsubset>L snd Cl3 \<Longrightarrow> snd Cl1 \<sqsubset>L snd Cl3"
-        using wf_prec_L unfolding minimal_element_def po_on_def transp_def by (meson UNIV_I)
-      moreover have "fst Cl1 \<doteq> fst Cl2 \<Longrightarrow> fst Cl2 \<doteq> fst Cl3 \<Longrightarrow> fst Cl1 \<doteq> fst Cl3"
-        using equiv_equiv_F by (meson equivp_transp)
-      ultimately show "fst Cl1 \<prec>\<cdot> fst Cl3 \<or> fst Cl1 \<doteq> fst Cl3 \<and> snd Cl1 \<sqsubset>L snd Cl3"
-        using trans_hyps trans_prec_F by blast
-    qed
+lemma wf_prec_FL: "wfp (\<sqsubset>)" "transp (\<sqsubset>)"
+proof-
+  show "transp (\<sqsubset>)" unfolding Prec_FL_def
+  proof (rule transpI)
+    fix Cl1 Cl2 Cl3
+    assume trans_hyps:
+      "(fst Cl1 \<prec>\<cdot> fst Cl2 \<or> fst Cl1 \<doteq> fst Cl2 \<and> snd Cl1 \<sqsubset>L snd Cl2)"
+      "(fst Cl2 \<prec>\<cdot> fst Cl3 \<or> fst Cl2 \<doteq> fst Cl3 \<and> snd Cl2 \<sqsubset>L snd Cl3)"
+    have "fst Cl1 \<prec>\<cdot> fst Cl2 \<Longrightarrow> fst Cl2 \<doteq> fst Cl3 \<Longrightarrow> fst Cl1 \<prec>\<cdot> fst Cl3"
+      using compat_equiv_prec by (metis equiv_equiv_F equivp_def)
+    moreover have "fst Cl1 \<doteq> fst Cl2 \<Longrightarrow> fst Cl2 \<prec>\<cdot> fst Cl3 \<Longrightarrow> fst Cl1 \<prec>\<cdot> fst Cl3"
+      using compat_equiv_prec by (metis equiv_equiv_F equivp_def)
+    moreover have "snd Cl1 \<sqsubset>L snd Cl2 \<Longrightarrow> snd Cl2 \<sqsubset>L snd Cl3 \<Longrightarrow> snd Cl1 \<sqsubset>L snd Cl3"
+      using wf_prec_L unfolding transp_def by (meson UNIV_I)
+    moreover have "fst Cl1 \<doteq> fst Cl2 \<Longrightarrow> fst Cl2 \<doteq> fst Cl3 \<Longrightarrow> fst Cl1 \<doteq> fst Cl3"
+      using equiv_equiv_F by (meson equivp_transp)
+    ultimately show "fst Cl1 \<prec>\<cdot> fst Cl3 \<or> fst Cl1 \<doteq> fst Cl3 \<and> snd Cl1 \<sqsubset>L snd Cl3"
+      using trans_hyps trans_prec_F by blast
   qed
 next
-  show "wfp_on (\<sqsubset>) UNIV" unfolding wfp_on_def
-  proof
-    assume contra: "\<exists>f. \<forall>i. f i \<in> UNIV \<and> f (Suc i) \<sqsubset> f i"
+   {
+    assume contra: "\<exists>f. \<forall>i. f (Suc i) \<sqsubset> f i"
     then obtain f where
       f_suc: "\<forall>i. f (Suc i) \<sqsubset> f i"
       by blast
@@ -112,9 +100,9 @@ next
       f_chain: "\<forall>i. (f (Suc (i + k)), f (i + k)) \<in> S"
     proof (atomize_elim, rule wf_infinite_down_chain_compatible[of R f S])
       show "wf R"
-        unfolding R_def using wf_app[OF wf_prec_F[unfolded minimal_element_def, THEN conjunct2,
-              unfolded wfp_on_UNIV wfp_def]]
-        by force
+        using wfP_app wf_prec_F
+        unfolding R_def wfp_def
+        by auto
     next
       show "\<forall>i. (f (Suc i), f i) \<in> R \<union> S"
         using f_suc unfolding R_def S_def Prec_FL_def by blast
@@ -130,14 +118,15 @@ next
       unfolding g_def using f_chain by simp
     have wf_s: "wf S"
       unfolding S_def
-      by (rule wf_subset[OF wf_app[OF wf_prec_L[unfolded minimal_element_def, THEN conjunct2,
-                unfolded wfp_on_UNIV wfp_def], of snd]])
-        fast
-    show False
-      using g_chain[unfolded S_def]
-        wf_s[unfolded S_def, folded wfp_def wfp_on_UNIV, unfolded wfp_on_def]
-      by auto
-  qed
+      by (rule wf_subset[OF wf_app[OF wf_prec_L(1)[ unfolded wfp_def], of snd]]) fast
+    have False
+      using g_chain[unfolded S_def] wf_s[unfolded S_def, folded wfp_def, unfolded wfp_on_def]
+      by (meson g_chain wf_no_infinite_down_chainE wf_s)
+  }
+
+  then show "wfp (\<sqsubset>)"
+    unfolding infinite_chain_function_iff_infinite_chain_llist wfP_iff_no_infinite_down_chain_llist
+    by argo
 qed
 
 definition active_subset :: "('f \<times> 'l) set \<Rightarrow> ('f \<times> 'l) set" where

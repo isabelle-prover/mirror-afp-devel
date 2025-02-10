@@ -1,38 +1,34 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Computer science on Archive of Formal Proofs
-    </title>
-    <link>/topics/computer-science/</link>
-    <description>
-        Recent content in Computer science 
-        on Archive of Formal Proofs
-    </description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language>
-    
-      <lastBuildDate>Mon, 25 Nov 2024 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/topics/computer-science/index.xml" rel="self" type="application/rss+xml" />
-        <item>
-          <title>Labeled Transition Systems</title>
-          <link>/entries/Labeled_Transition_Systems.html</link>
+    <title>Computer science</title>
+    <link>https://isa-afp.org/topics/computer-science/</link>
+    <description>AFP entries in Computer science</description>
+         <item>
+          <title>Pushdown Systems</title>
+          <link>https://isa-afp.org/entries/Pushdown_Systems.html</link>
           <pubDate>Tue, 31 Oct 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/Labeled_Transition_Systems.html</guid>
-          <description></description>
+          <description>Pushdown Systems in the AFP</description>
+            <category>Computer science/Automata and formal languages</category>
+            <category>Computer science</category>
         </item>
         <item>
-          <title>Pushdown Systems</title>
-          <link>/entries/Pushdown_Systems.html</link>
+          <title>Labeled Transition Systems</title>
+          <link>https://isa-afp.org/entries/Labeled_Transition_Systems.html</link>
           <pubDate>Tue, 31 Oct 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/Pushdown_Systems.html</guid>
-          <description></description>
+          <description>Labeled Transition Systems in the AFP</description>
+            <category>Computer science/Automata and formal languages</category>
+            <category>Computer science</category>
         </item>
         <item>
           <title>The Halting Problem is Soluble in Malament-Hogarth Spacetimes</title>
-          <link>/entries/MHComputation.html</link>
+          <link>https://isa-afp.org/entries/MHComputation.html</link>
           <pubDate>Sat, 29 Apr 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/MHComputation.html</guid>
-          <description></description>
+          <description>The Halting Problem is Soluble in Malament-Hogarth Spacetimes in the AFP</description>
+            <category>Computer science</category>
+            <category>Logic/Computability</category>
+            <category>Mathematics/Physics</category>
         </item>
+
   </channel>
 </rss>

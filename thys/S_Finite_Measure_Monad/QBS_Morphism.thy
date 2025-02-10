@@ -9,7 +9,7 @@ imports
 
 begin
 
-abbreviation qbs_morphism :: "['a quasi_borel, 'b quasi_borel] \<Rightarrow> ('a \<Rightarrow> 'b) set" (infixr \<open>\<rightarrow>\<^sub>Q\<close> 60) where 
+abbreviation qbs_morphism :: "['a quasi_borel, 'b quasi_borel] \<Rightarrow> ('a \<Rightarrow> 'b) set" (infixr "\<rightarrow>\<^sub>Q" 60) where 
   "X \<rightarrow>\<^sub>Q Y \<equiv> qbs_space (X \<Rightarrow>\<^sub>Q Y)"
 
 lemma qbs_morphismI: "(\<And>\<alpha>. \<alpha> \<in> qbs_Mx X \<Longrightarrow> f \<circ> \<alpha> \<in> qbs_Mx Y) \<Longrightarrow> f \<in> X \<rightarrow>\<^sub>Q Y"
@@ -96,7 +96,7 @@ lemma qbs_morphism_from_empty: "qbs_space X = {} \<Longrightarrow> f \<in> X \<r
 lemma unit_quasi_borel_terminal: "\<exists>! f. f \<in> X \<rightarrow>\<^sub>Q unit_quasi_borel"
   by(fastforce simp: qbs_morphism_def)
 
-definition to_unit_quasi_borel :: "'a \<Rightarrow> unit" (\<open>!\<^sub>Q\<close>) where
+definition to_unit_quasi_borel :: "'a \<Rightarrow> unit" ("!\<^sub>Q") where
 "to_unit_quasi_borel \<equiv> (\<lambda>r.())"
 
 lemma to_unit_quasi_borel_morphism:
@@ -119,8 +119,13 @@ lemma qbs_morphism_subI2:
   shows "f \<in> sub_qbs X A \<rightarrow>\<^sub>Q Y"
   using qbs_morphism_Mx[OF assms] by(auto intro!: qbs_morphismI simp: sub_qbs_Mx)
 
+lemma qbs_morphism_subI2':
+  assumes "f \<in> X \<rightarrow>\<^sub>Q Y" "qbs_space Z \<subseteq> qbs_space X" "qbs_Mx Z \<subseteq> qbs_Mx X"
+  shows "f \<in> Z \<rightarrow>\<^sub>Q Y"
+  using qbs_morphism_Mx[OF assms(1)] assms(2,3) by(auto intro!: qbs_morphismI)
+
 corollary qbs_morphism_subsubI:
-  assumes "f \<in>  X \<rightarrow>\<^sub>Q Y" "\<And>x. x \<in> A \<Longrightarrow> f x \<in> B"
+  assumes "f \<in>  X \<rightarrow>\<^sub>Q Y" "\<And>x. x \<in> A \<Longrightarrow> x \<in> qbs_space X \<Longrightarrow> f x \<in> B"
   shows "f \<in> sub_qbs X A \<rightarrow>\<^sub>Q sub_qbs Y B"
   by(rule qbs_morphism_subI1) (auto intro!: qbs_morphism_subI2 assms simp: sub_qbs_space)
 
