@@ -127,11 +127,54 @@ qed
 
 lemma mp_mset_in_pat_mset: "mp \<in># pp \<Longrightarrow> mp_mset mp \<in> pat_mset pp"
   by auto
+lemma mp_step_mset_cong: 
+  assumes "(\<rightarrow>\<^sub>m)\<^sup>*\<^sup>* mp mp'"
+  shows "(add_mset (add_mset mp p) P, add_mset (add_mset mp' p) P) \<in> \<Rrightarrow>\<^sup>*" 
+  using assms
+proof induct
+  case (step mp' mp'')
+  from P_simp_pp[OF pat_simp_mp[OF step(2), of p], of P]
+  have "(add_mset (add_mset mp' p) P, add_mset (add_mset mp'' p) P) \<in> P_step" 
+    unfolding P_step_def by auto
+  with step(3)
+  show ?case by simp
+qed auto
+
+lemma mp_step_mset_vars: assumes "mp \<rightarrow>\<^sub>m mp'"
+  shows "tvars_mp (mp_mset mp) \<supseteq> tvars_mp (mp_mset mp')" 
+  using assms 
+proof induct 
+  case *: (match_decompose' mp y f n mp' ys)
+  {
+    let ?mset = "mset :: _ \<Rightarrow> ('f,'v,'s)match_problem_mset"
+    fix x
+    assume "x \<in> tvars_mp (mp_mset ((\<Sum>(t, l)\<in>#mp. ?mset (zip (args t) (map Var ys)))))" 
+    from this[unfolded tvars_mp_def, simplified]
+    obtain t l ti yi where tl: "(t,l) \<in># mp" and tiyi: "(ti,yi) \<in># ?mset (zip (args t) (map Var ys))" 
+      and x: "x \<in> vars ti" 
+      by auto
+    from *(1)[OF tl] obtain ts where l: "l = Var y" and t: "t = Fun f ts" and lts: "length ts = n"
+      by (cases t, auto)
+    from tiyi[unfolded t] have "ti \<in> set ts"
+      using set_zip_leftD by fastforce
+    with x t have "x \<in> vars t" by auto
+    hence "x \<in> tvars_mp (mp_mset mp)" using tl unfolding tvars_mp_def by auto
+  }
+  thus ?case unfolding tvars_mp_def by force
+qed (auto simp: tvars_mp_def set_zip)
+
+lemma mp_step_mset_steps_vars: assumes "(\<rightarrow>\<^sub>m)\<^sup>*\<^sup>* mp mp'"
+  shows "tvars_mp (mp_mset mp) \<supseteq> tvars_mp (mp_mset mp')" 
+  using assms by (induct, insert mp_step_mset_vars, auto)
+
+end
+
+context pattern_completeness_context_with_assms begin
 
 lemma pat_fail_or_trans_or_finite_var_form:
   fixes p :: "('f,'v,'s) pat_problem_mset"
-  assumes "improved \<Longrightarrow> infinite (UNIV :: 'v set)" 
-  shows "pat_fail p \<or> (\<exists> ps. p \<Rightarrow>\<^sub>m ps) \<or> (improved \<and> finite_var_form_pp (pat_mset p))" 
+  assumes "improved \<Longrightarrow> infinite (UNIV :: 'v set)" and wf: "wf_pat (pat_mset p)"
+  shows "pat_fail p \<or> (\<exists> ps. p \<Rightarrow>\<^sub>m ps) \<or> (improved \<and> finite_var_form_pat C (pat_mset p))" 
 proof (cases "p = {#}")
   case True
   with pat_empty show ?thesis by auto
@@ -230,15 +273,15 @@ next
               case impr: True
               (* we first prove that we can reach weak-finite-var-form and switch to finite-var-form later *)
               (* TODO: one might clean up this two-way proof and directly go to finite-var-form *)
-              have "(pat_fail p \<or> (\<exists>ps. p \<Rightarrow>\<^sub>m ps)) \<or> weak_finite_var_form_pp (pat_mset p)" 
-              proof (cases "weak_finite_var_form_pp (pat_mset p)")
+              have "(pat_fail p \<or> (\<exists>ps. p \<Rightarrow>\<^sub>m ps)) \<or> weak_finite_var_form_pat (pat_mset p)" 
+              proof (cases "weak_finite_var_form_pat (pat_mset p)")
                 case False
-                from this[unfolded weak_finite_var_form_pp_def] obtain mp 
-                  where mp: "mp \<in># p" and nmp: "\<not> weak_finite_var_form_mp (mp_mset mp)" by auto
+                from this[unfolded weak_finite_var_form_pat_def] obtain mp 
+                  where mp: "mp \<in># p" and nmp: "\<not> weak_finite_var_form_match (mp_mset mp)" by auto
                 from mset_add[OF mp] obtain p' where p': "p = add_mset mp p'" by auto
                 from rhs_vars[OF mp] have "((\<forall>(t, l)\<in>#mp. \<exists>y. l = Var y) \<and> b) = b" for b
                   by force
-                note nmp = nmp[unfolded weak_finite_var_form_mp_def this]
+                note nmp = nmp[unfolded weak_finite_var_form_match_def this]
                 from this[simplified] obtain f ss y where
                   s: "(Fun f ss, Var y) \<in># mp" and
                   violation: "((\<forall>x. (Var x, Var y) \<in># mp \<longrightarrow> \<not> inf_sort (snd x)) \<or>
@@ -326,8 +369,8 @@ next
               thus ?thesis
               proof (elim context_disjE)
                 assume no_step: "\<not> (pat_fail p \<or> (\<exists>ps. p \<Rightarrow>\<^sub>m ps))" 
-                assume "weak_finite_var_form_pp (pat_mset p)" 
-                note wfvf = this[unfolded weak_finite_var_form_pp_def weak_finite_var_form_mp_def, rule_format]
+                assume "weak_finite_var_form_pat (pat_mset p)" 
+                note wfvf = this[unfolded weak_finite_var_form_pat_def weak_finite_var_form_match_def, rule_format]
                 note get_var = wfvf[THEN conjunct1, rule_format]
                 note fun_case = wfvf[THEN conjunct2, rule_format]
                 (* fin-predicate: all variables in mp are of finite sort *)
@@ -339,8 +382,8 @@ next
                 proof (cases "p_inf = {#}")
                   case True
                   have fin: "\<And> mp. mp \<in># p \<Longrightarrow> fin mp" unfolding p_split True unfolding p_fin_def by auto
-                  have "finite_var_form_pp (pat_mset p)" 
-                    unfolding finite_var_form_pp_def finite_var_form_mp_def var_form_mp_def
+                  have "finite_var_form_pat C (pat_mset p)"
+                    unfolding finite_var_form_pat_def finite_var_form_match_def var_form_match_def
                   proof (intro ballI conjI subsetI allI impI, clarify)
                     fix mp l
                     assume mp: "mp \<in> pat_mset p"
@@ -358,8 +401,12 @@ next
                       with ly show "(t,l) \<in> range (map_prod Var Var)" by auto
                     } note var_var = this
                     fix x assume xl: "(Var x, l) \<in> mp"
-                    with fin[unfolded fin_def tvars_mp_def] mp
-                    show fint: "\<not> inf_sort (snd x)" by auto
+                    then have xmp: "x \<in> tvars_mp mp" by (force simp: tvars_mp_def)
+                    with wf[unfolded wf_pat_def wf_match_def, rule_format, OF mp]
+                    have sxS: "snd x \<in> S" by auto
+                    from mp xmp fin fin_def have "\<not>inf_sort (snd x)" by auto
+                    with inf_sort[OF sxS]
+                    show fint: "finite_sort C (snd x)" by auto
                     fix y assume yl: "(Var y, l) \<in> mp"
                     from yl var_var obtain z where l: "l = Var z" by force
                     show "snd x = snd y" 
@@ -438,65 +485,25 @@ next
   qed
 qed
 
-lemma mp_step_mset_cong: 
-  assumes "(\<rightarrow>\<^sub>m)\<^sup>*\<^sup>* mp mp'"
-  shows "(add_mset (add_mset mp p) P, add_mset (add_mset mp' p) P) \<in> \<Rrightarrow>\<^sup>*" 
-  using assms
-proof induct
-  case (step mp' mp'')
-  from P_simp_pp[OF pat_simp_mp[OF step(2), of p], of P]
-  have "(add_mset (add_mset mp' p) P, add_mset (add_mset mp'' p) P) \<in> P_step" 
-    unfolding P_step_def by auto
-  with step(3)
-  show ?case by simp
-qed auto
-
-lemma mp_step_mset_vars: assumes "mp \<rightarrow>\<^sub>m mp'"
-  shows "tvars_mp (mp_mset mp) \<supseteq> tvars_mp (mp_mset mp')" 
-  using assms 
-proof induct 
-  case *: (match_decompose' mp y f n mp' ys)
-  {
-    let ?mset = "mset :: _ \<Rightarrow> ('f,'v,'s)match_problem_mset"
-    fix x
-    assume "x \<in> tvars_mp (mp_mset ((\<Sum>(t, l)\<in>#mp. ?mset (zip (args t) (map Var ys)))))" 
-    from this[unfolded tvars_mp_def, simplified]
-    obtain t l ti yi where tl: "(t,l) \<in># mp" and tiyi: "(ti,yi) \<in># ?mset (zip (args t) (map Var ys))" 
-      and x: "x \<in> vars ti" 
-      by auto
-    from *(1)[OF tl] obtain ts where l: "l = Var y" and t: "t = Fun f ts" and lts: "length ts = n"
-      by (cases t, auto)
-    from tiyi[unfolded t] have "ti \<in> set ts"
-      using set_zip_leftD by fastforce
-    with x t have "x \<in> vars t" by auto
-    hence "x \<in> tvars_mp (mp_mset mp)" using tl unfolding tvars_mp_def by auto
-  }
-  thus ?case unfolding tvars_mp_def by force
-qed (auto simp: tvars_mp_def set_zip)
-
-lemma mp_step_mset_steps_vars: assumes "(\<rightarrow>\<^sub>m)\<^sup>*\<^sup>* mp mp'"
-  shows "tvars_mp (mp_mset mp) \<supseteq> tvars_mp (mp_mset mp')" 
-  using assms by (induct, insert mp_step_mset_vars, auto)
-
-
 context
   assumes non_improved: "\<not> improved"
 begin
   
-lemma pat_fail_or_trans: "pat_fail p \<or> (\<exists> ps. p \<Rightarrow>\<^sub>m ps)" 
+lemma pat_fail_or_trans: "wf_pat (pat_mset p) \<Longrightarrow> pat_fail p \<or> (\<exists> ps. p \<Rightarrow>\<^sub>m ps)" 
   using pat_fail_or_trans_or_finite_var_form[of p] non_improved by auto
 
 text \<open>Pattern problems just have two normal forms: 
   empty set (solvable) or bottom (not solvable)\<close>
 theorem P_step_NF: 
-  assumes NF: "P \<in> NF \<Rrightarrow>" 
+  assumes wf: "wf_pats (pats_mset P)" and NF: "P \<in> NF \<Rrightarrow>" 
   shows "P \<in> {{#}, bottom_mset}" 
 proof (rule ccontr)
   assume nNF: "P \<notin> {{#}, bottom_mset}"
   from NF have NF: "\<not> (\<exists> Q. P \<Rrightarrow>\<^sub>m Q)" unfolding P_step_def by blast
   from nNF obtain p P' where P: "P = add_mset p P'"
     using multiset_cases by auto
-  from pat_fail_or_trans
+  with wf have "wf_pat (pat_mset p)" by (auto simp: wf_pats_def)
+  with pat_fail_or_trans
   obtain ps where "pat_fail p \<or> p \<Rightarrow>\<^sub>m ps" by auto
   with P_simp_pp[of p ps] NF
   have "pat_fail p" unfolding P by auto
@@ -511,25 +518,29 @@ context
 begin
   
 lemma pat_fail_or_trans_or_fvf:
-  "pat_fail (p::('f,'v,'s) pat_problem_mset) \<or> (\<exists> ps. p \<Rightarrow>\<^sub>m ps) \<or> finite_var_form_pp (pat_mset p)"
-  using pat_fail_or_trans_or_finite_var_form[of p, OF inf] by auto
+  fixes p :: "('f,'v,'s) pat_problem_mset"
+  assumes "wf_pat (pat_mset p)"
+  shows "pat_fail p \<or> (\<exists> ps. p \<Rightarrow>\<^sub>m ps) \<or> finite_var_form_pat C (pat_mset p)"
+  using assms pat_fail_or_trans_or_finite_var_form[of p, OF inf] by auto
 
 text \<open>Normal forms only consist of finite-var-form pattern problems\<close>
 theorem P_step_NF_fvf: 
-  assumes NF: "(P::('f,'v,'s) pats_problem_mset) \<in> NF \<Rrightarrow>" 
+  assumes wf: "wf_pats (pats_mset P)"
+    and NF: "(P::('f,'v,'s) pats_problem_mset) \<in> NF \<Rrightarrow>" 
     and p: "p \<in># P"
-  shows "finite_var_form_pp (pat_mset p)"  
+  shows "finite_var_form_pat C (pat_mset p)"  
 proof (rule ccontr)
-  assume nfvf: "\<not> ?thesis" 
+  assume nfvf: "\<not> ?thesis"
+  from wf p have wfp: "wf_pat (pat_mset p)" by (auto simp: wf_pats_def)
   from mset_add[OF p] obtain P' where P: "P = add_mset p P'" by auto
   from NF have NF: "\<not> (\<exists> Q. P \<Rrightarrow>\<^sub>m Q)" unfolding P_step_def by blast
-  from pat_fail_or_trans_or_fvf[of p] nfvf
+  from pat_fail_or_trans_or_fvf[OF wfp] nfvf
   obtain ps where "pat_fail p \<or> p \<Rightarrow>\<^sub>m ps" by auto
   with P_simp_pp[of p ps] NF
   have "pat_fail p" unfolding P by auto
   from P_failure[OF this, of P', folded P] NF have "P = {# {#} #}" by auto
   with P have "p = {#}" by auto
-  with nfvf show False unfolding finite_var_form_pp_def by auto
+  with nfvf show False unfolding finite_var_form_pat_def by auto
 qed
 
 end
@@ -1176,7 +1187,7 @@ proof -
   have wf: "wf_pats (pats_mset Q)" and 
     sound: "pats_complete C (pats_mset P) = pats_complete C (pats_mset Q)" 
     by blast+
-  from P_step_NF[OF non_improved NF] have "Q \<in> {{#},bottom_mset}" .
+  from P_step_NF[OF non_improved wf NF] have "Q \<in> {{#},bottom_mset}" .
   thus ?thesis unfolding sound by auto
 qed
 
@@ -1186,13 +1197,15 @@ theorem P_step_improved:
     and inf: "infinite (UNIV :: 'v set)" 
     and wf: "wf_pats (pats_mset P)" and NF: "(P,Q) \<in> \<Rrightarrow>\<^sup>!"
   shows "pats_complete C (pats_mset P) \<longleftrightarrow> pats_complete C (pats_mset Q)" \<comment> \<open>equivalence\<close>
-    "p \<in># Q \<Longrightarrow> finite_var_form_pp (pat_mset p)" \<comment> \<open>all remaining problems are in finite-var-form\<close>
+    "p \<in># Q \<Longrightarrow> finite_var_form_pat C (pat_mset p)" \<comment> \<open>all remaining problems are in finite-var-form\<close>
 proof -
   from NF have steps: "(P,Q) \<in> \<Rrightarrow>^*" and NF: "Q \<in> NF P_step" by auto
-  from P_steps_pcorrect[OF wf steps]
+  note * = P_steps_pcorrect[OF wf steps]
+  from *
   show "pats_complete C (pats_mset P) = pats_complete C (pats_mset Q)" ..
-  from P_step_NF_fvf[OF \<open>improved\<close> inf NF]
-  show "p \<in># Q \<Longrightarrow> finite_var_form_pp (pat_mset p)" .
+  from * have wfQ: "wf_pats (pats_mset Q)" by auto
+  from P_step_NF_fvf[OF \<open>improved\<close> inf this NF]
+  show "p \<in># Q \<Longrightarrow> finite_var_form_pat C (pat_mset p)" .
 qed
 
 end
