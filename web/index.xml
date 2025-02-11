@@ -21,6 +21,13 @@
           <description></description>
         </item>
         <item>
+          <title>Formalization of (Conflict-)Serializability and Strict Two-Phase Locking</title>
+          <link>/entries/Serializable.html</link>
+          <pubDate>Sat, 01 Feb 2025 00:00:00 +0000</pubDate>
+          <guid>/entries/Serializable.html</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Mission-time Linear Temporal Logic</title>
           <link>/entries/Mission_Time_LTL.html</link>
           <pubDate>Fri, 24 Jan 2025 00:00:00 +0000</pubDate>
@@ -11526,6 +11533,13 @@
           <link>/sessions/sequentinvertibility/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
           <guid>/sessions/sequentinvertibility/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Serializable</title>
+          <link>/sessions/serializable/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/serializable/</guid>
           <description></description>
         </item>
         <item>

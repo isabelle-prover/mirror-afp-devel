@@ -50,6 +50,12 @@
     <loc>/authors/watts/</loc>
     <lastmod>2025-02-05T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>/entries/Serializable.html</loc>
+    <lastmod>2025-02-01T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/traytel/</loc>
+    <lastmod>2025-02-01T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>/authors/cordwell/</loc>
     <lastmod>2025-01-24T00:00:00+00:00</lastmod>
   </url><url>
@@ -786,9 +792,6 @@
     <lastmod>2024-04-16T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/raszyk/</loc>
-    <lastmod>2024-04-16T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/traytel/</loc>
     <lastmod>2024-04-16T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Actuarial_Mathematics.html</loc>
@@ -7176,6 +7179,8 @@
     <loc>/sessions/sequentinvertibility/</loc>
   </url><url>
     <loc>/sessions/sequents/</loc>
+  </url><url>
+    <loc>/sessions/serializable/</loc>
   </url><url>
     <loc>/sessions/</loc>
   </url><url>
