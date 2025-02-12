@@ -21,10 +21,10 @@ lemma qbracket_1_left [simp]: "qbracket 1 n = of_int n"
   by (simp add: qbracket_def)
 
 lemma qbracket_0_0 [simp]: "qbracket 0 0 = 0"
-  by (auto simp: qbracket_def power_int_0_left_If)
+  by (auto simp: qbracket_def power_int_0_left_if)
 
 lemma qbracket_0_nonneg [simp]: "n \<noteq> 0 \<Longrightarrow> qbracket 0 n = 1"
-  by (auto simp: qbracket_def power_int_0_left_If)
+  by (auto simp: qbracket_def power_int_0_left_if)
 
 lemma qbracket_0_left: "qbracket 0 n = (if n = 0 then 0 else 1)"
   by auto
@@ -105,7 +105,7 @@ lemma qbracket_add:
   using assms
   by (cases "q = 0")
      (auto simp: qbracket_def divide_simps power_int_add power_int_diff
-                 power_int_0_left_If add_eq_0_iff,
+                 power_int_0_left_if add_eq_0_iff,
       (simp add: algebra_simps)?)
 
 lemma qbracket_diff:
@@ -1117,7 +1117,7 @@ proof (cases "q = 0")
   from assms have "n \<ge> 0"
     by auto
   thus ?thesis                  
-    by (simp add: power_int_0_left_If)
+    by (simp add: power_int_0_left_if)
 next
   case [simp]: False
 

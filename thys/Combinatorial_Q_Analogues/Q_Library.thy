@@ -96,7 +96,7 @@ proof (cases n rule: int_cases4)
   thus ?thesis 
     by (cases "n = 0"; cases "f x = 0")
        (auto intro!: derivative_eq_intros simp: field_simps power_int_diff 
-                     power_diff power_int_0_left_If)
+                     power_diff power_int_0_left_if)
 next
   case (neg n)
   thus ?thesis using assms(2)

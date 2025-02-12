@@ -304,10 +304,10 @@ proof (cases "q = 0")
                               ((i choose 2) + ((r - i) choose 2) + m * (r - i)))"
       by (subst power_add)+ (simp add: mult_ac)
     also have "\<dots> = (\<Sum>i\<le>r. qbinomial q m i * qbinomial q n (r - i) * 
-                              q ^ (r choose 2 + (m - i) * (r - i)))"
+                              q ^ ((r choose 2) + (m - i) * (r - i)))"
     proof (intro sum.cong refl, goal_cases)
       case (1 k)
-      have eq: "k choose 2 + (r - k choose 2) + m * (r - k) = (r choose 2) + (m - k) * (r - k)"
+      have eq: "(k choose 2) + (r - k choose 2) + m * (r - k) = (r choose 2) + (m - k) * (r - k)"
         if "k \<le> m" "k \<le> r"
       proof -
         have "2 * (int (k choose 2) + int (r - k choose 2) + m * (int r - int k)) =
@@ -317,7 +317,9 @@ proof (cases "q = 0")
                  apply (simp_all add: of_nat_diff)
           apply (simp_all add: algebra_simps)?
           done
-        hence "2 * (k choose 2 + (r - k choose 2) + m * (r - k)) =
+        hence "nat (2 * (int (k choose 2) + int (r - k choose 2) + m * (int r - int k))) =
+              nat (2 * ((r choose 2) + (int m - int k) * (int r - int k)))" by simp
+        hence "2 * ((k choose 2) + (r - k choose 2) + m * (r - k)) =
                  2 * ((r choose 2) + (m - k) * (r - k))"
           using that by (simp add: nat_plus_as_int of_nat_diff)
         thus ?thesis
