@@ -1,13 +1,15 @@
 (*<*)
-\<comment>\<open> ******************************************************************** 
- * Project         : HOL-CSP - A Shallow Embedding of CSP in  Isabelle/HOL
+\<comment>\<open> ********************************************************************
+ * Project         : HOL-CSP - A Shallow Embedding of CSP in Isabelle/HOL
  * Version         : 2.0
  *
- * Author          : Burkhart Wolff, Safouan Taha.
+ * Author          : Benoît Ballenghien, Safouan Taha, Burkhart Wolff, Lina Ye.
+ *                   (Based on HOL-CSP 1.0 by Haykal Tej and Burkhart Wolff)
  *
- * This file       : A Combined CSP Theory
+ * This file       : Conclusion
  *
  * Copyright (c) 2009 Université Paris-Sud, France
+ * Copyright (c) 2025 Université Paris-Saclay, France
  *
  * All rights reserved.
  *
@@ -42,31 +44,32 @@
 (*>*)
 
 chapter\<open>Conclusion\<close>
+
 (*<*)
 theory Conclusion
-  imports Assertions 
+  imports CSP
 begin
-(*>*)
+  (*>*)
 
 section\<open>Related Work\<close>
 text\<open>As mentioned earlier, this work has its very ancient roots in a first formalization 
 of A. Camilieri in the early 90s in HOL. This work was reformulated and substantially
 extended in HOL-CSP 1.0 published in 1997. In 2005, Roggenbach and Isobe published 
 CSP-Prover, a formal theory of a (fragment of) the Failures model of CSP. This work 
-led to a couple of publications culminating in @{cite "IsobeRoggenbach2010"}; emphasis was put
+led to a couple of publications culminating in \<^cite>\<open>"IsobeRoggenbach2010"\<close>; emphasis was put
 on actually completing the CSP theory up to the point where it is sufficiently tactically
 supported to serve as a kind of tool. This theory is still maintained and last releases (the 
 latest one was released on 18 February 2019) can be
 found under \<^url>\<open>https://staff.aist.go.jp/y-isobe/CSP-Prover/CSP-Prover.html\<close>. This theory
 represents the first half of Roscoes theory of a Failures/Divergence model, i.e. the Failures part.
 More recently, Pasquale Noce 
-@{cite "Noninterference_CSP-AFP" and "Noninterference_Sequential_Composition-AFP" and 
-"Noninterference_Concurrent_Composition-AFP"}
-developed a theory of non-interference notions based on an abstract denotational model fragment of 
+\<^cite>\<open>"Noninterference_CSP-AFP" and "Noninterference_Sequential_Composition-AFP" and 
+"Noninterference_Concurrent_Composition-AFP"\<close>
+developed a theory of non interference notions based on an abstract denotational model fragment of 
 the Failure/Divergence Model of CSP (without continuity and algebraic laws); this theory could 
 probably be rebuilt on top of our work.
 
-The present work could be another, more "classic" foundation of test-generation techniques
+The present work could be another, more ``classic'' foundation of test-generation techniques
 of this kind paving the way to an interaction with FDR and its possibility to generate
 labelled transition systems as output that could drive specialized tactics in HOL-CSP 2.0.
 \<close>
@@ -90,28 +93,43 @@ or refactoring) on the proof length is inconclusive.
 Note that our data does not allow to make a prediction on the length of a porting project --- 
 the effort was distributed over a too long period and performed by a team with initially very 
 different knowledge about CSP and interactive theorem proving.
+
+It is also worth noting that the restructuring of the theory, as well as the proofs
+(declarative Isar style), has substantially increased the possibility to parallelize
+the proof checking process and makes the entire theory more maintainable. 
+
+Finally, having the entire theory formalized makes extensions such as parametized ticks
+possible since the effect of changes of basic definitions can be traced consequently.
+This is an important aspect that extensions of this kind are not ad hoc and do not endanger
+global consistency.
 \<close>
 
 
 section\<open>A Summary on New Results\<close>
 text\<open>Compared to the original version of HOL-CSP 1.0, the present theory is complete relative to
-Roscoe's Book@{cite "roscoe:csp:1998" }. It contains a number of new theorems and some interesting
+Roscoe's Book\<^cite>\<open>"roscoe:csp:1998"\<close>. It contains a number of new theorems and some interesting
 (and unexpected) generalizations: 
 \<^enum> @{thm mono_Hiding} is now also valid for the infinite case (arbitrary hide-set A).
-\<^enum> @{term \<open>P \ (A \<union> B) = (P \ A) \ B\<close>} is true for @{term "finite A"} (see @{thm Hiding_Un});
+\<^enum> \<^term>\<open>P \ (A \<union> B) = (P \ A) \ B\<close> is true for \<^term>\<open>finite A\<close> (see @{thm Hiding_Un});
   this was not even proven in HOL-CSP 1.0 for the singleton case! It can be considered as the
   most complex theorem of this theory.
 \<^enum> distribution laws of \<^const>\<open>Hiding\<close> over \<^const>\<open>Sync\<close> @{thm Hiding_Sync}; 
   however, this works only in the finite case. A true monster proof.
-\<^enum> distribution of \<^const>\<open>Mprefix\<close> over \<^const>\<open>Sync\<close> @{thm Mprefix_Sync_distr} in the most
+\<^enum> distribution of \<^const>\<open>Mprefix\<close> over \<^const>\<open>Sync\<close> @{thm Mprefix_Sync_Mprefix} in the most
   generalized case. Also a true monster proof, but reworked using symmetries and
   abstractions to be more reasonable (and faster) 
 \<^enum> the synchronization operator is associative @{thm "Sync_assoc"}.
-  (In HOL-CSP 1.0, this had only be shown for special cases like @{thm "Par_assoc"}).
-\<^enum> the generalized non-deterministic choice operator --- relevant for proofs of deadlock-freeness ---
-  has been added to the theory @{thm "Mndetprefix_def"}; it is proven monotone in the general case and
-  continuous for the special case @{thm Mndetprefix_cont} relevant for the definition of the
-  deadlock reference processes @{thm DF_def} and @{thm "DF\<^sub>S\<^sub>K\<^sub>I\<^sub>P_def"}.\<close>
+  (In HOL-CSP 1.0, this had only be shown for special cases like @{thm Sync_assoc[where S = \<open>UNIV\<close>]}).
+\<^enum> the generalized non deterministic prefix choice operator --- relevant for proofs of deadlock-freeness ---
+  has been added to the theory @{thm "Mndetprefix_def"}; it is proven monotone and
+  continuous @{thm Mndetprefix_cont} in the general case
+  (in contrast to the global choice without prefix, see @{thm GlobalNdet_cont}).
+  This is relevant for the definition of the deadlock reference processes @{thm DF_def} and @{thm "DF\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_def"}.
+\<^enum> since Isabelle-2025, new support for read \<^term>\<open>c\<^bold>?a\<in>A \<rightarrow> P a\<close> and non deterministic write
+  \<^term>\<open>c\<^bold>!\<^bold>!a\<in>A \<rightarrow> P a\<close> has been added. Also, sliding choice has been added and new algebraic
+  laws involving this operator (see @{thm Hiding_Mprefix_non_disjoint}) have been proven.
+\<close>
 
-  
+(*<*)
 end
+  (*>*)
