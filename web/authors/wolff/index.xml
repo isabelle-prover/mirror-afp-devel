@@ -11,8 +11,15 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Fri, 26 Apr 2024 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Wed, 12 Feb 2025 00:00:00 +0000</lastBuildDate>
       <atom:link href="/authors/wolff/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>A Proof of Hilbert Basis Theorem and            an Extension to Formal Power Series</title>
+          <link>/entries/Hilbert_Basis.html</link>
+          <pubDate>Wed, 12 Feb 2025 00:00:00 +0000</pubDate>
+          <guid>/entries/Hilbert_Basis.html</guid>
+          <description></description>
+        </item>
         <item>
           <title>Isabelle/DOF</title>
           <link>/entries/Isabelle_DOF.html</link>

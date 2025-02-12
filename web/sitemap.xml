@@ -3,18 +3,39 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>/</loc>
-    <lastmod>2025-02-05T00:00:00+00:00</lastmod>
+    <lastmod>2025-02-12T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Hilbert_Basis.html</loc>
+    <lastmod>2025-02-12T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/</loc>
-    <lastmod>2025-02-05T00:00:00+00:00</lastmod>
+    <lastmod>2025-02-12T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/topics/computer-science/</loc>
-    <lastmod>2025-02-05T00:00:00+00:00</lastmod>
+    <loc>/authors/ballenghien/</loc>
+    <lastmod>2025-02-12T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/</loc>
-    <lastmod>2025-02-05T00:00:00+00:00</lastmod>
+    <lastmod>2025-02-12T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/</loc>
+    <lastmod>2025-02-12T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/mathematics/</loc>
+    <lastmod>2025-02-12T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/padic_field/</loc>
+    <lastmod>2025-02-12T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/puyobro/</loc>
+    <lastmod>2025-02-12T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/</loc>
+    <lastmod>2025-02-12T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/wolff/</loc>
+    <lastmod>2025-02-12T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/computer-science/</loc>
     <lastmod>2025-02-05T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/finite_fields/</loc>
@@ -36,9 +57,6 @@
     <lastmod>2025-02-05T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/tan/</loc>
-    <lastmod>2025-02-05T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/</loc>
     <lastmod>2025-02-05T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/universal_hash_families/</loc>
@@ -78,9 +96,6 @@
     <lastmod>2025-01-24T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/argyraki/</loc>
-    <lastmod>2025-01-20T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/mathematics/</loc>
     <lastmod>2025-01-20T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/paulson/</loc>
@@ -695,9 +710,6 @@
     <loc>/dependencies/regular-sets/</loc>
     <lastmod>2024-04-26T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/authors/wolff/</loc>
-    <lastmod>2024-04-26T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/dependencies/factor_algebraic_polynomial/</loc>
     <lastmod>2024-04-25T00:00:00+00:00</lastmod>
   </url><url>
@@ -940,9 +952,6 @@
   </url><url>
     <loc>/authors/stell/</loc>
     <lastmod>2024-01-21T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/ballenghien/</loc>
-    <lastmod>2023-12-24T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/hol-cspm/</loc>
     <lastmod>2023-12-24T00:00:00+00:00</lastmod>
@@ -6100,6 +6109,8 @@
     <loc>/sessions/hidden_markov_models/</loc>
   </url><url>
     <loc>/sessions/higher_order_terms/</loc>
+  </url><url>
+    <loc>/sessions/hilbert_basis/</loc>
   </url><url>
     <loc>/sessions/hilbert_space_tensor_product/</loc>
   </url><url>

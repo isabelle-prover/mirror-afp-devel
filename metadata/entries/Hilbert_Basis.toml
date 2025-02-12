@@ -1,0 +1,61 @@
+title = "A Proof of Hilbert Basis Theorem and            an Extension to Formal Power Series"
+date = 2025-02-12
+topics = [
+  "Mathematics",
+]
+abstract = """
+<p>
+The Hilbert Basis Theorem is enlisted in the extension of Wiedijk's 
+catalogue \"Formalizing 100 Theorems\", a well-known collection 
+of challenge problems for the formalization of mathematics.
+</p><p>
+In this paper, we present a formal proof of several versions
+of this theorem in Isabelle/HOL. Hilbert's basis theorem asserts that 
+every ideal of a polynomial ring over a commutative ring has a finite generating 
+family (a finite basis in Hilbert's terminology). 
+A prominent alternative formulation is:
+every polynomial ring over a Noetherian ring is also Noetherian.
+</p><p>
+In more detail, the statement and our generalization can be presented as follows:
+</p>
+<ul><li>
+Hilbert's Basis Theorem. Let \\( \\mathcal{R}[X] \\) denote the ring of polynomials in the indeterminate \\( X \\) 
+  over the commutative ring \\( \\mathcal{R} \\). Then \\( \\mathcal{R}[X] \\) is Noetherian if and only if \\( \\mathcal{R} \\) is.
+</li><li>
+Corollary. \\( \\mathcal{R}[X_1, \\ldots, X_n] \\) is Noetherian if and only if \\( \\mathcal{R} \\) is.
+</li><li>
+Extension. If \\( \\mathcal{R} \\) is a Noetherian ring, then \\( \\mathcal{R}[[X]] \\) is a Noetherian ring, 
+  where \\( \\mathcal{R}[[X]] \\) denotes the formal power series over the ring \\( \\mathcal{R} \\).
+</li></ul>
+<p>
+We also provide isomorphisms between the three types of polynomial rings defined in HOL-Algebra.
+Together with the fact that the Noetherian property is preserved by isomorphism, we get 
+Hilbert's Basis Theorem for all three models. We believe that this technique has a wider
+potential of applications in the AFP library.</p>"""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.puyobro]
+email = "puyobro_email"
+
+[authors.ballenghien]
+email = "ballenghien_email"
+
+[authors.wolff]
+email = "wolff_email"
+
+[contributors]
+
+[notify]
+puyobro = "puyobro_email"
+ballenghien = "ballenghien_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

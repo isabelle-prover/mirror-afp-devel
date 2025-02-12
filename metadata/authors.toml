@@ -5640,6 +5640,23 @@ name = "Cornelia Pusch"
 
 [pusch.homepages]
 
+[puyobro]
+name = "Benjamin Puyobro"
+
+[puyobro.emails]
+
+[puyobro.emails.puyobro_email]
+user = [
+  "benjamin",
+  "puyobro",
+]
+host = [
+  "laposte",
+  "net",
+]
+
+[puyobro.homepages]
+
 [qiu]
 name = "Qi Qiu"
 
