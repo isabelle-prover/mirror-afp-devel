@@ -163,7 +163,7 @@ proof (cases "z = 0")
   also have "\<dots> = fls_nth F 0"
     using assms by auto
   also have "\<dots> = eval_fls F z"
-    using assms by (auto simp: eval_fls_def eval_fps_at_0 power_int_0_left_If)
+    using assms by (auto simp: eval_fls_def eval_fps_at_0 power_int_0_left_if)
   finally show ?thesis 
     using assms by (simp add: sums_iff)
 next

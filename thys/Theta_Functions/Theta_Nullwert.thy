@@ -172,10 +172,10 @@ proof (induction k)
     also have "?S =  (\<Sum>i | i \<in> {0<..n} \<and> is_square i. 
                        2 * of_nat (count_sos k (n - i)) * c ^ n)"
       by (rule sum.mono_neutral_cong_right) (auto simp: fps_jacobi_theta_nw_def simp flip: power_add)
-    also have "\<dots> = (\<Sum>i \<in> {1..Discrete.sqrt n}. 
+    also have "\<dots> = (\<Sum>i \<in> {1..floor_sqrt n}. 
                        2 * of_nat (count_sos k (n - i ^ 2)) * c ^ n)"
-      by (intro sum.reindex_bij_witness[of _ "\<lambda>i. i ^ 2" Discrete.sqrt])
-         (auto elim!: is_nth_powerE simp: Discrete.le_sqrt_iff)
+      by (intro sum.reindex_bij_witness[of _ "\<lambda>i. i ^ 2" floor_sqrt])
+         (auto elim!: is_nth_powerE simp: le_floor_sqrt_iff)
     also have "of_nat (count_sos k n) * c ^ n + \<dots> = of_nat (count_sos (Suc k) n) * c ^ n"
       by (simp add: count_sos_Suc sum_distrib_left sum_distrib_right power_add algebra_simps)
     finally show "fps_nth ?lhs n = fps_nth ?rhs n"
@@ -307,7 +307,7 @@ proof -
   qed auto
   also have "?this \<longleftrightarrow> ((\<lambda>n. fps_nth (fps_jacobi_theta_nw 1) n * q ^ n) has_sum
                           \<theta>\<^sub>3 q) {n. is_square n}"
-    by (rule has_sum_reindex_bij_witness[of _ Discrete.sqrt "\<lambda>i. i ^ 2"])
+    by (rule has_sum_reindex_bij_witness[of _ floor_sqrt "\<lambda>i. i ^ 2"])
        (auto simp: fps_jacobi_theta_nw_def power_int_def scaleR_conv_of_real nat_power_eq
              elim!: is_nth_powerE)
   also have "\<dots> \<longleftrightarrow> ((\<lambda>n. fps_nth (fps_jacobi_theta_nw 1) n * q ^ n) has_sum
@@ -901,7 +901,7 @@ proof -
     by (rule sums_eval_fps)
        (use q in \<open>auto intro!: less_le_trans[OF _ fps_conv_radius_deriv]\<close>)
   moreover have "bij_betw (\<lambda>n. (n+1)^2 - 1) UNIV {n. is_square (Suc n)}"
-    by (rule bij_betwI[of _ _ _ "\<lambda>n. Discrete.sqrt (n+1) - 1"]) (auto elim!: is_nth_powerE)
+    by (rule bij_betwI[of _ _ _ "\<lambda>n. floor_sqrt (n+1) - 1"]) (auto elim!: is_nth_powerE)
   moreover have "strict_mono (\<lambda>n::nat. (n+1)^2 - 1)"
     by (intro strict_monoI_Suc) (auto simp: power2_eq_square)
   ultimately have "(\<lambda>n. fps_nth (fps_deriv F) ((n+1)^2 - 1) * q ^ ((n+1)^2 - 1)) sums 
