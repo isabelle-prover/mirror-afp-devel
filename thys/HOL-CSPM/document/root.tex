@@ -7,6 +7,9 @@
 % further packages required for unusual symbols (see also
 % isabellesym.sty), use only when needed
 
+\usepackage{pifont}
+
+\usepackage{latexsym}
 \usepackage{amssymb}
   %for \<leadsto>, \<box>, \<diamond>, \<sqsupset>, \<mho>, \<Join>,
   %\<lhd>, \<lesssim>, \<greatersim>, \<lessapprox>, \<greaterapprox>,
@@ -48,15 +51,25 @@
 
    Recently, a modern version of Roscoes and Brookes \cite{brookes-roscoe85} 
    Failure-Divergence Semantics for CSP has been formalized in Isabelle \cite{HOL-CSP-AFP}. 
+   On top of this theory, we develop the so-called ``architectural operators'', i.e.
+   generalizations of basic non-deterministic choices, synchronized producs and sequetializations,
+   as has been introduced in the well-known FDR4 model-checker for CSP.
 
-   The session HOL-CSP introduces among other things some binary operators on processes
-   that we will here generalize in a fully-abstract way.
+   While FDR4 uses these architectural operators as handy macros that help to structure
+   the specifications, they are basically macro-expanded before the Labelled Transition
+   Systems were generated. In contrast, we develop the formal theory of these operators
+   in themselves which paves the way for a more structured approach to reasoning 
+   in HOL-CSP. Our generalizations will take commutativity and idempotence into account,
+   such that they become fully-abstract wrt. to index-sets, index-multi-sets or lists, 
+   respectively. 
 
-   On these "architectural operators", we will prove the properties of refinement,
-   the rules of continuity and the laws of interaction so that they can be easily used.
+   Additionally, the theory of some more exotic --- but in the CSP literature discussed --- 
+   operators have been developed; in particular throw and interupt.
+
+   For these "architectural operators", we will prove the properties of refinement,
+   monotonicity and continuity and the laws of interaction in order to simplify their use.
 
    Finally, we will give examples of their usefulness when trying to model complex systems.
-
 
 \tableofcontents
 

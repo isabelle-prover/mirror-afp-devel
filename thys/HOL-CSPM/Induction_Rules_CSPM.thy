@@ -2,11 +2,11 @@
 \<comment>\<open> ********************************************************************
  * Project         : HOL-CSPM - Architectural operators for HOL-CSP
  *
- * Author          : Benoît Ballenghien, Safouan Taha, Burkhart Wolff
+ * Author          : Benoît Ballenghien, Safouan Taha, Burkhart Wolff.
  *
  * This file       : Preliminary induction rules for set, multiset, nat
  *
- * Copyright (c) 2023 Université Paris-Saclay, France
+ * Copyright (c) 2025 Université Paris-Saclay, France
  *
  * All rights reserved.
  *
@@ -41,19 +41,21 @@
 (*>*)
 
 
-chapter \<open>Some Preliminary Work\<close>
+chapter \<open>Preliminary Work\<close>
 
-theory PreliminaryWork
+(*<*)
+theory Induction_Rules_CSPM
   imports "HOL-Library.Multiset"
 begin
+  (*>*)
 
 
 
-section \<open>Induction Rules for \<^typ>\<open>'\<alpha> set\<close>\<close>
+section \<open>Induction Rules for \<^typ>\<open>'a set\<close>\<close>
 
 
 lemma finite_subset_induct_singleton
-      [consumes 3, case_names singleton insertion]:
+  [consumes 3, case_names singleton insertion]:
   \<open>\<lbrakk>a \<in> A; finite F; F \<subseteq> A; P {a}; 
     \<And>x F. finite F \<Longrightarrow> x \<in> A \<Longrightarrow> x \<notin> (insert a F) \<Longrightarrow> P (insert a F)
           \<Longrightarrow> P (insert x (insert a F))\<rbrakk> \<Longrightarrow> P (insert a F)\<close>
@@ -62,12 +64,12 @@ lemma finite_subset_induct_singleton
 
 
 lemma finite_set_induct_nonempty
-      [consumes 2, case_names singleton insertion]:
+  [consumes 2, case_names singleton insertion]:
   assumes \<open>A \<noteq> {}\<close> and \<open>finite A\<close>
-      and singleton: \<open>\<And>a. a \<in> A \<Longrightarrow> P {a}\<close>
-      and insert: \<open>\<And>x F. \<lbrakk>F \<noteq> {}; finite F; x \<in> A; x \<notin> F;  P F\<rbrakk> 
+    and singleton: \<open>\<And>a. a \<in> A \<Longrightarrow> P {a}\<close>
+    and insert: \<open>\<And>x F. \<lbrakk>F \<noteq> {}; finite F; x \<in> A; x \<notin> F;  P F\<rbrakk> 
                           \<Longrightarrow> P (insert x F)\<close>
-    shows \<open>P A\<close>
+  shows \<open>P A\<close>
 proof-
   obtain a A' where \<open>a \<in> A\<close> \<open>finite A'\<close> \<open>A' \<subseteq> A\<close> \<open>A = insert a A'\<close>
     using \<open>A \<noteq> {}\<close> \<open>finite A\<close> by fastforce
@@ -78,7 +80,7 @@ qed
 
 
 lemma finite_subset_induct_singleton'
-      [consumes 3, case_names singleton insertion]:
+  [consumes 3, case_names singleton insertion]:
   \<open>\<lbrakk>a \<in> A; finite F; F \<subseteq> A; P {a};
     \<And>x F. \<lbrakk>finite F; x \<in> A; insert a F \<subseteq> A; x \<notin> insert a F; P (insert a F)\<rbrakk>
            \<Longrightarrow> P (insert x (insert a F))\<rbrakk>
@@ -88,8 +90,8 @@ lemma finite_subset_induct_singleton'
 
 
 lemma induct_subset_empty_single[consumes 1]:
-  \<open>\<lbrakk>finite A; P {}; \<forall>a \<in> A. P {a}; 
-    \<And>F a. \<lbrakk>a \<in> A; finite F; F \<subseteq> A; F \<noteq> {}; P F\<rbrakk> \<Longrightarrow> P (insert a F)\<rbrakk> \<Longrightarrow> P A\<close>
+  \<open>\<lbrakk>finite A; P {}; \<And>a. a \<in> A \<Longrightarrow> P {a}; 
+    \<And>F a. \<lbrakk>a \<in> A; a \<notin> F; finite F; F \<subseteq> A; F \<noteq> {}; P F\<rbrakk> \<Longrightarrow> P (insert a F)\<rbrakk> \<Longrightarrow> P A\<close>
   by (rule finite_subset_induct') auto
 
 
@@ -112,9 +114,9 @@ lemma msubset_induct_singleton [consumes 2, case_names m_singleton add]:
 
 lemma mset_induct_nonempty [consumes 1, case_names m_singleton add]:
   assumes \<open>A \<noteq> {#}\<close>
-      and m_singleton: \<open>\<And>a. a \<in># A \<Longrightarrow> P {#a#}\<close>
-      and add: \<open>\<And>x F. \<lbrakk>F \<noteq> {#}; x \<in># A; P F\<rbrakk> \<Longrightarrow> P (add_mset x F)\<close>
-    shows \<open>P A\<close>
+    and m_singleton: \<open>\<And>a. a \<in># A \<Longrightarrow> P {#a#}\<close>
+    and add: \<open>\<And>x F. \<lbrakk>F \<noteq> {#}; x \<in># A; P F\<rbrakk> \<Longrightarrow> P (add_mset x F)\<close>
+  shows \<open>P A\<close>
 proof-
   obtain a A' where \<open>a \<in># A\<close> \<open>A' \<subseteq># A\<close> \<open>A = add_mset a A'\<close>
     by (metis  \<open>A \<noteq> {#}\<close> diff_subset_eq_self insert_DiffM multiset_nonemptyE)
@@ -138,8 +140,8 @@ proof -
     case (add x F)
     then show \<open>P (add_mset x F)\<close>
       using Diff_eq_empty_iff_mset add_diff_cancel_left add_diff_cancel_left'
-            add_mset_add_single local.insert mset_subset_eq_insertD
-            subset_mset.le_iff_add subset_mset.less_imp_le by fastforce
+        add_mset_add_single local.insert mset_subset_eq_insertD
+        subset_mset.le_iff_add subset_mset.less_imp_le by fastforce
   qed
 qed
 
@@ -163,9 +165,9 @@ lemma msubset_induct_singleton'' [consumes 1, case_names m_singleton add]:
 
 lemma mset_induct_nonempty' [consumes 1, case_names m_singleton add]:
   assumes nonempty: \<open>A \<noteq> {#}\<close> and m_singleton: \<open>\<And>a. a \<in># A \<Longrightarrow> P {#a#}\<close>
-      and hyp: \<open>\<And>a x F. \<lbrakk>a \<in># A; x \<in># A - add_mset a F; add_mset a F \<subseteq># A;
+    and hyp: \<open>\<And>a x F. \<lbrakk>a \<in># A; x \<in># A - add_mset a F; add_mset a F \<subseteq># A;
                           P (add_mset a F)\<rbrakk> \<Longrightarrow> P (add_mset x (add_mset a F))\<close>
-    shows \<open>P A\<close>
+  shows \<open>P A\<close>
 proof-
   obtain a A' where \<open>A = add_mset a A'\<close> \<open>add_mset a A' \<subseteq># A\<close>
     using nonempty multiset_cases subset_mset_def by auto
@@ -180,17 +182,17 @@ proof-
       apply (subst hyp) 
           apply (simp add: \<open>A = add_mset a A'\<close>)
          apply (metis \<open>add_mset x (add_mset a F) \<subseteq># A\<close> add_mset_add_single
-                      mset_subset_eq_insertD subset_mset.add_diff_inverse 
-                      subset_mset.add_le_cancel_left subset_mset_def)
+          mset_subset_eq_insertD subset_mset.add_diff_inverse 
+          subset_mset.add_le_cancel_left subset_mset_def)
         apply (meson \<open>add_mset x (add_mset a F) \<subseteq># A\<close> mset_subset_eq_insertD
-                     subset_mset.dual_order.strict_implies_order)
+          subset_mset.dual_order.strict_implies_order)
       by (simp_all add: \<open>P (add_mset a F)\<close>)
   qed
 qed
 
 
 lemma induct_subset_mset_empty_single:
-  \<open>\<lbrakk>P {#}; \<forall>a \<in># M. P {#a#}; 
+  \<open>\<lbrakk>P {#}; \<And>a. a \<in># M \<Longrightarrow> P {#a#}; 
     \<And>N a. \<lbrakk>a \<in># M; N \<subseteq># M; N \<noteq> {#}; P N\<rbrakk> \<Longrightarrow> P (add_mset a N)\<rbrakk> \<Longrightarrow> P M\<close>
   by (metis in_diffD mset_induct_nonempty')
 
@@ -209,7 +211,7 @@ lemma strong_nat_induct_non_zero[consumes 1, case_names 1 Suc]:
 
 
 
-section \<open>Preliminaries for Cartesian Product Results\<close>
+section \<open>Useful Results for Cartesian Products\<close>
 
 lemma prem_Multi_cartprod:
   \<open>(\<lambda>(x, y). x @ y ) ` (A  \<times> B ) = {s @ t  |s t. (s, t) \<in> A  \<times> B }\<close>
@@ -218,5 +220,6 @@ lemma prem_Multi_cartprod:
   by auto
 
 
-
+(*<*)
 end
+  (*>*)
