@@ -120,9 +120,9 @@ proof -
       have "?lhs n = 0 powi (n * (n + 1) div 2) * 0 powi (n * (n - 1) div 2)"
         using N by (simp add: True power_0_left)
       also have "\<dots> = (if n = 0 then 1 else 0)"
-        unfolding power_int_0_left_If * by auto
+        unfolding power_int_0_left_if * by auto
       also have "\<dots> = ?rhs n"
-        unfolding True power_int_0_left_If ** by auto
+        unfolding True power_int_0_left_if ** by auto
       finally show ?thesis .
     next
       case [simp]: False
