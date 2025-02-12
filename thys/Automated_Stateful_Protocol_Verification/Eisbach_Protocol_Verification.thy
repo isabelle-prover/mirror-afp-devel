@@ -12,6 +12,29 @@ theory Eisbach_Protocol_Verification
           "HOL-Eisbach.Eisbach_Tools"
 begin
 
+ML\<open>fun code_simp_all_tac ctx = PARALLEL_ALLGOALS (fn i => Code_Simp.dynamic_tac ctx i)\<close>
+method_setup code_simp_all = \<open>Scan.succeed (fn ctxt => SIMPLE_METHOD (code_simp_all_tac ctxt))\<close>
+                             \<open>code_simp (all goals)\<close>
+
+ML\<open>fun normalization_all_tac ctx = PARALLEL_ALLGOALS (fn i => (CONVERSION(Nbe.dynamic_conv ctx) 
+                                                               THEN_ALL_NEW (TRY o resolve_tac ctx [TrueI])) i)\<close>
+method_setup normalization_all = \<open>Scan.succeed (fn ctxt => SIMPLE_METHOD (normalization_all_tac ctxt))\<close>
+                             \<open>normalization (all goals)\<close>
+
+ML\<open>fun eval_all_tac ctx = 
+  let
+    fun eval_tac ctxt =
+      let val conv = Code_Runtime.dynamic_holds_conv
+      in
+        CONVERSION (Conv.params_conv ~1 (Conv.concl_conv ~1 o conv) ctxt) THEN'
+        resolve_tac ctxt [TrueI]
+      end
+  in
+    PARALLEL_ALLGOALS (fn i => eval_tac ctx i)
+  end \<close>
+method_setup eval_all = \<open>Scan.succeed (fn ctxt => SIMPLE_METHOD (eval_all_tac ctxt))\<close>
+                             \<open>evaluation (all goals)\<close>
+
 named_theorems exhausts
 named_theorems type_class_instance_lemmata
 named_theorems protocol_checks
@@ -21,6 +44,8 @@ named_theorems coverage_check_unfold_transaction_lemma
 named_theorems coverage_check_unfold_lemmata
 named_theorems protocol_check_intro_lemmata
 named_theorems transaction_coverage_lemmata
+named_theorems protocol_def 
+named_theorems protocol_defs 
 
 method UNIV_lemma =
   (rule UNIV_eq_I; (subst insert_iff)+; subst empty_iff; smt exhausts)+
@@ -29,7 +54,7 @@ method type_class_instance =
   (intro_classes; auto simp add: type_class_instance_lemmata)
 
 method protocol_model_subgoal =
-  (((rule allI, case_tac f); (erule forw_subst)+)?; simp)
+  (((rule allI, case_tac f); (erule forw_subst)+)?, simp_all)
 
 method protocol_model_interpretation =
   (unfold_locales; protocol_model_subgoal+)
@@ -76,24 +101,27 @@ method check_protocol_intro' =
   tactic distinct_subgoals_tac)
 
 method check_protocol_with methods meth =
-  (check_protocol_intro; meth)
+  ((check_protocol_intro; coverage_check_intro?), meth)
+
+method parallel_check_protocol_with methods meth =
+  (check_protocol_with \<open>((simp_all add: protocol_def protocol_defs Let_def, safe)?), tactic \<open>distinct_subgoals_tac\<close>, meth\<close>)
 
 method check_protocol =
-  (check_protocol_with \<open>coverage_check_intro?; code_simp\<close>)
+  (parallel_check_protocol_with \<open>code_simp_all\<close>)
 
 method check_protocol_nbe =
-  (check_protocol_with \<open>coverage_check_intro?; normalization\<close>)
+  (parallel_check_protocol_with \<open>normalization_all\<close>)
 
-method check_protocol_unsafe =
-  (check_protocol_with \<open>coverage_check_intro?; eval\<close>)
+method check_protocol_eval =
+  (parallel_check_protocol_with \<open>eval_all\<close>)
 
 method check_protocol_compositionality =
-  (check_protocol_with \<open>coverage_check_intro?; (code_simp; fastforce?)\<close>)
+  (check_protocol_with \<open>code_simp_all\<close>; fastforce?)
 
 method check_protocol_compositionality_nbe =
-  (check_protocol_with \<open>coverage_check_intro?; (normalization; fastforce?)\<close>)
+  (check_protocol_with \<open>normalization_all\<close>; fastforce?)
 
-method check_protocol_compositionality_unsafe =
-  (check_protocol_with \<open>coverage_check_intro?; (eval?; (code_simp; fastforce?))\<close>)
-
+method check_protocol_compositionality_eval =
+  (check_protocol_with \<open>(eval_all?, code_simp_all?)\<close>; fastforce?)
+  
 end
