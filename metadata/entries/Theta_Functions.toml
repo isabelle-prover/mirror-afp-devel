@@ -1,0 +1,39 @@
+title = "Theta Functions"
+date = 2024-12-02
+topics = [
+  "Mathematics/Number theory",
+]
+abstract = """
+<p>This entry defines the Ramanujan theta function</p>
+\\[f(a,b) = \\sum_{n=-\\infty}^\\infty a^{\\frac{n(n+1)}{2}} b^{\\frac{n(n-1)}{2}}\\]
+and derives from it the more commonly known Jacobi theta function on the unit disc
+\\[\\vartheta_{00}(w,q) = \\sum_{n=-\\infty}^\\infty w^{2n} q^{n^2},\\ \\]
+its version in the complex plane
+\\[\\vartheta_{00}(z;\\tau) = \\sum_{n=-\\infty}^\\infty \\exp(i\\pi (2nz + n^2\\tau))\\]
+as well as its half-period variants $\\vartheta_{01}$, $\\vartheta_{10}$, and $\\vartheta_{11}$.</p>
+
+<p>The most notable single result in this work is the proof of Jacobi's triple product
+\\[\\prod_{n=1}^\\infty (1-q^{2m})(1+q^{2m-1}w^2)(1+q^{2m-1}w^{-2}) = 
+  \\sum_{k=-\\infty}^\\infty q^{k^2}w^{2k}\\]
+and its corollary, Euler's famous pentagonal number theorem:
+\\[\\prod_{n=1}^\\infty (1-q^n) = \\sum_{k=-\\infty}^\\infty (-1)^k q^{k(3k-1)/2}\\]</p>"""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.eberl]
+email = "eberl_email"
+
+[contributors]
+
+[notify]
+eberl = "eberl_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

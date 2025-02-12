@@ -5,6 +5,14 @@
     <link>https://isa-afp.org/authors/minamide/</link>
     <description>AFP entries of Yasuhiko Minamide</description>
         <item>
+          <title>Differential Privacy</title>
+          <link>https://isa-afp.org/entries/Differential_Privacy.html</link>
+          <pubDate>Tue, 07 Jan 2025 00:00:00 +0000</pubDate>
+          <description>Differential Privacy in the AFP</description>
+            <category>Computer science/Semantics and reasoning</category>
+            <category>Computer science/Security</category>
+        </item>
+        <item>
           <title>S-Finite Measure Monad on Quasi-Borel Spaces</title>
           <link>https://isa-afp.org/entries/S_Finite_Measure_Monad.html</link>
           <pubDate>Tue, 08 Aug 2023 00:00:00 +0000</pubDate>

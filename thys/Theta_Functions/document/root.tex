@@ -1,0 +1,63 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8x]{inputenc}
+\usepackage[LGR,T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+\usepackage{amsfonts, amsmath, amssymb}
+\usepackage[greek.polutoniko,greek,main=english]{babel}
+\newcommand{\greekbous}{\textgreek{βοῦς}}
+\newcommand{\greekstrofe}{\textgreek{στροφή}}
+\newcommand{\greekdon}{\textgreek{-ηδόν}}
+\DeclareMathOperator{\sech}{sech}
+\newcommand{\oeiscite}[1]{\cite[\href{https://oeis.org/#1}{#1}]{oeis}}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+\usepackage[shortcuts]{extdash}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{rm}
+
+
+\begin{document}
+
+\title{Theta Functions}
+\author{Manuel Eberl}
+\maketitle
+
+\begin{abstract}
+This entry defines the Ramanujan theta function
+\[f(a,b) = \sum_{n=-\infty}^\infty a^{\frac{n(n+1)}{2}} b^{\frac{n(n-1)}{2}}\]
+and derives from it the more commonly known Jacobi theta function on the unit disc
+\[\vartheta_{00}(w,q) = \sum_{n=-\infty}^\infty w^{2n} q^{n^2},\ \]
+its version in the complex plane
+\[\vartheta_{00}(z;\tau) = \sum_{n=-\infty}^\infty \exp(i\pi (2nz + n^2\tau))\]
+as well as its half-period variants $\vartheta_{01}$, $\vartheta_{10}$, and $\vartheta_{11}$.
+
+The most notable single result in this work is the proof of Jacobi's triple product
+\[\prod_{n=1}^\infty (1-q^{2m})(1+q^{2m-1}w^2)(1+q^{2m-1}w^{-2}) = 
+  \sum_{k=-\infty}^\infty q^{k^2}w^{2k}\]
+and its corollary, Euler's famous pentagonal number theorem:
+\[\prod_{n=1}^\infty (1-q^n) = \sum_{k=-\infty}^\infty (-1)^k q^{k(3k-1)/2}\]
+\end{abstract}
+
+\newpage
+
+\tableofcontents
+
+\newpage
+\parindent 0pt\parskip 0.5ex
+
+\section{Auxiliary material}
+
+\input{session}
+
+\raggedright
+\nocite{brent2020}
+\nocite{borwein1987}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+

@@ -6,5 +6,6 @@ session Implicational_Logic = HOL +
     Implicational_Logic
     Implicational_Logic_Appendix
     Implicational_Logic_Sequent_Calculus
+    Implicational_Logic_Natural_Deduction
   document_files
     "root.tex"

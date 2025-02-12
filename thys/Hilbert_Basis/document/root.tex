@@ -1,0 +1,60 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{isabelle,isabellesym}
+\usepackage{graphicx}
+\graphicspath {{figures/}}
+\usepackage[T1]{fontenc}
+
+
+% necessary to have the box symbol, used by CSP
+\usepackage{authblk} 
+\usepackage{latexsym}
+\usepackage{amssymb}
+\usepackage{amsmath}
+
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+% for uniform font size
+%\renewcommand{\isastyle}{\isastyleminor}
+\pagestyle{plain}
+
+\begin{document}
+\title{Hilbert Basis Theorems\thanks{This work has been supported by the French government under the "France 2030" program, as part of the SystemX Technological Research Institute within the CVH project.}}
+\author{Benjamin Puyobro \and Benoît Ballenghien \and Burkhart Wolff}
+\affil{Université Paris Saclay, IRT SystemX, LMF, CNRS}
+
+\maketitle
+\tableofcontents
+\newpage
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+% generated text of all theories
+\input{session}
+% Bibliographie
+\begin{thebibliography}{99} % L'argument "99" est pour l'espace réservé au numéro max.
+\bibitem{Padic_Fields-AFP}
+Aaron Crighton
+\textit {p-adic Fields and p-adic Semialgebraic Sets }, Archive of Formal Proofs, September 2022
+\url{https://www.isa-afp.org/entries/Padic_Field.html}
+\bibitem{source1}
+Stack project
+\url{https://stacks.math.columbia.edu/tag/00FM}.
+\bibitem{source2}
+Vincent Douce
+\url{https://agreg-maths.fr/uploads/versions/1458/preview.pdf}.
+\bibitem{source3}
+Wiedijk's catalogue "Formalizing 100 Theorems"
+\url{https://www.cs.ru.nl/~freek/100/}, It appears at position 121 ...
+\end{thebibliography}
+% optional bibliography
+%\bibliographystyle{abbrv}
+%\bibliography{references}
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

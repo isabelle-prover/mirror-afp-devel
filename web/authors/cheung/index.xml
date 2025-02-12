@@ -5,6 +5,13 @@
     <link>https://isa-afp.org/authors/cheung/</link>
     <description>AFP entries of Louis Cheung</description>
         <item>
+          <title>Formalised Burrows-Wheeler Transform</title>
+          <link>https://isa-afp.org/entries/BurrowsWheeler.html</link>
+          <pubDate>Fri, 17 Jan 2025 00:00:00 +0000</pubDate>
+          <description>Formalised Burrows-Wheeler Transform in the AFP</description>
+            <category>Computer science/Algorithms</category>
+        </item>
+        <item>
           <title>Formally Verified Suffix Array Construction</title>
           <link>https://isa-afp.org/entries/SuffixArray.html</link>
           <pubDate>Wed, 25 Sep 2024 00:00:00 +0000</pubDate>

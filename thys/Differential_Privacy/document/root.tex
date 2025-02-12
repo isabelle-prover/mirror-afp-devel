@@ -1,0 +1,78 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym,amsmath}
+
+% further packages required for unusual symbols (see also
+% isabellesym.sty), use only when needed
+
+%\usepackage{amssymb}
+  %for \<leadsto>, \<box>, \<diamond>, \<sqsupset>, \<mho>, \<Join>,
+  %\<lhd>, \<lesssim>, \<greatersim>, \<lessapprox>, \<greaterapprox>,
+  %\<triangleq>, \<yen>, \<lozenge>
+
+%\usepackage{eurosym}
+  %for \<euro>
+
+%\usepackage[only,bigsqcap,bigparallel,fatsemi,interleave,sslash]{stmaryrd}
+  %for \<Sqinter>, \<Parallel>, \<Zsemi>, \<Parallel>, \<sslash>
+
+%\usepackage{eufrak}
+  %for \<AA> ... \<ZZ>, \<aa> ... \<zz> (also included in amssymb)
+
+%\usepackage{textcomp}
+  %for \<onequarter>, \<onehalf>, \<threequarters>, \<degree>, \<cent>,
+  %\<currency>
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+% for uniform font size
+%\renewcommand{\isastyle}{\isastyleminor}
+
+
+\begin{document}
+
+\title{Differential Privacy}
+\author{Tetsuya Sato \and Yasuhiko Minamide}
+\maketitle
+
+\abstract{
+This entry contains formalization of differential privacy in a general setting,
+based on the seminal textbook of Dwork and Roth~\cite{DworkRothTCS-042}
+and the papers of statistical divergence for differential privacy~\cite{BartheOlmedo2013,Sato_Katsumata_2023}.
+
+This entry includes the following formalization:
+\begin{itemize}
+\item Measurable space of lists and measurability of list operations,
+\item Laplace distribution,
+\item The statisatical divergence for differential privacy,
+\item Differential privacy and its basic properties,
+\item Randomized Response,
+\item Laplace mechanism,
+\item The report noisy max mechanism.
+\end{itemize}
+}
+
+\tableofcontents
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+% generated text of all theories
+\input{session}
+
+% optional bibliography
+\bibliographystyle{abbrv}
+\bibliography{root}
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
+\endinput
+%:%file=/cygdrive/e/Dropbox/;研究/差分プライバシーの形式検証/differential_privacy_formalization/formalization/document/root.tex%:%

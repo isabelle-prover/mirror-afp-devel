@@ -16,6 +16,9 @@ note = ""
 [authors.benzmueller]
 email = "benzmueller_email"
 
+[authors.scott]
+homepage = "scott_homepage"
+
 [contributors]
 
 [notify]

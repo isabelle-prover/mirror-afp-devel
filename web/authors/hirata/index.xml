@@ -5,6 +5,13 @@
     <link>https://isa-afp.org/authors/hirata/</link>
     <description>AFP entries of Michikazu Hirata</description>
         <item>
+          <title>Diﬀerential Privacy using Quasi-Borel Spaces</title>
+          <link>https://isa-afp.org/entries/DP_QBS.html</link>
+          <pubDate>Tue, 07 Jan 2025 00:00:00 +0000</pubDate>
+          <description>Diﬀerential Privacy using Quasi-Borel Spaces in the AFP</description>
+            <category>Computer science/Semantics and reasoning</category>
+        </item>
+        <item>
           <title>The Riesz Representation Theorem</title>
           <link>https://isa-afp.org/entries/Riesz_Representation.html</link>
           <pubDate>Tue, 04 Jun 2024 00:00:00 +0000</pubDate>

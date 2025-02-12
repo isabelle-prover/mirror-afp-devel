@@ -5,12 +5,71 @@
     <link>https://isa-afp.org/</link>
     <description>Formal developments in the AFP</description>
         <item>
+          <title>A Proof of Hilbert Basis Theorem and            an Extension to Formal Power Series</title>
+          <link>https://isa-afp.org/entries/Hilbert_Basis.html</link>
+          <pubDate>Wed, 12 Feb 2025 00:00:00 +0000</pubDate>
+          <description>A Proof of Hilbert Basis Theorem and            an Extension to Formal Power Series in the AFP</description>
+            <category>Mathematics</category>
+        </item>
+        <item>
+          <title>Verification of the CVM algorithm with a New Recursive Analysis Technique</title>
+          <link>https://isa-afp.org/entries/CVM_Distinct_Elements.html</link>
+          <pubDate>Wed, 05 Feb 2025 00:00:00 +0000</pubDate>
+          <description>Verification of the CVM algorithm with a New Recursive Analysis Technique in the AFP</description>
+            <category>Computer science/Algorithms/Randomized</category>
+        </item>
+        <item>
+          <title>Formalization of (Conflict-)Serializability and Strict Two-Phase Locking</title>
+          <link>https://isa-afp.org/entries/Serializable.html</link>
+          <pubDate>Sat, 01 Feb 2025 00:00:00 +0000</pubDate>
+          <description>Formalization of (Conflict-)Serializability and Strict Two-Phase Locking in the AFP</description>
+            <category>Computer science/Data management systems</category>
+            <category>Computer science/Concurrency</category>
+        </item>
+        <item>
+          <title>Mission-time Linear Temporal Logic to Regular Expressions</title>
+          <link>https://isa-afp.org/entries/Mission_Time_LTL_to_Regular_Expression.html</link>
+          <pubDate>Fri, 24 Jan 2025 00:00:00 +0000</pubDate>
+          <description>Mission-time Linear Temporal Logic to Regular Expressions in the AFP</description>
+            <category>Computer science/Automata and formal languages</category>
+            <category>Logic/General logic/Temporal logic</category>
+        </item>
+        <item>
+          <title>Mission-time Linear Temporal Logic</title>
+          <link>https://isa-afp.org/entries/Mission_Time_LTL.html</link>
+          <pubDate>Fri, 24 Jan 2025 00:00:00 +0000</pubDate>
+          <description>Mission-time Linear Temporal Logic in the AFP</description>
+            <category>Computer science/Automata and formal languages</category>
+            <category>Logic/General logic/Temporal logic</category>
+        </item>
+        <item>
+          <title>Transitive Union-Closed Families</title>
+          <link>https://isa-afp.org/entries/Transitive_Union_Closed_Families.html</link>
+          <pubDate>Mon, 20 Jan 2025 00:00:00 +0000</pubDate>
+          <description>Transitive Union-Closed Families in the AFP</description>
+            <category>Mathematics/Combinatorics</category>
+        </item>
+        <item>
           <title>First Order Clause</title>
           <link>https://isa-afp.org/entries/First_Order_Clause.html</link>
           <pubDate>Fri, 17 Jan 2025 00:00:00 +0000</pubDate>
           <description>First Order Clause in the AFP</description>
             <category>Logic/General logic/Classical first-order logic</category>
             <category>Logic/General logic</category>
+        </item>
+        <item>
+          <title>Formalised Burrows-Wheeler Transform</title>
+          <link>https://isa-afp.org/entries/BurrowsWheeler.html</link>
+          <pubDate>Fri, 17 Jan 2025 00:00:00 +0000</pubDate>
+          <description>Formalised Burrows-Wheeler Transform in the AFP</description>
+            <category>Computer science/Algorithms</category>
+        </item>
+        <item>
+          <title>Negatively Associated Random Variables</title>
+          <link>https://isa-afp.org/entries/Negative_Association.html</link>
+          <pubDate>Thu, 16 Jan 2025 00:00:00 +0000</pubDate>
+          <description>Negatively Associated Random Variables in the AFP</description>
+            <category>Mathematics/Probability theory</category>
         </item>
         <item>
           <title>Elementary Graph Traversal Algorithms</title>
@@ -26,6 +85,43 @@
           <description>Notes on Gödel’s and Scott’s Variants of the Ontological Argument (Isabelle/HOL dataset) in the AFP</description>
             <category>Logic/Philosophical aspects</category>
             <category>Logic/General logic/Modal logic</category>
+        </item>
+        <item>
+          <title>Differential Privacy</title>
+          <link>https://isa-afp.org/entries/Differential_Privacy.html</link>
+          <pubDate>Tue, 07 Jan 2025 00:00:00 +0000</pubDate>
+          <description>Differential Privacy in the AFP</description>
+            <category>Computer science/Semantics and reasoning</category>
+            <category>Computer science/Security</category>
+        </item>
+        <item>
+          <title>Diﬀerential Privacy using Quasi-Borel Spaces</title>
+          <link>https://isa-afp.org/entries/DP_QBS.html</link>
+          <pubDate>Tue, 07 Jan 2025 00:00:00 +0000</pubDate>
+          <description>Diﬀerential Privacy using Quasi-Borel Spaces in the AFP</description>
+            <category>Computer science/Semantics and reasoning</category>
+        </item>
+        <item>
+          <title>Theta Functions</title>
+          <link>https://isa-afp.org/entries/Theta_Functions.html</link>
+          <pubDate>Mon, 02 Dec 2024 00:00:00 +0000</pubDate>
+          <description>Theta Functions in the AFP</description>
+            <category>Mathematics/Number theory</category>
+        </item>
+        <item>
+          <title>The Rogers–Ramanujan Identities</title>
+          <link>https://isa-afp.org/entries/Rogers_Ramanujan.html</link>
+          <pubDate>Mon, 02 Dec 2024 00:00:00 +0000</pubDate>
+          <description>The Rogers–Ramanujan Identities in the AFP</description>
+            <category>Mathematics/Number theory</category>
+            <category>Mathematics/Combinatorics</category>
+        </item>
+        <item>
+          <title>Combinatorial q-Analogues</title>
+          <link>https://isa-afp.org/entries/Combinatorial_Q_Analogues.html</link>
+          <pubDate>Mon, 02 Dec 2024 00:00:00 +0000</pubDate>
+          <description>Combinatorial q-Analogues in the AFP</description>
+            <category>Mathematics/Number theory</category>
         </item>
         <item>
           <title>The Sum-of-Squares Function and Jacobi&#39;s Two-Square Theorem</title>

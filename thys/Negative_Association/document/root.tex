@@ -1,0 +1,47 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{isabelle,isabellesym}
+\usepackage{amsfonts,amsmath, amssymb}
+
+\usepackage[only,bigsqcap]{stmaryrd}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+\begin{document}
+
+\title{Negatively Associated Random Variables}
+\author{Emin Karayel}
+\maketitle
+
+\begin{abstract}
+Negative Association is a generalization of independence for random variables, that retains some
+of the key properties of independent random variables. In particular closure properties, such as
+composition with monotone functions, as well as, the well-known Chernoff-Hoeffding bounds.
+
+This entry introduces the concept and verifies the most important closure properties, as well as,
+the concentration inequalities. It also verifies the FKG inequality, which is a generalization of
+Chebyshev's sum inequality for distributive lattices and a key tool for establishing negative
+association, but has also many applications beyond the context of negative association, in 
+particular, statistical physics and graph theory.
+
+As an example, permutation distributions are shown to be negatively associated, from which
+many more sets of negatively random variables can be derived, such as, e.g., n-subsets, or the 
+the balls-into-bins process.
+
+Finally, the entry derives a correct false-positive rate for Bloom filters using the library.
+\end{abstract}
+
+\tableofcontents
+
+\parindent 0pt\parskip 0.5ex
+
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}

@@ -1,0 +1,36 @@
+chapter AFP
+
+session BurrowsWheeler = SuffixArray +
+  options [timeout = 300]
+
+sessions 
+  "HOL-Combinatorics"
+  "HOL-Library"
+
+directories
+  util
+  counting
+  bwt
+
+theories
+  
+  (* Basic helper theories (in util folder) *)
+  Nat_Mod_Helper
+  Rotated_Substring
+  SA_Util
+  
+  (* Helper theories about counting (in counting folder) *)
+  Count_Util
+  Rank_Util
+  Select_Util
+  Rank_Select
+  SA_Count
+  
+  (* Verification of the BWT and its inverse (in bwt folder) *)
+  BWT
+  BWT_SA_Corres
+  IBWT
+
+document_files
+  "root.bib"
+  "root.tex"

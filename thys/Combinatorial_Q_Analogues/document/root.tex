@@ -1,0 +1,69 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8x]{inputenc}
+\usepackage[LGR,T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+\usepackage{amsfonts, amsmath, amssymb}
+\usepackage[greek.polutoniko,greek,main=english]{babel}
+\newcommand{\greekbous}{\textgreek{βοῦς}}
+\newcommand{\greekstrofe}{\textgreek{στροφή}}
+\newcommand{\greekdon}{\textgreek{-ηδόν}}
+\DeclareMathOperator{\sech}{sech}
+\newcommand{\oeiscite}[1]{\cite[\href{https://oeis.org/#1}{#1}]{oeis}}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+\usepackage[shortcuts]{extdash}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{rm}
+
+
+\begin{document}
+
+\title{Combinatorial $q$-Analogues}
+\author{Manuel Eberl}
+\maketitle
+
+\begin{abstract}
+This entry defines the $q$-analogues of various combinatorial symbols, namely:
+\begin{itemize}
+  \item The $q$-bracket $[n]_q = \frac{1-q^n}{1-q}$ for $n\in\mathbb{Z}$
+  \item The $q$-factorial $[n]_q! = [1]_q [2]_q \cdots [n]_q$ for $n\in\mathbb{Z}$
+  \item The $q$-binomial coefficients $\binom{n}{k}_{\!q} = \frac{[n]_q!}{[k]_q!\,[n-k]_q!}$ for $n,k\in\mathbb{N}$ (also known as
+        Gaussian binomial coefficients or Gaussian polynomials)
+  \item The infinite $q$-Pochhammer symbol $(a; q)_\infty = \prod_{n=0}^\infty\, (1 - aq^n)$
+  \item Euler's $\phi$ function $\phi(q) = (q; q)_\infty$
+  \item The finite $q$-Pochhammer symbol $(a; q)_n = (a; q)_\infty / (aq^n; q)_\infty$ for $n\in\mathbb{Z}$
+\end{itemize}
+Proofs for many basic properties are provided, notably for the $q$-binomial theorem:
+\[(-a; q)_n = \prod_{k=0}^{n-1} (1 + aq^n) = \sum_{k=0}^n \binom{n}{k}_{\!\!q} a^k q^{k(k-1)/2} \]
+Additionally, two identities of Euler are formalised that give power series expansions for
+$(a; q)_\infty$ and $1/(a; q)_\infty$ in powers of $a$:
+\begin{alignat*}{3}
+(a; q)_\infty &{}= \prod_{k=0}^\infty (1 - aq^k) &{}= 
+      \sum_{n=0}^\infty \frac{(-a)^n q^{n(n-1)/2}}{(1-q) \cdots (1-q^n)}\\
+\frac{1}{(a; q)_\infty} &{}= \prod_{k=0}^\infty \frac{1}{1 - aq^k} &{}= 
+      \sum_{n=0}^\infty \frac{a^n}{(1-q)\cdots(1-q^n)}
+\end{alignat*}
+
+\end{abstract}
+
+\newpage
+\tableofcontents
+
+\newpage
+\parindent 0pt\parskip 0.5ex
+
+\section{Auxiliary material}
+
+\input{session}
+
+\raggedright
+\nocite{andrews1999}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+

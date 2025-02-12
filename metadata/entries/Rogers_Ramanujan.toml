@@ -1,0 +1,38 @@
+title = "The Rogers–Ramanujan Identities"
+date = 2024-12-02
+topics = [
+  "Mathematics/Number theory",
+  "Mathematics/Combinatorics",
+]
+abstract = """
+<p>This entry formalises the Rogers--Ramanujan Identities:
+\\begin{alignat*}{3}
+  \\sum_{k=-\\infty}^\\infty \\frac{q^{k^2}}{\\prod_{j=1}^k (1 - q^j)} &=
+  \\left(\\,\\prod_{n=0}^\\infty (1 - q^{1+5n}) (1-q^{4+5n})\\right)^{-1}\\\\
+  \\sum_{k=-\\infty}^\\infty \\frac{q^{k^2+k}}{\\prod_{j=1}^k (1 - q^j)} &=
+  \\left(\\,\\prod_{n=0}^\\infty (1 - q^{2+5n}) (1-q^{3+5n})\\right)^{-1}
+\\end{alignat*}</p>
+<p>
+The formalisation follows the elegant proof given in Andrews and Eriksson 
+<a href=\"
+    https://doi.org/10.1017/CBO9781139167239\"><em>Integer Partitions</em></a>, using the Jacobi triple product.</p>"""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.eberl]
+email = "eberl_email"
+
+[contributors]
+
+[notify]
+eberl = "eberl_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

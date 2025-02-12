@@ -3,19 +3,58 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://isa-afp.org/entries/index.json</loc>
-    <lastmod>2025-01-17T00:00:00+00:00</lastmod>
+    <lastmod>2025-02-12T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Hilbert_Basis.html</loc>
+    <lastmod>2025-02-12T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/</loc>
-    <lastmod>2025-01-17T00:00:00+00:00</lastmod>
+    <lastmod>2025-02-12T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/CVM_Distinct_Elements.html</loc>
+    <lastmod>2025-02-05T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Serializable.html</loc>
+    <lastmod>2025-02-01T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Mission_Time_LTL.html</loc>
+    <lastmod>2025-01-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Mission_Time_LTL_to_Regular_Expression.html</loc>
+    <lastmod>2025-01-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Transitive_Union_Closed_Families.html</loc>
+    <lastmod>2025-01-20T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/entries/First_Order_Clause.html</loc>
     <lastmod>2025-01-17T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>https://isa-afp.org/entries/BurrowsWheeler.html</loc>
+    <lastmod>2025-01-17T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Negative_Association.html</loc>
+    <lastmod>2025-01-16T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>https://isa-afp.org/entries/Graph_Algorithms.html</loc>
     <lastmod>2025-01-14T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>https://isa-afp.org/entries/Differential_Privacy.html</loc>
+    <lastmod>2025-01-07T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/DP_QBS.html</loc>
+    <lastmod>2025-01-07T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>https://isa-afp.org/entries/Notes_On_Goedels_Ontological_Argument.html</loc>
     <lastmod>2025-01-07T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Combinatorial_Q_Analogues.html</loc>
+    <lastmod>2024-12-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Rogers_Ramanujan.html</loc>
+    <lastmod>2024-12-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Theta_Functions.html</loc>
+    <lastmod>2024-12-02T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/entries/Sum_Of_Squares_Count.html</loc>
     <lastmod>2024-11-26T00:00:00+00:00</lastmod>
@@ -2858,6 +2897,8 @@
   </url><url>
     <loc>https://isa-afp.org/authors/porter/</loc>
   </url><url>
+    <loc>https://isa-afp.org/authors/puyobro/</loc>
+  </url><url>
     <loc>https://isa-afp.org/authors/ballenghien/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/benor_kozen_reif/</loc>
@@ -2941,6 +2982,8 @@
     <loc>https://isa-afp.org/sessions/buildings/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/wolff/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/sessions/burrowswheeler/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/bytecodelogicjmltypes/</loc>
   </url><url>
@@ -3085,6 +3128,8 @@
     <loc>https://isa-afp.org/sessions/combinable_wands/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/combinatorial_enumeration_algorithms/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/sessions/combinatorial_q_analogues/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/combinatorics_words/</loc>
   </url><url>
@@ -3278,6 +3323,8 @@
   </url><url>
     <loc>https://isa-afp.org/sessions/cubicalcategories/</loc>
   </url><url>
+    <loc>https://isa-afp.org/sessions/cvm_distinct_elements/</loc>
+  </url><url>
     <loc>https://isa-afp.org/sessions/cvp_hardness/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/cyk/</loc>
@@ -3372,6 +3419,8 @@
   </url><url>
     <loc>https://isa-afp.org/sessions/derangements/</loc>
   </url><url>
+    <loc>https://isa-afp.org/authors/khu/</loc>
+  </url><url>
     <loc>https://isa-afp.org/sessions/deriving/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/descartes_sign_rule/</loc>
@@ -3393,6 +3442,8 @@
     <loc>https://isa-afp.org/sessions/differential_dynamic_logic/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/differential_game_logic/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/sessions/differential_privacy/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/digit_expansions/</loc>
   </url><url>
@@ -3436,6 +3487,8 @@
   </url><url>
     <loc>https://isa-afp.org/download/</loc>
   </url><url>
+    <loc>https://isa-afp.org/sessions/dp_qbs/</loc>
+  </url><url>
     <loc>https://isa-afp.org/sessions/dprm_theorem/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/dpt-sat-solver/</loc>
@@ -3471,6 +3524,8 @@
     <loc>https://isa-afp.org/authors/wenninger/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/elimination_of_repeated_factors/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/authors/sloan/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/elliptic_curves_group_law/</loc>
   </url><url>
@@ -3837,6 +3892,8 @@
     <loc>https://isa-afp.org/authors/kobayashi/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/higher_order_terms/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/sessions/hilbert_basis/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/hilbert_space_tensor_product/</loc>
   </url><url>
@@ -4342,6 +4399,8 @@
   </url><url>
     <loc>https://isa-afp.org/sessions/kruskal/</loc>
   </url><url>
+    <loc>https://isa-afp.org/authors/meel/</loc>
+  </url><url>
     <loc>https://isa-afp.org/sessions/kummer_congruence/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/kuratowski_closure_complement/</loc>
@@ -4754,6 +4813,10 @@
   </url><url>
     <loc>https://isa-afp.org/authors/spasic/</loc>
   </url><url>
+    <loc>https://isa-afp.org/sessions/mission_time_ltl/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/sessions/mission_time_ltl_to_regular_expression/</loc>
+  </url><url>
     <loc>https://isa-afp.org/authors/ogawa/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/ml_unification/</loc>
@@ -4813,6 +4876,8 @@
     <loc>https://isa-afp.org/sessions/nat-interval-logic/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/native_word/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/sessions/negative_association/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/mitchell/</loc>
   </url><url>
@@ -5262,6 +5327,8 @@
   </url><url>
     <loc>https://isa-afp.org/authors/oosterhuis/</loc>
   </url><url>
+    <loc>https://isa-afp.org/sessions/rogers_ramanujan/</loc>
+  </url><url>
     <loc>https://isa-afp.org/authors/strnisa/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/coghetto/</loc>
@@ -5353,6 +5420,8 @@
   </url><url>
     <loc>https://isa-afp.org/sessions/selection_heap_sort/</loc>
   </url><url>
+    <loc>https://isa-afp.org/authors/watts/</loc>
+  </url><url>
     <loc>https://isa-afp.org/sessions/sensocialchoice/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/separata/</loc>
@@ -5374,6 +5443,8 @@
     <loc>https://isa-afp.org/sessions/sequents/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/tverdyshev/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/sessions/serializable/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/park/</loc>
   </url><url>
@@ -5609,13 +5680,13 @@
   </url><url>
     <loc>https://isa-afp.org/sessions/tesl_language/</loc>
   </url><url>
-    <loc>https://isa-afp.org/sessions/test/</loc>
-  </url><url>
     <loc>https://isa-afp.org/authors/sato/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/limat/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/delemazure/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/sessions/theta_functions/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/dardinier/</loc>
   </url><url>
@@ -5682,6 +5753,8 @@
     <loc>https://isa-afp.org/sessions/transition_systems_and_automata/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/transitive_models/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/sessions/transitive_union_closed_families/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/transitive-closure/</loc>
   </url><url>
@@ -5888,6 +5961,8 @@
     <loc>https://isa-afp.org/authors/hou/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/yez/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/authors/wangz/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/jiangz/</loc>
   </url><url>
