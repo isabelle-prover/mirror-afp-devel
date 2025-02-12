@@ -49,7 +49,7 @@ theory CVM_New_Unbiased_Algorithm
     Negative_Association.Negative_Association_Permutation_Distributions
 begin
 
-unbundle no_vec_syntax
+unbundle no vec_syntax
 
 context
   fixes f :: real and n :: nat

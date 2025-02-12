@@ -64,7 +64,7 @@ imports
   Universal_Hash_Families.Universal_Hash_Families_More_Product_PMF
 begin
 
-unbundle no_vec_syntax
+unbundle no vec_syntax
 
 datatype 'a state = State (state_\<chi>: \<open>'a set\<close>) (state_p: real)
 
