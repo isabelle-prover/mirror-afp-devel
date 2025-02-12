@@ -5,6 +5,21 @@
     <link>https://isa-afp.org/topics/computer-science/semantics-and-reasoning/</link>
     <description>AFP entries in Semantics and reasoning</description>
          <item>
+          <title>Differential Privacy</title>
+          <link>https://isa-afp.org/entries/Differential_Privacy.html</link>
+          <pubDate>Tue, 07 Jan 2025 00:00:00 +0000</pubDate>
+          <description>Differential Privacy in the AFP</description>
+            <category>Computer science/Semantics and reasoning</category>
+            <category>Computer science/Security</category>
+        </item>
+        <item>
+          <title>Diﬀerential Privacy using Quasi-Borel Spaces</title>
+          <link>https://isa-afp.org/entries/DP_QBS.html</link>
+          <pubDate>Tue, 07 Jan 2025 00:00:00 +0000</pubDate>
+          <description>Diﬀerential Privacy using Quasi-Borel Spaces in the AFP</description>
+            <category>Computer science/Semantics and reasoning</category>
+        </item>
+        <item>
           <title>NREST: Nondeterministc RESult monad with Time</title>
           <link>https://isa-afp.org/entries/NREST.html</link>
           <pubDate>Mon, 16 Sep 2024 00:00:00 +0000</pubDate>

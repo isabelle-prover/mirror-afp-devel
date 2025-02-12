@@ -5,6 +5,14 @@
     <link>https://isa-afp.org/authors/traytel/</link>
     <description>AFP entries of Dmitriy Traytel</description>
         <item>
+          <title>Formalization of (Conflict-)Serializability and Strict Two-Phase Locking</title>
+          <link>https://isa-afp.org/entries/Serializable.html</link>
+          <pubDate>Sat, 01 Feb 2025 00:00:00 +0000</pubDate>
+          <description>Formalization of (Conflict-)Serializability and Strict Two-Phase Locking in the AFP</description>
+            <category>Computer science/Data management systems</category>
+            <category>Computer science/Concurrency</category>
+        </item>
+        <item>
           <title>A Verified Proof Checker for Metric First-Order Temporal Logic</title>
           <link>https://isa-afp.org/entries/MFOTL_Checker.html</link>
           <pubDate>Tue, 16 Apr 2024 00:00:00 +0000</pubDate>

@@ -5,6 +5,28 @@
     <link>https://isa-afp.org/topics/mathematics/number-theory/</link>
     <description>AFP entries in Number theory</description>
          <item>
+          <title>Theta Functions</title>
+          <link>https://isa-afp.org/entries/Theta_Functions.html</link>
+          <pubDate>Mon, 02 Dec 2024 00:00:00 +0000</pubDate>
+          <description>Theta Functions in the AFP</description>
+            <category>Mathematics/Number theory</category>
+        </item>
+        <item>
+          <title>The Rogers–Ramanujan Identities</title>
+          <link>https://isa-afp.org/entries/Rogers_Ramanujan.html</link>
+          <pubDate>Mon, 02 Dec 2024 00:00:00 +0000</pubDate>
+          <description>The Rogers–Ramanujan Identities in the AFP</description>
+            <category>Mathematics/Number theory</category>
+            <category>Mathematics/Combinatorics</category>
+        </item>
+        <item>
+          <title>Combinatorial q-Analogues</title>
+          <link>https://isa-afp.org/entries/Combinatorial_Q_Analogues.html</link>
+          <pubDate>Mon, 02 Dec 2024 00:00:00 +0000</pubDate>
+          <description>Combinatorial q-Analogues in the AFP</description>
+            <category>Mathematics/Number theory</category>
+        </item>
+        <item>
           <title>The Sum-of-Squares Function and Jacobi&#39;s Two-Square Theorem</title>
           <link>https://isa-afp.org/entries/Sum_Of_Squares_Count.html</link>
           <pubDate>Tue, 26 Nov 2024 00:00:00 +0000</pubDate>

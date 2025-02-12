@@ -1,0 +1,19 @@
+chapter AFP
+
+session Theta_Functions (AFP) = Dirichlet_Series +
+  options [timeout = 900]
+  sessions
+    "HOL-Computational_Algebra"
+    "HOL-Library"
+    Lambert_Series
+    Sum_Of_Squares_Count
+    Combinatorial_Q_Analogues
+  theories
+    Theta_Functions_Library
+    Nome
+    Theta_Functions
+    Jacobi_Triple_Product
+    Theta_Nullwert
+  document_files
+    "root.tex"
+    "root.bib"

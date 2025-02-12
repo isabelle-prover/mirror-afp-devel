@@ -5,6 +5,13 @@
     <link>https://isa-afp.org/authors/ballenghien/</link>
     <description>AFP entries of Benoît Ballenghien</description>
         <item>
+          <title>A Proof of Hilbert Basis Theorem and            an Extension to Formal Power Series</title>
+          <link>https://isa-afp.org/entries/Hilbert_Basis.html</link>
+          <pubDate>Wed, 12 Feb 2025 00:00:00 +0000</pubDate>
+          <description>A Proof of Hilbert Basis Theorem and            an Extension to Formal Power Series in the AFP</description>
+            <category>Mathematics</category>
+        </item>
+        <item>
           <title>Operational Semantics formally proven in HOL-CSP</title>
           <link>https://isa-afp.org/entries/HOL-CSP_OpSem.html</link>
           <pubDate>Sun, 24 Dec 2023 00:00:00 +0000</pubDate>

@@ -1,0 +1,10 @@
+chapter AFP
+
+session Mission_Time_LTL = "HOL-Library" +
+  options [timeout = 300]
+  theories
+    MLTL_Encoding
+    MLTL_Properties
+  document_files 
+    "root.tex"
+    "root.bib"

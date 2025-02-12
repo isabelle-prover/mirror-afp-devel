@@ -5,6 +5,13 @@
     <link>https://isa-afp.org/topics/mathematics/probability-theory/</link>
     <description>AFP entries in Probability theory</description>
          <item>
+          <title>Negatively Associated Random Variables</title>
+          <link>https://isa-afp.org/entries/Negative_Association.html</link>
+          <pubDate>Thu, 16 Jan 2025 00:00:00 +0000</pubDate>
+          <description>Negatively Associated Random Variables in the AFP</description>
+            <category>Mathematics/Probability theory</category>
+        </item>
+        <item>
           <title>The Lévy-Prokhorov Metric</title>
           <link>https://isa-afp.org/entries/Levy_Prokhorov_Metric.html</link>
           <pubDate>Tue, 04 Jun 2024 00:00:00 +0000</pubDate>

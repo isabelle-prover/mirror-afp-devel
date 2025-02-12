@@ -1,0 +1,11 @@
+chapter AFP
+
+session "DP_QBS" (AFP) = "HOL-Probability" +
+  options [timeout = 300]
+  sessions "S_Finite_Measure_Monad"
+           "Differential_Privacy"
+  theories "DP_QBS"
+           "DP_QBS_Examples"
+  document_files
+    "root.tex"
+    "root.bib"

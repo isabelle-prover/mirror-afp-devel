@@ -1,0 +1,55 @@
+title = "Verification of the CVM algorithm with a New Recursive Analysis Technique"
+date = 2025-02-05
+topics = [
+  "Computer science/Algorithms/Randomized",
+]
+abstract = """
+<p>In 2022, <a href=\"https://doi.org/10.4230/LIPIcs.ESA.2022.34\">Chakraborty et al.</a> published a streaming
+algorithm (henceforth, the CVM algorithm) for the distinct
+elements problem, that deviated considerably from the state-of-the art, due to its simplicity
+and avoidance of standard derandomization techniques, while still maintaining a close to optimal
+logarithmic space complexity.</p>
+
+<p>In this entry, we verify the CVM algorithm's correctness using a new technique which simplifies
+the analysis considerably compared to the orignal proof by Chakraborty et al. The main idea is
+based on a probabilistic invariant that allows us to derive concentration bounds using the
+Cramér-Chernoff method.</p>
+
+<p>This new technique opens up the possible algorithm design space, and we introduce a new variant of
+the CVM algorithm, that is total, and also has an additional property in addition to concentration:
+unbiasedness. This means the expected result of the algorithm is exactly equal to the desired
+result. The latter is also a new property, that neither the original CVM algorithm nor classic
+algorithms for the distinct elements problem possess.</p>"""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.karayel]
+email = "karayel_email"
+
+[authors.khu]
+email = "khu_email"
+
+[authors.meel]
+email = "meel_email"
+
+[authors.tan]
+email = "tan_email"
+
+[authors.watts]
+email = "watts_email"
+
+[contributors]
+
+[notify]
+karayel = "karayel_email"
+tan = "tan_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []
