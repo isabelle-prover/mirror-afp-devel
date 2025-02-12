@@ -78,7 +78,7 @@ lemma qbs_l_Lap_mechanism: "qbs_l (Lap_mechanism\<^sub>Q e r) = Lap_dist e r"
   by(auto simp: qbs_Lap_mechanism_def qbs_l_return_qbs space_L qbs_l_density_qbs[of _ borel] Lap_dist_def cong: return_cong)
 
 lemma qbs_Lap_mechanism_qbs_l_inverse:"Lap_mechanism\<^sub>Q e x= qbs_l_inverse (Lap_dist e x)"
-  by(auto intro!: inj_onD[OF qbs_l_inj_P[of borel]] standard_borel_ne.qbs_l_qbs_l_inverse_prob[OF _ sets_Lap_dist,symmetric]
+  by(auto intro!: inj_onD[OF qbs_l_inj_P[of borel]] standard_borel_ne.qbs_l_qbs_l_inverse[OF _ sets_Lap_dist,symmetric]
      standard_borel_ne.qbs_l_inverse_in_space_monadP[OF _ sets_Lap_dist] simp: qbs_l_Lap_mechanism)
 
 proposition qbs_DP_Lap_mechanism:
