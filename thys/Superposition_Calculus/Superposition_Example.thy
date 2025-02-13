@@ -112,12 +112,12 @@ proof unfold_locales
     then have "(SOME l. is_maximal l C \<and> is_neg l) \<in># C"
       by(rule someI2_ex) (simp add: maximal_in_clause)
   }
-   
 
   then show "select_max C \<subseteq># C"
     by auto
 next
   fix C l
+
   {
     assume "\<exists>l\<in>#C. is_maximal l C \<and> is_neg l" 
 
@@ -127,7 +127,6 @@ next
     then have "is_neg (SOME l. is_maximal l C \<and> is_neg l)"
       by (rule someI2_ex) simp
   }
-
 
   then show "l \<in># select_max C \<Longrightarrow> is_neg l"
     by (smt (verit, ccfv_threshold) ex_in_conv set_mset_add_mset_insert set_mset_eq_empty_iff 
@@ -185,7 +184,7 @@ definition weights_nat :: "nat weights" where "weights_nat \<equiv> weights"
 
 instance
   using weights_adm pr_strict_total pr_strict_asymp
-  by(intro_classes, unfold weights_nat_def) auto
+  by (intro_classes, unfold weights_nat_def) auto
 
 end
 
@@ -196,23 +195,26 @@ instance
 
 end
 
-lemma ltake_0 [simp]: "list_of (ltake (enat 0) xs) = []"
-  by(induction xs) (auto simp add: enat_0)
+fun repeat :: "nat \<Rightarrow> 'a \<Rightarrow> 'a list" where
+  "repeat 0 _ = []"
+| "repeat (Suc n) x = x # repeat n x"
 
 abbreviation types :: "nat \<Rightarrow> type list \<times> type" where
-  "types n \<equiv> let type = if even n then A else B in (list_of (ltake (n div 2) (repeat type)), type)"
+  "types n \<equiv>
+    let type = if even n then A else B
+    in (repeat (n div 2) type, type)"
 
 lemma types_inhabited: "\<exists>f. types f = ([], \<tau>)"
-proof(cases \<tau>)
+proof (cases \<tau>)
   case A
   show ?thesis
     unfolding A
-    by(rule exI[of _ 0]) auto
+    by (rule exI[of _ 0]) auto
 next
   case B
   show ?thesis
     unfolding B
-    by(rule exI[of _ 1]) auto
+    by (rule exI[of _ 1]) auto
 qed
 
 locale superposition_example =
@@ -222,7 +224,7 @@ begin
 sublocale wellfounded_strict_order "trivial_tiebreakers C\<^sub>G"
   using trivial_tiebreakers.
 
-sublocale nonground_term_with_context.
+sublocale nonground_term_with_context .
 
 sublocale nonground_equality_order less_kbo
   by unfold_locales
@@ -236,10 +238,10 @@ sublocale
 proof unfold_locales
   fix \<tau>
   show "\<exists>f. types f = ([], \<tau>)"
-    using types_inhabited.
+    using types_inhabited .
 next
   show "|UNIV :: type set| \<le>o |UNIV :: nat set|"
-    using UNIV_type_ordLeq_UNIV_nat.
+    using UNIV_type_ordLeq_UNIV_nat .
 qed
 
 end

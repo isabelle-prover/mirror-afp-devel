@@ -56,7 +56,7 @@ locale term_grounding =
 locale nonground_term
 begin
 
-sublocale vars_def where vars_def = vars_term.
+sublocale vars_def where vars_def = vars_term .
 
 sublocale grounding_def where
   to_ground_def = gterm_of_term and from_ground_def = term_of_gterm .
