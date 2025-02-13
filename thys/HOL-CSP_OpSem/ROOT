@@ -43,7 +43,7 @@ chapter AFP
 (*>*)
 
 session "HOL-CSP_OpSem" = "HOL-CSPM" +
-  options [document = pdf, document_output = "output", timeout = 1200] 
+  options [timeout = 1200] 
   theories
     Introduction
 
