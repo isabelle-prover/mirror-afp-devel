@@ -48,7 +48,7 @@ chapter AFP
 session "CSP_RefTK" (AFP) = "HOL-CSP" +
   description  \<open>An Environment for Advanced Refinement Proofs based on Normalization.
                 Together with a proof of the generalized dining philosophers problem.\<close> 
-  options [document = pdf, document_output = "output",timeout = 1200]
+  options [timeout = 1200]
   sessions
      "HOLCF-Library"
   theories

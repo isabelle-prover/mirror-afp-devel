@@ -45,7 +45,7 @@ chapter AFP
 
 session "HOL-CSPM" (AFP) = "HOL-CSP" +
   description \<open>Architectural operators for HOL-CSP.\<close>
-  options [document = pdf, document_output = "output", timeout = 1200]
+  options [timeout = 1200]
   sessions
     "HOL-Eisbach" "HOL-Library"
   theories
