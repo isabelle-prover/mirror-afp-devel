@@ -59,6 +59,10 @@ section "Simulations"
       using ide_b A.con_implies_arr
       by unfold_locales auto
 
+    lemma is_simulation:
+    shows "simulation A B map"
+      ..
+
   end
 
   (*
@@ -859,6 +863,10 @@ section "Transformations"
        apply (metis (full_types) A.in_sourcesE B.null_is_zero(1) B.resid_src_arr)
       by (metis (full_types) A.con_implies_arr(1) A.in_sourcesE B.src_in_sources)
 
+    lemma is_transformation:
+    shows "transformation A B F G map"
+      ..
+
   end
 
   locale simulation_as_transformation =
@@ -879,7 +887,7 @@ section "Transformations"
   end
 
   lemma transformation_eqI:
-  assumes "transformation A B F G \<sigma>" and "transformation A B F G \<tau>"
+  assumes "transformation A B F G \<sigma>" and "transformation A B F H \<tau>"
   and "extensional_rts B"
   and "\<And>a. residuation.ide A a \<Longrightarrow> \<sigma> a = \<tau> a"
   shows "\<sigma> = \<tau>"
@@ -894,7 +902,7 @@ section "Transformations"
       using assms(1) transformation.axioms(4) by blast
     interpret \<sigma>: transformation A B F G \<sigma>
       using assms(1) by blast
-    interpret \<tau>: transformation A B F G \<tau>
+    interpret \<tau>: transformation A B F H \<tau>
       using assms(2) by blast
     fix t
     show "\<sigma> t = \<tau> t"

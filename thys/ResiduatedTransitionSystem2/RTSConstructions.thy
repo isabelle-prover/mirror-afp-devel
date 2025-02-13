@@ -4555,8 +4555,6 @@ subsection "Exponential of Small RTS's"
                     conI con_sym_ax not_ide_null)
               thus ?thesis
                 using transformation_eqI
-                        [of A B "Dom u" "Cod u"
-                            "Map (MkArr (Dom t) (Cod u) TU.map \\ t)" "Map u"]
                       2 arr_char U.transformation_axioms
                 by (metis (no_types, lifting) B.extensional_rts_axioms Dom_resid
                     arr_resid calculation(1-2) conI con_sym_ax not_ide_null)
@@ -7979,10 +7977,10 @@ subsection "Coextension of a Simulation"
       interpret A: simulation_as_transformation A A A.map ..
       interpret TxA: product_transformation
                        X A AB.resid A F A.map G A.map T A.map ..
-      show"Uncurry T = map \<circ> TxA.map"
+      show "Uncurry T = map \<circ> TxA.map"
       proof (intro transformation_eqI
-                     [of XxA.resid B "Uncurry F" "Uncurry G" "Uncurry T"
-                         "map \<circ> TxA.map"])
+                     [of XxA.resid B "Uncurry F" "Uncurry G"
+                         "Uncurry T" _ "map \<circ> TxA.map"])
         show "transformation XxA.resid B (Uncurry F) (Uncurry G) (Uncurry T)"
           using Uncurry_T.transformation_axioms by blast
         show "transformation

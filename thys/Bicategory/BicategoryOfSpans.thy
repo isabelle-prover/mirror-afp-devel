@@ -6278,7 +6278,7 @@ $$
                B.isomorphic_implies_ide(1) B.src_hcomp)
          let ?W = "CLS w"
          have W: "\<guillemotleft>?W : dom U \<rightarrow> dom \<lbrakk>\<lbrakk>?f\<rbrakk>\<rbrakk>\<guillemotright>"
-         proof
+         proof (intro in_homI)
            show "arr ?W"
              using w CLS_in_hom by blast
            thus "dom ?W = dom U"
