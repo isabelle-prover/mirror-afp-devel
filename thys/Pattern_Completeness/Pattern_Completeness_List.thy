@@ -104,6 +104,24 @@ datatype ('f,'v,'s)pat_impl_result = Incomplete
   | New_Problems "nat \<times> nat \<times> ('f,'v,'s)pat_problem_list list" 
   | Fin_Var_Form "('f,'v,'s)pat_problem_list" 
 
+lemma size_zip[termination_simp]: "length ts = length ls \<Longrightarrow> size_list (\<lambda>p. size (snd p)) (zip ts ls) 
+  < Suc (size_list size ls)"  
+  by (induct ts ls rule: list_induct2, auto)
+
+fun match_decomp_lin_impl :: "('f,'v,'s)match_problem_list \<Rightarrow> ('f,'v,'s)match_problem_lx option" where
+  "match_decomp_lin_impl [] = Some []"
+| "match_decomp_lin_impl ((Fun f ts, Fun g ls) # mp) = (if (f,length ts) = (g,length ls) then 
+     match_decomp_lin_impl (zip ts ls @ mp) else None)" 
+| "match_decomp_lin_impl ((Var x, Fun g ls) # mp) = (map_option (Cons (x, Fun g ls)) (match_decomp_lin_impl mp))" 
+| "match_decomp_lin_impl ((t, Var y) # mp) = match_decomp_lin_impl mp" 
+
+fun pat_inner_lin_impl :: "('f,'v,'s)pat_problem_list \<Rightarrow> ('f,'v,'s)pat_problem_lx \<Rightarrow> ('f,'v,'s)pat_problem_lx option" where
+  "pat_inner_lin_impl [] pd = Some pd" 
+| "pat_inner_lin_impl (mp # p) pd = (case match_decomp_lin_impl mp of 
+     None \<Rightarrow> pat_inner_lin_impl p pd
+   | Some mp' \<Rightarrow> if mp' = [] then None
+       else pat_inner_lin_impl p (mp' # pd))" 
+
 context pattern_completeness_context
 begin
 
@@ -120,10 +138,6 @@ definition insert_rx :: "('f,nat \<times> 's)term \<Rightarrow> 'v \<Rightarrow>
           else Some ((AList.update x (t # ts) rx, b \<or> (\<exists> y \<in> set (concat cs). inf_sort (snd y))))
        )))"
 
-lemma size_zip[termination_simp]: "length ts = length ls \<Longrightarrow> size_list (\<lambda>p. size (snd p)) (zip ts ls) 
-  < Suc (size_list size ls)"  
-  by (induct ts ls rule: list_induct2, auto)
-
 text \<open>Decomposition applies decomposition, duplicate and clash rule to classify all remaining problems 
   as being of kind (x,f(l1,..,ln)) or (t,x).\<close>
 fun decomp_impl :: "('f,'v,'s)match_problem_list \<Rightarrow> ('f,'v,'s)match_problem_lr option" where
@@ -135,20 +149,6 @@ fun decomp_impl :: "('f,'v,'s)match_problem_list \<Rightarrow> ('f,'v,'s)match_p
 | "decomp_impl ((t, Var y) # mp) = (case decomp_impl mp of Some (lx,rx) \<Rightarrow> 
        (case insert_rx t y rx of Some rx' \<Rightarrow> Some (lx,rx') | None \<Rightarrow> None)
        | None \<Rightarrow> None)" 
-
-fun match_decomp_lin_impl :: "('f,'v,'s)match_problem_list \<Rightarrow> ('f,'v,'s)match_problem_lx option" where
-  "match_decomp_lin_impl [] = Some []"
-| "match_decomp_lin_impl ((Fun f ts, Fun g ls) # mp) = (if (f,length ts) = (g,length ls) then 
-     match_decomp_lin_impl (zip ts ls @ mp) else None)" 
-| "match_decomp_lin_impl ((Var x, Fun g ls) # mp) = (map_option (Cons (x, Fun g ls)) (match_decomp_lin_impl mp))" 
-| "match_decomp_lin_impl ((t, Var y) # mp) = match_decomp_lin_impl mp" 
-
-fun pat_inner_lin_impl :: "('f,'v,'s)pat_problem_list \<Rightarrow> ('f,'v,'s)pat_problem_lx \<Rightarrow> ('f,'v,'s)pat_problem_lx option" where
-  "pat_inner_lin_impl [] pd = Some pd" 
-| "pat_inner_lin_impl (mp # p) pd = (case match_decomp_lin_impl mp of 
-     None \<Rightarrow> pat_inner_lin_impl p pd
-   | Some mp' \<Rightarrow> if mp' = [] then None
-       else pat_inner_lin_impl p (mp' # pd))" 
 
 definition pat_lin_impl :: "nat \<Rightarrow> ('f,'v,'s)pat_problem_list \<Rightarrow> ('f,'v,'s)pat_problem_list list option" where
   "pat_lin_impl n p = (case pat_inner_lin_impl p [] of None \<Rightarrow> Some []
@@ -165,6 +165,10 @@ partial_function (tailrec) pats_lin_impl :: "nat \<Rightarrow> ('f,'v,'s)pats_pr
 definition match_steps_impl :: "('f,'v,'s)match_problem_list \<Rightarrow> ('v list \<times> ('f,'v,'s)match_problem_lr) option" where
   "match_steps_impl mp = (map_option match_var_impl (decomp_impl mp))" 
 
+definition pat_complete_lin_impl :: "('f,'v,'s)pats_problem_list \<Rightarrow> bool" where
+  "pat_complete_lin_impl ps = (let 
+      n = Suc (max_list (List.maps (map fst o vars_term_list o fst) (concat (concat ps))))
+     in pats_lin_impl n ps)" 
 
 context 
 fixes
@@ -250,6 +254,9 @@ lemmas pat_complete_impl_code =
   pattern_completeness_context.match_decomp'_impl_def
   pattern_completeness_context.match_steps_impl_def
   pattern_completeness_context.pat_inner_impl.simps
+  pattern_completeness_context.pat_lin_impl_def
+  pattern_completeness_context.pats_lin_impl.simps
+  pattern_completeness_context.pat_complete_lin_impl_def
 
 declare pat_complete_impl_code[code]
 
@@ -1081,6 +1088,31 @@ proof (insert assms, induct ps arbitrary: n rule:
   qed
 qed
 
+corollary pat_complete_lin_impl: 
+  assumes wf: "snd ` \<Union> (vars ` fst ` set (concat (concat P))) \<subseteq> S" 
+  and left_linear: "Ball (set P) ll_pp" 
+  shows "pat_complete_lin_impl (P :: ('f,'v,'s)pats_problem_list) \<longleftrightarrow> pats_complete C (pat_list ` set P)" 
+proof - 
+  have wf: "Ball (pat_list ` set P) wf_pat" 
+    unfolding pat_list_def wf_pat_def wf_match_def tvars_mp_def using wf[unfolded set_concat image_comp] by force
+  let ?l = "(List.maps (map fst o vars_term_list o fst) (concat (concat P)))" 
+  define n where "n = Suc (max_list ?l)" 
+  have n: "\<forall>p\<in>set P. tvars_pat (pat_list p) \<subseteq> {..<n} \<times> S" 
+  proof (safe)
+    fix p x \<iota>
+    assume p: "p \<in> set P" and xp: "(x,\<iota>) \<in> tvars_pat (pat_list p)" 
+    hence "x \<in> set ?l" unfolding List.maps_def tvars_pat_def tvars_mp_def pat_list_def 
+      by force
+    from max_list[OF this] have "x < n" unfolding n_def by auto
+    thus "x < n" by auto
+    from xp p wf
+    show "\<iota> \<in> S" by (auto simp: wf_pat_iff)
+  qed  
+  have "pat_complete_lin_impl P = pats_lin_impl n P" 
+    unfolding pat_complete_lin_impl_def Let_def n_def by auto
+  from pats_lin_impl[OF n left_linear wf, folded this]
+  show ?thesis by auto
+qed
 
 
 lemma match_var_impl: assumes wf: "wf_lr mp" 
@@ -2842,6 +2874,7 @@ proof
 qed (auto simp: compute_inf_sorts nonempty_sort)
 
 thm pat_complete_impl
+thm pat_complete_lin_impl
 
 end
 
@@ -2950,6 +2983,29 @@ definition decide_pat_complete :: "(('f \<times> 's list) \<times> 's)list \<Rig
       Cl = constr_list Cs; 
       IS = compute_inf_sorts Cs
      in pat_complete_impl_old m Cl (\<lambda> s. s \<in> IS)) P" 
+
+definition decide_pat_complete_lin :: "(('f \<times> 's list) \<times> 's)list \<Rightarrow> ('f,'v,'s)pats_problem_list \<Rightarrow> bool" where
+  "decide_pat_complete_lin Cs P = (let 
+      m = max_arity_list Cs;
+      Cl = constr_list Cs
+     in pattern_completeness_context.pat_complete_lin_impl m Cl P)" 
+
+(* the decision procedure of the FSCD paper, but 
+   implementing the linear rules *)
+theorem decide_pat_complete_lin:
+  assumes dist: "distinct (map fst Cs)" 
+    and non_empty_sorts: "decide_nonempty_sorts (sorts_of_ssig_list Cs) Cs = None" 
+    and P: "snd ` \<Union> (vars ` fst ` set (concat (concat P))) \<subseteq> set (sorts_of_ssig_list Cs)"
+    and left_linear: "Ball (set P) ll_pp" 
+  shows "decide_pat_complete_lin Cs P = pats_complete (map_of Cs) (pat_list ` set P)"
+proof-
+  interpret pattern_completeness_list Cs
+    apply unfold_locales
+    using dist non_empty_sorts.
+  show ?thesis
+    unfolding decide_pat_complete_lin_def Let_def
+    by (rule pat_complete_lin_impl[OF P left_linear])
+qed
 
 (* the decision procedure of FSCD paper *)
 theorem decide_pat_complete:
