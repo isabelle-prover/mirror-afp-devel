@@ -42,11 +42,11 @@
 (*>*)
 
 chapter\<open>Conclusion\<close>
-(*<*)
+  (*<*)
 theory Conclusion
-    imports HOLCF
+  imports HOLCF
 begin
-(*>*)
+  (*>*)
 
 text\<open> We presented a formalisation of the most comprehensive semantic model for CSP, a 'classical' 
 language for the specification and analysis of concurrent systems studied in a rich body of 
@@ -77,5 +77,5 @@ over finite sub-systems with globally infinite systems in a logically safe way.
 
 (*<*)
 end
-(*>*)
+  (*>*)
 

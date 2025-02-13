@@ -8010,6 +8010,7 @@ name = "Kai Wirt"
 
 [wolff]
 name = "Burkhart Wolff"
+orcid = "0000-0002-9648-7663"
 
 [wolff.emails]
 
@@ -8019,7 +8020,7 @@ user = [
   "wolff",
 ]
 host = [
-  "lri",
+  "lmf.cnrs",
   "fr",
 ]
 
