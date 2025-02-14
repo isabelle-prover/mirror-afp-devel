@@ -3180,6 +3180,89 @@ qed simp
 lemma ground_imp_linear_term [simp]: "ground t \<Longrightarrow> linear_term t"
   by (induct t) (auto simp add: is_partition_def ground_vars_term_empty)
 
+lemma linear_vars_term_list:
+  assumes "linear_term t"
+  shows "length (filter ((=) x) (vars_term_list t)) \<le> 1"
+using assms
+proof (induct t)
+  case (Var y)
+  show ?case by (auto simp: vars_term_list.simps)
+next
+  case (Fun f ss)
+  show ?case 
+  proof (rule ccontr)
+    assume "\<not> ?thesis"
+    from this [unfolded vars_term_list.simps]
+    have len: "2 \<le> length (filter ((=) x) (concat (map vars_term_list ss)))" (is "_ \<le> length ?xs") by auto
+    from len obtain y ys where xs: "?xs = y # ys" by (cases ?xs, auto)
+    from len[unfolded xs] obtain z zs where ys: "ys = z # zs" by (cases ys, auto)
+    from xs[unfolded ys] have "{y,z} \<subseteq> set ?xs" by auto
+    from this[unfolded set_filter] have "y = x" and "z = x" by auto
+    from xs[unfolded ys this] have xs: "?xs = x # x # zs" by auto
+    {
+      fix s
+      assume s: "s \<in> set ss"
+      with Fun(2)[unfolded linear_term.simps]
+      have "linear_term s" by auto
+      note Fun(1)[OF s this]
+    }
+    from this Fun(2)[unfolded linear_term.simps] xs
+    show False
+    proof (induct ss)
+      case Nil then show ?case by simp
+    next
+      case (Cons s ss) note oCons = this
+      from Cons(3) have part: "is_partition (map vars_term ss) \<and> (\<forall> s \<in> set ss. linear_term s)" and lin: "linear_term s"  using is_partition_Cons by auto
+      from Cons(1)[OF _ part] Cons(2) 
+      have ind: "filter ((=) x) (concat (map vars_term_list ss)) \<noteq> x # x # zs" by auto
+      show ?case 
+      proof (cases "filter ((=) x) (vars_term_list s)")
+        case Nil
+        with Cons(4) ind show False by auto
+      next
+        case (Cons y ys)
+        let ?s = "filter ((=) x) (vars_term_list s)"
+        let ?ss = "filter ((=) x) (concat (map vars_term_list ss))"
+        from Cons oCons(4) have "?s = x # ys" by auto
+        with oCons(2)[of s] have sx: "?s = [x]"
+          by auto
+        with oCons(4) have ssx: "?ss = x # zs" by auto
+        from sx have "x \<in> set ?s" by auto
+        from this[unfolded set_filter set_vars_term_list]
+        have sx: "x \<in> vars_term s" by auto
+        from ssx have "x \<in> set ?ss" by auto
+        from this[unfolded set_filter set_vars_term_list]
+        obtain t where tx: "x \<in> vars_term t" and t: "t \<in> set ss" by auto
+        from t[unfolded set_conv_nth] obtain i where i: "i < length ss" and
+          t: "t = ss ! i" by auto
+        from oCons(3)[THEN conjunct1, unfolded is_partition_def, THEN spec[of _ "Suc i"], THEN mp, THEN spec[of _ 0]] i tx[unfolded t] sx
+        show False by auto
+      qed
+    qed  
+  qed
+qed
+
+lemma distinct_alt:
+  assumes "\<forall> x. length (filter ((=) x) xs) \<le> 1"
+  shows "distinct xs"
+  using assms proof(induct xs)
+  case (Cons x xs)
+  then have IH:"distinct xs"
+    by (metis dual_order.trans filter.simps(2) impossible_Cons nle_le) 
+  from Cons(2) have "length (filter ((=) x) xs) = 0"
+    by (metis (mono_tags) One_nat_def add.right_neutral add_Suc_right filter.simps(2) le_less length_0_conv less_Suc0 list.simps(3) list.size(4) nat.inject)
+  then have "x \<notin> set (xs)"
+    by (metis (full_types) filter_empty_conv length_0_conv) 
+  with IH show ?case
+    by simp
+qed simp
+
+lemma linear_term_distinct_vars:
+  assumes "linear_term t"
+  shows "distinct (vars_term_list t)"
+  using distinct_alt linear_vars_term_list[OF assms] by blast
+
+
 text \<open>exhaustively apply several maps on function symbols\<close>
 fun map_funs_term_enum :: "('f \<Rightarrow> 'g list) \<Rightarrow> ('f, 'v) term \<Rightarrow> ('g, 'v) term list"
 where

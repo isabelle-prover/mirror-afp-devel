@@ -230,7 +230,7 @@ text\<open> \<^rail>\<open>
 @@{command "protocol_security_proof"} behavior instance_name ':' protocol_name \<newline>
 (('for' protocol_constant ((fixpoint_constant (smp_constant ?)) ?)) ?)
 ;
-behavior: ('[safe]' | '[nbe]' | '[unsafe]' ) ? \<close>
+behavior: ('[safe]' | '[nbe]' | '[eval]' ) ? \<close>
 
 This command executes the formal security proof for the given security protocol.
 Its internal behavior can be configured using one of the following three options:
@@ -241,7 +241,7 @@ Its internal behavior can be configured using one of the following three options
   configuration of Isabelle's code generator for HOL. While the stack of code to be trusted is 
   considerable, we consider this still a highly trustworthy setup, as it cannot be influenced by 
   end-user configurations of the code generator. 
-\<^item> @{text "[unsafe]"}: use Isabelle's code-generator for evaluating the proof goal on the SML-level. While 
+\<^item> @{text "[eval]"}: use Isabelle's code-generator for evaluating the proof goal on the SML-level. While 
   this is, by far, the fastest setup, it depends on the full-blown code-generator setup. As we do 
   not modify the code-generator setup in our formalization, we consider the setup to be nearly 
   as trustworthy as the normalization by evaluation setup. Still, end-user configurations of the 
@@ -335,7 +335,7 @@ text\<open> \<^rail>\<open> @@{command "protocol_composition_proof"} behavior in
 'and' protocol_constant (protocol_constant +) \<newline>
 'and' smp_constant (smp_constant +)
 ;
-behavior: ('[safe]' | '[nbe]' | '[unsafe]' ) ? \<close>
+behavior: ('[safe]' | '[nbe]' | '[eval]' ) ? \<close>
 
 
 This command applies the compositionality theorem of~\cite{hess.ea:stateful:2018} to the protocols given as arguments and automatically proves the syntactic conditions required for composition.

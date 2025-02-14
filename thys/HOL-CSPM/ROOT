@@ -4,11 +4,11 @@ chapter AFP
 \<comment>\<open> ********************************************************************
  * Project         : HOL-CSPM - Architectural operators for HOL-CSP
  *
- * Author          : Benoît Ballenghien, Safouan Taha, Burkhart Wolff
+ * Author          : Benoît Ballenghien, Safouan Taha, Burkhart Wolff.
  *
  * This file       : ROOT file
  *
- * Copyright (c) 2023 Université Paris-Saclay, France
+ * Copyright (c) 2025 Université Paris-Saclay, France
  *
  * All rights reserved.
  *
@@ -50,20 +50,24 @@ session "HOL-CSPM" (AFP) = "HOL-CSP" +
     "HOL-Eisbach" "HOL-Library"
   theories
     Introduction
-    PreliminaryWork
-    Patch
-    MultiDet
-    MultiNdet
-    MultiSync
-    MultiSeq
-    GlobalNdet
+    Induction_Rules_CSPM
+    Global_Deterministic_Choice
+    Multi_Synchronization_Product
+    Multi_Sequential_Composition
+    Throw
+    Interrupt
+    CSPM_Monotonies
+    Non_Deterministic_CSPM_Distributivity
+    Step_CSPM_Laws
+    Step_CSPM_Laws_Extended
+    Read_Write_CSPM_Laws
+    CSPM_Laws
+    Events_Ticks_CSPM_Laws
+    CSPM_Deadlock_Results
     CSPM
     DiningPhilosophers
     POTS
-    EventsProperties
-    DeadlockResults
     Conclusion
   document_files
     "root.tex"
     "root.bib"
-    "figures/session_graph.pdf"

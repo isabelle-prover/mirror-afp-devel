@@ -5,6 +5,21 @@
     <link>https://isa-afp.org/topics/mathematics/combinatorics/</link>
     <description>AFP entries in Combinatorics</description>
          <item>
+          <title>Transitive Union-Closed Families</title>
+          <link>https://isa-afp.org/entries/Transitive_Union_Closed_Families.html</link>
+          <pubDate>Mon, 20 Jan 2025 00:00:00 +0000</pubDate>
+          <description>Transitive Union-Closed Families in the AFP</description>
+            <category>Mathematics/Combinatorics</category>
+        </item>
+        <item>
+          <title>The Rogers–Ramanujan Identities</title>
+          <link>https://isa-afp.org/entries/Rogers_Ramanujan.html</link>
+          <pubDate>Mon, 02 Dec 2024 00:00:00 +0000</pubDate>
+          <description>The Rogers–Ramanujan Identities in the AFP</description>
+            <category>Mathematics/Number theory</category>
+            <category>Mathematics/Combinatorics</category>
+        </item>
+        <item>
           <title>A Generalization of the Cauchy–Davenport theorem</title>
           <link>https://isa-afp.org/entries/Generalized_Cauchy_Davenport.html</link>
           <pubDate>Sat, 23 Nov 2024 00:00:00 +0000</pubDate>

@@ -15,18 +15,20 @@ imports
 keywords
       "trac" :: thy_decl
   and "trac_import" :: thy_decl
-  and "print_transaction_strand" :: diag
-  and "print_transaction_strand_list" :: diag
-  and "print_attack_trace" :: diag
-  and "print_fixpoint" :: diag
+  and "print_transaction_strand" :: thy_decl
+  and "print_transaction_strand_list" :: thy_decl
+  and "print_attack_trace" :: thy_decl
+  and "print_fixpoint" :: thy_decl
   and "save_fixpoint" :: thy_decl
   and "load_fixpoint" :: thy_decl
   and "protocol_model_setup" :: thy_decl
   and "protocol_security_proof" :: thy_decl
+  and "protocol_security_proof_parallel" :: thy_decl
+  and "protocol_security_proof_safe_heuristic" :: thy_decl
   and "protocol_composition_proof" :: thy_decl
-  and "manual_protocol_model_setup" :: thy_goal
-  and "manual_protocol_security_proof" :: thy_goal
-  and "manual_protocol_composition_proof" :: thy_goal
+  and "manual_protocol_model_setup" :: thy_decl
+  and "manual_protocol_security_proof" :: thy_decl
+  and "manual_protocol_composition_proof" :: thy_decl
   and "compute_fixpoint" :: thy_decl
   and "compute_SMP" :: thy_decl
   and "compute_shared_secrets" :: thy_decl
@@ -241,7 +243,7 @@ structure ml_isar_wrapper = struct
 
    fun prove_simple name stmt tactic lthy = 
      let
-       val thm = Goal.prove lthy [] [] stmt (fn {context, ...} => tactic context) 
+       val thm = Goal.prove_future lthy [] [] stmt (fn {context, ...} => tactic context) 
                  |> Goal.norm_result lthy
                  |> Goal.check_finished lthy
      in 
@@ -250,7 +252,7 @@ structure ml_isar_wrapper = struct
      end
 
     fun prove_state_simple method proof_state = 
-           Seq.the_result "error in proof state" ( (Proof.refine method proof_state))
+           (Proof.refine_singleton method proof_state)
                |> Proof.global_done_proof 
 
 end
@@ -948,7 +950,7 @@ structure trac_definitorial_package = struct
         in
           Class.prove_instantiation_exit (fn ctxt => 
             (Class.intro_classes_tac ctxt [])  THEN
-               ALLGOALS (simp_tac (ctxt addsimps  [Proof_Context.get_thm ctxt (name^"_UNIV"),  
+               PARALLEL_ALLGOALS (simp_tac (ctxt addsimps  [Proof_Context.get_thm ctxt (name^"_UNIV"),  
                                                            enum_def, enum_all_def, enum_ex_def]) ) 
             )lthy
         end
@@ -964,8 +966,8 @@ structure trac_definitorial_package = struct
       lthy
       |> ml_isar_wrapper.prove_simple (name^"_UNIV") stmt 
          (fn c =>     (safe_tac c) 
-                 THEN (ALLGOALS(simp_tac c))
-                 THEN (ALLGOALS(Metis_Tactic.metis_tac ["full_types"] 
+                 THEN (PARALLEL_ALLGOALS(simp_tac c))
+                 THEN (PARALLEL_ALLGOALS(Metis_Tactic.metis_tac ["full_types"] 
                                    "combs"  c 
                                    (map (Proof_Context.get_thm c) thmsN)))
          )
@@ -1314,7 +1316,7 @@ structure trac_definitorial_package = struct
         val checksall      = #checkall_actions    transaction
         val updates        = #update_actions      transaction
         val sends          = #send_actions        transaction
-        val fresh          = get_fresh_variables  transaction
+        val fresh          = #fresh_actions       transaction
         val attack_signals = #attack_actions      transaction
 
         val fresh_vars          = get_fresh_variables            transaction
@@ -1332,7 +1334,19 @@ structure trac_definitorial_package = struct
         val infenum_enumtype_vars =
           filter (member (op =) (enumtype_vars@infenum_vars)) (all_decl_vars@fresh_vars)
 
-        val (enum_ineqs, value_ineqs) = get_variable_restrictions transaction
+        val (enum_ineqs_in_head, value_ineqs_in_head) = get_variable_restrictions transaction
+
+        val value_single_ineqs_in_body =
+          let
+            open Trac_Term TracProtocolCert
+            fun aux (_,cNegChecks ([], [cInequality (cVar (x, ValueType), cVar (y, ValueType))])) =
+                  SOME (x,y)
+              | aux _ = NONE
+          in
+            map_filter aux checkssingle
+          end
+
+        val declared_value_ineqs = distinct (op =) (value_ineqs_in_head@value_single_ineqs_in_body)
 
         val enable_let_bindings = true
 
@@ -1346,7 +1360,7 @@ structure trac_definitorial_package = struct
         val abstract_over_finenum_vars = fn x => fn y => fn z =>
           abstract_over_finite_enum_vars x y z trac lthy
 
-        fun mk_transaction_term (rcvs, chcksingle, chckall, upds, snds, frsh, atcks) =
+        fun mk_transaction_term (rcvs, chcksingle, chckall, upds, snds, frsh_xs, frsh_acs, atcks) =
           let
             open Trac_Term TracProtocolCert
             fun action_filter f (lbl,a) = case f a of SOME x => SOME (lbl,x) | NONE => NONE
@@ -1398,6 +1412,27 @@ structure trac_definitorial_package = struct
             val S1 = map (lbl_trms_to_h mk_Receive)
                          (map_filter (action_filter maybe_the_Receive) rcvs)
 
+            val additional_value_ineqs =
+              let
+                val tr_acs = rcvs@chcksingle@chckall@frsh_acs@upds@snds@atcks
+    
+                val (vars_in_acs, vars_in_star_acs) =
+                  let val f = distinct (op =) o List.concat o map (cAction_fvs o snd)
+                  in (f tr_acs, f (filter (fn (l,_) => l = LabelS) tr_acs)) end
+                val (nonfresh_vals_in_acs, nonfresh_vals_in_star_acs) =
+                  let fun f xs = filter (fn x => member (op =) xs x) nonfresh_value_vars
+                  in (f vars_in_acs, f vars_in_star_acs) end
+    
+                fun mk_Value_cVar x = cVar (x,ValueType)
+                fun mk_cInequality star_acs_vars x y =
+                  let val mem = member (op =) star_acs_vars
+                      val lbl = if mem x andalso mem y then LabelS else LabelN
+                  in (lbl, cNegChecks ([],[cInequality (mk_Value_cVar x, mk_Value_cVar y)])) end
+                fun mk_cInequalities star_acs_vars =
+                  list_triangle_product (mk_cInequality star_acs_vars)
+                val ineqs = mk_cInequalities nonfresh_vals_in_star_acs nonfresh_vals_in_acs
+              in filter (not o member (op =) chcksingle) ineqs end
+
             val S2 =
               let
                 fun aux (lbl,cEquality (pcv,(x,y))) =
@@ -1415,7 +1450,7 @@ structure trac_definitorial_package = struct
                       end
                   | aux _ = NONE
               in
-                map_filter aux chcksingle
+                map_filter aux (additional_value_ineqs@chcksingle)
               end
 
             val S3 =
@@ -1440,7 +1475,7 @@ structure trac_definitorial_package = struct
                 map mk_trms (map_filter (action_filter maybe_the_NotInAny) chckall)
               end
 
-            val S4 = map (c_to_h o cVar) frsh
+            val S4 = map (c_to_h o cVar) frsh_xs
 
             val S5 =
               let
@@ -1456,7 +1491,7 @@ structure trac_definitorial_package = struct
               in map (lbl_trms_to_h mk_Send) (snds'@map (fn (lbl,_) => (lbl,[cAttack])) atcks) end
           in
             mk_Transaction trac lthy S0 S1 S2 S3 S4 S5 S6
-              |> abstract_over_finenum_vars finenum_vars enum_ineqs
+              |> abstract_over_finenum_vars finenum_vars enum_ineqs_in_head
               |> (fn trm =>
                     if not (null nonfinenum_vars) andalso enable_let_bindings
                     then let
@@ -1471,8 +1506,10 @@ structure trac_definitorial_package = struct
 
         fun def_trm trm print lthy =
           #2 (ml_isar_wrapper.define_constant_definition' (defname, trm) print lthy)
+          |> declare_def_attr "protocol_defs" defname false
 
-        val additional_value_ineqs =
+
+        val value_ineqs_from_unsat_set_constrs =
           let
             open Trac_Term TracProtocolCert
             val poschecks = map_filter (maybe_the_InSet o snd) checkssingle
@@ -1494,14 +1531,15 @@ structure trac_definitorial_package = struct
             List.concat (map_filter aux poschecks)
           end
 
-        val all_value_ineqs = distinct (op =) (value_ineqs@additional_value_ineqs)
+        val all_value_ineqs =
+          distinct (op =) (declared_value_ineqs@value_ineqs_from_unsat_set_constrs)
 
         val valvarsprod =
               filter (fn p => not (List.exists (fn q => p = q orelse swap p = q) all_value_ineqs))
                      (list_triangle_product (fn x => fn y => (x,y)) nonfresh_value_vars)
 
         val transaction_trm0 = mk_transaction_term
-                      (receives, checkssingle, checksall, updates, sends, fresh, attack_signals)
+              (receives, checkssingle, checksall, updates, sends, fresh_vars, fresh, attack_signals)
       in
         if null valvarsprod
         then def_trm transaction_trm0 print lthy
@@ -1521,13 +1559,9 @@ structure trac_definitorial_package = struct
           fun apply d =
             let
               val ap = subst_apply_cActions d
-              val checksingle' =
-                filter (fn (_,a) => case a of
-                                      cNegChecks ([],[cInequality (x,y)]) => x <> y
-                                    | _ => true)
-                       (ap checkssingle)
             in
-              (ap receives, checksingle', ap checksall, ap updates, ap sends, fresh, attack_signals)
+              (ap receives, ap checkssingle, ap checksall, ap updates, ap sends, fresh_vars,
+               ap fresh, attack_signals)
             end
 
           val transaction_trms = transaction_trm0::map (mk_transaction_term o apply o mk_subst) ps
@@ -1553,8 +1587,9 @@ structure trac_definitorial_package = struct
       fun def_protocols lthy = let
           fun mk_prot_def (name,trm) lthy =
             let val _ = info("  Defining "^name)
-            in #2 (ml_isar_wrapper.define_constant_definition' (name,trm) print lthy)
-            end
+            in #2 (ml_isar_wrapper.define_constant_definition' (name,trm) print lthy) 
+                   |> declare_def_attr "protocol_def" name false
+             end
 
           val prots = #transaction_spec trac
           val num_prots = length prots
@@ -1848,25 +1883,25 @@ fun select_proof_method_error msg opt_meth_level =
     "1. safe: Instructs Isabelle to " ^ msg ^ " using \"code_simp\" " ^
     "(this is the default setting).\n" ^
     "2. nbe: Instructs Isabelle to use \"normalization\" instead of \"code_simp\".\n" ^
-    "3. unsafe: Instructs Isabelle to use \"eval\" instead of \"code_simp\".")
+    "3. eval: Instructs Isabelle to use \"eval\" instead of \"code_simp\".")
 
-fun select_proof_method _ "safe" = "check_protocol"
+ fun select_proof_method _ "safe" = "check_protocol"
   | select_proof_method _ "safe_coverage_rcv" = "check_protocol"
   | select_proof_method _ "nbe" = "check_protocol_nbe"
   | select_proof_method _ "nbe_coverage_rcv" = "check_protocol_nbe"
-  | select_proof_method _ "unsafe" = "check_protocol_unsafe"
-  | select_proof_method _ "unsafe_coverage_rcv" = "check_protocol_unsafe"
+  | select_proof_method _ "eval" = "check_protocol_eval"
+  | select_proof_method _ "eval_coverage_rcv" = "check_protocol_eval"
   | select_proof_method msg opt_meth_level = error (
           select_proof_method_error_prefix ^ opt_meth_level ^ "\n\nValid options:\n" ^
           "1. safe: Instructs Isabelle to " ^ msg ^ " using \"code_simp\" " ^
           "(this is the default setting).\n" ^
           "2. nbe: Instructs Isabelle to use \"normalization\" instead of \"code_simp\".\n" ^
-          "3. unsafe: Instructs Isabelle to use \"eval\" instead of \"code_simp\".\n" ^
+          "3. eval: Instructs Isabelle to use \"eval\" instead of \"code_simp\".\n" ^
           "4. safe_coverage_rcv: Instructs Isabelle to " ^ msg ^ " using \"code_simp\" " ^
           "(with alternative coverage check).\n" ^
           "5. nbe_coverage_rcv: Instructs Isabelle to use \"normalization\" instead of \"code_simp\" " ^
           "(with alternative coverage check).\n" ^
-          "6. unsafe_coverage_rcv: Instructs Isabelle to use \"eval\" instead of \"code_simp\"" ^
+          "6. eval_coverage_rcv: Instructs Isabelle to use \"eval\" instead of \"code_simp\"" ^
           "(with alternative coverage check).")
 
   | select_proof_method msg opt_meth_level =
@@ -1874,7 +1909,7 @@ fun select_proof_method _ "safe" = "check_protocol"
 
 fun select_proof_method_compositionality _ "safe" = "check_protocol_compositionality"
   | select_proof_method_compositionality _ "nbe" = "check_protocol_compositionality_nbe"
-  | select_proof_method_compositionality _ "unsafe" = "check_protocol_compositionality_unsafe"
+  | select_proof_method_compositionality _ "eval" = "check_protocol_compositionality_eval"
   | select_proof_method_compositionality msg opt_meth_level =
       select_proof_method_error msg opt_meth_level
 
@@ -1919,14 +1954,10 @@ val _ =
     in
       proof_state
   end));
+\<close>
 
-val _ =
-  Outer_Syntax.local_theory' \<^command_keyword>\<open>protocol_security_proof\<close>
-    "prove interpretation of secure protocol locale into global theory"
-    (security_proof_locale_parser_with_method_choice >> 
-    (fn params => fn print => fn lthy =>
-    let 
-        val ((opt_meth_level,(name,prefix)),opt_defs) = params
+ML\<open>
+structure protocol_security_proof = struct
         fun protocol_security_proof (params, print, lthy) = 
         let
           val ((opt_meth_level,(name,prefix)),opt_defs) = params
@@ -1938,7 +1969,7 @@ val _ =
                 val m = select_proof_method "prove the protocol secure" opt_meth_level
                 val info = Output.information
                 val _ = info ("Proving security of protocol " ^ nth defs 0 ^
-                              " with proof method " ^ m)
+                              " with proof method " ^ m ^(" ("^opt_meth_level^")"))
                 val _ = if num_defs > 1 then info ("Using fixed point " ^ nth defs 1) else ()
                 val _ = if num_defs > 2 then info ("Using SMP set " ^ nth defs 2) else ()
               in
@@ -1947,8 +1978,10 @@ val _ =
         in
            ml_isar_wrapper.prove_state_simple meth proof_state
         end
-      fun protocol_security_proof_with_error_messages (params, print, lthy) =
-        protocol_security_proof (params, print, lthy)
+
+
+      fun protocol_security_proof_with_error_messages (params, (name,prefix, opt_defs, opt_meth_level), print, lthy) =
+        protocol_security_proof(params, print, lthy)
         handle
           ERROR msg =>
             if String.isPrefix "Duplicate fact declaration" msg
@@ -1993,10 +2026,146 @@ val _ =
               "\n\nOriginal error message:\n" ^ msg)
             end
             (* else error msg *)
+
+
+        fun parallel' (params, print, lthy) = 
+        let
+          val ((opt_meth_level,(name,prefix)),opt_defs) = params
+          val (defs, proof_state) =
+            protocol_security_proof_proof_state false name prefix opt_defs opt_meth_level print lthy
+          val num_defs = length defs
+          val meth =
+              let
+                val m = select_proof_method "prove the protocol secure" opt_meth_level
+                val info = Output.information
+                val _ = info ("Proving security of protocol " ^ nth defs 0 ^
+                              " with proof method " ^ m ^(" ("^opt_meth_level^")"))
+                val _ = if num_defs > 1 then info ("Using fixed point " ^ nth defs 1) else ()
+                val _ = if num_defs > 2 then info ("Using SMP set " ^ nth defs 2) else ()
+              in
+                Method.Source (Token.make_src (m, Position.none) [])
+              end
+        in
+           ml_isar_wrapper.prove_state_simple meth proof_state
+        end
+
+               fun run_in_parallel (params', print, lthy) = let
+               val ((opt_meth_level,(name,prefix)),opt_defs) = params'
+               val _ = if opt_meth_level = "safe" orelse opt_meth_level = "nbe" 
+                                                  orelse opt_meth_level = "eval" 
+                       then ()
+                       else error ("Only methods \"eval\", \"nbe\", and \"safe\", supported for parallel execution.")
+               
+               val opt_meth_level_classic = opt_meth_level
+               val opt_meth_level_receive = opt_meth_level^"_coverage_rcv"
+               fun f variant = 
+                    SOME (variant, protocol_security_proof
+                                 (((variant,(name,prefix)),opt_defs), print, lthy)) 
+            in 
+               case Par_List.get_some f [opt_meth_level_classic, opt_meth_level_receive] of 
+                    SOME(v,t) => let val _ = warning ("First Successful Termination: "^v) in (v,t) end 
+                  |NONE => ("",lthy)                
+            end
+
+
+      fun parallel (params, (name,prefix, opt_defs, opt_meth_level), print, lthy) =
+        run_in_parallel (params, print, lthy)
+        |> snd 
+        handle
+          ERROR msg =>
+            if String.isPrefix "Duplicate fact declaration" msg
+            then error (
+              "Failed to finalize proof because of duplicate fact declarations.\n" ^
+              "This might happen if \"" ^ name ^ "\" was used previously.\n" ^
+              "\n\nOriginal error message:\n" ^ msg)
+            else if String.isPrefix select_proof_method_error_prefix msg
+            then error msg
+            else (* if String.isPrefix "Wellsortedness error" msg orelse
+                    String.isPrefix "Failed to finish proof" msg orelse
+                    String.isPrefix "error in proof state" msg
+            then *)
+            let
+              val (def_names,_) =
+                protocol_security_proof_defs false name prefix opt_defs opt_meth_level lthy
+              val (prot_name,fp_name,smp_name) = case length def_names of
+                  0 => (prefix^"_protocol", prefix^"_fixpoint", prefix^"_SMP")
+                | 1 => (nth def_names 0,    prefix^"_fixpoint", prefix^"_SMP")
+                | 2 => (nth def_names 0,    nth def_names 1,    prefix^"_SMP")
+                | _ => (nth def_names 0,    nth def_names 1,    nth def_names 2)
+            in error (
+              "Failed to prove the protocol secure.\n" ^
+              "Click on the following to inspect which parts of the proof failed:\n" ^
+              Active.sendback_markup_command (
+                (if length def_names < 2
+                 then "\<comment> \<open>First compute a fixed-point\<close>\n" ^
+                      "compute_fixpoint "^prot_name^" "^fp_name^"\n\n"
+                 else "")^
+                "\<comment> \<open>Is the fixed point free of attack signals?\<close>\n" ^
+                "value \"attack_notin_fixpoint "^fp_name^"\"\n\n" ^
+                "\<comment> \<open>Is the protocol covered by the fixed point?\<close>\n" ^
+                "value \"protocol_covered_by_fixpoint "^fp_name^" "^prot_name^"\"\n\n" ^
+                "\<comment> \<open>Is the fixed point analyzed?\<close>\n" ^
+                "value \"analyzed_fixpoint "^fp_name^"\"\n\n" ^
+                "\<comment> \<open>Is the protocol well-formed?\<close>\n" ^
+                (if length def_names < 3
+                 then "value \"wellformed_protocol "^prot_name^"\"\n\n"
+                 else "value \"wellformed_protocol' "^prot_name^" "^smp_name^"\"\n\n")^
+                "\<comment> \<open>Is the fixed point well-formed?\<close>\n" ^
+                "value \"wellformed_fixpoint "^fp_name^"\"") ^
+              "\n\nOriginal error message:\n" ^ msg)
+            end
+            (* else error msg *)
+
+
+      fun heuristic (params, (name, prefix, opt_defs), print, lthy) = 
+      let 
+        val method = case run_in_parallel ((("nbe",(name,prefix)),opt_defs), print, lthy) of
+                          ("nbe",_) => "safe" 
+                          | ("nbe_coverage_rcv",_) => "safe_coverage_rcv" 
+
+      in
+        protocol_security_proof(((method,(name,prefix)),opt_defs), print, lthy)
+      end
+
+end
+
+
+val _ =
+  Outer_Syntax.local_theory' \<^command_keyword>\<open>protocol_security_proof\<close>
+    "prove interpretation of secure protocol locale into global theory"
+    (security_proof_locale_parser_with_method_choice >> 
+    (fn params => fn print => fn lthy =>
+    let 
+        val ((opt_meth_level,(name,prefix)),opt_defs) = params
     in 
       trac_time.ap_lthy lthy ("protocol_security_proof ("^name^")")
-                        protocol_security_proof_with_error_messages (params, print, lthy)
+                        protocol_security_proof.protocol_security_proof_with_error_messages (params, (name, prefix, opt_defs, opt_meth_level), print, lthy)
     end));
+
+val _ =
+  Outer_Syntax.local_theory' \<^command_keyword>\<open>protocol_security_proof_parallel\<close>
+    "prove interpretation of secure protocol locale into global theory"
+    (security_proof_locale_parser_with_method_choice >> 
+    (fn params => fn print => fn lthy =>
+    let 
+        val ((opt_meth_level,(name,prefix)),opt_defs) = params
+    in 
+      trac_time.ap_lthy lthy ("protocol_security_proof ("^name^")")
+                        protocol_security_proof.parallel (params, (name, prefix, opt_defs, opt_meth_level), print, lthy)
+    end));
+
+val _ =
+  Outer_Syntax.local_theory' \<^command_keyword>\<open>protocol_security_proof_safe_heuristic\<close>
+    "prove interpretation of secure protocol locale into global theory"
+    (security_proof_locale_parser_with_method_choice >> 
+    (fn params => fn print => fn lthy =>
+    let 
+        val ((opt_meth_level,(name,prefix)),opt_defs) = params
+    in 
+      trac_time.ap_lthy lthy ("protocol_security_proof ("^name^")")
+                        protocol_security_proof.heuristic (params, (name, prefix, opt_defs), print, lthy)
+    end));
+
 
 val _ =
   Outer_Syntax.local_theory_to_proof' \<^command_keyword>\<open>manual_protocol_security_proof\<close>
@@ -2011,7 +2180,7 @@ val _ =
           val m = "code_simp" (* case opt_meth_level of
               "safe" => "code_simp"
             | "nbe" => "normalization"
-            | "unsafe" => "eval"
+            | "eval" => "eval"
             | _ => error ("Invalid option: " ^ opt_meth_level) *)
         in
           "  subgoal by " ^ m ^ "\n"

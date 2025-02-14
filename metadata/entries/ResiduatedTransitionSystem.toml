@@ -58,6 +58,17 @@ email = "stark_email"
 stark = "stark_email"
 
 [history]
+2024-05-21 = """
+Added a missing result on couniversality of composite completion, and correct
+some lemmas whose statements were not actually what was advertised in the
+informal text.
+(revision 31ba975e68fa)<br>
+"""
+2025-01-09 = """
+Added a notion of RTS with chosen sources, to support the generalization of facts
+about extension of simulations and transformations to composite completions to
+situations with weaker extensionality assumptions.
+(revision cd09c4762638)<br>"""
 
 [extra]
 

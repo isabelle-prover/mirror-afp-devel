@@ -1,0 +1,47 @@
+title = "Differential Privacy"
+date = 2025-01-07
+topics = [
+  "Computer science/Semantics and reasoning",
+  "Computer science/Security",
+]
+abstract = """
+<p>This entry contains formalization of differential privacy in a general setting,
+based on the seminal textbook of <a href=\"https://doi.org/10.1561/0400000042\">Dwork and Roth</a> 
+and the papers of statistical divergence for differential privacy [<a href=\"https://doi.org/10.1017/S0960129523000245\">Sato and Katsumata, MSCS2023</a> and <a href=\"https://doi.org/10.1007/978-3-642-39212-2_8\">Barthe and Olmedo,ICALP2013</a>].
+</p>
+<p>
+This entry includes the following formalization:
+</p>
+<ul>
+  <li>Measurable space of lists and measurability of list operations</li>
+  <li>Laplace distribution</li>
+  <li>The statisatical divergence for differential privacy</li>
+  <li>Differential privacy and its basic properties</li>
+  <li>Randomized Response</li>
+  <li>Laplace mechanism</li>
+  <li>The report noisy max mechanism</li>
+</ul>"""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.sato]
+email = "sato_email"
+
+[authors.minamide]
+email = "minamide_email"
+
+[contributors]
+
+[notify]
+sato = "sato_email"
+minamide = "minamide_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

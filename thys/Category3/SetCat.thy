@@ -94,14 +94,8 @@ begin
             fix a :: "'e setcat.arr"
             assume a: "S.ide a"
             show "\<guillemotleft>S.MkArr (S.Dom a) {x} (\<lambda>_\<in>S.Dom a. x) : a \<rightarrow> S.MkIde {x}\<guillemotright>"
-            proof
-              show 2: "S.arr (S.MkArr (S.Dom a) {x} (\<lambda>_ \<in> S.Dom a. x))"
-                using a 1 S.arr_MkArr [of "S.Dom a" "{x}"] S.ide_char\<^sub>C\<^sub>C by force
-              show "S.dom (S.MkArr (S.Dom a) {x} (\<lambda>_ \<in> S.Dom a. x)) = a"
-                using a 2 S.dom_MkArr by force
-              show "S.cod (S.MkArr (S.Dom a) {x} (\<lambda>_\<in>S.Dom a. x)) = S.MkIde {x}"
-                using 2 S.cod_MkArr by blast
-            qed
+              using a 1 S.arr_MkArr S.dom_MkArr S.cod_MkArr S.ide_char\<^sub>C\<^sub>C S.MkArr_in_hom
+              by (intro S.MkArr_in_hom) auto
             fix f :: "'e setcat.arr"
             assume f: "\<guillemotleft>f : a \<rightarrow> S.MkIde {x}\<guillemotright>"
             show "f = S.MkArr (S.Dom a) {x} (\<lambda>_ \<in> S.Dom a. x)"
@@ -157,42 +151,9 @@ begin
             let ?f = "S.MkArr {undefined} (S.Dom a) (\<lambda>_ \<in> {undefined}. x)"
             let ?f' = "S.MkArr {undefined} (S.Dom a) (\<lambda>_ \<in> {undefined}. x')"
             have "S.par ?f ?f'"
-            proof -
-              have "\<guillemotleft>?f : S.MkIde {undefined} \<rightarrow> a\<guillemotright>"
-              proof
-                show 2: "S.arr ?f"
-                proof (intro S.arr_MkArr)
-                  show "{undefined} \<in> {A. Setp A}"
-                    by (simp add: finite_imp_Setp)
-                  show "S.Dom a \<in> {A. Setp A}"
-                    using ide_a S.ide_char\<^sub>C\<^sub>C by blast
-                  show "(\<lambda>_ \<in> {undefined}. x) \<in> extensional {undefined} \<inter> ({undefined} \<rightarrow> S.Dom a)"
-                    using 1 by blast
-                qed
-                show "S.dom ?f = S.MkIde {undefined}"
-                  using 2 S.dom_MkArr by auto
-                show "S.cod ?f = a"
-                  using 2 S.cod_MkArr ide_a by force
-              qed
-              moreover have "\<guillemotleft>?f' : S.MkIde {undefined} \<rightarrow> a\<guillemotright>"
-              proof
-                show 2: "S.arr ?f'"
-                proof (intro S.arr_MkArr)
-                  show "{undefined} \<in> {A. Setp A}"
-                    by (simp add: finite_imp_Setp)
-                  show "S.Dom a \<in> {A. Setp A}"
-                    using ide_a S.ide_char\<^sub>C\<^sub>C by blast
-                  show "(\<lambda>_ \<in> {undefined}. x') \<in> extensional {undefined} \<inter> ({undefined} \<rightarrow> S.Dom a)"
-                    using 1 by blast
-                qed
-                show "S.dom ?f' = S.MkIde {undefined}"
-                  using 2 S.dom_MkArr by auto
-                show "S.cod ?f' = a"
-                  using 2 S.cod_MkArr ide_a by force
-              qed
-              ultimately show ?thesis
-                by (metis (no_types, lifting) S.in_homE)
-            qed
+              using 1 S.Dom_in_Obj S.arr_MkArr S.cod_MkArr S.dom_MkArr S.ideD(1)
+                    Setp_singleton ide_a
+              by force
             moreover have "?f \<noteq> ?f'"
               using 1 by (metis S.arr.inject restrict_apply' singletonI)
             ultimately show "\<not>S.terminal a"
@@ -222,8 +183,8 @@ begin
       by (metis (mono_tags, lifting))
   
     text\<open>
-      The inverse maps @{term arr_of} and @{term elem_of} are used to pass back and forth between
-      the inhabitants of type @{typ 'a} and the corresponding terminal objects.
+      The inverse maps @{term arr_of} and @{term elem_of} are used to pass back and forth
+      between the inhabitants of type @{typ 'a} and the corresponding terminal objects.
       These are exported so that a client of the theory can relate the concrete
       element type @{typ 'a} to the otherwise abstract arrow type.
 \<close>
@@ -270,12 +231,8 @@ begin
   
     lemma bij_elem_of:
     shows "bij_betw elem_of S.Univ UNIV"
-    proof (intro bij_betwI)
-      show "\<And>t. t \<in> S.Univ \<Longrightarrow> arr_of (elem_of t) = t" by simp
-      show "\<And>x. x \<in> UNIV \<Longrightarrow> elem_of (arr_of x) = x" by simp
-      show "elem_of \<in> S.Univ \<rightarrow> UNIV" using elem_of_mapsto by auto
-      show "arr_of \<in> UNIV \<rightarrow> S.Univ" using arr_of_mapsto by auto
-    qed
+      using elem_of_mapsto arr_of_mapsto
+      by (intro bij_betwI) auto
 
     lemma elem_of_img_arr_of_img [simp]:
     shows "elem_of ` arr_of ` A = A"
@@ -307,15 +264,7 @@ begin
         fix f
         assume f: "f \<in> S.hom S.unity a"
         have "S.terminal (S.MkIde (S.Map f ` S.Dom S.unity))"
-        proof -
-          obtain u :: 'e where u: "S.unity = S.MkIde {u}"
-            using terminal_unity terminal_char
-            by (metis (mono_tags, lifting))
-          have "S.Map f ` S.Dom S.unity = {S.Map f u}"
-            using u by simp
-          thus ?thesis
-            using terminal_char by auto
-        qed
+          using terminal_char terminal_unity by force
         hence "S.MkIde (S.Map f ` S.Dom S.unity) \<in> S.Univ" by simp
         moreover have "S.MkIde (S.Map f ` S.Dom S.unity) = IMG f"
           using f IMG_def S.in_hom_char
@@ -601,18 +550,20 @@ begin
                 proof
                   fix x
                   assume x: "x \<in> S.Dom a"
-                  have "MkElem (arr_of x) a \<in> S.hom S.unity a"
-                    using x a MkElem_in_hom [of a x] S.ide_char S.ideD(1-2) by force
-                  hence 1: "F (MkElem (arr_of x) a) \<in> S.hom S.unity b"
-                    using F by auto
-                  moreover have "S.Dom (F (MkElem (arr_of x) a)) = {U}"
-                    using 1 MkElem_IMG
-                    by (metis (mono_tags, lifting) S.Dom.simps(1))
-                  moreover have "S.Cod (F (MkElem (arr_of x) a)) = S.Dom b"
-                    using 1 by (metis (mono_tags, lifting) CollectD S.in_hom_char)
-                  ultimately have "S.Map (F (MkElem (arr_of x) a)) \<in> {U} \<rightarrow> S.Dom b"
-                    using arr_char [of "F (MkElem (arr_of x) a)"] by blast
-                  thus "S.Map (F (MkElem (arr_of x) a)) U \<in> S.Dom b" by blast
+                  show "S.Map (F (MkElem (arr_of x) a)) U \<in> S.Dom b"
+                  proof -
+                    have 1: "F (MkElem (arr_of x) a) \<in> S.hom S.unity b"
+                      using x a F MkElem_in_hom S.ide_char S.ideD(1-2)
+                      by force
+                    moreover have "S.Dom (F (MkElem (arr_of x) a)) = {U}"
+                      using 1 MkElem_IMG
+                      by (metis (mono_tags, lifting) S.Dom.simps(1))
+                    moreover have "S.Cod (F (MkElem (arr_of x) a)) = S.Dom b"
+                      using 1 by (metis (mono_tags, lifting) CollectD S.in_hom_char)
+                    ultimately have "S.Map (F (MkElem (arr_of x) a)) \<in> {U} \<rightarrow> S.Dom b"
+                      using arr_char by blast
+                    thus ?thesis by blast
+                  qed
                 qed
               qed
               hence "\<guillemotleft>?f : S.MkIde (S.Dom a) \<rightarrow> S.MkIde (S.Dom b)\<guillemotright>"
@@ -644,14 +595,14 @@ begin
                 proof -
                   assume y: "y \<notin> {U}"
                   have "compose {U} (S.Map ?f) (\<lambda>_ \<in> {U}. elem_of (IMG x)) y = undefined"
-                    using y compose_def extensional_arb by simp
+                    using y compose_def by simp
                   also have "... = S.Map (F x) y"
                   proof -
-                    have 5: "F x \<in> S.hom S.unity b" using x F 1 by fastforce
+                    have 6: "F x \<in> S.hom S.unity b" using x F 1 by fastforce
                     hence "S.Dom (F x) = {U}"
-                      by (metis (mono_tags, lifting) "2" CollectD S.Dom.simps(1) S.in_hom_char x)
+                      by (metis (mono_tags, lifting) x 2 CollectD S.Dom.simps(1) S.in_hom_char)
                     thus ?thesis
-                      using x y F 5 arr_char [of "F x"] extensional_arb [of "S.Map (F x)" "{U}" y]
+                      using x y F 6 arr_char extensional_arb [of "S.Map (F x)" "{U}" y]
                       by (metis (mono_tags, lifting) CollectD Int_iff S.in_hom_char)
                   qed
                   ultimately show ?thesis by auto
@@ -672,7 +623,7 @@ begin
                       using restrict_apply by simp
                   qed
                   also have "... = S.Map (F x) y"
-                    using x y 1 2 MkElem_IMG [of x a] by simp
+                    using x y 1 2 MkElem_IMG by simp
                   finally show
                       "compose {U} (S.Map ?f) (\<lambda>_ \<in> {U}. elem_of (IMG x)) y = S.Map (F x) y"
                     by auto
@@ -703,7 +654,8 @@ begin
           next
           show "\<And>A. A \<subseteq> S.Univ \<and> Setp (elem_of ` A) \<Longrightarrow> A \<subseteq> S.Univ"
             by simp
-          show "\<And>A' A. \<lbrakk>A' \<subseteq> A; A \<subseteq> S.Univ \<and> Setp (elem_of ` A)\<rbrakk> \<Longrightarrow> A' \<subseteq> S.Univ \<and> Setp (elem_of ` A')"
+          show "\<And>A' A. \<lbrakk>A' \<subseteq> A; A \<subseteq> S.Univ \<and> Setp (elem_of ` A)\<rbrakk>
+                           \<Longrightarrow> A' \<subseteq> S.Univ \<and> Setp (elem_of ` A')"
             by (meson image_mono setcat.Setp_respects_subset setcat_axioms subset_trans)
           show "\<And>A B. \<lbrakk>A \<subseteq> S.Univ \<and> Setp (elem_of ` A); B \<subseteq> S.Univ \<and> Setp (elem_of ` B)\<rbrakk>
                          \<Longrightarrow> A \<union> B \<subseteq> S.Univ \<and> Setp (elem_of ` (A \<union> B))"

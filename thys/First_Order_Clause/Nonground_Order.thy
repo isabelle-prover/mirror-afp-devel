@@ -31,9 +31,6 @@ for less\<^sub>t
 (* TODO: Abstract out non-equality literal order + better name *)
 locale nonground_equality_order =
   nonground_clause +
-  term.order: restricted_wellfounded_total_strict_order where
-  less = "less\<^sub>t :: ('f, 'v) Term.term \<Rightarrow> ('f, 'v) Term.term \<Rightarrow> bool" and
-  restriction = "range term.from_ground" +
   "term": nonground_term_order
 begin
 

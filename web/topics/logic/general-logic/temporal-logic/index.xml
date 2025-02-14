@@ -5,6 +5,22 @@
     <link>https://isa-afp.org/topics/logic/general-logic/temporal-logic/</link>
     <description>AFP entries in Temporal logic</description>
          <item>
+          <title>Mission-time Linear Temporal Logic to Regular Expressions</title>
+          <link>https://isa-afp.org/entries/Mission_Time_LTL_to_Regular_Expression.html</link>
+          <pubDate>Fri, 24 Jan 2025 00:00:00 +0000</pubDate>
+          <description>Mission-time Linear Temporal Logic to Regular Expressions in the AFP</description>
+            <category>Computer science/Automata and formal languages</category>
+            <category>Logic/General logic/Temporal logic</category>
+        </item>
+        <item>
+          <title>Mission-time Linear Temporal Logic</title>
+          <link>https://isa-afp.org/entries/Mission_Time_LTL.html</link>
+          <pubDate>Fri, 24 Jan 2025 00:00:00 +0000</pubDate>
+          <description>Mission-time Linear Temporal Logic in the AFP</description>
+            <category>Computer science/Automata and formal languages</category>
+            <category>Logic/General logic/Temporal logic</category>
+        </item>
+        <item>
           <title>Definitive Set Semantics for LTL3</title>
           <link>https://isa-afp.org/entries/LTL3_Semantics.html</link>
           <pubDate>Mon, 12 Aug 2024 00:00:00 +0000</pubDate>

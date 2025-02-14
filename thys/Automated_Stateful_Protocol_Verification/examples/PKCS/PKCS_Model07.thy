@@ -154,7 +154,7 @@ print_attack_trace RE_IMPORT_ATT RE_IMPORT_ATT_protocol attack_trace
 
 (* subsection \<open>Proof of security\<close>
 compute_SMP [optimized] RE_IMPORT_ATT_protocol RE_IMPORT_ATT_SMP
-protocol_security_proof [unsafe] ssp: RE_IMPORT_ATT
+protocol_security_proof [eval] ssp: RE_IMPORT_ATT
   for RE_IMPORT_ATT_protocol RE_IMPORT_ATT_fixpoint RE_IMPORT_ATT_SMP *)
 
 

@@ -971,23 +971,52 @@ inductive synth_abs_substs_constrs_rel for FP OCC TI where
 | SolveValueVar:
     "\<theta> = ((\<lambda>_. set OCC)(x := ticl_abss TI {a \<in> set OCC. \<langle>a\<rangle>\<^sub>a\<^sub>b\<^sub>s \<in> set FP}))
       \<Longrightarrow> synth_abs_substs_constrs_rel FP OCC TI [Var x] \<theta>"
-| SolveComposed:
-    "arity f > 0 \<Longrightarrow> length ts = arity f
+| SolvePubComposed:
+    "arity f > 0 \<Longrightarrow> public f \<Longrightarrow> length ts = arity f
       \<Longrightarrow> \<forall>\<delta>. \<delta> \<in> \<Delta> \<longleftrightarrow> (\<exists>s \<in> set FP. match_abss OCC TI (Fun f ts) s = Some \<delta>)
       \<Longrightarrow> \<theta>1 = fun_point_Union \<Delta>
       \<Longrightarrow> synth_abs_substs_constrs_rel FP OCC TI ts \<theta>2
       \<Longrightarrow> synth_abs_substs_constrs_rel FP OCC TI [Fun f ts] (fun_point_union \<theta>1 \<theta>2)"
+| SolvePrivComposed:
+    "arity f > 0 \<Longrightarrow> \<not>public f \<Longrightarrow> length ts = arity f
+      \<Longrightarrow> \<forall>\<delta>. \<delta> \<in> \<Delta> \<longleftrightarrow> (\<exists>s \<in> set FP. match_abss OCC TI (Fun f ts) s = Some \<delta>)
+      \<Longrightarrow> \<theta> = fun_point_Union \<Delta>
+      \<Longrightarrow> synth_abs_substs_constrs_rel FP OCC TI [Fun f ts] \<theta>"
 
 fun synth_abs_substs_constrs_aux where
   "synth_abs_substs_constrs_aux FP OCC TI (Var x) = (
     (\<lambda>_. set OCC)(x := ticl_abss TI (set (filter (\<lambda>a. \<langle>a\<rangle>\<^sub>a\<^sub>b\<^sub>s \<in> set FP) OCC))))"
 | "synth_abs_substs_constrs_aux FP OCC TI (Fun f ts) = (
     if ts = []
-    then if \<not>public f \<and> Fun f ts \<notin> set FP then (\<lambda>_. {}) else (\<lambda>_. set OCC)
-    else let \<Delta> = map the (filter (\<lambda>\<delta>. \<delta> \<noteq> None) (map (match_abss OCC TI (Fun f ts)) FP));
-             \<theta>1 = fun_point_Union_list \<Delta>;
-             \<theta>2 = fun_point_Inter_list (map (synth_abs_substs_constrs_aux FP OCC TI) ts)
-         in fun_point_union \<theta>1 \<theta>2)"
+    then (if \<not>public f \<and> Fun f ts \<notin> set FP then (\<lambda>_. {}) else (\<lambda>_. set OCC))
+    else (let \<Delta> = map the (filter (\<lambda>\<delta>. \<delta> \<noteq> None) (map (match_abss OCC TI (Fun f ts)) FP));
+              \<theta>1 = fun_point_Union_list \<Delta>;
+              \<theta>2 = fun_point_Inter_list (
+                    case ts of t#ts' \<Rightarrow> 
+                      if \<not>is_Var t \<and> args t = [] \<and> \<not>public (the_Fun t)
+                      then (if t \<notin> set FP then [\<lambda>_. {}]
+                            else (\<lambda>_. set OCC)#map (synth_abs_substs_constrs_aux FP OCC TI) ts')
+                      else map (synth_abs_substs_constrs_aux FP OCC TI) ts
+                   )
+          in fun_point_union \<theta>1 \<theta>2))"
+
+lemma synth_abs_substs_constrs_aux_fun_case:
+  assumes ts: "ts \<noteq> []"
+  shows "synth_abs_substs_constrs_aux FP OCC TI (Fun f ts) = (
+    let \<Delta> = map the (filter (\<lambda>\<delta>. \<delta> \<noteq> None) (map (match_abss OCC TI (Fun f ts)) FP));
+        \<theta>1 = fun_point_Union_list \<Delta>;
+        \<theta>2 = fun_point_Inter_list (map (synth_abs_substs_constrs_aux FP OCC TI) ts)
+    in fun_point_union \<theta>1 \<theta>2)"
+proof -
+  let ?s = "synth_abs_substs_constrs_aux FP OCC TI"
+  let ?P = "\<lambda>t. \<not>is_Var t \<and> args t = [] \<and> \<not>public (the_Fun t)"
+
+  obtain t ts' where ts': "ts = t#ts'" using ts by (cases ts) auto
+
+  have "fun_point_Inter_list ((\<lambda>_. {})#map ?s ts') = fun_point_Inter_list [\<lambda>_. {}]"
+    unfolding fun_point_Inter_list_def by simp
+  thus ?thesis unfolding ts' by (cases "?P t") auto
+qed
 
 definition synth_abs_substs_constrs where
   "synth_abs_substs_constrs FPT T \<equiv>
@@ -7799,14 +7828,14 @@ proof -
 
       have "?D (Fun f ss) = (
               fun_point_union (fun_point_Union_list \<Delta>) (fun_point_Inter_list (map ?D ss)))"
-        using ss synth_abs_substs_constrs_aux.simps(2)[of FP OCC TI f ss]
+        using synth_abs_substs_constrs_aux_fun_case[OF ss, of FP OCC TI f]
         unfolding Let_def \<Delta>_def flt_def by argo
       hence "?D (Fun f ss) = fun_point_union \<theta>1 \<theta>2"
         using fun_point_Inter_set_eq[of "map ?D ss"] fun_point_Union_set_eq[of \<Delta>]
         unfolding \<theta>1_def \<theta>2_def by simp
       thus ?thesis
-        using synth_abs_substs_constrs_rel.SolveComposed[
-                OF f' f[symmetric] \<Delta>3 \<theta>1_def IH']
+        using synth_abs_substs_constrs_rel.SolvePubComposed[
+                OF f' no_private_funs[OF f'] f[symmetric] \<Delta>3 \<theta>1_def IH']
         unfolding \<theta>2_def by argo
     qed
   qed
@@ -8215,6 +8244,42 @@ proof -
     unfolding match_abss_def by simp
 qed
 
+lemma timpls_transformable_to_match_abss_obtain:
+  assumes TI: "set TI = {(a,b) \<in> (set TI)\<^sup>+. a \<noteq> b}"
+    and s_t_timpl: "timpls_transformable_to TI s (t \<cdot> \<theta>)"
+    and s_ground: "fv s = {}"
+    and t_no_abs: "\<forall>f \<in> funs_term t. \<not>is_Abs f"
+    and t_\<theta>_abs: "\<forall>x \<in> fv t. \<exists>a. \<theta> x = \<langle>a\<rangle>\<^sub>a\<^sub>b\<^sub>s"
+  obtains \<delta> where "match_abss OCC TI t s = Some \<delta>"
+    and "\<forall>x a. x \<in> fv t \<and> \<theta> x = \<langle>a\<rangle>\<^sub>a\<^sub>b\<^sub>s \<longrightarrow> a \<in> \<delta> x"
+    and "\<forall>x. x \<notin> fv t \<longrightarrow> \<delta> x = set OCC"
+proof -
+  let ?f = "\<lambda>\<delta> x. if x \<in> fv t then \<delta> x else set OCC"
+  let ?g = "\<lambda>\<delta> x. \<Inter>(ticl_abs TI ` \<delta> x)"
+
+  obtain \<delta> where \<delta>: "match_abss OCC TI t s = Some \<delta>"
+    using timpls_transformable_to_match_abss_case[OF TI s_t_timpl s_ground t_no_abs t_\<theta>_abs]
+    by blast
+
+  obtain \<sigma> where \<sigma>:
+      "match_abss' t s = Some \<sigma>" "\<delta> = ?f (?g \<sigma>)"
+    using match_abssD[OF \<delta>] by blast
+
+  have "\<forall>b \<in> \<sigma> x. a \<in> ticl_abs TI b" when x: "x \<in> fv t" and a: "\<theta> x = \<langle>a\<rangle>\<^sub>a\<^sub>b\<^sub>s" for x a
+    using timpls_transformable_to_match_abss'_nonempty_disj'[
+              OF TI s_t_timpl \<sigma>(1) x s_ground t_no_abs t_\<theta>_abs a]
+    unfolding ticl_abs_iff[OF TI]
+    by simp
+  hence 0: "a \<in> \<delta> x" when x: "x \<in> fv t" and a: "\<theta> x = \<langle>a\<rangle>\<^sub>a\<^sub>b\<^sub>s" for x a
+    using x a \<sigma>(2) by simp
+
+  have 1: "\<delta> x = set OCC" when x: "x \<notin> fv t" for x
+    using x match_abss_OCC_if_not_fv[OF \<delta> x]
+    by simp
+
+  show ?thesis using \<delta> \<sigma> 0 1 that by blast
+qed
+
 private lemma transaction_check_variant_soundness_aux3:
   fixes T FP S C xs OCC negs poss as
   defines "\<theta> \<equiv> \<lambda>\<delta> x. if fst x = TAtom Value then (absc \<circ> \<delta>) x else Var x"
@@ -8299,18 +8364,18 @@ proof -
       unfolding SolveValueVar.hyps(1) ticl_abss_def ticl_abs_def
       by force
   next
-    case (SolveComposed g us \<Delta> \<theta>1 \<theta>2) show ?case
+    case (SolvePubComposed g us \<Delta> \<theta>1 \<theta>2) show ?case
     proof (cases "\<forall>t \<in> set us. intruder_synth_mod_timpls FP TI (t \<cdot> \<theta> \<delta>)")
       case True
       hence "\<delta> x \<in> \<theta>2 x"
-        using SolveComposed.IH SolveComposed.prems(2,3)
+        using SolvePubComposed.IH SolvePubComposed.prems(2,3)
               distinct_fv_list_Fun_param[of g us] 
         by auto
       thus ?thesis unfolding fun_point_union_def by simp
     next
       case False
       hence "list_ex (\<lambda>t. timpls_transformable_to TI t (Fun g us \<cdot> \<theta> \<delta>)) FP"
-        using SolveComposed.prems(1) intruder_synth_mod_timpls.simps(2)[of FP TI g "us \<cdot>\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<theta> \<delta>"]
+        using SolvePubComposed.prems(1) intruder_synth_mod_timpls.simps(2)[of FP TI g "us \<cdot>\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<theta> \<delta>"]
         unfolding list_all_iff by auto
       then obtain t where t: "t \<in> set FP" "timpls_transformable_to TI t (Fun g us \<cdot> \<theta> \<delta>)"
         unfolding list_ex_iff by blast
@@ -8321,43 +8386,35 @@ proof -
       have g_no_abs: "\<not>is_Abs f" when f: "f \<in> funs_term (Fun g us)" for f
       proof -
         obtain fts where "Fun f fts \<sqsubseteq> Fun g us" using funs_term_Fun_subterm[OF f] by blast
-        thus ?thesis using SolveComposed.prems(2)[of _ fts] by (cases f) auto
+        thus ?thesis using SolvePubComposed.prems(2)[of _ fts] by (cases f) auto
       qed
 
       have g_\<theta>_abs: "\<exists>a. \<theta> \<delta> y = \<langle>a\<rangle>\<^sub>a\<^sub>b\<^sub>s" when y: "y \<in> fv (Fun g us)" for y
-        using y SolveComposed.prems(3) unfolding \<theta>_def by fastforce
+        using y SolvePubComposed.prems(3) unfolding \<theta>_def by fastforce
       
-      obtain \<delta>' where \<delta>': "match_abss OCC TI (Fun g us) t = Some \<delta>'"
-        using g_no_abs g_\<theta>_abs timpls_transformable_to_match_abss_case[OF TI t(2) t_ground ]
-        by blast
-
       let ?h1 = "\<lambda>\<delta> x. if x \<in> fv (Fun g us) then \<delta> x else set OCC"
       let ?h2 = "\<lambda>\<delta> x. \<Inter>(ticl_abs TI ` \<delta> x)"
 
-      obtain \<delta>'' where \<delta>'':
-          "match_abss' (Fun g us) t = Some \<delta>''" "\<delta>' = ?h1 (?h2 \<delta>'')"
-          "\<forall>x \<in> fv (Fun g us). \<delta>' x \<noteq> {} \<and> \<delta>' x \<noteq> {}"
-        using match_abssD[OF \<delta>'] by blast
+      obtain \<delta>' where \<delta>':
+          "match_abss OCC TI (Fun g us) t = Some \<delta>'"
+          "\<forall>x a. x \<in> fv (Fun g us) \<and> \<theta> \<delta> x = \<langle>a\<rangle>\<^sub>a\<^sub>b\<^sub>s \<longrightarrow> a \<in> \<delta>' x"
+          "\<forall>x. x \<notin> fv (Fun g us) \<longrightarrow> \<delta>' x = set OCC"
+        using g_no_abs g_\<theta>_abs
+              timpls_transformable_to_match_abss_obtain[OF TI t(2) t_ground, of OCC thesis]
+        by blast
 
       have \<delta>'_\<Delta>: "\<delta>' \<in> \<Delta>"
-        using t(1) \<delta>' SolveComposed.hyps(3) by metis
+        using t(1) \<delta>'(1) SolvePubComposed.hyps(4) by metis
 
-      have "\<delta> x \<in> ticl_abs TI a" when a: "a \<in> \<delta>'' x" and x_in_g: "x \<in> fv (Fun g us)" for a
+      have "\<delta> x \<in> \<delta>' x" when x_in_g: "x \<in> fv (Fun g us)"
       proof -
-        have "fst x = TAtom Value" using x_in_g SolveComposed.prems(3) by auto
+        have "fst x = TAtom Value" using x_in_g SolvePubComposed.prems(3) by auto
         hence "\<theta> \<delta> x = \<langle>\<delta> x\<rangle>\<^sub>a\<^sub>b\<^sub>s" unfolding \<theta>_def by simp
-        hence "(a, \<delta> x) \<in> (set TI)\<^sup>*"
-          using timpls_transformable_to_match_abss'_nonempty_disj'[
-                  OF TI t(2) \<delta>''(1) x_in_g t_ground]
-                g_no_abs g_\<theta>_abs a
-          by fastforce
-        thus "\<delta> x \<in> ticl_abs TI a" unfolding ticl_abs_iff[OF TI] by force
+        thus "\<delta> x \<in> \<delta>' x" using \<delta>'(2) x_in_g by blast
       qed
-      hence "\<delta> x \<in> \<delta>' x" when x_in_g: "x \<in> fv (Fun g us)"
-        using \<delta>''(2,3) x_in_g unfolding \<delta>''(1) by simp
-      hence "\<delta> x \<in> \<delta>' x" using match_abss_OCC_if_not_fv[OF \<delta>'] \<delta>x0(1) by blast
+      hence "\<delta> x \<in> \<delta>' x" using \<delta>'(3) \<delta>x0(1) by blast
       hence "\<delta> x \<in> \<theta>1 x"
-        using \<delta>'_\<Delta> \<delta>x0(1) unfolding SolveComposed.hyps(4,5) fun_point_Union_def by auto
+        using \<delta>'_\<Delta> \<delta>x0(1) unfolding SolvePubComposed.hyps(5) fun_point_Union_def by auto
       thus ?thesis unfolding fun_point_union_def by simp
     qed
   qed (auto simp add: \<delta>x0 fun_point_Inter_def)
@@ -8551,7 +8608,7 @@ definition compute_fixpoint_fun' where
 
         trace' = \<lambda>S. snd S;
 
-        close = \<lambda>M f. let g = remdups \<circ> f in while (\<lambda>A. set (g A) \<noteq> set A) g M;
+        close  = \<lambda>M f. let g = remdups \<circ> f in while (\<lambda>A. set (g A) \<noteq> set A) g M;
         close' = \<lambda>M f. let g = remdups \<circ> f in while (\<lambda>A. set (g A) \<noteq> set A) g M;
         trancl_minus_refl = \<lambda>TI.
           let aux = \<lambda>ts p. map (\<lambda>q. (fst p,snd q)) (filter ((=) (snd p) \<circ> fst) ts)
@@ -8603,12 +8660,16 @@ definition compute_fixpoint_fun' where
              update_state S0)
     in ((reduce_fixpoint (FP' S) (TI' S), OCC' S, TI' S), trace' S)"
 
-definition compute_fixpoint_fun where
+definition compute_fixpoint_fun where 
   "compute_fixpoint_fun P \<equiv>
-    let P' = remdups (filter (\<lambda>T. transaction_updates T \<noteq> [] \<or> transaction_send T \<noteq> []) P);
+    let P' = (filter (\<lambda>T. transaction_updates T \<noteq> [] \<or> transaction_send T \<noteq> []) (remdups P));
         f = (\<lambda>FPT T. let msgcs = synth_abs_substs_constrs FPT T
                     in transaction_check_comp (\<lambda>x a. a \<in> msgcs x) FPT T)
     in fst (compute_fixpoint_fun' P' None False f (([],[]),[]))"
+
+lemmas compute_fixpoint_fun_code[code] 
+          = compute_fixpoint_fun_def[simplified compute_fixpoint_fun'_def[of _ "None" "False" _ "(([],[]),[])"
+                                  ,simplified reduce_fixpoint_def o_def Option.option.case if_False]]
 
 definition compute_fixpoint_with_trace where
   "compute_fixpoint_with_trace P \<equiv>

@@ -57,7 +57,15 @@ Cosmetic improvements.
 """
 2020-07-10 = """
 Added new material on cartesian monoidal categories.
-(revision 06640f317a79)<br>"""
+(revision 06640f317a79)<br>
+"""
+2023-04-20 = """
+Various changes related to cartesian monoidal categories.
+(revision e7b7c0db9ab6)<br>
+"""
+2024-03-28 = """
+Added constructions for the dual of a monoidal category and a symmetric monoidal category.
+(revision 6610630663ea)<br>"""
 
 [extra]
 

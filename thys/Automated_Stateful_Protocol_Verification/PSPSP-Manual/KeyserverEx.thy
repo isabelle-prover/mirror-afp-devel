@@ -170,7 +170,7 @@ protocol_security_proof [nbe] ssp: Keyserver
 
 text\<open>While the stack of code that needs to be trusted for the normalization by evaluation is 
 much smaller than for the direct code evaluation, direct code evaluation is usually much faster:\<close>
-protocol_security_proof [unsafe] ssp: Keyserver
+protocol_security_proof [eval] ssp: Keyserver
 
 text\<open>Moreover, there is the option to only generate the proof obligations (as sub-goals) for an 
 interactive security proof:\<close>

@@ -281,9 +281,9 @@ begin
     shows "Map f \<in> Hom (Dom f) (Cod f)"
       using assms arr_char by simp
 
-    lemma MkArr_in_hom:
-    assumes "A \<in> Obj" and "B \<in> Obj" and "f \<in> Hom A B"
-    shows "in_hom (MkArr A B f) (MkIde A) (MkIde B)"
+    lemma MkArr_in_hom [intro]:
+    assumes "A \<in> Obj" and "B \<in> Obj" and "f \<in> Hom A B" and "a = MkIde A" and "b = MkIde B"
+    shows "in_hom (MkArr A B f) a b"
       using assms arr_char ide_MkIde
       by (simp add: in_codomains_char in_domains_char in_hom_def)
 

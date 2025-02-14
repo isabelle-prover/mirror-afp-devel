@@ -1,0 +1,25 @@
+chapter AFP
+
+session Negative_Association = "HOL-Probability" +
+  options [timeout = 600]
+
+  sessions
+    Concentration_Inequalities
+    Birkhoff_Finite_Distributive_Lattices
+    Twelvefold_Way
+    Weighted_Arithmetic_Geometric_Mean
+    Executable_Randomized_Algorithms
+    Universal_Hash_Families
+
+  theories
+    Negative_Association_Util
+    Negative_Association_Definition
+    Negative_Association_Chernoff_Bounds
+    Negative_Association_FKG_Inequality
+    Negative_Association_More_Lattices
+    Negative_Association_Permutation_Distributions
+    Negative_Association_Bloom_Filters
+
+  document_files
+    "root.tex"
+    "root.bib"

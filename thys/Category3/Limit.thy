@@ -3402,6 +3402,24 @@ begin
       qed
     qed
 
+    lemma has_as_equalizerE [elim]:
+    assumes "has_as_equalizer f g e"
+    and "\<lbrakk>seq f e; f \<cdot> e = g \<cdot> e; \<And>e'. \<lbrakk>seq f e'; f \<cdot> e' = g \<cdot> e'\<rbrakk> \<Longrightarrow> \<exists>!h. e \<cdot> h = e'\<rbrakk> \<Longrightarrow> T"
+    shows T
+    proof -
+      interpret D: parallel_pair_diagram C f g
+        using assms
+        by (simp add: category_axioms has_as_equalizer_def parallel_pair_diagram.intro
+            parallel_pair_diagram_axioms_def)
+      have "D.has_as_equalizer e"
+        using assms has_as_equalizer_def by blast
+      interpret equalizer_cone C f g e
+        by (simp add: \<open>D.has_as_equalizer e\<close> category_axioms equalizer_cone_def
+            D.parallel_pair_diagram_axioms)
+      show T
+        by (metis arr_iff_in_hom assms(2) dom_comp equalizes is_universal' seqE)
+    qed
+
   end
 
   section "Limits by Products and Equalizers"

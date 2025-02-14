@@ -23,14 +23,17 @@ note = ""
 
 [authors]
 
+[authors.ballenghien]
+email = "ballenghien_email"
+
 [authors.taha]
 email = "taha_email"
 
-[authors.ye]
-email = "ye_email"
-
 [authors.wolff]
 email = "wolff_email"
+
+[authors.ye]
+email = "ye_email"
 
 [contributors]
 
