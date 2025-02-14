@@ -140,15 +140,15 @@ fun pat_inner_lin_impl :: "('f,'v,'s)pat_problem_list \<Rightarrow> ('f,'v,'s)pa
    | Some mp' \<Rightarrow> if mp' = [] then None
        else pat_inner_lin_impl p (mp' # pd))" 
 
-text \<open>We required a solver for (a subset of) integer-difference-logic (IDL). We basically just need
+text \<open>We require a solver for (a subset of) integer-difference-logic (IDL). We basically just need
   comparisons of variables against constants, and difference of two variables.
   Of course, comparisons of constants can be encoded as differences by using a fresh variable representing 0.
 
   Note that all variables can be assumed to be finitely bounded, so we only need a solver for 
   finite IDL search problems.\<close>
 definition idl_smt_solver where
-  "idl_smt_solver s = (\<forall> bnds diffs. (\<forall> x y z. (x,y) \<in> set (concat diffs) \<longrightarrow> z \<in> {x,y} \<longrightarrow> z \<in> fst ` set bnds) 
-     \<longrightarrow> s bnds diffs = (\<exists>\<alpha> :: 'a \<Rightarrow> int.
+  "idl_smt_solver solver = (\<forall> bnds diffs. (\<forall> v w u. (v,w) \<in> set (concat diffs) \<longrightarrow> u \<in> {v,w} \<longrightarrow> u \<in> fst ` set bnds) 
+     \<longrightarrow> solver bnds diffs = (\<exists>\<alpha> :: 'a \<Rightarrow> int.
     (\<forall> (v,b) \<in> set bnds. 0 \<le> \<alpha> v \<and> \<alpha> v \<le> b) \<and>
     (\<forall> c \<in> set diffs. \<exists> (v,w) \<in> set c. \<alpha> v \<noteq> \<alpha> w)))" 
 
