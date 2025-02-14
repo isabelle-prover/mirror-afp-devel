@@ -51,15 +51,21 @@ definition pats_of_lhss :: "(('f \<times> 's list) \<times> 's)list \<Rightarrow
   "pats_of_lhss D lhss = (let pats = [Fun f (map Var (zip [0..<length ss] ss)). ((f,ss),s) \<leftarrow> D]
      in [[[(pat,lhs)]. lhs \<leftarrow> lhss]. pat \<leftarrow> pats])" 
 
-definition decide_pat_complete_lhss :: 
-  "(('f \<times> 's list) \<times> 's)list \<Rightarrow> (('f \<times> 's list) \<times> 's)list \<Rightarrow> ('f,'v)term list \<Rightarrow> showsl + bool" where
-  "decide_pat_complete_lhss C D lhss = do {
+definition check_signatures :: "(('f \<times> 's list) \<times> 's)list \<Rightarrow> (('f \<times> 's list) \<times> 's)list \<Rightarrow> showsl check" where 
+  "check_signatures C D = do {
     check (distinct (map fst C)) (showsl_lit (STR ''constructor information contains duplicate''));
     check (distinct (map fst D)) (showsl_lit (STR ''defined symbol information contains duplicate''));
     let S = sorts_of_ssig_list C;
     check_allm (\<lambda> ((f,ss),_). check_allm (\<lambda> s. check (s \<in> set S) 
       (showsl_lit (STR ''a defined symbol has argument sort that is not known in constructors''))) ss) D;
-    (case (decide_nonempty_sorts S C) of None \<Rightarrow> return () | Some s \<Rightarrow> error (showsl_lit (STR ''some sort is empty'')));
+    (case (decide_nonempty_sorts S C) of None \<Rightarrow> return () | Some s \<Rightarrow> error (showsl_lit (STR ''some sort is empty'')))
+    }"
+
+
+definition decide_pat_complete_lhss :: 
+  "(('f \<times> 's list) \<times> 's)list \<Rightarrow> (('f \<times> 's list) \<times> 's)list \<Rightarrow> ('f,'v)term list \<Rightarrow> showsl + bool" where
+  "decide_pat_complete_lhss C D lhss = do {
+    check_signatures C D;
     return (decide_pat_complete C (pats_of_lhss D lhss))
   }"  
 
@@ -76,15 +82,34 @@ proof -
   thus ?thesis unfolding pats_of_lhss_def by force
 qed
 
+lemma check_signatures: assumes "isOK(check_signatures C D)" 
+  shows "distinct (map fst C)" (is ?G1)
+    and "distinct (map fst D)" (is ?G2)
+    and "\<forall>x\<in>set D. \<forall>a b. (\<forall>x2. x \<noteq> ((a, b), x2)) \<or> (\<forall>x\<in>set b. x \<in> set (sorts_of_ssig_list C))" (is ?G3)
+    and "decide_nonempty_sorts (sorts_of_ssig_list C) C = None" (is ?G4)
+proof -
+  let ?C = "map_of C"
+  let ?D = "map_of D"
+  define S where "S = sorts_of_ssig_list C"
+  have dist: "distinct (map fst C)" and distD: "distinct (map fst D)"
+    and dec: "decide_nonempty_sorts S C = None"
+    and condD: "\<forall>x\<in>set D. \<forall>a b. (\<forall>x2. x \<noteq> ((a, b), x2)) \<or> (\<forall>x\<in>set b. x \<in> set S)"
+    using assms
+      apply (unfold check_signatures_def)
+      apply (unfold Let_def S_def[symmetric])
+      apply (auto split: prod.splits option.splits)
+    done
+  show ?G1 ?G2 ?G3 ?G4 unfolding S_def[symmetric] by fact+
+qed  
+
 lemma pats_of_lhss: 
-  assumes distD: "distinct (map fst D)"
-    and distC: "distinct (map fst C)" 
-    and condD: "\<forall>x\<in>set D. \<forall>a b. (\<forall>x2. x \<noteq> ((a, b), x2)) \<or> (\<forall>x\<in>set b. x \<in> set (sorts_of_ssig_list C))"
-    and dec: "decide_nonempty_sorts (sorts_of_ssig_list C) C = None"
+  assumes "isOK(check_signatures C D)" 
   shows  "pats_complete (map_of C) (pat_list ` set (pats_of_lhss D lhss)) = 
    (\<forall>t\<in>\<B>(map_of C,map_of D). \<exists>l\<in>set lhss. l matches t)" 
 proof -
   define S where "S = sorts_of_ssig_list C"
+  note * = check_signatures[OF assms, folded S_def]
+  note distC = *(1) note distD = *(2) note condD = *(3) note dec = *(4)
   define pats where "pats = map (\<lambda> ((f,ss),s). Fun f (map Var (zip [0..<length ss] ss))) D" 
   define P where "P = map (\<lambda> pat. map (\<lambda> lhs. [(pat,lhs)]) lhss) pats"
   note condD = condD[folded S_def]
@@ -187,43 +212,33 @@ proof -
   let ?D = "map_of D"
   define S where "S = sorts_of_ssig_list C"
   define P where "P = pats_of_lhss D lhss"
-  have dist: "distinct (map fst C)" and distD: "distinct (map fst D)"
-    and dec: "decide_nonempty_sorts S C = None"
+  have sig: "isOK(check_signatures C D)" 
     and b: "b = decide_pat_complete C P"
-    and condD: "\<forall>x\<in>set D. \<forall>a b. (\<forall>x2. x \<noteq> ((a, b), x2)) \<or> (\<forall>x\<in>set b. x \<in> set S)"
     using assms
-      apply (unfold decide_pat_complete_lhss_def)
-      apply (unfold Let_def P_def[symmetric] S_def[symmetric])
-      apply (auto simp: split: prod.splits option.splits)
-    done
+     apply (unfold decide_pat_complete_lhss_def)
+     apply (unfold Let_def P_def[symmetric] S_def[symmetric])
+    by auto
+  note * = check_signatures[OF sig]
+  note distC = *(1) note distD = *(2) note condD = *(3) note dec = *(4)  
   interpret pattern_completeness_list C
     rewrites "sorts_of_ssig_list C = S"
      apply unfold_locales
-    using dist dec by (auto simp: S_def)
-  from condD
-  have wf: "wf_pats (pat_list ` set P)"
-    by (force simp: P_def pats_of_lhss_def wf_pats_def wf_pat_def pat_list_def wf_match_def tvars_match_def
-        elim!: in_set_zipE)
+    using * by (auto simp: S_def)
   have "b = pats_complete ?C (pat_list ` set P)"
     apply (unfold b)
-    apply (rule decide_pat_complete[OF dist(1) dec[unfolded S_def]])
+    apply (rule decide_pat_complete[OF distC dec[unfolded S_def]])
     apply (unfold P_def)
     apply (rule pats_of_lhss_vars[OF condD[unfolded P_def S_def]])
     done
-  also have "\<dots> = (\<forall>t\<in>\<B>(map_of C,map_of D). \<exists>l\<in>set lhss. l matches t)" unfolding P_def
-    by (rule pats_of_lhss[OF distD dist condD[unfolded S_def] dec[unfolded S_def]])
+  also have "\<dots> = (\<forall>t\<in>\<B>(?C,?D). \<exists>l\<in>set lhss. l matches t)" unfolding P_def
+    by (rule pats_of_lhss[OF sig])
   finally show ?thesis unfolding pat_complete_lhss_def .
 qed
 
 definition decide_pat_complete_linear_lhss :: 
   "(('f \<times> 's list) \<times> 's)list \<Rightarrow> (('f \<times> 's list) \<times> 's)list \<Rightarrow> ('f,'v)term list \<Rightarrow> showsl + bool" where
   "decide_pat_complete_linear_lhss C D lhss = do {
-    check (distinct (map fst C)) (showsl_lit (STR ''constructor information contains duplicate''));
-    check (distinct (map fst D)) (showsl_lit (STR ''defined symbol information contains duplicate''));
-    let S = sorts_of_ssig_list C;
-    check_allm (\<lambda> ((f,ss),_). check_allm (\<lambda> s. check (s \<in> set S) 
-      (showsl_lit (STR ''a defined symbol has argument sort that is not known in constructors''))) ss) D;
-    (case (decide_nonempty_sorts S C) of None \<Rightarrow> return () | Some s \<Rightarrow> error (showsl_lit (STR ''some sort is empty'')));
+    check_signatures C D;
     return (decide_pat_complete_lin C (pats_of_lhss D lhss))
   }" 
 
@@ -238,28 +253,25 @@ proof -
   let ?D = "map_of D"
   define S where "S = sorts_of_ssig_list C"
   define P where "P = pats_of_lhss D lhss"
-  have dist: "distinct (map fst C)" and distD: "distinct (map fst D)"
-    and dec: "decide_nonempty_sorts S C = None"
+  have sig: "isOK(check_signatures C D)" 
     and b: "b = decide_pat_complete_lin C P"
-    and condD: "\<forall>x\<in>set D. \<forall>a b. (\<forall>x2. x \<noteq> ((a, b), x2)) \<or> (\<forall>x\<in>set b. x \<in> set S)"
     using assms
-      apply (unfold decide_pat_complete_linear_lhss_def)
-      apply (unfold Let_def P_def[symmetric] S_def[symmetric])
-      apply (auto simp: split: prod.splits option.splits)
-    done
+     apply (unfold decide_pat_complete_linear_lhss_def)
+     apply (unfold Let_def P_def[symmetric] S_def[symmetric])
+    by auto
+  note * = check_signatures[OF sig]
+  note distC = *(1) note distD = *(2) note condD = *(3) note dec = *(4)  
   interpret pattern_completeness_list C
     rewrites "sorts_of_ssig_list C = S"
      apply unfold_locales
-    using dist dec by (auto simp: S_def)
-  from condD
-  have wf: "wf_pats (pat_list ` set P)"
-    by (force simp: P_def pats_of_lhss_def wf_pats_def wf_pat_def pat_list_def wf_match_def tvars_match_def
-        elim!: in_set_zipE)
+    using * by (auto simp: S_def)
   have "b = pats_complete ?C (pat_list ` set P)"
     apply (unfold b)
-  proof (rule decide_pat_complete_lin[OF dist(1) dec[unfolded S_def]], fold S_def)
-    show "snd ` \<Union> (vars ` fst ` set (concat (concat P))) \<subseteq> set S" unfolding P_def
-      by (rule pats_of_lhss_vars[OF condD])
+    apply (rule decide_pat_complete_lin[OF distC dec[unfolded S_def]])
+     apply (unfold P_def)
+     apply (rule pats_of_lhss_vars[OF condD[unfolded P_def S_def]])
+    apply (fold P_def)
+  proof -
     show "Ball (set P) ll_pp" unfolding ll_pp_def
     proof (intro ballI)
       fix p mp
@@ -281,8 +293,8 @@ proof -
         by (simp add: distinct_count_atmost_1)
     qed
   qed
-  also have "\<dots> = (\<forall>t\<in>\<B>(map_of C,map_of D). \<exists>l\<in>set lhss. l matches t)" unfolding P_def
-    by (rule pats_of_lhss[OF distD dist condD[unfolded S_def] dec[unfolded S_def]])
+  also have "\<dots> = (\<forall>t\<in>\<B>(?C,?D). \<exists>l\<in>set lhss. l matches t)" unfolding P_def
+    by (rule pats_of_lhss[OF sig])
   finally show ?thesis unfolding pat_complete_lhss_def .
 qed
 
@@ -299,12 +311,7 @@ definition term_and_args :: "'f \<Rightarrow> ('f,'v)term list \<Rightarrow> ('f
 definition decide_strong_quasi_reducible :: 
   "(('f \<times> 's list) \<times> 's)list \<Rightarrow> (('f \<times> 's list) \<times> 's)list \<Rightarrow> ('f,'v)term list \<Rightarrow> showsl + bool" where
   "decide_strong_quasi_reducible C D lhss = do {
-    check (distinct (map fst C)) (showsl_lit (STR ''constructor information contains duplicate''));
-    check (distinct (map fst D)) (showsl_lit (STR ''defined symbol information contains duplicate''));
-    let S = sorts_of_ssig_list C;
-    check_allm (\<lambda> ((f,ss),_). check_allm (\<lambda> s. check (s \<in> set S) 
-      (showsl_lit (STR ''defined symbol f has argument sort s that is not known in constructors''))) ss) D;
-    (case (decide_nonempty_sorts S C) of None \<Rightarrow> return () | Some s \<Rightarrow> error (showsl_lit (STR ''sort s is empty'')));
+    check_signatures C D;
     let pats = map (\<lambda> ((f,ss),s). term_and_args f (map Var (zip [0..<length ss] ss))) D;
     let P = map (List.maps (\<lambda> pat. map (\<lambda> lhs. [(pat,lhs)]) lhss)) pats;
     return (decide_pat_complete C P)
@@ -326,18 +333,18 @@ proof -
   define V where "V = {x : \<iota> in \<V>. \<iota> \<in> set (sorts_of_ssig_list C)}"
   let ?match_lhs = "\<lambda>t. \<exists>l \<in> set lhss. l matches t" 
   from assms(1)
-  have dec: "decide_nonempty_sorts ?S C = None" (is "?e = _")
-    and b: "b = decide_pat_complete C P"
-    and dist: "distinct (map fst C)" and distD: "distinct (map fst D)"
-    and foo: "\<forall>a b z x. ((a,b),z)\<in>set D \<longrightarrow> x \<in> set b \<longrightarrow> x \<in> set ?S"
+  have b: "b = decide_pat_complete C P"
+    and sig: "isOK (check_signatures C D)" 
     by (auto simp: decide_strong_quasi_reducible_def pats_def[symmetric] Let_def P_def[symmetric]
         split: prod.splits option.splits)
+  note * = check_signatures[OF sig]
+  note distC = *(1) note distD = *(2) note condD = *(3) note dec = *(4)
   interpret pattern_completeness_list C
-    apply unfold_locales using dist dec.
-  have wf: "wf_pats (pat_list ` set P)"
-    by (auto simp: P_def pats_def wf_pats_def wf_pat_def pat_list_def wf_match_def tvars_match_def
+    apply unfold_locales using distC dec.
+  have wf: "wf_pats (pat_list ` set P)" using condD
+    by (force simp: P_def pats_def wf_pats_def wf_pat_def pat_list_def wf_match_def tvars_match_def
         term_and_args_def List.maps_def
-        elim!: in_set_zipE intro!: foo[rule_format] split:  prod.splits)
+        elim!: in_set_zipE split:  prod.splits)
   have *: "pat_list ` set P = { { {(pat,lhs)} | lhs pat. pat \<in> set patL \<and> lhs \<in> set lhss} | patL. patL \<in> set pats}" 
     unfolding pat_list_def P_def List.maps_def by (auto simp: image_comp) force+
   have "b = pats_complete ?C (pat_list ` set P)"
@@ -347,7 +354,7 @@ proof -
       fix f ss s i si
       assume mem: "((f, ss), s) \<in> set D" and isi: "(i, si) \<in> set (zip [0..<length ss] ss)"
       from isi have si: "si \<in> set ss" by (metis in_set_zipE)
-      from mem si foo
+      from mem si condD
       have "si \<in> set ?S" by auto
     }
     thus "snd ` \<Union> (vars ` fst ` set (concat (concat P))) \<subseteq> set ?S" unfolding P_def pats_def term_and_args_def List.maps_def
@@ -377,7 +384,7 @@ proof -
       fix i
       assume i: "i < length ss" 
       hence "ss ! i \<in> set ss" by auto
-      with inDs foo have "ss ! i \<in> set ?S" by auto
+      with inDs condD have "ss ! i \<in> set ?S" by auto
       then have "\<sigma> (i, ss ! i) : ss ! i in \<T>(?C)"
         by (auto intro!: sorted_mapD[OF subst] simp: V_def)
     } note ssigma = this
