@@ -145,12 +145,18 @@ text \<open>We require a solver for (a subset of) integer-difference-logic (IDL)
   Of course, comparisons of constants can be encoded as differences by using a fresh variable representing 0.
 
   Note that all variables can be assumed to be finitely bounded, so we only need a solver for 
-  finite IDL search problems.\<close>
+  finite IDL search problems.
+  Moreover, it suffices to consider inputs where only those variables are put in comparison that 
+  share the same sort
+  (the second parameter of a variable),
+  and the bounds are completely determined by the sorts.\<close>
 definition idl_smt_solver where
   "idl_smt_solver solver = (\<forall> bnds diffs. 
      distinct (map fst bnds) 
      \<longrightarrow> (\<forall> v w u. (v,w) \<in> set (concat diffs) \<longrightarrow> u \<in> {v,w} \<longrightarrow> u \<in> fst ` set bnds) 
-     \<longrightarrow> solver bnds diffs = (\<exists>\<alpha> :: 'a \<Rightarrow> int.
+     \<longrightarrow> (\<forall> v w. (v,w) \<in> set (concat diffs) \<longrightarrow> snd v = snd w) 
+     \<longrightarrow> (\<forall> v w b1 b2. (v,b1) \<in> set bnds \<longrightarrow> (w,b2) \<in> set bnds \<longrightarrow> snd v = snd w \<longrightarrow> b1 = b2) 
+     \<longrightarrow> solver bnds diffs = (\<exists>\<alpha> :: 'v \<times> 's \<Rightarrow> int.
     (\<forall> (v,b) \<in> set bnds. 0 \<le> \<alpha> v \<and> \<alpha> v \<le> b) \<and>
     (\<forall> c \<in> set diffs. \<exists> (v,w) \<in> set c. \<alpha> v \<noteq> \<alpha> w)))" 
 
@@ -2855,6 +2861,34 @@ proof-
          set_pairs_of_list by force
     show "distinct (map fst (bounds_list cd cnf))" unfolding bounds_list_def Let_def map_map o_def 
       by auto
+    show "\<And>v w b1 b2.
+       (v, b1) \<in> set (bounds_list cd cnf) \<Longrightarrow>
+       (w, b2) \<in> set (bounds_list cd cnf) \<Longrightarrow> snd v = snd w \<Longrightarrow> b1 = b2" 
+      unfolding bounds_list_def Let_def by (auto simp: cd_def)
+    fix v w
+    assume "(v, w) \<in> set (concat (dist_pairs_list cnf))" 
+    from this[unfolded dist_pairs_list_def List.maps_def, simplified]
+    obtain c vs where c: "c \<in> set cnf" and vs: "vs \<in> set c" and vw: "(v, w) \<in> set (pairs_of_list vs)" 
+      by auto
+    from vw[unfolded set_pairs_of_list] 
+    have vw: "v \<in> set vs" "w \<in> set vs" by auto
+    from c[unfolded cnf var_form_of_pat_list_def, simplified]
+    obtain mp where mp: "mp \<in> set pp" and c: "c = map snd (var_form_of_match_list mp)" 
+      by auto
+    from vs[unfolded c, simplified] obtain x where xvs: "(x,vs) \<in> set (var_form_of_match_list mp) " by auto
+    from xvs[unfolded var_form_of_match_list_def set_concat set_map image_comp o_def]
+    have vs: "vs = remdups
+     (concat
+     (map (\<lambda>(a, l).
+              case a of Var v \<Rightarrow> if l = Var x then [v] else []
+              | Fun f list \<Rightarrow> [])
+       mp))" by auto
+    from vw[unfolded vs]
+    have vw: "(Var v, Var x) \<in> set mp" "(Var w, Var x) \<in> set mp" by auto
+    from fvf[unfolded finite_var_form_pat_def] mp 
+    have "finite_var_form_match C (set mp)" by (auto simp: pat_list_def)
+    from this[unfolded finite_var_form_match_def] vw
+    show "snd v = snd w" by blast
   qed
   finally show ?thesis unfolding cd_def .
 qed    
