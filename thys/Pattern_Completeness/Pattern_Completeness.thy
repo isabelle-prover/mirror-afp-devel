@@ -61,12 +61,25 @@ definition check_signatures :: "(('f \<times> 's list) \<times> 's)list \<Righta
     (case (decide_nonempty_sorts S C) of None \<Rightarrow> return () | Some s \<Rightarrow> error (showsl_lit (STR ''some sort is empty'')))
     }"
 
+definition decide_pat_complete_linear_lhss :: 
+  "(('f \<times> 's list) \<times> 's)list \<Rightarrow> (('f \<times> 's list) \<times> 's)list \<Rightarrow> ('f,'v)term list \<Rightarrow> showsl + bool" where
+  "decide_pat_complete_linear_lhss C D lhss = do {
+    check_signatures C D;
+    return (decide_pat_complete_lin C (pats_of_lhss D lhss))
+  }" 
 
 definition decide_pat_complete_lhss :: 
   "(('f \<times> 's list) \<times> 's)list \<Rightarrow> (('f \<times> 's list) \<times> 's)list \<Rightarrow> ('f,'v)term list \<Rightarrow> showsl + bool" where
   "decide_pat_complete_lhss C D lhss = do {
     check_signatures C D;
     return (decide_pat_complete C (pats_of_lhss D lhss))
+  }"  
+
+definition decide_pat_complete_lhss_idl :: 
+  "_ \<Rightarrow> _ \<Rightarrow> _ \<Rightarrow> (('f \<times> 's list) \<times> 's)list \<Rightarrow> (('f \<times> 's list) \<times> 's)list \<Rightarrow> ('f,'v)term list \<Rightarrow> showsl + bool" where
+  "decide_pat_complete_lhss_idl rn rv idl C D lhss = do {
+    check_signatures C D;
+    return (decide_pat_complete_idl rn rv idl C (pats_of_lhss D lhss))
   }"  
 
 lemma pats_of_lhss_vars: assumes condD: "\<forall>x\<in>set D. \<forall>a b. (\<forall>x2. x \<noteq> ((a, b), x2)) \<or> (\<forall>x\<in>set b. x \<in> S)"
@@ -235,14 +248,6 @@ proof -
   finally show ?thesis unfolding pat_complete_lhss_def .
 qed
 
-definition decide_pat_complete_linear_lhss :: 
-  "(('f \<times> 's list) \<times> 's)list \<Rightarrow> (('f \<times> 's list) \<times> 's)list \<Rightarrow> ('f,'v)term list \<Rightarrow> showsl + bool" where
-  "decide_pat_complete_linear_lhss C D lhss = do {
-    check_signatures C D;
-    return (decide_pat_complete_lin C (pats_of_lhss D lhss))
-  }" 
-
-
 theorem decide_pat_complete_linear_lhss:
   fixes C D :: "(('f \<times> 's list) \<times> 's) list" and lhss :: "('f,'v)term list"
   assumes "decide_pat_complete_linear_lhss C D lhss = return b" 
@@ -293,6 +298,40 @@ proof -
         by (simp add: distinct_count_atmost_1)
     qed
   qed
+  also have "\<dots> = (\<forall>t\<in>\<B>(?C,?D). \<exists>l\<in>set lhss. l matches t)" unfolding P_def
+    by (rule pats_of_lhss[OF sig])
+  finally show ?thesis unfolding pat_complete_lhss_def .
+qed
+
+theorem decide_pat_complete_lhss_idl:
+  fixes C D :: "(('f \<times> 's list) \<times> 's) list" and lhss :: "('f,'v)term list"
+  assumes "decide_pat_complete_lhss_idl rn rv idl C D lhss = return b" 
+    and ren: "renaming_funs rn rv" 
+    and idl: "idl_smt_solver idl"
+  shows "b = pat_complete_lhss (map_of C) (map_of D) (set lhss)" 
+proof -
+  let ?C = "map_of C"
+  let ?D = "map_of D"
+  define S where "S = sorts_of_ssig_list C"
+  define P where "P = pats_of_lhss D lhss"
+  have sig: "isOK(check_signatures C D)" 
+    and b: "b = decide_pat_complete_idl rn rv idl C P"
+    using assms
+     apply (unfold decide_pat_complete_lhss_idl_def)
+     apply (unfold Let_def P_def[symmetric] S_def[symmetric])
+    by auto
+  note * = check_signatures[OF sig]
+  note distC = *(1) note distD = *(2) note condD = *(3) note dec = *(4)  
+  interpret pattern_completeness_list C
+    rewrites "sorts_of_ssig_list C = S"
+     apply unfold_locales
+    using * by (auto simp: S_def)
+  have "b = pats_complete ?C (pat_list ` set P)"
+    apply (unfold b)
+    apply (rule decide_pat_complete_idl[OF distC dec[unfolded S_def] _ ren idl])
+    apply (unfold P_def)
+    apply (rule pats_of_lhss_vars[OF condD[unfolded P_def S_def]])
+    done
   also have "\<dots> = (\<forall>t\<in>\<B>(?C,?D). \<exists>l\<in>set lhss. l matches t)" unfolding P_def
     by (rule pats_of_lhss[OF sig])
   finally show ?thesis unfolding pat_complete_lhss_def .

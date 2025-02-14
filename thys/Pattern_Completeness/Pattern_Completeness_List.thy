@@ -147,7 +147,9 @@ text \<open>We require a solver for (a subset of) integer-difference-logic (IDL)
   Note that all variables can be assumed to be finitely bounded, so we only need a solver for 
   finite IDL search problems.\<close>
 definition idl_smt_solver where
-  "idl_smt_solver solver = (\<forall> bnds diffs. (\<forall> v w u. (v,w) \<in> set (concat diffs) \<longrightarrow> u \<in> {v,w} \<longrightarrow> u \<in> fst ` set bnds) 
+  "idl_smt_solver solver = (\<forall> bnds diffs. 
+     distinct (map fst bnds) 
+     \<longrightarrow> (\<forall> v w u. (v,w) \<in> set (concat diffs) \<longrightarrow> u \<in> {v,w} \<longrightarrow> u \<in> fst ` set bnds) 
      \<longrightarrow> solver bnds diffs = (\<exists>\<alpha> :: 'a \<Rightarrow> int.
     (\<forall> (v,b) \<in> set bnds. 0 \<le> \<alpha> v \<and> \<alpha> v \<le> b) \<and>
     (\<forall> c \<in> set diffs. \<exists> (v,w) \<in> set c. \<alpha> v \<noteq> \<alpha> w)))" 
@@ -2851,6 +2853,8 @@ proof-
     show "(x, y) \<in> set (concat (dist_pairs_list cnf)) \<Longrightarrow> z \<in> {x, y} \<Longrightarrow> z \<in> fst ` set (bounds_list cd cnf)" for x y z
       unfolding dist_pairs_list_def bounds_list_def List.maps_def  set_concat set_map image_comp o_def
          set_pairs_of_list by force
+    show "distinct (map fst (bounds_list cd cnf))" unfolding bounds_list_def Let_def map_map o_def 
+      by auto
   qed
   finally show ?thesis unfolding cd_def .
 qed    
@@ -3357,26 +3361,27 @@ qed
 
 (* the improved decision procedure for pattern completeness that 
    stops at finite-variable forms, and then 
-   invokes a decision procedure for these problems *)
+   encodes these problems into integer difference logic and calls 
+   an idl-solver *)
 
-definition decide_pat_complete_new :: "_ \<Rightarrow> _ \<Rightarrow> _ \<Rightarrow> (('f \<times> 's list) \<times> 's)list \<Rightarrow> ('f,'v,'s)pats_problem_list \<Rightarrow> bool" where
-  "decide_pat_complete_new rn rv dp Cs P = (let 
+definition decide_pat_complete_idl :: "_ \<Rightarrow> _ \<Rightarrow> _ \<Rightarrow> (('f \<times> 's list) \<times> 's)list \<Rightarrow> ('f,'v,'s)pats_problem_list \<Rightarrow> bool" where
+  "decide_pat_complete_idl rn rv idl Cs P = (let 
       m = max_arity_list Cs;
       Cl = constr_list Cs; 
       (IS,CD) = compute_inf_card_sorts Cs
-     in pat_complete_impl_new m Cl (\<lambda> s. s \<in> IS) CD) rn rv dp P" 
+     in pat_complete_impl_new m Cl (\<lambda> s. s \<in> IS) CD) rn rv idl P" 
 
 definition "fvf_pp_list pp =
   [[y. (t', Var y) \<leftarrow> pp, t' = t]. t \<leftarrow> remdups (map fst pp)]"
 
 
-theorem decide_pat_complete_new:
+theorem decide_pat_complete_idl:
   assumes dist: "distinct (map fst Cs)" 
     and non_empty_sorts: "decide_nonempty_sorts (sorts_of_ssig_list Cs) Cs = None" 
     and P: "snd ` \<Union> (vars ` fst ` set (concat (concat P))) \<subseteq> set (sorts_of_ssig_list Cs)"
     and ren: "renaming_funs rn rv" 
     and idl: "idl_smt_solver idl"
-  shows "decide_pat_complete_new rn rv idl Cs P \<longleftrightarrow> pats_complete (map_of Cs) (pat_list ` set P)"
+  shows "decide_pat_complete_idl rn rv idl Cs P \<longleftrightarrow> pats_complete (map_of Cs) (pat_list ` set P)"
     (is "?l \<longleftrightarrow> ?r")
 proof -
   interpret pattern_completeness_list Cs
@@ -3390,7 +3395,7 @@ proof -
   have cics: "compute_inf_card_sorts Cs = (compute_inf_sorts Cs,card_of_sort (map_of Cs))"
     by (auto)
   show ?thesis
-    apply (unfold decide_pat_complete_new_def Let_def case_prod_beta)
+    apply (unfold decide_pat_complete_idl_def Let_def case_prod_beta)
     unfolding pat_complete_impl_new_def
     using pat_complete_impl[OF ren idl P]
     by auto
@@ -3398,6 +3403,6 @@ qed
 
 export_code decide_pat_complete_lin checking 
 export_code decide_pat_complete checking 
-export_code decide_pat_complete_new checking 
+export_code decide_pat_complete_idl checking 
 
 end
