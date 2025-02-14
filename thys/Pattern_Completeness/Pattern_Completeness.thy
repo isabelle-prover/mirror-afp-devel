@@ -61,6 +61,86 @@ definition decide_pat_complete_lhss ::
     return (decide_pat_complete C P)
   }" 
 
+lemma basic_terms_map_of: assumes
+  distD: "distinct (map fst D)"
+  and distC: "distinct (map fst C)" 
+  and condD: "\<forall>x\<in>set D. \<forall>a b. (\<forall>x2. x \<noteq> ((a, b), x2)) \<or> (\<forall>x\<in>set b. x \<in> set (sorts_of_ssig_list C))"
+  and dec: "decide_nonempty_sorts (sorts_of_ssig_list C) C = None" 
+shows "\<B>(map_of C,map_of D) = {pat \<cdot> \<sigma> |pat \<sigma>.
+     pat
+     \<in> set (map (\<lambda>((f, ss), s). Fun f (map Var (zip [0..<length ss] ss))) D) \<and>
+     \<sigma> :\<^sub>s {x : \<iota> in \<V>. \<iota> \<in> set (sorts_of_ssig_list C)} \<rightarrow> \<T>(map_of C)}"
+proof -
+  define S where "S = sorts_of_ssig_list C"
+  define pats where "pats = map (\<lambda> ((f,ss),s). Fun f (map Var (zip [0..<length ss] ss))) D" 
+  let ?C = "map_of C" 
+  let ?D = "map_of D" 
+  let ?L = "{ pat \<cdot> \<sigma> | pat \<sigma>. pat \<in> set pats \<and> \<sigma> :\<^sub>s {x : \<iota> in \<V>. \<iota> \<in> set S} \<rightarrow> \<T>(?C)}" 
+  have "?L = \<B>(?C,?D,\<emptyset>)" (is "_ = ?R") 
+  proof 
+    {
+      fix pat and \<sigma>
+      assume pat: "pat \<in> set pats" and subst: "\<sigma> :\<^sub>s {x : \<iota> in \<V>. \<iota> \<in> set S} \<rightarrow> \<T>(?C)"
+      from pat[unfolded pats_def] obtain f ss s where pat: "pat = Fun f (map Var (zip [0..<length ss] ss))" 
+        and inDs: "((f,ss),s) \<in> set D" by auto
+      from distD inDs have f: "f : ss \<rightarrow> s in ?D" unfolding fun_hastype_def by simp
+      {
+        fix i
+        assume i: "i < length ss" 
+        hence "ss ! i \<in> set ss" by auto
+        with inDs condD have "ss ! i \<in> set S" by (auto simp: S_def)
+        then
+        have "\<sigma> (i, ss ! i) : ss ! i in \<T>(?C)"
+          by (auto intro!: sorted_mapD[OF subst] simp: hastype_restrict)
+      } note ssigma = this
+      define ts where "ts = (map (\<lambda> i. \<sigma> (i, ss ! i)) [0..<length ss])" 
+      have ts: "ts :\<^sub>l ss in \<T>(?C)" unfolding list_all2_conv_all_nth ts_def using ssigma by auto
+      have pat: "pat \<cdot> \<sigma> = Fun f ts" 
+        unfolding pat ts_def by (auto intro: nth_equalityI)
+      from pat f ts have "pat \<cdot> \<sigma> \<in> ?R" unfolding basic_terms_def by auto
+    }
+    thus "?L \<subseteq> ?R" by auto
+    {
+      fix f ss s and ts
+      assume f: "f : ss \<rightarrow> s in ?D" and ts: "ts :\<^sub>l ss in \<T>(?C)" 
+      from ts have len: "length ts = length ss" by (metis list_all2_lengthD)
+      define pat where "pat = Fun f (map Var (zip [0..<length ss] ss))"
+      from f have "((f,ss),s) \<in> set D" unfolding fun_hastype_def by (metis map_of_SomeD)
+      hence pat: "pat \<in> set pats" unfolding pat_def pats_def by force
+      define \<sigma> where "\<sigma> x = (case x of (i,s) \<Rightarrow> if i < length ss \<and> s = ss ! i then ts ! i else 
+        (SOME t. t : s in \<T>(?C)))" for x
+      have id: "Fun f ts = pat \<cdot> \<sigma>" unfolding pat_def using len
+        by (auto intro!: nth_equalityI simp: \<sigma>_def)
+      have ssigma: "\<sigma> :\<^sub>s {x : \<iota> in \<V>. \<iota> \<in> set S} \<rightarrow> \<T>(?C)" 
+      proof (intro sorted_mapI)
+        fix x \<iota>
+        assume "x : \<iota> in {x : \<iota> in \<V>. \<iota> \<in> set S}"
+        then have "\<iota> = snd x" and s: "\<iota> \<in> set S" by auto
+        then obtain i where x: "x = (i,\<iota>)" by (cases x, auto)
+        show "\<sigma> x : \<iota> in \<T>(?C)" 
+        proof (cases "i < length ss \<and> \<iota> = ss ! i")
+          case True
+          hence id: "\<sigma> x = ts ! i" unfolding x \<sigma>_def by auto
+          from ts True show ?thesis unfolding id unfolding x snd_conv
+            by (auto simp add: list_all2_conv_all_nth)
+        next
+          case False
+          hence id: "\<sigma> x = (SOME t. t : \<iota> in \<T>(?C))" unfolding x \<sigma>_def by auto
+          from decide_nonempty_sorts(1)[OF distC dec] s
+          have "\<exists> t. t : \<iota> in \<T>(?C)" by (auto elim!: not_empty_sortE simp: S_def)
+          from someI_ex[OF this] have "\<sigma> x : \<iota> in \<T>(?C)" unfolding id .
+          thus ?thesis unfolding x by auto
+        qed
+      qed
+      from pat id ssigma
+      have "Fun f ts \<in> ?L" by auto
+    }
+    thus "?R \<subseteq> ?L" unfolding basic_terms_def by auto
+  qed
+  thus ?thesis unfolding S_def pats_def by auto
+qed
+
+
 theorem decide_pat_complete_lhss:
   fixes C D :: "(('f \<times> 's list) \<times> 's) list" and lhss :: "('f,'v)term list"
   assumes "decide_pat_complete_lhss C D lhss = return b" 
@@ -104,74 +184,17 @@ proof -
   also note wf_pats_complete_iff[OF wf]
   also have "pat_list ` set P = { { {(pat,lhs)} | lhs. lhs \<in> set lhss} | pat. pat \<in> set pats}"
     unfolding pat_list_def P_def by (auto simp: image_comp)
-  finally have "b \<longleftrightarrow>
-     Ball { pat \<cdot> \<sigma> | pat \<sigma>. pat \<in> set pats \<and> \<sigma> :\<^sub>s {x : \<iota> in \<V>. \<iota> \<in> set S} \<rightarrow> \<T>(?C)} ?match_lhs" (is "_ = Ball ?L _")
+  also have "(\<forall>f :\<^sub>s {x : \<iota> in \<V>. \<iota> \<in> set S} \<rightarrow> \<T>(map_of C).
+   \<forall>pp\<in>{{{(pat, lhs)} |lhs. lhs \<in> set lhss} |pat. pat \<in> set pats}.
+      \<exists>mp\<in>pp. match_complete_wrt f mp) = Ball { pat \<cdot> \<sigma> | pat \<sigma>. pat \<in> set pats \<and> \<sigma> :\<^sub>s {x : \<iota> in \<V>. \<iota> \<in> set S} \<rightarrow> \<T>(?C)} ?match_lhs" (is "_ = Ball ?L _")
     apply (simp add: imp_ex match_complete_wrt_def matches_def Bex_def conj_commute
         imp_conjL flip:ex_simps(1) all_simps(6) split: prod.splits
         cong: all_cong1 ex_cong1 conj_cong imp_cong)
     apply (subst all_comm)
     by (simp add: ac_simps verit_bool_simplify(4) o_def)
-  also have "?L = \<B>(?C,?D,\<emptyset>)" (is "_ = ?R")
-  proof 
-    {
-      fix pat and \<sigma>
-      assume pat: "pat \<in> set pats" and subst: "\<sigma> :\<^sub>s {x : \<iota> in \<V>. \<iota> \<in> set S} \<rightarrow> \<T>(?C)"
-      from pat[unfolded pats_def] obtain f ss s where pat: "pat = Fun f (map Var (zip [0..<length ss] ss))" 
-        and inDs: "((f,ss),s) \<in> set D" by auto
-      from distD inDs have f: "f : ss \<rightarrow> s in ?D" unfolding fun_hastype_def by simp
-      {
-        fix i
-        assume i: "i < length ss" 
-        hence "ss ! i \<in> set ss" by auto
-        with inDs foo have "ss ! i \<in> set S" by auto
-        then
-        have "\<sigma> (i, ss ! i) : ss ! i in \<T>(?C)"
-          by (auto intro!: sorted_mapD[OF subst] simp: hastype_restrict)
-      } note ssigma = this
-      define ts where "ts = (map (\<lambda> i. \<sigma> (i, ss ! i)) [0..<length ss])" 
-      have ts: "ts :\<^sub>l ss in \<T>(?C)" unfolding list_all2_conv_all_nth ts_def using ssigma by auto
-      have pat: "pat \<cdot> \<sigma> = Fun f ts" 
-        unfolding pat ts_def by (auto intro: nth_equalityI)
-      from pat f ts have "pat \<cdot> \<sigma> \<in> ?R" unfolding basic_terms_def by auto
-    }
-    thus "?L \<subseteq> ?R" by auto
-    {
-      fix f ss s and ts
-      assume f: "f : ss \<rightarrow> s in ?D" and ts: "ts :\<^sub>l ss in \<T>(?C)" 
-      from ts have len: "length ts = length ss" by (metis list_all2_lengthD)
-      define pat where "pat = Fun f (map Var (zip [0..<length ss] ss))"
-      from f have "((f,ss),s) \<in> set D" unfolding fun_hastype_def by (metis map_of_SomeD)
-      hence pat: "pat \<in> set pats" unfolding pat_def pats_def by force
-      define \<sigma> where "\<sigma> x = (case x of (i,s) \<Rightarrow> if i < length ss \<and> s = ss ! i then ts ! i else 
-        (SOME t. t : s in \<T>(?C)))" for x
-      have id: "Fun f ts = pat \<cdot> \<sigma>" unfolding pat_def using len
-        by (auto intro!: nth_equalityI simp: \<sigma>_def)
-      have ssigma: "\<sigma> :\<^sub>s {x : \<iota> in \<V>. \<iota> \<in> set S} \<rightarrow> \<T>(?C)" 
-      proof (intro sorted_mapI)
-        fix x \<iota>
-        assume "x : \<iota> in {x : \<iota> in \<V>. \<iota> \<in> set S}"
-        then have "\<iota> = snd x" and s: "\<iota> \<in> set S" by auto
-        then obtain i where x: "x = (i,\<iota>)" by (cases x, auto)
-        show "\<sigma> x : \<iota> in \<T>(?C)" 
-        proof (cases "i < length ss \<and> \<iota> = ss ! i")
-          case True
-          hence id: "\<sigma> x = ts ! i" unfolding x \<sigma>_def by auto
-          from ts True show ?thesis unfolding id unfolding x snd_conv
-            by (auto simp add: list_all2_conv_all_nth)
-        next
-          case False
-          hence id: "\<sigma> x = (SOME t. t : \<iota> in \<T>(?C))" unfolding x \<sigma>_def by auto
-          from decide_nonempty_sorts(1)[OF dist(1) dec] s
-          have "\<exists> t. t : \<iota> in \<T>(?C)" by (auto elim!: not_empty_sortE)
-          from someI_ex[OF this] have "\<sigma> x : \<iota> in \<T>(?C)" unfolding id .
-          thus ?thesis unfolding x by auto
-        qed
-      qed
-      from pat id ssigma
-      have "Fun f ts \<in> ?L" by auto
-    }
-    thus "?R \<subseteq> ?L" unfolding basic_terms_def by auto
-  qed
+  also have "?L = \<B>(?C,?D,\<emptyset>)" 
+    by (subst basic_terms_map_of[OF distD dist foo[unfolded S_def] dec[unfolded S_def]],
+      auto simp: S_def pats_def)
   finally show ?thesis unfolding pat_complete_lhss_def by blast
 qed
 
@@ -190,7 +213,6 @@ definition decide_pat_complete_linear_lhss ::
   }" 
 
 
-(* TODO: pull out common steps from non-linear case in proof below *)
 theorem decide_pat_complete_linear_lhss:
   fixes C D :: "(('f \<times> 's list) \<times> 's) list" and lhss :: "('f,'v)term list"
   assumes "decide_pat_complete_linear_lhss C D lhss = return b" 
@@ -255,74 +277,17 @@ proof -
   also note wf_pats_complete_iff[OF wf]
   also have "pat_list ` set P = { { {(pat,lhs)} | lhs. lhs \<in> set lhss} | pat. pat \<in> set pats}"
     unfolding pat_list_def P_def by (auto simp: image_comp)
-  finally have "b \<longleftrightarrow>
-     Ball { pat \<cdot> \<sigma> | pat \<sigma>. pat \<in> set pats \<and> \<sigma> :\<^sub>s {x : \<iota> in \<V>. \<iota> \<in> set S} \<rightarrow> \<T>(?C)} ?match_lhs" (is "_ = Ball ?L _")
+  also have "(\<forall>f :\<^sub>s {x : \<iota> in \<V>. \<iota> \<in> set S} \<rightarrow> \<T>(map_of C).
+   \<forall>pp\<in>{{{(pat, lhs)} |lhs. lhs \<in> set lhss} |pat. pat \<in> set pats}.
+      \<exists>mp\<in>pp. match_complete_wrt f mp) = Ball { pat \<cdot> \<sigma> | pat \<sigma>. pat \<in> set pats \<and> \<sigma> :\<^sub>s {x : \<iota> in \<V>. \<iota> \<in> set S} \<rightarrow> \<T>(?C)} ?match_lhs" (is "_ = Ball ?L _")
     apply (simp add: imp_ex match_complete_wrt_def matches_def Bex_def conj_commute
         imp_conjL flip:ex_simps(1) all_simps(6) split: prod.splits
         cong: all_cong1 ex_cong1 conj_cong imp_cong)
     apply (subst all_comm)
     by (simp add: ac_simps verit_bool_simplify(4) o_def)
-  also have "?L = \<B>(?C,?D,\<emptyset>)" (is "_ = ?R")
-  proof 
-    {
-      fix pat and \<sigma>
-      assume pat: "pat \<in> set pats" and subst: "\<sigma> :\<^sub>s {x : \<iota> in \<V>. \<iota> \<in> set S} \<rightarrow> \<T>(?C)"
-      from pat[unfolded pats_def] obtain f ss s where pat: "pat = Fun f (map Var (zip [0..<length ss] ss))" 
-        and inDs: "((f,ss),s) \<in> set D" by auto
-      from distD inDs have f: "f : ss \<rightarrow> s in ?D" unfolding fun_hastype_def by simp
-      {
-        fix i
-        assume i: "i < length ss" 
-        hence "ss ! i \<in> set ss" by auto
-        with inDs foo have "ss ! i \<in> set S" by auto
-        then
-        have "\<sigma> (i, ss ! i) : ss ! i in \<T>(?C)"
-          by (auto intro!: sorted_mapD[OF subst] simp: hastype_restrict)
-      } note ssigma = this
-      define ts where "ts = (map (\<lambda> i. \<sigma> (i, ss ! i)) [0..<length ss])" 
-      have ts: "ts :\<^sub>l ss in \<T>(?C)" unfolding list_all2_conv_all_nth ts_def using ssigma by auto
-      have pat: "pat \<cdot> \<sigma> = Fun f ts" 
-        unfolding pat ts_def by (auto intro: nth_equalityI)
-      from pat f ts have "pat \<cdot> \<sigma> \<in> ?R" unfolding basic_terms_def by auto
-    }
-    thus "?L \<subseteq> ?R" by auto
-    {
-      fix f ss s and ts
-      assume f: "f : ss \<rightarrow> s in ?D" and ts: "ts :\<^sub>l ss in \<T>(?C)" 
-      from ts have len: "length ts = length ss" by (metis list_all2_lengthD)
-      define pat where "pat = Fun f (map Var (zip [0..<length ss] ss))"
-      from f have "((f,ss),s) \<in> set D" unfolding fun_hastype_def by (metis map_of_SomeD)
-      hence pat: "pat \<in> set pats" unfolding pat_def pats_def by force
-      define \<sigma> where "\<sigma> x = (case x of (i,s) \<Rightarrow> if i < length ss \<and> s = ss ! i then ts ! i else 
-        (SOME t. t : s in \<T>(?C)))" for x
-      have id: "Fun f ts = pat \<cdot> \<sigma>" unfolding pat_def using len
-        by (auto intro!: nth_equalityI simp: \<sigma>_def)
-      have ssigma: "\<sigma> :\<^sub>s {x : \<iota> in \<V>. \<iota> \<in> set S} \<rightarrow> \<T>(?C)" 
-      proof (intro sorted_mapI)
-        fix x \<iota>
-        assume "x : \<iota> in {x : \<iota> in \<V>. \<iota> \<in> set S}"
-        then have "\<iota> = snd x" and s: "\<iota> \<in> set S" by auto
-        then obtain i where x: "x = (i,\<iota>)" by (cases x, auto)
-        show "\<sigma> x : \<iota> in \<T>(?C)" 
-        proof (cases "i < length ss \<and> \<iota> = ss ! i")
-          case True
-          hence id: "\<sigma> x = ts ! i" unfolding x \<sigma>_def by auto
-          from ts True show ?thesis unfolding id unfolding x snd_conv
-            by (auto simp add: list_all2_conv_all_nth)
-        next
-          case False
-          hence id: "\<sigma> x = (SOME t. t : \<iota> in \<T>(?C))" unfolding x \<sigma>_def by auto
-          from decide_nonempty_sorts(1)[OF dist(1) dec] s
-          have "\<exists> t. t : \<iota> in \<T>(?C)" by (auto elim!: not_empty_sortE)
-          from someI_ex[OF this] have "\<sigma> x : \<iota> in \<T>(?C)" unfolding id .
-          thus ?thesis unfolding x by auto
-        qed
-      qed
-      from pat id ssigma
-      have "Fun f ts \<in> ?L" by auto
-    }
-    thus "?R \<subseteq> ?L" unfolding basic_terms_def by auto
-  qed
+  also have "?L = \<B>(?C,?D,\<emptyset>)" 
+    by (subst basic_terms_map_of[OF distD dist foo[unfolded S_def] dec[unfolded S_def]],
+      auto simp: S_def pats_def)
   finally show ?thesis unfolding pat_complete_lhss_def by blast
 qed
 
