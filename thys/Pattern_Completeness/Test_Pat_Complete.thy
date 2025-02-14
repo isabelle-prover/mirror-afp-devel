@@ -77,10 +77,13 @@ lemma "\<not> pat_complete_lhss (map_of int_bool) (map_of even_int) (set even_lh
   apply (subst decide_pat_complete_wrapper[of _ _ _ False])
   by eval+
 
+value "decide_pat_complete_linear_lhss int_bool even_int even_lhss_int" 
+
 
 lemma "strong_quasi_reducible (map_of int_bool) (map_of even_int) (set even_lhss_int)" 
   apply (subst decide_strong_quasi_reducible_wrapper[of _ _ _ True])
   by eval+
+
 
 definition "non_lin_lhss = [
   Fun ''f'' [Var ''x'', Var ''x'', Var ''y''],
@@ -95,6 +98,11 @@ lemma "pat_complete_lhss (map_of nat_bool) (map_of [((''f'',[''bool'',''bool'','
 lemma "\<not> pat_complete_lhss (map_of nat_bool) (map_of [((''f'',[''nat'',''nat'',''nat'']),''bool'')]) (set non_lin_lhss)" 
   apply (subst decide_pat_complete_wrapper[of _ _ _ False])
   by eval+
+
+(* the algorithm for linear lhss returns a wrong result here; the reason is that 
+   it does not check that the input is indeed linear *)
+value "decide_pat_complete_linear_lhss nat_bool [((''f'',[''nat'',''nat'',''nat'']),''bool'')] non_lin_lhss" 
+
 
 definition "testproblem (c :: nat) n = (let s = String.implode; s = id;
     c1 = even c;

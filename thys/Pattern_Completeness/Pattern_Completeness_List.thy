@@ -140,6 +140,24 @@ fun pat_inner_lin_impl :: "('f,'v,'s)pat_problem_list \<Rightarrow> ('f,'v,'s)pa
    | Some mp' \<Rightarrow> if mp' = [] then None
        else pat_inner_lin_impl p (mp' # pd))" 
 
+text \<open>We required a solver for (a subset of) integer-difference-logic (IDL). We basically just need
+  comparisons of variables against constants, and difference of two variables.
+  Of course, comparisons of constants can be encoded as differences by using a fresh variable representing 0.
+
+  Note that all variables can be assumed to be finitely bounded, so we only need a solver for 
+  finite IDL search problems.\<close>
+definition idl_smt_solver where
+  "idl_smt_solver s = (\<forall> bnds diffs. (\<forall> x y z. (x,y) \<in> set (concat diffs) \<longrightarrow> z \<in> {x,y} \<longrightarrow> z \<in> fst ` set bnds) 
+     \<longrightarrow> s bnds diffs = (\<exists>\<alpha> :: 'a \<Rightarrow> int.
+    (\<forall> (v,b) \<in> set bnds. 0 \<le> \<alpha> v \<and> \<alpha> v \<le> b) \<and>
+    (\<forall> c \<in> set diffs. \<exists> (v,w) \<in> set c. \<alpha> v \<noteq> \<alpha> w)))" 
+
+definition "bounds_list bnd cnf = (let vars = remdups (concat (concat cnf))
+  in map (\<lambda> v. (v, int (bnd v) - 1)) vars)" 
+
+definition "dist_pairs_list cnf = 
+  (map (\<lambda> c. (List.maps (\<lambda> vs. List.maps (\<lambda> v. map (Pair v) (filter ((\<noteq>) v) vs)) vs) c))) cnf" 
+
 context pattern_completeness_context
 begin
 
@@ -188,11 +206,12 @@ definition pat_complete_lin_impl :: "('f,'v,'s)pats_problem_list \<Rightarrow> b
       n = Suc (max_list (List.maps (map fst o vars_term_list o fst) (concat (concat ps))))
      in pats_lin_impl n ps)" 
 
+
 context 
 fixes
   renNat :: "nat \<Rightarrow> 'v" and 
   renVar :: "'v \<Rightarrow> 'v" and
-  fvf_dp :: "(nat\<times>'s \<Rightarrow> nat) \<Rightarrow> (nat \<times> 's) list list list \<Rightarrow> bool"
+  smt_solver :: "((nat \<times> 's) \<times> int) list \<Rightarrow> ((nat \<times> 's) \<times> (nat \<times> 's)) list list \<Rightarrow> bool" 
 begin
 
 partial_function (tailrec) decomp'_main_loop where 
@@ -245,8 +264,9 @@ partial_function (tailrec) pats_impl :: "nat \<Rightarrow> nat \<Rightarrow> ('f
      | p # ps1 \<Rightarrow> (case pat_impl n nl p of 
          Incomplete \<Rightarrow> False
        | Fin_Var_Form p' \<Rightarrow>
-         if fvf_dp (cd_sort \<circ> snd) (map (map snd) (var_form_of_pat_list p'))
-         then pats_impl n nl ps1 else False
+         let bnd = (cd_sort \<circ> snd); cnf = (map (map snd) (var_form_of_pat_list p'))
+         in if smt_solver (bounds_list bnd cnf) (dist_pairs_list cnf) then False else 
+            pats_impl n nl ps1
        | New_Problems (n',nl',ps2) \<Rightarrow> pats_impl n' nl' (ps2 @ ps1)))"
 
 definition pat_complete_impl :: "('f,'v,'s)pats_problem_list \<Rightarrow> bool" where
@@ -1428,11 +1448,9 @@ qed
 context 
   fixes renVar :: "'v \<Rightarrow> 'v" 
     and renNat  :: "nat \<Rightarrow> 'v" 
-    and fvf_dp :: "(nat\<times>'s \<Rightarrow> nat) \<Rightarrow> (nat \<times> 's) list list list \<Rightarrow> bool" 
+    and idl_solver :: "((nat\<times>'s) \<times> int)list \<Rightarrow> _ \<Rightarrow> bool" 
   assumes renaming_ass: "improved \<Longrightarrow> renaming_funs renNat renVar" 
-    and fvf_dp: "\<And>bnd cnf. improved \<Longrightarrow> fvf_dp bnd cnf \<longleftrightarrow>
-    (\<forall>\<alpha>. (\<forall>v \<in> set (concat (concat cnf)). \<alpha> v < bnd v) \<longrightarrow>
-    (\<exists>c \<in> set cnf. \<forall>vs \<in> set c. UNIQ (\<alpha> ` set vs)))"
+    and idl_solver: "improved \<Longrightarrow> idl_smt_solver idl_solver"
 begin
 
 abbreviation Match_decomp'_impl where "Match_decomp'_impl \<equiv> match_decomp'_impl renNat" 
@@ -1440,8 +1458,8 @@ abbreviation Decomp'_main_loop where "Decomp'_main_loop \<equiv> decomp'_main_lo
 abbreviation Decomp'_impl where "Decomp'_impl \<equiv> decomp'_impl renNat" 
 abbreviation Pat_inner_impl where "Pat_inner_impl \<equiv> pat_inner_impl renNat" 
 abbreviation Pat_impl where "Pat_impl \<equiv> pat_impl renNat" 
-abbreviation Pats_impl where "Pats_impl \<equiv> pats_impl renNat fvf_dp" 
-abbreviation Pat_complete_impl where "Pat_complete_impl \<equiv> pat_complete_impl renNat renVar fvf_dp"
+abbreviation Pats_impl where "Pats_impl \<equiv> pats_impl renNat idl_solver" 
+abbreviation Pat_complete_impl where "Pat_complete_impl \<equiv> pat_complete_impl renNat renVar idl_solver"
 
 definition allowed_vars where "allowed_vars n = (if improved then range renVar \<union> renNat ` {..<n} else UNIV)" 
 
@@ -2686,12 +2704,15 @@ proof (atomize(full), goal_cases)
   qed
 qed
 
-lemma pat_complete_via_fvf_dp:
+lemma non_uniq_image_diff: "\<not> UNIQ (\<alpha> ` set vs) \<longleftrightarrow> (\<exists> v \<in> set vs. \<exists> w \<in> set vs. \<alpha> v \<noteq> \<alpha> w)"
+  by (smt (verit, ccfv_SIG) Uniq_def image_iff)
+
+lemma pat_complete_via_idl_solver:
   assumes impr: "improved"
     and fvf: "finite_var_form_pat C (pat_list pp)"
     and wf: "wf_pat (pat_list pp)"
     and cnf: "cnf = map (map snd) (var_form_of_pat_list pp)"
-  shows "pat_complete C (pat_list pp) \<longleftrightarrow> fvf_dp (cd_sort \<circ> snd) cnf"
+  shows "pat_complete C (pat_list pp) \<longleftrightarrow> \<not> idl_solver (bounds_list (cd_sort \<circ> snd) cnf) (dist_pairs_list cnf)"
 proof-
   note vf = finite_var_form_imp_of_var_form_pat[OF fvf]
   have var_conv: "set (concat (concat cnf)) = tvars_pat (pat_list pp)"
@@ -2703,10 +2724,81 @@ proof-
   from wf[unfolded wf_pat_iff] cd
   have cd_conv: "v \<in> tvars_pat (pat_list pp) \<Longrightarrow> cd_sort (snd v) = card_of_sort C (snd v)"
     for v by auto
-  show ?thesis
-    apply (unfold pat_complete_via_cnf[OF fvf cnf] var_conv fvf_dp[OF impr])
-    by (simp add: cd_conv)
-qed
+  define cd :: "nat \<times> 's \<Rightarrow> nat" where "cd = (cd_sort \<circ> snd)" 
+  define S where "S = set (concat (concat cnf))" 
+  {
+    fix v vs c
+    assume "c \<in> set cnf" "vs \<in> set c" "v \<in> set vs" 
+    hence "v \<in> S" unfolding S_def by auto
+  } note in_S = this
+  have "pat_complete C (pat_list pp) \<longleftrightarrow>
+    (\<forall>\<alpha>. (\<forall>v\<in> S. \<alpha> v < cd v) \<longrightarrow> (\<exists>c\<in>set cnf. \<forall>vs\<in>set c. UNIQ (\<alpha> ` set vs)))" 
+    by (unfold S_def pat_complete_via_cnf[OF fvf cnf] var_conv, simp add: cd_conv cd_def)
+  also have "\<dots> \<longleftrightarrow> \<not> (\<exists> \<alpha>. (\<forall>v\<in> S. \<alpha> v < cd v) \<and> (\<forall> c \<in> set cnf. \<exists>vs\<in>set c. \<not> UNIQ (\<alpha> ` set vs)))" (is "_ \<longleftrightarrow> \<not> ?f") by blast
+  also have "?f \<longleftrightarrow> (\<exists> \<alpha>. (\<forall>v\<in> S. \<alpha> v < cd v) \<and> (\<forall>c\<in>set cnf. \<exists>vs\<in>set c. \<exists>v\<in>set vs. \<exists>w\<in>set vs. \<alpha> v \<noteq> \<alpha> w))" (is "_ \<longleftrightarrow> (\<exists> \<alpha>. ?fN \<alpha>)")
+    unfolding non_uniq_image_diff ..
+  also have "\<dots> \<longleftrightarrow> (\<exists> \<alpha>. (\<forall>v\<in> S. 0 \<le> \<alpha> v \<and> \<alpha> v < int (cd v)) \<and> (\<forall>c\<in>set cnf. \<exists>vs\<in>set c. \<exists>v\<in>set vs. \<exists>w\<in>set vs. \<alpha> v \<noteq> \<alpha> w))" (is "_ \<longleftrightarrow> (\<exists> \<alpha>. ?fZ \<alpha>)")
+  proof
+    assume "\<exists> \<alpha>. ?fN \<alpha>" 
+    then obtain \<alpha> where "?fN \<alpha>" by blast
+    hence "?fZ (int o \<alpha>)" unfolding o_def by auto
+    thus "\<exists> \<alpha>. ?fZ \<alpha>" by blast
+  next
+    assume "\<exists> \<alpha>. ?fZ \<alpha>" 
+    then obtain \<alpha> where alpha: "?fZ \<alpha>" by blast
+    have "?fN (nat o \<alpha>)" unfolding o_def
+    proof (intro conjI ballI)
+      show "v \<in> S \<Longrightarrow> nat (\<alpha> v) < cd v" for v using alpha by auto
+      fix c
+      assume c: "c \<in> set cnf" 
+      with alpha obtain vs v w where vs: "vs\<in>set c" and v: "v\<in>set vs" and w: "w\<in>set vs" and diff: "\<alpha> v \<noteq> \<alpha> w" 
+        by auto
+      from in_S[OF c vs] v w have "v \<in> S" "w \<in> S" by auto
+      with alpha have "\<alpha> v \<ge> 0" "\<alpha> w \<ge> 0" by auto 
+      with diff have "nat (\<alpha> v) \<noteq> nat (\<alpha> w)" by simp
+      with vs v w show "\<exists>vs\<in>set c. \<exists>v\<in>set vs. \<exists>w\<in>set vs. nat (\<alpha> v) \<noteq> nat (\<alpha> w)" by auto
+    qed
+    thus "\<exists> \<alpha>. ?fN \<alpha>" by blast
+  qed
+  also have "\<dots> \<longleftrightarrow> (\<exists> \<alpha>. (\<forall>v\<in> S. 0 \<le> \<alpha> v \<and> \<alpha> v \<le> int (cd v) - 1) \<and> (\<forall>c\<in>set cnf. \<exists>vs\<in>set c. \<exists>v\<in>set vs. \<exists>w\<in>set vs. \<alpha> v \<noteq> \<alpha> w))" 
+    by auto
+  also have "\<dots> = (\<exists>\<alpha>. (\<forall>(v, b)\<in>set (bounds_list cd cnf). 0 \<le> \<alpha> v \<and> \<alpha> v \<le> b) \<and> (\<forall>c\<in>set (dist_pairs_list cnf). \<exists>(v, w)\<in>set c. \<alpha> v \<noteq> \<alpha> w))" 
+    unfolding bounds_list_def Let_def S_def[symmetric] set_map set_remdups
+  proof (intro arg_cong[of _ _ "Ex"] ext arg_cong2[of _ _ _ _ "(\<and>)"], force)
+    fix \<alpha> :: "_ \<Rightarrow> int" 
+    let ?f = "List.maps (\<lambda>vs. List.maps (\<lambda>v. map (Pair v) (filter ((\<noteq>) v) vs)) vs)" 
+    show "(\<forall>c\<in>set cnf. \<exists>vs\<in>set c. \<exists>v\<in>set vs. \<exists>w\<in>set vs. \<alpha> v \<noteq> \<alpha> w) = (\<forall>c\<in>set (dist_pairs_list cnf). \<exists>(v, w)\<in>set c. \<alpha> v \<noteq> \<alpha> w)" (is "?l = ?r")
+    proof 
+      assume ?l
+      show ?r
+      proof
+        fix cf
+        assume "cf \<in> set (dist_pairs_list cnf)" 
+        from this[unfolded dist_pairs_list_def, simplified] obtain c
+          where c: "c \<in> set cnf" and cf: "cf = ?f c" by auto
+        from \<open>?l\<close> c obtain vs v w where "vs\<in>set c" "v\<in>set vs" "w\<in>set vs" and diff: "\<alpha> v \<noteq> \<alpha> w" by auto
+        hence "(v,w) \<in> set cf" unfolding cf List.maps_def by auto
+        with diff show "\<exists>(v, w)\<in>set cf. \<alpha> v \<noteq> \<alpha> w" by auto
+      qed
+    next
+      assume ?r
+      show ?l
+      proof
+        fix c
+        assume "c \<in> set cnf" 
+        hence "?f c \<in> set (dist_pairs_list cnf)" unfolding dist_pairs_list_def by auto
+        with \<open>?r\<close> obtain v w where vw: "(v,w) \<in> set (?f c)" and diff: "\<alpha> v \<noteq> \<alpha> w" by auto
+        thus "\<exists>vs\<in>set c. \<exists>v\<in>set vs. \<exists>w\<in>set vs. \<alpha> v \<noteq> \<alpha> w" unfolding List.maps_def by auto
+      qed
+    qed
+  qed
+  also have "\<dots> = idl_solver (bounds_list cd cnf) (dist_pairs_list cnf)" 
+  proof (rule sym, rule idl_solver[OF \<open>improved\<close>, unfolded idl_smt_solver_def, rule_format])
+    show "(x, y) \<in> set (concat (dist_pairs_list cnf)) \<Longrightarrow> z \<in> {x, y} \<Longrightarrow> z \<in> fst ` set (bounds_list cd cnf)" for x y z
+      unfolding dist_pairs_list_def bounds_list_def List.maps_def by force
+  qed
+  finally show ?thesis unfolding cd_def .
+qed    
 
 text \<open>The soundness property of the implementation, proven by induction
   on the relation that was also used to prove termination of @{term "(\<Rrightarrow>)"}.
@@ -2818,7 +2910,7 @@ proof (insert assms, induct ps arbitrary: n nl rule: wf_induct[OF wf_inv_image[O
         pats_complete C (pats_mset (add_mset (pat_mset_list fvf) (pats_mset_list ps1)))"
         and "wf_pat (pat_mset (pat_mset_list fvf))" unfolding wf_pats_def by auto
       hence "wf_pat (pat_list fvf)" unfolding pat_mset_list by auto
-      note via_fvf = pat_complete_via_fvf_dp[OF ifvf this refl]
+      note via_idl = pat_complete_via_idl_solver[OF ifvf this refl]
       have "(pats_mset_list ps1, add_mset (pat_mset_list fvf) (pats_mset_list ps1)) \<in> \<prec>mul" 
         unfolding rel_pats_def by (simp add: subset_implies_mult)
       with steps_to_rel(2)[OF steps]
@@ -2830,11 +2922,12 @@ proof (insert assms, induct ps arbitrary: n nl rule: wf_induct[OF wf_inv_image[O
       from 1(3) Cons have "\<forall>pp\<in>set ps1. lvar_cond_pp nl (pat_mset_list pp)" by auto
       note IH = IH[OF this]
       with 1(4) Cons have IH: "Pats_impl n nl ps1 = pats_complete C (pat_list ` set ps1)" by auto
+      let ?cnf = "(map (map snd) (var_form_of_pat_list fvf))" 
       from FVF res have "Pats_impl n nl ps =
-        (fvf_dp (cd_sort \<circ> snd) (map (map snd) (var_form_of_pat_list fvf)) \<and> Pats_impl n nl ps1)" 
-        by auto
+        (\<not> idl_solver (bounds_list (cd_sort \<circ> snd) ?cnf) (dist_pairs_list ?cnf) \<and> Pats_impl n nl ps1)" 
+        by (auto simp: Let_def)
       also have "\<dots> = (pat_complete C (pat_list fvf) \<and> pats_complete C (pat_list ` set ps1))" 
-        unfolding via_fvf IH by simp
+        unfolding via_idl IH by simp
       also have "\<dots> = pats_complete C (pats_mset (pats_mset_list ps))" 
         unfolding steps_to_equiv[OF steps, THEN conjunct2]
         by (smt (z3) add_mset_commute comp_def image_iff insert_noteq_member mset_add pat_mset_list
@@ -3125,23 +3218,23 @@ lemmas pat_inner_impl_old_code[code] =
 context
   fixes rn :: "nat \<Rightarrow> 'v"
     and rv :: "'v \<Rightarrow> 'v"
-    and dp :: "(nat \<times> 's \<Rightarrow> nat) \<Rightarrow> (nat \<times> 's) list list list \<Rightarrow> bool" 
+    and idl :: "((nat\<times>'s) \<times> int)list \<Rightarrow> ((nat\<times>'s) \<times> (nat\<times>'s))list list \<Rightarrow> bool" 
 begin
-definition "pat_complete_impl_new = pattern_completeness_context.pat_complete_impl m Cl Is Cd True rn rv dp"
-definition "pats_impl_new = pattern_completeness_context.pats_impl m Cl Is Cd True rn dp"
+definition "pat_complete_impl_new = pattern_completeness_context.pat_complete_impl m Cl Is Cd True rn rv idl"
+definition "pats_impl_new = pattern_completeness_context.pats_impl m Cl Is Cd True rn idl "
 definition "pat_impl_new = pattern_completeness_context.pat_impl m Cl Is True rn" 
 definition "pat_inner_impl_new = pattern_completeness_context.pat_inner_impl Is True rn"  
 definition "match_decomp'_impl_new = pattern_completeness_context.match_decomp'_impl Is True rn"
 definition "find_var_new = find_var True"
 
-lemmas pat_complete_impl_new_code[code] = pattern_completeness_context.pat_complete_impl_def[of m Cl Is Cd True rn rv dp,
+lemmas pat_complete_impl_new_code[code] = pattern_completeness_context.pat_complete_impl_def[of m Cl Is Cd True rn rv idl,
     folded pat_complete_impl_new_def pats_impl_new_def,
     unfolded if_True Let_def]
 
 lemmas pat_impl_new_code[code] = pattern_completeness_context.pat_impl_def[of m Cl Is True rn, 
     folded pat_impl_new_def pat_inner_impl_new_def find_var_new_def]
 
-lemmas pats_impl_new_code[code] = pattern_completeness_context.pats_impl.simps[of m Cl Is Cd True rn dp,
+lemmas pats_impl_new_code[code] = pattern_completeness_context.pats_impl.simps[of m Cl Is Cd True rn idl,
     folded pats_impl_new_def pat_impl_new_def]
 
 lemmas match_decomp'_impl_new_code[code] =
@@ -3227,10 +3320,8 @@ theorem decide_pat_complete_new:
     and non_empty_sorts: "decide_nonempty_sorts (sorts_of_ssig_list Cs) Cs = None" 
     and P: "snd ` \<Union> (vars ` fst ` set (concat (concat P))) \<subseteq> set (sorts_of_ssig_list Cs)"
     and ren: "renaming_funs rn rv" 
-    and fvf_dp: "\<forall>bnd cnf. fvf_dp bnd cnf \<longleftrightarrow>
-    (\<forall>\<alpha>. (\<forall>v \<in> set (concat (concat cnf)). \<alpha> v < bnd v) \<longrightarrow>
-    (\<exists>c \<in> set cnf. \<forall>vs \<in> set c. UNIQ (\<alpha> ` set vs)))"
-  shows "decide_pat_complete_new rn rv fvf_dp Cs P \<longleftrightarrow> pats_complete (map_of Cs) (pat_list ` set P)"
+    and idl: "idl_smt_solver idl"
+  shows "decide_pat_complete_new rn rv idl Cs P \<longleftrightarrow> pats_complete (map_of Cs) (pat_list ` set P)"
     (is "?l \<longleftrightarrow> ?r")
 proof -
   interpret pattern_completeness_list Cs
@@ -3246,7 +3337,7 @@ proof -
   show ?thesis
     apply (unfold decide_pat_complete_new_def Let_def case_prod_beta)
     unfolding pat_complete_impl_new_def
-    using pat_complete_impl[OF ren fvf_dp[rule_format] P]
+    using pat_complete_impl[OF ren idl P]
     by auto
 qed
 
