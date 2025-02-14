@@ -1714,10 +1714,9 @@ proof safe
   }
 qed
 
-text \<open>Conditions when all patterns are reduced to variables,
-   all var-conflicts for finite sorts are between variables (no function symbols),
-   and all var-conflicts give rise to a var-conflict of an infinite sort that occurs at root,
-   moreover, no obvious clashes are present.
+text \<open>A problem is in finite variable form, if only variables occur in the problem and
+   these variable all have a finite sort. Moreover, comparison of variables is only done
+   if they have the same sort.
 \<close>
 
 definition finite_var_form_match :: "('f,'s) ssig \<Rightarrow> ('f,'v,'s)match_problem_set \<Rightarrow> bool" where
