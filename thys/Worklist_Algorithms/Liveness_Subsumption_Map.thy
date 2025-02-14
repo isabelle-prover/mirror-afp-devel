@@ -10,7 +10,7 @@ locale Liveness_Search_Space_Key_Defs =
   fixes subsumes' :: "'v \<Rightarrow> 'v \<Rightarrow> bool" (infix \<open>\<unlhd>\<close> 50)
 begin
 
-sublocale Search_Space_Key_Defs .
+sublocale Search_Space_Key_Defs where empty = undefined and subsumes' = subsumes' .
 
 definition "check_loop_list v ST = (\<exists> v' \<in> set ST. v' \<preceq> v)"
 
