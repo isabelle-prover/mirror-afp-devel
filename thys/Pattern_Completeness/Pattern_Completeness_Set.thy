@@ -53,6 +53,28 @@ proof (induct p arbitrary: t)
   qed auto
 qed auto
 
+lemma removeAll_remdups: "removeAll x (remdups ys) = remdups (removeAll x ys)"
+  by (simp add: remdups_filter removeAll_filter_not_eq)
+
+lemma removeAll_eq_Nil_iff: "removeAll x ys = [] \<longleftrightarrow> (\<forall>y \<in> set ys. y = x)"
+  by (induction ys, auto)
+
+lemma concat_removeAll_Nil: "concat (removeAll [] xss) = concat xss"
+  by (induction xss, auto)
+
+lemma removeAll_eq_imp_concat_eq:
+  assumes "removeAll [] xss = removeAll [] xss'"
+  shows "concat xss = concat xss'"
+  apply (subst (1 2) concat_removeAll_Nil[symmetric])
+  by (simp add: assms)
+
+lemma map_remdups_commute:
+  assumes "inj_on f (set xs)"
+  shows "map f (remdups xs) = remdups (map f xs)"
+  using assms by (induction xs, auto)
+
+lemma Uniq_False: "\<exists>\<^sub>\<le>\<^sub>1 a. False" by (auto intro!: Uniq_I)
+
 abbreviation "UNIQ A \<equiv> \<exists>\<^sub>\<le>\<^sub>1 a. a \<in> A"
 
 lemma Uniq_eq_the_elem:
@@ -117,11 +139,11 @@ type_synonym ('f,'v,'s)pats_problem_set = "('f,'v,'s)pat_problem_set set"
 
 abbreviation (input) bottom :: "('f,'v,'s)pats_problem_set" where "bottom \<equiv> {{}}"
 
-definition tvars_mp :: "('f,'v,'s)match_problem_set \<Rightarrow> (nat \<times> 's) set" where
-  "tvars_mp mp = (\<Union>(t,l) \<in> mp. vars t)"
+definition tvars_match :: "('f,'v,'s)match_problem_set \<Rightarrow> (nat \<times> 's) set" where
+  "tvars_match mp = (\<Union>(t,l) \<in> mp. vars t)"
 
 definition tvars_pat :: "('f,'v,'s)pat_problem_set \<Rightarrow> (nat \<times> 's) set" where
-  "tvars_pat pp = (\<Union>mp \<in> pp. tvars_mp mp)"
+  "tvars_pat pp = (\<Union>mp \<in> pp. tvars_match mp)"
 
 definition tvars_pats :: "('f,'v,'s)pats_problem_set \<Rightarrow> (nat \<times> 's) set" where
   "tvars_pats P = (\<Union>pp \<in> P. tvars_pat pp)"
@@ -135,14 +157,14 @@ definition match_complete_wrt :: "('f,nat \<times> 's,'w)gsubst \<Rightarrow> ('
   "match_complete_wrt \<sigma> mp = (\<exists> \<mu>. \<forall> (t,l) \<in> mp. t \<cdot> \<sigma> = l \<cdot> \<mu>)" 
 
 lemma match_complete_wrt_cong:
-  assumes s: "\<And>x. x \<in> tvars_mp mp \<Longrightarrow> \<sigma> x = \<sigma>' x"
+  assumes s: "\<And>x. x \<in> tvars_match mp \<Longrightarrow> \<sigma> x = \<sigma>' x"
     and mp: "mp = mp'"
   shows "match_complete_wrt \<sigma> mp = match_complete_wrt \<sigma>' mp'"
   apply (unfold match_complete_wrt_def Ball_Pair_conv mp[symmetric])
   apply (intro ex_cong1 all_cong1 imp_cong[OF refl])
 proof-
   fix \<mu> t l assume "(t,l) \<in> mp"
-  with s have "\<forall>x \<in> vars t. \<sigma> x = \<sigma>' x" by (auto simp: tvars_mp_def)
+  with s have "\<forall>x \<in> vars t. \<sigma> x = \<sigma>' x" by (auto simp: tvars_match_def)
   from subst_same_vars[OF this] show "t\<cdot>\<sigma> = l\<cdot>\<mu> \<longleftrightarrow> t\<cdot>\<sigma>' = l\<cdot>\<mu>" by simp
 qed
 
@@ -159,18 +181,18 @@ proof (unfold match_complete_wrt_def)
 qed
 
 lemma match_complete_wrt_o_imp:
-  assumes s: "\<sigma> :\<^sub>s \<V> |` tvars_mp mp \<rightarrow> \<T>(C,\<emptyset>)" and m: "match_complete_wrt (\<sigma> \<circ>\<^sub>s \<tau>) mp"
+  assumes s: "\<sigma> :\<^sub>s \<V> |` tvars_match mp \<rightarrow> \<T>(C,\<emptyset>)" and m: "match_complete_wrt (\<sigma> \<circ>\<^sub>s \<tau>) mp"
   shows "match_complete_wrt \<sigma> mp"
 proof (unfold match_complete_wrt_def)
   from m[unfolded match_complete_wrt_def] obtain \<mu> where eq: "\<forall>(t,l) \<in> mp. t\<cdot>\<sigma>\<cdot>\<tau> = l\<cdot>\<mu>"
     by auto
-  have "\<forall>x \<in> tvars_mp mp. \<sigma> x : snd x in \<T>(C,\<emptyset>)"
+  have "\<forall>x \<in> tvars_match mp. \<sigma> x : snd x in \<T>(C,\<emptyset>)"
     by (auto intro!: sorted_mapD[OF s] simp: hastype_restrict)
-  then have g: "x \<in> tvars_mp mp \<Longrightarrow> ground (\<sigma> x)" for x
+  then have g: "x \<in> tvars_match mp \<Longrightarrow> ground (\<sigma> x)" for x
     by (auto simp: hatype_imp_ground)
   { fix t l
     assume tl: "(t,l) \<in> mp"
-    then have "ground (t\<cdot>\<sigma>)" by (force intro!: g simp: tvars_mp_def)
+    then have "ground (t\<cdot>\<sigma>)" by (force intro!: g simp: tvars_match_def)
     then have "t\<cdot>\<sigma>\<cdot>\<tau>\<cdot>undefined = t\<cdot>\<sigma>" by (metis eval_subst ground_subst_apply)
     with tl eq have "t\<cdot>\<sigma> = l\<cdot>(\<mu> \<circ>\<^sub>s undefined)" by auto
   }
@@ -194,7 +216,7 @@ proof -
   obtain mp where mp: "mp \<in> pp"
     and m: "match_complete_wrt (\<sigma> \<circ>\<^sub>s undefined :: _ \<Rightarrow> (_,unit) term) mp" 
     by auto
-  have "\<sigma> :\<^sub>s \<V> |` tvars_mp mp \<rightarrow> \<T>(C,\<emptyset>)"
+  have "\<sigma> :\<^sub>s \<V> |` tvars_match mp \<rightarrow> \<T>(C,\<emptyset>)"
     apply (rule sorted_map_cmono[OF s])
     using mp
     by (auto simp: tvars_pat_def intro!: restrict_map_mono_right)
@@ -212,7 +234,7 @@ proof (unfold pat_complete_def, safe)
   from r[rule_format, OF this]
   obtain mp where mp: "mp \<in> pp" and m: "match_complete_wrt (\<sigma> \<circ>\<^sub>s undefined::_\<Rightarrow>(_,'v) term) mp" 
     by auto
-  have "\<sigma> :\<^sub>s \<V> |` tvars_mp mp \<rightarrow> \<T>(C)"
+  have "\<sigma> :\<^sub>s \<V> |` tvars_match mp \<rightarrow> \<T>(C)"
     apply (rule sorted_map_cmono[OF s restrict_map_mono_right])
     using mp by (auto simp: tvars_pat_def)
   from match_complete_wrt_o_imp[OF this m] mp
@@ -414,6 +436,7 @@ locale pattern_completeness_context =
     and m :: nat \<comment> \<open>upper bound on arities of constructors\<close>
     and Cl :: "'s \<Rightarrow> ('f \<times> 's list)list" \<comment> \<open>a function to compute all constructors of given sort as list\<close> 
     and inf_sort :: "'s \<Rightarrow> bool" \<comment> \<open>a function to indicate whether a sort is infinite\<close>
+    and cd_sort :: "'s \<Rightarrow> nat" \<comment> \<open>a function to compute finite cardinality of a sort\<close>
     and improved :: bool \<comment> \<open>if improved = False, then FSCD-version of algorithm is used;
                              if improved = True, the better journal version (under development) is used.\<close>
 begin
@@ -495,22 +518,22 @@ subsection \<open>Soundness of the inference rules\<close>
 text \<open>Well-formed matching and pattern problems: all occurring variables 
   (in left-hand sides of matching problems) have a known sort.\<close>
 definition wf_match :: "('f,'v,'s)match_problem_set \<Rightarrow> bool" where
-  "wf_match mp = (snd ` tvars_mp mp \<subseteq> S)" 
+  "wf_match mp = (snd ` tvars_match mp \<subseteq> S)" 
 
-lemma wf_match_iff: "wf_match mp \<longleftrightarrow> (\<forall>(x,\<iota>) \<in> tvars_mp mp. \<iota> \<in> S)"
+lemma wf_match_iff: "wf_match mp \<longleftrightarrow> (\<forall>(x,\<iota>) \<in> tvars_match mp. \<iota> \<in> S)"
   by (auto simp: wf_match_def)
 
-lemma tvars_mp_subst: "tvars_mp (subst_match_problem_set \<sigma> mp) = (\<Union>(t,l) \<in> mp. vars (t\<cdot>\<sigma>))"
-  by (auto simp: tvars_mp_def subst_match_problem_set_def subst_left_def)
+lemma tvars_match_subst: "tvars_match (subst_match_problem_set \<sigma> mp) = (\<Union>(t,l) \<in> mp. vars (t\<cdot>\<sigma>))"
+  by (auto simp: tvars_match_def subst_match_problem_set_def subst_left_def)
 
 lemma wf_match_subst:
-  assumes s: "\<sigma> :\<^sub>s \<V> |` tvars_mp mp \<rightarrow> \<T>(C',{x : \<iota> in \<V>. \<iota> \<in> S})"
+  assumes s: "\<sigma> :\<^sub>s \<V> |` tvars_match mp \<rightarrow> \<T>(C',{x : \<iota> in \<V>. \<iota> \<in> S})"
   shows "wf_match (subst_match_problem_set \<sigma> mp)"
-  apply (unfold wf_match_iff tvars_mp_subst)
+  apply (unfold wf_match_iff tvars_match_subst)
 proof (safe)
   fix t l x \<iota> assume tl: "(t,l) \<in> mp" and xt: "(x,\<iota>) \<in> vars (t\<cdot>\<sigma>)"
   from xt obtain y \<kappa> where y: "(y,\<kappa>) \<in> vars t" and xy: "(x,\<iota>) \<in> vars (\<sigma> (y,\<kappa>))" by (auto simp: vars_term_subst)
-  from tl y have "(y,\<kappa>) : \<kappa> in \<V> |` tvars_mp mp" by (auto simp: hastype_restrict tvars_mp_def)
+  from tl y have "(y,\<kappa>) : \<kappa> in \<V> |` tvars_match mp" by (auto simp: hastype_restrict tvars_match_def)
   from sorted_mapD[OF s this]
   have "\<sigma> (y,\<kappa>) : \<kappa> in \<T>(C',{x : \<iota> in \<V>. \<iota> \<in> S})".
   from hastype_in_Term_imp_vars[OF this xy]
@@ -629,7 +652,7 @@ next
 qed auto
 
 lemma mp_fail_pcorrect1:
-  assumes "mp_fail mp" "\<sigma> :\<^sub>s sort_annotated |` tvars_mp mp \<rightarrow> \<T>(C,X)"
+  assumes "mp_fail mp" "\<sigma> :\<^sub>s sort_annotated |` tvars_match mp \<rightarrow> \<T>(C,X)"
   shows "\<not> match_complete_wrt \<sigma> mp"
   using assms
 proof (induct mp rule: mp_fail.induct)
@@ -671,7 +694,7 @@ next
         using po[THEN vars_term_subt_at] y z by auto
       then
       have "\<sigma> y : snd y in \<T>(C,X)" "\<sigma> z : snd z in \<T>(C,X)"
-        by (auto intro!: *(2)[THEN sorted_mapD] simp: hastype_restrict tvars_mp_def)
+        by (auto intro!: *(2)[THEN sorted_mapD] simp: hastype_restrict tvars_match_def)
       with ty yz show False by (auto simp: has_same_type)
     qed
   qed
@@ -692,16 +715,17 @@ text \<open>For proving partial correctness we need further properties of the fi
    Further all symbols in \<open>C\<close> must have sorts of \<open>S\<close>.
    Finally, \<open>Cl\<close> should precisely compute the constructors of a sort.\<close>
 
-locale pattern_completeness_context_with_assms = pattern_completeness_context S C m Cl inf_sort
+locale pattern_completeness_context_with_assms = pattern_completeness_context S C m Cl inf_sort cd_sort
   for S and C :: "('f,'s)ssig" 
-    and m Cl inf_sort +
+    and m Cl inf_sort cd_sort +
   assumes not_empty_sort: "\<And> s. s \<in> S \<Longrightarrow> \<not> empty_sort C s"
     and C_sub_S: "\<And> f ss s. f : ss \<rightarrow> s in C \<Longrightarrow> insert s (set ss) \<subseteq> S"
     and m: "\<And> f ss s. f : ss \<rightarrow> s in C \<Longrightarrow> length ss \<le> m"
     and finite_C: "finite (dom C)"
     and inf_sort: "\<And>s. s \<in> S \<Longrightarrow> inf_sort s \<longleftrightarrow> \<not> finite_sort C s"
-    and Cl: "\<And> s. set (Cl s) = {(f,ss). f : ss \<rightarrow> s in C}" 
-    and Cl_len: "\<And> \<sigma>. Ball (length ` snd ` set (Cl \<sigma>)) (\<lambda> a. a \<le> m)" 
+    and Cl: "\<And> s. set (Cl s) = {(f,ss). f : ss \<rightarrow> s in C}"
+    and Cl_len: "\<And> \<sigma>. Ball (length ` snd ` set (Cl \<sigma>)) (\<lambda> a. a \<le> m)"
+    and cd: "\<And>s. s \<in> S \<Longrightarrow> cd_sort s = card_of_sort C s"
 begin
 
 lemma sorts_non_empty: "s \<in> S \<Longrightarrow> \<exists> t. t : s in \<T>(C,\<emptyset>)"
@@ -722,7 +746,7 @@ lemmas subst_defs_set =
 text \<open>Preservation of well-formedness\<close>
 
 lemma mp_step_wf: "mp \<rightarrow>\<^sub>s mp' \<Longrightarrow> wf_match mp \<Longrightarrow> wf_match mp'" 
-  unfolding wf_match_def tvars_mp_def
+  unfolding wf_match_def tvars_match_def
 proof (induct mp mp' rule: mp_step.induct)
   case (mp_decompose f ts ls mp)
   then show ?case by (auto dest!: set_zip_leftD)
@@ -763,15 +787,15 @@ next
       unfolding set_conv_nth set_zip by auto
     {
       fix mp y
-      assume mp: "mp \<in> p"  and "y \<in> tvars_mp (subst_left \<tau> ` mp)"
+      assume mp: "mp \<in> p"  and "y \<in> tvars_match (subst_left \<tau> ` mp)"
       then obtain s t where y: "y \<in> vars (s \<cdot> \<tau>)" and st: "(s,t) \<in> mp" 
-        unfolding tvars_mp_def subst_left_def by auto
+        unfolding tvars_match_def subst_left_def by auto
       from y have "y \<in> vars s \<union> set ?xs" unfolding vars_term_subst \<tau>
         by (auto simp: subst_def split: if_splits)
       hence "snd y \<in> snd ` vars s \<union> snd ` set ?xs" by auto
       also have "\<dots> \<subseteq> snd ` vars s \<union> S" using xs by auto
       also have "\<dots> \<subseteq> S" using p mp st
-        unfolding wf_pat_def wf_match_def tvars_mp_def by force
+        unfolding wf_pat_def wf_match_def tvars_match_def by force
       finally have "snd y \<in> S" .
     }
     hence "wf_pat (subst_pat_problem_set \<tau> p)" 
@@ -815,7 +839,7 @@ next
       by (auto intro!: sorted_mapI sorted_mapD[OF s] sorted_mapD[OF \<sigma>g] simp: \<sigma>'_def hastype_restrict)
     from r[rule_format, OF this]
     obtain mp where mp: "mp \<in> pp" and m: "match_complete_wrt \<sigma>' mp" by auto
-    have [simp]: "x \<in> tvars_mp mp \<Longrightarrow> \<sigma> x = \<sigma>' x" for x using mp by (auto simp: \<sigma>'_def tvars_pat_def)
+    have [simp]: "x \<in> tvars_match mp \<Longrightarrow> \<sigma> x = \<sigma>' x" for x using mp by (auto simp: \<sigma>'_def tvars_pat_def)
     from m have "match_complete_wrt \<sigma> mp" by (simp cong: match_complete_wrt_cong)
     with mp show "Bex pp (match_complete_wrt \<sigma>)" by auto
   qed
@@ -1005,7 +1029,7 @@ next
               and *: "p mp \<in> poss (s mp)" "s mp |_ p mp = Var z" "(s mp, Var (x mp)) \<in> mp"
               by auto
             from *(1,2) have "z \<in> vars (s mp)" using vars_term_subt_at by fastforce
-            with *(3) have "z \<in> tvars_mp mp" unfolding tvars_mp_def by force
+            with *(3) have "z \<in> tvars_match mp" unfolding tvars_match_def by force
             with \<open>mp \<in> pp\<close> wf have "snd z \<in> S" unfolding wf_pat_def wf_match_def by auto
             from not_bdd_above_natD[OF inf_sort_not_bdd[OF this, THEN iffD2, OF inf]]
               sorts_non_empty[OF this]
@@ -1338,9 +1362,9 @@ next
         proof (intro term_subst_eq, rule sym, rule \<sigma>\<delta>)
           fix x
           assume x: "x \<in> vars ti"
-          from *(3) x tl mp show "\<not> inf_sort (snd x)" by (auto simp: tvars_pat_def tvars_mp_def) 
+          from *(3) x tl mp show "\<not> inf_sort (snd x)" by (auto simp: tvars_pat_def tvars_match_def) 
           from *(5) x tl mp show "snd x \<in> S" 
-            unfolding wf_pat_def wf_match_def tvars_mp_def by auto
+            unfolding wf_pat_def wf_match_def tvars_match_def by auto
         qed
         also have "\<dots> = li \<cdot> \<mu>" using match[OF tl] .
         finally show "ti \<cdot> \<delta> = li \<cdot> \<mu>" .
@@ -1375,7 +1399,7 @@ next
   then have wfpp: "wf_pat pp" and wfP: "wf_pats P" by (auto simp: wf_pats_def)
   (* This is the step where well-formedness is essential *)
   from wfpp *(2) have x: "snd x \<in> S"
-    unfolding tvars_pat_def tvars_mp_def wf_pat_def wf_match_def by force
+    unfolding tvars_pat_def tvars_match_def wf_pat_def wf_match_def by force
   note def = wf_pat_complete_iff[unfolded match_complete_wrt_def]
   define P' where "P' = {subst_pat_problem_set \<tau> pp |. \<tau> \<in> \<tau>s n x}"
   show ?case
@@ -1552,6 +1576,11 @@ lemma match_of_var_form_of_match:
   using assms
   by (auto simp: var_form_match_def match_of_var_form_def var_form_of_match_def)
 
+lemma tvars_match_var_form:
+  assumes "var_form_match mp"
+  shows "tvars_match mp = {v. \<exists>x. (Var v, Var x) \<in> mp}"
+  using assms by (force simp: var_form_match_def tvars_match_def)
+
 lemma pat_of_var_form_pat:
   assumes "var_form_pat pp"
   shows "pat_of_var_form (var_form_of_pat pp) = pp"
@@ -1559,7 +1588,7 @@ lemma pat_of_var_form_pat:
   by (auto simp: var_form_pat_def var_form_of_pat_def pat_of_var_form_def)
 
 lemma tvars_pat_var_form: "tvars_pat (pat_of_var_form ff) = tvars_var_form_pat ff"
-  by (fastforce simp: tvars_var_form_pat_def tvars_pat_def tvars_mp_def pat_of_var_form_def match_of_var_form_def
+  by (fastforce simp: tvars_var_form_pat_def tvars_pat_def tvars_match_def pat_of_var_form_def match_of_var_form_def
       split: prod.splits)
 
 lemma tvars_var_form_pat:
@@ -1619,7 +1648,7 @@ lemma pat_complete_var_form_nat:
   assumes fin: "\<forall>(x,\<iota>) \<in> tvars_var_form_pat ff. finite_sort C \<iota>"
     and uniq: "\<forall>f \<in> ff. \<forall>x::'v. UNIQ (snd ` f x)"
   shows "pat_complete C (pat_of_var_form ff) \<longleftrightarrow>
-  (\<forall>\<alpha>. (\<forall>(x,\<iota>) \<in> tvars_var_form_pat ff. \<alpha> (x,\<iota>) < card_of_sort C \<iota>) \<longrightarrow>
+  (\<forall>\<alpha>. (\<forall>v \<in> tvars_var_form_pat ff. \<alpha> v < card_of_sort C (snd v)) \<longrightarrow>
   (\<exists>f \<in> ff. \<forall>x. UNIQ (\<alpha> ` f x)))"
   (is "?l \<longleftrightarrow> (\<forall>\<alpha>. ?s \<alpha> \<longrightarrow> ?r \<alpha>)")
 proof safe
@@ -1638,7 +1667,7 @@ proof safe
     obtain f where f: "f \<in> ff" and u: "\<And>x. UNIQ (\<sigma> ` f x)" by auto
     have id: "y \<in> f x \<Longrightarrow> index_of_term C (\<sigma> y) = \<alpha> y" for y x
       using assms a f
-      by (auto simp: \<sigma>_def index_of_term_of_index tvars_var_form_pat_def split: prod.splits)
+      by (force simp: \<sigma>_def index_of_term_of_index tvars_var_form_pat_def Ball_def split: prod.splits)
     then have "\<alpha> ` f x = index_of_term C ` \<sigma> ` f x" for x
       by (auto simp: image_def)
     then have "UNIQ (\<alpha> ` f x)" for x by (simp add: image_Uniq[OF u])
@@ -1745,7 +1774,7 @@ qed
 lemma finite_var_form_pat_pat_complete:
   assumes fvf: "finite_var_form_pat C pp"
   shows "pat_complete C pp \<longleftrightarrow>
-    (\<forall>\<alpha>. (\<forall>(y,\<iota>) \<in> tvars_pat pp. \<alpha> (y,\<iota>) < card_of_sort C \<iota>) \<longrightarrow>
+    (\<forall>\<alpha>. (\<forall>v \<in> tvars_pat pp. \<alpha> v < card_of_sort C (snd v)) \<longrightarrow>
     (\<exists>mp \<in> pp. \<forall>x. UNIQ {\<alpha> y |y. (Var y, Var x) \<in> mp}))"
 proof-
   note vf = finite_var_form_imp_of_var_form_pat[OF fvf]
@@ -1759,7 +1788,7 @@ proof-
       fix y \<iota>
       assume y: "(y,\<iota>) \<in> tvars_pat pp"
       from y obtain mp t l where mp: "mp \<in> pp" and tl:"(t,l) \<in> mp" and yt: "(y, \<iota>) \<in> vars t"
-        by (auto simp: tvars_pat_def tvars_mp_def)
+        by (auto simp: tvars_pat_def tvars_match_def)
       from finite_var_form_patD[OF fvf mp tl] yt
       show "finite_sort C \<iota>" by auto
     qed

@@ -91,6 +91,24 @@ datatype ('f,'v,'s)pat_impl_result = Incomplete
   | New_Problems "nat \<times> nat \<times> ('f,'v,'s)pat_problem_list list" 
   | Fin_Var_Form "('f,'v,'s)pat_problem_list" 
 
+text \<open>Transforming finite variable forms:\<close>
+
+definition "tvars_match_list = remdups \<circ> concat \<circ> map (var_list_term \<circ> fst)"
+
+definition "tvars_pat_list = remdups \<circ> concat \<circ> map tvars_match_list"
+
+definition var_form_of_match_list where
+  "var_form_of_match_list mp = [(x, remdups [v. (Var v, l) \<leftarrow> mp, l = Var x]). Var x \<leftarrow> remdups (map snd mp)]"
+
+definition match_of_var_form_list where
+  "match_of_var_form_list mpv = concat [[(Var v, Var x). v \<leftarrow> vs]. (x,vs) \<leftarrow> mpv]"
+
+definition var_form_of_pat_list where
+  "var_form_of_pat_list = map var_form_of_match_list"
+
+definition pat_of_var_form_list where
+  "pat_of_var_form_list = map match_of_var_form_list"
+
 context pattern_completeness_context
 begin
 
@@ -131,7 +149,7 @@ context
 fixes
   renNat :: "nat \<Rightarrow> 'v" and 
   renVar :: "'v \<Rightarrow> 'v" and
-  fvf_dp :: "('f,'v,'s)pat_problem_list \<Rightarrow> bool" 
+  fvf_dp :: "(nat\<times>'s \<Rightarrow> nat) \<Rightarrow> (nat \<times> 's) list list list \<Rightarrow> bool"
 begin
 
 partial_function (tailrec) decomp'_main_loop where 
@@ -183,7 +201,9 @@ partial_function (tailrec) pats_impl :: "nat \<Rightarrow> nat \<Rightarrow> ('f
   "pats_impl n nl ps = (case ps of [] \<Rightarrow> True
      | p # ps1 \<Rightarrow> (case pat_impl n nl p of 
          Incomplete \<Rightarrow> False
-       | Fin_Var_Form p' \<Rightarrow> if fvf_dp p' then pats_impl n nl ps1 else False
+       | Fin_Var_Form p' \<Rightarrow>
+         if fvf_dp (cd_sort \<circ> snd) (map (map snd) (var_form_of_pat_list p'))
+         then pats_impl n nl ps1 else False
        | New_Problems (n',nl',ps2) \<Rightarrow> pats_impl n' nl' (ps2 @ ps1)))"
 
 definition pat_complete_impl :: "('f,'v,'s)pats_problem_list \<Rightarrow> bool" where
@@ -274,6 +294,142 @@ lemma mp_rx_append: "mp_rx (xs @ ys, b) = mp_rx (xs,b) + mp_rx (ys,b)"
 lemma mp_rx_Cons: "mp_rx (p # xs, b) = mp_list (case p of (x, ts) \<Rightarrow> map (\<lambda>t. (t, Var x)) ts) 
   + mp_rx (xs,b)" 
   unfolding mp_rx_def List.maps_def by auto
+
+lemma set_tvars_match_list: "set (tvars_match_list mp) = tvars_match (set mp)"
+  by (auto simp: tvars_match_list_def tvars_match_def)
+
+lemma set_tvars_pat_list: "set (tvars_pat_list pp) = tvars_pat (pat_list pp)"
+  by (simp add: tvars_pat_list_def tvars_pat_def set_tvars_match_list pat_list_def)
+
+lemma var_form_match_list: "var_form_match (set (match_of_var_form_list mpv))"
+  by (auto simp: var_form_match_def match_of_var_form_list_def)
+
+lemma match_of_var_form_of_match_list:
+  assumes "var_form_match (set mp)"
+  shows "set (match_of_var_form_list (var_form_of_match_list mp)) = set mp"
+  using assms
+  by (force simp: match_of_var_form_list_def var_form_of_match_list_def var_form_match_def)
+
+lemma var_form_of_match_list_same:
+  "(x, vs) \<in> set (var_form_of_match_list mp) \<Longrightarrow>
+   (x, vs') \<in> set (var_form_of_match_list mp) \<Longrightarrow> vs = vs'"
+      by (auto simp: var_form_of_match_list_def)
+
+lemma var_form_pat_list: "var_form_pat (pat_list (pat_of_var_form_list ppv))"
+  by (simp add: var_form_pat_def pat_list_def pat_of_var_form_list_def
+      var_form_match_list)
+
+lemma pat_of_var_form_of_pat_list:
+  assumes "var_form_pat (pat_list pp)"
+  shows "pat_list (pat_of_var_form_list (var_form_of_pat_list pp)) = pat_list pp"
+  using assms
+  by (auto simp: var_form_pat_def pat_of_var_form_list_def var_form_of_pat_list_def
+      match_of_var_form_of_match_list pat_list_def image_iff)
+
+lemma in_match_of_var_form_list: "(Var v, Var x) \<in> set (match_of_var_form_list mpv) \<longleftrightarrow>
+  (\<exists>vs. (x,vs) \<in> set mpv \<and> v \<in> set vs)"
+  by (auto simp: match_of_var_form_list_def)
+
+lemma finite_var_form_pat_pat_complete_list:
+  fixes pp::"('f,'v,'s) pat_problem_list" and C
+  assumes fvf: "finite_var_form_pat C (pat_list pp)"
+  shows "pat_complete C (pat_list pp) \<longleftrightarrow>
+  (\<forall>\<alpha>. (\<forall>v \<in> set (tvars_pat_list pp). \<alpha> v < card_of_sort C (snd v)) \<longrightarrow>
+       (\<exists>c \<in> set (map (map snd) (var_form_of_pat_list pp)).
+        \<forall>vs \<in> set c. UNIQ (\<alpha> ` set vs)))"
+proof-
+  from finite_var_form_imp_of_var_form_pat[OF fvf]
+  have vf: "var_form_pat (pat_list pp)".
+  have "(\<exists>mp \<in> pat_list pp. \<forall>x. UNIQ {\<alpha> v |v. (Var v, Var x) \<in> mp}) \<longleftrightarrow>
+    (\<exists>mpv \<in> set (var_form_of_pat_list pp). \<forall>(x,vs) \<in> set mpv. UNIQ (\<alpha> ` set vs))"
+    (is "?l \<longleftrightarrow> ?r")
+    for \<alpha> :: "_ \<Rightarrow> nat"
+  proof safe
+    fix mpv
+    assume "mpv \<in> set (var_form_of_pat_list pp)"
+      and r: "\<forall>(x,vs) \<in> set mpv. UNIQ (\<alpha> ` set vs)"
+    then obtain mp where mp: "mp \<in> set pp" and mpv: "mpv = var_form_of_match_list mp"
+      by (auto simp: var_form_of_pat_list_def)
+    from vf mp have vfm: "var_form_match (set mp)" by (auto simp: var_form_pat_def pat_list_def)
+    note [simp] = match_of_var_form_of_match_list[OF vfm, folded mpv]
+    { fix x vs
+      assume xvs:"(x,vs) \<in> set mpv"
+      from var_form_of_match_list_same[OF xvs[unfolded mpv], folded mpv]
+      have "{\<alpha> v |v. (Var v, Var x) \<in> set (match_of_var_form_list mpv :: ('f,_,_)match_problem_list)} = \<alpha> ` set vs"
+        by (force simp: xvs match_of_var_form_list_def)
+    } note eq = this
+    show ?l
+    proof (intro bexI allI)
+      from mp show "set mp \<in> pat_list pp" by (auto simp: pat_list_def)
+      show "UNIQ {\<alpha> v |v. (Var v, Var x) \<in> set mp}" for x
+      proof (cases "\<exists>vs. (x,vs) \<in> set mpv")
+        case True
+        then obtain vs where xvs: "(x,vs) \<in> set mpv" by auto
+        with r eq show ?thesis by auto
+      next
+        case False
+        then have nin: "(v, Var x) \<notin> set mp" for v :: "('f,_)term"
+          by (auto simp: mpv var_form_of_match_list_def)
+        show ?thesis by (auto simp:nin Uniq_False)
+      qed
+    qed
+  next
+    fix mp
+    assume mp: "mp \<in> pat_list pp" and l: "\<forall>x. UNIQ {\<alpha> v |v. (Var v, Var x) \<in> mp}"
+    from mp obtain mpl where mpl: "mpl \<in> set pp" and mp: "mp = set mpl" by (auto simp: pat_list_def)
+    define mpv where "mpv = var_form_of_match_list mpl"
+    from vf mpl have "var_form_match (set mpl)" by (auto simp: var_form_pat_def pat_list_def)
+    from match_of_var_form_of_match_list[OF this, folded mpv_def mp]
+    have mpeq: "mp = set (match_of_var_form_list mpv)" by simp
+    show ?r
+    proof (unfold Ball_Pair_conv, intro bexI allI impI)
+      from mpl show "mpv \<in> set (var_form_of_pat_list pp)"
+        by (auto simp: mpv_def var_form_of_pat_list_def)
+      fix x vs assume xvs: "(x,vs) \<in> set mpv"
+      with l[rule_format, of x]
+      show "UNIQ (\<alpha> ` set vs)"
+        by (force simp: mpeq in_match_of_var_form_list Uniq_def)
+    qed
+  qed
+  note finite_var_form_pat_pat_complete[OF fvf, unfolded this]
+  note main = this[folded set_tvars_pat_list]
+  also have *: "(\<exists>mpv \<in> set (var_form_of_pat_list pp). \<forall>(x,vs) \<in> set mpv. P \<alpha> vs) \<longleftrightarrow>
+  (\<exists>c \<in> set (map (map snd) (var_form_of_pat_list pp)). \<forall>vs \<in> set c. P \<alpha> vs)" for \<alpha> :: "_ \<Rightarrow> nat" and vf P
+    by (force split: prod.splits)
+  from main
+  show ?thesis by (subst(asm) *, auto)
+qed
+
+lemma pat_complete_via_cnf:
+  assumes fvf: "finite_var_form_pat C (pat_list pp)"
+    and cnf: "cnf = map (map snd) (var_form_of_pat_list pp)"
+  shows "pat_complete C (pat_list pp) \<longleftrightarrow>
+  (\<forall>\<alpha>. (\<forall>v \<in> set (concat (concat cnf)). \<alpha> v < card_of_sort C (snd v)) \<longrightarrow>
+       (\<exists>c \<in> set cnf. \<forall>vs \<in> set c. UNIQ (\<alpha> ` set vs)))"
+proof-
+  have *: "p \<in> set (var_form_of_match_list mp) \<Longrightarrow>
+   set (snd p) = {v. (Var v, Var (fst p)) \<in> set mp}" for p mp
+    by (cases p, auto simp: var_form_of_match_list_def image_iff)
+  note vf = finite_var_form_imp_of_var_form_pat[OF fvf]
+  { fix mp assume "mp \<in> set pp"
+    with vf have vfm: "var_form_match (set mp)"
+      by (auto simp: var_form_pat_def pat_list_def)
+    then have "v \<in> set (tvars_match_list mp) \<longleftrightarrow> (\<exists>x. (Var v, Var x) \<in> set mp)"
+      for v by (auto simp: set_tvars_match_list tvars_match_var_form)
+    then have "set (tvars_match_list mp) = {v | v x. (Var v, Var x) \<in> set mp}"
+      by auto
+    also have "\<dots> = (\<Union>a \<in> set (var_form_of_match_list mp). set (snd a))"
+      by (auto simp: var_form_of_match_list_def)
+    finally have "set (tvars_match_list mp) = \<dots>".
+  } note 2 = this
+  have 3: "(\<Union>mp \<in> set pp. set (tvars_match_list mp)) =
+    (\<Union>mp \<in> set pp. (\<Union>a \<in> set (var_form_of_match_list mp). set (snd a)))" by (simp add: 2)
+  from vf have "set (tvars_pat_list pp) = set (concat (concat cnf))"
+    apply (unfold cnf)
+    by (simp add: tvars_pat_list_def 3 var_form_of_pat_list_def)
+  from finite_var_form_pat_pat_complete_list[OF fvf, unfolded this, folded cnf]
+  show ?thesis.
+qed
 
 context pattern_completeness_context_with_assms
 begin
@@ -772,11 +928,11 @@ qed
 context 
   fixes renVar :: "'v \<Rightarrow> 'v" 
     and renNat  :: "nat \<Rightarrow> 'v" 
-    and fvf_dp :: "('f,'v,'s)pat_problem_list \<Rightarrow> bool" 
+    and fvf_dp :: "(nat\<times>'s \<Rightarrow> nat) \<Rightarrow> (nat \<times> 's) list list list \<Rightarrow> bool" 
   assumes renaming_ass: "improved \<Longrightarrow> renaming_funs renNat renVar" 
-    and fvf_dp: "improved \<Longrightarrow>
-    \<forall>p. finite_var_form_pat C (pat_list p) \<longrightarrow> wf_pat (pat_list p) \<longrightarrow>
-    fvf_dp p \<longleftrightarrow> pat_complete C (pat_list p)" 
+    and fvf_dp: "\<And>bnd cnf. improved \<Longrightarrow> fvf_dp bnd cnf \<longleftrightarrow>
+    (\<forall>\<alpha>. (\<forall>v \<in> set (concat (concat cnf)). \<alpha> v < bnd v) \<longrightarrow>
+    (\<exists>c \<in> set cnf. \<forall>vs \<in> set c. UNIQ (\<alpha> ` set vs)))"
 begin
 
 abbreviation Match_decomp'_impl where "Match_decomp'_impl \<equiv> match_decomp'_impl renNat" 
@@ -785,7 +941,7 @@ abbreviation Decomp'_impl where "Decomp'_impl \<equiv> decomp'_impl renNat"
 abbreviation Pat_inner_impl where "Pat_inner_impl \<equiv> pat_inner_impl renNat" 
 abbreviation Pat_impl where "Pat_impl \<equiv> pat_impl renNat" 
 abbreviation Pats_impl where "Pats_impl \<equiv> pats_impl renNat fvf_dp" 
-abbreviation Pat_complete_impl where "Pat_complete_impl \<equiv> pat_complete_impl renNat renVar fvf_dp" 
+abbreviation Pat_complete_impl where "Pat_complete_impl \<equiv> pat_complete_impl renNat renVar fvf_dp"
 
 definition allowed_vars where "allowed_vars n = (if improved then range renVar \<union> renNat ` {..<n} else UNIV)" 
 
@@ -1704,7 +1860,7 @@ proof (atomize(full), goal_cases)
           note x = Some[unfolded find_var_def]
           let ?concat = "List.maps (\<lambda> (lx,_). lx) no_ivc" 
           have disj: "tvars_disj_pp {n..<n + m} (pat_mset (pat_lr p'))" 
-            using varsp' unfolding tvars_pat_def tvars_disj_pp_def tvars_mp_def by force
+            using varsp' unfolding tvars_pat_def tvars_disj_pp_def tvars_match_def by force
           show "pat_lr p' \<Rightarrow>\<^sub>m mset (map pat_mset_list ps)" 
           proof (cases ?concat)
             case (Cons pair list)
@@ -1824,7 +1980,7 @@ proof (atomize(full), goal_cases)
           assume "(yn,\<iota>) \<in> tvars_pat (\<Union> (pat_list ` set ps))" 
           then obtain pi mp
             where pi: "pi \<in> set ps"
-              and mp: "mp \<in> set pi" and y: "(yn,\<iota>) \<in> tvars_mp (set mp)"
+              and mp: "mp \<in> set pi" and y: "(yn,\<iota>) \<in> tvars_match (set mp)"
             unfolding tvars_pat_def pat_list_def by force
           from pi[unfolded ps_def set_map subst_pat_problem_list_def subst_match_problem_list_def, simplified] 
           obtain \<tau> where tau: "\<tau> \<in> set (\<tau>s_list n x)" and pi: "pi = map (map (subst_left \<tau>)) p'l" by auto
@@ -1832,7 +1988,7 @@ proof (atomize(full), goal_cases)
           obtain info where infoCl: "info \<in> set (Cl (snd x))" and tau: "\<tau> = \<tau>c n x info" by auto
           from Cl_len[of "snd x"] this(1) have len: "length (snd info) \<le> m" by force
           from mp[unfolded pi set_map] obtain mp' where mp': "mp' \<in> set p'l" and mp: "mp = map (subst_left \<tau>) mp'" by auto
-          from y[unfolded mp tvars_mp_def image_comp o_def set_map]
+          from y[unfolded mp tvars_match_def image_comp o_def set_map]
           obtain pair where *: "pair \<in> set mp'" "(yn,\<iota>) \<in> vars (fst (subst_left \<tau> pair))" by auto
           obtain s t where pair: "pair = (s,t)" by force
           from *[unfolded pair] have st: "(s,t) \<in> set mp'" and y: "(yn,\<iota>) \<in> vars (s \<cdot> \<tau>)" unfolding subst_left_def by auto
@@ -1859,7 +2015,7 @@ proof (atomize(full), goal_cases)
             hence "\<tau> z = Var z" unfolding tau by (auto simp: subst_def)
             with y have "z = (yn,\<iota>)" by auto
             with z have y: "(yn,\<iota>) \<in> vars s" by auto
-            with st have "(yn,\<iota>) \<in> tvars_mp (set mp')" unfolding tvars_mp_def by force
+            with st have "(yn,\<iota>) \<in> tvars_match (set mp')" unfolding tvars_match_def by force
             with mp' have "(yn,\<iota>) \<in> tvars_pat (set ` set p'l)" unfolding tvars_pat_def by auto
             also have "\<dots> = tvars_pat (pat_mset (pat_mset_list p'l))" 
               by (rule arg_cong[of _ _ tvars_pat], auto simp: pat_mset_list_def image_comp)
@@ -1963,10 +2119,10 @@ proof (atomize(full), goal_cases)
               fix y
               assume "y \<in> tvars_pat (pat_mset (pat_lr no_ivc))" 
               from this[unfolded pat_lr_def tvars_pat_def]
-              obtain mp where mp_mem: "mp \<in> set no_ivc" and y: "y \<in> tvars_mp (mp_mset (mp_lr mp))" by auto
+              obtain mp where mp_mem: "mp \<in> set no_ivc" and y: "y \<in> tvars_match (mp_mset (mp_lr mp))" by auto
               from no_ivc_probs[OF mp_mem] obtain rx where mp: "mp = ([], rx, False)" 
                 and no_inf: "\<And> x ts t. (x, ts) \<in> set rx \<Longrightarrow> t \<in> set ts \<Longrightarrow> (\<exists>y. t = Var y \<and> \<not> inf_sort (snd y))" by auto
-              from y[unfolded mp tvars_mp_def mp_lr_def split, simplified]
+              from y[unfolded mp tvars_match_def mp_lr_def split, simplified]
               obtain x t where "(t,x) \<in># mp_rx (rx, False)" and y: "y \<in> vars t" by auto
               from this(1)[unfolded mp_rx_def List.maps_def] obtain ts x' where 
                 "(x',ts) \<in> set rx" "t \<in> set ts" by auto
@@ -1997,7 +2153,7 @@ proof (atomize(full), goal_cases)
             fix l x
             assume xl: "(Var x, l) \<in> Mp"
             with Mp mp mp_mem sub have "x \<in> tvars_pat (pat_mset (pat_lr p'))"
-              apply (auto simp: tvars_pat_def pat_lr_def mp_lr_def mp_rx_def tvars_mp_def intro!: bexI[of _ mp])
+              apply (auto simp: tvars_pat_def pat_lr_def mp_lr_def mp_rx_def tvars_match_def intro!: bexI[of _ mp])
               by (metis case_prod_conv term.set_intros(3))
             with varsp' have sxS: "snd x \<in> S" by auto
             from xl[unfolded Mp mp mp_lr_def split mp_rx_def List.maps_def]
@@ -2036,6 +2192,28 @@ qed
 lemma pats_mset_list: "pats_mset (pats_mset_list ps) = pat_list ` set ps" 
   unfolding pat_list_def pat_mset_list_def o_def set_mset_mset set_map
       mset_map image_comp set_image_mset by simp
+
+lemma pat_complete_via_fvf_dp:
+  assumes impr: "improved"
+    and fvf: "finite_var_form_pat C (pat_list pp)"
+    and wf: "wf_pat (pat_list pp)"
+    and cnf: "cnf = map (map snd) (var_form_of_pat_list pp)"
+  shows "pat_complete C (pat_list pp) \<longleftrightarrow> fvf_dp (cd_sort \<circ> snd) cnf"
+proof-
+  note vf = finite_var_form_imp_of_var_form_pat[OF fvf]
+  have var_conv: "set (concat (concat cnf)) = tvars_pat (pat_list pp)"
+    apply (fold tvars_var_form_pat[OF vf])
+    apply (unfold cnf)
+    by (force simp add: tvars_var_form_pat_def var_form_of_pat_list_def
+        var_form_of_match_list_def var_form_of_pat_def
+        var_form_of_match_def pat_list_def)
+  from wf[unfolded wf_pat_iff] cd
+  have cd_conv: "v \<in> tvars_pat (pat_list pp) \<Longrightarrow> cd_sort (snd v) = card_of_sort C (snd v)"
+    for v by auto
+  show ?thesis
+    apply (unfold pat_complete_via_cnf[OF fvf cnf] var_conv fvf_dp[OF impr])
+    by (simp add: cd_conv)
+qed
 
 text \<open>The soundness property of the implementation, proven by induction
   on the relation that was also used to prove termination of @{term "(\<Rrightarrow>)"}.
@@ -2147,8 +2325,7 @@ proof (insert assms, induct ps arbitrary: n nl rule: wf_induct[OF wf_inv_image[O
         pats_complete C (pats_mset (add_mset (pat_mset_list fvf) (pats_mset_list ps1)))"
         and "wf_pat (pat_mset (pat_mset_list fvf))" unfolding wf_pats_def by auto
       hence "wf_pat (pat_list fvf)" unfolding pat_mset_list by auto
-      from fvf_dp[rule_format, OF ifvf this]
-      have fvf_dp: "fvf_dp fvf = pat_complete C (pat_list fvf)" .
+      note via_fvf = pat_complete_via_fvf_dp[OF ifvf this refl]
       have "(pats_mset_list ps1, add_mset (pat_mset_list fvf) (pats_mset_list ps1)) \<in> \<prec>mul" 
         unfolding rel_pats_def by (simp add: subset_implies_mult)
       with steps_to_rel(2)[OF steps]
@@ -2160,10 +2337,11 @@ proof (insert assms, induct ps arbitrary: n nl rule: wf_induct[OF wf_inv_image[O
       from 1(3) Cons have "\<forall>pp\<in>set ps1. lvar_cond_pp nl (pat_mset_list pp)" by auto
       note IH = IH[OF this]
       with 1(4) Cons have IH: "Pats_impl n nl ps1 = pats_complete C (pat_list ` set ps1)" by auto
-      from FVF res have "Pats_impl n nl ps = (fvf_dp fvf \<and> Pats_impl n nl ps1)" 
+      from FVF res have "Pats_impl n nl ps =
+        (fvf_dp (cd_sort \<circ> snd) (map (map snd) (var_form_of_pat_list fvf)) \<and> Pats_impl n nl ps1)" 
         by auto
       also have "\<dots> = (pat_complete C (pat_list fvf) \<and> pats_complete C (pat_list ` set ps1))" 
-        unfolding fvf_dp IH by simp
+        unfolding via_fvf IH by simp
       also have "\<dots> = pats_complete C (pats_mset (pats_mset_list ps))" 
         unfolding steps_to_equiv[OF steps, THEN conjunct2]
         by (smt (z3) add_mset_commute comp_def image_iff insert_noteq_member mset_add pat_mset_list
@@ -2183,14 +2361,14 @@ corollary pat_complete_impl:
   shows "Pat_complete_impl (P :: ('f,'v,'s)pats_problem_list) \<longleftrightarrow> pats_complete C (pat_list ` set P)" 
 proof - 
   have wf: "Ball (pat_list ` set P) wf_pat" 
-    unfolding pat_list_def wf_pat_def wf_match_def tvars_mp_def using wf[unfolded set_concat image_comp] by force
+    unfolding pat_list_def wf_pat_def wf_match_def tvars_match_def using wf[unfolded set_concat image_comp] by force
   let ?l = "(List.maps (map fst o vars_term_list o fst) (concat (concat P)))" 
   define n where "n = Suc (max_list ?l)" 
   have n: "\<forall>p\<in>set P. tvars_pat (pat_list p) \<subseteq> {..<n} \<times> S" 
   proof (safe)
     fix p x \<iota>
     assume p: "p \<in> set P" and xp: "(x,\<iota>) \<in> tvars_pat (pat_list p)" 
-    hence "x \<in> set ?l" unfolding List.maps_def tvars_pat_def tvars_mp_def pat_list_def 
+    hence "x \<in> set ?l" unfolding List.maps_def tvars_pat_def tvars_match_def pat_list_def 
       by force
     from max_list[OF this] have "x < n" unfolding n_def by auto
     thus "x < n" by auto
@@ -2221,7 +2399,7 @@ proof -
         assume "rp \<in> set ?Q" 
         then obtain p where p: "p \<in> set P" and rp: "rp = ?r p" by auto
         have id: "tvars_pat (pat_list rp) = tvars_pat (pat_list p)" 
-          unfolding pat_list_def rp tvars_pat_def tvars_mp_def by force
+          unfolding pat_list_def rp tvars_pat_def tvars_match_def by force
         with n p show "tvars_pat (pat_list rp) \<subseteq> {..<n} \<times> S" by auto
       qed
       show "Ball (pat_list ` set ?Q) wf_pat" 
@@ -2232,7 +2410,7 @@ proof -
           then obtain p where "p \<in> set P" and rp: "rp = ?r p" by auto
           from this(1) wf have "wf_pat (pat_list p)" by auto
           hence "wf_pat (pat_list rp)" unfolding wf_pat_def wf_match_def
-            unfolding pat_list_def rp tvars_mp_def by force
+            unfolding pat_list_def rp tvars_match_def by force
         }
         thus ?thesis by blast
       qed
@@ -2264,10 +2442,10 @@ proof -
       note bex = bex_simps(7) (* (\<exists>x\<in> f ` A. P x) = (\<exists>x\<in> A. P (f x)) *)
       from wf p
       have wfp: "wf_pat (pat_list p)"
-        by (fastforce simp: subset_iff wf_pat_def wf_match_def tvars_mp_def)
+        by (fastforce simp: subset_iff wf_pat_def wf_match_def tvars_match_def)
       from wf p
       have wf2: "wf_pat (pat_list (?r p))"
-        by (fastforce simp: id subset_iff wf_pat_def wf_match_def tvars_mp_def)
+        by (fastforce simp: id subset_iff wf_pat_def wf_match_def tvars_match_def)
       show "pat_complete C (pat_list (?r p)) = pat_complete C (pat_list p)" 
         apply (unfold wf_pat_complete_iff[OF wfp] wf_pat_complete_iff[OF wf2])
         apply (unfold id bex)
@@ -2355,8 +2533,14 @@ lemma compute_inf_sorts: "\<sigma> \<in> compute_inf_sorts Cs \<longleftrightarr
     using nonempty_sort
     by (auto intro!:nonempty_sort simp: fun_hastype_in_map_of[OF dist] dest!: sorts_of_ssig_list(1))
 
+lemma compute_card_sorts: "snd (compute_inf_card_sorts Cs) = card_of_sort (map_of Cs)"
+  apply (rule compute_inf_card_sorts(2)[OF refl _ dist surjective_pairing])
+  by (auto intro!: nonempty_sort simp: fun_hastype_in_map_of[OF dist] dest!: sorts_of_ssig_list(1))
+
 sublocale pattern_completeness_context_with_assms
-  improved "set (sorts_of_ssig_list Cs)" "map_of Cs" "max_arity_list Cs" "constr_list Cs" "\<lambda> s. s \<in> compute_inf_sorts Cs"
+  improved "set (sorts_of_ssig_list Cs)" "map_of Cs" "max_arity_list Cs" "constr_list Cs"
+  "\<lambda> s. s \<in> compute_inf_sorts Cs"
+  "snd (compute_inf_card_sorts Cs)"
   for improved
 proof
   {
@@ -2378,7 +2562,7 @@ proof
     from max_arity_list[OF this] have "length ss \<le> max_arity_list Cs" by auto
   }
   then show m: "\<forall>a\<in>length ` snd ` set (constr_list Cs s). a \<le> max_arity_list Cs" for s by auto
-qed (auto simp: compute_inf_sorts nonempty_sort)
+qed (auto simp: compute_inf_sorts nonempty_sort compute_card_sorts)
 
 thm pat_complete_impl
 
@@ -2396,10 +2580,11 @@ context
   fixes m :: nat \<comment> \<open>upper bound on arities of constructors\<close>
     and Cl :: "'s \<Rightarrow> ('f \<times> 's list)list" \<comment> \<open>a function to compute all constructors of given sort as list\<close> 
     and Is :: "'s \<Rightarrow> bool" \<comment> \<open>a function to indicate whether a sort is infinite\<close>
+    and Cd :: "'s \<Rightarrow> nat" \<comment> \<open>a function to compute finite cardinality of sort\<close>
 begin
 
-definition "pat_complete_impl_old = pattern_completeness_context.pat_complete_impl m Cl Is False undefined undefined undefined" 
-definition "pats_impl_old = pattern_completeness_context.pats_impl m Cl Is False undefined undefined" 
+definition "pat_complete_impl_old = pattern_completeness_context.pat_complete_impl m Cl Is Cd False undefined undefined undefined"
+definition "pats_impl_old = pattern_completeness_context.pats_impl m Cl Is Cd False undefined undefined" 
 definition "pat_impl_old = pattern_completeness_context.pat_impl m Cl Is False undefined" 
 definition "pat_inner_impl_old = pattern_completeness_context.pat_inner_impl Is False undefined"  
 definition "match_decomp'_impl_old = pattern_completeness_context.match_decomp'_impl Is False undefined" 
@@ -2413,7 +2598,7 @@ definition find_var_old :: "('f,'v,'s)match_problem_lr list \<Rightarrow> _" whe
 lemma find_var_old: "find_var False p = Some (find_var_old p)" 
   unfolding find_var_old_def find_var_def if_False by (auto split: list.splits)
 
-lemmas pat_complete_impl_old_code[code] = pattern_completeness_context.pat_complete_impl_def[of m Cl Is False undefined undefined undefined,
+lemmas pat_complete_impl_old_code[code] = pattern_completeness_context.pat_complete_impl_def[of m Cl Is Cd False undefined undefined undefined,
     folded pat_complete_impl_old_def pats_impl_old_def,
     unfolded if_False Let_def]
 
@@ -2427,7 +2612,7 @@ lemma pats_impl_old_code[code]:
      | p # ps1 \<Rightarrow>
          (case pat_impl_old n nl p of Incomplete \<Rightarrow> False
          | New_Problems (n', nl', ps2) \<Rightarrow> pats_impl_old n' nl' (ps2 @ ps1)))" 
-  unfolding pats_impl_old_def pattern_completeness_context.pats_impl.simps[of _ _ _ _ _ _ _ _ ps]
+  unfolding pats_impl_old_def pattern_completeness_context.pats_impl.simps[of _ _ _ _ _ _ _ _ _ ps]
   unfolding pat_impl_old_def[symmetric]
   unfolding pat_impl_old_code
   by (auto split: list.splits option.splits)
@@ -2444,26 +2629,25 @@ lemmas pat_inner_impl_old_code[code] =
 
 
 context
-  fixes
-    rn :: "nat \<Rightarrow> 'v"
+  fixes rn :: "nat \<Rightarrow> 'v"
     and rv :: "'v \<Rightarrow> 'v"
-    and dp :: "('f,'v,'s)pat_problem_list \<Rightarrow> bool" 
+    and dp :: "(nat \<times> 's \<Rightarrow> nat) \<Rightarrow> (nat \<times> 's) list list list \<Rightarrow> bool" 
 begin
-definition "pat_complete_impl_new = pattern_completeness_context.pat_complete_impl m Cl Is True rn rv dp" 
-definition "pats_impl_new = pattern_completeness_context.pats_impl m Cl Is True rn dp" 
+definition "pat_complete_impl_new = pattern_completeness_context.pat_complete_impl m Cl Is Cd True rn rv dp"
+definition "pats_impl_new = pattern_completeness_context.pats_impl m Cl Is Cd True rn dp"
 definition "pat_impl_new = pattern_completeness_context.pat_impl m Cl Is True rn" 
 definition "pat_inner_impl_new = pattern_completeness_context.pat_inner_impl Is True rn"  
 definition "match_decomp'_impl_new = pattern_completeness_context.match_decomp'_impl Is True rn"
 definition "find_var_new = find_var True"
 
-lemmas pat_complete_impl_new_code[code] = pattern_completeness_context.pat_complete_impl_def[of m Cl Is True rn rv dp,
+lemmas pat_complete_impl_new_code[code] = pattern_completeness_context.pat_complete_impl_def[of m Cl Is Cd True rn rv dp,
     folded pat_complete_impl_new_def pats_impl_new_def,
     unfolded if_True Let_def]
 
 lemmas pat_impl_new_code[code] = pattern_completeness_context.pat_impl_def[of m Cl Is True rn, 
     folded pat_impl_new_def pat_inner_impl_new_def find_var_new_def]
 
-lemmas pats_impl_new_code[code] = pattern_completeness_context.pats_impl.simps[of m Cl Is True rn dp,
+lemmas pats_impl_new_code[code] = pattern_completeness_context.pats_impl.simps[of m Cl Is Cd True rn dp,
     folded pats_impl_new_def pat_impl_new_def]
 
 lemmas match_decomp'_impl_new_code[code] =
@@ -2487,8 +2671,8 @@ definition decide_pat_complete :: "(('f \<times> 's list) \<times> 's)list \<Rig
   "decide_pat_complete Cs P = (let 
       m = max_arity_list Cs;
       Cl = constr_list Cs; 
-      IS = compute_inf_sorts Cs
-     in pat_complete_impl_old m Cl (\<lambda> s. s \<in> IS)) P" 
+      (IS,CD) = compute_inf_card_sorts Cs
+     in pat_complete_impl_old m Cl (\<lambda> s. s \<in> IS) CD) P" 
 
 (* the decision procedure of FSCD paper *)
 theorem decide_pat_complete:
@@ -2502,6 +2686,7 @@ proof-
     using dist non_empty_sorts.
   show ?thesis
     unfolding decide_pat_complete_def Let_def pat_complete_impl_old_def
+    apply (unfold case_prod_beta)
     apply (rule pat_complete_impl[OF _ _ P]) by auto
 qed
 
@@ -2513,8 +2698,8 @@ definition decide_pat_complete_new :: "_ \<Rightarrow> _ \<Rightarrow> _ \<Right
   "decide_pat_complete_new rn rv dp Cs P = (let 
       m = max_arity_list Cs;
       Cl = constr_list Cs; 
-      (IS,cd) = compute_inf_card_sorts Cs
-     in pat_complete_impl_new m Cl (\<lambda> s. s \<in> IS)) rn rv dp P" 
+      (IS,CD) = compute_inf_card_sorts Cs
+     in pat_complete_impl_new m Cl (\<lambda> s. s \<in> IS) CD) rn rv dp P" 
 
 definition "fvf_pp_list pp =
   [[y. (t', Var y) \<leftarrow> pp, t' = t]. t \<leftarrow> remdups (map fst pp)]"
@@ -2525,11 +2710,10 @@ theorem decide_pat_complete_new:
     and non_empty_sorts: "decide_nonempty_sorts (sorts_of_ssig_list Cs) Cs = None" 
     and P: "snd ` \<Union> (vars ` fst ` set (concat (concat P))) \<subseteq> set (sorts_of_ssig_list Cs)"
     and ren: "renaming_funs rn rv" 
-    and dp: "\<forall>p.
-      finite_var_form_pat (map_of Cs) (pat_list p) \<longrightarrow>
-      pattern_completeness_context.wf_pat (set (sorts_of_ssig_list Cs)) (pat_list p) \<longrightarrow>
-      dp p \<longleftrightarrow> pat_complete (map_of Cs) (pat_list p)"
-  shows "decide_pat_complete_new rn rv dp Cs P \<longleftrightarrow> pats_complete (map_of Cs) (pat_list ` set P)"
+    and fvf_dp: "\<forall>bnd cnf. fvf_dp bnd cnf \<longleftrightarrow>
+    (\<forall>\<alpha>. (\<forall>v \<in> set (concat (concat cnf)). \<alpha> v < bnd v) \<longrightarrow>
+    (\<exists>c \<in> set cnf. \<forall>vs \<in> set c. UNIQ (\<alpha> ` set vs)))"
+  shows "decide_pat_complete_new rn rv fvf_dp Cs P \<longleftrightarrow> pats_complete (map_of Cs) (pat_list ` set P)"
     (is "?l \<longleftrightarrow> ?r")
 proof -
   interpret pattern_completeness_list Cs
@@ -2541,67 +2725,12 @@ proof -
   obtain inf cd where "compute_inf_card_sorts Cs = (inf,cd)" by force
   with compute_inf_card_sorts(2,3)[OF refl nemp dist this]
   have cics: "compute_inf_card_sorts Cs = (compute_inf_sorts Cs,card_of_sort (map_of Cs))"
-    by (auto simp: compute_inf_sorts_def)
+    by (auto)
   show ?thesis
-    apply (unfold decide_pat_complete_new_def Let_def cics split)
+    apply (unfold decide_pat_complete_new_def Let_def case_prod_beta)
     unfolding pat_complete_impl_new_def
-    using pat_complete_impl[OF ren dp P]
+    using pat_complete_impl[OF ren fvf_dp[rule_format] P]
     by auto
 qed
-
-definition "tvars_mp_list = remdups \<circ> concat \<circ> map (var_list_term \<circ> fst)"
-
-lemma set_tvars_mp_list: "set (tvars_mp_list mp) = tvars_mp (set mp)"
-  by (auto simp: tvars_mp_list_def tvars_mp_def)
-
-definition "tvars_pat_list = remdups \<circ> concat \<circ> map tvars_mp_list"
-
-lemma set_tvars_pat_list: "set (tvars_pat_list pp) = tvars_pat (pat_list pp)"
-  by (simp add: tvars_pat_list_def tvars_pat_def set_tvars_mp_list pat_list_def)
-
-definition var_form_of_match_list where
-  "var_form_of_match_list mp = [(x, remdups [v. (Var v, l) \<leftarrow> mp, l = Var x]). Var x \<leftarrow> remdups (map snd mp)]"
-
-lemma removeAll_remdups: "removeAll x (remdups ys) = remdups (removeAll x ys)"
-  by (simp add: remdups_filter removeAll_filter_not_eq)
-
-lemma removeAll_map: "removeAll fx (map f ys) = map f [y \<leftarrow> ys. f y \<noteq> fx]"
-  by (induction ys, auto)
-
-lemmas term_case_distribR = term.case_distrib[of "\<lambda>f. f x" for x]
-
-lemma removeAll_eq_Nil_iff: "removeAll x ys = [] \<longleftrightarrow> (\<forall>y \<in> set ys. y = x)"
-  by (induction ys, auto)
-
-lemma concat_removeAll_Nil: "concat (removeAll [] xss) = concat xss"
-  by (induction xss, auto)
-
-lemma removeAll_eq_imp_concat_eq:
-  assumes "removeAll [] xss = removeAll [] xss'"
-  shows "concat xss = concat xss'"
-  apply (subst (1 2) concat_removeAll_Nil[symmetric])
-  by (simp add: assms)
-
-lemma map_remdups_commute:
-  assumes "inj_on f (set xs)"
-  shows "map f (remdups xs) = remdups (map f xs)"
-  using assms by (induction xs, auto)
-
-lemma distinct_map_fst_var_form_of_match_list:
-  "distinct (map fst (var_form_of_match_list mp))"
-  apply (auto simp add: var_form_of_match_list_def map_concat distinct_concat_iff o_def
-      term.case_distrib removeAll_filter_not_eq filter_map
-      split: term.splits)
-  apply (fold remdups_filter)
-  apply (subst map_remdups_commute)
-  by (auto intro!: inj_onI split: term.splits)
-
-lemma var_form_of_match_set:
-  "var_form_of_match (set mp) x =
-  (case map_of (var_form_of_match_list mp) x of Some vs \<Rightarrow> set vs | None \<Rightarrow> {})"
-  apply (simp add: var_form_of_match_def distinct_map_fst_var_form_of_match_list[of mp]
-      map_of_eq_None_iff
-      split: option.splits)
-  by (auto simp: var_form_of_match_list_def image_Union)
 
 end

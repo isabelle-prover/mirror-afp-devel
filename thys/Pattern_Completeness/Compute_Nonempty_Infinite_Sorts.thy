@@ -652,8 +652,8 @@ proof -
 qed
 end
 
-definition compute_inf_sorts :: "(('f \<times> 't list) \<times> 't)list \<Rightarrow> 't set" where
-  "compute_inf_sorts Cs = fst (compute_inf_card_sorts Cs)" 
+abbreviation compute_inf_sorts :: "(('f \<times> 't list) \<times> 't)list \<Rightarrow> 't set" where
+  "compute_inf_sorts Cs \<equiv> fst (compute_inf_card_sorts Cs)" 
 
 lemma compute_inf_sorts:
   assumes arg_types_nonempty: "\<forall> f \<tau>s \<tau> \<tau>'. f : \<tau>s \<rightarrow> \<tau> in map_of Cs \<longrightarrow> \<tau>' \<in> set \<tau>s \<longrightarrow> \<not> empty_sort (map_of Cs) \<tau>'"
@@ -661,7 +661,7 @@ lemma compute_inf_sorts:
 shows 
   "compute_inf_sorts Cs = {\<tau>. \<not> bdd_above (size ` {t. t : \<tau> in \<T>(map_of Cs)})}"
   "compute_inf_sorts Cs = {\<tau>. \<not> finite_sort (map_of Cs) \<tau>}"
-  unfolding compute_inf_sorts_def using compute_inf_card_sorts[OF refl assms] 
+  using compute_inf_card_sorts[OF refl assms] 
     by (cases "compute_inf_card_sorts Cs", auto)+
 
 end

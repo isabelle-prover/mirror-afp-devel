@@ -86,7 +86,7 @@ proof -
     using dist dec by (auto simp: S_def)
   from foo
   have wf: "wf_pats (pat_list ` set P)"
-    by (force simp: P_def pats_def wf_pats_def wf_pat_def pat_list_def wf_match_def tvars_mp_def
+    by (force simp: P_def pats_def wf_pats_def wf_pat_def pat_list_def wf_match_def tvars_match_def
         elim!: in_set_zipE)
   let ?match_lhs = "\<lambda>t. \<exists>l \<in> set lhss. l matches t" 
   have "b = pats_complete ?C (pat_list ` set P)"
@@ -224,7 +224,7 @@ proof -
   interpret pattern_completeness_list C
     apply unfold_locales using dist dec.
   have wf: "wf_pats (pat_list ` set P)"
-    by (auto simp: P_def pats_def wf_pats_def wf_pat_def pat_list_def wf_match_def tvars_mp_def
+    by (auto simp: P_def pats_def wf_pats_def wf_pat_def pat_list_def wf_match_def tvars_match_def
         term_and_args_def List.maps_def
         elim!: in_set_zipE intro!: foo[rule_format] split:  prod.splits)
   have *: "pat_list ` set P = { { {(pat,lhs)} | lhs pat. pat \<in> set patL \<and> lhs \<in> set lhss} | patL. patL \<in> set pats}" 
