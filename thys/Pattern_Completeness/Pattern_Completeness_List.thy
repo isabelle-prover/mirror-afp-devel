@@ -155,8 +155,53 @@ definition idl_smt_solver where
 definition "bounds_list bnd cnf = (let vars = remdups (concat (concat cnf))
   in map (\<lambda> v. (v, int (bnd v) - 1)) vars)" 
 
-definition "dist_pairs_list cnf = 
-  (map (\<lambda> c. (List.maps (\<lambda> vs. List.maps (\<lambda> v. map (Pair v) (filter ((\<noteq>) v) vs)) vs) c))) cnf" 
+fun pairs_of_list where 
+  "pairs_of_list [] = []" 
+| "pairs_of_list (x # xs) = map (Pair x) xs @ pairs_of_list xs" 
+
+lemma set_pairs_of_list: "set (pairs_of_list xs) = { (xs ! i, xs ! j) | i j. i < j \<and> j < length xs}" 
+proof (induct xs)
+  case (Cons x xs)
+  have "{((x # xs) ! i, (x # xs) ! j) |i j. i < j \<and> j < length (x # xs)}
+    = Pair x ` set xs \<union> {(xs ! i, xs ! j) | i j. i < j \<and> j < length xs}" (is "?l = ?r")
+  proof 
+    {
+      fix uv
+      assume "uv \<in> ?l" 
+      then obtain i j where *: "uv = ((x # xs) ! i, (x # xs) ! j)" "i < j" "j \<le> length xs" by auto
+      have "uv \<in> ?r" 
+      proof (cases i)
+        case 0
+        hence "uv \<in> Pair x ` set xs" using * by auto
+        thus ?thesis by auto
+      next
+        case (Suc i')
+        then obtain j' where j: "j = Suc j'" "j' < length xs" using * by (cases j, auto)
+        with Suc * show ?thesis by auto
+      qed
+    }
+    thus "?l \<subseteq> ?r" by blast
+    {
+      fix uv
+      assume "uv \<in> ?r" 
+      then consider (x) j where "j < length xs" "uv = (x,xs ! j)" | (ij) i j where "i < j" "j < length xs" "uv = (xs ! i, xs ! j)" 
+        by (auto simp: set_conv_nth)
+      hence "\<exists> i j. i < j \<and> j < Suc (length xs) \<and> uv = ((x # xs) ! i, (x # xs) ! j)" 
+      proof (cases)
+        case (x j)
+        show ?thesis by (rule exI[of _ 0], rule exI[of _ "Suc j"], insert x, auto)
+      next
+        case (ij i j)
+        show ?thesis by (rule exI[of _ "Suc i"], rule exI[of _ "Suc j"], insert ij, auto)
+      qed
+      hence "uv \<in> ?l" by auto
+    }
+    thus "?r \<subseteq> ?l" by blast
+  qed
+  thus ?case using Cons by auto
+qed auto
+
+definition "dist_pairs_list cnf = map (List.maps pairs_of_list) cnf" 
 
 context pattern_completeness_context
 begin
@@ -2766,7 +2811,7 @@ proof-
     unfolding bounds_list_def Let_def S_def[symmetric] set_map set_remdups
   proof (intro arg_cong[of _ _ "Ex"] ext arg_cong2[of _ _ _ _ "(\<and>)"], force)
     fix \<alpha> :: "_ \<Rightarrow> int" 
-    let ?f = "List.maps (\<lambda>vs. List.maps (\<lambda>v. map (Pair v) (filter ((\<noteq>) v) vs)) vs)" 
+    let ?f = "List.maps pairs_of_list" 
     show "(\<forall>c\<in>set cnf. \<exists>vs\<in>set c. \<exists>v\<in>set vs. \<exists>w\<in>set vs. \<alpha> v \<noteq> \<alpha> w) = (\<forall>c\<in>set (dist_pairs_list cnf). \<exists>(v, w)\<in>set c. \<alpha> v \<noteq> \<alpha> w)" (is "?l = ?r")
     proof 
       assume ?l
@@ -2776,8 +2821,16 @@ proof-
         assume "cf \<in> set (dist_pairs_list cnf)" 
         from this[unfolded dist_pairs_list_def, simplified] obtain c
           where c: "c \<in> set cnf" and cf: "cf = ?f c" by auto
-        from \<open>?l\<close> c obtain vs v w where "vs\<in>set c" "v\<in>set vs" "w\<in>set vs" and diff: "\<alpha> v \<noteq> \<alpha> w" by auto
-        hence "(v,w) \<in> set cf" unfolding cf List.maps_def by auto
+        from \<open>?l\<close> c obtain vs v w where vs: "vs\<in>set c" and vw: "v\<in>set vs" "w\<in>set vs" and diff: "\<alpha> v \<noteq> \<alpha> w" by auto
+        from vw obtain i j where ij: "i < length vs" "j < length vs" and vw: "v = vs ! i" "w = vs ! j" 
+          by (auto simp: set_conv_nth)
+        from diff vw have "i \<noteq> j" by auto
+        hence "i < j \<or> j < i" by linarith
+        with diff ij obtain i j where "i < j" "j < length vs" and diff: "\<alpha> (vs ! i) \<noteq> \<alpha> (vs ! j)" 
+          unfolding vw by auto
+        hence "(vs ! i, vs ! j) \<in> set cf" 
+          unfolding cf List.maps_def set_map set_concat image_comp o_def set_pairs_of_list
+          using c vs by auto
         with diff show "\<exists>(v, w)\<in>set cf. \<alpha> v \<noteq> \<alpha> w" by auto
       qed
     next
@@ -2788,14 +2841,16 @@ proof-
         assume "c \<in> set cnf" 
         hence "?f c \<in> set (dist_pairs_list cnf)" unfolding dist_pairs_list_def by auto
         with \<open>?r\<close> obtain v w where vw: "(v,w) \<in> set (?f c)" and diff: "\<alpha> v \<noteq> \<alpha> w" by auto
-        thus "\<exists>vs\<in>set c. \<exists>v\<in>set vs. \<exists>w\<in>set vs. \<alpha> v \<noteq> \<alpha> w" unfolding List.maps_def by auto
+        from vw[unfolded List.maps_def set_concat set_map image_comp o_def set_pairs_of_list] diff
+        show "\<exists>vs\<in>set c. \<exists>v\<in>set vs. \<exists>w\<in>set vs. \<alpha> v \<noteq> \<alpha> w" by force
       qed
     qed
   qed
   also have "\<dots> = idl_solver (bounds_list cd cnf) (dist_pairs_list cnf)" 
   proof (rule sym, rule idl_solver[OF \<open>improved\<close>, unfolded idl_smt_solver_def, rule_format])
     show "(x, y) \<in> set (concat (dist_pairs_list cnf)) \<Longrightarrow> z \<in> {x, y} \<Longrightarrow> z \<in> fst ` set (bounds_list cd cnf)" for x y z
-      unfolding dist_pairs_list_def bounds_list_def List.maps_def by force
+      unfolding dist_pairs_list_def bounds_list_def List.maps_def  set_concat set_map image_comp o_def
+         set_pairs_of_list by force
   qed
   finally show ?thesis unfolding cd_def .
 qed    
@@ -3340,5 +3395,9 @@ proof -
     using pat_complete_impl[OF ren idl P]
     by auto
 qed
+
+export_code decide_pat_complete_lin checking 
+export_code decide_pat_complete checking 
+export_code decide_pat_complete_new checking 
 
 end
