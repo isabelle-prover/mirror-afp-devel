@@ -156,6 +156,7 @@ definition idl_smt_solver where
      \<longrightarrow> (\<forall> v w u. (v,w) \<in> set (concat diffs) \<longrightarrow> u \<in> {v,w} \<longrightarrow> u \<in> fst ` set bnds) 
      \<longrightarrow> (\<forall> v w. (v,w) \<in> set (concat diffs) \<longrightarrow> snd v = snd w) 
      \<longrightarrow> (\<forall> v w b1 b2. (v,b1) \<in> set bnds \<longrightarrow> (w,b2) \<in> set bnds \<longrightarrow> snd v = snd w \<longrightarrow> b1 = b2) 
+     \<longrightarrow> (\<forall> v b. (v,b) \<in> set bnds \<longrightarrow> b \<ge> 0)
      \<longrightarrow> solver bnds diffs = (\<exists>\<alpha> :: 'v \<times> 's \<Rightarrow> int.
     (\<forall> (v,b) \<in> set bnds. 0 \<le> \<alpha> v \<and> \<alpha> v \<le> b) \<and>
     (\<forall> c \<in> set diffs. \<exists> (v,w) \<in> set c. \<alpha> v \<noteq> \<alpha> w)))" 
@@ -2767,6 +2768,7 @@ lemma pat_complete_via_idl_solver:
     and cnf: "cnf = map (map snd) (var_form_of_pat_list pp)"
   shows "pat_complete C (pat_list pp) \<longleftrightarrow> \<not> idl_solver (bounds_list (cd_sort \<circ> snd) cnf) (dist_pairs_list cnf)"
 proof-
+  let ?S = S
   note vf = finite_var_form_imp_of_var_form_pat[OF fvf]
   have var_conv: "set (concat (concat cnf)) = tvars_pat (pat_list pp)"
     apply (fold tvars_var_form_pat[OF vf])
@@ -2865,6 +2867,27 @@ proof-
        (v, b1) \<in> set (bounds_list cd cnf) \<Longrightarrow>
        (w, b2) \<in> set (bounds_list cd cnf) \<Longrightarrow> snd v = snd w \<Longrightarrow> b1 = b2" 
       unfolding bounds_list_def Let_def by (auto simp: cd_def)
+    {
+      fix v b
+      assume "(v, b) \<in> set (bounds_list cd cnf)"
+      from this[unfolded bounds_list_def] 
+      have v: "v \<in> tvars_pat (pat_list pp)" and b: "b = int (cd v) - 1" by (auto simp flip: var_conv)
+      from cd_conv[OF v] b have b: "b = int (card_of_sort C (snd v)) - 1" by (auto simp: cd_def)
+      from wf[unfolded wf_pat_iff, rule_format, OF v] 
+      have vS: "snd v \<in> ?S" by auto
+      from not_empty_sort[OF this] 
+      have nE: "\<not> empty_sort C (snd v)" .
+      from v[unfolded tvars_pat_def tvars_match_def]
+      obtain mp t l where mp: "mp \<in> pat_list pp" and tl: "(t,l) \<in> mp" and vt: "v \<in> vars t" by auto
+      from fvf[unfolded finite_var_form_pat_def] mp have mp: "finite_var_form_match C mp" by auto
+      note mp = mp[unfolded finite_var_form_match_def]
+      from mp[unfolded var_form_match_def] tl obtain x where t: "t = Var x" by auto
+      with vt tl have vl: "(Var v, l) \<in> mp" by auto
+      with mp have "finite_sort C (snd v)" by blast
+      with nE have "card_of_sort C (snd v) > 0" unfolding empty_sort_def finite_sort_def card_of_sort_def 
+        by fastforce
+      thus "0 \<le> b" unfolding b by simp
+    }
     fix v w
     assume "(v, w) \<in> set (concat (dist_pairs_list cnf))" 
     from this[unfolded dist_pairs_list_def List.maps_def, simplified]
