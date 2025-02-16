@@ -1788,10 +1788,9 @@ proof -
       also have "... = order x (([:- c, 1:] * p) \<circ>\<^sub>p q)" 
         unfolding pcompose_mult
         apply (subst order_mult)
-        subgoal 
-          unfolding q_def using assms(1) pcompose_eq_0 root.prems 
-          by (metis One_nat_def degree_pCons_eq_if mult_eq_0_iff
-              one_neq_zero pCons_eq_0_iff right_minus_eq) 
+        apply (metis add_0 assms(1) bot_nat_0.not_eq_extremum degree_pCons_0 degree_pCons_eq
+            diff_eq_eq n_not_Suc_n pCons_eq_0_iff pcompose_eq_0_iff pcompose_mult q_def
+            root(2))
         by simp
       finally show ?case .
     qed

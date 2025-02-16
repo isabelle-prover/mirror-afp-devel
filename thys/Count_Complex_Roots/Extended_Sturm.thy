@@ -3053,11 +3053,9 @@ next
           apply (rule coprime_linear_comp)
           using \<open>coprime s r\<close> by auto
         show "h q \<noteq> 0" "h s \<noteq> 0" " h p \<noteq> 0" " h r \<noteq> 0"
-          using False unfolding h_def 
-          by (subst pcompose_eq_0;auto)+
+          using False by (auto simp: h_def pcompose_eq_0_iff)
         have "h (p * s + q * r) \<noteq> 0"
-          using False unfolding h_def 
-          by (subst pcompose_eq_0;auto)
+          using False by (auto simp: h_def pcompose_eq_0_iff)
         then show "h p * h s + h q * h r \<noteq> 0"
           unfolding h_def pcompose_mult pcompose_add by simp
         show "a < b" by fact
@@ -3531,9 +3529,8 @@ proof -
     then have "pI1 = 0" "pR1 = 0" unfolding gc1_def by auto
     then have "p1 = 0" unfolding pI1_def pR1_def 
       by (metis cpoly_of_decompose map_poly_0)
-    then have "p=0" unfolding p1_def
-      apply (subst (asm) pcompose_eq_0)
-      using \<open>a\<noteq>b\<close> by auto
+    with \<open>a\<noteq>b\<close> have "p=0" unfolding p1_def
+      by (auto simp: pcompose_eq_0_iff)
     then show False using \<open>p\<noteq>0\<close> by auto
   qed
 

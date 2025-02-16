@@ -15,6 +15,9 @@ imports
   Missing_Unsorted
 begin
 
+text \<open>A nice extension rule for polynomials.\<close>
+declare poly_ext[intro]
+
 subsection \<open>Basic Properties\<close>
 
 lemma linear_poly_root: 
