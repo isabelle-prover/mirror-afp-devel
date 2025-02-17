@@ -156,6 +156,7 @@ definition idl_smt_solver where
   "idl_smt_solver solver = (\<forall> bnds diffs. 
      distinct (map fst bnds) 
      \<longrightarrow> (\<forall> v w u. (v,w) \<in> set (concat diffs) \<longrightarrow> u \<in> {v,w} \<longrightarrow> u \<in> fst ` set bnds) 
+     \<longrightarrow> (\<forall> v w. (v,w) \<in> set (concat diffs) \<longrightarrow> v \<noteq> w) 
      \<longrightarrow> (\<forall> v w. (v,w) \<in> set (concat diffs) \<longrightarrow> snd v = snd w) 
      \<longrightarrow> (\<forall> v w b1 b2. (v,b1) \<in> set bnds \<longrightarrow> (w,b2) \<in> set bnds \<longrightarrow> snd v = snd w \<longrightarrow> b1 = b2) 
      \<longrightarrow> (\<forall> v b. (v,b) \<in> set bnds \<longrightarrow> b \<ge> 0)
@@ -2285,7 +2286,8 @@ lemma pat_impl:
     and "res = Fin_Var_Form fvf \<Longrightarrow> improved 
              \<and> (add_mset (pat_mset_list p) P, add_mset (pat_mset_list (pat_of_var_form_list fvf)) P) \<in> \<Rrightarrow>\<^sup>* 
              \<and> finite_var_form_pat C (pat_list (pat_of_var_form_list fvf))
-             \<and> Ball (set fvf) (distinct o map fst)" 
+             \<and> Ball (set fvf) (distinct o map fst)
+             \<and> Ball (set (concat fvf)) (distinct \<circ> snd)" 
 proof (atomize(full), goal_cases)
   case 1
   have wf: "wf_pat_lr []" unfolding wf_pat_lr_def by auto
@@ -2728,8 +2730,30 @@ proof (atomize(full), goal_cases)
           show improved by fact
           show "(add_mset (pat_mset_list p) P, add_mset (?pat fvf) P) \<in> \<Rrightarrow>\<^sup>*" using steps' id by auto
           show "finite_var_form_pat C (pat_list (pat_of_var_form_list fvf))" using fvf_res
-              unfolding id pat_mset_list by auto
+            unfolding id pat_mset_list by auto
           show "Ball (set fvf) (distinct \<circ> map fst)" unfolding id using no_ivc_probs by force
+          show "Ball (set (concat fvf)) (distinct \<circ> snd)" 
+          proof
+            fix xvs
+            assume "xvs \<in> set (concat fvf)" 
+            from this[unfolded id] obtain c where
+              c: "c \<in> set no_ivc" and xvs: "xvs \<in> map_prod id (map the_Var) ` set (fst (snd c))" by auto
+            from no_ivc_probs[OF c] obtain rx where *: 
+              "c = ([], rx, False)" 
+              "Ball (snd ` set rx) wf_ts2" 
+              "(\<forall>x ts t. (x, ts) \<in> set rx \<longrightarrow> t \<in> set ts \<longrightarrow> (\<exists>y. t = Var y \<and> \<not> inf_sort (snd y)))" by blast
+            from xvs[unfolded *(1)]
+            have xvs: "xvs \<in> map_prod id (map the_Var) ` set rx" by auto
+            then obtain x ts where mem: "(x,ts) \<in> set rx" and xvs: "xvs = (x,map the_Var ts)" by auto
+            from *(2) mem have "wf_ts2 ts" by auto 
+            hence dist: "distinct ts" unfolding wf_ts2_def by auto
+            show "(distinct \<circ> snd) xvs" unfolding xvs o_def snd_conv
+                distinct_map
+            proof (rule conjI[OF dist])
+              show "inj_on the_Var (set ts)"   
+                by (auto simp: inj_on_def dest!: *(3)[rule_format, OF mem])
+            qed
+          qed
         qed
       qed
     qed
@@ -2745,6 +2769,7 @@ lemma pat_complete_via_idl_solver:
     and wf: "wf_pat (pat_list pp)"
     and pp: "pp = pat_of_var_form_list fvf" 
     and dist: "Ball (set fvf) (distinct o map fst)" 
+    and dist2: "Ball (set (concat fvf)) (distinct o snd)" 
     and cnf: "cnf = map (map snd) fvf"
   shows "pat_complete C (pat_list pp) \<longleftrightarrow> \<not> idl_solver (bounds_list (cd_sort \<circ> snd) cnf) (dist_pairs_list cnf)"
 proof-
@@ -2839,8 +2864,12 @@ proof-
     from this[unfolded dist_pairs_list_def cnf List.maps_def, simplified]
     obtain c x vs where c: "c \<in> set fvf" and xvs: "(x,vs) \<in> set c" and vw: "(v, w) \<in> set (pairs_of_list vs)" 
       by auto
+    from dist2 c xvs have dist2: "distinct vs" by force
     from vw[unfolded set_pairs_of_list] 
-    have vw: "v \<in> set vs" "w \<in> set vs" by auto
+    obtain i where v: "v = vs ! i" and w: "w =  vs ! Suc i" and i: "Suc i < length vs" by auto
+    from dist2 v w i show "v \<noteq> w" unfolding distinct_conv_nth by simp
+    
+    from v w i have vw: "v \<in> set vs" "w \<in> set vs" by auto
     from fvf[unfolded pp finite_var_form_pat_def pat_list_def pat_of_var_form_list_def] c
     have "finite_var_form_match C (set (match_of_var_form_list c))" by auto
     from this[unfolded finite_var_form_match_def, THEN conjunct2, THEN conjunct1, rule_format, of v "Var x" w]
@@ -2953,7 +2982,8 @@ proof (insert assms, induct ps arbitrary: n nl rule: wf_induct[OF wf_inv_image[O
       from pat_impl(3)[OF FVF] 
       have steps: "(pats_mset_list ps, add_mset (?pat fvf) (pats_mset_list ps1)) \<in> \<Rrightarrow>\<^sup>*" 
         and ifvf: improved "finite_var_form_pat C (?pat' fvf)" 
-        and dist: "Ball (set fvf) (distinct \<circ> map fst)" by auto
+        and dist: "Ball (set fvf) (distinct \<circ> map fst)" 
+        and dist2: "Ball (set (concat fvf)) (distinct \<circ> snd)" by auto
       have "wf_pats (pats_mset (pats_mset_list ps))" 
         using wf unfolding wf_pats_def pats_mset_list .
       from P_steps_pcorrect[OF this steps]
@@ -2974,7 +3004,7 @@ proof (insert assms, induct ps arbitrary: n nl rule: wf_induct[OF wf_inv_image[O
       from 1(3) Cons have "\<forall>pp\<in>set ps1. lvar_cond_pp nl (pat_mset_list pp)" by auto
       note IH = IH[OF this]
       with 1(4) Cons have IH: "Pats_impl n nl ps1 = pats_complete C (pat_list ` set ps1)" by auto
-      note via_idl = pat_complete_via_idl_solver[OF ifvf wf_fvf refl dist refl] 
+      note via_idl = pat_complete_via_idl_solver[OF ifvf wf_fvf refl dist dist2 refl] 
       let ?cnf = "(map (map snd) fvf)" 
       from FVF res have "Pats_impl n nl ps =
         (\<not> idl_solver (bounds_list (cd_sort \<circ> snd) ?cnf) (dist_pairs_list ?cnf) \<and> Pats_impl n nl ps1)" 
