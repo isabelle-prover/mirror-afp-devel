@@ -4,7 +4,7 @@
     <title>{{ .Params.Title }}</title>
     <link>{{ .Permalink }}</link>
     <description>AFP entries in {{ .Params.name }}</description>
- {{ range .Params.entries }}
+    {{- range .Params.entries }}
       {{- range .entries }}
         {{- partial "entry.rss.xml" (page.GetPage (printf "/entries/%s" .)) }}
       {{- end }}

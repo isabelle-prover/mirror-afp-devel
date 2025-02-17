@@ -4,7 +4,7 @@
     <title>Archive of Formal Proofs</title>
     <link>{{ .Permalink }}</link>
     <description>Formal developments in the AFP</description>
-{{ range .Params.entries }}
+    {{- range .Params.entries }}
       {{- range .entries }}
         {{- partial "entry.rss.xml" (page.GetPage (printf "/entries/%s" .)) }}
       {{- end }}

@@ -1,5 +1,5 @@
 {{- define "main" }}
-  {{ $data := .Site.Data.statistics }}
+  {{- $data := .Site.Data.statistics }}
   <table>
     <tr>
       <td class="statsnumber">{{ $data.num_entries }}</td>
@@ -31,25 +31,25 @@
       <th>Used by ? entries</th>
     </tr>
 
-    {{ range $index, $name := $data.top_used }}
-    {{ $entry := page.GetPage (printf "/entries/%s" $name) }}
-    <tr>
-      <td>{{ add $index 1 }}.</td>
-      <td><a href="{{ $entry.RelPermalink }}">{{ $entry.Title | safeHTML }}</a></td>
-      <td>{{ $entry.Params.used_by | len }}</td>
-    </tr>
-    {{ end }}
+    {{- range $index, $name := $data.top_used }}
+      {{- $entry := page.GetPage (printf "/entries/%s" $name) }}
+      <tr>
+        <td>{{ add $index 1 }}.</td>
+        <td><a href="{{ $entry.RelPermalink }}">{{ $entry.Title | safeHTML }}</a></td>
+        <td>{{ $entry.Params.used_by | len }}</td>
+      </tr>
+    {{- end }}
   </table>
 
   <script>
-    const years = [{{ delimit $data.years "," | safeJS }}]
-    const no_articles = [{{ delimit $data.articles_year "," | safeJS }}]
-    const no_loc = [{{ delimit $data.loc_years  "," | safeJS }} ]
-    const no_authors = [{{ delimit $data.author_years  "," | safeJS }}]
-    const no_authors_series = [{{ delimit $data.author_years_cumulative  "," | safeJS }}]
-    const all_articles = [{{ delimit (apply $data.all_articles "printf" "'%s'" ".") "," | safeJS }}]
-    const article_years_unique = [{{ delimit (apply $data.article_years_unique "printf" "'%s'" ".") "," | safeJS }}]
-    const loc_articles = [{{ delimit $data.loc_articles "," | safeJS }}]
+    const years = [{{ delimit $data.years ",\n" | safeJS }}]
+    const no_articles = [{{ delimit $data.articles_year ",\n" | safeJS }}]
+    const no_loc = [{{ delimit $data.loc_years  ",\n" | safeJS }} ]
+    const no_authors = [{{ delimit $data.author_years  ",\n" | safeJS }}]
+    const no_authors_series = [{{ delimit $data.author_years_cumulative  ",\n" | safeJS }}]
+    const all_articles = [{{ delimit (apply $data.all_articles "printf" "'%s'" ".") ",\n" | safeJS }}]
+    const article_years_unique = [{{ delimit (apply $data.article_years_unique "printf" "'%s'" ".") ",\n" | safeJS }}]
+    const loc_articles = [{{ delimit $data.loc_articles ",\n" | safeJS }}]
   </script>
   <h4>Growth in number of entries:</h4>
   <script src="/js/Chart.js"></script>
@@ -58,11 +58,11 @@
   </div>
   <script>
     new Chart(document.getElementById("num-articles-canvas"), {
-      type: 'bar',
+      type: "bar",
       data: {
         labels: years,
         datasets: [{
-          label: 'Size of the AFP in # of entries',
+          label: "Size of the AFP in # of entries",
           data: no_articles,
           backgroundColor: "rgba(46, 45, 78, 1)"
         }],
@@ -87,11 +87,11 @@
   </div>
   <script>
     new Chart(document.getElementById("loc-years-canvas"), {
-      type: 'bar',
+      type: "bar",
       data: {
         labels: years,
         datasets: [{
-          label: 'size of the AFP in lines of code',
+          label: "size of the AFP in lines of code",
           data: no_loc,
           backgroundColor: "rgba(101, 99, 136, 1)"
         }],
@@ -116,16 +116,16 @@
   </div>
   <script>
     new Chart(document.getElementById("author-years-canvas"), {
-      type: 'bar',
+      type: "bar",
       data: {
         labels: years,
         datasets: [{
-          label: 'new authors per year',
+          label: "new authors per year",
           data: no_authors,
           backgroundColor: "rgba(101, 99, 136, 1)"
         },
         {
-          label: 'number of authors contributing (cumulative)',
+          label: "number of authors contributing (cumulative)",
           data: no_authors_series,
           backgroundColor: "rgba(0, 15, 48, 1)"
         }],
@@ -150,13 +150,13 @@
   </div>
   <script>
     new Chart(document.getElementById("loc-articles-canvas"), {
-      type: 'bar',
+      type: "bar",
       data: {
         labels: article_years_unique,
         datasets: [{
-          label: 'loc per article',
+          label: "loc per article",
           data: loc_articles,
-          backgroundColor: 'rgba(101, 99, 136, 1)'
+          backgroundColor: "rgba(101, 99, 136, 1)"
         }]
       },
       options: {
