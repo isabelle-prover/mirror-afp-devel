@@ -51,7 +51,8 @@ proof (atomize(full), goal_cases)
     {
       assume *: "real_alg_show_info x = Sqrt_Info r sq" 
       from this[unfolded id'] have deg: "degree p = 2" by (auto split: if_splits)
-      from degree2_coeffs[OF this] obtain a b c where p: "p = [:c,b,a:]" and a: "a \<noteq> 0" by auto
+      from degree2_coeffs[OF this] obtain a b c where p: "p = [:c,b,a:]" and a: "a \<noteq> 0"
+        by metis
       hence coeffs: "coeff p 0 = c" "coeff p 1 = b" "coeff p (Suc (Suc 0)) = a" "2 = Suc (Suc 0)" by auto
       let ?a = "real_of_int a" 
       let ?b = "real_of_int b"     

@@ -289,7 +289,7 @@ lemma root_info:
   shows "root_info_cond (root_info p) p"
 proof (cases "degree p = 1")
   case deg: True
-  from degree1_coeffs[OF this] obtain a b where p: "p = [:b,a:]" and "a \<noteq> 0" by auto
+  from degree1_coeffs[OF this] obtain a b where p: "p = [:b,a:]" and "a \<noteq> 0" by metis
   from deg have "degree (real_of_int_poly p) = 1" by simp
   from roots1[OF this, unfolded roots1_def] p
   have id: "(ipoly p x = 0) = ((x :: real) = - b / a)" for x by auto

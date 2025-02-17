@@ -850,7 +850,7 @@ context
 begin
 lemma poly_nth_root_0[simp]: "poly_nth_root p = 0 \<longleftrightarrow> p = 0"
   unfolding poly_nth_root_def
-  by (rule pcompose_eq_0, insert n, auto simp: degree_monom_eq)
+  by (metis degree_monom_eq n not_gr0 pcompose_eq_0_iff zero_neq_one)
 
 lemma represents_nth_root:
   assumes y: "y^n = x" and alg: "p represents x"
@@ -1052,7 +1052,7 @@ proof -
   from quotient_of_div[OF quot] have r: "r = of_int n / of_int d" by auto
   from quotient_of_denom_pos[OF quot] have d: "d \<noteq> 0" "d > 0" by auto
   show ?thesis unfolding poly_add_rat_def quot split
-    by (simp add: d pcompose_eq_0)
+    by (simp add: d pcompose_eq_0_iff)
 qed
 
 lemma add_rat_roots: "ipoly (poly_add_rat r p) x = 0 \<longleftrightarrow> ipoly p (x - of_rat r) = 0"
