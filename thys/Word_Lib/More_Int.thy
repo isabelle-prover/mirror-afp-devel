@@ -2,7 +2,6 @@
  * Copyright Brian Huffman, PSU; Jeremy Dawson and Gerwin Klein, NICTA
  *
  * SPDX-License-Identifier: BSD-2-Clause
-Proofs tidied by LCP, 2024-09
  *)
 
 section \<open>More on bitwise operations on integers\<close>
@@ -422,7 +421,7 @@ lemma bintrunc_rest': "(take_bit :: nat \<Rightarrow> int \<Rightarrow> int) n \
 lemma sbintrunc_rest': "(signed_take_bit :: nat \<Rightarrow> int \<Rightarrow> int) n \<circ> (\<lambda>k::int. k div 2) \<circ> (signed_take_bit :: nat \<Rightarrow> int \<Rightarrow> int) n = (\<lambda>k::int. k div 2) \<circ> (signed_take_bit :: nat \<Rightarrow> int \<Rightarrow> int) n"
   by (rule ext) auto
 
-lemma rco_lem: 
+lemma rco_lem:
   assumes "f \<circ> g \<circ> f = g \<circ> f"
   shows "f \<circ> (g \<circ> f) ^^ n = g ^^ n \<circ> f"
 proof (induct n)

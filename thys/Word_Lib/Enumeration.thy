@@ -2,7 +2,6 @@
  * Copyright 2020, Data61, CSIRO (ABN 41 687 119 230)
  *
  * SPDX-License-Identifier: BSD-2-Clause
-Proofs tidied by LCP, 2024-09
  *)
 
 section "Enumeration extensions and alternative definition"
@@ -219,7 +218,7 @@ lemma toEnum_alt_red[simp]:
   "toEnumAlt = (toEnum :: nat \<Rightarrow> 'a :: enumeration_both)"
   by (rule ext) (simp add: enum_alt_rel alt_from_ord_def toEnum_def toEnumAlt_def)
 
-lemma upto_enum_red:               
+lemma upto_enum_red:
   "[(n :: ('a :: enumeration_both)) .e. m] = map toEnum [fromEnum n ..< Suc (fromEnum m)]"
   unfolding upto_enum_def by simp
 
