@@ -27,6 +27,14 @@
             <category>Computer science/Concurrency/Process calculi</category>
             <category>Computer science/Semantics and reasoning</category>
         </item>
+        <item>
+          <title>HOL-CSP Version 2.0</title>
+          <link>https://isa-afp.org/entries/HOL-CSP.html</link>
+          <pubDate>Fri, 26 Apr 2019 00:00:00 +0000</pubDate>
+          <description>HOL-CSP Version 2.0 in the AFP</description>
+            <category>Computer science/Concurrency/Process calculi</category>
+            <category>Computer science/Semantics and reasoning</category>
+        </item>
 
   </channel>
 </rss>
