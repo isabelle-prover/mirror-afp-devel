@@ -1,30 +1,29 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>David Trachtenherz</title>
     <link>https://isa-afp.org/authors/trachtenherz/</link>
-    <description>AFP entries of David Trachtenherz</description>
-        <item>
-          <title>Interval Temporal Logic on Natural Numbers</title>
-          <link>https://isa-afp.org/entries/Nat-Interval-Logic.html</link>
-          <pubDate>Wed, 23 Feb 2011 00:00:00 +0000</pubDate>
-          <description>Interval Temporal Logic on Natural Numbers in the AFP</description>
-            <category>Logic/General logic/Temporal logic</category>
-        </item>
-        <item>
-          <title>Infinite Lists</title>
-          <link>https://isa-afp.org/entries/List-Infinite.html</link>
-          <pubDate>Wed, 23 Feb 2011 00:00:00 +0000</pubDate>
-          <description>Infinite Lists in the AFP</description>
-            <category>Computer science/Data structures</category>
-        </item>
-        <item>
-          <title>AutoFocus Stream Processing for Single-Clocking and Multi-Clocking Semantics</title>
-          <link>https://isa-afp.org/entries/AutoFocus-Stream.html</link>
-          <pubDate>Wed, 23 Feb 2011 00:00:00 +0000</pubDate>
-          <description>AutoFocus Stream Processing for Single-Clocking and Multi-Clocking Semantics in the AFP</description>
-            <category>Computer science/Programming languages/Language definitions</category>
-        </item>
+    <description>AFP entries of David Trachtenherz</description><item>
+  <title>Interval Temporal Logic on Natural Numbers</title>
+  <link>https://isa-afp.org/entries/Nat-Interval-Logic.html</link>
+  <pubDate>Wed, 23 Feb 2011 00:00:00 +0000</pubDate>
+  <description>Interval Temporal Logic on Natural Numbers in the AFP</description>
+    <category>Logic/General logic/Temporal logic</category>
+</item>
+<item>
+  <title>Infinite Lists</title>
+  <link>https://isa-afp.org/entries/List-Infinite.html</link>
+  <pubDate>Wed, 23 Feb 2011 00:00:00 +0000</pubDate>
+  <description>Infinite Lists in the AFP</description>
+    <category>Computer science/Data structures</category>
+</item>
+<item>
+  <title>AutoFocus Stream Processing for Single-Clocking and Multi-Clocking Semantics</title>
+  <link>https://isa-afp.org/entries/AutoFocus-Stream.html</link>
+  <pubDate>Wed, 23 Feb 2011 00:00:00 +0000</pubDate>
+  <description>AutoFocus Stream Processing for Single-Clocking and Multi-Clocking Semantics in the AFP</description>
+    <category>Computer science/Programming languages/Language definitions</category>
+</item>
 
   </channel>
 </rss>

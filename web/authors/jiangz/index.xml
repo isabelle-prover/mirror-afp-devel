@@ -1,16 +1,15 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Zilin Jiang</title>
     <link>https://isa-afp.org/authors/jiangz/</link>
-    <description>AFP entries of Zilin Jiang</description>
-        <item>
-          <title>Two Theorems on Hermitian Matrices</title>
-          <link>https://isa-afp.org/entries/Two_Hermitian_Results.html</link>
-          <pubDate>Sat, 16 Nov 2024 00:00:00 +0000</pubDate>
-          <description>Two Theorems on Hermitian Matrices in the AFP</description>
-            <category>Mathematics/Algebra</category>
-        </item>
+    <description>AFP entries of Zilin Jiang</description><item>
+  <title>Two Theorems on Hermitian Matrices</title>
+  <link>https://isa-afp.org/entries/Two_Hermitian_Results.html</link>
+  <pubDate>Sat, 16 Nov 2024 00:00:00 +0000</pubDate>
+  <description>Two Theorems on Hermitian Matrices in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
 
   </channel>
 </rss>

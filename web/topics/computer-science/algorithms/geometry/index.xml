@@ -1,16 +1,15 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Computer science/Algorithms/Geometry</title>
     <link>https://isa-afp.org/topics/computer-science/algorithms/geometry/</link>
-    <description>AFP entries in Geometry</description>
-         <item>
-          <title>Closest Pair of Points Algorithms</title>
-          <link>https://isa-afp.org/entries/Closest_Pair_Points.html</link>
-          <pubDate>Mon, 13 Jan 2020 00:00:00 +0000</pubDate>
-          <description>Closest Pair of Points Algorithms in the AFP</description>
-            <category>Computer science/Algorithms/Geometry</category>
-        </item>
+    <description>AFP entries in Geometry</description><item>
+  <title>Closest Pair of Points Algorithms</title>
+  <link>https://isa-afp.org/entries/Closest_Pair_Points.html</link>
+  <pubDate>Mon, 13 Jan 2020 00:00:00 +0000</pubDate>
+  <description>Closest Pair of Points Algorithms in the AFP</description>
+    <category>Computer science/Algorithms/Geometry</category>
+</item>
 
   </channel>
 </rss>

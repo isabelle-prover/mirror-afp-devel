@@ -1,18 +1,17 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Leonardo Lima</title>
     <link>https://isa-afp.org/authors/lima/</link>
-    <description>AFP entries of Leonardo Lima</description>
-        <item>
-          <title>A Verified Proof Checker for Metric First-Order Temporal Logic</title>
-          <link>https://isa-afp.org/entries/MFOTL_Checker.html</link>
-          <pubDate>Tue, 16 Apr 2024 00:00:00 +0000</pubDate>
-          <description>A Verified Proof Checker for Metric First-Order Temporal Logic in the AFP</description>
-            <category>Computer science/Data management systems</category>
-            <category>Computer science/Algorithms</category>
-            <category>Logic/General logic/Temporal logic</category>
-        </item>
+    <description>AFP entries of Leonardo Lima</description><item>
+  <title>A Verified Proof Checker for Metric First-Order Temporal Logic</title>
+  <link>https://isa-afp.org/entries/MFOTL_Checker.html</link>
+  <pubDate>Tue, 16 Apr 2024 00:00:00 +0000</pubDate>
+  <description>A Verified Proof Checker for Metric First-Order Temporal Logic in the AFP</description>
+    <category>Computer science/Data management systems</category>
+    <category>Computer science/Algorithms</category>
+    <category>Logic/General logic/Temporal logic</category>
+</item>
 
   </channel>
 </rss>

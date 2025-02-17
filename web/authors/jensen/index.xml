@@ -1,16 +1,15 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Alexander Birch Jensen</title>
     <link>https://isa-afp.org/authors/jensen/</link>
-    <description>AFP entries of Alexander Birch Jensen</description>
-        <item>
-          <title>First-Order Logic According to Harrison</title>
-          <link>https://isa-afp.org/entries/FOL_Harrison.html</link>
-          <pubDate>Sun, 01 Jan 2017 00:00:00 +0000</pubDate>
-          <description>First-Order Logic According to Harrison in the AFP</description>
-            <category>Logic/General logic/Mechanization of proofs</category>
-        </item>
+    <description>AFP entries of Alexander Birch Jensen</description><item>
+  <title>First-Order Logic According to Harrison</title>
+  <link>https://isa-afp.org/entries/FOL_Harrison.html</link>
+  <pubDate>Sun, 01 Jan 2017 00:00:00 +0000</pubDate>
+  <description>First-Order Logic According to Harrison in the AFP</description>
+    <category>Logic/General logic/Mechanization of proofs</category>
+</item>
 
   </channel>
 </rss>

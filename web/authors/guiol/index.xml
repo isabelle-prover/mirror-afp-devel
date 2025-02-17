@@ -1,16 +1,15 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Hervé Guiol</title>
     <link>https://isa-afp.org/authors/guiol/</link>
-    <description>AFP entries of Hervé Guiol</description>
-        <item>
-          <title>The Hahn and Jordan Decomposition Theorems</title>
-          <link>https://isa-afp.org/entries/Hahn_Jordan_Decomposition.html</link>
-          <pubDate>Fri, 19 Nov 2021 00:00:00 +0000</pubDate>
-          <description>The Hahn and Jordan Decomposition Theorems in the AFP</description>
-            <category>Mathematics/Measure and integration</category>
-        </item>
+    <description>AFP entries of Hervé Guiol</description><item>
+  <title>The Hahn and Jordan Decomposition Theorems</title>
+  <link>https://isa-afp.org/entries/Hahn_Jordan_Decomposition.html</link>
+  <pubDate>Fri, 19 Nov 2021 00:00:00 +0000</pubDate>
+  <description>The Hahn and Jordan Decomposition Theorems in the AFP</description>
+    <category>Mathematics/Measure and integration</category>
+</item>
 
   </channel>
 </rss>

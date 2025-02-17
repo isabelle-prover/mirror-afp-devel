@@ -1,16 +1,15 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Chunhan Wu</title>
     <link>https://isa-afp.org/authors/wu/</link>
-    <description>AFP entries of Chunhan Wu</description>
-        <item>
-          <title>The Myhill-Nerode Theorem Based on Regular Expressions</title>
-          <link>https://isa-afp.org/entries/Myhill-Nerode.html</link>
-          <pubDate>Fri, 26 Aug 2011 00:00:00 +0000</pubDate>
-          <description>The Myhill-Nerode Theorem Based on Regular Expressions in the AFP</description>
-            <category>Computer science/Automata and formal languages</category>
-        </item>
+    <description>AFP entries of Chunhan Wu</description><item>
+  <title>The Myhill-Nerode Theorem Based on Regular Expressions</title>
+  <link>https://isa-afp.org/entries/Myhill-Nerode.html</link>
+  <pubDate>Fri, 26 Aug 2011 00:00:00 +0000</pubDate>
+  <description>The Myhill-Nerode Theorem Based on Regular Expressions in the AFP</description>
+    <category>Computer science/Automata and formal languages</category>
+</item>
 
   </channel>
 </rss>

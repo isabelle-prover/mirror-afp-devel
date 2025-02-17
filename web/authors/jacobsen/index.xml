@@ -1,18 +1,17 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Frederik Krogsdal Jacobsen</title>
     <link>https://isa-afp.org/authors/jacobsen/</link>
-    <description>AFP entries of Frederik Krogsdal Jacobsen</description>
-        <item>
-          <title>A Sequent Calculus Prover for First-Order Logic with Functions</title>
-          <link>https://isa-afp.org/entries/FOL_Seq_Calc2.html</link>
-          <pubDate>Mon, 31 Jan 2022 00:00:00 +0000</pubDate>
-          <description>A Sequent Calculus Prover for First-Order Logic with Functions in the AFP</description>
-            <category>Logic/General logic/Classical first-order logic</category>
-            <category>Logic/Proof theory</category>
-            <category>Logic/General logic/Mechanization of proofs</category>
-        </item>
+    <description>AFP entries of Frederik Krogsdal Jacobsen</description><item>
+  <title>A Sequent Calculus Prover for First-Order Logic with Functions</title>
+  <link>https://isa-afp.org/entries/FOL_Seq_Calc2.html</link>
+  <pubDate>Mon, 31 Jan 2022 00:00:00 +0000</pubDate>
+  <description>A Sequent Calculus Prover for First-Order Logic with Functions in the AFP</description>
+    <category>Logic/General logic/Classical first-order logic</category>
+    <category>Logic/Proof theory</category>
+    <category>Logic/General logic/Mechanization of proofs</category>
+</item>
 
   </channel>
 </rss>

@@ -1,17 +1,16 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Axel Bergström</title>
     <link>https://isa-afp.org/authors/bergstroem/</link>
-    <description>AFP entries of Axel Bergström</description>
-        <item>
-          <title>Verified QBF Solving</title>
-          <link>https://isa-afp.org/entries/QBF_Solver_Verification.html</link>
-          <pubDate>Wed, 06 Mar 2024 00:00:00 +0000</pubDate>
-          <description>Verified QBF Solving in the AFP</description>
-            <category>Computer science/Algorithms</category>
-            <category>Logic/General logic/Classical propositional logic</category>
-        </item>
+    <description>AFP entries of Axel Bergström</description><item>
+  <title>Verified QBF Solving</title>
+  <link>https://isa-afp.org/entries/QBF_Solver_Verification.html</link>
+  <pubDate>Wed, 06 Mar 2024 00:00:00 +0000</pubDate>
+  <description>Verified QBF Solving in the AFP</description>
+    <category>Computer science/Algorithms</category>
+    <category>Logic/General logic/Classical propositional logic</category>
+</item>
 
   </channel>
 </rss>

@@ -14,7 +14,8 @@ imports
   HOL.Complex "HOL-Computational_Algebra.Factorial_Ring"
 begin
 
-lemma bernoulli_inequality: assumes x: "-1 \<le> (x :: 'a :: linordered_field)"
+lemma bernoulli_inequality: 
+  assumes x: "-1 \<le> (x :: 'a :: linordered_field)"
   shows "1 + of_nat n * x \<le> (1 + x) ^ n"
 proof (induct n)
   case (Suc n)
@@ -35,7 +36,8 @@ private lemma pow_one: "b ^ x \<le> 1" using power_Suc_less_one[OF b, of "x - 1"
 
 private lemma pow_zero: "0 < b ^ x" using b(1) by simp
 
-lemma exp_tends_to_zero: assumes c: "c > 0"
+lemma exp_tends_to_zero: 
+  assumes c: "c > 0"
   shows "\<exists> x. b ^ x \<le> c" 
 proof (rule ccontr)
   assume not: "\<not> ?thesis"
@@ -209,7 +211,7 @@ lemma set_upt_Suc: "{0 ..< Suc i} = insert i {0 ..< i}"
   by (fact atLeast0_lessThan_Suc)
 
 lemma prod_pow[simp]: "(\<Prod>i = 0..<n. p) = (p :: 'a :: comm_monoid_mult) ^ n"
-  by (induct n, auto simp: set_upt_Suc)
+  by simp
 
 
 (* GCD and LCM part *)
@@ -302,7 +304,8 @@ qed
 lemma quotient_of_nonzero: "snd (quotient_of r) > 0" "snd (quotient_of r) \<noteq> 0"
   using quotient_of_denom_pos' [of r] by simp_all
 
-lemma quotient_of_int_div: assumes q: "quotient_of (of_int x / of_int y) = (a, b)"
+lemma quotient_of_int_div: 
+  assumes q: "quotient_of (of_int x / of_int y) = (a, b)"
   and y: "y \<noteq> 0" 
   shows "\<exists> z. z \<noteq> 0 \<and> x = a * z \<and> y = b * z"
 proof -
@@ -365,7 +368,8 @@ lemma sgn_minus_rat: "sgn (- (x :: rat)) = - sgn x"
 lemma real_of_rat_sgn: "sgn (of_rat x) = real_of_rat (sgn x)"
   unfolding sgn_real_def sgn_rat_def by auto
 
-lemma inverse_le_iff_sgn: assumes sgn: "sgn x = sgn y"
+lemma inverse_le_iff_sgn: 
+  assumes sgn: "sgn x = sgn y"
   shows "(inverse (x :: real) \<le> inverse y) = (y \<le> x)"
 proof (cases "x = 0")
   case True
@@ -391,7 +395,8 @@ next
   qed
 qed
 
-lemma inverse_le_sgn: assumes sgn: "sgn x = sgn y" and xy: "x \<le> (y :: real)"
+lemma inverse_le_sgn: 
+  assumes sgn: "sgn x = sgn y" and xy: "x \<le> (y :: real)"
   shows "inverse y \<le> inverse x"
   using xy inverse_le_iff_sgn[OF sgn] by auto
 
@@ -534,42 +539,22 @@ lemma dvd_times_left_cancel_iff [simp]:
   assumes "a \<noteq> 0"
   shows "a * b dvd a * c \<longleftrightarrow> b dvd c"
     (is "?lhs \<longleftrightarrow> ?rhs")
-proof
-  assume ?lhs
-  then obtain d where "a * c = a * b * d" ..
-  with assms have "c = b * d" by (auto simp add: ac_simps)
-  then show ?rhs ..
-next
-  assume ?rhs
-  then obtain d where "c = b * d" ..
-  then have "a * c = a * b * d" by (simp add: ac_simps)
-  then show ?lhs ..
-qed
+  using assms local.dvd_mult_cancel_left by presburger
 
 lemma dvd_times_right_cancel_iff [simp]:
   assumes "a \<noteq> 0"
   shows "b * a dvd c * a \<longleftrightarrow> b dvd c"
-  using dvd_times_left_cancel_iff [of a b c] assms by (simp add: ac_simps)
-
+  using assms local.dvd_mult_cancel_right by presburger
 
 lemma irreducibleI':
   assumes "a \<noteq> 0" "\<not> a dvd 1" "\<And>b. b dvd a \<Longrightarrow> a dvd b \<or> b dvd 1"
   shows   "irreducible a"
-proof (rule irreducibleI)
-  fix b c assume a_eq: "a = b * c"
-  hence "a dvd b \<or> b dvd 1" by (intro assms) simp_all
-  thus "b dvd 1 \<or> c dvd 1"
-  proof
-    assume "a dvd b"
-    hence "b * c dvd b * 1" by (simp add: a_eq)
-    moreover from \<open>a \<noteq> 0\<close> a_eq have "b \<noteq> 0" by auto
-    ultimately show ?thesis using dvd_times_left_cancel_iff by fastforce
-  qed blast
-qed (simp_all add: assms(1,2))
+  unfolding irreducible_def
+  by (metis assms dvd_times_left_cancel_iff local.dvd_triv_left local.mult_cancel_left1)
 
 lemma irreducible_altdef:
   shows "irreducible x \<longleftrightarrow> x \<noteq> 0 \<and> \<not> x dvd 1 \<and> (\<forall>b. b dvd x \<longrightarrow> x dvd b \<or> b dvd 1)"
-  using irreducibleI'[of x] irreducibleD'[of x] irreducible_not_unit[of x] by auto
+  using local.irreducibleD' irreducibleI' irreducible_def by blast
 
 lemma dvd_mult_unit_iff:
   assumes b: "b dvd 1"
@@ -603,8 +588,8 @@ proof (rule irreducibleI)
   from p_eq have "p dvd a * b" by simp
   with \<open>prime_elem p\<close> have "p dvd a \<or> p dvd b" by (rule prime_elem_dvd_multD)
   with \<open>p = a * b\<close> have "a * b dvd 1 * b \<or> a * b dvd a * 1" by auto
-  thus "a dvd 1 \<or> b dvd 1"
-    by (simp only: dvd_times_left_cancel_iff[OF nz(1)] dvd_times_right_cancel_iff[OF nz(2)])
+  with nz show "a dvd 1 \<or> b dvd 1"
+    using local.dvd_mult_cancel_right local.dvd_times_left_cancel_iff by blast
 qed (insert assms, simp_all add: prime_elem_def)
 
 lemma unit_imp_dvd [dest]: "b dvd 1 \<Longrightarrow> b dvd a"

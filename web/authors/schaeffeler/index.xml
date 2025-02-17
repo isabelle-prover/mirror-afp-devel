@@ -1,24 +1,23 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Maximilian Schäffeler</title>
     <link>https://isa-afp.org/authors/schaeffeler/</link>
-    <description>AFP entries of Maximilian Schäffeler</description>
-        <item>
-          <title>Markov Decision Processes with Rewards</title>
-          <link>https://isa-afp.org/entries/MDP-Rewards.html</link>
-          <pubDate>Thu, 16 Dec 2021 00:00:00 +0000</pubDate>
-          <description>Markov Decision Processes with Rewards in the AFP</description>
-            <category>Mathematics/Probability theory</category>
-        </item>
-        <item>
-          <title>Verified Algorithms for Solving Markov Decision Processes</title>
-          <link>https://isa-afp.org/entries/MDP-Algorithms.html</link>
-          <pubDate>Thu, 16 Dec 2021 00:00:00 +0000</pubDate>
-          <description>Verified Algorithms for Solving Markov Decision Processes in the AFP</description>
-            <category>Mathematics/Probability theory</category>
-            <category>Computer science/Algorithms</category>
-        </item>
+    <description>AFP entries of Maximilian Schäffeler</description><item>
+  <title>Markov Decision Processes with Rewards</title>
+  <link>https://isa-afp.org/entries/MDP-Rewards.html</link>
+  <pubDate>Thu, 16 Dec 2021 00:00:00 +0000</pubDate>
+  <description>Markov Decision Processes with Rewards in the AFP</description>
+    <category>Mathematics/Probability theory</category>
+</item>
+<item>
+  <title>Verified Algorithms for Solving Markov Decision Processes</title>
+  <link>https://isa-afp.org/entries/MDP-Algorithms.html</link>
+  <pubDate>Thu, 16 Dec 2021 00:00:00 +0000</pubDate>
+  <description>Verified Algorithms for Solving Markov Decision Processes in the AFP</description>
+    <category>Mathematics/Probability theory</category>
+    <category>Computer science/Algorithms</category>
+</item>
 
   </channel>
 </rss>

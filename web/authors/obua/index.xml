@@ -1,16 +1,15 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Steven Obua</title>
     <link>https://isa-afp.org/authors/obua/</link>
-    <description>AFP entries of Steven Obua</description>
-        <item>
-          <title>Local Lexing</title>
-          <link>https://isa-afp.org/entries/LocalLexing.html</link>
-          <pubDate>Fri, 28 Apr 2017 00:00:00 +0000</pubDate>
-          <description>Local Lexing in the AFP</description>
-            <category>Computer science/Automata and formal languages</category>
-        </item>
+    <description>AFP entries of Steven Obua</description><item>
+  <title>Local Lexing</title>
+  <link>https://isa-afp.org/entries/LocalLexing.html</link>
+  <pubDate>Fri, 28 Apr 2017 00:00:00 +0000</pubDate>
+  <description>Local Lexing in the AFP</description>
+    <category>Computer science/Automata and formal languages</category>
+</item>
 
   </channel>
 </rss>

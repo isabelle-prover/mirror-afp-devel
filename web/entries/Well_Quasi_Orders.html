@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
+<html lang="en"><head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -11,8 +10,7 @@
   <meta property="og:title" content="Well-Quasi-Orders" />
   <meta property="og:url" content="https://isa-afp.org/entries/Well_Quasi_Orders.html" />
   <meta property="og:image" content="https://isa-afp.org/images/afp.png" />
-  <meta property="og:type" content="article" />
-  
+    <meta property="og:type" content="article" />
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
 
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
@@ -20,11 +18,11 @@
     <script>
       MathJax = {
         tex: {
-          inlineMath: [['$', '$'], ['\\(', '\\)']]
+          inlineMath: [["$", "$"], ["\\(", "\\)"]]
         },
         processEscapes: true,
         svg: {
-          fontCache: 'global'
+          fontCache: "global"
         }
       };
     </script>
@@ -41,9 +39,8 @@
   <script src="../js/search-autocomplete.js"></script>
 </head>
 
-  <body class='mathjax_ignore'>
-    <aside>
-        <div id="menu-toggle">
+  <body class="mathjax_ignore">
+    <aside><div id="menu-toggle">
   <input id="toggle" type="checkbox" />
   <label for="toggle">
     <span>menu</span>
@@ -51,87 +48,65 @@
   </label>
 
   <a href="../" class="logo-link">
-    <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs"
-         class="logo">
+    <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
   </a>
 
   <nav id="menu">
     <div>
-      <a href="../" class='logo-link'>
-        <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs"
-             class="logo">
+      <a href="../" class="logo-link">
+        <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
       </a>
       <ul>
           <a href="../">
-            <li >
-              Home
-            </li>
+            <li >Home</li>
           </a>
           <a href="../topics/">
-            <li >
-              Topics
-            </li>
+            <li >Topics</li>
           </a>
           <a href="../download/">
-            <li >
-              Download
-            </li>
+            <li >Download</li>
           </a>
           <a href="../help/">
-            <li >
-              Help
-            </li>
+            <li >Help</li>
           </a>
           <a href="../submission/">
-            <li >
-              Submission
-            </li>
+            <li >Submission</li>
           </a>
           <a href="../statistics/">
-            <li >
-              Statistics
-            </li>
+            <li >Statistics</li>
           </a>
           <a href="../about/">
-            <li >
-              About
-            </li>
+            <li >About</li>
           </a>
       </ul>
     </div>
   </nav>
 </div>
     </aside>
-    <div class='content entries'>
-      <header>
+
+    <div class="content entries"><header>
     <form autocomplete="off" action="../search">
-      <div class='form-container'>
+      <div class="form-container">
         <input id="search-input" type="search" size="31" maxlength="255" value=""
-               aria-label="Search the AFP" list="autocomplete"><button
-               id="search-button" type="button">
-          <img src="../images/search.svg" alt="Search"/>
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="button">
+          <img src="../images/search.svg" alt="Search" />
         </button>
         <datalist id="autocomplete">
         </datalist>
       </div>
     </form>
-  <h1>
-    <span class='first'>W</span>ell-<span class='first'>Q</span>uasi-<span class='first'>O</span>rders
-    
+  <h1 ><span class='first'>W</span>ell-<span class='first'>Q</span>uasi-<span class='first'>O</span>rders
   </h1>
   <div>
-      <p>
-        <a href="../authors/sternagel/">Christian Sternagel</a> <a class="obfuscated" data="eyJ1c2VyIjpbImMiLCJzdGVybmFnZWwiXSwiaG9zdCI6WyJnbWFpbCIsImNvbSJdfQ==">📧</a>
-
+      <p><a href="../authors/sternagel/">Christian Sternagel</a> <a class="obfuscated" data="eyJ1c2VyIjpbImMiLCJzdGVybmFnZWwiXSwiaG9zdCI6WyJnbWFpbCIsImNvbSJdfQ==">📧</a>
       </p>
       <p class="date">April 13, 2012</p>
   </div>
 </header>
       <div>
-        
   <main>
-    <h3>Abstract</h3>
 
+    <h3>Abstract</h3>
     <div class="abstract mathjax_process">Based on Isabelle/HOL's type class for preorders,
 we introduce a type class for well-quasi-orders (wqo)
 which is characterized by the absence of "bad" sequences
@@ -153,25 +128,25 @@ The research was funded by the Austrian Science Fund (FWF): J3202.</div>
     </div>
       <h3>History</h3>
       <dl>
-        <dt>June 8, 2017</dt>
-        <dd>Proved (classical) equivalence to inductive definition of
+          <dt>June 8, 2017</dt>
+          <dd>Proved (classical) equivalence to inductive definition of
 almost-full relations according to the ITP 2012 paper "Stop When You Are
 Almost-Full" by Vytiniotis, Coquand, and Wahlstedt.</dd>
-        <dt>January 3, 2016</dt>
-        <dd>An alternative proof of Higman's lemma by open induction.<br></dd>
-        <dt>July 9, 2014</dt>
-        <dd>Simplified proofs of Higman's lemma and Kruskal's tree theorem,
+          <dt>January 3, 2016</dt>
+          <dd>An alternative proof of Higman's lemma by open induction.<br></dd>
+          <dt>July 9, 2014</dt>
+          <dd>Simplified proofs of Higman's lemma and Kruskal's tree theorem,
 based on homogeneous sequences.<br>
 </dd>
-        <dt>May 16, 2013</dt>
-        <dd>Simplified construction of minimal bad sequences.<br></dd>
-        <dt>December 19, 2012</dt>
-        <dd>New variant of Kruskal's tree theorem for terms (as opposed to
+          <dt>May 16, 2013</dt>
+          <dd>Simplified construction of minimal bad sequences.<br></dd>
+          <dt>December 19, 2012</dt>
+          <dd>New variant of Kruskal's tree theorem for terms (as opposed to
 variadic terms, i.e., trees), plus finite version of the tree theorem as
 corollary.<br>
 </dd>
-        <dt>June 11, 2012</dt>
-        <dd>Added Kruskal's Tree Theorem.<br></dd>
+          <dt>June 11, 2012</dt>
+          <dd>Added Kruskal's Tree Theorem.<br></dd>
       </dl>
       <h3>Topics</h3>
       <ul>
@@ -195,43 +170,30 @@ corollary.<br>
       </ul>
 
     <div class="flex-wrap">
-      <div>
-        <h3>Depends on</h3>
-        <ul class="horizontal-list">
+        <div>
+          <h3>Depends on</h3>
+          <ul class="horizontal-list">
               <li><a href="../entries/Abstract-Rewriting.html">Abstract Rewriting</a></li>
               <li><a href="../entries/Open_Induction.html">Open Induction</a></li>
-        </ul>
-      </div>
-      <div>
-        <h3>Used by</h3>
-        <ul class="horizontal-list">
-            <li>
-              <a href="../entries/Polynomials.html">Executable Multivariate Polynomials</a>
-            </li>
-            <li>
-              <a href="../entries/Myhill-Nerode.html">The Myhill-Nerode Theorem Based on Regular Expressions</a>
-            </li>
-            <li>
-              <a href="../entries/Decreasing-Diagrams-II.html">Decreasing Diagrams II</a>
-            </li>
-            <li>
-              <a href="../entries/Saturation_Framework.html">A Comprehensive Framework for Saturation Theorem Proving</a>
-            </li>
-            <li>
-              <a href="../entries/Saturation_Framework_Extensions.html">Extensions to the Comprehensive Framework for Saturation Theorem Proving</a>
-            </li>
-            <li>
-              <a href="../entries/Substitutions_Lambda_Free.html">Substitutions for Lambda-Free Higher-Order Terms</a>
-            </li>
-        </ul>
-      </div>
-      </div>
-    
+          </ul>
+        </div>
+        <div>
+          <h3>Used by</h3>
+          <ul class="horizontal-list">
+              <li><a href="../entries/Polynomials.html">Executable Multivariate Polynomials</a></li>
+              <li><a href="../entries/Myhill-Nerode.html">The Myhill-Nerode Theorem Based on Regular Expressions</a></li>
+              <li><a href="../entries/Decreasing-Diagrams-II.html">Decreasing Diagrams II</a></li>
+              <li><a href="../entries/Saturation_Framework.html">A Comprehensive Framework for Saturation Theorem Proving</a></li>
+              <li><a href="../entries/Saturation_Framework_Extensions.html">Extensions to the Comprehensive Framework for Saturation Theorem Proving</a></li>
+              <li><a href="../entries/Substitutions_Lambda_Free.html">Substitutions for Lambda-Free Higher-Order Terms</a></li>
+          </ul>
+        </div>
+    </div>
   </main>
 
-  <nav class='links'>
-    <a class='popup-button' href="#cite-popup">Cite</a>
-    <a class='popup-button' href="#download-popup">Download</a>
+  <nav class="links">
+    <a class="popup-button" href="#cite-popup">Cite</a>
+    <a class="popup-button" href="#download-popup">Download</a>
     <h4>PDFs</h4>
     <a href="https://www.isa-afp.org/browser_info/current/AFP/Well_Quasi_Orders/outline.pdf">Proof outline</a>
     <a href="https://www.isa-afp.org/browser_info/current/AFP/Well_Quasi_Orders/document.pdf">Proof document</a>
@@ -265,116 +227,98 @@ corollary.<br>
     <div class="popup">
       <h2>Download</h2>
       <a class="close" href="#">&times;</a>
-      <a href="https://www.isa-afp.org/release/afp-Well_Quasi_Orders-current.tar.gz"
-         download>Download latest</a>
+      <a href="https://www.isa-afp.org/release/afp-Well_Quasi_Orders-current.tar.gz" download>
+        Download latest</a>
         <p>Older releases:</p>
         <ul>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Well_Quasi_Orders-2024-05-26.tar.gz">
-                May 26, 2024
+              <a href="https://www.isa-afp.org/release/afp-Well_Quasi_Orders-2024-05-26.tar.gz">May 26, 2024
               </a>
               : Isabelle2024
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Well_Quasi_Orders-2023-09-13.tar.gz">
-                Sep 13, 2023
+              <a href="https://www.isa-afp.org/release/afp-Well_Quasi_Orders-2023-09-13.tar.gz">Sep 13, 2023
               </a>
               : Isabelle2023
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Well_Quasi_Orders-2022-10-27.tar.gz">
-                Oct 27, 2022
+              <a href="https://www.isa-afp.org/release/afp-Well_Quasi_Orders-2022-10-27.tar.gz">Oct 27, 2022
               </a>
               : Isabelle2022
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Well_Quasi_Orders-2021-12-14.tar.gz">
-                Dec 14, 2021
+              <a href="https://www.isa-afp.org/release/afp-Well_Quasi_Orders-2021-12-14.tar.gz">Dec 14, 2021
               </a>
               : Isabelle2021-1
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Well_Quasi_Orders-2021-02-23.tar.gz">
-                Feb 23, 2021
+              <a href="https://www.isa-afp.org/release/afp-Well_Quasi_Orders-2021-02-23.tar.gz">Feb 23, 2021
               </a>
               : Isabelle2021
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Well_Quasi_Orders-2020-04-20.tar.gz">
-                Apr 20, 2020
+              <a href="https://www.isa-afp.org/release/afp-Well_Quasi_Orders-2020-04-20.tar.gz">Apr 20, 2020
               </a>
               : Isabelle2020
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Well_Quasi_Orders-2019-06-11.tar.gz">
-                Jun 11, 2019
+              <a href="https://www.isa-afp.org/release/afp-Well_Quasi_Orders-2019-06-11.tar.gz">Jun 11, 2019
               </a>
               : Isabelle2019
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Well_Quasi_Orders-2018-08-16.tar.gz">
-                Aug 16, 2018
+              <a href="https://www.isa-afp.org/release/afp-Well_Quasi_Orders-2018-08-16.tar.gz">Aug 16, 2018
               </a>
               : Isabelle2018
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Well_Quasi_Orders-2017-10-10.tar.gz">
-                Oct 10, 2017
+              <a href="https://www.isa-afp.org/release/afp-Well_Quasi_Orders-2017-10-10.tar.gz">Oct 10, 2017
               </a>
               : Isabelle2017
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Well_Quasi_Orders-2016-12-17.tar.gz">
-                Dec 17, 2016
+              <a href="https://www.isa-afp.org/release/afp-Well_Quasi_Orders-2016-12-17.tar.gz">Dec 17, 2016
               </a>
               : Isabelle2016-1
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Well_Quasi_Orders-2016-02-22.tar.gz">
-                Feb 22, 2016
+              <a href="https://www.isa-afp.org/release/afp-Well_Quasi_Orders-2016-02-22.tar.gz">Feb 22, 2016
               </a>
               : Isabelle2016
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Well_Quasi_Orders-2015-05-27.tar.gz">
-                May 27, 2015
+              <a href="https://www.isa-afp.org/release/afp-Well_Quasi_Orders-2015-05-27.tar.gz">May 27, 2015
               </a>
               : Isabelle2015
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Well_Quasi_Orders-2014-08-28.tar.gz">
-                Aug 28, 2014
+              <a href="https://www.isa-afp.org/release/afp-Well_Quasi_Orders-2014-08-28.tar.gz">Aug 28, 2014
               </a>
               : Isabelle2014
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Well_Quasi_Orders-2013-12-11.tar.gz">
-                Dec 11, 2013
+              <a href="https://www.isa-afp.org/release/afp-Well_Quasi_Orders-2013-12-11.tar.gz">Dec 11, 2013
               </a>
               : Isabelle2013-2
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Well_Quasi_Orders-2013-11-17.tar.gz">
-                Nov 17, 2013
+              <a href="https://www.isa-afp.org/release/afp-Well_Quasi_Orders-2013-11-17.tar.gz">Nov 17, 2013
               </a>
               : Isabelle2013-1
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Well_Quasi_Orders-2013-02-16.tar.gz">
-                Feb 16, 2013
+              <a href="https://www.isa-afp.org/release/afp-Well_Quasi_Orders-2013-02-16.tar.gz">Feb 16, 2013
               </a>
               : Isabelle2013
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Well_Quasi_Orders-2012-05-24.tar.gz">
-                May 24, 2012
+              <a href="https://www.isa-afp.org/release/afp-Well_Quasi_Orders-2012-05-24.tar.gz">May 24, 2012
               </a>
               : Isabelle2012
             </li>
         </ul>
     </div>
   </div>
-        
       </div>
     </div>
   </body>

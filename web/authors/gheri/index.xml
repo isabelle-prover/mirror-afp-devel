@@ -1,18 +1,17 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Lorenzo Gheri</title>
     <link>https://isa-afp.org/authors/gheri/</link>
-    <description>AFP entries of Lorenzo Gheri</description>
-        <item>
-          <title>A General Theory of Syntax with Bindings</title>
-          <link>https://isa-afp.org/entries/Binding_Syntax_Theory.html</link>
-          <pubDate>Sat, 06 Apr 2019 00:00:00 +0000</pubDate>
-          <description>A General Theory of Syntax with Bindings in the AFP</description>
-            <category>Computer science/Programming languages/Lambda calculi</category>
-            <category>Computer science/Functional programming</category>
-            <category>Logic/General logic/Mechanization of proofs</category>
-        </item>
+    <description>AFP entries of Lorenzo Gheri</description><item>
+  <title>A General Theory of Syntax with Bindings</title>
+  <link>https://isa-afp.org/entries/Binding_Syntax_Theory.html</link>
+  <pubDate>Sat, 06 Apr 2019 00:00:00 +0000</pubDate>
+  <description>A General Theory of Syntax with Bindings in the AFP</description>
+    <category>Computer science/Programming languages/Lambda calculi</category>
+    <category>Computer science/Functional programming</category>
+    <category>Logic/General logic/Mechanization of proofs</category>
+</item>
 
   </channel>
 </rss>

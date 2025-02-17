@@ -1,16 +1,15 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Alexander Treml</title>
     <link>https://isa-afp.org/authors/treml/</link>
-    <description>AFP entries of Alexander Treml</description>
-        <item>
-          <title>Uncertainty Principle</title>
-          <link>https://isa-afp.org/entries/Uncertainty_Principle.html</link>
-          <pubDate>Tue, 26 Mar 2024 00:00:00 +0000</pubDate>
-          <description>Uncertainty Principle in the AFP</description>
-            <category>Mathematics/Physics/Quantum information</category>
-        </item>
+    <description>AFP entries of Alexander Treml</description><item>
+  <title>Uncertainty Principle</title>
+  <link>https://isa-afp.org/entries/Uncertainty_Principle.html</link>
+  <pubDate>Tue, 26 Mar 2024 00:00:00 +0000</pubDate>
+  <description>Uncertainty Principle in the AFP</description>
+    <category>Mathematics/Physics/Quantum information</category>
+</item>
 
   </channel>
 </rss>

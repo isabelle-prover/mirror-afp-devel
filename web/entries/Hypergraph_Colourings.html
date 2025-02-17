@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
+<html lang="en"><head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -11,8 +10,7 @@
   <meta property="og:title" content="Hypergraph Colouring Bounds" />
   <meta property="og:url" content="https://isa-afp.org/entries/Hypergraph_Colourings.html" />
   <meta property="og:image" content="https://isa-afp.org/images/afp.png" />
-  <meta property="og:type" content="article" />
-  
+    <meta property="og:type" content="article" />
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
 
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
@@ -20,11 +18,11 @@
     <script>
       MathJax = {
         tex: {
-          inlineMath: [['$', '$'], ['\\(', '\\)']]
+          inlineMath: [["$", "$"], ["\\(", "\\)"]]
         },
         processEscapes: true,
         svg: {
-          fontCache: 'global'
+          fontCache: "global"
         }
       };
     </script>
@@ -41,9 +39,8 @@
   <script src="../js/search-autocomplete.js"></script>
 </head>
 
-  <body class='mathjax_ignore'>
-    <aside>
-        <div id="menu-toggle">
+  <body class="mathjax_ignore">
+    <aside><div id="menu-toggle">
   <input id="toggle" type="checkbox" />
   <label for="toggle">
     <span>menu</span>
@@ -51,87 +48,65 @@
   </label>
 
   <a href="../" class="logo-link">
-    <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs"
-         class="logo">
+    <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
   </a>
 
   <nav id="menu">
     <div>
-      <a href="../" class='logo-link'>
-        <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs"
-             class="logo">
+      <a href="../" class="logo-link">
+        <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
       </a>
       <ul>
           <a href="../">
-            <li >
-              Home
-            </li>
+            <li >Home</li>
           </a>
           <a href="../topics/">
-            <li >
-              Topics
-            </li>
+            <li >Topics</li>
           </a>
           <a href="../download/">
-            <li >
-              Download
-            </li>
+            <li >Download</li>
           </a>
           <a href="../help/">
-            <li >
-              Help
-            </li>
+            <li >Help</li>
           </a>
           <a href="../submission/">
-            <li >
-              Submission
-            </li>
+            <li >Submission</li>
           </a>
           <a href="../statistics/">
-            <li >
-              Statistics
-            </li>
+            <li >Statistics</li>
           </a>
           <a href="../about/">
-            <li >
-              About
-            </li>
+            <li >About</li>
           </a>
       </ul>
     </div>
   </nav>
 </div>
     </aside>
-    <div class='content entries'>
-      <header>
+
+    <div class="content entries"><header>
     <form autocomplete="off" action="../search">
-      <div class='form-container'>
+      <div class="form-container">
         <input id="search-input" type="search" size="31" maxlength="255" value=""
-               aria-label="Search the AFP" list="autocomplete"><button
-               id="search-button" type="button">
-          <img src="../images/search.svg" alt="Search"/>
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="button">
+          <img src="../images/search.svg" alt="Search" />
         </button>
         <datalist id="autocomplete">
         </datalist>
       </div>
     </form>
-  <h1>
-    <span class='first'>H</span>ypergraph <span class='first'>C</span>olouring <span class='first'>B</span>ounds
-    
+  <h1 ><span class='first'>H</span>ypergraph <span class='first'>C</span>olouring <span class='first'>B</span>ounds
   </h1>
   <div>
-      <p>
-        <a href="../authors/edmonds/">Chelsea Edmonds</a> <a class="obfuscated" data="eyJ1c2VyIjpbImNsZTQ3Il0sImhvc3QiOlsiY2FtIiwiYWMiLCJ1ayJdfQ==">📧</a> and <a href="../authors/paulson/">Lawrence C. Paulson</a> <a class="obfuscated" data="eyJ1c2VyIjpbImxwMTUiXSwiaG9zdCI6WyJjYW0iLCJhYyIsInVrIl19">📧</a>
-
+      <p><a href="../authors/edmonds/">Chelsea Edmonds</a> <a class="obfuscated" data="eyJ1c2VyIjpbImNsZTQ3Il0sImhvc3QiOlsiY2FtIiwiYWMiLCJ1ayJdfQ==">📧</a> and <a href="../authors/paulson/">Lawrence C. Paulson</a> <a class="obfuscated" data="eyJ1c2VyIjpbImxwMTUiXSwiaG9zdCI6WyJjYW0iLCJhYyIsInVrIl19">📧</a>
       </p>
       <p class="date">September 23, 2023</p>
   </div>
 </header>
       <div>
-        
   <main>
-    <h3>Abstract</h3>
 
+    <h3>Abstract</h3>
     <div class="abstract mathjax_process">This library includes several example applications of the probabilistic method for combinatorics to establish bounds for hypergraph colourings. This focuses on Property B - the existence of a two-colouring of the vertex set of a hypergraph. A stricter bound was formalised using the Lov&aacutesz local lemma, which in turn required a surprisingly complex proof of the mutual independence principle for hypergraph edges that is often omitted on paper. The formalisation uncovered several interesting examples of circular intuition on proofs involving independence on paper. The formalisation is based on the textbook proofs from Alon and Spencer's famous textbook, <em>The Probabilistic Method</em>, further supported by notes by Zhao. The mutual independence principle proof is inspired by the less precise proof provided in Molloy and Reed's textbook on graph colourings, as it was omitted in all other sources. Additionally, this library demonstrates how locales can be used to establish a reusable probability space framework, thus minimizing the setup required for future formalisations requiring a probability space on numerous possible properties around an incidence system's vertex set.</div>
 
     <h3>License</h3>
@@ -146,12 +121,9 @@
       <h3>Related publications</h3>
       <ul>
         <li>Molloy, M., & Reed, B. (2002). Graph Colouring and the Probabilistic Method. In Algorithms and Combinatorics. Springer Berlin Heidelberg. <a href="https://doi.org/10.1007/978-3-642-04016-0">https://doi.org/10.1007/978-3-642-04016-0</a>
-
-        </li>
-        <li>https://dl.acm.org/doi/book/10.5555/3002498
-        </li>
-        <li>https://yufeizhao.com/pm/probmethod_notes.pdf
-        </li>
+</li>
+        <li>https://dl.acm.org/doi/book/10.5555/3002498</li>
+        <li>https://yufeizhao.com/pm/probmethod_notes.pdf</li>
       </ul>
       <h3>Session Hypergraph_Colourings</h3>
       <ul>
@@ -162,23 +134,22 @@
       </ul>
 
     <div class="flex-wrap">
-      <div>
-        <h3>Depends on</h3>
-        <ul class="horizontal-list">
+        <div>
+          <h3>Depends on</h3>
+          <ul class="horizontal-list">
               <li><a href="../entries/Card_Partitions.html">Cardinality of Set Partitions</a></li>
               <li><a href="../entries/Girth_Chromatic.html">A Probabilistic Proof of the Girth-Chromatic Number Theorem</a></li>
               <li><a href="../entries/Hypergraph_Basics.html">Hypergraphs</a></li>
               <li><a href="../entries/Lovasz_Local.html">General Probabilistic Techniques for Combinatorics and the Lovasz Local Lemma</a></li>
               <li><a href="../entries/Twelvefold_Way.html">The Twelvefold Way</a></li>
-        </ul>
-      </div>
-      </div>
-    
+          </ul>
+        </div>
+    </div>
   </main>
 
-  <nav class='links'>
-    <a class='popup-button' href="#cite-popup">Cite</a>
-    <a class='popup-button' href="#download-popup">Download</a>
+  <nav class="links">
+    <a class="popup-button" href="#cite-popup">Cite</a>
+    <a class="popup-button" href="#download-popup">Download</a>
     <h4>PDFs</h4>
     <a href="https://www.isa-afp.org/browser_info/current/AFP/Hypergraph_Colourings/outline.pdf">Proof outline</a>
     <a href="https://www.isa-afp.org/browser_info/current/AFP/Hypergraph_Colourings/document.pdf">Proof document</a>
@@ -212,26 +183,23 @@
     <div class="popup">
       <h2>Download</h2>
       <a class="close" href="#">&times;</a>
-      <a href="https://www.isa-afp.org/release/afp-Hypergraph_Colourings-current.tar.gz"
-         download>Download latest</a>
+      <a href="https://www.isa-afp.org/release/afp-Hypergraph_Colourings-current.tar.gz" download>
+        Download latest</a>
         <p>Older releases:</p>
         <ul>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Hypergraph_Colourings-2024-05-26.tar.gz">
-                May 26, 2024
+              <a href="https://www.isa-afp.org/release/afp-Hypergraph_Colourings-2024-05-26.tar.gz">May 26, 2024
               </a>
               : Isabelle2024
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Hypergraph_Colourings-2023-10-16.tar.gz">
-                Oct 16, 2023
+              <a href="https://www.isa-afp.org/release/afp-Hypergraph_Colourings-2023-10-16.tar.gz">Oct 16, 2023
               </a>
               : Isabelle2023
             </li>
         </ul>
     </div>
   </div>
-        
       </div>
     </div>
   </body>

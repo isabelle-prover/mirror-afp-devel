@@ -222,10 +222,7 @@ proof -
               even (Bernstein_changes_01 p Q - 
                   int (proots_count Q {x. 0 < x \<and> x < 1}))"
     unfolding Q_def
-    apply (rule Bernstein_changes_01_test)
-    subgoal using assms by fastforce
-    subgoal using assms by (auto simp: pcompose_eq_0)
-    done
+    using assms by (intro Bernstein_changes_01_test) (auto simp: pcompose_eq_0_iff)
   moreover have "proots_count P {x. c < x \<and> x < d} =
             proots_count Q {x. 0 < x \<and> x < 1}"
     unfolding Q_def
@@ -266,7 +263,7 @@ proof -
         (poly [:0, d - c:] ` {x. 0 < x \<and> x < 1})"
       using assms by (auto simp:proots_pcompose)
     show "P \<circ>\<^sub>p [:c, 1:] \<noteq> 0"
-      by (simp add: pcompose_eq_0 assms(2))
+      by (simp add: pcompose_eq_0_iff assms(2))
     show "degree [:0, d - c:] = 1"
       using assms by auto
   qed

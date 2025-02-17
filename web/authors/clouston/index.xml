@@ -1,17 +1,16 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Ranald Clouston</title>
     <link>https://isa-afp.org/authors/clouston/</link>
-    <description>AFP entries of Ranald Clouston</description>
-        <item>
-          <title>Separata: Isabelle tactics for Separation Algebra</title>
-          <link>https://isa-afp.org/entries/Separata.html</link>
-          <pubDate>Wed, 16 Nov 2016 00:00:00 +0000</pubDate>
-          <description>Separata: Isabelle tactics for Separation Algebra in the AFP</description>
-            <category>Computer science/Programming languages/Logics</category>
-            <category>Tools</category>
-        </item>
+    <description>AFP entries of Ranald Clouston</description><item>
+  <title>Separata: Isabelle tactics for Separation Algebra</title>
+  <link>https://isa-afp.org/entries/Separata.html</link>
+  <pubDate>Wed, 16 Nov 2016 00:00:00 +0000</pubDate>
+  <description>Separata: Isabelle tactics for Separation Algebra in the AFP</description>
+    <category>Computer science/Programming languages/Logics</category>
+    <category>Tools</category>
+</item>
 
   </channel>
 </rss>

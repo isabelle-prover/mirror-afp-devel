@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
+<html lang="en"><head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -11,8 +10,7 @@
   <meta property="og:title" content="A Verified Efficient Implementation of the Weighted Path Order" />
   <meta property="og:url" content="https://isa-afp.org/entries/Efficient_Weighted_Path_Order.html" />
   <meta property="og:image" content="https://isa-afp.org/images/afp.png" />
-  <meta property="og:type" content="article" />
-  
+    <meta property="og:type" content="article" />
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
 
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
@@ -20,11 +18,11 @@
     <script>
       MathJax = {
         tex: {
-          inlineMath: [['$', '$'], ['\\(', '\\)']]
+          inlineMath: [["$", "$"], ["\\(", "\\)"]]
         },
         processEscapes: true,
         svg: {
-          fontCache: 'global'
+          fontCache: "global"
         }
       };
     </script>
@@ -41,9 +39,8 @@
   <script src="../js/search-autocomplete.js"></script>
 </head>
 
-  <body class='mathjax_ignore'>
-    <aside>
-        <div id="menu-toggle">
+  <body class="mathjax_ignore">
+    <aside><div id="menu-toggle">
   <input id="toggle" type="checkbox" />
   <label for="toggle">
     <span>menu</span>
@@ -51,87 +48,65 @@
   </label>
 
   <a href="../" class="logo-link">
-    <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs"
-         class="logo">
+    <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
   </a>
 
   <nav id="menu">
     <div>
-      <a href="../" class='logo-link'>
-        <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs"
-             class="logo">
+      <a href="../" class="logo-link">
+        <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
       </a>
       <ul>
           <a href="../">
-            <li >
-              Home
-            </li>
+            <li >Home</li>
           </a>
           <a href="../topics/">
-            <li >
-              Topics
-            </li>
+            <li >Topics</li>
           </a>
           <a href="../download/">
-            <li >
-              Download
-            </li>
+            <li >Download</li>
           </a>
           <a href="../help/">
-            <li >
-              Help
-            </li>
+            <li >Help</li>
           </a>
           <a href="../submission/">
-            <li >
-              Submission
-            </li>
+            <li >Submission</li>
           </a>
           <a href="../statistics/">
-            <li >
-              Statistics
-            </li>
+            <li >Statistics</li>
           </a>
           <a href="../about/">
-            <li >
-              About
-            </li>
+            <li >About</li>
           </a>
       </ul>
     </div>
   </nav>
 </div>
     </aside>
-    <div class='content entries'>
-      <header>
+
+    <div class="content entries"><header>
     <form autocomplete="off" action="../search">
-      <div class='form-container'>
+      <div class="form-container">
         <input id="search-input" type="search" size="31" maxlength="255" value=""
-               aria-label="Search the AFP" list="autocomplete"><button
-               id="search-button" type="button">
-          <img src="../images/search.svg" alt="Search"/>
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="button">
+          <img src="../images/search.svg" alt="Search" />
         </button>
         <datalist id="autocomplete">
         </datalist>
       </div>
     </form>
-  <h1>
-    <span class='first'>A</span> <span class='first'>V</span>erified <span class='first'>E</span>fficient <span class='first'>I</span>mplementation of the <span class='first'>W</span>eighted <span class='first'>P</span>ath <span class='first'>O</span>rder
-    
+  <h1 ><span class='first'>A</span> <span class='first'>V</span>erified <span class='first'>E</span>fficient <span class='first'>I</span>mplementation of the <span class='first'>W</span>eighted <span class='first'>P</span>ath <span class='first'>O</span>rder
   </h1>
   <div>
-      <p>
-        <a href="../authors/thiemann/">René Thiemann</a> <a href="http://cl-informatik.uibk.ac.at/users/thiemann/">🌐</a> and <a href="../authors/wenninger/">Elias Wenninger</a>
-
+      <p><a href="../authors/thiemann/">René Thiemann</a> <a href="http://cl-informatik.uibk.ac.at/users/thiemann/">🌐</a> and <a href="../authors/wenninger/">Elias Wenninger</a>
       </p>
       <p class="date">June 1, 2023</p>
   </div>
 </header>
       <div>
-        
   <main>
-    <h3>Abstract</h3>
 
+    <h3>Abstract</h3>
     <div class="abstract mathjax_process"><p>The Weighted Path Order (WPO) of Yamada is a powerful technique for proving
 termination. In a previous AFP entry, the WPO was defined and properties of WPO
 have been formally verified. However, the implementation of WPO was naive,
@@ -153,11 +128,9 @@ order (RPO), we also easily derive an efficient implementation of RPO.
       </ul>
       <h3>Related publications</h3>
       <ul>
-        <li>Thiemann, R., Schöpf, J., Sternagel, C., &amp; Yamada, A. (2020). <i>Certifying the Weighted Path Order (Invited Talk)</i>. Schloss Dagstuhl – Leibniz-Zentrum für Informatik. https://doi.org/10.4230/LIPICS.FSCD.2020.4
-        </li>
+        <li>Thiemann, R., Schöpf, J., Sternagel, C., &amp; Yamada, A. (2020). <i>Certifying the Weighted Path Order (Invited Talk)</i>. Schloss Dagstuhl – Leibniz-Zentrum für Informatik. https://doi.org/10.4230/LIPICS.FSCD.2020.4</li>
         <li>Yamada, A., Kusakari, K., & Sakabe, T. (2015). A unified ordering for termination proving. Science of Computer Programming, 111, 110–134. <a href="https://doi.org/10.1016/j.scico.2014.07.009">https://doi.org/10.1016/j.scico.2014.07.009</a>
-
-        </li>
+</li>
       </ul>
       <h3>Session Efficient_Weighted_Path_Order</h3>
       <ul>
@@ -170,19 +143,18 @@ order (RPO), we also easily derive an efficient implementation of RPO.
       </ul>
 
     <div class="flex-wrap">
-      <div>
-        <h3>Depends on</h3>
-        <ul class="horizontal-list">
+        <div>
+          <h3>Depends on</h3>
+          <ul class="horizontal-list">
               <li><a href="../entries/Weighted_Path_Order.html">A Formalization of Weighted Path Orders and Recursive Path Orders</a></li>
-        </ul>
-      </div>
-      </div>
-    
+          </ul>
+        </div>
+    </div>
   </main>
 
-  <nav class='links'>
-    <a class='popup-button' href="#cite-popup">Cite</a>
-    <a class='popup-button' href="#download-popup">Download</a>
+  <nav class="links">
+    <a class="popup-button" href="#cite-popup">Cite</a>
+    <a class="popup-button" href="#download-popup">Download</a>
     <h4>PDFs</h4>
     <a href="https://www.isa-afp.org/browser_info/current/AFP/Efficient_Weighted_Path_Order/outline.pdf">Proof outline</a>
     <a href="https://www.isa-afp.org/browser_info/current/AFP/Efficient_Weighted_Path_Order/document.pdf">Proof document</a>
@@ -216,32 +188,28 @@ order (RPO), we also easily derive an efficient implementation of RPO.
     <div class="popup">
       <h2>Download</h2>
       <a class="close" href="#">&times;</a>
-      <a href="https://www.isa-afp.org/release/afp-Efficient_Weighted_Path_Order-current.tar.gz"
-         download>Download latest</a>
+      <a href="https://www.isa-afp.org/release/afp-Efficient_Weighted_Path_Order-current.tar.gz" download>
+        Download latest</a>
         <p>Older releases:</p>
         <ul>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Efficient_Weighted_Path_Order-2024-05-26.tar.gz">
-                May 26, 2024
+              <a href="https://www.isa-afp.org/release/afp-Efficient_Weighted_Path_Order-2024-05-26.tar.gz">May 26, 2024
               </a>
               : Isabelle2024
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Efficient_Weighted_Path_Order-2023-09-13.tar.gz">
-                Sep 13, 2023
+              <a href="https://www.isa-afp.org/release/afp-Efficient_Weighted_Path_Order-2023-09-13.tar.gz">Sep 13, 2023
               </a>
               : Isabelle2023
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Efficient_Weighted_Path_Order-2023-06-02.tar.gz">
-                Jun 2, 2023
+              <a href="https://www.isa-afp.org/release/afp-Efficient_Weighted_Path_Order-2023-06-02.tar.gz">Jun 2, 2023
               </a>
               : Isabelle2022
             </li>
         </ul>
     </div>
   </div>
-        
       </div>
     </div>
   </body>

@@ -10,26 +10,25 @@
   </p>
 
   {{- if .Site.Data.status }}
-  <p>
-    <strong>
-      This is the development version of the archive, referring to a recent Isabelle development version.
-      Some entries may not be in a working state.
-      The main archive is available from the <a href="{{ .Site.BaseURL }}">front page</a>.
-    </strong>
-  </p>
+    <p>
+      <strong>
+        This is the development version of the archive, referring to a recent Isabelle development version.
+        Some entries may not be in a working state.
+        The main archive is available from the <a href="{{ .Site.BaseURL }}">front page</a>.
+      </strong>
+    </p>
   {{- else }}
-  <p>
-    A <a href="{{ .Site.Params.devel_url }}">development version</a> of the archive is available as well.
-  </p>
+    <p>
+      A <a href="{{ .Site.Params.devel_url }}">development version</a> of the archive is available as well.
+    </p>
   {{- end }}
 
   <form autocomplete="off" action="{{ "search" | relURL }}">
-    <div class='form-container'>
+    <div class="form-container">
       <input id="search-input" type="search" size="31" maxlength="255" value=""
-             aria-label="Search the AFP" list="autocomplete"><button
-             id="search-button" type="button">
-        Search
-      </button>
+             aria-label="Search the AFP" list="autocomplete">
+      {{- "" -}}
+      <button id="search-button" type="button">Search</button>
       <datalist id="autocomplete"></datalist>
     </div>
   </form>
@@ -41,18 +40,18 @@
         {{- $entry := page.GetPage (printf "/entries/%s" .) }}
         <article class="entry">
           <div class="item-text">
-            <h5><a class="title" href="{{ $entry.RelPermalink }}">{{ $entry.Title | safeHTML }}</a></h5>
+            <h5>
+              <a class="title" href="{{ $entry.RelPermalink }}">{{ $entry.Title | safeHTML }}</a>
+            </h5>
             <br>
-            by {{ range $entry.Params.authors }}
-              {{- $author := site.GetPage (printf "authors/%s" .author) -}}
+            by
+            {{- range $entry.Params.authors }}
+              {{- $author := site.GetPage (printf "authors/%s" .author) }}
               <a href="{{ $author.RelPermalink }}">{{ $author.Params.name | safeHTML }}</a>
               {{- .sep }}
             {{- end }}
-
           </div>
-          <span class="date">
-            {{ $entry.Date.Format "Jan 02" }}
-          </span>
+          <span class="date">{{ $entry.Date.Format "Jan 02" }}</span>
         </article>
       {{- end }}
     </div>

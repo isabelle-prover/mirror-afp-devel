@@ -1,39 +1,38 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Julian Parsert</title>
     <link>https://isa-afp.org/authors/parsert/</link>
-    <description>AFP entries of Julian Parsert</description>
-        <item>
-          <title>Linear Programming</title>
-          <link>https://isa-afp.org/entries/Linear_Programming.html</link>
-          <pubDate>Tue, 06 Aug 2019 00:00:00 +0000</pubDate>
-          <description>Linear Programming in the AFP</description>
-            <category>Mathematics/Algebra</category>
-        </item>
-        <item>
-          <title>Von-Neumann-Morgenstern Utility Theorem</title>
-          <link>https://isa-afp.org/entries/Neumann_Morgenstern_Utility.html</link>
-          <pubDate>Wed, 04 Jul 2018 00:00:00 +0000</pubDate>
-          <description>Von-Neumann-Morgenstern Utility Theorem in the AFP</description>
-            <category>Mathematics/Games and economics</category>
-        </item>
-        <item>
-          <title>Homogeneous Linear Diophantine Equations</title>
-          <link>https://isa-afp.org/entries/Diophantine_Eqns_Lin_Hom.html</link>
-          <pubDate>Sat, 14 Oct 2017 00:00:00 +0000</pubDate>
-          <description>Homogeneous Linear Diophantine Equations in the AFP</description>
-            <category>Computer science/Algorithms/Mathematical</category>
-            <category>Mathematics/Number theory</category>
-            <category>Tools</category>
-        </item>
-        <item>
-          <title>Microeconomics and the First Welfare Theorem</title>
-          <link>https://isa-afp.org/entries/First_Welfare_Theorem.html</link>
-          <pubDate>Fri, 01 Sep 2017 00:00:00 +0000</pubDate>
-          <description>Microeconomics and the First Welfare Theorem in the AFP</description>
-            <category>Mathematics/Games and economics</category>
-        </item>
+    <description>AFP entries of Julian Parsert</description><item>
+  <title>Linear Programming</title>
+  <link>https://isa-afp.org/entries/Linear_Programming.html</link>
+  <pubDate>Tue, 06 Aug 2019 00:00:00 +0000</pubDate>
+  <description>Linear Programming in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Von-Neumann-Morgenstern Utility Theorem</title>
+  <link>https://isa-afp.org/entries/Neumann_Morgenstern_Utility.html</link>
+  <pubDate>Wed, 04 Jul 2018 00:00:00 +0000</pubDate>
+  <description>Von-Neumann-Morgenstern Utility Theorem in the AFP</description>
+    <category>Mathematics/Games and economics</category>
+</item>
+<item>
+  <title>Homogeneous Linear Diophantine Equations</title>
+  <link>https://isa-afp.org/entries/Diophantine_Eqns_Lin_Hom.html</link>
+  <pubDate>Sat, 14 Oct 2017 00:00:00 +0000</pubDate>
+  <description>Homogeneous Linear Diophantine Equations in the AFP</description>
+    <category>Computer science/Algorithms/Mathematical</category>
+    <category>Mathematics/Number theory</category>
+    <category>Tools</category>
+</item>
+<item>
+  <title>Microeconomics and the First Welfare Theorem</title>
+  <link>https://isa-afp.org/entries/First_Welfare_Theorem.html</link>
+  <pubDate>Fri, 01 Sep 2017 00:00:00 +0000</pubDate>
+  <description>Microeconomics and the First Welfare Theorem in the AFP</description>
+    <category>Mathematics/Games and economics</category>
+</item>
 
   </channel>
 </rss>

@@ -1,16 +1,15 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Michael Nedzelsky</title>
     <link>https://isa-afp.org/authors/nedzelsky/</link>
-    <description>AFP entries of Michael Nedzelsky</description>
-        <item>
-          <title>Recursion Theory I</title>
-          <link>https://isa-afp.org/entries/Recursion-Theory-I.html</link>
-          <pubDate>Sat, 05 Apr 2008 00:00:00 +0000</pubDate>
-          <description>Recursion Theory I in the AFP</description>
-            <category>Logic/Computability</category>
-        </item>
+    <description>AFP entries of Michael Nedzelsky</description><item>
+  <title>Recursion Theory I</title>
+  <link>https://isa-afp.org/entries/Recursion-Theory-I.html</link>
+  <pubDate>Sat, 05 Apr 2008 00:00:00 +0000</pubDate>
+  <description>Recursion Theory I in the AFP</description>
+    <category>Logic/Computability</category>
+</item>
 
   </channel>
 </rss>

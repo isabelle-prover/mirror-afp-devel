@@ -336,9 +336,9 @@ proof (subst Bernstein_changes_01_def')
     proof (cases "P=0")
       case False
       then have "reciprocal_poly p P \<circ>\<^sub>p [:1, 1:] \<noteq> 0" 
-        using hP by (simp add: Missing_Polynomial.pcompose_eq_0 reciprocal_0_iff)
+        using hP by (simp add: pcompose_eq_0_iff reciprocal_0_iff)
       moreover have "Suc (degree (reciprocal_poly p P \<circ>\<^sub>p [:1, 1:])) \<le> Suc p"
-        using hP by (auto simp: degree_pcompose degree_reciprocal)
+        using hP by (auto simp: degree_reciprocal)
       ultimately show ?thesis 
         using length_coeffs_degree by force
     qed (auto simp: reciprocal_0)
@@ -477,9 +477,7 @@ proof (subst Bernstein_changes_01_def')
       have "?L = int (nat (changes (map (\<lambda>j. 0::real) [0..<p+1])))"
         using hP by (auto simp: reciprocal_0 changes_nonneg)
       also have "... = 0"
-        apply (induction p)
-        by (auto simp: map_replicate_trivial changes_nonneg
-            replicate_app_Cons_same)
+        by (induction p) (auto simp: map_replicate_trivial changes_nonneg replicate_app_Cons_same)
       also have "0 = changes ([]::real list)" by simp
       also have "... = ?R" using hP by (auto simp: reciprocal_0)
       finally show ?thesis .
@@ -493,7 +491,8 @@ proof (subst Bernstein_changes_01_def')
       apply (subst changes_rev[symmetric])
       apply (subst 1)
       apply (subst 2)
-      apply (simp add: pcompose_eq_0 hP reciprocal_0_iff)
+        apply (simp add: hP pcompose_eq_0_iff reciprocal_0_iff)
+       apply (simp add: pcompose_eq_0 hP reciprocal_0_iff)
       using assms apply (auto simp: degree_reciprocal)[1]
       by (auto simp: changes_append_replicate_0 changes_nonneg)
   qed
@@ -506,10 +505,11 @@ lemma Bernstein_changes_01_test: fixes P::"real poly"
 proof -
   let ?Q = "(reciprocal_poly p P) \<circ>\<^sub>p [:1, 1:]"
 
-  have 1: "changes (coeffs ?Q) \<ge> proots_count ?Q {x. 0 < x} \<and> 
-        even (changes (coeffs ?Q) - proots_count ?Q {x. 0 < x})"
-    apply (rule descartes_sign)
-    by (simp add: Missing_Polynomial.pcompose_eq_0 h0 hP reciprocal_0_iff)
+  have "?Q \<noteq> 0"
+    using Bernstein_sum_01 h0 hP by fastforce
+  then have 1: "changes (coeffs ?Q) \<ge> proots_count ?Q {x. 0 < x} \<and> 
+                even (changes (coeffs ?Q) - proots_count ?Q {x. 0 < x})"
+    by (metis descartes_sign)
   
   have "((+) (1::real) ` Collect ((<) (0::real))) = {x. (1::real)<x}"
   proof

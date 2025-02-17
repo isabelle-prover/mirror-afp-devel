@@ -1,30 +1,29 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Martin Raška</title>
     <link>https://isa-afp.org/authors/raska/</link>
-    <description>AFP entries of Martin Raška</description>
-        <item>
-          <title>Binary codes that do not preserve primitivity</title>
-          <link>https://isa-afp.org/entries/Binary_Code_Imprimitive.html</link>
-          <pubDate>Tue, 03 Jan 2023 00:00:00 +0000</pubDate>
-          <description>Binary codes that do not preserve primitivity in the AFP</description>
-            <category>Computer science/Automata and formal languages</category>
-        </item>
-        <item>
-          <title>Graph Lemma</title>
-          <link>https://isa-afp.org/entries/Combinatorics_Words_Graph_Lemma.html</link>
-          <pubDate>Mon, 24 May 2021 00:00:00 +0000</pubDate>
-          <description>Graph Lemma in the AFP</description>
-            <category>Computer science/Automata and formal languages</category>
-        </item>
-        <item>
-          <title>Combinatorics on Words Basics</title>
-          <link>https://isa-afp.org/entries/Combinatorics_Words.html</link>
-          <pubDate>Mon, 24 May 2021 00:00:00 +0000</pubDate>
-          <description>Combinatorics on Words Basics in the AFP</description>
-            <category>Computer science/Automata and formal languages</category>
-        </item>
+    <description>AFP entries of Martin Raška</description><item>
+  <title>Binary codes that do not preserve primitivity</title>
+  <link>https://isa-afp.org/entries/Binary_Code_Imprimitive.html</link>
+  <pubDate>Tue, 03 Jan 2023 00:00:00 +0000</pubDate>
+  <description>Binary codes that do not preserve primitivity in the AFP</description>
+    <category>Computer science/Automata and formal languages</category>
+</item>
+<item>
+  <title>Graph Lemma</title>
+  <link>https://isa-afp.org/entries/Combinatorics_Words_Graph_Lemma.html</link>
+  <pubDate>Mon, 24 May 2021 00:00:00 +0000</pubDate>
+  <description>Graph Lemma in the AFP</description>
+    <category>Computer science/Automata and formal languages</category>
+</item>
+<item>
+  <title>Combinatorics on Words Basics</title>
+  <link>https://isa-afp.org/entries/Combinatorics_Words.html</link>
+  <pubDate>Mon, 24 May 2021 00:00:00 +0000</pubDate>
+  <description>Combinatorics on Words Basics in the AFP</description>
+    <category>Computer science/Automata and formal languages</category>
+</item>
 
   </channel>
 </rss>

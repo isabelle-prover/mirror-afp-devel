@@ -1,16 +1,15 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Wolfgang Naraschewski</title>
     <link>https://isa-afp.org/authors/naraschewski/</link>
-    <description>AFP entries of Wolfgang Naraschewski</description>
-        <item>
-          <title>Mini ML</title>
-          <link>https://isa-afp.org/entries/MiniML.html</link>
-          <pubDate>Fri, 19 Mar 2004 00:00:00 +0000</pubDate>
-          <description>Mini ML in the AFP</description>
-            <category>Computer science/Programming languages/Type systems</category>
-        </item>
+    <description>AFP entries of Wolfgang Naraschewski</description><item>
+  <title>Mini ML</title>
+  <link>https://isa-afp.org/entries/MiniML.html</link>
+  <pubDate>Fri, 19 Mar 2004 00:00:00 +0000</pubDate>
+  <description>Mini ML in the AFP</description>
+    <category>Computer science/Programming languages/Type systems</category>
+</item>
 
   </channel>
 </rss>

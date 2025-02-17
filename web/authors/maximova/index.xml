@@ -1,16 +1,15 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Alexandra Maximova</title>
     <link>https://isa-afp.org/authors/maximova/</link>
-    <description>AFP entries of Alexandra Maximova</description>
-        <item>
-          <title>Stream Fusion in HOL with Code Generation</title>
-          <link>https://isa-afp.org/entries/Stream_Fusion_Code.html</link>
-          <pubDate>Fri, 10 Oct 2014 00:00:00 +0000</pubDate>
-          <description>Stream Fusion in HOL with Code Generation in the AFP</description>
-            <category>Computer science/Functional programming</category>
-        </item>
+    <description>AFP entries of Alexandra Maximova</description><item>
+  <title>Stream Fusion in HOL with Code Generation</title>
+  <link>https://isa-afp.org/entries/Stream_Fusion_Code.html</link>
+  <pubDate>Fri, 10 Oct 2014 00:00:00 +0000</pubDate>
+  <description>Stream Fusion in HOL with Code Generation in the AFP</description>
+    <category>Computer science/Functional programming</category>
+</item>
 
   </channel>
 </rss>

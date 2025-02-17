@@ -1,16 +1,15 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Greg O&#39;Keefe</title>
     <link>https://isa-afp.org/authors/keefe/</link>
-    <description>AFP entries of Greg O'Keefe</description>
-        <item>
-          <title>Category Theory to Yoneda&#39;s Lemma</title>
-          <link>https://isa-afp.org/entries/Category.html</link>
-          <pubDate>Thu, 21 Apr 2005 00:00:00 +0000</pubDate>
-          <description>Category Theory to Yoneda&#39;s Lemma in the AFP</description>
-            <category>Mathematics/Category theory</category>
-        </item>
+    <description>AFP entries of Greg O'Keefe</description><item>
+  <title>Category Theory to Yoneda&#39;s Lemma</title>
+  <link>https://isa-afp.org/entries/Category.html</link>
+  <pubDate>Thu, 21 Apr 2005 00:00:00 +0000</pubDate>
+  <description>Category Theory to Yoneda&#39;s Lemma in the AFP</description>
+    <category>Mathematics/Category theory</category>
+</item>
 
   </channel>
 </rss>

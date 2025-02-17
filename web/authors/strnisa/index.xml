@@ -1,16 +1,15 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Rok Strniša</title>
     <link>https://isa-afp.org/authors/strnisa/</link>
-    <description>AFP entries of Rok Strniša</description>
-        <item>
-          <title>Lightweight Java</title>
-          <link>https://isa-afp.org/entries/LightweightJava.html</link>
-          <pubDate>Mon, 07 Feb 2011 00:00:00 +0000</pubDate>
-          <description>Lightweight Java in the AFP</description>
-            <category>Computer science/Programming languages/Language definitions</category>
-        </item>
+    <description>AFP entries of Rok Strniša</description><item>
+  <title>Lightweight Java</title>
+  <link>https://isa-afp.org/entries/LightweightJava.html</link>
+  <pubDate>Mon, 07 Feb 2011 00:00:00 +0000</pubDate>
+  <description>Lightweight Java in the AFP</description>
+    <category>Computer science/Programming languages/Language definitions</category>
+</item>
 
   </channel>
 </rss>

@@ -1,23 +1,22 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Roelof Oosterhuis</title>
     <link>https://isa-afp.org/authors/oosterhuis/</link>
-    <description>AFP entries of Roelof Oosterhuis</description>
-        <item>
-          <title>Sums of Two and Four Squares</title>
-          <link>https://isa-afp.org/entries/SumSquares.html</link>
-          <pubDate>Sun, 12 Aug 2007 00:00:00 +0000</pubDate>
-          <description>Sums of Two and Four Squares in the AFP</description>
-            <category>Mathematics/Number theory</category>
-        </item>
-        <item>
-          <title>Fermat&#39;s Last Theorem for Exponents 3 and 4 and the Parametrisation of Pythagorean Triples</title>
-          <link>https://isa-afp.org/entries/Fermat3_4.html</link>
-          <pubDate>Sun, 12 Aug 2007 00:00:00 +0000</pubDate>
-          <description>Fermat&#39;s Last Theorem for Exponents 3 and 4 and the Parametrisation of Pythagorean Triples in the AFP</description>
-            <category>Mathematics/Number theory</category>
-        </item>
+    <description>AFP entries of Roelof Oosterhuis</description><item>
+  <title>Sums of Two and Four Squares</title>
+  <link>https://isa-afp.org/entries/SumSquares.html</link>
+  <pubDate>Sun, 12 Aug 2007 00:00:00 +0000</pubDate>
+  <description>Sums of Two and Four Squares in the AFP</description>
+    <category>Mathematics/Number theory</category>
+</item>
+<item>
+  <title>Fermat&#39;s Last Theorem for Exponents 3 and 4 and the Parametrisation of Pythagorean Triples</title>
+  <link>https://isa-afp.org/entries/Fermat3_4.html</link>
+  <pubDate>Sun, 12 Aug 2007 00:00:00 +0000</pubDate>
+  <description>Fermat&#39;s Last Theorem for Exponents 3 and 4 and the Parametrisation of Pythagorean Triples in the AFP</description>
+    <category>Mathematics/Number theory</category>
+</item>
 
   </channel>
 </rss>

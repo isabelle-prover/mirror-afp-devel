@@ -1,85 +1,84 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Mathematics/Order</title>
     <link>https://isa-afp.org/topics/mathematics/order/</link>
-    <description>AFP entries in Order</description>
-         <item>
-          <title>Minimal, Maximal, Least, and Greatest Elements w.r.t. Restricted Ordering</title>
-          <link>https://isa-afp.org/entries/Min_Max_Least_Greatest.html</link>
-          <pubDate>Thu, 24 Oct 2024 00:00:00 +0000</pubDate>
-          <description>Minimal, Maximal, Least, and Greatest Elements w.r.t. Restricted Ordering in the AFP</description>
-            <category>Mathematics/Order</category>
-        </item>
-        <item>
-          <title>Transport via Partial Galois Connections and Equivalences</title>
-          <link>https://isa-afp.org/entries/Transport.html</link>
-          <pubDate>Wed, 11 Oct 2023 00:00:00 +0000</pubDate>
-          <description>Transport via Partial Galois Connections and Equivalences in the AFP</description>
-            <category>Computer science/Programming languages/Lambda calculi</category>
-            <category>Computer science/Programming languages/Type systems</category>
-            <category>Computer science/Semantics and reasoning</category>
-            <category>Mathematics/Order</category>
-        </item>
-        <item>
-          <title>Modal quantales, involutive quantales, Dedekind Quantales</title>
-          <link>https://isa-afp.org/entries/Quantales_Converse.html</link>
-          <pubDate>Tue, 25 Jul 2023 00:00:00 +0000</pubDate>
-          <description>Modal quantales, involutive quantales, Dedekind Quantales in the AFP</description>
-            <category>Computer science/Semantics and reasoning</category>
-            <category>Mathematics/Algebra</category>
-            <category>Mathematics/Order</category>
-        </item>
-        <item>
-          <title>Formalizing Results on Directed Sets</title>
-          <link>https://isa-afp.org/entries/Directed_Sets.html</link>
-          <pubDate>Wed, 24 May 2023 00:00:00 +0000</pubDate>
-          <description>Formalizing Results on Directed Sets in the AFP</description>
-            <category>Mathematics/Order</category>
-        </item>
-        <item>
-          <title>Order Extension and Szpilrajn&#39;s Extension Theorem</title>
-          <link>https://isa-afp.org/entries/Szpilrajn.html</link>
-          <pubDate>Sat, 27 Jul 2019 00:00:00 +0000</pubDate>
-          <description>Order Extension and Szpilrajn&#39;s Extension Theorem in the AFP</description>
-            <category>Mathematics/Order</category>
-        </item>
-        <item>
-          <title>Complete Non-Orders and Fixed Points</title>
-          <link>https://isa-afp.org/entries/Complete_Non_Orders.html</link>
-          <pubDate>Thu, 27 Jun 2019 00:00:00 +0000</pubDate>
-          <description>Complete Non-Orders and Fixed Points in the AFP</description>
-            <category>Mathematics/Order</category>
-        </item>
-        <item>
-          <title>Properties of Orderings and Lattices</title>
-          <link>https://isa-afp.org/entries/Order_Lattice_Props.html</link>
-          <pubDate>Tue, 11 Dec 2018 00:00:00 +0000</pubDate>
-          <description>Properties of Orderings and Lattices in the AFP</description>
-            <category>Mathematics/Order</category>
-        </item>
-        <item>
-          <title>Allen&#39;s Interval Calculus</title>
-          <link>https://isa-afp.org/entries/Allen_Calculus.html</link>
-          <pubDate>Thu, 29 Sep 2016 00:00:00 +0000</pubDate>
-          <description>Allen&#39;s Interval Calculus in the AFP</description>
-            <category>Logic/General logic/Temporal logic</category>
-            <category>Mathematics/Order</category>
-        </item>
-        <item>
-          <title>Stone Algebras</title>
-          <link>https://isa-afp.org/entries/Stone_Algebras.html</link>
-          <pubDate>Tue, 06 Sep 2016 00:00:00 +0000</pubDate>
-          <description>Stone Algebras in the AFP</description>
-            <category>Mathematics/Order</category>
-        </item>
-        <item>
-          <title>Lattice Properties</title>
-          <link>https://isa-afp.org/entries/LatticeProperties.html</link>
-          <pubDate>Thu, 22 Sep 2011 00:00:00 +0000</pubDate>
-          <description>Lattice Properties in the AFP</description>
-            <category>Mathematics/Order</category>
-        </item>
+    <description>AFP entries in Order</description><item>
+  <title>Minimal, Maximal, Least, and Greatest Elements w.r.t. Restricted Ordering</title>
+  <link>https://isa-afp.org/entries/Min_Max_Least_Greatest.html</link>
+  <pubDate>Thu, 24 Oct 2024 00:00:00 +0000</pubDate>
+  <description>Minimal, Maximal, Least, and Greatest Elements w.r.t. Restricted Ordering in the AFP</description>
+    <category>Mathematics/Order</category>
+</item>
+<item>
+  <title>Transport via Partial Galois Connections and Equivalences</title>
+  <link>https://isa-afp.org/entries/Transport.html</link>
+  <pubDate>Wed, 11 Oct 2023 00:00:00 +0000</pubDate>
+  <description>Transport via Partial Galois Connections and Equivalences in the AFP</description>
+    <category>Computer science/Programming languages/Lambda calculi</category>
+    <category>Computer science/Programming languages/Type systems</category>
+    <category>Computer science/Semantics and reasoning</category>
+    <category>Mathematics/Order</category>
+</item>
+<item>
+  <title>Modal quantales, involutive quantales, Dedekind Quantales</title>
+  <link>https://isa-afp.org/entries/Quantales_Converse.html</link>
+  <pubDate>Tue, 25 Jul 2023 00:00:00 +0000</pubDate>
+  <description>Modal quantales, involutive quantales, Dedekind Quantales in the AFP</description>
+    <category>Computer science/Semantics and reasoning</category>
+    <category>Mathematics/Algebra</category>
+    <category>Mathematics/Order</category>
+</item>
+<item>
+  <title>Formalizing Results on Directed Sets</title>
+  <link>https://isa-afp.org/entries/Directed_Sets.html</link>
+  <pubDate>Wed, 24 May 2023 00:00:00 +0000</pubDate>
+  <description>Formalizing Results on Directed Sets in the AFP</description>
+    <category>Mathematics/Order</category>
+</item>
+<item>
+  <title>Order Extension and Szpilrajn&#39;s Extension Theorem</title>
+  <link>https://isa-afp.org/entries/Szpilrajn.html</link>
+  <pubDate>Sat, 27 Jul 2019 00:00:00 +0000</pubDate>
+  <description>Order Extension and Szpilrajn&#39;s Extension Theorem in the AFP</description>
+    <category>Mathematics/Order</category>
+</item>
+<item>
+  <title>Complete Non-Orders and Fixed Points</title>
+  <link>https://isa-afp.org/entries/Complete_Non_Orders.html</link>
+  <pubDate>Thu, 27 Jun 2019 00:00:00 +0000</pubDate>
+  <description>Complete Non-Orders and Fixed Points in the AFP</description>
+    <category>Mathematics/Order</category>
+</item>
+<item>
+  <title>Properties of Orderings and Lattices</title>
+  <link>https://isa-afp.org/entries/Order_Lattice_Props.html</link>
+  <pubDate>Tue, 11 Dec 2018 00:00:00 +0000</pubDate>
+  <description>Properties of Orderings and Lattices in the AFP</description>
+    <category>Mathematics/Order</category>
+</item>
+<item>
+  <title>Allen&#39;s Interval Calculus</title>
+  <link>https://isa-afp.org/entries/Allen_Calculus.html</link>
+  <pubDate>Thu, 29 Sep 2016 00:00:00 +0000</pubDate>
+  <description>Allen&#39;s Interval Calculus in the AFP</description>
+    <category>Logic/General logic/Temporal logic</category>
+    <category>Mathematics/Order</category>
+</item>
+<item>
+  <title>Stone Algebras</title>
+  <link>https://isa-afp.org/entries/Stone_Algebras.html</link>
+  <pubDate>Tue, 06 Sep 2016 00:00:00 +0000</pubDate>
+  <description>Stone Algebras in the AFP</description>
+    <category>Mathematics/Order</category>
+</item>
+<item>
+  <title>Lattice Properties</title>
+  <link>https://isa-afp.org/entries/LatticeProperties.html</link>
+  <pubDate>Thu, 22 Sep 2011 00:00:00 +0000</pubDate>
+  <description>Lattice Properties in the AFP</description>
+    <category>Mathematics/Order</category>
+</item>
 
   </channel>
 </rss>

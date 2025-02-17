@@ -1,16 +1,15 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>A Whitley</title>
     <link>https://isa-afp.org/authors/whitley/</link>
-    <description>AFP entries of A Whitley</description>
-        <item>
-          <title>Cryptographic Standards</title>
-          <link>https://isa-afp.org/entries/Crypto_Standards.html</link>
-          <pubDate>Tue, 06 Jun 2023 00:00:00 +0000</pubDate>
-          <description>Cryptographic Standards in the AFP</description>
-            <category>Computer science/Security/Cryptography</category>
-        </item>
+    <description>AFP entries of A Whitley</description><item>
+  <title>Cryptographic Standards</title>
+  <link>https://isa-afp.org/entries/Crypto_Standards.html</link>
+  <pubDate>Tue, 06 Jun 2023 00:00:00 +0000</pubDate>
+  <description>Cryptographic Standards in the AFP</description>
+    <category>Computer science/Security/Cryptography</category>
+</item>
 
   </channel>
 </rss>

@@ -1,25 +1,24 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Alastair R. Beresford</title>
     <link>https://isa-afp.org/authors/beresford/</link>
-    <description>AFP entries of Alastair R. Beresford</description>
-        <item>
-          <title>OpSets: Sequential Specifications for Replicated Datatypes</title>
-          <link>https://isa-afp.org/entries/OpSets.html</link>
-          <pubDate>Thu, 10 May 2018 00:00:00 +0000</pubDate>
-          <description>OpSets: Sequential Specifications for Replicated Datatypes in the AFP</description>
-            <category>Computer science/Algorithms/Distributed</category>
-            <category>Computer science/Data structures</category>
-        </item>
-        <item>
-          <title>A framework for establishing Strong Eventual Consistency for Conflict-free Replicated Datatypes</title>
-          <link>https://isa-afp.org/entries/CRDT.html</link>
-          <pubDate>Fri, 07 Jul 2017 00:00:00 +0000</pubDate>
-          <description>A framework for establishing Strong Eventual Consistency for Conflict-free Replicated Datatypes in the AFP</description>
-            <category>Computer science/Algorithms/Distributed</category>
-            <category>Computer science/Data structures</category>
-        </item>
+    <description>AFP entries of Alastair R. Beresford</description><item>
+  <title>OpSets: Sequential Specifications for Replicated Datatypes</title>
+  <link>https://isa-afp.org/entries/OpSets.html</link>
+  <pubDate>Thu, 10 May 2018 00:00:00 +0000</pubDate>
+  <description>OpSets: Sequential Specifications for Replicated Datatypes in the AFP</description>
+    <category>Computer science/Algorithms/Distributed</category>
+    <category>Computer science/Data structures</category>
+</item>
+<item>
+  <title>A framework for establishing Strong Eventual Consistency for Conflict-free Replicated Datatypes</title>
+  <link>https://isa-afp.org/entries/CRDT.html</link>
+  <pubDate>Fri, 07 Jul 2017 00:00:00 +0000</pubDate>
+  <description>A framework for establishing Strong Eventual Consistency for Conflict-free Replicated Datatypes in the AFP</description>
+    <category>Computer science/Algorithms/Distributed</category>
+    <category>Computer science/Data structures</category>
+</item>
 
   </channel>
 </rss>

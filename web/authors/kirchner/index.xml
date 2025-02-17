@@ -1,24 +1,23 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Daniel Kirchner</title>
     <link>https://isa-afp.org/authors/kirchner/</link>
-    <description>AFP entries of Daniel Kirchner</description>
-        <item>
-          <title>Abstract Object Theory</title>
-          <link>https://isa-afp.org/entries/AOT.html</link>
-          <pubDate>Mon, 28 Nov 2022 00:00:00 +0000</pubDate>
-          <description>Abstract Object Theory in the AFP</description>
-            <category>Logic/General logic</category>
-            <category>Mathematics</category>
-        </item>
-        <item>
-          <title>Representation and Partial Automation of the Principia Logico-Metaphysica in Isabelle/HOL</title>
-          <link>https://isa-afp.org/entries/PLM.html</link>
-          <pubDate>Sun, 17 Sep 2017 00:00:00 +0000</pubDate>
-          <description>Representation and Partial Automation of the Principia Logico-Metaphysica in Isabelle/HOL in the AFP</description>
-            <category>Logic/Philosophical aspects</category>
-        </item>
+    <description>AFP entries of Daniel Kirchner</description><item>
+  <title>Abstract Object Theory</title>
+  <link>https://isa-afp.org/entries/AOT.html</link>
+  <pubDate>Mon, 28 Nov 2022 00:00:00 +0000</pubDate>
+  <description>Abstract Object Theory in the AFP</description>
+    <category>Logic/General logic</category>
+    <category>Mathematics</category>
+</item>
+<item>
+  <title>Representation and Partial Automation of the Principia Logico-Metaphysica in Isabelle/HOL</title>
+  <link>https://isa-afp.org/entries/PLM.html</link>
+  <pubDate>Sun, 17 Sep 2017 00:00:00 +0000</pubDate>
+  <description>Representation and Partial Automation of the Principia Logico-Metaphysica in Isabelle/HOL in the AFP</description>
+    <category>Logic/Philosophical aspects</category>
+</item>
 
   </channel>
 </rss>

@@ -1,73 +1,72 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Michikazu Hirata</title>
     <link>https://isa-afp.org/authors/hirata/</link>
-    <description>AFP entries of Michikazu Hirata</description>
-        <item>
-          <title>Diﬀerential Privacy using Quasi-Borel Spaces</title>
-          <link>https://isa-afp.org/entries/DP_QBS.html</link>
-          <pubDate>Tue, 07 Jan 2025 00:00:00 +0000</pubDate>
-          <description>Diﬀerential Privacy using Quasi-Borel Spaces in the AFP</description>
-            <category>Computer science/Semantics and reasoning</category>
-        </item>
-        <item>
-          <title>The Riesz Representation Theorem</title>
-          <link>https://isa-afp.org/entries/Riesz_Representation.html</link>
-          <pubDate>Tue, 04 Jun 2024 00:00:00 +0000</pubDate>
-          <description>The Riesz Representation Theorem in the AFP</description>
-            <category>Mathematics/Topology</category>
-            <category>Mathematics/Measure and integration</category>
-        </item>
-        <item>
-          <title>The Lévy-Prokhorov Metric</title>
-          <link>https://isa-afp.org/entries/Levy_Prokhorov_Metric.html</link>
-          <pubDate>Tue, 04 Jun 2024 00:00:00 +0000</pubDate>
-          <description>The Lévy-Prokhorov Metric in the AFP</description>
-            <category>Mathematics/Measure and integration</category>
-            <category>Mathematics/Topology</category>
-            <category>Mathematics/Probability theory</category>
-        </item>
-        <item>
-          <title>Coproduct Measure</title>
-          <link>https://isa-afp.org/entries/Coproduct_Measure.html</link>
-          <pubDate>Tue, 04 Jun 2024 00:00:00 +0000</pubDate>
-          <description>Coproduct Measure in the AFP</description>
-            <category>Mathematics/Measure and integration</category>
-        </item>
-        <item>
-          <title>Disintegration Theorem</title>
-          <link>https://isa-afp.org/entries/Disintegration.html</link>
-          <pubDate>Thu, 02 Nov 2023 00:00:00 +0000</pubDate>
-          <description>Disintegration Theorem in the AFP</description>
-            <category>Mathematics/Measure and integration</category>
-            <category>Mathematics/Probability theory</category>
-        </item>
-        <item>
-          <title>Standard Borel Spaces</title>
-          <link>https://isa-afp.org/entries/Standard_Borel_Spaces.html</link>
-          <pubDate>Tue, 08 Aug 2023 00:00:00 +0000</pubDate>
-          <description>Standard Borel Spaces in the AFP</description>
-            <category>Mathematics/Analysis</category>
-            <category>Mathematics/Topology</category>
-        </item>
-        <item>
-          <title>S-Finite Measure Monad on Quasi-Borel Spaces</title>
-          <link>https://isa-afp.org/entries/S_Finite_Measure_Monad.html</link>
-          <pubDate>Tue, 08 Aug 2023 00:00:00 +0000</pubDate>
-          <description>S-Finite Measure Monad on Quasi-Borel Spaces in the AFP</description>
-            <category>Computer science/Semantics and reasoning</category>
-            <category>Mathematics/Measure and integration</category>
-            <category>Mathematics/Probability theory</category>
-        </item>
-        <item>
-          <title>Quasi-Borel Spaces</title>
-          <link>https://isa-afp.org/entries/Quasi_Borel_Spaces.html</link>
-          <pubDate>Thu, 03 Feb 2022 00:00:00 +0000</pubDate>
-          <description>Quasi-Borel Spaces in the AFP</description>
-            <category>Mathematics/Probability theory</category>
-            <category>Computer science/Semantics and reasoning</category>
-        </item>
+    <description>AFP entries of Michikazu Hirata</description><item>
+  <title>Diﬀerential Privacy using Quasi-Borel Spaces</title>
+  <link>https://isa-afp.org/entries/DP_QBS.html</link>
+  <pubDate>Tue, 07 Jan 2025 00:00:00 +0000</pubDate>
+  <description>Diﬀerential Privacy using Quasi-Borel Spaces in the AFP</description>
+    <category>Computer science/Semantics and reasoning</category>
+</item>
+<item>
+  <title>The Riesz Representation Theorem</title>
+  <link>https://isa-afp.org/entries/Riesz_Representation.html</link>
+  <pubDate>Tue, 04 Jun 2024 00:00:00 +0000</pubDate>
+  <description>The Riesz Representation Theorem in the AFP</description>
+    <category>Mathematics/Topology</category>
+    <category>Mathematics/Measure and integration</category>
+</item>
+<item>
+  <title>The Lévy-Prokhorov Metric</title>
+  <link>https://isa-afp.org/entries/Levy_Prokhorov_Metric.html</link>
+  <pubDate>Tue, 04 Jun 2024 00:00:00 +0000</pubDate>
+  <description>The Lévy-Prokhorov Metric in the AFP</description>
+    <category>Mathematics/Measure and integration</category>
+    <category>Mathematics/Topology</category>
+    <category>Mathematics/Probability theory</category>
+</item>
+<item>
+  <title>Coproduct Measure</title>
+  <link>https://isa-afp.org/entries/Coproduct_Measure.html</link>
+  <pubDate>Tue, 04 Jun 2024 00:00:00 +0000</pubDate>
+  <description>Coproduct Measure in the AFP</description>
+    <category>Mathematics/Measure and integration</category>
+</item>
+<item>
+  <title>Disintegration Theorem</title>
+  <link>https://isa-afp.org/entries/Disintegration.html</link>
+  <pubDate>Thu, 02 Nov 2023 00:00:00 +0000</pubDate>
+  <description>Disintegration Theorem in the AFP</description>
+    <category>Mathematics/Measure and integration</category>
+    <category>Mathematics/Probability theory</category>
+</item>
+<item>
+  <title>Standard Borel Spaces</title>
+  <link>https://isa-afp.org/entries/Standard_Borel_Spaces.html</link>
+  <pubDate>Tue, 08 Aug 2023 00:00:00 +0000</pubDate>
+  <description>Standard Borel Spaces in the AFP</description>
+    <category>Mathematics/Analysis</category>
+    <category>Mathematics/Topology</category>
+</item>
+<item>
+  <title>S-Finite Measure Monad on Quasi-Borel Spaces</title>
+  <link>https://isa-afp.org/entries/S_Finite_Measure_Monad.html</link>
+  <pubDate>Tue, 08 Aug 2023 00:00:00 +0000</pubDate>
+  <description>S-Finite Measure Monad on Quasi-Borel Spaces in the AFP</description>
+    <category>Computer science/Semantics and reasoning</category>
+    <category>Mathematics/Measure and integration</category>
+    <category>Mathematics/Probability theory</category>
+</item>
+<item>
+  <title>Quasi-Borel Spaces</title>
+  <link>https://isa-afp.org/entries/Quasi_Borel_Spaces.html</link>
+  <pubDate>Thu, 03 Feb 2022 00:00:00 +0000</pubDate>
+  <description>Quasi-Borel Spaces in the AFP</description>
+    <category>Mathematics/Probability theory</category>
+    <category>Computer science/Semantics and reasoning</category>
+</item>
 
   </channel>
 </rss>

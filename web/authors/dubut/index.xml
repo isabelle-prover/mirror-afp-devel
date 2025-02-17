@@ -1,23 +1,22 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Jérémy Dubut</title>
     <link>https://isa-afp.org/authors/dubut/</link>
-    <description>AFP entries of Jérémy Dubut</description>
-        <item>
-          <title>Formalizing Results on Directed Sets</title>
-          <link>https://isa-afp.org/entries/Directed_Sets.html</link>
-          <pubDate>Wed, 24 May 2023 00:00:00 +0000</pubDate>
-          <description>Formalizing Results on Directed Sets in the AFP</description>
-            <category>Mathematics/Order</category>
-        </item>
-        <item>
-          <title>Complete Non-Orders and Fixed Points</title>
-          <link>https://isa-afp.org/entries/Complete_Non_Orders.html</link>
-          <pubDate>Thu, 27 Jun 2019 00:00:00 +0000</pubDate>
-          <description>Complete Non-Orders and Fixed Points in the AFP</description>
-            <category>Mathematics/Order</category>
-        </item>
+    <description>AFP entries of Jérémy Dubut</description><item>
+  <title>Formalizing Results on Directed Sets</title>
+  <link>https://isa-afp.org/entries/Directed_Sets.html</link>
+  <pubDate>Wed, 24 May 2023 00:00:00 +0000</pubDate>
+  <description>Formalizing Results on Directed Sets in the AFP</description>
+    <category>Mathematics/Order</category>
+</item>
+<item>
+  <title>Complete Non-Orders and Fixed Points</title>
+  <link>https://isa-afp.org/entries/Complete_Non_Orders.html</link>
+  <pubDate>Thu, 27 Jun 2019 00:00:00 +0000</pubDate>
+  <description>Complete Non-Orders and Fixed Points in the AFP</description>
+    <category>Mathematics/Order</category>
+</item>
 
   </channel>
 </rss>

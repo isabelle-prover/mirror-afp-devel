@@ -1,16 +1,15 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Nicolas Méric</title>
     <link>https://isa-afp.org/authors/meric/</link>
-    <description>AFP entries of Nicolas Méric</description>
-        <item>
-          <title>Isabelle/DOF</title>
-          <link>https://isa-afp.org/entries/Isabelle_DOF.html</link>
-          <pubDate>Fri, 26 Apr 2024 00:00:00 +0000</pubDate>
-          <description>Isabelle/DOF in the AFP</description>
-            <category>Computer science/Semantics and reasoning</category>
-        </item>
+    <description>AFP entries of Nicolas Méric</description><item>
+  <title>Isabelle/DOF</title>
+  <link>https://isa-afp.org/entries/Isabelle_DOF.html</link>
+  <pubDate>Fri, 26 Apr 2024 00:00:00 +0000</pubDate>
+  <description>Isabelle/DOF in the AFP</description>
+    <category>Computer science/Semantics and reasoning</category>
+</item>
 
   </channel>
 </rss>

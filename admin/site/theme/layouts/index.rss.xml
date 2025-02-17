@@ -1,10 +1,10 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+{{- printf "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"yes\"?>" | safeHTML }}
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Archive of Formal Proofs</title>
     <link>{{ .Permalink }}</link>
     <description>Formal developments in the AFP</description>
-{{ range .Params.entries }}
+    {{- range .Params.entries }}
       {{- range .entries }}
         {{- partial "entry.rss.xml" (page.GetPage (printf "/entries/%s" .)) }}
       {{- end }}

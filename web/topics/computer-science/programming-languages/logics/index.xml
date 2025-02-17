@@ -1,275 +1,274 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Computer science/Programming languages/Logics</title>
     <link>https://isa-afp.org/topics/computer-science/programming-languages/logics/</link>
-    <description>AFP entries in Logics</description>
-         <item>
-          <title>AutoCorres2</title>
-          <link>https://isa-afp.org/entries/AutoCorres2.html</link>
-          <pubDate>Wed, 17 Apr 2024 00:00:00 +0000</pubDate>
-          <description>AutoCorres2 in the AFP</description>
-            <category>Computer science/Programming languages/Logics</category>
-            <category>Computer science/Semantics and reasoning</category>
-            <category>Tools</category>
-            <category>Computer science/Programming languages/Language definitions</category>
-        </item>
-        <item>
-          <title>Formalization of Hyper Hoare Logic: A Logic to (Dis-)Prove Program Hyperproperties</title>
-          <link>https://isa-afp.org/entries/HyperHoareLogic.html</link>
-          <pubDate>Mon, 03 Apr 2023 00:00:00 +0000</pubDate>
-          <description>Formalization of Hyper Hoare Logic: A Logic to (Dis-)Prove Program Hyperproperties in the AFP</description>
-            <category>Computer science/Programming languages/Logics</category>
-        </item>
-        <item>
-          <title>Formalization of CommCSL: A Relational Concurrent Separation Logic for Proving Information Flow Security in Concurrent Programs</title>
-          <link>https://isa-afp.org/entries/CommCSL.html</link>
-          <pubDate>Wed, 15 Mar 2023 00:00:00 +0000</pubDate>
-          <description>Formalization of CommCSL: A Relational Concurrent Separation Logic for Proving Information Flow Security in Concurrent Programs in the AFP</description>
-            <category>Computer science/Programming languages/Logics</category>
-            <category>Computer science/Concurrency</category>
-            <category>Computer science/Security</category>
-        </item>
-        <item>
-          <title>Renaming-Enriched Sets (Rensets) and Renaming-Based Recursion</title>
-          <link>https://isa-afp.org/entries/Rensets.html</link>
-          <pubDate>Tue, 28 Feb 2023 00:00:00 +0000</pubDate>
-          <description>Renaming-Enriched Sets (Rensets) and Renaming-Based Recursion in the AFP</description>
-            <category>Computer science/Programming languages/Logics</category>
-        </item>
-        <item>
-          <title>A Hoare Logic for Diverging Programs</title>
-          <link>https://isa-afp.org/entries/HoareForDivergence.html</link>
-          <pubDate>Fri, 20 Jan 2023 00:00:00 +0000</pubDate>
-          <description>A Hoare Logic for Diverging Programs in the AFP</description>
-            <category>Computer science/Programming languages/Logics</category>
-        </item>
-        <item>
-          <title>Unbounded Separation Logic</title>
-          <link>https://isa-afp.org/entries/Separation_Logic_Unbounded.html</link>
-          <pubDate>Mon, 05 Sep 2022 00:00:00 +0000</pubDate>
-          <description>Unbounded Separation Logic in the AFP</description>
-            <category>Computer science/Programming languages/Logics</category>
-        </item>
-        <item>
-          <title>A Restricted Definition of the Magic Wand to Soundly Combine Fractions of a Wand</title>
-          <link>https://isa-afp.org/entries/Combinable_Wands.html</link>
-          <pubDate>Mon, 30 May 2022 00:00:00 +0000</pubDate>
-          <description>A Restricted Definition of the Magic Wand to Soundly Combine Fractions of a Wand in the AFP</description>
-            <category>Computer science/Programming languages/Logics</category>
-        </item>
-        <item>
-          <title>Formalization of a Framework for the Sound Automation of Magic Wands</title>
-          <link>https://isa-afp.org/entries/Package_logic.html</link>
-          <pubDate>Wed, 18 May 2022 00:00:00 +0000</pubDate>
-          <description>Formalization of a Framework for the Sound Automation of Magic Wands in the AFP</description>
-            <category>Computer science/Programming languages/Logics</category>
-        </item>
-        <item>
-          <title>Quantum and Classical Registers</title>
-          <link>https://isa-afp.org/entries/Registers.html</link>
-          <pubDate>Thu, 28 Oct 2021 00:00:00 +0000</pubDate>
-          <description>Quantum and Classical Registers in the AFP</description>
-            <category>Computer science/Algorithms/Quantum computing</category>
-            <category>Computer science/Programming languages/Logics</category>
-            <category>Computer science/Semantics and reasoning</category>
-        </item>
-        <item>
-          <title>Algebras for Iteration, Infinite Executions and Correctness of Sequential Computations</title>
-          <link>https://isa-afp.org/entries/Correctness_Algebras.html</link>
-          <pubDate>Tue, 12 Oct 2021 00:00:00 +0000</pubDate>
-          <description>Algebras for Iteration, Infinite Executions and Correctness of Sequential Computations in the AFP</description>
-            <category>Computer science/Programming languages/Logics</category>
-        </item>
-        <item>
-          <title>An Under-Approximate Relational Logic</title>
-          <link>https://isa-afp.org/entries/Relational-Incorrectness-Logic.html</link>
-          <pubDate>Thu, 12 Mar 2020 00:00:00 +0000</pubDate>
-          <description>An Under-Approximate Relational Logic in the AFP</description>
-            <category>Computer science/Programming languages/Logics</category>
-            <category>Computer science/Security</category>
-        </item>
-        <item>
-          <title>Differential Game Logic</title>
-          <link>https://isa-afp.org/entries/Differential_Game_Logic.html</link>
-          <pubDate>Mon, 03 Jun 2019 00:00:00 +0000</pubDate>
-          <description>Differential Game Logic in the AFP</description>
-            <category>Computer science/Programming languages/Logics</category>
-        </item>
-        <item>
-          <title>Quantum Hoare Logic</title>
-          <link>https://isa-afp.org/entries/QHLProver.html</link>
-          <pubDate>Sun, 24 Mar 2019 00:00:00 +0000</pubDate>
-          <description>Quantum Hoare Logic in the AFP</description>
-            <category>Computer science/Programming languages/Logics</category>
-            <category>Computer science/Semantics and reasoning</category>
-        </item>
-        <item>
-          <title>Isabelle/UTP: Mechanised Theory Engineering for Unifying Theories of Programming</title>
-          <link>https://isa-afp.org/entries/UTP.html</link>
-          <pubDate>Fri, 01 Feb 2019 00:00:00 +0000</pubDate>
-          <description>Isabelle/UTP: Mechanised Theory Engineering for Unifying Theories of Programming in the AFP</description>
-            <category>Computer science/Programming languages/Logics</category>
-        </item>
-        <item>
-          <title>IMP2 – Simple Program Verification in Isabelle/HOL</title>
-          <link>https://isa-afp.org/entries/IMP2.html</link>
-          <pubDate>Tue, 15 Jan 2019 00:00:00 +0000</pubDate>
-          <description>IMP2 – Simple Program Verification in Isabelle/HOL in the AFP</description>
-            <category>Computer science/Programming languages/Logics</category>
-            <category>Computer science/Algorithms</category>
-        </item>
-        <item>
-          <title>Hoare Logics for Time Bounds</title>
-          <link>https://isa-afp.org/entries/Hoare_Time.html</link>
-          <pubDate>Mon, 26 Feb 2018 00:00:00 +0000</pubDate>
-          <description>Hoare Logics for Time Bounds in the AFP</description>
-            <category>Computer science/Programming languages/Logics</category>
-        </item>
-        <item>
-          <title>Differential Dynamic Logic</title>
-          <link>https://isa-afp.org/entries/Differential_Dynamic_Logic.html</link>
-          <pubDate>Mon, 13 Feb 2017 00:00:00 +0000</pubDate>
-          <description>Differential Dynamic Logic in the AFP</description>
-            <category>Logic/General logic/Modal logic</category>
-            <category>Computer science/Programming languages/Logics</category>
-        </item>
-        <item>
-          <title>COMPLX: A Verification Framework for Concurrent Imperative Programs</title>
-          <link>https://isa-afp.org/entries/Complx.html</link>
-          <pubDate>Tue, 29 Nov 2016 00:00:00 +0000</pubDate>
-          <description>COMPLX: A Verification Framework for Concurrent Imperative Programs in the AFP</description>
-            <category>Computer science/Programming languages/Logics</category>
-            <category>Computer science/Programming languages/Language definitions</category>
-        </item>
-        <item>
-          <title>Separata: Isabelle tactics for Separation Algebra</title>
-          <link>https://isa-afp.org/entries/Separata.html</link>
-          <pubDate>Wed, 16 Nov 2016 00:00:00 +0000</pubDate>
-          <description>Separata: Isabelle tactics for Separation Algebra in the AFP</description>
-            <category>Computer science/Programming languages/Logics</category>
-            <category>Tools</category>
-        </item>
-        <item>
-          <title>Kleene Algebras with Domain</title>
-          <link>https://isa-afp.org/entries/KAD.html</link>
-          <pubDate>Tue, 12 Apr 2016 00:00:00 +0000</pubDate>
-          <description>Kleene Algebras with Domain in the AFP</description>
-            <category>Computer science/Programming languages/Logics</category>
-            <category>Computer science/Automata and formal languages</category>
-            <category>Mathematics/Algebra</category>
-        </item>
-        <item>
-          <title>Concurrent IMP</title>
-          <link>https://isa-afp.org/entries/ConcurrentIMP.html</link>
-          <pubDate>Mon, 13 Apr 2015 00:00:00 +0000</pubDate>
-          <description>Concurrent IMP in the AFP</description>
-            <category>Computer science/Programming languages/Logics</category>
-        </item>
-        <item>
-          <title>Formalization of Refinement Calculus for Reactive Systems</title>
-          <link>https://isa-afp.org/entries/RefinementReactive.html</link>
-          <pubDate>Wed, 08 Oct 2014 00:00:00 +0000</pubDate>
-          <description>Formalization of Refinement Calculus for Reactive Systems in the AFP</description>
-            <category>Computer science/Programming languages/Logics</category>
-        </item>
-        <item>
-          <title>Kleene Algebra with Tests and Demonic Refinement Algebras</title>
-          <link>https://isa-afp.org/entries/KAT_and_DRA.html</link>
-          <pubDate>Thu, 23 Jan 2014 00:00:00 +0000</pubDate>
-          <description>Kleene Algebra with Tests and Demonic Refinement Algebras in the AFP</description>
-            <category>Computer science/Programming languages/Logics</category>
-            <category>Computer science/Automata and formal languages</category>
-            <category>Mathematics/Algebra</category>
-        </item>
-        <item>
-          <title>Automatic Data Refinement</title>
-          <link>https://isa-afp.org/entries/Automatic_Refinement.html</link>
-          <pubDate>Wed, 02 Oct 2013 00:00:00 +0000</pubDate>
-          <description>Automatic Data Refinement in the AFP</description>
-            <category>Computer science/Programming languages/Logics</category>
-        </item>
-        <item>
-          <title>Ribbon Proofs</title>
-          <link>https://isa-afp.org/entries/Ribbon_Proofs.html</link>
-          <pubDate>Sat, 19 Jan 2013 00:00:00 +0000</pubDate>
-          <description>Ribbon Proofs in the AFP</description>
-            <category>Computer science/Programming languages/Logics</category>
-        </item>
-        <item>
-          <title>Kleene Algebra</title>
-          <link>https://isa-afp.org/entries/Kleene_Algebra.html</link>
-          <pubDate>Tue, 15 Jan 2013 00:00:00 +0000</pubDate>
-          <description>Kleene Algebra in the AFP</description>
-            <category>Computer science/Programming languages/Logics</category>
-            <category>Computer science/Automata and formal languages</category>
-            <category>Mathematics/Algebra</category>
-        </item>
-        <item>
-          <title>A Separation Logic Framework for Imperative HOL</title>
-          <link>https://isa-afp.org/entries/Separation_Logic_Imperative_HOL.html</link>
-          <pubDate>Wed, 14 Nov 2012 00:00:00 +0000</pubDate>
-          <description>A Separation Logic Framework for Imperative HOL in the AFP</description>
-            <category>Computer science/Programming languages/Logics</category>
-        </item>
-        <item>
-          <title>Separation Algebra</title>
-          <link>https://isa-afp.org/entries/Separation_Algebra.html</link>
-          <pubDate>Fri, 11 May 2012 00:00:00 +0000</pubDate>
-          <description>Separation Algebra in the AFP</description>
-            <category>Computer science/Programming languages/Logics</category>
-        </item>
-        <item>
-          <title>A Definitional Encoding of TLA* in Isabelle/HOL</title>
-          <link>https://isa-afp.org/entries/TLA.html</link>
-          <pubDate>Sat, 19 Nov 2011 00:00:00 +0000</pubDate>
-          <description>A Definitional Encoding of TLA* in Isabelle/HOL in the AFP</description>
-            <category>Computer science/Programming languages/Logics</category>
-        </item>
-        <item>
-          <title>Algebra of Monotonic Boolean Transformers</title>
-          <link>https://isa-afp.org/entries/MonoBoolTranAlgebra.html</link>
-          <pubDate>Thu, 22 Sep 2011 00:00:00 +0000</pubDate>
-          <description>Algebra of Monotonic Boolean Transformers in the AFP</description>
-            <category>Computer science/Programming languages/Logics</category>
-        </item>
-        <item>
-          <title>Semantics and Data Refinement of Invariant Based Programs</title>
-          <link>https://isa-afp.org/entries/DataRefinementIBP.html</link>
-          <pubDate>Fri, 28 May 2010 00:00:00 +0000</pubDate>
-          <description>Semantics and Data Refinement of Invariant Based Programs in the AFP</description>
-            <category>Computer science/Programming languages/Logics</category>
-        </item>
-        <item>
-          <title>A Bytecode Logic for JML and Types</title>
-          <link>https://isa-afp.org/entries/BytecodeLogicJmlTypes.html</link>
-          <pubDate>Fri, 12 Dec 2008 00:00:00 +0000</pubDate>
-          <description>A Bytecode Logic for JML and Types in the AFP</description>
-            <category>Computer science/Programming languages/Logics</category>
-        </item>
-        <item>
-          <title>Secure information flow and program logics</title>
-          <link>https://isa-afp.org/entries/SIFPL.html</link>
-          <pubDate>Mon, 10 Nov 2008 00:00:00 +0000</pubDate>
-          <description>Secure information flow and program logics in the AFP</description>
-            <category>Computer science/Programming languages/Logics</category>
-            <category>Computer science/Security</category>
-        </item>
-        <item>
-          <title>A Sequential Imperative Programming Language Syntax, Semantics, Hoare Logics and Verification Environment</title>
-          <link>https://isa-afp.org/entries/Simpl.html</link>
-          <pubDate>Fri, 29 Feb 2008 00:00:00 +0000</pubDate>
-          <description>A Sequential Imperative Programming Language Syntax, Semantics, Hoare Logics and Verification Environment in the AFP</description>
-            <category>Computer science/Programming languages/Language definitions</category>
-            <category>Computer science/Programming languages/Logics</category>
-        </item>
-        <item>
-          <title>Abstract Hoare Logics</title>
-          <link>https://isa-afp.org/entries/Abstract-Hoare-Logics.html</link>
-          <pubDate>Tue, 08 Aug 2006 00:00:00 +0000</pubDate>
-          <description>Abstract Hoare Logics in the AFP</description>
-            <category>Computer science/Programming languages/Logics</category>
-        </item>
+    <description>AFP entries in Logics</description><item>
+  <title>AutoCorres2</title>
+  <link>https://isa-afp.org/entries/AutoCorres2.html</link>
+  <pubDate>Wed, 17 Apr 2024 00:00:00 +0000</pubDate>
+  <description>AutoCorres2 in the AFP</description>
+    <category>Computer science/Programming languages/Logics</category>
+    <category>Computer science/Semantics and reasoning</category>
+    <category>Tools</category>
+    <category>Computer science/Programming languages/Language definitions</category>
+</item>
+<item>
+  <title>Formalization of Hyper Hoare Logic: A Logic to (Dis-)Prove Program Hyperproperties</title>
+  <link>https://isa-afp.org/entries/HyperHoareLogic.html</link>
+  <pubDate>Mon, 03 Apr 2023 00:00:00 +0000</pubDate>
+  <description>Formalization of Hyper Hoare Logic: A Logic to (Dis-)Prove Program Hyperproperties in the AFP</description>
+    <category>Computer science/Programming languages/Logics</category>
+</item>
+<item>
+  <title>Formalization of CommCSL: A Relational Concurrent Separation Logic for Proving Information Flow Security in Concurrent Programs</title>
+  <link>https://isa-afp.org/entries/CommCSL.html</link>
+  <pubDate>Wed, 15 Mar 2023 00:00:00 +0000</pubDate>
+  <description>Formalization of CommCSL: A Relational Concurrent Separation Logic for Proving Information Flow Security in Concurrent Programs in the AFP</description>
+    <category>Computer science/Programming languages/Logics</category>
+    <category>Computer science/Concurrency</category>
+    <category>Computer science/Security</category>
+</item>
+<item>
+  <title>Renaming-Enriched Sets (Rensets) and Renaming-Based Recursion</title>
+  <link>https://isa-afp.org/entries/Rensets.html</link>
+  <pubDate>Tue, 28 Feb 2023 00:00:00 +0000</pubDate>
+  <description>Renaming-Enriched Sets (Rensets) and Renaming-Based Recursion in the AFP</description>
+    <category>Computer science/Programming languages/Logics</category>
+</item>
+<item>
+  <title>A Hoare Logic for Diverging Programs</title>
+  <link>https://isa-afp.org/entries/HoareForDivergence.html</link>
+  <pubDate>Fri, 20 Jan 2023 00:00:00 +0000</pubDate>
+  <description>A Hoare Logic for Diverging Programs in the AFP</description>
+    <category>Computer science/Programming languages/Logics</category>
+</item>
+<item>
+  <title>Unbounded Separation Logic</title>
+  <link>https://isa-afp.org/entries/Separation_Logic_Unbounded.html</link>
+  <pubDate>Mon, 05 Sep 2022 00:00:00 +0000</pubDate>
+  <description>Unbounded Separation Logic in the AFP</description>
+    <category>Computer science/Programming languages/Logics</category>
+</item>
+<item>
+  <title>A Restricted Definition of the Magic Wand to Soundly Combine Fractions of a Wand</title>
+  <link>https://isa-afp.org/entries/Combinable_Wands.html</link>
+  <pubDate>Mon, 30 May 2022 00:00:00 +0000</pubDate>
+  <description>A Restricted Definition of the Magic Wand to Soundly Combine Fractions of a Wand in the AFP</description>
+    <category>Computer science/Programming languages/Logics</category>
+</item>
+<item>
+  <title>Formalization of a Framework for the Sound Automation of Magic Wands</title>
+  <link>https://isa-afp.org/entries/Package_logic.html</link>
+  <pubDate>Wed, 18 May 2022 00:00:00 +0000</pubDate>
+  <description>Formalization of a Framework for the Sound Automation of Magic Wands in the AFP</description>
+    <category>Computer science/Programming languages/Logics</category>
+</item>
+<item>
+  <title>Quantum and Classical Registers</title>
+  <link>https://isa-afp.org/entries/Registers.html</link>
+  <pubDate>Thu, 28 Oct 2021 00:00:00 +0000</pubDate>
+  <description>Quantum and Classical Registers in the AFP</description>
+    <category>Computer science/Algorithms/Quantum computing</category>
+    <category>Computer science/Programming languages/Logics</category>
+    <category>Computer science/Semantics and reasoning</category>
+</item>
+<item>
+  <title>Algebras for Iteration, Infinite Executions and Correctness of Sequential Computations</title>
+  <link>https://isa-afp.org/entries/Correctness_Algebras.html</link>
+  <pubDate>Tue, 12 Oct 2021 00:00:00 +0000</pubDate>
+  <description>Algebras for Iteration, Infinite Executions and Correctness of Sequential Computations in the AFP</description>
+    <category>Computer science/Programming languages/Logics</category>
+</item>
+<item>
+  <title>An Under-Approximate Relational Logic</title>
+  <link>https://isa-afp.org/entries/Relational-Incorrectness-Logic.html</link>
+  <pubDate>Thu, 12 Mar 2020 00:00:00 +0000</pubDate>
+  <description>An Under-Approximate Relational Logic in the AFP</description>
+    <category>Computer science/Programming languages/Logics</category>
+    <category>Computer science/Security</category>
+</item>
+<item>
+  <title>Differential Game Logic</title>
+  <link>https://isa-afp.org/entries/Differential_Game_Logic.html</link>
+  <pubDate>Mon, 03 Jun 2019 00:00:00 +0000</pubDate>
+  <description>Differential Game Logic in the AFP</description>
+    <category>Computer science/Programming languages/Logics</category>
+</item>
+<item>
+  <title>Quantum Hoare Logic</title>
+  <link>https://isa-afp.org/entries/QHLProver.html</link>
+  <pubDate>Sun, 24 Mar 2019 00:00:00 +0000</pubDate>
+  <description>Quantum Hoare Logic in the AFP</description>
+    <category>Computer science/Programming languages/Logics</category>
+    <category>Computer science/Semantics and reasoning</category>
+</item>
+<item>
+  <title>Isabelle/UTP: Mechanised Theory Engineering for Unifying Theories of Programming</title>
+  <link>https://isa-afp.org/entries/UTP.html</link>
+  <pubDate>Fri, 01 Feb 2019 00:00:00 +0000</pubDate>
+  <description>Isabelle/UTP: Mechanised Theory Engineering for Unifying Theories of Programming in the AFP</description>
+    <category>Computer science/Programming languages/Logics</category>
+</item>
+<item>
+  <title>IMP2 – Simple Program Verification in Isabelle/HOL</title>
+  <link>https://isa-afp.org/entries/IMP2.html</link>
+  <pubDate>Tue, 15 Jan 2019 00:00:00 +0000</pubDate>
+  <description>IMP2 – Simple Program Verification in Isabelle/HOL in the AFP</description>
+    <category>Computer science/Programming languages/Logics</category>
+    <category>Computer science/Algorithms</category>
+</item>
+<item>
+  <title>Hoare Logics for Time Bounds</title>
+  <link>https://isa-afp.org/entries/Hoare_Time.html</link>
+  <pubDate>Mon, 26 Feb 2018 00:00:00 +0000</pubDate>
+  <description>Hoare Logics for Time Bounds in the AFP</description>
+    <category>Computer science/Programming languages/Logics</category>
+</item>
+<item>
+  <title>Differential Dynamic Logic</title>
+  <link>https://isa-afp.org/entries/Differential_Dynamic_Logic.html</link>
+  <pubDate>Mon, 13 Feb 2017 00:00:00 +0000</pubDate>
+  <description>Differential Dynamic Logic in the AFP</description>
+    <category>Logic/General logic/Modal logic</category>
+    <category>Computer science/Programming languages/Logics</category>
+</item>
+<item>
+  <title>COMPLX: A Verification Framework for Concurrent Imperative Programs</title>
+  <link>https://isa-afp.org/entries/Complx.html</link>
+  <pubDate>Tue, 29 Nov 2016 00:00:00 +0000</pubDate>
+  <description>COMPLX: A Verification Framework for Concurrent Imperative Programs in the AFP</description>
+    <category>Computer science/Programming languages/Logics</category>
+    <category>Computer science/Programming languages/Language definitions</category>
+</item>
+<item>
+  <title>Separata: Isabelle tactics for Separation Algebra</title>
+  <link>https://isa-afp.org/entries/Separata.html</link>
+  <pubDate>Wed, 16 Nov 2016 00:00:00 +0000</pubDate>
+  <description>Separata: Isabelle tactics for Separation Algebra in the AFP</description>
+    <category>Computer science/Programming languages/Logics</category>
+    <category>Tools</category>
+</item>
+<item>
+  <title>Kleene Algebras with Domain</title>
+  <link>https://isa-afp.org/entries/KAD.html</link>
+  <pubDate>Tue, 12 Apr 2016 00:00:00 +0000</pubDate>
+  <description>Kleene Algebras with Domain in the AFP</description>
+    <category>Computer science/Programming languages/Logics</category>
+    <category>Computer science/Automata and formal languages</category>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Concurrent IMP</title>
+  <link>https://isa-afp.org/entries/ConcurrentIMP.html</link>
+  <pubDate>Mon, 13 Apr 2015 00:00:00 +0000</pubDate>
+  <description>Concurrent IMP in the AFP</description>
+    <category>Computer science/Programming languages/Logics</category>
+</item>
+<item>
+  <title>Formalization of Refinement Calculus for Reactive Systems</title>
+  <link>https://isa-afp.org/entries/RefinementReactive.html</link>
+  <pubDate>Wed, 08 Oct 2014 00:00:00 +0000</pubDate>
+  <description>Formalization of Refinement Calculus for Reactive Systems in the AFP</description>
+    <category>Computer science/Programming languages/Logics</category>
+</item>
+<item>
+  <title>Kleene Algebra with Tests and Demonic Refinement Algebras</title>
+  <link>https://isa-afp.org/entries/KAT_and_DRA.html</link>
+  <pubDate>Thu, 23 Jan 2014 00:00:00 +0000</pubDate>
+  <description>Kleene Algebra with Tests and Demonic Refinement Algebras in the AFP</description>
+    <category>Computer science/Programming languages/Logics</category>
+    <category>Computer science/Automata and formal languages</category>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Automatic Data Refinement</title>
+  <link>https://isa-afp.org/entries/Automatic_Refinement.html</link>
+  <pubDate>Wed, 02 Oct 2013 00:00:00 +0000</pubDate>
+  <description>Automatic Data Refinement in the AFP</description>
+    <category>Computer science/Programming languages/Logics</category>
+</item>
+<item>
+  <title>Ribbon Proofs</title>
+  <link>https://isa-afp.org/entries/Ribbon_Proofs.html</link>
+  <pubDate>Sat, 19 Jan 2013 00:00:00 +0000</pubDate>
+  <description>Ribbon Proofs in the AFP</description>
+    <category>Computer science/Programming languages/Logics</category>
+</item>
+<item>
+  <title>Kleene Algebra</title>
+  <link>https://isa-afp.org/entries/Kleene_Algebra.html</link>
+  <pubDate>Tue, 15 Jan 2013 00:00:00 +0000</pubDate>
+  <description>Kleene Algebra in the AFP</description>
+    <category>Computer science/Programming languages/Logics</category>
+    <category>Computer science/Automata and formal languages</category>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>A Separation Logic Framework for Imperative HOL</title>
+  <link>https://isa-afp.org/entries/Separation_Logic_Imperative_HOL.html</link>
+  <pubDate>Wed, 14 Nov 2012 00:00:00 +0000</pubDate>
+  <description>A Separation Logic Framework for Imperative HOL in the AFP</description>
+    <category>Computer science/Programming languages/Logics</category>
+</item>
+<item>
+  <title>Separation Algebra</title>
+  <link>https://isa-afp.org/entries/Separation_Algebra.html</link>
+  <pubDate>Fri, 11 May 2012 00:00:00 +0000</pubDate>
+  <description>Separation Algebra in the AFP</description>
+    <category>Computer science/Programming languages/Logics</category>
+</item>
+<item>
+  <title>A Definitional Encoding of TLA* in Isabelle/HOL</title>
+  <link>https://isa-afp.org/entries/TLA.html</link>
+  <pubDate>Sat, 19 Nov 2011 00:00:00 +0000</pubDate>
+  <description>A Definitional Encoding of TLA* in Isabelle/HOL in the AFP</description>
+    <category>Computer science/Programming languages/Logics</category>
+</item>
+<item>
+  <title>Algebra of Monotonic Boolean Transformers</title>
+  <link>https://isa-afp.org/entries/MonoBoolTranAlgebra.html</link>
+  <pubDate>Thu, 22 Sep 2011 00:00:00 +0000</pubDate>
+  <description>Algebra of Monotonic Boolean Transformers in the AFP</description>
+    <category>Computer science/Programming languages/Logics</category>
+</item>
+<item>
+  <title>Semantics and Data Refinement of Invariant Based Programs</title>
+  <link>https://isa-afp.org/entries/DataRefinementIBP.html</link>
+  <pubDate>Fri, 28 May 2010 00:00:00 +0000</pubDate>
+  <description>Semantics and Data Refinement of Invariant Based Programs in the AFP</description>
+    <category>Computer science/Programming languages/Logics</category>
+</item>
+<item>
+  <title>A Bytecode Logic for JML and Types</title>
+  <link>https://isa-afp.org/entries/BytecodeLogicJmlTypes.html</link>
+  <pubDate>Fri, 12 Dec 2008 00:00:00 +0000</pubDate>
+  <description>A Bytecode Logic for JML and Types in the AFP</description>
+    <category>Computer science/Programming languages/Logics</category>
+</item>
+<item>
+  <title>Secure information flow and program logics</title>
+  <link>https://isa-afp.org/entries/SIFPL.html</link>
+  <pubDate>Mon, 10 Nov 2008 00:00:00 +0000</pubDate>
+  <description>Secure information flow and program logics in the AFP</description>
+    <category>Computer science/Programming languages/Logics</category>
+    <category>Computer science/Security</category>
+</item>
+<item>
+  <title>A Sequential Imperative Programming Language Syntax, Semantics, Hoare Logics and Verification Environment</title>
+  <link>https://isa-afp.org/entries/Simpl.html</link>
+  <pubDate>Fri, 29 Feb 2008 00:00:00 +0000</pubDate>
+  <description>A Sequential Imperative Programming Language Syntax, Semantics, Hoare Logics and Verification Environment in the AFP</description>
+    <category>Computer science/Programming languages/Language definitions</category>
+    <category>Computer science/Programming languages/Logics</category>
+</item>
+<item>
+  <title>Abstract Hoare Logics</title>
+  <link>https://isa-afp.org/entries/Abstract-Hoare-Logics.html</link>
+  <pubDate>Tue, 08 Aug 2006 00:00:00 +0000</pubDate>
+  <description>Abstract Hoare Logics in the AFP</description>
+    <category>Computer science/Programming languages/Logics</category>
+</item>
 
   </channel>
 </rss>

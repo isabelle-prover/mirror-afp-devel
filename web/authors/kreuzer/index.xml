@@ -1,66 +1,65 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Katharina Kreuzer</title>
     <link>https://isa-afp.org/authors/kreuzer/</link>
-    <description>AFP entries of Katharina Kreuzer</description>
-        <item>
-          <title>CRYSTALS-Kyber_Security</title>
-          <link>https://isa-afp.org/entries/CRYSTALS-Kyber_Security.html</link>
-          <pubDate>Mon, 18 Dec 2023 00:00:00 +0000</pubDate>
-          <description>CRYSTALS-Kyber_Security in the AFP</description>
-            <category>Computer science/Security/Cryptography</category>
-        </item>
-        <item>
-          <title>Perfect Fields</title>
-          <link>https://isa-afp.org/entries/Perfect_Fields.html</link>
-          <pubDate>Mon, 06 Nov 2023 00:00:00 +0000</pubDate>
-          <description>Perfect Fields in the AFP</description>
-            <category>Mathematics/Algebra</category>
-        </item>
-        <item>
-          <title>Elimination of Repeated Factors Algorithm</title>
-          <link>https://isa-afp.org/entries/Elimination_Of_Repeated_Factors.html</link>
-          <pubDate>Mon, 06 Nov 2023 00:00:00 +0000</pubDate>
-          <description>Elimination of Repeated Factors Algorithm in the AFP</description>
-            <category>Mathematics/Algebra</category>
-        </item>
-        <item>
-          <title>Hardness of Lattice Problems</title>
-          <link>https://isa-afp.org/entries/CVP_Hardness.html</link>
-          <pubDate>Thu, 02 Feb 2023 00:00:00 +0000</pubDate>
-          <description>Hardness of Lattice Problems in the AFP</description>
-            <category>Computer science/Security/Cryptography</category>
-            <category>Mathematics/Misc</category>
-        </item>
-        <item>
-          <title>CRYSTALS-Kyber</title>
-          <link>https://isa-afp.org/entries/CRYSTALS-Kyber.html</link>
-          <pubDate>Thu, 08 Sep 2022 00:00:00 +0000</pubDate>
-          <description>CRYSTALS-Kyber in the AFP</description>
-            <category>Computer science/Security</category>
-        </item>
-        <item>
-          <title>The Hales–Jewett Theorem</title>
-          <link>https://isa-afp.org/entries/Hales_Jewett.html</link>
-          <pubDate>Fri, 02 Sep 2022 00:00:00 +0000</pubDate>
-          <description>The Hales–Jewett Theorem in the AFP</description>
-            <category>Mathematics/Combinatorics</category>
-        </item>
-        <item>
-          <title>Number Theoretic Transform</title>
-          <link>https://isa-afp.org/entries/Number_Theoretic_Transform.html</link>
-          <pubDate>Thu, 18 Aug 2022 00:00:00 +0000</pubDate>
-          <description>Number Theoretic Transform in the AFP</description>
-            <category>Computer science/Algorithms/Mathematical</category>
-        </item>
-        <item>
-          <title>Van der Waerden&#39;s Theorem</title>
-          <link>https://isa-afp.org/entries/Van_der_Waerden.html</link>
-          <pubDate>Tue, 22 Jun 2021 00:00:00 +0000</pubDate>
-          <description>Van der Waerden&#39;s Theorem in the AFP</description>
-            <category>Mathematics/Combinatorics</category>
-        </item>
+    <description>AFP entries of Katharina Kreuzer</description><item>
+  <title>CRYSTALS-Kyber_Security</title>
+  <link>https://isa-afp.org/entries/CRYSTALS-Kyber_Security.html</link>
+  <pubDate>Mon, 18 Dec 2023 00:00:00 +0000</pubDate>
+  <description>CRYSTALS-Kyber_Security in the AFP</description>
+    <category>Computer science/Security/Cryptography</category>
+</item>
+<item>
+  <title>Perfect Fields</title>
+  <link>https://isa-afp.org/entries/Perfect_Fields.html</link>
+  <pubDate>Mon, 06 Nov 2023 00:00:00 +0000</pubDate>
+  <description>Perfect Fields in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Elimination of Repeated Factors Algorithm</title>
+  <link>https://isa-afp.org/entries/Elimination_Of_Repeated_Factors.html</link>
+  <pubDate>Mon, 06 Nov 2023 00:00:00 +0000</pubDate>
+  <description>Elimination of Repeated Factors Algorithm in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Hardness of Lattice Problems</title>
+  <link>https://isa-afp.org/entries/CVP_Hardness.html</link>
+  <pubDate>Thu, 02 Feb 2023 00:00:00 +0000</pubDate>
+  <description>Hardness of Lattice Problems in the AFP</description>
+    <category>Computer science/Security/Cryptography</category>
+    <category>Mathematics/Misc</category>
+</item>
+<item>
+  <title>CRYSTALS-Kyber</title>
+  <link>https://isa-afp.org/entries/CRYSTALS-Kyber.html</link>
+  <pubDate>Thu, 08 Sep 2022 00:00:00 +0000</pubDate>
+  <description>CRYSTALS-Kyber in the AFP</description>
+    <category>Computer science/Security</category>
+</item>
+<item>
+  <title>The Hales–Jewett Theorem</title>
+  <link>https://isa-afp.org/entries/Hales_Jewett.html</link>
+  <pubDate>Fri, 02 Sep 2022 00:00:00 +0000</pubDate>
+  <description>The Hales–Jewett Theorem in the AFP</description>
+    <category>Mathematics/Combinatorics</category>
+</item>
+<item>
+  <title>Number Theoretic Transform</title>
+  <link>https://isa-afp.org/entries/Number_Theoretic_Transform.html</link>
+  <pubDate>Thu, 18 Aug 2022 00:00:00 +0000</pubDate>
+  <description>Number Theoretic Transform in the AFP</description>
+    <category>Computer science/Algorithms/Mathematical</category>
+</item>
+<item>
+  <title>Van der Waerden&#39;s Theorem</title>
+  <link>https://isa-afp.org/entries/Van_der_Waerden.html</link>
+  <pubDate>Tue, 22 Jun 2021 00:00:00 +0000</pubDate>
+  <description>Van der Waerden&#39;s Theorem in the AFP</description>
+    <category>Mathematics/Combinatorics</category>
+</item>
 
   </channel>
 </rss>

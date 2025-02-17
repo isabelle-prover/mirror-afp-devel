@@ -1,16 +1,15 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Fabian Hellauer</title>
     <link>https://isa-afp.org/authors/hellauer/</link>
-    <description>AFP entries of Fabian Hellauer</description>
-        <item>
-          <title>The string search algorithm by Knuth, Morris and Pratt</title>
-          <link>https://isa-afp.org/entries/Knuth_Morris_Pratt.html</link>
-          <pubDate>Mon, 18 Dec 2017 00:00:00 +0000</pubDate>
-          <description>The string search algorithm by Knuth, Morris and Pratt in the AFP</description>
-            <category>Computer science/Algorithms</category>
-        </item>
+    <description>AFP entries of Fabian Hellauer</description><item>
+  <title>The string search algorithm by Knuth, Morris and Pratt</title>
+  <link>https://isa-afp.org/entries/Knuth_Morris_Pratt.html</link>
+  <pubDate>Mon, 18 Dec 2017 00:00:00 +0000</pubDate>
+  <description>The string search algorithm by Knuth, Morris and Pratt in the AFP</description>
+    <category>Computer science/Algorithms</category>
+</item>
 
   </channel>
 </rss>

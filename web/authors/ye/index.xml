@@ -1,25 +1,24 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Lina Ye</title>
     <link>https://isa-afp.org/authors/ye/</link>
-    <description>AFP entries of Lina Ye</description>
-        <item>
-          <title>The HOL-CSP Refinement Toolkit</title>
-          <link>https://isa-afp.org/entries/CSP_RefTK.html</link>
-          <pubDate>Thu, 19 Nov 2020 00:00:00 +0000</pubDate>
-          <description>The HOL-CSP Refinement Toolkit in the AFP</description>
-            <category>Computer science/Concurrency/Process calculi</category>
-            <category>Computer science/Semantics and reasoning</category>
-        </item>
-        <item>
-          <title>HOL-CSP Version 2.0</title>
-          <link>https://isa-afp.org/entries/HOL-CSP.html</link>
-          <pubDate>Fri, 26 Apr 2019 00:00:00 +0000</pubDate>
-          <description>HOL-CSP Version 2.0 in the AFP</description>
-            <category>Computer science/Concurrency/Process calculi</category>
-            <category>Computer science/Semantics and reasoning</category>
-        </item>
+    <description>AFP entries of Lina Ye</description><item>
+  <title>The HOL-CSP Refinement Toolkit</title>
+  <link>https://isa-afp.org/entries/CSP_RefTK.html</link>
+  <pubDate>Thu, 19 Nov 2020 00:00:00 +0000</pubDate>
+  <description>The HOL-CSP Refinement Toolkit in the AFP</description>
+    <category>Computer science/Concurrency/Process calculi</category>
+    <category>Computer science/Semantics and reasoning</category>
+</item>
+<item>
+  <title>HOL-CSP Version 2.0</title>
+  <link>https://isa-afp.org/entries/HOL-CSP.html</link>
+  <pubDate>Fri, 26 Apr 2019 00:00:00 +0000</pubDate>
+  <description>HOL-CSP Version 2.0 in the AFP</description>
+    <category>Computer science/Concurrency/Process calculi</category>
+    <category>Computer science/Semantics and reasoning</category>
+</item>
 
   </channel>
 </rss>

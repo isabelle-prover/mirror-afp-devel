@@ -1,355 +1,354 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Tobias Nipkow</title>
     <link>https://isa-afp.org/authors/nipkow/</link>
-    <description>AFP entries of Tobias Nipkow</description>
-        <item>
-          <title>Alpha-Beta Pruning</title>
-          <link>https://isa-afp.org/entries/Alpha_Beta_Pruning.html</link>
-          <pubDate>Thu, 13 Jun 2024 00:00:00 +0000</pubDate>
-          <description>Alpha-Beta Pruning in the AFP</description>
-            <category>Computer science/Algorithms</category>
-            <category>Mathematics/Games and economics</category>
-        </item>
-        <item>
-          <title>Region Quadtrees</title>
-          <link>https://isa-afp.org/entries/Region_Quadtrees.html</link>
-          <pubDate>Fri, 26 Jan 2024 00:00:00 +0000</pubDate>
-          <description>Region Quadtrees in the AFP</description>
-            <category>Computer science/Data structures</category>
-        </item>
-        <item>
-          <title>Real-Time Double-Ended Queue</title>
-          <link>https://isa-afp.org/entries/Real_Time_Deque.html</link>
-          <pubDate>Thu, 23 Jun 2022 00:00:00 +0000</pubDate>
-          <description>Real-Time Double-Ended Queue in the AFP</description>
-            <category>Computer science/Data structures</category>
-        </item>
-        <item>
-          <title>Gale-Shapley Algorithm</title>
-          <link>https://isa-afp.org/entries/Gale_Shapley.html</link>
-          <pubDate>Wed, 29 Dec 2021 00:00:00 +0000</pubDate>
-          <description>Gale-Shapley Algorithm in the AFP</description>
-            <category>Computer science/Algorithms</category>
-            <category>Mathematics/Games and economics</category>
-        </item>
-        <item>
-          <title>Isabelle&#39;s Metalogic: Formalization and Proof Checker</title>
-          <link>https://isa-afp.org/entries/Metalogic_ProofChecker.html</link>
-          <pubDate>Tue, 27 Apr 2021 00:00:00 +0000</pubDate>
-          <description>Isabelle&#39;s Metalogic: Formalization and Proof Checker in the AFP</description>
-            <category>Logic/General logic</category>
-        </item>
-        <item>
-          <title>Verified Approximation Algorithms</title>
-          <link>https://isa-afp.org/entries/Approximation_Algorithms.html</link>
-          <pubDate>Thu, 16 Jan 2020 00:00:00 +0000</pubDate>
-          <description>Verified Approximation Algorithms in the AFP</description>
-            <category>Computer science/Algorithms/Approximation</category>
-        </item>
-        <item>
-          <title>Closest Pair of Points Algorithms</title>
-          <link>https://isa-afp.org/entries/Closest_Pair_Points.html</link>
-          <pubDate>Mon, 13 Jan 2020 00:00:00 +0000</pubDate>
-          <description>Closest Pair of Points Algorithms in the AFP</description>
-            <category>Computer science/Algorithms/Geometry</category>
-        </item>
-        <item>
-          <title>Priority Search Trees</title>
-          <link>https://isa-afp.org/entries/Priority_Search_Trees.html</link>
-          <pubDate>Tue, 25 Jun 2019 00:00:00 +0000</pubDate>
-          <description>Priority Search Trees in the AFP</description>
-            <category>Computer science/Data structures</category>
-        </item>
-        <item>
-          <title>Purely Functional, Simple, and Efficient Implementation of Prim and Dijkstra</title>
-          <link>https://isa-afp.org/entries/Prim_Dijkstra_Simple.html</link>
-          <pubDate>Tue, 25 Jun 2019 00:00:00 +0000</pubDate>
-          <description>Purely Functional, Simple, and Efficient Implementation of Prim and Dijkstra in the AFP</description>
-            <category>Computer science/Algorithms/Graph</category>
-        </item>
-        <item>
-          <title>Optimal Binary Search Trees</title>
-          <link>https://isa-afp.org/entries/Optimal_BST.html</link>
-          <pubDate>Sun, 27 May 2018 00:00:00 +0000</pubDate>
-          <description>Optimal Binary Search Trees in the AFP</description>
-            <category>Computer science/Algorithms</category>
-            <category>Computer science/Data structures</category>
-        </item>
-        <item>
-          <title>Monadification, Memoization and Dynamic Programming</title>
-          <link>https://isa-afp.org/entries/Monad_Memo_DP.html</link>
-          <pubDate>Tue, 22 May 2018 00:00:00 +0000</pubDate>
-          <description>Monadification, Memoization and Dynamic Programming in the AFP</description>
-            <category>Computer science/Algorithms</category>
-            <category>Computer science/Functional programming</category>
-        </item>
-        <item>
-          <title>Weight-Balanced Trees</title>
-          <link>https://isa-afp.org/entries/Weight_Balanced_Trees.html</link>
-          <pubDate>Tue, 13 Mar 2018 00:00:00 +0000</pubDate>
-          <description>Weight-Balanced Trees in the AFP</description>
-            <category>Computer science/Data structures</category>
-        </item>
-        <item>
-          <title>Hoare Logics for Time Bounds</title>
-          <link>https://isa-afp.org/entries/Hoare_Time.html</link>
-          <pubDate>Mon, 26 Feb 2018 00:00:00 +0000</pubDate>
-          <description>Hoare Logics for Time Bounds in the AFP</description>
-            <category>Computer science/Programming languages/Logics</category>
-        </item>
-        <item>
-          <title>Treaps</title>
-          <link>https://isa-afp.org/entries/Treaps.html</link>
-          <pubDate>Tue, 06 Feb 2018 00:00:00 +0000</pubDate>
-          <description>Treaps in the AFP</description>
-            <category>Computer science/Data structures</category>
-        </item>
-        <item>
-          <title>Root-Balanced Tree</title>
-          <link>https://isa-afp.org/entries/Root_Balanced_Tree.html</link>
-          <pubDate>Sun, 20 Aug 2017 00:00:00 +0000</pubDate>
-          <description>Root-Balanced Tree in the AFP</description>
-            <category>Computer science/Data structures</category>
-        </item>
-        <item>
-          <title>Propositional Proof Systems</title>
-          <link>https://isa-afp.org/entries/Propositional_Proof_Systems.html</link>
-          <pubDate>Wed, 21 Jun 2017 00:00:00 +0000</pubDate>
-          <description>Propositional Proof Systems in the AFP</description>
-            <category>Logic/Proof theory</category>
-        </item>
-        <item>
-          <title>Abstract Interpretation of Annotated Commands</title>
-          <link>https://isa-afp.org/entries/Abs_Int_ITP2012.html</link>
-          <pubDate>Wed, 23 Nov 2016 00:00:00 +0000</pubDate>
-          <description>Abstract Interpretation of Annotated Commands in the AFP</description>
-            <category>Computer science/Programming languages/Static analysis</category>
-        </item>
-        <item>
-          <title>Pairing Heap</title>
-          <link>https://isa-afp.org/entries/Pairing_Heap.html</link>
-          <pubDate>Thu, 14 Jul 2016 00:00:00 +0000</pubDate>
-          <description>Pairing Heap in the AFP</description>
-            <category>Computer science/Data structures</category>
-        </item>
-        <item>
-          <title>Analysis of List Update Algorithms</title>
-          <link>https://isa-afp.org/entries/List_Update.html</link>
-          <pubDate>Wed, 17 Feb 2016 00:00:00 +0000</pubDate>
-          <description>Analysis of List Update Algorithms in the AFP</description>
-            <category>Computer science/Algorithms/Online</category>
-            <category>Computer science/Algorithms/Randomized</category>
-        </item>
-        <item>
-          <title>Parameterized Dynamic Tables</title>
-          <link>https://isa-afp.org/entries/Dynamic_Tables.html</link>
-          <pubDate>Sun, 07 Jun 2015 00:00:00 +0000</pubDate>
-          <description>Parameterized Dynamic Tables in the AFP</description>
-            <category>Computer science/Data structures</category>
-        </item>
-        <item>
-          <title>Trie</title>
-          <link>https://isa-afp.org/entries/Trie.html</link>
-          <pubDate>Mon, 30 Mar 2015 00:00:00 +0000</pubDate>
-          <description>Trie in the AFP</description>
-            <category>Computer science/Data structures</category>
-        </item>
-        <item>
-          <title>A Verified Compiler for Probability Density Functions</title>
-          <link>https://isa-afp.org/entries/Density_Compiler.html</link>
-          <pubDate>Thu, 09 Oct 2014 00:00:00 +0000</pubDate>
-          <description>A Verified Compiler for Probability Density Functions in the AFP</description>
-            <category>Mathematics/Probability theory</category>
-            <category>Computer science/Programming languages/Compiling</category>
-        </item>
-        <item>
-          <title>Priority Queues Based on Braun Trees</title>
-          <link>https://isa-afp.org/entries/Priority_Queue_Braun.html</link>
-          <pubDate>Thu, 04 Sep 2014 00:00:00 +0000</pubDate>
-          <description>Priority Queues Based on Braun Trees in the AFP</description>
-            <category>Computer science/Data structures</category>
-        </item>
-        <item>
-          <title>Skew Heap</title>
-          <link>https://isa-afp.org/entries/Skew_Heap.html</link>
-          <pubDate>Wed, 13 Aug 2014 00:00:00 +0000</pubDate>
-          <description>Skew Heap in the AFP</description>
-            <category>Computer science/Data structures</category>
-        </item>
-        <item>
-          <title>Splay Tree</title>
-          <link>https://isa-afp.org/entries/Splay_Tree.html</link>
-          <pubDate>Tue, 12 Aug 2014 00:00:00 +0000</pubDate>
-          <description>Splay Tree in the AFP</description>
-            <category>Computer science/Data structures</category>
-        </item>
-        <item>
-          <title>Amortized Complexity Verified</title>
-          <link>https://isa-afp.org/entries/Amortized_Complexity.html</link>
-          <pubDate>Mon, 07 Jul 2014 00:00:00 +0000</pubDate>
-          <description>Amortized Complexity Verified in the AFP</description>
-            <category>Computer science/Data structures</category>
-        </item>
-        <item>
-          <title>Decision Procedures for MSO on Words Based on Derivatives of Regular Expressions</title>
-          <link>https://isa-afp.org/entries/MSO_Regex_Equivalence.html</link>
-          <pubDate>Thu, 12 Jun 2014 00:00:00 +0000</pubDate>
-          <description>Decision Procedures for MSO on Words Based on Derivatives of Regular Expressions in the AFP</description>
-            <category>Computer science/Automata and formal languages</category>
-            <category>Logic/General logic/Decidability of theories</category>
-        </item>
-        <item>
-          <title>Boolean Expression Checkers</title>
-          <link>https://isa-afp.org/entries/Boolean_Expression_Checkers.html</link>
-          <pubDate>Sun, 08 Jun 2014 00:00:00 +0000</pubDate>
-          <description>Boolean Expression Checkers in the AFP</description>
-            <category>Computer science/Algorithms</category>
-            <category>Logic/General logic/Mechanization of proofs</category>
-        </item>
-        <item>
-          <title>A Fully Verified Executable LTL Model Checker</title>
-          <link>https://isa-afp.org/entries/CAVA_LTL_Modelchecker.html</link>
-          <pubDate>Wed, 28 May 2014 00:00:00 +0000</pubDate>
-          <description>A Fully Verified Executable LTL Model Checker in the AFP</description>
-            <category>Computer science/Automata and formal languages</category>
-        </item>
-        <item>
-          <title>Unified Decision Procedures for Regular Expression Equivalence</title>
-          <link>https://isa-afp.org/entries/Regex_Equivalence.html</link>
-          <pubDate>Thu, 30 Jan 2014 00:00:00 +0000</pubDate>
-          <description>Unified Decision Procedures for Regular Expression Equivalence in the AFP</description>
-            <category>Computer science/Automata and formal languages</category>
-        </item>
-        <item>
-          <title>Markov Models</title>
-          <link>https://isa-afp.org/entries/Markov_Models.html</link>
-          <pubDate>Tue, 03 Jan 2012 00:00:00 +0000</pubDate>
-          <description>Markov Models in the AFP</description>
-            <category>Mathematics/Probability theory</category>
-            <category>Computer science/Automata and formal languages</category>
-        </item>
-        <item>
-          <title>Gauss-Jordan Elimination for Matrices Represented as Functions</title>
-          <link>https://isa-afp.org/entries/Gauss-Jordan-Elim-Fun.html</link>
-          <pubDate>Fri, 19 Aug 2011 00:00:00 +0000</pubDate>
-          <description>Gauss-Jordan Elimination for Matrices Represented as Functions in the AFP</description>
-            <category>Computer science/Algorithms/Mathematical</category>
-            <category>Mathematics/Algebra</category>
-        </item>
-        <item>
-          <title>Hall&#39;s Marriage Theorem</title>
-          <link>https://isa-afp.org/entries/Marriage.html</link>
-          <pubDate>Fri, 17 Dec 2010 00:00:00 +0000</pubDate>
-          <description>Hall&#39;s Marriage Theorem in the AFP</description>
-            <category>Mathematics/Combinatorics</category>
-        </item>
-        <item>
-          <title>Regular Sets and Expressions</title>
-          <link>https://isa-afp.org/entries/Regular-Sets.html</link>
-          <pubDate>Wed, 12 May 2010 00:00:00 +0000</pubDate>
-          <description>Regular Sets and Expressions in the AFP</description>
-            <category>Computer science/Automata and formal languages</category>
-        </item>
-        <item>
-          <title>List Index</title>
-          <link>https://isa-afp.org/entries/List-Index.html</link>
-          <pubDate>Sat, 20 Feb 2010 00:00:00 +0000</pubDate>
-          <description>List Index in the AFP</description>
-            <category>Computer science/Data structures</category>
-        </item>
-        <item>
-          <title>Fun With Tilings</title>
-          <link>https://isa-afp.org/entries/FunWithTilings.html</link>
-          <pubDate>Fri, 07 Nov 2008 00:00:00 +0000</pubDate>
-          <description>Fun With Tilings in the AFP</description>
-            <category>Mathematics/Misc</category>
-        </item>
-        <item>
-          <title>Arrow and Gibbard-Satterthwaite</title>
-          <link>https://isa-afp.org/entries/ArrowImpossibilityGS.html</link>
-          <pubDate>Mon, 01 Sep 2008 00:00:00 +0000</pubDate>
-          <description>Arrow and Gibbard-Satterthwaite in the AFP</description>
-            <category>Mathematics/Games and economics</category>
-        </item>
-        <item>
-          <title>Fun With Functions</title>
-          <link>https://isa-afp.org/entries/FunWithFunctions.html</link>
-          <pubDate>Tue, 26 Aug 2008 00:00:00 +0000</pubDate>
-          <description>Fun With Functions in the AFP</description>
-            <category>Mathematics/Misc</category>
-        </item>
-        <item>
-          <title>Normalization by Evaluation</title>
-          <link>https://isa-afp.org/entries/NormByEval.html</link>
-          <pubDate>Mon, 18 Feb 2008 00:00:00 +0000</pubDate>
-          <description>Normalization by Evaluation in the AFP</description>
-            <category>Computer science/Programming languages/Compiling</category>
-        </item>
-        <item>
-          <title>Quantifier Elimination for Linear Arithmetic</title>
-          <link>https://isa-afp.org/entries/LinearQuantifierElim.html</link>
-          <pubDate>Fri, 11 Jan 2008 00:00:00 +0000</pubDate>
-          <description>Quantifier Elimination for Linear Arithmetic in the AFP</description>
-            <category>Logic/General logic/Decidability of theories</category>
-        </item>
-        <item>
-          <title>Hotel Key Card System</title>
-          <link>https://isa-afp.org/entries/HotelKeyCards.html</link>
-          <pubDate>Sat, 09 Sep 2006 00:00:00 +0000</pubDate>
-          <description>Hotel Key Card System in the AFP</description>
-            <category>Computer science/Security</category>
-        </item>
-        <item>
-          <title>Abstract Hoare Logics</title>
-          <link>https://isa-afp.org/entries/Abstract-Hoare-Logics.html</link>
-          <pubDate>Tue, 08 Aug 2006 00:00:00 +0000</pubDate>
-          <description>Abstract Hoare Logics in the AFP</description>
-            <category>Computer science/Programming languages/Logics</category>
-        </item>
-        <item>
-          <title>Flyspeck I: Tame Graphs</title>
-          <link>https://isa-afp.org/entries/Flyspeck-Tame.html</link>
-          <pubDate>Mon, 22 May 2006 00:00:00 +0000</pubDate>
-          <description>Flyspeck I: Tame Graphs in the AFP</description>
-            <category>Mathematics/Graph theory</category>
-        </item>
-        <item>
-          <title>Jinja is not Java</title>
-          <link>https://isa-afp.org/entries/Jinja.html</link>
-          <pubDate>Wed, 01 Jun 2005 00:00:00 +0000</pubDate>
-          <description>Jinja is not Java in the AFP</description>
-            <category>Computer science/Programming languages/Language definitions</category>
-        </item>
-        <item>
-          <title>Compiling Exceptions Correctly</title>
-          <link>https://isa-afp.org/entries/Compiling-Exceptions-Correctly.html</link>
-          <pubDate>Fri, 09 Jul 2004 00:00:00 +0000</pubDate>
-          <description>Compiling Exceptions Correctly in the AFP</description>
-            <category>Computer science/Programming languages/Compiling</category>
-        </item>
-        <item>
-          <title>Functional Automata</title>
-          <link>https://isa-afp.org/entries/Functional-Automata.html</link>
-          <pubDate>Tue, 30 Mar 2004 00:00:00 +0000</pubDate>
-          <description>Functional Automata in the AFP</description>
-            <category>Computer science/Automata and formal languages</category>
-        </item>
-        <item>
-          <title>Mini ML</title>
-          <link>https://isa-afp.org/entries/MiniML.html</link>
-          <pubDate>Fri, 19 Mar 2004 00:00:00 +0000</pubDate>
-          <description>Mini ML in the AFP</description>
-            <category>Computer science/Programming languages/Type systems</category>
-        </item>
-        <item>
-          <title>AVL Trees</title>
-          <link>https://isa-afp.org/entries/AVL-Trees.html</link>
-          <pubDate>Fri, 19 Mar 2004 00:00:00 +0000</pubDate>
-          <description>AVL Trees in the AFP</description>
-            <category>Computer science/Data structures</category>
-        </item>
+    <description>AFP entries of Tobias Nipkow</description><item>
+  <title>Alpha-Beta Pruning</title>
+  <link>https://isa-afp.org/entries/Alpha_Beta_Pruning.html</link>
+  <pubDate>Thu, 13 Jun 2024 00:00:00 +0000</pubDate>
+  <description>Alpha-Beta Pruning in the AFP</description>
+    <category>Computer science/Algorithms</category>
+    <category>Mathematics/Games and economics</category>
+</item>
+<item>
+  <title>Region Quadtrees</title>
+  <link>https://isa-afp.org/entries/Region_Quadtrees.html</link>
+  <pubDate>Fri, 26 Jan 2024 00:00:00 +0000</pubDate>
+  <description>Region Quadtrees in the AFP</description>
+    <category>Computer science/Data structures</category>
+</item>
+<item>
+  <title>Real-Time Double-Ended Queue</title>
+  <link>https://isa-afp.org/entries/Real_Time_Deque.html</link>
+  <pubDate>Thu, 23 Jun 2022 00:00:00 +0000</pubDate>
+  <description>Real-Time Double-Ended Queue in the AFP</description>
+    <category>Computer science/Data structures</category>
+</item>
+<item>
+  <title>Gale-Shapley Algorithm</title>
+  <link>https://isa-afp.org/entries/Gale_Shapley.html</link>
+  <pubDate>Wed, 29 Dec 2021 00:00:00 +0000</pubDate>
+  <description>Gale-Shapley Algorithm in the AFP</description>
+    <category>Computer science/Algorithms</category>
+    <category>Mathematics/Games and economics</category>
+</item>
+<item>
+  <title>Isabelle&#39;s Metalogic: Formalization and Proof Checker</title>
+  <link>https://isa-afp.org/entries/Metalogic_ProofChecker.html</link>
+  <pubDate>Tue, 27 Apr 2021 00:00:00 +0000</pubDate>
+  <description>Isabelle&#39;s Metalogic: Formalization and Proof Checker in the AFP</description>
+    <category>Logic/General logic</category>
+</item>
+<item>
+  <title>Verified Approximation Algorithms</title>
+  <link>https://isa-afp.org/entries/Approximation_Algorithms.html</link>
+  <pubDate>Thu, 16 Jan 2020 00:00:00 +0000</pubDate>
+  <description>Verified Approximation Algorithms in the AFP</description>
+    <category>Computer science/Algorithms/Approximation</category>
+</item>
+<item>
+  <title>Closest Pair of Points Algorithms</title>
+  <link>https://isa-afp.org/entries/Closest_Pair_Points.html</link>
+  <pubDate>Mon, 13 Jan 2020 00:00:00 +0000</pubDate>
+  <description>Closest Pair of Points Algorithms in the AFP</description>
+    <category>Computer science/Algorithms/Geometry</category>
+</item>
+<item>
+  <title>Priority Search Trees</title>
+  <link>https://isa-afp.org/entries/Priority_Search_Trees.html</link>
+  <pubDate>Tue, 25 Jun 2019 00:00:00 +0000</pubDate>
+  <description>Priority Search Trees in the AFP</description>
+    <category>Computer science/Data structures</category>
+</item>
+<item>
+  <title>Purely Functional, Simple, and Efficient Implementation of Prim and Dijkstra</title>
+  <link>https://isa-afp.org/entries/Prim_Dijkstra_Simple.html</link>
+  <pubDate>Tue, 25 Jun 2019 00:00:00 +0000</pubDate>
+  <description>Purely Functional, Simple, and Efficient Implementation of Prim and Dijkstra in the AFP</description>
+    <category>Computer science/Algorithms/Graph</category>
+</item>
+<item>
+  <title>Optimal Binary Search Trees</title>
+  <link>https://isa-afp.org/entries/Optimal_BST.html</link>
+  <pubDate>Sun, 27 May 2018 00:00:00 +0000</pubDate>
+  <description>Optimal Binary Search Trees in the AFP</description>
+    <category>Computer science/Algorithms</category>
+    <category>Computer science/Data structures</category>
+</item>
+<item>
+  <title>Monadification, Memoization and Dynamic Programming</title>
+  <link>https://isa-afp.org/entries/Monad_Memo_DP.html</link>
+  <pubDate>Tue, 22 May 2018 00:00:00 +0000</pubDate>
+  <description>Monadification, Memoization and Dynamic Programming in the AFP</description>
+    <category>Computer science/Algorithms</category>
+    <category>Computer science/Functional programming</category>
+</item>
+<item>
+  <title>Weight-Balanced Trees</title>
+  <link>https://isa-afp.org/entries/Weight_Balanced_Trees.html</link>
+  <pubDate>Tue, 13 Mar 2018 00:00:00 +0000</pubDate>
+  <description>Weight-Balanced Trees in the AFP</description>
+    <category>Computer science/Data structures</category>
+</item>
+<item>
+  <title>Hoare Logics for Time Bounds</title>
+  <link>https://isa-afp.org/entries/Hoare_Time.html</link>
+  <pubDate>Mon, 26 Feb 2018 00:00:00 +0000</pubDate>
+  <description>Hoare Logics for Time Bounds in the AFP</description>
+    <category>Computer science/Programming languages/Logics</category>
+</item>
+<item>
+  <title>Treaps</title>
+  <link>https://isa-afp.org/entries/Treaps.html</link>
+  <pubDate>Tue, 06 Feb 2018 00:00:00 +0000</pubDate>
+  <description>Treaps in the AFP</description>
+    <category>Computer science/Data structures</category>
+</item>
+<item>
+  <title>Root-Balanced Tree</title>
+  <link>https://isa-afp.org/entries/Root_Balanced_Tree.html</link>
+  <pubDate>Sun, 20 Aug 2017 00:00:00 +0000</pubDate>
+  <description>Root-Balanced Tree in the AFP</description>
+    <category>Computer science/Data structures</category>
+</item>
+<item>
+  <title>Propositional Proof Systems</title>
+  <link>https://isa-afp.org/entries/Propositional_Proof_Systems.html</link>
+  <pubDate>Wed, 21 Jun 2017 00:00:00 +0000</pubDate>
+  <description>Propositional Proof Systems in the AFP</description>
+    <category>Logic/Proof theory</category>
+</item>
+<item>
+  <title>Abstract Interpretation of Annotated Commands</title>
+  <link>https://isa-afp.org/entries/Abs_Int_ITP2012.html</link>
+  <pubDate>Wed, 23 Nov 2016 00:00:00 +0000</pubDate>
+  <description>Abstract Interpretation of Annotated Commands in the AFP</description>
+    <category>Computer science/Programming languages/Static analysis</category>
+</item>
+<item>
+  <title>Pairing Heap</title>
+  <link>https://isa-afp.org/entries/Pairing_Heap.html</link>
+  <pubDate>Thu, 14 Jul 2016 00:00:00 +0000</pubDate>
+  <description>Pairing Heap in the AFP</description>
+    <category>Computer science/Data structures</category>
+</item>
+<item>
+  <title>Analysis of List Update Algorithms</title>
+  <link>https://isa-afp.org/entries/List_Update.html</link>
+  <pubDate>Wed, 17 Feb 2016 00:00:00 +0000</pubDate>
+  <description>Analysis of List Update Algorithms in the AFP</description>
+    <category>Computer science/Algorithms/Online</category>
+    <category>Computer science/Algorithms/Randomized</category>
+</item>
+<item>
+  <title>Parameterized Dynamic Tables</title>
+  <link>https://isa-afp.org/entries/Dynamic_Tables.html</link>
+  <pubDate>Sun, 07 Jun 2015 00:00:00 +0000</pubDate>
+  <description>Parameterized Dynamic Tables in the AFP</description>
+    <category>Computer science/Data structures</category>
+</item>
+<item>
+  <title>Trie</title>
+  <link>https://isa-afp.org/entries/Trie.html</link>
+  <pubDate>Mon, 30 Mar 2015 00:00:00 +0000</pubDate>
+  <description>Trie in the AFP</description>
+    <category>Computer science/Data structures</category>
+</item>
+<item>
+  <title>A Verified Compiler for Probability Density Functions</title>
+  <link>https://isa-afp.org/entries/Density_Compiler.html</link>
+  <pubDate>Thu, 09 Oct 2014 00:00:00 +0000</pubDate>
+  <description>A Verified Compiler for Probability Density Functions in the AFP</description>
+    <category>Mathematics/Probability theory</category>
+    <category>Computer science/Programming languages/Compiling</category>
+</item>
+<item>
+  <title>Priority Queues Based on Braun Trees</title>
+  <link>https://isa-afp.org/entries/Priority_Queue_Braun.html</link>
+  <pubDate>Thu, 04 Sep 2014 00:00:00 +0000</pubDate>
+  <description>Priority Queues Based on Braun Trees in the AFP</description>
+    <category>Computer science/Data structures</category>
+</item>
+<item>
+  <title>Skew Heap</title>
+  <link>https://isa-afp.org/entries/Skew_Heap.html</link>
+  <pubDate>Wed, 13 Aug 2014 00:00:00 +0000</pubDate>
+  <description>Skew Heap in the AFP</description>
+    <category>Computer science/Data structures</category>
+</item>
+<item>
+  <title>Splay Tree</title>
+  <link>https://isa-afp.org/entries/Splay_Tree.html</link>
+  <pubDate>Tue, 12 Aug 2014 00:00:00 +0000</pubDate>
+  <description>Splay Tree in the AFP</description>
+    <category>Computer science/Data structures</category>
+</item>
+<item>
+  <title>Amortized Complexity Verified</title>
+  <link>https://isa-afp.org/entries/Amortized_Complexity.html</link>
+  <pubDate>Mon, 07 Jul 2014 00:00:00 +0000</pubDate>
+  <description>Amortized Complexity Verified in the AFP</description>
+    <category>Computer science/Data structures</category>
+</item>
+<item>
+  <title>Decision Procedures for MSO on Words Based on Derivatives of Regular Expressions</title>
+  <link>https://isa-afp.org/entries/MSO_Regex_Equivalence.html</link>
+  <pubDate>Thu, 12 Jun 2014 00:00:00 +0000</pubDate>
+  <description>Decision Procedures for MSO on Words Based on Derivatives of Regular Expressions in the AFP</description>
+    <category>Computer science/Automata and formal languages</category>
+    <category>Logic/General logic/Decidability of theories</category>
+</item>
+<item>
+  <title>Boolean Expression Checkers</title>
+  <link>https://isa-afp.org/entries/Boolean_Expression_Checkers.html</link>
+  <pubDate>Sun, 08 Jun 2014 00:00:00 +0000</pubDate>
+  <description>Boolean Expression Checkers in the AFP</description>
+    <category>Computer science/Algorithms</category>
+    <category>Logic/General logic/Mechanization of proofs</category>
+</item>
+<item>
+  <title>A Fully Verified Executable LTL Model Checker</title>
+  <link>https://isa-afp.org/entries/CAVA_LTL_Modelchecker.html</link>
+  <pubDate>Wed, 28 May 2014 00:00:00 +0000</pubDate>
+  <description>A Fully Verified Executable LTL Model Checker in the AFP</description>
+    <category>Computer science/Automata and formal languages</category>
+</item>
+<item>
+  <title>Unified Decision Procedures for Regular Expression Equivalence</title>
+  <link>https://isa-afp.org/entries/Regex_Equivalence.html</link>
+  <pubDate>Thu, 30 Jan 2014 00:00:00 +0000</pubDate>
+  <description>Unified Decision Procedures for Regular Expression Equivalence in the AFP</description>
+    <category>Computer science/Automata and formal languages</category>
+</item>
+<item>
+  <title>Markov Models</title>
+  <link>https://isa-afp.org/entries/Markov_Models.html</link>
+  <pubDate>Tue, 03 Jan 2012 00:00:00 +0000</pubDate>
+  <description>Markov Models in the AFP</description>
+    <category>Mathematics/Probability theory</category>
+    <category>Computer science/Automata and formal languages</category>
+</item>
+<item>
+  <title>Gauss-Jordan Elimination for Matrices Represented as Functions</title>
+  <link>https://isa-afp.org/entries/Gauss-Jordan-Elim-Fun.html</link>
+  <pubDate>Fri, 19 Aug 2011 00:00:00 +0000</pubDate>
+  <description>Gauss-Jordan Elimination for Matrices Represented as Functions in the AFP</description>
+    <category>Computer science/Algorithms/Mathematical</category>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Hall&#39;s Marriage Theorem</title>
+  <link>https://isa-afp.org/entries/Marriage.html</link>
+  <pubDate>Fri, 17 Dec 2010 00:00:00 +0000</pubDate>
+  <description>Hall&#39;s Marriage Theorem in the AFP</description>
+    <category>Mathematics/Combinatorics</category>
+</item>
+<item>
+  <title>Regular Sets and Expressions</title>
+  <link>https://isa-afp.org/entries/Regular-Sets.html</link>
+  <pubDate>Wed, 12 May 2010 00:00:00 +0000</pubDate>
+  <description>Regular Sets and Expressions in the AFP</description>
+    <category>Computer science/Automata and formal languages</category>
+</item>
+<item>
+  <title>List Index</title>
+  <link>https://isa-afp.org/entries/List-Index.html</link>
+  <pubDate>Sat, 20 Feb 2010 00:00:00 +0000</pubDate>
+  <description>List Index in the AFP</description>
+    <category>Computer science/Data structures</category>
+</item>
+<item>
+  <title>Fun With Tilings</title>
+  <link>https://isa-afp.org/entries/FunWithTilings.html</link>
+  <pubDate>Fri, 07 Nov 2008 00:00:00 +0000</pubDate>
+  <description>Fun With Tilings in the AFP</description>
+    <category>Mathematics/Misc</category>
+</item>
+<item>
+  <title>Arrow and Gibbard-Satterthwaite</title>
+  <link>https://isa-afp.org/entries/ArrowImpossibilityGS.html</link>
+  <pubDate>Mon, 01 Sep 2008 00:00:00 +0000</pubDate>
+  <description>Arrow and Gibbard-Satterthwaite in the AFP</description>
+    <category>Mathematics/Games and economics</category>
+</item>
+<item>
+  <title>Fun With Functions</title>
+  <link>https://isa-afp.org/entries/FunWithFunctions.html</link>
+  <pubDate>Tue, 26 Aug 2008 00:00:00 +0000</pubDate>
+  <description>Fun With Functions in the AFP</description>
+    <category>Mathematics/Misc</category>
+</item>
+<item>
+  <title>Normalization by Evaluation</title>
+  <link>https://isa-afp.org/entries/NormByEval.html</link>
+  <pubDate>Mon, 18 Feb 2008 00:00:00 +0000</pubDate>
+  <description>Normalization by Evaluation in the AFP</description>
+    <category>Computer science/Programming languages/Compiling</category>
+</item>
+<item>
+  <title>Quantifier Elimination for Linear Arithmetic</title>
+  <link>https://isa-afp.org/entries/LinearQuantifierElim.html</link>
+  <pubDate>Fri, 11 Jan 2008 00:00:00 +0000</pubDate>
+  <description>Quantifier Elimination for Linear Arithmetic in the AFP</description>
+    <category>Logic/General logic/Decidability of theories</category>
+</item>
+<item>
+  <title>Hotel Key Card System</title>
+  <link>https://isa-afp.org/entries/HotelKeyCards.html</link>
+  <pubDate>Sat, 09 Sep 2006 00:00:00 +0000</pubDate>
+  <description>Hotel Key Card System in the AFP</description>
+    <category>Computer science/Security</category>
+</item>
+<item>
+  <title>Abstract Hoare Logics</title>
+  <link>https://isa-afp.org/entries/Abstract-Hoare-Logics.html</link>
+  <pubDate>Tue, 08 Aug 2006 00:00:00 +0000</pubDate>
+  <description>Abstract Hoare Logics in the AFP</description>
+    <category>Computer science/Programming languages/Logics</category>
+</item>
+<item>
+  <title>Flyspeck I: Tame Graphs</title>
+  <link>https://isa-afp.org/entries/Flyspeck-Tame.html</link>
+  <pubDate>Mon, 22 May 2006 00:00:00 +0000</pubDate>
+  <description>Flyspeck I: Tame Graphs in the AFP</description>
+    <category>Mathematics/Graph theory</category>
+</item>
+<item>
+  <title>Jinja is not Java</title>
+  <link>https://isa-afp.org/entries/Jinja.html</link>
+  <pubDate>Wed, 01 Jun 2005 00:00:00 +0000</pubDate>
+  <description>Jinja is not Java in the AFP</description>
+    <category>Computer science/Programming languages/Language definitions</category>
+</item>
+<item>
+  <title>Compiling Exceptions Correctly</title>
+  <link>https://isa-afp.org/entries/Compiling-Exceptions-Correctly.html</link>
+  <pubDate>Fri, 09 Jul 2004 00:00:00 +0000</pubDate>
+  <description>Compiling Exceptions Correctly in the AFP</description>
+    <category>Computer science/Programming languages/Compiling</category>
+</item>
+<item>
+  <title>Functional Automata</title>
+  <link>https://isa-afp.org/entries/Functional-Automata.html</link>
+  <pubDate>Tue, 30 Mar 2004 00:00:00 +0000</pubDate>
+  <description>Functional Automata in the AFP</description>
+    <category>Computer science/Automata and formal languages</category>
+</item>
+<item>
+  <title>Mini ML</title>
+  <link>https://isa-afp.org/entries/MiniML.html</link>
+  <pubDate>Fri, 19 Mar 2004 00:00:00 +0000</pubDate>
+  <description>Mini ML in the AFP</description>
+    <category>Computer science/Programming languages/Type systems</category>
+</item>
+<item>
+  <title>AVL Trees</title>
+  <link>https://isa-afp.org/entries/AVL-Trees.html</link>
+  <pubDate>Fri, 19 Mar 2004 00:00:00 +0000</pubDate>
+  <description>AVL Trees in the AFP</description>
+    <category>Computer science/Data structures</category>
+</item>
 
   </channel>
 </rss>

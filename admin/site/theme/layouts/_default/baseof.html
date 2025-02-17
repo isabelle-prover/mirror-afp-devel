@@ -1,22 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
-  {{ partial "head.html" . }}
+  {{- partial "head.html" . }}
 
-  <body class='mathjax_ignore{{ if (eq .Section "sessions") }} theories{{ end }}'>
+  <body class="mathjax_ignore{{ if (eq .Section "sessions") }} theories{{ end }}">
     <aside>
       {{- if ne .Section "sessions" }}
-        {{ partial "navigation.html" . }}
+        {{- partial "navigation.html" . }}
       {{- else }}
-        {{ partial "theory-navigation.html" . }}
+        {{- partial "theory-navigation.html" . }}
       {{- end }}
     </aside>
-    <div class='content
-      {{- if (eq .Section "entries") }} entries{{ end }}
-      {{- if eq .RelPermalink "/search/" }} search-page{{ end }}'>
-      {{ partial "header.html" . }}
+
+    <div class="content{{ if (eq .Section "entries") }} entries{{ end }}{{ if eq .RelPermalink "/search/" }} search-page{{ end }}">
+      {{- partial "header.html" . }}
       <div>
-        {{ block "main" . }}{{ end }}
-        
+        {{- block "main" . }}
+        {{- end }}
       </div>
     </div>
   </body>

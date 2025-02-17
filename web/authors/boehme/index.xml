@@ -1,16 +1,15 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Sascha Böhme</title>
     <link>https://isa-afp.org/authors/boehme/</link>
-    <description>AFP entries of Sascha Böhme</description>
-        <item>
-          <title>Much Ado About Two</title>
-          <link>https://isa-afp.org/entries/MuchAdoAboutTwo.html</link>
-          <pubDate>Tue, 06 Nov 2007 00:00:00 +0000</pubDate>
-          <description>Much Ado About Two in the AFP</description>
-            <category>Computer science/Algorithms</category>
-        </item>
+    <description>AFP entries of Sascha Böhme</description><item>
+  <title>Much Ado About Two</title>
+  <link>https://isa-afp.org/entries/MuchAdoAboutTwo.html</link>
+  <pubDate>Tue, 06 Nov 2007 00:00:00 +0000</pubDate>
+  <description>Much Ado About Two in the AFP</description>
+    <category>Computer science/Algorithms</category>
+</item>
 
   </channel>
 </rss>
