@@ -224,7 +224,7 @@ proof -
         subgoal using r0 pq qr by force
         by (subst degree_mult_eq[OF _ r0], auto)
       finally have "degree r = 1" by simp
-      from degree1_coeffs[OF this] obtain yy a where r: "r = [:yy,a:]" by auto
+      from degree1_coeffs[OF this] obtain yy a where r: "r = [:yy,a:]" by metis
       define y3 where "y3 = -yy" 
       with r have r: "r = [:-y3,a:]" by auto
       from pq[unfolded qr r] have "a = 1" by auto
@@ -283,7 +283,7 @@ proof -
     have "2 = degree ([:-x2,1:] * r)" using dq' by simp
     also have "\<dots> = 1 + degree r" by (subst degree_mult_eq, insert pq qr, auto)
     finally have "degree r = 1" by simp
-    from degree1_coeffs[OF this] obtain a b where r: "r = [:a,b:]" by auto
+    then obtain a b where r: "r = [:a,b:]" by (metis degree1_coeffs)
     from cpq[unfolded qr r] have b1: "b = 1" by simp
     with x3 r have "a + x3 = 0" by simp
     hence "a = - x3" by algebra
@@ -320,7 +320,7 @@ proof -
   have "2 = degree ([:-x2,1:] * r)" using dq' by simp
   also have "\<dots> = 1 + degree r" by (subst degree_mult_eq, insert pq qr, auto)
   finally have "degree r = 1" by simp
-  from degree1_coeffs[OF this] obtain a b where r: "r = [:a,b:]" by auto
+  then obtain a b where r: "r = [:a,b:]" by (metis degree1_coeffs)
   from pq[unfolded qr r] have b1: "b = 1" by simp
   define x3 where "x3 = -a" 
   have r: "r = [:-x3,1:]" unfolding r b1 x3_def by simp
