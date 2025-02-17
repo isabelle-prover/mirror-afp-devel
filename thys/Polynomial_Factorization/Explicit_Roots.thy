@@ -25,8 +25,12 @@ definition roots1 :: "'a :: field poly \<Rightarrow> 'a" where
 lemma roots1: fixes p :: "'a :: field poly"
   assumes p1: "degree p = 1" 
   shows "{x. poly p x = 0} = {roots1 p}"
-  using degree1_coeffs[OF p1] unfolding roots1_def 
-  by (auto simp: add_eq_0_iff nonzero_neg_divide_eq_eq2)
+proof -
+  obtain a b where "p = [: b, a :]" "a \<noteq> 0"
+    by (meson degree1_coeffs p1)
+  then show ?thesis unfolding roots1_def 
+    by (auto simp: add_eq_0_iff nonzero_neg_divide_eq_eq2)
+qed
 
 lemma roots2: fixes p :: "'a :: field_char_0 poly"
   assumes p2: "p = [: c, b, a :]" and a: "a \<noteq> 0"
@@ -61,7 +65,7 @@ lemma croots2: assumes "degree p = 2"
   shows "{x. poly p x = 0} = set (croots2 p)"
 proof -
   from degree2_coeffs[OF assms] obtain a b c 
-  where p: "p = [:c, b, a:]" and a: "a \<noteq> 0" by auto
+  where p: "p = [:c, b, a:]" and a: "a \<noteq> 0" by metis
   note main = roots2[OF p a]
   have 2: "2 = Suc (Suc 0)" by simp
   have coeff: "coeff p 2 = a" "coeff p 1 = b" "coeff p 0 = c" unfolding p by (auto simp: 2)
@@ -93,7 +97,7 @@ lemma rroots2: assumes "degree p = 2"
   shows "{x. poly p x = 0} = set (rroots2 p)"
 proof -
   from degree2_coeffs[OF assms] obtain a b c 
-  where p: "p = [:c, b, a:]" and a: "a \<noteq> 0" by auto
+  where p: "p = [:c, b, a:]" and a: "a \<noteq> 0" by metis
   note main = roots2[OF p a]
   have 2: "2 = Suc (Suc 0)" by simp
   have coeff: "coeff p 2 = a" "coeff p 1 = b" "coeff p 0 = c" unfolding p by (auto simp: 2)
@@ -112,7 +116,7 @@ lemma rat_roots2: assumes "degree p = 2"
   shows "{x. poly p x = 0} = set (rat_roots2 p)"
 proof -
   from degree2_coeffs[OF assms] obtain a b c 
-  where p: "p = [:c, b, a:]" and a: "a \<noteq> 0" by auto
+  where p: "p = [:c, b, a:]" and a: "a \<noteq> 0" by metis
   note main = roots2[OF p a]
   have 2: "2 = Suc (Suc 0)" by simp
   have coeff: "coeff p 2 = a" "coeff p 1 = b" "coeff p 0 = c" unfolding p by (auto simp: 2)

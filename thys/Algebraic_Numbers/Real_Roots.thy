@@ -52,7 +52,9 @@ proof -
     define c where "c = coeff p 0"
     define d where "d = coeff p 1" 
     from True have rr: "roots_of_2_irr p = [Rational (Rat.Fract (- c) (d))]" unfolding d d_def c_def by auto
-    from degree1_coeffs[OF True] have p: "p = [:c,d:]" and d: "d \<noteq> 0" unfolding c_def d_def by auto
+    from degree1_coeffs[OF True] 
+    obtain p: "p = [:c,d:]" and d: "d \<noteq> 0" unfolding c_def d_def
+      by (metis True coeff_0 coeff_pCons_0 degree_pCons_0 lead_coeff_pCons(1))
     have *: "real_of_int c + x * real_of_int d = 0 \<Longrightarrow> x = - (real_of_int c / real_of_int d)" for x
       using d by (simp add: field_simps)
     show ?thesis unfolding rr using d * unfolding p using of_rat_1[of "Rat.Fract (- c) (d)"]

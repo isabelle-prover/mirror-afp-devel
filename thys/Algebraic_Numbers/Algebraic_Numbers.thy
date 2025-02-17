@@ -144,13 +144,7 @@ proof
       from p have "[:[:a:]:] = - x_y * poly_lift p \<circ>\<^sub>p x_y" by (simp add: eq_neg_iff_add_eq_0)
       then have "degree [:[:a:]:] = degree (x_y * poly_lift p \<circ>\<^sub>p x_y)" by simp
       also have "... = degree (x_y::'a poly poly) + degree (poly_lift p \<circ>\<^sub>p x_y)"
-        apply (subst degree_mult_eq)
-          apply simp
-         apply (subst pcompose_eq_0)
-          apply (simp add: x_y_def)
-         apply (simp add: p0)
-        apply simp
-       done
+        using degree_mult_eq p0 pCons.hyps(2) x_y_nonzero by blast
       finally have False by simp 
       then show ?thesis..
     qed
@@ -688,7 +682,9 @@ proof(rule ccontr)
     hence "[:0,1:] dvd f" by (unfold dvd_iff_poly_eq_0, simp)
     from irreducible_dvd_degree[OF this irrF]
     have "degree f = 1" by auto
-    from degree1_coeffs[OF this] True obtain c where c: "c \<noteq> 0" and f: "f = [:0,c:]" by auto
+    from degree1_coeffs[OF this] True 
+    obtain c where c: "c \<noteq> 0" and f: "f = [:0,c:]"
+      by (metis add.right_neutral mult_zero_left poly_pCons)
     from g G have irrG: "irreducible g" by auto
     from poly_hom.hom_dvd[OF *]
     have "g dvd poly (poly_y_x (poly_x_mult_y f)) 1" by simp
@@ -697,7 +693,7 @@ proof(rule ccontr)
       by (intro exI[of _ "[: inverse c :]"], auto)
     finally have g01: "g dvd [:0,1:]" .
     from divides_degree[OF this] irrG have "degree g = 1" by auto
-    from degree1_coeffs[OF this] obtain a b where g: "g = [:b,a:]" and a: "a \<noteq> 0" by auto
+    from degree1_coeffs[OF this] obtain a b where g: "g = [:b,a:]" and a: "a \<noteq> 0" by metis
     from g01[unfolded dvd_def] g obtain k where id: "[:0,1:] = g * k" by auto
     from id have 0: "g \<noteq> 0" "k \<noteq> 0" by auto
     from arg_cong[OF id, of degree] have "degree k = 0" unfolding degree_mult_eq[OF 0] 
