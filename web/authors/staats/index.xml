@@ -1,16 +1,15 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Charles Staats</title>
     <link>https://isa-afp.org/authors/staats/</link>
-    <description>AFP entries of Charles Staats</description>
-        <item>
-          <title>Positional Notation for Natural Numbers in an Arbitrary Base</title>
-          <link>https://isa-afp.org/entries/DigitsInBase.html</link>
-          <pubDate>Mon, 03 Apr 2023 00:00:00 +0000</pubDate>
-          <description>Positional Notation for Natural Numbers in an Arbitrary Base in the AFP</description>
-            <category>Mathematics/Number theory</category>
-        </item>
+    <description>AFP entries of Charles Staats</description><item>
+  <title>Positional Notation for Natural Numbers in an Arbitrary Base</title>
+  <link>https://isa-afp.org/entries/DigitsInBase.html</link>
+  <pubDate>Mon, 03 Apr 2023 00:00:00 +0000</pubDate>
+  <description>Positional Notation for Natural Numbers in an Arbitrary Base in the AFP</description>
+    <category>Mathematics/Number theory</category>
+</item>
 
   </channel>
 </rss>

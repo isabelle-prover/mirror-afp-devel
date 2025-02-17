@@ -1,16 +1,15 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Andrew Boyton</title>
     <link>https://isa-afp.org/authors/boyton/</link>
-    <description>AFP entries of Andrew Boyton</description>
-        <item>
-          <title>Separation Algebra</title>
-          <link>https://isa-afp.org/entries/Separation_Algebra.html</link>
-          <pubDate>Fri, 11 May 2012 00:00:00 +0000</pubDate>
-          <description>Separation Algebra in the AFP</description>
-            <category>Computer science/Programming languages/Logics</category>
-        </item>
+    <description>AFP entries of Andrew Boyton</description><item>
+  <title>Separation Algebra</title>
+  <link>https://isa-afp.org/entries/Separation_Algebra.html</link>
+  <pubDate>Fri, 11 May 2012 00:00:00 +0000</pubDate>
+  <description>Separation Algebra in the AFP</description>
+    <category>Computer science/Programming languages/Logics</category>
+</item>
 
   </channel>
 </rss>

@@ -1,16 +1,15 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Giampaolo Bella</title>
     <link>https://isa-afp.org/authors/bella/</link>
-    <description>AFP entries of Giampaolo Bella</description>
-        <item>
-          <title>Inductive Study of Confidentiality</title>
-          <link>https://isa-afp.org/entries/Inductive_Confidentiality.html</link>
-          <pubDate>Wed, 02 May 2012 00:00:00 +0000</pubDate>
-          <description>Inductive Study of Confidentiality in the AFP</description>
-            <category>Computer science/Security</category>
-        </item>
+    <description>AFP entries of Giampaolo Bella</description><item>
+  <title>Inductive Study of Confidentiality</title>
+  <link>https://isa-afp.org/entries/Inductive_Confidentiality.html</link>
+  <pubDate>Wed, 02 May 2012 00:00:00 +0000</pubDate>
+  <description>Inductive Study of Confidentiality in the AFP</description>
+    <category>Computer science/Security</category>
+</item>
 
   </channel>
 </rss>

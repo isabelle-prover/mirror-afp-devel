@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
+<html lang="en"><head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -11,8 +10,7 @@
   <meta property="og:title" content="Turán&#39;s Graph Theorem" />
   <meta property="og:url" content="https://isa-afp.org/entries/Turans_Graph_Theorem.html" />
   <meta property="og:image" content="https://isa-afp.org/images/afp.png" />
-  <meta property="og:type" content="article" />
-  
+    <meta property="og:type" content="article" />
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
 
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
@@ -20,11 +18,11 @@
     <script>
       MathJax = {
         tex: {
-          inlineMath: [['$', '$'], ['\\(', '\\)']]
+          inlineMath: [["$", "$"], ["\\(", "\\)"]]
         },
         processEscapes: true,
         svg: {
-          fontCache: 'global'
+          fontCache: "global"
         }
       };
     </script>
@@ -41,9 +39,8 @@
   <script src="../js/search-autocomplete.js"></script>
 </head>
 
-  <body class='mathjax_ignore'>
-    <aside>
-        <div id="menu-toggle">
+  <body class="mathjax_ignore">
+    <aside><div id="menu-toggle">
   <input id="toggle" type="checkbox" />
   <label for="toggle">
     <span>menu</span>
@@ -51,87 +48,65 @@
   </label>
 
   <a href="../" class="logo-link">
-    <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs"
-         class="logo">
+    <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
   </a>
 
   <nav id="menu">
     <div>
-      <a href="../" class='logo-link'>
-        <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs"
-             class="logo">
+      <a href="../" class="logo-link">
+        <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
       </a>
       <ul>
           <a href="../">
-            <li >
-              Home
-            </li>
+            <li >Home</li>
           </a>
           <a href="../topics/">
-            <li >
-              Topics
-            </li>
+            <li >Topics</li>
           </a>
           <a href="../download/">
-            <li >
-              Download
-            </li>
+            <li >Download</li>
           </a>
           <a href="../help/">
-            <li >
-              Help
-            </li>
+            <li >Help</li>
           </a>
           <a href="../submission/">
-            <li >
-              Submission
-            </li>
+            <li >Submission</li>
           </a>
           <a href="../statistics/">
-            <li >
-              Statistics
-            </li>
+            <li >Statistics</li>
           </a>
           <a href="../about/">
-            <li >
-              About
-            </li>
+            <li >About</li>
           </a>
       </ul>
     </div>
   </nav>
 </div>
     </aside>
-    <div class='content entries'>
-      <header>
+
+    <div class="content entries"><header>
     <form autocomplete="off" action="../search">
-      <div class='form-container'>
+      <div class="form-container">
         <input id="search-input" type="search" size="31" maxlength="255" value=""
-               aria-label="Search the AFP" list="autocomplete"><button
-               id="search-button" type="button">
-          <img src="../images/search.svg" alt="Search"/>
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="button">
+          <img src="../images/search.svg" alt="Search" />
         </button>
         <datalist id="autocomplete">
         </datalist>
       </div>
     </form>
-  <h1>
-    <span class='first'>T</span>urán's <span class='first'>G</span>raph <span class='first'>T</span>heorem
-    
+  <h1 ><span class='first'>T</span>urán's <span class='first'>G</span>raph <span class='first'>T</span>heorem
   </h1>
   <div>
-      <p>
-        <a href="../authors/lauermann/">Nils Lauermann</a> <a class="obfuscated" data="eyJ1c2VyIjpbIk5pbHMiLCJMYXVlcm1hbm4iXSwiaG9zdCI6WyJjbCIsImNhbSIsImFjIiwidWsiXX0=">📧</a>
-
+      <p><a href="../authors/lauermann/">Nils Lauermann</a> <a class="obfuscated" data="eyJ1c2VyIjpbIk5pbHMiLCJMYXVlcm1hbm4iXSwiaG9zdCI6WyJjbCIsImNhbSIsImFjIiwidWsiXX0=">📧</a>
       </p>
       <p class="date">November 14, 2022</p>
   </div>
 </header>
       <div>
-        
   <main>
-    <h3>Abstract</h3>
 
+    <h3>Abstract</h3>
     <div class="abstract mathjax_process"><a href="https://en.wikipedia.org/wiki/Tur%C3%A1n%27s_theorem">Turán's Graph Theorem</a> states that any undirected, simple graph with $n$ vertices that does not contain a $p$-clique, contains at most $\left( 1 - \frac{1}{p-1} \right) \frac{n^2}{2}$ edges.
 The theorem is an important result in graph theory and the foundation of the field of extremal graph theory.
 
@@ -149,8 +124,7 @@ Besides a direct adaptation of the textbook proof, a simplified, second proof is
       <h3>Related publications</h3>
       <ul>
         <li>Aigner, M., & Ziegler, G. M. (2018). Turán’s graph theorem. Proofs from THE BOOK, 285–289. <a href="https://doi.org/10.1007/978-3-662-57265-8_41">https://doi.org/10.1007/978-3-662-57265-8_41</a>
-
-        </li>
+</li>
       </ul>
       <h3>Session Turans_Graph_Theorem</h3>
       <ul>
@@ -158,20 +132,19 @@ Besides a direct adaptation of the textbook proof, a simplified, second proof is
       </ul>
 
     <div class="flex-wrap">
-      <div>
-        <h3>Depends on</h3>
-        <ul class="horizontal-list">
+        <div>
+          <h3>Depends on</h3>
+          <ul class="horizontal-list">
               <li><a href="../entries/Girth_Chromatic.html">A Probabilistic Proof of the Girth-Chromatic Number Theorem</a></li>
               <li><a href="../entries/Random_Graph_Subgraph_Threshold.html">Properties of Random Graphs -- Subgraph Containment</a></li>
-        </ul>
-      </div>
-      </div>
-    
+          </ul>
+        </div>
+    </div>
   </main>
 
-  <nav class='links'>
-    <a class='popup-button' href="#cite-popup">Cite</a>
-    <a class='popup-button' href="#download-popup">Download</a>
+  <nav class="links">
+    <a class="popup-button" href="#cite-popup">Cite</a>
+    <a class="popup-button" href="#download-popup">Download</a>
     <h4>PDFs</h4>
     <a href="https://www.isa-afp.org/browser_info/current/AFP/Turans_Graph_Theorem/outline.pdf">Proof outline</a>
     <a href="https://www.isa-afp.org/browser_info/current/AFP/Turans_Graph_Theorem/document.pdf">Proof document</a>
@@ -205,32 +178,28 @@ Besides a direct adaptation of the textbook proof, a simplified, second proof is
     <div class="popup">
       <h2>Download</h2>
       <a class="close" href="#">&times;</a>
-      <a href="https://www.isa-afp.org/release/afp-Turans_Graph_Theorem-current.tar.gz"
-         download>Download latest</a>
+      <a href="https://www.isa-afp.org/release/afp-Turans_Graph_Theorem-current.tar.gz" download>
+        Download latest</a>
         <p>Older releases:</p>
         <ul>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Turans_Graph_Theorem-2024-05-26.tar.gz">
-                May 26, 2024
+              <a href="https://www.isa-afp.org/release/afp-Turans_Graph_Theorem-2024-05-26.tar.gz">May 26, 2024
               </a>
               : Isabelle2024
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Turans_Graph_Theorem-2023-09-13.tar.gz">
-                Sep 13, 2023
+              <a href="https://www.isa-afp.org/release/afp-Turans_Graph_Theorem-2023-09-13.tar.gz">Sep 13, 2023
               </a>
               : Isabelle2023
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Turans_Graph_Theorem-2022-12-01.tar.gz">
-                Dec 1, 2022
+              <a href="https://www.isa-afp.org/release/afp-Turans_Graph_Theorem-2022-12-01.tar.gz">Dec 1, 2022
               </a>
               : Isabelle2022
             </li>
         </ul>
     </div>
   </div>
-        
       </div>
     </div>
   </body>

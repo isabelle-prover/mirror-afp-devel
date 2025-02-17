@@ -1,16 +1,15 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Roy Overbeek</title>
     <link>https://isa-afp.org/authors/overbeek/</link>
-    <description>AFP entries of Roy Overbeek</description>
-        <item>
-          <title>Formalization of Concurrent Revisions</title>
-          <link>https://isa-afp.org/entries/Concurrent_Revisions.html</link>
-          <pubDate>Tue, 25 Dec 2018 00:00:00 +0000</pubDate>
-          <description>Formalization of Concurrent Revisions in the AFP</description>
-            <category>Computer science/Concurrency</category>
-        </item>
+    <description>AFP entries of Roy Overbeek</description><item>
+  <title>Formalization of Concurrent Revisions</title>
+  <link>https://isa-afp.org/entries/Concurrent_Revisions.html</link>
+  <pubDate>Tue, 25 Dec 2018 00:00:00 +0000</pubDate>
+  <description>Formalization of Concurrent Revisions in the AFP</description>
+    <category>Computer science/Concurrency</category>
+</item>
 
   </channel>
 </rss>

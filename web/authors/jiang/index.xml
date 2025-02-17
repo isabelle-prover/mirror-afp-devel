@@ -1,16 +1,15 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Nan Jiang</title>
     <link>https://isa-afp.org/authors/jiang/</link>
-    <description>AFP entries of Nan Jiang</description>
-        <item>
-          <title>A data flow analysis algorithm for computing dominators</title>
-          <link>https://isa-afp.org/entries/Dominance_CHK.html</link>
-          <pubDate>Sun, 05 Sep 2021 00:00:00 +0000</pubDate>
-          <description>A data flow analysis algorithm for computing dominators in the AFP</description>
-            <category>Computer science/Programming languages/Static analysis</category>
-        </item>
+    <description>AFP entries of Nan Jiang</description><item>
+  <title>A data flow analysis algorithm for computing dominators</title>
+  <link>https://isa-afp.org/entries/Dominance_CHK.html</link>
+  <pubDate>Sun, 05 Sep 2021 00:00:00 +0000</pubDate>
+  <description>A data flow analysis algorithm for computing dominators in the AFP</description>
+    <category>Computer science/Programming languages/Static analysis</category>
+</item>
 
   </channel>
 </rss>

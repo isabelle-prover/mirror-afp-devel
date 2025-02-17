@@ -1,40 +1,39 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Benoît Ballenghien</title>
     <link>https://isa-afp.org/authors/ballenghien/</link>
-    <description>AFP entries of Benoît Ballenghien</description>
-        <item>
-          <title>A Proof of Hilbert Basis Theorem and            an Extension to Formal Power Series</title>
-          <link>https://isa-afp.org/entries/Hilbert_Basis.html</link>
-          <pubDate>Wed, 12 Feb 2025 00:00:00 +0000</pubDate>
-          <description>A Proof of Hilbert Basis Theorem and            an Extension to Formal Power Series in the AFP</description>
-            <category>Mathematics</category>
-        </item>
-        <item>
-          <title>Operational Semantics formally proven in HOL-CSP</title>
-          <link>https://isa-afp.org/entries/HOL-CSP_OpSem.html</link>
-          <pubDate>Sun, 24 Dec 2023 00:00:00 +0000</pubDate>
-          <description>Operational Semantics formally proven in HOL-CSP in the AFP</description>
-            <category>Computer science/Concurrency/Process calculi</category>
-            <category>Computer science/Semantics and reasoning</category>
-        </item>
-        <item>
-          <title>HOL-CSPM - Architectural operators for HOL-CSP</title>
-          <link>https://isa-afp.org/entries/HOL-CSPM.html</link>
-          <pubDate>Tue, 05 Dec 2023 00:00:00 +0000</pubDate>
-          <description>HOL-CSPM - Architectural operators for HOL-CSP in the AFP</description>
-            <category>Computer science/Concurrency/Process calculi</category>
-            <category>Computer science/Semantics and reasoning</category>
-        </item>
-        <item>
-          <title>HOL-CSP Version 2.0</title>
-          <link>https://isa-afp.org/entries/HOL-CSP.html</link>
-          <pubDate>Fri, 26 Apr 2019 00:00:00 +0000</pubDate>
-          <description>HOL-CSP Version 2.0 in the AFP</description>
-            <category>Computer science/Concurrency/Process calculi</category>
-            <category>Computer science/Semantics and reasoning</category>
-        </item>
+    <description>AFP entries of Benoît Ballenghien</description><item>
+  <title>A Proof of Hilbert Basis Theorem and            an Extension to Formal Power Series</title>
+  <link>https://isa-afp.org/entries/Hilbert_Basis.html</link>
+  <pubDate>Wed, 12 Feb 2025 00:00:00 +0000</pubDate>
+  <description>A Proof of Hilbert Basis Theorem and            an Extension to Formal Power Series in the AFP</description>
+    <category>Mathematics</category>
+</item>
+<item>
+  <title>Operational Semantics formally proven in HOL-CSP</title>
+  <link>https://isa-afp.org/entries/HOL-CSP_OpSem.html</link>
+  <pubDate>Sun, 24 Dec 2023 00:00:00 +0000</pubDate>
+  <description>Operational Semantics formally proven in HOL-CSP in the AFP</description>
+    <category>Computer science/Concurrency/Process calculi</category>
+    <category>Computer science/Semantics and reasoning</category>
+</item>
+<item>
+  <title>HOL-CSPM - Architectural operators for HOL-CSP</title>
+  <link>https://isa-afp.org/entries/HOL-CSPM.html</link>
+  <pubDate>Tue, 05 Dec 2023 00:00:00 +0000</pubDate>
+  <description>HOL-CSPM - Architectural operators for HOL-CSP in the AFP</description>
+    <category>Computer science/Concurrency/Process calculi</category>
+    <category>Computer science/Semantics and reasoning</category>
+</item>
+<item>
+  <title>HOL-CSP Version 2.0</title>
+  <link>https://isa-afp.org/entries/HOL-CSP.html</link>
+  <pubDate>Fri, 26 Apr 2019 00:00:00 +0000</pubDate>
+  <description>HOL-CSP Version 2.0 in the AFP</description>
+    <category>Computer science/Concurrency/Process calculi</category>
+    <category>Computer science/Semantics and reasoning</category>
+</item>
 
   </channel>
 </rss>

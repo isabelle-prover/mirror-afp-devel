@@ -1,16 +1,15 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Yannick Stade</title>
     <link>https://isa-afp.org/authors/stade/</link>
-    <description>AFP entries of Yannick Stade</description>
-        <item>
-          <title>Partial Correctness of the Top-Down Solver</title>
-          <link>https://isa-afp.org/entries/Top_Down_Solver.html</link>
-          <pubDate>Thu, 09 May 2024 00:00:00 +0000</pubDate>
-          <description>Partial Correctness of the Top-Down Solver in the AFP</description>
-            <category>Computer science/Algorithms</category>
-        </item>
+    <description>AFP entries of Yannick Stade</description><item>
+  <title>Partial Correctness of the Top-Down Solver</title>
+  <link>https://isa-afp.org/entries/Top_Down_Solver.html</link>
+  <pubDate>Thu, 09 May 2024 00:00:00 +0000</pubDate>
+  <description>Partial Correctness of the Top-Down Solver in the AFP</description>
+    <category>Computer science/Algorithms</category>
+</item>
 
   </channel>
 </rss>

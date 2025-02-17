@@ -1,16 +1,15 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Ludovic Henrio</title>
     <link>https://isa-afp.org/authors/henrio/</link>
-    <description>AFP entries of Ludovic Henrio</description>
-        <item>
-          <title>Locally Nameless Sigma Calculus</title>
-          <link>https://isa-afp.org/entries/Locally-Nameless-Sigma.html</link>
-          <pubDate>Fri, 30 Apr 2010 00:00:00 +0000</pubDate>
-          <description>Locally Nameless Sigma Calculus in the AFP</description>
-            <category>Computer science/Programming languages/Language definitions</category>
-        </item>
+    <description>AFP entries of Ludovic Henrio</description><item>
+  <title>Locally Nameless Sigma Calculus</title>
+  <link>https://isa-afp.org/entries/Locally-Nameless-Sigma.html</link>
+  <pubDate>Fri, 30 Apr 2010 00:00:00 +0000</pubDate>
+  <description>Locally Nameless Sigma Calculus in the AFP</description>
+    <category>Computer science/Programming languages/Language definitions</category>
+</item>
 
   </channel>
 </rss>

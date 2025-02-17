@@ -1,16 +1,15 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Niklas Krofta</title>
     <link>https://isa-afp.org/authors/krofta/</link>
-    <description>AFP entries of Niklas Krofta</description>
-        <item>
-          <title>Topological Groups</title>
-          <link>https://isa-afp.org/entries/Topological_Groups.html</link>
-          <pubDate>Mon, 19 Aug 2024 00:00:00 +0000</pubDate>
-          <description>Topological Groups in the AFP</description>
-            <category>Mathematics/Algebra</category>
-        </item>
+    <description>AFP entries of Niklas Krofta</description><item>
+  <title>Topological Groups</title>
+  <link>https://isa-afp.org/entries/Topological_Groups.html</link>
+  <pubDate>Mon, 19 Aug 2024 00:00:00 +0000</pubDate>
+  <description>Topological Groups in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
 
   </channel>
 </rss>

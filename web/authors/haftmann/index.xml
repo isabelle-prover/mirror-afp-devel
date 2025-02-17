@@ -1,25 +1,24 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Florian Haftmann</title>
     <link>https://isa-afp.org/authors/haftmann/</link>
-    <description>AFP entries of Florian Haftmann</description>
-        <item>
-          <title>Discrete Summation</title>
-          <link>https://isa-afp.org/entries/Discrete_Summation.html</link>
-          <pubDate>Sun, 13 Apr 2014 00:00:00 +0000</pubDate>
-          <description>Discrete Summation in the AFP</description>
-            <category>Mathematics/Combinatorics</category>
-        </item>
-        <item>
-          <title>Executable Multivariate Polynomials</title>
-          <link>https://isa-afp.org/entries/Polynomials.html</link>
-          <pubDate>Tue, 10 Aug 2010 00:00:00 +0000</pubDate>
-          <description>Executable Multivariate Polynomials in the AFP</description>
-            <category>Mathematics/Analysis</category>
-            <category>Mathematics/Algebra</category>
-            <category>Computer science/Algorithms/Mathematical</category>
-        </item>
+    <description>AFP entries of Florian Haftmann</description><item>
+  <title>Discrete Summation</title>
+  <link>https://isa-afp.org/entries/Discrete_Summation.html</link>
+  <pubDate>Sun, 13 Apr 2014 00:00:00 +0000</pubDate>
+  <description>Discrete Summation in the AFP</description>
+    <category>Mathematics/Combinatorics</category>
+</item>
+<item>
+  <title>Executable Multivariate Polynomials</title>
+  <link>https://isa-afp.org/entries/Polynomials.html</link>
+  <pubDate>Tue, 10 Aug 2010 00:00:00 +0000</pubDate>
+  <description>Executable Multivariate Polynomials in the AFP</description>
+    <category>Mathematics/Analysis</category>
+    <category>Mathematics/Algebra</category>
+    <category>Computer science/Algorithms/Mathematical</category>
+</item>
 
   </channel>
 </rss>

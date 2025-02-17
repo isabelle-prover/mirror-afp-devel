@@ -1,16 +1,15 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Mark Ijbema</title>
     <link>https://isa-afp.org/authors/ijbema/</link>
-    <description>AFP entries of Mark Ijbema</description>
-        <item>
-          <title>Perfect Number Theorem</title>
-          <link>https://isa-afp.org/entries/Perfect-Number-Thm.html</link>
-          <pubDate>Sun, 22 Nov 2009 00:00:00 +0000</pubDate>
-          <description>Perfect Number Theorem in the AFP</description>
-            <category>Mathematics/Number theory</category>
-        </item>
+    <description>AFP entries of Mark Ijbema</description><item>
+  <title>Perfect Number Theorem</title>
+  <link>https://isa-afp.org/entries/Perfect-Number-Thm.html</link>
+  <pubDate>Sun, 22 Nov 2009 00:00:00 +0000</pubDate>
+  <description>Perfect Number Theorem in the AFP</description>
+    <category>Mathematics/Number theory</category>
+</item>
 
   </channel>
 </rss>

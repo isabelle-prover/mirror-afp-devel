@@ -3037,8 +3037,6 @@
   </url><url>
     <loc>https://isa-afp.org/sessions/cayley_hamilton/</loc>
   </url><url>
-    <loc>https://isa-afp.org/sessions/ccl/</loc>
-  </url><url>
     <loc>https://isa-afp.org/sessions/ccs/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/certification_monads/</loc>
@@ -3097,8 +3095,6 @@
   </url><url>
     <loc>https://isa-afp.org/sessions/cisc-kernel/</loc>
   </url><url>
-    <loc>https://isa-afp.org/sessions/classes/</loc>
-  </url><url>
     <loc>https://isa-afp.org/sessions/clean/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/ballarin/</loc>
@@ -3110,8 +3106,6 @@
     <loc>https://isa-afp.org/sessions/closest_pair_points/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/cocon/</loc>
-  </url><url>
-    <loc>https://isa-afp.org/sessions/codegen/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/cofgroups/</loc>
   </url><url>
@@ -3273,8 +3267,6 @@
   </url><url>
     <loc>https://isa-afp.org/sessions/core_sc_dom/</loc>
   </url><url>
-    <loc>https://isa-afp.org/sessions/corec/</loc>
-  </url><url>
     <loc>https://isa-afp.org/sessions/corec&#43;&#43;/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/lewis/</loc>
@@ -3312,10 +3304,6 @@
     <loc>https://isa-afp.org/sessions/crystals-kyber_security/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/csp_reftk/</loc>
-  </url><url>
-    <loc>https://isa-afp.org/sessions/ctt/</loc>
-  </url><url>
-    <loc>https://isa-afp.org/sessions/cube/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/cube_dissection/</loc>
   </url><url>
@@ -3363,8 +3351,6 @@
   </url><url>
     <loc>https://isa-afp.org/sessions/datatype_order_generator/</loc>
   </url><url>
-    <loc>https://isa-afp.org/sessions/datatypes/</loc>
-  </url><url>
     <loc>https://isa-afp.org/authors/aspinall/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/butler/</loc>
@@ -3392,16 +3378,6 @@
     <loc>https://isa-afp.org/sessions/deep_learning/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/delta_system_lemma/</loc>
-  </url><url>
-    <loc>https://isa-afp.org/sessions/demo_easychair/</loc>
-  </url><url>
-    <loc>https://isa-afp.org/sessions/demo_eptcs/</loc>
-  </url><url>
-    <loc>https://isa-afp.org/sessions/demo_foiltex/</loc>
-  </url><url>
-    <loc>https://isa-afp.org/sessions/demo_lipics/</loc>
-  </url><url>
-    <loc>https://isa-afp.org/sessions/demo_llncs/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/lohner/</loc>
   </url><url>
@@ -3518,8 +3494,6 @@
     <loc>https://isa-afp.org/sessions/efficient_weighted_path_order/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/efficient-mergesort/</loc>
-  </url><url>
-    <loc>https://isa-afp.org/sessions/eisbach/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/wenninger/</loc>
   </url><url>
@@ -3671,13 +3645,7 @@
   </url><url>
     <loc>https://isa-afp.org/sessions/fol_seq_calc3/</loc>
   </url><url>
-    <loc>https://isa-afp.org/sessions/fol-ex/</loc>
-  </url><url>
     <loc>https://isa-afp.org/sessions/fol-fitting/</loc>
-  </url><url>
-    <loc>https://isa-afp.org/sessions/folp/</loc>
-  </url><url>
-    <loc>https://isa-afp.org/sessions/folp-ex/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/forcing/</loc>
   </url><url>
@@ -3728,8 +3696,6 @@
     <loc>https://isa-afp.org/sessions/functional_ordered_resolution_prover/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/functional-automata/</loc>
-  </url><url>
-    <loc>https://isa-afp.org/sessions/functions/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/funwithfunctions/</loc>
   </url><url>
@@ -3855,8 +3821,6 @@
   </url><url>
     <loc>https://isa-afp.org/authors/tuch/</loc>
   </url><url>
-    <loc>https://isa-afp.org/sessions/haskell/</loc>
-  </url><url>
     <loc>https://isa-afp.org/authors/brinkop/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/heard_of/</loc>
@@ -3909,23 +3873,13 @@
   </url><url>
     <loc>https://isa-afp.org/sessions/hol-analysis/</loc>
   </url><url>
-    <loc>https://isa-afp.org/sessions/hol-analysis-ex/</loc>
-  </url><url>
-    <loc>https://isa-afp.org/sessions/hol-auth/</loc>
-  </url><url>
-    <loc>https://isa-afp.org/sessions/hol-bali/</loc>
-  </url><url>
     <loc>https://isa-afp.org/sessions/hol-cardinals/</loc>
-  </url><url>
-    <loc>https://isa-afp.org/sessions/hol-codegenerator_test/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/hol-combinatorics/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/hol-complex_analysis/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/hol-computational_algebra/</loc>
-  </url><url>
-    <loc>https://isa-afp.org/sessions/hol-corec_examples/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/hol-csp/</loc>
   </url><url>
@@ -3935,8 +3889,6 @@
   </url><url>
     <loc>https://isa-afp.org/sessions/hol-data_structures/</loc>
   </url><url>
-    <loc>https://isa-afp.org/sessions/hol-datatype_examples/</loc>
-  </url><url>
     <loc>https://isa-afp.org/sessions/hol-decision_procs/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/hol-eisbach/</loc>
@@ -3945,53 +3897,19 @@
   </url><url>
     <loc>https://isa-afp.org/sessions/hol-examples/</loc>
   </url><url>
-    <loc>https://isa-afp.org/sessions/hol-hahn_banach/</loc>
-  </url><url>
     <loc>https://isa-afp.org/sessions/hol-hoare/</loc>
-  </url><url>
-    <loc>https://isa-afp.org/sessions/hol-hoare_parallel/</loc>
-  </url><url>
-    <loc>https://isa-afp.org/sessions/hol-homology/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/hol-imp/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/hol-imperative_hol/</loc>
   </url><url>
-    <loc>https://isa-afp.org/sessions/hol-import/</loc>
-  </url><url>
-    <loc>https://isa-afp.org/sessions/hol-impp/</loc>
-  </url><url>
-    <loc>https://isa-afp.org/sessions/hol-induct/</loc>
-  </url><url>
-    <loc>https://isa-afp.org/sessions/hol-ioa/</loc>
-  </url><url>
-    <loc>https://isa-afp.org/sessions/hol-isar_examples/</loc>
-  </url><url>
     <loc>https://isa-afp.org/sessions/hol-lattice/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/hol-library/</loc>
   </url><url>
-    <loc>https://isa-afp.org/sessions/hol-matrix_lp/</loc>
-  </url><url>
-    <loc>https://isa-afp.org/sessions/hol-metis_examples/</loc>
-  </url><url>
-    <loc>https://isa-afp.org/sessions/hol-microjava/</loc>
-  </url><url>
-    <loc>https://isa-afp.org/sessions/hol-mirabelle-ex/</loc>
-  </url><url>
-    <loc>https://isa-afp.org/sessions/hol-mutabelle/</loc>
-  </url><url>
-    <loc>https://isa-afp.org/sessions/hol-nanojava/</loc>
-  </url><url>
-    <loc>https://isa-afp.org/sessions/hol-nitpick_examples/</loc>
-  </url><url>
     <loc>https://isa-afp.org/sessions/hol-nominal/</loc>
   </url><url>
-    <loc>https://isa-afp.org/sessions/hol-nominal-examples/</loc>
-  </url><url>
     <loc>https://isa-afp.org/sessions/hol-nonstandard_analysis/</loc>
-  </url><url>
-    <loc>https://isa-afp.org/sessions/hol-nonstandard_analysis-examples/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/hol-number_theory/</loc>
   </url><url>
@@ -4001,73 +3919,29 @@
   </url><url>
     <loc>https://isa-afp.org/sessions/hol-ode-numerics/</loc>
   </url><url>
-    <loc>https://isa-afp.org/sessions/hol-predicate_compile_examples/</loc>
-  </url><url>
     <loc>https://isa-afp.org/sessions/hol-probability/</loc>
-  </url><url>
-    <loc>https://isa-afp.org/sessions/hol-probability-ex/</loc>
-  </url><url>
-    <loc>https://isa-afp.org/sessions/hol-prolog/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/hol-proofs/</loc>
   </url><url>
-    <loc>https://isa-afp.org/sessions/hol-proofs-ex/</loc>
-  </url><url>
-    <loc>https://isa-afp.org/sessions/hol-proofs-extraction/</loc>
-  </url><url>
     <loc>https://isa-afp.org/sessions/hol-proofs-lambda/</loc>
   </url><url>
-    <loc>https://isa-afp.org/sessions/hol-quickcheck_examples/</loc>
-  </url><url>
-    <loc>https://isa-afp.org/sessions/hol-quotient_examples/</loc>
-  </url><url>
     <loc>https://isa-afp.org/sessions/hol-real_asymp/</loc>
-  </url><url>
-    <loc>https://isa-afp.org/sessions/hol-real_asymp-manual/</loc>
-  </url><url>
-    <loc>https://isa-afp.org/sessions/hol-set_protocol/</loc>
-  </url><url>
-    <loc>https://isa-afp.org/sessions/hol-smt_examples/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/hol-spark/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/hol-spark-examples/</loc>
   </url><url>
-    <loc>https://isa-afp.org/sessions/hol-spark-manual/</loc>
-  </url><url>
     <loc>https://isa-afp.org/sessions/hol-statespace/</loc>
   </url><url>
-    <loc>https://isa-afp.org/sessions/hol-tla/</loc>
-  </url><url>
-    <loc>https://isa-afp.org/sessions/hol-tla-buffer/</loc>
-  </url><url>
-    <loc>https://isa-afp.org/sessions/hol-tla-inc/</loc>
-  </url><url>
-    <loc>https://isa-afp.org/sessions/hol-tla-memory/</loc>
-  </url><url>
-    <loc>https://isa-afp.org/sessions/hol-tptp/</loc>
-  </url><url>
     <loc>https://isa-afp.org/sessions/hol-types_to_sets/</loc>
-  </url><url>
-    <loc>https://isa-afp.org/sessions/hol-unity/</loc>
-  </url><url>
-    <loc>https://isa-afp.org/sessions/hol-unix/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/hol-zf/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/holcf/</loc>
   </url><url>
-    <loc>https://isa-afp.org/sessions/holcf-ex/</loc>
-  </url><url>
-    <loc>https://isa-afp.org/sessions/holcf-focus/</loc>
-  </url><url>
-    <loc>https://isa-afp.org/sessions/holcf-imp/</loc>
-  </url><url>
     <loc>https://isa-afp.org/sessions/holcf-library/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/holcf-prelude/</loc>
-  </url><url>
-    <loc>https://isa-afp.org/sessions/holcf-tutorial/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/lee/</loc>
   </url><url>
@@ -4076,8 +3950,6 @@
     <loc>https://isa-afp.org/sessions/hood_melville_queue/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/hotelkeycards/</loc>
-  </url><url>
-    <loc>https://isa-afp.org/sessions/how_to_prove_it/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/hrb-slicing/</loc>
   </url><url>
@@ -4129,8 +4001,6 @@
   </url><url>
     <loc>https://isa-afp.org/sessions/imperative_insertion_sort/</loc>
   </url><url>
-    <loc>https://isa-afp.org/sessions/implementation/</loc>
-  </url><url>
     <loc>https://isa-afp.org/sessions/implicational_logic/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/impossible_geometry/</loc>
@@ -4161,23 +4031,11 @@
   </url><url>
     <loc>https://isa-afp.org/sessions/interval_arithmetic_word32/</loc>
   </url><url>
-    <loc>https://isa-afp.org/sessions/intro/</loc>
-  </url><url>
     <loc>https://isa-afp.org/sessions/intro_dest_elim/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/involutions2squares/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/io_language_conformance/</loc>
-  </url><url>
-    <loc>https://isa-afp.org/sessions/ioa/</loc>
-  </url><url>
-    <loc>https://isa-afp.org/sessions/ioa-abp/</loc>
-  </url><url>
-    <loc>https://isa-afp.org/sessions/ioa-ex/</loc>
-  </url><url>
-    <loc>https://isa-afp.org/sessions/ioa-ntp/</loc>
-  </url><url>
-    <loc>https://isa-afp.org/sessions/ioa-storage/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/ip_addresses/</loc>
   </url><url>
@@ -4244,8 +4102,6 @@
     <loc>https://isa-afp.org/authors/diaz/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/esparza/</loc>
-  </url><url>
-    <loc>https://isa-afp.org/sessions/jedit/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/ketland/</loc>
   </url><url>
@@ -4453,8 +4309,6 @@
   </url><url>
     <loc>https://isa-afp.org/sessions/lazy-lists-ii/</loc>
   </url><url>
-    <loc>https://isa-afp.org/sessions/lcf/</loc>
-  </url><url>
     <loc>https://isa-afp.org/sessions/lehmer/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/yu/</loc>
@@ -4511,8 +4365,6 @@
   </url><url>
     <loc>https://isa-afp.org/sessions/lll_factorization/</loc>
   </url><url>
-    <loc>https://isa-afp.org/sessions/locales/</loc>
-  </url><url>
     <loc>https://isa-afp.org/sessions/localization_ring/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/locallexing/</loc>
@@ -4552,10 +4404,6 @@
     <loc>https://isa-afp.org/topics/logic/rewriting/</loc>
   </url><url>
     <loc>https://isa-afp.org/topics/logic/set-theory/</loc>
-  </url><url>
-    <loc>https://isa-afp.org/sessions/logics/</loc>
-  </url><url>
-    <loc>https://isa-afp.org/sessions/logics_zf/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/chevalier/</loc>
   </url><url>
@@ -4610,8 +4458,6 @@
     <loc>https://isa-afp.org/authors/stevens/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/myreen/</loc>
-  </url><url>
-    <loc>https://isa-afp.org/sessions/main/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/wenzel/</loc>
   </url><url>
@@ -4871,10 +4717,6 @@
   </url><url>
     <loc>https://isa-afp.org/sessions/nano_json/</loc>
   </url><url>
-    <loc>https://isa-afp.org/sessions/naproche/</loc>
-  </url><url>
-    <loc>https://isa-afp.org/sessions/naproche-test/</loc>
-  </url><url>
     <loc>https://isa-afp.org/sessions/nash_williams/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/nat-interval-logic/</loc>
@@ -4908,8 +4750,6 @@
     <loc>https://isa-afp.org/authors/cremer/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/lauermann/</loc>
-  </url><url>
-    <loc>https://isa-afp.org/sessions/nitpick/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/no_ftl_observers/</loc>
   </url><url>
@@ -5444,8 +5284,6 @@
   </url><url>
     <loc>https://isa-afp.org/sessions/sequentinvertibility/</loc>
   </url><url>
-    <loc>https://isa-afp.org/sessions/sequents/</loc>
-  </url><url>
     <loc>https://isa-afp.org/authors/tverdyshev/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/serializable/</loc>
@@ -5506,8 +5344,6 @@
   </url><url>
     <loc>https://isa-afp.org/sessions/skip_lists/</loc>
   </url><url>
-    <loc>https://isa-afp.org/sessions/sledgehammer/</loc>
-  </url><url>
     <loc>https://isa-afp.org/sessions/slicing/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/sliding_window_algorithm/</loc>
@@ -5517,8 +5353,6 @@
     <loc>https://isa-afp.org/sessions/sm_base/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/smith_normal_form/</loc>
-  </url><url>
-    <loc>https://isa-afp.org/sessions/sml/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/smooth_manifolds/</loc>
   </url><url>
@@ -5628,8 +5462,6 @@
   </url><url>
     <loc>https://isa-afp.org/sessions/suffixarray/</loc>
   </url><url>
-    <loc>https://isa-afp.org/sessions/sugar/</loc>
-  </url><url>
     <loc>https://isa-afp.org/sessions/sum_of_squares_count/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/sumcheck_protocol/</loc>
@@ -5659,8 +5491,6 @@
     <loc>https://isa-afp.org/sessions/syntax_independent_logic/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/synthetic_completeness/</loc>
-  </url><url>
-    <loc>https://isa-afp.org/sessions/system/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/szemeredi_regularity/</loc>
   </url><url>
@@ -5782,8 +5612,6 @@
   </url><url>
     <loc>https://isa-afp.org/sessions/turans_graph_theorem/</loc>
   </url><url>
-    <loc>https://isa-afp.org/sessions/tutorial/</loc>
-  </url><url>
     <loc>https://isa-afp.org/sessions/twelvefold_way/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/two_generated_word_monoids_intersection/</loc>
@@ -5791,8 +5619,6 @@
     <loc>https://isa-afp.org/sessions/two_hermitian_results/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/tycon/</loc>
-  </url><url>
-    <loc>https://isa-afp.org/sessions/typeclass_hierarchy/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/types_tableaus_and_goedels_god/</loc>
   </url><url>
@@ -5944,21 +5770,7 @@
   </url><url>
     <loc>https://isa-afp.org/sessions/zf/</loc>
   </url><url>
-    <loc>https://isa-afp.org/sessions/zf-ac/</loc>
-  </url><url>
-    <loc>https://isa-afp.org/sessions/zf-coind/</loc>
-  </url><url>
     <loc>https://isa-afp.org/sessions/zf-constructible/</loc>
-  </url><url>
-    <loc>https://isa-afp.org/sessions/zf-ex/</loc>
-  </url><url>
-    <loc>https://isa-afp.org/sessions/zf-imp/</loc>
-  </url><url>
-    <loc>https://isa-afp.org/sessions/zf-induct/</loc>
-  </url><url>
-    <loc>https://isa-afp.org/sessions/zf-resid/</loc>
-  </url><url>
-    <loc>https://isa-afp.org/sessions/zf-unity/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/zfc_in_hol/</loc>
   </url><url>

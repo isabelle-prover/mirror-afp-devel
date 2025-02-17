@@ -1,16 +1,15 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Terru Stübinger</title>
     <link>https://isa-afp.org/authors/stuebinger/</link>
-    <description>AFP entries of Terru Stübinger</description>
-        <item>
-          <title>Go Code Generation for Isabelle</title>
-          <link>https://isa-afp.org/entries/Go.html</link>
-          <pubDate>Mon, 22 Jan 2024 00:00:00 +0000</pubDate>
-          <description>Go Code Generation for Isabelle in the AFP</description>
-            <category>Tools</category>
-        </item>
+    <description>AFP entries of Terru Stübinger</description><item>
+  <title>Go Code Generation for Isabelle</title>
+  <link>https://isa-afp.org/entries/Go.html</link>
+  <pubDate>Mon, 22 Jan 2024 00:00:00 +0000</pubDate>
+  <description>Go Code Generation for Isabelle in the AFP</description>
+    <category>Tools</category>
+</item>
 
   </channel>
 </rss>

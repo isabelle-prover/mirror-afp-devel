@@ -1,16 +1,15 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Thomas Sternagel</title>
     <link>https://isa-afp.org/authors/sternagelt/</link>
-    <description>AFP entries of Thomas Sternagel</description>
-        <item>
-          <title>Regular Tree Relations</title>
-          <link>https://isa-afp.org/entries/Regular_Tree_Relations.html</link>
-          <pubDate>Wed, 15 Dec 2021 00:00:00 +0000</pubDate>
-          <description>Regular Tree Relations in the AFP</description>
-            <category>Computer science/Automata and formal languages</category>
-        </item>
+    <description>AFP entries of Thomas Sternagel</description><item>
+  <title>Regular Tree Relations</title>
+  <link>https://isa-afp.org/entries/Regular_Tree_Relations.html</link>
+  <pubDate>Wed, 15 Dec 2021 00:00:00 +0000</pubDate>
+  <description>Regular Tree Relations in the AFP</description>
+    <category>Computer science/Automata and formal languages</category>
+</item>
 
   </channel>
 </rss>

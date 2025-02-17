@@ -1,23 +1,22 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Stefan Hetzl</title>
     <link>https://isa-afp.org/authors/hetzl/</link>
-    <description>AFP entries of Stefan Hetzl</description>
-        <item>
-          <title>The Cayley-Hamilton Theorem</title>
-          <link>https://isa-afp.org/entries/Cayley_Hamilton.html</link>
-          <pubDate>Mon, 15 Sep 2014 00:00:00 +0000</pubDate>
-          <description>The Cayley-Hamilton Theorem in the AFP</description>
-            <category>Mathematics/Algebra</category>
-        </item>
-        <item>
-          <title>Bondy&#39;s Theorem</title>
-          <link>https://isa-afp.org/entries/Bondy.html</link>
-          <pubDate>Sat, 27 Oct 2012 00:00:00 +0000</pubDate>
-          <description>Bondy&#39;s Theorem in the AFP</description>
-            <category>Mathematics/Combinatorics</category>
-        </item>
+    <description>AFP entries of Stefan Hetzl</description><item>
+  <title>The Cayley-Hamilton Theorem</title>
+  <link>https://isa-afp.org/entries/Cayley_Hamilton.html</link>
+  <pubDate>Mon, 15 Sep 2014 00:00:00 +0000</pubDate>
+  <description>The Cayley-Hamilton Theorem in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Bondy&#39;s Theorem</title>
+  <link>https://isa-afp.org/entries/Bondy.html</link>
+  <pubDate>Sat, 27 Oct 2012 00:00:00 +0000</pubDate>
+  <description>Bondy&#39;s Theorem in the AFP</description>
+    <category>Mathematics/Combinatorics</category>
+</item>
 
   </channel>
 </rss>

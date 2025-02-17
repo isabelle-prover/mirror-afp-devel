@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
+<html lang="en"><head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -11,8 +10,7 @@
   <meta property="og:title" content="Worklist Algorithms" />
   <meta property="og:url" content="https://isa-afp.org/entries/Worklist_Algorithms.html" />
   <meta property="og:image" content="https://isa-afp.org/images/afp.png" />
-  <meta property="og:type" content="article" />
-  
+    <meta property="og:type" content="article" />
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
 
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
@@ -20,11 +18,11 @@
     <script>
       MathJax = {
         tex: {
-          inlineMath: [['$', '$'], ['\\(', '\\)']]
+          inlineMath: [["$", "$"], ["\\(", "\\)"]]
         },
         processEscapes: true,
         svg: {
-          fontCache: 'global'
+          fontCache: "global"
         }
       };
     </script>
@@ -41,9 +39,8 @@
   <script src="../js/search-autocomplete.js"></script>
 </head>
 
-  <body class='mathjax_ignore'>
-    <aside>
-        <div id="menu-toggle">
+  <body class="mathjax_ignore">
+    <aside><div id="menu-toggle">
   <input id="toggle" type="checkbox" />
   <label for="toggle">
     <span>menu</span>
@@ -51,87 +48,65 @@
   </label>
 
   <a href="../" class="logo-link">
-    <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs"
-         class="logo">
+    <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
   </a>
 
   <nav id="menu">
     <div>
-      <a href="../" class='logo-link'>
-        <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs"
-             class="logo">
+      <a href="../" class="logo-link">
+        <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
       </a>
       <ul>
           <a href="../">
-            <li >
-              Home
-            </li>
+            <li >Home</li>
           </a>
           <a href="../topics/">
-            <li >
-              Topics
-            </li>
+            <li >Topics</li>
           </a>
           <a href="../download/">
-            <li >
-              Download
-            </li>
+            <li >Download</li>
           </a>
           <a href="../help/">
-            <li >
-              Help
-            </li>
+            <li >Help</li>
           </a>
           <a href="../submission/">
-            <li >
-              Submission
-            </li>
+            <li >Submission</li>
           </a>
           <a href="../statistics/">
-            <li >
-              Statistics
-            </li>
+            <li >Statistics</li>
           </a>
           <a href="../about/">
-            <li >
-              About
-            </li>
+            <li >About</li>
           </a>
       </ul>
     </div>
   </nav>
 </div>
     </aside>
-    <div class='content entries'>
-      <header>
+
+    <div class="content entries"><header>
     <form autocomplete="off" action="../search">
-      <div class='form-container'>
+      <div class="form-container">
         <input id="search-input" type="search" size="31" maxlength="255" value=""
-               aria-label="Search the AFP" list="autocomplete"><button
-               id="search-button" type="button">
-          <img src="../images/search.svg" alt="Search"/>
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="button">
+          <img src="../images/search.svg" alt="Search" />
         </button>
         <datalist id="autocomplete">
         </datalist>
       </div>
     </form>
-  <h1>
-    <span class='first'>W</span>orklist <span class='first'>A</span>lgorithms
-    
+  <h1 ><span class='first'>W</span>orklist <span class='first'>A</span>lgorithms
   </h1>
   <div>
-      <p>
-        <a href="../authors/wimmer/">Simon Wimmer</a> <a class="obfuscated" data="eyJ1c2VyIjpbInNpbW9uIiwid2ltbWVyIl0sImhvc3QiOlsidHVtIiwiZGUiXX0=">📧</a> and <a href="../authors/lammich/">Peter Lammich</a> <a class="obfuscated" data="eyJ1c2VyIjpbInAiLCJsYW1taWNoIl0sImhvc3QiOlsidXR3ZW50ZSIsIm5sIl19">📧</a>
-
+      <p><a href="../authors/wimmer/">Simon Wimmer</a> <a class="obfuscated" data="eyJ1c2VyIjpbInNpbW9uIiwid2ltbWVyIl0sImhvc3QiOlsidHVtIiwiZGUiXX0=">📧</a> and <a href="../authors/lammich/">Peter Lammich</a> <a class="obfuscated" data="eyJ1c2VyIjpbInAiLCJsYW1taWNoIl0sImhvc3QiOlsidXR3ZW50ZSIsIm5sIl19">📧</a>
       </p>
       <p class="date">August 9, 2024</p>
   </div>
 </header>
       <div>
-        
   <main>
-    <h3>Abstract</h3>
 
+    <h3>Abstract</h3>
     <div class="abstract mathjax_process">This entry verifies a number of worklist algorithms for exploring sets of reachable sets of transition systems with subsumption relations. Informally speaking, a node $a$ is subsumed by a node $b$ if everything that is reachable from $a$ is also reachable from $b$. Starting from a general abstract view of transition systems, we gradually add structure while refining our algorithms to more efficient versions. In the end, we obtain efficient imperative algorithms, which operate on a shared data structure to keep track of explored and yet-to-be-explored states, similar to the algorithms used in timed automata model checking [2, 1]. This entry forms part of the work described in a paper by the authors of this entry [4] and a PhD thesis [3].</div>
 
     <h3>License</h3>
@@ -145,10 +120,8 @@
       <h3>Related publications</h3>
       <ul>
         <li>Wimmer, S., & Lammich, P. (2018). Verified Model Checking of Timed Automata. Tools and Algorithms for the Construction and Analysis of Systems, 61–78. <a href="https://doi.org/10.1007/978-3-319-89960-2_4">https://doi.org/10.1007/978-3-319-89960-2_4</a>
-
-        </li>
-        <li>https://nbn-resolving.org/urn:nbn:de:bvb:91-diss-20201209-1576100-1-0
-        </li>
+</li>
+        <li>https://nbn-resolving.org/urn:nbn:de:bvb:91-diss-20201209-1576100-1-0</li>
       </ul>
       <h3>Session Worklist_Algorithms</h3>
       <ul>
@@ -174,20 +147,19 @@
       </ul>
 
     <div class="flex-wrap">
-      <div>
-        <h3>Depends on</h3>
-        <ul class="horizontal-list">
+        <div>
+          <h3>Depends on</h3>
+          <ul class="horizontal-list">
               <li><a href="../entries/Probabilistic_Timed_Automata.html">Probabilistic Timed Automata</a></li>
               <li><a href="../entries/Refine_Imperative_HOL.html">The Imperative Refinement Framework</a></li>
-        </ul>
-      </div>
-      </div>
-    
+          </ul>
+        </div>
+    </div>
   </main>
 
-  <nav class='links'>
-    <a class='popup-button' href="#cite-popup">Cite</a>
-    <a class='popup-button' href="#download-popup">Download</a>
+  <nav class="links">
+    <a class="popup-button" href="#cite-popup">Cite</a>
+    <a class="popup-button" href="#download-popup">Download</a>
     <h4>PDFs</h4>
     <a href="https://www.isa-afp.org/browser_info/current/AFP/Worklist_Algorithms/outline.pdf">Proof outline</a>
     <a href="https://www.isa-afp.org/browser_info/current/AFP/Worklist_Algorithms/document.pdf">Proof document</a>
@@ -221,11 +193,10 @@
     <div class="popup">
       <h2>Download</h2>
       <a class="close" href="#">&times;</a>
-      <a href="https://www.isa-afp.org/release/afp-Worklist_Algorithms-current.tar.gz"
-         download>Download latest</a>
+      <a href="https://www.isa-afp.org/release/afp-Worklist_Algorithms-current.tar.gz" download>
+        Download latest</a>
     </div>
   </div>
-        
       </div>
     </div>
   </body>

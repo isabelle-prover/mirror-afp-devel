@@ -1,16 +1,15 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Nicole Rauch</title>
     <link>https://isa-afp.org/authors/rauch/</link>
-    <description>AFP entries of Nicole Rauch</description>
-        <item>
-          <title>Jive Data and Store Model</title>
-          <link>https://isa-afp.org/entries/JiveDataStoreModel.html</link>
-          <pubDate>Mon, 20 Jun 2005 00:00:00 +0000</pubDate>
-          <description>Jive Data and Store Model in the AFP</description>
-            <category>Computer science/Programming languages/Misc</category>
-        </item>
+    <description>AFP entries of Nicole Rauch</description><item>
+  <title>Jive Data and Store Model</title>
+  <link>https://isa-afp.org/entries/JiveDataStoreModel.html</link>
+  <pubDate>Mon, 20 Jun 2005 00:00:00 +0000</pubDate>
+  <description>Jive Data and Store Model in the AFP</description>
+    <category>Computer science/Programming languages/Misc</category>
+</item>
 
   </channel>
 </rss>

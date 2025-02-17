@@ -1,47 +1,46 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Simon Foster</title>
     <link>https://isa-afp.org/authors/fosters/</link>
-    <description>AFP entries of Simon Foster</description>
-        <item>
-          <title>A Sound Type System for Physical Quantities, Units, and Measurements</title>
-          <link>https://isa-afp.org/entries/Physical_Quantities.html</link>
-          <pubDate>Tue, 20 Oct 2020 00:00:00 +0000</pubDate>
-          <description>A Sound Type System for Physical Quantities, Units, and Measurements in the AFP</description>
-            <category>Mathematics/Physics</category>
-            <category>Computer science/Programming languages/Type systems</category>
-        </item>
-        <item>
-          <title>Isabelle/UTP: Mechanised Theory Engineering for Unifying Theories of Programming</title>
-          <link>https://isa-afp.org/entries/UTP.html</link>
-          <pubDate>Fri, 01 Feb 2019 00:00:00 +0000</pubDate>
-          <description>Isabelle/UTP: Mechanised Theory Engineering for Unifying Theories of Programming in the AFP</description>
-            <category>Computer science/Programming languages/Logics</category>
-        </item>
-        <item>
-          <title>Optics</title>
-          <link>https://isa-afp.org/entries/Optics.html</link>
-          <pubDate>Thu, 25 May 2017 00:00:00 +0000</pubDate>
-          <description>Optics in the AFP</description>
-            <category>Computer science/Functional programming</category>
-            <category>Mathematics/Algebra</category>
-        </item>
-        <item>
-          <title>Regular Algebras</title>
-          <link>https://isa-afp.org/entries/Regular_Algebras.html</link>
-          <pubDate>Wed, 21 May 2014 00:00:00 +0000</pubDate>
-          <description>Regular Algebras in the AFP</description>
-            <category>Computer science/Automata and formal languages</category>
-            <category>Mathematics/Algebra</category>
-        </item>
-        <item>
-          <title>Relation Algebra</title>
-          <link>https://isa-afp.org/entries/Relation_Algebra.html</link>
-          <pubDate>Sat, 25 Jan 2014 00:00:00 +0000</pubDate>
-          <description>Relation Algebra in the AFP</description>
-            <category>Mathematics/Algebra</category>
-        </item>
+    <description>AFP entries of Simon Foster</description><item>
+  <title>A Sound Type System for Physical Quantities, Units, and Measurements</title>
+  <link>https://isa-afp.org/entries/Physical_Quantities.html</link>
+  <pubDate>Tue, 20 Oct 2020 00:00:00 +0000</pubDate>
+  <description>A Sound Type System for Physical Quantities, Units, and Measurements in the AFP</description>
+    <category>Mathematics/Physics</category>
+    <category>Computer science/Programming languages/Type systems</category>
+</item>
+<item>
+  <title>Isabelle/UTP: Mechanised Theory Engineering for Unifying Theories of Programming</title>
+  <link>https://isa-afp.org/entries/UTP.html</link>
+  <pubDate>Fri, 01 Feb 2019 00:00:00 +0000</pubDate>
+  <description>Isabelle/UTP: Mechanised Theory Engineering for Unifying Theories of Programming in the AFP</description>
+    <category>Computer science/Programming languages/Logics</category>
+</item>
+<item>
+  <title>Optics</title>
+  <link>https://isa-afp.org/entries/Optics.html</link>
+  <pubDate>Thu, 25 May 2017 00:00:00 +0000</pubDate>
+  <description>Optics in the AFP</description>
+    <category>Computer science/Functional programming</category>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Regular Algebras</title>
+  <link>https://isa-afp.org/entries/Regular_Algebras.html</link>
+  <pubDate>Wed, 21 May 2014 00:00:00 +0000</pubDate>
+  <description>Regular Algebras in the AFP</description>
+    <category>Computer science/Automata and formal languages</category>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Relation Algebra</title>
+  <link>https://isa-afp.org/entries/Relation_Algebra.html</link>
+  <pubDate>Sat, 25 Jan 2014 00:00:00 +0000</pubDate>
+  <description>Relation Algebra in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
 
   </channel>
 </rss>

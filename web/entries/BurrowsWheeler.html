@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
+<html lang="en"><head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -11,8 +10,7 @@
   <meta property="og:title" content="Formalised Burrows-Wheeler Transform" />
   <meta property="og:url" content="https://isa-afp.org/entries/BurrowsWheeler.html" />
   <meta property="og:image" content="https://isa-afp.org/images/afp.png" />
-  <meta property="og:type" content="article" />
-  
+    <meta property="og:type" content="article" />
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
 
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
@@ -20,11 +18,11 @@
     <script>
       MathJax = {
         tex: {
-          inlineMath: [['$', '$'], ['\\(', '\\)']]
+          inlineMath: [["$", "$"], ["\\(", "\\)"]]
         },
         processEscapes: true,
         svg: {
-          fontCache: 'global'
+          fontCache: "global"
         }
       };
     </script>
@@ -41,9 +39,8 @@
   <script src="../js/search-autocomplete.js"></script>
 </head>
 
-  <body class='mathjax_ignore'>
-    <aside>
-        <div id="menu-toggle">
+  <body class="mathjax_ignore">
+    <aside><div id="menu-toggle">
   <input id="toggle" type="checkbox" />
   <label for="toggle">
     <span>menu</span>
@@ -51,87 +48,65 @@
   </label>
 
   <a href="../" class="logo-link">
-    <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs"
-         class="logo">
+    <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
   </a>
 
   <nav id="menu">
     <div>
-      <a href="../" class='logo-link'>
-        <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs"
-             class="logo">
+      <a href="../" class="logo-link">
+        <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
       </a>
       <ul>
           <a href="../">
-            <li >
-              Home
-            </li>
+            <li >Home</li>
           </a>
           <a href="../topics/">
-            <li >
-              Topics
-            </li>
+            <li >Topics</li>
           </a>
           <a href="../download/">
-            <li >
-              Download
-            </li>
+            <li >Download</li>
           </a>
           <a href="../help/">
-            <li >
-              Help
-            </li>
+            <li >Help</li>
           </a>
           <a href="../submission/">
-            <li >
-              Submission
-            </li>
+            <li >Submission</li>
           </a>
           <a href="../statistics/">
-            <li >
-              Statistics
-            </li>
+            <li >Statistics</li>
           </a>
           <a href="../about/">
-            <li >
-              About
-            </li>
+            <li >About</li>
           </a>
       </ul>
     </div>
   </nav>
 </div>
     </aside>
-    <div class='content entries'>
-      <header>
+
+    <div class="content entries"><header>
     <form autocomplete="off" action="../search">
-      <div class='form-container'>
+      <div class="form-container">
         <input id="search-input" type="search" size="31" maxlength="255" value=""
-               aria-label="Search the AFP" list="autocomplete"><button
-               id="search-button" type="button">
-          <img src="../images/search.svg" alt="Search"/>
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="button">
+          <img src="../images/search.svg" alt="Search" />
         </button>
         <datalist id="autocomplete">
         </datalist>
       </div>
     </form>
-  <h1>
-    <span class='first'>F</span>ormalised <span class='first'>B</span>urrows-<span class='first'>W</span>heeler <span class='first'>T</span>ransform
-    
+  <h1 ><span class='first'>F</span>ormalised <span class='first'>B</span>urrows-<span class='first'>W</span>heeler <span class='first'>T</span>ransform
   </h1>
   <div>
-      <p>
-        <a href="../authors/cheung/">Louis Cheung</a> <a class="obfuscated" data="eyJ1c2VyIjpbImxvdWlzIiwiY2hldW5nIl0sImhvc3QiOlsic3R1ZGVudCIsInVuaW1lbGIiLCJlZHUiLCJhdSJdfQ==">📧</a> and <a href="../authors/rizkallah/">Christine Rizkallah</a> <a class="obfuscated" data="eyJ1c2VyIjpbImNocmlzdGluZSIsInJpemthbGxhaCJdLCJob3N0IjpbInVuaW1lbGIiLCJlZHUiLCJhdSJdfQ==">📧</a>
-
+      <p><a href="../authors/cheung/">Louis Cheung</a> <a class="obfuscated" data="eyJ1c2VyIjpbImxvdWlzIiwiY2hldW5nIl0sImhvc3QiOlsic3R1ZGVudCIsInVuaW1lbGIiLCJlZHUiLCJhdSJdfQ==">📧</a> and <a href="../authors/rizkallah/">Christine Rizkallah</a> <a class="obfuscated" data="eyJ1c2VyIjpbImNocmlzdGluZSIsInJpemthbGxhaCJdLCJob3N0IjpbInVuaW1lbGIiLCJlZHUiLCJhdSJdfQ==">📧</a>
       </p>
       <p class="date">January 17, 2025</p>
   </div>
 </header>
       <div>
-        
   <main>
-    <h3>Abstract</h3>
 
+    <h3>Abstract</h3>
     <div class="abstract mathjax_process">The Burrows-Wheeler transform (BWT) is an invertible lossless transformation that permutes input sequences into alternate sequences of the same length that frequently contain long localized regions that involve clusters consisting of just a few distinct symbols, and sometimes also include long runs of same-symbol repetitions. Moreover, there is a one-to-one correspondence between the BWT and suﬃx arrays. As a consequence, the BWT is widely used in data compression and as an indexing data structure for pattern search. In this formalization, we present the formal verification of both the BWT and its inverse, building on a formalization of suﬃx arrays.</div>
 
     <h3>License</h3>
@@ -144,16 +119,12 @@
       </ul>
       <h3>Related publications</h3>
       <ul>
-        <li>Cheung, L., &amp; Rizkallah, C. (2024). <i>Formalized Burrows-Wheeler Transform (Artefact)</i>. Zenodo. https://doi.org/10.5281/ZENODO.14279882
-        </li>
+        <li>Cheung, L., &amp; Rizkallah, C. (2024). <i>Formalized Burrows-Wheeler Transform (Artefact)</i>. Zenodo. https://doi.org/10.5281/ZENODO.14279882</li>
         <li>Cheung, L., Moffat, A., & Rizkallah, C. (2025). Formalized Burrows-Wheeler Transform. Proceedings of the 14th ACM SIGPLAN International Conference on Certified Programs and Proofs, 187–197. <a href="https://doi.org/10.1145/3703595.3705883">https://doi.org/10.1145/3703595.3705883</a>
-
-        </li>
+</li>
         <li>Ferragina, P., & Manzini, G. (n.d.). Opportunistic data structures with applications. Proceedings 41st Annual Symposium on Foundations of Computer Science, 390–398. https://doi.org/10.1109/sfcs.2000.892127
-
-        </li>
-        <li><a href=\"https://en.wikipedia.org/wiki/Burrows–Wheeler_transform\">Wikipedia</a>
-        </li>
+</li>
+        <li><a href=\"https://en.wikipedia.org/wiki/Burrows–Wheeler_transform\">Wikipedia</a></li>
       </ul>
       <h3>Session BurrowsWheeler</h3>
       <ul>
@@ -171,19 +142,18 @@
       </ul>
 
     <div class="flex-wrap">
-      <div>
-        <h3>Depends on</h3>
-        <ul class="horizontal-list">
+        <div>
+          <h3>Depends on</h3>
+          <ul class="horizontal-list">
               <li><a href="../entries/SuffixArray.html">Formally Verified Suffix Array Construction</a></li>
-        </ul>
-      </div>
-      </div>
-    
+          </ul>
+        </div>
+    </div>
   </main>
 
-  <nav class='links'>
-    <a class='popup-button' href="#cite-popup">Cite</a>
-    <a class='popup-button' href="#download-popup">Download</a>
+  <nav class="links">
+    <a class="popup-button" href="#cite-popup">Cite</a>
+    <a class="popup-button" href="#download-popup">Download</a>
     <h4>PDFs</h4>
     <a href="https://www.isa-afp.org/browser_info/current/AFP/BurrowsWheeler/outline.pdf">Proof outline</a>
     <a href="https://www.isa-afp.org/browser_info/current/AFP/BurrowsWheeler/document.pdf">Proof document</a>
@@ -217,11 +187,10 @@
     <div class="popup">
       <h2>Download</h2>
       <a class="close" href="#">&times;</a>
-      <a href="https://www.isa-afp.org/release/afp-BurrowsWheeler-current.tar.gz"
-         download>Download latest</a>
+      <a href="https://www.isa-afp.org/release/afp-BurrowsWheeler-current.tar.gz" download>
+        Download latest</a>
     </div>
   </div>
-        
       </div>
     </div>
   </body>

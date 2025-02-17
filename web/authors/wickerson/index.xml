@@ -1,23 +1,22 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>John Wickerson</title>
     <link>https://isa-afp.org/authors/wickerson/</link>
-    <description>AFP entries of John Wickerson</description>
-        <item>
-          <title>Syntax and semantics of a GPU kernel programming language</title>
-          <link>https://isa-afp.org/entries/GPU_Kernel_PL.html</link>
-          <pubDate>Thu, 03 Apr 2014 00:00:00 +0000</pubDate>
-          <description>Syntax and semantics of a GPU kernel programming language in the AFP</description>
-            <category>Computer science/Programming languages/Language definitions</category>
-        </item>
-        <item>
-          <title>Ribbon Proofs</title>
-          <link>https://isa-afp.org/entries/Ribbon_Proofs.html</link>
-          <pubDate>Sat, 19 Jan 2013 00:00:00 +0000</pubDate>
-          <description>Ribbon Proofs in the AFP</description>
-            <category>Computer science/Programming languages/Logics</category>
-        </item>
+    <description>AFP entries of John Wickerson</description><item>
+  <title>Syntax and semantics of a GPU kernel programming language</title>
+  <link>https://isa-afp.org/entries/GPU_Kernel_PL.html</link>
+  <pubDate>Thu, 03 Apr 2014 00:00:00 +0000</pubDate>
+  <description>Syntax and semantics of a GPU kernel programming language in the AFP</description>
+    <category>Computer science/Programming languages/Language definitions</category>
+</item>
+<item>
+  <title>Ribbon Proofs</title>
+  <link>https://isa-afp.org/entries/Ribbon_Proofs.html</link>
+  <pubDate>Sat, 19 Jan 2013 00:00:00 +0000</pubDate>
+  <description>Ribbon Proofs in the AFP</description>
+    <category>Computer science/Programming languages/Logics</category>
+</item>
 
   </channel>
 </rss>

@@ -1,31 +1,30 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Christoph Dittmann</title>
     <link>https://isa-afp.org/authors/dittmann/</link>
-    <description>AFP entries of Christoph Dittmann</description>
-        <item>
-          <title>Menger&#39;s Theorem</title>
-          <link>https://isa-afp.org/entries/Menger.html</link>
-          <pubDate>Sun, 26 Feb 2017 00:00:00 +0000</pubDate>
-          <description>Menger&#39;s Theorem in the AFP</description>
-            <category>Mathematics/Graph theory</category>
-        </item>
-        <item>
-          <title>Tree Decomposition</title>
-          <link>https://isa-afp.org/entries/Tree_Decomposition.html</link>
-          <pubDate>Tue, 31 May 2016 00:00:00 +0000</pubDate>
-          <description>Tree Decomposition in the AFP</description>
-            <category>Mathematics/Graph theory</category>
-        </item>
-        <item>
-          <title>Positional Determinacy of Parity Games</title>
-          <link>https://isa-afp.org/entries/Parity_Game.html</link>
-          <pubDate>Mon, 02 Nov 2015 00:00:00 +0000</pubDate>
-          <description>Positional Determinacy of Parity Games in the AFP</description>
-            <category>Mathematics/Games and economics</category>
-            <category>Mathematics/Graph theory</category>
-        </item>
+    <description>AFP entries of Christoph Dittmann</description><item>
+  <title>Menger&#39;s Theorem</title>
+  <link>https://isa-afp.org/entries/Menger.html</link>
+  <pubDate>Sun, 26 Feb 2017 00:00:00 +0000</pubDate>
+  <description>Menger&#39;s Theorem in the AFP</description>
+    <category>Mathematics/Graph theory</category>
+</item>
+<item>
+  <title>Tree Decomposition</title>
+  <link>https://isa-afp.org/entries/Tree_Decomposition.html</link>
+  <pubDate>Tue, 31 May 2016 00:00:00 +0000</pubDate>
+  <description>Tree Decomposition in the AFP</description>
+    <category>Mathematics/Graph theory</category>
+</item>
+<item>
+  <title>Positional Determinacy of Parity Games</title>
+  <link>https://isa-afp.org/entries/Parity_Game.html</link>
+  <pubDate>Mon, 02 Nov 2015 00:00:00 +0000</pubDate>
+  <description>Positional Determinacy of Parity Games in the AFP</description>
+    <category>Mathematics/Games and economics</category>
+    <category>Mathematics/Graph theory</category>
+</item>
 
   </channel>
 </rss>

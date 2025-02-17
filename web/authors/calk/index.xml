@@ -1,26 +1,25 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Cameron Calk</title>
     <link>https://isa-afp.org/authors/calk/</link>
-    <description>AFP entries of Cameron Calk</description>
-        <item>
-          <title>Higher Globular Catoids and Quantales</title>
-          <link>https://isa-afp.org/entries/OmegaCatoidsQuantales.html</link>
-          <pubDate>Wed, 24 Jan 2024 00:00:00 +0000</pubDate>
-          <description>Higher Globular Catoids and Quantales in the AFP</description>
-            <category>Mathematics/Category theory</category>
-            <category>Mathematics/Algebra</category>
-        </item>
-        <item>
-          <title>Modal quantales, involutive quantales, Dedekind Quantales</title>
-          <link>https://isa-afp.org/entries/Quantales_Converse.html</link>
-          <pubDate>Tue, 25 Jul 2023 00:00:00 +0000</pubDate>
-          <description>Modal quantales, involutive quantales, Dedekind Quantales in the AFP</description>
-            <category>Computer science/Semantics and reasoning</category>
-            <category>Mathematics/Algebra</category>
-            <category>Mathematics/Order</category>
-        </item>
+    <description>AFP entries of Cameron Calk</description><item>
+  <title>Higher Globular Catoids and Quantales</title>
+  <link>https://isa-afp.org/entries/OmegaCatoidsQuantales.html</link>
+  <pubDate>Wed, 24 Jan 2024 00:00:00 +0000</pubDate>
+  <description>Higher Globular Catoids and Quantales in the AFP</description>
+    <category>Mathematics/Category theory</category>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Modal quantales, involutive quantales, Dedekind Quantales</title>
+  <link>https://isa-afp.org/entries/Quantales_Converse.html</link>
+  <pubDate>Tue, 25 Jul 2023 00:00:00 +0000</pubDate>
+  <description>Modal quantales, involutive quantales, Dedekind Quantales in the AFP</description>
+    <category>Computer science/Semantics and reasoning</category>
+    <category>Mathematics/Algebra</category>
+    <category>Mathematics/Order</category>
+</item>
 
   </channel>
 </rss>

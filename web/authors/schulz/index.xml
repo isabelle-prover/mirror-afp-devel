@@ -1,25 +1,24 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Jakob Schulz</title>
     <link>https://isa-afp.org/authors/schulz/</link>
-    <description>AFP entries of Jakob Schulz</description>
-        <item>
-          <title>Schönhage-Strassen Multiplication</title>
-          <link>https://isa-afp.org/entries/Schoenhage_Strassen.html</link>
-          <pubDate>Fri, 10 May 2024 00:00:00 +0000</pubDate>
-          <description>Schönhage-Strassen Multiplication in the AFP</description>
-            <category>Computer science/Algorithms/Mathematical</category>
-            <category>Mathematics/Algebra</category>
-        </item>
-        <item>
-          <title>Karatsuba Multiplication on Integers</title>
-          <link>https://isa-afp.org/entries/Karatsuba.html</link>
-          <pubDate>Mon, 19 Feb 2024 00:00:00 +0000</pubDate>
-          <description>Karatsuba Multiplication on Integers in the AFP</description>
-            <category>Computer science/Algorithms</category>
-            <category>Computer science/Algorithms/Mathematical</category>
-        </item>
+    <description>AFP entries of Jakob Schulz</description><item>
+  <title>Schönhage-Strassen Multiplication</title>
+  <link>https://isa-afp.org/entries/Schoenhage_Strassen.html</link>
+  <pubDate>Fri, 10 May 2024 00:00:00 +0000</pubDate>
+  <description>Schönhage-Strassen Multiplication in the AFP</description>
+    <category>Computer science/Algorithms/Mathematical</category>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Karatsuba Multiplication on Integers</title>
+  <link>https://isa-afp.org/entries/Karatsuba.html</link>
+  <pubDate>Mon, 19 Feb 2024 00:00:00 +0000</pubDate>
+  <description>Karatsuba Multiplication on Integers in the AFP</description>
+    <category>Computer science/Algorithms</category>
+    <category>Computer science/Algorithms/Mathematical</category>
+</item>
 
   </channel>
 </rss>

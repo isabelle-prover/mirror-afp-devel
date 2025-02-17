@@ -1,17 +1,16 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Jake Palmer</title>
     <link>https://isa-afp.org/authors/palmer/</link>
-    <description>AFP entries of Jake Palmer</description>
-        <item>
-          <title>Schutz&#39; Independent Axioms for Minkowski Spacetime</title>
-          <link>https://isa-afp.org/entries/Schutz_Spacetime.html</link>
-          <pubDate>Tue, 27 Jul 2021 00:00:00 +0000</pubDate>
-          <description>Schutz&#39; Independent Axioms for Minkowski Spacetime in the AFP</description>
-            <category>Mathematics/Physics</category>
-            <category>Mathematics/Geometry</category>
-        </item>
+    <description>AFP entries of Jake Palmer</description><item>
+  <title>Schutz&#39; Independent Axioms for Minkowski Spacetime</title>
+  <link>https://isa-afp.org/entries/Schutz_Spacetime.html</link>
+  <pubDate>Tue, 27 Jul 2021 00:00:00 +0000</pubDate>
+  <description>Schutz&#39; Independent Axioms for Minkowski Spacetime in the AFP</description>
+    <category>Mathematics/Physics</category>
+    <category>Mathematics/Geometry</category>
+</item>
 
   </channel>
 </rss>

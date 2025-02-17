@@ -1,17 +1,16 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Tobias Klenze</title>
     <link>https://isa-afp.org/authors/klenze/</link>
-    <description>AFP entries of Tobias Klenze</description>
-        <item>
-          <title>IsaNet: Formalization of a Verification Framework for Secure Data Plane Protocols</title>
-          <link>https://isa-afp.org/entries/IsaNet.html</link>
-          <pubDate>Wed, 08 Jun 2022 00:00:00 +0000</pubDate>
-          <description>IsaNet: Formalization of a Verification Framework for Secure Data Plane Protocols in the AFP</description>
-            <category>Computer science/Security</category>
-            <category>Computer science/Networks</category>
-        </item>
+    <description>AFP entries of Tobias Klenze</description><item>
+  <title>IsaNet: Formalization of a Verification Framework for Secure Data Plane Protocols</title>
+  <link>https://isa-afp.org/entries/IsaNet.html</link>
+  <pubDate>Wed, 08 Jun 2022 00:00:00 +0000</pubDate>
+  <description>IsaNet: Formalization of a Verification Framework for Secure Data Plane Protocols in the AFP</description>
+    <category>Computer science/Security</category>
+    <category>Computer science/Networks</category>
+</item>
 
   </channel>
 </rss>

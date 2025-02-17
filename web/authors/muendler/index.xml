@@ -1,17 +1,16 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Niels Mündler</title>
     <link>https://isa-afp.org/authors/muendler/</link>
-    <description>AFP entries of Niels Mündler</description>
-        <item>
-          <title>A Verified Imperative Implementation of B-Trees</title>
-          <link>https://isa-afp.org/entries/BTree.html</link>
-          <pubDate>Wed, 24 Feb 2021 00:00:00 +0000</pubDate>
-          <description>A Verified Imperative Implementation of B-Trees in the AFP</description>
-            <category>Computer science/Data management systems</category>
-            <category>Computer science/Data structures</category>
-        </item>
+    <description>AFP entries of Niels Mündler</description><item>
+  <title>A Verified Imperative Implementation of B-Trees</title>
+  <link>https://isa-afp.org/entries/BTree.html</link>
+  <pubDate>Wed, 24 Feb 2021 00:00:00 +0000</pubDate>
+  <description>A Verified Imperative Implementation of B-Trees in the AFP</description>
+    <category>Computer science/Data management systems</category>
+    <category>Computer science/Data structures</category>
+</item>
 
   </channel>
 </rss>

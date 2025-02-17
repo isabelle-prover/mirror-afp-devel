@@ -1,197 +1,196 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Computer science/Functional programming</title>
     <link>https://isa-afp.org/topics/computer-science/functional-programming/</link>
-    <description>AFP entries in Functional programming</description>
-         <item>
-          <title>More Operations on Lazy Lists</title>
-          <link>https://isa-afp.org/entries/More_LazyLists.html</link>
-          <pubDate>Fri, 24 May 2024 00:00:00 +0000</pubDate>
-          <description>More Operations on Lazy Lists in the AFP</description>
-            <category>Computer science/Functional programming</category>
-        </item>
-        <item>
-          <title>Putting the `K&#39; into Bird&#39;s derivation of Knuth-Morris-Pratt string matching</title>
-          <link>https://isa-afp.org/entries/BirdKMP.html</link>
-          <pubDate>Tue, 25 Aug 2020 00:00:00 +0000</pubDate>
-          <description>Putting the `K&#39; into Bird&#39;s derivation of Knuth-Morris-Pratt string matching in the AFP</description>
-            <category>Computer science/Functional programming</category>
-        </item>
-        <item>
-          <title>Hello World</title>
-          <link>https://isa-afp.org/entries/Hello_World.html</link>
-          <pubDate>Sat, 07 Mar 2020 00:00:00 +0000</pubDate>
-          <description>Hello World in the AFP</description>
-            <category>Computer science/Functional programming</category>
-        </item>
-        <item>
-          <title>An Efficient Generalization of Counting Sort for Large, possibly Infinite Key Ranges</title>
-          <link>https://isa-afp.org/entries/Generalized_Counting_Sort.html</link>
-          <pubDate>Wed, 04 Dec 2019 00:00:00 +0000</pubDate>
-          <description>An Efficient Generalization of Counting Sort for Large, possibly Infinite Key Ranges in the AFP</description>
-            <category>Computer science/Algorithms</category>
-            <category>Computer science/Functional programming</category>
-        </item>
-        <item>
-          <title>A General Theory of Syntax with Bindings</title>
-          <link>https://isa-afp.org/entries/Binding_Syntax_Theory.html</link>
-          <pubDate>Sat, 06 Apr 2019 00:00:00 +0000</pubDate>
-          <description>A General Theory of Syntax with Bindings in the AFP</description>
-            <category>Computer science/Programming languages/Lambda calculi</category>
-            <category>Computer science/Functional programming</category>
-            <category>Logic/General logic/Mechanization of proofs</category>
-        </item>
-        <item>
-          <title>Monadification, Memoization and Dynamic Programming</title>
-          <link>https://isa-afp.org/entries/Monad_Memo_DP.html</link>
-          <pubDate>Tue, 22 May 2018 00:00:00 +0000</pubDate>
-          <description>Monadification, Memoization and Dynamic Programming in the AFP</description>
-            <category>Computer science/Algorithms</category>
-            <category>Computer science/Functional programming</category>
-        </item>
-        <item>
-          <title>Bounded Natural Functors with Covariance and Contravariance</title>
-          <link>https://isa-afp.org/entries/BNF_CC.html</link>
-          <pubDate>Tue, 24 Apr 2018 00:00:00 +0000</pubDate>
-          <description>Bounded Natural Functors with Covariance and Contravariance in the AFP</description>
-            <category>Computer science/Functional programming</category>
-            <category>Tools</category>
-        </item>
-        <item>
-          <title>HOLCF-Prelude</title>
-          <link>https://isa-afp.org/entries/HOLCF-Prelude.html</link>
-          <pubDate>Sat, 15 Jul 2017 00:00:00 +0000</pubDate>
-          <description>HOLCF-Prelude in the AFP</description>
-            <category>Computer science/Functional programming</category>
-        </item>
-        <item>
-          <title>Optics</title>
-          <link>https://isa-afp.org/entries/Optics.html</link>
-          <pubDate>Thu, 25 May 2017 00:00:00 +0000</pubDate>
-          <description>Optics in the AFP</description>
-            <category>Computer science/Functional programming</category>
-            <category>Mathematics/Algebra</category>
-        </item>
-        <item>
-          <title>Probabilistic while loop</title>
-          <link>https://isa-afp.org/entries/Probabilistic_While.html</link>
-          <pubDate>Fri, 05 May 2017 00:00:00 +0000</pubDate>
-          <description>Probabilistic while loop in the AFP</description>
-            <category>Computer science/Functional programming</category>
-            <category>Mathematics/Probability theory</category>
-            <category>Computer science/Algorithms/Randomized</category>
-        </item>
-        <item>
-          <title>Effect polymorphism in higher-order logic</title>
-          <link>https://isa-afp.org/entries/Monomorphic_Monad.html</link>
-          <pubDate>Fri, 05 May 2017 00:00:00 +0000</pubDate>
-          <description>Effect polymorphism in higher-order logic in the AFP</description>
-            <category>Computer science/Functional programming</category>
-        </item>
-        <item>
-          <title>Monad normalisation</title>
-          <link>https://isa-afp.org/entries/Monad_Normalisation.html</link>
-          <pubDate>Fri, 05 May 2017 00:00:00 +0000</pubDate>
-          <description>Monad normalisation in the AFP</description>
-            <category>Tools</category>
-            <category>Computer science/Functional programming</category>
-            <category>Logic/Rewriting</category>
-        </item>
-        <item>
-          <title>CryptHOL</title>
-          <link>https://isa-afp.org/entries/CryptHOL.html</link>
-          <pubDate>Fri, 05 May 2017 00:00:00 +0000</pubDate>
-          <description>CryptHOL in the AFP</description>
-            <category>Computer science/Security/Cryptography</category>
-            <category>Computer science/Functional programming</category>
-            <category>Mathematics/Probability theory</category>
-        </item>
-        <item>
-          <title>Applicative Lifting</title>
-          <link>https://isa-afp.org/entries/Applicative_Lifting.html</link>
-          <pubDate>Tue, 22 Dec 2015 00:00:00 +0000</pubDate>
-          <description>Applicative Lifting in the AFP</description>
-            <category>Computer science/Functional programming</category>
-        </item>
-        <item>
-          <title>Lifting Definition Option</title>
-          <link>https://isa-afp.org/entries/Lifting_Definition_Option.html</link>
-          <pubDate>Mon, 13 Oct 2014 00:00:00 +0000</pubDate>
-          <description>Lifting Definition Option in the AFP</description>
-            <category>Computer science/Functional programming</category>
-        </item>
-        <item>
-          <title>Stream Fusion in HOL with Code Generation</title>
-          <link>https://isa-afp.org/entries/Stream_Fusion_Code.html</link>
-          <pubDate>Fri, 10 Oct 2014 00:00:00 +0000</pubDate>
-          <description>Stream Fusion in HOL with Code Generation in the AFP</description>
-            <category>Computer science/Functional programming</category>
-        </item>
-        <item>
-          <title>XML</title>
-          <link>https://isa-afp.org/entries/XML.html</link>
-          <pubDate>Fri, 03 Oct 2014 00:00:00 +0000</pubDate>
-          <description>XML in the AFP</description>
-            <category>Computer science/Functional programming</category>
-            <category>Computer science/Data structures</category>
-        </item>
-        <item>
-          <title>Certification Monads</title>
-          <link>https://isa-afp.org/entries/Certification_Monads.html</link>
-          <pubDate>Fri, 03 Oct 2014 00:00:00 +0000</pubDate>
-          <description>Certification Monads in the AFP</description>
-            <category>Computer science/Functional programming</category>
-        </item>
-        <item>
-          <title>Haskell&#39;s Show Class in Isabelle/HOL</title>
-          <link>https://isa-afp.org/entries/Show.html</link>
-          <pubDate>Tue, 29 Jul 2014 00:00:00 +0000</pubDate>
-          <description>Haskell&#39;s Show Class in Isabelle/HOL in the AFP</description>
-            <category>Computer science/Functional programming</category>
-        </item>
-        <item>
-          <title>Mutually Recursive Partial Functions</title>
-          <link>https://isa-afp.org/entries/Partial_Function_MR.html</link>
-          <pubDate>Tue, 18 Feb 2014 00:00:00 +0000</pubDate>
-          <description>Mutually Recursive Partial Functions in the AFP</description>
-            <category>Computer science/Functional programming</category>
-        </item>
-        <item>
-          <title>A General Method for the Proof of Theorems on Tail-recursive Functions</title>
-          <link>https://isa-afp.org/entries/Tail_Recursive_Functions.html</link>
-          <pubDate>Sun, 01 Dec 2013 00:00:00 +0000</pubDate>
-          <description>A General Method for the Proof of Theorems on Tail-recursive Functions in the AFP</description>
-            <category>Computer science/Functional programming</category>
-        </item>
-        <item>
-          <title>Type Constructor Classes and Monad Transformers</title>
-          <link>https://isa-afp.org/entries/Tycon.html</link>
-          <pubDate>Tue, 26 Jun 2012 00:00:00 +0000</pubDate>
-          <description>Type Constructor Classes and Monad Transformers in the AFP</description>
-            <category>Computer science/Functional programming</category>
-        </item>
-        <item>
-          <title>Coinductive</title>
-          <link>https://isa-afp.org/entries/Coinductive.html</link>
-          <pubDate>Fri, 12 Feb 2010 00:00:00 +0000</pubDate>
-          <description>Coinductive in the AFP</description>
-            <category>Computer science/Functional programming</category>
-        </item>
-        <item>
-          <title>The Worker/Wrapper Transformation</title>
-          <link>https://isa-afp.org/entries/WorkerWrapper.html</link>
-          <pubDate>Fri, 30 Oct 2009 00:00:00 +0000</pubDate>
-          <description>The Worker/Wrapper Transformation in the AFP</description>
-            <category>Computer science/Functional programming</category>
-        </item>
-        <item>
-          <title>Stream Fusion</title>
-          <link>https://isa-afp.org/entries/Stream-Fusion.html</link>
-          <pubDate>Wed, 29 Apr 2009 00:00:00 +0000</pubDate>
-          <description>Stream Fusion in the AFP</description>
-            <category>Computer science/Functional programming</category>
-        </item>
+    <description>AFP entries in Functional programming</description><item>
+  <title>More Operations on Lazy Lists</title>
+  <link>https://isa-afp.org/entries/More_LazyLists.html</link>
+  <pubDate>Fri, 24 May 2024 00:00:00 +0000</pubDate>
+  <description>More Operations on Lazy Lists in the AFP</description>
+    <category>Computer science/Functional programming</category>
+</item>
+<item>
+  <title>Putting the `K&#39; into Bird&#39;s derivation of Knuth-Morris-Pratt string matching</title>
+  <link>https://isa-afp.org/entries/BirdKMP.html</link>
+  <pubDate>Tue, 25 Aug 2020 00:00:00 +0000</pubDate>
+  <description>Putting the `K&#39; into Bird&#39;s derivation of Knuth-Morris-Pratt string matching in the AFP</description>
+    <category>Computer science/Functional programming</category>
+</item>
+<item>
+  <title>Hello World</title>
+  <link>https://isa-afp.org/entries/Hello_World.html</link>
+  <pubDate>Sat, 07 Mar 2020 00:00:00 +0000</pubDate>
+  <description>Hello World in the AFP</description>
+    <category>Computer science/Functional programming</category>
+</item>
+<item>
+  <title>An Efficient Generalization of Counting Sort for Large, possibly Infinite Key Ranges</title>
+  <link>https://isa-afp.org/entries/Generalized_Counting_Sort.html</link>
+  <pubDate>Wed, 04 Dec 2019 00:00:00 +0000</pubDate>
+  <description>An Efficient Generalization of Counting Sort for Large, possibly Infinite Key Ranges in the AFP</description>
+    <category>Computer science/Algorithms</category>
+    <category>Computer science/Functional programming</category>
+</item>
+<item>
+  <title>A General Theory of Syntax with Bindings</title>
+  <link>https://isa-afp.org/entries/Binding_Syntax_Theory.html</link>
+  <pubDate>Sat, 06 Apr 2019 00:00:00 +0000</pubDate>
+  <description>A General Theory of Syntax with Bindings in the AFP</description>
+    <category>Computer science/Programming languages/Lambda calculi</category>
+    <category>Computer science/Functional programming</category>
+    <category>Logic/General logic/Mechanization of proofs</category>
+</item>
+<item>
+  <title>Monadification, Memoization and Dynamic Programming</title>
+  <link>https://isa-afp.org/entries/Monad_Memo_DP.html</link>
+  <pubDate>Tue, 22 May 2018 00:00:00 +0000</pubDate>
+  <description>Monadification, Memoization and Dynamic Programming in the AFP</description>
+    <category>Computer science/Algorithms</category>
+    <category>Computer science/Functional programming</category>
+</item>
+<item>
+  <title>Bounded Natural Functors with Covariance and Contravariance</title>
+  <link>https://isa-afp.org/entries/BNF_CC.html</link>
+  <pubDate>Tue, 24 Apr 2018 00:00:00 +0000</pubDate>
+  <description>Bounded Natural Functors with Covariance and Contravariance in the AFP</description>
+    <category>Computer science/Functional programming</category>
+    <category>Tools</category>
+</item>
+<item>
+  <title>HOLCF-Prelude</title>
+  <link>https://isa-afp.org/entries/HOLCF-Prelude.html</link>
+  <pubDate>Sat, 15 Jul 2017 00:00:00 +0000</pubDate>
+  <description>HOLCF-Prelude in the AFP</description>
+    <category>Computer science/Functional programming</category>
+</item>
+<item>
+  <title>Optics</title>
+  <link>https://isa-afp.org/entries/Optics.html</link>
+  <pubDate>Thu, 25 May 2017 00:00:00 +0000</pubDate>
+  <description>Optics in the AFP</description>
+    <category>Computer science/Functional programming</category>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Probabilistic while loop</title>
+  <link>https://isa-afp.org/entries/Probabilistic_While.html</link>
+  <pubDate>Fri, 05 May 2017 00:00:00 +0000</pubDate>
+  <description>Probabilistic while loop in the AFP</description>
+    <category>Computer science/Functional programming</category>
+    <category>Mathematics/Probability theory</category>
+    <category>Computer science/Algorithms/Randomized</category>
+</item>
+<item>
+  <title>Effect polymorphism in higher-order logic</title>
+  <link>https://isa-afp.org/entries/Monomorphic_Monad.html</link>
+  <pubDate>Fri, 05 May 2017 00:00:00 +0000</pubDate>
+  <description>Effect polymorphism in higher-order logic in the AFP</description>
+    <category>Computer science/Functional programming</category>
+</item>
+<item>
+  <title>Monad normalisation</title>
+  <link>https://isa-afp.org/entries/Monad_Normalisation.html</link>
+  <pubDate>Fri, 05 May 2017 00:00:00 +0000</pubDate>
+  <description>Monad normalisation in the AFP</description>
+    <category>Tools</category>
+    <category>Computer science/Functional programming</category>
+    <category>Logic/Rewriting</category>
+</item>
+<item>
+  <title>CryptHOL</title>
+  <link>https://isa-afp.org/entries/CryptHOL.html</link>
+  <pubDate>Fri, 05 May 2017 00:00:00 +0000</pubDate>
+  <description>CryptHOL in the AFP</description>
+    <category>Computer science/Security/Cryptography</category>
+    <category>Computer science/Functional programming</category>
+    <category>Mathematics/Probability theory</category>
+</item>
+<item>
+  <title>Applicative Lifting</title>
+  <link>https://isa-afp.org/entries/Applicative_Lifting.html</link>
+  <pubDate>Tue, 22 Dec 2015 00:00:00 +0000</pubDate>
+  <description>Applicative Lifting in the AFP</description>
+    <category>Computer science/Functional programming</category>
+</item>
+<item>
+  <title>Lifting Definition Option</title>
+  <link>https://isa-afp.org/entries/Lifting_Definition_Option.html</link>
+  <pubDate>Mon, 13 Oct 2014 00:00:00 +0000</pubDate>
+  <description>Lifting Definition Option in the AFP</description>
+    <category>Computer science/Functional programming</category>
+</item>
+<item>
+  <title>Stream Fusion in HOL with Code Generation</title>
+  <link>https://isa-afp.org/entries/Stream_Fusion_Code.html</link>
+  <pubDate>Fri, 10 Oct 2014 00:00:00 +0000</pubDate>
+  <description>Stream Fusion in HOL with Code Generation in the AFP</description>
+    <category>Computer science/Functional programming</category>
+</item>
+<item>
+  <title>XML</title>
+  <link>https://isa-afp.org/entries/XML.html</link>
+  <pubDate>Fri, 03 Oct 2014 00:00:00 +0000</pubDate>
+  <description>XML in the AFP</description>
+    <category>Computer science/Functional programming</category>
+    <category>Computer science/Data structures</category>
+</item>
+<item>
+  <title>Certification Monads</title>
+  <link>https://isa-afp.org/entries/Certification_Monads.html</link>
+  <pubDate>Fri, 03 Oct 2014 00:00:00 +0000</pubDate>
+  <description>Certification Monads in the AFP</description>
+    <category>Computer science/Functional programming</category>
+</item>
+<item>
+  <title>Haskell&#39;s Show Class in Isabelle/HOL</title>
+  <link>https://isa-afp.org/entries/Show.html</link>
+  <pubDate>Tue, 29 Jul 2014 00:00:00 +0000</pubDate>
+  <description>Haskell&#39;s Show Class in Isabelle/HOL in the AFP</description>
+    <category>Computer science/Functional programming</category>
+</item>
+<item>
+  <title>Mutually Recursive Partial Functions</title>
+  <link>https://isa-afp.org/entries/Partial_Function_MR.html</link>
+  <pubDate>Tue, 18 Feb 2014 00:00:00 +0000</pubDate>
+  <description>Mutually Recursive Partial Functions in the AFP</description>
+    <category>Computer science/Functional programming</category>
+</item>
+<item>
+  <title>A General Method for the Proof of Theorems on Tail-recursive Functions</title>
+  <link>https://isa-afp.org/entries/Tail_Recursive_Functions.html</link>
+  <pubDate>Sun, 01 Dec 2013 00:00:00 +0000</pubDate>
+  <description>A General Method for the Proof of Theorems on Tail-recursive Functions in the AFP</description>
+    <category>Computer science/Functional programming</category>
+</item>
+<item>
+  <title>Type Constructor Classes and Monad Transformers</title>
+  <link>https://isa-afp.org/entries/Tycon.html</link>
+  <pubDate>Tue, 26 Jun 2012 00:00:00 +0000</pubDate>
+  <description>Type Constructor Classes and Monad Transformers in the AFP</description>
+    <category>Computer science/Functional programming</category>
+</item>
+<item>
+  <title>Coinductive</title>
+  <link>https://isa-afp.org/entries/Coinductive.html</link>
+  <pubDate>Fri, 12 Feb 2010 00:00:00 +0000</pubDate>
+  <description>Coinductive in the AFP</description>
+    <category>Computer science/Functional programming</category>
+</item>
+<item>
+  <title>The Worker/Wrapper Transformation</title>
+  <link>https://isa-afp.org/entries/WorkerWrapper.html</link>
+  <pubDate>Fri, 30 Oct 2009 00:00:00 +0000</pubDate>
+  <description>The Worker/Wrapper Transformation in the AFP</description>
+    <category>Computer science/Functional programming</category>
+</item>
+<item>
+  <title>Stream Fusion</title>
+  <link>https://isa-afp.org/entries/Stream-Fusion.html</link>
+  <pubDate>Wed, 29 Apr 2009 00:00:00 +0000</pubDate>
+  <description>Stream Fusion in the AFP</description>
+    <category>Computer science/Functional programming</category>
+</item>
 
   </channel>
 </rss>

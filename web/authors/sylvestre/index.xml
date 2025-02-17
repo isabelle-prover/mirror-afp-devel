@@ -1,24 +1,23 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Jeremy Sylvestre</title>
     <link>https://isa-afp.org/authors/sylvestre/</link>
-    <description>AFP entries of Jeremy Sylvestre</description>
-        <item>
-          <title>Chamber Complexes, Coxeter Systems, and Buildings</title>
-          <link>https://isa-afp.org/entries/Buildings.html</link>
-          <pubDate>Fri, 01 Jul 2016 00:00:00 +0000</pubDate>
-          <description>Chamber Complexes, Coxeter Systems, and Buildings in the AFP</description>
-            <category>Mathematics/Algebra</category>
-            <category>Mathematics/Geometry</category>
-        </item>
-        <item>
-          <title>Representations of Finite Groups</title>
-          <link>https://isa-afp.org/entries/Rep_Fin_Groups.html</link>
-          <pubDate>Wed, 12 Aug 2015 00:00:00 +0000</pubDate>
-          <description>Representations of Finite Groups in the AFP</description>
-            <category>Mathematics/Algebra</category>
-        </item>
+    <description>AFP entries of Jeremy Sylvestre</description><item>
+  <title>Chamber Complexes, Coxeter Systems, and Buildings</title>
+  <link>https://isa-afp.org/entries/Buildings.html</link>
+  <pubDate>Fri, 01 Jul 2016 00:00:00 +0000</pubDate>
+  <description>Chamber Complexes, Coxeter Systems, and Buildings in the AFP</description>
+    <category>Mathematics/Algebra</category>
+    <category>Mathematics/Geometry</category>
+</item>
+<item>
+  <title>Representations of Finite Groups</title>
+  <link>https://isa-afp.org/entries/Rep_Fin_Groups.html</link>
+  <pubDate>Wed, 12 Aug 2015 00:00:00 +0000</pubDate>
+  <description>Representations of Finite Groups in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
 
   </channel>
 </rss>

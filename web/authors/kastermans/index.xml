@@ -1,16 +1,15 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Bart Kastermans</title>
     <link>https://isa-afp.org/authors/kastermans/</link>
-    <description>AFP entries of Bart Kastermans</description>
-        <item>
-          <title>An Example of a Cofinitary Group in Isabelle/HOL</title>
-          <link>https://isa-afp.org/entries/CofGroups.html</link>
-          <pubDate>Tue, 04 Aug 2009 00:00:00 +0000</pubDate>
-          <description>An Example of a Cofinitary Group in Isabelle/HOL in the AFP</description>
-            <category>Mathematics/Algebra</category>
-        </item>
+    <description>AFP entries of Bart Kastermans</description><item>
+  <title>An Example of a Cofinitary Group in Isabelle/HOL</title>
+  <link>https://isa-afp.org/entries/CofGroups.html</link>
+  <pubDate>Tue, 04 Aug 2009 00:00:00 +0000</pubDate>
+  <description>An Example of a Cofinitary Group in Isabelle/HOL in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
 
   </channel>
 </rss>

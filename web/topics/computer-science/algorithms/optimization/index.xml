@@ -1,16 +1,15 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Computer science/Algorithms/Optimization</title>
     <link>https://isa-afp.org/topics/computer-science/algorithms/optimization/</link>
-    <description>AFP entries in Optimization</description>
-         <item>
-          <title>An Incremental Simplex Algorithm with Unsatisfiable Core Generation</title>
-          <link>https://isa-afp.org/entries/Simplex.html</link>
-          <pubDate>Fri, 24 Aug 2018 00:00:00 +0000</pubDate>
-          <description>An Incremental Simplex Algorithm with Unsatisfiable Core Generation in the AFP</description>
-            <category>Computer science/Algorithms/Optimization</category>
-        </item>
+    <description>AFP entries in Optimization</description><item>
+  <title>An Incremental Simplex Algorithm with Unsatisfiable Core Generation</title>
+  <link>https://isa-afp.org/entries/Simplex.html</link>
+  <pubDate>Fri, 24 Aug 2018 00:00:00 +0000</pubDate>
+  <description>An Incremental Simplex Algorithm with Unsatisfiable Core Generation in the AFP</description>
+    <category>Computer science/Algorithms/Optimization</category>
+</item>
 
   </channel>
 </rss>

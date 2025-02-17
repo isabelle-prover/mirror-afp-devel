@@ -1,16 +1,15 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Klaus Aehlig</title>
     <link>https://isa-afp.org/authors/aehlig/</link>
-    <description>AFP entries of Klaus Aehlig</description>
-        <item>
-          <title>Normalization by Evaluation</title>
-          <link>https://isa-afp.org/entries/NormByEval.html</link>
-          <pubDate>Mon, 18 Feb 2008 00:00:00 +0000</pubDate>
-          <description>Normalization by Evaluation in the AFP</description>
-            <category>Computer science/Programming languages/Compiling</category>
-        </item>
+    <description>AFP entries of Klaus Aehlig</description><item>
+  <title>Normalization by Evaluation</title>
+  <link>https://isa-afp.org/entries/NormByEval.html</link>
+  <pubDate>Mon, 18 Feb 2008 00:00:00 +0000</pubDate>
+  <description>Normalization by Evaluation in the AFP</description>
+    <category>Computer science/Programming languages/Compiling</category>
+</item>
 
   </channel>
 </rss>

@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
+<html lang="en"><head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -11,8 +10,7 @@
   <meta property="og:title" content="Coupled Similarity and Contrasimilarity, and How to Compute Them" />
   <meta property="og:url" content="https://isa-afp.org/entries/Coupledsim_Contrasim.html" />
   <meta property="og:image" content="https://isa-afp.org/images/afp.png" />
-  <meta property="og:type" content="article" />
-  
+    <meta property="og:type" content="article" />
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
 
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
@@ -20,11 +18,11 @@
     <script>
       MathJax = {
         tex: {
-          inlineMath: [['$', '$'], ['\\(', '\\)']]
+          inlineMath: [["$", "$"], ["\\(", "\\)"]]
         },
         processEscapes: true,
         svg: {
-          fontCache: 'global'
+          fontCache: "global"
         }
       };
     </script>
@@ -41,9 +39,8 @@
   <script src="../js/search-autocomplete.js"></script>
 </head>
 
-  <body class='mathjax_ignore'>
-    <aside>
-        <div id="menu-toggle">
+  <body class="mathjax_ignore">
+    <aside><div id="menu-toggle">
   <input id="toggle" type="checkbox" />
   <label for="toggle">
     <span>menu</span>
@@ -51,87 +48,65 @@
   </label>
 
   <a href="../" class="logo-link">
-    <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs"
-         class="logo">
+    <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
   </a>
 
   <nav id="menu">
     <div>
-      <a href="../" class='logo-link'>
-        <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs"
-             class="logo">
+      <a href="../" class="logo-link">
+        <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
       </a>
       <ul>
           <a href="../">
-            <li >
-              Home
-            </li>
+            <li >Home</li>
           </a>
           <a href="../topics/">
-            <li >
-              Topics
-            </li>
+            <li >Topics</li>
           </a>
           <a href="../download/">
-            <li >
-              Download
-            </li>
+            <li >Download</li>
           </a>
           <a href="../help/">
-            <li >
-              Help
-            </li>
+            <li >Help</li>
           </a>
           <a href="../submission/">
-            <li >
-              Submission
-            </li>
+            <li >Submission</li>
           </a>
           <a href="../statistics/">
-            <li >
-              Statistics
-            </li>
+            <li >Statistics</li>
           </a>
           <a href="../about/">
-            <li >
-              About
-            </li>
+            <li >About</li>
           </a>
       </ul>
     </div>
   </nav>
 </div>
     </aside>
-    <div class='content entries'>
-      <header>
+
+    <div class="content entries"><header>
     <form autocomplete="off" action="../search">
-      <div class='form-container'>
+      <div class="form-container">
         <input id="search-input" type="search" size="31" maxlength="255" value=""
-               aria-label="Search the AFP" list="autocomplete"><button
-               id="search-button" type="button">
-          <img src="../images/search.svg" alt="Search"/>
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="button">
+          <img src="../images/search.svg" alt="Search" />
         </button>
         <datalist id="autocomplete">
         </datalist>
       </div>
     </form>
-  <h1>
-    <span class='first'>C</span>oupled <span class='first'>S</span>imilarity and <span class='first'>C</span>ontrasimilarity, and <span class='first'>H</span>ow to <span class='first'>C</span>ompute <span class='first'>T</span>hem
-    
+  <h1 ><span class='first'>C</span>oupled <span class='first'>S</span>imilarity and <span class='first'>C</span>ontrasimilarity, and <span class='first'>H</span>ow to <span class='first'>C</span>ompute <span class='first'>T</span>hem
   </h1>
   <div>
-      <p>
-        <a href="../authors/bisping/">Benjamin Bisping</a> <a href="https://bbisping.de">🌐</a> and <a href="../authors/montanari/">Luisa Montanari</a>
-
+      <p><a href="../authors/bisping/">Benjamin Bisping</a> <a href="https://bbisping.de">🌐</a> and <a href="../authors/montanari/">Luisa Montanari</a>
       </p>
       <p class="date">August 18, 2023</p>
   </div>
 </header>
       <div>
-        
   <main>
-    <h3>Abstract</h3>
 
+    <h3>Abstract</h3>
     <div class="abstract mathjax_process"><p>We survey and extend characterizations of <em>coupled similarity</em> and <em>contrasimilarity</em> and prove properties relevant for algorithms computing their simulation preorders and equivalences.</p>
 
 <p>Coupled similarity and contrasimilarity are two weak forms of bisimilarity for systems with internal behavior. They have outstanding applications in contexts where internal choices must transparently be distributed in time or space, for example, in process calculi encodings or in action refinements.</p>
@@ -151,11 +126,9 @@
       <h3>Related publications</h3>
       <ul>
         <li>Bisping, B., & Nestmann, U. (2019). Computing Coupled Similarity. Tools and Algorithms for the Construction and Analysis of Systems, 244–261. <a href="https://doi.org/10.1007/978-3-030-17462-0_14">https://doi.org/10.1007/978-3-030-17462-0_14</a>
-
-        </li>
+</li>
         <li>Bisping, B., & Montanari, L. (2021). A Game Characterization for Contrasimilarity. Electronic Proceedings in Theoretical Computer Science, 339, 27–42. https://doi.org/10.4204/eptcs.339.5
-
-        </li>
+</li>
       </ul>
       <h3>Session Coupledsim_Contrasim</h3>
       <ul>
@@ -176,13 +149,12 @@
       </ul>
 
     <div class="flex-wrap">
-      </div>
-    
+    </div>
   </main>
 
-  <nav class='links'>
-    <a class='popup-button' href="#cite-popup">Cite</a>
-    <a class='popup-button' href="#download-popup">Download</a>
+  <nav class="links">
+    <a class="popup-button" href="#cite-popup">Cite</a>
+    <a class="popup-button" href="#download-popup">Download</a>
     <h4>PDFs</h4>
     <a href="https://www.isa-afp.org/browser_info/current/AFP/Coupledsim_Contrasim/outline.pdf">Proof outline</a>
     <a href="https://www.isa-afp.org/browser_info/current/AFP/Coupledsim_Contrasim/document.pdf">Proof document</a>
@@ -216,26 +188,23 @@
     <div class="popup">
       <h2>Download</h2>
       <a class="close" href="#">&times;</a>
-      <a href="https://www.isa-afp.org/release/afp-Coupledsim_Contrasim-current.tar.gz"
-         download>Download latest</a>
+      <a href="https://www.isa-afp.org/release/afp-Coupledsim_Contrasim-current.tar.gz" download>
+        Download latest</a>
         <p>Older releases:</p>
         <ul>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Coupledsim_Contrasim-2024-05-26.tar.gz">
-                May 26, 2024
+              <a href="https://www.isa-afp.org/release/afp-Coupledsim_Contrasim-2024-05-26.tar.gz">May 26, 2024
               </a>
               : Isabelle2024
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Coupledsim_Contrasim-2023-10-11.tar.gz">
-                Oct 11, 2023
+              <a href="https://www.isa-afp.org/release/afp-Coupledsim_Contrasim-2023-10-11.tar.gz">Oct 11, 2023
               </a>
               : Isabelle2023
             </li>
         </ul>
     </div>
   </div>
-        
       </div>
     </div>
   </body>

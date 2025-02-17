@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
+<html lang="en"><head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -11,8 +10,7 @@
   <meta property="og:title" content="Formalization of an Optimized Monitoring Algorithm for Metric First-Order Dynamic Logic with Aggregations" />
   <meta property="og:url" content="https://isa-afp.org/entries/MFODL_Monitor_Optimized.html" />
   <meta property="og:image" content="https://isa-afp.org/images/afp.png" />
-  <meta property="og:type" content="article" />
-  
+    <meta property="og:type" content="article" />
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
 
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
@@ -20,11 +18,11 @@
     <script>
       MathJax = {
         tex: {
-          inlineMath: [['$', '$'], ['\\(', '\\)']]
+          inlineMath: [["$", "$"], ["\\(", "\\)"]]
         },
         processEscapes: true,
         svg: {
-          fontCache: 'global'
+          fontCache: "global"
         }
       };
     </script>
@@ -41,9 +39,8 @@
   <script src="../js/search-autocomplete.js"></script>
 </head>
 
-  <body class='mathjax_ignore'>
-    <aside>
-        <div id="menu-toggle">
+  <body class="mathjax_ignore">
+    <aside><div id="menu-toggle">
   <input id="toggle" type="checkbox" />
   <label for="toggle">
     <span>menu</span>
@@ -51,87 +48,65 @@
   </label>
 
   <a href="../" class="logo-link">
-    <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs"
-         class="logo">
+    <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
   </a>
 
   <nav id="menu">
     <div>
-      <a href="../" class='logo-link'>
-        <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs"
-             class="logo">
+      <a href="../" class="logo-link">
+        <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
       </a>
       <ul>
           <a href="../">
-            <li >
-              Home
-            </li>
+            <li >Home</li>
           </a>
           <a href="../topics/">
-            <li >
-              Topics
-            </li>
+            <li >Topics</li>
           </a>
           <a href="../download/">
-            <li >
-              Download
-            </li>
+            <li >Download</li>
           </a>
           <a href="../help/">
-            <li >
-              Help
-            </li>
+            <li >Help</li>
           </a>
           <a href="../submission/">
-            <li >
-              Submission
-            </li>
+            <li >Submission</li>
           </a>
           <a href="../statistics/">
-            <li >
-              Statistics
-            </li>
+            <li >Statistics</li>
           </a>
           <a href="../about/">
-            <li >
-              About
-            </li>
+            <li >About</li>
           </a>
       </ul>
     </div>
   </nav>
 </div>
     </aside>
-    <div class='content entries'>
-      <header>
+
+    <div class="content entries"><header>
     <form autocomplete="off" action="../search">
-      <div class='form-container'>
+      <div class="form-container">
         <input id="search-input" type="search" size="31" maxlength="255" value=""
-               aria-label="Search the AFP" list="autocomplete"><button
-               id="search-button" type="button">
-          <img src="../images/search.svg" alt="Search"/>
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="button">
+          <img src="../images/search.svg" alt="Search" />
         </button>
         <datalist id="autocomplete">
         </datalist>
       </div>
     </form>
-  <h1>
-    <span class='first'>F</span>ormalization of an <span class='first'>O</span>ptimized <span class='first'>M</span>onitoring <span class='first'>A</span>lgorithm for <span class='first'>M</span>etric <span class='first'>F</span>irst-<span class='first'>O</span>rder <span class='first'>D</span>ynamic <span class='first'>L</span>ogic with <span class='first'>A</span>ggregations
-    
+  <h1 ><span class='first'>F</span>ormalization of an <span class='first'>O</span>ptimized <span class='first'>M</span>onitoring <span class='first'>A</span>lgorithm for <span class='first'>M</span>etric <span class='first'>F</span>irst-<span class='first'>O</span>rder <span class='first'>D</span>ynamic <span class='first'>L</span>ogic with <span class='first'>A</span>ggregations
   </h1>
   <div>
-      <p>
-        <a href="../authors/dardinier/">Thibault Dardinier</a>, <a href="../authors/heimes/">Lukas Heimes</a>, <a href="../authors/raszyk/">Martin Raszyk</a> <a class="obfuscated" data="eyJ1c2VyIjpbIm1hcnRpbiIsInJhc3p5ayJdLCJob3N0IjpbImluZiIsImV0aHoiLCJjaCJdfQ==">📧</a>, <a href="../authors/schneider/">Joshua Schneider</a> <a class="obfuscated" data="eyJ1c2VyIjpbImpvc2h1YSIsInNjaG5laWRlciJdLCJob3N0IjpbImluZiIsImV0aHoiLCJjaCJdfQ==">📧</a> and <a href="../authors/traytel/">Dmitriy Traytel</a> <a href="https://traytel.bitbucket.io/">🌐</a>
-
+      <p><a href="../authors/dardinier/">Thibault Dardinier</a>, <a href="../authors/heimes/">Lukas Heimes</a>, <a href="../authors/raszyk/">Martin Raszyk</a> <a class="obfuscated" data="eyJ1c2VyIjpbIm1hcnRpbiIsInJhc3p5ayJdLCJob3N0IjpbImluZiIsImV0aHoiLCJjaCJdfQ==">📧</a>, <a href="../authors/schneider/">Joshua Schneider</a> <a class="obfuscated" data="eyJ1c2VyIjpbImpvc2h1YSIsInNjaG5laWRlciJdLCJob3N0IjpbImluZiIsImV0aHoiLCJjaCJdfQ==">📧</a> and <a href="../authors/traytel/">Dmitriy Traytel</a> <a href="https://traytel.bitbucket.io/">🌐</a>
       </p>
       <p class="date">April 9, 2020</p>
   </div>
 </header>
       <div>
-        
   <main>
-    <h3>Abstract</h3>
 
+    <h3>Abstract</h3>
     <div class="abstract mathjax_process">A monitor is a runtime verification tool that solves the following
 problem: Given a stream of time-stamped events and a policy formulated
 in a specification language, decide whether the policy is satisfied at
@@ -157,8 +132,8 @@ optimize the monitor.</div>
     </div>
       <h3>History</h3>
       <dl>
-        <dt>October 19, 2021</dt>
-        <dd>corrected a mistake in the calculation of median aggregations
+          <dt>October 19, 2021</dt>
+          <dd>corrected a mistake in the calculation of median aggregations
 (reported by Nicolas Kaletsch, revision 02b14c9bf3da)<br></dd>
       </dl>
       <h3>Topics</h3>
@@ -181,27 +156,26 @@ optimize the monitor.</div>
       </ul>
 
     <div class="flex-wrap">
-      <div>
-        <h3>Depends on</h3>
-        <ul class="horizontal-list">
+        <div>
+          <h3>Depends on</h3>
+          <ul class="horizontal-list">
               <li><a href="../entries/Generic_Join.html">Formalization of Multiway-Join Algorithms</a></li>
               <li><a href="../entries/IEEE_Floating_Point.html">A Formal Model of IEEE Floating Point Arithmetic</a></li>
               <li><a href="../entries/MFOTL_Monitor.html">Formalization of a Monitoring Algorithm for Metric First-Order Temporal Logic</a></li>
-        </ul>
-      </div>
-      <div>
-        <h3>Similar entries</h3>
-        <ul class="horizontal-list">
-            <li><a href="../entries/Sliding_Window_Algorithm.html">Formalization of an Algorithm for Greedily Computing Associative Aggregations on Sliding Windows</a></li>
-        </ul>
-      </div>
-      </div>
-    
+          </ul>
+        </div>
+        <div>
+          <h3>Similar entries</h3>
+          <ul class="horizontal-list">
+              <li><a href="../entries/Sliding_Window_Algorithm.html">Formalization of an Algorithm for Greedily Computing Associative Aggregations on Sliding Windows</a></li>
+          </ul>
+        </div>
+    </div>
   </main>
 
-  <nav class='links'>
-    <a class='popup-button' href="#cite-popup">Cite</a>
-    <a class='popup-button' href="#download-popup">Download</a>
+  <nav class="links">
+    <a class="popup-button" href="#cite-popup">Cite</a>
+    <a class="popup-button" href="#download-popup">Download</a>
     <h4>PDFs</h4>
     <a href="https://www.isa-afp.org/browser_info/current/AFP/MFODL_Monitor_Optimized/outline.pdf">Proof outline</a>
     <a href="https://www.isa-afp.org/browser_info/current/AFP/MFODL_Monitor_Optimized/document.pdf">Proof document</a>
@@ -235,62 +209,53 @@ optimize the monitor.</div>
     <div class="popup">
       <h2>Download</h2>
       <a class="close" href="#">&times;</a>
-      <a href="https://www.isa-afp.org/release/afp-MFODL_Monitor_Optimized-current.tar.gz"
-         download>Download latest</a>
+      <a href="https://www.isa-afp.org/release/afp-MFODL_Monitor_Optimized-current.tar.gz" download>
+        Download latest</a>
         <p>Older releases:</p>
         <ul>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-MFODL_Monitor_Optimized-2024-05-26.tar.gz">
-                May 26, 2024
+              <a href="https://www.isa-afp.org/release/afp-MFODL_Monitor_Optimized-2024-05-26.tar.gz">May 26, 2024
               </a>
               : Isabelle2024
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-MFODL_Monitor_Optimized-2023-09-13.tar.gz">
-                Sep 13, 2023
+              <a href="https://www.isa-afp.org/release/afp-MFODL_Monitor_Optimized-2023-09-13.tar.gz">Sep 13, 2023
               </a>
               : Isabelle2023
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-MFODL_Monitor_Optimized-2022-10-27.tar.gz">
-                Oct 27, 2022
+              <a href="https://www.isa-afp.org/release/afp-MFODL_Monitor_Optimized-2022-10-27.tar.gz">Oct 27, 2022
               </a>
               : Isabelle2022
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-MFODL_Monitor_Optimized-2021-12-14.tar.gz">
-                Dec 14, 2021
+              <a href="https://www.isa-afp.org/release/afp-MFODL_Monitor_Optimized-2021-12-14.tar.gz">Dec 14, 2021
               </a>
               : Isabelle2021-1
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-MFODL_Monitor_Optimized-2021-02-23.tar.gz">
-                Feb 23, 2021
+              <a href="https://www.isa-afp.org/release/afp-MFODL_Monitor_Optimized-2021-02-23.tar.gz">Feb 23, 2021
               </a>
               : Isabelle2021
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-MFODL_Monitor_Optimized-2020-04-20.tar.gz">
-                Apr 20, 2020
+              <a href="https://www.isa-afp.org/release/afp-MFODL_Monitor_Optimized-2020-04-20.tar.gz">Apr 20, 2020
               </a>
               : Isabelle2020
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-MFODL_Monitor_Optimized-2020-04-12.tar.gz">
-                Apr 12, 2020
+              <a href="https://www.isa-afp.org/release/afp-MFODL_Monitor_Optimized-2020-04-12.tar.gz">Apr 12, 2020
               </a>
               : Isabelle2019
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-MFODL_Monitor_Optimized-2020-04-11.tar.gz">
-                Apr 11, 2020
+              <a href="https://www.isa-afp.org/release/afp-MFODL_Monitor_Optimized-2020-04-11.tar.gz">Apr 11, 2020
               </a>
               : Isabelle2019
             </li>
         </ul>
     </div>
   </div>
-        
       </div>
     </div>
   </body>

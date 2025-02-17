@@ -1,75 +1,74 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Anders Schlichtkrull</title>
     <link>https://isa-afp.org/authors/schlichtkrull/</link>
-    <description>AFP entries of Anders Schlichtkrull</description>
-        <item>
-          <title>Soundness of the Q0 proof system for higher-order logic</title>
-          <link>https://isa-afp.org/entries/Q0_Soundness.html</link>
-          <pubDate>Mon, 20 Nov 2023 00:00:00 +0000</pubDate>
-          <description>Soundness of the Q0 proof system for higher-order logic in the AFP</description>
-            <category>Logic/General logic</category>
-        </item>
-        <item>
-          <title>Pushdown Systems</title>
-          <link>https://isa-afp.org/entries/Pushdown_Systems.html</link>
-          <pubDate>Tue, 31 Oct 2023 00:00:00 +0000</pubDate>
-          <description>Pushdown Systems in the AFP</description>
-            <category>Computer science/Automata and formal languages</category>
-            <category>Computer science</category>
-        </item>
-        <item>
-          <title>Labeled Transition Systems</title>
-          <link>https://isa-afp.org/entries/Labeled_Transition_Systems.html</link>
-          <pubDate>Tue, 31 Oct 2023 00:00:00 +0000</pubDate>
-          <description>Labeled Transition Systems in the AFP</description>
-            <category>Computer science/Automata and formal languages</category>
-            <category>Computer science</category>
-        </item>
-        <item>
-          <title>Automated Stateful Protocol Verification</title>
-          <link>https://isa-afp.org/entries/Automated_Stateful_Protocol_Verification.html</link>
-          <pubDate>Wed, 08 Apr 2020 00:00:00 +0000</pubDate>
-          <description>Automated Stateful Protocol Verification in the AFP</description>
-            <category>Computer science/Security</category>
-            <category>Tools</category>
-        </item>
-        <item>
-          <title>A Verified Functional Implementation of Bachmair and Ganzinger&#39;s Ordered Resolution Prover</title>
-          <link>https://isa-afp.org/entries/Functional_Ordered_Resolution_Prover.html</link>
-          <pubDate>Fri, 23 Nov 2018 00:00:00 +0000</pubDate>
-          <description>A Verified Functional Implementation of Bachmair and Ganzinger&#39;s Ordered Resolution Prover in the AFP</description>
-            <category>Logic/General logic/Mechanization of proofs</category>
-        </item>
-        <item>
-          <title>Formalization of Bachmair and Ganzinger&#39;s Ordered Resolution Prover</title>
-          <link>https://isa-afp.org/entries/Ordered_Resolution_Prover.html</link>
-          <pubDate>Thu, 18 Jan 2018 00:00:00 +0000</pubDate>
-          <description>Formalization of Bachmair and Ganzinger&#39;s Ordered Resolution Prover in the AFP</description>
-            <category>Logic/General logic/Mechanization of proofs</category>
-        </item>
-        <item>
-          <title>First-Order Logic According to Harrison</title>
-          <link>https://isa-afp.org/entries/FOL_Harrison.html</link>
-          <pubDate>Sun, 01 Jan 2017 00:00:00 +0000</pubDate>
-          <description>First-Order Logic According to Harrison in the AFP</description>
-            <category>Logic/General logic/Mechanization of proofs</category>
-        </item>
-        <item>
-          <title>Paraconsistency</title>
-          <link>https://isa-afp.org/entries/Paraconsistency.html</link>
-          <pubDate>Wed, 07 Dec 2016 00:00:00 +0000</pubDate>
-          <description>Paraconsistency in the AFP</description>
-            <category>Logic/General logic/Paraconsistent logics</category>
-        </item>
-        <item>
-          <title>The Resolution Calculus for First-Order Logic</title>
-          <link>https://isa-afp.org/entries/Resolution_FOL.html</link>
-          <pubDate>Thu, 30 Jun 2016 00:00:00 +0000</pubDate>
-          <description>The Resolution Calculus for First-Order Logic in the AFP</description>
-            <category>Logic/General logic/Mechanization of proofs</category>
-        </item>
+    <description>AFP entries of Anders Schlichtkrull</description><item>
+  <title>Soundness of the Q0 proof system for higher-order logic</title>
+  <link>https://isa-afp.org/entries/Q0_Soundness.html</link>
+  <pubDate>Mon, 20 Nov 2023 00:00:00 +0000</pubDate>
+  <description>Soundness of the Q0 proof system for higher-order logic in the AFP</description>
+    <category>Logic/General logic</category>
+</item>
+<item>
+  <title>Pushdown Systems</title>
+  <link>https://isa-afp.org/entries/Pushdown_Systems.html</link>
+  <pubDate>Tue, 31 Oct 2023 00:00:00 +0000</pubDate>
+  <description>Pushdown Systems in the AFP</description>
+    <category>Computer science/Automata and formal languages</category>
+    <category>Computer science</category>
+</item>
+<item>
+  <title>Labeled Transition Systems</title>
+  <link>https://isa-afp.org/entries/Labeled_Transition_Systems.html</link>
+  <pubDate>Tue, 31 Oct 2023 00:00:00 +0000</pubDate>
+  <description>Labeled Transition Systems in the AFP</description>
+    <category>Computer science/Automata and formal languages</category>
+    <category>Computer science</category>
+</item>
+<item>
+  <title>Automated Stateful Protocol Verification</title>
+  <link>https://isa-afp.org/entries/Automated_Stateful_Protocol_Verification.html</link>
+  <pubDate>Wed, 08 Apr 2020 00:00:00 +0000</pubDate>
+  <description>Automated Stateful Protocol Verification in the AFP</description>
+    <category>Computer science/Security</category>
+    <category>Tools</category>
+</item>
+<item>
+  <title>A Verified Functional Implementation of Bachmair and Ganzinger&#39;s Ordered Resolution Prover</title>
+  <link>https://isa-afp.org/entries/Functional_Ordered_Resolution_Prover.html</link>
+  <pubDate>Fri, 23 Nov 2018 00:00:00 +0000</pubDate>
+  <description>A Verified Functional Implementation of Bachmair and Ganzinger&#39;s Ordered Resolution Prover in the AFP</description>
+    <category>Logic/General logic/Mechanization of proofs</category>
+</item>
+<item>
+  <title>Formalization of Bachmair and Ganzinger&#39;s Ordered Resolution Prover</title>
+  <link>https://isa-afp.org/entries/Ordered_Resolution_Prover.html</link>
+  <pubDate>Thu, 18 Jan 2018 00:00:00 +0000</pubDate>
+  <description>Formalization of Bachmair and Ganzinger&#39;s Ordered Resolution Prover in the AFP</description>
+    <category>Logic/General logic/Mechanization of proofs</category>
+</item>
+<item>
+  <title>First-Order Logic According to Harrison</title>
+  <link>https://isa-afp.org/entries/FOL_Harrison.html</link>
+  <pubDate>Sun, 01 Jan 2017 00:00:00 +0000</pubDate>
+  <description>First-Order Logic According to Harrison in the AFP</description>
+    <category>Logic/General logic/Mechanization of proofs</category>
+</item>
+<item>
+  <title>Paraconsistency</title>
+  <link>https://isa-afp.org/entries/Paraconsistency.html</link>
+  <pubDate>Wed, 07 Dec 2016 00:00:00 +0000</pubDate>
+  <description>Paraconsistency in the AFP</description>
+    <category>Logic/General logic/Paraconsistent logics</category>
+</item>
+<item>
+  <title>The Resolution Calculus for First-Order Logic</title>
+  <link>https://isa-afp.org/entries/Resolution_FOL.html</link>
+  <pubDate>Thu, 30 Jun 2016 00:00:00 +0000</pubDate>
+  <description>The Resolution Calculus for First-Order Logic in the AFP</description>
+    <category>Logic/General logic/Mechanization of proofs</category>
+</item>
 
   </channel>
 </rss>

@@ -1,38 +1,37 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Mathematics/Misc</title>
     <link>https://isa-afp.org/topics/mathematics/misc/</link>
-    <description>AFP entries in Misc</description>
-         <item>
-          <title>Hardness of Lattice Problems</title>
-          <link>https://isa-afp.org/entries/CVP_Hardness.html</link>
-          <pubDate>Thu, 02 Feb 2023 00:00:00 +0000</pubDate>
-          <description>Hardness of Lattice Problems in the AFP</description>
-            <category>Computer science/Security/Cryptography</category>
-            <category>Mathematics/Misc</category>
-        </item>
-        <item>
-          <title>Selected Problems from the International Mathematical Olympiad 2019</title>
-          <link>https://isa-afp.org/entries/IMO2019.html</link>
-          <pubDate>Mon, 05 Aug 2019 00:00:00 +0000</pubDate>
-          <description>Selected Problems from the International Mathematical Olympiad 2019 in the AFP</description>
-            <category>Mathematics/Misc</category>
-        </item>
-        <item>
-          <title>Fun With Tilings</title>
-          <link>https://isa-afp.org/entries/FunWithTilings.html</link>
-          <pubDate>Fri, 07 Nov 2008 00:00:00 +0000</pubDate>
-          <description>Fun With Tilings in the AFP</description>
-            <category>Mathematics/Misc</category>
-        </item>
-        <item>
-          <title>Fun With Functions</title>
-          <link>https://isa-afp.org/entries/FunWithFunctions.html</link>
-          <pubDate>Tue, 26 Aug 2008 00:00:00 +0000</pubDate>
-          <description>Fun With Functions in the AFP</description>
-            <category>Mathematics/Misc</category>
-        </item>
+    <description>AFP entries in Misc</description><item>
+  <title>Hardness of Lattice Problems</title>
+  <link>https://isa-afp.org/entries/CVP_Hardness.html</link>
+  <pubDate>Thu, 02 Feb 2023 00:00:00 +0000</pubDate>
+  <description>Hardness of Lattice Problems in the AFP</description>
+    <category>Computer science/Security/Cryptography</category>
+    <category>Mathematics/Misc</category>
+</item>
+<item>
+  <title>Selected Problems from the International Mathematical Olympiad 2019</title>
+  <link>https://isa-afp.org/entries/IMO2019.html</link>
+  <pubDate>Mon, 05 Aug 2019 00:00:00 +0000</pubDate>
+  <description>Selected Problems from the International Mathematical Olympiad 2019 in the AFP</description>
+    <category>Mathematics/Misc</category>
+</item>
+<item>
+  <title>Fun With Tilings</title>
+  <link>https://isa-afp.org/entries/FunWithTilings.html</link>
+  <pubDate>Fri, 07 Nov 2008 00:00:00 +0000</pubDate>
+  <description>Fun With Tilings in the AFP</description>
+    <category>Mathematics/Misc</category>
+</item>
+<item>
+  <title>Fun With Functions</title>
+  <link>https://isa-afp.org/entries/FunWithFunctions.html</link>
+  <pubDate>Tue, 26 Aug 2008 00:00:00 +0000</pubDate>
+  <description>Fun With Functions in the AFP</description>
+    <category>Mathematics/Misc</category>
+</item>
 
   </channel>
 </rss>

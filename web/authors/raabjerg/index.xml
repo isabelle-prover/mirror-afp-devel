@@ -1,16 +1,15 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Palle Raabjerg</title>
     <link>https://isa-afp.org/authors/raabjerg/</link>
-    <description>AFP entries of Palle Raabjerg</description>
-        <item>
-          <title>Broadcast Psi-calculi</title>
-          <link>https://isa-afp.org/entries/Broadcast_Psi.html</link>
-          <pubDate>Wed, 27 Mar 2024 00:00:00 +0000</pubDate>
-          <description>Broadcast Psi-calculi in the AFP</description>
-            <category>Computer science/Concurrency/Process calculi</category>
-        </item>
+    <description>AFP entries of Palle Raabjerg</description><item>
+  <title>Broadcast Psi-calculi</title>
+  <link>https://isa-afp.org/entries/Broadcast_Psi.html</link>
+  <pubDate>Wed, 27 Mar 2024 00:00:00 +0000</pubDate>
+  <description>Broadcast Psi-calculi in the AFP</description>
+    <category>Computer science/Concurrency/Process calculi</category>
+</item>
 
   </channel>
 </rss>

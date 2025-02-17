@@ -1,16 +1,15 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Jan-Georg Smaus</title>
     <link>https://isa-afp.org/authors/smaus/</link>
-    <description>AFP entries of Jan-Georg Smaus</description>
-        <item>
-          <title>A Fully Verified Executable LTL Model Checker</title>
-          <link>https://isa-afp.org/entries/CAVA_LTL_Modelchecker.html</link>
-          <pubDate>Wed, 28 May 2014 00:00:00 +0000</pubDate>
-          <description>A Fully Verified Executable LTL Model Checker in the AFP</description>
-            <category>Computer science/Automata and formal languages</category>
-        </item>
+    <description>AFP entries of Jan-Georg Smaus</description><item>
+  <title>A Fully Verified Executable LTL Model Checker</title>
+  <link>https://isa-afp.org/entries/CAVA_LTL_Modelchecker.html</link>
+  <pubDate>Wed, 28 May 2014 00:00:00 +0000</pubDate>
+  <description>A Fully Verified Executable LTL Model Checker in the AFP</description>
+    <category>Computer science/Automata and formal languages</category>
+</item>
 
   </channel>
 </rss>

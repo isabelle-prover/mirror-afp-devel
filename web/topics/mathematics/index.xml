@@ -1,32 +1,31 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Mathematics</title>
     <link>https://isa-afp.org/topics/mathematics/</link>
-    <description>AFP entries in Mathematics</description>
-         <item>
-          <title>A Proof of Hilbert Basis Theorem and            an Extension to Formal Power Series</title>
-          <link>https://isa-afp.org/entries/Hilbert_Basis.html</link>
-          <pubDate>Wed, 12 Feb 2025 00:00:00 +0000</pubDate>
-          <description>A Proof of Hilbert Basis Theorem and            an Extension to Formal Power Series in the AFP</description>
-            <category>Mathematics</category>
-        </item>
-        <item>
-          <title>(Extended) Interval Analysis</title>
-          <link>https://isa-afp.org/entries/Interval_Analysis.html</link>
-          <pubDate>Sun, 21 Jan 2024 00:00:00 +0000</pubDate>
-          <description>(Extended) Interval Analysis in the AFP</description>
-            <category>Mathematics/Analysis</category>
-            <category>Mathematics</category>
-        </item>
-        <item>
-          <title>Abstract Object Theory</title>
-          <link>https://isa-afp.org/entries/AOT.html</link>
-          <pubDate>Mon, 28 Nov 2022 00:00:00 +0000</pubDate>
-          <description>Abstract Object Theory in the AFP</description>
-            <category>Logic/General logic</category>
-            <category>Mathematics</category>
-        </item>
+    <description>AFP entries in Mathematics</description><item>
+  <title>A Proof of Hilbert Basis Theorem and            an Extension to Formal Power Series</title>
+  <link>https://isa-afp.org/entries/Hilbert_Basis.html</link>
+  <pubDate>Wed, 12 Feb 2025 00:00:00 +0000</pubDate>
+  <description>A Proof of Hilbert Basis Theorem and            an Extension to Formal Power Series in the AFP</description>
+    <category>Mathematics</category>
+</item>
+<item>
+  <title>(Extended) Interval Analysis</title>
+  <link>https://isa-afp.org/entries/Interval_Analysis.html</link>
+  <pubDate>Sun, 21 Jan 2024 00:00:00 +0000</pubDate>
+  <description>(Extended) Interval Analysis in the AFP</description>
+    <category>Mathematics/Analysis</category>
+    <category>Mathematics</category>
+</item>
+<item>
+  <title>Abstract Object Theory</title>
+  <link>https://isa-afp.org/entries/AOT.html</link>
+  <pubDate>Mon, 28 Nov 2022 00:00:00 +0000</pubDate>
+  <description>Abstract Object Theory in the AFP</description>
+    <category>Logic/General logic</category>
+    <category>Mathematics</category>
+</item>
 
   </channel>
 </rss>

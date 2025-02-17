@@ -1,30 +1,29 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Florian Kammüller</title>
     <link>https://isa-afp.org/authors/kammueller/</link>
-    <description>AFP entries of Florian Kammüller</description>
-        <item>
-          <title>Attack Trees in Isabelle for GDPR compliance of IoT healthcare systems</title>
-          <link>https://isa-afp.org/entries/Attack_Trees.html</link>
-          <pubDate>Mon, 27 Apr 2020 00:00:00 +0000</pubDate>
-          <description>Attack Trees in Isabelle for GDPR compliance of IoT healthcare systems in the AFP</description>
-            <category>Computer science/Security</category>
-        </item>
-        <item>
-          <title>Formalizing Statecharts using Hierarchical Automata</title>
-          <link>https://isa-afp.org/entries/Statecharts.html</link>
-          <pubDate>Sun, 08 Aug 2010 00:00:00 +0000</pubDate>
-          <description>Formalizing Statecharts using Hierarchical Automata in the AFP</description>
-            <category>Computer science/Automata and formal languages</category>
-        </item>
-        <item>
-          <title>Locally Nameless Sigma Calculus</title>
-          <link>https://isa-afp.org/entries/Locally-Nameless-Sigma.html</link>
-          <pubDate>Fri, 30 Apr 2010 00:00:00 +0000</pubDate>
-          <description>Locally Nameless Sigma Calculus in the AFP</description>
-            <category>Computer science/Programming languages/Language definitions</category>
-        </item>
+    <description>AFP entries of Florian Kammüller</description><item>
+  <title>Attack Trees in Isabelle for GDPR compliance of IoT healthcare systems</title>
+  <link>https://isa-afp.org/entries/Attack_Trees.html</link>
+  <pubDate>Mon, 27 Apr 2020 00:00:00 +0000</pubDate>
+  <description>Attack Trees in Isabelle for GDPR compliance of IoT healthcare systems in the AFP</description>
+    <category>Computer science/Security</category>
+</item>
+<item>
+  <title>Formalizing Statecharts using Hierarchical Automata</title>
+  <link>https://isa-afp.org/entries/Statecharts.html</link>
+  <pubDate>Sun, 08 Aug 2010 00:00:00 +0000</pubDate>
+  <description>Formalizing Statecharts using Hierarchical Automata in the AFP</description>
+    <category>Computer science/Automata and formal languages</category>
+</item>
+<item>
+  <title>Locally Nameless Sigma Calculus</title>
+  <link>https://isa-afp.org/entries/Locally-Nameless-Sigma.html</link>
+  <pubDate>Fri, 30 Apr 2010 00:00:00 +0000</pubDate>
+  <description>Locally Nameless Sigma Calculus in the AFP</description>
+    <category>Computer science/Programming languages/Language definitions</category>
+</item>
 
   </channel>
 </rss>

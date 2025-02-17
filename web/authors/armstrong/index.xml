@@ -1,34 +1,33 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Alasdair Armstrong</title>
     <link>https://isa-afp.org/authors/armstrong/</link>
-    <description>AFP entries of Alasdair Armstrong</description>
-        <item>
-          <title>Relation Algebra</title>
-          <link>https://isa-afp.org/entries/Relation_Algebra.html</link>
-          <pubDate>Sat, 25 Jan 2014 00:00:00 +0000</pubDate>
-          <description>Relation Algebra in the AFP</description>
-            <category>Mathematics/Algebra</category>
-        </item>
-        <item>
-          <title>Kleene Algebra with Tests and Demonic Refinement Algebras</title>
-          <link>https://isa-afp.org/entries/KAT_and_DRA.html</link>
-          <pubDate>Thu, 23 Jan 2014 00:00:00 +0000</pubDate>
-          <description>Kleene Algebra with Tests and Demonic Refinement Algebras in the AFP</description>
-            <category>Computer science/Programming languages/Logics</category>
-            <category>Computer science/Automata and formal languages</category>
-            <category>Mathematics/Algebra</category>
-        </item>
-        <item>
-          <title>Kleene Algebra</title>
-          <link>https://isa-afp.org/entries/Kleene_Algebra.html</link>
-          <pubDate>Tue, 15 Jan 2013 00:00:00 +0000</pubDate>
-          <description>Kleene Algebra in the AFP</description>
-            <category>Computer science/Programming languages/Logics</category>
-            <category>Computer science/Automata and formal languages</category>
-            <category>Mathematics/Algebra</category>
-        </item>
+    <description>AFP entries of Alasdair Armstrong</description><item>
+  <title>Relation Algebra</title>
+  <link>https://isa-afp.org/entries/Relation_Algebra.html</link>
+  <pubDate>Sat, 25 Jan 2014 00:00:00 +0000</pubDate>
+  <description>Relation Algebra in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Kleene Algebra with Tests and Demonic Refinement Algebras</title>
+  <link>https://isa-afp.org/entries/KAT_and_DRA.html</link>
+  <pubDate>Thu, 23 Jan 2014 00:00:00 +0000</pubDate>
+  <description>Kleene Algebra with Tests and Demonic Refinement Algebras in the AFP</description>
+    <category>Computer science/Programming languages/Logics</category>
+    <category>Computer science/Automata and formal languages</category>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Kleene Algebra</title>
+  <link>https://isa-afp.org/entries/Kleene_Algebra.html</link>
+  <pubDate>Tue, 15 Jan 2013 00:00:00 +0000</pubDate>
+  <description>Kleene Algebra in the AFP</description>
+    <category>Computer science/Programming languages/Logics</category>
+    <category>Computer science/Automata and formal languages</category>
+    <category>Mathematics/Algebra</category>
+</item>
 
   </channel>
 </rss>

@@ -1,16 +1,15 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Joseph Lallemand</title>
     <link>https://isa-afp.org/authors/lallemand/</link>
-    <description>AFP entries of Joseph Lallemand</description>
-        <item>
-          <title>Refining Authenticated Key Agreement with Strong Adversaries</title>
-          <link>https://isa-afp.org/entries/Key_Agreement_Strong_Adversaries.html</link>
-          <pubDate>Tue, 31 Jan 2017 00:00:00 +0000</pubDate>
-          <description>Refining Authenticated Key Agreement with Strong Adversaries in the AFP</description>
-            <category>Computer science/Security</category>
-        </item>
+    <description>AFP entries of Joseph Lallemand</description><item>
+  <title>Refining Authenticated Key Agreement with Strong Adversaries</title>
+  <link>https://isa-afp.org/entries/Key_Agreement_Strong_Adversaries.html</link>
+  <pubDate>Tue, 31 Jan 2017 00:00:00 +0000</pubDate>
+  <description>Refining Authenticated Key Agreement with Strong Adversaries in the AFP</description>
+    <category>Computer science/Security</category>
+</item>
 
   </channel>
 </rss>

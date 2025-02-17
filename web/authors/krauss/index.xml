@@ -1,16 +1,15 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Alexander Krauss</title>
     <link>https://isa-afp.org/authors/krauss/</link>
-    <description>AFP entries of Alexander Krauss</description>
-        <item>
-          <title>Regular Sets and Expressions</title>
-          <link>https://isa-afp.org/entries/Regular-Sets.html</link>
-          <pubDate>Wed, 12 May 2010 00:00:00 +0000</pubDate>
-          <description>Regular Sets and Expressions in the AFP</description>
-            <category>Computer science/Automata and formal languages</category>
-        </item>
+    <description>AFP entries of Alexander Krauss</description><item>
+  <title>Regular Sets and Expressions</title>
+  <link>https://isa-afp.org/entries/Regular-Sets.html</link>
+  <pubDate>Wed, 12 May 2010 00:00:00 +0000</pubDate>
+  <description>Regular Sets and Expressions in the AFP</description>
+    <category>Computer science/Automata and formal languages</category>
+</item>
 
   </channel>
 </rss>

@@ -1,16 +1,15 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Holden Lee</title>
     <link>https://isa-afp.org/authors/lee/</link>
-    <description>AFP entries of Holden Lee</description>
-        <item>
-          <title>Vector Spaces</title>
-          <link>https://isa-afp.org/entries/VectorSpace.html</link>
-          <pubDate>Fri, 29 Aug 2014 00:00:00 +0000</pubDate>
-          <description>Vector Spaces in the AFP</description>
-            <category>Mathematics/Algebra</category>
-        </item>
+    <description>AFP entries of Holden Lee</description><item>
+  <title>Vector Spaces</title>
+  <link>https://isa-afp.org/entries/VectorSpace.html</link>
+  <pubDate>Fri, 29 Aug 2014 00:00:00 +0000</pubDate>
+  <description>Vector Spaces in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
 
   </channel>
 </rss>

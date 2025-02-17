@@ -1,17 +1,16 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Ralph Romanos</title>
     <link>https://isa-afp.org/authors/romanos/</link>
-    <description>AFP entries of Ralph Romanos</description>
-        <item>
-          <title>Proving the Impossibility of Trisecting an Angle and Doubling the Cube</title>
-          <link>https://isa-afp.org/entries/Impossible_Geometry.html</link>
-          <pubDate>Sun, 05 Aug 2012 00:00:00 +0000</pubDate>
-          <description>Proving the Impossibility of Trisecting an Angle and Doubling the Cube in the AFP</description>
-            <category>Mathematics/Algebra</category>
-            <category>Mathematics/Geometry</category>
-        </item>
+    <description>AFP entries of Ralph Romanos</description><item>
+  <title>Proving the Impossibility of Trisecting an Angle and Doubling the Cube</title>
+  <link>https://isa-afp.org/entries/Impossible_Geometry.html</link>
+  <pubDate>Sun, 05 Aug 2012 00:00:00 +0000</pubDate>
+  <description>Proving the Impossibility of Trisecting an Angle and Doubling the Cube in the AFP</description>
+    <category>Mathematics/Algebra</category>
+    <category>Mathematics/Geometry</category>
+</item>
 
   </channel>
 </rss>

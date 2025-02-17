@@ -1,49 +1,48 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Logic/General logic/Decidability of theories</title>
     <link>https://isa-afp.org/topics/logic/general-logic/decidability-of-theories/</link>
-    <description>AFP entries in Decidability of theories</description>
-         <item>
-          <title>MLSS Decision Procedure</title>
-          <link>https://isa-afp.org/entries/MLSS_Decision_Proc.html</link>
-          <pubDate>Fri, 05 May 2023 00:00:00 +0000</pubDate>
-          <description>MLSS Decision Procedure in the AFP</description>
-            <category>Logic/General logic/Classical propositional logic</category>
-            <category>Logic/Set theory</category>
-            <category>Logic/General logic/Decidability of theories</category>
-        </item>
-        <item>
-          <title>Derivatives of Logical Formulas</title>
-          <link>https://isa-afp.org/entries/Formula_Derivatives.html</link>
-          <pubDate>Thu, 28 May 2015 00:00:00 +0000</pubDate>
-          <description>Derivatives of Logical Formulas in the AFP</description>
-            <category>Computer science/Automata and formal languages</category>
-            <category>Logic/General logic/Decidability of theories</category>
-        </item>
-        <item>
-          <title>Decision Procedures for MSO on Words Based on Derivatives of Regular Expressions</title>
-          <link>https://isa-afp.org/entries/MSO_Regex_Equivalence.html</link>
-          <pubDate>Thu, 12 Jun 2014 00:00:00 +0000</pubDate>
-          <description>Decision Procedures for MSO on Words Based on Derivatives of Regular Expressions in the AFP</description>
-            <category>Computer science/Automata and formal languages</category>
-            <category>Logic/General logic/Decidability of theories</category>
-        </item>
-        <item>
-          <title>Formalizing the Logic-Automaton Connection</title>
-          <link>https://isa-afp.org/entries/Presburger-Automata.html</link>
-          <pubDate>Thu, 03 Dec 2009 00:00:00 +0000</pubDate>
-          <description>Formalizing the Logic-Automaton Connection in the AFP</description>
-            <category>Computer science/Automata and formal languages</category>
-            <category>Logic/General logic/Decidability of theories</category>
-        </item>
-        <item>
-          <title>Quantifier Elimination for Linear Arithmetic</title>
-          <link>https://isa-afp.org/entries/LinearQuantifierElim.html</link>
-          <pubDate>Fri, 11 Jan 2008 00:00:00 +0000</pubDate>
-          <description>Quantifier Elimination for Linear Arithmetic in the AFP</description>
-            <category>Logic/General logic/Decidability of theories</category>
-        </item>
+    <description>AFP entries in Decidability of theories</description><item>
+  <title>MLSS Decision Procedure</title>
+  <link>https://isa-afp.org/entries/MLSS_Decision_Proc.html</link>
+  <pubDate>Fri, 05 May 2023 00:00:00 +0000</pubDate>
+  <description>MLSS Decision Procedure in the AFP</description>
+    <category>Logic/General logic/Classical propositional logic</category>
+    <category>Logic/Set theory</category>
+    <category>Logic/General logic/Decidability of theories</category>
+</item>
+<item>
+  <title>Derivatives of Logical Formulas</title>
+  <link>https://isa-afp.org/entries/Formula_Derivatives.html</link>
+  <pubDate>Thu, 28 May 2015 00:00:00 +0000</pubDate>
+  <description>Derivatives of Logical Formulas in the AFP</description>
+    <category>Computer science/Automata and formal languages</category>
+    <category>Logic/General logic/Decidability of theories</category>
+</item>
+<item>
+  <title>Decision Procedures for MSO on Words Based on Derivatives of Regular Expressions</title>
+  <link>https://isa-afp.org/entries/MSO_Regex_Equivalence.html</link>
+  <pubDate>Thu, 12 Jun 2014 00:00:00 +0000</pubDate>
+  <description>Decision Procedures for MSO on Words Based on Derivatives of Regular Expressions in the AFP</description>
+    <category>Computer science/Automata and formal languages</category>
+    <category>Logic/General logic/Decidability of theories</category>
+</item>
+<item>
+  <title>Formalizing the Logic-Automaton Connection</title>
+  <link>https://isa-afp.org/entries/Presburger-Automata.html</link>
+  <pubDate>Thu, 03 Dec 2009 00:00:00 +0000</pubDate>
+  <description>Formalizing the Logic-Automaton Connection in the AFP</description>
+    <category>Computer science/Automata and formal languages</category>
+    <category>Logic/General logic/Decidability of theories</category>
+</item>
+<item>
+  <title>Quantifier Elimination for Linear Arithmetic</title>
+  <link>https://isa-afp.org/entries/LinearQuantifierElim.html</link>
+  <pubDate>Fri, 11 Jan 2008 00:00:00 +0000</pubDate>
+  <description>Quantifier Elimination for Linear Arithmetic in the AFP</description>
+    <category>Logic/General logic/Decidability of theories</category>
+</item>
 
   </channel>
 </rss>

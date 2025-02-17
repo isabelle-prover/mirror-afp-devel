@@ -1,17 +1,16 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Tao Liu</title>
     <link>https://isa-afp.org/authors/liut/</link>
-    <description>AFP entries of Tao Liu</description>
-        <item>
-          <title>Quantum Hoare Logic</title>
-          <link>https://isa-afp.org/entries/QHLProver.html</link>
-          <pubDate>Sun, 24 Mar 2019 00:00:00 +0000</pubDate>
-          <description>Quantum Hoare Logic in the AFP</description>
-            <category>Computer science/Programming languages/Logics</category>
-            <category>Computer science/Semantics and reasoning</category>
-        </item>
+    <description>AFP entries of Tao Liu</description><item>
+  <title>Quantum Hoare Logic</title>
+  <link>https://isa-afp.org/entries/QHLProver.html</link>
+  <pubDate>Sun, 24 Mar 2019 00:00:00 +0000</pubDate>
+  <description>Quantum Hoare Logic in the AFP</description>
+    <category>Computer science/Programming languages/Logics</category>
+    <category>Computer science/Semantics and reasoning</category>
+</item>
 
   </channel>
 </rss>
