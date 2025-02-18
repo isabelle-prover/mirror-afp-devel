@@ -152,10 +152,7 @@ lemma L1_while_infinite [L1opt]: "L1_while C L1_skip = L1_guard (\<lambda>s. \<n
 
 lemma L1_while_false [L1opt]:
   "L1_while (\<lambda>_. False) B = L1_skip"
-  apply (clarsimp simp: L1_while_def L1_skip_def)
-  apply (subst whileLoop_unroll)
-  apply clarsimp
-  done
+  by (clarsimp simp: L1_while_def L1_skip_def)
 
 declare ucast_id [L1opt]
 declare scast_id [L1opt]

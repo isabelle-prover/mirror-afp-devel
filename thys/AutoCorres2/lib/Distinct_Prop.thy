@@ -25,6 +25,7 @@ where
   "distinct_sets [] = True"
 | "distinct_sets (x#xs) = (x \<inter> \<Union> (set xs) = {} \<and> distinct_sets xs)"
 
+declare distinct_sets.simps [simp del]
 
 lemma distinct_prop_map:
   "distinct_prop P (map f xs) = distinct_prop (\<lambda>x y. P (f x) (f y)) xs"
@@ -54,7 +55,7 @@ lemma distinct_prefix:
 
 lemma distinct_sets_prop:
   "distinct_sets xs = distinct_prop (\<lambda>x y. x \<inter> y = {}) xs"
-  by (induct xs) auto
+  by (induct xs) (auto simp add: distinct_sets.simps)
 
 lemma distinct_take_strg:
   "distinct xs \<longrightarrow> distinct (take n xs)"
@@ -162,7 +163,7 @@ lemma distinct_sets_drop_nth:
   "\<lbrakk>distinct_sets xs; i < length xs; x \<in> set (drop (Suc i) xs)\<rbrakk> \<Longrightarrow> x \<inter> xs ! i = {}"
   apply (drule (1) distinct_sets_drop)
   apply (subst (asm) drop_Suc_nth, assumption)
-  apply fastforce
+  apply (fastforce simp add: distinct_sets.simps)
   done
 
 lemma distinct_sets_append_distinct:
@@ -181,10 +182,10 @@ lemma distinct_sets_update:
     apply (fold distinct_sets_prop)
     apply (drule (1) distinct_sets_drop)
     apply (subst (asm) drop_Suc_nth, assumption)
-    apply fastforce
+    apply (fastforce simp add: distinct_sets.simps)
    apply (drule (1) distinct_sets_drop)
    apply (subst (asm) drop_Suc_nth, assumption)
-   apply clarsimp
+   apply (clarsimp simp add: distinct_sets.simps)
   apply clarsimp
   apply (rule conjI)
    apply (drule (2) distinct_sets_take_nth)
@@ -206,7 +207,7 @@ lemma Union_list_update:
   \<Longrightarrow> (\<Union>x\<in>set (xs [i := a]). f x) = (\<Union>x\<in>set xs. f x) - f (xs ! i) \<union> f a"
   apply (induct xs arbitrary: i; clarsimp)
   subgoal for x xs i
-    apply (cases i; (clarsimp, fastforce))
+    apply (cases i; (clarsimp, fastforce simp add: distinct_sets.simps))
     done
   done
 

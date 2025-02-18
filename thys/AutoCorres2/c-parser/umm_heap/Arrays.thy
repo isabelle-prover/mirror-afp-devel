@@ -11,6 +11,8 @@
 theory Arrays
 imports
   "HOL-Library.Numeral_Type"
+  "Match_Cterm"
+  "ML_Infer_Instantiate"
 begin
 
 definition has_size :: "'a set \<Rightarrow> nat \<Rightarrow> bool" where
@@ -346,4 +348,27 @@ lemma finite_index_bij_betw: "bij_betw (finite_index::nat\<Rightarrow>'a::finite
   using finite_index_inj_on
   by (metis (mono_tags, lifting) UNIV_I bij_betw_def finite_index_works imageI mem_Collect_eq subsetI subset_antisym)
 
+
+simproc_setup passive fold_update (\<open>Arrays.update a n v\<close>) = \<open>K (fn ctxt => fn ct => 
+  \<comment> \<open>Prefer more abstract \<^const>\<open>Arrays.fupdate\<close> over \<^const>\<open>Arrays.update\<close>\<close>
+  let
+     val {a, n, v, ...} = @{cterm_match "Arrays.update ?a ?n ?v"} ct
+     val elem = \<^infer_instantiate>\<open>a = a and n = n  in cterm \<open>a.[n]\<close>\<close> ctxt
+     val elem_t = Thm.term_of elem
+  in 
+    if exists_subterm (fn t => elem_t aconv t) (Thm.term_of v) then 
+      SOME (Drule.infer_instantiate ctxt 
+        [(("a",0), a), (("n",0), n), (("f", 0), Thm.lambda_name ("v", elem) v)] 
+        @{thm Arrays.fupdate_def[symmetric]})
+    else 
+      NONE 
+  end)\<close>
+
+experiment 
+begin
+lemma "Arrays.update a n (k - a.[n] + x) = fupdate n (\<lambda>v. k - v + x) a "
+  supply [[simproc add: fold_update]]
+  apply (simp)
+  done
+end
 end

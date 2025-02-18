@@ -75,9 +75,14 @@ fun arraydecl l r n = wrap ((fn ty => Array (ty, n)), l, r)
 
 val one_const = expr_int 1
 val zero_const = expr_int 0
-fun postinc e = Assign(e,ebogwrap(BinOp(Plus,e,one_const)))
-fun postdec e = Assign(e,ebogwrap(BinOp(Minus,e,one_const)))
-
+fun postinc_expr e = PostOp(e,Plus_Plus)
+fun postdec_expr e = PostOp(e,Minus_Minus)
+fun postop_to_stmt ctxt e =
+  (case enode e of
+     PostOp (e, Plus_Plus) => Assign(e,ebogwrap(BinOp(Plus,e,one_const)))
+   | PostOp (e, Minus_Minus) => Assign(e,ebogwrap(BinOp(Minus,e,one_const)))
+   | _ =>  (errorStr' ctxt (eleft e, eright e,
+                      "Expecting ++ / -- here."); EmptyStmt))
 
 fun resolve_fnname ctxt e =
     case enode e of
@@ -1023,18 +1028,6 @@ idlist
 declaration
 : declaration_specifiers YSEMI
                 (empty_declarator ctxt (node declaration_specifiers))
-(*| declaration_specifiers init_declarator_list attribute_specifier YSEMI
-                (let
-                   val dspecs' = FunSpec
-                                     (apnode GCC_Attributes
-                                             attribute_specifier) ::
-                                 node declaration_specifiers
-                   val ds_w = wrap(dspecs',
-                                   left declaration_specifiers,
-                                   right attribute_specifier)
-                 in
-                   make_declaration ds_w init_declarator_list
-                 end) *)
 | declaration_specifiers init_declarator_list YSEMI
                 (make_declaration ctxt declaration_specifiers init_declarator_list)
 
@@ -1227,7 +1220,19 @@ struct_declaration
                          left basetype, right struct_declarator_list),
                     sdecls)
                  end)
-
+| specifier_qualifier_list YSEMI (* anonymous nested struct / union *)
+                (let val basetype = extract_type ctxt specifier_qualifier_list
+                     val sdecls = first_sdecls (node specifier_qualifier_list)
+                     val _ = case first_enum_dec (node specifier_qualifier_list) of
+                               NONE => ()
+                             | SOME es => errorStr' ctxt (left es, right es,
+                                                    "Don't declare enumerations\
+                                                    \ inside structs")
+                     val dummy_field = (node basetype, wrap ("",YSEMIleft,YSEMIleft), NONE, [])
+                 in
+                   (wrap([dummy_field],left basetype, YSEMIleft),
+                    sdecls)
+                 end)
 struct_declarator_list :
    struct_declarator (wrap ([node struct_declarator], left struct_declarator,
                             right struct_declarator))
@@ -1241,11 +1246,6 @@ struct_declarator
 | declarator YCOLON rexpression
                 (wrap((declarator, SOME rexpression), left declarator,
                       eright rexpression))
-(*
-| YCOLON rexpression
-                (((fn t => (t, "")), SOME rexpression))
-*)
-
 init_declarator_list
 : init_declarator
                 ([init_declarator])
@@ -1591,11 +1591,12 @@ statement
        in
          case enode e of
            EFnCall(fn_e, args) => swrap(AssignFnCall(NONE, fn_e, args),l,r)
+         | PostOp _ => swrap (postop_to_stmt ctxt e, l, r)
          | _ => if is_number e then empty
                 else if fncall_free e then
                   (warnStr' ctxt (l, r,
                             "Ignoring (oddly expressed) expression without \
-                            \side effect");
+                            \side effect" ^ @{make_string} e);
                    empty)
                 else
                   (errorStr' ctxt (l, r, "Illegal bare expression containing \
@@ -1657,10 +1658,6 @@ statement
              sright statement2))
 | YSEMI
       (swrap(EmptyStmt,YSEMIleft,YSEMIright))
-| lexpression PLUSPLUS YSEMI
-      (swrap(postinc lexpression, eleft lexpression, YSEMIright))
-| lexpression MINUSMINUS YSEMI
-      (swrap(postdec lexpression, eleft lexpression, YSEMIright))
 | SWITCH LPAREN rexpression RPAREN LCURLY switchcase_list RCURLY
       (swrap(Trap(BreakT,
                   swrap(Switch(rexpression,
@@ -1827,12 +1824,8 @@ opt_for3_exprbase :
    lexpression assignop rexpression
       (swrap(parse_stdassignop ctxt (lexpression, assignop, rexpression),
              eleft lexpression, eright rexpression))
- | lexpression PLUSPLUS
-                (swrap(postinc lexpression, eleft lexpression,
-                       PLUSPLUSright))
- | lexpression MINUSMINUS
-                (swrap(postdec lexpression, eleft lexpression,
-                       MINUSMINUSright))
+ | lexpression
+        (swrap (postop_to_stmt ctxt lexpression, eleft lexpression, eright lexpression))
 
 opt_rexpr_list : (wrap([], defaultPos, defaultPos))
                | rexpr_list (rexpr_list)
@@ -2022,6 +2015,12 @@ postfix_expression
 | LPAREN type_name RPAREN LCURLY initializer_list RCURLY
          (ewrap(CompLiteral(node type_name, initializer_list),
                 LPARENleft, RCURLYright))
+| postfix_expression PLUSPLUS
+         (ewrap(postinc_expr postfix_expression, eleft postfix_expression,
+                       PLUSPLUSright))
+| postfix_expression MINUSMINUS
+         (ewrap(postdec_expr postfix_expression, eleft postfix_expression,
+                       MINUSMINUSright))
 
 primary_expression
 : ID

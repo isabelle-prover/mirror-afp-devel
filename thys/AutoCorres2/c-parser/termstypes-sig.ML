@@ -83,6 +83,7 @@ sig
 
   val mk_lshift : term * term -> term
   val mk_rshift : term * term -> term
+  val mk_arith_rshift : term * term -> term
 
   (* Given (addr,value) yield a primitive heap => heap transformer. *)
   val mk_heap_upd : term * term -> term

@@ -181,3 +181,17 @@ void set_NULL_void(void ** p) {
 void set_NULL_unsigned(unsigned ** p) {
  *p = 0;
 }
+
+typedef struct arr_struct {
+  unsigned arr1 [12];
+  unsigned arr2 [12];
+} arr_struct_t;
+
+unsigned access_arr_struct (arr_struct_t * p) {
+  unsigned result = 0;
+  for (unsigned i = 0; i < 6; i ++) {
+    p -> arr2[i] = 3;
+    p -> arr2[i+1] = p -> arr2[i+1] + i;
+  }
+  return 1;
+}

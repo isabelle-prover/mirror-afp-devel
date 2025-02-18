@@ -63,6 +63,65 @@ unsigned call_inc_value (unsigned k) {
   return n;
 }
 
+
+typedef unsigned (unop_u)(unsigned *);
+typedef unsigned (binop_u) (unsigned *, unsigned *);
+
+unsigned call_unop(unop_u * p, unsigned x) {
+  return p(&x);
+}
+
+unsigned call_binop (binop_u * p, unsigned x, unsigned y) {
+  return p (&x, &y);
+}
+
+unsigned uinc(unsigned *p) {
+ return (*p + 1);
+}
+
+unsigned udec(unsigned *p) {
+ return (*p - 1);
+}
+
+unsigned call_unop_uinc(unsigned x) {
+  return call_unop (uinc, x);
+}
+
+unsigned call_unop_udec(unsigned x) {
+  return call_unop (udec, x);
+}
+
+typedef struct object {
+  unop_u * unop;
+  binop_u * binop;
+} object_t;
+
+unsigned call_unop_method(object_t * p, unsigned x) {
+  return p->unop(&x);
+}
+
+unsigned call_binop_method(object_t * p, unsigned x, unsigned y) {
+  return p->binop(&x, &y);
+}
+
+
+
+
+enum type {ZERO, ONE, TYPE_MAX};
+static const object_t dispatcher[TYPE_MAX] = {
+  [ZERO] = {.unop=uinc},
+  [ONE]  = {.unop=udec}
+};
+
+unsigned dispatch_call_unop(unsigned char i, unsigned x) {
+  unsigned r = 0;
+  if (dispatcher[i].unop != 0) {
+    r = dispatcher[i].unop(&x);
+  }
+  return (r);
+};
+
+
 void compare (unsigned * cmp, unsigned i, unsigned j) {
   unsigned result = 0;
   if (i < j) {
@@ -403,6 +462,42 @@ void call_inc_ptr(unsigned *p) {
   inc(p);
 }
 
+void call_inc_ptr_keep(unsigned *p) {
+  inc(p);
+}
+
+unsigned deref_ptr(unsigned * p) {
+  return (*p);
+}
+
+unsigned deref_ptr_glob(unsigned * p) {
+  return (*p);
+}
+
+unsigned call_deref_ptr_keep(unsigned *p) {
+  return deref_ptr(p);
+}
+
+unsigned call_deref_ptr_glob_single(unsigned *p) {
+  unsigned x = 0 ;
+  unsigned res = 0;
+  keep_inc (&(x));
+  res = deref_ptr_glob(&(x));
+  return res;
+}
+
+unsigned call_deref_ptr_glob_pair(unsigned *p) {
+  pair_t x = {0,0};
+  keep_inc (&(x.second));
+  return deref_ptr_glob(&(x.first));
+}
+
+
+/*
+unsigned call_deref_ptr_glob_keep(unsigned *p) {
+  return deref_ptr_glob(p);
+}
+*/
 void call_inc_in_out_ptr(unsigned *p) {
   *p = inc_in_out(*p);
 }
@@ -555,6 +650,11 @@ typedef struct twice {
 
 void out(unsigned *out, tw cmp0, tw cmp1) {
   *out = 1;
+}
+
+void out_two(unsigned *out1, unsigned *out2, tw cmp0, tw cmp1) {
+  *out1 = 1;
+  *out2 = 2;
 }
 
 unsigned out_seq(unsigned *out, unsigned x, unsigned y) {
@@ -880,8 +980,122 @@ unsigned goto_read_char5(elem_t        *elem, long unsigned int cmp)
       return_status = 0;
       goto exit;
     }
+
     return_status = 1;
 
 exit:
     return return_status;
 }
+
+unsigned goto_read_char6(
+    elem_t  *elem,
+    unsigned         *value ) 
+{
+    unsigned return_status = 0;
+   
+    if (!elem) {
+      return_status = 0;
+      goto exit;
+    } 
+    if (!elem->content) {
+      return_status = 0;
+      goto exit;
+    } 
+    if (!value) {
+      return_status = 0;
+      goto exit;
+    } 
+    
+    if ( elem->content[0] == 0 ) {
+        *value = 1;
+    }
+    else if (elem->content[0] == 0xFF ) {
+        *value = 0;
+    }
+    else {
+        return_status = 0;
+        goto exit;
+    }
+
+    return_status = 1;
+exit:
+    return return_status;
+}
+
+unsigned fun1(unsigned  *content, elem_t *q)
+{
+	return 1;
+}
+
+unsigned smex7()
+{
+    unsigned s = 0;
+    elem_t p = {0, 0};
+    elem_t q = {0, 0};
+    s = fun1( &p.first, &q );
+    return s;
+}
+
+unsigned cmp_no_io(unsigned char * p, unsigned char * q) {
+  unsigned status = 0;
+  if (p == 0) goto exit;
+  if (q == 0) goto exit;
+
+  status = (*p == *q);
+exit: 
+  return status;
+}
+
+unsigned call_cmp_no_io(unsigned char * p, elem_t * q) {
+  unsigned status = 0;
+  if (p == 0) goto exit;
+  if (q == 0) goto exit;
+  status = cmp_no_io(p, q->content);
+exit:
+  return status; 
+}
+
+unsigned call_cmp_no_io1(unsigned char * p, elem_t * q) {
+  unsigned status = 0;
+  unsigned char * p1;
+  long unsigned int len1;
+  unsigned char res;
+  status = cmp_no_io(p, q->content);
+  res = read_char(&p1, &len1);
+  return status;
+}
+
+typedef struct {
+  void (*fnc)(void);
+} fnc_obj_t;
+
+void do_return(void) { return; }
+void do_exit(void) { exit(0); }
+
+fnc_obj_t fs[2] = { { .fnc = do_return }, { .fnc = do_exit } };
+
+void call_fnc(void) {
+  fs[0].fnc();
+  fs[1].fnc();
+}
+
+
+typedef struct {
+  void (*fnc)(unsigned char*);
+} fnc1_obj_t;
+
+void fnc1(unsigned char *p) { return; }
+
+fnc1_obj_t fnc1s[1] = { { .fnc = fnc1 } };
+
+
+void call_fnc1(void) {
+  unsigned char p = 0;
+  fnc1s[0].fnc(&p);
+}
+
+void f_empty1(int *p);
+void f_empty2(int *p) { *p = *(int*)0; };
+
+void f_only_return(void) { return; }
+void call_f_only_return(unsigned char *p) { f_only_return();}

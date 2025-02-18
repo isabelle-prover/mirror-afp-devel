@@ -562,6 +562,7 @@ fun define_funcs_single_recursive_group
     val fn_def_thms = fn_def_thms |> map (safe_mk_meta_eq) 
     val induct_thms = map (FunctionInfo.get_induct_thms o the o (AutoCorresData.get_function_info (Context.Proof lthy) filename phase)) fn_names
         |> hd
+
     (*
      * Instantiate schematic function calls in our theorems with their
      * concrete definitions.

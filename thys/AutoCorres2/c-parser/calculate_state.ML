@@ -121,7 +121,7 @@ fun define_enum_consts (CE {enumenv, ...}) lthy = let
     val binding = Binding.name nm'
     val ((_, (_, th)), lthy) =
         Local_Theory.define ((binding, NoSyn),
-                             ((Thm.def_binding binding, []), rhs_v))
+                             ((Thm.def_binding binding, @{attributes [enum_defs]}), rhs_v))
                             lthy
     fun upd th t = th :: t
     val acc = case tyname_opt of
@@ -386,12 +386,12 @@ let
           map (map (the o Symtab.lookup rcdmap)) sorted1
         end
   val used_types = ProgramAnalysis.get_usedtypes cse
-in
-  sorted_structs
-  |> burrow_split (List.partition (fn item => not prune 
+  val res = sorted_structs
+    |> burrow_split (List.partition (fn item => not prune 
        orelse Binaryset.member (used_types, CType.type_of_rcd item) 
        orelse member (op =) union_structs item))
-
+in
+  res
 end
 
 
@@ -792,6 +792,11 @@ fun mk_thy_decls prog_name state {owners, mstate_ty = pmstate_ty, gstate_ty, add
                in prop \<open>all_distinct t\<close> for t:: \<open>unit ptr tree\<close>\<close>, 
              [])])
 
+      val disjnt_G_S = ((Binding.make ("disjoint_\<G>_\<S>", \<^here>), @{attributes [disjoint_\<G>_\<S>]}), 
+            [(\<^instantiate>\<open>G = G and S = S 
+               in prop \<open>(G::addr set) \<inter> S = {}\<close>\<close>, 
+             [])])
+
       fun declare_addressed_global g thy =
         let
           val T = (mk_ptr_ty o #2) g
@@ -804,7 +809,8 @@ fun mk_thy_decls prog_name state {owners, mstate_ty = pmstate_ty, gstate_ty, add
     in
       (thy, [Element.Fixes (map (mk_fix nat) owners), 
              Element.Assumes (map mk_fun_ptr_guard (fun_ptrs ~~ addressed_funs)),
-             Element.Assumes [all_distinct]])
+             Element.Assumes [all_distinct],
+             Element.Assumes [disjnt_G_S]])
     end
     val lvars = lvars
     val (thy, globs) = mk_globals_rcd thy

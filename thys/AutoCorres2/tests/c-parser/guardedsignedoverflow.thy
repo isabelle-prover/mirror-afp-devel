@@ -5,13 +5,13 @@
  * SPDX-License-Identifier: BSD-2-Clause
  *)
 
-theory analsignedoverflow
+theory guardedsignedoverflow
 imports "AutoCorres2.CTranslation"
 begin
 
 
-declare [[anal_integer_conversion=true]]
-install_C_file "analsignedoverflow.c"
+declare [[guarded_integer_conversion=true]]
+install_C_file "guardedsignedoverflow.c"
 
 context f_impl
 begin

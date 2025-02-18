@@ -136,12 +136,12 @@ fun get_abs_inv_fn (rules : WARules list) t =
  * From a list of abstract arguments to a function, derive a list of
  * concrete arguments and types and a precondition that links the two.
  *)
-fun get_wa_conc_args rules fn_ptr_infos l2_infos fn_name fn_args lthy =
+fun get_wa_conc_args prev_phase rules fn_ptr_infos l2_infos fn_name fn_args lthy =
 let
   (* Construct arguments for the concrete body. We use the abstract names
    * with a prime ('), but with the concrete types. *)
   val args0 = case AList.lookup (op =) fn_ptr_infos fn_name of
-         SOME info => #args (info FunctionInfo.L2) (* args should not change in HL phase *)
+         SOME info => #args (info prev_phase)
       | NONE => the (Symtab.lookup l2_infos fn_name) |> FunctionInfo.get_plain_args;
   val conc_types = map snd args0;
   val (conc_names, lthy) = Variable.variant_fixes (map (fn Free (n, T) => n ^ "'") fn_args) lthy;
@@ -192,7 +192,7 @@ end
 
 
 fun mk_fn_ptr_infos ctxt prog_info fn_args info =
-  AutoCorresData.mk_fn_ptr_infos ctxt prog_info "" fn_args info
+  AutoCorresData.mk_fn_ptr_infos ctxt prog_info {ts_monad_name=""} fn_args info
 
 (* Get the expected theorem that will be generated about a function. *)
 fun get_wa_corres_prop skips prog_info rules prev_phase fn_ptr_infos l2_infos ctxt assume fn_name
@@ -209,13 +209,13 @@ let
         val P_wa = #prog_env wa_info
         val p = Free (#ptr_val wa_info)
         val prev_args = map Free (#args prev_info)
-      in (P_prev $ p, P_wa $ p, AutoCorresData.retT_from_fn_ptr_info prev_info, @{typ "exit_status c_exntype"}, []) end 
+      in (P_prev $ p, P_wa $ p, AutoCorresData.retT_from_fn_ptr_info prev_info, AutoCorresData.ex_type_of_exn_monad P_prev, []) end 
     | NONE => let val info = the (Symtab.lookup l2_infos fn_name) 
               in (FunctionInfo.get_const info, function_free, 
                   FunctionInfo.get_return_type info, FunctionInfo.get_exn_type info, []) end
 
   val (old_arg_types, old_args, precond, arg_pairs, _)
-      = get_wa_conc_args rules fn_ptr_infos l2_infos fn_name fn_args ctxt
+      = get_wa_conc_args prev_phase rules fn_ptr_infos l2_infos fn_name fn_args ctxt
   val old_term = betapplys (old_fn, old_args)
   val new_term = betapplys (new_fn, fn_args)
 
@@ -490,31 +490,32 @@ fun mk_corresTA_fun_ptr_thm prog_info (rec_funs, rec_ptrs) ctxt ((P_prev as Cons
      ||> HOLogic.mk_list (HOLogic.mk_prodT (@{typ "unit ptr"}, funT))
    val _ = if empty andalso not (null rec_funs) then raise Match else ()
 
-   val {resT=ret_prevT, stateT, ...} = AutoCorresData.dest_exn_monad_result_type monad_prevT
+   val {resT=ret_prevT, exT=ex_prevT, stateT, ...} = AutoCorresData.dest_exn_monad_result_type monad_prevT
 
    val (_ :: argTs, monadT) = strip_type T
-   val {resT = retT, ...} = AutoCorresData.dest_exn_monad_result_type monadT
+   val {resT = retT, exT, ...} = AutoCorresData.dest_exn_monad_result_type monadT
 
    val prev_args = map (fn T => ("x", T)) prev_argTs
    val args = map (fn T => ("y", T)) argTs
 
    val rt = ("rt", ret_prevT --> retT)
+   val ex = ("ex", ex_prevT --> exT)
    val Q = ("Q", stateT --> HOLogic.boolT)
    val R = ("R", stateT --> HOLogic.boolT)
    val Pre = ("P", HOLogic.boolT)
-   val (Pre::Q::R::rt::p'::prev_args, ctxt') = Utils.fix_variant_frees ([Pre, Q, R, rt, ("p'", ptrT)] @ prev_args) ctxt
+   val (Pre::Q::R::rt::ex::p'::prev_args, ctxt') = Utils.fix_variant_frees ([Pre, Q, R, rt, ex, ("p'", ptrT)] @ prev_args) ctxt
    val (p::args, ctxt') = Utils.fix_variant_frees ([("p", ptrT)]@args) ctxt'
    val abs_val = \<^infer_instantiate>\<open>Pre = Pre and p = p and p' = p' in prop \<open>abstract_val Pre p id p'\<close>\<close> ctxt
    val P_prev = betapplys(P_prev, [p'] @ prev_args)
    val P = if empty then P else \<^infer_instantiate>\<open>P = P and xs = ptr_assoc in term \<open>map_of_default P xs\<close>\<close> ctxt
    val (P, P') = (betapplys(P, [p] @ args), betapplys(P, [p'] @ args))
 
-   fun corres (Q, rt, P, P_prev) = \<^infer_instantiate>\<open>Q = Q and rt = rt and P = P and P_prev = P_prev 
-         in prop \<open>corresTA Q rt id P P_prev\<close>\<close> ctxt
+   fun corres (Q, rt, ex, P, P_prev) = \<^infer_instantiate>\<open>Q = Q and rt = rt and ex = ex and P = P and P_prev = P_prev 
+         in prop \<open>corresTA Q rt ex P P_prev\<close>\<close> ctxt
    val conj = \<^infer_instantiate>\<open>Pre = Pre and Q = Q in term \<open>\<lambda>s. Pre \<and> Q s\<close>\<close> ctxt
    val impl = \<^infer_instantiate>\<open>R = R and C = conj in term \<open>\<And>s. R s \<Longrightarrow> C s\<close>\<close> ctxt
-   val corres_pre = @{term DYN_CALL} $ corres (Q, rt, P', P_prev)
-   val goal = corres (R, rt, P, P_prev)
+   val corres_pre = @{term DYN_CALL} $ corres (Q, rt, ex, P', P_prev)
+   val goal = corres (R, rt, ex, P, P_prev)
 
    val [thm] = Goal.prove ctxt' [] [abs_val, corres_pre, impl] goal (fn {context=ctxt,prems=[abs_val, corres_pre, impl], ...} => 
          EVERY [
@@ -597,7 +598,7 @@ let
 
      (* Construct free variables to represent our concrete arguments. *)
     val (conc_types, conc_args, precond, arg_pairs, lthy'')
-        = get_wa_conc_args wa_rules fn_ptr_infos l2_infos f arg_frees lthy''
+        = get_wa_conc_args prev_phase wa_rules fn_ptr_infos l2_infos f arg_frees lthy''
 
     (* Fetch the function definition, and instantiate its arguments. *)
     val old_body_def = FunctionInfo.get_definition old_fn_info
@@ -736,9 +737,21 @@ let
         (lthy'' |> AutoCorresTrace.put_trace_info f phase FunctionInfo.RAW)
         []
         []
-        thm WA_opt 4 trace_opt "WA");
+        thm WA_opt 4 trace_opt FunctionInfo.WA);
     val _ = verbose_msg 1 lthy'' (fn _ => "WA (opt) - " ^ f ^ ": " ^ Thm.string_of_thm lthy'' thm);
 
+    fun corres_prog_conv conv = Conv.fconv_rule (Utils.remove_meta_conv (fn ctxt =>
+      Utils.nth_arg_conv 4 (conv ctxt)) lthy'')
+    val thm = thm |> not (#skip_io_abs skips) ? (fn thm =>
+     let
+       val _ = writeln ("Remove unused tuple components (WAprj) " ^ f)
+       val thm = Utils.timeit_msg 1 lthy'' (fn _ => "Remove unused tuple components (WAprj): " ^ f) (fn _ =>
+         thm
+         |> corres_prog_conv (fn ctxt => (L2_Exception_Rewrite.project_used_components_conv ctxt)))
+       val _ = Utils.verbose_msg 1 lthy'' (fn _ => "WA (IOprj) - " ^ f ^ ": " ^ Thm.string_of_thm lthy'' thm)
+     in
+       thm
+     end)
     (* We end up with an unwanted L2_guard outside the L2_recguard.
      * L2Opt should simplify the condition to (%_. True) even if (WA_opt = RAW),
      * so we match the guard and get rid of it here. *)

@@ -15,7 +15,8 @@ sig
   type varinfo =
        (string * Term.typ * ctyp option * CalculateState.var_sort)
 
-  val anal_integer_conversion : bool Config.T
+  val guarded_integer_conversion : bool Config.T
+  val arithmetic_right_shift : bool Config.T
 
   val zero_term : Proof.context -> ProgramAnalysis.senv -> ctyp -> term
 
@@ -225,8 +226,8 @@ fun strip_kb ei =
       end
 
 (* this is for converting between pairs of integer types *)
-val anal_integer_conversion =
-  Attrib.setup_config_bool \<^binding>\<open>anal_integer_conversion\<close> (K false)
+val guarded_integer_conversion =
+  Attrib.setup_config_bool \<^binding>\<open>guarded_integer_conversion\<close> (K false)
 
 fun int_conversion ctxt newty (ei : expr_info) : expr_info = let
   val oldty = ctype_of ei
@@ -253,7 +254,7 @@ in
         (mk_conj(lower,upper), signed_overflow_error)
       end
       val guards =
-          if Config.get_global (Proof_Context.theory_of ctxt) anal_integer_conversion then
+          if Config.get_global (Proof_Context.theory_of ctxt) guarded_integer_conversion then
             case newty of
               Signed _ => [mkguard]
             | PlainChar => if imin PlainChar = 0 then [] else [mkguard]
@@ -476,6 +477,11 @@ in
     end
 end
 
+(* adds a guard when arithmetic_right_shift is false *)
+val arithmetic_right_shift =
+  Attrib.setup_config_bool \<^binding>\<open>arithmetic_right_shift\<close> (K false)
+
+
 fun binop_term ctxt bop ei1 ei2 : expr_info = let
   val ei1 = array_decay ctxt ei1
   val ei2 = array_decay ctxt ei2
@@ -648,23 +654,28 @@ in
       (* "the integer promotions are performed on each of the operands" *)
       val ei1' = intprom_ei ctxt ei1
       val ei2' = intprom_ei ctxt ei2
-      fun rval s =
-          mk_rshift(rval_of ei1' s, IntInfo.ity_to_nat (rval_of ei2' s))
+      val (shift, do_guard) = (case ctype_of ei1' of
+          Signed _ => if Config.get ctxt arithmetic_right_shift
+              then (mk_arith_rshift, false)
+              else (mk_rshift, true)
+       | Unsigned _ => (mk_rshift, false)
+       | _ => raise General.Fail "RShift: impossible")
+      fun rval s = shift (rval_of ei1' s, IntInfo.ity_to_nat (rval_of ei2' s))
       val res =
-          mk_rval(rval,ctype_of ei1',false,eileft ei1', eiright ei2')
-                 |> add_ei_guards ei1 |> add_ei_guards ei2
+        mk_rval(rval, ctype_of ei1', false, eileft ei1', eiright ei2')
+        |> add_ei_guards ei1 |> add_ei_guards ei2
       val res = (* add check that second argument is not too large *) let
-        val ity1 = case ctype_of ei1' of
-                     Signed i => i
-                   | Unsigned i => i
-                   | _ => Fail "Bad type for first argument to right-shift"
-        val iwidth = int_sizeof ity1 * CHAR_BIT
-        val szcheck =
-            mk_relbinop ctxt (@{const_name "less"}, @{const_name "word_sless"},
-                             ei2', literalconstant ctxt (boglit iwidth))
-      in
-        add_guard (fn s => (rval_of szcheck s, shift_error)) res
-      end
+          val ity1 = case ctype_of ei1' of
+                       Signed i => i
+                     | Unsigned i => i
+                     | _ => Fail "Bad type for first argument to right-shift"
+          val iwidth = int_sizeof ity1 * CHAR_BIT
+          val szcheck =
+              mk_relbinop ctxt (@{const_name "less"}, @{const_name "word_sless"},
+                               ei2', literalconstant ctxt (boglit iwidth))
+        in
+          add_guard (fn s => (rval_of szcheck s, shift_error)) res
+        end
       val res = (* possibly add negativity check on second argument *)
           case ctype_of ei2' of
             Signed _ => let
@@ -678,17 +689,14 @@ in
           | Unsigned _ => res
           | _ => Fail "Bad type for second argument to right shift"
       val res = (* possibly add negativity check on first argument *)
-          case ctype_of ei1' of
-            Signed _ => let
-              val neg_check =
-                  mk_relbinop ctxt (@{const_name "less_eq"}, @{const_name "word_sle"},
-                                   literalconstant ctxt (boglit 0), ei1')
-              fun negP s = (rval_of neg_check s, shift_error)
-            in
-              add_guard negP res
-            end
-          | Unsigned _ => res
-          | _ => raise General.Fail "RShift: impossible"
+        if not do_guard then res else let
+          val neg_check =
+              mk_relbinop ctxt (@{const_name "less_eq"}, @{const_name "word_sle"},
+                               literalconstant ctxt (boglit 0), ei1')
+          fun negP s = (rval_of neg_check s, shift_error)
+        in
+          add_guard negP res
+        end
     in
       res
     end
@@ -1133,47 +1141,53 @@ in
             StructTy s => s
           | UnionTy s => s
           | _ => error "Expression on left of . doesn't have struct type"
-      fun ptr_coerce p = 
-        the_default (p, CalculateState.ctype_to_typ ctxt (StructTy sname)) 
-          (CalculateState.union_variant {non_canonical=true} thy cse (sname, fld) |> Option.map (fn (union_ty, variant_ty, _) => 
-            (\<^Const>\<open>ptr_coerce union_ty variant_ty\<close> $ p, variant_ty)))
-      fun heap_deref a = let     
-          fun rval st =
-            let 
-              val (ptr, ptr_ty) = ptr_coerce (a st)
-            in
-              mk_field_lvalue_ptr ctxt
-                 (ptr,
-                  mk_qualified_field_name fld,
-                  ptr_ty,
-                  CalculateState.ctype_to_typ ctxt (tyinfo e))
-            end
-        in
-          deref_action (mk_rval(rval, Ptr (tyinfo e)))
-        end
-      fun addr_of_option f g =
-          case addr_of e0_val of
-            SOME a => f (heap_deref a)
-          | NONE => g
-      val addr = addr_of_option addr_of NONE
-      val lval = addr_of_option lval_of
-          (case lval_of e0_val of
-             SOME f => let
-                fun lval0 (value : term) st =
-                    f (rcd_updator (sname, fld) value (e0_r st)) st
+      in 
+        case expand_anonymous_field senv sname e0 fld of 
+          SOME e' => expr_term e' 
+        | _ => 
+          let 
+            fun ptr_coerce p = 
+              the_default (p, CalculateState.ctype_to_typ ctxt (StructTy sname)) 
+                (CalculateState.union_variant {non_canonical=true} thy cse (sname, fld) |> Option.map (fn (union_ty, variant_ty, _) => 
+                  (\<^Const>\<open>ptr_coerce union_ty variant_ty\<close> $ p, variant_ty)))
+            fun heap_deref a = let     
+                fun rval st =
+                  let 
+                    val (ptr, ptr_ty) = ptr_coerce (a st)
+                  in
+                    mk_field_lvalue_ptr ctxt
+                       (ptr,
+                        mk_qualified_field_name fld,
+                        ptr_ty,
+                        CalculateState.ctype_to_typ ctxt (tyinfo e))
+                  end
               in
-                SOME lval0
+                deref_action (mk_rval(rval, Ptr (tyinfo e)))
               end
-           | NONE => NONE)
-      fun rval st = addr_of_option (fn x => rval_of x st)
-                                   (rcd_accessor (sname, fld) (e0_r st))
-      val lguard = lguards_of e0_val
-      val guard = guards_of e0_val
-    in
-      EI {lval = lval, addr = addr, rval = rval,
-          cty = addr_of_option ctype_of (tyinfo e),
-          ibool = false, lguard = lguard, guard = guard,
-          left = eleft e, right = eright e}
+            fun addr_of_option f g =
+                case addr_of e0_val of
+                  SOME a => f (heap_deref a)
+                | NONE => g
+            val addr = addr_of_option addr_of NONE
+            val lval = addr_of_option lval_of
+                (case lval_of e0_val of
+                   SOME f => let
+                      fun lval0 (value : term) st =
+                          f (rcd_updator (sname, fld) value (e0_r st)) st
+                    in
+                      SOME lval0
+                    end
+                 | NONE => NONE)
+            fun rval st = addr_of_option (fn x => rval_of x st)
+                                         (rcd_accessor (sname, fld) (e0_r st))
+            val lguard = lguards_of e0_val
+            val guard = guards_of e0_val
+          in
+            EI {lval = lval, addr = addr, rval = rval,
+                cty = addr_of_option ctype_of (tyinfo e),
+                ibool = false, lguard = lguard, guard = guard,
+                left = eleft e, right = eright e}
+          end
     end
   | TypeCast(cty,e0) => typecast (ctxt, constify_abtype true ctxt ecenv (node cty),
                                   expr_term e0)
@@ -1191,8 +1205,13 @@ in
     in
       mk_rval(rval, ImplementationTypes.size_t)
     end
-  | OffsetOf _ =>  let
-      val off = consteval true ctxt ecenv e
+  | OffsetOf (e0, flds0) =>  let
+      val flds = case node e0 of 
+        StructTy n => ExpressionTyping.expand_anonymous_fields senv n flds0
+       | UnionTy n => ExpressionTyping.expand_anonymous_fields senv n flds0
+       | _ => flds0
+      val e' = ewrap (OffsetOf (e0, flds), eleft e, eright e)
+      val off = consteval true ctxt ecenv e'
       fun rval _  = IntInfo.numeral2w ImplementationTypes.size_t off 
     in
       mk_rval (rval, ImplementationTypes.size_t)

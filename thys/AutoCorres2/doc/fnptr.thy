@@ -20,6 +20,50 @@ FIXME: what about a final-autocorres sanity check?
 
 install_C_file "fnptr.c"
 
+text \<open>\<close>
+ML \<open>
+val emp = Binaryset.empty fast_string_ord
+
+val s1 = Binaryset.addList (emp, ["even", "odd"])
+val s1' =  Binaryset.listItems s1
+val odd = Binaryset.addList (emp, ["odd"])
+val even = Binaryset.addList (emp, ["even"])
+
+val s3 = Binaryset.difference (odd, s1)
+val s3' = Binaryset.listItems s3
+
+val s4 = Binaryset.difference (even, s1)
+val s4' = Binaryset.listItems s4
+
+val s5 = Binaryset.difference (s1, odd)
+val s5' = Binaryset.listItems s5
+\<close>
+
+declare [[ML_print_depth=1000]]
+init-autocorres [phase=L1,
+  ts_force nondet = voidcaller,  
+  ts_force_known_functions = option ] fnptr.c
+
+autocorres [phase=L1,single_threaded,
+  ts_force nondet = voidcaller,  
+  ts_force_known_functions = option ] fnptr.c
+
+autocorres [phase=L2,single_threaded,
+  ts_force nondet = voidcaller,  
+  ts_force_known_functions = option ] fnptr.c
+
+autocorres [phase=HL,
+  ts_force nondet = voidcaller,  
+  ts_force_known_functions = option ] fnptr.c
+
+autocorres [phase=TS,
+  ts_force nondet = voidcaller,  
+  ts_force_known_functions = option ] fnptr.c
+
+
+
+
+
 autocorres [
   ts_force nondet = voidcaller,  
   ts_force_known_functions = option ] fnptr.c
@@ -31,7 +75,7 @@ Dealing with function pointers in AutoCorres has the following main challenges:
 \<^item> Correspondence proofs
 \<^item> Mutual recursion
 \<close>
-
+term from_bytes
 subsubsection \<open>Parameter passing\<close> 
 
 text \<open>
@@ -679,8 +723,21 @@ all functions for which addresses are calculated in the program and considers th
 context fnptr_all_impl
 begin
 thm known_function
+thm fun_ptr_simps
+thm fun_ptr_distinct
 end
 
+context fnptr_all_corres
+begin
+
+thm global_const_defs
+thm fun_ptr_simps
+thm fun_ptr_intros
+thm fun_ptr_distinct
+thm fun_ptr_subtree
+thm known_function
+thm known_function_corres
+end
 
 
 end

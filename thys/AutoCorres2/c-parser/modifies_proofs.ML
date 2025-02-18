@@ -341,7 +341,7 @@ fun prove_all_modifies_goals_local prog_name csenv includeP tyargs cliques thy =
     fun gamma_t ctxt = HP_TermsTypes.mk_gamma ctxt prog_name;
 
 
-    val {callees,callers} = ProgramAnalysis.compute_callgraphs ctxt csenv
+    val {callees,callers} = ProgramAnalysis.compute_callgraphs csenv
 
     fun do_one fname (failedsofar, mod_inv_props, thy) =
       let

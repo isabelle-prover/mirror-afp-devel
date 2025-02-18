@@ -27,36 +27,10 @@ lemma L2_return_L2_gets_conv: "L2_return x ns = L2_gets (\<lambda>_. x) ns"
   unfolding L2_defs L2_VARS_def
   by (simp add: gets_return)
 
-
 lemma return_L2_gets_conv: "(return x) = L2_gets (\<lambda>_. x) []"
   unfolding L2_defs L2_VARS_def
   by (simp add: gets_return)
 
-
-definition (in heap_state)  
-  IO_modify_heap_padding::"'a::mem_type ptr \<Rightarrow> ('s \<Rightarrow> 'a) \<Rightarrow> ('b::default, unit, 's) spec_monad" where
- "IO_modify_heap_padding p v = 
-    state_select {(s, t). \<exists>bs. length bs = size_of (TYPE('a)) \<and> t = hmem_upd (heap_update_padding p (v s) bs) s}"
-
-lemma (in heap_state) liftE_IO_modify_heap_padding: "liftE (IO_modify_heap_padding p v) = (IO_modify_heap_padding p v)"
-  unfolding IO_modify_heap_padding_def
-  apply (rule spec_monad_eqI)
-  apply (auto simp add: runs_to_iff)
-  done
-
-abbreviation (in heap_state) IO_modify_heap_paddingE:: 
-    "'a::mem_type ptr \<Rightarrow> ('s \<Rightarrow> 'a) \<Rightarrow> ('b, unit, 's) exn_monad" where
-    "IO_modify_heap_paddingE p v \<equiv> liftE (IO_modify_heap_padding p v)"
-
-lemma (in heap_state) no_fail_IO_modify_padding[simp]:  "succeeds (IO_modify_heap_padding p v) s"
-  unfolding IO_modify_heap_padding_def
-  apply (simp)
-  using length_to_bytes_p by blast
-
-lemma (in heap_state) no_fail_IO_modify_paddingE[simp]:  "succeeds (IO_modify_heap_paddingE p v) s"
-  unfolding IO_modify_heap_padding_def
-  apply (simp)
-  using length_to_bytes_p by blast
 
 named_theorems refines_right_eq
 
@@ -183,6 +157,20 @@ lemma refines_right_eq_L2_guard:
   by (rule refines_right_eq_L2_guard')
 
 
+lemma refines_L2_guarded:
+  assumes grd: "g' t \<Longrightarrow> g s"
+  assumes X_X': "g s \<Longrightarrow> g' t \<Longrightarrow> refines X X' s t Q"
+  shows "refines (L2_guarded g X) (L2_guarded g' X') s t Q"
+  using grd X_X'
+  apply (simp add: L2_guarded_def L2_seq_def L2_guard_def)
+  apply (rule refines_bind')
+      apply (rule refines_guard)
+   apply simp
+  apply clarsimp
+  done
+
+
+
 lemma select_UNIV_L2_unknown_conv: "(select UNIV) = L2_unknown ns"
   unfolding L2_defs
   by simp
@@ -197,37 +185,6 @@ lemma hd_UNIV: "hd ` UNIV \<subseteq> UNIV"
 
 lemma hd_singleton: "hd ` {[x]} \<subseteq> {x}"
   by simp
-
-lemma refines_select_right_witness:
-  assumes "x \<in> X"
-  assumes "refines f (g x) s t Q"
-  shows "refines f ((select X) >>= g) s t Q"
-  using assms
-  using assms
-  by (fastforce simp add: refines_def_old succeeds_bind reaches_bind)
-  
-
-lemma refines_bindE_right: 
-  assumes f: "refines f f' s s' Q"
-  assumes ll: "\<And>e e' t t'. Q (Exn e, t) (Exn e', t') \<Longrightarrow> R (Exn e, t) (Exn e', t')"
-  assumes lr: "\<And>e v' t t'. Q (Exn e, t) (Result v', t') \<Longrightarrow> refines (throw e) (g' v') t t' R"
-  assumes rl: "\<And>v e' t t'. Q (Result v, t) (Exn e', t') \<Longrightarrow> refines ((return v)) (throw e') t t' R"
-  assumes rr: "\<And>v v' t t'. Q (Result v, t) (Result v', t') \<Longrightarrow> refines ((return v)) (g' v') t t' R"
-  shows "refines f (f' >>= g') s s' R"
-proof -
-  have eq: "f = (f >>= (\<lambda>v. return v))"
-    by simp
-  show ?thesis
-    apply (subst eq)
-    using assms
-    by (rule refines_bind_bind_exn)
-qed
-
-lemma refines_exec_modify_step_right: 
-  assumes "refines (return x) g s (upd t) Q"
-  shows "refines (return x) (do{ _ <- (modify (upd)); g }) s t Q"
-  using assms
-  by (auto simp add: refines_def_old reaches_bind succeeds_bind)
 
 lemma (in heap_state) refines_exec_IO_modify_heap_padding_step_right: 
   fixes p:: "'a::mem_type ptr"
@@ -278,12 +235,6 @@ lemma refines_exec_L2_return_right:
   using assms unfolding L2_VARS_def
   by (auto simp add: refines_def_old)
 
-lemma f_catch_throw: "(f <catch> throw) = f"
-  apply (rule spec_monad_eqI)
-  apply (clarsimp simp add: runs_to_iff)
-  apply (clarsimp simp add: runs_to_def_old)
-  by (metis Exn_def default_option_def exception_or_result_cases not_None_eq)
-
 lemma refines_L2_catch_right:
   assumes f: "refines f g s t Q"
   assumes Res_Res: "\<And>v v' s' t'. Q (Result v, s') (Result v', t') \<Longrightarrow> R (Result v, s') (Result v', t')"
@@ -328,7 +279,7 @@ lemma refines_project_guard_right:
 
 named_rules cguard_assms and alloc_assms and modifies_assms and disjoint_assms and
   disjoint_alloc and disjoint_stack_free and stack_ptr and h_val_globals_frame_eq and
-  rel_alloc_independent_globals
+  rel_alloc_independent_globals and keep_non_stack_ptr_eqs
 synthesize_rules refines_in_out
 add_synthesize_pattern refines_in_out =
 \<open>
@@ -422,7 +373,7 @@ lemma domain_rel_singleton_stack:
 
 
 
-named_theorems rel_stack_intros and rel_stack_simps
+named_theorems rel_stack_intros and rel_stack_simps and rel_entail
 
 
 
@@ -610,6 +561,13 @@ lemma rel_exit_simps[simp]:
 lemma rel_exit_intro: "Q h x y \<Longrightarrow> rel_exit Q h (Nonlocal x) y"
   by (auto simp add: rel_exit_def)
 
+
+
+lemma rel_exit_entail[rel_entail]:
+  "(\<And>x y. R h x y \<Longrightarrow> R' h x y) \<Longrightarrow> 
+  rel_exit R h x y \<Longrightarrow> rel_exit R' h x y"
+  by (auto simp add: rel_exit_def)
+
 lemma rel_xval_stack_rel_exit_intro:
   assumes "\<And>x. rel_xval_stack (rel_exit Q) R h (Exn (Nonlocal (the_Nonlocal x))) (Exn x)" 
   assumes "rel_exit Q h e e'" 
@@ -640,9 +598,15 @@ lemma rel_xval_stack_generalise_left:
   "rel_xval_stack L R h v w \<Longrightarrow> (\<And>v w. L h v w \<Longrightarrow> L' h v w) \<Longrightarrow> rel_xval_stack L' R h v w"
   by (auto simp add: rel_xval_stack_def rel_xval.simps)
 
+lemma rel_sum_stack_generalise_both: 
+  "rel_sum_stack L R h v w \<Longrightarrow> (\<And>v w. L h v w \<Longrightarrow> L' h v w) \<Longrightarrow> (\<And>v w. R h v w \<Longrightarrow> R' h v w) \<Longrightarrow> 
+  rel_sum_stack L' R' h v w"
+  by (auto simp add: rel_sum_stack_def rel_sum.simps)
+
 lemmas generalise_unreachable_exitE = 
   rel_exit_FalseE
-  rel_sum_stack_generalise_left
+  FalseE
+  rel_sum_stack_generalise_both
   rel_xval_stack_generalise_left
 
 lemma fun_of_rel_rel_exit: "fun_of_rel (L h) f_l \<Longrightarrow> fun_of_rel (rel_exit L h) (\<lambda>v. case v of Nonlocal x \<Rightarrow> f_l x | _ \<Rightarrow> undefined)"
@@ -766,6 +730,18 @@ lemma disjoint_stack_free_equal_on_trans:
    stack_free d' \<inter> P = {}"
   apply (clarsimp simp add: equal_on_def)
   using root_ptr_valid_def stack_free_def valid_root_footprint_def by fastforce
+
+lemma refines_L2_guard_right_unconditional: 
+  assumes "refines f g s t Q"
+  shows "refines f (L2_seq (L2_guard P) (\<lambda>_. g)) s t Q"
+  using assms unfolding L2_defs
+  by (auto simp add: refines_def_old reaches_bind succeeds_bind)
+
+lemma refines_L2_guard_right_unconditional': 
+  assumes "refines f g s t Q"
+  shows "refines f (L2_seq (L2_guard (\<lambda>_. P)) (\<lambda>_. g)) s t Q"
+  using assms unfolding L2_defs
+  by (auto simp add: refines_def_old reaches_bind succeeds_bind)
 
 lemma refines_L2_guard_right': 
   assumes "P t \<Longrightarrow> refines f g s t Q"
@@ -908,6 +884,9 @@ lemma rel_alloc_stack_free_disjoint':
 
 lemma rel_alloc_stack_free_disjoint_trans':  
  "rel_alloc S M A t\<^sub>0 s' t \<Longrightarrow> htd s' = htd s \<Longrightarrow> ptr_span p \<subseteq> A \<Longrightarrow> stack_free (htd s) \<inter> ptr_span p  = {}"
+  by (auto simp add: rel_alloc_def)
+              
+lemma rel_alloc_disj_G_S: "G \<inter> S = {} \<Longrightarrow> rel_alloc S M A t\<^sub>0 s t \<Longrightarrow> G \<inter> stack_free (htd s) = {}"
   by (auto simp add: rel_alloc_def)
 
 lemma rel_alloc_stack_free_disjoint_field_lvalue:
@@ -1845,6 +1824,22 @@ proof -
     by blast
 qed
 
+lemma L2_guarded_rel_stack:
+  assumes e: "g' (frame A t\<^sub>0 s) \<Longrightarrow> g s"
+  assumes rel_alloc: "rel_alloc \<S> M A t\<^sub>0 s t"
+  assumes X_X': "g s \<Longrightarrow> g' t \<Longrightarrow> refines X X' s t (rel_stack \<S> M' A s t\<^sub>0 (rel_xval_stack L R))"
+  assumes M: "M' \<subseteq> M"
+  shows "refines (L2_guarded g X) (L2_guarded g' X') s t (rel_stack \<S> M' A s t\<^sub>0 (rel_xval_stack L R))"
+  apply (rule refines_L2_guarded)
+    subgoal using e rel_alloc
+    apply (auto simp add: rel_alloc_def)
+      done
+    subgoal
+       apply (rule X_X')
+        apply (simp_all add: M)
+      done
+    done
+
 lemma L2_condition_rel_stack:
   assumes s_t: "rel_alloc \<S> M A t\<^sub>0 s t"
   assumes c_c': "c s = c' (frame A t\<^sub>0 s)"
@@ -2053,6 +2048,13 @@ lemma L2_fail_rel_stack:
   shows "refines (L2_fail) (L2_fail) s t (rel_stack \<S> {} A s t\<^sub>0 (rel_xval_stack L R))"
   using s_t
   by (auto simp add: L2_fail_def refines_def_old rel_stack_def rel_alloc_modifies_antimono)
+
+lemma L2_undefined_function_rel_stack:
+  assumes s_t: "rel_alloc \<S> M A t\<^sub>0 s t"
+  shows "refines ((L2_guard (\<lambda>s. UNDEFINED_FUNCTION))) L2_fail s t (rel_stack \<S> {} A s t\<^sub>0 (rel_xval_stack L R))"
+  using s_t L2_fail_rel_stack
+  by (auto simp add: L2_guard_false UNDEFINED_FUNCTION_def)
+
 
 lemma L2_skip_rel_stack:
   assumes s_t: "rel_alloc \<S> M A t\<^sub>0 s t"
@@ -3414,7 +3416,6 @@ lemma refines_rel_stack_override_heap_on_exit:
   assumes f_g: "\<And>s t t\<^sub>0. rel_alloc \<S> M (P \<union> A) t\<^sub>0 s t \<Longrightarrow> 
     refines f (g s) s t (rel_stack \<S> M1 (P \<union> A) s t\<^sub>0 Q)"
   assumes disj_A: "P \<inter> A = {}"
-  assumes p_M1: "P \<subseteq> M1"
   assumes M1_M: "M1 \<subseteq> M"
   assumes disj_stack_free_s: "P \<inter> stack_free (htd s) = {}"
   shows "refines f (g s) s t 
@@ -3466,7 +3467,6 @@ lemma refines_rel_stack_override_heap_on_exit_guarded:
   assumes f_g: "\<And>s t t\<^sub>0. G \<Longrightarrow> rel_alloc \<S> M (P \<union> A) t\<^sub>0 s t \<Longrightarrow> 
     refines f (L2_seq (L2_guard (\<lambda>_. G)) (\<lambda>_. g s)) s t (rel_stack \<S> M1 (P \<union> A) s t\<^sub>0 Q)"
   assumes disj_A: "G \<Longrightarrow> P \<inter> A = {}"
-  assumes p_M1: "G \<Longrightarrow> P \<subseteq> M1"
   assumes M1_M: "G \<Longrightarrow> M1 \<subseteq> M"
   assumes disj_stack_free_s: "G \<Longrightarrow> P \<inter> stack_free (htd s) = {}"
   shows "refines f (L2_seq (L2_guard (\<lambda>_. G)) (\<lambda>_. g s)) s t 
@@ -3474,12 +3474,177 @@ lemma refines_rel_stack_override_heap_on_exit_guarded:
 proof -
   {assume guard: "G" 
     have "refines f (L2_seq (L2_guard (\<lambda>_. G)) (\<lambda>_. g s)) s t (rel_stack \<S> M1 (P \<union> A) s (override_heap_on P t\<^sub>0 t) Q)"
-      using refines_rel_stack_override_heap_on_exit [OF stack f_g [OF guard] disj_A [OF guard] p_M1 [OF guard] 
+      using refines_rel_stack_override_heap_on_exit [OF stack f_g [OF guard] disj_A [OF guard]  
           M1_M [OF guard] disj_stack_free_s [OF guard]].}
   then show ?thesis
     by (rule refines_L2_guard_right'')
 qed
 
+
+lemma override_heap_on_merge: 
+  "(override_heap_on (P1 \<union> P2) t\<^sub>0 t) = override_heap_on P2 (override_heap_on P1 t\<^sub>0 t) t"
+  unfolding override_heap_on_def
+  using override_on_merge
+  by (smt (verit, ccfv_threshold) heap.get_upd heap.lense_axioms 
+      heap_commute lense.upd_compose lense.upd_cong sup_aci(1) typing.get_upd typing.lense_axioms)
+  
+lemma refines_rel_stack_override_heap_on_unmodified'':
+  fixes p:: "'a::xmem_type ptr"
+  assumes stack: "rel_alloc \<S> M A t\<^sub>0 s t"
+  assumes f_g: "refines f g s t 
+    (rel_stack \<S> M1 ((P1 \<union> P2) \<union> A) s (override_heap_on (P1 \<union> P2) t\<^sub>0 t) Q)"
+  assumes disj_A: "(P1 \<union> P2) \<inter> A = {}"
+  assumes unmodified: "P1 \<inter> M1 = {}" 
+  assumes M1_M: "M1 \<subseteq> M"
+  assumes disj_stack_free_s: "(P1 \<union> P2) \<inter> stack_free (htd s) = {}"
+  shows "refines f g s t (rel_stack \<S> M1 (P2 \<union> A) s (override_heap_on P2 t\<^sub>0 t) Q)"
+  using f_g
+  apply (auto simp add: refines_def_old rel_stack_def)
+  subgoal for r s'
+    apply (erule  allE [where x=r])
+    apply (erule  allE [where x=s'])
+    apply auto
+    subgoal for x t'
+      apply (rule exI [where x = x])
+      apply (rule exI [where x = t'])
+      apply auto
+      using disj_A unmodified M1_M stack
+      apply (auto simp add: rel_alloc_def)
+      subgoal premises prems
+      proof -
+        have eq1: 
+          "(\<lambda>a. if (a \<in> P1 \<or> a \<in> P2 \<or> a \<in> A) \<and> a \<notin> stack_free (htd s)
+               then if a \<in> P1 \<or> a \<in> P2 then if a \<in> A \<and> a \<notin> stack_free (htd s) then htd t\<^sub>0 a else htd s a
+                    else htd t\<^sub>0 a
+               else htd s'  a) =  
+           (\<lambda>a. if (a \<in> P2 \<or> a \<in> A) \<and> a \<notin> stack_free (htd s)
+               then if a \<in> P2 then if a \<in> A \<and> a \<notin> stack_free (htd s) then htd t\<^sub>0 a else htd s a else htd t\<^sub>0 a
+               else htd s' a)"
+          using prems
+          by fastforce
+
+        have eq2:
+         "(\<lambda>a. if a \<in> P1 \<or> a \<in> P2 \<or> a \<in> A \<or> a \<in> stack_free (htd s)
+             then if a \<in> P1 \<or> a \<in> P2 then if a \<in> A \<or> a \<in> stack_free (htd s) then hmem t\<^sub>0 a else hmem s a
+                  else hmem t\<^sub>0 a
+             else hmem s' a) = 
+          (\<lambda>a. if a \<in> P2 \<or> a \<in> A \<or> a \<in> stack_free (htd s)
+             then if a \<in> P2 then if a \<in> A \<or> a \<in> stack_free (htd s) then hmem t\<^sub>0 a else hmem s a else hmem t\<^sub>0 a
+             else hmem s' a)"
+          apply (auto simp add: fun_eq_iff)
+          using prems
+          by (simp add: equal_upto_def orthD1)
+
+        have eq3: "\<And>f g. hmem_upd f (htd_upd g s') = (hmem_upd (\<lambda>_. f (hmem s')) (htd_upd g s'))"
+          by (metis heap.upd_cong hmem_htd_upd)
+
+        have *: 
+          "hmem_upd
+             (\<lambda>h a. if a \<in> P1 \<or> a \<in> P2 \<or> a \<in> A \<or> a \<in> stack_free (htd s)
+               then if a \<in> P1 \<or> a \<in> P2 then if a \<in> A \<or> a \<in> stack_free (htd s) then hmem t\<^sub>0 a else hmem s a
+                    else hmem t\<^sub>0 a
+               else h a)
+            (htd_upd
+              (\<lambda>d a. if (a \<in> P1 \<or> a \<in> P2 \<or> a \<in> A) \<and> a \<notin> stack_free (htd s)
+                 then if a \<in> P1 \<or> a \<in> P2 then if a \<in> A \<and> a \<notin> stack_free (htd s) then htd t\<^sub>0 a else htd s a
+                      else htd t\<^sub>0 a
+                 else d a)
+             s') =
+           hmem_upd
+             (\<lambda>h a. if a \<in> P2 \<or> a \<in> A \<or> a \<in> stack_free (htd s)
+                then if a \<in> P2 then if a \<in> A \<or> a \<in> stack_free (htd s) then hmem t\<^sub>0 a else hmem s a else hmem t\<^sub>0 a
+              else h a)
+            (htd_upd
+               (\<lambda>d a. if (a \<in> P2 \<or> a \<in> A) \<and> a \<notin> stack_free (htd s)
+                 then if a \<in> P2 then if a \<in> A \<and> a \<notin> stack_free (htd s) then htd t\<^sub>0 a else htd s a else htd t\<^sub>0 a
+                 else d a)
+            s')" 
+          apply (subst typing.upd_cong )
+           apply (rule eq1)
+          apply (subst eq3)
+          apply (subst eq2)          
+          apply (subst (2) eq3)
+          apply simp
+          done
+        show ?thesis
+          apply (simp add: override_heap_on_def frame_def)
+          apply (auto simp add: override_on_def split: if_splits)
+          using *
+          using prems(7) by auto
+      qed
+      done
+    done
+  done
+
+lemma refines_rel_stack_override_heap_on_unmodified':
+  fixes p:: "'a::xmem_type ptr"
+  assumes stack: "rel_alloc \<S> M A t\<^sub>0 s t"
+  assumes f_g: "refines f g s t 
+    (rel_stack \<S> M1 (P \<union> A) s (override_heap_on P t\<^sub>0 t) Q)"
+
+  assumes disj_A: "P \<inter> A = {}"
+  assumes unmodified: "P \<inter> M1 = {}" 
+  assumes M1_M: "M1 \<subseteq> M"
+  assumes disj_stack_free_s: "P \<inter> stack_free (htd s) = {}"
+  shows "refines f g s t (rel_stack \<S> M1 A s t\<^sub>0 Q)"
+  using refines_rel_stack_override_heap_on_unmodified'' [where ?P1.0= P and ?P2.0="{}"] assms
+  by simp
+
+lemma refines_rel_stack_override_heap_on_unmodified:
+  fixes p:: "'a::xmem_type ptr"
+  assumes stack: "rel_alloc \<S> M A t\<^sub>0 s t"
+  assumes f_g: "refines f g s t 
+    (rel_stack \<S> M1 (P \<union> A) s (override_heap_on P t\<^sub>0 t) Q)"
+  assumes P: "P = (P1 \<union> P2)"
+  assumes disj_A: "P \<inter> A = {}"
+  assumes unmodified: "P1 \<inter> M1 = {}" 
+  assumes M1_M: "M1 \<subseteq> M"
+  assumes disj_stack_free_s: "P \<inter> stack_free (htd s) = {}"
+  shows "refines f g s t (rel_stack \<S> M1 (P2 \<union> A) s (override_heap_on P2 t\<^sub>0 t) Q)"
+  using refines_rel_stack_override_heap_on_unmodified'' assms
+  by auto
+
+
+lemma refines_rel_stack_override_heap_on_exit_unmodified:
+  fixes p:: "'a::xmem_type ptr"
+  assumes stack: "rel_alloc \<S> M A t\<^sub>0 s t"
+  assumes f_g: "\<And>s t t\<^sub>0. rel_alloc \<S> M (P \<union> A) t\<^sub>0 s t \<Longrightarrow> 
+    refines f (g s) s t (rel_stack \<S> M1 (P \<union> A) s t\<^sub>0 Q)"
+  assumes P: "P = (P1 \<union> P2)"
+  assumes disj_A: "P \<inter> A = {}"
+  assumes unmodified: "P1 \<inter> M1 = {}" 
+  assumes M1_M: "M1 \<subseteq> M"
+  assumes disj_stack_free_s: "P \<inter> stack_free (htd s) = {}"
+  shows "refines f (g s) s t 
+    (rel_stack \<S> M1 (P2 \<union> A) s (override_heap_on P2 t\<^sub>0 t) Q)"
+proof -
+  from refines_rel_stack_override_heap_on_exit [OF stack f_g disj_A M1_M disj_stack_free_s]
+  have "refines f (g s) s t (rel_stack \<S> M1 (P \<union> A) s (override_heap_on P t\<^sub>0 t) Q)".
+  from refines_rel_stack_override_heap_on_unmodified [OF stack this P disj_A unmodified M1_M disj_stack_free_s]
+  show ?thesis .
+qed
+
+lemma refines_rel_stack_override_heap_on_exit_guarded_unmodified:
+  fixes p:: "'a::xmem_type ptr"
+  assumes stack: "rel_alloc \<S> M A t\<^sub>0 s t"
+  assumes f_g: "\<And>s t t\<^sub>0. G \<Longrightarrow> rel_alloc \<S> M (P \<union> A) t\<^sub>0 s t \<Longrightarrow> 
+    refines f (L2_seq (L2_guard (\<lambda>_. G)) (\<lambda>_. g s)) s t (rel_stack \<S> M1 (P \<union> A) s t\<^sub>0 Q)"
+  assumes P: "G \<Longrightarrow> P = (P1 \<union> P2)"
+  assumes disj_A: "G \<Longrightarrow> P \<inter> A = {}"
+  assumes unmodified: "G \<Longrightarrow> P1 \<inter> M1 = {}" 
+  assumes M1_M: "G \<Longrightarrow> M1 \<subseteq> M"
+  assumes disj_stack_free_s: "G \<Longrightarrow> P \<inter> stack_free (htd s) = {}"
+  shows "refines f (L2_seq (L2_guard (\<lambda>_. G)) (\<lambda>_. g s)) s t 
+    (rel_stack \<S> M1 (P2 \<union> A) s (override_heap_on P2 t\<^sub>0 t) Q)"
+proof -
+  {assume guard: "G" 
+    have "refines f (L2_seq (L2_guard (\<lambda>_. G)) (\<lambda>_. g s)) s t (rel_stack \<S> M1 (P2 \<union> A) s (override_heap_on P2 t\<^sub>0 t) Q)"
+      using refines_rel_stack_override_heap_on_exit_unmodified [OF stack f_g [OF guard] P [OF guard] 
+          disj_A [OF guard]  unmodified [OF guard] 
+          M1_M [OF guard] disj_stack_free_s [OF guard]].}
+  then show ?thesis
+    by (rule refines_L2_guard_right'')
+qed
 
 
 lemma refines_rel_stack_override_heap_emptyI:
@@ -3543,7 +3708,7 @@ proof -
 
   show ?thesis
     unfolding L2_seq_def
-    apply (rule refines_bindE_right [where Q = "\<lambda>(v, s') (w, t'). 
+    apply (rule refines_bindE_right' [where Q = "\<lambda>(v, s') (w, t'). 
         case v of 
           Exn e \<Rightarrow> \<exists>w'. w = Exn w' \<and> rel_stack \<S> M1 (P \<union> A) s (override_heap_on P t\<^sub>0 t) (rel_xval_stack (rel_exit L) (\<lambda>_ _ _. False)) (Exn e, s') (Exn w', t')
         | Result v \<Rightarrow> \<exists>w'. w = Result w' \<and> rel_stack \<S> M1 (ptr_span p \<union> P \<union> A) s (override_heap_on (ptr_span p \<union> P) t\<^sub>0 t) (rel_xval_stack (\<lambda>_ _ _. False) (rel_push p R)) (Result v, s') (Result w', t')"] )
@@ -3745,7 +3910,7 @@ proof -
 
   show ?thesis
     unfolding L2_seq_def
-    apply (rule refines_bindE_right [where Q = "\<lambda>(v, s') (w, t'). 
+    apply (rule refines_bindE_right' [where Q = "\<lambda>(v, s') (w, t'). 
         case v of 
           Exn e \<Rightarrow> \<exists>w'. w = Exn w' \<and> rel_stack \<S> M1 (P \<union> A) s (override_heap_on P t\<^sub>0 t) (rel_xval_stack (rel_exit L) (\<lambda>_ _ _. False)) (Exn e, s') (Exn w', t')
         | Result v \<Rightarrow> \<exists>w'. w = Result w' \<and> rel_stack \<S> M1 (ptr_span p \<union> P \<union> A) s  (override_heap_on (ptr_span p \<union> P) t\<^sub>0 t) (rel_xval_stack (\<lambda>_ _ _. False) (rel_singleton_stack p)) (Result v, s') (Result w', t')"] )
@@ -3941,7 +4106,7 @@ proof -
 
   show ?thesis
     unfolding L2_seq_def
-    apply (rule refines_bindE_right)
+    apply (rule refines_bindE_right')
         apply (rule f_g)
        apply simp_all
     subgoal by (simp add: rel_stack_def)
@@ -4000,6 +4165,7 @@ proof -
       done
     done
 qed
+
 
 lemma refines_rel_stack_pop_heap_no_exit_guarded:
   fixes p:: "'a::xmem_type ptr"
@@ -4079,7 +4245,7 @@ proof -
 
   show ?thesis
     unfolding L2_seq_def
-    apply (rule refines_bindE_right)
+    apply (rule refines_bindE_right')
         apply (rule f_g)
        apply simp_all
     subgoal by (simp add: rel_stack_def)
@@ -4341,26 +4507,8 @@ lemma L2_call_rel_stack_bare:
             s t
             (rel_stack \<S> M1 A s t\<^sub>0 (rel_xval_stack (rel_exit L) R))"
   using assms
-  apply (clarsimp simp add: L2_call_def reaches_map_value succeeds_catch reaches_catch succeeds_bind reaches_bind L2_defs refines_def_old L2_VARS_def
+  by (clarsimp simp add: L2_call_def reaches_map_value succeeds_catch reaches_catch succeeds_bind reaches_bind L2_defs refines_def_old L2_VARS_def
       rel_stack_def rel_alloc_def rel_xval_stack_def rel_xval.simps rel_exit_def)
-  subgoal for r s'
-    apply (cases r)
-    subgoal 
-      apply (clarsimp simp add: default_option_def  Exn_def[symmetric])
-      subgoal for y
-
-        apply (erule_tac x="Exn y" in allE)
-        apply (erule_tac x="s'" in allE)
-        apply fastforce
-        done
-      done
-    subgoal for v
-      apply (erule_tac x="Result v" in allE)
-      apply (erule_tac x="s'" in allE)
-      apply fastforce
-      done
-    done
-  done
 
 lemma L2_call_rel_stack_bare_extend_modifies:
   assumes f: "refines f g s t
@@ -4545,8 +4693,7 @@ lemma L2_catch_throw_id: "L2_catch f (\<lambda>x. L2_throw x ns) = f"
   unfolding L2_defs
   apply (rule spec_monad_eqI)
   apply (clarsimp simp add: runs_to_iff)
-  apply (clarsimp simp add: runs_to_def_old)
-  by (metis Exn_def default_option_def exception_or_result_cases not_None_eq)
+  done
 
 lemma L2_catch_call_throw: 
   "(L2_catch 
@@ -4573,7 +4720,15 @@ lemma liftE_L2_seq: "L2_seq (liftE A) (\<lambda>x. liftE (B x)) = (liftE (A >>= 
 lemma liftE_return_L2_gets_conv: "liftE (return x) = L2_gets (\<lambda>_. x) []"
   by (simp add: return_L2_gets_conv)
 
+lemma L2_call_shuffle_conv: 
+  "L2_call (L2_seq (L2_catch f A) B) (\<lambda>x. x) ns = 
+     (L2_seq (L2_catch (L2_call f (\<lambda>x. x) ns) A) B)"
+  unfolding L2_call_def L2_defs
+  apply (rule spec_monad_eqI)
+  apply (auto simp add: runs_to_iff)
+  done 
 lemmas L2_call_canonical_convs = 
+  L2_call_shuffle_conv
   L2_seq_return_conv
   L2_call_fuse_handlers2
   L2_call_fuse_handlers1
@@ -4599,7 +4754,7 @@ lemmas L2_call_final_convs =
   L2_seq_return_id_conv
   L2_seq_L2_return_id_conv
   L2_catch_L2_call_conv
-  guard_triv
+  (* guard_triv *) (* sic *)
   liftE_bind_L2_seq
   L2_gets_unbound
   L2_catch_throw_id
@@ -4618,7 +4773,7 @@ lemma L2_call_ETA_TUPLED2: "L2_seq (L2_call g emb ns) g1 \<equiv> L2_seq (L2_cal
 
 
 lemma distinct_sets_consI: "distinct_sets ps \<Longrightarrow> distinct_sets (p#ps) \<longleftrightarrow> p \<inter> \<Union> (set ps) = {}"
-  by (simp)
+  by (simp add: distinct_sets.simps)
 
 lemma disjoint_subset_simps:
   "ASSUMPTION (A \<inter> B = {}) \<Longrightarrow> A' \<subseteq> A \<Longrightarrow> B \<inter> A' = {} \<longleftrightarrow> True"
@@ -4793,8 +4948,12 @@ begin
 lemma globals_subset_trans: "NO_MATCH \<G> X \<Longrightarrow> NO_MATCH \<G> Y \<Longrightarrow> X \<subseteq> \<G> \<Longrightarrow> \<G> \<subseteq> Y \<Longrightarrow> X \<subseteq> Y"
   by blast
 
-lemma globals_disjoint_subset: "NO_MATCH \<G> X \<Longrightarrow> X \<subseteq> \<G> \<Longrightarrow> \<G> \<inter> A = {} \<Longrightarrow> X \<inter> A = {}"
+lemma globals_disjoint_subset_left: "NO_MATCH \<G> X \<Longrightarrow> X \<subseteq> \<G> \<Longrightarrow> \<G> \<inter> A = {} \<Longrightarrow> X \<inter> A = {}"
   by blast
+
+lemma globals_disjoint_subset_right: "NO_MATCH \<G> X \<Longrightarrow> X \<subseteq> \<G> \<Longrightarrow> A \<inter> \<G> = {} \<Longrightarrow> A \<inter> X = {}"
+  by blast
+
 end
 
 lemma Union_Diff_right_conv': "X \<union> Y = X \<union> (Y - X)"
@@ -4865,4 +5024,6 @@ lemma subset_union_left: "X \<subseteq> L \<Longrightarrow> X \<subseteq> L \<un
 lemma subset_union_right: "X \<subseteq> R \<Longrightarrow> X \<subseteq> L \<union> R"
   by blast
 
+lemma disjoint_globals_stack: "G \<inter> S = {} \<Longrightarrow> x \<subseteq> S \<Longrightarrow> G \<inter> x = {}"
+  by blast
 end

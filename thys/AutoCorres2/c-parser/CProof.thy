@@ -12,8 +12,6 @@ imports
   "umm_heap/StructSupport"
   "umm_heap/ArrayAssertion"
   "AutoCorres_Utils"
-  "Match_Cterm"
-  "ML_Infer_Instantiate"
 begin
 
 
@@ -615,7 +613,7 @@ lemma intvl_off_disj:
   subgoal
     apply (drule intvlD)
     apply clarsimp
-    by (metis add.commute add_lessD1 le_Suc_ex nat_less_le unat32_eq_of_nat)
+    by (metis add.commute add_lessD1 le_Suc_ex nat_less_le unat32_eq_of_nat unat64_eq_of_nat)
   done
 
 lemma intvl_empty2:

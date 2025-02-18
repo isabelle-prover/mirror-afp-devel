@@ -85,6 +85,83 @@ lemma "do {
   apply (monad_simp)
   done
 
+lemma "do {
+    _ \<leftarrow> guard (\<lambda>s. IS_VALID(32 word) s y0);
+    _ \<leftarrow> guard (\<lambda>s. IS_VALID(32 word) s x0);
+    p \<leftarrow> return y0;
+    _ \<leftarrow> guard (\<lambda>s. IS_VALID(32 word) s p);
+    (q1, q2) \<leftarrow> return (y0, x0);
+    _ \<leftarrow> guard (\<lambda>s. IS_VALID(32 word) s q1);
+    _ \<leftarrow> guard (\<lambda>s. IS_VALID(32 word) s q2);
+    
+    return (p, q1, q2)
+  } = 
+  do {
+      _ \<leftarrow> guard (\<lambda>s. IS_VALID(32 word) s y0);
+      _ \<leftarrow> guard (\<lambda>s. IS_VALID(32 word) s x0);
+      p \<leftarrow> return y0;
+      (q1, q2) \<leftarrow> return (y0, x0);
+      return (p, q1, q2)
+    }"
+  by monad_simp
+
+lemma "whileLoop (\<lambda>i s. i < (6::64 word))
+            (\<lambda>i. do {
+                  _ \<leftarrow> guard (\<lambda>s. i < 8);
+                  return (i + 1)
+                })
+            0 = 
+       whileLoop (\<lambda>i s. i < 6)
+          (\<lambda>i. return (i + 1))
+          0"
+  apply monad_simp
+  done
+
+lemma "whileLoop (\<lambda>i s. i \<le> (6::64 word))
+            (\<lambda>i. do {
+                  _ \<leftarrow> guard (\<lambda>s. i \<le> 8);
+                  return (i + 1)
+                })
+            0 = 
+       whileLoop (\<lambda>i s. i \<le> 6)
+          (\<lambda>i. return (i + 1))
+          0"
+  apply monad_simp
+  done
+
+lemma XX: "whileLoop (\<lambda>i s. i <s (6::64 word))
+            (\<lambda>i. do {
+                  _ \<leftarrow> guard (\<lambda>s. i <s 8);
+                  return (i + 1)
+                })
+            0 = 
+       whileLoop (\<lambda>i s. i <s 6)
+          (\<lambda>i. return (i + 1))
+          0"
+  apply monad_simp
+  done
+
+lemma "whileLoop (\<lambda>i s. i <s (6::64 word))
+  (\<lambda>i. return (i + 1))
+ 0 =
+whileLoop (\<lambda>i s. i <s 6)
+  (\<lambda>i. return (i + 1))
+ 0"
+  by (rule XX [monad_simplified])
+
+lemma "whileLoop (\<lambda>i s. i \<le>s (6::64 word))
+            (\<lambda>i. do {
+                  _ \<leftarrow> guard (\<lambda>s. i <s 8);
+                  return (i + 1)
+                })
+            0 = 
+       whileLoop (\<lambda>i s. i \<le>s 6)
+          (\<lambda>i. return (i + 1))
+          0"
+  apply monad_simp
+  done
+
+
 lemma fixes x::"32 word" shows "do {when (x > 42) (throw x); guard (\<lambda>_. \<not> x > 42); return x } = 
   do {when (x > 42) (throw x); return x }"
   apply monad_simp
@@ -407,6 +484,7 @@ lemma "do {x \<leftarrow> return n;
                  })
             (0, 42);
          return 42}"
+  supply [[verbose=4]]
   apply monad_simp
   done
 
@@ -442,14 +520,6 @@ lemma "do {x \<leftarrow> return n;
          (0, 42, p);
       return 42
     } "
-  apply monad_simp
-  done
-
-lemma 
- "condition (\<lambda>s. n = g_'' s) 
-   (return n) (return (n + 1)) = 
- condition (\<lambda>s. n = g_'' s) 
-   (return n) (return (n + 1))"
   apply monad_simp
   done
 

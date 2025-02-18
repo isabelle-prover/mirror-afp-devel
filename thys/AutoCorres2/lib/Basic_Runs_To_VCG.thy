@@ -133,14 +133,14 @@ ML \<open>
 signature RUNS_TO_VCG =
 sig
   val apply_runs_to:
-     (Proof.context -> int -> tactic) option ->
+     bool -> (Proof.context -> int -> tactic) option ->
        (Proof.context -> (unit -> string) -> tactic) ->
          term -> Proof.context -> tactic
   val prepare:
      {do_nosplit: bool, no_unsafe_hyp_subst: bool} -> Proof.context -> tactic
   val runs_to_vcg_tac:
      (Proof.context -> int -> tactic) option ->
-       int -> (Proof.context -> (unit -> string) -> tactic) ->
+       int -> (Proof.context -> (unit -> string) -> tactic) -> bool ->
            {do_nosplit: bool, no_unsafe_hyp_subst: bool} ->
              (Proof.context -> tactic) -> Proof.context -> tactic
   val split_paired_all: Proof.context -> int -> tactic
@@ -215,8 +215,20 @@ fun with_rules tac ctxt =
     Named_Rules.with_rules @{named_rules runs_to_vcg} tac' ctxt 1
   end 
 
-fun apply_runs_to splitter_opt trace prg = with_rules (fn ctxt => fn rules => 
+fun apply_attributes attributes thm ctxt =
+  fold (fn attr => fn (thm, ctxt) => Thm.apply_attribute attr thm ctxt) attributes (thm, ctxt)
+
+fun apply_runs_to add_tags splitter_opt trace prg = with_rules (fn ctxt => fn rules => 
   let
+    val rules =
+      if add_tags then
+        map (fn thm =>
+          apply_attributes
+            [add_asm_tag NONE, add_tags_from_cases false [], push_tags_attr]
+            thm (Context.Proof ctxt)
+          |> fst
+        ) rules
+      else rules
     val n = length rules
     fun t i thm msg () =
       let
@@ -242,7 +254,7 @@ fun apply_runs_to splitter_opt trace prg = with_rules (fn ctxt => fn rules =>
         trace ctxt (t i thm "weakened rule"))))
   end)
 
-fun runs_to_vcg_tac splitter_opt n trace options solver ctxt =
+fun runs_to_vcg_tac splitter_opt n trace add_tags options solver ctxt =
 let
   fun flat_trace f () = "  " ^ f ()
   fun runs_to_vcg_loop n trace ctxt prems =
@@ -251,7 +263,7 @@ let
       case parse_program ctxt g of
         SOME prg => 
           THEN_ALL_NEW_FORWARD
-            (CHANGED (apply_runs_to splitter_opt trace prg ctxt))
+            (CHANGED (apply_runs_to add_tags splitter_opt trace prg ctxt))
             (THEN_ALL_NEW_FORWARD
               (prepare options ctxt)
               (Marked_Assumptions.with_assms ctxt prems
@@ -270,16 +282,18 @@ end
 
 method_setup runs_to_vcg =
 \<open> (Scan.lift (Args.mode "trace") --
+    Scan.lift (Args.mode "tags") --
     Scan.lift (Args.mode "nosplit") --
     Scan.lift (Args.mode "no_unsafe_hyp_subst") --
     Scan.optional (Scan.lift (Args.parens Parse.nat)) (~1) --
     Scan.option Method.text_closure) >>
-    (fn ((((do_trace, do_nosplit), do_no_unsafe_hyp_subst), n), text) => fn ctxt =>
+    (fn (((((do_trace, do_tags), do_nosplit), do_no_unsafe_hyp_subst), n), text) => fn ctxt =>
       let val tac = (case text of
           NONE => (fn _ => no_tac)
         | SOME txt => fn ctxt => NO_CONTEXT_TACTIC ctxt (Method.evaluate txt ctxt []))
       in SIMPLE_METHOD (Runs_To_VCG.runs_to_vcg_tac NONE n
         (if do_trace then Runs_To_VCG.trace_tac else Runs_To_VCG.no_trace_tac)
+        do_tags
         {do_nosplit=do_nosplit, no_unsafe_hyp_subst=do_no_unsafe_hyp_subst}
         tac ctxt) end) \<close>
 

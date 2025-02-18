@@ -36,14 +36,15 @@ val string_of_ccpo_data : Proof.context -> ccpo_data -> string
 val add_ccpo : string -> (Proof.context -> typ -> ccpo_data) -> Context.generic -> Context.generic
 val get_ccpo : Context.generic -> (Proof.context -> typ -> ccpo_data) Symtab.table
 
-val synth_funs   : Proof.context -> typ list * ccpo_data -> ccpo_data
-val synth_prod   : Proof.context -> ccpo_data -> ccpo_data -> ccpo_data
-val synth_fun    : Proof.context -> typ -> ccpo_data -> ccpo_data
-val synth_flat   : Proof.context -> term -> ccpo_data
-val synth_option : Proof.context -> typ -> ccpo_data
-val synth_lfp    : Proof.context -> typ -> ccpo_data
-val synth_gfp    : Proof.context -> typ -> ccpo_data
-val synth_ccpo   : Context.generic -> string -> typ -> ccpo_data
+val synth_funs       : Proof.context -> typ list * ccpo_data -> ccpo_data
+val synth_prod       : Proof.context -> ccpo_data -> ccpo_data -> ccpo_data
+val synth_fun        : Proof.context -> typ -> ccpo_data -> ccpo_data
+val synth_flat       : Proof.context -> term -> ccpo_data
+val synth_option     : Proof.context -> typ -> ccpo_data
+val synth_lfp        : Proof.context -> typ -> ccpo_data
+val synth_gfp        : Proof.context -> typ -> ccpo_data
+val synth_ccpo_class : Proof.context -> typ -> ccpo_data
+val synth_ccpo       : Context.generic -> string -> typ -> ccpo_data
 
 val ccpo_bot        : ccpo_data -> term
 val ccpo_mono       : ccpo_data -> ccpo_data -> term
@@ -235,35 +236,23 @@ fun string_of_ccpo_data ctxt (ccpo_data : ccpo_data) =
 fun get_class ctxt ({class, ...}: ccpo_data) = Thm.transfer' ctxt class
 
 fun synth_prod ctxt (a : ccpo_data) (b : ccpo_data) : ccpo_data =
-  let
-    val prodT = HOLogic.mk_prodT (#typ a, #typ b)
-    val ordT = ordT (#typ a) --> ordT (#typ b) --> ordT prodT
-    val lubT = lubT (#typ a) --> lubT (#typ b) --> lubT prodT
-  in
-    { typ = prodT,
-      ord = Const (@{const_name rel_prod}, ordT) $ #ord a $ #ord b,
-      lub = Const (@{const_name prod_lub}, lubT) $ #lub a $ #lub b,
-      bot = HOLogic.mk_prod (#bot a, #bot b),
-      class = Thm.trim_context (@{thm ccpo_rel_prodI} OF
-        [get_class ctxt a, get_class ctxt b]) }
-  end
+  { typ = \<^Type>\<open>prod \<open>#typ a\<close> \<open>#typ b\<close>\<close>,
+    ord = \<^Const>\<open>rel_prod \<open>#typ a\<close> \<open>#typ a\<close> \<open>#typ b\<close> \<open>#typ b\<close> for \<open>#ord a\<close> \<open>#ord b\<close>\<close>,
+    lub = \<^Const>\<open>prod_lub \<open>#typ a\<close> \<open>#typ b\<close> for \<open>#lub a\<close> \<open>#lub b\<close>\<close>,
+    bot = HOLogic.mk_prod (#bot a, #bot b),
+    class = Thm.trim_context (@{thm ccpo_rel_prodI} OF
+      [get_class ctxt a, get_class ctxt b]) }
 
 fun synth_fun ctxt (a : typ) (b : ccpo_data) : ccpo_data =
-  let
-    val funT = a --> #typ b
-    val ordT = ordT (#typ b) --> ordT funT
-    val lubT = lubT (#typ b) --> lubT funT
-  in
-    { typ = funT,
-      ord = Const (@{const_name fun_ord}, ordT) $ #ord b,
-      lub = Const (@{const_name fun_lub}, lubT) $ #lub b,
-      bot = Abs ("x", a, #bot b),
-      class = Thm.trim_context (
-        (instantiate'_normalize
-          [SOME (Thm.ctyp_of ctxt (#typ b)), SOME (Thm.ctyp_of ctxt a)]
-          [SOME (Thm.cterm_of ctxt (#lub b)), SOME (Thm.cterm_of ctxt (#ord b))]
-          @{thm ccpo.ccpo_fun}) OF [get_class ctxt b]) }
-  end
+  { typ = a --> #typ b,
+    ord = \<^Const>\<open>fun_ord \<open>#typ b\<close> \<open>#typ b\<close> \<open>a\<close> for \<open>#ord b\<close>\<close>,
+    lub = \<^Const>\<open>fun_lub \<open>#typ b\<close> \<open>#typ b\<close> \<open>a\<close> for \<open>#lub b\<close>\<close>,
+    bot = Abs ("x", a, #bot b),
+    class = Thm.trim_context (
+      (instantiate'_normalize
+        [SOME (Thm.ctyp_of ctxt (#typ b)), SOME (Thm.ctyp_of ctxt a)]
+        [SOME (Thm.cterm_of ctxt (#lub b)), SOME (Thm.cterm_of ctxt (#ord b))]
+        @{thm ccpo.ccpo_fun}) OF [get_class ctxt b]) }
 
 fun synth_gfp ctxt (a : typ) : ccpo_data =
   if Sign.of_sort (Proof_Context.theory_of ctxt) (a, @{sort complete_lattice}) then
@@ -289,13 +278,23 @@ fun synth_lfp ctxt (a : typ) : ccpo_data =
 fun synth_flat ctxt (a : term) : ccpo_data =
   let val aT = fastype_of a in
     { typ = aT,
-      ord = Const (@{const_name "flat_ord"}, aT --> ordT aT) $ a,
-      lub = Const (@{const_name "flat_lub"}, aT --> lubT aT) $ a,
+      ord = \<^Const>\<open>flat_ord aT for a\<close>,
+      lub = \<^Const>\<open>flat_lub aT for a\<close>,
       bot = a,
       class = Thm.trim_context (
         instantiate'_normalize [SOME (Thm.ctyp_of ctxt aT)] [SOME (Thm.cterm_of ctxt a)]
         @{thm ccpo_flat}) }
   end
+
+fun synth_ccpo_class ctxt (a : typ) : ccpo_data =
+  if Sign.of_sort (Proof_Context.theory_of ctxt) (a, @{sort ccpo}) then
+    { typ = a,
+      ord = \<^Const>\<open>less_eq a\<close>,
+      lub = \<^Const>\<open>Sup a\<close>,
+      bot = \<^Const>\<open>bot a\<close>,
+      class = Thm.trim_context (
+        instantiate'_normalize [SOME (Thm.ctyp_of ctxt a)] [] @{thm ccpo_ccpo_class'}) }
+  else error ("Expect ccpo_class " ^ Syntax.string_of_typ ctxt a)
 
 fun dest_optionT (Type (@{type_name option}, [a])) = a
   | dest_optionT t = raise TYPE ("dest_optionT", [t], [])
@@ -449,6 +448,9 @@ fun mutual_ccpo_fixed_point (fs : functional list) ctxt =
 
     val functional = tuple_of_btree raw_functionals |> absfree recF
 
+    val cleanup_simps = Named_Theorems.get ctxt @{named_theorems fixed_point_cleanup_simps}
+    val cleanup_ss = simpset_map ctxt (fn ctxt => ctxt addsimps cleanup_simps) HOL_basic_ss;
+
 val _ = TRACE ("prove mono thm ")
 
     val mono_thm =
@@ -494,6 +496,7 @@ val _ = TRACE "prepare strong induction"
           instantiate'_normalize [] [SOME (Thm.cterm_of ctxt motive)] induct_thm
 
 val _ = TRACE "strong induction"
+        
         val induct_thm = Goal.prove ctxt []
           [HOLogic.mk_Trueprop (ccpo_admissible ccpo_struct $ motive),
             HOLogic.mk_Trueprop (list_comb (motiveF,
@@ -503,21 +506,19 @@ val _ = TRACE "strong induction"
               (list_comb (motiveF, map (fn f => #rhs f |> fold_rev absfree (#params f)) fs)
                 |> HOLogic.mk_Trueprop)
             |> fold_rev Logic.all frees]
-            (list_comb (motiveF, cs) |> HOLogic.mk_Trueprop)
-            (fn {context, prems, ...} =>
-              let fun simp_tac ctxt st =
-                full_simp_tac ((put_simpset HOL_basic_ss ctxt) addsimps
-                  (@{thms Inf_empty Sup_empty prod_lub_empty fun_lub_empty
-                          flat_lub_empty fst_conv snd_conv split_paired_all prod.collapse} @
-                    map Thm.symmetric defs)) 1 st
-              in
-                cut_tac induct' 1 THEN
-                SOLVED (simp_tac context) THEN
-                EVERY (prems |> map (fn thm =>
-                  Subgoal.SUBPROOF (fn { context, prems, ... } =>
-                    cut_tac (thm OF prems) 1 THEN
-                    simp_tac context) context 1))
-              end)
+          (list_comb (motiveF, cs) |> HOLogic.mk_Trueprop)
+          (fn {context, prems, ...} =>
+            let
+              fun simp_tac ctxt =
+                full_simp_tac ((put_simpset cleanup_ss ctxt) addsimps (map Thm.symmetric defs)) 1
+            in
+              cut_tac induct' 1 THEN
+              SOLVED (simp_tac context) THEN
+              EVERY (prems |> map (fn thm =>
+                Subgoal.SUBPROOF (fn { context, prems, ... } =>
+                  cut_tac (thm OF prems) 1 THEN
+                  simp_tac context) context 1))
+            end)
       in
         Proof_Context.export ctxt ctxt0 [induct_thm] |> the_single
       end
@@ -684,8 +685,6 @@ type fixed_point_spec =
     body : term,
     mono : thm }
 
-
-
 fun prepare_fixed_point prepare fixes_raw eqns_raw lthy =
   let
 
@@ -702,6 +701,8 @@ fun prepare_fixed_point prepare fixes_raw eqns_raw lthy =
       | gen_projs t (Node (l, r)) =
         Node (gen_projs (HOLogic.mk_fst t) l, gen_projs (HOLogic.mk_snd t) r)
     val projs = gen_projs (Free recF) b_fixes |> btree_to_list
+
+    val cleanup_simps = Named_Theorems.get lthy @{named_theorems fixed_point_cleanup_simps}
 
     val (specs : functional_spec list, _) =
       let
@@ -989,9 +990,7 @@ val _ = TRACE ("= construct =")
                       (@{thm ccpo.induct_Sup_of_subsingleton_sets} OF
                        [ get_class ctxt (#ccpo (#f m)) ]) OF [ss_asm, adm]] 1 THEN
                     Subgoal.SUBPROOF (fn { context, ...} =>
-                      unfold_tac context (@{thms Inf_empty Sup_empty
-                        prod_lub_empty fun_lub_empty flat_lub_empty fst_conv snd_conv
-                        split_paired_all prod.collapse} @ [bot])) context 1 THEN
+                      unfold_tac context (cleanup_simps @ [bot])) context 1 THEN
                     EVERY (cases |> map (fn (c, (_, guards, args, _, _)) =>
                       eresolve_tac context @{thms insertE} 1 THEN
                       bound_hyp_subst_tac context 1 THEN

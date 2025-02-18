@@ -437,11 +437,11 @@ fun except_rewrite_cache_ctxt ctxt thms =
 
 fun except_rewrite_cache_conv cache_ctxt =
     Simplifier.asm_full_rewrite cache_ctxt then_conv 
-    Utils.eta_conv cache_ctxt
+    Utils.eta_conv
 
 fun except_rewrite_conv ctxt thms =
     Simplifier.asm_full_rewrite (except_rewrite_cache_ctxt ctxt thms) then_conv 
-    Utils.eta_conv ctxt
+    Utils.eta_conv
 
 
 
