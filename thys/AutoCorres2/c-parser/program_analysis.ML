@@ -386,7 +386,7 @@ fun fncall_ord (f1,f2) =
          ((x1, (x2, x3)), (y1, (y2, y3)))
 
 datatype selector = Field of string | Index of int option
-
+              
 fun selector_ord (Field s1, Field s2) = fast_string_ord (s1, s2)
   | selector_ord (Field _ , Index _) = LESS
   | selector_ord (Index _, Field _)  = GREATER
@@ -1358,12 +1358,27 @@ fun report_error ctxt l r f x =
     ()
   end handle ERROR s => Feedback.errorStr' ctxt (l, r, s)
 
-
 fun newstr_decl process_expr ctxt (kind: rcd_kind) (nm, flds0 : (expr ctype * string wrap * gcc_attribute list) list, sattrs0) cse = let
   open NameGeneration
   fun foldthis (cty,fldnm,attrs) acc =
       process_type process_expr ctxt (left fldnm, right fldnm) cty acc
   val cse = cse |> fold foldthis flds0
+  val n_flds = length flds0
+  val flexible_array_fields = 
+    map_index (fn (x as (i, (cty,_,_))) => if flexible_array_type cty then SOME x else NONE) flds0
+    |> map_filter I
+  val _ = null flexible_array_fields 
+          orelse
+          (kind = Struct andalso n_flds > 1 andalso 
+            length flexible_array_fields = 1 andalso #1 (hd flexible_array_fields) = n_flds - 1)
+          orelse
+            let
+              val (fld, l, r) = (unwrap o #2 o #2) (hd flexible_array_fields)
+            in
+              Feedback.error_range ctxt l r 
+                ("flexible array member " ^ quote fld ^ " only allowed as last field in a non-empty struct")
+            end
+  
   val ecenv = cse2ecenv ctxt cse
   fun uscore_check i nmty s =
       if get_allow_underscores cse orelse check_uscore_ok (node s) then ()

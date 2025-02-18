@@ -39,6 +39,7 @@ theory AutoCorresTest imports
   "proof-tests/array_indirect_update"
   "proof-tests/badnames"
   "proof-tests/buffer"
+  "proof-tests/flexible_array_member"
   "proof-tests/function_decay"
   "proof-tests/function_pointer_array_decay"
   "proof-tests/globals"

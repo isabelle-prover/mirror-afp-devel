@@ -1135,7 +1135,7 @@ fun check_addressable_fields ignore_addressable_fields_error thy prog_info xname
         |> Absyn.CTypeTab.dest
         |> map_filter (fn (cty, selectors) => 
             let
-              val ty = CalculateState.ctype_to_typ ctxt cty
+              val ty = CalculateState.ctype_to_typ_flexible_array ctxt cty
             in 
               if forall null selectors then 
                 NONE

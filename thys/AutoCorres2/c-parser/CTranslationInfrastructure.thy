@@ -153,7 +153,6 @@ schematic_goal "s\<langle>x := \<lambda>_. 2\<rangle> \<cdot> p = ?X"
 
 install_C_file "ex.c"
 
-
 thm size_td_simps
 thm my_struct_C_update_const 
 text \<open>The root locale storing the global content @{locale ex_global_addresses}. This is also

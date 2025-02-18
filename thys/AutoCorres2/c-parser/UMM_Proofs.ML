@@ -24,7 +24,7 @@ sig
   val umm_array_calculation : typ -> int -> T -> local_theory -> T * local_theory
 
   val c_type_name_instantiation : string -> local_theory -> local_theory
-  val c_type_instantiation : (string * ((string * typ * int Absyn.ctype * CType.attribute list) list * CType.attribute list)) -> local_theory -> ((thm * thm) * local_theory)
+  val c_type_instantiation : csenv -> (string * ((string * typ * int Absyn.ctype * CType.attribute list) list * CType.attribute list)) -> local_theory -> ((thm * thm) * local_theory)
 
   val set_array_bound_mksimps: Proof.context -> Proof.context
 
@@ -49,6 +49,8 @@ end
 
 structure UMM_Proofs : UMM_PROOFS =
 struct
+
+fun par_map_filter f = Par_List.map f #> map_filter I
 
 (* cached calculations *)
 
@@ -979,8 +981,9 @@ fun c_type_instance recname = gen_c_type_instantiation @{sort c_type}
           ALLGOALS (asm_full_simp_tac (ctxt addsimps [thm])))
         recname
 
-fun c_type_instantiation (recname, (flds, attrs)) lthy =
+fun c_type_instantiation cse (recname, (flds, attrs)) lthy =
   let
+    val align_exp = IntInf.log2 (ProgramAnalysis.alignof_struct_or_union cse recname)
     fun trac s = Feedback.informStr lthy (1, recname ^ ": " ^ s)
     val thy = Proof_Context.theory_of lthy
     val fullrecname = Sign.intern_type thy recname
@@ -996,7 +999,7 @@ fun c_type_instantiation (recname, (flds, attrs)) lthy =
       | (fldnm, ty, _, attrs)::rest =>
           gen_tag_pad rest (mk_tag_pad_tm (get_align attrs) recty ty fldnm lthy$ tag)
     val tag_rhs =
-      final_pad_tm (get_align attrs) recty $ gen_tag_pad flds (empty_tag_tm recty 0 recname)
+      final_pad_tm align_exp recty $ gen_tag_pad flds (empty_tag_tm recty 0 recname)
     val tag_nm = recname^"_tag"
     val (tag_def_thm, lthy) = prim_mk_defn tag_nm tag_rhs @{attributes [typ_tag_defs, simp]} lthy
       handle ERROR s => error ("Defining "^tag_nm^" as\n  "^

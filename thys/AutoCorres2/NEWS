@@ -3,8 +3,23 @@ AutoCorres / C-Parser NEWS -- history of user-relevant changes
 
 (Note: Isabelle/jEdit shows a tree-view of the NEWS file in Sidekick.)
 
-New in Repository Version
--------------------------
+
+New in Version for Isabelle2025
+
+*** CParser ***
+* Support for post increment / decrement expressions on local variables
+  in assignment and while condition, eg:
+  tests/proof-tests/side_effect_assignment.thy
+* Support for anonymous structs / unions, eg:
+  tests/proof-tests/anonymous_nested_struct.thy
+* Support for function decay, and array decay in function pointers, eg:
+  tests/proof-tests/function_decay.thy,
+  tests/proof-tests/function_pointer_array_decay.thy
+* Support for flexible array members in struct, eg:
+  tests/proof-tests/flexible_array_member.thy,
+
+New in Version for Isabelle2024
+-------------------------------
 
 *** AutoCorres ***
 * Replaced former ('s, 'a) nondet_monad by more canonical

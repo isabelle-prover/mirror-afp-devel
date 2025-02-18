@@ -422,7 +422,6 @@ in
   else fail()
 end
 
-fun boglit i = bogwrap(NUMCONST {value = i, base = StringCvt.DEC, suffix = ""})
 
 fun mk_relbinop ctxt (opr,sopr,ei1,ei2) = let
   val cty1 = ctype_of ei1
@@ -788,7 +787,26 @@ in
 end
 
 
+fun dest_flexible_array_access cse (senv:senv) sname fld =
+   AList.lookup (op =) senv sname |> Option.mapPartial (fn (_, flds, _, _) =>     
+       AList.lookup (op =) flds fld |> Option.mapPartial (fn fld => 
+         (case fld of
+           (Array (el_ty, NONE), _) => SOME (el_ty, ProgramAnalysis.sizeof_struct_or_union cse sname)
+         | _ => NONE)))
 
+fun mk_flexible_array_value l r el_ty struct_ty e =
+  let
+    val l' = eleft e
+    val r' = eright e
+    fun w e = ewrap (e, l, r) 
+    val off' = ewrap (SizeofTy (wrap (from_int_ctype struct_ty, l', r')), l', r')
+    val char_ptr = bogwrap (Ptr (PlainChar))
+    val el_ptr = bogwrap (Ptr (from_int_ctype el_ty))
+    val addr_e = ewrap (UnOp (Addr, e), l', r')
+    val v =  (w (TypeCast (el_ptr, w (BinOp (Plus, ewrap (TypeCast (char_ptr, addr_e), l', r'), off')))))
+  in
+    v
+  end 
 fun expr_term ctxt cse tbuilders varinfo e : expr_info = let
   val thy = Proof_Context.theory_of ctxt
   val ecenv = ProgramAnalysis.cse2ecenv ctxt cse
@@ -1130,7 +1148,7 @@ in
                left = eleft e,
                right = eright e}
         end
-      | _ => error "Array dereference with impossible type"
+      | x => error ("Array dereference with impossible type:" ^ @{make_string} x)
     end
   | StructDot (e0, fld) => let
       val e0_val = expr_term e0
@@ -1142,7 +1160,13 @@ in
           | UnionTy s => s
           | _ => error "Expression on left of . doesn't have struct type"
       in 
-        case expand_anonymous_field senv sname e0 fld of 
+        (case dest_flexible_array_access cse senv sname fld of 
+           SOME (el_ty, _) =>
+              let
+                val x = mk_flexible_array_value (eleft e) (eright e) el_ty e0_cty e0;
+              in expr_term x end
+         | _ =>
+        (case expand_anonymous_field senv sname e0 fld of 
           SOME e' => expr_term e' 
         | _ => 
           let 
@@ -1187,7 +1211,7 @@ in
                 cty = addr_of_option ctype_of (tyinfo e),
                 ibool = false, lguard = lguard, guard = guard,
                 left = eleft e, right = eright e}
-          end
+          end))
     end
   | TypeCast(cty,e0) => typecast (ctxt, constify_abtype true ctxt ecenv (node cty),
                                   expr_term e0)

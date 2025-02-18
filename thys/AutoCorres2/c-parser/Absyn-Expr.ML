@@ -142,6 +142,9 @@ sig
       option
   val extract_post_ops: Proof.context -> expr -> expr * expr_node (* PostOp *) list
 
+  val boglit: int -> literalconstant_node RegionExtras.wrap
+  val bogint: int -> expr
+  val from_int_ctype: int CType.ctype -> expr CType.ctype     
 end
 
 structure Expr : EXPR =
@@ -707,5 +710,28 @@ fun map_var f (Var x) = Var (f x)
   | map_var _ e = e
 
 fun map_enode f (E x) = E (apnode f x)
+ 
+fun boglit i = bogwrap(NUMCONST {value = i, base = StringCvt.DEC, suffix = ""})
+fun bogint i = ebogwrap (Constant (boglit i))
+       
+fun from_int_ctype (ty:int ctype) : expr ctype =
+  case ty of                       
+    Signed x => Signed x
+  | Unsigned x => Unsigned x
+  | Bool => Bool
+  | PlainChar => PlainChar
+  | StructTy x => StructTy x
+  | UnionTy x => UnionTy x
+  | EnumTy x => EnumTy x
+  | Ptr x => Ptr (from_int_ctype x)
+  | Array (x, NONE) => Array (from_int_ctype x, NONE)
+  | Array (x, SOME i) => Array (from_int_ctype x, SOME (bogint i))
+                                                                        
+  | Bitfield (x, i) => Bitfield (from_int_ctype x, bogint i)
+  | Ident x => Ident x
+  | Function (retT, argTs) => Function (from_int_ctype retT, map from_int_ctype argTs)
+  | Void => Void
+  | TypeOf i => error "from_int_ctype: TypeOf not supported" 
 
+         
 end (* struct *)
