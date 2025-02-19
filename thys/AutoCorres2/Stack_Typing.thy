@@ -73,7 +73,7 @@ fun unchanged_typing_tac splitter ctxt =
     val trace_tac = Runs_To_VCG.no_trace_tac
     fun solver_tac ctxt = ALLGOALS (asm_full_simp_tac ctxt)
   in
-    Runs_To_VCG.runs_to_vcg_tac splitter (~1) trace_tac  
+    Runs_To_VCG.runs_to_vcg_tac splitter (~1) trace_tac false
           {do_nosplit = false, no_unsafe_hyp_subst = false} solver_tac ctxt
   end
 end

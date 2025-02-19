@@ -41,6 +41,7 @@ lemma (in ts_definition_g) "ptr_valid (heap_typing h) s \<Longrightarrow>
        \<rbrace>"
   unfolding g'_def
   apply runs_to_vcg
+  apply (simp_all add: Arrays.fupdate_def)
   done
 
 end

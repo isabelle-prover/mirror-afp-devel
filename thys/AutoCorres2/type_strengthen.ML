@@ -110,7 +110,7 @@ let
   val prems = case Symtab.lookup l2_infos fn_name of 
         SOME info => (* regular function not a function pointer parameter *)
           let  (* We add corres preconditions for any function pointer parameter in this function *)
-            val fn_ptr_param_infos = AutoCorresData.mk_fn_ptr_infos ctxt prog_info (#name rule_set) [] info 
+            val fn_ptr_param_infos = AutoCorresData.mk_fn_ptr_infos ctxt prog_info {ts_monad_name = #name rule_set} [] info 
           in    
             fn_ptr_param_infos 
             |> map (fn (ptr, ptr_info) => 
@@ -295,8 +295,8 @@ let
   val args = FunctionInfo.get_plain_args f_info;
   val (arg_frees, ctxt3_args) = Utils.fix_variant_frees args ctxt2_state;
 
-  val fn_ptr_infos = AutoCorresData.mk_fn_ptr_infos ctxt prog_info (#name rule_set) arg_frees f_info
-  val fn_ptr_param_infos = AutoCorresData.mk_fn_ptr_infos ctxt prog_info (#name rule_set) [] f_info
+  val fn_ptr_infos = AutoCorresData.mk_fn_ptr_infos ctxt prog_info {ts_monad_name = #name rule_set} arg_frees f_info
+  val fn_ptr_param_infos = AutoCorresData.mk_fn_ptr_infos ctxt prog_info {ts_monad_name = #name rule_set} [] f_info
   val export_fun_names = Variable.export_morphism ctxt1_fun_names ctxt
   val export_measure = Variable.export_morphism ctxt2_state ctxt1_fun_names
   val export_args = Variable.export_morphism ctxt3_args ctxt2_state
@@ -489,7 +489,7 @@ let
     let
       val finfo = the (Symtab.lookup l2_infos fn_name)
       val args = FunctionInfo.get_plain_args finfo |> (fn xs => Utils.fix_variant_frees xs lthy') |> fst 
-      val fn_ptr_param_infos = AutoCorresData.mk_fn_ptr_infos lthy' prog_info (#name rule_set) [] finfo
+      val fn_ptr_param_infos = AutoCorresData.mk_fn_ptr_infos lthy' prog_info {ts_monad_name= #name rule_set} [] finfo
       val prop =  get_ts_corres_prop lthy' skips prog_info prev_phase fn_ptr_param_infos l2_infos fn_name
        rule_set state args (betapplys (fn_trm, args)) |> snd |> fst
     in
@@ -659,7 +659,7 @@ let
   val prems = case Symtab.lookup ts_infos fn_name of 
         SOME info => (* regular function not a function pointer parameter *)
           let  (* We add corres preconditions for any function pointer parameter in this function *)
-            val fn_ptr_param_infos = AutoCorresData.mk_fn_ptr_infos ctxt prog_info monad_name fn_args info           
+            val fn_ptr_param_infos = AutoCorresData.mk_fn_ptr_infos ctxt prog_info {ts_monad_name = monad_name} fn_args info           
           in
             fn_ptr_param_infos 
             |> map (fn (ptr, ptr_info) => 
@@ -733,7 +733,8 @@ let
             the (ProgramInfo.get_lifted_globals_type prog_info)
           else  ProgramInfo.get_globals_type prog_info
 
-        val monad_infos = rules |> drop_while (fn r => #name r <> monad_name) 
+        val all_rules = Monad_Types.get_ordered_rules [] (Context.Proof lthy)
+        val monad_infos = all_rules |> drop_while (fn r => #name r <> monad_name) 
          |> map (fn {name, lift_from_previous_monad,...} => 
                    (name, if name = monad_name then I else lift_from_previous_monad lthy stateT))
         val monad_infos = (I, []) 
@@ -741,6 +742,7 @@ let
                  let val new_lift = current_lift o lift in (new_lift, (n, new_lift)::xs) end)
                  monad_infos
             |> snd |> rev
+            |> filter (fn (n, _) => member (op =) (map #name rules) n)
 
         val lthy = lthy |> AutoCorresData.in_theory (
           AutoCorresData.add_impl_locales skips prog_info infos_prev_phase phase monad_infos fn_names)
@@ -763,7 +765,7 @@ let
                 val def = FunctionInfo.get_definition info
                 val (params, ctxt) = Utils.fix_variant_frees args ctxt;
                                                         
-                val fn_ptr_infos = AutoCorresData.mk_fn_ptr_infos ctxt prog_info monad_name params info
+                val fn_ptr_infos = AutoCorresData.mk_fn_ptr_infos ctxt prog_info {ts_monad_name = monad_name} params info
                 val ((prems, prop), attrs) = get_unchanged_typing_prop prog_info fn_ptr_infos ts_infos monad_name lthy f (map Free args)
                 val ((arbitrary_vars, prop), ctxt) = Utils.import_universal_prop prop ctxt
                 val (prems, ctxt) = Assumption.add_assumes (map (Thm.cterm_of ctxt) prems) ctxt
@@ -798,7 +800,7 @@ let
                       @{thms replicate_0 replicate_Suc replicate_numeral} @ (* Unify with setup in l2_opt.ML ? *)
                       size_simps
                val def' = timeit_msg 1 lthy (fn _ => "Simplifying guards within " ^ f) (fn _ => 
-                 Monad_Cong_Simp.monad_simplify_def ctxt def)
+                 Monad_Cong_Simp.monad_simplify_import ctxt def)
                val _ = Utils.verbose_msg 3 ctxt (fn _ => "after guard simplification:\n " ^ Thm.string_of_thm lthy def')
                val base_name = make_function_name "" f
                val b = 

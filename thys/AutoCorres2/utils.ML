@@ -123,6 +123,9 @@ fun export_prop {closed} inner outer prop =
     |> Thm.cprop_of
   end
 
+fun export_prop_term {closed} inner outer prop =
+  prop |> Thm.cterm_of inner |> export_prop {closed=closed} inner outer |> Thm.term_of
+
 (*** evaluate function in locale, preserving slots ***)
 
 fun transfer_slots slots from to =
@@ -932,8 +935,8 @@ fun subst_conv ctxt thm =
   (Thm.eta_conversion
       then_conv subst_conv_raw ctxt (Drule.eta_contraction_rule thm))
 
-fun eta_conv ctxt = Conv.bottom_conv (K (Thm.eta_conversion)) ctxt
-fun eta_norm ctxt thm = Conv.fconv_rule (eta_conv ctxt) thm
+val eta_conv = Thm.eta_conversion
+val eta_norm = Conv.fconv_rule eta_conv
 
 (* A conversion to wade through any Isabelle/Pure or Isabelle/HOL
  * logical gunf. *)
@@ -1059,17 +1062,6 @@ fun symtab_merge_with merge (tab1, tab2) =
                         | (NONE, SOME x2) => x2
                         (* (NONE, NONE) impossible *)))
   |> Symtab.make
-
-fun buckets eq xs =
-  let
-    fun bucks done [] = done
-      | bucks done (x::xs) = 
-         let 
-           val (same, rest) = split_filter (fn y => eq (x, y)) (x::xs)
-         in bucks (same::done) rest end
-  in
-   bucks [] xs
-  end
 
 fun app_snds f ps = 
   let 

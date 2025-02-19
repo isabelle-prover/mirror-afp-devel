@@ -53,7 +53,7 @@ sig
 
   val fncall_ord : fncall_type * fncall_type -> order
 
-  datatype selector = Field of string | Array_Index
+  datatype selector = Field of string | Index of int option
   val selector_ord: selector * selector -> order
   val selectors_ord: selector list * selector list -> order
 
@@ -69,14 +69,15 @@ sig
   val get_rettype : string -> csenv -> int ctype option
   val get_heaptypes : csenv -> int ctype Binaryset.set
   val get_usedtypes : csenv -> int ctype Binaryset.set
-  val compute_callgraphs : Proof.context -> csenv -> callgraph
-  val compute_callgraphs_with_exit : Proof.context -> csenv -> callgraph
+  val compute_callgraphs : csenv -> callgraph
+  val compute_callgraphs_with_exit : csenv -> callgraph
   val get_addressed : csenv -> (expr * selector list) list XMSymTab.table
   val is_addressed  : csenv -> (MString.t * string option) -> bool
   val get_addressed_types: csenv -> selector list Ord_List.T Absyn.CTypeTab.table
   val get_callgraph : csenv -> fncall_type Binaryset.set Symtab.table
   val get_direct_callees: csenv -> Symtab.key -> string list
   val get_fun_ptr_callees: csenv -> Symtab.key -> string list
+  val get_fun_ptr_params: csenv -> ((string * ExprDatatype.var_info) list) option list Symtab.table
   val get_other_fun_ptr_dependencies: csenv -> Symtab.key -> string list
   val get_all_other_fun_ptr_dependencies: csenv -> string list
   val get_all_addressed_funs : csenv -> string list
@@ -114,6 +115,8 @@ sig
   val get_constant_global_fun_ptrs : csenv -> (string * string list) list
   val map_constant_global_fun_ptrs : ((string * string list) list ->  (string * string list) list)
          -> csenv -> csenv
+  val get_global_fun_ptrs_grouped_by_type: csenv -> (string * int CTypeDatatype.ctype) list list
+  val get_global_fun_ptr_group_with_same_type: csenv -> string -> string list
   val get_cliques : csenv -> string list list
   val map_cliques : (string list list -> string list list ) -> csenv -> csenv
   val get_final_callgraph : csenv -> callgraph
@@ -124,6 +127,7 @@ sig
   val get_clique : csenv -> string -> string list option
   val get_fun_ptr_parameters: csenv -> Symtab.key -> var_info option list
   val has_fun_ptr_parameters: csenv -> Symtab.key -> bool
+  val all_fun_ptr_parameters: csenv -> var_info list
   val all_fun_ptr_parameter_types: csenv -> int CTypeDatatype.ctype list
   val all_method_fun_ptr_types: csenv -> int CTypeDatatype.ctype list
   val is_exit_reachable: csenv -> string -> bool
@@ -132,7 +136,7 @@ sig
   val get_defined_functions : csenv -> Region.Wrap.region Symtab.table
   val get_read_globals : csenv -> modify_var Binaryset.set Symtab.table
   val is_recursivefn : csenv -> string -> bool
-  val mvar_traverse : Proof.context -> csenv -> csenv
+  val mvar_traverse : csenv -> csenv
   val get_modified_global_locns : csenv -> string Binaryset.set MVar_Table.table
   val calc_all_globals : csenv -> int ctype MSymTab.table
   val calc_untouched_globals : csenv -> int ctype MSymTab.table
@@ -144,13 +148,17 @@ sig
 
   val used_fun_types_of_fun : csenv -> string -> int ctype list
   val uses_globals : csenv -> string -> bool
+  val approx_globals': csenv ->
+      (string * (selector list * (string * ExprDatatype.var_info) list) list) list
 
   val process_decls : Proof.context -> s2s_config -> Absyn.ext_decl list ->
                       ((Absyn.ext_decl list * Absyn.statement list) * csenv)
   val function_specs : csenv -> Absyn.fnspec list Symtab.table
-  val sizeof : csenv -> int ctype -> int
   val sizeof_padding : csenv -> int ctype -> int * bool
+  val sizeof : csenv -> int ctype -> int
   val sizeof_struct_or_union: csenv -> string -> int
+  val is_packed : csenv -> int ctype -> bool
+  val is_packed_struct_or_union : csenv -> string -> bool
   val alignof: csenv -> int ctype -> int
   val alignof_struct_or_union: csenv -> string -> int
   val offsetof: csenv -> string -> string -> int
@@ -199,6 +207,9 @@ sig
   (* Writes the mungedb to the file specified in `munge_info_fname` (see
      type s2s_config). *)
   val export_mungedb : csenv -> unit
+
+  val check_post_ops_while: Proof.context -> Absyn.expr * ExprDatatype.expr_node list -> unit
+  val mk_post_op_assign: ExprDatatype.expr_node -> Absyn.statement
 end
 
 structure ProgramAnalysis : PROGRAM_ANALYSIS =
@@ -374,12 +385,12 @@ fun fncall_ord (f1,f2) =
         prod_ord funty_ord (prod_ord (list_ord (prod_ord (string_ord) (ExprDatatype.var_info_ord))) bool_ord) 
          ((x1, (x2, x3)), (y1, (y2, y3)))
 
-datatype selector = Field of string | Array_Index
-
+datatype selector = Field of string | Index of int option
+              
 fun selector_ord (Field s1, Field s2) = fast_string_ord (s1, s2)
-  | selector_ord (Field _ , Array_Index) = LESS
-  | selector_ord (Array_Index, Field _)  = GREATER
-  | selector_ord (Array_Index, Array_Index) = EQUAL
+  | selector_ord (Field _ , Index _) = LESS
+  | selector_ord (Index _, Field _)  = GREATER
+  | selector_ord (Index o1, Index o2) = option_ord int_ord (o1, o2)
 
 val selectors_ord = list_ord selector_ord
 type callgraph =
@@ -481,7 +492,7 @@ fun all_fun_ptr_parameter_types cse =
 
 fun all_method_fun_ptr_types cse =
   let
-    fun method_type (FnPtrCall ((retT, argTs), _, True)) = SOME (CType.Function (retT, argTs))
+    fun method_type (FnPtrCall ((retT, argTs), _, true)) = SOME (CType.Function (retT, argTs))
       | method_type _ = NONE
     val Ts = get_callgraph cse |> Symtab.dest |> maps (Binaryset.listItems o snd) 
       |> map_filter method_type |> sort_distinct (CType.ctype_ord int_ord)
@@ -1001,6 +1012,8 @@ and gen_strsize strict cse s : (Int.int * bool) =
 and gen_sizeof strict cse ty = Absyn.sizeof (gen_strsize strict cse) ty
 val sizeof_padding = gen_sizeof false
 val sizeof = fst oo sizeof_padding
+val is_padding = snd oo sizeof_padding
+val is_packed = not oo is_padding
 val offset_padding = gen_offset false
 val offset = fst ooo offset_padding
 val strsize = gen_strsize false
@@ -1044,6 +1057,7 @@ fun type_of_struct_or_union cse s =
 
 fun sizeof_struct_or_union cse s = sizeof cse (type_of_struct_or_union cse s)
 fun alignof_struct_or_union cse s = alignof cse (type_of_struct_or_union cse s)
+fun is_packed_struct_or_union cse s = is_packed cse (type_of_struct_or_union cse s)
 
 fun cse2ecenv ctxt cse = CE {enumenv = get_enumenv cse,
                         typing = cse_typing ctxt cse,
@@ -1066,7 +1080,6 @@ end
 
 local
 open ExprDatatype
-datatype access = Field of string | Index of int option
 
 fun dest_access ctxt ecenv (Var (s, info)) = ((s, info), [])
   | dest_access ctxt ecenv (StructDot (E e, fld)) =
@@ -1137,8 +1150,9 @@ fun approx_expr ctxt cse e =
     |> these
   end
 
+fun approx_literal_access' accs inits = (accs, approx_literal_access accs inits)
 
-fun approx_globals cse =
+fun approx_globals' cse =
   let
     val senv = get_senv cse
     val vars = get_variables cse NONE
@@ -1148,11 +1162,15 @@ fun approx_globals cse =
       let
         val inits = dest_init_expr e
         val accss = all_accesses senv (typ_of g)
-      in ( MString.dest g, accss |> map (fn accs => approx_literal_access accs inits) |> flat) end
+      in ( MString.dest g, accss |> map (fn accs => approx_literal_access' accs inits) ) end
   in
     MSymTab.dest (get_globinits cse)
     |> map approx
   end
+
+
+fun approx_globals cse =
+  approx_globals' cse |> map (fn (x, is) => (x, maps snd is))
 
 fun eq_string_assoc (xs, ys) =
   let
@@ -1242,7 +1260,7 @@ fun get_local_info cse (n, NONE) = NONE
 fun dest_method_fun_ptr ctxt cse fn_e =
   (case raw_fndes_callinfo ctxt cse fn_e of
     (FnPtrCall ((retT, argTs), funs, _), _) => 
-      (case Expr.vars_expr {typ = false, addr = false} fn_e of
+      (case Expr.vars_expr {typ = false, addr = false, post_op = true} fn_e of
         [(p, var_info)] => 
            (case !var_info of
               SOME (pT, MungedVar {munge, fname = SOME fname, ...}) => 
@@ -1340,12 +1358,27 @@ fun report_error ctxt l r f x =
     ()
   end handle ERROR s => Feedback.errorStr' ctxt (l, r, s)
 
-
 fun newstr_decl process_expr ctxt (kind: rcd_kind) (nm, flds0 : (expr ctype * string wrap * gcc_attribute list) list, sattrs0) cse = let
   open NameGeneration
   fun foldthis (cty,fldnm,attrs) acc =
       process_type process_expr ctxt (left fldnm, right fldnm) cty acc
   val cse = cse |> fold foldthis flds0
+  val n_flds = length flds0
+  val flexible_array_fields = 
+    map_index (fn (x as (i, (cty,_,_))) => if flexible_array_type cty then SOME x else NONE) flds0
+    |> map_filter I
+  val _ = null flexible_array_fields 
+          orelse
+          (kind = Struct andalso n_flds > 1 andalso 
+            length flexible_array_fields = 1 andalso #1 (hd flexible_array_fields) = n_flds - 1)
+          orelse
+            let
+              val (fld, l, r) = (unwrap o #2 o #2) (hd flexible_array_fields)
+            in
+              Feedback.error_range ctxt l r 
+                ("flexible array member " ^ quote fld ^ " only allowed as last field in a non-empty struct")
+            end
+  
   val ecenv = cse2ecenv ctxt cse
   fun uscore_check i nmty s =
       if get_allow_underscores cse orelse check_uscore_ok (node s) then ()
@@ -1618,6 +1651,7 @@ fun process_expr ctxt lvstate fname (env as Csenv {senv, ...}) e = let
             Addr => count_fncalls (env,fmap,UnderAddr []) (E e1::RAS adstat :: es)
           | _ => count_fncalls (rval ef) (E e1::es)
         end
+      | PostOp(e1, _) => count_fncalls (rval ef) (E e1::es)
       | CondExp(e1,e2,e3) => let
           val acc =
               if adstat <> SzOf andalso
@@ -1700,7 +1734,8 @@ fun process_expr ctxt lvstate fname (env as Csenv {senv, ...}) e = let
                      MungedVar
                        { munge = get_mname vi,
                          owned_by = StmtDecl.get_owned_by (get_attrs vi),
-                         fname = fname, init = the_default false (Option.mapPartial (get_init o snd) (!vinfo_ref))
+                         fname = fname, init = the_default false (Option.mapPartial (get_init o snd) (!vinfo_ref)),
+                         global = is_none (get_fname vi)
                        })
             in
               vinfo_ref := SOME (ty, info);
@@ -1709,22 +1744,28 @@ fun process_expr ctxt lvstate fname (env as Csenv {senv, ...}) e = let
         end
       | StructDot(e1, field) =>
         let
-          val ty = cse_typing ctxt env e
           val ty1 = cse_typing ctxt env e1
-          val env = env |> maybe (add_variant field) (dest_union_type ty1)
-        in
-          if adstat = Rvalue andalso array_type ty then
-            count_fncalls (env,fmap,UnderAddr []) (E e1::RAS adstat::es)
-          else let
-              val env =
-                  if adstat = BrackLeft andalso ptr_type ty andalso
-                     is_some fname
-                  then add_read (the fname) TheHeap env
-                  else env
+        in   
+          case ExpressionTyping.expand_anonymous_field' senv ty1 e1 field of 
+            SOME e' => count_fncall ef e' es
+          | NONE => 
+            let         
+              val ty = cse_typing ctxt env e
+              val env = env |> maybe (add_variant field) (dest_union_type ty1)
             in
-              count_fncalls (env, fmap, extend_selector (Field field) adstat) (E e1::es)
-            end
-        end
+              if adstat = Rvalue andalso array_type ty then
+                count_fncalls (env,fmap,UnderAddr []) (E e1::RAS adstat::es)
+              else let
+                  val env =
+                      if adstat = BrackLeft andalso ptr_type ty andalso
+                         is_some fname
+                      then add_read (the fname) TheHeap env
+                      else env
+                in
+                  count_fncalls (env, fmap, extend_selector (Field field) adstat) (E e1::es)
+                end
+            end 
+      end
       | ArrayDeref(e1,e2) => let
           val ty = cse_typing ctxt env e
           val ty1 = cse_typing ctxt env e1
@@ -1735,7 +1776,7 @@ fun process_expr ctxt lvstate fname (env as Csenv {senv, ...}) e = let
                     else env
         in
           case adstat of
-            UnderAddr sels => count_fncalls (env,fmap,extend_selector Array_Index (BL_Addr sels))
+            UnderAddr sels => count_fncalls (env,fmap,extend_selector (Index NONE) (BL_Addr sels))
                                        (E e1::RAS Rvalue::E e2::RAS adstat::es)
           | Rvalue => let
             in
@@ -1747,7 +1788,7 @@ fun process_expr ctxt lvstate fname (env as Csenv {senv, ...}) e = let
             end
           | BrackLeft => count_fncalls (env,fmap,BrackLeft)
                                        (E e1::RAS Rvalue::E e2::es)
-          | BL_Addr sels => count_fncalls (env,fmap,extend_selector Array_Index (BL_Addr sels))
+          | BL_Addr sels => count_fncalls (env,fmap,extend_selector (Index NONE) (BL_Addr sels))
                                      (E e1::RAS Rvalue::E e2::RAS adstat::es)
           | Lvalue => count_fncalls (env,fmap,BrackLeftLV)
                                     (E e1::RAS Rvalue::E e2::RAS Lvalue::es)
@@ -1834,6 +1875,7 @@ fun get_modified ctxt env e = let
      base modified var_info for e if something in the global memory might be
      changing *)
   datatype s = BrackLeft | Normal
+  val senv = get_senv env
   fun recurse state e =
       case enode e of
         Var (s, Unsynchronized.ref (SOME (ty, MungedVar {munge = mnm, ...}))) => let
@@ -1853,7 +1895,7 @@ fun get_modified ctxt env e = let
               else raise Fail ("Munged Variable "^s^", "^MString.dest mnm^
                                " not in environment")
             end
-        end
+        end 
       | Var (s, Unsynchronized.ref NONE) => let
           open Region
           val msg = toString (make {left = eleft e, right = eright e}) ^
@@ -1862,12 +1904,20 @@ fun get_modified ctxt env e = let
           raise Fail msg
         end
       | Var _ => NONE
-      | StructDot (e', _) => let
-        in
-          case cse_typing ctxt env e of
-            Ptr _ => if state = BrackLeft then SOME TheHeap
-                     else recurse state e'
-          | _ => recurse state e'
+      | StructDot (e', fld) => 
+        let
+          val ty_e = cse_typing ctxt env e
+        in 
+          case ExpressionTyping.expand_anonymous_field' senv ty_e e fld of 
+            SOME e' => recurse state e'
+          | NONE =>
+            let
+            in
+              case ty_e of
+                Ptr _ => if state = BrackLeft then SOME TheHeap
+                         else recurse state e'
+              | _ => recurse state e'
+            end
         end
       | ArrayDeref (e', _) => recurse BrackLeft e'
       | Deref _ => SOME TheHeap
@@ -1997,7 +2047,8 @@ in
       val munged_name = get_mname vi
       val bogus = SourcePos.bogus
       val mvinfo = MungedVar {munge = munged_name,
-                              owned_by = StmtDecl.get_owned_by attrs, fname=fname, init=true}
+                              owned_by = StmtDecl.get_owned_by attrs, fname=fname, init=true, 
+                              global = is_none (get_fname vi)}
       val var_e = ewrap(Var (str, Unsynchronized.ref (SOME (vty, mvinfo))), left s, right s)
       val (inits, proc_expr_opt, e) =
           case iopt of
@@ -2216,6 +2267,102 @@ in
     mod3 = []}}
 end
 
+fun mk_post_op_assign (PostOp (e, m)) =
+  let
+    val l = eleft e
+    val r = eright e
+    val operation = case m of Plus_Plus => Plus | Minus_Minus => Minus
+    val binop = ewrap (BinOp (operation, e, expr_int 1), l, r)
+  in
+    swrap (Assign (e, binop), l, r)
+  end
+  | mk_post_op_assign t = error ("mk_post_op_assign: unexpected term: " ^ @{make_string} t)
+
+fun check_local_var ctxt e =
+  let
+    val l = eleft e
+    val r = eright e
+  in 
+  case vars_expr {typ=false, addr=false, post_op=false} e of
+    [] => Feedback.error_range ctxt l r "undefined behavior: side effects only allowed on local variables"
+  | [var] => 
+      (case dest_var var of 
+        SOME (info as (_, (_, {global = false, ...}))) => (info, l, r) 
+       | _ => Feedback.error_range ctxt l r "undefined behavior: side effects only allowed on local variables")
+  | vars => Feedback.error_range ctxt l r "undefined behavior: expecting single local variable here"
+
+  end
+
+fun check_post_ops ctxt ops1 ops2 =
+  let
+    val ops = ops1 @ ops2
+    val ops'  = map_filter dest_post_op' ops
+    val _ = if length ops' <> length ops then error "check_post_ops: expection only PostOp" else ()
+    val local_vars = map (check_local_var ctxt o fst) ops'
+    val dups = duplicates ((op =) o apply2 #1) local_vars
+    val _ = case dups of [] => () | 
+              (((x,_), l, r)::_) => 
+                Feedback.error_range ctxt l r ("undefined behavior: duplicate variable with side effects: " ^ quote x)
+  in
+    chop (length ops1) local_vars
+  end
+
+fun check_post_ops_while ctxt (e, post_ops) =
+  let
+    val (_, vars_post_ops) = check_post_ops ctxt [] post_ops
+    val e_vars = vars_expr {typ=false, addr=false, post_op=false} e |> map_filter dest_var
+    val inter1 = inter (fn ((x,_,_), y) => x=y) (e_vars) (vars_post_ops)
+    val _ = case inter1 of [] => () | ((v, l, r)::_) =>
+      Feedback.error_range ctxt l r "undefined behavior: variable collision with side effects"
+  in
+    ()
+  end
+
+fun check_post_ops_assign ctxt (left, left_post_ops) (right, right_post_ops) =
+  let
+    val (vars_post_left, vars_post_right) = check_post_ops ctxt left_post_ops right_post_ops
+    val left_vars = vars_expr {typ=false, addr=false, post_op=false} left |> map_filter dest_var
+    val right_vars = vars_expr {typ=false, addr=false, post_op=false} right |> map_filter dest_var
+
+    val inter3 = inter (fn ((x,_,_), y) => x=y) (left_vars @ right_vars) (vars_post_left @ vars_post_right)
+    val _ = case inter3 of [] => () | ((v, l, r)::_) =>
+      Feedback.error_range ctxt l r "undefined behavior: variable collision with side effects"
+    val inter1 = inter (fn ((x,_,_), y) => x=y) (right_vars) vars_post_left
+    val _ = case inter1 of [] => () | ((v, l, r)::_) =>
+      Feedback.error_range ctxt l r "undefined behavior: variable also appears in right hand side of assignment"
+    val inter2 = inter (fn ((x,_,_), y) => x=y) (left_vars) vars_post_right
+    val _ = case inter2 of [] => () | ((v, l, r)::_) =>
+      Feedback.error_range ctxt l r "undefined behavior: variable also appears in left hand side of assignment"
+
+  in
+    ()
+  end
+
+fun mk_while_with_post_ops l r e post_ops inv bdy =
+  case post_ops of [] => error ("mk_while_with_post_ops: empty list")
+  | _ => let
+    (* E.g. 
+      while(n--) {...}   
+      \<longrightarrow> 
+      while (1) {
+         if (n) { n--} else {n--; break;}; 
+         ... 
+         }
+     *)
+           val le = eleft e
+           val re = eright e
+           fun s x = swrap (x, le, re)
+           fun b x = swrap (x, SourcePos.bogus, SourcePos.bogus)
+           fun blk xs = Block (map BI_Stmt xs)
+           val assigns = map mk_post_op_assign post_ops
+
+           val cond_sideeffect = s (IfStmt (e, s (blk assigns), s(blk (assigns @ [b Break]))))
+           val bdy' = s (blk [cond_sideeffect, bdy])
+           val while' = swrap (While(expr_int 1, inv, bdy'), l, r)
+         in
+           swrap (Trap (BreakT, while'), l, r)
+         end
+
 fun process_blockitem ctxt fname e bi = let
 in
   case bi of
@@ -2266,8 +2413,8 @@ in
   case snode stmt of
     While(g, i, s) => let
       val (e,grs) = pex e g
-      val cstmts = mk_chaos_stmts grs
-      val (s', e) = pst e s
+      val cstmts = mk_chaos_stmts grs    
+      val (s', e) = pst e s  
     in
       (cstmts @ [w (While(g,i,lift_stmts (s' @ cstmts)))], e)
     end
@@ -2316,23 +2463,45 @@ in
       apfst (fn cs => prechaos grs [w (Switch(g,cs))])
             (apsnd pop_scope (fold_pipe one_case e cases))
     end
-  | Assign(e1,e2) =>
-    let
-      val _ = if CType.fun_ptr_type (cse_typing ctxt e e1)
-        then Feedback.errorStr' ctxt (sleft stmt, sright stmt, "assignment to function pointer not supported")
-        else ();
-
-      val (e, grs1) = pexlv e e1
-      val (e, grs2) = pex e e2
-      val grs = Binaryset.union(grs1,grs2)
-      val modified = get_modified ctxt e e1
-      val e =
-          case modified of
-            NONE => e
-          | SOME m => add_modification fname m e
-    in
-      (prechaos grs [stmt], e)
-    end
+  | Assign(e1_0,e2_0) =>
+     let
+       val (e1, post_ops1) = extract_post_ops ctxt e1_0
+       val (e2, post_ops2) = extract_post_ops ctxt e2_0
+       val post_ops = post_ops1 @ post_ops2
+     in
+      (if not (null post_ops) then  
+         let
+           val assign' = w (Assign (e1, e2))
+           val post_op_assigns = map mk_post_op_assign post_ops
+           val stmt' = w (Block (map BI_Stmt (assign'::post_op_assigns)))
+           val res = pst e stmt'
+           val _ = check_post_ops_assign ctxt (e1_0, post_ops1) (e2_0, post_ops2)
+         in res end
+        (*case dest_post_op_lval e1 of
+        SOME (p, m) => 
+          let 
+            val res = pst e (mk_post_op_assign (sleft stmt) (sright stmt) p m e2)
+            val _ = check_post_op_assign ctxt p e2
+          in res end
+      | NONE => *)
+       else
+        let
+          val _ = if CType.fun_ptr_type (cse_typing ctxt e e1)
+            then Feedback.errorStr' ctxt (sleft stmt, sright stmt, "assignment to function pointer not supported")
+            else ();
+        
+          val (e, grs1) = pexlv e e1
+          val (e, grs2) = pex e e2
+          val grs = Binaryset.union(grs1,grs2)
+          val modified = get_modified ctxt e e1
+          val e =
+              case modified of
+                NONE => e
+              | SOME m => add_modification fname m e
+        in
+          (prechaos grs [stmt], e)
+        end)
+      end
   | AssignFnCall(eopt,fn_e,args) => let in
       if treat_as_emb_fcall ctxt e (eopt,fn_e,args)
       then let
@@ -2524,12 +2693,12 @@ fun process_one_extdecl ctxt (env0 : csenv) edec =
         in
           map_fnspecs (Symtab.map_default (node s, []) (U specs)) env
         end
-        val env = pop_scope env
+        val env = pop_scope env                           
       in
         (([FnDefn((rettype0, s), params, specs, body')], []), env)
       end
 
-fun gen_compute_callgraphs excludes ctxt env = let
+fun gen_compute_callgraphs excludes env = let
   fun add fname s = if member (op =) excludes fname then s else Binaryset.add(s, fname)
 
   val (callgraph, converse) = let
@@ -2577,7 +2746,7 @@ fun has_addressable_variables cse fname =
     get_variables cse (SOME fname) |> exists (XMSymTab.defined addressed o key)
   end
 
-fun mvar_traverse ctxt env = let
+fun mvar_traverse env = let
   val fnames = get_functions env
   val defined_fns = Symtab.keys (get_defined_functions env)
   val empty_sset = Binaryset.empty string_ord
@@ -2613,7 +2782,7 @@ fun mvar_traverse ctxt env = let
   fun lift f fnm = case Symtab.lookup f fnm of
                      NONE => []
                    | SOME s => Binaryset.listItems s
-  val {callees,callers} = compute_callgraphs ctxt env
+  val {callees,callers} = compute_callgraphs env
 
   val sorted = Topo_Sort.topo_sort {cmp = string_ord,
                                     graph = lift callees,
@@ -2719,7 +2888,7 @@ fun mvar_traverse ctxt env = let
           fun update_at f cmod setopt =
               case setopt of
                 NONE => del f cmod
-              | SOME s => ins f cmod s
+              | SOME s => ins f cmod s  
           fun foldthis f env =
               env |> mk_recursive f
                   |> update_at f map_modifies ms
@@ -2817,6 +2986,38 @@ fun get_functions_used_via_fun_ptr cse =
     get_functions_used_as_fun_ptr_params cse @ glob_fun_ptr |> distinct (op =)
   end
 end
+
+fun mk_fun_ty (retT, _, vinfos) = Function (retT, map get_vtype vinfos)
+fun get_global_fun_ptrs_grouped_by_type cse  =
+   let
+     val fninfo = get_fninfo cse
+     fun get_cty f = Symtab.lookup fninfo f |> Option.map mk_fun_ty |> the
+     val fun_ptr_funs = get_functions_used_via_fun_ptr cse
+     val res = get_constant_global_fun_ptrs cse |> map snd |> flat
+     |> filter (member (op =) fun_ptr_funs)
+     |> sort_distinct fast_string_ord
+     |> map (fn x => (x, get_cty x))
+     |> Utils.buckets (fn ((_, cty1), (_, cty2)) => cty1 = cty2)
+   in
+     res
+   end
+ 
+fun get_global_fun_ptr_group_with_same_type cse fname =
+ case Symtab.lookup (get_fninfo cse) fname |> Option.map mk_fun_ty of
+   SOME cty =>
+   let
+     val fninfo = get_fninfo cse
+     fun get_cty f = Symtab.lookup fninfo f |> Option.map mk_fun_ty |> the
+     val fun_ptr_funs = get_functions_used_via_fun_ptr cse
+     val globs = get_constant_global_fun_ptrs cse |> map snd 
+     |> filter (fn xs => member (op =) xs fname) |> flat
+     |> filter (member (op =) fun_ptr_funs)
+     |> filter (fn f => get_cty f = cty)
+    val res = fname :: globs |> sort_distinct fast_string_ord
+   in
+     res
+   end
+ | NONE => [fname]
 
 fun get_clique cse fname =
   let
@@ -3038,7 +3239,7 @@ fun process_decls ctxt cfg (p : program) = let
         * globals that are modified at some point. So global constants will disappear.
         * We restore the original values in the end.
         *)
-  val env = mvar_finalise (mvar_traverse ctxt env)
+  val env = mvar_finalise (mvar_traverse env)
   val env = map_read_globals (K orig_read_globals) env
   val env = map_fun_ptr_params (compress_fun_ptr_params) env
   val env = map_constant_global_fun_ptrs (K (approx_global_fun_ptrs env)) env
@@ -3134,7 +3335,7 @@ fun is_reachable (callee_graph: string Binaryset.set Symtab.table) caller callee
     fun immediate_callees caller = 
       case Symtab.lookup callee_graph caller of 
        SOME X => X
-      | NONE => Binaryset.empty (fast_string_ord)
+      | NONE => Binaryset.empty (String.compare)
 
     fun reach searched caller =
       let 
@@ -3154,7 +3355,7 @@ fun is_reachable (callee_graph: string Binaryset.set Symtab.table) caller callee
           
       end
   in
-    reach (Binaryset.empty fast_string_ord) caller
+    reach (Binaryset.empty String.compare) caller
   end
 
 fun is_exit_reachable cse caller =

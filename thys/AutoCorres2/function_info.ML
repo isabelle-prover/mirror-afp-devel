@@ -23,9 +23,17 @@ sig
                  | HL (* HeapLift *) (* TODO: rename to HeapAbstract, Split Heap *)
                  | WA (* WordAbstract *)
                  | TS (* TypeStrengthen *);
-  datatype parameter_kind = In | Out | In_Out | Data
+  datatype parameter_kind = In | Out | In_Out | Data | Keep_Ptr
+  type in_out_fun_ptr_spec = {
+    param_kinds: (parameter_kind * bool) list,
+    in_out_globals: bool,
+    might_exit: bool}
+  val parameter_kind_ord: parameter_kind * parameter_kind -> order
+  val in_out_fun_ptr_spec_ord: in_out_fun_ptr_spec * in_out_fun_ptr_spec -> order
   val parameter_kind_from_string : string -> parameter_kind
   val string_from_parameter_kind : parameter_kind -> string
+  val default_parameter_kind: int CType.ctype -> (parameter_kind * bool)
+  val default_fun_ptr_params: int CType.ctype -> in_out_fun_ptr_spec option
   val phases: phase list;
   val string_of_phase : phase -> string;
   val phase_of_string : string -> phase;
@@ -296,14 +304,37 @@ fun info_phase (skips as {skip_io_abs, skip_heap_abs, skip_word_abs}) phase =
 
 fun prev_phase skips = info_phase skips o prev_phase_raw
 
-datatype parameter_kind = In | Out | In_Out | Data
+datatype parameter_kind = In | Out | In_Out | Data | Keep_Ptr
 
-fun parameter_kind_from_string str = 
+type in_out_fun_ptr_spec = {
+  param_kinds: (parameter_kind * bool) list,
+  in_out_globals: bool,
+  might_exit: bool}
+
+fun encode_parameter_kind k =
+  case k of
+    In => 0
+  | Out => 1
+  | In_Out => 2
+  | Data => 3
+  | Keep_Ptr => 4
+
+val parameter_kind_ord = int_ord o apply2 encode_parameter_kind
+fun in_out_fun_ptr_spec_ord (
+  {param_kinds = ps1, in_out_globals = g1, might_exit = e1}, 
+  {param_kinds = ps2, in_out_globals = g2, might_exit = e2}) =
+  prod_ord 
+    (list_ord (prod_ord parameter_kind_ord bool_ord)) 
+    (prod_ord bool_ord bool_ord)
+    ((ps1, (g1, e1)), (ps2, (g2, e2)))
+
+fun parameter_kind_from_string str =   
   case str of
     "in" => In
   | "out" => Out
   | "in_out" => In_Out
   | "data" => Data
+  | "keep" => Keep_Ptr
   | _ => error ("parameter_kind_from_string: unexpected string" ^ quote str)
 
 fun string_from_parameter_kind k =
@@ -312,6 +343,21 @@ fun string_from_parameter_kind k =
   | Out => "out"
   | In_Out => "in_out"
   | Data => "data"
+  | Keep_Ptr => "keep"
+
+fun default_parameter_kind (CType.Ptr (CType.Function _)) = (Data, false)
+  | default_parameter_kind (CType.Ptr _) = (Keep_Ptr, true)
+  | default_parameter_kind _ = (Data, false)
+
+fun mk_default_fun_ptr_param_spec ps = {
+  param_kinds = map default_parameter_kind ps, 
+  in_out_globals = false, 
+  might_exit = true (* specs with might_exit = true are more general, but ts phase stays in exit monad! *)
+  }: in_out_fun_ptr_spec
+
+fun default_fun_ptr_params (CType.Function (_, ps)) = SOME (mk_default_fun_ptr_param_spec ps)
+  | default_fun_ptr_params (CType.Ptr (CType.Function (_, ps))) = SOME (mk_default_fun_ptr_param_spec ps)
+  | default_fun_ptr_params _ = NONE
 
 structure Phasetab = Table(
   type key = phase

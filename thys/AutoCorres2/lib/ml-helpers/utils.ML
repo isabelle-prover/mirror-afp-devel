@@ -39,8 +39,6 @@ fun gen_verbose_msg_tac tac level ctxt f st = (verbose_msg level ctxt f; tac st)
 val verbose_msg_tac = gen_verbose_msg_tac all_tac
 val verbose_msg_no_tac = gen_verbose_msg_tac no_tac
 
-
-
 (* timing *)
 
 val timing = Attrib.setup_config_int \<^binding>\<open>verbose_timing\<close> (K 0);
@@ -246,6 +244,13 @@ fun print_conv msg (ct:cterm) =
     val _ = tracing (msg ^ ": " ^ @{make_string} ct);
   in Conv.all_conv ct end
 
+fun verbose_conv level ctxt msg conv ct =
+  let
+    val eq = conv ct
+    val _ = if level <= Config.get ctxt verbose then 
+      tracing (msg level ^ ": " ^ Syntax.string_of_term ctxt (Thm.term_of (Thm.rhs_of eq))) else ()
+  in eq end
+
 fun gen_fix_variant_frees strict ts ctxt =
   let
     val (names, types) = split_list ts
@@ -391,6 +396,17 @@ fun split_map_filter f [] = ([], [])
           SOME y => (y :: somes, nones)
         | NONE => (somes, x :: nones)
       end
+
+fun buckets eq xs =
+  let
+    fun bucks done [] = done
+      | bucks done (x::xs) = 
+         let 
+           val (same, rest) = split_filter (fn y => eq (x, y)) (x::xs)
+         in bucks (same::done) rest end
+  in
+   bucks [] xs
+  end
 
 fun OFs asms thms =
   let

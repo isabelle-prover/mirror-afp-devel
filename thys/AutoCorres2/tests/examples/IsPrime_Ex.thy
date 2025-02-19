@@ -180,10 +180,12 @@ theorem (in ts_definition_is_prime) is_prime_faster_correct:
     subgoal by simp
     subgoal
       apply runs_to_vcg 
-      apply auto
-      using le_Suc_eq by force
+              apply auto
+      subgoal using le_Suc_eq 
+        by force
     done
-  done
+      done
+    done
 
 end
 

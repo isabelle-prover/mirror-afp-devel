@@ -217,14 +217,14 @@ fun add_progenv_corres_bundle (prev_phase, phase) prog_info filename thy =
   end
 
 
-fun L1_fn_ptr_corres p Gamma P ctxt =
+fun L1_fn_ptr_corres _ _ p Gamma P ctxt =
   let
     val prop = \<^infer_instantiate>\<open>p = p and G = Gamma and P = P in prop\<open>L1corres True G (P p) (Call p)\<close>\<close> ctxt
   in
     SOME ((prop, []), ctxt) 
   end
 
-fun L2_fn_ptr_corres prog_info p P_L1 (P_L2 as Const (_, T)) ctxt =
+fun L2_fn_ptr_corres prog_info _ _ p P_L1 (P_L2 as Const (_, T)) ctxt =
   let
     val (ptrT::argTs, retT) = strip_type T
     val {exT = errT, resT =  resT, ...} = AutoCorresData.dest_exn_monad_result_type retT
@@ -245,7 +245,7 @@ fun L2_fn_ptr_corres prog_info p P_L1 (P_L2 as Const (_, T)) ctxt =
     SOME ((prop, []), ctxt1)
   end
 
-fun HL_fn_ptr_corres HL_setup p (P_prev as Const (_, T_prev)) (P as Const (Pname, T)) ctxt =
+fun HL_fn_ptr_corres (HL_setup:HeapLiftBase.heap_lift_setup) _ _ p (P_prev as Const (_, T_prev)) (P as Const (Pname, T)) ctxt =
   let
     val (ptrT::argTs, ret_prevT) = strip_type T_prev
     val stateT = T |> strip_type |> fst |> split_last |> snd
@@ -259,8 +259,33 @@ fun HL_fn_ptr_corres HL_setup p (P_prev as Const (_, T_prev)) (P as Const (Pname
     SOME ((prop, @{attributes [consumes 1]}), ctxt1)
   end
 
+fun compatible_options 
+  (fun_opt: ProgramInfo.function_options) 
+  ({param_kinds, might_exit,  ...}:FunctionInfo.in_out_fun_ptr_spec) =
+  map (AutoCorresData.norm_kind {only_type=false} o snd) (ProgramInfo.get_in_out_parameters fun_opt) = 
+  map (AutoCorresData.norm_kind {only_type=false} o fst) param_kinds andalso
+  ProgramInfo.get_might_exit fun_opt = might_exit
 
-fun WA_fn_ptr_corres opt p (P_prev as Const (_, T_prev)) (P as Const (Pname, T)) ctxt =
+ 
+fun IO_fn_ptr_corres prog_info (cty: int CType.ctype) (fun_opt:ProgramInfo.function_options) p (P_prev as Const (_, T_prev)) (P as Const (Pname, T)) ctxt =
+  let
+    val ops = the (In_Out_Parameters.Data.get (NameGeneration.global_rcd_name) ctxt) 
+    val fun_ptr_spec_opt = 
+      (case AList.lookup (op =) (ProgramInfo.get_method_io_params prog_info) cty of
+         SOME spec => SOME spec
+       | _  => FunctionInfo.default_fun_ptr_params cty)
+  in
+    fun_ptr_spec_opt |> Option.mapPartial (fn fun_ptr_spec => 
+    if compatible_options fun_opt fun_ptr_spec then
+      let
+        val (cprop, ctxt') = #IO_fn_ptr_cprop ops fun_ptr_spec p P_prev P ctxt
+        in
+          SOME ((Thm.term_of cprop, []), ctxt')
+        end
+     else NONE)
+  end
+
+fun WA_fn_ptr_corres opt _ _ p (P_prev as Const (_, T_prev)) (P as Const (Pname, T)) ctxt =
   let
     val unsigned_word_abs = the_default false (AutoCorres_Options.get_unsigned_word_abs_known_functions opt)
     val no_signed_word_abs = the_default false (AutoCorres_Options.get_no_signed_word_abs_known_functions opt)
@@ -268,10 +293,10 @@ fun WA_fn_ptr_corres opt p (P_prev as Const (_, T_prev)) (P as Const (Pname, T))
       (if unsigned_word_abs then WordAbstract.word_abs else []) @ 
       (if no_signed_word_abs then [] else WordAbstract.sword_abs)
     val (ptrT::prev_argTs, mprevT) = strip_type T_prev
-    val {resT = ret_prevT, ...} = AutoCorresData.dest_exn_monad_result_type mprevT
+    val {resT = ret_prevT, exT = ex_prevT, ...} = AutoCorresData.dest_exn_monad_result_type mprevT
 
     val (_ :: argTs, mT) = strip_type T
-    val {resT = retT, ...} = AutoCorresData.dest_exn_monad_result_type mT
+    val {resT = retT, exT, ...} = AutoCorresData.dest_exn_monad_result_type mT
 
     val prev_args = map (fn T => ("x", T)) prev_argTs
     val args = map (fn T => ("y", T)) argTs
@@ -288,6 +313,7 @@ fun WA_fn_ptr_corres opt p (P_prev as Const (_, T_prev)) (P as Const (Pname, T))
          the (get_first (matches xT yT o #abs_fn) WA_rules)
 
     val rt = abs_fun ret_prevT retT
+    val ex = WordAbstract.get_abs_fn_exit WA_rules ex_prevT
     val (prev_args, ctxt1) = Utils.fix_variant_frees (prev_args) ctxt
     val (args, ctxt2) = Utils.fix_variant_frees (args) ctxt1
 
@@ -299,15 +325,15 @@ fun WA_fn_ptr_corres opt p (P_prev as Const (_, T_prev)) (P as Const (Pname, T))
 
     val P_prev = betapplys(P_prev, [p] @ prev_args)
     val P = betapplys(P, [p] @ args)
-    val prop = \<^infer_instantiate>\<open>Pre = abs_conj and rt = rt and P_prev = P_prev and P = P in 
-      prop\<open>corresTA (\<lambda>s. Pre) rt id P P_prev\<close>\<close> ctxt2
+    val prop = \<^infer_instantiate>\<open>Pre = abs_conj and rt = rt and ex = ex and P_prev = P_prev and P = P in 
+      prop\<open>corresTA (\<lambda>s. Pre) rt ex P P_prev\<close>\<close> ctxt2
   in
     SOME ((prop, []), ctxt2)
   end
   handle Option => NONE
 
 
-fun TS_fn_ptr_corres opt p (P_prev as Const (_, T_prev)) (P as Const (Pname, T)) ctxt =
+fun TS_fn_ptr_corres opt _ _ p (P_prev as Const (_, T_prev)) (P as Const (Pname, T)) ctxt =
   let
     val target_monad_name = the_default "exit" (AutoCorres_Options.get_ts_force_known_functions opt)
     val (ptrT::prev_argTs, mprevT) = strip_type T_prev
@@ -347,6 +373,7 @@ fun add_corres_locale HL_setup_opt opt (prev_phase, phase) prog_info filename th
     let
       fun prop FunctionInfo.L1 = L1_fn_ptr_corres
         | prop FunctionInfo.L2 = L2_fn_ptr_corres prog_info
+        | prop FunctionInfo.IO = IO_fn_ptr_corres prog_info
         | prop FunctionInfo.HL = HL_fn_ptr_corres (the HL_setup_opt)
         | prop FunctionInfo.WA = WA_fn_ptr_corres opt
         | prop FunctionInfo.TS = TS_fn_ptr_corres opt
@@ -354,21 +381,98 @@ fun add_corres_locale HL_setup_opt opt (prev_phase, phase) prog_info filename th
       AutoCorresData.add_global_corres_locale (prev_phase, phase) prog_info prop thy
     end
 
-fun fun_options opt fname =
+fun complete_in_out_spec params in_out_spec =
   let
+    val res = 
+      params |> map (fn (n, cty) => 
+        (n, the_default (fst (FunctionInfo.default_parameter_kind cty)) (AList.lookup (op =) in_out_spec n)))
+  in res end
+
+fun get_might_exit cse fname =
+  let
+    val fun_ptr_group = ProgramAnalysis.get_global_fun_ptr_group_with_same_type cse fname
+    val _ = @{assert} (member (op =) fun_ptr_group fname)
+  in
+      exists (ProgramAnalysis.is_exit_reachable cse) fun_ptr_group
+  end
+
+fun check_might_exit cse opt fname =
+  let
+    val {skip_io_abs, ...} = AutoCorres_Options.get_skips opt
+    val might_exit_group = get_might_exit cse fname
+    val might_exit = ProgramAnalysis.is_exit_reachable cse fname
+    val ts_force = AutoCorres_Options.get_ts_force opt
+    val _ = if not skip_io_abs andalso not might_exit andalso might_exit_group andalso Symtab.lookup ts_force fname <> SOME "exit" then
+            error ("IO option 'might_exit' is inferred for function: " ^ quote fname ^ " called via a function pointer.\n" ^
+              "TS phase might fail for functions calling it via a function pointer unless you specify 'ts_force exit' for " ^ quote fname)   
+            else ()
+  in
+    might_exit_group
+  end
+fun fun_options cse opt fname =
+  let
+    val params = these (ProgramAnalysis.get_params fname cse) |> map (fn vinfo => (ProgramAnalysis.srcname vinfo, ProgramAnalysis.get_vtype vinfo))
+    val default_in_out_fun_ptr_params = params |> map_filter (fn (n, cty) => FunctionInfo.default_fun_ptr_params cty |> Option.map (pair n))    
+    val might_exit = check_might_exit cse opt fname
     val {skip_io_abs, skip_heap_abs, skip_word_abs} = AutoCorres_Options.get_skips opt
     val heap_abs = not (skip_heap_abs orelse member (op =) (these (AutoCorres_Options.get_no_heap_abs opt)) fname)
     val signed_abs = not (skip_word_abs orelse member (op =) (these (AutoCorres_Options.get_no_signed_word_abs opt)) fname)
     val unsigned_abs = (not skip_word_abs) andalso member (op =) (these (AutoCorres_Options.get_unsigned_word_abs opt)) fname
     val in_out_globals =  (not skip_io_abs) andalso member (op =) (these (AutoCorres_Options.get_in_out_globals opt)) fname
-    val in_out_params = AList.lookup (op =) (these (AutoCorres_Options.get_in_out_parameters opt)) fname |> these
-    val in_out_params_opt = if skip_io_abs then NONE else SOME in_out_params
+    val in_out_params = AList.lookup (op =) (these (AutoCorres_Options.get_in_out_parameters opt)) fname |> the_default ([], NONE, NONE)
+    val in_out_params_opt = if skip_io_abs then NONE else SOME (complete_in_out_spec params (#1 in_out_params))
+    val in_out_disjnt_opt = if skip_io_abs then NONE else (#2 in_out_params)
+    val in_out_fun_ptr_params = if skip_io_abs then [] else these (#3 in_out_params)
+    val overwrite_in_out_fun_ptr_params = default_in_out_fun_ptr_params 
+      |> map (fn (n, x) => (n, the_default x (AList.lookup (op =) in_out_fun_ptr_params n))) 
+    val skip_io_abs = skip_io_abs
 
   in
     ProgramInfo.make_function_options {heap_abs = heap_abs, signed_abs = signed_abs, unsigned_abs = unsigned_abs,
-      skip_heap_abs = skip_heap_abs, skip_word_abs = skip_word_abs,
-      in_out_parameters = in_out_params_opt, in_out_globals = in_out_globals}
+      skip_heap_abs = skip_heap_abs, skip_word_abs = skip_word_abs, skip_io_abs = skip_io_abs,
+      in_out_parameters = in_out_params_opt, in_out_globals = in_out_globals, 
+      in_out_disjoint_ptrs = in_out_disjnt_opt,
+      in_out_fun_ptr_params = overwrite_in_out_fun_ptr_params, might_exit = might_exit}
   end
+
+fun ensure_C_names [] = error ("ensure_C_names: expecting structure name and at least one field name")
+  | ensure_C_names [x] = (x,[]) (* x must be a array type *)
+  | ensure_C_names (x::xs) = 
+      (NameGeneration.ensure_C_struct_name x,  map NameGeneration.ensure_C_field_name xs)
+
+fun lookup_field (senv: ProgramAnalysis.senv) name (f::fs) = 
+  case AList.lookup (op =) senv name of
+    SOME (kind, fields, _ , _) => 
+      (case AList.lookup (op =) fields f of
+        SOME (cty, _) => if null fs then cty else 
+           (case cty of 
+              CType.StructTy s => lookup_field senv s fs
+            | CType.UnionTy s => lookup_field senv s fs
+            | _ => error ("lookup_field: unexpected type: " ^ @{make_string} cty))
+       | NONE => error ("lookup_field: unknown field " ^ quote f ^ " of structure " ^ quote name))
+   | NONE => error ("lookup_field: unknown structure: " ^ quote name) 
+
+fun check_fun_ptr_cty_spec {prefix, kind, elem} fname p cty (spec: ProgramInfo.in_out_fun_ptr_spec) =
+  let
+    val _ = if CType.fun_ptr_type cty then () else
+        error (prefix ^ ": " ^ elem ^ " " ^ quote p ^ " in " ^ kind ^ ": " ^ 
+          quote fname ^ "is not a function pointer: " ^ @{make_string} cty)
+    val CType.Ptr (CType.Function (_, argTs)) = cty
+    val _ = if length argTs = length (#param_kinds spec) then () else 
+         error (prefix ^ ":function pointer spec of " ^ elem ^ " " ^ quote p ^ " in " ^ kind ^ ": " ^ 
+          quote fname ^ "\nhas to specify in-out kinds for exactly " ^ @{make_string} (length argTs) ^ 
+          " parameter(s). Got " ^ @{make_string} (length (#param_kinds spec)) ^ ".")
+    fun check_arg_spec (argT, (kind', distinct)) = 
+      let
+        val _ = 
+         if CType.ptr_type argT then () 
+         else (case (kind', distinct) of 
+             (FunctionInfo.Data, false) => ()
+             | _ =>  error (prefix ^ ": function pointer spec of parameter " ^ quote p ^ " in " ^ kind ^ ": " ^ 
+               quote fname ^ " unexpected specification for argument type " ^ @{make_string} (argT, (kind, distinct))))
+      in () end
+    val _ = map check_arg_spec (argTs ~~ #param_kinds spec)
+   in () end
 
 fun check_options thy cfilename opt =
   let
@@ -378,6 +482,7 @@ fun check_options thy cfilename opt =
     val in_out_globals = these (AutoCorres_Options.get_in_out_globals opt)
     val in_out_parameters = these (AutoCorres_Options.get_in_out_parameters opt)
     val skip_in_out_phase = null in_out_globals andalso null in_out_parameters
+    val funs_with_fun_ptr_params = ProgramAnalysis.get_fun_ptr_params csenv
     val check_in_out_globals = if skip_in_out_phase then () else
       let
         val in_out_globals = AutoCorres_Options.get_in_out_globals opt |> these |> sort fast_string_ord
@@ -399,7 +504,7 @@ fun check_options thy cfilename opt =
        val _ = if null unknown_functions then () else  
           warning ("unknown functions for option in_out_params: " ^ @{make_string} unknown_functions)
        val known_in_out_params = in_out_params |> filter_out (member (fn (b, a) => fst b = a) unknown_functions) 
-       fun check (fname, in_outs) = 
+       fun check (fname, (in_outs, disjnts, fun_ptr_specs)) =  
          let
            val params = these (ProgramAnalysis.get_params fname csenv)
            fun get_info n = find_first (fn info => ProgramAnalysis.srcname info = n) params 
@@ -410,6 +515,22 @@ fun check_options thy cfilename opt =
            val non_ptr_params = in_outs |> filter_out (is_ptr_type o fst)
            val _ = null non_ptr_params orelse
              error ("in_out_params: not a pointer parameter of function " ^ quote fname ^ ": " ^ @{make_string} non_ptr_params)
+           val disjnts' = these disjnts
+           val unknown_disjnts = disjnts' |> filter (is_none o get_info)
+           val _ = null unknown_disjnts orelse
+             error ("in_out_params: unknown disjoint parameters of function " ^ quote fname ^ ": " ^ @{make_string} unknown_disjnts)       
+           val non_ptr_disjnts = disjnts' |> filter_out (is_ptr_type)
+           val _ = null non_ptr_disjnts orelse
+             error ("in_out_params: not a pointer parameter of function " ^ quote fname ^ ": " ^ @{make_string} non_ptr_disjnts)
+           val unknown_fun_ptr_params = these fun_ptr_specs |> filter (is_none o get_info o fst)
+           val _ = null unknown_fun_ptr_params orelse
+             error ("in_out_params: unknown function pointer parameters of function " ^ quote fname ^ ": " ^ @{make_string} unknown_fun_ptr_params)
+           fun check_fun_ptr_spec (p, spec) =        
+             let
+               val info = the (get_info p)
+               val cty = ProgramAnalysis.get_vtype info
+             in check_fun_ptr_cty_spec {prefix = "in_out_params", kind="function", elem="parameter"} fname p cty spec end
+           val _ = map check_fun_ptr_spec (these fun_ptr_specs)
          in () 
          end
        val _ = map check known_in_out_params
@@ -453,10 +574,69 @@ fun check_options thy cfilename opt =
        in
         ()
        end
+     val check_funs_with_fun_ptr_params = if Symtab.is_empty funs_with_fun_ptr_params orelse skip_in_out_phase then () else
+       let
+         val funs = Symtab.dest funs_with_fun_ptr_params
+         fun check_fun (fname, param_callees) =
+           let
+             val opts = fun_options csenv opt fname
+             val params = the (Symtab.lookup (ProgramAnalysis.get_fninfo csenv) fname) |> #3 
+               |> map ProgramAnalysis.srcname
+             fun idx n = find_index (fn x => x = n) params
+             val in_out_fun_ptr_params = ProgramInfo.get_in_out_fun_ptr_params opts
+             fun check_param (p, in_out_spec) =
+               let
+                 val callees = nth (param_callees) (idx p) |> these |> map fst
+                 fun check_callee c =
+                   let
+                     val callee_opts = fun_options csenv opt c
+                     val arg_infos = the (Symtab.lookup (ProgramAnalysis.get_fninfo csenv) c) |> #3 
+                     val callee_spec = ProgramInfo.in_out_fun_ptr_spec_of callee_opts arg_infos
+                     val _ = if callee_spec = in_out_spec then () else 
+                       error ("IO specification mismatch between callees of function pointer parameter " ^ 
+                         quote p ^ " of function " ^ quote fname ^ ".\n" ^
+                         "expected: " ^ @{make_string} in_out_spec ^ "\n" ^
+                         "callee " ^ quote c ^ ": " ^ @{make_string} callee_spec)
+                   in
+                    ()
+                   end
+                 val _ = map check_callee callees
+               in
+                 ()
+               end
+             val _ = map check_param in_out_fun_ptr_params
+           in
+             ()
+           end
+         val _ = map check_fun funs
+       in 
+         ()
+       end
   in
     ()
   end
 
+
+fun check_method_in_out_fun_ptr_specs thy cfilename opt =
+  let
+    val csenv = the (CalculateState.get_csenv thy cfilename)
+    val senv = ProgramAnalysis.get_senv csenv
+    val method_in_out_fun_ptr_specs = these (AutoCorres_Options.get_method_in_out_fun_ptr_specs opt)
+    fun check_spec (path, spec) = 
+      let 
+         fun dest_ptr (CType.Ptr T) = T
+         val (root, selectors) = ensure_C_names path
+         val cty = lookup_field senv root selectors
+         val _ = check_fun_ptr_cty_spec  {prefix = "method_in_out_fun_ptr_specs", kind="method", elem="field"} root (space_implode "." selectors) cty spec
+      in (dest_ptr cty, (spec, (root, selectors))) end
+    val cty_specs = map check_spec method_in_out_fun_ptr_specs 
+     |> group_by ((op =) o apply2 fst)
+    fun check_unique' [(cty, (spec, _))] = (cty, spec)
+      | check_unique' xs = error ("check_method_in_out_fun_ptr_specs: all method pointers with same function type must " ^
+         "have same in_out_fun_ptr_spec: " ^ @{make_string} xs)
+    val check_unique = distinct ((op =) o apply2 (fst o snd)) #> check_unique'
+    val cty_specs' = map check_unique cty_specs
+  in cty_specs' end
 fun finalise prog_info skips keep_going existing_ts (cliques, thy) =
   let
     val filename = ProgramInfo.get_prog_name prog_info
@@ -884,11 +1064,6 @@ fun get_prog_info thy filename =
 fun check_addressable_field thy xnames =
   let
     val ctxt = Proof_Context.init_global thy
-    fun ensure_C_names [] = error ("addressable_fields: expecting structure name and at least one field name")
-      | ensure_C_names [x] = (x,[]) (* x must be a array type *)
-      | ensure_C_names (x::xs) = 
-         (NameGeneration.ensure_C_struct_name x,  map NameGeneration.ensure_C_field_name xs)
-
     val (record_name, field_names) = ensure_C_names xnames
 
 
@@ -951,7 +1126,7 @@ fun check_addressable_fields ignore_addressable_fields_error thy prog_info xname
           (case x of 
             ProgramAnalysis.Field f => 
               let val (long, ty') = select_field ty f in (ty, long)::expand_type ty' xs end
-          | ProgramAnalysis.Array_Index => 
+          | ProgramAnalysis.Index _ => 
               (case ty of
                  \<^Type>\<open>ptr ty'\<close> => expand_type ty' xs 
                | _ => let val ty' = TermsTypes.element_type ty in (ty, "")::expand_type ty' xs end))  
@@ -960,7 +1135,7 @@ fun check_addressable_fields ignore_addressable_fields_error thy prog_info xname
         |> Absyn.CTypeTab.dest
         |> map_filter (fn (cty, selectors) => 
             let
-              val ty = CalculateState.ctype_to_typ ctxt cty
+              val ty = CalculateState.ctype_to_typ_flexible_array ctxt cty
             in 
               if forall null selectors then 
                 NONE
@@ -1038,8 +1213,11 @@ fun do_init_autocorres (opt : AutoCorres_Options.autocorres_options) cfilename s
     then 
       let
         val prog_info = get_prog_info thy filename
-        val fun_opts = fun_options opt
-        val prog_info = prog_info |> ProgramInfo.map_fun_options (K fun_opts)
+        val fun_opts = fun_options (ProgramInfo.get_csenv prog_info) opt
+        val cty_specs = check_method_in_out_fun_ptr_specs thy cfilename opt
+        val prog_info = prog_info 
+          |> ProgramInfo.map_fun_options (K fun_opts)
+          |> ProgramInfo.map_method_io_params (fn xs => AList.merge (op =) (op =) (xs, cty_specs))       
         val HL_setup_opt = Symtab.lookup (HeapLiftBase.HeapInfo.get thy) filename
         val prog_info = (case HL_setup_opt of 
             SOME HL_setup =>
@@ -1051,11 +1229,11 @@ fun do_init_autocorres (opt : AutoCorres_Options.autocorres_options) cfilename s
       end
     else
       let   
-        val prog_info = ProgramInfo.get_prog_info thy (fun_options opt) make_function_name dest_function_name cfilename
-
+        val cse = CalculateState.get_csenv thy cfilename |> the;
+        val method_io_params = check_method_in_out_fun_ptr_specs thy cfilename opt
+        val prog_info = ProgramInfo.get_prog_info thy (fun_options cse opt) method_io_params make_function_name dest_function_name cfilename
         val skips = AutoCorres_Options.get_skips opt
         val (_, thy) = thy |> AutoCorresData.init_function_info skips prog_info
-
         val ctxt = Proof_Context.init_global thy
         val params = HP_TermsTypes.globals_stack_heap_raw_state_params HP_TermsTypes.State ctxt
         val [hrs, hrs_upd,  S] = map Utils.dummy_schematic 
@@ -1097,14 +1275,14 @@ fun do_init_autocorres (opt : AutoCorres_Options.autocorres_options) cfilename s
            in fn f => prefix ^ f ^ suffix end;
 
         val gen_word_heaps = AutoCorres_Options.get_gen_word_heaps opt = SOME true
-        val ignore_addressable_fields_error = AutoCorres_Options.get_ignore_addressable_fields_error opt = SOME true
-        val addressable_fields = AutoCorres_Options.get_addressable_fields opt |> these 
-          |> check_addressable_fields ignore_addressable_fields_error thy prog_info
-
         val (prog_info, HL_setup, lthy) = 
           if AutoCorres_Options.get_skip_heap_abs opt = SOME true then (prog_info, NONE, lthy) 
           else
             let
+              val ignore_addressable_fields_error = AutoCorres_Options.get_ignore_addressable_fields_error opt = SOME true
+              val addressable_fields = AutoCorres_Options.get_addressable_fields opt |> these 
+                |> check_addressable_fields ignore_addressable_fields_error thy prog_info
+
               val (HL_setup, lthy) = lthy |> HeapLiftBase.prepare_heap_lift filename prog_info addressable_fields 
                     all_simpl_infos make_lifted_globals_field_name gen_word_heaps heap_abs_syntax
               val prog_info = prog_info |> ProgramInfo.map_lifted_globals_type 
@@ -1115,6 +1293,15 @@ fun do_init_autocorres (opt : AutoCorres_Options.autocorres_options) cfilename s
         val skips = AutoCorres_Options.get_skips opt
         fun info_phase_pair phase = (FunctionInfo.prev_phase skips phase, phase)
 
+        val lthy =
+          let
+            val state_fold_congs = ProgramInfo.get_state_fold_congs (Proof_Context.theory_of lthy) prog_info
+            val [attr] = map (Attrib.attribute lthy) @{attributes [state_fold_congs]}
+           in 
+            lthy |> Local_Theory.declaration {pervasive = true, pos = \<^here>, syntax = false} (fn phi => 
+                      fold (Thm.attribute_declaration attr o Morphism.thm phi) state_fold_congs)
+           end
+
         val thy = lthy 
           |> Local_Theory.exit_global 
           |> AutoCorres_Options.Options_Theory.map (apfst (Symtab.update (filename, {options=opt', prog_info = prog_info})))
@@ -1123,6 +1310,8 @@ fun do_init_autocorres (opt : AutoCorres_Options.autocorres_options) cfilename s
           |> add_progenv_decls FunctionInfo.L2 prog_info filename
           |> add_corres_locale HL_setup opt (info_phase_pair FunctionInfo.L2) prog_info filename
           |> add_progenv_decls FunctionInfo.IO prog_info filename
+          |> not (#skip_io_abs skips) ? 
+               add_corres_locale HL_setup opt (info_phase_pair FunctionInfo.IO) prog_info filename
           |> add_progenv_decls FunctionInfo.HL prog_info filename
           |> add_corres_locale HL_setup opt (info_phase_pair FunctionInfo.HL) prog_info filename
           |> add_progenv_corres_bundle (info_phase_pair FunctionInfo.HL) prog_info filename
@@ -1132,7 +1321,6 @@ fun do_init_autocorres (opt : AutoCorres_Options.autocorres_options) cfilename s
           |> add_progenv_decls FunctionInfo.TS prog_info filename
           |> add_progenv_corres_bundle (info_phase_pair FunctionInfo.TS) prog_info filename
           |> add_corres_locale HL_setup opt (info_phase_pair FunctionInfo.TS) prog_info filename
-
       in ((prog_info, HL_setup), AutoCorres_Options.map_current_options (K NONE) thy) end
   end  
 
@@ -1149,7 +1337,7 @@ fun final_autocorres_cmd cfilename thy =
     val start = Timing.start ();
     val filename = cfilename |> Path.explode |> Path.drop_ext |> Path.file_name
     val prog_info = if is_initialized filename thy then
-                       ProgramInfo.get_prog_info thy (K ProgramInfo.default_fun_options) (K (K I)) (K (K I)) cfilename
+                       ProgramInfo.get_prog_info thy (K ProgramInfo.default_fun_options) [] (K (K I)) (K (K I)) cfilename
                     else 
                        error ("final_autocorres: autocorres not yet run on: " ^ quote cfilename)
 

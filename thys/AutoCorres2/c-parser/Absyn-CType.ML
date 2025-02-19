@@ -46,6 +46,7 @@ sig
   val integer_type : 'a ctype -> bool
   val arithmetic_type : 'a ctype -> bool
   val array_type : 'a ctype -> bool
+  val flexible_array_type: 'a ctype -> bool
   val function_type : 'a ctype -> bool
   val fun_ptr_type: 'a ctype -> bool
   val aggregate_type : 'a ctype -> bool
@@ -241,6 +242,10 @@ and param_norm ty =
 
 fun array_type (Array _) = true
   | array_type _ = false
+
+fun flexible_array_type (Array(_, NONE)) = true
+  | flexible_array_type _ = false
+
 fun function_type (Function _) = true
   | function_type _ = false
 
@@ -426,6 +431,7 @@ fun int_sizeof ty = ti (int_width ty div CHAR_BIT)
 end
 
 
+
 fun sizeof (structsizes : string -> (Int.int * bool)) ty : (Int.int * bool) = let
   open ImplementationNumbers
 in
@@ -440,7 +446,7 @@ in
   | Ptr _ => (ti (ptrWidth div CHAR_BIT), false)
   | Array(base, SOME sz) => 
       let val (el_sz, padding) = sizeof structsizes base in (sz * el_sz, padding) end
-  | Array(base, NONE) => raise Fail "Can't compute size for incomplete array"
+  | Array(base, NONE) => let val (_, padding) = sizeof structsizes base in (0, padding) end  (* may be relevant for flexible array member in struct *)
   | Bitfield (ty, width) =>
       let
         val (signed, int_ty) = dest_int_type ty

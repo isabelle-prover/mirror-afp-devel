@@ -239,6 +239,7 @@ To support function pointers even more locales where introduced. See \<^file>\<o
 
 section \<open>Example Program\<close>
 
+declare [[c_parser_feedback_level=1]]
 install_C_file "autocorres_infrastructure_ex.c"
 print_theorems
 thm upd_lift_simps
@@ -629,9 +630,22 @@ lemma "L2_while (\<lambda>(x,y,z) s. 0 < (y::nat)) (\<lambda>(x,y,z). L2_seq (L2
        = 
        L2_while (\<lambda>(x,y,z) s. 0 < y) (\<lambda>(x,y,z). L2_seq (L2_guard (\<lambda>_. z = a)) (\<lambda>_. X)) x ns"
 apply (tactic \<open>
-  asm_full_simp_tac (L2Opt.cleanup_ss @{context} [] FunctionInfo.PEEP) 1\<close>)
+  asm_full_simp_tac (L2Opt.cleanup_ss @{context} [] FunctionInfo.HL FunctionInfo.PEEP) 1\<close>)
  done
 
+lemma 
+  assumes XX_def: "XX =  L2_while (\<lambda>(x, y, z) s. 0 < y)
+     (\<lambda>(x1, x2, x3). L2_seq (L2_guard (\<lambda>_. Suc 0 \<le> y1 \<and> z1 = a)) (\<lambda>_. X)) x ns"
+  shows "L2_while (\<lambda>(x,y,z) s. 0 < (y::nat)) (\<lambda>(x,y,z). L2_seq (L2_guard (\<lambda>_. Suc 0 \<le> y1 \<and> z1 = a)) (\<lambda>_. X)) x ns
+       = 
+        XX"
+  apply (tactic \<open>
+    asm_full_simp_tac (L2Opt.cleanup_ss @{context} [] FunctionInfo.HL FunctionInfo.PEEP) 1\<close>)
+    apply (tactic \<open>
+    asm_full_simp_tac (Simplifier.clear_simpset @{context} addsimprocs [@{simproc ETA_TUPLED}]) 1\<close>)
+  apply (subst XX_def)
+  apply (rule refl)
+  done
 
 lemma "L2_while (\<lambda>(x, y, z) s. y = 0)
      (\<lambda>(x, y, z).
@@ -639,7 +653,7 @@ lemma "L2_while (\<lambda>(x, y, z) s. y = 0)
      names =
     L2_while (\<lambda>(x, y, z) s. y = 0) (\<lambda>(x, y, z). L2_seq (L2_gets (\<lambda>s. 0) [\<S> ''ret'']) (\<lambda>r. XXX21 r x)) names"
 apply (tactic \<open>
-  asm_full_simp_tac (L2Opt.cleanup_ss @{context} [] FunctionInfo.PEEP) 1\<close>)
+  asm_full_simp_tac (L2Opt.cleanup_ss @{context} [] FunctionInfo.HL FunctionInfo.PEEP) 1\<close>)
   done
 
 
@@ -772,18 +786,18 @@ text \<open>Propagation of simple constant by unfolding.\<close>
 
 lemma "L2_seq_gets c [\<S> ''r'']  (\<lambda>r. (L2_guard (\<lambda>_. P r ))) =
        L2_guard (\<lambda>_. P c )"
-  by (tactic \<open>simp_tac (L2Opt.cleanup_ss @{context} [] FunctionInfo.PEEP) 1\<close>)
+  by (tactic \<open>simp_tac (L2Opt.cleanup_ss @{context} []  FunctionInfo.L2 FunctionInfo.PEEP) 1\<close>)
 
 text \<open>Propagation of term, as it only appears once in the second statement.\<close>
 
 lemma "L2_seq_gets (c + d) [\<S> ''r'']  (\<lambda>r. (L2_guard (\<lambda>_. P r ))) =
        L2_guard (\<lambda>_. P (c + d) )"
-  by (tactic \<open>simp_tac (L2Opt.cleanup_ss @{context} [] FunctionInfo.PEEP) 1\<close>)
+  by (tactic \<open>simp_tac (L2Opt.cleanup_ss @{context} []  FunctionInfo.L2 FunctionInfo.PEEP) 1\<close>)
 
 text \<open>As nothing is in the prems yet, marking is just removed and second statement is thus simplified\<close>
 lemma "L2_seq_gets (c + d) [\<S> ''r'']  (\<lambda>r. (L2_guard (\<lambda>_. P r \<and> (P r \<longrightarrow> Q r)))) =
-       L2_seq (L2_gets (\<lambda>_. c + d) [\<S> ''r'']) (\<lambda>r. L2_guard (\<lambda>_. P r \<and> Q r))"
-  by (tactic \<open>simp_tac (L2Opt.cleanup_ss @{context} [] FunctionInfo.PEEP) 1\<close>)
+       STOP (L2_seq_gets (c + d) [\<S> ''r''] (\<lambda>r. L2_guard (\<lambda>_. P r \<and> Q r)))"
+  by (tactic \<open>simp_tac (L2Opt.cleanup_ss @{context} []  FunctionInfo.L2 FunctionInfo.PEEP) 1\<close>)
 
 text \<open>The first guard condition is propagated to the second guard, via the intermediate
 assignment @{term "r = a + b"}.\<close>
@@ -792,7 +806,7 @@ lemma "L2_seq_guard (\<lambda>_. a + b < 5)
           (\<lambda>r. L2_guard (\<lambda>_. r < 5 \<and> P))) =
        L2_seq_guard (\<lambda>_. a + b < 5)  
          (\<lambda>_. L2_guard (\<lambda>_. P))"
-  by (tactic \<open>simp_tac (L2Opt.cleanup_ss @{context} [] FunctionInfo.PEEP) 1\<close>)
+  by (tactic \<open>simp_tac (L2Opt.cleanup_ss @{context} []  FunctionInfo.L2 FunctionInfo.PEEP) 1\<close>)
 
 
 ML \<open>
@@ -804,7 +818,7 @@ ML_val \<open>
 val ct = @{cterm "L2_seq_guard (\<lambda>_. (a::int) + b < 5) 
     (\<lambda>_. L2_seq_gets (a + b) [\<S> ''r'']  
       (\<lambda>r. (L2_guard (\<lambda>_. r < 5 \<and> P))))"}
-val test = Simplifier.asm_full_rewrite (L2Opt.cleanup_ss @{context} [] FunctionInfo.PEEP) ct
+val test = Simplifier.asm_full_rewrite (L2Opt.cleanup_ss @{context} []  FunctionInfo.L2 FunctionInfo.PEEP) ct
 val _ = assert_rhs test 
  @{cterm "STOP (L2_seq_guard (\<lambda>_. (a::int) + b < 5) (\<lambda>_. L2_guard (\<lambda>_. P)))"}
 \<close>
@@ -814,13 +828,13 @@ lemma "L2_seq_guard (\<lambda>s. V1 + a - (r::int) \<le> 2)
         (\<lambda>_. L2_seq (L2_condition (\<lambda>s. CC) (L2_seq_guard (\<lambda>s. V1 + a - r \<le> 3) (\<lambda>_. X1)) X2) (\<lambda>_. X3)) =
        L2_seq_guard (\<lambda>s. V1 + a - r \<le> 2)
         (\<lambda>_. L2_seq (L2_condition (\<lambda>s. CC) (L2_seq_guard (\<lambda>s. True) (\<lambda>_. X1)) X2) (\<lambda>_. X3))"
-  by (tactic \<open>asm_full_simp_tac (L2Opt.cleanup_ss @{context} [] FunctionInfo.PEEP) 1\<close>)
+  by (tactic \<open>asm_full_simp_tac (L2Opt.cleanup_ss @{context} []  FunctionInfo.L2 FunctionInfo.PEEP) 1\<close>)
 
 ML_val \<open>
 val ct = @{cterm "L2_seq_guard (\<lambda>s. (V1 + a - (r::int) \<le> 2))
           (\<lambda>_. L2_seq (L2_condition (\<lambda>s. CC) (L2_seq_guard (\<lambda>s. V1 + a - r \<le> 3) (\<lambda>_. X1)) X2) (\<lambda>_. X3))"}
 
-val test = Simplifier.asm_full_rewrite (L2Opt.cleanup_ss @{context} [] FunctionInfo.PEEP) ct 
+val test = Simplifier.asm_full_rewrite (L2Opt.cleanup_ss @{context} []  FunctionInfo.L2 FunctionInfo.PEEP) ct 
 val _ = assert_rhs test
   @{cterm "STOP (L2_seq_guard (\<lambda>s. V1 + a - r \<le> 2)
      (\<lambda>_. L2_seq (L2_condition (\<lambda>s. CC) (STOP (L2_seq_guard (\<lambda>s. True) (\<lambda>_. X1))) X2) (\<lambda>_. X3)))"}
@@ -832,7 +846,7 @@ val ct = @{cterm "L2_seq_guard
           (\<lambda>_. 
             (L2_seq_guard (\<lambda>s. (g k) + a - r \<le> n + 1) (\<lambda>_. X1)))"}
 
-val test = Simplifier.asm_full_rewrite (Variable.set_body true (L2Opt.cleanup_ss @{context} [] FunctionInfo.PEEP)) ct
+val test = Simplifier.asm_full_rewrite (Variable.set_body true (L2Opt.cleanup_ss @{context} []  FunctionInfo.L2 FunctionInfo.PEEP)) ct
 val _ = assert_rhs test @{cterm "STOP (L2_seq_guard (\<lambda>_. g k + a - r \<le> n) (\<lambda>_. STOP (L2_seq_guard (\<lambda>s. True) (\<lambda>_. X1))))"}
 \<close>
 

@@ -80,6 +80,9 @@ by (simp add: len_exp_def bogus_log2lessthree_def)
 lemma lx64' [simp]: "len_exp (x::64 itself) = 3"
 by (simp add: len_exp_def bogus_log2lessthree_def)
 
+lemma lx128' [simp]: "len_exp (x::128 itself) = 4"
+by (simp add: len_exp_def bogus_log2lessthree_def)
+
 lemma lx_signed' [simp]: "len_exp (x::('a::len) signed itself) = len_exp (TYPE('a))"
   by (simp add: len_exp_def)
 

@@ -17,7 +17,7 @@ AutoCorres2 is a fork of AutoCorres:
 
 ### Authors of the new / refined material in AutoCorres2
 
-* Johannes Hölz
+* Johannes Hölzl
 * Fabian Immler
 * Norbert Schirmer
 * Salomon Sickert-Zehnter

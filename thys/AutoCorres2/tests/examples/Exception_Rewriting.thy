@@ -123,19 +123,27 @@ lemma "fac_exit' n = condition (\<lambda>s. n < 0)
 term "while_comb'::int \<Rightarrow> (int, lifted_globals) res_monad"
 thm while_comb'_def[no_vars]
 lemma "while_comb' a \<equiv> do {
-  x \<leftarrow> guard (\<lambda>s. - 1073741824 \<le> a);
+  _ \<leftarrow> guard (\<lambda>s. - 1073741824 \<le> a);
   _ \<leftarrow> guard (\<lambda>s. 2 * a \<le> INT_MAX);
-  x \<leftarrow> condition (\<lambda>s. 2 * a < 30) (do {
-                                     _ \<leftarrow> guard (\<lambda>s. - (INT_MAX + 1) < 2 * a);
-                                     return (2 * a - 1)
-                                   })
-        (do {
-           _ \<leftarrow> guard (\<lambda>s. 2 * a \<le> INT_MAX - 1);
-           return (2 * a + 1)
-         });
+  x \<leftarrow> return (2 * a);
+  x \<leftarrow> condition (\<lambda>s. x < 30)
+         (do {
+            _ \<leftarrow> guard (\<lambda>s. - INT_MAX - 1 < x);
+            return (x - 1)
+          })
+         (do {
+            _ \<leftarrow> guard (\<lambda>s. x < INT_MAX);
+            return (x + 1)
+          });
   finally (do {
              _ \<leftarrow> try (do {
-                         a \<leftarrow> whileLoop (\<lambda>a s. True) (\<lambda>a. condition (\<lambda>s. 3 < a) (throw (Inl 1)) (condition (\<lambda>s. 1 < a) (return (a + 1)) (throw (Inr ())))) a;
+                         a \<leftarrow> whileLoop (\<lambda>a s. True)
+                                (\<lambda>a. condition (\<lambda>s. 3 < a)
+                                        (throw (Inl 1))
+                                        (condition (\<lambda>s. 1 < a)
+                                           (return (a + 1))
+                                           (throw (Inr ()))))
+                               a;
                          skip
                        });
              throw x
@@ -147,19 +155,27 @@ term "while_comb_exit':: int \<Rightarrow> (32 signed word, int, lifted_globals)
 thm while_comb_exit'_def[no_vars]
 lemma "while_comb_exit' a \<equiv> do {
   _ \<leftarrow> liftE (do {
-                _ \<leftarrow> guard (\<lambda>s. - 1073741824 \<le> a);
-                guard (\<lambda>s. 2 * a \<le> INT_MAX)
+                _ \<leftarrow> guard (\<lambda>_. - 1073741824 \<le> a);
+                guard (\<lambda>_. 2 * a \<le> INT_MAX)
               });
-  x \<leftarrow> liftE (condition (\<lambda>s. 2 * a < 30) (do {
-                                            _ \<leftarrow> guard (\<lambda>s. - (INT_MAX + 1) < 2 * a);
-                                            return (2 * a - 1)
-                                          })
-               (do {
-                  _ \<leftarrow> guard (\<lambda>s. 2 * a \<le> INT_MAX - 1);
-                  return (2 * a + 1)
-                }));
+  x \<leftarrow> return (2 * a);
+  x \<leftarrow> liftE (condition (\<lambda>s. x < 30)
+                (do {
+                   _ \<leftarrow> guard (\<lambda>s. - INT_MAX - 1 < x);
+                   return (x - 1)
+                 })
+                (do {
+                   _ \<leftarrow> guard (\<lambda>s. x < INT_MAX);
+                   return (x + 1)
+                 }));
   try (do {
-         a \<leftarrow> whileLoop (\<lambda>a s. True) (\<lambda>a. condition (\<lambda>s. 3 < a) (throw (Inr 1)) (condition (\<lambda>s. 1 < a) (return (a + 1)) (throw (Inl 1)))) a;
+         a \<leftarrow> whileLoop (\<lambda>a s. True)
+                (\<lambda>a. condition (\<lambda>s. 3 < a)
+                        (throw (Inr 1))
+                        (condition (\<lambda>s. 1 < a)
+                           (return (a + 1))
+                           (throw (Inl 1))))
+               a;
          throw (Inr x)
        })
 }"

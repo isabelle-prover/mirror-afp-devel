@@ -284,11 +284,11 @@ ML_file "exception_rewrite.ML"
 ML_file "simpl_conv.ML"
 (* L2 *)
 ML_file "prog.ML"
+ML_file "pretty_bound_var_names.ML"
 ML_file "l2_opt.ML"
 ML_file "local_var_extract.ML"
 
 (* IO *)
-
 
 context globals_stack_heap_state
 begin
@@ -304,7 +304,6 @@ ML_file "heap_lift_base.ML"
 ML_file "heap_lift.ML"
 (* WA *)
 ML_file "word_abstract.ML"
-ML_file "pretty_bound_var_names.ML"
 ML_file "monad_convert.ML"
 (* TS *)
 ML_file "type_strengthen.ML"

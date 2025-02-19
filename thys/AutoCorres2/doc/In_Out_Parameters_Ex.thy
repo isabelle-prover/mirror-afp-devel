@@ -217,7 +217,6 @@ More details on the options are provided in the following examples.
 
 subsection \<open>Examples\<close>
 
-
 init-autocorres [ in_out_parameters = 
     compare(cmp:out) and
     inc(y:in_out) and
@@ -239,6 +238,7 @@ init-autocorres [ in_out_parameters =
     resab(res:in_out) and
     abcmp(cmpRst:in_out) and
     out(out:out) and
+    out_two(out1:out, out2:out) and
     out2(out:in_out) and
     out_seq(out:out) and
     inc_loop (x:"in", y:in_out) and
@@ -257,7 +257,24 @@ init-autocorres [ in_out_parameters =
     set_byte(p:"data") and
     read_char(p:in_out, len: in_out) and
     goto_read_char1(p:in_out) and
-    goto_read_char5(elem: "in"),
+    goto_read_char5(elem: "in") and smex7() and
+    cmp_no_io() where disjoint [] and
+    call_cmp_no_io1() where disjoint [] and
+    deref_ptr(p:"in") and
+    deref_ptr_glob(p:"in") and 
+    call_deref_ptr_glob_single() and
+    call_deref_ptr_glob_pair() and
+    uinc(p:in_out) and
+    udec(p:in_out) and
+    call_unop() for p("in_out"); and
+    call_binop() for p("keep*", "keep*"); and
+    f_empty1(p:"in_out") and
+    f_empty2(p:"in_out") and
+    call_f_only_return(p:"in_out") ,
+    method_in_out_fun_ptr_specs = 
+      object.unop("keep*") and
+      object.binop(data, data),
+
     in_out_globals =
       keep_inc_global_array
       inc_global_array
@@ -267,11 +284,15 @@ init-autocorres [ in_out_parameters =
       call_inc_global_array
       mixed_global_local_inc shuffle global_array_update
       read_char call_read_char call_read_char_loop 
-      goto_read_char1 goto_read_char2 goto_read_char3 goto_read_char4 goto_read_char5,
+      goto_read_char1 goto_read_char2 goto_read_char3 goto_read_char4 goto_read_char5
+      goto_read_char6
+      call_cmp_no_io call_cmp_no_io1
+      deref_ptr_glob call_deref_ptr_glob_pair call_deref_ptr_glob_single
+      (*deref_ptr_glob call_deref_ptr_glob_keep*)  (* FIXME: can we make this work? *),
     ignore_addressable_fields_error, (* FIXME *)
     addressable_fields = 
       pair.first 
-      pair.second 
+      pair.second
       array.elements
       int_pair.int_first
       int_pair.int_second
@@ -280,8 +301,55 @@ init-autocorres [ in_out_parameters =
 FIXME: open_types seems to have an issue that
 lemma "typ_uinfo_t TYPE(32 signed word[3]) = typ_uinfo_t (TYPE(32 word[3])))"
 
-*)
+*) , 
+   ts_force exit = do_return
    ]"in_out_parameters.c"
+
+text \<open>\<close>
+
+autocorres [ts_force option = fnc1] "in_out_parameters.c"
+
+
+context includes in_out_parameters_wa_impl_corres
+begin
+thm fun_ptr_intros
+term "\<P>_io_ptr_to_unsigned___unsigned"
+end
+
+context includes in_out_parameters_ts_impl_corres
+begin
+thm fun_ptr_intros
+thm known_function
+thm known_function_corres
+end
+
+context in_out_parameters_hl_corres
+begin
+thm known_function
+thm known_function_corres
+end
+
+context in_out_parameters_wa_corres
+begin
+thm known_function
+thm known_function_corres
+end
+context in_out_parameters_ts_corres
+begin
+thm known_function
+thm known_function_corres
+end
+context in_out_parameters_l2_corres
+begin
+thm known_function
+thm known_function_corres
+end
+
+context in_out_parameters_io_corres
+begin
+thm known_function
+thm known_function_corres
+end
 
 
 text \<open>In option \<open>in_out_parameters\<close> you provide a parameter specification for the functions
@@ -292,7 +360,8 @@ The parameter specs following the parameter name are
 \<^item> \<open>out\<close>: the pointer is only used to output a result from the function. The referenced value at
    the beginning is irrelevant, the abstracted function should return the referenced value at
    the end of the original function.
-\<^item> \<open>in_out\<close> the pointer is used to input a value and to return a result.
+\<^item> \<open>in_out\<close> the pointer is used to input a value and t
+o return a result.
 
 When no specification is given for a function, the list is considered empty. This means that
 the signature of the function shall not be changed by the abstraction. Pointer parameters in 
@@ -684,7 +753,7 @@ and thus the instances of the main functions are only evaluated once.
 end
 
 
-subsection \<open>pointer-parameters as data\<close>
+subsection \<open>Pointer-parameters as data\<close>
 
 text \<open>In a case where a pointer is not used to access the heap (e.g., \<open>set_void\<close>), the
   "modifies" part of the corres theorem should be empty.
@@ -712,9 +781,48 @@ context io_corres_set_byte begin
 thm io_set_byte'_corres
 end
 
+subsection \<open>Function pointers\<close>
+
+text \<open>
+The basics how function pointers are handled is decribed in \<^file>\<open>fnptr.thy\<close>.
+
+To support function pointers during the IO phase we need the "in-out specification" for the function pointer
+to build the corres proposition for the function pointer and to conduct the corres proof. The 
+specification follows those for other functions with the peculiarity that the arguments
+of a function pointer are specified positionally (as we do not have names for the arguments).
+
+The general format for a function pointer p is:
+  \<^verbatim>\<open>p(kind, kind, ...) [might_exit] [in_out_globals])\<close>  
+\<^item> where kind is on of
+  \<open>data\<close>, \<open>in\<close>, \<open>out\<close>, \<open>in_out\<close>, \<open>keep\<close> or \<open>keep*\<close>.
+  The default for a non-pointer type or a function pointer type is \<open>data\<close>.
+  The default for a pointer parameter is \<open>keep*\<close>.
+  The distinction between \<open>keep*\<close> and \<open>keep\<close> allows us to fine tune the disjointness assumptions
+  about the pointer parameters. Pointers specified with \<open>in\<close>, \<open>out\<close>, \<open>in_out\<close> and \<open>keep\<close> have to
+  be disjoint. Pointers specified with \<open>data\<close> or \<open>keep*\<close> do not have to be disjoint.
+  Note that the kind of a parameter can influence the type of the resulting function and thus in
+  which program environment the abstracted function pointer is defined. Thus it can be the case that
+  we need multiple environments depending on the target type of the abstraction. 
+\<^item> The default for \<open>might_exit\<close> is false
+\<^item> The default for \<open>in_out_globals\<close> is false
+ 
+There are 3 use-cases of function pointers that are supported which are handled slightly
+differently: 
+\<^enum> Function pointer as explicit parameter of another function: The specification of the pointer parameters 
+  is given as part of \<open>in_out_parameters\<close> specification of the outer function:
+  \<^verbatim>\<open>outer_function(...) \<open>for\<close> p1(...) and p2(...) ... ;\<close> where the specs for the pointer parameter are as
+  described above. 
+\<^enum> Function pointer via global variable. You do not need an explicit specification here. It is inferred
+  from the functions that might be referenced via the global variable. Note that all functions that
+  might be target of the same function pointer must have the same in-out specification.
+\<^enum> C-style object method calls. Here we have the section \<open>method_in_out_fun_ptr_specs\<close> in the autocorres
+  parameters. You specify the function pointer by designating the structure field,
+  \<^verbatim>\<open>struct.field(...) ...\<close> and giving a specification as described above. Note that currently all
+  such method pointers with the same function signature must share the same in-out specification.
+
+\<close>
 subsection \<open>Future work / Open Ends\<close>
 text \<open>
-\<^item> Support function pointers
 \<^item> support functions that might modify the heap typing (e.g. via \<open>exec_concrete\<close>)
   currently our \<open>rel_alloc\<close> / \<open>rel_stack\<close> setup enforces that heap typing does not change at all
   this is to restrictive. Before we had that heap typing does not change in \<^term>\<open>\<S>\<close> which was

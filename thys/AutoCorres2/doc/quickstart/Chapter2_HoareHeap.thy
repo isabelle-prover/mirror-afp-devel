@@ -156,13 +156,19 @@ lemma mult_by_add_correct:
     to the verification condition generator.\<close>
   supply runs_to_whileLoop_res [where  
       I="\<lambda>(a', result) s. result = (a - a') * b" and 
-      R="measure' (\<lambda>((a', result), s). a')", runs_to_vcg]
+      R="measure' (\<lambda>((a', result), s). a')",
+      tags body post, \<comment> \<open>optional: tag resulting verification conditions\<close>
+      runs_to_vcg]
   txt \<open>Run the ``verification condition generator''.\<close>
   apply (runs_to_vcg)
   txt \<open>Solve the program correctness goals.\<close>
-     apply (simp add: field_simps)
+  subgoalsT body
+    apply (simp add: field_simps)
     apply unat_arith
-   apply (auto simp: field_simps not_less)
+    done
+  subgoalT post
+    apply (auto simp: field_simps not_less)
+    done
   done
 
 

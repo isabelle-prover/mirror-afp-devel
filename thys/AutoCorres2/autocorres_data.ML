@@ -73,22 +73,27 @@ sig
 
   val progenv_insts: Proof.context -> ProgramInfo.prog_info -> FunctionInfo.phase -> (string * term) list
   val dest_progenv_inst: term -> (string * typ)
-  val progenv_insts_grouped_by_cty: {per_ctype:bool} -> Proof.context -> ProgramInfo.prog_info ->
-        (string * (term * (FunctionInfo.phase * string * typ * typ list * int CType.ctype))) list list
+
   val progenv_names: Proof.context -> ProgramInfo.prog_info -> FunctionInfo.phase -> string list
-  val get_progenv_for: Proof.context -> ProgramInfo.prog_info -> FunctionInfo.phase -> string -> string -> string * term
-  val get_progenv_for_sig: Proof.context -> ProgramInfo.prog_info -> string -> FunctionInfo.phase ->
+  val get_progenv_for: Proof.context -> ProgramInfo.prog_info -> FunctionInfo.phase -> {ts_monad_name:string} -> string -> string * term
+  val get_progenv_for_sig: Proof.context -> ProgramInfo.prog_info -> {ts_monad_name:string} -> FunctionInfo.phase ->
           typ * typ list -> (string * term) option
-  val get_progenv_for_cty: Proof.context -> ProgramInfo.prog_info -> string -> FunctionInfo.phase ->
-              int CType.ctype -> (string * term * (typ * typ list)) option
-  val get_sig_for_fn_ptr: Proof.context -> ProgramInfo.prog_info -> string -> FunctionInfo.phase ->
-              int CType.ctype -> (typ * typ list) option
+  val options_of_in_out_params: ProgramInfo.prog_info -> FunctionInfo.in_out_fun_ptr_spec ->
+        ProgramInfo.function_options
+  val get_progenv_for_cty: Proof.context -> ProgramInfo.prog_info -> {ts_monad_name:string} -> FunctionInfo.phase ->
+               ProgramInfo.function_options -> int CType.ctype -> (string * term * (typ * typ list)) option
+  val get_sig_for_fn_ptr: Proof.context -> ProgramInfo.prog_info -> {ts_monad_name:string} -> FunctionInfo.phase ->
+              ProgramInfo.function_options -> int CType.ctype -> (typ * typ list) option
+
+  val progenv_insts_with_cty: Proof.context -> ProgramInfo.prog_info -> FunctionInfo.phase -> (term * int CType.ctype) list
+
+  val norm_kind: {only_type: bool} ->  FunctionInfo.parameter_kind -> FunctionInfo.parameter_kind
 
   type fn_ptr_info = {idx: int, args: (string * typ) list, ret: (string * typ) list, ptr_val: string * typ, 
-         prog_env: term}
+         prog_env: term, in_out_spec: FunctionInfo.in_out_fun_ptr_spec}
   val retT_from_fn_ptr_info : fn_ptr_info -> typ
 
-  val mk_fn_ptr_infos: Proof.context -> ProgramInfo.prog_info -> string -> 
+  val mk_fn_ptr_infos: Proof.context -> ProgramInfo.prog_info -> {ts_monad_name:string} -> 
         term list -> FunctionInfo.function_info -> (string * (FunctionInfo.phase -> fn_ptr_info)) list
 
   val add_definition_and_corres_proof_locales:
@@ -105,7 +110,7 @@ sig
         local_theory -> local_theory
 
   val add_global_corres_locale: FunctionInfo.phase * FunctionInfo.phase -> ProgramInfo.prog_info ->
-        (FunctionInfo.phase -> term -> term -> term -> Proof.context -> ((term * Token.src list) * Proof.context) option) -> 
+        (FunctionInfo.phase -> int CType.ctype -> ProgramInfo.function_options -> term -> term -> term -> Proof.context -> ((term * Token.src list) * Proof.context) option) -> 
         theory -> theory
 
   structure FunctionInfo: GENERIC_DATA;
@@ -202,6 +207,9 @@ fun mk_l2monadT stateT retT exT =
 
 val progenvN = "\<P>"
 
+fun norm_kind {only_type=true} (FI.Keep_Ptr) = FI.Data (* should have same effect on type of program environemnt *)
+  | norm_kind _ x = x
+
 local
 
 val l1_progenvN = progenvN
@@ -215,50 +223,125 @@ fun abs_word_type opt T =
   case try dest_wordT T of
      SOME (true, _) => if ProgramInfo.get_signed_abs opt then @{typ int} else T
    | SOME (false,_) => if ProgramInfo.get_unsigned_abs opt then @{typ nat} else T
-   | NONE => T
+   | NONE => T                                    
 
-fun mk_progenvN name cty = progenvN ^ "_" ^ name ^ CType.tyname cty;
-fun l2_progenvN phase cty = mk_progenvN (phase_prefix phase) cty;
 
-fun mk_progenvT mk_monadT ctxt stateT abs_type (CType.Function (retT, argTs)) =
+type funT = {argTs: int CType.ctype list, retTs: int CType.ctype list, exTs: int CType.ctype list, c_exntype: bool}
+
+fun funT_name ({argTs, retTs, exTs, c_exntype}:funT) = 
+  let
+    fun seplist [] = ""
+      | seplist [x] = CType.tyname x
+      | seplist (h::t) = String.concat [CType.tyname h, "'", seplist t]
+    fun res_name retTs [] = seplist retTs
+      | res_name retTs exTs = seplist retTs ^ "__" ^ seplist exTs
+  in
+    String.concatWith "_" [seplist argTs, "_", res_name retTs exTs]
+  end
+
+fun funT_of (CType.Function (retT, argTs))  = {argTs=argTs, retTs= [retT], exTs = [], c_exntype = true}:funT
+  | funT_of cty = error ("funT_of: unexpected ctype: " ^ @{make_string} cty)
+
+
+fun in_out_argT (CType.Ptr T     , FI.In_Out)   = SOME T
+  | in_out_argT (CType.Ptr T     , FI.In)       = SOME T
+  | in_out_argT (CType.Ptr _     , FI.Out)      = NONE
+  | in_out_argT (T as CType.Ptr _, FI.Keep_Ptr) = SOME T
+  | in_out_argT (T               , FI.Data)     = SOME T
+  | in_out_argT (T, X) = error ("in_out_argT unexpected: " ^ @{make_string} (T, X))
+
+fun in_out_retT (CType.Ptr T     , FI.In_Out)   = SOME T
+  | in_out_retT (CType.Ptr T     , FI.In)       = NONE
+  | in_out_retT (CType.Ptr T     , FI.Out)      = SOME T
+  | in_out_retT (CType.Ptr _     , FI.Keep_Ptr) = NONE
+  | in_out_retT (_               , FI.Data)     = NONE
+  | in_out_retT (T, X) = error ("in_out_retT unexpected: " ^ @{make_string} (T, X))
+
+
+fun norm_opt (kind as {only_type}) opt = (* if norm_opt o1 = norm_opt o2 then the resulting program environemnt should be the same*)
+  opt
+  |> ProgramInfo.get_skip_io_abs opt ? ProgramInfo.map_in_out_parameters (K NONE) 
+  |> ProgramInfo.map_in_out_parameters (Option.map (map (fn (_, x) => ("", norm_kind kind x))))
+  |> ProgramInfo.map_might_exit (fn b => if only_type then false else b)
+
+fun norm_io opt =
+  let
+    val d = ProgramInfo.default_fun_options
+  in
+    opt
+    |> ProgramInfo.get_skip_io_abs opt? (
+      ProgramInfo.map_in_out_parameters (K (ProgramInfo.get_in_out_parameters_raw d)) #>
+      ProgramInfo.map_in_out_globals (K (ProgramInfo.get_in_out_globals d)) #>
+      ProgramInfo.map_in_out_disjoint_ptrs (K (ProgramInfo.get_in_out_disjoint_ptrs d)) #>
+      ProgramInfo.map_in_out_fun_ptr_params (K (ProgramInfo.get_in_out_fun_ptr_params d)) #>
+      ProgramInfo.map_might_exit (K (ProgramInfo.get_might_exit d)))
+    |> ProgramInfo.map_in_out_parameters (Option.map (map (fn (_, x) => ("", x))))
+  end
+
+fun mk_retTs [] retT = [retT]
+  | mk_retTs outTs CType.Void = outTs
+  | mk_retTs outTs retT = outTs @ [retT]
+ 
+fun mk_funT phase (opt: ProgramInfo.function_options) (cty as (CType.Function (retT, argTs))) = 
+  if ProgramInfo.get_skip_io_abs opt orelse member (op =) [FI.CP, FI.L1, FI.L2] phase then 
+    funT_of cty 
+  else
+    (case ProgramInfo.get_in_out_parameters_raw opt of
+      NONE => funT_of cty
+    | SOME ps => let
+                    val arg_specs = (argTs ~~ map snd ps)
+                 in {argTs = map_filter in_out_argT arg_specs,
+                     retTs = mk_retTs (map_filter in_out_retT arg_specs) retT,
+                     exTs = map_filter in_out_retT arg_specs,
+                     c_exntype = false} end)
+   | mk_funT phase (opt: ProgramInfo.function_options) cty = error ("mk_funT: unexpected cty: " ^ @{make_string} cty)
+
+fun mk_progenvN name fty = progenvN ^ "_" ^ name ^ funT_name fty;
+fun l2_progenvN phase fty = mk_progenvN (phase_prefix phase) fty;
+
+fun mk_l2_monadT exT retT stateT = \<^Type>\<open>spec_monad \<^Type>\<open>option exT\<close> retT stateT\<close>
+
+fun mk_progenvT mk_monadT ctxt stateT abs_type ({argTs, retTs, exTs, c_exntype}:funT) =
       let
-        val retT' = abs_type (CalculateState.ctype_to_typ ctxt retT)
+        val retTs' = map (abs_type o CalculateState.ctype_to_typ ctxt) retTs
         val argTs' = map (abs_type o CalculateState.ctype_to_typ ctxt) argTs
-        val monadT = mk_monadT stateT retT' HP_TermsTypes.c_exntype_ty
+        val exTs'  = map (abs_type o CalculateState.ctype_to_typ ctxt) exTs
+        val retT = HOLogic.mk_tupleT retTs'
+        val exT = if c_exntype then (@{assert} (null exTs); HP_TermsTypes.c_exntype_ty) 
+                  else HOLogic.mk_tupleT (exTs' @ [abs_type @{typ exit_status}])
+        val monadT = mk_monadT exT retT stateT  
         val T = @{typ "unit ptr"} --> (argTs' ---> monadT)
       in
-        (T, (retT', argTs'))
+        (T, (retT, argTs'))
       end
-  | mk_progenvT _ _ _ _ cty = error ("mk_progenvT: expecting function type got " ^ quote (@{make_string} cty))
+  | mk_progenvT _ _ _ _ fty = error ("mk_progenvT: expecting function type got " ^ quote (@{make_string} fty))
 
-val l2_progenvT = mk_progenvT mk_l2monadT 
-
- 
-
+val l2_progenvT = mk_progenvT mk_l2_monadT
 fun ts_progenvT (monad_info: Monad_Types.monad_type) =
   let
-    fun mk_monadT stateT resT exT = #typ_from_L2 monad_info {stateT=stateT, resT =  resT, exT = exT}
+    fun mk_monadT exT resT stateT = #typ_from_L2 monad_info {stateT=stateT, resT =  resT, exT = exT}
   in
     mk_progenvT mk_monadT
   end
 
 (* FIXME: can we simplify the setup of progenv names ?  *)     
-fun progenvN ctxt prog_info ts_monad_name phase cty =
+fun progenvN ctxt prog_info {ts_monad_name} phase (cty, opt) =
   let
     val prog_name = ProgramInfo.get_prog_name prog_info 
     val naming = ProgramInfo.get_naming prog_info
     fun full_name base_name =
       Name_Space.full_name naming 
-       (Binding.qualify false prog_name (Binding.name base_name)) 
+       (Binding.qualify false prog_name (Binding.name base_name))
+    val fty = mk_funT phase opt cty
   in             
     case phase of
       FI.CP => ProgramInfo.get_gamma prog_info |> dest_Const |> fst
     | FI.L1 => full_name l1_progenvN 
-    | FI.L2 => full_name (l2_progenvN FI.L2 cty)
-    | FI.IO => full_name (l2_progenvN FI.IO cty)
-    | FI.HL => full_name (l2_progenvN FI.HL cty)
-    | FI.WA => full_name (l2_progenvN FI.WA cty)
-    | FI.TS => full_name (mk_progenvN (ts_monad_name |> suffix "_" ) cty)
+    | FI.L2 => full_name (l2_progenvN FI.L2 fty)
+    | FI.IO => full_name (l2_progenvN FI.IO fty)
+    | FI.HL => full_name (l2_progenvN FI.HL fty)
+    | FI.WA => full_name (l2_progenvN FI.WA fty)
+    | FI.TS => full_name (mk_progenvN (ts_monad_name |> suffix "_" ) fty)
     | _ => error ("progenvN not defined for phase " ^ quote (@{make_string} phase))
   end
 fun get_stateT prog_info opt = 
@@ -266,26 +349,30 @@ fun get_stateT prog_info opt =
  then the (ProgramInfo.get_lifted_globals_type prog_info)
  else ProgramInfo.get_globals_type prog_info
  
-fun progenvT ctxt (prog_info: ProgramInfo.prog_info) ts_monad_name phase (cty, opt) =
-  case phase of
-    FI.CP => (ProgramInfo.get_gamma prog_info |> fastype_of, (dummyT, []))
-  | FI.L1 => (l1_progenvT (ProgramInfo.get_state_type prog_info), (dummyT, []))
-  | FI.L2 => l2_progenvT ctxt (ProgramInfo.get_globals_type prog_info) I cty
-  | FI.IO => l2_progenvT ctxt (ProgramInfo.get_globals_type prog_info) I cty
-  | FI.HL => l2_progenvT ctxt (get_stateT prog_info opt) I cty
-  | FI.WA => l2_progenvT ctxt (get_stateT prog_info opt) (abs_word_type opt) cty
-  | FI.TS => 
-     case Symtab.lookup (Monad_Types.TSRules.get (Context.Proof ctxt)) ts_monad_name of
-        SOME info => ts_progenvT info ctxt (get_stateT prog_info opt) (abs_word_type opt) cty
-      | NONE => error ("progenvT monad_name undefined: " ^ quote ts_monad_name)
-  | _ => error ("progenvT not defined for phase " ^ quote (@{make_string} phase))
+fun progenvT ctxt (prog_info: ProgramInfo.prog_info) {ts_monad_name} phase (cty, opt) =
+  let
+    val fty = mk_funT phase opt cty
+  in
+    case phase of
+      FI.CP => (ProgramInfo.get_gamma prog_info |> fastype_of, (dummyT, []))
+    | FI.L1 => (l1_progenvT (ProgramInfo.get_state_type prog_info), (dummyT, []))
+    | FI.L2 => l2_progenvT ctxt (ProgramInfo.get_globals_type prog_info) I fty
+    | FI.IO => l2_progenvT ctxt (ProgramInfo.get_globals_type prog_info) I fty
+    | FI.HL => l2_progenvT ctxt (get_stateT prog_info opt) I fty
+    | FI.WA => l2_progenvT ctxt (get_stateT prog_info opt) (abs_word_type opt) fty
+    | FI.TS => 
+       case Symtab.lookup (Monad_Types.TSRules.get (Context.Proof ctxt)) ts_monad_name of
+          SOME info => ts_progenvT info ctxt (get_stateT prog_info opt) (abs_word_type opt) fty
+        | NONE => error ("progenvT monad_name undefined: " ^ quote ts_monad_name)
+    | _ => error ("progenvT not defined for phase " ^ quote (@{make_string} phase))
+  end
 
-fun progenv_inst' ctxt prog_info ts_monad_name phase (cty, opt) =
+fun progenv_inst' ctxt prog_info (mn as {ts_monad_name=ts_monad_name}) phase (cty, opt) =
  let                                     
-   val name = progenvN ctxt prog_info ts_monad_name phase cty
-   val (T, (retT, argTs)) = progenvT ctxt prog_info ts_monad_name phase (cty, opt)
+   val name = progenvN ctxt prog_info mn phase (cty, opt)
+   val (T, (retT, argTs)) = progenvT ctxt prog_info mn phase (cty, opt)
  in
-  (Long_Name.base_name name, (Const (name, T), (phase, ts_monad_name, retT, argTs, cty)))
+  (Long_Name.base_name name, (Const (name, T), (phase, ts_monad_name, retT, argTs, cty, opt)))
  end
 
 
@@ -295,24 +382,51 @@ fun progenv_inst ctxt prog_info ts_monad_name phase cty =
    in  
      (n, t)
    end
-         
+
+
+
+fun fun_ptr_param_spec fun_opts (vinfo:ProgramAnalysis.var_info) =
+   (ProgramAnalysis.get_fname vinfo |> Option.mapPartial (fn f => 
+    case ProgramInfo.get_in_out_fun_ptr_params (fun_opts f) of 
+      [] => FI.default_fun_ptr_params (ProgramAnalysis.get_vtype vinfo)
+    | ps => case AList.lookup (op =) ps (ProgramAnalysis.srcname vinfo) of
+              NONE => FI.default_fun_ptr_params (ProgramAnalysis.get_vtype vinfo)
+            | some => some)) 
+
 fun ctype_of (retty, _, var_infos) = CType.Function (retty, map ProgramAnalysis.get_vtype var_infos)
+
 in
+
+
+fun options_of_in_out_params prog_info =
+  let
+    val opt0 = ProgramInfo.get_fun_options prog_info "" 
+    fun options_of_params ({param_kinds, might_exit,...}:FI.in_out_fun_ptr_spec) = opt0 
+      |> ProgramInfo.map_in_out_parameters (K (SOME (map (pair "") (map fst param_kinds))))
+      |> ProgramInfo.map_might_exit (K might_exit)
+  in options_of_params end
+
 fun progenv_insts' {per_ctype} ctxt (prog_info: ProgramInfo.prog_info) phase = 
   let
     val cse = ProgramInfo.get_csenv prog_info
-    val fninfo = ProgramAnalysis.get_fninfo cse
-    val fun_ptr_funs = ProgramAnalysis.get_functions_used_via_fun_ptr cse 
-      |> map (fn fname => (fname, ctype_of (the (Symtab.lookup fninfo fname))))
-    val grouped = Utils.buckets (fn ((_, cty1), (_, cty2)) => cty1 = cty2) fun_ptr_funs
-    val fun_ptr_parameter_types = ProgramAnalysis.all_fun_ptr_parameter_types cse
-    val method_ptr_types = ProgramAnalysis.all_method_fun_ptr_types cse
+    val grouped = ProgramAnalysis.get_global_fun_ptrs_grouped_by_type cse
+    val fun_ptr_params = ProgramAnalysis.all_fun_ptr_parameters cse
     val fun_opts = ProgramInfo.get_fun_options prog_info
+    val fun_ptr_params_ty_params = fun_ptr_params |> map (fn vinfo => 
+       (((fn (CType.Ptr fty) => fty) o ProgramAnalysis.get_vtype) vinfo, the (fun_ptr_param_spec fun_opts vinfo)))
+    val method_ptr_types = ProgramAnalysis.all_method_fun_ptr_types cse
+    fun method_spec cty = case AList.lookup (op =) (ProgramInfo.get_method_io_params prog_info) cty of
+          NONE => the (FI.default_fun_ptr_params cty)
+        | SOME x => x
+ 
+    val method_ptr_ty_params = method_ptr_types |> (map (fn ty => (ty, method_spec ty)))
+    val options_of_params = options_of_in_out_params prog_info
+
     fun options_of_group [] = error ("progenv_insts': empty function group")
       | options_of_group ((n, cty)::fs) =
         let
           val names = n::map fst fs
-          val options = map fun_opts names |> distinct (op =)
+          val options = map fun_opts names |> distinct ((op =) o apply2 norm_io)
         in 
           case options of 
             [opt] => (cty, opt)
@@ -323,16 +437,25 @@ fun progenv_insts' {per_ctype} ctxt (prog_info: ProgramInfo.prog_info) phase =
           then Monad_Types.TSRules.get (Context.Proof ctxt) |> Symtab.keys 
           else [""]
     val fun_types = map options_of_group grouped
-    val decl_only_types = fun_ptr_parameter_types @ method_ptr_types 
-        |> sort_distinct (CType.ctype_ord int_ord)
-        |> filter_out (member (fn (t, (t', _)) => t = t') fun_types)
-        |> map (rpair (ProgramInfo.get_fun_options prog_info ""))
+
+
+    val fun_ptr_ord = prod_ord (CType.ctype_ord int_ord) FI.in_out_fun_ptr_spec_ord
+    val decl_only_types =  fun_ptr_params_ty_params @ method_ptr_ty_params
+      |> sort_distinct fun_ptr_ord
+      |> map (apsnd options_of_params)
+      |> filter_out (member (op =) (map (apsnd (norm_opt {only_type=false})) fun_types))
+    
+    val res = 
+      fun_types @ decl_only_types
+      |> map (fn (cty, opt) => 
+          map (fn mn => progenv_inst' ctxt prog_info {ts_monad_name=mn} phase (cty,opt)) ts_monad_names) 
+      |> flat 
+      |> distinct (fn ((n, (_, (_, _, _, _, cty1, opt1))), (m, (_,(_, _, _, _, cty2, opt2)))) => 
+          n = m andalso 
+          (phase <> FI.IO orelse norm_opt {only_type=false} opt1 = norm_opt {only_type=false} opt2) andalso 
+          if per_ctype then cty1 = cty2 else true)
   in
-    fun_types @ decl_only_types
-    |> map (fn (cty, opt) => 
-        map (fn mn => progenv_inst' ctxt prog_info mn phase (cty,opt)) ts_monad_names) 
-    |> flat 
-    |> distinct (fn ((n, (_, (_, _, _, _, cty1))), (m, (_,(_, _, _, _, cty2)))) => n = m andalso if per_ctype then cty1 = cty2 else true)
+    res
   end
 
 fun progenv_insts_grouped_by_cty per_ctype ctxt prog_info =
@@ -345,7 +468,12 @@ fun progenv_insts_grouped_by_cty per_ctype ctxt prog_info =
 
 fun progenv_insts ctxt (prog_info: ProgramInfo.prog_info) phase =
   map (fn (n, (t, _)) => (n, t)) (progenv_insts' {per_ctype=false} ctxt prog_info phase)
+  |> sort_distinct (fast_string_ord o apply2 fst)
 
+fun progenv_insts_with_cty ctxt prog_info phase =
+  let 
+    val all = progenv_insts' {per_ctype=false} ctxt prog_info phase
+  in map (fn (n, (t, (_, _, _, _, cty, _))) => (t, cty)) all |> sort_distinct (Term_Ord.fast_term_ord o apply2 fst)  end
 
 fun get_progenv_for ctxt (prog_info: ProgramInfo.prog_info) phase ts_monad_name fname = 
   let
@@ -362,10 +490,25 @@ fun get_progenv_for ctxt (prog_info: ProgramInfo.prog_info) phase ts_monad_name 
      | _ => error ("get_progenv_for: undefined function " ^ quote fname)
   end
 
-fun get_progenv_for_sig ctxt (prog_info: ProgramInfo.prog_info) ts_monad_name phase (retT, argTs) = 
+fun get_progenv_for_cty ctxt (prog_info: ProgramInfo.prog_info) {ts_monad_name=ts_monad_name} phase opt cty = 
   let
     val all = progenv_insts' {per_ctype=false} ctxt prog_info phase
-    fun match (n, (t, (phase', ts_monad_name', retT', argTs', cty))) =
+    val opt = norm_opt {only_type=true} opt
+    fun match (n, (t, (phase', ts_monad_name', retT', argTs', cty', opt'))) =
+      if member (op =) [FI.CP, FI.L1] phase orelse  
+         (cty = cty' andalso 
+           (phase = FI.L2 orelse opt = norm_opt {only_type=true} opt') andalso 
+           (phase <> FI.TS orelse ts_monad_name' = ts_monad_name))
+      then SOME (n, t, (retT', argTs')) 
+      else NONE
+  in
+    get_first match all
+  end
+
+fun get_progenv_for_sig ctxt (prog_info: ProgramInfo.prog_info) {ts_monad_name=ts_monad_name} phase (retT, argTs) = 
+  let
+    val all = progenv_insts' {per_ctype=false} ctxt prog_info phase
+    fun match (n, (t, (phase', ts_monad_name', retT', argTs', cty, opt'))) =
       if member (op =) [FI.CP, FI.L1] phase orelse 
          (retT' = retT andalso argTs' = argTs andalso 
             (phase <> FI.TS orelse ts_monad_name' = ts_monad_name))
@@ -375,25 +518,13 @@ fun get_progenv_for_sig ctxt (prog_info: ProgramInfo.prog_info) ts_monad_name ph
     get_first match all
   end
 
-fun get_progenv_for_cty ctxt (prog_info: ProgramInfo.prog_info) ts_monad_name phase cty = 
-  let
-    val all = progenv_insts' {per_ctype=false} ctxt prog_info phase
-    fun match (n, (t, (phase', ts_monad_name', retT', argTs', cty'))) =
-      if member (op =) [FI.CP, FI.L1] phase orelse  
-         (cty = cty' andalso 
-           (phase <> FI.TS orelse ts_monad_name' = ts_monad_name))
-      then SOME (n, t, (retT', argTs')) 
-      else NONE
-  in
-    get_first match all
-  end
 
 fun dest_progenv_inst (Const(n, T)) = (n, T)
   | dest_progenv_inst t = raise TERM ("dest_progenv_insts: unexpected term", [t])
 
 
-fun get_sig_for_fn_ptr ctxt (prog_info: ProgramInfo.prog_info) ts_monad_name phase cty =
-  get_progenv_for_cty ctxt prog_info ts_monad_name phase cty 
+fun get_sig_for_fn_ptr ctxt (prog_info: ProgramInfo.prog_info) ts_monad_name phase opt cty =
+  get_progenv_for_cty ctxt prog_info ts_monad_name phase opt cty 
   |> Option.map (#3)
 
 
@@ -408,29 +539,39 @@ type fn_ptr_info = {
   args: (string * typ) list, 
   ret: (string * typ) list, 
   ptr_val: (string * typ), 
-  prog_env: term}
+  prog_env: term,
+  in_out_spec: FI.in_out_fun_ptr_spec}
 
 
+fun in_out_fn_ptr_param_spec prog_info fname pname (cretT, cargTs) = (
+  case ProgramInfo.get_in_out_fun_ptr_params  (ProgramInfo.get_fun_options prog_info fname) of
+    [] => FI.default_fun_ptr_params (CType.Function (cretT, cargTs))
+  | ps => case AList.lookup (op =) ps pname of
+              NONE => FI.default_fun_ptr_params  (CType.Function (cretT, cargTs))
+            | some => some)
 
-fun get_fn_ptr_param_info ctxt (prog_info: ProgramInfo.prog_info) ts_monad_name (pname, idx) (cretT, cargTs) phase =
+fun get_fn_ptr_param_info ctxt (prog_info: ProgramInfo.prog_info) fname ts_monad_name (pname, idx) (cretT, cargTs) phase =
   let
     val cty = CType.Function (cretT, cargTs)
-    val (retT, argTs) = the (get_sig_for_fn_ptr ctxt prog_info ts_monad_name phase cty)
-    val prog_env = get_progenv_for_cty ctxt prog_info ts_monad_name phase cty |> the |> #2 
+    val in_out_spec =  (the (in_out_fn_ptr_param_spec prog_info fname pname (cretT, cargTs)))
+    val opt = options_of_in_out_params prog_info in_out_spec
+    val (retT, argTs) = the (get_sig_for_fn_ptr ctxt prog_info ts_monad_name phase opt cty)
+    val prog_env = get_progenv_for_cty ctxt prog_info ts_monad_name phase opt cty |> the |> #2 
     val args = if member (op =) [FI.CP, FI.L1] phase then [] else mk_positional_args (cargTs ~~ argTs) 
     val ret = if retT = @{typ unit} then [] else [(string_of_int (length args), retT)]
     val ptr_val = (pname, @{typ "unit ptr"})
   in
-   {idx = idx, args = args, ret = ret, ptr_val = ptr_val, prog_env = prog_env}
+   {idx = idx, args = args, ret = ret, ptr_val = ptr_val, prog_env = prog_env, in_out_spec = in_out_spec}:fn_ptr_info
   end
 
 fun mk_fn_ptr_infos ctxt prog_info ts_monad_name fargs finfo =
    FI.get_fn_ptr_args_info finfo |> map (fn (n, (idx, (cretT, cargTs))) =>
     let
-      val n' = case try (nth fargs) (idx - 1) of SOME (Free (n', _)) => n' | _ => n 
+      val n' = case try (nth fargs) (idx - 1) of SOME (Free (n', _)) => n' | _ => n
+      val fname = FI.get_name finfo
     in
       (NameGeneration.ensure_varname n, 
-         fn phase => get_fn_ptr_param_info ctxt prog_info ts_monad_name  
+         fn phase => get_fn_ptr_param_info ctxt prog_info fname ts_monad_name  
           (n', idx) (cretT, cargTs) phase) 
     end)
 
@@ -590,7 +731,7 @@ fun add_definition_and_corres_proof_locales (prog_info:ProgramInfo.prog_info) ba
     fun dep_corres name = corres_proof_locale ctxt skips phase filename [name]
     fun dep_corres_l1 name = corres_proof_locale ctxt skips FI.L1 filename [name]
     val imports_corres =
-      (if has_methods andalso phase <> FI.IO then [([], intern_global_corres_locale thy phase filename)] else []) @
+      (if has_methods then [([], intern_global_corres_locale thy phase filename)] else []) @
       map (fn l => ([], l)) (
          [implementation_locale ctxt skips prev_phase filename clique] @ 
          map dep_corres referenced_other_funs @ 
@@ -849,7 +990,6 @@ fun init_function_info skips (prog_info: ProgramInfo.prog_info) thy =
         let
           (* function options *)
           val skips = ProgramInfo.get_skips prog_info name
-           
           (* Convert C Parser return type into a HOL return type. *)
           val has_body_spec =  exists (fn StmtDeclDatatype.gcc_attribs _ => false | _ => true) 
                (these (Symtab.lookup (ProgramAnalysis.function_specs csenv) name))
@@ -858,13 +998,10 @@ fun init_function_info skips (prog_info: ProgramInfo.prog_info) thy =
               @{typ unit}
             else
               CalculateState.ctype_to_typ lthy return_ctype;
-      
-       
           (* Convert arguments into a list of (name, HOL type) pairs. *)
           fun make_var v = 
             (ProgramAnalysis.get_mname v |> MString.dest,
              (CalculateState.ctype_to_typ lthy (ProgramAnalysis.get_vtype v), v))
-           
           val args = map make_var carg_list;
           val locals = map make_var (ProgramAnalysis.get_locals csenv name) |> distinct (op =)
           val returns = if return_ctype = Absyn.Void then []
@@ -890,11 +1027,9 @@ fun init_function_info skips (prog_info: ProgramInfo.prog_info) thy =
               in 
                 Utils.inst_args lthy [Thm.cterm_of lthy ret_upd] @{thm init_return_undefined_function_body_def}
               end
-       
           val (definition, invented) = if proto andalso not has_body_spec then (undef_thm, true) else
                   (Proof_Context.get_thm lthy (Long_Name.implode [Long_Name.localN, name ^ "_body_def"]), false)
                    handle ERROR _ => (undef_thm, true);
-
           val clique = these (ProgramAnalysis.get_clique csenv name)
           val fun_ptr_dependencies = 
             ProgramAnalysis.get_indirect_fun_ptr_dependencies csenv name
@@ -1021,7 +1156,7 @@ fun add_impl_locale prog_info finfos phase ts_monads name thy =
       then
         let
           fun penv (ts_monad_name, lift) =
-                (get_progenv_for ctxt prog_info phase ts_monad_name name |> snd , lift)
+                (get_progenv_for ctxt prog_info phase {ts_monad_name=ts_monad_name} name |> snd , lift)
             
           val monads = if null ts_monads then [("", I)] else ts_monads
           val Ps = map penv monads
@@ -1095,12 +1230,20 @@ fun pairs xs ys =
 fun pull_tag [] = ("", [])
   | pull_tag ((t,x)::xs) = (t, x :: map snd xs)
 
+fun compatible_fun_options prev_phase (opt1:ProgramInfo.function_options, opt2:ProgramInfo.function_options) = 
+  prev_phase = FI.L2 orelse
+  (ProgramInfo.get_in_out_parameters opt1 = ProgramInfo.get_in_out_parameters opt2)
+
 fun prove_and_note_fun_ptr_intros persistent (prev_phase, phase) prog_info mk_thm lthy =
   let
     val all_insts = progenv_insts_grouped_by_cty {per_ctype=false} lthy prog_info
     fun phase_insts phase = filter (fn inst => #1 (#2 (#2 inst)) = phase) 
-            #> map (fn inst => ((#1 o #2) inst, (#2 o #2 o #2) inst))
+            #> map (fn inst => ((#1 o #2) inst, (#2 o #2 o #2) inst, (#6 o #2 o #2) inst))
+    val compatible_options = compatible_fun_options prev_phase o apply2 #3
     val paired_insts = map (fn insts => pairs (phase_insts prev_phase insts) (phase_insts phase insts)) all_insts |> flat |> flat
+      |> filter compatible_options
+      |> map (fn ((x1, x2, _), (y1, y2, _)) => ((x1, x2), (y1, y2)))
+
     fun get_monad_type_attribs "" = ("", [])
       | get_monad_type_attribs monad_type = 
             Monad_Types.get_monad_type monad_type (Context.Proof lthy) 
@@ -1117,7 +1260,7 @@ fun prove_and_note_fun_ptr_intros persistent (prev_phase, phase) prog_info mk_th
 
     fun notes lthy =
       let
-        val thmss = map (mk_thm lthy) paired_insts |> flat |> group_by ((op =) o (apply2 fst)) |> map pull_tag 
+        val thmss = map (mk_thm lthy) paired_insts |> flat |> group_by ((op =) o (apply2 #1)) |> map pull_tag 
          |> map (apfst get_monad_type_attribs)
       in 
         lthy |> fold (fn ((name, attrs), thms) =>
@@ -1127,27 +1270,29 @@ fun prove_and_note_fun_ptr_intros persistent (prev_phase, phase) prog_info mk_th
   in
     lthy |> notes
   end
-
-
+ 
 fun add_global_corres_locale (prev_phase, phase) prog_info mk_prop thy =
   if not (ProgramInfo.has_method_fun_ptrs prog_info) then thy else
   let
     val ctxt = Proof_Context.init_global thy
     val all_insts = progenv_insts_grouped_by_cty {per_ctype=phase=FI.L2} ctxt prog_info
     fun phase_insts phase = filter (fn inst => #1 (#2 (#2 inst)) = phase) 
-            #> map (fn inst => ((#1 o #2) inst, (#2 o #2 o #2) inst))
+            #> map (fn inst => ((#1 o #2) inst, (#2 o #2 o #2) inst, (#5 o #2 o #2) inst, (#6 o #2 o #2) inst))
 
+    val compatible_options = compatible_fun_options prev_phase o apply2 #4
     val paired_insts = map (fn insts => pairs (phase_insts prev_phase insts) (phase_insts phase insts)) all_insts |> flat |> flat
+      |> filter compatible_options
+
     val prog_name = ProgramInfo.get_prog_name prog_info
     val locale_name = global_corres_locale phase prog_name
     val locale_binding = Binding.make (locale_name, \<^here>)
 
     val known_function = HP_TermsTypes.known_function ctxt
-    fun make_prop ((P_prev, _), (P, _)) = 
+    fun make_prop ((P_prev, _, _, _), (P, _, cty, opt)) = 
       let
         val ([p], ctxt1) = Utils.fix_variant_frees [("p", @{typ "unit ptr"})] ctxt
       in 
-        mk_prop phase p P_prev P ctxt1 |> Option.map (fn ((prop, attrs), ctxt2) =>
+        mk_prop phase cty opt p P_prev P ctxt1 |> Option.map (fn ((prop, attrs), ctxt2) =>
           let 
             val prop1 = \<^infer_instantiate>\<open>P = "prop" and p = p and known_function = known_function 
               in prop \<open>known_function p \<Longrightarrow> PROP P\<close>\<close> ctxt |> Thm.cterm_of ctxt

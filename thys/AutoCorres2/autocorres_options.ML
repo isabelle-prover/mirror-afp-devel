@@ -32,8 +32,12 @@ fun unfold_constructor_bind_of_string str =
   (* Do not lift heaps for these functions. *)
   no_heap_abs : string list option,
   (* In/Out parameter specs for these functions. *)
-  in_out_parameters : ((string * ((string * ProgramInfo.parameter_kind) list)) list) option,
+  in_out_parameters : ((string * (
+    ((string * ProgramInfo.parameter_kind) list ) (* parameter spec *) * 
+      string list option (* disjoint spec *) * 
+      (string * ProgramInfo.in_out_fun_ptr_spec) list option )) list) option,
   in_out_globals: string list option,
+  method_in_out_fun_ptr_specs: (string list * ProgramInfo.in_out_fun_ptr_spec) list option,
 
   (* Make split heap on the level of fields not on the complete type *)
   addressable_fields: string list list option,
@@ -122,6 +126,7 @@ val default_opts = make_autocorres_options {
     no_heap_abs = NONE,
     in_out_parameters = NONE,
     in_out_globals = NONE,
+    method_in_out_fun_ptr_specs = NONE,
     skip_heap_abs = NONE,
     skip_io_abs = NONE,
     unsigned_word_abs = NONE,
@@ -214,15 +219,47 @@ val no_heap_abs_parser =
   (fn funcs => none_to_some map_no_heap_abs funcs "autocorres: no_heap_abs option specified multiple times")
 
 
+fun disjoint_parameter_kind_from_string str =   
+  case str of
+    "in" => (FunctionInfo.In, true)
+  | "out" => (FunctionInfo.Out, true)
+  | "in_out" => (FunctionInfo.In_Out, true)
+  | "data" => (FunctionInfo.Data, false)
+  | "keep" => (FunctionInfo.Keep_Ptr, false)
+  | "keep*" => (FunctionInfo.Keep_Ptr, true)
+  | _ => error ("parameter_kind_from_string: unexpected string" ^ quote str)
+
 
 val parse_parameter_kind = Parse.embedded >> FunctionInfo.parameter_kind_from_string
 val parse_in_out_param = Parse.embedded -- (Parse.$$$ ":" |-- parse_parameter_kind) 
 val parse_in_out_list = Parse.$$$ "(" |-- (Parse.enum "," parse_in_out_param) --| Parse.$$$ ")"
 
+val parse_disjoint_list = Parse.$$$ "[" |-- (Parse.enum "," Parse.embedded) --| Parse.$$$ "]"
+val parse_distinct_ptrs = Scan.optional (Parse.$$$ "where" |-- Parse.reserved "disjoint" |-- parse_disjoint_list >> SOME) NONE
+
+val parse_disjoint_parameter_kind = Parse.embedded >> disjoint_parameter_kind_from_string
+val parse_in_out_fun_ptr_list = Parse.$$$ "(" |-- (Parse.enum "," parse_disjoint_parameter_kind) --| Parse.$$$ ")"
+val parse_might_exit = Scan.optional (Parse.reserved "might_exit" >> K true) false
+val parse_in_out_globals = Scan.optional (Parse.reserved "in_out_globals" >> K true) false
+val parse_in_out_flags = parse_might_exit -- parse_in_out_globals
+
+val parse_in_out_fun_ptr_spec = parse_in_out_fun_ptr_list -- parse_in_out_flags >> (fn (param_kinds, (might_exit, in_out_globals)) => 
+  {param_kinds = param_kinds, might_exit=might_exit, in_out_globals=in_out_globals}:ProgramInfo.in_out_fun_ptr_spec)
+
+val parse_in_out_fun_ptr_param = Parse.embedded -- parse_in_out_fun_ptr_spec
+val parse_in_out_fun_ptr_params = Parse.and_list parse_in_out_fun_ptr_param
+val parse_in_out_fun_ptr_params_opt = Scan.optional (Parse.$$$ "for" |-- parse_in_out_fun_ptr_params  --| Parse.$$$ ";" >> SOME) NONE
 
 val in_out_parameter_parser =
-  named_option (Parse.and_list (Parse.embedded -- parse_in_out_list )) "in_out_parameters" "in / out parameters" >>
+  named_option (Parse.and_list (Parse.embedded -- (parse_in_out_list -- parse_distinct_ptrs -- parse_in_out_fun_ptr_params_opt >> (fn ((x,y),z) => (x,y,z)) ) )) 
+  "in_out_parameters" "in / out parameters" >>
   (fn param_specs => none_to_some map_in_out_parameters param_specs "autocorres: in_out_parameters option specified miltiple times")
+
+val parse_method_in_out_fun_ptr_spec = parse_in_out_fun_ptr_param >> (apfst (space_explode "."))
+val method_in_out_fun_ptr_parser =
+  named_option (Parse.and_list parse_method_in_out_fun_ptr_spec)
+  "method_in_out_fun_ptr_specs" "in / out parameter specs for method function pointers" >>
+  (fn specs => none_to_some map_method_in_out_fun_ptr_specs specs "autocorres: method_in_out_fun_ptr_specs option specified multiple times")
 
 val in_out_globals_parser =
   named_opt "in_out_globals" "function names" >>
@@ -388,14 +425,32 @@ val base_locale_parser =
   (fn name_pos => none_to_some map_base_locale name_pos
                  "autocorres: base_locale option specified multiple times")
 
-fun merge_in_out_parameters xs ys = AList.join (op =) (fn _ => AList.merge (op =) (op =)) (xs, ys)
+fun map_pair f g (x, y) = (f x, g y)
+fun merge_o merge (NONE,   NONE)   = NONE 
+  | merge_o merge (NONE,   SOME x) = SOME x
+  | merge_o merge (SOME x, NONE  ) = SOME x
+  | merge_o merge (SOME x, SOME y) = SOME (merge x y);
+
+
+fun merge_disjnt  (NONE,   NONE)   = NONE 
+      | merge_disjnt (NONE,   SOME x) = SOME x
+      | merge_disjnt (SOME x, NONE  ) = SOME x
+      | merge_disjnt (SOME x, SOME y) = 
+      if x = y then SOME x else error ("merge_disjnt: cannot merge " ^ @{make_string} (x,y))
+
+
+
+fun merge_in_out_parameters xs ys = AList.join (op =) 
+  (fn _ => (fn ((ps1, disjnt1, ptr_specs1), (ps2, disjnt2, ptr_specs2)) =>  
+    (AList.merge (op =) (op =) (ps1, ps2), 
+     merge_disjnt (disjnt1, disjnt2), 
+     merge_o (curry (AList.merge (op =) (op =))) (ptr_specs1, ptr_specs2)))) (xs, ys)
+
+fun merge_method_in_out_fun_ptr_specs xs ys = 
+  AList.merge (op =) (op =) (xs, ys)
 
 fun merge_opt old new =
   let
-    fun merge_o merge (NONE,   NONE)   = NONE 
-      | merge_o merge (NONE,   SOME x) = SOME x
-      | merge_o merge (SOME x, NONE  ) = SOME x
-      | merge_o merge (SOME x, SOME y) = SOME (merge x y);
 
     fun override_o merge (NONE,   NONE)   = NONE 
       | override_o merge (NONE,   SOME x) = SOME x
@@ -412,6 +467,7 @@ fun merge_opt old new =
       no_heap_abs         = merge_o merge_lists (get_opts get_no_heap_abs old new),
       in_out_parameters   = merge_o merge_in_out_parameters (get_opts get_in_out_parameters old new),
       in_out_globals      = merge_o merge_lists (get_opts get_in_out_globals old new),
+      method_in_out_fun_ptr_specs = merge_o merge_method_in_out_fun_ptr_specs (get_opts get_method_in_out_fun_ptr_specs old new),
       skip_heap_abs       = merge_o take_snd (get_opts get_skip_heap_abs old new),
       skip_io_abs         = merge_o take_snd (get_opts get_skip_io_abs old new),
       unsigned_word_abs   = merge_o merge_lists (get_opts get_unsigned_word_abs old new),
@@ -420,7 +476,7 @@ fun merge_opt old new =
       no_signed_word_abs_known_functions = merge_o take_fst (get_opts get_no_signed_word_abs_known_functions old new),
       skip_word_abs       = merge_o take_snd (get_opts get_skip_word_abs old new),
       ts_rules            = merge_o merge_lists (get_opts get_ts_rules old new),
-      ts_force            = Symtab.merge (K false) (get_ts_force old, get_ts_force new),
+      ts_force            = Symtab.merge (op =) (get_ts_force old, get_ts_force new),
       ts_force_known_functions = merge_o take_fst (get_opts get_ts_force_known_functions old new),
       heap_abs_syntax     = merge_o take_fst (get_opts get_heap_abs_syntax old new),
       phase               = merge_o take_snd (get_opts get_phase old new),
@@ -458,6 +514,7 @@ local
     (no_heap_abs_parser ||
      in_out_parameter_parser ||
      in_out_globals_parser ||
+     method_in_out_fun_ptr_parser ||
      skip_heap_abs_parser ||
      ts_rules_parser ||
      ts_force_parser ||

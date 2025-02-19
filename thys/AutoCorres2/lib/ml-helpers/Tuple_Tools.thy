@@ -750,6 +750,21 @@ fun mksimps ctxt thm =
   in (Simpdata.mksimps Simpdata.mksimps_pairs) ctxt thm'
   end
 
+fun beta_tupled_conv ctxt arity ct =
+  if arity <= 1 then 
+    Conv.all_conv ct
+  else
+    let
+      val case_eq_thm = get_tuple_case_eq_thm ctxt arity 
+    in
+      Conv.rewr_conv case_eq_thm ct
+    end
+
+fun app_beta_tupled_conv ctxt arity f x =
+  Thm.apply f x |> beta_tupled_conv ctxt arity
+
+fun beta_tupled ctxt arity f x = app_beta_tupled_conv ctxt arity f x |> Thm.rhs_of
+
 val SPLIT_simproc =
   Simplifier.make_simproc @{context} {name = "SPLIT_simproc", kind = Simproc, identifier = [],
     lhss = [Proof_Context.read_term_pattern @{context} "PROP SPLIT ?P",
@@ -1024,7 +1039,8 @@ end
 
 simproc_setup ETA_TUPLED (\<open>ETA_TUPLED f\<close>) = \<open>fn _ => fn ctxt => fn ct =>
   let
-    val arity = Thm.typ_of_cterm ct |> domain_type |> HOLogic.flatten_tupleT |> length
+    val T = Thm.typ_of_cterm ct |> domain_type
+    val arity = T |> HOLogic.flatten_tupleT |> length
   in
     if arity <= 1 then
       SOME @{thm ETA_TUPLED_def}
@@ -1247,6 +1263,9 @@ val d2 = Tuple_Tools.eta_expand_tupled_conv @{context} @{cterm "\<lambda>(a, (b:
 val d3 = Tuple_Tools.eta_expand_tupled_conv @{context} @{cterm "\<lambda>(a, (b::nat \<times> nat \<times> nat \<times> nat)) s. a < 2"}
 \<close>
 
+ML_val \<open>
+Tuple_Tools.beta_tupled @{context} 3 @{cterm \<open>\<lambda>(a::nat,b,c). a + b + c\<close>} @{cterm "(x::nat,y::nat,z::nat)"}
+\<close>
 end
 
 

@@ -2577,6 +2577,28 @@ lemma disj_ptr_span_field_disj_ptr_span'':
   using disj_ptr_span_field_disj_ptr_span' [OF _ f1 match_s f2 match_t]
   by (simp add: disj)
 
+lemma field_lvalue_empty:
+  "&(p\<rightarrow>[]) = ptr_val p"
+  by (simp add: field_lvalue_def field_offset_def field_offset_untyped_def)
+
+lemma disj_ptr_span_field_disj_ptr_span_root1: 
+  assumes disj: "ptr_span (p::'a::mem_type ptr) \<inter> ptr_span (q::'b::mem_type ptr) \<equiv> {}"
+  assumes f1: "field_lookup (typ_info_t (TYPE('a))) f1 0 = Some (s, n)"
+  assumes match_s: "export_uinfo s = typ_uinfo_t (TYPE('c::mem_type))"
+  shows "{&(p\<rightarrow>f1)..+size_of TYPE('c)} \<inter> ptr_span q \<equiv> {}"
+  using disj_ptr_span_field_disj_ptr_span'' [OF disj f1 match_s,  of "[]" "typ_info_t TYPE('b)" 0, 
+      simplified typ_uinfo_t_def, simplified, OF refl]
+  by (simp add: field_lvalue_empty)
+
+lemma disj_ptr_span_field_disj_ptr_span_root2: 
+  assumes disj: "ptr_span (p::'a::mem_type ptr) \<inter> ptr_span (q::'b::mem_type ptr) \<equiv> {}"
+  assumes f2: "field_lookup (typ_info_t (TYPE('b))) f2 0 = Some (t, m)"
+  assumes match_t: "export_uinfo t = typ_uinfo_t (TYPE('d::mem_type))"
+  shows "ptr_span p \<inter> {&(q\<rightarrow>f2)..+size_of TYPE('d)} = {}"
+  using disj_ptr_span_field_disj_ptr_span'' [OF disj _ _  f2 match_t,  of "[]" "typ_info_t TYPE('a)" 0, 
+      simplified typ_uinfo_t_def, simplified, OF refl]
+  by (simp add: field_lvalue_empty)
+ 
 lemma root_ptr_valid_disj_field_lvalue_conv:
   assumes valid_p: "root_ptr_valid d (p::'a::mem_type ptr)" 
   assumes valid_q: "root_ptr_valid d (q::'b::mem_type ptr)" 

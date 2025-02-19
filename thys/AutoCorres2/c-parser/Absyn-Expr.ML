@@ -27,6 +27,7 @@ datatype binoptype =
        | RShift | LShift
 
 datatype unoptype = Negate | Not | Addr | BitNegate
+datatype modifiertype = Plus_Plus | Minus_Minus
 
 type var_info = (int CType.ctype * more_info) option Unsynchronized.ref
 
@@ -40,6 +41,7 @@ fun var_info_ord (v1, v2) = option_ord (prod_ord (CType.ctype_ord int_ord) more_
 datatype expr_node =
          BinOp of binoptype * expr * expr
        | UnOp of unoptype * expr
+       | PostOp of expr * modifiertype
        | CondExp of expr * expr * expr
        | Constant of literalconstant
        | Var of string * var_info
@@ -78,6 +80,7 @@ sig
 
   datatype binoptype = datatype ExprDatatype.binoptype
   datatype unoptype = datatype ExprDatatype.unoptype
+  datatype modifiertype = datatype ExprDatatype.modifiertype
   datatype expr_node = datatype ExprDatatype.expr_node
   datatype initializer = datatype ExprDatatype.initializer
   datatype designator = datatype ExprDatatype.designator
@@ -121,10 +124,27 @@ sig
   val consteval : bool -> Proof.context -> ecenv -> expr -> IntInf.int
 
   val fun_of_var_expr: expr -> string option
-  val vars_expr: {typ:bool, addr:bool} -> expr -> (string * ExprDatatype.var_info) list
+  val vars_expr: {typ:bool, addr:bool, post_op:bool} -> expr -> (string * ExprDatatype.var_info) list
 
   val map_var: ((string *  ExprDatatype.var_info) -> (string *  ExprDatatype.var_info)) -> expr_node -> expr_node
   val map_enode: (expr_node -> expr_node) -> expr -> expr
+
+  val dest_post_op: expr -> (expr * modifiertype) option
+  val dest_post_op': expr_node -> (expr * modifiertype) option
+  val dest_post_op_lval: expr -> (expr * modifiertype) option
+  val dest_var:  string * (int CType.ctype * more_info) option Unsynchronized.ref ->
+      (string *
+       (int CType.ctype *
+        {fname: string option,
+         init: bool,
+         munge: MString.t, owned_by: string option, global: bool})
+      )
+      option
+  val extract_post_ops: Proof.context -> expr -> expr * expr_node (* PostOp *) list
+
+  val boglit: int -> literalconstant_node RegionExtras.wrap
+  val bogint: int -> expr
+  val from_int_ctype: int CType.ctype -> expr CType.ctype     
 end
 
 structure Expr : EXPR =
@@ -477,9 +497,10 @@ in
   | OffsetOf (cty, flds) => (fi (get_offset_of ctxt offset_of cty flds),
                             ImplementationTypes.size_t)
   | TypeCast(destty, e0) => let
+      val destty' = constify_abtype report_error ctxt ecenv (node destty)
       val (v,_) = consteval e0
     in
-      safeop ctxt (eleft e, eright e) (node destty) (fn x => x) v
+      safeop ctxt (eleft e, eright e) destty' (fn x => x) v
     end
   | _ => Fail ("Unexpected expression form (" ^ expr_string e ^
                ") in consteval")
@@ -500,7 +521,7 @@ and constify_abtype report_error ctxt (ecenv as CE {enumenv, typing, structsize,
       | EnumTy x => EnumTy x
       | Bitfield(ty0,e) => Bitfield (recurse ty0, IntInf.toInt (consteval report_error ctxt ecenv e))
       | Ident s => Ident s
-      | Function (retty, args) => Function (recurse retty, map recurse args)
+      | Function (retty, args) => Function (recurse retty, map (param_norm o recurse) args)
       | Void => Void
       | Bool => Bool
       | TypeOf e => typing e
@@ -553,10 +574,11 @@ fun fun_of_var_expr (E w) = case node w of
  | _ => NONE
 
 
-fun vars_node (t as {typ, addr}) e =
+fun vars_node (t as {typ, addr, post_op}) e =
   case e of
     BinOp (bop, e1, e2) => vars_expr t e1 @ vars_expr t e2
   | UnOp (uop, e1) => if not addr andalso uop = Addr then [] else vars_expr t e1
+  | PostOp (e, _) => if post_op then vars_expr t e else []
   | CondExp (e1, e2, e3) => vars_expr t e1 @ vars_expr t e2 @ vars_expr t e3
   | Constant _ => []
   | Var (n, info) => [(n, info)]
@@ -581,7 +603,7 @@ and vars_designator t d =
   case d of
     DesignE e1 => vars_expr t e1
   | DesignFld _ => []
-and vars_type (t as {typ, addr}) T = if not typ then [] else
+and vars_type (t as {typ, addr, post_op}) T = if not typ then [] else
   (case T of
     TypeOf e => vars_expr t e
   | Ptr T1 => vars_type t T1
@@ -591,9 +613,125 @@ and vars_type (t as {typ, addr}) T = if not typ then [] else
   | _ => [])
 
 
+fun dest_post_op' e =
+  (case e of
+    PostOp (e', m) => SOME (e', m)
+  | _ => NONE)
+
+fun dest_post_op e =
+  (case enode e of
+    PostOp (e', m) => SOME (e', m)
+  | _ => NONE)
+ 
+fun dest_post_op_lval e =
+  (case enode e of
+    Deref p => dest_post_op p 
+   | _ => NONE)
+
+
+fun dest_var (name:string, more_info_ref:(int CType.ctype * more_info) option Unsynchronized.ref) = 
+  case !more_info_ref of
+    SOME (ty, MungedVar x) => SOME (name, (ty, x))
+  | _ => NONE
+
+fun extract_post_ops ctxt e =
+  let
+    val l = eleft e
+    val r = eright e
+    fun w e = ewrap (e, l, r)
+  in 
+    case enode e of
+      PostOp (e1, m) => 
+        let 
+          val (e1', ops) = extract_post_ops ctxt e1
+        in (e1', PostOp (e1', m)::ops) end
+    | UnOp (uop, e1) => 
+        let 
+          val (e1', ops) = extract_post_ops ctxt e1
+        in (w(UnOp(uop, e1')), ops) end
+    | BinOp (bop, e1, e2) => 
+        let 
+          val (e1', ops1) = extract_post_ops ctxt e1
+          val (e2', ops2) = extract_post_ops ctxt e2
+          val _ = not (member (op = ) [LogOr, LogAnd] bop) orelse
+               (null ops2 orelse Feedback.error_range ctxt (eleft e2) (eright e2) 
+                 "post increment / decrement not supported in right hand side of logical operation")
+        in (w(BinOp (bop, e1', e2')), ops1 @ ops2) end
+    | CondExp (c, e1, e2) =>
+       let 
+         val (c', opsc) = extract_post_ops ctxt c
+         val (_, ops1) = extract_post_ops ctxt e1
+         val (_, ops2) = extract_post_ops ctxt e2
+         val _ = null ops1 orelse Feedback.error_range ctxt (eleft e1) (eright e1) 
+           "post increment / decrement not supported in conditional branch"
+         val _ = null ops2 orelse Feedback.error_range ctxt (eleft e2) (eright e2) 
+           "post increment / decrement not supported in conditional branch"
+       in (w(CondExp(c', e1, e2)), opsc) end
+    | StructDot (e1, fld) =>
+        let
+           val (e1', ops1) = extract_post_ops ctxt e1
+        in (w(StructDot(e1', fld)), ops1) end
+    | ArrayDeref (e1, e2) => 
+         let 
+           val (e1', ops1) = extract_post_ops ctxt e1
+           val (e2', ops2) = extract_post_ops ctxt e2
+         in (w(ArrayDeref(e1', e2')), ops1 @ ops2) end
+    | Deref (e1) =>
+        let
+           val (e1', ops1) = extract_post_ops ctxt e1
+        in (w(Deref(e1')), ops1) end
+    | TypeCast (T, e1) =>
+        let
+           val (e1', ops1) = extract_post_ops ctxt e1
+        in (w(TypeCast(T, e1')), ops1) end
+    | Sizeof (e1) =>
+        let
+          val (e1', ops1) = extract_post_ops ctxt e1
+          val _ = null ops1 orelse Feedback.error_range ctxt (eleft e1) (eright e1) 
+           "post increment / decrement not supported in sizeof expression"          
+        in (w(Sizeof(e1')), ops1) end
+    | EFnCall (e1, es) => 
+        let
+          val (e1', ops1) = extract_post_ops ctxt e1
+          val (es', ops') = map (extract_post_ops ctxt) es |> split_list 
+        in
+           (w (EFnCall(e1', es')), ops1 @ flat ops')
+        end
+    | MKBOOL (e1) =>
+        let
+          val (e1', ops1) = extract_post_ops ctxt e1
+          val _ = null ops1 orelse Feedback.error_range ctxt (eleft e1) (eright e1) 
+           "post increment / decrement not supported in conditional branch"          
+        in (w(MKBOOL(e1')), ops1) end
+    | atomic => (e, [])
+  end
+
 fun map_var f (Var x) = Var (f x)
   | map_var _ e = e
 
 fun map_enode f (E x) = E (apnode f x)
+ 
+fun boglit i = bogwrap(NUMCONST {value = i, base = StringCvt.DEC, suffix = ""})
+fun bogint i = ebogwrap (Constant (boglit i))
+       
+fun from_int_ctype (ty:int ctype) : expr ctype =
+  case ty of                       
+    Signed x => Signed x
+  | Unsigned x => Unsigned x
+  | Bool => Bool
+  | PlainChar => PlainChar
+  | StructTy x => StructTy x
+  | UnionTy x => UnionTy x
+  | EnumTy x => EnumTy x
+  | Ptr x => Ptr (from_int_ctype x)
+  | Array (x, NONE) => Array (from_int_ctype x, NONE)
+  | Array (x, SOME i) => Array (from_int_ctype x, SOME (bogint i))
+                                                                        
+  | Bitfield (x, i) => Bitfield (from_int_ctype x, bogint i)
+  | Ident x => Ident x
+  | Function (retT, argTs) => Function (from_int_ctype retT, map from_int_ctype argTs)
+  | Void => Void
+  | TypeOf i => error "from_int_ctype: TypeOf not supported" 
 
+         
 end (* struct *)

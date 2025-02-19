@@ -1667,7 +1667,9 @@ let
     CalculateState.ctype_to_typ ctxt (CTypeDatatype.StructTy name)
 
   (* Generate information relating to a field of a single struct. *)
-  fun get_field_info struct_name struct_type (field_name, (field_type, _)) = let
+  fun get_field_info struct_name struct_type (field_name, (field_type, _)) = 
+  if CType.flexible_array_type field_type then NONE else SOME
+  let
     val hol_field_type = CalculateState.ctype_to_typ ctxt field_type
   in
     {
@@ -1694,7 +1696,7 @@ let
     (struct_name, {
       name = struct_name,
       struct_type = struct_type,
-      field_info = map (get_field_info struct_name struct_type) struct_fields
+      field_info = map_filter (get_field_info struct_name struct_type) struct_fields
     })
   end
 
