@@ -1,9 +1,11 @@
-(*  Title:      Two Generated Word Monoids_Intersection
-    File:       Two_Generated_Word_Monoids_Intersection.Two_Generated_Word_Monoids_Intersection
+(*  Title:      CoW_Binary_Monoids_Intersection
+    File:       Two_Generated_Word_Monoids_Intersection.CoW_Binary_Monoids_Intersection
     Author:     Štěpán Holub, Charles University
     Author:     Štěpán Starosta, CTU in Prague
 
 Part of Combinatorics on Words Formalized. See https://gitlab.com/formalcow/combinatorics-on-words-formalized/
+
+A version of the theory is included in the AFP. See https://www.isa-afp.org/entries/Two_Generated_Word_Monoids_Intersection.html
 *)
 
 theory Two_Generated_Word_Monoids_Intersection
@@ -11,7 +13,7 @@ theory Two_Generated_Word_Monoids_Intersection
 begin
 
 text
-  \<open>The characterization of intersection of binary languages formalized here is due to @{cite Ka_intersections}.\<close>
+  \<open>The characterization of intersection of binary languages formalized here is due to \<^cite>\<open>Ka_intersections\<close>.\<close>
 
 chapter "Binary Intersection Formalized"
 
@@ -43,7 +45,7 @@ proof-
     have "s \<le>p s' \<Longrightarrow> r \<le>p r'" and "s' \<le>p s \<Longrightarrow> r' \<le>p r"
       using \<open>g r = h s\<close> \<open>g r' = h s'\<close> g.pref_morph_pref_eq h.pref_mono by metis+
     hence "(r, s) = (r', s')"
-      using \<open>s \<le>p s' \<or> s' \<le>p s\<close> \<open>g r =\<^sub>m h s\<close> \<open>g r' =\<^sub>m h s'\<close> npI
+      using \<open>s \<le>p s' \<or> s' \<le>p s\<close> \<open>g r =\<^sub>m h s\<close> \<open>g r' =\<^sub>m h s'\<close>
       unfolding min_coin_def by metis
     thus False
       using \<open>(r, s) \<noteq> (r', s')\<close> by blast
@@ -163,9 +165,9 @@ definition beginning_block :: "binA list * binA list"  where
   "beginning_block = (SOME pair. \<alpha>\<^sub>g \<cdot> g\<^sub>m (fst pair) = \<alpha>\<^sub>h \<cdot> h\<^sub>m (snd pair) \<and>
    (\<forall> p' q'. \<alpha>\<^sub>g \<cdot> g\<^sub>m p' = \<alpha>\<^sub>h \<cdot> h\<^sub>m q' \<longrightarrow> (fst pair) \<le>p p' \<and> (snd pair) \<le>p q'))"
 
-definition fst_beginning_block (\<open>p\<close>) where
+definition fst_beginning_block ("p") where
   "fst_beginning_block \<equiv> fst beginning_block"
-definition snd_beginning_block (\<open>q\<close>) where
+definition snd_beginning_block ("q") where
   "snd_beginning_block \<equiv> snd beginning_block"
 
 lemma begin_block: "\<alpha> \<cdot> g\<^sub>m p = h\<^sub>m q" and
@@ -224,8 +226,8 @@ proof-
   show "marked.blockP c".
 qed
 
-notation marked.suc_fst (\<open>\<ee>\<close>) and
-         marked.suc_snd (\<open>\<ff>\<close>)
+notation marked.suc_fst ("\<ee>") and
+         marked.suc_snd ("\<ff>")
 
 lemma sucs_eq: "g\<^sub>m (\<ee> \<tau>) = h\<^sub>m (\<ff> \<tau>)"
   using marked.blocks_eq both_blocks by blast
@@ -509,10 +511,9 @@ qed
 lemma  last_letter_block: assumes "coin_block (z \<cdot> [c])"
   shows "coin_block [c]"
 proof (cases)
-  assume "z \<in> [c]*"
-  from sing_pow_exp[OF this]
-  obtain i where "z = [c]\<^sup>@i"
-    by blast
+  assume "set z \<subseteq> {c}"
+  then obtain i where "z = [c]\<^sup>@i"
+    unfolding sing_pow_exp by blast
   have "z \<cdot> [c] = [c]\<^sup>@Suc i"
     unfolding \<open>z = [c]\<^sup>@i\<close> pow_Suc'..
   have "\<ee> (z \<cdot> [c]) = (\<ee> [c])\<^sup>@Suc i" and "\<ff> (z \<cdot> [c]) = (\<ff> [c])\<^sup>@Suc i"
@@ -521,7 +522,7 @@ proof (cases)
   show "coin_block [c]"
     unfolding coin_block_def using per_drop_exp_rev[OF zero_less_Suc] by metis
 next
-  assume "z \<notin> [c]*"
+  assume "\<not> set z \<subseteq> {c}"
   from distinct_letter_in_suf[OF this]
   obtain t z' b where z: "z = z' \<cdot> [b] \<cdot> [c]\<^sup>@t" and "b \<noteq> c"
     unfolding suffix_def by metis
@@ -540,11 +541,11 @@ next
       unfolding coin_block_def using ssufD1[OF ssuf_ext[OF \<open>p <s \<ee> [c]\<close>]] by blast
   next \<comment> \<open>the other option leads to a contradiction\<close>
     write
-      marked.sucs.h.bin_morph_mismatch_suf (\<open>\<dd>\<close>) and
-      marked.sucs.h.bin_code_lcs (\<open>\<beta>\<^sub>\<hh>\<close>) and
-      hm.bin_code_lcs (\<open>\<beta>\<^sub>H\<close>) and
-      gm.bin_code_lcs (\<open>\<beta>\<^sub>G\<close>) and
-      g.bin_code_lcs (\<open>\<beta>\<^sub>g\<close>)
+      marked.sucs.h.bin_morph_mismatch_suf ("\<dd>") and
+      marked.sucs.h.bin_code_lcs ("\<beta>\<^sub>\<hh>") and
+      hm.bin_code_lcs ("\<beta>\<^sub>H") and
+      gm.bin_code_lcs ("\<beta>\<^sub>G") and
+      g.bin_code_lcs ("\<beta>\<^sub>g")
     assume "\<not> q \<le>s q \<cdot> \<ff> [c]"
       \<comment> \<open>suffix of @{term q}\<close>
     hence "\<not> q \<le>s q \<cdot> \<ff> ([c]\<^sup>@ Suc t)"
@@ -654,7 +655,7 @@ proof-
     by (cases rule: bin_swap_exhaust[of "last \<tau>" a1]) simp_all
 qed
 
-definition coincidence_exponent (\<open>t\<close>) where
+definition coincidence_exponent ("t") where
   "coincidence_exponent = (LEAST x. (q \<le>s q \<cdot> \<ff>([a1] \<cdot> [1-a1]\<^sup>@Suc x)))"
 
 lemma q_nemp: "q \<noteq> \<epsilon>"
@@ -680,7 +681,7 @@ proof-
   from LeastI[of "\<lambda> x. (q \<le>s q \<cdot> \<ff>([a1] \<cdot> [1-a1]\<^sup>@Suc x))",
       folded coincidence_exponent_def, of "\<^bold>|q\<^bold>| - 1"] suf_ext[OF this, of q]
   have "q \<le>s q \<cdot> \<ff> ([a1] \<cdot> [1 - a1] \<^sup>@ Suc t)"
-    unfolding Suc_minus[OF nemp_len[OF q_nemp]] by blast
+    unfolding Suc_minus[OF nemp_len_not0[OF q_nemp]] by blast
   thus "coin_block ([a1] \<cdot> [1-a1]\<^sup>@Suc t)"
     unfolding pow_Suc' marked.sucs.g.morph coin_block_def
     using suf_ext[OF ssufD1[OF p_suf], of "p \<cdot> \<ee> [a1] \<cdot> \<ee> ([1 - a1] \<^sup>@ t)", unfolded rassoc] by blast
@@ -828,7 +829,7 @@ proof (induction x rule: \<W>.induct)
   qed
 qed
 
-lemma pref_code_\<W>: "pref_code ({[1-a1]} \<union> \<W>)"
+lemma prefix_code_\<W>: "prefix_code ({[1-a1]} \<union> \<W>)"
 proof
   show nemp: "\<epsilon> \<notin> {[1 - a1]} \<union> \<W>"
     using \<W>_nemp by auto
@@ -923,7 +924,7 @@ next
           then obtain k where "x = [1 - a1]\<^sup>@k"
             using bin_without_letter by blast
           thus "x \<in> \<langle>{[1 - a1]} \<union> \<W>\<rangle>"
-            using gen_in[THEN power_in] by fast
+            using gen_in[THEN power_in] by auto
         next
           assume "a1 \<in> set x"
           hence "x \<noteq> \<epsilon>" by force
@@ -1038,7 +1039,7 @@ proof
       case (2 \<tau> i)
       then obtain w where "\<tau> = w \<cdot> [a1] \<cdot> [1 - a1] \<^sup>@ Suc t" and "w \<in> \<langle>{[a1] \<cdot> [1 - a1] \<^sup>@ i |i. i \<le> t}\<rangle>"
         by blast
-      from hull.prod_cl[OF _ this(2), of "[a1] \<cdot> [1 - a1] \<^sup>@ i"] \<open>i \<le> t\<close>
+      from prod_cl[OF _ this(2), of "[a1] \<cdot> [1 - a1] \<^sup>@ i"] \<open>i \<le> t\<close>
       have "[a1] \<cdot> [1 - a1] \<^sup>@ i \<cdot> w \<in> \<langle>{[a1] \<cdot> [1 - a1] \<^sup>@ i |i. i \<le> t}\<rangle>"
         unfolding mem_Collect_eq by simp
       thus ?case
@@ -1060,7 +1061,7 @@ qed
 
 theorem infinite_basis: "\<BB> \<T> = ({[1-a1]} \<union> \<W>)"
   using basis_of_hull[of "{[1-a1]} \<union> \<W>"]
-  unfolding \<W>_gen_T  code.code_is_basis[OF pref_code.code, OF pref_code_\<W>].
+  unfolding \<W>_gen_T  code.code_is_basis[OF prefix_code.code, OF prefix_code_\<W>].
 
 end
 
@@ -1111,9 +1112,9 @@ proof-
   have assms': "binary_code x' y'" "binary_code u' v'"
     using assms unfolding x'_def y'_def u'_def v'_def by simp_all
 
-  define first_morphism (\<open>g \<close>)
+  define first_morphism ("g ")
     where "first_morphism \<equiv> bin_morph_of x' y'"
-  define second_morphism (\<open>h\<close>)
+  define second_morphism ("h")
     where "second_morphism \<equiv> bin_morph_of u' v'"
   note mdefs = first_morphism_def second_morphism_def
   have ranges: "range g = \<langle>{x',y'}\<rangle>" "range h = \<langle>{u',v'}\<rangle>"
@@ -1139,7 +1140,7 @@ proof-
       by (simp add: emp_gen_set)
     from that(1)[unfolded int' this]
     show ?thesis
-      unfolding emp_basis_iff by simp
+      unfolding basis_def ungenerated_def by fast
   next
     assume "\<CC>\<^sub>m g h \<noteq> {}"
     then obtain r1 s1 where "g r1 =\<^sub>m h s1"
@@ -1164,12 +1165,12 @@ proof-
       from min_coin_setD[OF this(1)] \<open>g r1 =\<^sub>m h s1\<close> this(2)
       interpret binary_codes_coincidence_two_generators g h
         by unfold_locales auto
-      write g.marked_version (\<open>g\<^sub>m\<close>) and
-        h.marked_version (\<open>h\<^sub>m\<close>) and
-        fst_beginning_block (\<open>p\<close>)  and
-        snd_beginning_block (\<open>q\<close>)  and
-        h.bin_code_lcp (\<open>\<alpha>\<^sub>h\<close>) and
-        marked.suc_snd (\<open>\<ff>\<close>)
+      write g.marked_version ("g\<^sub>m") and
+        h.marked_version ("h\<^sub>m") and
+        fst_beginning_block ("p")  and
+        snd_beginning_block ("q")  and
+        h.bin_code_lcp ("\<alpha>\<^sub>h") and
+        marked.suc_snd ("\<ff>")
       show thesis
       proof(cases)
         assume "\<forall> a. coin_block [a]"
@@ -1187,7 +1188,7 @@ proof-
         then obtain a1 where "\<not> coin_block [a1]" by blast
         then interpret binary_codes_coincidence_infinite g h a1
           by unfold_locales
-        write coincidence_exponent (\<open>t\<close>)
+        write coincidence_exponent ("t")
 
         from inter_basis[unfolded ranges infinite_basis bin_morph_of_range, folded Setcompr_eq_image, unfolded mem_Collect_eq]
         have inter:"\<BB> (\<langle>{x', y'}\<rangle> \<inter> \<langle>{u', v'}\<rangle>) = {(h \<circ> (\<lambda>x. (q \<cdot> x)\<^sup><\<inverse>q ) \<circ> \<ff>) x |x. x \<in> {[1 - a1]} \<union> \<W>}".

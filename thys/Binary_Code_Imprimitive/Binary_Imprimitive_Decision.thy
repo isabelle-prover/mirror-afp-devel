@@ -3,6 +3,8 @@
     Author:     Martin Raška, Charles University
 
 Part of Combinatorics on Words Formalized. See https://gitlab.com/formalcow/combinatorics-on-words-formalized/
+
+A version of the theory is included in the AFP. See https://www.isa-afp.org/entries/Binary_Code_Imprimitive.html
 *)
 
 theory Binary_Imprimitive_Decision
@@ -21,7 +23,7 @@ proof (rule nemp_comm)
   assume "y \<noteq> \<epsilon>"
   have "y \<^sup>@ k \<le>p z \<cdot> y \<^sup>@ k"
     using \<open>y \<^sup>@ k \<cdot> x = z \<^sup>@ l\<close>
-    by (blast intro!: pref_prod_root)
+    by (blast intro!: pref_pow_root)
   moreover have "y \<^sup>@ k \<le>p y \<cdot> y \<^sup>@ k"
     by (blast intro!: pref_pow_ext')
   moreover have "1 \<le> gcd \<^bold>|z\<^bold>| \<^bold>|y\<^bold>|"
@@ -218,7 +220,7 @@ next
   obtain ws where
       "ws \<in> lists {x, y}" and "2 \<le> \<^bold>|ws\<^bold>|" and "primitive ws" and "\<not> primitive (concat ws)"
     using \<open>\<not> bin_prim x y\<close> unfolding bin_prim_concat_prim_pres_conv[OF \<open>x \<noteq> y\<close>]
-    by blast
+    by meson
   then consider "ws \<sim> [x, x, y]"
     | k where "1 \<le> k" and "k \<le> (\<^bold>|x\<^bold>| - 4) div \<^bold>|y\<^bold>| + 2"
       and   "ws \<sim> [x] \<cdot> [y] \<^sup>@ k"
