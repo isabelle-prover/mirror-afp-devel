@@ -19,7 +19,7 @@ The consequence is equivalent to the fact that the corresponding periodic roots 
 It is also known as the Fine and Wilf theorem due to its authors \cite{ FineWilf}.\<close>
 
 text\<open>
-If we relax the requirement to @{term "p + q"}, then the claim becomes easy, and it is proved in theory Combinatorics_Words.CoWBasic as @{term two_pers_root}: @{thm[names_long] two_pers_root[no_vars]}.
+If we relax the requirement to @{term "p + q"}, then the claim becomes easy, and it is proved in theory @{theory Combinatorics_Words.CoWBasic} as @{term two_pers_root}: @{thm[names_long] two_pers_root[no_vars]}.
 \<close>
 
 theorem per_lemma_relaxed:

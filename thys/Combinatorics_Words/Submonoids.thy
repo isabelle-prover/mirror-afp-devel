@@ -2683,7 +2683,7 @@ proof
     by auto
 qed
 
-text\<open>On the other hand, it can be proved that the \emph{free basis}, defined as the basis of the free hull,  has a (non-strictly) smaller cardinality than the ordinary basis. (See the theory Graph_Lemma)\<close>
+text\<open>On the other hand, it can be proved that the \emph{free basis}, defined as the basis of the free hull,  has a (non-strictly) smaller cardinality than the ordinary basis. (See the theory Graph Lemma)\<close>
 
 definition free_basis ::  "'a list set \<Rightarrow> 'a list set" ("\<BB>\<^sub>F _" [54] 55)
   where  "free_basis G \<equiv> \<BB> \<langle>G\<rangle>\<^sub>F"

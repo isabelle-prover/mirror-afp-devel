@@ -29,7 +29,7 @@ In this formalization we consider the equation in words only. Then the original 
 $x$, $y$ and $z$ satisfying the equality ith $2 \leq a,b,c$ pairwise commute.
 
 The result in free groups was first proved in \cite{ LySch62}.
-For words, there are several proofs to be found in the literature (for instance \cite{ Lo83 and Dmsi2006}).
+For words, there are several proofs to be found in the literature (for instance \cite{Lo83} and \cite{Dmsi2006}).
 The presented proof is the authors' proof.
 
 In addition, we give a full parametric solution of the equation for any $a$, $b$ and $c$.

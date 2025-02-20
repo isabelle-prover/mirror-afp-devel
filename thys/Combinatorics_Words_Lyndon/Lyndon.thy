@@ -16,7 +16,7 @@ text\<open>A Lyndon word is a non-empty word that is lexicographically
 strictly smaller than any other word in its conjugacy class, i.e., than any its rotations.
 They are named after R. Lyndon who introduced them in \cite{ Lyndon54} as ``standard'' sequences.
 
-We present elementary results on Lyndon words, mostly covered by results in \cite{ \<open>Chapter 5\<close> Lo83} and \cite{ Duval80 and Duval83}.
+We present elementary results on Lyndon words, mostly covered by results in \cite[\<open>Chapter 5\<close>]{Lo83} and \cite{Duval80, Duval83}.
 
 This definition assumes a linear order on letters given by the context.
 \<close>

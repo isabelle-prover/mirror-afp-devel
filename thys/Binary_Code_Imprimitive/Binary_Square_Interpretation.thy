@@ -1235,7 +1235,7 @@ proof-
     by (rule fac_interpI) force+
 qed
 
-text \<open>A long cube cover with a long @{term y}}\<close>
+text \<open>A cube cover with long \<open>y\<close>\<close>
 
 lemma example_cube_cover:
   fixes x y p s

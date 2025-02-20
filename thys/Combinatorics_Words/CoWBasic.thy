@@ -248,7 +248,7 @@ lemmas map_rev_involution[simp] = list.map_comp[of rev rev, unfolded rev_involut
 
 lemma map_rev_lists_rev:  "map rev ` (lists (rev ` A)) = lists A"
   unfolding lists_image[of rev] image_comp
-  by simp
+  by (simp add: rev_involution')
 
 lemma inj_on_map_lists: assumes "inj_on f A"
   shows "inj_on (map f) (lists A)"

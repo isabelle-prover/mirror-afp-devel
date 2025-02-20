@@ -23,7 +23,7 @@ in particular holds for any nontrivial equation over two words.
 The name refers to a graph whose vertices are the unknowns of the system, and edges connect front letters of the left- and right-
 hand sides of equations. The bound mentioned above is then the number of connected components of the graph.
 
-We formalize the algebraic proof from \cite{Berstel1979}. Key ingredients of the proof are in the theory Combinatorics_Words_Graph_Lemma.Glued_Codes\<close>
+We formalize the algebraic proof from \cite{Berstel1979}. Key ingredients of the proof are in the theory @{theory Combinatorics_Words_Graph_Lemma.Glued_Codes}\<close>
 
 section \<open>Graph lemma\<close>
 
@@ -67,7 +67,7 @@ qed
 section \<open>Binary code\<close>
 
 text \<open>We illustrate the use of the Graph Lemma in an alternative proof of the fact that two non-commuting words form a code.
-See also @{thm no_comm_bin_code [no_vars]} in Combinatorics_Words.CoWBasic.
+See also @{thm no_comm_bin_code [no_vars]} in @{theory Combinatorics_Words.CoWBasic}.
 
 First, we prove a lemma which is the core of the alternative proof.\<close>
 
