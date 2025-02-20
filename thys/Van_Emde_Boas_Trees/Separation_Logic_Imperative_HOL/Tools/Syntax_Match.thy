@@ -6,7 +6,7 @@ begin
 subsection \<open>Non-Matching\<close>
 
 text \<open>
-  We define the vebt_predicates \<open>syntax_nomatch\<close> 
+  We define the vebt predicates \<open>syntax_nomatch\<close> 
   and \<open>syntax_fo_nomatch\<close>. The expression 
   \<open>syntax_nomatch pattern object\<close> is simplified to true only if 
   the term \<open>pattern\<close> syntactically matches the term \<open>object\<close>. 
@@ -14,7 +14,7 @@ text \<open>
   true. While \<open>syntax_nomatch\<close> does higher-order matching, 
   \<open>syntax_fo_nomatch\<close> does first-order matching.
 
-  The intended application of these vebt_predicates are as guards for simplification
+  The intended application of these vebt predicates are as guards for simplification
   rules, enforcing additional syntactic restrictions on the applicability of
   the simplification rule.
 \<close>
