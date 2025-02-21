@@ -1,5 +1,5 @@
 theory Multiset_Extension
-  imports 
+  imports
     Restricted_Order
     Multiset_Extra
 begin
@@ -35,7 +35,7 @@ end
 subsection \<open>Wellfounded Multiset Extensions\<close>
 
 (* TODO: Investigate if restricted wfp can be lifted  *)
-locale wellfounded_multiset_extension = 
+locale wellfounded_multiset_extension =
   order: wellfounded_strict_order +
   multiset_extension
 begin
@@ -52,8 +52,8 @@ end
 
 subsection \<open>Total Multiset Extensions\<close>
 
-locale restricted_total_multiset_extension = 
-  base: restricted_total_strict_order + 
+locale restricted_total_multiset_extension =
+  base: restricted_total_strict_order +
   multiset_extension +
   assumes inj_on_to_mset: "inj_on to_mset {b. set_mset (to_mset b) \<subseteq> restriction}"
 begin
@@ -72,8 +72,8 @@ qed
 
 end
 
-locale total_multiset_extension = 
-  order: total_strict_order + 
+locale total_multiset_extension =
+  order: total_strict_order +
   multiset_extension +
   assumes inj_to_mset: "inj to_mset"
 begin
@@ -87,7 +87,7 @@ sublocale total_strict_order "(\<prec>\<^sub>m)"
 
 end
 
-locale total_wellfounded_multiset_extension = 
+locale total_wellfounded_multiset_extension =
   wellfounded_multiset_extension + total_multiset_extension
 
 end

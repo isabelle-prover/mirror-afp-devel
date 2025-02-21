@@ -1,16 +1,15 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Edgar Gonzàlez</title>
     <link>https://isa-afp.org/authors/gonzalez/</link>
-    <description>AFP entries of Edgar Gonzàlez</description>
-        <item>
-          <title>Strong Eventual Consistency of the Collaborative Editing Framework WOOT</title>
-          <link>https://isa-afp.org/entries/WOOT_Strong_Eventual_Consistency.html</link>
-          <pubDate>Wed, 25 Mar 2020 00:00:00 +0000</pubDate>
-          <description>Strong Eventual Consistency of the Collaborative Editing Framework WOOT in the AFP</description>
-            <category>Computer science/Algorithms/Distributed</category>
-        </item>
+    <description>AFP entries of Edgar Gonzàlez</description><item>
+  <title>Strong Eventual Consistency of the Collaborative Editing Framework WOOT</title>
+  <link>https://isa-afp.org/entries/WOOT_Strong_Eventual_Consistency.html</link>
+  <pubDate>Wed, 25 Mar 2020 00:00:00 +0000</pubDate>
+  <description>Strong Eventual Consistency of the Collaborative Editing Framework WOOT in the AFP</description>
+    <category>Computer science/Algorithms/Distributed</category>
+</item>
 
   </channel>
 </rss>

@@ -1,16 +1,15 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Lei Yu</title>
     <link>https://isa-afp.org/authors/yu/</link>
-    <description>AFP entries of Lei Yu</description>
-        <item>
-          <title>A Formal Model of IEEE Floating Point Arithmetic</title>
-          <link>https://isa-afp.org/entries/IEEE_Floating_Point.html</link>
-          <pubDate>Sat, 27 Jul 2013 00:00:00 +0000</pubDate>
-          <description>A Formal Model of IEEE Floating Point Arithmetic in the AFP</description>
-            <category>Computer science/Data structures</category>
-        </item>
+    <description>AFP entries of Lei Yu</description><item>
+  <title>A Formal Model of IEEE Floating Point Arithmetic</title>
+  <link>https://isa-afp.org/entries/IEEE_Floating_Point.html</link>
+  <pubDate>Sat, 27 Jul 2013 00:00:00 +0000</pubDate>
+  <description>A Formal Model of IEEE Floating Point Arithmetic in the AFP</description>
+    <category>Computer science/Data structures</category>
+</item>
 
   </channel>
 </rss>

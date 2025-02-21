@@ -18,6 +18,7 @@ sig
 
   type info = {constructor: (string * typ), fields: (string * typ) list, updates: (string * typ) list};
   val get_simpset : theory -> simpset;
+  val get_no_congs_simpset : theory -> simpset;
   val get_info : theory -> info Symtab.table;
   val is_record : theory -> string -> bool;
   val is_constructor : theory -> string (* type *) -> string (* const *) -> bool;
@@ -30,21 +31,23 @@ structure RecursiveRecordPackage : RECURSIVE_RECORD_PACKAGE =
 struct
 
 type info = {constructor: (string * typ), fields: (string * typ) list, updates: (string * typ) list};
-type data = {simpset: simpset, info: info Symtab.table};
+type data = {simpset: simpset, no_congs_simpset: simpset,  info: info Symtab.table};
 
-fun make_data simpset info = {simpset=simpset, info=info};
+fun make_data simpset no_congs_simpset info = 
+  {simpset=simpset, no_congs_simpset = no_congs_simpset, info=info};
 
 structure RecursiveRecordData = Theory_Data
 (
   type T = data;
-  val empty = make_data HOL_basic_ss Symtab.empty;
-  val merge = Utils.fast_merge (fn ({simpset=ss1, info=info1}, {simpset=ss2, info=info2}) =>
-    make_data (merge_ss (ss1, ss2)) (Symtab.merge (K true) (info1, info2)));
+  val empty = make_data HOL_basic_ss HOL_basic_ss Symtab.empty;
+  val merge = Utils.fast_merge (fn ({simpset=ss1, no_congs_simpset = nss1, info=info1}, {simpset=ss2, no_congs_simpset = nss2, info=info2}) =>
+    make_data (merge_ss (ss1, ss2)) (merge_ss (nss1, nss2)) (Symtab.merge (K true) (info1, info2)));
 );
 
 val updateN = Record.updateN
 
 val get_simpset = #simpset o RecursiveRecordData.get;
+val get_no_congs_simpset = #no_congs_simpset o RecursiveRecordData.get;
 val get_info = #info o RecursiveRecordData.get
 
 fun is_record thy name = Symtab.defined (get_info thy) name;
@@ -67,17 +70,34 @@ fun is_field thy name fld =
      NONE => false
    | SOME {fields,...} => AList.defined (op =) fields fld;
 
-fun map_simpset f = RecursiveRecordData.map (fn data => make_data (f (#simpset data)) (#info data))
-fun map_info f = RecursiveRecordData.map (fn data => make_data (#simpset data) (f (#info data)))
+fun map_simpset f = RecursiveRecordData.map (fn data => make_data (f (#simpset data)) (#no_congs_simpset data) (#info data))
+fun map_no_congs_simpset f = RecursiveRecordData.map (fn data => make_data (#simpset data) (f (#no_congs_simpset data)) (#info data))
+fun map_info f = RecursiveRecordData.map (fn data => make_data (#simpset data) (#no_congs_simpset data) (f (#info data)))
 
-fun add_recursive_record_thms simps congs thy =
+fun gen_add_record_simpset map_ss simps congs thy =
   thy
-  |> map_simpset (fn ss =>
+  |> map_ss (fn ss =>
        Proof_Context.init_global thy
        |> put_simpset ss
        |> (fn ctxt => ctxt addsimps simps)
        |> fold Raw_Simplifier.add_cong congs
-       |> simpset_of);
+       |> simpset_of)
+
+datatype no_congs_simp_option = Add | No_Add | Add_Symmetric 
+
+fun add_recursive_record_thms (no_congs_option, simps) congs thy =
+  let
+    fun symmetric thm = fst (Thm.apply_attribute Calculation.symmetric thm (Context.Theory thy))
+    val no_congs_simps = case no_congs_option of
+          Add => simps
+        | No_Add => []  
+        | Add_Symmetric => (*map symmetric*) simps (* FIXME *)
+  in 
+    thy
+    |> gen_add_record_simpset map_simpset simps congs
+    |> gen_add_record_simpset map_no_congs_simpset no_congs_simps []
+  end
+
 
 fun add_info (name, info) thy =
   thy |> map_info (Symtab.update_new (name, info));
@@ -105,7 +125,7 @@ in
   |> BNF_LFP_Compat.primrec_global
        [(Binding.name fldname, NONE, NoSyn)]
        [(((Binding.name (fldname ^ "_def"), []), defn), [], [])] 
-  |-> (fn (_, [_, simp]) => add_recursive_record_thms [export_thm simp] []) 
+  |-> (fn (_, [_, simp]) => add_recursive_record_thms (Add, [export_thm simp]) []) 
 end
 
 
@@ -127,7 +147,7 @@ in
    |> BNF_LFP_Compat.primrec_global
         [(Binding.name upd_name, NONE, NoSyn)]
         [(((Binding.name (upd_name ^ "_def"), []), defn), [], [])] 
-   |-> (fn (_, [_, simp]) => add_recursive_record_thms [export_thm simp] []))
+   |-> (fn (_, [_, simp]) => add_recursive_record_thms (Add_Symmetric, [export_thm simp]) []))
 end
 
 fun fold_map_index f =
@@ -224,6 +244,8 @@ fun prove_record_rewrites {record_name, fields} thy = let
   fun mk_upd_t {fldname,fldty} =
       Const(Sign.intern_const thy (suffix updateN (Long_Name.qualify record_name fldname)),
             (fldty --> fldty) --> (rty --> rty))
+  fun mk_acc_t {fldname, fldty} = 
+    Const(Sign.intern_const thy (Long_Name.qualify record_name fldname), rty --> fldty)
 
   fun prove_accupd_same (fld as {fldname, fldty}) = let
     val f = Free("f", fldty --> fldty)
@@ -278,7 +300,7 @@ fun prove_record_rewrites {record_name, fields} thy = let
 
   fun prove_idupdates (fld as {fldname, fldty}) = let
     val upd_t = mk_upd_t fld
-    val acc_t = Const(Sign.intern_const thy (Long_Name.qualify record_name fldname), rty --> fldty)
+    val acc_t = mk_acc_t fld
     val K = K_rec fldty
   in
     prove(mk_eqt(upd_t $ (K $ (acc_t $ r_var)) $ r_var, r_var))
@@ -287,8 +309,8 @@ fun prove_record_rewrites {record_name, fields} thy = let
 
   (* proves that (| fld1 = fld1 v, fld2 = fld2 v, fld3 = fld3 v,..|) = v *)
   val idupd_value1 = let
-    fun mk_arg {fldname, fldty} acc = let
-      val acc_t = Const(Sign.intern_const thy (Long_Name.qualify record_name fldname), rty --> fldty)
+    fun mk_arg (fld as {fldname, fldty}) acc = let
+      val acc_t = mk_acc_t fld
     in
       acc $ (acc_t $ r_var)
     end
@@ -296,10 +318,12 @@ fun prove_record_rewrites {record_name, fields} thy = let
     prove(mk_eqt(constructor_t |> fold mk_arg fields, r_var))
   end
 
+
+
   (* proves that u (| fld1 := fld1 v, fld2 := fld2 v, ... |) = v *)
   val idupd_value2 = let
     fun mk_arg (fld as {fldname, fldty}) t = let
-      val acc_t = Const(Sign.intern_const thy (Long_Name.qualify record_name fldname), rty --> fldty)
+      val acc_t = mk_acc_t fld
       val upd_t = mk_upd_t fld
       val K = K_rec fldty
     in
@@ -328,12 +352,49 @@ fun prove_record_rewrites {record_name, fields} thy = let
       acc $ fld_var
     end
   in
-    Goal.prove_global_future
-      thy [] []
+    Goal.prove_global_future thy [] [] 
       (mk_prop (mk_eqt(r_var |> fold mk_arg_upd fields, constructor_t |> fold mk_arg_constr fields)))
       (fn {context,...} => case_tac context "r" [] NONE 1 THEN
                          asm_full_simp_tac context 1)
   end
+
+  (* If there is only one field proof: constr (f (fld r))  = fld_update f r *)
+  val single_field_constr_update =
+    case fields of 
+      [fld as {fldname, fldty}] => 
+       let
+         val ffty = fldty --> fldty
+         val f = Free("f", ffty)
+         val lhs = constructor_t $ (f $ (mk_acc_t fld $ r_var))
+         val rhs = mk_upd_t fld $ f $ r_var
+         val thm = Goal.prove_global_future thy [] [] (mk_prop (mk_eqt(lhs, rhs)))
+            (fn {context,...} => case_tac context "r" [] NONE 1 THEN
+                 asm_full_simp_tac context 1)
+         val _ = tracing ("single_field_constr_update: "  ^ Thm.string_of_thm (Proof_Context.init_global thy) thm)
+       in
+         [thm]
+       end
+    | _ => []
+ 
+
+  val split_all_eq =
+    let
+      val P = Free ("P", rty --> prop)
+      val lhs = Logic.all r_var (P $ r_var)
+      val args = gen_vars (map #fldty fields)
+      val record_value_t = constructor_t |> fold (fn a => fn t => t $ a) args
+      val rhs = (P $ record_value_t) |> fold_rev (Logic.all) args
+      val thm = Goal.prove_global_future thy [] [] (Logic.mk_equals(lhs, rhs))
+            (fn {context,...} => 
+              Classical.rule_tac context @{thms equal_intr_rule} [] 1 THEN
+              Method.assm_tac context 1 THEN
+              EqSubst.eqsubst_tac context [0] [Thm.symmetric (mk_meta_eq idupd_value1)] 1 THEN
+              Method.assm_tac context 1)
+    in thm end
+
+  fun add_split_all_eq_thm thy = thy |>
+    Global_Theory.add_thm ((Binding.name(record_name ^ "_split_all_eq"), split_all_eq),  
+      map (Attrib.attribute_global thy) @{attributes [recursive_records_split_all_eqs]}) |> snd           
 
   (* proves a fold congruence, used for eliminating the accessor
      within the body of the updator more generally than the idupdate
@@ -348,28 +409,33 @@ fun prove_record_rewrites {record_name, fields} thy = let
 
   val fold_congs = Par_List.map prove_fold_cong (idupdates ~~ updupd_sames);
 
-  fun add_thms (_, []) thy = thy
-    | add_thms (sfx, thms) thy =
-        (Global_Theory.add_thmss [
-          ( (Binding.name (record_name ^ sfx), thms), [Simplifier.simp_add])] thy)
+  fun add_thmss sfx attrs thms =
+    Global_Theory.add_thmss [
+       ( (Binding.name (record_name ^ sfx), thms), attrs)]
+
+  fun add_thms _ (_, []) thy = thy
+    | add_thms add_to_no_congs_simpset (sfx, thms) thy =
+        add_thmss sfx [Simplifier.simp_add] thms thy
         |> #2
-        |> add_recursive_record_thms thms []
+        |> add_recursive_record_thms (add_to_no_congs_simpset, thms) []
 
   fun add_fold_thms (_, []) thy = thy
     | add_fold_thms (sfx, thms) thy =
     let
       val (thms', thy') = thy
-         |> Global_Theory.add_thmss [((Binding.name(record_name ^ sfx), thms), [])];
+         |> Global_Theory.add_thmss [((Binding.name(record_name ^ sfx), thms), map (Attrib.attribute_global thy) @{attributes [recursive_records_fold_congs]})];
     in
       HoarePackage.add_foldcongs (flat thms') thy'
-      |> add_recursive_record_thms [] thms
+      |> add_recursive_record_thms (No_Add, []) thms
     end;
 in
-  thy |> add_thms ("_accupd_same", accupd_sames)
-      |> add_thms ("_accupd_diff", accupd_diffs)
-      |> add_thms ("_updupd_same", updupd_sames)
-      |> add_thms ("_updupd_diff", updupd_diffs)
-      |> add_thms ("_idupdates",   idupd_value1 :: idupd_value2 :: idupd_complete :: idupdates)
+  thy |> add_split_all_eq_thm
+      |> add_thms Add ("_single_field_constr_update", single_field_constr_update)
+      |> add_thms Add ("_accupd_same", accupd_sames)
+      |> add_thms Add ("_accupd_diff", accupd_diffs)
+      |> add_thms Add ("_updupd_same", updupd_sames)
+      |> add_thms Add ("_updupd_diff", updupd_diffs)
+      |> add_thms Add ("_idupdates",   idupd_value1 :: idupd_value2 :: idupd_complete :: idupdates)
       |> add_fold_thms ("_fold_congs", fold_congs)
       |> pair constructor
 end

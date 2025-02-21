@@ -652,8 +652,7 @@ object AFP_Submit {
         val archive_file = dir + Path.basic(archive_name + file_extension)
         Bytes.write(archive_file, archive)
 
-        val metadata_rel =
-          File.relative_path(afp.base_dir, afp.metadata_dir).getOrElse(afp.metadata_dir)
+        val metadata_rel = File.perhaps_relative_path(afp.base_dir, afp.metadata_dir)
         val metadata_patch = make_partial_patch(afp.base_dir, metadata_rel, structure.metadata_dir)
         File.write(patch_file(id), metadata_patch)
 

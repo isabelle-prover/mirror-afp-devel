@@ -1090,7 +1090,7 @@ fun string_of_terms ctxt ts =
 
 fun l2_prog_env ctxt prog_info rec_funs rec_ptrs (retT, argTs) =
  let
-   val (_, P as Const (Pname, T)) = AutoCorresData.get_progenv_for_sig ctxt prog_info "" FunctionInfo.L2 (retT, argTs) |> the
+   val (_, P as Const (Pname, T)) = AutoCorresData.get_progenv_for_sig ctxt prog_info {ts_monad_name=""} FunctionInfo.L2 (retT, argTs) |> the
    val (ptrT::argTs, retT) = strip_type T
    val funT = argTs ---> retT
    fun mk_fun_ptr fname = HP_TermsTypes.mk_fun_ptr ctxt (ProgramInfo.get_prog_name prog_info) fname
@@ -1808,7 +1808,7 @@ in
 end
 
 fun mk_fn_ptr_infos ctxt prog_info fn_args info =
-  AutoCorresData.mk_fn_ptr_infos ctxt prog_info "" fn_args info
+  AutoCorresData.mk_fn_ptr_infos ctxt prog_info {ts_monad_name=""} fn_args info
 
 fun get_l2_corres_prop skips prog_info fn_ptr_infos l1_infos ctxt assume fn_name fn_free fn_args  =
 let
@@ -2089,7 +2089,7 @@ fun get_l2corres_thm ctxt skips prog_info l1_infos fn_ptr_infos l1_call_info L2_
   val ctxt = ctxt |> AutoCorresTrace.put_trace_info fn_name FunctionInfo.L2 FunctionInfo.PEEP;
   val new_thm = timeit_msg 1 ctxt (fn _ => "Simplification (L2opt): " ^ fn_name) (fn _ =>
     L2Opt.cleanup_thm_tagged (ctxt delsimps cleanup_del) fn_ptr_guard_simps [] new_thm
-    L2_opt 5 trace_opt "L2")
+    L2_opt 5 trace_opt FunctionInfo.L2)
   val _ = verbose_msg 1 ctxt (fn _ => "L2 (L2opt) - " ^ fn_name ^ ": " ^ Thm.string_of_thm ctxt new_thm)
 
   (* Introduce nested exceptions *)

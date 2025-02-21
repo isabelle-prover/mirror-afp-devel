@@ -1,16 +1,15 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Bernhard Stöckl</title>
     <link>https://isa-afp.org/authors/stoeckl/</link>
-    <description>AFP entries of Bernhard Stöckl</description>
-        <item>
-          <title>Verification of Query Optimization Algorithms</title>
-          <link>https://isa-afp.org/entries/Query_Optimization.html</link>
-          <pubDate>Tue, 04 Oct 2022 00:00:00 +0000</pubDate>
-          <description>Verification of Query Optimization Algorithms in the AFP</description>
-            <category>Computer science/Data management systems</category>
-        </item>
+    <description>AFP entries of Bernhard Stöckl</description><item>
+  <title>Verification of Query Optimization Algorithms</title>
+  <link>https://isa-afp.org/entries/Query_Optimization.html</link>
+  <pubDate>Tue, 04 Oct 2022 00:00:00 +0000</pubDate>
+  <description>Verification of Query Optimization Algorithms in the AFP</description>
+    <category>Computer science/Data management systems</category>
+</item>
 
   </channel>
 </rss>

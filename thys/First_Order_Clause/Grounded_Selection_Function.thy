@@ -1,5 +1,5 @@
 theory Grounded_Selection_Function
-  imports 
+  imports
     Nonground_Selection_Function
     Nonground_Typing
     HOL_Extra
@@ -8,9 +8,9 @@ begin
 context nonground_typing
 begin
 
-abbreviation select_subst_stability_on_clause where 
-  "select_subst_stability_on_clause select select\<^sub>G C\<^sub>G C \<V> \<gamma> \<equiv> 
-    C \<cdot> \<gamma> = clause.from_ground C\<^sub>G \<and> 
+abbreviation select_subst_stability_on_clause where
+  "select_subst_stability_on_clause select select\<^sub>G C\<^sub>G C \<V> \<gamma> \<equiv>
+    C \<cdot> \<gamma> = clause.from_ground C\<^sub>G \<and>
     select\<^sub>G C\<^sub>G = clause.to_ground ((select C) \<cdot> \<gamma>) \<and>
     clause.is_welltyped_ground_instance C \<V> \<gamma>"
 
@@ -21,7 +21,7 @@ abbreviation select_subst_stability_on where
 
 lemma obtain_subst_stable_on_select_grounding:
   fixes select :: "('f, 'v) select"
-  obtains select\<^sub>G where 
+  obtains select\<^sub>G where
     "select_subst_stability_on select select\<^sub>G N"
     "is_select_grounding select select\<^sub>G"
 proof-
@@ -30,11 +30,11 @@ proof-
   {
     fix C \<V> \<gamma>
     assume
-      "(C, \<V>) \<in> N" 
+      "(C, \<V>) \<in> N"
       "clause.is_welltyped_ground_instance C \<V> \<gamma>"
 
-    then have 
-      "\<exists>\<gamma>'. \<exists>(C', \<V>')\<in>N. \<exists>select\<^sub>G. 
+    then have
+      "\<exists>\<gamma>'. \<exists>(C', \<V>')\<in>N. \<exists>select\<^sub>G.
         select_subst_stability_on_clause select select\<^sub>G (clause.to_ground (C \<cdot> \<gamma>)) C' \<V>' \<gamma>'"
       by(intro exI[of _ \<gamma>], intro bexI[of _ "(C, \<V>)"]) auto
   }
@@ -45,14 +45,14 @@ proof-
     unfolding clause.welltyped_ground_instances_def
     by auto
 
-  then have select\<^sub>G_exists_for_premises: 
+  then have select\<^sub>G_exists_for_premises:
      "\<forall>C\<^sub>G \<in> ?N\<^sub>G. \<exists>select\<^sub>G \<gamma>. \<exists>(C, \<V>) \<in> N.
          select_subst_stability_on_clause select select\<^sub>G C\<^sub>G C \<V> \<gamma>"
     by blast
 
-  obtain select\<^sub>G_on_groundings where 
+  obtain select\<^sub>G_on_groundings where
     select\<^sub>G_on_groundings: "select_subst_stability_on select select\<^sub>G_on_groundings N"
-    using Ball_Ex_comm(1)[OF select\<^sub>G_exists_for_premises] 
+    using Ball_Ex_comm(1)[OF select\<^sub>G_exists_for_premises]
     unfolding prod.case_eq_if
     by fast
 
@@ -66,9 +66,9 @@ proof-
   have grounding: "is_select_grounding select select\<^sub>G"
     using select\<^sub>G_on_groundings
     unfolding is_select_grounding_def select\<^sub>G_def prod.case_eq_if
-    by (metis (no_types, lifting) clause.from_ground_inverse clause.ground_is_ground 
+    by (metis (no_types, lifting) clause.from_ground_inverse clause.ground_is_ground
         clause.subst_id_subst)
-   
+
   show ?thesis
     using that[OF _ grounding] select\<^sub>G_on_groundings
     unfolding select\<^sub>G_def
@@ -77,13 +77,13 @@ qed
 
 end
 
-locale grounded_selection_function = 
+locale grounded_selection_function =
   nonground_selection_function select +
   nonground_typing \<F>
   for
-    select :: "('f, 'v :: infinite) atom clause \<Rightarrow> ('f, 'v) atom clause" and 
+    select :: "('f, 'v :: infinite) atom clause \<Rightarrow> ('f, 'v) atom clause" and
     \<F> :: "('f, 'ty) fun_types" +
-fixes select\<^sub>G 
+fixes select\<^sub>G
 assumes select\<^sub>G: "is_select_grounding select select\<^sub>G"
 begin
 
@@ -91,7 +91,7 @@ abbreviation subst_stability_on where
   "subst_stability_on N \<equiv> select_subst_stability_on select select\<^sub>G N"
 
 lemma select\<^sub>G_subset: "select\<^sub>G C \<subseteq># C"
-  using select\<^sub>G 
+  using select\<^sub>G
   unfolding is_select_grounding_def
   by (metis select_subset clause.to_ground_def image_mset_subseteq_mono clause.subst_def)
 
@@ -99,7 +99,7 @@ lemma select\<^sub>G_negative_literals:
   assumes "l\<^sub>G \<in># select\<^sub>G C\<^sub>G"
   shows "is_neg l\<^sub>G"
 proof -
-  obtain C \<gamma> where 
+  obtain C \<gamma> where
     is_ground: "clause.is_ground (C \<cdot> \<gamma>)" and
     select\<^sub>G: "select\<^sub>G C\<^sub>G = clause.to_ground (select C \<cdot> \<gamma>)"
     using select\<^sub>G
@@ -113,7 +113,7 @@ proof -
         THEN select_neg_subst
         ]
     by simp
-    
+
 qed
 
 sublocale ground: selection_function select\<^sub>G

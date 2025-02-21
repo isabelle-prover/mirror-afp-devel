@@ -2,11 +2,11 @@
 \<comment>\<open> ********************************************************************
  * Project         : HOL-CSPM - Architectural operators for HOL-CSP
  *
- * Author          : Benoît Ballenghien, Safouan Taha, Burkhart Wolff
+ * Author          : Benoît Ballenghien, Safouan Taha, Burkhart Wolff.
  *
  * This file       : POTS example
  *
- * Copyright (c) 2023 Université Paris-Saclay, France
+ * Copyright (c) 2025 Université Paris-Saclay, France
  *
  * All rights reserved.
  *
@@ -59,15 +59,16 @@ text\<open>The "Plain Old Telephone Service is a standard medium-size example fo
 
 
      C.f. wikipedia \<^url>\<open>https://en.wikipedia.org/wiki/Plain_old_telephone_service\<close>.
-\<close> (* rework this small text *)
+\<close>    (* rework this small text *)
 
-
+(*<*)
 theory POTS                                               
-  imports CSPM 
-begin 
+  imports CSPM_Laws 
+begin
+  (*>*)
 
 text \<open>We need to see \<^typ>\<open>int\<close> as a \<^class>\<open>cpo\<close>.\<close>
-\<comment>\<open>We may replace this instantiation by an import of "HOLCF-Library.Int_Discrete"\<close>
+  \<comment>\<open>We may replace this instantiation by an import of "HOLCF-Library.Int_Discrete"\<close>
 instantiation int :: discrete_cpo
 begin
 
@@ -96,21 +97,21 @@ type_synonym Phones = \<open>int\<close>
 
 
 datatype channels = tcO \<open>Phones \<times> MtcO\<close>            \<comment>\<open>  \<close>       
-                  | ctO \<open>Phones \<times> MctO\<close>            
-                  | tcT \<open>Phones \<times> MtcT \<times> Phones\<close> 
-                  | ctT \<open>Phones \<times> MctT \<times> Phones\<close> 
-                  | tcOdial    \<open>Phones \<times> Phones\<close>   
-                  | StartReject Phones            \<comment>\<open> phone x rejects from now on to be called \<close>
-                  | EndReject   Phones            \<comment>\<open> phone x accepts from now on to be called \<close>
-                  | terminal    Phones 
-                  | off_hook    Phones     
-                  | on_hook     Phones      
-                  | digits     \<open>Phones \<times> Phones\<close> \<comment>\<open> communication relation: x calls y \<close>     
-                  | tone_ring   Phones    
-                  | tone_quiet  Phones   
-                  | tone_busy   Phones
-                  | tone_dial   Phones    
-                  | connected   Phones
+  | ctO \<open>Phones \<times> MctO\<close>            
+  | tcT \<open>Phones \<times> MtcT \<times> Phones\<close> 
+  | ctT \<open>Phones \<times> MctT \<times> Phones\<close> 
+  | tcOdial    \<open>Phones \<times> Phones\<close>   
+  | StartReject Phones            \<comment>\<open> phone x rejects from now on to be called \<close>
+  | EndReject   Phones            \<comment>\<open> phone x accepts from now on to be called \<close>
+  | terminal    Phones 
+  | off_hook    Phones     
+  | on_hook     Phones      
+  | digits     \<open>Phones \<times> Phones\<close> \<comment>\<open> communication relation: x calls y \<close>     
+  | tone_ring   Phones    
+  | tone_quiet  Phones   
+  | tone_busy   Phones
+  | tone_dial   Phones    
+  | connected   Phones
 
 
 locale POTS = 
@@ -118,7 +119,7 @@ locale POTS =
     and max_phones :: int
     and VisibleEvents :: \<open>channels set\<close>
   assumes min_phones_g_1[simp]          :          \<open>1 \<le> min_phones\<close>
-      and max_phones_g_min_phones[simp] : \<open>min_phones < max_phones\<close>
+    and max_phones_g_min_phones[simp] : \<open>min_phones < max_phones\<close>
 begin
 
 definition phones :: \<open>Phones set\<close> where \<open>phones \<equiv> {min_phones ..  max_phones}\<close>
@@ -142,41 +143,37 @@ definition  EventsUser :: \<open>Phones \<Rightarrow> channels set\<close>
 
 section\<open>Auxilliaries to Substructure the Specification\<close>
 
-abbreviation Sliding :: \<open>'\<alpha> process \<Rightarrow> '\<alpha> process \<Rightarrow> '\<alpha> process\<close> (infixl \<open>\<rhd>\<close> 78)
-  where \<open>P \<rhd> Q \<equiv> (P \<box> Q) \<sqinter> Q\<close>
-\<comment> \<open>This operator is also called Timeout, more studied in future theories.\<close>
-
 abbreviation
   Tside_connected     :: \<open>Phones \<Rightarrow> Phones \<Rightarrow> channels process\<close>
-where \<open>Tside_connected ts os \<equiv> 
-           (ctT\<^bold>!(ts,Tdiscon_o,os) \<rightarrow> tcT\<^bold>!(ts,Tdiscon_t,os) \<rightarrow> EndReject\<^bold>!ts\<rightarrow>SKIP)
-       \<rhd> (tcT\<^bold>!(ts,Tdiscon_t,os) \<rightarrow> ctT\<^bold>!(ts,Tdiscon_o,os) \<rightarrow> EndReject\<^bold>!ts\<rightarrow>SKIP)\<close>
+  where \<open>Tside_connected ts os \<equiv> 
+           (ctT\<^bold>!(ts,Tdiscon_o,os) \<rightarrow> tcT\<^bold>!(ts,Tdiscon_t,os) \<rightarrow> EndReject\<^bold>!ts\<rightarrow>Skip)
+       \<rhd> (tcT\<^bold>!(ts,Tdiscon_t,os) \<rightarrow> ctT\<^bold>!(ts,Tdiscon_o,os) \<rightarrow> EndReject\<^bold>!ts\<rightarrow>Skip)\<close>
 
 
 
 abbreviation
   Oside_connected     :: \<open>Phones \<Rightarrow> channels process\<close>
-where   \<open>Oside_connected ts \<equiv>
-            (ctO\<^bold>!(ts,Odiscon_t) \<rightarrow> tcO\<^bold>!(ts,Odiscon_o) \<rightarrow> EndReject\<^bold>!ts\<rightarrow>SKIP)
-        \<rhd> (tcO\<^bold>!(ts,Odiscon_o) \<rightarrow> ctO\<^bold>!(ts,Odiscon_t) \<rightarrow> EndReject\<^bold>!ts\<rightarrow>SKIP)\<close>
+  where   \<open>Oside_connected ts \<equiv>
+            (ctO\<^bold>!(ts,Odiscon_t) \<rightarrow> tcO\<^bold>!(ts,Odiscon_o) \<rightarrow> EndReject\<^bold>!ts\<rightarrow>Skip)
+        \<rhd> (tcO\<^bold>!(ts,Odiscon_o) \<rightarrow> ctO\<^bold>!(ts,Odiscon_t) \<rightarrow> EndReject\<^bold>!ts\<rightarrow>Skip)\<close>
 
 
 
 abbreviation
-   Oside1 :: \<open>[Phones, Phones] \<Rightarrow> channels process\<close>
-where 
-  \<open>Oside1 ts p \<equiv>  tcOdial\<^bold>!(ts,p)
+  Oside1 :: \<open>[Phones, Phones] \<Rightarrow> channels process\<close>
+  where 
+    \<open>Oside1 ts p \<equiv>  tcOdial\<^bold>!(ts,p)
 	                 \<rightarrow>   (ctO\<^bold>!(ts,Oalert)
                          \<rightarrow> ctO\<^bold>!(ts,Oconnect)
                          \<rightarrow> (Oside_connected ts))
                       \<box>(ctO\<^bold>!(ts,Oconnect) \<rightarrow>(Oside_connected ts))
-                      \<box>(ctO\<^bold>!(ts,Obusy) \<rightarrow> tcO\<^bold>!(ts,Odiscon_o) \<rightarrow> EndReject\<^bold>!ts \<rightarrow> SKIP)\<close>
+                      \<box>(ctO\<^bold>!(ts,Obusy) \<rightarrow> tcO\<^bold>!(ts,Odiscon_o) \<rightarrow> EndReject\<^bold>!ts \<rightarrow> Skip)\<close>
 
 
 definition
   ITside_connected    :: \<open>[Phones,Phones,channels process] \<Rightarrow> channels process\<close>
-where
- \<open>ITside_connected ts os IT \<equiv> (ctT(ts,Tdiscon_o,os)
+  where
+    \<open>ITside_connected ts os IT \<equiv> (ctT(ts,Tdiscon_o,os)
                                 \<rightarrow>(  (tone_busy\<^bold>!ts
                                        \<rightarrow> on_hook\<^bold>!ts
                                        \<rightarrow> tcT\<^bold>!(ts,Tdiscon_t,os)
@@ -196,25 +193,29 @@ where
 
 section\<open>A Telephone \<close>
 
+(* TODO : more work on is_finite_ticks *)
+
+(* TODO: abbreviation for Seq when unit ? *)
+
 fixrec     T        :: \<open>Phones \<rightarrow> channels process\<close>
-       and Oside    :: \<open>Phones \<rightarrow> channels process\<close>
-       and Tside    :: \<open>Phones \<rightarrow> channels process\<close>
-       and NoReject :: \<open>Phones \<rightarrow> channels process\<close>
-       and Reject   :: \<open>Phones \<rightarrow> channels process\<close>
-where
-   T_rec        [simp del]: \<open>T\<cdot>ts        = (Tside\<cdot>ts \<^bold>; T\<cdot>ts) \<rhd> (Oside\<cdot>ts \<^bold>; T\<cdot>ts)\<close>
- | Oside_rec    [simp del]: \<open>Oside\<cdot>ts    = StartReject\<^bold>!ts 
+  and Oside    :: \<open>Phones \<rightarrow> channels process\<close>
+  and Tside    :: \<open>Phones \<rightarrow> channels process\<close>
+  and NoReject :: \<open>Phones \<rightarrow> channels process\<close>
+  and Reject   :: \<open>Phones \<rightarrow> channels process\<close>
+  where
+    T_rec        [simp del]: \<open>T\<cdot>ts        = (Tside\<cdot>ts \<^bold>; T\<cdot>ts) \<rhd> (Oside\<cdot>ts \<^bold>; T\<cdot>ts)\<close>
+  | Oside_rec    [simp del]: \<open>Oside\<cdot>ts    = StartReject\<^bold>!ts 
                                               \<rightarrow> tcO\<^bold>!(ts,Osetup) 
-                                              \<rightarrow> (\<Sqinter> p \<in> phones. Oside1 ts p)\<close>
- | Tside_rec    [simp del]: \<open>Tside\<cdot>ts    = ctT\<^bold>?(y,z,os)\<^bold>|((y,z)=(ts,Tsetup)) 
+                                              \<rightarrow> (\<sqinter> p \<in> phones. Oside1 ts p)\<close>
+  | Tside_rec    [simp del]: \<open>Tside\<cdot>ts    = ctT\<^bold>?(y,z,os)\<^bold>|((y,z)=(ts,Tsetup)) 
                                               \<rightarrow> StartReject\<^bold>!ts 
                                               \<rightarrow> (   tcT\<^bold>!(ts,Talert,os)
                                                      \<rightarrow> tcT\<^bold>!(ts,Tconnect,os)
                                                      \<rightarrow>(Tside_connected ts os)
                                                   \<sqinter> (tcT\<^bold>!(ts,Tconnect,os)
                                                      \<rightarrow> (Tside_connected ts os)))\<close>  
- | NoReject_rec [simp del]: \<open>NoReject\<cdot>ts = StartReject\<^bold>!ts \<rightarrow> Reject\<cdot>ts\<close>
- | Reject_rec   [simp del]: \<open>Reject\<cdot>ts   = ctT\<^bold>?(y,z,os)\<^bold>|(y=ts \<and> z=Tsetup \<and> os\<in>phones \<and> os\<noteq>ts)
+  | NoReject_rec [simp del]: \<open>NoReject\<cdot>ts = StartReject\<^bold>!ts \<rightarrow> Reject\<cdot>ts\<close>
+  | Reject_rec   [simp del]: \<open>Reject\<cdot>ts   = ctT\<^bold>?(y,z,os)\<^bold>|(y=ts \<and> z=Tsetup \<and> os\<in>phones \<and> os\<noteq>ts)
                                               \<rightarrow>     (tcT\<^bold>!(ts,Tbusy,os) \<rightarrow> Reject\<cdot>ts)
                                                  \<box>  (EndReject\<^bold>!ts \<rightarrow> NoReject\<cdot>ts)\<close>
 
@@ -228,19 +229,19 @@ definition Tel:: \<open>Phones \<Rightarrow> channels process\<close>
 
 
 
-section\<open> A Connector with the Network \<close>
+section\<open>A Connector with the Network \<close>
 
 fixrec     Call      :: \<open>Phones \<rightarrow> channels process\<close>
-       and BUSY      :: \<open>Phones \<rightarrow> Phones \<rightarrow> channels process\<close>
-       and Connected :: \<open>Phones \<rightarrow> Phones \<rightarrow> channels process\<close>
-where
-   Call_rec  [simp del]: \<open>Call\<cdot>os     = (tcO\<^bold>!  (os,Osetup) \<rightarrow> tcOdial\<^bold>?(x,ts)\<^bold>|(x=os) \<rightarrow> (BUSY\<cdot>os\<cdot>ts)) \<^bold>; Call\<cdot>os\<close>
- | BUSY_rec  [simp del]: \<open>BUSY\<cdot>os\<cdot>ts  = (if ts = os 
-                              then ctO\<^bold>!(os,Obusy) \<rightarrow> tcO\<^bold>!(os,Odiscon_o) \<rightarrow> SKIP
+  and BUSY      :: \<open>Phones \<rightarrow> Phones \<rightarrow> channels process\<close>
+  and Connected :: \<open>Phones \<rightarrow> Phones \<rightarrow> channels process\<close>
+  where
+    Call_rec  [simp del]: \<open>Call\<cdot>os     = (tcO\<^bold>!  (os,Osetup) \<rightarrow> tcOdial\<^bold>?(x,ts)\<^bold>|(x=os) \<rightarrow> (BUSY\<cdot>os\<cdot>ts)) \<^bold>; Call\<cdot>os\<close>
+  | BUSY_rec  [simp del]: \<open>BUSY\<cdot>os\<cdot>ts  = (if ts = os 
+                              then ctO\<^bold>!(os,Obusy) \<rightarrow> tcO\<^bold>!(os,Odiscon_o) \<rightarrow> Skip
                               else ctT\<^bold>!(ts,Tsetup,os)
                                    \<rightarrow>( (tcT\<^bold>!(ts,Tbusy,os)
                                           \<rightarrow> ctO\<^bold>!(os,Obusy)
-                                          \<rightarrow> tcO\<^bold>!(os,Odiscon_o) \<rightarrow> SKIP)
+                                          \<rightarrow> tcO\<^bold>!(os,Odiscon_o) \<rightarrow> Skip)
                                        \<box>
                                          (tcT \<^bold>! (ts,Talert,os)
                                           \<rightarrow> ctO\<^bold>!(os,Oalert)
@@ -251,29 +252,29 @@ where
                                          (tcT\<^bold>!(ts,Tconnect,os)
                                           \<rightarrow> ctO\<^bold>!(os,Oconnect)
                                           \<rightarrow> Connected\<cdot>os\<cdot>ts)))\<close>
- | Connected_rec [simp del]: \<open>Connected\<cdot>os\<cdot>ts =  (tcO\<^bold>!(os,Odiscon_o) \<rightarrow>
-                             (( (ctT\<^bold>!(ts,Tdiscon_o,os) \<rightarrow> tcT\<^bold>!(ts,Tdiscon_t,os) \<rightarrow> SKIP)
+  | Connected_rec [simp del]: \<open>Connected\<cdot>os\<cdot>ts =  (tcO\<^bold>!(os,Odiscon_o) \<rightarrow>
+                             (( (ctT\<^bold>!(ts,Tdiscon_o,os) \<rightarrow> tcT\<^bold>!(ts,Tdiscon_t,os) \<rightarrow> Skip)
                                 \<box> 
-                                (tcT\<^bold>!(ts,Tdiscon_t,os)\<rightarrow> ctT\<^bold>!(ts,Tdiscon_o,os) \<rightarrow> SKIP)
+                                (tcT\<^bold>!(ts,Tdiscon_t,os)\<rightarrow> ctT\<^bold>!(ts,Tdiscon_o,os) \<rightarrow> Skip)
                               )
-                              \<^bold>; (ctO\<^bold>!(os,Odiscon_t) \<rightarrow> SKIP)))
+                              \<^bold>; (ctO\<^bold>!(os,Odiscon_t) \<rightarrow> Skip)))
                               \<box>
                              (tcT\<^bold>!(ts,Tdiscon_t,os) \<rightarrow>
                                      (  (ctO\<^bold>!(os,Odiscon_t) 
                                          \<rightarrow> ctT\<^bold>!(ts,Tdiscon_o,os) 
                                          \<rightarrow> tcO\<^bold>!(os,Odiscon_o) 
-                                         \<rightarrow> SKIP )
+                                         \<rightarrow> Skip )
                                         \<box>
                                         (tcO\<^bold>!(os,Odiscon_o) 
                                          \<rightarrow> ctT\<^bold>!(ts,Tdiscon_o,os) 
                                          \<rightarrow> ctO\<^bold>!(os,Odiscon_t)
-                                         \<rightarrow> SKIP) 
+                                         \<rightarrow> Skip) 
                                      )
                              )\<close>
 
 
 
-section\<open> Combining NETWORK and TELEPHONES to a SYSTEM \<close>
+section\<open>Combining NETWORK and TELEPHONES to a SYSTEM \<close>
 
 definition  NETWORK     :: \<open>channels process\<close>
   where      \<open>NETWORK     \<equiv>  (\<^bold>|\<^bold>|\<^bold>| os \<in># (mset_set phones). Call\<cdot>os)\<close>
@@ -285,19 +286,19 @@ definition  SYSTEM      :: \<open>channels process\<close>
   where      \<open>SYSTEM      \<equiv>  NETWORK \<lbrakk>VisibleEvents\<rbrakk> TELEPHONES\<close>
 
 text \<open>We underline here the usefulness of the architectural operators, especially \<^const>\<open>MultiSync\<close>
-      but also \<^const>\<open>MultiNdet\<close> which appears in \<^const>\<open>Oside\<close> recursive definition.\<close>
+      but also \<^const>\<open>GlobalNdet\<close> which appears in \<^const>\<open>Oside\<close> recursive definition.\<close>
 
 
 
 
-section\<open>Simple Model of a User \<close>
+section\<open>A simple Model of a User \<close>
 
 fixrec     User      :: \<open>Phones \<rightarrow> channels process\<close>
-       and UserSCon  :: \<open>Phones \<rightarrow> channels process\<close>
-where
-  User_rec[simp del]  : \<open>User\<cdot>u = (off_hook\<^bold>!u \<rightarrow>
+  and UserSCon  :: \<open>Phones \<rightarrow> channels process\<close>
+  where
+    User_rec[simp del]  : \<open>User\<cdot>u = (off_hook\<^bold>!u \<rightarrow>
                          (tone_dial\<^bold>!u \<rightarrow>
-                          (\<Sqinter> p \<in> phones. digits\<^bold>!(u,p)\<rightarrow>tone_quiet\<^bold>!u\<rightarrow>
+                          (\<sqinter> p \<in> phones. digits\<^bold>!(u,p)\<rightarrow>tone_quiet\<^bold>!u\<rightarrow>
                                           (  (tone_ring\<^bold>!u\<rightarrow>connected\<^bold>!u\<rightarrow>UserSCon\<cdot>u)
                                            \<box> (connected\<^bold>!u\<rightarrow>UserSCon\<cdot>u)
                                            \<box> (tone_busy\<^bold>!u\<rightarrow>on_hook\<^bold>!u\<rightarrow>User\<cdot>u)
@@ -312,11 +313,11 @@ where
 
 
 fixrec     User_Ndet      :: \<open>Phones \<rightarrow> channels process\<close>
-       and UserSCon_Ndet  :: \<open>Phones \<rightarrow> channels process\<close>
-where
-  User_Ndet_rec[simp del]  : \<open>User_Ndet\<cdot>u = (off_hook\<^bold>!u \<rightarrow>
+  and UserSCon_Ndet  :: \<open>Phones \<rightarrow> channels process\<close>
+  where
+    User_Ndet_rec[simp del]  : \<open>User_Ndet\<cdot>u = (off_hook\<^bold>!u \<rightarrow>
                          (tone_dial\<^bold>!u \<rightarrow>
-                          (\<Sqinter> p \<in> phones. digits\<^bold>!(u,p)\<rightarrow>tone_quiet\<^bold>!u\<rightarrow>
+                          (\<sqinter> p \<in> phones. digits\<^bold>!(u,p)\<rightarrow>tone_quiet\<^bold>!u\<rightarrow>
                                           (  (tone_ring\<^bold>!u\<rightarrow>connected\<^bold>!u\<rightarrow>UserSCon_Ndet\<cdot>u)
                                            \<sqinter> (connected\<^bold>!u\<rightarrow>UserSCon_Ndet\<cdot>u)
                                            \<sqinter> (tone_busy\<^bold>!u\<rightarrow>on_hook\<^bold>!u\<rightarrow>User_Ndet\<cdot>u)
@@ -349,11 +350,13 @@ lemma \<open>deadlock_free_v2 SYSTEM\<close> oops
 lemma \<open>lifelock_free SYSTEM\<close> oops 
 lemma \<open>\<forall>p \<in> phones. lifelock_free (ImplementT p)\<close> oops
 lemma \<open>\<forall>p \<in> phones. Tel p \<sqsubseteq>\<^sub>F\<^sub>D ImplementT p\<close> oops
-                                
+
 lemma \<open>\<forall>p \<in> phones. Tel'\<cdot>p  \<sqsubseteq>\<^sub>F RUN UNIV\<close> oops
-text\<open>this should represent "deterministic" in process-algebraic terms. . .\<close>
+  text\<open>this should represent "deterministic" in process-algebraic terms. . .\<close>
 
 
 end
 
+(*<*)
 end
+  (*>*)

@@ -1,24 +1,23 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Tim Jungnickel</title>
     <link>https://isa-afp.org/authors/jungnickel/</link>
-    <description>AFP entries of Tim Jungnickel</description>
-        <item>
-          <title>The IMAP CmRDT</title>
-          <link>https://isa-afp.org/entries/IMAP-CRDT.html</link>
-          <pubDate>Thu, 09 Nov 2017 00:00:00 +0000</pubDate>
-          <description>The IMAP CmRDT in the AFP</description>
-            <category>Computer science/Algorithms/Distributed</category>
-            <category>Computer science/Data structures</category>
-        </item>
-        <item>
-          <title>A Constructive Proof for FLP</title>
-          <link>https://isa-afp.org/entries/FLP.html</link>
-          <pubDate>Wed, 18 May 2016 00:00:00 +0000</pubDate>
-          <description>A Constructive Proof for FLP in the AFP</description>
-            <category>Computer science/Concurrency</category>
-        </item>
+    <description>AFP entries of Tim Jungnickel</description><item>
+  <title>The IMAP CmRDT</title>
+  <link>https://isa-afp.org/entries/IMAP-CRDT.html</link>
+  <pubDate>Thu, 09 Nov 2017 00:00:00 +0000</pubDate>
+  <description>The IMAP CmRDT in the AFP</description>
+    <category>Computer science/Algorithms/Distributed</category>
+    <category>Computer science/Data structures</category>
+</item>
+<item>
+  <title>A Constructive Proof for FLP</title>
+  <link>https://isa-afp.org/entries/FLP.html</link>
+  <pubDate>Wed, 18 May 2016 00:00:00 +0000</pubDate>
+  <description>A Constructive Proof for FLP in the AFP</description>
+    <category>Computer science/Concurrency</category>
+</item>
 
   </channel>
 </rss>

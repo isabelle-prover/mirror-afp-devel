@@ -1,16 +1,15 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Søren Debois</title>
     <link>https://isa-afp.org/authors/debois/</link>
-    <description>AFP entries of Søren Debois</description>
-        <item>
-          <title>DCR Syntax and Execution Equivalent Markings</title>
-          <link>https://isa-afp.org/entries/DCR-ExecutionEquivalence.html</link>
-          <pubDate>Fri, 16 Jun 2023 00:00:00 +0000</pubDate>
-          <description>DCR Syntax and Execution Equivalent Markings in the AFP</description>
-            <category>Computer science/System description languages</category>
-        </item>
+    <description>AFP entries of Søren Debois</description><item>
+  <title>DCR Syntax and Execution Equivalent Markings</title>
+  <link>https://isa-afp.org/entries/DCR-ExecutionEquivalence.html</link>
+  <pubDate>Fri, 16 Jun 2023 00:00:00 +0000</pubDate>
+  <description>DCR Syntax and Execution Equivalent Markings in the AFP</description>
+    <category>Computer science/System description languages</category>
+</item>
 
   </channel>
 </rss>

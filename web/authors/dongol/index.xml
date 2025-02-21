@@ -1,23 +1,22 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Brijesh Dongol</title>
     <link>https://isa-afp.org/authors/dongol/</link>
-    <description>AFP entries of Brijesh Dongol</description>
-        <item>
-          <title>Secret-Directed Unwinding</title>
-          <link>https://isa-afp.org/entries/Secret_Directed_Unwinding.html</link>
-          <pubDate>Fri, 24 May 2024 00:00:00 +0000</pubDate>
-          <description>Secret-Directed Unwinding in the AFP</description>
-            <category>Computer science/Security</category>
-        </item>
-        <item>
-          <title>Partial Semigroups and Convolution Algebras</title>
-          <link>https://isa-afp.org/entries/PSemigroupsConvolution.html</link>
-          <pubDate>Tue, 13 Jun 2017 00:00:00 +0000</pubDate>
-          <description>Partial Semigroups and Convolution Algebras in the AFP</description>
-            <category>Mathematics/Algebra</category>
-        </item>
+    <description>AFP entries of Brijesh Dongol</description><item>
+  <title>Secret-Directed Unwinding</title>
+  <link>https://isa-afp.org/entries/Secret_Directed_Unwinding.html</link>
+  <pubDate>Fri, 24 May 2024 00:00:00 +0000</pubDate>
+  <description>Secret-Directed Unwinding in the AFP</description>
+    <category>Computer science/Security</category>
+</item>
+<item>
+  <title>Partial Semigroups and Convolution Algebras</title>
+  <link>https://isa-afp.org/entries/PSemigroupsConvolution.html</link>
+  <pubDate>Tue, 13 Jun 2017 00:00:00 +0000</pubDate>
+  <description>Partial Semigroups and Convolution Algebras in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
 
   </channel>
 </rss>

@@ -1,16 +1,15 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Jeffrey Ketland</title>
     <link>https://isa-afp.org/authors/ketland/</link>
-    <description>AFP entries of Jeffrey Ketland</description>
-        <item>
-          <title>Boolos&#39;s Curious Inference in Isabelle/HOL</title>
-          <link>https://isa-afp.org/entries/Boolos_Curious_Inference.html</link>
-          <pubDate>Mon, 20 Jun 2022 00:00:00 +0000</pubDate>
-          <description>Boolos&#39;s Curious Inference in Isabelle/HOL in the AFP</description>
-            <category>Logic/Philosophical aspects</category>
-        </item>
+    <description>AFP entries of Jeffrey Ketland</description><item>
+  <title>Boolos&#39;s Curious Inference in Isabelle/HOL</title>
+  <link>https://isa-afp.org/entries/Boolos_Curious_Inference.html</link>
+  <pubDate>Mon, 20 Jun 2022 00:00:00 +0000</pubDate>
+  <description>Boolos&#39;s Curious Inference in Isabelle/HOL in the AFP</description>
+    <category>Logic/Philosophical aspects</category>
+</item>
 
   </channel>
 </rss>

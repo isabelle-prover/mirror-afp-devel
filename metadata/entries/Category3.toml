@@ -63,10 +63,6 @@ email = "stark_email"
 stark = "stark_email"
 
 [history]
-2021-07-22 = """
-Minor changes to sublocale declarations related to functor/natural transformation to
-avoid issues with global interpretations reported 2/2/2021 by Filip Smola.
-(revision 49d3aa43c180)<br>"""
 2018-05-29 = """
 Revised axioms for the category locale.  Introduced notation for composition and \"in hom\".
 (revision 8318366d4575)<br>
@@ -85,6 +81,23 @@ Minor modifications and extensions made in conjunction with the addition
 of new material to Bicategory.
 (revision 472cb2268826)<br>
 """
+2021-07-22 = """
+Minor changes to sublocale declarations related to functor/natural transformation to
+avoid issues with global interpretations reported 2/2/2021 by Filip Smola.
+(revision 49d3aa43c180)<br>
+"""
+2022-04-22 = """
+Added a construction, using ZFC_in_HOL, of the category of small sets and functions.
+Generalized existing theories to accommodate the addition.
+(revision 293f007783a1)<br>
+"""
+2022-08-26 = """
+Added various proof rules for limits.
+(revision 8190a9ebc716)<br>
+"""
+2024-03-28 = """
+Additions to CartesianCategory.  Added facts about dual equivalences of categories.
+(revision 6610630663ea)<br>"""
 
 [extra]
 

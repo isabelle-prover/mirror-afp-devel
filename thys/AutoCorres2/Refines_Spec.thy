@@ -207,8 +207,8 @@ add_synthesize_pattern option where
 
 add_synthesize_pattern nondet and exit where
   refines_nondet_synth = \<open>Trueprop (refines ?f ?f' _ _ ?R)\<close> (f') and
-
   rel_liftE_nondet_synth = \<open>Trueprop (rel_liftE ?x ?x')\<close> (x') and
+  rel_liftE'_nondet_synth = \<open>Trueprop (rel_liftE' ?x ?x')\<close> (x') and
   rel_sum_nondet_synth = \<open>Trueprop (rel_sum _ _ ?x ?x')\<close> (x') and
   rel_sum_nondet_synth = \<open>Trueprop (rel_xval _ _ ?x ?x')\<close> (x') and
   rel_compp_nondet_synth = \<open>Trueprop ((_ OO _) ?x ?x')\<close> (x') and
@@ -263,6 +263,8 @@ lemma refines_L2_try_L2_throw_pure:
   unfolding L2_defs L2_VARS_def
   by (auto simp add: refines_def_old reaches_try rel_liftE_def unnest_exn_def)
 
+
+
 lemma refines_L2_try_L2_seq_pure:
   assumes g: "\<And>v t. refines (L2_try (g v)) (return (g' v)::('a,'s) res_monad) t t (rel_prod rel_liftE (=))"
   assumes f: "refines f (return f'::('b,'s) res_monad) s s (rel_prod rel_liftE (=))"
@@ -274,6 +276,14 @@ lemma refines_L2_try_L2_seq_pure:
   subgoal by auto
   subgoal using g [simplified L2_defs try_def refines_map_value_left_iff] by auto
   done
+
+lemma refines_L2_catch_pure:
+  assumes f: "refines f (return f'::('b,'s) res_monad) s s (rel_prod rel_liftE (=))"
+  shows "refines (L2_catch f g) (return f'::('b,'s) res_monad) s s (rel_prod rel_liftE (=))"
+  unfolding L2_defs catch_def refines_map_value_left_iff return_let_bind
+  apply (rule refines_bind_handle_left')
+  using f [simplified refines_return_right_iff]
+  by (simp add: rel_liftE_def runs_to_weaken)
 
 lemma refines_L2_try_L2_condition_pure:
   assumes f: "refines (L2_try f) (return f'::('a,'s) res_monad) s s (rel_prod rel_liftE (=))"
@@ -301,6 +311,7 @@ lemmas refines_monad_pure =
   refines_L2_gets_pure [synthesize_rule pure and reader and option and nondet and exit priority:510]
   refines_L2_seq_pure [synthesize_rule pure and reader and option and nondet and exit priority:510 split: g and g']
   refines_L2_condition_pure [synthesize_rule pure and reader and option and nondet and exit priority:510]
+  refines_L2_catch_pure [synthesize_rule pure and reader and option and nondet and exit priority:510]
   refines_L2_try_L2_throw_pure [synthesize_rule pure and reader and option and nondet and exit priority:520]
   refines_L2_try_L2_seq_pure [synthesize_rule pure and reader and option and nondet and exit priority:520 split: g and g']
   refines_L2_try_L2_condition_pure [synthesize_rule pure and reader and option and nondet and exit priority:520]
@@ -372,6 +383,14 @@ lemma refines_L2_try_L2_seq_reader:
   subgoal using g [unfolded L2_defs try_def refines_map_value_left_iff ] by auto
   done
 
+lemma refines_L2_catch_reader:
+  assumes f [unfolded THIN_def]: "PROP THIN (Trueprop (refines f (gets f') s s (rel_prod rel_liftE (=))))"
+  shows "refines (L2_catch f g) (gets f') s s (rel_prod rel_liftE (=))"
+  unfolding L2_defs catch_def refines_map_value_left_iff return_let_bind
+  apply (rule refines_bind_handle_left')
+  using f
+  by (simp add: refines_iff_runs_to rel_liftE_def runs_to_gets_iff)
+
 lemma refines_L2_try_L2_condition_reader:
   assumes f [unfolded THIN_def]: "PROP THIN (Trueprop (refines (L2_try f) (gets f') s s (rel_prod rel_liftE (=))))"
   assumes g [unfolded THIN_def]: "PROP THIN (Trueprop (refines (L2_try g) (gets g') s s (rel_prod rel_liftE (=))))"
@@ -393,6 +412,7 @@ lemmas refines_monad_reader =
   refines_lift_pure_reader [synthesize_rule reader and option and nondet and exit priority:440]
   refines_L2_seq_reader [synthesize_rule reader and option and nondet and exit priority:410 split: g and g']
   refines_L2_condition_reader [synthesize_rule reader and option and nondet and exit priority:410]
+  refines_L2_catch_reader [synthesize_rule reader and option and nondet and exit priority:410]
   refines_L2_try_L2_throw_reader [synthesize_rule reader and option and nondet and exit priority:420]
   refines_L2_try_L2_seq_reader [synthesize_rule reader and option and nondet and exit priority:420 split: g and g']
   refines_L2_try_L2_condition_reader [synthesize_rule reader and option and nondet and exit priority:420]
@@ -582,6 +602,14 @@ section \<open>Nondet Monad\<close>
 
 text \<open>Note that \<^const>\<open>L2_catch\<close> is already replaced by \<^const>\<open>L2_try\<close> during exception rewriting in phase L2.\<close>
 
+lemma (in heap_state) refines_IO_modify_heap_paddingE_nondet: 
+  "refines (IO_modify_heap_paddingE p v) (IO_modify_heap_padding p v) s s (rel_prod rel_liftE (=))"
+  apply (clarsimp simp add: IO_modify_heap_padding_def)
+  apply (simp add: refines_liftE_left_iff)
+  apply (rule refines_assert_result_and_state)
+   apply auto
+  done
+
 lemma refines_L2_call_embed_nondet:
   assumes f: "refines f f' s s (rel_prod rel_liftE (=))"
   shows "refines (L2_call f emb ns) (L2_VARS f' ns) s s (rel_prod rel_liftE (=))"
@@ -675,6 +703,15 @@ lemma refines_L2_try_rel_LiftE_nondet:
   using f unfolding L2_defs
   apply (clarsimp simp add: refines_def_old reaches_try rel_liftE_def unnest_exn_def split: xval_splits)
   by (metis Exn_def default_option_def exception_or_result_cases option.exhaust_sel)
+
+lemma refines_L2_catch_rel_LiftE_nondet:
+  assumes f: "refines f f' s s (rel_prod rel_liftE (=))"
+  shows "refines (L2_catch f g) f' s s (rel_prod rel_liftE (=))"
+  using f unfolding L2_defs
+  apply (auto simp add: refines_def_old reaches_catch succeeds_catch rel_liftE_def unnest_exn_def split: xval_splits)
+  subgoal by fastforce
+  subgoal by (metis Exn_def default_option_def exception_or_result_cases not_None_eq)
+  done
 
 lemma refines_try_finally_rel_liftE:
   assumes f: "refines f f' s s (rel_prod (rel_xval rel_liftE' (=)) (=))"
@@ -1009,6 +1046,8 @@ lemma refines_rel_prod_L2_try_with_fresh_stack_ptr:
 
 end
 
+
+
 (* c is the synthesize var, so a is concrete and we have to ensure to derive "r a b" first *)
 
 lemma relcomppI_swapped: "s b c \<Longrightarrow> r a b \<Longrightarrow> (r OO s) a c"
@@ -1021,6 +1060,8 @@ lemmas refines_monad_nondet =
   refines_liftE_exn [synthesize_rule nondet and exit priority:250]
   refines_L2_seq_nondet [synthesize_rule nondet and exit priority:210 split: g and g']
   refines_L2_seq_exn [synthesize_rule nondet and exit priority:210 split: g and g']
+
+  refines_L2_catch_rel_LiftE_nondet [synthesize_rule nondet and exit priority:210]
 
   refines_L2_try_L2_seq_nondet [synthesize_rule nondet and exit priority:230 split: g and g']
   refines_L2_try_L2_condition_nondet [synthesize_rule nondet and exit priority:230]
@@ -1093,9 +1134,14 @@ lemmas refines_nondet_monad =
   refines_rel_prod_with_fresh_stack_ptr [synthesize_rule nondet and exit priority:210]
 end
 
+context heap_state
+begin
+lemmas refines_nondet_monad' =
+  refines_IO_modify_heap_paddingE_nondet[synthesize_rule nondet and exit priority:210]
+end
 add_synthesize_pattern nondet and exit where
-  rel_throwE_nondet_synth = \<open>Trueprop (rel_throwE _ ?x ?x')\<close> (x')
-
+  rel_throwE_nondet_synth = \<open>Trueprop (rel_throwE _ ?x ?x')\<close> (x') and
+  rel_throwE'_nondet_synth = \<open>Trueprop (rel_throwE' _ ?x ?x')\<close> (x')
 
 subsection \<open>Elimination of \<open>L2_try\<close> in the Error Monad\<close>
 
@@ -1401,6 +1447,7 @@ lemma refines_L2_catch_exit:
   using f h
   apply (auto intro!: refines_catch)
   done
+
 
 lemma rel_xval_eq_refl: "rel_xval (=) (=) x x"
   by (auto simp add: rel_xval_eq)

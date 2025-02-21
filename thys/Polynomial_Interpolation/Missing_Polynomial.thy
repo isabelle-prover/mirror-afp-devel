@@ -15,55 +15,13 @@ imports
   Missing_Unsorted
 begin
 
+text \<open>A nice extension rule for polynomials.\<close>
+declare poly_ext[intro]
+
 subsection \<open>Basic Properties\<close>
 
-lemma degree_0_id: assumes "degree p = 0"
-  shows "[: coeff p 0 :] = p" 
-proof -
-  have "\<And> x. 0 \<noteq> Suc x" by auto 
-  thus ?thesis using assms
-  by (metis coeff_pCons_0 degree_pCons_eq_if pCons_cases)
-qed
-
-lemma degree0_coeffs: "degree p = 0 \<Longrightarrow>
-  \<exists> a. p = [: a :]"
-  by (metis degree_pCons_eq_if old.nat.distinct(2) pCons_cases)
-
-lemma degree1_coeffs: "degree p = 1 \<Longrightarrow>
-  \<exists> a b. p = [: b, a :] \<and> a \<noteq> 0" 
-  by (metis One_nat_def degree_pCons_eq_if nat.inject old.nat.distinct(2) pCons_0_0 pCons_cases)
-
-lemma degree2_coeffs: "degree p = 2 \<Longrightarrow>
-  \<exists> a b c. p = [: c, b, a :] \<and> a \<noteq> 0"
-  by (metis Suc_1 Suc_neq_Zero degree1_coeffs degree_pCons_eq_if nat.inject pCons_cases)
-
-lemma poly_zero:
-  fixes p :: "'a :: comm_ring_1 poly"
-  assumes x: "poly p x = 0" shows "p = 0 \<longleftrightarrow> degree p = 0"
-proof
-  assume degp: "degree p = 0"
-  hence "poly p x = coeff p (degree p)" by(subst degree_0_id[OF degp,symmetric], simp)
-  hence "coeff p (degree p) = 0" using x by auto
-  thus "p = 0" by auto
-qed auto
-
-lemma coeff_monom_Suc: "coeff (monom a (Suc d) * p) (Suc i) = coeff (monom a d * p) i"
-  by (simp add: monom_Suc)
-
-lemma coeff_sum_monom:
-  assumes n: "n \<le> d"
-  shows "coeff (\<Sum>i\<le>d. monom (f i) i) n = f n" (is "?l = _")
-proof -
-  have "?l = (\<Sum>i\<le>d. coeff (monom (f i) i) n)" (is "_ = sum ?cmf _")
-    using coeff_sum.
-  also have "{..d} = insert n ({..d}-{n})" using n by auto
-    hence "sum ?cmf {..d} = sum ?cmf ..." by auto
-  also have "... = sum ?cmf ({..d}-{n}) + ?cmf n" by (subst sum.insert,auto)
-  also have "sum ?cmf ({..d}-{n}) = 0" by (subst sum.neutral, auto)
-  finally show ?thesis by simp
-qed
-
-lemma linear_poly_root: "(a :: 'a :: comm_ring_1) \<in> set as \<Longrightarrow> poly (\<Prod> a \<leftarrow> as. [: - a, 1:]) a = 0"
+lemma linear_poly_root: 
+  "(a :: 'a :: comm_ring_1) \<in> set as \<Longrightarrow> poly (\<Prod> a \<leftarrow> as. [: - a, 1:]) a = 0"
 proof (induct as)
   case (Cons b as)
   show ?case
@@ -99,7 +57,7 @@ next
     finally show "degree (sum f (S - {q})) < degree (f q)" unfolding deg .
   qed
   finally show ?thesis unfolding deg[symmetric] cong[symmetric]
-  proof (rule conjI)
+  proof 
     have id: "(\<Sum>x\<in>S - {q}. coeff (f x) (degree (f q))) = 0"
       by (rule sum.neutral, rule ballI, rule coeff_eq_0[OF degle[folded deg]])
     show "coeff (sum f S) (degree (f q)) = coeff (f q) (degree (f q))"
@@ -108,31 +66,6 @@ next
   qed
 qed
 
-lemma degree_sum_list_le: "(\<And> p . p \<in> set ps \<Longrightarrow> degree p \<le> n)
-  \<Longrightarrow> degree (sum_list ps) \<le> n"
-proof (induct ps)
-  case (Cons p ps)
-  hence "degree (sum_list ps) \<le> n" "degree p \<le> n" by auto
-  thus ?case unfolding sum_list.Cons by (metis degree_add_le)
-qed simp
-
-lemma degree_prod_list_le: "degree (prod_list ps) \<le> sum_list (map degree ps)"
-proof (induct ps)
-  case (Cons p ps)
-  show ?case unfolding prod_list.Cons
-    by (rule order.trans[OF degree_mult_le], insert Cons, auto)
-qed simp
-
-lemma smult_sum: "smult (\<Sum>i \<in> S. f i) p = (\<Sum>i \<in> S. smult (f i) p)"
-  by (induct S rule: infinite_finite_induct, auto simp: smult_add_left)
-
-
-lemma range_coeff: "range (coeff p) = insert 0 (set (coeffs p))" 
-  by (metis nth_default_coeffs_eq range_nth_default)
-
-lemma smult_power: "(smult a p) ^ n = smult (a ^ n) (p ^ n)"
-  by (induct n, auto simp: field_simps)
-
 lemma poly_sum_list: "poly (sum_list ps) x = sum_list (map (\<lambda> p. poly p x) ps)"
   by (induct ps, auto)
 
@@ -140,10 +73,10 @@ lemma poly_prod_list: "poly (prod_list ps) x = prod_list (map (\<lambda> p. poly
   by (induct ps, auto)
 
 lemma sum_list_neutral: "(\<And> x. x \<in> set xs \<Longrightarrow> x = 0) \<Longrightarrow> sum_list xs = 0"
-  by (induct xs, auto)
+  by (induct xs) auto
 
 lemma prod_list_neutral: "(\<And> x. x \<in> set xs \<Longrightarrow> x = 1) \<Longrightarrow> prod_list xs = 1"
-  by (induct xs, auto)
+  by (induct xs) auto
 
 lemma (in comm_monoid_mult) prod_list_map_remove1:
   "x \<in> set xs \<Longrightarrow> prod_list (map f xs) = f x * prod_list (map f (remove1 x xs))"
@@ -174,64 +107,9 @@ proof (cases "d \<le> i")
     finally show ?thesis using True by auto
 qed
 
-lemma poly_eqI2:
-  assumes "degree p = degree q" and "\<And>i. i \<le> degree p \<Longrightarrow> coeff p i = coeff q i"
-  shows "p = q"
-  apply(rule poly_eqI) by (metis assms le_degree)
-
-text \<open>A nice extension rule for polynomials.\<close>
-lemma poly_ext[intro]:
-  fixes p q :: "'a :: {ring_char_0, idom} poly"
-  assumes "\<And>x. poly p x = poly q x" shows "p = q"
-  unfolding poly_eq_poly_eq_iff[symmetric]
-  using assms by (rule ext)
-
-text \<open>Copied from non-negative variants.\<close>
-lemma coeff_linear_power_neg[simp]:
-  fixes a :: "'a::comm_ring_1"
-  shows "coeff ([:a, -1:] ^ n) n = (-1)^n"
-apply (induct n, simp_all)
-apply (subst coeff_eq_0)
-apply (auto intro: le_less_trans degree_power_le)
-done
-
-lemma degree_linear_power_neg[simp]:
-  fixes a :: "'a::{idom,comm_ring_1}"
-  shows "degree ([:a, -1:] ^ n) = n"
-apply (rule order_antisym)
-apply (rule ord_le_eq_trans [OF degree_power_le], simp)
-apply (rule le_degree)
-unfolding coeff_linear_power_neg
-apply (auto)
-done
-
-
 subsection \<open>Polynomial Composition\<close>
 
 lemmas [simp] = pcompose_pCons
-
-lemma pcompose_eq_0: fixes q :: "'a :: idom poly"
-  assumes q: "degree q \<noteq> 0"
-  shows "p \<circ>\<^sub>p q = 0 \<longleftrightarrow> p = 0"
-proof (induct p)
-  case 0
-  show ?case by auto
-next
-  case (pCons a p)
-  have id: "(pCons a p) \<circ>\<^sub>p q = [:a:] + q * (p \<circ>\<^sub>p q)" by simp
-  show ?case 
-  proof (cases "p = 0")
-    case True
-    show ?thesis unfolding id unfolding True by simp
-  next
-    case False
-    with pCons(2) have "p \<circ>\<^sub>p q \<noteq> 0" by auto
-    from degree_mult_eq[OF _ this, of q] q have "degree (q * (p \<circ>\<^sub>p q)) \<noteq> 0" by force
-    hence deg: "degree ([:a:] + q * (p \<circ>\<^sub>p q)) \<noteq> 0"
-      by (subst degree_add_eq_right, auto)
-    show ?thesis unfolding id using False deg by auto
-  qed
-qed
 
 declare degree_pcompose[simp]
 
@@ -579,7 +457,8 @@ proof (cases "degree p = 0")
   with divides_degree[of p 1] show ?thesis by auto
 next
   case True
-  from degree0_coeffs[OF this] obtain a where p: "p = [:a:]" by auto
+  then obtain a where p: "p = [:a:]"
+    using degree_eq_zeroE by blast
   show ?thesis unfolding p by auto
 qed
 
@@ -877,15 +756,15 @@ lemma irreducible\<^sub>d_dvd_smult:
 proof -
   from assms obtain r where q: "q = p * r" by (elim dvdE, auto)
   from degree_mult_eq[of p r] assms(1) q
-  have "\<not> degree p < degree q" and nz: "p \<noteq> 0" "q \<noteq> 0"
-    apply (metis assms(2) degree_mult_eq_0 gr_implies_not_zero irreducible\<^sub>dD(2) less_add_same_cancel2)
-    using assms by auto
+  obtain "\<not> degree p < degree q" and nz: "p \<noteq> 0" "q \<noteq> 0"
+    by (metis assms(2) degree_0 less_add_same_cancel2 less_irrefl reducible\<^sub>dI)
   hence deg: "degree p \<ge> degree q" by auto
   from \<open>p dvd q\<close> obtain k where q: "q = k * p" unfolding dvd_def by (auto simp: ac_simps)
   with nz have "k \<noteq> 0" by auto
   from deg[unfolded q degree_mult_eq[OF \<open>k \<noteq> 0\<close> \<open>p \<noteq> 0\<close> ]] have "degree k = 0" 
     unfolding q by auto 
-  then obtain c where k: "k = [: c :]" by (metis degree_0_id)
+  then obtain c where k: "k = [: c :]"
+    using degree_eq_zeroE by blast
   with \<open>k \<noteq> 0\<close> have "c \<noteq> 0" by auto
   have "q = smult c p" unfolding q k by simp
   with \<open>c \<noteq> 0\<close> show ?thesis by auto

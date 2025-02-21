@@ -100,6 +100,9 @@ fun mk_rshift(t1, t2) =
     Const(@{const_name "shiftr"},
           type_of t1 --> nat --> type_of t1) $ t1 $ t2
 
+fun mk_arith_rshift(t1, t2) =
+    Const(@{const_name "sshiftr"},
+          type_of t1 --> nat --> type_of t1) $ t1 $ t2
 
 fun mk_w2ui t =
     Const(@{const_name "Word.unsigned"}, type_of t --> int) $ t

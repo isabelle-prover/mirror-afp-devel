@@ -1,0 +1,15 @@
+chapter AFP
+
+session Combinatorial_Q_Analogues (AFP) = "HOL-Complex_Analysis" +
+  options [timeout = 900]
+  sessions
+    "HOL-Computational_Algebra"
+  theories
+    More_Infinite_Products
+    Q_Library
+    Q_Analogues
+    Q_Pochhammer_Infinite
+    Q_Binomial_Identities
+  document_files
+    "root.tex"
+    "root.bib"

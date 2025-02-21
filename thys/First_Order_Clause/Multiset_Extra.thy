@@ -13,14 +13,14 @@ global_interpretation muliset_magma: natural_magma_with_empty where
   to_set = set_mset and plus = "(+)" and wrap = "\<lambda>l. {#l#}" and add = add_mset and empty = "{#}"
   by unfold_locales simp_all
 
-global_interpretation multiset_functor: finite_natural_functor where 
+global_interpretation multiset_functor: finite_natural_functor where
   map = image_mset and to_set = set_mset
   by unfold_locales auto
 
-global_interpretation multiset_functor: natural_functor_conversion where 
-  map = image_mset and to_set = set_mset and map_to = image_mset and map_from = image_mset and 
+global_interpretation multiset_functor: natural_functor_conversion where
+  map = image_mset and to_set = set_mset and map_to = image_mset and map_from = image_mset and
   map' = image_mset and to_set' = set_mset
-  by unfold_locales simp_all 
+  by unfold_locales simp_all
 
 global_interpretation muliset_functor: natural_magma_functor where
   map = image_mset and to_set = set_mset and plus = "(+)" and wrap = "\<lambda>l. {#l#}" and add = add_mset
@@ -53,14 +53,14 @@ lemma one_step_implies_multp\<^sub>H\<^sub>O_strong:
   unfolding multp\<^sub>H\<^sub>O_def
 proof (intro conjI allI impI)
   show "A \<noteq> B"
-    using assms 
+    using assms
     by force
 next
   fix y
   assume "count B y < count A y"
 
   then show "\<exists>x. R y x \<and> count A x < count B x"
-    using assms 
+    using assms
     by (metis in_diff_count)
 qed
 
@@ -208,8 +208,8 @@ lemma asymp_multp:
 lemma multp_doubleton_singleton: "transp R \<Longrightarrow> multp R {# x, x #} {# y #} \<longleftrightarrow> R x y"
   by (cases "x = y") auto
 
-lemma image_mset_remove1_mset: 
-  assumes "inj f"  
+lemma image_mset_remove1_mset:
+  assumes "inj f"
   shows "remove1_mset (f a) (image_mset f X) = image_mset f (remove1_mset a X)"
   using image_mset_remove1_mset_if
   unfolding image_mset_remove1_mset_if inj_image_mem_iff[OF assms, symmetric]
@@ -231,7 +231,7 @@ proof -
   let ?fX = "image_mset f X"
 
   show ?thesis
-    unfolding multp\<^sub>D\<^sub>M_def 
+    unfolding multp\<^sub>D\<^sub>M_def
   proof (intro exI conjI)
     show "image_mset f Y \<noteq> {#}"
       using \<open>Y \<noteq> {#}\<close> unfolding image_mset_is_empty_iff .
@@ -285,12 +285,12 @@ proof(intro allI conjI impI)
     unfolding multp\<^sub>H\<^sub>O_def
     by (metis asympD count_add_mset lessI less_not_refl)
 next
-  fix x' 
+  fix x'
   assume count_x': "count (add_mset y Y) x' < count (add_mset x X) x'"
   show "\<exists>y'. R x' y' \<and> count (add_mset x X) y' < count (add_mset y Y) y'"
   proof(cases "x' = x")
       case True
-      then show ?thesis 
+      then show ?thesis
         using assms
         unfolding multp\<^sub>H\<^sub>O_def
         by (metis count_add_mset irreflpD irreflp_on_if_asymp_on not_less_eq transpE)
@@ -299,7 +299,7 @@ next
       show ?thesis
       proof(cases "y = x'")
         case True
-        then show ?thesis 
+        then show ?thesis
           using assms(1, 3, 4) count_x' x'_neq_x
           unfolding multp\<^sub>H\<^sub>O_def count_add_mset
           by (smt (verit) Suc_lessD asympD)
@@ -309,7 +309,7 @@ next
           using assms count_x' x'_neq_x
           unfolding multp\<^sub>H\<^sub>O_def count_add_mset
           by (smt (verit, del_insts) irreflpD irreflp_on_if_asymp_on not_less_eq transpE)
-      qed     
+      qed
     qed
 qed
 
@@ -318,20 +318,20 @@ lemma multp_add_mset:
   assumes "asymp R" "transp R" "R x y" "multp R X Y"
   shows "multp R (add_mset x X) (add_mset y Y)"
   using multp\<^sub>H\<^sub>O_add_mset[OF assms(1-3)] assms(4)
-  unfolding multp_eq_multp\<^sub>H\<^sub>O[OF assms(1, 2)] 
+  unfolding multp_eq_multp\<^sub>H\<^sub>O[OF assms(1, 2)]
   by simp
 
 lemma multp_add_mset':
-  assumes "R x y"  
+  assumes "R x y"
   shows "multp R (add_mset x X) (add_mset y X)"
   using assms
-  by (metis add_mset_add_single empty_iff insert_iff one_step_implies_multp set_mset_add_mset_insert 
+  by (metis add_mset_add_single empty_iff insert_iff one_step_implies_multp set_mset_add_mset_insert
         set_mset_empty)
 
 lemma multp_add_mset_reflclp:
   assumes "asymp R" "transp R" "R x y" "(multp R)\<^sup>=\<^sup>= X Y"
   shows "multp R (add_mset x X) (add_mset y Y)"
-  using 
+  using
     assms(4)
     multp_add_mset'[of R, OF assms(3)]
     multp_add_mset[OF assms(1-3)]
@@ -346,7 +346,7 @@ lemma inj_mset_plus_same: "inj (\<lambda>X :: 'a multiset . X + X)"
 proof(unfold inj_def, intro allI impI)
   fix X Y :: "'a multiset"
   assume "X + X = Y + Y"
-  
+
   then show "X = Y"
   proof(induction X arbitrary: Y)
     case empty
@@ -355,13 +355,13 @@ proof(unfold inj_def, intro allI impI)
   next
     case (add x X)
     then show ?case
-      by (metis diff_single_eq_union diff_union_single_conv single_subset_iff 
+      by (metis diff_single_eq_union diff_union_single_conv single_subset_iff
           subset_mset.add_diff_assoc2 union_iff union_single_eq_member)
   qed
 qed
 
-(* TODO: Should be possible 
-lemma 
+(* TODO: Should be possible
+lemma
   assumes "wfP (multp\<^sub>D\<^sub>M R)" (* "asymp (multp\<^sub>D\<^sub>M R)" "transp (multp\<^sub>D\<^sub>M R)" ? *)
   shows "wfP R"
   using assms
@@ -370,7 +370,7 @@ lemma
 
 (* TODO: everywhere less_eq \<rightarrow> lesseq *)
 lemma multp_image_lesseq_if_all_lesseq:
-   assumes 
+   assumes
     asymp: "asymp R" and
     transp: "transp R" and
     all_lesseq: "\<forall>x\<in>#X. R\<^sup>=\<^sup>= (f x) (g x)"
@@ -378,17 +378,17 @@ lemma multp_image_lesseq_if_all_lesseq:
   using assms
   by(induction X) (auto simp: multp_add_mset multp_add_mset')
 
-lemma multp_image_less_if_all_lesseq_ex_less: 
-  assumes 
+lemma multp_image_less_if_all_lesseq_ex_less:
+  assumes
     asymp: "asymp R" and
     transp: "transp R" and
     all_less_eq: "\<forall>x\<in>#X. R\<^sup>=\<^sup>= (f x) (g x)" and
-    ex_less: "\<exists>x\<in>#X. R (f x) (g x)" 
+    ex_less: "\<exists>x\<in>#X. R (f x) (g x)"
   shows "multp R {# f x. x \<in># X #} {# g x. x \<in># X #}"
   using all_less_eq ex_less
 proof(induction X)
   case empty
-  then show ?case 
+  then show ?case
     by simp
 next
   case (add x X)
@@ -407,10 +407,10 @@ next
 
     then show ?thesis
       using add.prems(1) multp_add_mset[OF asymp transp] multp_add_same[OF asymp transp]
-      by auto   
+      by auto
   next
     case False
-    
+
     then have "R (f x) (g x)"
       using add.prems(2) by fastforce
 

@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
+<html lang="en"><head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -11,8 +10,7 @@
   <meta property="og:title" content="Category Theory with Adjunctions and Limits" />
   <meta property="og:url" content="https://isa-afp.org/entries/Category3.html" />
   <meta property="og:image" content="https://isa-afp.org/images/afp.png" />
-  <meta property="og:type" content="article" />
-  
+    <meta property="og:type" content="article" />
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
 
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
@@ -20,11 +18,11 @@
     <script>
       MathJax = {
         tex: {
-          inlineMath: [['$', '$'], ['\\(', '\\)']]
+          inlineMath: [["$", "$"], ["\\(", "\\)"]]
         },
         processEscapes: true,
         svg: {
-          fontCache: 'global'
+          fontCache: "global"
         }
       };
     </script>
@@ -41,9 +39,8 @@
   <script src="../js/search-autocomplete.js"></script>
 </head>
 
-  <body class='mathjax_ignore'>
-    <aside>
-        <div id="menu-toggle">
+  <body class="mathjax_ignore">
+    <aside><div id="menu-toggle">
   <input id="toggle" type="checkbox" />
   <label for="toggle">
     <span>menu</span>
@@ -51,87 +48,65 @@
   </label>
 
   <a href="../" class="logo-link">
-    <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs"
-         class="logo">
+    <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
   </a>
 
   <nav id="menu">
     <div>
-      <a href="../" class='logo-link'>
-        <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs"
-             class="logo">
+      <a href="../" class="logo-link">
+        <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
       </a>
       <ul>
           <a href="../">
-            <li >
-              Home
-            </li>
+            <li >Home</li>
           </a>
           <a href="../topics/">
-            <li >
-              Topics
-            </li>
+            <li >Topics</li>
           </a>
           <a href="../download/">
-            <li >
-              Download
-            </li>
+            <li >Download</li>
           </a>
           <a href="../help/">
-            <li >
-              Help
-            </li>
+            <li >Help</li>
           </a>
           <a href="../submission/">
-            <li >
-              Submission
-            </li>
+            <li >Submission</li>
           </a>
           <a href="../statistics/">
-            <li >
-              Statistics
-            </li>
+            <li >Statistics</li>
           </a>
           <a href="../about/">
-            <li >
-              About
-            </li>
+            <li >About</li>
           </a>
       </ul>
     </div>
   </nav>
 </div>
     </aside>
-    <div class='content entries'>
-      <header>
+
+    <div class="content entries"><header>
     <form autocomplete="off" action="../search">
-      <div class='form-container'>
+      <div class="form-container">
         <input id="search-input" type="search" size="31" maxlength="255" value=""
-               aria-label="Search the AFP" list="autocomplete"><button
-               id="search-button" type="button">
-          <img src="../images/search.svg" alt="Search"/>
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="button">
+          <img src="../images/search.svg" alt="Search" />
         </button>
         <datalist id="autocomplete">
         </datalist>
       </div>
     </form>
-  <h1>
-    <span class='first'>C</span>ategory <span class='first'>T</span>heory with <span class='first'>A</span>djunctions and <span class='first'>L</span>imits
-    
+  <h1 ><span class='first'>C</span>ategory <span class='first'>T</span>heory with <span class='first'>A</span>djunctions and <span class='first'>L</span>imits
   </h1>
   <div>
-      <p>
-        <a href="../authors/stark/">Eugene W. Stark</a> <a class="obfuscated" data="eyJ1c2VyIjpbInN0YXJrIl0sImhvc3QiOlsiY3MiLCJzdG9ueWJyb29rIiwiZWR1Il19">📧</a>
-
+      <p><a href="../authors/stark/">Eugene W. Stark</a> <a class="obfuscated" data="eyJ1c2VyIjpbInN0YXJrIl0sImhvc3QiOlsiY3MiLCJzdG9ueWJyb29rIiwiZWR1Il19">📧</a>
       </p>
       <p class="date">June 26, 2016</p>
   </div>
 </header>
       <div>
-        
   <main>
-    <h3>Abstract</h3>
 
+    <h3>Abstract</h3>
     <div class="abstract mathjax_process"><p>
 This article attempts to develop a usable framework for doing category
 theory in Isabelle/HOL.  Our point of view, which to some extent
@@ -184,26 +159,39 @@ that this category is small-complete.
     </div>
       <h3>History</h3>
       <dl>
-        <dt>July 22, 2021</dt>
-        <dd>Minor changes to sublocale declarations related to functor/natural transformation to
+          <dt>March 28, 2024</dt>
+          <dd>Additions to CartesianCategory.  Added facts about dual equivalences of categories.
+(revision 6610630663ea)<br></dd>
+          <dt>August 26, 2022</dt>
+          <dd>Added various proof rules for limits.
+(revision 8190a9ebc716)<br>
+</dd>
+          <dt>April 22, 2022</dt>
+          <dd>Added a construction, using ZFC_in_HOL, of the category of small sets and functions.
+Generalized existing theories to accommodate the addition.
+(revision 293f007783a1)<br>
+</dd>
+          <dt>July 22, 2021</dt>
+          <dd>Minor changes to sublocale declarations related to functor/natural transformation to
 avoid issues with global interpretations reported 2/2/2021 by Filip Smola.
-(revision 49d3aa43c180)<br></dd>
-        <dt>November 4, 2020</dt>
-        <dd>Minor modifications and extensions made in conjunction with the addition
+(revision 49d3aa43c180)<br>
+</dd>
+          <dt>November 4, 2020</dt>
+          <dd>Minor modifications and extensions made in conjunction with the addition
 of new material to Bicategory.
 (revision 472cb2268826)<br>
 </dd>
-        <dt>July 10, 2020</dt>
-        <dd>Added new material, mostly centered around cartesian categories.
+          <dt>July 10, 2020</dt>
+          <dd>Added new material, mostly centered around cartesian categories.
 (revision 06640f317a79)<br>
 </dd>
-        <dt>February 15, 2020</dt>
-        <dd>Move ConcreteCategory.thy from Bicategory to Category3 and use it systematically.
+          <dt>February 15, 2020</dt>
+          <dd>Move ConcreteCategory.thy from Bicategory to Category3 and use it systematically.
 Make other minor improvements throughout.
 (revision a51840d36867)<br>
 </dd>
-        <dt>May 29, 2018</dt>
-        <dd>Revised axioms for the category locale.  Introduced notation for composition and "in hom".
+          <dt>May 29, 2018</dt>
+          <dd>Revised axioms for the category locale.  Introduced notation for composition and "in hom".
 (revision 8318366d4575)<br>
 </dd>
       </dl>
@@ -243,28 +231,25 @@ Make other minor improvements throughout.
       </ul>
 
     <div class="flex-wrap">
-      <div>
-        <h3>Depends on</h3>
-        <ul class="horizontal-list">
+        <div>
+          <h3>Depends on</h3>
+          <ul class="horizontal-list">
               <li><a href="../entries/HereditarilyFinite.html">The Hereditarily Finite Sets</a></li>
               <li><a href="../entries/ZFC_in_HOL.html">Zermelo Fraenkel Set Theory in Higher-Order Logic</a></li>
-        </ul>
-      </div>
-      <div>
-        <h3>Used by</h3>
-        <ul class="horizontal-list">
-            <li>
-              <a href="../entries/MonoidalCategory.html">Monoidal Categories</a>
-            </li>
-        </ul>
-      </div>
-      </div>
-    
+          </ul>
+        </div>
+        <div>
+          <h3>Used by</h3>
+          <ul class="horizontal-list">
+              <li><a href="../entries/MonoidalCategory.html">Monoidal Categories</a></li>
+          </ul>
+        </div>
+    </div>
   </main>
 
-  <nav class='links'>
-    <a class='popup-button' href="#cite-popup">Cite</a>
-    <a class='popup-button' href="#download-popup">Download</a>
+  <nav class="links">
+    <a class="popup-button" href="#cite-popup">Cite</a>
+    <a class="popup-button" href="#download-popup">Download</a>
     <h4>PDFs</h4>
     <a href="https://www.isa-afp.org/browser_info/current/AFP/Category3/outline.pdf">Proof outline</a>
     <a href="https://www.isa-afp.org/browser_info/current/AFP/Category3/document.pdf">Proof document</a>
@@ -298,80 +283,68 @@ Make other minor improvements throughout.
     <div class="popup">
       <h2>Download</h2>
       <a class="close" href="#">&times;</a>
-      <a href="https://www.isa-afp.org/release/afp-Category3-current.tar.gz"
-         download>Download latest</a>
+      <a href="https://www.isa-afp.org/release/afp-Category3-current.tar.gz" download>
+        Download latest</a>
         <p>Older releases:</p>
         <ul>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Category3-2024-05-26.tar.gz">
-                May 26, 2024
+              <a href="https://www.isa-afp.org/release/afp-Category3-2024-05-26.tar.gz">May 26, 2024
               </a>
               : Isabelle2024
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Category3-2023-09-13.tar.gz">
-                Sep 13, 2023
+              <a href="https://www.isa-afp.org/release/afp-Category3-2023-09-13.tar.gz">Sep 13, 2023
               </a>
               : Isabelle2023
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Category3-2022-10-27.tar.gz">
-                Oct 27, 2022
+              <a href="https://www.isa-afp.org/release/afp-Category3-2022-10-27.tar.gz">Oct 27, 2022
               </a>
               : Isabelle2022
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Category3-2021-12-14.tar.gz">
-                Dec 14, 2021
+              <a href="https://www.isa-afp.org/release/afp-Category3-2021-12-14.tar.gz">Dec 14, 2021
               </a>
               : Isabelle2021-1
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Category3-2021-02-23.tar.gz">
-                Feb 23, 2021
+              <a href="https://www.isa-afp.org/release/afp-Category3-2021-02-23.tar.gz">Feb 23, 2021
               </a>
               : Isabelle2021
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Category3-2020-04-18.tar.gz">
-                Apr 18, 2020
+              <a href="https://www.isa-afp.org/release/afp-Category3-2020-04-18.tar.gz">Apr 18, 2020
               </a>
               : Isabelle2020
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Category3-2019-06-11.tar.gz">
-                Jun 11, 2019
+              <a href="https://www.isa-afp.org/release/afp-Category3-2019-06-11.tar.gz">Jun 11, 2019
               </a>
               : Isabelle2019
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Category3-2018-08-16.tar.gz">
-                Aug 16, 2018
+              <a href="https://www.isa-afp.org/release/afp-Category3-2018-08-16.tar.gz">Aug 16, 2018
               </a>
               : Isabelle2018
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Category3-2017-10-10.tar.gz">
-                Oct 10, 2017
+              <a href="https://www.isa-afp.org/release/afp-Category3-2017-10-10.tar.gz">Oct 10, 2017
               </a>
               : Isabelle2017
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Category3-2016-12-17.tar.gz">
-                Dec 17, 2016
+              <a href="https://www.isa-afp.org/release/afp-Category3-2016-12-17.tar.gz">Dec 17, 2016
               </a>
               : Isabelle2016-1
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Category3-2016-06-26.tar.gz">
-                Jun 26, 2016
+              <a href="https://www.isa-afp.org/release/afp-Category3-2016-06-26.tar.gz">Jun 26, 2016
               </a>
               : Isabelle2016
             </li>
         </ul>
     </div>
   </div>
-        
       </div>
     </div>
   </body>

@@ -21,10 +21,18 @@ sig
   val binop_type : Proof.context ->
       SourcePos.t * SourcePos.t * Absyn.binoptype * int ctype * int ctype -> int ctype
   val unop_type : Absyn.unoptype * 'a ctype -> 'a ctype
+  type senv = (string * (CType.rcd_kind * (string * (int ctype * CType.attribute list)) list * Region.t * CType.attribute list)) list
   val expr_type : Proof.context -> Absyn.ecenv ->
-                  (string * (CType.rcd_kind * (string * (int ctype * CType.attribute list)) list * Region.t * CType.attribute list)) list ->
+                  senv ->
                   (string -> int ctype option) ->
                   Absyn.expr -> int ctype
+
+  val anonymous_field_names: string list -> string list
+  val compound_record_name:  {union: bool} -> string list -> string
+  val unsuffix_compound_record: string -> (string * bool) option
+  val expand_anonymous_fields: senv -> string -> string list -> string list
+  val expand_anonymous_field : senv -> string   -> Absyn.expr -> string -> ExprDatatype.expr option
+  val expand_anonymous_field': senv -> 'a ctype -> Absyn.expr -> string -> ExprDatatype.expr option
 end
 
 
@@ -33,8 +41,11 @@ struct
 
 open Basics Absyn
 
-
-fun cast_compatible fromty toty = scalar_type fromty andalso scalar_type toty
+type senv = (string * (CType.rcd_kind * (string * (int ctype * CType.attribute list)) list * Region.t * CType.attribute list)) list
+fun cast_compatible fromty toty = 
+  scalar_type fromty andalso scalar_type toty
+  orelse
+  function_type fromty andalso fun_ptr_type toty
 
 fun fndes_convert (ty as Function _) = Ptr ty
   | fndes_convert x = x
@@ -61,6 +72,8 @@ and
   fun_ptr_compatible (Ptr (Function (resT1, params1))) (Ptr (Function (resT2, params2))) =
       assign_compatible false (resT1, resT2) andalso length params1 = length params2 andalso
       forall (assign_compatible false) (params1 ~~ params2)
+  | fun_ptr_compatible (p1 as (Ptr (Function _))) (p2 as (Function _)) =
+     fun_ptr_compatible p1 (Ptr p2) (* function designator decays to function pointer *) 
   | fun_ptr_compatible _ _ = false
 
 
@@ -140,6 +153,110 @@ fun unop_type (unop, ty) =
     | BitNegate => if integer_type ty then ty
                    else raise Fail "Bad type to bitwise complement"
 
+fun dest_rcd_name (StructTy name) = SOME name
+  | dest_rcd_name (UnionTy name) = SOME name
+  | dest_rcd_name _ = NONE
+
+fun find_field (senv: senv) path rname fld =
+  case AList.lookup (op =) senv rname of
+    NONE => []
+  | SOME (_, flds, _ , _)  => 
+      (case AList.lookup (op =) flds fld of 
+        SOME x => [{path = path @ [{rname=rname, fld=fld}], entry=x}] 
+       | NONE => 
+          let 
+            fun find (fld', (ty, _)) = case dest_rcd_name ty of
+                  NONE => []
+                | SOME sname' => find_field senv (path @ [{rname=rname, fld=fld'}]) sname' fld 
+          in maps find flds end)
+
+fun mk_field_access e [] = e
+  | mk_field_access e (f::flds) = mk_field_access (ewrap (StructDot (e, f), eleft e, eright e)) flds
+
+
+val anonN = "anon"
+fun compound_record_name {union} path =
+ space_implode "'" (path @ [if union then "union" else "struct"]) 
+
+fun unsuffix_compound_record name =
+  case try (unsuffix "'union") name of
+     SOME name' => SOME (name', true)
+   | NONE => (case try (unsuffix "'struct") name of
+                SOME name' => SOME (name', false)
+              | NONE => NONE)
+
+fun gen_anonymous_names {tag, untag} ns0 =
+  let
+    val ns = map untag ns0
+    val names0 = Name.make_context ns
+    val (ns', _) = names0 
+     |> fold_map (fn n => fn names => 
+            if n <> "" then 
+              (n, names) 
+            else 
+              let val (n', names') = Name.variant anonN names in (n', names') end) ns
+  in
+    map tag ns'
+  end
+
+val anonymous_field_names = gen_anonymous_names {tag = C_field_name, untag = unC_field_name}
+
+fun is_anonymous_field_name n = is_some (try (unprefix anonN) n)
+fun is_anonymous_record_name n = is_some (try unsuffix_compound_record n)
+
+
+fun check_anonymous (check_fld, check_rname) {fld, rname} =
+  (not check_fld orelse is_anonymous_field_name fld) andalso
+  (not check_rname orelse is_anonymous_record_name rname)
+
+fun check_anonymous_path ps =
+  let 
+    val n = length ps
+  in
+    if n < 2 then false
+    else
+      let
+        val (x::middle, y) = split_last ps
+      in check_anonymous (true, false) x andalso check_anonymous (false, true) y andalso
+         forall (check_anonymous (true, true)) middle 
+      end
+  end
+    
+
+fun gen_expand_anonymous_field {strict_expansion:bool} senv sname fld = 
+  AList.lookup (op =) senv sname |> Option.mapPartial (fn sinfo => 
+    case AList.lookup (op =) (#2 sinfo) fld of
+      SOME entry => if strict_expansion then NONE else SOME {entry=entry, path= [{rname=sname, fld=fld}]}
+    | NONE => 
+       let 
+         val fldss = find_field senv [] sname fld
+         val anonymous_fldss = filter (check_anonymous_path o #path) fldss
+       in 
+         case anonymous_fldss of 
+           [] => NONE 
+         | [flds] => SOME flds
+         | fldss' => error ("gen_expand_anonymous_field: ambiguous anonymous fields in structure / union:\n " ^ @{make_string} fldss')  
+      end ) 
+
+fun expand_anonymous_fields _ _ [] = []
+  | expand_anonymous_fields senv sname (fld::flds) = 
+     case gen_expand_anonymous_field {strict_expansion = false} senv sname fld of
+       NONE => fld::flds
+     | SOME {path=path1,...} =>
+        let
+          val (_, {rname,...}) = split_last path1
+          val flds' = expand_anonymous_fields senv rname flds
+        in
+          map #fld path1 @ flds'
+        end
+     
+fun expand_anonymous_field senv sname e fld = 
+  gen_expand_anonymous_field {strict_expansion=true} senv sname fld 
+  |> Option.map (fn flds => mk_field_access e (map #fld (#path flds)))
+
+fun expand_anonymous_field' senv e_ty e fld = 
+  dest_rcd_name e_ty |> Option.mapPartial (fn sname => expand_anonymous_field senv sname e fld)
+
 fun expr_type ctxt ecenv senv varinfo e = let
   val expr_type = expr_type ctxt ecenv senv varinfo
   fun Fail s = (Feedback.errorStr' ctxt (eleft e, eright e, "expr-typing: " ^ s);
@@ -158,10 +275,12 @@ in
     BinOp(binop, e1, e2) => binop_type ctxt (eleft e, eright e, binop,
                                        expr_type e1, expr_type e2)
   | UnOp(unop, e0) => unop_type (unop, expr_type e0)
+  | PostOp(e0, modifier) => expr_type e0
   | Constant c => constant_type c
   | Var (s, Unsynchronized.ref NONE) => get_varinfo s
   | Var (_, Unsynchronized.ref (SOME (cty, _))) => cty
-  | StructDot (e0, fld) => let
+  | StructDot (e0, fld) => 
+    let
      fun sel name = 
        let
           val sinfo = (#2 (the (AList.lookup (op =) senv name)))
@@ -172,10 +291,14 @@ in
        in
          fld_type
        end
+     fun process name = 
+       case expand_anonymous_field senv name e0 fld of 
+         NONE => sel name
+        | SOME e' => expr_type e' 
     in
       case expr_type e0 of
-        StructTy sname => sel sname
-      | UnionTy uname => sel uname
+        StructTy sname => process sname
+      | UnionTy uname => process uname
       | _ => Fail "Attempt to field-dereference non-struct value"
     end
   | ArrayDeref(e1, e2) => let

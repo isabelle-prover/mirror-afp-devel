@@ -42,11 +42,11 @@
 (*>*)
 
 chapter\<open>Context\<close>
-(*<*)
+  (*<*)
 theory Introduction
-    imports HOLCF
+  imports HOLCF
 begin
-(*>*)
+  (*>*)
 
 section\<open>Introduction\<close>
 
@@ -121,4 +121,4 @@ corresponding theories in \<^session>\<open>HOL-CSP\<close>. *)
 
 (*<*)
 end
-(*>*)
+  (*>*)

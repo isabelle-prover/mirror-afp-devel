@@ -1,5 +1,5 @@
 theory Ground_Typing
-  imports 
+  imports
     Ground_Clause
     Clause_Typing
     Term_Typing
@@ -54,8 +54,8 @@ sublocale term_typing where typed = typed and welltyped = welltyped and Fun = GF
 proof unfold_locales
   fix t t' c \<tau> \<tau>'
 
-  assume 
-    t_type: "welltyped t \<tau>'" and 
+  assume
+    t_type: "welltyped t \<tau>'" and
     t'_type: "welltyped t' \<tau>'" and
     c_type: "welltyped c\<langle>t\<rangle>\<^sub>G \<tau>"
 
@@ -70,7 +70,7 @@ proof unfold_locales
     case (More f ss1 c ss2)
 
     have "welltyped (GFun f (ss1 @ c\<langle>t\<rangle>\<^sub>G # ss2)) \<tau>"
-      using More.prems 
+      using More.prems
       by simp
 
     then have "welltyped (GFun f (ss1 @ c\<langle>t'\<rangle>\<^sub>G # ss2)) \<tau>"
@@ -89,14 +89,14 @@ proof unfold_locales
       qed
     qed
 
-    thus ?case 
+    thus ?case
       by simp
   qed
 next
   fix t t' c \<tau> \<tau>'
 
   assume "typed t \<tau>'" "typed t' \<tau>'" "typed c\<langle>t\<rangle>\<^sub>G \<tau>"
- 
+
   then show "typed c\<langle>t'\<rangle>\<^sub>G \<tau>"
     by(induction c arbitrary: \<tau>) (auto simp: typed.simps)
 next

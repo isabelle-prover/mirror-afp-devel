@@ -141,7 +141,7 @@ end
 
 (* Final simplification after type strengthening. *)
 named_theorems polish
-named_theorems polish_cong
+named_theorems polish_cong and state_fold_congs
 
 declare map_value_id[polish]
 
@@ -369,100 +369,6 @@ lemma oguard_obind_cong: "g = g' \<Longrightarrow> (\<And>s. g' s \<Longrightarr
   do {_ <- oguard g ; c} = do {_ <- oguard g';  c'}"
   by (auto simp add: oguard_def obind_def)
 
-lemma guard_bind_cong:
-  "g = g' \<Longrightarrow> (\<And>s. g' s \<Longrightarrow> run c s = run c' s) \<Longrightarrow> 
-    do {_ <- guard g;
-       c
-    } =
-    do {_ <- guard g';
-       c'
-    }"
-  apply (rule spec_monad_ext)
-  apply (simp add: run_bind run_guard)
-  done
-
-lemma modify_guard_swap:
-"(\<And>s. P (f s) = P s) \<Longrightarrow>
-  do { 
-    _ <- modify f;
-    guard P 
-  } = 
-  do { 
-    _ <- guard P;
-    modify f
-  }"
- apply (rule spec_monad_ext)
- apply (simp add: run_bind run_guard)
- done
-
-lemma modify_guard_bind_swap:
-"(\<And>s. P (f s) = P s) \<Longrightarrow>
-  do { 
-    _ <- modify f;
-    _ <- guard P;
-    X
-  } = 
-  do { 
-    _ <- guard P;
-    _ <- modify f;
-    X
-  }"
-  apply (rule spec_monad_ext)
-  apply (simp add: run_bind run_guard)
-  done
-
-
-
-lemma when_throw_cong: "P = P' \<Longrightarrow> (\<And>s. P' \<Longrightarrow> run Y s = run Y' s) \<Longrightarrow> 
-  do { _ <- when (\<not> P) (throw x); Y  } =
-  do {_ <- when (\<not> P') (throw x); Y' }"
-  apply (rule spec_monad_ext)
-  apply (auto simp add: run_bind run_when)
-  done
-
-lemma condition_throw:
-  "condition (\<lambda>s. P) (throw e) B = do { when P (throw e); B }"
-  apply (auto simp add: spec_monad_eq_iff runs_to_iff Exn_def default_option_def)
-  done
-
-lemma map_value_map_lift_result_bind[simp]: 
-  "map_value (map_exception_or_result (\<lambda>x::unit. undefined) f) (bind m g) = 
-   bind m (\<lambda>x. map_value (map_exception_or_result (\<lambda>x. undefined) f) (g x))"
-  by (simp add: spec_monad_eq_iff runs_to_iff)
-
-lemma map_value_map_result_bind[simp]: 
-  "map_value (map_exception_or_result id f) (bind m g) = 
-   bind m (\<lambda>x. map_value (map_exception_or_result id f) (g x))"
-  apply (auto simp add: spec_monad_eq_iff runs_to_iff)
-  done
-
-lemma map_value_yield[simp]: "map_value f (yield x) = yield (f x)"
-  apply (rule spec_monad_ext)
-  apply (simp add: run_map_value)
-  done
-
-lemma map_result_return[simp]: "map_value (map_exception_or_result id f) (return x) = return (f x)"
-  apply (rule spec_monad_ext)
-  apply (simp add: run_map_value)
-  done
-
-lemma map_result_throw[simp]: "map_value (map_exception_or_result id f) (throw x) = throw x"
-  apply (rule spec_monad_ext)
-  apply (simp add: run_map_value)
-  done
-
-lemma map_value_compose[simp]: "map_value f (map_value g m) = (map_value (f \<circ> g) m)"
-  apply (auto simp add: runs_to_iff spec_monad_eq_iff)
-  done
-
-lemma map_result_compose[simp]:
-  "map_exception_or_result id f o map_exception_or_result id g = map_exception_or_result id (f o g)"
-  by (simp add: map_exception_or_result_comp fun_eq_iff)
-
-lemma map_value_condition: 
-  "map_value f (condition c g h) = condition c (map_value f g) (map_value f h)"
-  apply (auto simp add: runs_to_iff spec_monad_eq_iff)
-  done
 
 lemma oguard_True_K_bind [polish]: "(oguard (\<lambda>_. True) >>= (\<lambda>_. c)) = c"
   apply (rule ext)
@@ -1121,6 +1027,7 @@ lemma RUN_CASE_PROD_I:"x \<equiv> x' \<Longrightarrow> run (case_prod f x') s \<
 
 named_theorems 
   monad_simp_simp "simplification rules to derive facts" and 
+  monad_simp_augment_rule "conditional rules to augment facts" and
   monad_simp_split_tuple_cong "congruence rules to control tuple expansion"
 
 
@@ -1130,16 +1037,13 @@ lemma PRESERVED_FACTS_runs_to_partial: "PRESERVED_FACTS f s r t \<Longrightarrow
 
 lemma STOPI: "x \<equiv> y \<Longrightarrow> x \<equiv> STOP y" by (simp add: STOP_def)
 
-lemma eq_TrueD: "P \<equiv> True \<Longrightarrow> P"
-  by blast
-lemma eq_FalseD: "P \<equiv> False \<Longrightarrow> \<not> P"
-  by blast
-
 
 lemma expand_unused_case_prod: 
   "(\<lambda>(x,y::('c * 'd)). f x) = (\<lambda>(x, y1, y2). f x)"
   by auto
 
+lemma PRESERVED_FACTS_return_eq: "PRESERVED_FACTS (return x) s (Result y) t \<Longrightarrow> y = x"
+  by (auto simp add: PRESERVED_FACTS_def)
 
 ML \<open>
 
@@ -1643,31 +1547,6 @@ fun mk_rewr_conv eqs =
     rewr_conv rules
   end
 
-fun dest_bool_eq eq =
-  (try (fn eq => (@{thm eq_TrueD} OF [eq])) eq |> the_list) @
-  (try (fn eq => (@{thm eq_FalseD} OF [eq])) eq |> the_list)
-
-val dest_bool_eqs = maps dest_bool_eq
-
-val is_iarith = Match_Cterm.switch [
-  @{cterm_match "Trueprop ((?m::'a::linordered_idom) < ?n)" } #> (fn _ => true),
-  @{cterm_match "Trueprop ((?m::'a::linordered_idom) \<le> ?n)" } #> (fn _ => true),
-  @{cterm_match "Trueprop ((?m::'a::linordered_idom) = ?n)" } #> (fn _ => true),
-  @{cterm_match "Trueprop (\<not> (?m::'a::linordered_idom) < ?n)" } #> (fn _ => true),
-  @{cterm_match "Trueprop (\<not> (?m::'a::linordered_idom) \<le> ?n)" } #> (fn _ => true),
-  @{cterm_match "Trueprop (\<not> (?m::'a::linordered_idom) = ?n)" } #> (fn _ => true),
-  fn _ => false
-]
-
-val iariths_of_eqs = dest_bool_eqs #> filter (is_iarith o Thm.cprop_of)
-
-fun add_ariths thms ctxt = 
-  let
-    val _ = Utils.verbose_msg 5 ctxt (fn _ => ("adding ariths:\n "  ^ string_of_thms ctxt thms))
-  in
-    ctxt |> Context.proof_map (
-      fold (Named_Theorems.add_thm @{named_theorems arith}) thms)
-  end
 
 fun dest_abs_fresh (n, x) f = 
   snd (Thm.dest_abs_fresh n f) handle CTERM _ => Thm.apply f x
@@ -1723,6 +1602,18 @@ fun case_prod_apply_conv ctxt = Match_Cterm.switch [
        val cp_eq = case_prod_bdy_conv ctxt cp
      in case_prod_cong OF [x_eq, cp_eq] end)]
 
+
+val pure_eqD = @{lemma "P \<equiv> True \<Longrightarrow> P" by simp}
+val pure_eqI = @{lemma "P \<Longrightarrow> P \<equiv> True" by simp}
+
+fun augment_rule_format thm =
+ let
+    val thm1 = the_default thm (try (fn thm => thm RSN (1, pure_eqI) \<comment>\<open>\<open>thm [then pure_eqI]\<close>\<close>) thm)
+    val thm2 = the_default thm1 (try (fn thm => thm OF [pure_eqD]) thm1)
+ in
+    thm2
+ end
+
 (* e.g. avoid substition with \<open>n = global_variable s\<close> *)
 fun state_dependent_rhs ctxt thm =
   case states_of ctxt of
@@ -1733,9 +1624,19 @@ fun state_dependent_rhs ctxt thm =
  
 fun gen_mksimps do_simp ctxt thm =
   let
+    val augment_rules = Named_Theorems.get ctxt @{named_theorems monad_simp_augment_rule}
+    fun augment thm = 
+      let
+        val augs = map_filter (fn rule => try (fn rule => rule OF [thm]) rule) augment_rules
+          |> map (Simplifier.simplify ctxt) |> filter_out Utils.trivial_meta_eq_thm 
+        val _ = Utils.verbose_msg 7 ctxt (fn _ => "augmenting " ^ Thm.string_of_thm ctxt thm ^ " with " ^ string_of_thms ctxt augs)
+      in
+        thm :: augs
+      end 
     val thm' = if do_simp then Simplifier.asm_full_simplify ctxt thm else thm
   in
     thm' |> Simplifier.mksimps ctxt |> filter_out ( Utils.trivial_meta_eq_thm orf (state_dependent_rhs ctxt)) (* avoid loops *)
+         |> maps augment
   end
 
 val mksimps = gen_mksimps false
@@ -1746,6 +1647,29 @@ fun params_of prem = prem |> Thm.term_of |> Utils.strip_all_open [] |> fst
 fun timeit_export str inner outer thms =
   Utils.timeit_msg 3 outer (fn _ => "export " ^ str) (fn _  => Proof_Context.export inner outer thms)
 
+fun preserved_facts_return_eqs ctxt preserved_thm = 
+  case try (fn thm => @{thm PRESERVED_FACTS_return_eq} OF [thm]) preserved_thm of
+     NONE =>  []
+  |  SOME eq => gen_mksimps true ctxt eq
+     
+fun contains_frees frees thm =
+  exists (member (op =) frees) (Term.add_frees (Thm.prop_of thm) [])
+
+fun new_from_defs ctxt defs thms =
+  let
+    val lhss = map (Thm.term_of o lhs_of) defs 
+  in 
+    thms |> map (Local_Defs.fold ctxt defs) 
+    |> filter (exists_subterm (member (aconv) lhss) o Thm.prop_of)
+  end
+
+fun new_facts_from_defs ctxt defs ({pred, thms}:fact) =
+  case new_from_defs ctxt defs thms of
+    [] => NONE
+  | thms' => 
+    let val pred' = Drule.mk_term pred |> Local_Defs.fold ctxt defs |> Drule.dest_term 
+    in SOME ({pred=pred', thms=thms'}:fact) end 
+ 
 fun monad_state_conv (rule as {split_vars, ...}) ctxt ct =
   let
     val _ = Utils.verbose_msg 4 ctxt (fn _ => ("rule:\n " ^ Thm.string_of_thm ctxt (#apply_thm rule)))
@@ -1849,10 +1773,10 @@ fun monad_state_conv (rule as {split_vars, ...}) ctxt ct =
                        Method.insert_tac ctxt1 [fact] 1 THEN 
                        asm_full_simp_tac (ctxt1 addsimps @{thms ADD_FACT_def}) 1)
                  val fact_eqs = gen_mksimps true ctxt1 fact1
-                 val fact_ariths = iariths_of_eqs fact_eqs
+                 val fact_ariths = Utils.iariths_of_eqs fact_eqs
                  val ctxt2 = (ctxt1 |> map_facts (cons {pred = P, thms = fact_eqs})) 
                        addsimps fact_eqs
-                       |> add_ariths fact_ariths
+                       |> Utils.add_ariths fact_ariths
                        |> Simplifier.add_prems fact_eqs
                  val _ = Utils.timing_msg' 3 ctxt (fn _ => "ADD_FACT (0)") start0
                  val _ = Utils.verbose_msg 4 ctxt (fn _ => ("adding:\n "  ^ string_of_thms ctxt1 fact_eqs))
@@ -1879,6 +1803,7 @@ fun monad_state_conv (rule as {split_vars, ...}) ctxt ct =
                  val preserved_prop = \<^infer_instantiate>\<open>f = f and s = s and r = r and t = t in
                       cprop "PRESERVED_FACTS f s r t"\<close> ctxt'
                  val ([preserved], ctxt1) = Assumption.add_assumes [preserved_prop] ctxt'
+                 val return_eqs = preserved_facts_return_eqs ctxt' preserved
                  val derived_props = map #pred facts |> map (fn pred =>
                        (pred, Thm.apply pred t |> Utils.Trueprop_cterm))
                  val derived_facts0 = derive_facts ctxt' preserved
@@ -1894,15 +1819,16 @@ fun monad_state_conv (rule as {split_vars, ...}) ctxt ct =
                  val derived_facts1 = derived_props |> map_filter (fn (pred, prop) => 
                        try (fn prop => Goal.prove_internal ctxt1 [] prop (fn _ => prover ctxt1)) prop |> 
                        Option.map (fn thm => ({pred = pred, thms = mksimps ctxt1 thm})))
-                 val derived_facts = derived_facts0 @ derived_facts1
+                 val derived_facts3 = map_filter (new_facts_from_defs ctxt1 return_eqs) (derived_facts0 @ derived_facts1)
+                 val derived_facts = derived_facts0 @ derived_facts1 @ derived_facts3
                  val derived_eqs = maps #thms derived_facts
-                 val derived_ariths = iariths_of_eqs (maps #thms derived_facts)
+                 val derived_ariths = Utils.iariths_of_eqs (maps #thms derived_facts)
                  val ctxt2 = ctxt1 
                    addsimps derived_eqs
                    |> Simplifier.add_prems derived_eqs
                    |> map_states (cons t)
                    |> map_facts (K derived_facts)
-                   |> add_ariths derived_ariths
+                   |> Utils.add_ariths derived_ariths
                  val _ = Utils.timing_msg' 3 ctxt (fn _ => "preserved (0)") start0
                  val _ = Utils.verbose_msg 4 ctxt (fn _ => "derived_facts (1):\n " ^ string_of_thms ctxt1  (maps #thms derived_facts))
                  val eq1 = Utils.timeit_msg 4 ctxt (fn _ => "eq (5): ") 
@@ -1947,14 +1873,14 @@ fun monad_state_conv (rule as {split_vars, ...}) ctxt ct =
                        try (fn prop => Goal.prove_internal ctxt1 [] prop (fn _ => prover ctxt1)) prop |> 
                        Option.map (fn thm => ({pred = pred, thms = mksimps ctxt1 thm})))
                  val derived_eqs = maps #thms derived_facts
-                 val derived_ariths = iariths_of_eqs (maps #thms derived_facts)
+                 val derived_ariths = Utils.iariths_of_eqs (maps #thms derived_facts)
 
                  val ctxt2 = ctxt1
                    addsimps derived_eqs
                    |> Simplifier.add_prems derived_eqs
                    |> map_states (cons t)
                    |> map_facts (K derived_facts)
-                   |> add_ariths derived_ariths
+                   |> Utils.add_ariths derived_ariths
                  val _ = Utils.timing_msg' 3 ctxt (fn _ => "while (0)") start0
                  val _ = Utils.verbose_msg 4 ctxt (fn _ => "derived_facts (2):\n " ^ string_of_thms ctxt1  (maps #thms derived_facts))
                  val C_eq1 = Utils.timeit_msg 3 ctxt (fn _ => "eq (6): ") 
@@ -1969,11 +1895,11 @@ fun monad_state_conv (rule as {split_vars, ...}) ctxt ct =
                  val C'_pred = Utils.lambdas [("s", t)] C'1
                  val ([C'_thm], ctxt3) = Assumption.add_assumes [Utils.Trueprop_cterm C'1] ctxt2
                  val C'_eqs = mksimps ctxt3 C'_thm
-                 val C'_ariths = iariths_of_eqs C'_eqs
+                 val C'_ariths = Utils.iariths_of_eqs C'_eqs
                  val ctxt4 = (ctxt3 |> map_facts (cons {pred = C'_pred, thms = C'_eqs}))
                        addsimps C'_eqs
                        |> Simplifier.add_prems C'_eqs
-                       |> add_ariths C'_ariths
+                       |> Utils.add_ariths C'_ariths
                  val _ = Utils.timing_msg' 3 ctxt (fn _ => "while (1)") start1
                  val _ = Utils.verbose_msg 5 ctxt (fn _ => ("adding:\n "  ^ string_of_thms ctxt1 C'_eqs))
                  val B_eq1 = Utils.timeit_msg 4 ctxt (fn _ => "eq (7): ") 
@@ -2222,12 +2148,17 @@ fun prepare_simpset max_depth ctxt =
     val monad_cong_simps = Named_Theorems.get ctxt @{named_theorems monad_simp_simp}
     val run_spec_monad =  Named_Theorems.get ctxt @{named_theorems run_spec_monad}
 
+    val state_fold_congs = Named_Theorems.get ctxt @{named_theorems state_fold_congs}
+    val recursive_records_fold_congs = Named_Theorems.get ctxt @{named_theorems recursive_records_fold_congs}
+
     val ctxt' = (ctxt |> Context_Position.set_visible false
       |> Simplifier.add_cong @{thm STOP_cong}
+      |> fold Simplifier.add_cong (state_fold_congs @ recursive_records_fold_congs)
       |> fold Simplifier.add_cong stop_congs)
-      addsimprocs [@{simproc spec_monad_simproc}, @{simproc monad_run_simproc}] @ simprocs'
+      addsimprocs [@{simproc spec_monad_simproc}, @{simproc monad_run_simproc}, @{simproc Arrays.fold_update}] @ simprocs'
       delsimps @{thms return_bind bind_return Spec_Monad.run_case_prod_distrib} @ run_spec_monad
       addsimps monad_cong_simps
+      addsimps @{thms Arrays.fupdate_def [symmetric]}
       |> Context_Position.set_visible visible
       |> Config.map simp_depth_limit (K (max_depth + 20))
    in ctxt' end
@@ -2237,18 +2168,22 @@ fun monad_simp_tac ctxt = SUBGOAL (fn (goal, i) =>
     val depth = strip_comb_depth_of_term goal
     val ctxt' = prepare_simpset depth ctxt
   in
-    (asm_full_simp_tac ctxt' THEN_ALL_NEW  
-     full_simp_tac (Simplifier.clear_simpset ctxt addsimps @{thms STOP_def polish})) i
+    (asm_full_simp_tac ctxt' THEN_ALL_NEW 
+     (Utils.verbose_print_subgoal_tac 7 "before monad_simp polish" ctxt THEN'
+      full_simp_tac (Simplifier.clear_simpset ctxt addsimps @{thms STOP_def polish}))) i
   end)
 
-fun monad_asm_full_simplify ctxt thm = 
+fun gen_monad_simplify simplify ctxt thm = 
   let
     val depth = strip_comb_depth_of_term (Thm.prop_of thm)
     val ctxt' = prepare_simpset depth ctxt
   in
-    thm |> asm_full_simplify ctxt' |>
-    full_simplify (Simplifier.clear_simpset ctxt addsimps @{thms STOP_def polish})
+    thm |> simplify ctxt' |>
+    simplify (Simplifier.clear_simpset ctxt addsimps @{thms STOP_def polish})
   end
+
+val monad_simplify = gen_monad_simplify simplify
+val monad_asm_full_simplify = gen_monad_simplify asm_full_simplify
 
 fun monad_asm_full_rewrite ctxt ct = 
   let
@@ -2259,14 +2194,17 @@ fun monad_asm_full_rewrite ctxt ct =
     Simplifier.full_rewrite (Simplifier.clear_simpset ctxt addsimps @{thms STOP_def polish}))
   end
 
-fun monad_simplify_def ctxt def_eq =
+fun gen_monad_simplify_import simplify ctxt thm =
   let
-    val ctxt' = Variable.declare_thm def_eq ctxt
-    val ((_, [eq']), ctxt'') = Variable.import true [Thm.transfer' ctxt def_eq] ctxt'
+    val ctxt' = Variable.declare_thm thm ctxt
+    val ((_, [thm']), ctxt'') = Variable.import true [Thm.transfer' ctxt thm] ctxt'
   in
-    eq' |> monad_asm_full_simplify ctxt'' |> singleton (Variable.export ctxt'' ctxt') 
+    thm' |> simplify ctxt'' |> singleton (Variable.export ctxt'' ctxt') 
     |> zero_var_indexes
   end
+
+val monad_asm_full_simplify_import = gen_monad_simplify_import monad_asm_full_simplify
+val monad_simplify_import = gen_monad_simplify_import monad_simplify
 
 end
 \<close>
@@ -2524,6 +2462,46 @@ lemma ptr_valid_assume_stack_alloc [monad_simp_derive_rule]:
         done
 
 end
+
+
+attribute_setup augment_rule_format = \<open>
+  Scan.succeed (Thm.rule_attribute []
+    (K (Monad_Cong_Simp.augment_rule_format)))\<close>
+
+attribute_setup augment_rule = \<open>
+let
+  fun mk_mixed_attribute ctxt attribs_src =
+  let
+    val attribs = map (Attrib.attribute ctxt) attribs_src
+    val attrib = Thm.mixed_attribute (fold (fn attrib => fn (context, thm) => (swap (Thm.apply_attribute attrib thm context))) attribs)
+  in attrib end
+in
+  Scan.succeed (mk_mixed_attribute @{context} @{attributes [augment_rule_format, monad_simp_augment_rule]})
+end\<close>
+
+
+attribute_setup monad_simplified = \<open>
+  Scan.succeed (Thm.rule_attribute []
+    (fn context => Monad_Cong_Simp.monad_simplify_import (Context.proof_of context)))\<close>
+
+lemmas word_augment_rules[augment_rule] =
+  word_le_nat_alt [THEN iffD1]
+  word_less_nat_alt [THEN iffD1]
+  word_le_def [THEN iffD1]
+  word_less_def [THEN iffD1]
+  word_sle_def [THEN iffD1]
+  word_sless_alt [THEN iffD1]
+lemmas word_monad_simp[monad_simp_simp] =
+  word_le_nat_alt [THEN iffD2]
+  word_less_nat_alt [THEN iffD2]
+  word_le_def [THEN iffD2]
+  word_less_def [THEN iffD2]
+  word_sle_def [THEN iffD2]
+  word_sless_alt [THEN iffD2]
+
+thm monad_simp_augment_rule
+thm monad_simp_simp
+
 
 method array_index_to_ptr_arith_simp uses simp cong =
    (use TrueI[array_bound_mksimps, simproc add: field_lvalue_unfold]

@@ -3553,6 +3553,25 @@ host = [
 
 [ketland.homepages]
 
+[khu]
+name = "Derek Khu"
+orcid = "0009-0000-0293-0664"
+
+[khu.emails]
+
+[khu.emails.khu_email]
+user = [
+  "Derek_Khu",
+]
+host = [
+  "i2r",
+  "a-star",
+  "edu",
+  "sg",
+]
+
+[khu.homepages]
+
 [kim]
 name = "Sunpill Kim"
 orcid = "0000-0002-7767-4084"
@@ -3842,26 +3861,24 @@ name = "Peter Lammich"
 
 [lammich.emails.lammich_email]
 user = [
-  "lammich",
+  "p.lammich",
 ]
 host = [
-  "in",
-  "tum",
-  "de",
+  "utwente",
+  "nl",
 ]
 
 [lammich.emails.lammich_email1]
 user = [
-  "peter",
-  "lammich",
+  "plammich",
 ]
 host = [
-  "uni-muenster",
-  "de",
+  "gmail",
+  "com",
 ]
 
 [lammich.homepages]
-lammich_homepage = "http://www21.in.tum.de/~lammich"
+lammich_homepage = "https://people.utwente.nl/p.lammich"
 
 [lange]
 name = "Christoph Lange"
@@ -4517,6 +4534,24 @@ host = [
 ]
 
 [maximova.homepages]
+
+[meel]
+name = "Kuldeep S. Meel"
+orcid = "0000-0001-9423-5270"
+
+[meel.emails]
+
+[meel.emails.meel_email]
+user = [
+  "meel",
+]
+host = [
+  "cs",
+  "toronto",
+  "edu",
+]
+
+[meel.homepages]
 
 [meis]
 name = "Rene Meis"
@@ -5585,6 +5620,23 @@ name = "Cornelia Pusch"
 
 [pusch.homepages]
 
+[puyobro]
+name = "Benjamin Puyobro"
+
+[puyobro.emails]
+
+[puyobro.emails.puyobro_email]
+user = [
+  "benjamin",
+  "puyobro",
+]
+host = [
+  "laposte",
+  "net",
+]
+
+[puyobro.homepages]
+
 [qiu]
 name = "Qi Qiu"
 
@@ -6497,6 +6549,23 @@ name = "Robert Sison"
 [sison.emails]
 
 [sison.homepages]
+
+[sloan]
+name = "Elizabeth Sloan"
+orcid = "0000-0003-0496-9241"
+
+[sloan.emails]
+
+[sloan.emails.sloan_email]
+user = [
+  "elisloan",
+]
+host = [
+  "iastate",
+  "edu",
+]
+
+[sloan.homepages]
 
 [smaus]
 name = "Jan-Georg Smaus"
@@ -7729,6 +7798,23 @@ name = "Shuling Wang"
 
 [wang.homepages]
 
+[wangz]
+name = "Zili Wang"
+orcid = "0000-0003-1730-6180"
+
+[wangz.emails]
+
+[wangz.emails.wangz_email]
+user = [
+  "ziliw1",
+]
+host = [
+  "iastate",
+  "edu",
+]
+
+[wangz.homepages]
+
 [wassell]
 name = "Mark Wassell"
 
@@ -7770,6 +7856,25 @@ host = [
 
 [watt.homepages]
 watt_homepage = "http://www.cl.cam.ac.uk/~caw77/"
+
+[watts]
+name = "Seng Joe Watt"
+orcid = "0000-0002-6883-4736"
+
+[watts.emails]
+
+[watts.emails.watts_email]
+user = [
+  "Watt_Seng_Joe",
+]
+host = [
+  "i2r",
+  "a-star",
+  "edu",
+  "sg",
+]
+
+[watts.homepages]
 
 [weber]
 name = "Tjark Weber"
@@ -7905,6 +8010,7 @@ name = "Kai Wirt"
 
 [wolff]
 name = "Burkhart Wolff"
+orcid = "0000-0002-9648-7663"
 
 [wolff.emails]
 
@@ -7914,7 +8020,7 @@ user = [
   "wolff",
 ]
 host = [
-  "lri",
+  "lmf.cnrs",
   "fr",
 ]
 

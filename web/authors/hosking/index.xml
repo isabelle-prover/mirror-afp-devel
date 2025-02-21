@@ -1,16 +1,15 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Tony Hosking</title>
     <link>https://isa-afp.org/authors/hosking/</link>
-    <description>AFP entries of Tony Hosking</description>
-        <item>
-          <title>Relaxing Safely: Verified On-the-Fly Garbage Collection for x86-TSO</title>
-          <link>https://isa-afp.org/entries/ConcurrentGC.html</link>
-          <pubDate>Mon, 13 Apr 2015 00:00:00 +0000</pubDate>
-          <description>Relaxing Safely: Verified On-the-Fly Garbage Collection for x86-TSO in the AFP</description>
-            <category>Computer science/Algorithms/Concurrent</category>
-        </item>
+    <description>AFP entries of Tony Hosking</description><item>
+  <title>Relaxing Safely: Verified On-the-Fly Garbage Collection for x86-TSO</title>
+  <link>https://isa-afp.org/entries/ConcurrentGC.html</link>
+  <pubDate>Mon, 13 Apr 2015 00:00:00 +0000</pubDate>
+  <description>Relaxing Safely: Verified On-the-Fly Garbage Collection for x86-TSO in the AFP</description>
+    <category>Computer science/Algorithms/Concurrent</category>
+</item>
 
   </channel>
 </rss>

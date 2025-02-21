@@ -1,16 +1,15 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Lukas Schmidinger</title>
     <link>https://isa-afp.org/authors/schmidinger/</link>
-    <description>AFP entries of Lukas Schmidinger</description>
-        <item>
-          <title>The Generalized Multiset Ordering is NP-Complete</title>
-          <link>https://isa-afp.org/entries/Multiset_Ordering_NPC.html</link>
-          <pubDate>Wed, 20 Apr 2022 00:00:00 +0000</pubDate>
-          <description>The Generalized Multiset Ordering is NP-Complete in the AFP</description>
-            <category>Logic/Rewriting</category>
-        </item>
+    <description>AFP entries of Lukas Schmidinger</description><item>
+  <title>The Generalized Multiset Ordering is NP-Complete</title>
+  <link>https://isa-afp.org/entries/Multiset_Ordering_NPC.html</link>
+  <pubDate>Wed, 20 Apr 2022 00:00:00 +0000</pubDate>
+  <description>The Generalized Multiset Ordering is NP-Complete in the AFP</description>
+    <category>Logic/Rewriting</category>
+</item>
 
   </channel>
 </rss>

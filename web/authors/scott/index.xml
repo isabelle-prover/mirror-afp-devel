@@ -1,16 +1,23 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Dana Scott</title>
     <link>https://isa-afp.org/authors/scott/</link>
-    <description>AFP entries of Dana Scott</description>
-        <item>
-          <title>Axiom Systems for Category Theory in Free Logic</title>
-          <link>https://isa-afp.org/entries/AxiomaticCategoryTheory.html</link>
-          <pubDate>Wed, 23 May 2018 00:00:00 +0000</pubDate>
-          <description>Axiom Systems for Category Theory in Free Logic in the AFP</description>
-            <category>Mathematics/Category theory</category>
-        </item>
+    <description>AFP entries of Dana Scott</description><item>
+  <title>Notes on Gödel’s and Scott’s Variants of the Ontological Argument (Isabelle/HOL dataset)</title>
+  <link>https://isa-afp.org/entries/Notes_On_Goedels_Ontological_Argument.html</link>
+  <pubDate>Tue, 07 Jan 2025 00:00:00 +0000</pubDate>
+  <description>Notes on Gödel’s and Scott’s Variants of the Ontological Argument (Isabelle/HOL dataset) in the AFP</description>
+    <category>Logic/Philosophical aspects</category>
+    <category>Logic/General logic/Modal logic</category>
+</item>
+<item>
+  <title>Axiom Systems for Category Theory in Free Logic</title>
+  <link>https://isa-afp.org/entries/AxiomaticCategoryTheory.html</link>
+  <pubDate>Wed, 23 May 2018 00:00:00 +0000</pubDate>
+  <description>Axiom Systems for Category Theory in Free Logic in the AFP</description>
+    <category>Mathematics/Category theory</category>
+</item>
 
   </channel>
 </rss>

@@ -1,16 +1,15 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Qi Qiu</title>
     <link>https://isa-afp.org/authors/qiu/</link>
-    <description>AFP entries of Qi Qiu</description>
-        <item>
-          <title>Given Clause Loops</title>
-          <link>https://isa-afp.org/entries/Given_Clause_Loops.html</link>
-          <pubDate>Wed, 25 Jan 2023 00:00:00 +0000</pubDate>
-          <description>Given Clause Loops in the AFP</description>
-            <category>Logic/General logic/Classical first-order logic</category>
-        </item>
+    <description>AFP entries of Qi Qiu</description><item>
+  <title>Given Clause Loops</title>
+  <link>https://isa-afp.org/entries/Given_Clause_Loops.html</link>
+  <pubDate>Wed, 25 Jan 2023 00:00:00 +0000</pubDate>
+  <description>Given Clause Loops in the AFP</description>
+    <category>Logic/General logic/Classical first-order logic</category>
+</item>
 
   </channel>
 </rss>

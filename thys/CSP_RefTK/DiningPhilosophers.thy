@@ -44,7 +44,7 @@
 section\<open> Generalized Dining Philosophers \<close>
 
 theory     DiningPhilosophers
- imports   "Process_norm"
+  imports   "Process_norm"
 begin 
 
 subsection \<open>Preliminary lemmas for proof automation\<close>
@@ -69,17 +69,17 @@ lemma numeral_5_eq_5:"5 = Suc (Suc (Suc (Suc (Suc 0))))"
 subsection\<open>The dining processes definition\<close>
 
 locale DiningPhilosophers =
-  
-  fixes N::nat
-  assumes N_g1[simp] : "N > 1"  
+
+fixes N::nat
+assumes N_g1[simp] : "N > 1"  
 
 begin
 
 datatype dining_event  = picks (phil:nat) (fork:nat) 
-                       | putsdown (phil:nat) (fork:nat)
+  | putsdown (phil:nat) (fork:nat)
 
 definition RPHIL::  "nat \<Rightarrow> dining_event process"
- where "RPHIL i = (\<mu> X. (picks i i \<rightarrow> (picks i (i-1) \<rightarrow> (putsdown i (i-1) \<rightarrow> (putsdown i i \<rightarrow> X)))))"
+  where "RPHIL i = (\<mu> X. (picks i i \<rightarrow> (picks i (i-1) \<rightarrow> (putsdown i (i-1) \<rightarrow> (putsdown i i \<rightarrow> X)))))"
 
 definition LPHIL0::  "dining_event process"
   where "LPHIL0 = (\<mu> X. (picks 0 (N-1) \<rightarrow> (picks 0 0 \<rightarrow> (putsdown 0 0 \<rightarrow> (putsdown 0 (N-1) \<rightarrow> X)))))"
@@ -96,9 +96,6 @@ abbreviation "foldFORKs n \<equiv> fold (\<lambda> i P. P ||| FORK i) [1..< n] (
 abbreviation "PHILs \<equiv> foldPHILs N"
 abbreviation "FORKs \<equiv> foldFORKs N"
 
-
-corollary FORKs_def2: "FORKs = fold (\<lambda> i P. P ||| FORK i) [0..< N] SKIP"
-  using N_g1 by (subst (2) upt_rec, auto) (metis (no_types, lifting) Inter_commute Inter_SKIP) 
 
 corollary "N = 3 \<Longrightarrow> PHILs = (LPHIL0 ||| RPHIL 1 ||| RPHIL 2)"
   by (subst upt_rec, auto simp add:numeral_2_eq_2)+
@@ -135,7 +132,7 @@ type_synonym id\<^sub>f\<^sub>o\<^sub>r\<^sub>k = nat
 type_synonym \<sigma>\<^sub>f\<^sub>o\<^sub>r\<^sub>k = nat
 
 
-definition fork_transitions:: "id\<^sub>f\<^sub>o\<^sub>r\<^sub>k \<Rightarrow> \<sigma>\<^sub>f\<^sub>o\<^sub>r\<^sub>k \<Rightarrow> dining_event set" (\<open>Tr\<^sub>f\<close>)
+definition fork_transitions:: "id\<^sub>f\<^sub>o\<^sub>r\<^sub>k \<Rightarrow> \<sigma>\<^sub>f\<^sub>o\<^sub>r\<^sub>k \<Rightarrow> dining_event set" ("Tr\<^sub>f")
   where "Tr\<^sub>f i s = (if s = 0        then {picks i i} \<union> {picks ((i+1) mod N) i}
                     else if s = 1   then {putsdown i i} 
                     else if s = 2   then {putsdown ((i+1) mod N) i}
@@ -145,7 +142,7 @@ declare Un_insert_right[simp del] Un_insert_left[simp del]
 lemma ev_id\<^sub>f\<^sub>o\<^sub>r\<^sub>kx[simp]: "e \<in> Tr\<^sub>f i s \<Longrightarrow> fork e = i" 
   by (auto simp add:fork_transitions_def split:if_splits)
 
-definition \<sigma>\<^sub>f\<^sub>o\<^sub>r\<^sub>k_update:: "id\<^sub>f\<^sub>o\<^sub>r\<^sub>k \<Rightarrow> \<sigma>\<^sub>f\<^sub>o\<^sub>r\<^sub>k \<Rightarrow> dining_event \<Rightarrow> \<sigma>\<^sub>f\<^sub>o\<^sub>r\<^sub>k" (\<open>Up\<^sub>f\<close>)
+definition \<sigma>\<^sub>f\<^sub>o\<^sub>r\<^sub>k_update:: "id\<^sub>f\<^sub>o\<^sub>r\<^sub>k \<Rightarrow> \<sigma>\<^sub>f\<^sub>o\<^sub>r\<^sub>k \<Rightarrow> dining_event \<Rightarrow> \<sigma>\<^sub>f\<^sub>o\<^sub>r\<^sub>k" ("Up\<^sub>f")
   where "Up\<^sub>f i s e = ( if e = (picks i i)                   then 1 
                       else if e = (picks ((i+1) mod N) i)  then 2 
                       else                                      0 )"
@@ -158,7 +155,7 @@ lemma FORK\<^sub>n\<^sub>o\<^sub>r\<^sub>m_rec:  "FORK\<^sub>n\<^sub>o\<^sub>r\<
 
 lemma FORK_refines_FORK\<^sub>n\<^sub>o\<^sub>r\<^sub>m: "FORK\<^sub>n\<^sub>o\<^sub>r\<^sub>m i 0 \<sqsubseteq>\<^sub>F\<^sub>D FORK i"
 proof(unfold FORK\<^sub>n\<^sub>o\<^sub>r\<^sub>m_def, 
-      induct rule:fix_ind_k_skip[where k=2 and f="\<Lambda> x.(\<lambda>s. Mprefix (Tr\<^sub>f i s) (\<lambda>e. x (Up\<^sub>f i s e)))"])
+    induct rule:fix_ind_k_skip[where k=2 and f="\<Lambda> x.(\<lambda>s. Mprefix (Tr\<^sub>f i s) (\<lambda>e. x (Up\<^sub>f i s e)))"])
   case lower_bound
   then show ?case by simp
 next
@@ -172,21 +169,22 @@ next
     moreover have "(iterate 0\<cdot>?f\<cdot>\<bottom>) 0 \<sqsubseteq>\<^sub>F\<^sub>D FORK i" by simp
     moreover have "(iterate 1\<cdot>?f\<cdot>\<bottom>) 0 \<sqsubseteq>\<^sub>F\<^sub>D FORK i" 
       by (subst FORK_rec) 
-         (simp add: write0_def fork_transitions_def Mprefix_Un_distrib)
+        (simp add: write0_def fork_transitions_def Mprefix_Un_distrib mono_Mprefix_FD mono_Det_FD)
     ultimately show ?thesis by simp
   qed
 next
   case (step x)
   then show ?case (is "(iterate 2\<cdot>?f\<cdot>x) 0 \<sqsubseteq>\<^sub>F\<^sub>D FORK i")
-    by (subst FORK_rec) 
-       (simp add: write0_def numeral_2_eq_2 fork_transitions_def \<sigma>\<^sub>f\<^sub>o\<^sub>r\<^sub>k_update_def Mprefix_Un_distrib) 
+    apply (subst FORK_rec) 
+    by (auto simp add: write0_def numeral_2_eq_2 fork_transitions_def \<sigma>\<^sub>f\<^sub>o\<^sub>r\<^sub>k_update_def Mprefix_Un_distrib 
+        intro!: mono_Det_FD mono_Mprefix_FD)
 qed
 
 
 
 lemma FORK\<^sub>n\<^sub>o\<^sub>r\<^sub>m_refines_FORK: "FORK i \<sqsubseteq>\<^sub>F\<^sub>D FORK\<^sub>n\<^sub>o\<^sub>r\<^sub>m i 0"
 proof(unfold FORK_def, 
-      induct rule:fix_ind_k_skip[where k=1])
+    induct rule:fix_ind_k_skip[where k=1])
   show "(1::nat) \<le> 1" by simp
 next
   show "adm (\<lambda>a. a \<sqsubseteq>\<^sub>F\<^sub>D FORK\<^sub>n\<^sub>o\<^sub>r\<^sub>m i 0)" by (simp add: monofunI)
@@ -198,8 +196,8 @@ next
   then show ?case (is "iterate 1\<cdot>?f\<cdot>x \<sqsubseteq>\<^sub>F\<^sub>D FORK\<^sub>n\<^sub>o\<^sub>r\<^sub>m i 0")
     apply (subst FORK\<^sub>n\<^sub>o\<^sub>r\<^sub>m_rec) 
     apply (simp add: write0_def fork_transitions_def \<sigma>\<^sub>f\<^sub>o\<^sub>r\<^sub>k_update_def Mprefix_Un_distrib)
-    by (subst (1 2) FORK\<^sub>n\<^sub>o\<^sub>r\<^sub>m_rec) 
-       (simp add: fork_transitions_def \<sigma>\<^sub>f\<^sub>o\<^sub>r\<^sub>k_update_def Mprefix_Un_distrib) 
+    apply (subst (1 2) FORK\<^sub>n\<^sub>o\<^sub>r\<^sub>m_rec) 
+    by (auto simp add: fork_transitions_def \<sigma>\<^sub>f\<^sub>o\<^sub>r\<^sub>k_update_def Mprefix_Un_distrib intro!: mono_Mprefix_FD mono_Det_FD) 
 qed
 
 lemma FORK\<^sub>n\<^sub>o\<^sub>r\<^sub>m_is_FORK: "FORK i = FORK\<^sub>n\<^sub>o\<^sub>r\<^sub>m i 0"
@@ -210,13 +208,13 @@ text \<open>The all-forks process in normal form\<close>
 
 type_synonym \<sigma>\<^sub>f\<^sub>o\<^sub>r\<^sub>k\<^sub>s = "nat list"
 
-definition forks_transitions:: "nat \<Rightarrow> \<sigma>\<^sub>f\<^sub>o\<^sub>r\<^sub>k\<^sub>s \<Rightarrow> dining_event set" (\<open>Tr\<^sub>F\<close>)
+definition forks_transitions:: "nat \<Rightarrow> \<sigma>\<^sub>f\<^sub>o\<^sub>r\<^sub>k\<^sub>s \<Rightarrow> dining_event set" ("Tr\<^sub>F")
   where "Tr\<^sub>F n fs = (\<Union>i<n. Tr\<^sub>f i (fs!i))"
 
 lemma forks_transitions_take: "Tr\<^sub>F n fs = Tr\<^sub>F n (take n fs)"
   by (simp add:forks_transitions_def)
 
-definition \<sigma>\<^sub>f\<^sub>o\<^sub>r\<^sub>k\<^sub>s_update:: "\<sigma>\<^sub>f\<^sub>o\<^sub>r\<^sub>k\<^sub>s \<Rightarrow> dining_event \<Rightarrow> \<sigma>\<^sub>f\<^sub>o\<^sub>r\<^sub>k\<^sub>s" (\<open>Up\<^sub>F\<close>)
+definition \<sigma>\<^sub>f\<^sub>o\<^sub>r\<^sub>k\<^sub>s_update:: "\<sigma>\<^sub>f\<^sub>o\<^sub>r\<^sub>k\<^sub>s \<Rightarrow> dining_event \<Rightarrow> \<sigma>\<^sub>f\<^sub>o\<^sub>r\<^sub>k\<^sub>s" ("Up\<^sub>F")
   where "Up\<^sub>F fs e = (let i=(fork e) in fs[i:=(Up\<^sub>f i (fs!i) e)])"
 
 lemma forks_update_take: "take n (Up\<^sub>F fs e) = Up\<^sub>F (take n fs) e"
@@ -230,13 +228,13 @@ lemma FORKs\<^sub>n\<^sub>o\<^sub>r\<^sub>m_rec:  "FORKs\<^sub>n\<^sub>o\<^sub>r
   using fix_eq[of "\<Lambda> X. (\<lambda>fs. Mprefix (Tr\<^sub>F n fs) (\<lambda>e. X (Up\<^sub>F fs e)))"] FORKs\<^sub>n\<^sub>o\<^sub>r\<^sub>m_def by simp
 
 lemma FORKs\<^sub>n\<^sub>o\<^sub>r\<^sub>m_0: "FORKs\<^sub>n\<^sub>o\<^sub>r\<^sub>m 0 fs = STOP"
-  by (subst FORKs\<^sub>n\<^sub>o\<^sub>r\<^sub>m_rec, simp add:forks_transitions_def Mprefix_STOP)
+  by (subst FORKs\<^sub>n\<^sub>o\<^sub>r\<^sub>m_rec, simp add:forks_transitions_def)
 
 
 lemma FORKs\<^sub>n\<^sub>o\<^sub>r\<^sub>m_1_dir1: "length fs > 0 \<Longrightarrow> FORKs\<^sub>n\<^sub>o\<^sub>r\<^sub>m 1 fs \<sqsubseteq>\<^sub>F\<^sub>D (FORK\<^sub>n\<^sub>o\<^sub>r\<^sub>m 0 (fs!0))" 
 proof(unfold FORKs\<^sub>n\<^sub>o\<^sub>r\<^sub>m_def,          
-      induct arbitrary:fs rule:fix_ind_k[where k=1  
-                                         and f="\<Lambda> x. (\<lambda>fs. Mprefix (Tr\<^sub>F 1 fs) (\<lambda>e. x (Up\<^sub>F fs e)))"])
+    induct arbitrary:fs rule:fix_ind_k[where k=1  
+      and f="\<Lambda> x. (\<lambda>fs. Mprefix (Tr\<^sub>F 1 fs) (\<lambda>e. x (Up\<^sub>F fs e)))"])
   case admissibility
   then show ?case by (simp add: cont_fun monofunI) 
 next
@@ -247,15 +245,15 @@ next
   hence "(\<Union>i<Suc 0. Tr\<^sub>f i (fs ! i)) = Tr\<^sub>f 0 (fs ! 0)" by auto
   with step show ?case
     apply (subst FORK\<^sub>n\<^sub>o\<^sub>r\<^sub>m_rec, simp add:\<sigma>\<^sub>f\<^sub>o\<^sub>r\<^sub>k\<^sub>s_update_def forks_transitions_def) 
-    apply (intro mono_Mprefix_FD, safe)
+    apply (intro mono_Mprefix_FD)
     by (metis ev_id\<^sub>f\<^sub>o\<^sub>r\<^sub>kx step.prems list_update_nonempty nth_list_update_eq)
 qed
 
 
 lemma FORKs\<^sub>n\<^sub>o\<^sub>r\<^sub>m_1_dir2: "length fs > 0 \<Longrightarrow> (FORK\<^sub>n\<^sub>o\<^sub>r\<^sub>m 0 (fs!0)) \<sqsubseteq>\<^sub>F\<^sub>D FORKs\<^sub>n\<^sub>o\<^sub>r\<^sub>m 1 fs" 
 proof(unfold FORK\<^sub>n\<^sub>o\<^sub>r\<^sub>m_def, 
-      induct arbitrary:fs rule:fix_ind_k[where k=1 
-                                         and f="\<Lambda> x. (\<lambda>s. Mprefix (Tr\<^sub>f 0 s) (\<lambda>e. x (Up\<^sub>f 0 s e)))"])
+    induct arbitrary:fs rule:fix_ind_k[where k=1 
+      and f="\<Lambda> x. (\<lambda>s. Mprefix (Tr\<^sub>f 0 s) (\<lambda>e. x (Up\<^sub>f 0 s e)))"])
   case admissibility
   then show ?case by (simp add: cont_fun monofunI) 
 next
@@ -266,7 +264,7 @@ next
   have "(\<Union>i<Suc 0. Tr\<^sub>f i (fs ! i)) = Tr\<^sub>f 0 (fs ! 0)" by auto
   with step show ?case
     apply (subst FORKs\<^sub>n\<^sub>o\<^sub>r\<^sub>m_rec, simp add: \<sigma>\<^sub>f\<^sub>o\<^sub>r\<^sub>k\<^sub>s_update_def forks_transitions_def) 
-    apply (intro mono_Mprefix_FD, safe) 
+    apply (intro mono_Mprefix_FD) 
     by (metis ev_id\<^sub>f\<^sub>o\<^sub>r\<^sub>kx step.prems list_update_nonempty nth_list_update_eq)
 qed
 
@@ -275,15 +273,15 @@ lemma FORKs\<^sub>n\<^sub>o\<^sub>r\<^sub>m_1: "length fs > 0 \<Longrightarrow> 
 
 
 lemma FORKs\<^sub>n\<^sub>o\<^sub>r\<^sub>m_unfold: 
-"0 < n \<Longrightarrow> length fs = Suc n \<Longrightarrow> 
+  "0 < n \<Longrightarrow> length fs = Suc n \<Longrightarrow> 
                               FORKs\<^sub>n\<^sub>o\<^sub>r\<^sub>m (Suc n) fs = (FORKs\<^sub>n\<^sub>o\<^sub>r\<^sub>m n (butlast fs)|||(FORK\<^sub>n\<^sub>o\<^sub>r\<^sub>m n (fs!n)))"
 proof(rule FD_antisym)
   show "0 < n \<Longrightarrow> length fs = Suc n \<Longrightarrow> 
                               FORKs\<^sub>n\<^sub>o\<^sub>r\<^sub>m (Suc n) fs \<sqsubseteq>\<^sub>F\<^sub>D (FORKs\<^sub>n\<^sub>o\<^sub>r\<^sub>m n (butlast fs)|||FORK\<^sub>n\<^sub>o\<^sub>r\<^sub>m n (fs!n))"
   proof(subst FORKs\<^sub>n\<^sub>o\<^sub>r\<^sub>m_def, 
-        induct arbitrary:fs 
-               rule:fix_ind_k[where k=1 
-                              and f="\<Lambda> x. (\<lambda>fs. Mprefix (Tr\<^sub>F (Suc n) fs) (\<lambda>e. x (Up\<^sub>F fs e)))"])
+      induct arbitrary:fs 
+      rule:fix_ind_k[where k=1 
+        and f="\<Lambda> x. (\<lambda>fs. Mprefix (Tr\<^sub>F (Suc n) fs) (\<lambda>e. x (Up\<^sub>F fs e)))"])
     case admissibility
     then show ?case by (simp add: cont_fun monofunI) 
   next
@@ -332,7 +330,7 @@ next
     case step:(2 X fs)
     then show ?case
       apply (unfold FORKs\<^sub>n\<^sub>o\<^sub>r\<^sub>m_def, subst fix_eq, simp add:forks_transitions_def 
-                                                          Un_commute lessThan_Suc nth_butlast)
+          Un_commute lessThan_Suc nth_butlast)
     proof(rule mono_Mprefix_FD, safe, goal_cases)
       case (1 e)
       from 1(6) have a:"fork e = n" 
@@ -351,7 +349,7 @@ next
     qed
   qed
 qed
-   
+
 lemma ft: "0 < n \<Longrightarrow> FORKs\<^sub>n\<^sub>o\<^sub>r\<^sub>m n (replicate n 0) = foldFORKs n"
 proof (induct n, simp)
   case (Suc n)
@@ -360,7 +358,7 @@ proof (induct n, simp)
     apply (metis Suc_le_D butlast_snoc replicate_Suc replicate_append_same)
     by (metis FORKs\<^sub>n\<^sub>o\<^sub>r\<^sub>m_1 One_nat_def leI length_replicate less_Suc0 nth_replicate replicate_Suc)
 qed
-  
+
 corollary FORKs_is_FORKs\<^sub>n\<^sub>o\<^sub>r\<^sub>m: "FORKs\<^sub>n\<^sub>o\<^sub>r\<^sub>m N (replicate N 0) = FORKs"
   using ft N_pos by simp
 
@@ -369,31 +367,31 @@ text \<open>The one-philosopher process in normal form:\<close>
 type_synonym phil_id = nat
 type_synonym phil_state = nat
 
-definition rphil_transitions:: "phil_id \<Rightarrow> phil_state \<Rightarrow> dining_event set" (\<open>Tr\<^sub>r\<^sub>p\<close>)
+definition rphil_transitions:: "phil_id \<Rightarrow> phil_state \<Rightarrow> dining_event set" ("Tr\<^sub>r\<^sub>p")
   where "Tr\<^sub>r\<^sub>p i s = ( if      s = 0  then {picks i i}
                      else if s = 1  then {picks i (i-1)}
                      else if s = 2  then {putsdown i (i-1)} 
                      else if s = 3  then {putsdown i i}
                      else                {})"
 
-definition lphil0_transitions:: "phil_state \<Rightarrow> dining_event set" (\<open>Tr\<^sub>l\<^sub>p\<close>)
-    where "Tr\<^sub>l\<^sub>p s = ( if s = 0       then {picks 0 (N-1)}
+definition lphil0_transitions:: "phil_state \<Rightarrow> dining_event set" ("Tr\<^sub>l\<^sub>p")
+  where "Tr\<^sub>l\<^sub>p s = ( if s = 0       then {picks 0 (N-1)}
                      else if s = 1  then {picks 0 0}
                      else if s = 2  then {putsdown 0 0} 
                      else if s = 3  then {putsdown 0 (N-1)}
                      else                {})"
 
 corollary rphil_phil: "e \<in> Tr\<^sub>r\<^sub>p i s \<Longrightarrow> phil e = i"
-      and lphil0_phil: "e \<in> Tr\<^sub>l\<^sub>p s \<Longrightarrow> phil e = 0"
+  and lphil0_phil: "e \<in> Tr\<^sub>l\<^sub>p s \<Longrightarrow> phil e = 0"
   by (simp_all add:rphil_transitions_def lphil0_transitions_def split:if_splits)
 
-definition rphil_state_update:: "id\<^sub>f\<^sub>o\<^sub>r\<^sub>k \<Rightarrow> \<sigma>\<^sub>f\<^sub>o\<^sub>r\<^sub>k \<Rightarrow> dining_event \<Rightarrow> \<sigma>\<^sub>f\<^sub>o\<^sub>r\<^sub>k" (\<open>Up\<^sub>r\<^sub>p\<close>)
+definition rphil_state_update:: "id\<^sub>f\<^sub>o\<^sub>r\<^sub>k \<Rightarrow> \<sigma>\<^sub>f\<^sub>o\<^sub>r\<^sub>k \<Rightarrow> dining_event \<Rightarrow> \<sigma>\<^sub>f\<^sub>o\<^sub>r\<^sub>k" ("Up\<^sub>r\<^sub>p")
   where "Up\<^sub>r\<^sub>p i s e = ( if e = (picks i i)               then 1 
                        else if e = (picks i (i-1))      then 2
                        else if e = (putsdown i (i-1))   then 3
                        else                                  0 )"
 
-definition lphil0_state_update:: "\<sigma>\<^sub>f\<^sub>o\<^sub>r\<^sub>k \<Rightarrow> dining_event \<Rightarrow> \<sigma>\<^sub>f\<^sub>o\<^sub>r\<^sub>k" (\<open>Up\<^sub>l\<^sub>p\<close>)
+definition lphil0_state_update:: "\<sigma>\<^sub>f\<^sub>o\<^sub>r\<^sub>k \<Rightarrow> dining_event \<Rightarrow> \<sigma>\<^sub>f\<^sub>o\<^sub>r\<^sub>k" ("Up\<^sub>l\<^sub>p")
   where "Up\<^sub>l\<^sub>p s e = ( if e = (picks 0 (N-1))         then 1
                      else if e = (picks 0 0)        then 2 
                      else if e = (putsdown 0 0)     then 3
@@ -416,7 +414,7 @@ lemma RPHIL_refines_RPHIL\<^sub>n\<^sub>o\<^sub>r\<^sub>m:
   assumes i_pos: "i > 0"
   shows "RPHIL\<^sub>n\<^sub>o\<^sub>r\<^sub>m i 0 \<sqsubseteq>\<^sub>F\<^sub>D RPHIL i"
 proof(unfold RPHIL\<^sub>n\<^sub>o\<^sub>r\<^sub>m_def, 
-      induct rule:fix_ind_k_skip[where k=4 and f="\<Lambda> x. (\<lambda>s. Mprefix (Tr\<^sub>r\<^sub>p i s) (\<lambda>e. x (Up\<^sub>r\<^sub>p i s e)))"])
+    induct rule:fix_ind_k_skip[where k=4 and f="\<Lambda> x. (\<lambda>s. Mprefix (Tr\<^sub>r\<^sub>p i s) (\<lambda>e. x (Up\<^sub>r\<^sub>p i s e)))"])
   case lower_bound
   then show ?case (is "1 \<le> 4") by simp
 next
@@ -430,13 +428,15 @@ next
     have less_2:"\<And>j. (j::nat) < 4 = (j = 0 \<or> j = 1  \<or> j = 2  \<or> j = 3)" by linarith
     moreover have "(iterate 0\<cdot>?f\<cdot>\<bottom>) 0 \<sqsubseteq>\<^sub>F\<^sub>D RPHIL i" by simp
     moreover have "(iterate 1\<cdot>?f\<cdot>\<bottom>) 0 \<sqsubseteq>\<^sub>F\<^sub>D RPHIL i" 
-      by (subst RPHIL_rec) (simp add: write0_def rphil_transitions_def)
+      by (subst RPHIL_rec) (simp add: write0_def rphil_transitions_def mono_Mprefix_FD mono_Det_FD)
     moreover have "(iterate 2\<cdot>?f\<cdot>\<bottom>) 0 \<sqsubseteq>\<^sub>F\<^sub>D RPHIL i" 
       by (subst RPHIL_rec) 
-         (simp add: numeral_2_eq_2 write0_def rphil_transitions_def rphil_state_update_def)
+        (auto simp add: numeral_2_eq_2 write0_def rphil_transitions_def rphil_state_update_def
+          intro!: mono_Mprefix_FD mono_Det_FD)
     moreover have "(iterate 3\<cdot>?f\<cdot>\<bottom>) 0 \<sqsubseteq>\<^sub>F\<^sub>D RPHIL i" 
-      by (subst RPHIL_rec) (simp add: numeral_3_eq_3 write0_def rphil_transitions_def 
-                                      rphil_state_update_def minus_suc[OF i_pos])
+      by (subst RPHIL_rec) (auto simp add: numeral_3_eq_3 write0_def rphil_transitions_def 
+          rphil_state_update_def minus_suc[OF i_pos]
+          intro!: mono_Mprefix_FD mono_Det_FD)
     ultimately show ?thesis by simp
   qed
 next
@@ -451,7 +451,7 @@ qed
 
 lemma LPHIL0_refines_LPHIL0\<^sub>n\<^sub>o\<^sub>r\<^sub>m: "LPHIL0\<^sub>n\<^sub>o\<^sub>r\<^sub>m 0 \<sqsubseteq>\<^sub>F\<^sub>D LPHIL0"
 proof(unfold LPHIL0\<^sub>n\<^sub>o\<^sub>r\<^sub>m_def,
-      induct rule:fix_ind_k_skip[where k=4 and f="\<Lambda> x. (\<lambda>s. Mprefix (Tr\<^sub>l\<^sub>p s) (\<lambda>e. x (Up\<^sub>l\<^sub>p s e)))"])
+    induct rule:fix_ind_k_skip[where k=4 and f="\<Lambda> x. (\<lambda>s. Mprefix (Tr\<^sub>l\<^sub>p s) (\<lambda>e. x (Up\<^sub>l\<^sub>p s e)))"])
   show "(1::nat) \<le> 4" by simp
 next
   show "adm (\<lambda>a. a 0 \<sqsubseteq>\<^sub>F\<^sub>D LPHIL0)" by (simp add: cont_fun monofunI)
@@ -462,20 +462,20 @@ next
     have less_2:"\<And>j. (j::nat) < 4 = (j = 0 \<or> j = 1  \<or> j = 2  \<or> j = 3)" by linarith
     moreover have "(iterate 0\<cdot>?f\<cdot>\<bottom>) 0 \<sqsubseteq>\<^sub>F\<^sub>D LPHIL0" by simp
     moreover have "(iterate 1\<cdot>?f\<cdot>\<bottom>) 0 \<sqsubseteq>\<^sub>F\<^sub>D LPHIL0" 
-      by (subst LPHIL0_rec) (simp add: write0_def lphil0_transitions_def)
+      by (subst LPHIL0_rec) (simp add: write0_def lphil0_transitions_def mono_Mprefix_FD mono_Det_FD)
     moreover have "(iterate 2\<cdot>?f\<cdot>\<bottom>) 0 \<sqsubseteq>\<^sub>F\<^sub>D LPHIL0" 
-      by (subst LPHIL0_rec) (simp add: numeral_2_eq_2 write0_def lphil0_transitions_def 
-                                       lphil0_state_update_def)
+      by (subst LPHIL0_rec) (auto simp add: numeral_2_eq_2 write0_def lphil0_transitions_def 
+          lphil0_state_update_def intro!: mono_Mprefix_FD mono_Det_FD)
     moreover have "(iterate 3\<cdot>?f\<cdot>\<bottom>) 0 \<sqsubseteq>\<^sub>F\<^sub>D LPHIL0" 
-      by (subst LPHIL0_rec) (simp add: numeral_3_eq_3 write0_def lphil0_transitions_def 
-                                       lphil0_state_update_def)
+      by (subst LPHIL0_rec) (auto simp add: numeral_3_eq_3 write0_def lphil0_transitions_def 
+          lphil0_state_update_def intro!: mono_Mprefix_FD mono_Det_FD)
     ultimately show ?thesis by simp
   qed
 next
   case (step x)
   then show ?case (is "(iterate 4\<cdot>?f\<cdot>x) 0 \<sqsubseteq>\<^sub>F\<^sub>D LPHIL0")
-    by (subst LPHIL0_rec) (simp add: write0_def numeral_4_eq_4 lphil0_transitions_def 
-                                     lphil0_state_update_def)
+    by (subst LPHIL0_rec) (auto simp add: write0_def numeral_4_eq_4 lphil0_transitions_def 
+        lphil0_state_update_def intro!: mono_Mprefix_FD mono_Det_FD)
 qed
 
 lemma RPHIL\<^sub>n\<^sub>o\<^sub>r\<^sub>m_refines_RPHIL:   
@@ -506,7 +506,7 @@ qed
 
 lemma LPHIL0\<^sub>n\<^sub>o\<^sub>r\<^sub>m_refines_LPHIL0: "LPHIL0 \<sqsubseteq>\<^sub>F\<^sub>D LPHIL0\<^sub>n\<^sub>o\<^sub>r\<^sub>m 0"
 proof(unfold LPHIL0_def, 
-      induct rule:fix_ind_k_skip[where k=1])
+    induct rule:fix_ind_k_skip[where k=1])
   show "(1::nat) \<le> 1" by simp
 next
   show "adm (\<lambda>a. a \<sqsubseteq>\<^sub>F\<^sub>D LPHIL0\<^sub>n\<^sub>o\<^sub>r\<^sub>m 0)" by (simp add: monofunI)
@@ -522,7 +522,7 @@ next
     apply (rule mono_Mprefix_FD, simp)
     apply (subst LPHIL0\<^sub>n\<^sub>o\<^sub>r\<^sub>m_rec, simp add: write0_def lphil0_transitions_def lphil0_state_update_def) 
     apply (rule mono_Mprefix_FD, simp)
-       by (subst LPHIL0\<^sub>n\<^sub>o\<^sub>r\<^sub>m_rec, simp add: write0_def lphil0_transitions_def lphil0_state_update_def) 
+    by (subst LPHIL0\<^sub>n\<^sub>o\<^sub>r\<^sub>m_rec, auto simp add: write0_def lphil0_transitions_def lphil0_state_update_def intro!: mono_Mprefix_FD mono_Det_FD) 
 qed
 
 lemma RPHIL\<^sub>n\<^sub>o\<^sub>r\<^sub>m_is_RPHIL: "i > 0 \<Longrightarrow> RPHIL i = RPHIL\<^sub>n\<^sub>o\<^sub>r\<^sub>m i 0"
@@ -535,7 +535,7 @@ subsection \<open>The normal form for the global philosopher network\<close>
 
 type_synonym \<sigma>\<^sub>p\<^sub>h\<^sub>i\<^sub>l\<^sub>s = "nat list"
 
-definition phils_transitions:: "nat \<Rightarrow> \<sigma>\<^sub>p\<^sub>h\<^sub>i\<^sub>l\<^sub>s \<Rightarrow> dining_event set" (\<open>Tr\<^sub>P\<close>)
+definition phils_transitions:: "nat \<Rightarrow> \<sigma>\<^sub>p\<^sub>h\<^sub>i\<^sub>l\<^sub>s \<Rightarrow> dining_event set" ("Tr\<^sub>P")
   where "Tr\<^sub>P n ps = Tr\<^sub>l\<^sub>p (ps!0) \<union> (\<Union>i\<in>{1..< n}. Tr\<^sub>r\<^sub>p i (ps!i))"
 
 corollary phils_phil: "0 < n \<Longrightarrow> e \<in> Tr\<^sub>P n s \<Longrightarrow> phil e < n"
@@ -544,13 +544,13 @@ corollary phils_phil: "0 < n \<Longrightarrow> e \<in> Tr\<^sub>P n s \<Longrigh
 lemma phils_transitions_take: "0 < n \<Longrightarrow> Tr\<^sub>P n ps = Tr\<^sub>P n (take n ps)"
   by (auto simp add:phils_transitions_def) 
 
-definition \<sigma>\<^sub>p\<^sub>h\<^sub>i\<^sub>l\<^sub>s_update:: "\<sigma>\<^sub>p\<^sub>h\<^sub>i\<^sub>l\<^sub>s \<Rightarrow> dining_event \<Rightarrow> \<sigma>\<^sub>p\<^sub>h\<^sub>i\<^sub>l\<^sub>s" (\<open>Up\<^sub>P\<close>)
+definition \<sigma>\<^sub>p\<^sub>h\<^sub>i\<^sub>l\<^sub>s_update:: "\<sigma>\<^sub>p\<^sub>h\<^sub>i\<^sub>l\<^sub>s \<Rightarrow> dining_event \<Rightarrow> \<sigma>\<^sub>p\<^sub>h\<^sub>i\<^sub>l\<^sub>s" ("Up\<^sub>P")
   where "Up\<^sub>P ps e = (let i=(phil e) in if i = 0 then ps[i:=(Up\<^sub>l\<^sub>p (ps!i) e)] 
                                        else          ps[i:=(Up\<^sub>r\<^sub>p i (ps!i) e)])"
 
 lemma phils_update_take: "take n (Up\<^sub>P ps e) = Up\<^sub>P (take n ps) e"
   by (cases e) (simp_all add: \<sigma>\<^sub>p\<^sub>h\<^sub>i\<^sub>l\<^sub>s_update_def lphil0_state_update_def 
-                              rphil_state_update_def take_update_swap)
+      rphil_state_update_def take_update_swap)
 
 definition PHILs\<^sub>n\<^sub>o\<^sub>r\<^sub>m:: "nat \<Rightarrow> \<sigma>\<^sub>p\<^sub>h\<^sub>i\<^sub>l\<^sub>s \<Rightarrow> dining_event process"
   where "PHILs\<^sub>n\<^sub>o\<^sub>r\<^sub>m n = P\<^sub>n\<^sub>o\<^sub>r\<^sub>m\<lbrakk>Tr\<^sub>P n,Up\<^sub>P\<rbrakk>"
@@ -560,9 +560,9 @@ lemma PHILs\<^sub>n\<^sub>o\<^sub>r\<^sub>m_rec:  "PHILs\<^sub>n\<^sub>o\<^sub>r
 
 lemma PHILs\<^sub>n\<^sub>o\<^sub>r\<^sub>m_1_dir1: "length ps > 0 \<Longrightarrow> PHILs\<^sub>n\<^sub>o\<^sub>r\<^sub>m 1 ps \<sqsubseteq>\<^sub>F\<^sub>D (LPHIL0\<^sub>n\<^sub>o\<^sub>r\<^sub>m (ps!0))" 
 proof(unfold PHILs\<^sub>n\<^sub>o\<^sub>r\<^sub>m_def,
-      induct arbitrary:ps 
-             rule:fix_ind_k[where k=1 
-                            and f="\<Lambda> x. (\<lambda>ps. Mprefix (Tr\<^sub>P 1 ps) (\<lambda>e. x (Up\<^sub>P ps e)))"])
+    induct arbitrary:ps 
+    rule:fix_ind_k[where k=1 
+      and f="\<Lambda> x. (\<lambda>ps. Mprefix (Tr\<^sub>P 1 ps) (\<lambda>e. x (Up\<^sub>P ps e)))"])
   case admissibility
   then show ?case by (simp add: cont_fun monofunI) 
 next
@@ -572,18 +572,18 @@ next
   case (step X)
   then show ?case
     apply (subst LPHIL0\<^sub>n\<^sub>o\<^sub>r\<^sub>m_rec, simp add:\<sigma>\<^sub>p\<^sub>h\<^sub>i\<^sub>l\<^sub>s_update_def phils_transitions_def) 
-    proof (intro mono_Mprefix_FD, safe, goal_cases)
-      case (1 e)
-      with 1(2) show ?case 
-        using 1(1)[rule_format, of "ps[0 := Up\<^sub>l\<^sub>p (ps ! 0) e]"] 
-        by (simp add:lphil0_transitions_def split:if_splits)
-    qed
+  proof (intro mono_Mprefix_FD, goal_cases)
+    case (1 e)
+    with 1(2) show ?case 
+      using 1(1)[rule_format, of "ps[0 := Up\<^sub>l\<^sub>p (ps ! 0) e]"] 
+      by (simp add:lphil0_transitions_def split:if_splits)
+  qed
 qed
 
 lemma PHILs\<^sub>n\<^sub>o\<^sub>r\<^sub>m_1_dir2: "length ps > 0 \<Longrightarrow> (LPHIL0\<^sub>n\<^sub>o\<^sub>r\<^sub>m (ps!0)) \<sqsubseteq>\<^sub>F\<^sub>D PHILs\<^sub>n\<^sub>o\<^sub>r\<^sub>m 1 ps" 
 proof(unfold LPHIL0\<^sub>n\<^sub>o\<^sub>r\<^sub>m_def, 
-      induct arbitrary:ps rule:fix_ind_k[where k=1 
-                                         and f="\<Lambda> x. (\<lambda>s. Mprefix (Tr\<^sub>l\<^sub>p s) (\<lambda>e. x (Up\<^sub>l\<^sub>p s e)))"])
+    induct arbitrary:ps rule:fix_ind_k[where k=1 
+      and f="\<Lambda> x. (\<lambda>s. Mprefix (Tr\<^sub>l\<^sub>p s) (\<lambda>e. x (Up\<^sub>l\<^sub>p s e)))"])
   case admissibility
   then show ?case by (simp add: cont_fun monofunI) 
 next
@@ -593,12 +593,12 @@ next
   case (step X)
   then show ?case
     apply (subst PHILs\<^sub>n\<^sub>o\<^sub>r\<^sub>m_rec, simp add:\<sigma>\<^sub>p\<^sub>h\<^sub>i\<^sub>l\<^sub>s_update_def phils_transitions_def) 
-    proof (intro mono_Mprefix_FD, safe, goal_cases)
-      case (1 e)
-      with 1(2) show ?case 
-        using 1(1)[rule_format, of "ps[0 := Up\<^sub>l\<^sub>p (ps ! 0) e]"] 
-        by (simp add:lphil0_transitions_def split:if_splits)
-    qed
+  proof (intro mono_Mprefix_FD, goal_cases)
+    case (1 e)
+    with 1(2) show ?case 
+      using 1(1)[rule_format, of "ps[0 := Up\<^sub>l\<^sub>p (ps ! 0) e]"] 
+      by (simp add:lphil0_transitions_def split:if_splits)
+  qed
 qed
 
 lemma PHILs\<^sub>n\<^sub>o\<^sub>r\<^sub>m_1: "length ps > 0 \<Longrightarrow> PHILs\<^sub>n\<^sub>o\<^sub>r\<^sub>m 1 ps = (LPHIL0\<^sub>n\<^sub>o\<^sub>r\<^sub>m (ps!0))"
@@ -611,9 +611,9 @@ lemma PHILs\<^sub>n\<^sub>o\<^sub>r\<^sub>m_unfold:
 proof(rule FD_antisym)
   show "length ps = Suc n \<Longrightarrow> PHILs\<^sub>n\<^sub>o\<^sub>r\<^sub>m (Suc n) ps \<sqsubseteq>\<^sub>F\<^sub>D (PHILs\<^sub>n\<^sub>o\<^sub>r\<^sub>m n (butlast ps)|||RPHIL\<^sub>n\<^sub>o\<^sub>r\<^sub>m n (ps!n))"
   proof(subst PHILs\<^sub>n\<^sub>o\<^sub>r\<^sub>m_def, 
-        induct arbitrary:ps 
-               rule:fix_ind_k[where k=1 
-                              and f="\<Lambda> x. (\<lambda>ps. Mprefix (Tr\<^sub>P (Suc n) ps) (\<lambda>e. x (Up\<^sub>P ps e)))"])
+      induct arbitrary:ps 
+      rule:fix_ind_k[where k=1 
+        and f="\<Lambda> x. (\<lambda>ps. Mprefix (Tr\<^sub>P (Suc n) ps) (\<lambda>e. x (Up\<^sub>P ps e)))"])
     case admissibility
     then show ?case by (simp add: cont_fun monofunI) 
   next
@@ -625,7 +625,7 @@ proof(rule FD_antisym)
       using phils_phil rphil_phil n_pos by blast
     from step have tra:"(Tr\<^sub>P (Suc n) ps) =(Tr\<^sub>P n (butlast ps) \<union> Tr\<^sub>r\<^sub>p n (ps ! n))" 
       by (auto simp add:n_pos phils_transitions_def nth_butlast Suc_leI 
-                        atLeastLessThanSuc Un_commute Un_assoc)
+          atLeastLessThanSuc Un_commute Un_assoc)
     from step show ?case
       apply (auto simp add:indep dnorm_inter PHILs\<^sub>n\<^sub>o\<^sub>r\<^sub>m_def RPHIL\<^sub>n\<^sub>o\<^sub>r\<^sub>m_def)
       apply (subst fix_eq, auto simp add:tra) 
@@ -636,7 +636,7 @@ proof(rule FD_antisym)
         by (cases "phil e", auto) (metis exists_least_iff nth_list_update_neq)
       have d:"Up\<^sub>P (butlast ps) e = butlast (Up\<^sub>P ps e)"       
         by (cases "phil e", auto simp add:\<sigma>\<^sub>p\<^sub>h\<^sub>i\<^sub>l\<^sub>s_update_def butlast_list_update 
-                                          lphil0_state_update_def rphil_state_update_def)
+            lphil0_state_update_def rphil_state_update_def)
       have e:"length (Up\<^sub>P ps e) = Suc n"
         by (metis (full_types) step(2) length_list_update \<sigma>\<^sub>p\<^sub>h\<^sub>i\<^sub>l\<^sub>s_update_def)
       from 1 show ?case 
@@ -659,14 +659,14 @@ next
     apply (subst PHILs\<^sub>n\<^sub>o\<^sub>r\<^sub>m_def, auto simp add:indep dnorm_inter RPHIL\<^sub>n\<^sub>o\<^sub>r\<^sub>m_def)
   proof(rule fix_ind[where 
         P="\<lambda>a. \<forall>x. length x = Suc n \<longrightarrow> a (butlast x, x ! n) \<sqsubseteq>\<^sub>F\<^sub>D PHILs\<^sub>n\<^sub>o\<^sub>r\<^sub>m (Suc n) x", rule_format], 
-        simp_all, goal_cases base step)
+      simp_all, goal_cases base step)
     case base
     then show ?case by (simp add: cont_fun monofunI) 
   next
     case (step X ps)
     hence tra:"(Tr\<^sub>P (Suc n) ps) =(Tr\<^sub>P n (butlast ps) \<union> Tr\<^sub>r\<^sub>p n (ps ! n))" 
       by (auto simp add:n_pos phils_transitions_def nth_butlast 
-                        Suc_leI atLeastLessThanSuc Un_commute Un_assoc)
+          Suc_leI atLeastLessThanSuc Un_commute Un_assoc)
     from step show ?case
       apply (auto simp add:indep dnorm_inter PHILs\<^sub>n\<^sub>o\<^sub>r\<^sub>m_def RPHIL\<^sub>n\<^sub>o\<^sub>r\<^sub>m_def)
       apply (subst fix_eq, auto simp add:tra)     
@@ -677,7 +677,7 @@ next
         by (cases "phil e", auto) (metis exists_least_iff nth_list_update_neq)
       have d:"Up\<^sub>P (butlast ps) e = butlast (Up\<^sub>P ps e)"       
         by (cases "phil e", auto simp add:\<sigma>\<^sub>p\<^sub>h\<^sub>i\<^sub>l\<^sub>s_update_def butlast_list_update 
-                                          lphil0_state_update_def rphil_state_update_def)
+            lphil0_state_update_def rphil_state_update_def)
       have e:"length (Up\<^sub>P ps e) = Suc n"
         by (metis (full_types) step(3) length_list_update \<sigma>\<^sub>p\<^sub>h\<^sub>i\<^sub>l\<^sub>s_update_def)
       from 1 show ?case 
@@ -693,27 +693,27 @@ next
     qed
   qed
 qed
-   
+
 lemma pt: "0 < n \<Longrightarrow> PHILs\<^sub>n\<^sub>o\<^sub>r\<^sub>m n (replicate n 0) = foldPHILs n"
 proof (induct n, simp)
   case (Suc n)
   then show ?case 
     apply (auto simp add: PHILs\<^sub>n\<^sub>o\<^sub>r\<^sub>m_unfold LPHIL0\<^sub>n\<^sub>o\<^sub>r\<^sub>m_is_LPHIL0)
-     apply (metis Suc_le_eq butlast.simps(2) butlast_snoc RPHIL\<^sub>n\<^sub>o\<^sub>r\<^sub>m_is_RPHIL
-                    nat_neq_iff replicate_append_same replicate_empty)
+    apply (metis Suc_le_eq butlast.simps(2) butlast_snoc RPHIL\<^sub>n\<^sub>o\<^sub>r\<^sub>m_is_RPHIL
+        nat_neq_iff replicate_append_same replicate_empty)
     by (metis One_nat_def leI length_replicate less_Suc0 PHILs\<^sub>n\<^sub>o\<^sub>r\<^sub>m_1 nth_Cons_0 replicate_Suc)
 qed
-  
+
 corollary PHILs_is_PHILs\<^sub>n\<^sub>o\<^sub>r\<^sub>m: "PHILs\<^sub>n\<^sub>o\<^sub>r\<^sub>m N (replicate N 0) = PHILs"
   using pt N_pos by simp
 
 subsection \<open>The complete process system under normal form\<close>
 
-definition dining_transitions:: "nat \<Rightarrow> \<sigma>\<^sub>p\<^sub>h\<^sub>i\<^sub>l\<^sub>s \<times> \<sigma>\<^sub>f\<^sub>o\<^sub>r\<^sub>k\<^sub>s \<Rightarrow> dining_event set" (\<open>Tr\<^sub>D\<close>)
+definition dining_transitions:: "nat \<Rightarrow> \<sigma>\<^sub>p\<^sub>h\<^sub>i\<^sub>l\<^sub>s \<times> \<sigma>\<^sub>f\<^sub>o\<^sub>r\<^sub>k\<^sub>s \<Rightarrow> dining_event set" ("Tr\<^sub>D")
   where "Tr\<^sub>D n = (\<lambda>(ps,fs). (Tr\<^sub>P n ps) \<inter> (Tr\<^sub>F n fs))"
 
 definition dining_state_update:: 
-  "\<sigma>\<^sub>p\<^sub>h\<^sub>i\<^sub>l\<^sub>s \<times> \<sigma>\<^sub>f\<^sub>o\<^sub>r\<^sub>k\<^sub>s \<Rightarrow> dining_event \<Rightarrow> \<sigma>\<^sub>p\<^sub>h\<^sub>i\<^sub>l\<^sub>s \<times> \<sigma>\<^sub>f\<^sub>o\<^sub>r\<^sub>k\<^sub>s" (\<open>Up\<^sub>D\<close>)
+  "\<sigma>\<^sub>p\<^sub>h\<^sub>i\<^sub>l\<^sub>s \<times> \<sigma>\<^sub>f\<^sub>o\<^sub>r\<^sub>k\<^sub>s \<Rightarrow> dining_event \<Rightarrow> \<sigma>\<^sub>p\<^sub>h\<^sub>i\<^sub>l\<^sub>s \<times> \<sigma>\<^sub>f\<^sub>o\<^sub>r\<^sub>k\<^sub>s" ("Up\<^sub>D")
   where "Up\<^sub>D = (\<lambda>(ps,fs) e. (Up\<^sub>P ps e, Up\<^sub>F fs e))"
 
 definition DINING\<^sub>n\<^sub>o\<^sub>r\<^sub>m:: "nat \<Rightarrow> \<sigma>\<^sub>p\<^sub>h\<^sub>i\<^sub>l\<^sub>s \<times> \<sigma>\<^sub>f\<^sub>o\<^sub>r\<^sub>k\<^sub>s \<Rightarrow> dining_event process"
@@ -727,24 +727,24 @@ proof -
   have "DINING\<^sub>n\<^sub>o\<^sub>r\<^sub>m N (replicate N 0, replicate N 0) = 
                                         (PHILs\<^sub>n\<^sub>o\<^sub>r\<^sub>m N (replicate N 0) || FORKs\<^sub>n\<^sub>o\<^sub>r\<^sub>m N (replicate N 0))"
     unfolding DINING\<^sub>n\<^sub>o\<^sub>r\<^sub>m_def PHILs\<^sub>n\<^sub>o\<^sub>r\<^sub>m_def FORKs\<^sub>n\<^sub>o\<^sub>r\<^sub>m_def dining_transitions_def 
-              dining_state_update_def dnorm_par by simp
+      dining_state_update_def dnorm_par by simp
   thus ?thesis
     using PHILs_is_PHILs\<^sub>n\<^sub>o\<^sub>r\<^sub>m FORKs_is_FORKs\<^sub>n\<^sub>o\<^sub>r\<^sub>m DINING_def
-    by (simp add: Par_commute)
+    by (simp add: Sync_commute)
 qed
 
 subsection \<open>And finally: Philosophers may dine ! Always !\<close>
 
 corollary lphil_states:"Up\<^sub>l\<^sub>p r e = 0 \<or> Up\<^sub>l\<^sub>p r e = 1 \<or> Up\<^sub>l\<^sub>p r e = 2 \<or> Up\<^sub>l\<^sub>p r e = 3" 
-      and rphil_states:"Up\<^sub>r\<^sub>p i r e = 0 \<or> Up\<^sub>r\<^sub>p i r e = 1 \<or> Up\<^sub>r\<^sub>p i r e = 2 \<or> Up\<^sub>r\<^sub>p i r e = 3" 
+  and rphil_states:"Up\<^sub>r\<^sub>p i r e = 0 \<or> Up\<^sub>r\<^sub>p i r e = 1 \<or> Up\<^sub>r\<^sub>p i r e = 2 \<or> Up\<^sub>r\<^sub>p i r e = 3" 
   unfolding lphil0_state_update_def rphil_state_update_def by auto
 
 lemma dining_events: 
-"e \<in> Tr\<^sub>D N s \<Longrightarrow> 
+  "e \<in> Tr\<^sub>D N s \<Longrightarrow> 
         (\<exists>i\<in>{1..<N}. e = picks i i \<or> e = picks i (i-1)  \<or> e = putsdown i i \<or> e = putsdown i (i-1)) 
      \<or> (e = picks 0 0 \<or> e = picks 0 (N-1) \<or> e = putsdown 0 0 \<or> e = putsdown 0 (N-1))" 
   by (auto simp add:dining_transitions_def phils_transitions_def rphil_transitions_def 
-                    lphil0_transitions_def split:prod.splits if_splits) 
+      lphil0_transitions_def split:prod.splits if_splits) 
 
 definition "inv_dining ps fs \<equiv>      
             (\<forall>i. Suc i < N \<longrightarrow>  ((fs!(Suc i) = 1) \<longleftrightarrow> ps!Suc i \<noteq> 0)) \<and> (fs!(N-1) = 2 \<longleftrightarrow> ps!0 \<noteq> 0)
@@ -762,10 +762,10 @@ next
   case (rstep s e)
   from rstep(2,3) show ?case
     apply(auto simp add:dining_transitions_def phils_transitions_def forks_transitions_def
-                       lphil0_transitions_def rphil_transitions_def fork_transitions_def
-                       lphil0_state_update_def rphil_state_update_def \<sigma>\<^sub>f\<^sub>o\<^sub>r\<^sub>k_update_def 
-                       dining_state_update_def \<sigma>\<^sub>p\<^sub>h\<^sub>i\<^sub>l\<^sub>s_update_def \<sigma>\<^sub>f\<^sub>o\<^sub>r\<^sub>k\<^sub>s_update_def 
-                   split:if_splits prod.split) 
+        lphil0_transitions_def rphil_transitions_def fork_transitions_def
+        lphil0_state_update_def rphil_state_update_def \<sigma>\<^sub>f\<^sub>o\<^sub>r\<^sub>k_update_def 
+        dining_state_update_def \<sigma>\<^sub>p\<^sub>h\<^sub>i\<^sub>l\<^sub>s_update_def \<sigma>\<^sub>f\<^sub>o\<^sub>r\<^sub>k\<^sub>s_update_def 
+        split:if_splits prod.split) 
     unfolding inv_dining_def
   proof(goal_cases)  
     case (1 ps fs)
@@ -817,24 +817,24 @@ qed
 lemma inv_implies_DF:"inv_dining ps fs \<Longrightarrow> Tr\<^sub>D N (ps, fs) \<noteq> {}"
   unfolding inv_dining_def
   apply(simp add:dining_transitions_def phils_transitions_def forks_transitions_def
-                 lphil0_transitions_def
-             split: if_splits prod.splits)
+      lphil0_transitions_def
+      split: if_splits prod.splits)
 proof(elim conjE, intro conjI impI, goal_cases)
   case 1
   hence "putsdown 0 (N - Suc 0) \<in> (\<Union>i<N. Tr\<^sub>f i (fs ! i))"
-     by (auto simp add:fork_transitions_def) 
+    by (auto simp add:fork_transitions_def) 
   then show ?case 
     by blast 
 next
   case 2
   hence "putsdown 0 0 \<in> (\<Union>i<N. Tr\<^sub>f i (fs ! i))"
-     by (auto simp add:fork_transitions_def) 
+    by (auto simp add:fork_transitions_def) 
   then show ?case
     by (simp add:fork_transitions_def) force
 next
   case 3
   hence a:"fs!0 = 0 \<Longrightarrow> picks 0 0 \<in> (\<Union>i<N. Tr\<^sub>f i (fs ! i))"
-     by (auto simp add:fork_transitions_def) 
+    by (auto simp add:fork_transitions_def) 
   from 3 have b1:"ps!1 = 2 \<Longrightarrow> putsdown 1 0 \<in> (\<Union>x\<in>{Suc 0..<N}. Tr\<^sub>r\<^sub>p x (ps ! x))"
     using N_g1 by (auto simp add:rphil_transitions_def) 
   from 3 have b2:"fs!0 = 2 \<Longrightarrow> putsdown 1 0 \<in> Tr\<^sub>f 0 (fs ! 0)"
@@ -854,7 +854,7 @@ next
   proof(goal_cases)
     case 41:1 (* fs!0 = 0 *)
     then show ?case
-    using 4(5)[rule_format, of 1, OF N_g1] apply(elim disjE) 
+      using 4(5)[rule_format, of 1, OF N_g1] apply(elim disjE) 
     proof(goal_cases)
       case 411:1 (* fs!1 = 0 *)
       from 411 have a0: "ps!1 = 0"
@@ -934,10 +934,14 @@ next
   then show ?case
     using 5(6)[rule_format, of 0] by simp
 qed
-  
-corollary DF_DINING: "deadlock_free_v2 DINING"
+
+
+corollary deadlock_free_DINING: "deadlock_free DINING"
   unfolding DINING_is_DINING\<^sub>n\<^sub>o\<^sub>r\<^sub>m DINING\<^sub>n\<^sub>o\<^sub>r\<^sub>m_def 
   using inv_DINING inv_implies_DF by (subst deadlock_free_dnorm) auto
+
+corollary deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_DINING: "deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S DINING"
+  by (simp add: deadlock_free_DINING deadlock_free_imp_deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S)
 
 end
 

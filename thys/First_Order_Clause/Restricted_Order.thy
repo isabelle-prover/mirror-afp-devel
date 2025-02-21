@@ -4,7 +4,7 @@ begin
 
 section \<open>Restricted Orders\<close>
 
-locale relation_restriction = 
+locale relation_restriction =
   fixes R :: "'a \<Rightarrow> 'a \<Rightarrow> bool" and lift :: "'b \<Rightarrow> 'a"
   assumes inj_lift [intro]: "inj lift"
 begin
@@ -16,7 +16,7 @@ end
 
 subsection \<open>Strict Orders\<close>
 
-locale strict_order = 
+locale strict_order =
   fixes
     less :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<prec>" 50)
   assumes
@@ -27,13 +27,13 @@ begin
 abbreviation less_eq where "less_eq \<equiv> (\<prec>)\<^sup>=\<^sup>="
 
 notation less_eq (infix "\<preceq>" 50)
- 
+
 sublocale order "(\<preceq>)" "(\<prec>)"
   by(rule order_reflclp_if_transp_and_asymp[OF transp asymp])
 
 end
 
-locale strict_order_restriction = 
+locale strict_order_restriction =
   strict_order +
   relation_restriction where R = "(\<prec>)"
 begin
@@ -58,10 +58,10 @@ locale restricted_wellfounded_strict_order = strict_order +
   fixes restriction
   assumes wfp [intro]: "wfp_on restriction (\<prec>)"
 
-locale wellfounded_strict_order = 
+locale wellfounded_strict_order =
   restricted_wellfounded_strict_order where restriction = UNIV
 
-locale wellfounded_strict_order_restriction = 
+locale wellfounded_strict_order_restriction =
   strict_order_restriction +
   restricted_wellfounded_strict_order where restriction = "range lift" and less = "(\<prec>)"
 begin
@@ -88,10 +88,10 @@ lemma restricted_not_le:
   shows "a \<preceq> b"
   using assms
   by (metis less_le local.order_refl totalp totalp_on_def)
-  
+
 end
 
-locale total_strict_order = 
+locale total_strict_order =
   restricted_total_strict_order where restriction = UNIV
 begin
 
@@ -101,8 +101,8 @@ sublocale linorder "(\<preceq>)" "(\<prec>)"
 
 end
 
-locale total_strict_order_restriction = 
-  strict_order_restriction + 
+locale total_strict_order_restriction =
+  strict_order_restriction +
   restricted_total_strict_order where restriction = "range lift" and less = "(\<prec>)"
 begin
 
@@ -116,7 +116,7 @@ qed
 
 end
 
-locale restricted_wellfounded_total_strict_order = 
-  restricted_wellfounded_strict_order + restricted_total_strict_order 
+locale restricted_wellfounded_total_strict_order =
+  restricted_wellfounded_strict_order + restricted_total_strict_order
 
 end

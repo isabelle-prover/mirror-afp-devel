@@ -1,18 +1,17 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Gergely Buday</title>
     <link>https://isa-afp.org/authors/buday/</link>
-    <description>AFP entries of Gergely Buday</description>
-        <item>
-          <title>Countable Sums and Discrete (Sub)Distributions</title>
-          <link>https://isa-afp.org/entries/Countable_Sums_and_Discrete_Distributions.html</link>
-          <pubDate>Sat, 25 May 2024 00:00:00 +0000</pubDate>
-          <description>Countable Sums and Discrete (Sub)Distributions in the AFP</description>
-            <category>Logic/General logic/Mechanization of proofs</category>
-            <category>Mathematics/Probability theory</category>
-            <category>Mathematics/Algebra</category>
-        </item>
+    <description>AFP entries of Gergely Buday</description><item>
+  <title>Countable Sums and Discrete (Sub)Distributions</title>
+  <link>https://isa-afp.org/entries/Countable_Sums_and_Discrete_Distributions.html</link>
+  <pubDate>Sat, 25 May 2024 00:00:00 +0000</pubDate>
+  <description>Countable Sums and Discrete (Sub)Distributions in the AFP</description>
+    <category>Logic/General logic/Mechanization of proofs</category>
+    <category>Mathematics/Probability theory</category>
+    <category>Mathematics/Algebra</category>
+</item>
 
   </channel>
 </rss>

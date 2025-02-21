@@ -74,6 +74,7 @@ Buchi_Complementation
 Budan_Fourier
 Buffons_Needle
 Buildings
+BurrowsWheeler
 BytecodeLogicJmlTypes
 C2KA_DistributedSystems
 CAVA_Automata
@@ -87,6 +88,7 @@ CRDT
 CRYSTALS-Kyber
 CRYSTALS-Kyber_Security
 CSP_RefTK
+CVM_Distinct_Elements
 CVP_Hardness
 CYK
 CZH_Elementary_Categories
@@ -130,6 +132,7 @@ Coinductive_Languages
 Collections
 Combinable_Wands
 Combinatorial_Enumeration_Algorithms
+Combinatorial_Q_Analogues
 Combinatorics_Words
 Combinatorics_Words_Graph_Lemma
 Combinatorics_Words_Lyndon
@@ -179,6 +182,7 @@ DFS_Framework
 DOM_Components
 DPRM_Theorem
 DPT-SAT-Solver
+DP_QBS
 DataRefinementIBP
 Datatype_Order_Generator
 Decl_Sem_Fun_PL
@@ -200,6 +204,7 @@ Dict_Construction
 Difference_Bound_Matrices
 Differential_Dynamic_Logic
 Differential_Game_Logic
+Differential_Privacy
 DigitsInBase
 Digit_Expansions
 Dijkstra_Shortest_Path
@@ -340,6 +345,7 @@ Hermite
 Hermite_Lindemann
 Hidden_Markov_Models
 Higher_Order_Terms
+Hilbert_Basis
 Hilbert_Space_Tensor_Product
 HoareForDivergence
 Hoare_Time
@@ -506,6 +512,8 @@ MiniSail
 Minimal_SSA
 Minkowskis_Theorem
 Minsky_Machines
+Mission_Time_LTL
+Mission_Time_LTL_to_Regular_Expression
 MLSS_Decision_Proc
 ML_Unification
 Modal_Logics_for_NTS
@@ -529,6 +537,7 @@ Nano_JSON
 Nash_Williams
 Nat-Interval-Logic
 Native_Word
+Negative_Association
 Nested_Multisets_Ordinals
 Network_Security_Policy_Verification
 Neumann_Morgenstern_Utility
@@ -694,6 +703,7 @@ Riesz_Representation
 Risk_Free_Lending
 Robbins-Conjecture
 Robinson_Arithmetic
+Rogers_Ramanujan
 Root_Balanced_Tree
 Roth_Arithmetic_Progressions
 Routing
@@ -725,6 +735,7 @@ Separation_Algebra
 Separation_Logic_Imperative_HOL
 Separation_Logic_Unbounded
 SequentInvertibility
+Serializable
 Shadow_DOM
 Shadow_SC_DOM
 Shivers-CFA
@@ -798,6 +809,7 @@ TLA
 Tail_Recursive_Functions
 Tarskis_Geometry
 Taylor_Models
+Theta_Functions
 Three_Circles
 Three_Squares
 Timed_Automata
@@ -813,6 +825,7 @@ Transition_Systems_and_Automata
 Transitive-Closure
 Transitive-Closure-II
 Transitive_Models
+Transitive_Union_Closed_Families
 Transport
 Treaps
 Tree-Automata

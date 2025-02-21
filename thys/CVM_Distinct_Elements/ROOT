@@ -1,0 +1,21 @@
+chapter AFP
+
+session CVM_Distinct_Elements = "HOL-Probability" +
+  options [timeout = 1200]
+
+  sessions
+    Finite_Fields
+    Probabilistic_Prime_Tests
+    Negative_Association
+    Universal_Hash_Families
+
+  theories
+    CVM_Preliminary
+    CVM_Abstract_Algorithm
+    CVM_Original_Algorithm
+    CVM_New_Unbiased_Algorithm
+
+  document_files
+    "root.tex"
+    "root.bib"
+    "appendix.tex"

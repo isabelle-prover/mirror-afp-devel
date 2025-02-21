@@ -9,7 +9,7 @@ proof (intro Set.equalityI Set.subsetI)
   fix z assume "z \<in> N"
   hence "R z x \<or> z = x \<or> R x z"
     using tot[THEN totalp_onD] x_in by auto
-  thus "z \<in> {y \<in> N. R y x} \<union> {x} \<union> {y \<in> N. R x y}" 
+  thus "z \<in> {y \<in> N. R y x} \<union> {x} \<union> {y \<in> N. R x y}"
     using \<open>z \<in> N\<close> by auto
 next
   fix z assume "z \<in> {y \<in> N. R y x} \<union> {x} \<union> {y \<in> N. R x y}"

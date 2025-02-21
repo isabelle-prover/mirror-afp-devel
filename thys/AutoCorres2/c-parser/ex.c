@@ -3,6 +3,7 @@
  *
  * SPDX-License-Identifier: BSD-2-Clause
  */
+
 #define offsetof(type, member) __builtin_offsetof(type, member)
 
 int g_static = 2;
@@ -26,11 +27,9 @@ typedef struct outer {
 } outer_t;
 
 
-
 struct outer get_outer (outer_t * p) {
   return *p;
 }
-
 
 typedef struct unpacked {
 char chr;
@@ -172,3 +171,18 @@ unsigned call_add (unsigned i, unsigned k) {
 int id(int a) {
   return *(&a);
 }
+
+
+typedef unsigned long word_t;
+
+#define MY_MAX 2
+#define N_BITS 12
+
+#define calc_div(x, a) \
+    (((x) + (((typeof((x))) (a)) - 1)) / ((typeof((x))) (a)))
+
+#define calc(bits) calc_div((bits), N_BITS)
+
+struct irq_bitmap {
+  word_t bitmap[calc(MY_MAX)];
+};

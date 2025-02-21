@@ -1,11 +1,11 @@
 theory Maximal_Literal
-  imports 
+  imports
     Clausal_Calculus_Extra
-    Min_Max_Least_Greatest.Min_Max_Least_Greatest_Multiset 
+    Min_Max_Least_Greatest.Min_Max_Least_Greatest_Multiset
     Restricted_Order
 begin
 
-locale maximal_literal = order: strict_order where less = less 
+locale maximal_literal = order: strict_order where less = less
 for less :: "'a literal \<Rightarrow> 'a literal \<Rightarrow> bool"
 begin
 
@@ -24,19 +24,19 @@ lemmas is_maximal_if_is_strictly_maximal = order.is_maximal_in_mset_if_is_strict
 lemma maximal_in_clause:
   assumes "is_maximal l C"
   shows "l \<in># C"
-  using assms 
+  using assms
   unfolding is_maximal_def
   by(rule conjunct1)
 
 lemma strictly_maximal_in_clause:
   assumes "is_strictly_maximal l C"
   shows "l \<in># C"
-  using assms  
+  using assms
   unfolding is_strictly_maximal_def
   by(rule conjunct1)
 
 (* TODO: Names *)
-lemma is_maximal_not_empty [intro]: "is_maximal l C \<Longrightarrow> C \<noteq> {#}"  
+lemma is_maximal_not_empty [intro]: "is_maximal l C \<Longrightarrow> C \<noteq> {#}"
   using maximal_in_clause
   by fastforce
 

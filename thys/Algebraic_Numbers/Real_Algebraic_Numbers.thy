@@ -481,7 +481,7 @@ proof
 next
   assume "degree p = 1"
   from degree1_coeffs[OF this]
-  obtain a b where p: "p = [:a,b:]" and b: "b \<noteq> 0" by auto
+  obtain a b where p: "p = [:a,b:]" and b: "b \<noteq> 0" by metis
   from rt[unfolded p hom_distribs] have "of_int a + x * of_int b = 0" by auto
   from arg_cong[OF this, of "\<lambda> x. (x - of_int a) / of_int b"]
   have "x = - of_rat (of_int a) / of_rat (of_int b)" using b by auto

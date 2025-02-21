@@ -1,16 +1,15 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Pedro Ribeiro</title>
     <link>https://isa-afp.org/authors/ribeiro/</link>
-    <description>AFP entries of Pedro Ribeiro</description>
-        <item>
-          <title>Isabelle/UTP: Mechanised Theory Engineering for Unifying Theories of Programming</title>
-          <link>https://isa-afp.org/entries/UTP.html</link>
-          <pubDate>Fri, 01 Feb 2019 00:00:00 +0000</pubDate>
-          <description>Isabelle/UTP: Mechanised Theory Engineering for Unifying Theories of Programming in the AFP</description>
-            <category>Computer science/Programming languages/Logics</category>
-        </item>
+    <description>AFP entries of Pedro Ribeiro</description><item>
+  <title>Isabelle/UTP: Mechanised Theory Engineering for Unifying Theories of Programming</title>
+  <link>https://isa-afp.org/entries/UTP.html</link>
+  <pubDate>Fri, 01 Feb 2019 00:00:00 +0000</pubDate>
+  <description>Isabelle/UTP: Mechanised Theory Engineering for Unifying Theories of Programming in the AFP</description>
+    <category>Computer science/Programming languages/Logics</category>
+</item>
 
   </channel>
 </rss>

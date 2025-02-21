@@ -1,16 +1,15 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Alexander Katovsky</title>
     <link>https://isa-afp.org/authors/katovsky/</link>
-    <description>AFP entries of Alexander Katovsky</description>
-        <item>
-          <title>Category Theory</title>
-          <link>https://isa-afp.org/entries/Category2.html</link>
-          <pubDate>Sun, 20 Jun 2010 00:00:00 +0000</pubDate>
-          <description>Category Theory in the AFP</description>
-            <category>Mathematics/Category theory</category>
-        </item>
+    <description>AFP entries of Alexander Katovsky</description><item>
+  <title>Category Theory</title>
+  <link>https://isa-afp.org/entries/Category2.html</link>
+  <pubDate>Sun, 20 Jun 2010 00:00:00 +0000</pubDate>
+  <description>Category Theory in the AFP</description>
+    <category>Mathematics/Category theory</category>
+</item>
 
   </channel>
 </rss>

@@ -1,24 +1,23 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Friedrich Kurz</title>
     <link>https://isa-afp.org/authors/kurz/</link>
-    <description>AFP entries of Friedrich Kurz</description>
-        <item>
-          <title>Verified SAT-Based AI Planning</title>
-          <link>https://isa-afp.org/entries/Verified_SAT_Based_AI_Planning.html</link>
-          <pubDate>Thu, 29 Oct 2020 00:00:00 +0000</pubDate>
-          <description>Verified SAT-Based AI Planning in the AFP</description>
-            <category>Computer science/Artificial intelligence</category>
-        </item>
-        <item>
-          <title>Upper Bounding Diameters of State Spaces of Factored Transition Systems</title>
-          <link>https://isa-afp.org/entries/Factored_Transition_System_Bounding.html</link>
-          <pubDate>Fri, 12 Oct 2018 00:00:00 +0000</pubDate>
-          <description>Upper Bounding Diameters of State Spaces of Factored Transition Systems in the AFP</description>
-            <category>Computer science/Automata and formal languages</category>
-            <category>Mathematics/Graph theory</category>
-        </item>
+    <description>AFP entries of Friedrich Kurz</description><item>
+  <title>Verified SAT-Based AI Planning</title>
+  <link>https://isa-afp.org/entries/Verified_SAT_Based_AI_Planning.html</link>
+  <pubDate>Thu, 29 Oct 2020 00:00:00 +0000</pubDate>
+  <description>Verified SAT-Based AI Planning in the AFP</description>
+    <category>Computer science/Artificial intelligence</category>
+</item>
+<item>
+  <title>Upper Bounding Diameters of State Spaces of Factored Transition Systems</title>
+  <link>https://isa-afp.org/entries/Factored_Transition_System_Bounding.html</link>
+  <pubDate>Fri, 12 Oct 2018 00:00:00 +0000</pubDate>
+  <description>Upper Bounding Diameters of State Spaces of Factored Transition Systems in the AFP</description>
+    <category>Computer science/Automata and formal languages</category>
+    <category>Mathematics/Graph theory</category>
+</item>
 
   </channel>
 </rss>

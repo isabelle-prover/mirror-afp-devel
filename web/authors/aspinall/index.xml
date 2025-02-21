@@ -1,16 +1,15 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>David Aspinall</title>
     <link>https://isa-afp.org/authors/aspinall/</link>
-    <description>AFP entries of David Aspinall</description>
-        <item>
-          <title>Multi-Party Computation</title>
-          <link>https://isa-afp.org/entries/Multi_Party_Computation.html</link>
-          <pubDate>Thu, 09 May 2019 00:00:00 +0000</pubDate>
-          <description>Multi-Party Computation in the AFP</description>
-            <category>Computer science/Security</category>
-        </item>
+    <description>AFP entries of David Aspinall</description><item>
+  <title>Multi-Party Computation</title>
+  <link>https://isa-afp.org/entries/Multi_Party_Computation.html</link>
+  <pubDate>Thu, 09 May 2019 00:00:00 +0000</pubDate>
+  <description>Multi-Party Computation in the AFP</description>
+    <category>Computer science/Security</category>
+</item>
 
   </channel>
 </rss>

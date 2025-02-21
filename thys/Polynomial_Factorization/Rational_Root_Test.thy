@@ -79,7 +79,8 @@ proof -
     obtain c q where x1: "rat_to_normalized_int_poly [: -x, 1 :] = (c, q)" by force
     from rat_to_int_factor_explicit[OF ip_id x1] obtain r where  ip: "ip = q * r" by blast
     from rat_to_normalized_int_poly(4)[OF x1] have deg: "degree q = 1" by auto
-    from degree1_coeffs[OF deg] obtain a b where q: "q = [: b, a :]" and a: "a \<noteq> 0" by auto
+    from degree1_coeffs[OF deg] obtain a b where q: "q = [: b, a :]" and a: "a \<noteq> 0"
+      by metis
     have ipr: "ip = [: b, a :] * r" using ip q by auto
     from arg_cong[OF ipr, of "\<lambda> p. coeff p 0"] have ba0: "b dvd ?a0" by auto
     have rpq: "?rp q = [: ?r b, ?r a :]" unfolding q

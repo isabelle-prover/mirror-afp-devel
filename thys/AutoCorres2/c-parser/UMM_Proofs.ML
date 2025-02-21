@@ -24,7 +24,7 @@ sig
   val umm_array_calculation : typ -> int -> T -> local_theory -> T * local_theory
 
   val c_type_name_instantiation : string -> local_theory -> local_theory
-  val c_type_instantiation : (string * ((string * typ * int Absyn.ctype * CType.attribute list) list * CType.attribute list)) -> local_theory -> ((thm * thm) * local_theory)
+  val c_type_instantiation : csenv -> (string * ((string * typ * int Absyn.ctype * CType.attribute list) list * CType.attribute list)) -> local_theory -> ((thm * thm) * local_theory)
 
   val set_array_bound_mksimps: Proof.context -> Proof.context
 
@@ -49,6 +49,8 @@ end
 
 structure UMM_Proofs : UMM_PROOFS =
 struct
+
+fun par_map_filter f = Par_List.map f #> map_filter I
 
 (* cached calculations *)
 
@@ -842,7 +844,7 @@ val packed_type_simps = @{thms "packed_type_intro_simps"}
 val packed_type_class_intro = @{thm "packed_type_class_intro"}
 val td_packed_intros = @{thms "td_packed_intros"}
 
-fun umm_packed_type recname recty typtag_thm tag_def_thm fgthms (st, lthy) = let
+fun umm_packed_type cse recname recty typtag_thm tag_def_thm fgthms (st, lthy) = let
   val _ = Feedback.informStr lthy (1, "Proving UMM packed type for type "^recname^"... ")
 
   val packed_type_instance_t =
@@ -852,22 +854,26 @@ fun umm_packed_type recname recty typtag_thm tag_def_thm fgthms (st, lthy) = let
            @{thms align_td_array_info}   @
            @{thms max_non_zero_unfold}
 
-  val pt_ss = (lthy addsimps simp_thms)
+  val pt_ss = (lthy addsimps simp_thms delsimps @{thms One_nat_def add_2_eq_Suc add_2_eq_Suc'})
 
-  (* Try to solve. If we fail, we catch the exception and ignore. *)
-  val is_packed_type_thm =
-      Goal.prove lthy [] [] packed_type_instance_t
+in if ProgramAnalysis.is_packed_struct_or_union cse recname
+  then
+    let
+      val is_packed_type_thm = Goal.prove lthy [] [] packed_type_instance_t
        (fn _ => DETERM ((
                 (resolve_tac lthy [packed_type_class_intro]
                  THEN' K (unfold_tac lthy [typtag_thm, tag_def_thm])
                  THEN' REPEAT_ALL_NEW (resolve_tac lthy td_packed_intros))
                  THEN_ALL_NEW (asm_simp_tac pt_ss)) 1))
-in
- (add_packed_done (Syntax.string_of_typ lthy recty, true) st,
-  lthy
-  |> More_Local_Theory.in_theory (Axclass.add_arity is_packed_type_thm))
-end handle ERROR _ => (Feedback.informStr lthy (0, "Failed to prove UMM packed type for type "^recname);
+    in
+      (add_packed_done (Syntax.string_of_typ lthy recty, true) st,
+        lthy
+        |> More_Local_Theory.in_theory (Axclass.add_arity is_packed_type_thm))
+    end
+  else
+    (Feedback.informStr lthy (0, "Did not prove UMM packed type for type "^recname);
       (add_packed_done (Syntax.string_of_typ lthy recty, false) st, lthy))
+end
 
 exception AlreadyDone
 fun calculate_record_size recname (st, lthy) ths ty =
@@ -975,8 +981,9 @@ fun c_type_instance recname = gen_c_type_instantiation @{sort c_type}
           ALLGOALS (asm_full_simp_tac (ctxt addsimps [thm])))
         recname
 
-fun c_type_instantiation (recname, (flds, attrs)) lthy =
+fun c_type_instantiation cse (recname, (flds, attrs)) lthy =
   let
+    val align_exp = IntInf.log2 (ProgramAnalysis.alignof_struct_or_union cse recname)
     fun trac s = Feedback.informStr lthy (1, recname ^ ": " ^ s)
     val thy = Proof_Context.theory_of lthy
     val fullrecname = Sign.intern_type thy recname
@@ -992,7 +999,7 @@ fun c_type_instantiation (recname, (flds, attrs)) lthy =
       | (fldnm, ty, _, attrs)::rest =>
           gen_tag_pad rest (mk_tag_pad_tm (get_align attrs) recty ty fldnm lthy$ tag)
     val tag_rhs =
-      final_pad_tm (get_align attrs) recty $ gen_tag_pad flds (empty_tag_tm recty 0 recname)
+      final_pad_tm align_exp recty $ gen_tag_pad flds (empty_tag_tm recty 0 recname)
     val tag_nm = recname^"_tag"
     val (tag_def_thm, lthy) = prim_mk_defn tag_nm tag_rhs @{attributes [typ_tag_defs, simp]} lthy
       handle ERROR s => error ("Defining "^tag_nm^" as\n  "^
@@ -1214,7 +1221,7 @@ fun umm_struct_calculation cse ((recname, (flds, attrs)), tag_def_thm, typ_info_
   end;
 
   val _ = phase "PACKEDTYPE"
-  val (st, lthy) = umm_packed_type recname recty typtag_thm tag_def_thm fgthms (st, lthy)
+  val (st, lthy) = umm_packed_type cse recname recty typtag_thm tag_def_thm fgthms (st, lthy)
 
   val _ = phase "FLSOME"
   val _ = trac "About to type/field fl_Some ..."
@@ -1434,6 +1441,34 @@ fun umm_struct_calculation cse ((recname, (flds, attrs)), tag_def_thm, typ_info_
     |> notes [((Binding.make (recname ^ "_make_zero", \<^here>),  make_zero), @{attributes [make_zero]})]
     |> snd
 
+  val lthy = 
+   let
+     val {updates, fields,  ...} = the (Symtab.lookup (RecursiveRecordPackage.get_info (Proof_Context.theory_of lthy)) fullrecname)
+     val update_defs = updates |> map (Proof_Context.get_thm lthy o (suffix "_def" o fst))
+     fun mk_zero T = \<^Const>\<open>c_type_class.zero T\<close>
+     val zero_args = fields |> map (Thm.cterm_of lthy o mk_zero o snd)
+     val simp_ctxt = lthy addsimps [make_zero]
+     fun upd_zero thm = Drule.infer_instantiate' lthy (NONE::(map SOME zero_args)) thm 
+       |> Simplifier.simplify simp_ctxt
+     val update_zero_thms = map upd_zero update_defs
+
+     fun upd_const thm = 
+       let 
+         val maxidx = Thm.maxidx_of thm
+         val Var (f, T) = thm |> Thm.prop_of |> Utils.lhs_of_eq  |> (fn (_ $ f $ _) => f)
+         val vT = domain_type T
+         val v = Var (("v", maxidx + 1), vT)
+         val K_v = Abs (Name.uu_, vT, v) |> Thm.cterm_of lthy  
+         val thm' = Drule.infer_instantiate' lthy [SOME K_v] thm |> Simplifier.simplify (Simplifier.clear_simpset lthy)
+       in thm' end
+     val update_const_thms = map upd_const update_defs
+   in 
+     lthy 
+     |> notess [((Binding.make (recname ^ "_update_zero", \<^here>),  update_zero_thms), @{attributes [zero_simps]})]
+     |> snd 
+     |> notess [((Binding.make (recname ^ "_update_const", \<^here>),  update_const_thms), [])]
+     |> snd
+   end
 (*
 
 thm field_lookup_zero' [OF inner_C_fld1_C_fl_Some, simplified, OF refl, simplified inv_p]

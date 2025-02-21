@@ -7,8 +7,8 @@ definition ground_critical_pairs :: "'f gterm rel \<Rightarrow> 'f gterm rel" wh
 
 locale ground_critical_pair_theorem =
   fixes f_type :: "'f itself"
-  assumes ground_critical_pair_theorem: 
-    "\<And>R :: 'f gterm rel. 
+  assumes ground_critical_pair_theorem:
+    "\<And>R :: 'f gterm rel.
       WCR (rewrite_inside_gctxt R) \<longleftrightarrow> ground_critical_pairs R \<subseteq> (rewrite_inside_gctxt R)\<^sup>\<down>"
 
 end

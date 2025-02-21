@@ -1,16 +1,15 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Peter Zeller</title>
     <link>https://isa-afp.org/authors/zeller/</link>
-    <description>AFP entries of Peter Zeller</description>
-        <item>
-          <title>Order Extension and Szpilrajn&#39;s Extension Theorem</title>
-          <link>https://isa-afp.org/entries/Szpilrajn.html</link>
-          <pubDate>Sat, 27 Jul 2019 00:00:00 +0000</pubDate>
-          <description>Order Extension and Szpilrajn&#39;s Extension Theorem in the AFP</description>
-            <category>Mathematics/Order</category>
-        </item>
+    <description>AFP entries of Peter Zeller</description><item>
+  <title>Order Extension and Szpilrajn&#39;s Extension Theorem</title>
+  <link>https://isa-afp.org/entries/Szpilrajn.html</link>
+  <pubDate>Sat, 27 Jul 2019 00:00:00 +0000</pubDate>
+  <description>Order Extension and Szpilrajn&#39;s Extension Theorem in the AFP</description>
+    <category>Mathematics/Order</category>
+</item>
 
   </channel>
 </rss>

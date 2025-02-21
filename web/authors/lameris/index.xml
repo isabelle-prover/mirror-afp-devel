@@ -1,16 +1,15 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Cárolos Laméris</title>
     <link>https://isa-afp.org/authors/lameris/</link>
-    <description>AFP entries of Cárolos Laméris</description>
-        <item>
-          <title>Myhill-Nerode Theorem for Nominal G-Automata</title>
-          <link>https://isa-afp.org/entries/Nominal_Myhill_Nerode.html</link>
-          <pubDate>Fri, 10 Nov 2023 00:00:00 +0000</pubDate>
-          <description>Myhill-Nerode Theorem for Nominal G-Automata in the AFP</description>
-            <category>Computer science/Automata and formal languages</category>
-        </item>
+    <description>AFP entries of Cárolos Laméris</description><item>
+  <title>Myhill-Nerode Theorem for Nominal G-Automata</title>
+  <link>https://isa-afp.org/entries/Nominal_Myhill_Nerode.html</link>
+  <pubDate>Fri, 10 Nov 2023 00:00:00 +0000</pubDate>
+  <description>Myhill-Nerode Theorem for Nominal G-Automata in the AFP</description>
+    <category>Computer science/Automata and formal languages</category>
+</item>
 
   </channel>
 </rss>

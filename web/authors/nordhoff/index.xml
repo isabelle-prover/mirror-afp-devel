@@ -1,30 +1,29 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Benedikt Nordhoff</title>
     <link>https://isa-afp.org/authors/nordhoff/</link>
-    <description>AFP entries of Benedikt Nordhoff</description>
-        <item>
-          <title>Information Flow Control via Dependency Tracking</title>
-          <link>https://isa-afp.org/entries/IFC_Tracking.html</link>
-          <pubDate>Thu, 01 Apr 2021 00:00:00 +0000</pubDate>
-          <description>Information Flow Control via Dependency Tracking in the AFP</description>
-            <category>Computer science/Security</category>
-        </item>
-        <item>
-          <title>Dijkstra&#39;s Shortest Path Algorithm</title>
-          <link>https://isa-afp.org/entries/Dijkstra_Shortest_Path.html</link>
-          <pubDate>Mon, 30 Jan 2012 00:00:00 +0000</pubDate>
-          <description>Dijkstra&#39;s Shortest Path Algorithm in the AFP</description>
-            <category>Computer science/Algorithms/Graph</category>
-        </item>
-        <item>
-          <title>Finger Trees</title>
-          <link>https://isa-afp.org/entries/Finger-Trees.html</link>
-          <pubDate>Thu, 28 Oct 2010 00:00:00 +0000</pubDate>
-          <description>Finger Trees in the AFP</description>
-            <category>Computer science/Data structures</category>
-        </item>
+    <description>AFP entries of Benedikt Nordhoff</description><item>
+  <title>Information Flow Control via Dependency Tracking</title>
+  <link>https://isa-afp.org/entries/IFC_Tracking.html</link>
+  <pubDate>Thu, 01 Apr 2021 00:00:00 +0000</pubDate>
+  <description>Information Flow Control via Dependency Tracking in the AFP</description>
+    <category>Computer science/Security</category>
+</item>
+<item>
+  <title>Dijkstra&#39;s Shortest Path Algorithm</title>
+  <link>https://isa-afp.org/entries/Dijkstra_Shortest_Path.html</link>
+  <pubDate>Mon, 30 Jan 2012 00:00:00 +0000</pubDate>
+  <description>Dijkstra&#39;s Shortest Path Algorithm in the AFP</description>
+    <category>Computer science/Algorithms/Graph</category>
+</item>
+<item>
+  <title>Finger Trees</title>
+  <link>https://isa-afp.org/entries/Finger-Trees.html</link>
+  <pubDate>Thu, 28 Oct 2010 00:00:00 +0000</pubDate>
+  <description>Finger Trees in the AFP</description>
+    <category>Computer science/Data structures</category>
+</item>
 
   </channel>
 </rss>

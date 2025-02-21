@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
+<html lang="en"><head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -11,8 +10,7 @@
   <meta property="og:title" content="Wooley&#39;s Discrete Inequality" />
   <meta property="og:url" content="https://isa-afp.org/entries/Wooley_Elementary_Discrete_Inequality.html" />
   <meta property="og:image" content="https://isa-afp.org/images/afp.png" />
-  <meta property="og:type" content="article" />
-  
+    <meta property="og:type" content="article" />
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
 
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
@@ -20,11 +18,11 @@
     <script>
       MathJax = {
         tex: {
-          inlineMath: [['$', '$'], ['\\(', '\\)']]
+          inlineMath: [["$", "$"], ["\\(", "\\)"]]
         },
         processEscapes: true,
         svg: {
-          fontCache: 'global'
+          fontCache: "global"
         }
       };
     </script>
@@ -41,9 +39,8 @@
   <script src="../js/search-autocomplete.js"></script>
 </head>
 
-  <body class='mathjax_ignore'>
-    <aside>
-        <div id="menu-toggle">
+  <body class="mathjax_ignore">
+    <aside><div id="menu-toggle">
   <input id="toggle" type="checkbox" />
   <label for="toggle">
     <span>menu</span>
@@ -51,87 +48,65 @@
   </label>
 
   <a href="../" class="logo-link">
-    <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs"
-         class="logo">
+    <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
   </a>
 
   <nav id="menu">
     <div>
-      <a href="../" class='logo-link'>
-        <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs"
-             class="logo">
+      <a href="../" class="logo-link">
+        <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
       </a>
       <ul>
           <a href="../">
-            <li >
-              Home
-            </li>
+            <li >Home</li>
           </a>
           <a href="../topics/">
-            <li >
-              Topics
-            </li>
+            <li >Topics</li>
           </a>
           <a href="../download/">
-            <li >
-              Download
-            </li>
+            <li >Download</li>
           </a>
           <a href="../help/">
-            <li >
-              Help
-            </li>
+            <li >Help</li>
           </a>
           <a href="../submission/">
-            <li >
-              Submission
-            </li>
+            <li >Submission</li>
           </a>
           <a href="../statistics/">
-            <li >
-              Statistics
-            </li>
+            <li >Statistics</li>
           </a>
           <a href="../about/">
-            <li >
-              About
-            </li>
+            <li >About</li>
           </a>
       </ul>
     </div>
   </nav>
 </div>
     </aside>
-    <div class='content entries'>
-      <header>
+
+    <div class="content entries"><header>
     <form autocomplete="off" action="../search">
-      <div class='form-container'>
+      <div class="form-container">
         <input id="search-input" type="search" size="31" maxlength="255" value=""
-               aria-label="Search the AFP" list="autocomplete"><button
-               id="search-button" type="button">
-          <img src="../images/search.svg" alt="Search"/>
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="button">
+          <img src="../images/search.svg" alt="Search" />
         </button>
         <datalist id="autocomplete">
         </datalist>
       </div>
     </form>
-  <h1>
-    <span class='first'>W</span>ooley's <span class='first'>D</span>iscrete <span class='first'>I</span>nequality
-    
+  <h1 ><span class='first'>W</span>ooley's <span class='first'>D</span>iscrete <span class='first'>I</span>nequality
   </h1>
   <div>
-      <p>
-        <a href="../authors/argyraki/">Angeliki Koutsoukou-Argyraki</a> <a href="https://pure.royalholloway.ac.uk/en/persons/angeliki-koutsoukou-argyraki">🌐</a> <a class="obfuscated" data="eyJ1c2VyIjpbImFuZ2VsaWtpIiwia291dHNvdWtvdWFyZ3lyYWtpIl0sImhvc3QiOlsicmh1bCIsImFjIiwidWsiXX0=">📧</a>
-
+      <p><a href="../authors/argyraki/">Angeliki Koutsoukou-Argyraki</a> <a href="https://pure.royalholloway.ac.uk/en/persons/angeliki-koutsoukou-argyraki">🌐</a> <a class="obfuscated" data="eyJ1c2VyIjpbImFuZ2VsaWtpIiwia291dHNvdWtvdWFyZ3lyYWtpIl0sImhvc3QiOlsicmh1bCIsImFjIiwidWsiXX0=">📧</a>
       </p>
       <p class="date">October 2, 2024</p>
   </div>
 </header>
       <div>
-        
   <main>
-    <h3>Abstract</h3>
 
+    <h3>Abstract</h3>
     <div class="abstract mathjax_process">This is a formalisation of the proof of an inequality by Trevor D. Wooley attesting that when 
 $\lambda > 0$, $$\min_{r \in \mathbb{N}}(r + \lambda/r) \leq \sqrt{4 \lambda +1}$$
 with equality if and only if $\lambda = m(m-1)$ for some positive integer $m$.
@@ -147,8 +122,7 @@ The source is the note <a href="https://www.math.purdue.edu/~twooley/publ/202304
       </ul>
       <h3>Related publications</h3>
       <ul>
-        <li><a href="https://www.math.purdue.edu/~twooley/publ/20230410discineq.pdf">T.D. Wooley, An Elementary Discrete Inequality</a>.
-        </li>
+        <li><a href="https://www.math.purdue.edu/~twooley/publ/20230410discineq.pdf">T.D. Wooley, An Elementary Discrete Inequality</a>.</li>
       </ul>
       <h3>Session Wooley_Elementary_Discrete_Inequality</h3>
       <ul>
@@ -156,13 +130,12 @@ The source is the note <a href="https://www.math.purdue.edu/~twooley/publ/202304
       </ul>
 
     <div class="flex-wrap">
-      </div>
-    
+    </div>
   </main>
 
-  <nav class='links'>
-    <a class='popup-button' href="#cite-popup">Cite</a>
-    <a class='popup-button' href="#download-popup">Download</a>
+  <nav class="links">
+    <a class="popup-button" href="#cite-popup">Cite</a>
+    <a class="popup-button" href="#download-popup">Download</a>
     <h4>PDFs</h4>
     <a href="https://www.isa-afp.org/browser_info/current/AFP/Wooley_Elementary_Discrete_Inequality/outline.pdf">Proof outline</a>
     <a href="https://www.isa-afp.org/browser_info/current/AFP/Wooley_Elementary_Discrete_Inequality/document.pdf">Proof document</a>
@@ -196,11 +169,10 @@ The source is the note <a href="https://www.math.purdue.edu/~twooley/publ/202304
     <div class="popup">
       <h2>Download</h2>
       <a class="close" href="#">&times;</a>
-      <a href="https://www.isa-afp.org/release/afp-Wooley_Elementary_Discrete_Inequality-current.tar.gz"
-         download>Download latest</a>
+      <a href="https://www.isa-afp.org/release/afp-Wooley_Elementary_Discrete_Inequality-current.tar.gz" download>
+        Download latest</a>
     </div>
   </div>
-        
       </div>
     </div>
   </body>

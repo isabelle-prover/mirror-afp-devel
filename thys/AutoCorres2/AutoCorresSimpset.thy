@@ -42,8 +42,9 @@ val AUTOCORRES_SIMPSET =
     @ @{thms CollectPairFalse}
     @ @{thms unsigned_of_nat unsigned_of_int}
     @ @{thms map_of_default.simps}
-    @ @{thms field_lvalue_append} @
-    @{thms ptr_val_ptr_add_simps} )
+    @ @{thms field_lvalue_append} 
+    @ @{thms ptr_val_ptr_add_simps}
+    @ @{thms distinct_sets.simps} )
   addsimps (
     (* Needed for L2corres_spec *)
     @{thms globals_surj}

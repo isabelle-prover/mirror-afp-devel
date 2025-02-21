@@ -1,16 +1,15 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Gudmund Grov</title>
     <link>https://isa-afp.org/authors/grov/</link>
-    <description>AFP entries of Gudmund Grov</description>
-        <item>
-          <title>A Definitional Encoding of TLA* in Isabelle/HOL</title>
-          <link>https://isa-afp.org/entries/TLA.html</link>
-          <pubDate>Sat, 19 Nov 2011 00:00:00 +0000</pubDate>
-          <description>A Definitional Encoding of TLA* in Isabelle/HOL in the AFP</description>
-            <category>Computer science/Programming languages/Logics</category>
-        </item>
+    <description>AFP entries of Gudmund Grov</description><item>
+  <title>A Definitional Encoding of TLA* in Isabelle/HOL</title>
+  <link>https://isa-afp.org/entries/TLA.html</link>
+  <pubDate>Sat, 19 Nov 2011 00:00:00 +0000</pubDate>
+  <description>A Definitional Encoding of TLA* in Isabelle/HOL in the AFP</description>
+    <category>Computer science/Programming languages/Logics</category>
+</item>
 
   </channel>
 </rss>

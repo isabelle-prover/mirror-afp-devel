@@ -1,51 +1,50 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Thomas Bauereiss</title>
     <link>https://isa-afp.org/authors/bauereiss/</link>
-    <description>AFP entries of Thomas Bauereiss</description>
-        <item>
-          <title>Fresh identifiers</title>
-          <link>https://isa-afp.org/entries/Fresh_Identifiers.html</link>
-          <pubDate>Mon, 16 Aug 2021 00:00:00 +0000</pubDate>
-          <description>Fresh identifiers in the AFP</description>
-            <category>Computer science/Data structures</category>
-        </item>
-        <item>
-          <title>CoSMed: A confidentiality-verified social media platform</title>
-          <link>https://isa-afp.org/entries/CoSMed.html</link>
-          <pubDate>Mon, 16 Aug 2021 00:00:00 +0000</pubDate>
-          <description>CoSMed: A confidentiality-verified social media platform in the AFP</description>
-            <category>Computer science/Security</category>
-        </item>
-        <item>
-          <title>CoSMeDis: A confidentiality-verified distributed social media platform</title>
-          <link>https://isa-afp.org/entries/CoSMeDis.html</link>
-          <pubDate>Mon, 16 Aug 2021 00:00:00 +0000</pubDate>
-          <description>CoSMeDis: A confidentiality-verified distributed social media platform in the AFP</description>
-            <category>Computer science/Security</category>
-        </item>
-        <item>
-          <title>CoCon: A Confidentiality-Verified Conference Management System</title>
-          <link>https://isa-afp.org/entries/CoCon.html</link>
-          <pubDate>Mon, 16 Aug 2021 00:00:00 +0000</pubDate>
-          <description>CoCon: A Confidentiality-Verified Conference Management System in the AFP</description>
-            <category>Computer science/Security</category>
-        </item>
-        <item>
-          <title>Compositional BD Security</title>
-          <link>https://isa-afp.org/entries/BD_Security_Compositional.html</link>
-          <pubDate>Mon, 16 Aug 2021 00:00:00 +0000</pubDate>
-          <description>Compositional BD Security in the AFP</description>
-            <category>Computer science/Security</category>
-        </item>
-        <item>
-          <title>Bounded-Deducibility Security</title>
-          <link>https://isa-afp.org/entries/Bounded_Deducibility_Security.html</link>
-          <pubDate>Tue, 22 Apr 2014 00:00:00 +0000</pubDate>
-          <description>Bounded-Deducibility Security in the AFP</description>
-            <category>Computer science/Security</category>
-        </item>
+    <description>AFP entries of Thomas Bauereiss</description><item>
+  <title>Fresh identifiers</title>
+  <link>https://isa-afp.org/entries/Fresh_Identifiers.html</link>
+  <pubDate>Mon, 16 Aug 2021 00:00:00 +0000</pubDate>
+  <description>Fresh identifiers in the AFP</description>
+    <category>Computer science/Data structures</category>
+</item>
+<item>
+  <title>CoSMed: A confidentiality-verified social media platform</title>
+  <link>https://isa-afp.org/entries/CoSMed.html</link>
+  <pubDate>Mon, 16 Aug 2021 00:00:00 +0000</pubDate>
+  <description>CoSMed: A confidentiality-verified social media platform in the AFP</description>
+    <category>Computer science/Security</category>
+</item>
+<item>
+  <title>CoSMeDis: A confidentiality-verified distributed social media platform</title>
+  <link>https://isa-afp.org/entries/CoSMeDis.html</link>
+  <pubDate>Mon, 16 Aug 2021 00:00:00 +0000</pubDate>
+  <description>CoSMeDis: A confidentiality-verified distributed social media platform in the AFP</description>
+    <category>Computer science/Security</category>
+</item>
+<item>
+  <title>CoCon: A Confidentiality-Verified Conference Management System</title>
+  <link>https://isa-afp.org/entries/CoCon.html</link>
+  <pubDate>Mon, 16 Aug 2021 00:00:00 +0000</pubDate>
+  <description>CoCon: A Confidentiality-Verified Conference Management System in the AFP</description>
+    <category>Computer science/Security</category>
+</item>
+<item>
+  <title>Compositional BD Security</title>
+  <link>https://isa-afp.org/entries/BD_Security_Compositional.html</link>
+  <pubDate>Mon, 16 Aug 2021 00:00:00 +0000</pubDate>
+  <description>Compositional BD Security in the AFP</description>
+    <category>Computer science/Security</category>
+</item>
+<item>
+  <title>Bounded-Deducibility Security</title>
+  <link>https://isa-afp.org/entries/Bounded_Deducibility_Security.html</link>
+  <pubDate>Tue, 22 Apr 2014 00:00:00 +0000</pubDate>
+  <description>Bounded-Deducibility Security in the AFP</description>
+    <category>Computer science/Security</category>
+</item>
 
   </channel>
 </rss>

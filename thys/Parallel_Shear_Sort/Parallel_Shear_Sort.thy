@@ -19,12 +19,6 @@ begin
 
 subsubsection \<open>Facts about sorting\<close>
 
-lemma sorted_map_mono:
-  assumes "sorted xs" and "mono_on (set xs) f"
-  shows   "sorted (map f xs)"
-  using assms(1)
-  by (rule sorted_wrt_map_mono) (use assms in \<open>auto simp: mono_on_def\<close>)
-
 lemma sort_map_mono: "mono f \<Longrightarrow> sort (map f xs) = map f (sort xs)"
   by (intro properties_for_sort sorted_map_mono)
      (use mono_on_subset in auto)

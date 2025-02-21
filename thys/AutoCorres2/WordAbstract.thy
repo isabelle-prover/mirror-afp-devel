@@ -679,6 +679,15 @@ lemma corresTA_L2_modify:
   apply (simp add: abstract_val_def)
   done
 
+lemma (in heap_state) corresTA_IO_modify_heap_paddingE[word_abs]:
+  "abstract_val P p id p' \<Longrightarrow>  (\<And>s. abstract_val (Q s) (v s) id (v' s)) \<Longrightarrow> 
+  corresTA (\<lambda>s. P \<and> Q s) rx ex (IO_modify_heap_paddingE p v) (IO_modify_heap_paddingE p' v')"
+  apply (clarsimp simp add: corresTA_refines_conv IO_modify_heap_padding_def)
+  apply (simp add: refines_liftE_right_iff refines_liftE_left_iff abstract_val_def)
+  apply (rule refines_assert_result_and_state)
+  apply auto
+  done
+
 (* FIXME: move to spec monad *)
 
 lemma refines_throw: "R (Exn x, s) (Exn y, t) \<Longrightarrow> refines (throw x) (throw y) s t R"

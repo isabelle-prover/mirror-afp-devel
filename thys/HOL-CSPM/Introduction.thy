@@ -2,11 +2,11 @@
 \<comment>\<open> ********************************************************************
  * Project         : HOL-CSPM - Architectural operators for HOL-CSP
  *
- * Author          : Benoît Ballenghien, Safouan Taha, Burkhart Wolff
+ * Author          : Benoît Ballenghien, Safouan Taha, Burkhart Wolff.
  *
  * This file       : Introduction
  *
- * Copyright (c) 2023 Université Paris-Saclay, France
+ * Copyright (c) 2025 Université Paris-Saclay, France
  *
  * All rights reserved.
  *
@@ -40,13 +40,14 @@
  ******************************************************************************\<close>
 (*>*)
 
+
 chapter\<open> Introduction \<close>
 
 (*<*)
 theory Introduction                                               
-  imports "HOL-CSP.Assertions"
+  imports "HOL-CSP.CSP"
 begin 
-(*>*)
+  (*>*)
 
 section\<open>Motivations\<close>
 
@@ -57,16 +58,16 @@ text \<open>\<^session>\<open>HOL-CSP\<close> \<^cite>\<open>"HOL-CSP-AFP"\<clos
       and the semantic details in a joint Paper of Roscoe and Brooks
       "An improved failures model for communicating processes" \<^cite>\<open>"brookes-roscoe85"\<close>.\<close>
 
-text \<open>In the session \<^session>\<open>HOL-CSP\<close> are introduced the type \<^typ>\<open>'\<alpha> process\<close>, several 
+text \<open>In the session \<^session>\<open>HOL-CSP\<close> are introduced the type \<^typ>\<open>('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close>, several 
       classic CSP operators and number of laws that govern their interactions.
 
       Four of them are binary operators: the non-deterministic choice \<^term>\<open>P \<sqinter> Q\<close>, 
       the deterministic choice \<^term>\<open>P \<box> Q\<close>, the synchronization \<^term>\<open>P \<lbrakk>S\<rbrakk> Q\<close> and the
       sequential composition \<^term>\<open>P \<^bold>; Q\<close>.\<close>
 
-text \<open>Analogously to the  finite sum
+text \<open>Analogously to the finite sum
       @{term [mode=latex_sum, eta_contract = false] \<open>\<Sum>i = 0::nat..n. a i\<close>} which is generalization
-      of the addition \<^term>\<open>a + b\<close>,  we define generalisations of the binary operators 
+      of the addition \<^term>\<open>a + b\<close>, we define generalisations of the binary operators 
       of CSP.
 
       The most straight-forward way to do so would be a fold on a list of processes.
@@ -77,22 +78,37 @@ text \<open>Analogously to the  finite sum
       The notations we choose are widely inspired by the CSP$_M$ syntax of FDR:
       \<^url>\<open>https://cocotec.io/fdr/manual/cspm.html\<close>.\<close>
 
-text \<open>In this session we therefore introduce the multi-operators associated respectively
-      with \<^term>\<open>P \<sqinter> Q\<close>, \<^term>\<open>P \<box> Q\<close>, \<^term>\<open>P \<lbrakk>S\<rbrakk> Q\<close> and \<^term>\<open>P \<^bold>; Q\<close>. 
+text \<open>For the non-deterministic choice \<^term>\<open>P \<sqinter> Q\<close>, this is already done in \<^session>\<open>HOL-CSP\<close>.
+      In this session we therefore introduce the multi-operators:
+        \<^item> the global deterministic choice, written \<open>\<box> a \<in> A. P a\<close>, generalizing \<^term>\<open>P \<box> Q\<close>
+        \<^item> the multi-synchronization product, written \<open>\<^bold>\<lbrakk>S\<^bold>\<rbrakk> m \<in># M. P m\<close>, generalizing \<^term>\<open>P \<lbrakk>S\<rbrakk> Q\<close>
+          with the two special cases \<open>\<^bold>|\<^bold>|\<^bold>| m \<in># M. P m\<close> and \<open>\<^bold>|\<^bold>| m \<in># M. P m\<close>
+        \<^item> the multi-sequential composition, written \<open>SEQ l \<in>@ L. P l\<close>, generalizing \<^term>\<open>P \<^bold>; Q\<close>.
       We prove their continuity and refinements rules, 
       as well as some laws governing their interactions.\<close>
 
-text \<open>We also give the definitions of the POTS and Dining Philosophers examples,
+text \<open>We also provide the definitions of the POTS and Dining Philosophers examples,
       which greatly benefit from the newly introduced generalized operators.
 
       Since they appear naturally when modeling complex architectures,
-      we may call them \<^emph>\<open>architectural operators\<close> of CSP.\<close>
+      we may call them \<^emph>\<open>architectural operators\<close>:
+      these multi-operators represent the heart of the architectural composition principles of CSP.\<close>
 
-text \<open>Finally this session also includes results on the notion of \<^const>\<open>events_of\<close>, 
-      and a very powerful result about \<^const>\<open>deadlock_free\<close> and \<^const>\<open>Sync\<close>:
-      the interleaving \<^term>\<open>P ||| Q\<close> is \<^const>\<open>deadlock_free\<close> if \<^term>\<open>P\<close> and \<^term>\<open>Q\<close> are.
+text \<open>Additionally, we developed the theory of the interrupt operators \<^emph>\<open>Sliding\<close>, \<^emph>\<open>Throw\<close> 
+      and \<^emph>\<open>Interrupt\<close> \<^cite>\<open>"Roscoe2010UnderstandingCS"\<close>.
+      This part of the present theory reintroduces denotational semantics for these operators and
+      constructs on this basis the algebraic laws for them.
 
-      \newpage\<close>
+    In several places, our formalization efforts led to slight modifications of the original
+      definitions in order to achieve the goal of a combined integrated theory.
+      In some cases -- in particular in connection with the \<^emph>\<open>Interrupt\<close> operator definition --
+      some corrections have been necessary since the fundamental invariants were not respected.\<close>
+
+text \<open>Finally, his session includes a very powerful result about \<^const>\<open>deadlock_free\<close>
+      and \<^const>\<open>Sync\<close>: the interleaving \<^term>\<open>P ||| Q\<close> is \<^const>\<open>deadlock_free\<close> if \<^term>\<open>P\<close> and \<^term>\<open>Q\<close> are,
+      and so is the multi-interleaving of processes \<open>P m\<close> for \<open>m \<in># M\<close>.
+      
+       \newpage\<close>
 
 
 section\<open>The Global Architecture of HOL-CSPM\<close>
@@ -100,7 +116,7 @@ section\<open>The Global Architecture of HOL-CSPM\<close>
 text\<open>
 \begin{figure}[ht]
   \centering
-  \includegraphics[width=0.70\textwidth]{figures/session_graph.pdf}
+  \includegraphics[width=0.85\textwidth]{session_graph.pdf}
 	\caption{The overall architecture}
 	\label{fig:fig1}
 \end{figure}
@@ -115,4 +131,4 @@ The entire package resides on:
 
 (*<*)
 end
-(*>*)
+  (*>*)

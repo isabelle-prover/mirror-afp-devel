@@ -1,110 +1,109 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Lars Hupel</title>
     <link>https://isa-afp.org/authors/hupel/</link>
-    <description>AFP entries of Lars Hupel</description>
-        <item>
-          <title>Go Code Generation for Isabelle</title>
-          <link>https://isa-afp.org/entries/Go.html</link>
-          <pubDate>Mon, 22 Jan 2024 00:00:00 +0000</pubDate>
-          <description>Go Code Generation for Isabelle in the AFP</description>
-            <category>Tools</category>
-        </item>
-        <item>
-          <title>Fixed-length vectors</title>
-          <link>https://isa-afp.org/entries/Fixed_Length_Vector.html</link>
-          <pubDate>Mon, 14 Aug 2023 00:00:00 +0000</pubDate>
-          <description>Fixed-length vectors in the AFP</description>
-            <category>Computer science/Data structures</category>
-        </item>
-        <item>
-          <title>Hello World</title>
-          <link>https://isa-afp.org/entries/Hello_World.html</link>
-          <pubDate>Sat, 07 Mar 2020 00:00:00 +0000</pubDate>
-          <description>Hello World in the AFP</description>
-            <category>Computer science/Functional programming</category>
-        </item>
-        <item>
-          <title>A Verified Code Generator from Isabelle/HOL to CakeML</title>
-          <link>https://isa-afp.org/entries/CakeML_Codegen.html</link>
-          <pubDate>Mon, 08 Jul 2019 00:00:00 +0000</pubDate>
-          <description>A Verified Code Generator from Isabelle/HOL to CakeML in the AFP</description>
-            <category>Computer science/Programming languages/Compiling</category>
-            <category>Logic/Rewriting</category>
-        </item>
-        <item>
-          <title>An Algebra for Higher-Order Terms</title>
-          <link>https://isa-afp.org/entries/Higher_Order_Terms.html</link>
-          <pubDate>Tue, 15 Jan 2019 00:00:00 +0000</pubDate>
-          <description>An Algebra for Higher-Order Terms in the AFP</description>
-            <category>Computer science/Programming languages/Lambda calculi</category>
-        </item>
-        <item>
-          <title>Deriving generic class instances for datatypes</title>
-          <link>https://isa-afp.org/entries/Generic_Deriving.html</link>
-          <pubDate>Tue, 06 Nov 2018 00:00:00 +0000</pubDate>
-          <description>Deriving generic class instances for datatypes in the AFP</description>
-            <category>Computer science/Data structures</category>
-        </item>
-        <item>
-          <title>CakeML</title>
-          <link>https://isa-afp.org/entries/CakeML.html</link>
-          <pubDate>Mon, 12 Mar 2018 00:00:00 +0000</pubDate>
-          <description>CakeML in the AFP</description>
-            <category>Computer science/Programming languages/Language definitions</category>
-        </item>
-        <item>
-          <title>Dictionary Construction</title>
-          <link>https://isa-afp.org/entries/Dict_Construction.html</link>
-          <pubDate>Wed, 24 May 2017 00:00:00 +0000</pubDate>
-          <description>Dictionary Construction in the AFP</description>
-            <category>Tools</category>
-        </item>
-        <item>
-          <title>Constructor Functions</title>
-          <link>https://isa-afp.org/entries/Constructor_Funs.html</link>
-          <pubDate>Wed, 19 Apr 2017 00:00:00 +0000</pubDate>
-          <description>Constructor Functions in the AFP</description>
-            <category>Tools</category>
-        </item>
-        <item>
-          <title>Lazifying case constants</title>
-          <link>https://isa-afp.org/entries/Lazy_Case.html</link>
-          <pubDate>Tue, 18 Apr 2017 00:00:00 +0000</pubDate>
-          <description>Lazifying case constants in the AFP</description>
-            <category>Tools</category>
-        </item>
-        <item>
-          <title>Iptables Semantics</title>
-          <link>https://isa-afp.org/entries/Iptables_Semantics.html</link>
-          <pubDate>Fri, 09 Sep 2016 00:00:00 +0000</pubDate>
-          <description>Iptables Semantics in the AFP</description>
-            <category>Computer science/Networks</category>
-        </item>
-        <item>
-          <title>IP Addresses</title>
-          <link>https://isa-afp.org/entries/IP_Addresses.html</link>
-          <pubDate>Tue, 28 Jun 2016 00:00:00 +0000</pubDate>
-          <description>IP Addresses in the AFP</description>
-            <category>Computer science/Networks</category>
-        </item>
-        <item>
-          <title>Algorithms for Reduced Ordered Binary Decision Diagrams</title>
-          <link>https://isa-afp.org/entries/ROBDD.html</link>
-          <pubDate>Wed, 27 Apr 2016 00:00:00 +0000</pubDate>
-          <description>Algorithms for Reduced Ordered Binary Decision Diagrams in the AFP</description>
-            <category>Computer science/Algorithms</category>
-            <category>Computer science/Data structures</category>
-        </item>
-        <item>
-          <title>Properties of Random Graphs -- Subgraph Containment</title>
-          <link>https://isa-afp.org/entries/Random_Graph_Subgraph_Threshold.html</link>
-          <pubDate>Thu, 13 Feb 2014 00:00:00 +0000</pubDate>
-          <description>Properties of Random Graphs -- Subgraph Containment in the AFP</description>
-            <category>Mathematics/Graph theory</category>
-            <category>Mathematics/Probability theory</category>
-        </item>
+    <description>AFP entries of Lars Hupel</description><item>
+  <title>Go Code Generation for Isabelle</title>
+  <link>https://isa-afp.org/entries/Go.html</link>
+  <pubDate>Mon, 22 Jan 2024 00:00:00 +0000</pubDate>
+  <description>Go Code Generation for Isabelle in the AFP</description>
+    <category>Tools</category>
+</item>
+<item>
+  <title>Fixed-length vectors</title>
+  <link>https://isa-afp.org/entries/Fixed_Length_Vector.html</link>
+  <pubDate>Mon, 14 Aug 2023 00:00:00 +0000</pubDate>
+  <description>Fixed-length vectors in the AFP</description>
+    <category>Computer science/Data structures</category>
+</item>
+<item>
+  <title>Hello World</title>
+  <link>https://isa-afp.org/entries/Hello_World.html</link>
+  <pubDate>Sat, 07 Mar 2020 00:00:00 +0000</pubDate>
+  <description>Hello World in the AFP</description>
+    <category>Computer science/Functional programming</category>
+</item>
+<item>
+  <title>A Verified Code Generator from Isabelle/HOL to CakeML</title>
+  <link>https://isa-afp.org/entries/CakeML_Codegen.html</link>
+  <pubDate>Mon, 08 Jul 2019 00:00:00 +0000</pubDate>
+  <description>A Verified Code Generator from Isabelle/HOL to CakeML in the AFP</description>
+    <category>Computer science/Programming languages/Compiling</category>
+    <category>Logic/Rewriting</category>
+</item>
+<item>
+  <title>An Algebra for Higher-Order Terms</title>
+  <link>https://isa-afp.org/entries/Higher_Order_Terms.html</link>
+  <pubDate>Tue, 15 Jan 2019 00:00:00 +0000</pubDate>
+  <description>An Algebra for Higher-Order Terms in the AFP</description>
+    <category>Computer science/Programming languages/Lambda calculi</category>
+</item>
+<item>
+  <title>Deriving generic class instances for datatypes</title>
+  <link>https://isa-afp.org/entries/Generic_Deriving.html</link>
+  <pubDate>Tue, 06 Nov 2018 00:00:00 +0000</pubDate>
+  <description>Deriving generic class instances for datatypes in the AFP</description>
+    <category>Computer science/Data structures</category>
+</item>
+<item>
+  <title>CakeML</title>
+  <link>https://isa-afp.org/entries/CakeML.html</link>
+  <pubDate>Mon, 12 Mar 2018 00:00:00 +0000</pubDate>
+  <description>CakeML in the AFP</description>
+    <category>Computer science/Programming languages/Language definitions</category>
+</item>
+<item>
+  <title>Dictionary Construction</title>
+  <link>https://isa-afp.org/entries/Dict_Construction.html</link>
+  <pubDate>Wed, 24 May 2017 00:00:00 +0000</pubDate>
+  <description>Dictionary Construction in the AFP</description>
+    <category>Tools</category>
+</item>
+<item>
+  <title>Constructor Functions</title>
+  <link>https://isa-afp.org/entries/Constructor_Funs.html</link>
+  <pubDate>Wed, 19 Apr 2017 00:00:00 +0000</pubDate>
+  <description>Constructor Functions in the AFP</description>
+    <category>Tools</category>
+</item>
+<item>
+  <title>Lazifying case constants</title>
+  <link>https://isa-afp.org/entries/Lazy_Case.html</link>
+  <pubDate>Tue, 18 Apr 2017 00:00:00 +0000</pubDate>
+  <description>Lazifying case constants in the AFP</description>
+    <category>Tools</category>
+</item>
+<item>
+  <title>Iptables Semantics</title>
+  <link>https://isa-afp.org/entries/Iptables_Semantics.html</link>
+  <pubDate>Fri, 09 Sep 2016 00:00:00 +0000</pubDate>
+  <description>Iptables Semantics in the AFP</description>
+    <category>Computer science/Networks</category>
+</item>
+<item>
+  <title>IP Addresses</title>
+  <link>https://isa-afp.org/entries/IP_Addresses.html</link>
+  <pubDate>Tue, 28 Jun 2016 00:00:00 +0000</pubDate>
+  <description>IP Addresses in the AFP</description>
+    <category>Computer science/Networks</category>
+</item>
+<item>
+  <title>Algorithms for Reduced Ordered Binary Decision Diagrams</title>
+  <link>https://isa-afp.org/entries/ROBDD.html</link>
+  <pubDate>Wed, 27 Apr 2016 00:00:00 +0000</pubDate>
+  <description>Algorithms for Reduced Ordered Binary Decision Diagrams in the AFP</description>
+    <category>Computer science/Algorithms</category>
+    <category>Computer science/Data structures</category>
+</item>
+<item>
+  <title>Properties of Random Graphs -- Subgraph Containment</title>
+  <link>https://isa-afp.org/entries/Random_Graph_Subgraph_Threshold.html</link>
+  <pubDate>Thu, 13 Feb 2014 00:00:00 +0000</pubDate>
+  <description>Properties of Random Graphs -- Subgraph Containment in the AFP</description>
+    <category>Mathematics/Graph theory</category>
+    <category>Mathematics/Probability theory</category>
+</item>
 
   </channel>
 </rss>

@@ -269,7 +269,7 @@ Last 50 lines from stderr (if available):
               Options.Spec.make("build_database_server"))
 
           val cmd = Find_Facts.find_facts_index_command(results.sessions_ok, options =
-            find_facts_options, dirs = dirs, clean = true, no_build = true)
+            find_facts_options, dirs = dirs, no_build = true)
 
           val isabelle_home = Path.explode("$ISABELLE_HOME")
           val isabelle_identifier = Isabelle_System.isabelle_identifier() getOrElse ""

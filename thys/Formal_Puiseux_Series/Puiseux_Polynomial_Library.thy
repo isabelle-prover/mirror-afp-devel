@@ -28,7 +28,10 @@ qed
 lemma inj_idom_hom_pcompose [intro]:
   assumes [simp]: "degree (p :: 'a :: idom poly) \<noteq> 0"
   shows "inj_idom_hom (\<lambda>q. pcompose q p)"
-  by unfold_locales (simp_all add: pcompose_eq_0)
+proof
+  show "\<And>x. x \<circ>\<^sub>p p = 0 \<Longrightarrow> x = 0"
+    using pcompose_eq_0 assms by blast
+qed
 
 
 subsection \<open>A typeclass for algebraically closed fields\<close>

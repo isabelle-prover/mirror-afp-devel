@@ -1,0 +1,325 @@
+\section{Informal Proof\label{apx:informal_proof}}
+This section includes an informal version of the proof for the tail bounds and unbiasedness
+of the abstract algorithm (Algorithm~\ref{alg:cvm_abs}) for interested readers.
+
+This means we assume the $\mathrm{subsample}(\chi)$ operation fulfills
+Eq.~\ref{eq:subsample_condition} and always returns a subset of $\chi$.
+
+\paragraph{Notation:} For a finite set $S$, the probability space of uniformly sampling from the set
+is denoted by $U(S)$, i.e., for each $s \in S$ we have $\prob_{U(S)}({s}) = |S|^{-1}$.
+We write $\mathrm{Ber}(p)$ for the Bernoulli probability space, over the set $\{0,1\}$, i.e.,
+$P_{\mathrm{Ber}(p)}(\{1\}) = p$. $I(P)$ is the indicator function for a predicate $P$, i.e.,
+$I(\mathrm{true}) = 1$ and $I(\mathrm{false}) = 0$.
+
+Like in the formalization, we will denote the first five lines of the loop ($3$--$7$) as step 1,
+the last four lines ($8$--$10$) as step 2. For the distribution of the state of the algorithm after
+processing $i$ elements of the sequence, we will write $\Omega_i$.
+The elements of the probability spaces are pairs composed of a set and the number of subsampling
+steps, representing $\chi$ and $p$ respectively.
+
+For example: $\Omega_0 = U(\{(\emptyset, 1)\})$ is the initial state,
+$\Omega_1 = U(\{(\{a_1\}, 1)\})$, etc., and $\Omega_l$ denotes the final state.
+We introduce $\chi$ and $p$ as random variables defined over such probability spaces $\Omega$,
+in particular, $\chi$ (resp. $p$) is the projection to the first (resp. second) component.
+
+The state of the algorithm after processing only step 1 of the $i$-th loop iteration is denoted by
+$\Omega'_i$. So the sequence of states is represented by the distributions
+$\Omega_0, \Omega'_1, \Omega_1, \ldots, \Omega'_l, \Omega_l$.
+
+\subsection{Loop Invariant}
+After these preliminaries, we can go to the main proof, whose core is a probabilistic loop
+invariant for Algorithm~\ref{alg:cvm_abs} that can be verified inductively.
+
+\begin{lemma}
+\label{le:prob_invariant}
+Let $\phi : (0,1] \times \{0,1\} \rightarrow \mathbb R_{\geq 0}$ be a function, fulfilling the following
+  conditions:
+\begin{enumerate}
+\item \label{cond:phi_1} $(1-\alpha) \phi(x,0) + \alpha \phi(x,1) \leq \phi(x/\alpha,1)$ for all
+  $0 < \alpha < 1$, $0 < x \leq 1$, and
+\item \label{cond:phi_2} $\phi(x,0) \leq \phi(y,0)$ for all $0 < x < y \leq 1$.
+\end{enumerate}
+Then for all
+$k \in \{0,\ldots,l\}$, $S \subseteq \{a_1,..,a_k\}$, $\Omega \in \{\Omega_k,\Omega_k'\}$:
+\[
+  \expect_{\Omega}\left[ \prod_{s \in S} \phi(p, I(s \in \chi)) \right] \leq \phi(1,1)^{|S|}
+\]
+\end{lemma}
+\begin{proof}
+We show the result using induction over $k$. Note that we show the statement for arbitrary $S$,
+i.e., the induction statements are:
+\begin{eqnarray*}
+P(k) & :\leftrightarrow & \left(\forall S \subseteq \{a_1,..,a_k\}. \;
+  \expect_{\Omega_k}\left[ \prod_{s \in S} \phi(p, I(s \in \chi)) \right]
+    \leq \phi(1,1)^{|S|} \right) \\
+Q(k) & :\leftrightarrow & \left(\forall S \subseteq \{a_1,..,a_k\}. \;
+  \expect_{\Omega'_k}\left[ \prod_{s \in S} \phi(p, I(s \in \chi)) \right]
+    \leq \phi(1,1)^{|S|} \right)
+\end{eqnarray*}
+and we will show $P(0),Q(1),P(1),Q(2),P(2),\ldots,Q(l),P(l)$ successively.
+\paragraph{Induction start $P(0)$:} \phantom{.}\\
+We have $S \subseteq \emptyset$, and hence
+\[
+\expect_{\Omega_0}\left[ \prod_{s \in S} \phi(p, I(s \in \chi)) \right] =
+\expect_{\Omega_0}\left[1\right] = 1 \leq \phi(1,1)^0 \textrm{.}
+\]
+\paragraph{Induction step $P(k) \rightarrow Q(k+1)$:} \phantom{.}\\
+Let $S \subseteq \{ a_1, \ldots, a_{k+1} \}$ and define $S' := S - \{ a_{k+1} \}$.
+Note that $\Omega'_{k+1}$ can be constructed from $\Omega_k$ as a compound distribution, where
+$a_{k+1}$ is included in the buffer, with the probability $p$, which is itself a random variable
+over the space $\Omega_k$.
+
+In particular, for example:
+\[
+\prob_{\Omega'_{k+1}}( P(\chi, p) ) = \int_{\Omega_k} \int_{\textrm{Ber}(p(\omega))}
+P(\chi(\omega)-\{a_{k+1}\}\cup f(\tau), p(\omega)) \, d \tau \, d \omega
+\]
+for all predicates $P$ where we define $f(1) = \{a_{k+1}\}$ and $f(0) = \emptyset$.
+
+We distinguish the two cases $a_{k+1} \in S$ and $a_{k+1} \notin S$. If $a_{k+1} \in S$:
+\begin{eqnarray*}
+  & & \textstyle \expect_{\Omega'_{k+1}}\left[\prod_{s \in S} \phi(p, I(s \in \chi)) \right] \\
+ & = & \textstyle \int_{\Omega_k} \left(\prod_{s \in S'} \phi(p, I(s \in \chi))\right)
+  \int_{\mathrm{Ber}(p(\omega))} \phi(p, \tau) \, d \tau \, d \omega \\
+  & = & \textstyle \int_{\Omega_k} \left(\prod_{s \in S'} \phi(p, I(s \in \chi))\right) ((1-p) \phi(p,0) +
+  p \phi(p,1)) \, d \omega\\
+  & \underset{\textrm{Cond~\ref{cond:phi_1}}}{\leq} & \textstyle \int_{\Omega_k} \left( \prod_{s \in S'}
+  \phi(p, I(s \in \chi)) \right) \phi(1,1) \, d \omega \\
+  & \underset{\textrm{IH}}{\leq} & \textstyle \phi(1,1)^{|S'|} \phi(1,1) = \phi(1,1)^{|S|}
+\end{eqnarray*}
+
+If $a_{k+1} \notin S$ then $S' = S$ and:
+\[
+  \textstyle \expect_{\Omega'_{k+1}}\left[\prod_{s \in S} \phi(p, I(s \in \chi)) \right] =
+  \int_{\Omega_k} \prod_{s \in S} \phi(p, I(s \in \chi)) \, d \omega \leq_{\textrm{IH}} \phi(1,1)^{|S'|} =
+  \phi(1,1)^{|S|}
+\]
+\paragraph{Induction step $Q(k+1) \rightarrow P(k+1)$:} \phantom{.}\\
+Let $S \subseteq \{ a_1, \ldots, a_{k+1} \}$.
+
+Let us again note that $\Omega_{k+1}$ is a compound distribution over $\Omega'_{k+1}$. In general, for
+all predicates $P$:
+\begin{align*}
+  & \prob_{\Omega_{k+1}}( P(\chi, p) ) = \\
+  & \int_{\Omega'_{k+1}} I( |\chi(\omega)|<n ) P(\chi(\omega),p(\omega)) +
+  I( |\chi(\omega)|=n ) \int_{\mathrm{subsample}(\chi(\omega))}
+  P(\tau, f p(\omega)) \, d \tau \, d \omega \textrm{.}
+\end{align*}
+
+With this we can can now verify the induction step:
+\begin{eqnarray*}
+&  & \textstyle\expect_{\Omega_{k+1}}\left[\prod_{s \in S} \phi(p, I(s \in \chi))\right]  \\
+& = & \textstyle \int_{\Omega'_{k+1}} I(|\chi|<n)\prod_{s\in S} \phi(p, I(s \in \chi)) \, d \omega\\
+& + & \textstyle \int_{\Omega'_{k+1}} I(|\chi|=n)
+  \prod_{s \in S \setminus \chi(\omega)} \phi(pf,0)
+    \int_{\mathrm{subsample}(\chi)} \prod_{s \in S \cap \chi} \phi(pf,I(s \in \tau )) d \tau \, d \omega \\
+& \leq \marginnote{\footnotesize Eq.~\ref{eq:subsample_condition}} & \textstyle \int_{\Omega'_{k+1}}
+  I(|\chi| < n)\prod_{s \in S} \phi(p, I(s \in \chi)) \, d \omega \\
+& + & \textstyle \int_{\Omega'_{k+1}} I(|\chi| = n) \prod_{s \in S \setminus \chi(\omega)}
+  \phi(pf,0) \prod_{s \in S \cap \chi} \int_{\mathrm{Ber(f)}} \phi(pf,\tau) d \tau \, d \omega  \\
+& \leq \marginnote{\footnotesize Cond~\ref{cond:phi_2}}  &
+  \textstyle \int_{\Omega'_{k+1}} I(|\chi| < n)\prod_{s \in S} \phi(p, I(s \in \chi)) \, d \omega \\
+& + & \textstyle \int_{\Omega'_{k+1}} I(|\chi| = n) \prod_{s \in S \setminus \chi(\omega)}
+  \phi(p,0) \prod_{s \in S \cap \chi} ((1-f)\phi(pf,0)+f\phi(pf,1)) \, d \omega  \\
+& \leq \marginnote{\footnotesize Cond~\ref{cond:phi_1}} & \textstyle \int_{\Omega'_{k+1}} I(|\chi| < n)
+  \prod_{s \in S} \phi(p, I(s \in \chi)) \, d \omega \\
+& + & \textstyle \int_{\Omega'_{k+1}} I(|\chi| = n) \prod_{s \in S \setminus \chi(\omega)}
+  \phi(p,0) \prod_{s \in S \cap \chi} \phi(p,1) \, d \omega \\
+& = & \textstyle \int_{\Omega'_{k+1}} I(|\chi|<n)\prod_{s \in S} \phi(p,I(s\in\chi)) \, d\omega \\
+& + & \textstyle \int_{\Omega'_{k+1}} I(|\chi|=n)\prod_{s \in S} \phi(p,I(s\in\chi)) \, d\omega \\
+& = & \textstyle \expect_{\Omega'_{k+1}}\left[\prod_{s \in S} \phi(p, I(s \in \chi)) \right]
+  \leq  \marginnote{\footnotesize IH} \phi(1,1)^{|S|}
+\end{eqnarray*}
+\end{proof}
+
+A corollary and more practical version of the previous lemma is:
+\begin{lemma}\label{le:prob_invariant_simple}
+Let $q \leq 1$ and $h : \mathbb [0,q^{-1}] \rightarrow \mathbb R_{\geq 0}$ be concave then for all
+$k \in \{0,\ldots,l\}$, $S \subseteq \{a_1,..,a_k\}$, $\Omega \in \{\Omega_k,\Omega_k'\}$:
+\[
+  \expect_{\Omega}\left[ \prod_{s \in S} I(p>q) h(p^{-1} I(s \in \chi)) \right] \leq h(1)^{|S|}
+\]
+\end{lemma}
+\begin{proof}
+Follows from Lemma~\ref{le:prob_invariant} for $\phi(p,\tau) := I(p > q) h(\tau p^{-1})$. We just
+need to check Conditions 1 and 2. Indeed,
+\begin{eqnarray*}
+  (1-\alpha) \phi(x,0) + \alpha \phi(x,1) & = & (1-\alpha) I(x>q) h(0) + \alpha I(x>q) h(x^{-1}) \\
+   & \leq & I(x > q) h(\alpha x^{-1}) \leq I(x > q \alpha) h(\alpha x^{-1}) = \phi(x/\alpha,1)
+\end{eqnarray*}
+for $0 < \alpha < 1$ and $0< x \leq 1$, where we used that $x > q$ implies $x > q \alpha$; and
+\[
+  \phi(x,0) = I(x>q) h(0) \leq I(y > q) h(0) = \phi(y,0)
+\]
+for $0 < x < y \leq 1$, where we used that $x > q$ implies $y > q$.
+\end{proof}
+
+It should be noted that this is a probabilistic recurrence relation, but the main innovation is that
+we establish a relation, with respect to general classes of functions of the state variables.
+
+\subsection{Concentration}
+Let us now see how we can obtain concentration bounds using Lemma~\ref{le:prob_invariant_simple}, i.e., that
+the result of the algorithm is concentrated around the cardinality of $A = \{ a_1, \ldots, a_l \}$.
+This will be done using the Cram\'{e}r--Chernoff method for the probability that the estimate is
+above $(1+\eps)|A|$ (resp.~below $(1-\eps)|A|$) assuming $p$ is not too small and a tail estimate
+for $p$ being too small.
+
+It should be noted that concentration is trivial, if $|A| < n$, i.e., if we never need to do
+sub-sampling, so we assume $|A| \geq n$.
+
+Define $q := n/(4|A|)$ and notice that $q \leq \frac{1}{4}$.
+
+Let us start with the upper tail bound:
+\begin{lemma}
+\label{le:upper_tail}
+For any $\Omega \in \{\Omega_0,\ldots,\Omega_l\} \cup \{\Omega'_1,\ldots,\Omega'_l\}$ and
+$0 < \eps \leq 1$:
+\[
+L := \prob_{\Omega} \left( p^{-1} |\chi| \geq (1+\eps) |A| \wedge p \geq q\right) \leq
+  \exp\left(-\frac{n}{12} \eps^2\right)
+\]
+\end{lemma}
+\begin{proof}
+By assumption there exists a $k$ such that $\Omega \in \{\Omega_k, \Omega'_k\}$.
+Let $A' = A \cap \{a_1,\ldots,a_k\}$.
+Moreover, we define:
+\begin{align*}
+  t & := q \ln( 1 + \eps) \\
+  h(x) & := 1+qx(e^{t/q}-1)
+\end{align*}
+
+To get a tail estimate, we use the Cram\'{e}r--Chernoff method:
+{\allowdisplaybreaks
+\begin{eqnarray*}
+  L & \underset{t > 0}{\leq} & \prob_{\Omega} \left( \exp(t p^{-1} |\chi|) \geq
+    \exp(t (1+\eps) |A|) \wedge p \geq q \right) \\
+  & \leq &
+    \prob_{\Omega} \left( I(p \geq q) \exp(t p^{-1} |\chi|) \geq \exp(t (1+\eps) |A|) \right) \\
+  & \underset{\textrm{Markov}}{\leq} &
+    \exp( -t (1+\eps) |A| ) \expect_\Omega \left[ I(p \geq q) \exp ( t p^{-1} |\chi| ) \right] \\
+ & \leq & \exp( -t (1+\eps) |A| )
+  \expect_\Omega \left[ \prod_{s \in A'} I(p \geq q) \exp ( t p^{-1} I(s \in \chi) ) \right] \\
+ & \leq & \exp( -t (1+\eps) |A| )
+  \expect_\Omega \left[ \prod_{s \in A'} I(p \geq q) h( p^{-1} I(s \in \chi) ) \right] \\
+ & \underset{\textrm{Le.~\ref{le:prob_invariant_simple}}}{\leq} & \exp( -t (1+\eps) |A| ) h(1)^{|A'|} \\
+ & \underset{h(1)\geq 1}{\leq} & \left(\exp( \ln(h(1)) -t (1+\eps))\right) ^ {|A|}
+\end{eqnarray*}}
+So we just need to show that (using $|A|=\frac{n}{4q}$):
+\[
+  \ln(h(1))-t (1+\eps) \leq \frac{-q \eps^2}{3}
+\]
+The latter can be established by analyzing the function
+\[
+  f(\eps) := -\ln(1+q \eps) + q \ln(1+\eps) (1+\eps) - \frac{q \eps^2}{3} =
+    -\ln (h(1)) +t (1+\eps) - \frac{q\eps^2}{3} \textrm{.}
+\]
+For which it is easy to check $f(0) = 0$ and the derivative with respect to $\eps$ is non-negative
+in the range $0 \leq q \leq 1/4$ and $0 < \eps \leq 1$, i.e., $f(\eps) \geq 0$.
+\end{proof}
+
+Using the previous result we can also estimate bounds for $p$ becoming too small:
+\begin{lemma}\label{le:low_p}
+\[
+\prob_{\Omega_l}(p < q) \leq l \exp\left( - \frac{n}{12}\right)
+\]
+\end{lemma}
+\begin{proof}
+We will use a similar strategy as in the $\mathrm{Bad}_2$ bound from the original CVM paper~\cite{chakraborty2022}.
+Let $j$ be maximal, s.t., $q \leq f^j$. Hence $f^{j+1} < q$ and:
+\begin{equation}
+\label{eq:f_j}
+  f^j \leq 2f f^j < 2q = \frac{n}{2|A|} \textrm{.}
+\end{equation}
+First, we bound the probability of jumping from $p=f^j$ to $p=f^{j+1}$ at a specific point in the
+algorithm, e.g., while processing $k$ stream elements. It can only happen if $|\chi|=n$, $p=f^j$
+in $\Omega'_k$. Then
+\begin{eqnarray*}
+  \prob_{\Omega'_k} ( |\chi| \geq n \wedge p=f^j) & \leq &
+    \prob( p^{-1} |\chi| \geq f^{-j} n \wedge p \geq q) \\
+    & \underset{\textrm{Eq.~\ref{eq:f_j}}}{\leq} & \prob( p^{-1} |\chi| \geq 2|A| \wedge p \geq q)\\
+    & \underset{\textrm{Le.~\ref{le:upper_tail}}}{\leq} & \exp(- n/12)
+\end{eqnarray*}
+The probability that this happens ever in the entire process is then at most $l$ times the above
+which proves the lemma.
+\end{proof}
+
+\begin{lemma}\label{le:lower_tail}
+Let $0 < \eps < 1$ then:
+\[
+  L := \prob_{\Omega_l} ( p^{-1} |\chi| \leq (1-\eps)|A| \wedge p \geq q) \leq
+    \exp\left(-\frac{n}{8} \eps^2\right)
+\]
+\end{lemma}
+\begin{proof}
+Let us define
+\begin{align*}
+  t & := q \ln(1-\eps) < 0 \\
+  h(x) & := 1+q x (e^{t/q}-1)
+\end{align*}
+
+Note that $h(x) \geq 0$ for $0 \leq x \leq q^{-1}$ (can be checked by verifying it is true for
+$h(0)$ and $h(q^{-1})$ and the fact that the function is affine.)
+
+With these definitions we again follow the Cram\'{e}r--Chernoff method:
+{\allowdisplaybreaks
+\begin{eqnarray*}
+  L & \underset{t<0}{=} & \prob_{\Omega_l} \left( \exp(t p^{-1} |\chi|) \geq
+    \exp(t (1-\eps)|A|) \wedge p \geq q \right) \\
+    & \leq & \prob_{\Omega_l} \left( I(p \geq q) \exp(t p^{-1} |\chi|) \geq
+    \exp(t (1-\eps)|A|) \wedge p > q \right) \\
+    & \underset{\textrm{Markov}}{\leq} & \exp( -t (1-\eps) |A| )
+    \expect_\Omega \left[ I(p \geq q) \exp ( t p^{-1} |\chi| ) \right] \\
+    & = & \exp( -t (1-\eps) |A| ) \expect_\Omega \left[ \prod_{s \in A} I(p \geq q)
+      \exp ( t p^{-1} I(s \in \chi) ) \right] \\
+    & \leq & \exp( -t (1-\eps) |A| ) \expect_\Omega
+      \left[ \prod_{s \in A} I(p \geq q) h( p^{-1} I(s \in \chi) ) \right] \\
+    & \underset{\textrm{Le.~\ref{le:prob_invariant_simple}}}{\leq} & \exp( -t (1-\eps) |A| ) (h(1))^{|A|} \\
+    & = & \exp( \ln(h(1)) -t (1-\eps) )^{|A|}
+\end{eqnarray*}
+}
+Substituting $t$ and $h$ and using $|A| = \frac{n}{4q}$, we can see that the lemma is true if
+\[
+  f(\eps) := q \ln(1-\eps) (1-\eps) -\ln(1 - q \eps) - \frac{q}{2}\eps^2 =
+  t (1-\eps) - \ln(h(1)) - \frac{q}{2} \eps^2
+\]
+is non-negative for $0 \leq q \leq \frac{1}{4}$ and $0 < \eps < 1$.
+This can be verified by checking that $f(0) = 0$ and that the derivative with respect to $\eps$ is
+non-negative.
+\end{proof}
+We can now establish the concentration result:
+\begin{theorem}\label{th:concentration}
+Let $0 < \eps < 1$ and $0 < \delta < 1$ and
+$n \geq \frac{12}{\eps^2} \ln\left(\frac{3l}{\delta}\right)$ then:
+\[
+  L = \prob_{\Omega_l} \left( | p^{-1} |\chi| - |A| | \geq \eps |A| \right) \leq \delta
+\]
+\end{theorem}
+\begin{proof}
+Note that the theorem is trivial if $|A| < n$. If not:
+\begin{eqnarray*}
+  L & \leq & \prob_{\Omega_l} \left( | p^{-1} |\chi| \leq (1-\eps) |A| \wedge p \geq q \right)\\
+  & + &
+    \prob_{\Omega_l} \left( | p^{-1} |\chi| \geq (1+\eps) |A| \wedge p \geq q \right) +
+    \prob_{\Omega_l} \left( p < q \right) \\
+    & \underset{Le.~\ref{le:upper_tail}-\ref{le:lower_tail}}{\leq} &
+    \exp\left( - \frac{n}{8} \eps^2 \right)  + \exp\left( - \frac{n}{12} \eps^2 \right) +
+    l \exp\left( - \frac{n}{12} \right) \\
+    & \leq & \frac{\delta}{3} + \frac{\delta}{3} + \frac{\delta}{3}
+\end{eqnarray*}
+\end{proof}
+\subsection{Unbiasedness\label{sec:unbiasedness}}
+Let $M$ be large enough such that $p^{-1} \leq M$ a.s. (e.g., we can choose $M = f^{-l}$).
+Then we can derive from Lemma~\ref{le:prob_invariant_simple} using $h(x) = x$ and $h(x) = M+1-x$ that
+for all $s \in A$:
+\begin{eqnarray*}
+  \expect_{\Omega_l} [ p^{-1} I(s \in \chi) ] & = &
+    \expect_{\Omega_l} [ I(p \geq M^{-1}) p^{-1} I(s \in \chi) ] \leq 1 \\
+  \expect_{\Omega_l} [ M + 1 - p^{-1} I(s \in \chi) ] & = &
+    \expect_{\Omega_l} [ I(p \geq M^{-1}) (M + 1 - p^{-1} I(s \in \chi)) ] \leq M
+\end{eqnarray*}
+which implies $\expect_{\Omega_l} [ p^{-1} I(s \in \chi) ] = 1$.
+By linearity of expectation we conclude
+\[
+  \expect_{\Omega_l} [ p^{-1} |\chi| ] =
+    \sum_{s \in A} \expect_{\Omega_l} [ p^{-1} I(s \in \chi) ] = |A| \textrm{.}
+\]

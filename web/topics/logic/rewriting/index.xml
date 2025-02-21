@@ -1,179 +1,178 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Logic/Rewriting</title>
     <link>https://isa-afp.org/topics/logic/rewriting/</link>
-    <description>AFP entries in Rewriting</description>
-         <item>
-          <title>Sorted Terms</title>
-          <link>https://isa-afp.org/entries/Sorted_Terms.html</link>
-          <pubDate>Mon, 27 May 2024 00:00:00 +0000</pubDate>
-          <description>Sorted Terms in the AFP</description>
-            <category>Logic/Rewriting</category>
-            <category>Mathematics/Algebra</category>
-        </item>
-        <item>
-          <title>Verifying a Decision Procedure for Pattern Completeness</title>
-          <link>https://isa-afp.org/entries/Pattern_Completeness.html</link>
-          <pubDate>Mon, 27 May 2024 00:00:00 +0000</pubDate>
-          <description>Verifying a Decision Procedure for Pattern Completeness in the AFP</description>
-            <category>Logic/Rewriting</category>
-        </item>
-        <item>
-          <title>Substitutions for Lambda-Free Higher-Order Terms</title>
-          <link>https://isa-afp.org/entries/Substitutions_Lambda_Free.html</link>
-          <pubDate>Thu, 25 Apr 2024 00:00:00 +0000</pubDate>
-          <description>Substitutions for Lambda-Free Higher-Order Terms in the AFP</description>
-            <category>Logic/Rewriting</category>
-        </item>
-        <item>
-          <title>Undecidability Results on Orienting Single Rewrite Rules</title>
-          <link>https://isa-afp.org/entries/Orient_Rewrite_Rule_Undecidable.html</link>
-          <pubDate>Thu, 25 Apr 2024 00:00:00 +0000</pubDate>
-          <description>Undecidability Results on Orienting Single Rewrite Rules in the AFP</description>
-            <category>Logic/Rewriting</category>
-        </item>
-        <item>
-          <title>A Verified Efficient Implementation of the Weighted Path Order</title>
-          <link>https://isa-afp.org/entries/Efficient_Weighted_Path_Order.html</link>
-          <pubDate>Thu, 01 Jun 2023 00:00:00 +0000</pubDate>
-          <description>A Verified Efficient Implementation of the Weighted Path Order in the AFP</description>
-            <category>Logic/Rewriting</category>
-            <category>Computer science/Algorithms</category>
-        </item>
-        <item>
-          <title>Reducing Rewrite Properties to Properties on Ground Terms</title>
-          <link>https://isa-afp.org/entries/Rewrite_Properties_Reduction.html</link>
-          <pubDate>Thu, 02 Jun 2022 00:00:00 +0000</pubDate>
-          <description>Reducing Rewrite Properties to Properties on Ground Terms in the AFP</description>
-            <category>Logic/Rewriting</category>
-        </item>
-        <item>
-          <title>The Generalized Multiset Ordering is NP-Complete</title>
-          <link>https://isa-afp.org/entries/Multiset_Ordering_NPC.html</link>
-          <pubDate>Wed, 20 Apr 2022 00:00:00 +0000</pubDate>
-          <description>The Generalized Multiset Ordering is NP-Complete in the AFP</description>
-            <category>Logic/Rewriting</category>
-        </item>
-        <item>
-          <title>First-Order Theory of Rewriting</title>
-          <link>https://isa-afp.org/entries/FO_Theory_Rewriting.html</link>
-          <pubDate>Wed, 02 Feb 2022 00:00:00 +0000</pubDate>
-          <description>First-Order Theory of Rewriting in the AFP</description>
-            <category>Computer science/Automata and formal languages</category>
-            <category>Logic/Rewriting</category>
-            <category>Logic/Proof theory</category>
-        </item>
-        <item>
-          <title>A Formalization of Weighted Path Orders and Recursive Path Orders</title>
-          <link>https://isa-afp.org/entries/Weighted_Path_Order.html</link>
-          <pubDate>Thu, 16 Sep 2021 00:00:00 +0000</pubDate>
-          <description>A Formalization of Weighted Path Orders and Recursive Path Orders in the AFP</description>
-            <category>Logic/Rewriting</category>
-        </item>
-        <item>
-          <title>A Formalization of Knuth–Bendix Orders</title>
-          <link>https://isa-afp.org/entries/Knuth_Bendix_Order.html</link>
-          <pubDate>Wed, 13 May 2020 00:00:00 +0000</pubDate>
-          <description>A Formalization of Knuth–Bendix Orders in the AFP</description>
-            <category>Logic/Rewriting</category>
-        </item>
-        <item>
-          <title>Implementing the Goodstein Function in &lambda;-Calculus</title>
-          <link>https://isa-afp.org/entries/Goodstein_Lambda.html</link>
-          <pubDate>Fri, 21 Feb 2020 00:00:00 +0000</pubDate>
-          <description>Implementing the Goodstein Function in &amp;lambda;-Calculus in the AFP</description>
-            <category>Logic/Rewriting</category>
-        </item>
-        <item>
-          <title>A Verified Code Generator from Isabelle/HOL to CakeML</title>
-          <link>https://isa-afp.org/entries/CakeML_Codegen.html</link>
-          <pubDate>Mon, 08 Jul 2019 00:00:00 +0000</pubDate>
-          <description>A Verified Code Generator from Isabelle/HOL to CakeML in the AFP</description>
-            <category>Computer science/Programming languages/Compiling</category>
-            <category>Logic/Rewriting</category>
-        </item>
-        <item>
-          <title>Graph Saturation</title>
-          <link>https://isa-afp.org/entries/Graph_Saturation.html</link>
-          <pubDate>Fri, 23 Nov 2018 00:00:00 +0000</pubDate>
-          <description>Graph Saturation in the AFP</description>
-            <category>Logic/Rewriting</category>
-            <category>Mathematics/Graph theory</category>
-        </item>
-        <item>
-          <title>Formalization of the Embedding Path Order for Lambda-Free Higher-Order Terms</title>
-          <link>https://isa-afp.org/entries/Lambda_Free_EPO.html</link>
-          <pubDate>Fri, 19 Oct 2018 00:00:00 +0000</pubDate>
-          <description>Formalization of the Embedding Path Order for Lambda-Free Higher-Order Terms in the AFP</description>
-            <category>Logic/Rewriting</category>
-        </item>
-        <item>
-          <title>First-Order Terms</title>
-          <link>https://isa-afp.org/entries/First_Order_Terms.html</link>
-          <pubDate>Tue, 06 Feb 2018 00:00:00 +0000</pubDate>
-          <description>First-Order Terms in the AFP</description>
-            <category>Logic/Rewriting</category>
-            <category>Computer science/Algorithms</category>
-        </item>
-        <item>
-          <title>Monad normalisation</title>
-          <link>https://isa-afp.org/entries/Monad_Normalisation.html</link>
-          <pubDate>Fri, 05 May 2017 00:00:00 +0000</pubDate>
-          <description>Monad normalisation in the AFP</description>
-            <category>Tools</category>
-            <category>Computer science/Functional programming</category>
-            <category>Logic/Rewriting</category>
-        </item>
-        <item>
-          <title>Formalization of Nested Multisets, Hereditary Multisets, and Syntactic Ordinals</title>
-          <link>https://isa-afp.org/entries/Nested_Multisets_Ordinals.html</link>
-          <pubDate>Sat, 12 Nov 2016 00:00:00 +0000</pubDate>
-          <description>Formalization of Nested Multisets, Hereditary Multisets, and Syntactic Ordinals in the AFP</description>
-            <category>Logic/Rewriting</category>
-        </item>
-        <item>
-          <title>Formalization of Knuth–Bendix Orders for Lambda-Free Higher-Order Terms</title>
-          <link>https://isa-afp.org/entries/Lambda_Free_KBOs.html</link>
-          <pubDate>Sat, 12 Nov 2016 00:00:00 +0000</pubDate>
-          <description>Formalization of Knuth–Bendix Orders for Lambda-Free Higher-Order Terms in the AFP</description>
-            <category>Logic/Rewriting</category>
-        </item>
-        <item>
-          <title>Formalization of Recursive Path Orders for Lambda-Free Higher-Order Terms</title>
-          <link>https://isa-afp.org/entries/Lambda_Free_RPOs.html</link>
-          <pubDate>Fri, 23 Sep 2016 00:00:00 +0000</pubDate>
-          <description>Formalization of Recursive Path Orders for Lambda-Free Higher-Order Terms in the AFP</description>
-            <category>Logic/Rewriting</category>
-        </item>
-        <item>
-          <title>The Z Property</title>
-          <link>https://isa-afp.org/entries/Rewriting_Z.html</link>
-          <pubDate>Thu, 30 Jun 2016 00:00:00 +0000</pubDate>
-          <description>The Z Property in the AFP</description>
-            <category>Logic/Rewriting</category>
-        </item>
-        <item>
-          <title>Decreasing Diagrams II</title>
-          <link>https://isa-afp.org/entries/Decreasing-Diagrams-II.html</link>
-          <pubDate>Thu, 20 Aug 2015 00:00:00 +0000</pubDate>
-          <description>Decreasing Diagrams II in the AFP</description>
-            <category>Logic/Rewriting</category>
-        </item>
-        <item>
-          <title>Decreasing Diagrams</title>
-          <link>https://isa-afp.org/entries/Decreasing-Diagrams.html</link>
-          <pubDate>Fri, 01 Nov 2013 00:00:00 +0000</pubDate>
-          <description>Decreasing Diagrams in the AFP</description>
-            <category>Logic/Rewriting</category>
-        </item>
-        <item>
-          <title>Abstract Rewriting</title>
-          <link>https://isa-afp.org/entries/Abstract-Rewriting.html</link>
-          <pubDate>Mon, 14 Jun 2010 00:00:00 +0000</pubDate>
-          <description>Abstract Rewriting in the AFP</description>
-            <category>Logic/Rewriting</category>
-        </item>
+    <description>AFP entries in Rewriting</description><item>
+  <title>Sorted Terms</title>
+  <link>https://isa-afp.org/entries/Sorted_Terms.html</link>
+  <pubDate>Mon, 27 May 2024 00:00:00 +0000</pubDate>
+  <description>Sorted Terms in the AFP</description>
+    <category>Logic/Rewriting</category>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Verifying a Decision Procedure for Pattern Completeness</title>
+  <link>https://isa-afp.org/entries/Pattern_Completeness.html</link>
+  <pubDate>Mon, 27 May 2024 00:00:00 +0000</pubDate>
+  <description>Verifying a Decision Procedure for Pattern Completeness in the AFP</description>
+    <category>Logic/Rewriting</category>
+</item>
+<item>
+  <title>Substitutions for Lambda-Free Higher-Order Terms</title>
+  <link>https://isa-afp.org/entries/Substitutions_Lambda_Free.html</link>
+  <pubDate>Thu, 25 Apr 2024 00:00:00 +0000</pubDate>
+  <description>Substitutions for Lambda-Free Higher-Order Terms in the AFP</description>
+    <category>Logic/Rewriting</category>
+</item>
+<item>
+  <title>Undecidability Results on Orienting Single Rewrite Rules</title>
+  <link>https://isa-afp.org/entries/Orient_Rewrite_Rule_Undecidable.html</link>
+  <pubDate>Thu, 25 Apr 2024 00:00:00 +0000</pubDate>
+  <description>Undecidability Results on Orienting Single Rewrite Rules in the AFP</description>
+    <category>Logic/Rewriting</category>
+</item>
+<item>
+  <title>A Verified Efficient Implementation of the Weighted Path Order</title>
+  <link>https://isa-afp.org/entries/Efficient_Weighted_Path_Order.html</link>
+  <pubDate>Thu, 01 Jun 2023 00:00:00 +0000</pubDate>
+  <description>A Verified Efficient Implementation of the Weighted Path Order in the AFP</description>
+    <category>Logic/Rewriting</category>
+    <category>Computer science/Algorithms</category>
+</item>
+<item>
+  <title>Reducing Rewrite Properties to Properties on Ground Terms</title>
+  <link>https://isa-afp.org/entries/Rewrite_Properties_Reduction.html</link>
+  <pubDate>Thu, 02 Jun 2022 00:00:00 +0000</pubDate>
+  <description>Reducing Rewrite Properties to Properties on Ground Terms in the AFP</description>
+    <category>Logic/Rewriting</category>
+</item>
+<item>
+  <title>The Generalized Multiset Ordering is NP-Complete</title>
+  <link>https://isa-afp.org/entries/Multiset_Ordering_NPC.html</link>
+  <pubDate>Wed, 20 Apr 2022 00:00:00 +0000</pubDate>
+  <description>The Generalized Multiset Ordering is NP-Complete in the AFP</description>
+    <category>Logic/Rewriting</category>
+</item>
+<item>
+  <title>First-Order Theory of Rewriting</title>
+  <link>https://isa-afp.org/entries/FO_Theory_Rewriting.html</link>
+  <pubDate>Wed, 02 Feb 2022 00:00:00 +0000</pubDate>
+  <description>First-Order Theory of Rewriting in the AFP</description>
+    <category>Computer science/Automata and formal languages</category>
+    <category>Logic/Rewriting</category>
+    <category>Logic/Proof theory</category>
+</item>
+<item>
+  <title>A Formalization of Weighted Path Orders and Recursive Path Orders</title>
+  <link>https://isa-afp.org/entries/Weighted_Path_Order.html</link>
+  <pubDate>Thu, 16 Sep 2021 00:00:00 +0000</pubDate>
+  <description>A Formalization of Weighted Path Orders and Recursive Path Orders in the AFP</description>
+    <category>Logic/Rewriting</category>
+</item>
+<item>
+  <title>A Formalization of Knuth–Bendix Orders</title>
+  <link>https://isa-afp.org/entries/Knuth_Bendix_Order.html</link>
+  <pubDate>Wed, 13 May 2020 00:00:00 +0000</pubDate>
+  <description>A Formalization of Knuth–Bendix Orders in the AFP</description>
+    <category>Logic/Rewriting</category>
+</item>
+<item>
+  <title>Implementing the Goodstein Function in &lambda;-Calculus</title>
+  <link>https://isa-afp.org/entries/Goodstein_Lambda.html</link>
+  <pubDate>Fri, 21 Feb 2020 00:00:00 +0000</pubDate>
+  <description>Implementing the Goodstein Function in &amp;lambda;-Calculus in the AFP</description>
+    <category>Logic/Rewriting</category>
+</item>
+<item>
+  <title>A Verified Code Generator from Isabelle/HOL to CakeML</title>
+  <link>https://isa-afp.org/entries/CakeML_Codegen.html</link>
+  <pubDate>Mon, 08 Jul 2019 00:00:00 +0000</pubDate>
+  <description>A Verified Code Generator from Isabelle/HOL to CakeML in the AFP</description>
+    <category>Computer science/Programming languages/Compiling</category>
+    <category>Logic/Rewriting</category>
+</item>
+<item>
+  <title>Graph Saturation</title>
+  <link>https://isa-afp.org/entries/Graph_Saturation.html</link>
+  <pubDate>Fri, 23 Nov 2018 00:00:00 +0000</pubDate>
+  <description>Graph Saturation in the AFP</description>
+    <category>Logic/Rewriting</category>
+    <category>Mathematics/Graph theory</category>
+</item>
+<item>
+  <title>Formalization of the Embedding Path Order for Lambda-Free Higher-Order Terms</title>
+  <link>https://isa-afp.org/entries/Lambda_Free_EPO.html</link>
+  <pubDate>Fri, 19 Oct 2018 00:00:00 +0000</pubDate>
+  <description>Formalization of the Embedding Path Order for Lambda-Free Higher-Order Terms in the AFP</description>
+    <category>Logic/Rewriting</category>
+</item>
+<item>
+  <title>First-Order Terms</title>
+  <link>https://isa-afp.org/entries/First_Order_Terms.html</link>
+  <pubDate>Tue, 06 Feb 2018 00:00:00 +0000</pubDate>
+  <description>First-Order Terms in the AFP</description>
+    <category>Logic/Rewriting</category>
+    <category>Computer science/Algorithms</category>
+</item>
+<item>
+  <title>Monad normalisation</title>
+  <link>https://isa-afp.org/entries/Monad_Normalisation.html</link>
+  <pubDate>Fri, 05 May 2017 00:00:00 +0000</pubDate>
+  <description>Monad normalisation in the AFP</description>
+    <category>Tools</category>
+    <category>Computer science/Functional programming</category>
+    <category>Logic/Rewriting</category>
+</item>
+<item>
+  <title>Formalization of Nested Multisets, Hereditary Multisets, and Syntactic Ordinals</title>
+  <link>https://isa-afp.org/entries/Nested_Multisets_Ordinals.html</link>
+  <pubDate>Sat, 12 Nov 2016 00:00:00 +0000</pubDate>
+  <description>Formalization of Nested Multisets, Hereditary Multisets, and Syntactic Ordinals in the AFP</description>
+    <category>Logic/Rewriting</category>
+</item>
+<item>
+  <title>Formalization of Knuth–Bendix Orders for Lambda-Free Higher-Order Terms</title>
+  <link>https://isa-afp.org/entries/Lambda_Free_KBOs.html</link>
+  <pubDate>Sat, 12 Nov 2016 00:00:00 +0000</pubDate>
+  <description>Formalization of Knuth–Bendix Orders for Lambda-Free Higher-Order Terms in the AFP</description>
+    <category>Logic/Rewriting</category>
+</item>
+<item>
+  <title>Formalization of Recursive Path Orders for Lambda-Free Higher-Order Terms</title>
+  <link>https://isa-afp.org/entries/Lambda_Free_RPOs.html</link>
+  <pubDate>Fri, 23 Sep 2016 00:00:00 +0000</pubDate>
+  <description>Formalization of Recursive Path Orders for Lambda-Free Higher-Order Terms in the AFP</description>
+    <category>Logic/Rewriting</category>
+</item>
+<item>
+  <title>The Z Property</title>
+  <link>https://isa-afp.org/entries/Rewriting_Z.html</link>
+  <pubDate>Thu, 30 Jun 2016 00:00:00 +0000</pubDate>
+  <description>The Z Property in the AFP</description>
+    <category>Logic/Rewriting</category>
+</item>
+<item>
+  <title>Decreasing Diagrams II</title>
+  <link>https://isa-afp.org/entries/Decreasing-Diagrams-II.html</link>
+  <pubDate>Thu, 20 Aug 2015 00:00:00 +0000</pubDate>
+  <description>Decreasing Diagrams II in the AFP</description>
+    <category>Logic/Rewriting</category>
+</item>
+<item>
+  <title>Decreasing Diagrams</title>
+  <link>https://isa-afp.org/entries/Decreasing-Diagrams.html</link>
+  <pubDate>Fri, 01 Nov 2013 00:00:00 +0000</pubDate>
+  <description>Decreasing Diagrams in the AFP</description>
+    <category>Logic/Rewriting</category>
+</item>
+<item>
+  <title>Abstract Rewriting</title>
+  <link>https://isa-afp.org/entries/Abstract-Rewriting.html</link>
+  <pubDate>Mon, 14 Jun 2010 00:00:00 +0000</pubDate>
+  <description>Abstract Rewriting in the AFP</description>
+    <category>Logic/Rewriting</category>
+</item>
 
   </channel>
 </rss>

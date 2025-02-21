@@ -1,16 +1,15 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Bowen Yao</title>
     <link>https://isa-afp.org/authors/yao/</link>
-    <description>AFP entries of Bowen Yao</description>
-        <item>
-          <title>Prime Number Theorem with Remainder Term</title>
-          <link>https://isa-afp.org/entries/PNT_with_Remainder.html</link>
-          <pubDate>Sun, 05 May 2024 00:00:00 +0000</pubDate>
-          <description>Prime Number Theorem with Remainder Term in the AFP</description>
-            <category>Mathematics/Number theory</category>
-        </item>
+    <description>AFP entries of Bowen Yao</description><item>
+  <title>Prime Number Theorem with Remainder Term</title>
+  <link>https://isa-afp.org/entries/PNT_with_Remainder.html</link>
+  <pubDate>Sun, 05 May 2024 00:00:00 +0000</pubDate>
+  <description>Prime Number Theorem with Remainder Term in the AFP</description>
+    <category>Mathematics/Number theory</category>
+</item>
 
   </channel>
 </rss>

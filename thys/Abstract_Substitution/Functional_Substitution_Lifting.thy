@@ -170,7 +170,7 @@ locale finite_variables_lifting =
 begin
 
 abbreviation to_fset :: "'expr \<Rightarrow> 'sub fset" where
-  "to_fset expr \<equiv>  Abs_fset (to_set expr)"
+  "to_fset expr \<equiv> Abs_fset (to_set expr)"
 
 sublocale finite_variables where vars = vars and subst = subst
   by unfold_locales (auto simp: vars_def finite_to_set)

@@ -1,24 +1,23 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>T.V.H. Prathamesh</title>
     <link>https://isa-afp.org/authors/prathamesh/</link>
-    <description>AFP entries of T.V.H. Prathamesh</description>
-        <item>
-          <title>Knot Theory</title>
-          <link>https://isa-afp.org/entries/Knot_Theory.html</link>
-          <pubDate>Wed, 20 Jan 2016 00:00:00 +0000</pubDate>
-          <description>Knot Theory in the AFP</description>
-            <category>Mathematics/Topology</category>
-        </item>
-        <item>
-          <title>Tensor Product of Matrices</title>
-          <link>https://isa-afp.org/entries/Matrix_Tensor.html</link>
-          <pubDate>Mon, 18 Jan 2016 00:00:00 +0000</pubDate>
-          <description>Tensor Product of Matrices in the AFP</description>
-            <category>Computer science/Data structures</category>
-            <category>Mathematics/Algebra</category>
-        </item>
+    <description>AFP entries of T.V.H. Prathamesh</description><item>
+  <title>Knot Theory</title>
+  <link>https://isa-afp.org/entries/Knot_Theory.html</link>
+  <pubDate>Wed, 20 Jan 2016 00:00:00 +0000</pubDate>
+  <description>Knot Theory in the AFP</description>
+    <category>Mathematics/Topology</category>
+</item>
+<item>
+  <title>Tensor Product of Matrices</title>
+  <link>https://isa-afp.org/entries/Matrix_Tensor.html</link>
+  <pubDate>Mon, 18 Jan 2016 00:00:00 +0000</pubDate>
+  <description>Tensor Product of Matrices in the AFP</description>
+    <category>Computer science/Data structures</category>
+    <category>Mathematics/Algebra</category>
+</item>
 
   </channel>
 </rss>

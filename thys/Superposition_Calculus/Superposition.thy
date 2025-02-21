@@ -30,7 +30,7 @@ begin
 interpretation term_order_notation.
 
 inductive eq_resolution :: "('f, 'v, 'ty) typed_clause \<Rightarrow> ('f, 'v, 'ty) typed_clause \<Rightarrow> bool" where
-  eq_resolutionI: 
+  eq_resolutionI:
    "D = add_mset l D' \<Longrightarrow>
     l = t !\<approx> t' \<Longrightarrow>
     welltyped_imgu_on (clause.vars D) \<V> t t' \<mu> \<Longrightarrow>
@@ -39,7 +39,7 @@ inductive eq_resolution :: "('f, 'v, 'ty) typed_clause \<Rightarrow> ('f, 'v, 't
     eq_resolution (D, \<V>) (C, \<V>)"
 
 inductive eq_factoring :: "('f, 'v, 'ty) typed_clause \<Rightarrow> ('f, 'v, 'ty) typed_clause \<Rightarrow> bool" where
-  eq_factoringI: 
+  eq_factoringI:
    "D = add_mset l\<^sub>1 (add_mset l\<^sub>2 D') \<Longrightarrow>
     l\<^sub>1 = t\<^sub>1 \<approx> t\<^sub>1' \<Longrightarrow>
     l\<^sub>2 = t\<^sub>2 \<approx> t\<^sub>2' \<Longrightarrow>
@@ -130,14 +130,14 @@ where
     \<not> (c\<^sub>1\<langle>t\<^sub>1\<rangle> \<cdot>t \<rho>\<^sub>1 \<odot> \<mu> \<preceq>\<^sub>t t\<^sub>1' \<cdot>t \<rho>\<^sub>1 \<odot> \<mu>) \<Longrightarrow>
     \<not> (t\<^sub>2 \<cdot>t \<rho>\<^sub>2 \<odot> \<mu> \<preceq>\<^sub>t t\<^sub>2' \<cdot>t \<rho>\<^sub>2 \<odot> \<mu>) \<Longrightarrow>
     C = add_mset (\<P> (Upair (c\<^sub>1 \<cdot>t\<^sub>c \<rho>\<^sub>1)\<langle>t\<^sub>2' \<cdot>t \<rho>\<^sub>2\<rangle> (t\<^sub>1' \<cdot>t \<rho>\<^sub>1))) (E' \<cdot> \<rho>\<^sub>1 + D' \<cdot> \<rho>\<^sub>2) \<cdot> \<mu> \<Longrightarrow>
-    superposition' (D, \<V>\<^sub>2) (E, \<V>\<^sub>1) (C, \<V>\<^sub>3)"  
+    superposition' (D, \<V>\<^sub>2) (E, \<V>\<^sub>1) (C, \<V>\<^sub>3)"
 
 lemma superposition_eq_superposition': "superposition = superposition'"
 proof (intro ext iffI)
   fix D E C
-  assume "superposition D E C" 
+  assume "superposition D E C"
   then show "superposition' D E C"
-  
+
   proof (cases D E C rule: superposition.cases)
     case (superpositionI \<V>\<^sub>1 \<V>\<^sub>2 \<rho>\<^sub>1 \<rho>\<^sub>2 E D l\<^sub>1 E' l\<^sub>2 D' \<P> c\<^sub>1 t\<^sub>1 t\<^sub>1' t\<^sub>2 t\<^sub>2' \<V>\<^sub>3 \<mu> C)
 
@@ -153,7 +153,7 @@ proof (intro ext iffI)
   qed
 next
   fix D E C
-  assume "superposition' D E C" 
+  assume "superposition' D E C"
   then show "superposition D E C"
   proof (cases D E C rule: superposition'.cases)
     case (superposition'I \<V>\<^sub>1 \<V>\<^sub>2 \<rho>\<^sub>1 \<rho>\<^sub>2 E D l\<^sub>1 E' l\<^sub>2 D' \<P> c\<^sub>1 t\<^sub>1 t\<^sub>1' t\<^sub>2 t\<^sub>2' \<V>\<^sub>3 \<mu> C)
@@ -162,20 +162,20 @@ next
     proof (unfold superposition'I(1-3), rule superpositionI[of \<V>\<^sub>1 \<V>\<^sub>2 \<rho>\<^sub>1 \<rho>\<^sub>2]; (rule superposition'I)?)
 
       show
-        "\<P> = Pos \<Longrightarrow> select E = {#}" 
+        "\<P> = Pos \<Longrightarrow> select E = {#}"
         "\<P> = Pos \<Longrightarrow> is_strictly_maximal (l\<^sub>1 \<cdot>l \<rho>\<^sub>1 \<odot> \<mu>) (E \<cdot> \<rho>\<^sub>1 \<odot> \<mu>)"
         "\<P> = Neg \<Longrightarrow> select E = {#} \<Longrightarrow> is_maximal (l\<^sub>1 \<cdot>l \<rho>\<^sub>1 \<odot> \<mu>) (E \<cdot> \<rho>\<^sub>1 \<odot> \<mu>)"
         "\<P> = Neg \<Longrightarrow> select E \<noteq> {#} \<Longrightarrow> is_maximal (l\<^sub>1 \<cdot>l \<rho>\<^sub>1 \<odot> \<mu>) (select E \<cdot> \<rho>\<^sub>1 \<odot> \<mu>)"
         using superposition'I(22) is_maximal_not_empty
         by auto
-    qed 
+    qed
   qed
 qed
 
 inductive pos_superposition ::
   "('f, 'v, 'ty) typed_clause \<Rightarrow> ('f, 'v, 'ty) typed_clause \<Rightarrow> ('f, 'v, 'ty) typed_clause \<Rightarrow> bool"
 where
-  pos_superpositionI: 
+  pos_superpositionI:
    "infinite_variables_per_type \<V>\<^sub>1 \<Longrightarrow>
     infinite_variables_per_type \<V>\<^sub>2 \<Longrightarrow>
     term_subst.is_renaming \<rho>\<^sub>1 \<Longrightarrow>
@@ -210,13 +210,13 @@ proof (cases rule: pos_superposition.cases)
   case (pos_superpositionI \<V>\<^sub>1 \<V>\<^sub>2 \<rho>\<^sub>1 \<rho>\<^sub>2 E D l\<^sub>1 E' l\<^sub>2 D' c\<^sub>1 t\<^sub>1 t\<^sub>1' t\<^sub>2 t\<^sub>2' \<mu> \<V>\<^sub>3  C)
   then show ?thesis
     using superpositionI[of \<V>\<^sub>1 \<V>\<^sub>2 \<rho>\<^sub>1 \<rho>\<^sub>2 E D l\<^sub>1 E' l\<^sub>2 D' Pos c\<^sub>1 t\<^sub>1 t\<^sub>1' t\<^sub>2 t\<^sub>2' \<mu> \<V>\<^sub>3 C]
-    by blast
+    by fast
 qed
 
 inductive neg_superposition ::
   "('f, 'v, 'ty) typed_clause \<Rightarrow> ('f, 'v, 'ty) typed_clause \<Rightarrow> ('f, 'v, 'ty) typed_clause \<Rightarrow> bool"
 where
-  neg_superpositionI: 
+  neg_superpositionI:
    "infinite_variables_per_type \<V>\<^sub>1 \<Longrightarrow>
     infinite_variables_per_type \<V>\<^sub>2 \<Longrightarrow>
     term_subst.is_renaming \<rho>\<^sub>1 \<Longrightarrow>
@@ -250,7 +250,7 @@ lemma superposition_if_neg_superposition:
 proof (cases E D C rule: neg_superposition.cases)
   case (neg_superpositionI \<V>\<^sub>1 \<V>\<^sub>2 \<rho>\<^sub>1 \<rho>\<^sub>2 E D l\<^sub>1 E' l\<^sub>2 D' c\<^sub>1 t\<^sub>1 t\<^sub>1' t\<^sub>2 t\<^sub>2' \<mu> \<V>\<^sub>3 C)
   then show ?thesis
-    using 
+    using
       superpositionI[of \<V>\<^sub>1 \<V>\<^sub>2 \<rho>\<^sub>1 \<rho>\<^sub>2 E D l\<^sub>1 E' l\<^sub>2 D' Neg c\<^sub>1 t\<^sub>1 t\<^sub>1' t\<^sub>2 t\<^sub>2' \<mu> \<V>\<^sub>3 C]
       literals_distinct(2)
     by blast
@@ -264,11 +264,11 @@ proof (rule iffI)
   proof (cases D E C rule: superposition.cases)
     case (superpositionI \<V>\<^sub>1 \<V>\<^sub>2 \<rho>\<^sub>1 \<rho>\<^sub>2 E D l\<^sub>1 E' l\<^sub>2 D' \<P> c\<^sub>1 t\<^sub>1 t\<^sub>1' t\<^sub>2 t\<^sub>2' \<V>\<^sub>3 \<mu> C)
 
-    show ?thesis 
+    show ?thesis
     proof(cases "\<P> = Pos")
       case True
       then have "pos_superposition (D, \<V>\<^sub>2) (E, \<V>\<^sub>1) (C, \<V>\<^sub>3)"
-        using 
+        using
           superpositionI
           pos_superpositionI[of \<V>\<^sub>1 \<V>\<^sub>2 \<rho>\<^sub>1 \<rho>\<^sub>2 E D l\<^sub>1 E' l\<^sub>2 D' c\<^sub>1 t\<^sub>1 t\<^sub>1' t\<^sub>2 t\<^sub>2' \<V>\<^sub>3 \<mu> C]
         by argo
@@ -276,17 +276,17 @@ proof (rule iffI)
       then show ?thesis
         unfolding superpositionI(1-3)
         by simp
-        
+
     next
       case False
 
       then have "\<P> = Neg"
-        using superpositionI(11) 
+        using superpositionI(11)
         by blast
 
       then have "neg_superposition (D, \<V>\<^sub>2) (E, \<V>\<^sub>1) (C, \<V>\<^sub>3)"
-        using 
-          superpositionI 
+        using
+          superpositionI
           neg_superpositionI[of \<V>\<^sub>1 \<V>\<^sub>2 \<rho>\<^sub>1 \<rho>\<^sub>2 E D l\<^sub>1 E' l\<^sub>2 D' c\<^sub>1 t\<^sub>1 t\<^sub>1' t\<^sub>2 t\<^sub>2' \<V>\<^sub>3 \<mu> C]
         by argo
 
@@ -298,7 +298,7 @@ proof (rule iffI)
 next
   assume "pos_superposition D E C \<or> neg_superposition D E C"
   thus "superposition D E C"
-    using superposition_if_neg_superposition superposition_if_pos_superposition 
+    using superposition_if_neg_superposition superposition_if_pos_superposition
     by metis
 qed
 

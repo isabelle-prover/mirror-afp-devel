@@ -2,11 +2,11 @@ theory Term_Typing
   imports Typing Context_Extra
 begin
 
-type_synonym ('f, 'ty) fun_types = "'f \<Rightarrow> 'ty list \<times> 'ty" 
+type_synonym ('f, 'ty) fun_types = "'f \<Rightarrow> 'ty list \<times> 'ty"
 
-locale context_compatible_typing = 
+locale context_compatible_typing =
   fixes Fun typed
-  assumes 
+  assumes
    context_compatible [intro]:
     "\<And>t t' c \<tau> \<tau>'.
       typed t \<tau>' \<Longrightarrow>
@@ -14,7 +14,7 @@ locale context_compatible_typing =
       typed (Fun\<langle>c; t\<rangle>) \<tau> \<Longrightarrow>
       typed (Fun\<langle>c; t'\<rangle>) \<tau>"
 
-locale subterm_typing = 
+locale subterm_typing =
   fixes Fun typed
   assumes
     subterm': "\<And>f ts \<tau> . typed (Fun f ts) \<tau> \<Longrightarrow> \<forall>t\<in>set ts. \<exists>\<tau>'. typed t \<tau>'"
@@ -38,7 +38,7 @@ next
   then obtain \<tau>' where "typed (Fun\<langle>c;t\<rangle>) \<tau>'"
     by blast
 
-  then show ?case 
+  then show ?case
     using More.IH
     by simp
 qed

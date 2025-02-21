@@ -9,7 +9,7 @@
     <meta name="og:description" content="{{ .Site.Params.Description }}" />
   {{- else }}
     <title>{{ .Title | safeHTML }} - {{ .Site.Title }}</title>
-    {{- $description := default 
+    {{- $description := default
       (printf "%s in the Archive of Formal Proofs" .Title | plainify)
       .Description }}
     <meta name="description" content="{{ $description | safeHTMLAttr }}" />
@@ -17,20 +17,20 @@
   {{- end }}
 
   {{- with .OutputFormats.Get "rss" }}
-  {{ printf `<link rel="%s" type="%s" href="%s" title="%s" />` .Rel .MediaType.Type .Permalink
+  {{- printf `<link rel="%s" type="%s" href="%s" title="%s" />` .Rel .MediaType.Type .Permalink
      $.Site.Title | safeHTML }}
   {{- end }}
 
   <meta property="og:title" content="{{ .Title | safeHTMLAttr }}" />
   <meta property="og:url" content="{{ .Permalink }}" />
   <meta property="og:image" content="{{ "images/afp.png" | absURL }}" />
-  {{ if eq .Section "entries" -}}
+  {{- if eq .Section "entries" }}
     <meta property="og:type" content="article" />
-  {{ else if eq .Section "authors" -}}
+  {{- else if eq .Section "authors" }}
     <meta property="og:type" content="profile" />
-  {{ else -}}
+  {{- else }}
     <meta property="og:type" content="website" />
-  {{ end }}
+  {{- end }}
 
   {{- $options := (dict "targetPath" "css/front.css") }}
   {{- $style := resources.Get "sass/main.scss" | toCSS $options | minify }}
@@ -49,11 +49,11 @@
     <script>
       MathJax = {
         tex: {
-          inlineMath: [['$', '$'], ['\\(', '\\)']]
+          inlineMath: [["$", "$"], ["\\(", "\\)"]]
         },
         processEscapes: true,
         svg: {
-          fontCache: 'global'
+          fontCache: "global"
         }
       };
     </script>

@@ -1,40 +1,39 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Mathematics/Physics/Quantum information</title>
     <link>https://isa-afp.org/topics/mathematics/physics/quantum-information/</link>
-    <description>AFP entries in Quantum information</description>
-         <item>
-          <title>Uncertainty Principle</title>
-          <link>https://isa-afp.org/entries/Uncertainty_Principle.html</link>
-          <pubDate>Tue, 26 Mar 2024 00:00:00 +0000</pubDate>
-          <description>Uncertainty Principle in the AFP</description>
-            <category>Mathematics/Physics/Quantum information</category>
-        </item>
-        <item>
-          <title>The CHSH inequality: Tsirelson&#39;s upper-bound and other results</title>
-          <link>https://isa-afp.org/entries/TsirelsonBound.html</link>
-          <pubDate>Tue, 18 Apr 2023 00:00:00 +0000</pubDate>
-          <description>The CHSH inequality: Tsirelson&#39;s upper-bound and other results in the AFP</description>
-            <category>Mathematics/Algebra</category>
-            <category>Mathematics/Physics/Quantum information</category>
-        </item>
-        <item>
-          <title>Quantum projective measurements and the CHSH inequality</title>
-          <link>https://isa-afp.org/entries/Projective_Measurements.html</link>
-          <pubDate>Wed, 03 Mar 2021 00:00:00 +0000</pubDate>
-          <description>Quantum projective measurements and the CHSH inequality in the AFP</description>
-            <category>Computer science/Algorithms/Quantum computing</category>
-            <category>Mathematics/Physics/Quantum information</category>
-        </item>
-        <item>
-          <title>Isabelle Marries Dirac: a Library for Quantum Computation and Quantum Information</title>
-          <link>https://isa-afp.org/entries/Isabelle_Marries_Dirac.html</link>
-          <pubDate>Sun, 22 Nov 2020 00:00:00 +0000</pubDate>
-          <description>Isabelle Marries Dirac: a Library for Quantum Computation and Quantum Information in the AFP</description>
-            <category>Computer science/Algorithms/Quantum computing</category>
-            <category>Mathematics/Physics/Quantum information</category>
-        </item>
+    <description>AFP entries in Quantum information</description><item>
+  <title>Uncertainty Principle</title>
+  <link>https://isa-afp.org/entries/Uncertainty_Principle.html</link>
+  <pubDate>Tue, 26 Mar 2024 00:00:00 +0000</pubDate>
+  <description>Uncertainty Principle in the AFP</description>
+    <category>Mathematics/Physics/Quantum information</category>
+</item>
+<item>
+  <title>The CHSH inequality: Tsirelson&#39;s upper-bound and other results</title>
+  <link>https://isa-afp.org/entries/TsirelsonBound.html</link>
+  <pubDate>Tue, 18 Apr 2023 00:00:00 +0000</pubDate>
+  <description>The CHSH inequality: Tsirelson&#39;s upper-bound and other results in the AFP</description>
+    <category>Mathematics/Algebra</category>
+    <category>Mathematics/Physics/Quantum information</category>
+</item>
+<item>
+  <title>Quantum projective measurements and the CHSH inequality</title>
+  <link>https://isa-afp.org/entries/Projective_Measurements.html</link>
+  <pubDate>Wed, 03 Mar 2021 00:00:00 +0000</pubDate>
+  <description>Quantum projective measurements and the CHSH inequality in the AFP</description>
+    <category>Computer science/Algorithms/Quantum computing</category>
+    <category>Mathematics/Physics/Quantum information</category>
+</item>
+<item>
+  <title>Isabelle Marries Dirac: a Library for Quantum Computation and Quantum Information</title>
+  <link>https://isa-afp.org/entries/Isabelle_Marries_Dirac.html</link>
+  <pubDate>Sun, 22 Nov 2020 00:00:00 +0000</pubDate>
+  <description>Isabelle Marries Dirac: a Library for Quantum Computation and Quantum Information in the AFP</description>
+    <category>Computer science/Algorithms/Quantum computing</category>
+    <category>Mathematics/Physics/Quantum information</category>
+</item>
 
   </channel>
 </rss>

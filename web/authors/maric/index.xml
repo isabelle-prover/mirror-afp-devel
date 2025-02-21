@@ -1,23 +1,22 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Ognjen Marić</title>
     <link>https://isa-afp.org/authors/maric/</link>
-    <description>AFP entries of Ognjen Marić</description>
-        <item>
-          <title>Authenticated Data Structures As Functors</title>
-          <link>https://isa-afp.org/entries/ADS_Functor.html</link>
-          <pubDate>Thu, 16 Apr 2020 00:00:00 +0000</pubDate>
-          <description>Authenticated Data Structures As Functors in the AFP</description>
-            <category>Computer science/Data structures</category>
-        </item>
-        <item>
-          <title>Consensus Refined</title>
-          <link>https://isa-afp.org/entries/Consensus_Refined.html</link>
-          <pubDate>Wed, 18 Mar 2015 00:00:00 +0000</pubDate>
-          <description>Consensus Refined in the AFP</description>
-            <category>Computer science/Algorithms/Distributed</category>
-        </item>
+    <description>AFP entries of Ognjen Marić</description><item>
+  <title>Authenticated Data Structures As Functors</title>
+  <link>https://isa-afp.org/entries/ADS_Functor.html</link>
+  <pubDate>Thu, 16 Apr 2020 00:00:00 +0000</pubDate>
+  <description>Authenticated Data Structures As Functors in the AFP</description>
+    <category>Computer science/Data structures</category>
+</item>
+<item>
+  <title>Consensus Refined</title>
+  <link>https://isa-afp.org/entries/Consensus_Refined.html</link>
+  <pubDate>Wed, 18 Mar 2015 00:00:00 +0000</pubDate>
+  <description>Consensus Refined in the AFP</description>
+    <category>Computer science/Algorithms/Distributed</category>
+</item>
 
   </channel>
 </rss>

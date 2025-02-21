@@ -1,16 +1,15 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Frederic Voisin</title>
     <link>https://isa-afp.org/authors/voisin/</link>
-    <description>AFP entries of Frederic Voisin</description>
-        <item>
-          <title>Infeasible Paths Elimination by Symbolic Execution Techniques: Proof of Correctness and Preservation of Paths</title>
-          <link>https://isa-afp.org/entries/InfPathElimination.html</link>
-          <pubDate>Thu, 18 Aug 2016 00:00:00 +0000</pubDate>
-          <description>Infeasible Paths Elimination by Symbolic Execution Techniques: Proof of Correctness and Preservation of Paths in the AFP</description>
-            <category>Computer science/Programming languages/Static analysis</category>
-        </item>
+    <description>AFP entries of Frederic Voisin</description><item>
+  <title>Infeasible Paths Elimination by Symbolic Execution Techniques: Proof of Correctness and Preservation of Paths</title>
+  <link>https://isa-afp.org/entries/InfPathElimination.html</link>
+  <pubDate>Thu, 18 Aug 2016 00:00:00 +0000</pubDate>
+  <description>Infeasible Paths Elimination by Symbolic Execution Techniques: Proof of Correctness and Preservation of Paths in the AFP</description>
+    <category>Computer science/Programming languages/Static analysis</category>
+</item>
 
   </channel>
 </rss>

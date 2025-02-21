@@ -5,6 +5,7 @@ theory Test_Pat_Complete
     Pattern_Completeness
     "HOL-Library.Code_Abstract_Char"
     "HOL-Library.Code_Target_Numeral"
+    "Show.Number_Parser" 
 begin
 
 text \<open>turn error message into runtime error\<close>
@@ -26,6 +27,19 @@ definition "nat_bool = [
    ((''true'', []), ''bool''),
    ((''false'', []), ''bool'')
    ]"
+
+definition rn_string where "rn_string x = ''x'' @ show (x :: nat)"
+definition rv_string where "rv_string x = ''y'' @ x"
+
+lemma renaming_string: "renaming_funs rn_string rv_string"
+  using inj_show_nat 
+  unfolding renaming_funs_def 
+  by (auto simp: inj_def rn_string_def rv_string_def) 
+
+definition "decide_pat_complete_lhss_idl_string = decide_pat_complete_lhss_idl rn_string rv_string" 
+
+lemmas decide_pat_complete_lhss_idl_string = decide_pat_complete_lhss_idl[OF _ renaming_string,
+    folded decide_pat_complete_lhss_idl_string_def]
 
 definition "int_bool = [ 
    ((''zero'', []), ''int''),
@@ -77,10 +91,13 @@ lemma "\<not> pat_complete_lhss (map_of int_bool) (map_of even_int) (set even_lh
   apply (subst decide_pat_complete_wrapper[of _ _ _ False])
   by eval+
 
+value "decide_pat_complete_linear_lhss int_bool even_int even_lhss_int" 
+
 
 lemma "strong_quasi_reducible (map_of int_bool) (map_of even_int) (set even_lhss_int)" 
   apply (subst decide_strong_quasi_reducible_wrapper[of _ _ _ True])
   by eval+
+
 
 definition "non_lin_lhss = [
   Fun ''f'' [Var ''x'', Var ''x'', Var ''y''],
@@ -95,6 +112,20 @@ lemma "pat_complete_lhss (map_of nat_bool) (map_of [((''f'',[''bool'',''bool'','
 lemma "\<not> pat_complete_lhss (map_of nat_bool) (map_of [((''f'',[''nat'',''nat'',''nat'']),''bool'')]) (set non_lin_lhss)" 
   apply (subst decide_pat_complete_wrapper[of _ _ _ False])
   by eval+
+
+(* the algorithm for linear lhss returns a wrong result here; the reason is that 
+   it does not check that the input is indeed linear *)
+value "decide_pat_complete_linear_lhss nat_bool [((''f'',[''nat'',''nat'',''nat'']),''bool'')] non_lin_lhss" 
+
+value "decide_pat_complete_lhss nat_bool [((''f'',[''nat'',''nat'',''nat'']),''bool'')] non_lin_lhss" 
+value "decide_pat_complete_lhss nat_bool [((''f'',[''bool'',''bool'',''bool'']),''bool'')] non_lin_lhss" 
+
+(* inf-var-conflict, so idl solver (undefined) is not required in this example *)
+value "decide_pat_complete_lhss_idl_string (\<lambda> _ _. undefined) nat_bool [((''f'',[''nat'',''nat'',''nat'']),''bool'')] non_lin_lhss"
+
+(* incorrect idl-solvers can cause wrong results *)
+value "decide_pat_complete_lhss_idl_string (\<lambda> _ _. True) nat_bool [((''f'',[''bool'',''bool'',''bool'']),''bool'')] non_lin_lhss"
+value "decide_pat_complete_lhss_idl_string (\<lambda> _ _. False) nat_bool [((''f'',[''bool'',''bool'',''bool'']),''bool'')] non_lin_lhss" 
 
 definition "testproblem (c :: nat) n = (let s = String.implode; s = id;
     c1 = even c;

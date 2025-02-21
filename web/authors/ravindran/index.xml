@@ -1,17 +1,16 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Binoy Ravindran</title>
     <link>https://isa-afp.org/authors/ravindran/</link>
-    <description>AFP entries of Binoy Ravindran</description>
-        <item>
-          <title>X86 instruction semantics and basic block symbolic execution</title>
-          <link>https://isa-afp.org/entries/X86_Semantics.html</link>
-          <pubDate>Wed, 13 Oct 2021 00:00:00 +0000</pubDate>
-          <description>X86 instruction semantics and basic block symbolic execution in the AFP</description>
-            <category>Computer science/Hardware</category>
-            <category>Computer science/Semantics and reasoning</category>
-        </item>
+    <description>AFP entries of Binoy Ravindran</description><item>
+  <title>X86 instruction semantics and basic block symbolic execution</title>
+  <link>https://isa-afp.org/entries/X86_Semantics.html</link>
+  <pubDate>Wed, 13 Oct 2021 00:00:00 +0000</pubDate>
+  <description>X86 instruction semantics and basic block symbolic execution in the AFP</description>
+    <category>Computer science/Hardware</category>
+    <category>Computer science/Semantics and reasoning</category>
+</item>
 
   </channel>
 </rss>

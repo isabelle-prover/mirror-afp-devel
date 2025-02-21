@@ -1,0 +1,75 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{isabelle,isabellesym}
+\usepackage{amsfonts,amsmath, amssymb,amsthm}
+\usepackage[top=1.4in, bottom=1.4in, left=1.4in, right=1.4in]{geometry}
+
+\usepackage[only,bigsqcap]{stmaryrd}
+
+\usepackage{marginnote}
+\usepackage{algorithm}
+\usepackage[noend]{algpseudocode}
+\renewcommand{\algorithmicrequire}{\textbf{Input:}}
+\renewcommand{\algorithmicensure}{\textbf{Output:}}
+\let\oldsection\section
+\renewcommand\section{\clearpage\oldsection}
+
+\newcommand{\getsr}{\xleftarrow{\$}}
+
+\usepackage{mathtools}
+\DeclarePairedDelimiter{\ceil}{\lceil}{\rceil}
+\DeclareMathOperator{\prob}{\mathcal P}
+\DeclareMathOperator{\expect}{\mathbb E}
+\DeclareMathOperator{\Ber}{\mathrm{Ber}}
+\DeclareMathOperator{\indicator}{\mathrm{I}}
+
+\newcommand{\eps}{\varepsilon}
+\renewcommand{\phi}{\varphi}
+\newtheorem{theorem}{Theorem}
+\theoremstyle{definition}
+\newtheorem{lemma}{Lemma}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+\begin{document}
+
+\title{Verification of the CVM algorithm with a New Recursive Analysis Technique}
+\author{Emin Karayel, Derek Khu, Kuldeep S. Meel, Yong Kiam Tan,\\and Seng Joe Watt}
+\maketitle
+
+\begin{abstract}
+In 2022, Chakraborty et al.~\cite{chakraborty2022} published a streaming
+algorithm (henceforth, the CVM algorithm) for the distinct
+elements problem, that deviated considerably from the state-of-the art, due to its simplicity
+and avoidance of standard derandomization techniques, while still maintaining a close to optimal
+logarithmic space complexity.
+
+In this entry, we verify the CVM algorithm's correctness using a new technique which simplifies
+the analysis considerably compared to the orignal proof by Chakraborty et al. The main idea is
+based on a probabilistic invariant that allows us to derive concentration bounds using the
+Cram\'{e}r--Chernoff method.
+
+This new technique opens up the possible algorithm design space, and we introduce a new variant of
+the CVM algorithm, that is total, and also has an additional property in addition to concentration:
+unbiasedness. This means the expected result of the algorithm is exactly equal to the desired
+result. The latter is also a new property, that neither the original CVM algorithm nor classic
+algorithms for the distinct elements problem possess.
+\end{abstract}
+
+\tableofcontents
+
+\parindent 0pt\parskip 0.5ex
+
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\appendix
+\input{appendix}
+
+\end{document}

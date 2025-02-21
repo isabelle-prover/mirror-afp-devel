@@ -1,16 +1,15 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Andrea Lattuada</title>
     <link>https://isa-afp.org/authors/lattuada/</link>
-    <description>AFP entries of Andrea Lattuada</description>
-        <item>
-          <title>Formalization of Timely Dataflow&#39;s Progress Tracking Protocol</title>
-          <link>https://isa-afp.org/entries/Progress_Tracking.html</link>
-          <pubDate>Tue, 13 Apr 2021 00:00:00 +0000</pubDate>
-          <description>Formalization of Timely Dataflow&#39;s Progress Tracking Protocol in the AFP</description>
-            <category>Computer science/Algorithms/Distributed</category>
-        </item>
+    <description>AFP entries of Andrea Lattuada</description><item>
+  <title>Formalization of Timely Dataflow&#39;s Progress Tracking Protocol</title>
+  <link>https://isa-afp.org/entries/Progress_Tracking.html</link>
+  <pubDate>Tue, 13 Apr 2021 00:00:00 +0000</pubDate>
+  <description>Formalization of Timely Dataflow&#39;s Progress Tracking Protocol in the AFP</description>
+    <category>Computer science/Algorithms/Distributed</category>
+</item>
 
   </channel>
 </rss>

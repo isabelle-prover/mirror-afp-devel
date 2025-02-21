@@ -1,758 +1,757 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Mathematics/Algebra</title>
     <link>https://isa-afp.org/topics/mathematics/algebra/</link>
-    <description>AFP entries in Algebra</description>
-         <item>
-          <title>A Generalization of the Cauchy–Davenport theorem</title>
-          <link>https://isa-afp.org/entries/Generalized_Cauchy_Davenport.html</link>
-          <pubDate>Sat, 23 Nov 2024 00:00:00 +0000</pubDate>
-          <description>A Generalization of the Cauchy–Davenport theorem in the AFP</description>
-            <category>Mathematics/Combinatorics</category>
-            <category>Mathematics/Algebra</category>
-        </item>
-        <item>
-          <title>Two Theorems on Hermitian Matrices</title>
-          <link>https://isa-afp.org/entries/Two_Hermitian_Results.html</link>
-          <pubDate>Sat, 16 Nov 2024 00:00:00 +0000</pubDate>
-          <description>Two Theorems on Hermitian Matrices in the AFP</description>
-            <category>Mathematics/Algebra</category>
-        </item>
-        <item>
-          <title>A simple proof that π is irrational</title>
-          <link>https://isa-afp.org/entries/Pi_Irrational.html</link>
-          <pubDate>Fri, 13 Sep 2024 00:00:00 +0000</pubDate>
-          <description>A simple proof that π is irrational in the AFP</description>
-            <category>Mathematics/Algebra</category>
-        </item>
-        <item>
-          <title>Topological Groups</title>
-          <link>https://isa-afp.org/entries/Topological_Groups.html</link>
-          <pubDate>Mon, 19 Aug 2024 00:00:00 +0000</pubDate>
-          <description>Topological Groups in the AFP</description>
-            <category>Mathematics/Algebra</category>
-        </item>
-        <item>
-          <title>Lie Groups and Algebras</title>
-          <link>https://isa-afp.org/entries/Lie_Groups.html</link>
-          <pubDate>Wed, 31 Jul 2024 00:00:00 +0000</pubDate>
-          <description>Lie Groups and Algebras in the AFP</description>
-            <category>Mathematics/Algebra</category>
-            <category>Mathematics/Geometry</category>
-        </item>
-        <item>
-          <title>Sorted Terms</title>
-          <link>https://isa-afp.org/entries/Sorted_Terms.html</link>
-          <pubDate>Mon, 27 May 2024 00:00:00 +0000</pubDate>
-          <description>Sorted Terms in the AFP</description>
-            <category>Logic/Rewriting</category>
-            <category>Mathematics/Algebra</category>
-        </item>
-        <item>
-          <title>Countable Sums and Discrete (Sub)Distributions</title>
-          <link>https://isa-afp.org/entries/Countable_Sums_and_Discrete_Distributions.html</link>
-          <pubDate>Sat, 25 May 2024 00:00:00 +0000</pubDate>
-          <description>Countable Sums and Discrete (Sub)Distributions in the AFP</description>
-            <category>Logic/General logic/Mechanization of proofs</category>
-            <category>Mathematics/Probability theory</category>
-            <category>Mathematics/Algebra</category>
-        </item>
-        <item>
-          <title>Schönhage-Strassen Multiplication</title>
-          <link>https://isa-afp.org/entries/Schoenhage_Strassen.html</link>
-          <pubDate>Fri, 10 May 2024 00:00:00 +0000</pubDate>
-          <description>Schönhage-Strassen Multiplication in the AFP</description>
-            <category>Computer science/Algorithms/Mathematical</category>
-            <category>Mathematics/Algebra</category>
-        </item>
-        <item>
-          <title>Higher Globular Catoids and Quantales</title>
-          <link>https://isa-afp.org/entries/OmegaCatoidsQuantales.html</link>
-          <pubDate>Wed, 24 Jan 2024 00:00:00 +0000</pubDate>
-          <description>Higher Globular Catoids and Quantales in the AFP</description>
-            <category>Mathematics/Category theory</category>
-            <category>Mathematics/Algebra</category>
-        </item>
-        <item>
-          <title>Decomposition of totally ordered hoops</title>
-          <link>https://isa-afp.org/entries/Isabelle_hoops.html</link>
-          <pubDate>Mon, 22 Jan 2024 00:00:00 +0000</pubDate>
-          <description>Decomposition of totally ordered hoops in the AFP</description>
-            <category>Mathematics/Algebra</category>
-        </item>
-        <item>
-          <title>Two theorems about the geometry of the critical points of a complex polynomial</title>
-          <link>https://isa-afp.org/entries/Polynomial_Crit_Geometry.html</link>
-          <pubDate>Tue, 14 Nov 2023 00:00:00 +0000</pubDate>
-          <description>Two theorems about the geometry of the critical points of a complex polynomial in the AFP</description>
-            <category>Mathematics/Algebra</category>
-        </item>
-        <item>
-          <title>Chebyshev Polynomials</title>
-          <link>https://isa-afp.org/entries/Chebyshev_Polynomials.html</link>
-          <pubDate>Mon, 13 Nov 2023 00:00:00 +0000</pubDate>
-          <description>Chebyshev Polynomials in the AFP</description>
-            <category>Mathematics/Algebra</category>
-        </item>
-        <item>
-          <title>Perfect Fields</title>
-          <link>https://isa-afp.org/entries/Perfect_Fields.html</link>
-          <pubDate>Mon, 06 Nov 2023 00:00:00 +0000</pubDate>
-          <description>Perfect Fields in the AFP</description>
-            <category>Mathematics/Algebra</category>
-        </item>
-        <item>
-          <title>Elimination of Repeated Factors Algorithm</title>
-          <link>https://isa-afp.org/entries/Elimination_Of_Repeated_Factors.html</link>
-          <pubDate>Mon, 06 Nov 2023 00:00:00 +0000</pubDate>
-          <description>Elimination of Repeated Factors Algorithm in the AFP</description>
-            <category>Mathematics/Algebra</category>
-        </item>
-        <item>
-          <title>Cardinality and Representation of Stone Relation Algebras</title>
-          <link>https://isa-afp.org/entries/Relational_Cardinality.html</link>
-          <pubDate>Fri, 22 Sep 2023 00:00:00 +0000</pubDate>
-          <description>Cardinality and Representation of Stone Relation Algebras in the AFP</description>
-            <category>Mathematics/Algebra</category>
-        </item>
-        <item>
-          <title>Catoids, Categories, Groupoids</title>
-          <link>https://isa-afp.org/entries/Catoids.html</link>
-          <pubDate>Mon, 14 Aug 2023 00:00:00 +0000</pubDate>
-          <description>Catoids, Categories, Groupoids in the AFP</description>
-            <category>Mathematics/Algebra</category>
-            <category>Mathematics/Category theory</category>
-        </item>
-        <item>
-          <title>Modal quantales, involutive quantales, Dedekind Quantales</title>
-          <link>https://isa-afp.org/entries/Quantales_Converse.html</link>
-          <pubDate>Tue, 25 Jul 2023 00:00:00 +0000</pubDate>
-          <description>Modal quantales, involutive quantales, Dedekind Quantales in the AFP</description>
-            <category>Computer science/Semantics and reasoning</category>
-            <category>Mathematics/Algebra</category>
-            <category>Mathematics/Order</category>
-        </item>
-        <item>
-          <title>Inner Structure, Determinism and Modal Algebra of Multirelations</title>
-          <link>https://isa-afp.org/entries/Multirelations_Heterogeneous.html</link>
-          <pubDate>Mon, 22 May 2023 00:00:00 +0000</pubDate>
-          <description>Inner Structure, Determinism and Modal Algebra of Multirelations in the AFP</description>
-            <category>Mathematics/Algebra</category>
-        </item>
-        <item>
-          <title>The Schwartz-Zippel Lemma</title>
-          <link>https://isa-afp.org/entries/Schwartz_Zippel.html</link>
-          <pubDate>Thu, 27 Apr 2023 00:00:00 +0000</pubDate>
-          <description>The Schwartz-Zippel Lemma in the AFP</description>
-            <category>Computer science/Algorithms/Randomized</category>
-            <category>Mathematics/Algebra</category>
-        </item>
-        <item>
-          <title>The CHSH inequality: Tsirelson&#39;s upper-bound and other results</title>
-          <link>https://isa-afp.org/entries/TsirelsonBound.html</link>
-          <pubDate>Tue, 18 Apr 2023 00:00:00 +0000</pubDate>
-          <description>The CHSH inequality: Tsirelson&#39;s upper-bound and other results in the AFP</description>
-            <category>Mathematics/Algebra</category>
-            <category>Mathematics/Physics/Quantum information</category>
-        </item>
-        <item>
-          <title>Group Law of Edwards Elliptic Curves</title>
-          <link>https://isa-afp.org/entries/Edwards_Elliptic_Curves_Group.html</link>
-          <pubDate>Thu, 16 Feb 2023 00:00:00 +0000</pubDate>
-          <description>Group Law of Edwards Elliptic Curves in the AFP</description>
-            <category>Mathematics/Algebra</category>
-        </item>
-        <item>
-          <title>Birkhoff&#39;s Representation Theorem For Finite Distributive Lattices</title>
-          <link>https://isa-afp.org/entries/Birkhoff_Finite_Distributive_Lattices.html</link>
-          <pubDate>Tue, 06 Dec 2022 00:00:00 +0000</pubDate>
-          <description>Birkhoff&#39;s Representation Theorem For Finite Distributive Lattices in the AFP</description>
-            <category>Mathematics/Algebra</category>
-        </item>
-        <item>
-          <title>p-adic Fields and p-adic Semialgebraic Sets</title>
-          <link>https://isa-afp.org/entries/Padic_Field.html</link>
-          <pubDate>Thu, 22 Sep 2022 00:00:00 +0000</pubDate>
-          <description>p-adic Fields and p-adic Semialgebraic Sets in the AFP</description>
-            <category>Mathematics/Number theory</category>
-            <category>Mathematics/Algebra</category>
-        </item>
-        <item>
-          <title>Simultaneous diagonalization of pairwise commuting Hermitian matrices</title>
-          <link>https://isa-afp.org/entries/Commuting_Hermitian.html</link>
-          <pubDate>Mon, 18 Jul 2022 00:00:00 +0000</pubDate>
-          <description>Simultaneous diagonalization of pairwise commuting Hermitian matrices in the AFP</description>
-            <category>Mathematics/Algebra</category>
-        </item>
-        <item>
-          <title>Finite Fields</title>
-          <link>https://isa-afp.org/entries/Finite_Fields.html</link>
-          <pubDate>Wed, 08 Jun 2022 00:00:00 +0000</pubDate>
-          <description>Finite Fields in the AFP</description>
-            <category>Mathematics/Algebra</category>
-        </item>
-        <item>
-          <title>Fisher&#39;s Inequality: Linear Algebraic Proof Techniques for Combinatorics</title>
-          <link>https://isa-afp.org/entries/Fishers_Inequality.html</link>
-          <pubDate>Thu, 21 Apr 2022 00:00:00 +0000</pubDate>
-          <description>Fisher&#39;s Inequality: Linear Algebraic Proof Techniques for Combinatorics in the AFP</description>
-            <category>Mathematics/Combinatorics</category>
-            <category>Mathematics/Algebra</category>
-        </item>
-        <item>
-          <title>Duality of Linear Programming</title>
-          <link>https://isa-afp.org/entries/LP_Duality.html</link>
-          <pubDate>Thu, 03 Feb 2022 00:00:00 +0000</pubDate>
-          <description>Duality of Linear Programming in the AFP</description>
-            <category>Mathematics/Algebra</category>
-        </item>
-        <item>
-          <title>Interpolation Polynomials (in HOL-Algebra)</title>
-          <link>https://isa-afp.org/entries/Interpolation_Polynomials_HOL_Algebra.html</link>
-          <pubDate>Sat, 29 Jan 2022 00:00:00 +0000</pubDate>
-          <description>Interpolation Polynomials (in HOL-Algebra) in the AFP</description>
-            <category>Mathematics/Algebra</category>
-        </item>
-        <item>
-          <title>Hyperdual Numbers and Forward Differentiation</title>
-          <link>https://isa-afp.org/entries/Hyperdual.html</link>
-          <pubDate>Fri, 31 Dec 2021 00:00:00 +0000</pubDate>
-          <description>Hyperdual Numbers and Forward Differentiation in the AFP</description>
-            <category>Mathematics/Algebra</category>
-            <category>Mathematics/Analysis</category>
-        </item>
-        <item>
-          <title>Factorization of Polynomials with Algebraic Coefficients</title>
-          <link>https://isa-afp.org/entries/Factor_Algebraic_Polynomial.html</link>
-          <pubDate>Mon, 08 Nov 2021 00:00:00 +0000</pubDate>
-          <description>Factorization of Polynomials with Algebraic Coefficients in the AFP</description>
-            <category>Mathematics/Algebra</category>
-        </item>
-        <item>
-          <title>Finitely Generated Abelian Groups</title>
-          <link>https://isa-afp.org/entries/Finitely_Generated_Abelian_Groups.html</link>
-          <pubDate>Wed, 07 Jul 2021 00:00:00 +0000</pubDate>
-          <description>Finitely Generated Abelian Groups in the AFP</description>
-            <category>Mathematics/Algebra</category>
-        </item>
-        <item>
-          <title>Grothendieck&#39;s Schemes in Algebraic Geometry</title>
-          <link>https://isa-afp.org/entries/Grothendieck_Schemes.html</link>
-          <pubDate>Mon, 29 Mar 2021 00:00:00 +0000</pubDate>
-          <description>Grothendieck&#39;s Schemes in Algebraic Geometry in the AFP</description>
-            <category>Mathematics/Algebra</category>
-            <category>Mathematics/Geometry</category>
-        </item>
-        <item>
-          <title>Formal Puiseux Series</title>
-          <link>https://isa-afp.org/entries/Formal_Puiseux_Series.html</link>
-          <pubDate>Wed, 17 Feb 2021 00:00:00 +0000</pubDate>
-          <description>Formal Puiseux Series in the AFP</description>
-            <category>Mathematics/Algebra</category>
-        </item>
-        <item>
-          <title>A verified algorithm for computing the Smith normal form of a matrix</title>
-          <link>https://isa-afp.org/entries/Smith_Normal_Form.html</link>
-          <pubDate>Sat, 23 May 2020 00:00:00 +0000</pubDate>
-          <description>A verified algorithm for computing the Smith normal form of a matrix in the AFP</description>
-            <category>Mathematics/Algebra</category>
-            <category>Computer science/Algorithms/Mathematical</category>
-        </item>
-        <item>
-          <title>Power Sum Polynomials</title>
-          <link>https://isa-afp.org/entries/Power_Sum_Polynomials.html</link>
-          <pubDate>Fri, 24 Apr 2020 00:00:00 +0000</pubDate>
-          <description>Power Sum Polynomials in the AFP</description>
-            <category>Mathematics/Algebra</category>
-        </item>
-        <item>
-          <title>Matrices for ODEs</title>
-          <link>https://isa-afp.org/entries/Matrices_for_ODEs.html</link>
-          <pubDate>Sun, 19 Apr 2020 00:00:00 +0000</pubDate>
-          <description>Matrices for ODEs in the AFP</description>
-            <category>Mathematics/Analysis</category>
-            <category>Mathematics/Algebra</category>
-        </item>
-        <item>
-          <title>A Hierarchy of Algebras for Boolean Subsets</title>
-          <link>https://isa-afp.org/entries/Subset_Boolean_Algebras.html</link>
-          <pubDate>Fri, 31 Jan 2020 00:00:00 +0000</pubDate>
-          <description>A Hierarchy of Algebras for Boolean Subsets in the AFP</description>
-            <category>Mathematics/Algebra</category>
-        </item>
-        <item>
-          <title>Verification Components for Hybrid Systems</title>
-          <link>https://isa-afp.org/entries/Hybrid_Systems_VCs.html</link>
-          <pubDate>Tue, 10 Sep 2019 00:00:00 +0000</pubDate>
-          <description>Verification Components for Hybrid Systems in the AFP</description>
-            <category>Mathematics/Algebra</category>
-            <category>Mathematics/Analysis</category>
-        </item>
-        <item>
-          <title>A Case Study in Basic Algebra</title>
-          <link>https://isa-afp.org/entries/Jacobson_Basic_Algebra.html</link>
-          <pubDate>Fri, 30 Aug 2019 00:00:00 +0000</pubDate>
-          <description>A Case Study in Basic Algebra in the AFP</description>
-            <category>Mathematics/Algebra</category>
-        </item>
-        <item>
-          <title>Linear Programming</title>
-          <link>https://isa-afp.org/entries/Linear_Programming.html</link>
-          <pubDate>Tue, 06 Aug 2019 00:00:00 +0000</pubDate>
-          <description>Linear Programming in the AFP</description>
-            <category>Mathematics/Algebra</category>
-        </item>
-        <item>
-          <title>Communicating Concurrent Kleene Algebra for Distributed Systems Specification</title>
-          <link>https://isa-afp.org/entries/C2KA_DistributedSystems.html</link>
-          <pubDate>Tue, 06 Aug 2019 00:00:00 +0000</pubDate>
-          <description>Communicating Concurrent Kleene Algebra for Distributed Systems Specification in the AFP</description>
-            <category>Computer science/Automata and formal languages</category>
-            <category>Mathematics/Algebra</category>
-        </item>
-        <item>
-          <title>Linear Inequalities</title>
-          <link>https://isa-afp.org/entries/Linear_Inequalities.html</link>
-          <pubDate>Fri, 21 Jun 2019 00:00:00 +0000</pubDate>
-          <description>Linear Inequalities in the AFP</description>
-            <category>Mathematics/Algebra</category>
-        </item>
-        <item>
-          <title>Hilbert&#39;s Nullstellensatz</title>
-          <link>https://isa-afp.org/entries/Nullstellensatz.html</link>
-          <pubDate>Sun, 16 Jun 2019 00:00:00 +0000</pubDate>
-          <description>Hilbert&#39;s Nullstellensatz in the AFP</description>
-            <category>Mathematics/Algebra</category>
-            <category>Mathematics/Geometry</category>
-        </item>
-        <item>
-          <title>Gröbner Bases, Macaulay Matrices and Dubé&#39;s Degree Bounds</title>
-          <link>https://isa-afp.org/entries/Groebner_Macaulay.html</link>
-          <pubDate>Sat, 15 Jun 2019 00:00:00 +0000</pubDate>
-          <description>Gröbner Bases, Macaulay Matrices and Dubé&#39;s Degree Bounds in the AFP</description>
-            <category>Mathematics/Algebra</category>
-        </item>
-        <item>
-          <title>Farkas&#39; Lemma and Motzkin&#39;s Transposition Theorem</title>
-          <link>https://isa-afp.org/entries/Farkas.html</link>
-          <pubDate>Thu, 17 Jan 2019 00:00:00 +0000</pubDate>
-          <description>Farkas&#39; Lemma and Motzkin&#39;s Transposition Theorem in the AFP</description>
-            <category>Mathematics/Algebra</category>
-        </item>
-        <item>
-          <title>Transformer Semantics</title>
-          <link>https://isa-afp.org/entries/Transformer_Semantics.html</link>
-          <pubDate>Tue, 11 Dec 2018 00:00:00 +0000</pubDate>
-          <description>Transformer Semantics in the AFP</description>
-            <category>Mathematics/Algebra</category>
-            <category>Computer science/Semantics and reasoning</category>
-        </item>
-        <item>
-          <title>Quantales</title>
-          <link>https://isa-afp.org/entries/Quantales.html</link>
-          <pubDate>Tue, 11 Dec 2018 00:00:00 +0000</pubDate>
-          <description>Quantales in the AFP</description>
-            <category>Mathematics/Algebra</category>
-        </item>
-        <item>
-          <title>Symmetric Polynomials</title>
-          <link>https://isa-afp.org/entries/Symmetric_Polynomials.html</link>
-          <pubDate>Tue, 25 Sep 2018 00:00:00 +0000</pubDate>
-          <description>Symmetric Polynomials in the AFP</description>
-            <category>Mathematics/Algebra</category>
-        </item>
-        <item>
-          <title>Signature-Based Gröbner Basis Algorithms</title>
-          <link>https://isa-afp.org/entries/Signature_Groebner.html</link>
-          <pubDate>Thu, 20 Sep 2018 00:00:00 +0000</pubDate>
-          <description>Signature-Based Gröbner Basis Algorithms in the AFP</description>
-            <category>Mathematics/Algebra</category>
-            <category>Computer science/Algorithms/Mathematical</category>
-        </item>
-        <item>
-          <title>Aggregation Algebras</title>
-          <link>https://isa-afp.org/entries/Aggregation_Algebras.html</link>
-          <pubDate>Sat, 15 Sep 2018 00:00:00 +0000</pubDate>
-          <description>Aggregation Algebras in the AFP</description>
-            <category>Mathematics/Algebra</category>
-        </item>
-        <item>
-          <title>Octonions</title>
-          <link>https://isa-afp.org/entries/Octonions.html</link>
-          <pubDate>Fri, 14 Sep 2018 00:00:00 +0000</pubDate>
-          <description>Octonions in the AFP</description>
-            <category>Mathematics/Algebra</category>
-            <category>Mathematics/Geometry</category>
-        </item>
-        <item>
-          <title>Quaternions</title>
-          <link>https://isa-afp.org/entries/Quaternions.html</link>
-          <pubDate>Wed, 05 Sep 2018 00:00:00 +0000</pubDate>
-          <description>Quaternions in the AFP</description>
-            <category>Mathematics/Algebra</category>
-            <category>Mathematics/Geometry</category>
-        </item>
-        <item>
-          <title>The Localization of a Commutative Ring</title>
-          <link>https://isa-afp.org/entries/Localization_Ring.html</link>
-          <pubDate>Thu, 14 Jun 2018 00:00:00 +0000</pubDate>
-          <description>The Localization of a Commutative Ring in the AFP</description>
-            <category>Mathematics/Algebra</category>
-        </item>
-        <item>
-          <title>A verified factorization algorithm for integer polynomials with polynomial complexity</title>
-          <link>https://isa-afp.org/entries/LLL_Factorization.html</link>
-          <pubDate>Tue, 06 Feb 2018 00:00:00 +0000</pubDate>
-          <description>A verified factorization algorithm for integer polynomials with polynomial complexity in the AFP</description>
-            <category>Mathematics/Algebra</category>
-        </item>
-        <item>
-          <title>A verified LLL algorithm</title>
-          <link>https://isa-afp.org/entries/LLL_Basis_Reduction.html</link>
-          <pubDate>Fri, 02 Feb 2018 00:00:00 +0000</pubDate>
-          <description>A verified LLL algorithm in the AFP</description>
-            <category>Computer science/Algorithms/Mathematical</category>
-            <category>Mathematics/Algebra</category>
-        </item>
-        <item>
-          <title>Taylor Models</title>
-          <link>https://isa-afp.org/entries/Taylor_Models.html</link>
-          <pubDate>Mon, 08 Jan 2018 00:00:00 +0000</pubDate>
-          <description>Taylor Models in the AFP</description>
-            <category>Computer science/Algorithms/Mathematical</category>
-            <category>Computer science/Data structures</category>
-            <category>Mathematics/Analysis</category>
-            <category>Mathematics/Algebra</category>
-        </item>
-        <item>
-          <title>The Mason–Stothers Theorem</title>
-          <link>https://isa-afp.org/entries/Mason_Stothers.html</link>
-          <pubDate>Thu, 21 Dec 2017 00:00:00 +0000</pubDate>
-          <description>The Mason–Stothers Theorem in the AFP</description>
-            <category>Mathematics/Algebra</category>
-        </item>
-        <item>
-          <title>Dirichlet L-Functions and Dirichlet&#39;s Theorem</title>
-          <link>https://isa-afp.org/entries/Dirichlet_L.html</link>
-          <pubDate>Thu, 21 Dec 2017 00:00:00 +0000</pubDate>
-          <description>Dirichlet L-Functions and Dirichlet&#39;s Theorem in the AFP</description>
-            <category>Mathematics/Number theory</category>
-            <category>Mathematics/Algebra</category>
-        </item>
-        <item>
-          <title>Stochastic Matrices and the Perron-Frobenius Theorem</title>
-          <link>https://isa-afp.org/entries/Stochastic_Matrices.html</link>
-          <pubDate>Wed, 22 Nov 2017 00:00:00 +0000</pubDate>
-          <description>Stochastic Matrices and the Perron-Frobenius Theorem in the AFP</description>
-            <category>Mathematics/Algebra</category>
-            <category>Computer science/Automata and formal languages</category>
-        </item>
-        <item>
-          <title>Orbit-Stabiliser Theorem with Application to Rotational Symmetries</title>
-          <link>https://isa-afp.org/entries/Orbit_Stabiliser.html</link>
-          <pubDate>Sun, 20 Aug 2017 00:00:00 +0000</pubDate>
-          <description>Orbit-Stabiliser Theorem with Application to Rotational Symmetries in the AFP</description>
-            <category>Mathematics/Algebra</category>
-        </item>
-        <item>
-          <title>Stone-Kleene Relation Algebras</title>
-          <link>https://isa-afp.org/entries/Stone_Kleene_Relation_Algebras.html</link>
-          <pubDate>Thu, 06 Jul 2017 00:00:00 +0000</pubDate>
-          <description>Stone-Kleene Relation Algebras in the AFP</description>
-            <category>Mathematics/Algebra</category>
-        </item>
-        <item>
-          <title>Partial Semigroups and Convolution Algebras</title>
-          <link>https://isa-afp.org/entries/PSemigroupsConvolution.html</link>
-          <pubDate>Tue, 13 Jun 2017 00:00:00 +0000</pubDate>
-          <description>Partial Semigroups and Convolution Algebras in the AFP</description>
-            <category>Mathematics/Algebra</category>
-        </item>
-        <item>
-          <title>Optics</title>
-          <link>https://isa-afp.org/entries/Optics.html</link>
-          <pubDate>Thu, 25 May 2017 00:00:00 +0000</pubDate>
-          <description>Optics in the AFP</description>
-            <category>Computer science/Functional programming</category>
-            <category>Mathematics/Algebra</category>
-        </item>
-        <item>
-          <title>Subresultants</title>
-          <link>https://isa-afp.org/entries/Subresultants.html</link>
-          <pubDate>Thu, 06 Apr 2017 00:00:00 +0000</pubDate>
-          <description>Subresultants in the AFP</description>
-            <category>Mathematics/Algebra</category>
-        </item>
-        <item>
-          <title>Stone Relation Algebras</title>
-          <link>https://isa-afp.org/entries/Stone_Relation_Algebras.html</link>
-          <pubDate>Tue, 07 Feb 2017 00:00:00 +0000</pubDate>
-          <description>Stone Relation Algebras in the AFP</description>
-            <category>Mathematics/Algebra</category>
-        </item>
-        <item>
-          <title>The Factorization Algorithm of Berlekamp and Zassenhaus</title>
-          <link>https://isa-afp.org/entries/Berlekamp_Zassenhaus.html</link>
-          <pubDate>Fri, 14 Oct 2016 00:00:00 +0000</pubDate>
-          <description>The Factorization Algorithm of Berlekamp and Zassenhaus in the AFP</description>
-            <category>Mathematics/Algebra</category>
-        </item>
-        <item>
-          <title>Chamber Complexes, Coxeter Systems, and Buildings</title>
-          <link>https://isa-afp.org/entries/Buildings.html</link>
-          <pubDate>Fri, 01 Jul 2016 00:00:00 +0000</pubDate>
-          <description>Chamber Complexes, Coxeter Systems, and Buildings in the AFP</description>
-            <category>Mathematics/Algebra</category>
-            <category>Mathematics/Geometry</category>
-        </item>
-        <item>
-          <title>Program Construction and Verification Components Based on Kleene Algebra</title>
-          <link>https://isa-afp.org/entries/Algebraic_VCs.html</link>
-          <pubDate>Sat, 18 Jun 2016 00:00:00 +0000</pubDate>
-          <description>Program Construction and Verification Components Based on Kleene Algebra in the AFP</description>
-            <category>Mathematics/Algebra</category>
-        </item>
-        <item>
-          <title>Perron-Frobenius Theorem for Spectral Radius Analysis</title>
-          <link>https://isa-afp.org/entries/Perron_Frobenius.html</link>
-          <pubDate>Fri, 20 May 2016 00:00:00 +0000</pubDate>
-          <description>Perron-Frobenius Theorem for Spectral Radius Analysis in the AFP</description>
-            <category>Mathematics/Algebra</category>
-        </item>
-        <item>
-          <title>Gröbner Bases Theory</title>
-          <link>https://isa-afp.org/entries/Groebner_Bases.html</link>
-          <pubDate>Mon, 02 May 2016 00:00:00 +0000</pubDate>
-          <description>Gröbner Bases Theory in the AFP</description>
-            <category>Mathematics/Algebra</category>
-            <category>Computer science/Algorithms/Mathematical</category>
-        </item>
-        <item>
-          <title>Kleene Algebras with Domain</title>
-          <link>https://isa-afp.org/entries/KAD.html</link>
-          <pubDate>Tue, 12 Apr 2016 00:00:00 +0000</pubDate>
-          <description>Kleene Algebras with Domain in the AFP</description>
-            <category>Computer science/Programming languages/Logics</category>
-            <category>Computer science/Automata and formal languages</category>
-            <category>Mathematics/Algebra</category>
-        </item>
-        <item>
-          <title>Polynomial Interpolation</title>
-          <link>https://isa-afp.org/entries/Polynomial_Interpolation.html</link>
-          <pubDate>Fri, 29 Jan 2016 00:00:00 +0000</pubDate>
-          <description>Polynomial Interpolation in the AFP</description>
-            <category>Mathematics/Algebra</category>
-        </item>
-        <item>
-          <title>Polynomial Factorization</title>
-          <link>https://isa-afp.org/entries/Polynomial_Factorization.html</link>
-          <pubDate>Fri, 29 Jan 2016 00:00:00 +0000</pubDate>
-          <description>Polynomial Factorization in the AFP</description>
-            <category>Mathematics/Algebra</category>
-        </item>
-        <item>
-          <title>Tensor Product of Matrices</title>
-          <link>https://isa-afp.org/entries/Matrix_Tensor.html</link>
-          <pubDate>Mon, 18 Jan 2016 00:00:00 +0000</pubDate>
-          <description>Tensor Product of Matrices in the AFP</description>
-            <category>Computer science/Data structures</category>
-            <category>Mathematics/Algebra</category>
-        </item>
-        <item>
-          <title>Algebraic Numbers in Isabelle/HOL</title>
-          <link>https://isa-afp.org/entries/Algebraic_Numbers.html</link>
-          <pubDate>Tue, 22 Dec 2015 00:00:00 +0000</pubDate>
-          <description>Algebraic Numbers in Isabelle/HOL in the AFP</description>
-            <category>Mathematics/Algebra</category>
-        </item>
-        <item>
-          <title>Matrices, Jordan Normal Forms, and Spectral Radius Theory</title>
-          <link>https://isa-afp.org/entries/Jordan_Normal_Form.html</link>
-          <pubDate>Fri, 21 Aug 2015 00:00:00 +0000</pubDate>
-          <description>Matrices, Jordan Normal Forms, and Spectral Radius Theory in the AFP</description>
-            <category>Mathematics/Algebra</category>
-        </item>
-        <item>
-          <title>Representations of Finite Groups</title>
-          <link>https://isa-afp.org/entries/Rep_Fin_Groups.html</link>
-          <pubDate>Wed, 12 Aug 2015 00:00:00 +0000</pubDate>
-          <description>Representations of Finite Groups in the AFP</description>
-            <category>Mathematics/Algebra</category>
-        </item>
-        <item>
-          <title>Hermite Normal Form</title>
-          <link>https://isa-afp.org/entries/Hermite.html</link>
-          <pubDate>Tue, 07 Jul 2015 00:00:00 +0000</pubDate>
-          <description>Hermite Normal Form in the AFP</description>
-            <category>Computer science/Algorithms/Mathematical</category>
-            <category>Mathematics/Algebra</category>
-        </item>
-        <item>
-          <title>Binary Multirelations</title>
-          <link>https://isa-afp.org/entries/Multirelations.html</link>
-          <pubDate>Thu, 11 Jun 2015 00:00:00 +0000</pubDate>
-          <description>Binary Multirelations in the AFP</description>
-            <category>Mathematics/Algebra</category>
-        </item>
-        <item>
-          <title>Residuated Lattices</title>
-          <link>https://isa-afp.org/entries/Residuated_Lattices.html</link>
-          <pubDate>Wed, 15 Apr 2015 00:00:00 +0000</pubDate>
-          <description>Residuated Lattices in the AFP</description>
-            <category>Mathematics/Algebra</category>
-        </item>
-        <item>
-          <title>QR Decomposition</title>
-          <link>https://isa-afp.org/entries/QR_Decomposition.html</link>
-          <pubDate>Thu, 12 Feb 2015 00:00:00 +0000</pubDate>
-          <description>QR Decomposition in the AFP</description>
-            <category>Computer science/Algorithms/Mathematical</category>
-            <category>Mathematics/Algebra</category>
-        </item>
-        <item>
-          <title>Echelon Form</title>
-          <link>https://isa-afp.org/entries/Echelon_Form.html</link>
-          <pubDate>Thu, 12 Feb 2015 00:00:00 +0000</pubDate>
-          <description>Echelon Form in the AFP</description>
-            <category>Computer science/Algorithms/Mathematical</category>
-            <category>Mathematics/Algebra</category>
-        </item>
-        <item>
-          <title>The Cayley-Hamilton Theorem</title>
-          <link>https://isa-afp.org/entries/Cayley_Hamilton.html</link>
-          <pubDate>Mon, 15 Sep 2014 00:00:00 +0000</pubDate>
-          <description>The Cayley-Hamilton Theorem in the AFP</description>
-            <category>Mathematics/Algebra</category>
-        </item>
-        <item>
-          <title>The Jordan-Hölder Theorem</title>
-          <link>https://isa-afp.org/entries/Jordan_Hoelder.html</link>
-          <pubDate>Tue, 09 Sep 2014 00:00:00 +0000</pubDate>
-          <description>The Jordan-Hölder Theorem in the AFP</description>
-            <category>Mathematics/Algebra</category>
-        </item>
-        <item>
-          <title>Vector Spaces</title>
-          <link>https://isa-afp.org/entries/VectorSpace.html</link>
-          <pubDate>Fri, 29 Aug 2014 00:00:00 +0000</pubDate>
-          <description>Vector Spaces in the AFP</description>
-            <category>Mathematics/Algebra</category>
-        </item>
-        <item>
-          <title>Regular Algebras</title>
-          <link>https://isa-afp.org/entries/Regular_Algebras.html</link>
-          <pubDate>Wed, 21 May 2014 00:00:00 +0000</pubDate>
-          <description>Regular Algebras in the AFP</description>
-            <category>Computer science/Automata and formal languages</category>
-            <category>Mathematics/Algebra</category>
-        </item>
-        <item>
-          <title>Secondary Sylow Theorems</title>
-          <link>https://isa-afp.org/entries/Secondary_Sylow.html</link>
-          <pubDate>Tue, 28 Jan 2014 00:00:00 +0000</pubDate>
-          <description>Secondary Sylow Theorems in the AFP</description>
-            <category>Mathematics/Algebra</category>
-        </item>
-        <item>
-          <title>Relation Algebra</title>
-          <link>https://isa-afp.org/entries/Relation_Algebra.html</link>
-          <pubDate>Sat, 25 Jan 2014 00:00:00 +0000</pubDate>
-          <description>Relation Algebra in the AFP</description>
-            <category>Mathematics/Algebra</category>
-        </item>
-        <item>
-          <title>Kleene Algebra with Tests and Demonic Refinement Algebras</title>
-          <link>https://isa-afp.org/entries/KAT_and_DRA.html</link>
-          <pubDate>Thu, 23 Jan 2014 00:00:00 +0000</pubDate>
-          <description>Kleene Algebra with Tests and Demonic Refinement Algebras in the AFP</description>
-            <category>Computer science/Programming languages/Logics</category>
-            <category>Computer science/Automata and formal languages</category>
-            <category>Mathematics/Algebra</category>
-        </item>
-        <item>
-          <title>Rank-Nullity Theorem in Linear Algebra</title>
-          <link>https://isa-afp.org/entries/Rank_Nullity_Theorem.html</link>
-          <pubDate>Wed, 16 Jan 2013 00:00:00 +0000</pubDate>
-          <description>Rank-Nullity Theorem in Linear Algebra in the AFP</description>
-            <category>Mathematics/Algebra</category>
-        </item>
-        <item>
-          <title>Kleene Algebra</title>
-          <link>https://isa-afp.org/entries/Kleene_Algebra.html</link>
-          <pubDate>Tue, 15 Jan 2013 00:00:00 +0000</pubDate>
-          <description>Kleene Algebra in the AFP</description>
-            <category>Computer science/Programming languages/Logics</category>
-            <category>Computer science/Automata and formal languages</category>
-            <category>Mathematics/Algebra</category>
-        </item>
-        <item>
-          <title>Proving the Impossibility of Trisecting an Angle and Doubling the Cube</title>
-          <link>https://isa-afp.org/entries/Impossible_Geometry.html</link>
-          <pubDate>Sun, 05 Aug 2012 00:00:00 +0000</pubDate>
-          <description>Proving the Impossibility of Trisecting an Angle and Doubling the Cube in the AFP</description>
-            <category>Mathematics/Algebra</category>
-            <category>Mathematics/Geometry</category>
-        </item>
-        <item>
-          <title>Pseudo Hoops</title>
-          <link>https://isa-afp.org/entries/PseudoHoops.html</link>
-          <pubDate>Thu, 22 Sep 2011 00:00:00 +0000</pubDate>
-          <description>Pseudo Hoops in the AFP</description>
-            <category>Mathematics/Algebra</category>
-        </item>
-        <item>
-          <title>Gauss-Jordan Elimination for Matrices Represented as Functions</title>
-          <link>https://isa-afp.org/entries/Gauss-Jordan-Elim-Fun.html</link>
-          <pubDate>Fri, 19 Aug 2011 00:00:00 +0000</pubDate>
-          <description>Gauss-Jordan Elimination for Matrices Represented as Functions in the AFP</description>
-            <category>Computer science/Algorithms/Mathematical</category>
-            <category>Mathematics/Algebra</category>
-        </item>
-        <item>
-          <title>Executable Multivariate Polynomials</title>
-          <link>https://isa-afp.org/entries/Polynomials.html</link>
-          <pubDate>Tue, 10 Aug 2010 00:00:00 +0000</pubDate>
-          <description>Executable Multivariate Polynomials in the AFP</description>
-            <category>Mathematics/Analysis</category>
-            <category>Mathematics/Algebra</category>
-            <category>Computer science/Algorithms/Mathematical</category>
-        </item>
-        <item>
-          <title>Free Groups</title>
-          <link>https://isa-afp.org/entries/Free-Groups.html</link>
-          <pubDate>Thu, 24 Jun 2010 00:00:00 +0000</pubDate>
-          <description>Free Groups in the AFP</description>
-            <category>Mathematics/Algebra</category>
-        </item>
-        <item>
-          <title>A Complete Proof of the Robbins Conjecture</title>
-          <link>https://isa-afp.org/entries/Robbins-Conjecture.html</link>
-          <pubDate>Sat, 22 May 2010 00:00:00 +0000</pubDate>
-          <description>A Complete Proof of the Robbins Conjecture in the AFP</description>
-            <category>Mathematics/Algebra</category>
-        </item>
-        <item>
-          <title>An Example of a Cofinitary Group in Isabelle/HOL</title>
-          <link>https://isa-afp.org/entries/CofGroups.html</link>
-          <pubDate>Tue, 04 Aug 2009 00:00:00 +0000</pubDate>
-          <description>An Example of a Cofinitary Group in Isabelle/HOL in the AFP</description>
-            <category>Mathematics/Algebra</category>
-        </item>
-        <item>
-          <title>Fundamental Properties of Valuation Theory and Hensel&#39;s Lemma</title>
-          <link>https://isa-afp.org/entries/Valuation.html</link>
-          <pubDate>Wed, 08 Aug 2007 00:00:00 +0000</pubDate>
-          <description>Fundamental Properties of Valuation Theory and Hensel&#39;s Lemma in the AFP</description>
-            <category>Mathematics/Algebra</category>
-        </item>
-        <item>
-          <title>Groups, Rings and Modules</title>
-          <link>https://isa-afp.org/entries/Group-Ring-Module.html</link>
-          <pubDate>Tue, 18 May 2004 00:00:00 +0000</pubDate>
-          <description>Groups, Rings and Modules in the AFP</description>
-            <category>Mathematics/Algebra</category>
-        </item>
+    <description>AFP entries in Algebra</description><item>
+  <title>A Generalization of the Cauchy–Davenport theorem</title>
+  <link>https://isa-afp.org/entries/Generalized_Cauchy_Davenport.html</link>
+  <pubDate>Sat, 23 Nov 2024 00:00:00 +0000</pubDate>
+  <description>A Generalization of the Cauchy–Davenport theorem in the AFP</description>
+    <category>Mathematics/Combinatorics</category>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Two Theorems on Hermitian Matrices</title>
+  <link>https://isa-afp.org/entries/Two_Hermitian_Results.html</link>
+  <pubDate>Sat, 16 Nov 2024 00:00:00 +0000</pubDate>
+  <description>Two Theorems on Hermitian Matrices in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>A simple proof that π is irrational</title>
+  <link>https://isa-afp.org/entries/Pi_Irrational.html</link>
+  <pubDate>Fri, 13 Sep 2024 00:00:00 +0000</pubDate>
+  <description>A simple proof that π is irrational in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Topological Groups</title>
+  <link>https://isa-afp.org/entries/Topological_Groups.html</link>
+  <pubDate>Mon, 19 Aug 2024 00:00:00 +0000</pubDate>
+  <description>Topological Groups in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Lie Groups and Algebras</title>
+  <link>https://isa-afp.org/entries/Lie_Groups.html</link>
+  <pubDate>Wed, 31 Jul 2024 00:00:00 +0000</pubDate>
+  <description>Lie Groups and Algebras in the AFP</description>
+    <category>Mathematics/Algebra</category>
+    <category>Mathematics/Geometry</category>
+</item>
+<item>
+  <title>Sorted Terms</title>
+  <link>https://isa-afp.org/entries/Sorted_Terms.html</link>
+  <pubDate>Mon, 27 May 2024 00:00:00 +0000</pubDate>
+  <description>Sorted Terms in the AFP</description>
+    <category>Logic/Rewriting</category>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Countable Sums and Discrete (Sub)Distributions</title>
+  <link>https://isa-afp.org/entries/Countable_Sums_and_Discrete_Distributions.html</link>
+  <pubDate>Sat, 25 May 2024 00:00:00 +0000</pubDate>
+  <description>Countable Sums and Discrete (Sub)Distributions in the AFP</description>
+    <category>Logic/General logic/Mechanization of proofs</category>
+    <category>Mathematics/Probability theory</category>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Schönhage-Strassen Multiplication</title>
+  <link>https://isa-afp.org/entries/Schoenhage_Strassen.html</link>
+  <pubDate>Fri, 10 May 2024 00:00:00 +0000</pubDate>
+  <description>Schönhage-Strassen Multiplication in the AFP</description>
+    <category>Computer science/Algorithms/Mathematical</category>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Higher Globular Catoids and Quantales</title>
+  <link>https://isa-afp.org/entries/OmegaCatoidsQuantales.html</link>
+  <pubDate>Wed, 24 Jan 2024 00:00:00 +0000</pubDate>
+  <description>Higher Globular Catoids and Quantales in the AFP</description>
+    <category>Mathematics/Category theory</category>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Decomposition of totally ordered hoops</title>
+  <link>https://isa-afp.org/entries/Isabelle_hoops.html</link>
+  <pubDate>Mon, 22 Jan 2024 00:00:00 +0000</pubDate>
+  <description>Decomposition of totally ordered hoops in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Two theorems about the geometry of the critical points of a complex polynomial</title>
+  <link>https://isa-afp.org/entries/Polynomial_Crit_Geometry.html</link>
+  <pubDate>Tue, 14 Nov 2023 00:00:00 +0000</pubDate>
+  <description>Two theorems about the geometry of the critical points of a complex polynomial in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Chebyshev Polynomials</title>
+  <link>https://isa-afp.org/entries/Chebyshev_Polynomials.html</link>
+  <pubDate>Mon, 13 Nov 2023 00:00:00 +0000</pubDate>
+  <description>Chebyshev Polynomials in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Perfect Fields</title>
+  <link>https://isa-afp.org/entries/Perfect_Fields.html</link>
+  <pubDate>Mon, 06 Nov 2023 00:00:00 +0000</pubDate>
+  <description>Perfect Fields in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Elimination of Repeated Factors Algorithm</title>
+  <link>https://isa-afp.org/entries/Elimination_Of_Repeated_Factors.html</link>
+  <pubDate>Mon, 06 Nov 2023 00:00:00 +0000</pubDate>
+  <description>Elimination of Repeated Factors Algorithm in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Cardinality and Representation of Stone Relation Algebras</title>
+  <link>https://isa-afp.org/entries/Relational_Cardinality.html</link>
+  <pubDate>Fri, 22 Sep 2023 00:00:00 +0000</pubDate>
+  <description>Cardinality and Representation of Stone Relation Algebras in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Catoids, Categories, Groupoids</title>
+  <link>https://isa-afp.org/entries/Catoids.html</link>
+  <pubDate>Mon, 14 Aug 2023 00:00:00 +0000</pubDate>
+  <description>Catoids, Categories, Groupoids in the AFP</description>
+    <category>Mathematics/Algebra</category>
+    <category>Mathematics/Category theory</category>
+</item>
+<item>
+  <title>Modal quantales, involutive quantales, Dedekind Quantales</title>
+  <link>https://isa-afp.org/entries/Quantales_Converse.html</link>
+  <pubDate>Tue, 25 Jul 2023 00:00:00 +0000</pubDate>
+  <description>Modal quantales, involutive quantales, Dedekind Quantales in the AFP</description>
+    <category>Computer science/Semantics and reasoning</category>
+    <category>Mathematics/Algebra</category>
+    <category>Mathematics/Order</category>
+</item>
+<item>
+  <title>Inner Structure, Determinism and Modal Algebra of Multirelations</title>
+  <link>https://isa-afp.org/entries/Multirelations_Heterogeneous.html</link>
+  <pubDate>Mon, 22 May 2023 00:00:00 +0000</pubDate>
+  <description>Inner Structure, Determinism and Modal Algebra of Multirelations in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>The Schwartz-Zippel Lemma</title>
+  <link>https://isa-afp.org/entries/Schwartz_Zippel.html</link>
+  <pubDate>Thu, 27 Apr 2023 00:00:00 +0000</pubDate>
+  <description>The Schwartz-Zippel Lemma in the AFP</description>
+    <category>Computer science/Algorithms/Randomized</category>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>The CHSH inequality: Tsirelson&#39;s upper-bound and other results</title>
+  <link>https://isa-afp.org/entries/TsirelsonBound.html</link>
+  <pubDate>Tue, 18 Apr 2023 00:00:00 +0000</pubDate>
+  <description>The CHSH inequality: Tsirelson&#39;s upper-bound and other results in the AFP</description>
+    <category>Mathematics/Algebra</category>
+    <category>Mathematics/Physics/Quantum information</category>
+</item>
+<item>
+  <title>Group Law of Edwards Elliptic Curves</title>
+  <link>https://isa-afp.org/entries/Edwards_Elliptic_Curves_Group.html</link>
+  <pubDate>Thu, 16 Feb 2023 00:00:00 +0000</pubDate>
+  <description>Group Law of Edwards Elliptic Curves in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Birkhoff&#39;s Representation Theorem For Finite Distributive Lattices</title>
+  <link>https://isa-afp.org/entries/Birkhoff_Finite_Distributive_Lattices.html</link>
+  <pubDate>Tue, 06 Dec 2022 00:00:00 +0000</pubDate>
+  <description>Birkhoff&#39;s Representation Theorem For Finite Distributive Lattices in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>p-adic Fields and p-adic Semialgebraic Sets</title>
+  <link>https://isa-afp.org/entries/Padic_Field.html</link>
+  <pubDate>Thu, 22 Sep 2022 00:00:00 +0000</pubDate>
+  <description>p-adic Fields and p-adic Semialgebraic Sets in the AFP</description>
+    <category>Mathematics/Number theory</category>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Simultaneous diagonalization of pairwise commuting Hermitian matrices</title>
+  <link>https://isa-afp.org/entries/Commuting_Hermitian.html</link>
+  <pubDate>Mon, 18 Jul 2022 00:00:00 +0000</pubDate>
+  <description>Simultaneous diagonalization of pairwise commuting Hermitian matrices in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Finite Fields</title>
+  <link>https://isa-afp.org/entries/Finite_Fields.html</link>
+  <pubDate>Wed, 08 Jun 2022 00:00:00 +0000</pubDate>
+  <description>Finite Fields in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Fisher&#39;s Inequality: Linear Algebraic Proof Techniques for Combinatorics</title>
+  <link>https://isa-afp.org/entries/Fishers_Inequality.html</link>
+  <pubDate>Thu, 21 Apr 2022 00:00:00 +0000</pubDate>
+  <description>Fisher&#39;s Inequality: Linear Algebraic Proof Techniques for Combinatorics in the AFP</description>
+    <category>Mathematics/Combinatorics</category>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Duality of Linear Programming</title>
+  <link>https://isa-afp.org/entries/LP_Duality.html</link>
+  <pubDate>Thu, 03 Feb 2022 00:00:00 +0000</pubDate>
+  <description>Duality of Linear Programming in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Interpolation Polynomials (in HOL-Algebra)</title>
+  <link>https://isa-afp.org/entries/Interpolation_Polynomials_HOL_Algebra.html</link>
+  <pubDate>Sat, 29 Jan 2022 00:00:00 +0000</pubDate>
+  <description>Interpolation Polynomials (in HOL-Algebra) in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Hyperdual Numbers and Forward Differentiation</title>
+  <link>https://isa-afp.org/entries/Hyperdual.html</link>
+  <pubDate>Fri, 31 Dec 2021 00:00:00 +0000</pubDate>
+  <description>Hyperdual Numbers and Forward Differentiation in the AFP</description>
+    <category>Mathematics/Algebra</category>
+    <category>Mathematics/Analysis</category>
+</item>
+<item>
+  <title>Factorization of Polynomials with Algebraic Coefficients</title>
+  <link>https://isa-afp.org/entries/Factor_Algebraic_Polynomial.html</link>
+  <pubDate>Mon, 08 Nov 2021 00:00:00 +0000</pubDate>
+  <description>Factorization of Polynomials with Algebraic Coefficients in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Finitely Generated Abelian Groups</title>
+  <link>https://isa-afp.org/entries/Finitely_Generated_Abelian_Groups.html</link>
+  <pubDate>Wed, 07 Jul 2021 00:00:00 +0000</pubDate>
+  <description>Finitely Generated Abelian Groups in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Grothendieck&#39;s Schemes in Algebraic Geometry</title>
+  <link>https://isa-afp.org/entries/Grothendieck_Schemes.html</link>
+  <pubDate>Mon, 29 Mar 2021 00:00:00 +0000</pubDate>
+  <description>Grothendieck&#39;s Schemes in Algebraic Geometry in the AFP</description>
+    <category>Mathematics/Algebra</category>
+    <category>Mathematics/Geometry</category>
+</item>
+<item>
+  <title>Formal Puiseux Series</title>
+  <link>https://isa-afp.org/entries/Formal_Puiseux_Series.html</link>
+  <pubDate>Wed, 17 Feb 2021 00:00:00 +0000</pubDate>
+  <description>Formal Puiseux Series in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>A verified algorithm for computing the Smith normal form of a matrix</title>
+  <link>https://isa-afp.org/entries/Smith_Normal_Form.html</link>
+  <pubDate>Sat, 23 May 2020 00:00:00 +0000</pubDate>
+  <description>A verified algorithm for computing the Smith normal form of a matrix in the AFP</description>
+    <category>Mathematics/Algebra</category>
+    <category>Computer science/Algorithms/Mathematical</category>
+</item>
+<item>
+  <title>Power Sum Polynomials</title>
+  <link>https://isa-afp.org/entries/Power_Sum_Polynomials.html</link>
+  <pubDate>Fri, 24 Apr 2020 00:00:00 +0000</pubDate>
+  <description>Power Sum Polynomials in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Matrices for ODEs</title>
+  <link>https://isa-afp.org/entries/Matrices_for_ODEs.html</link>
+  <pubDate>Sun, 19 Apr 2020 00:00:00 +0000</pubDate>
+  <description>Matrices for ODEs in the AFP</description>
+    <category>Mathematics/Analysis</category>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>A Hierarchy of Algebras for Boolean Subsets</title>
+  <link>https://isa-afp.org/entries/Subset_Boolean_Algebras.html</link>
+  <pubDate>Fri, 31 Jan 2020 00:00:00 +0000</pubDate>
+  <description>A Hierarchy of Algebras for Boolean Subsets in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Verification Components for Hybrid Systems</title>
+  <link>https://isa-afp.org/entries/Hybrid_Systems_VCs.html</link>
+  <pubDate>Tue, 10 Sep 2019 00:00:00 +0000</pubDate>
+  <description>Verification Components for Hybrid Systems in the AFP</description>
+    <category>Mathematics/Algebra</category>
+    <category>Mathematics/Analysis</category>
+</item>
+<item>
+  <title>A Case Study in Basic Algebra</title>
+  <link>https://isa-afp.org/entries/Jacobson_Basic_Algebra.html</link>
+  <pubDate>Fri, 30 Aug 2019 00:00:00 +0000</pubDate>
+  <description>A Case Study in Basic Algebra in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Linear Programming</title>
+  <link>https://isa-afp.org/entries/Linear_Programming.html</link>
+  <pubDate>Tue, 06 Aug 2019 00:00:00 +0000</pubDate>
+  <description>Linear Programming in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Communicating Concurrent Kleene Algebra for Distributed Systems Specification</title>
+  <link>https://isa-afp.org/entries/C2KA_DistributedSystems.html</link>
+  <pubDate>Tue, 06 Aug 2019 00:00:00 +0000</pubDate>
+  <description>Communicating Concurrent Kleene Algebra for Distributed Systems Specification in the AFP</description>
+    <category>Computer science/Automata and formal languages</category>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Linear Inequalities</title>
+  <link>https://isa-afp.org/entries/Linear_Inequalities.html</link>
+  <pubDate>Fri, 21 Jun 2019 00:00:00 +0000</pubDate>
+  <description>Linear Inequalities in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Hilbert&#39;s Nullstellensatz</title>
+  <link>https://isa-afp.org/entries/Nullstellensatz.html</link>
+  <pubDate>Sun, 16 Jun 2019 00:00:00 +0000</pubDate>
+  <description>Hilbert&#39;s Nullstellensatz in the AFP</description>
+    <category>Mathematics/Algebra</category>
+    <category>Mathematics/Geometry</category>
+</item>
+<item>
+  <title>Gröbner Bases, Macaulay Matrices and Dubé&#39;s Degree Bounds</title>
+  <link>https://isa-afp.org/entries/Groebner_Macaulay.html</link>
+  <pubDate>Sat, 15 Jun 2019 00:00:00 +0000</pubDate>
+  <description>Gröbner Bases, Macaulay Matrices and Dubé&#39;s Degree Bounds in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Farkas&#39; Lemma and Motzkin&#39;s Transposition Theorem</title>
+  <link>https://isa-afp.org/entries/Farkas.html</link>
+  <pubDate>Thu, 17 Jan 2019 00:00:00 +0000</pubDate>
+  <description>Farkas&#39; Lemma and Motzkin&#39;s Transposition Theorem in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Transformer Semantics</title>
+  <link>https://isa-afp.org/entries/Transformer_Semantics.html</link>
+  <pubDate>Tue, 11 Dec 2018 00:00:00 +0000</pubDate>
+  <description>Transformer Semantics in the AFP</description>
+    <category>Mathematics/Algebra</category>
+    <category>Computer science/Semantics and reasoning</category>
+</item>
+<item>
+  <title>Quantales</title>
+  <link>https://isa-afp.org/entries/Quantales.html</link>
+  <pubDate>Tue, 11 Dec 2018 00:00:00 +0000</pubDate>
+  <description>Quantales in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Symmetric Polynomials</title>
+  <link>https://isa-afp.org/entries/Symmetric_Polynomials.html</link>
+  <pubDate>Tue, 25 Sep 2018 00:00:00 +0000</pubDate>
+  <description>Symmetric Polynomials in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Signature-Based Gröbner Basis Algorithms</title>
+  <link>https://isa-afp.org/entries/Signature_Groebner.html</link>
+  <pubDate>Thu, 20 Sep 2018 00:00:00 +0000</pubDate>
+  <description>Signature-Based Gröbner Basis Algorithms in the AFP</description>
+    <category>Mathematics/Algebra</category>
+    <category>Computer science/Algorithms/Mathematical</category>
+</item>
+<item>
+  <title>Aggregation Algebras</title>
+  <link>https://isa-afp.org/entries/Aggregation_Algebras.html</link>
+  <pubDate>Sat, 15 Sep 2018 00:00:00 +0000</pubDate>
+  <description>Aggregation Algebras in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Octonions</title>
+  <link>https://isa-afp.org/entries/Octonions.html</link>
+  <pubDate>Fri, 14 Sep 2018 00:00:00 +0000</pubDate>
+  <description>Octonions in the AFP</description>
+    <category>Mathematics/Algebra</category>
+    <category>Mathematics/Geometry</category>
+</item>
+<item>
+  <title>Quaternions</title>
+  <link>https://isa-afp.org/entries/Quaternions.html</link>
+  <pubDate>Wed, 05 Sep 2018 00:00:00 +0000</pubDate>
+  <description>Quaternions in the AFP</description>
+    <category>Mathematics/Algebra</category>
+    <category>Mathematics/Geometry</category>
+</item>
+<item>
+  <title>The Localization of a Commutative Ring</title>
+  <link>https://isa-afp.org/entries/Localization_Ring.html</link>
+  <pubDate>Thu, 14 Jun 2018 00:00:00 +0000</pubDate>
+  <description>The Localization of a Commutative Ring in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>A verified factorization algorithm for integer polynomials with polynomial complexity</title>
+  <link>https://isa-afp.org/entries/LLL_Factorization.html</link>
+  <pubDate>Tue, 06 Feb 2018 00:00:00 +0000</pubDate>
+  <description>A verified factorization algorithm for integer polynomials with polynomial complexity in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>A verified LLL algorithm</title>
+  <link>https://isa-afp.org/entries/LLL_Basis_Reduction.html</link>
+  <pubDate>Fri, 02 Feb 2018 00:00:00 +0000</pubDate>
+  <description>A verified LLL algorithm in the AFP</description>
+    <category>Computer science/Algorithms/Mathematical</category>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Taylor Models</title>
+  <link>https://isa-afp.org/entries/Taylor_Models.html</link>
+  <pubDate>Mon, 08 Jan 2018 00:00:00 +0000</pubDate>
+  <description>Taylor Models in the AFP</description>
+    <category>Computer science/Algorithms/Mathematical</category>
+    <category>Computer science/Data structures</category>
+    <category>Mathematics/Analysis</category>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>The Mason–Stothers Theorem</title>
+  <link>https://isa-afp.org/entries/Mason_Stothers.html</link>
+  <pubDate>Thu, 21 Dec 2017 00:00:00 +0000</pubDate>
+  <description>The Mason–Stothers Theorem in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Dirichlet L-Functions and Dirichlet&#39;s Theorem</title>
+  <link>https://isa-afp.org/entries/Dirichlet_L.html</link>
+  <pubDate>Thu, 21 Dec 2017 00:00:00 +0000</pubDate>
+  <description>Dirichlet L-Functions and Dirichlet&#39;s Theorem in the AFP</description>
+    <category>Mathematics/Number theory</category>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Stochastic Matrices and the Perron-Frobenius Theorem</title>
+  <link>https://isa-afp.org/entries/Stochastic_Matrices.html</link>
+  <pubDate>Wed, 22 Nov 2017 00:00:00 +0000</pubDate>
+  <description>Stochastic Matrices and the Perron-Frobenius Theorem in the AFP</description>
+    <category>Mathematics/Algebra</category>
+    <category>Computer science/Automata and formal languages</category>
+</item>
+<item>
+  <title>Orbit-Stabiliser Theorem with Application to Rotational Symmetries</title>
+  <link>https://isa-afp.org/entries/Orbit_Stabiliser.html</link>
+  <pubDate>Sun, 20 Aug 2017 00:00:00 +0000</pubDate>
+  <description>Orbit-Stabiliser Theorem with Application to Rotational Symmetries in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Stone-Kleene Relation Algebras</title>
+  <link>https://isa-afp.org/entries/Stone_Kleene_Relation_Algebras.html</link>
+  <pubDate>Thu, 06 Jul 2017 00:00:00 +0000</pubDate>
+  <description>Stone-Kleene Relation Algebras in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Partial Semigroups and Convolution Algebras</title>
+  <link>https://isa-afp.org/entries/PSemigroupsConvolution.html</link>
+  <pubDate>Tue, 13 Jun 2017 00:00:00 +0000</pubDate>
+  <description>Partial Semigroups and Convolution Algebras in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Optics</title>
+  <link>https://isa-afp.org/entries/Optics.html</link>
+  <pubDate>Thu, 25 May 2017 00:00:00 +0000</pubDate>
+  <description>Optics in the AFP</description>
+    <category>Computer science/Functional programming</category>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Subresultants</title>
+  <link>https://isa-afp.org/entries/Subresultants.html</link>
+  <pubDate>Thu, 06 Apr 2017 00:00:00 +0000</pubDate>
+  <description>Subresultants in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Stone Relation Algebras</title>
+  <link>https://isa-afp.org/entries/Stone_Relation_Algebras.html</link>
+  <pubDate>Tue, 07 Feb 2017 00:00:00 +0000</pubDate>
+  <description>Stone Relation Algebras in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>The Factorization Algorithm of Berlekamp and Zassenhaus</title>
+  <link>https://isa-afp.org/entries/Berlekamp_Zassenhaus.html</link>
+  <pubDate>Fri, 14 Oct 2016 00:00:00 +0000</pubDate>
+  <description>The Factorization Algorithm of Berlekamp and Zassenhaus in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Chamber Complexes, Coxeter Systems, and Buildings</title>
+  <link>https://isa-afp.org/entries/Buildings.html</link>
+  <pubDate>Fri, 01 Jul 2016 00:00:00 +0000</pubDate>
+  <description>Chamber Complexes, Coxeter Systems, and Buildings in the AFP</description>
+    <category>Mathematics/Algebra</category>
+    <category>Mathematics/Geometry</category>
+</item>
+<item>
+  <title>Program Construction and Verification Components Based on Kleene Algebra</title>
+  <link>https://isa-afp.org/entries/Algebraic_VCs.html</link>
+  <pubDate>Sat, 18 Jun 2016 00:00:00 +0000</pubDate>
+  <description>Program Construction and Verification Components Based on Kleene Algebra in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Perron-Frobenius Theorem for Spectral Radius Analysis</title>
+  <link>https://isa-afp.org/entries/Perron_Frobenius.html</link>
+  <pubDate>Fri, 20 May 2016 00:00:00 +0000</pubDate>
+  <description>Perron-Frobenius Theorem for Spectral Radius Analysis in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Gröbner Bases Theory</title>
+  <link>https://isa-afp.org/entries/Groebner_Bases.html</link>
+  <pubDate>Mon, 02 May 2016 00:00:00 +0000</pubDate>
+  <description>Gröbner Bases Theory in the AFP</description>
+    <category>Mathematics/Algebra</category>
+    <category>Computer science/Algorithms/Mathematical</category>
+</item>
+<item>
+  <title>Kleene Algebras with Domain</title>
+  <link>https://isa-afp.org/entries/KAD.html</link>
+  <pubDate>Tue, 12 Apr 2016 00:00:00 +0000</pubDate>
+  <description>Kleene Algebras with Domain in the AFP</description>
+    <category>Computer science/Programming languages/Logics</category>
+    <category>Computer science/Automata and formal languages</category>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Polynomial Interpolation</title>
+  <link>https://isa-afp.org/entries/Polynomial_Interpolation.html</link>
+  <pubDate>Fri, 29 Jan 2016 00:00:00 +0000</pubDate>
+  <description>Polynomial Interpolation in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Polynomial Factorization</title>
+  <link>https://isa-afp.org/entries/Polynomial_Factorization.html</link>
+  <pubDate>Fri, 29 Jan 2016 00:00:00 +0000</pubDate>
+  <description>Polynomial Factorization in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Tensor Product of Matrices</title>
+  <link>https://isa-afp.org/entries/Matrix_Tensor.html</link>
+  <pubDate>Mon, 18 Jan 2016 00:00:00 +0000</pubDate>
+  <description>Tensor Product of Matrices in the AFP</description>
+    <category>Computer science/Data structures</category>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Algebraic Numbers in Isabelle/HOL</title>
+  <link>https://isa-afp.org/entries/Algebraic_Numbers.html</link>
+  <pubDate>Tue, 22 Dec 2015 00:00:00 +0000</pubDate>
+  <description>Algebraic Numbers in Isabelle/HOL in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Matrices, Jordan Normal Forms, and Spectral Radius Theory</title>
+  <link>https://isa-afp.org/entries/Jordan_Normal_Form.html</link>
+  <pubDate>Fri, 21 Aug 2015 00:00:00 +0000</pubDate>
+  <description>Matrices, Jordan Normal Forms, and Spectral Radius Theory in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Representations of Finite Groups</title>
+  <link>https://isa-afp.org/entries/Rep_Fin_Groups.html</link>
+  <pubDate>Wed, 12 Aug 2015 00:00:00 +0000</pubDate>
+  <description>Representations of Finite Groups in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Hermite Normal Form</title>
+  <link>https://isa-afp.org/entries/Hermite.html</link>
+  <pubDate>Tue, 07 Jul 2015 00:00:00 +0000</pubDate>
+  <description>Hermite Normal Form in the AFP</description>
+    <category>Computer science/Algorithms/Mathematical</category>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Binary Multirelations</title>
+  <link>https://isa-afp.org/entries/Multirelations.html</link>
+  <pubDate>Thu, 11 Jun 2015 00:00:00 +0000</pubDate>
+  <description>Binary Multirelations in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Residuated Lattices</title>
+  <link>https://isa-afp.org/entries/Residuated_Lattices.html</link>
+  <pubDate>Wed, 15 Apr 2015 00:00:00 +0000</pubDate>
+  <description>Residuated Lattices in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>QR Decomposition</title>
+  <link>https://isa-afp.org/entries/QR_Decomposition.html</link>
+  <pubDate>Thu, 12 Feb 2015 00:00:00 +0000</pubDate>
+  <description>QR Decomposition in the AFP</description>
+    <category>Computer science/Algorithms/Mathematical</category>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Echelon Form</title>
+  <link>https://isa-afp.org/entries/Echelon_Form.html</link>
+  <pubDate>Thu, 12 Feb 2015 00:00:00 +0000</pubDate>
+  <description>Echelon Form in the AFP</description>
+    <category>Computer science/Algorithms/Mathematical</category>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>The Cayley-Hamilton Theorem</title>
+  <link>https://isa-afp.org/entries/Cayley_Hamilton.html</link>
+  <pubDate>Mon, 15 Sep 2014 00:00:00 +0000</pubDate>
+  <description>The Cayley-Hamilton Theorem in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>The Jordan-Hölder Theorem</title>
+  <link>https://isa-afp.org/entries/Jordan_Hoelder.html</link>
+  <pubDate>Tue, 09 Sep 2014 00:00:00 +0000</pubDate>
+  <description>The Jordan-Hölder Theorem in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Vector Spaces</title>
+  <link>https://isa-afp.org/entries/VectorSpace.html</link>
+  <pubDate>Fri, 29 Aug 2014 00:00:00 +0000</pubDate>
+  <description>Vector Spaces in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Regular Algebras</title>
+  <link>https://isa-afp.org/entries/Regular_Algebras.html</link>
+  <pubDate>Wed, 21 May 2014 00:00:00 +0000</pubDate>
+  <description>Regular Algebras in the AFP</description>
+    <category>Computer science/Automata and formal languages</category>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Secondary Sylow Theorems</title>
+  <link>https://isa-afp.org/entries/Secondary_Sylow.html</link>
+  <pubDate>Tue, 28 Jan 2014 00:00:00 +0000</pubDate>
+  <description>Secondary Sylow Theorems in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Relation Algebra</title>
+  <link>https://isa-afp.org/entries/Relation_Algebra.html</link>
+  <pubDate>Sat, 25 Jan 2014 00:00:00 +0000</pubDate>
+  <description>Relation Algebra in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Kleene Algebra with Tests and Demonic Refinement Algebras</title>
+  <link>https://isa-afp.org/entries/KAT_and_DRA.html</link>
+  <pubDate>Thu, 23 Jan 2014 00:00:00 +0000</pubDate>
+  <description>Kleene Algebra with Tests and Demonic Refinement Algebras in the AFP</description>
+    <category>Computer science/Programming languages/Logics</category>
+    <category>Computer science/Automata and formal languages</category>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Rank-Nullity Theorem in Linear Algebra</title>
+  <link>https://isa-afp.org/entries/Rank_Nullity_Theorem.html</link>
+  <pubDate>Wed, 16 Jan 2013 00:00:00 +0000</pubDate>
+  <description>Rank-Nullity Theorem in Linear Algebra in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Kleene Algebra</title>
+  <link>https://isa-afp.org/entries/Kleene_Algebra.html</link>
+  <pubDate>Tue, 15 Jan 2013 00:00:00 +0000</pubDate>
+  <description>Kleene Algebra in the AFP</description>
+    <category>Computer science/Programming languages/Logics</category>
+    <category>Computer science/Automata and formal languages</category>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Proving the Impossibility of Trisecting an Angle and Doubling the Cube</title>
+  <link>https://isa-afp.org/entries/Impossible_Geometry.html</link>
+  <pubDate>Sun, 05 Aug 2012 00:00:00 +0000</pubDate>
+  <description>Proving the Impossibility of Trisecting an Angle and Doubling the Cube in the AFP</description>
+    <category>Mathematics/Algebra</category>
+    <category>Mathematics/Geometry</category>
+</item>
+<item>
+  <title>Pseudo Hoops</title>
+  <link>https://isa-afp.org/entries/PseudoHoops.html</link>
+  <pubDate>Thu, 22 Sep 2011 00:00:00 +0000</pubDate>
+  <description>Pseudo Hoops in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Gauss-Jordan Elimination for Matrices Represented as Functions</title>
+  <link>https://isa-afp.org/entries/Gauss-Jordan-Elim-Fun.html</link>
+  <pubDate>Fri, 19 Aug 2011 00:00:00 +0000</pubDate>
+  <description>Gauss-Jordan Elimination for Matrices Represented as Functions in the AFP</description>
+    <category>Computer science/Algorithms/Mathematical</category>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Executable Multivariate Polynomials</title>
+  <link>https://isa-afp.org/entries/Polynomials.html</link>
+  <pubDate>Tue, 10 Aug 2010 00:00:00 +0000</pubDate>
+  <description>Executable Multivariate Polynomials in the AFP</description>
+    <category>Mathematics/Analysis</category>
+    <category>Mathematics/Algebra</category>
+    <category>Computer science/Algorithms/Mathematical</category>
+</item>
+<item>
+  <title>Free Groups</title>
+  <link>https://isa-afp.org/entries/Free-Groups.html</link>
+  <pubDate>Thu, 24 Jun 2010 00:00:00 +0000</pubDate>
+  <description>Free Groups in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>A Complete Proof of the Robbins Conjecture</title>
+  <link>https://isa-afp.org/entries/Robbins-Conjecture.html</link>
+  <pubDate>Sat, 22 May 2010 00:00:00 +0000</pubDate>
+  <description>A Complete Proof of the Robbins Conjecture in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>An Example of a Cofinitary Group in Isabelle/HOL</title>
+  <link>https://isa-afp.org/entries/CofGroups.html</link>
+  <pubDate>Tue, 04 Aug 2009 00:00:00 +0000</pubDate>
+  <description>An Example of a Cofinitary Group in Isabelle/HOL in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Fundamental Properties of Valuation Theory and Hensel&#39;s Lemma</title>
+  <link>https://isa-afp.org/entries/Valuation.html</link>
+  <pubDate>Wed, 08 Aug 2007 00:00:00 +0000</pubDate>
+  <description>Fundamental Properties of Valuation Theory and Hensel&#39;s Lemma in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Groups, Rings and Modules</title>
+  <link>https://isa-afp.org/entries/Group-Ring-Module.html</link>
+  <pubDate>Tue, 18 May 2004 00:00:00 +0000</pubDate>
+  <description>Groups, Rings and Modules in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
 
   </channel>
 </rss>

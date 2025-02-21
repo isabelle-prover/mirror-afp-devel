@@ -1,16 +1,15 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Markus Müller-Olm</title>
     <link>https://isa-afp.org/authors/olm/</link>
-    <description>AFP entries of Markus Müller-Olm</description>
-        <item>
-          <title>Formalization of Conflict Analysis of Programs with Procedures, Thread Creation, and Monitors</title>
-          <link>https://isa-afp.org/entries/Program-Conflict-Analysis.html</link>
-          <pubDate>Fri, 14 Dec 2007 00:00:00 +0000</pubDate>
-          <description>Formalization of Conflict Analysis of Programs with Procedures, Thread Creation, and Monitors in the AFP</description>
-            <category>Computer science/Programming languages/Static analysis</category>
-        </item>
+    <description>AFP entries of Markus Müller-Olm</description><item>
+  <title>Formalization of Conflict Analysis of Programs with Procedures, Thread Creation, and Monitors</title>
+  <link>https://isa-afp.org/entries/Program-Conflict-Analysis.html</link>
+  <pubDate>Fri, 14 Dec 2007 00:00:00 +0000</pubDate>
+  <description>Formalization of Conflict Analysis of Programs with Procedures, Thread Creation, and Monitors in the AFP</description>
+    <category>Computer science/Programming languages/Static analysis</category>
+</item>
 
   </channel>
 </rss>

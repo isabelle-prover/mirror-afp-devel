@@ -1,33 +1,40 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Yasuhiko Minamide</title>
     <link>https://isa-afp.org/authors/minamide/</link>
-    <description>AFP entries of Yasuhiko Minamide</description>
-        <item>
-          <title>S-Finite Measure Monad on Quasi-Borel Spaces</title>
-          <link>https://isa-afp.org/entries/S_Finite_Measure_Monad.html</link>
-          <pubDate>Tue, 08 Aug 2023 00:00:00 +0000</pubDate>
-          <description>S-Finite Measure Monad on Quasi-Borel Spaces in the AFP</description>
-            <category>Computer science/Semantics and reasoning</category>
-            <category>Mathematics/Measure and integration</category>
-            <category>Mathematics/Probability theory</category>
-        </item>
-        <item>
-          <title>Quasi-Borel Spaces</title>
-          <link>https://isa-afp.org/entries/Quasi_Borel_Spaces.html</link>
-          <pubDate>Thu, 03 Feb 2022 00:00:00 +0000</pubDate>
-          <description>Quasi-Borel Spaces in the AFP</description>
-            <category>Mathematics/Probability theory</category>
-            <category>Computer science/Semantics and reasoning</category>
-        </item>
-        <item>
-          <title>Depth First Search</title>
-          <link>https://isa-afp.org/entries/Depth-First-Search.html</link>
-          <pubDate>Thu, 24 Jun 2004 00:00:00 +0000</pubDate>
-          <description>Depth First Search in the AFP</description>
-            <category>Computer science/Algorithms/Graph</category>
-        </item>
+    <description>AFP entries of Yasuhiko Minamide</description><item>
+  <title>Differential Privacy</title>
+  <link>https://isa-afp.org/entries/Differential_Privacy.html</link>
+  <pubDate>Tue, 07 Jan 2025 00:00:00 +0000</pubDate>
+  <description>Differential Privacy in the AFP</description>
+    <category>Computer science/Semantics and reasoning</category>
+    <category>Computer science/Security</category>
+</item>
+<item>
+  <title>S-Finite Measure Monad on Quasi-Borel Spaces</title>
+  <link>https://isa-afp.org/entries/S_Finite_Measure_Monad.html</link>
+  <pubDate>Tue, 08 Aug 2023 00:00:00 +0000</pubDate>
+  <description>S-Finite Measure Monad on Quasi-Borel Spaces in the AFP</description>
+    <category>Computer science/Semantics and reasoning</category>
+    <category>Mathematics/Measure and integration</category>
+    <category>Mathematics/Probability theory</category>
+</item>
+<item>
+  <title>Quasi-Borel Spaces</title>
+  <link>https://isa-afp.org/entries/Quasi_Borel_Spaces.html</link>
+  <pubDate>Thu, 03 Feb 2022 00:00:00 +0000</pubDate>
+  <description>Quasi-Borel Spaces in the AFP</description>
+    <category>Mathematics/Probability theory</category>
+    <category>Computer science/Semantics and reasoning</category>
+</item>
+<item>
+  <title>Depth First Search</title>
+  <link>https://isa-afp.org/entries/Depth-First-Search.html</link>
+  <pubDate>Thu, 24 Jun 2004 00:00:00 +0000</pubDate>
+  <description>Depth First Search in the AFP</description>
+    <category>Computer science/Algorithms/Graph</category>
+</item>
 
   </channel>
 </rss>

@@ -382,7 +382,7 @@ fun params_of_fun_types ctxt ctys = map (params_of_fun_type ctxt) ctys
 
 fun mk_fninfo ctxt csenv includeP decllist: (fninfo list list * ProgramAnalysis.callgraph) =
 let
-  val cg as {callees,callers} = ProgramAnalysis.compute_callgraphs ctxt csenv
+  val cg as {callees,callers} = ProgramAnalysis.compute_callgraphs csenv
   fun lift f fnm = case Symtab.lookup f fnm of
                      NONE => []
                    | SOME s => Binaryset.listItems s

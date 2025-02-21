@@ -80,7 +80,7 @@ fun untag_tac ctxt = thin_asm_tag_tac ctxt THEN' unfold_tac' ctxt @{thms TAG_def
 \<close>
 
 method_setup untag =
-  \<open>Args.context >> (fn _ => fn ctxt => SIMPLE_METHOD' (untag_tac ctxt))\<close> "remove tags"
+  \<open>Args.context >> (fn _ => fn ctxt => SIMPLE_METHOD' (untag_tac ctxt))\<close> "strip tags"
 
 subsubsection \<open>Subgoals Test\<close>
 
@@ -117,22 +117,17 @@ val tag_of_goal = extract_tag_trm o Logic.strip_assums_concl o Thm.prop_of
 
 ML \<open>
 fun prems_conv cv ct =
-  let
-    val n = Logic.count_prems (Thm.term_of ct)
-  in
-    Conv.prems_conv n cv ct
-  end
+  Conv.prems_conv (Thm.term_of ct |> Logic.count_prems) cv ct
 
-fun goal_conv cv ct =
-  let
-    val n = Logic.count_prems (Thm.term_of ct)
-  in
-    Conv.concl_conv n cv ct
-  end
+fun concl_conv cv ct =
+  Conv.concl_conv (Thm.term_of ct |> Logic.count_prems) cv ct
+
+fun params_conv cv ctxt ct =
+  Conv.params_conv (Thm.term_of ct |> Logic.strip_params |> length) cv ctxt ct
 \<close>
 
 ML \<open>
-fun rm_head_tag_conv ctx = Conv.top_rewrs_conv @{thms TAG_def} ctx |> goal_conv
+fun rm_head_tag_conv ctx = Conv.top_rewrs_conv @{thms TAG_def} ctx |> concl_conv
 \<close>
 
 ML \<open>
@@ -162,18 +157,19 @@ let
   val rewr_conv = Conv.rewrs_conv push_thms
   val push_conv = prems_conv rewr_conv
   val push = Conv.fconv_rule push_conv
-  val norm_conv = Conv.rewrs_conv @{thms norm_tag} |> goal_conv
+  val norm_conv = Conv.rewrs_conv @{thms norm_tag} |> concl_conv
   val norm_conv = Conv.top_sweep_conv (fn _ => norm_conv) ctxt
-  val assms_conv = Conv.rewrs_conv @{thms ASM_TAG_CONV1}
-    |> goal_conv
+  val assms_conv = Conv.rewrs_conv @{thms ASM_TAG_CONV1} |> concl_conv
   val assms_conv = Conv.top_sweep_conv (fn _ => assms_conv) ctxt
   val rm = Conv.fconv_rule (rm_head_tag_conv ctxt)
+  val tags = Thm.get_tags thm
 in
   thm
   |> Conv.fconv_rule (prems_conv (norm_conv \<^cancel>\<open>ctxt\<close>))
   |> Conv.fconv_rule assms_conv
   |> (case tag_opt of NONE => I | _ => push)
   |> rm
+  |> Thm.map_tags (K tags)
 end
 \<close>
 
@@ -185,6 +181,7 @@ val push_tags_attr =
 
 attribute_setup push_tags =
   \<open>Scan.succeed () >> (fn _ => push_tags_attr)\<close>
+  \<open>push tags to assumptions\<close>
 
 ML \<open>
 fun extract_asm_tag_trm trm =
@@ -217,7 +214,7 @@ fun add_tag_conv assm t ctxt = case get_list_tag t of
         get_add_tag_rewrs ctxt ctag
       else
         mk_add_tag_thms ctag
-    val rewr_conv = Conv.rewrs_conv push_thms |> goal_conv
+    val rewr_conv = Conv.rewrs_conv push_thms |> concl_conv
   in
     rewr_conv
   end
@@ -264,25 +261,155 @@ lemma
   apply (all tidy_tags)
   oops
 
+lemma rm_ASM_TAG:
+  "(ASM_TAG A \<Longrightarrow> PROP B) \<equiv> PROP B"
+  unfolding ASM_TAG_def by auto
+
+ML \<open>
+fun add_tag_conv assm tag ctxt =
+  let
+    val ctag = Thm.cterm_of ctxt (HOLogic.mk_string tag)
+    val push_thms =
+      if assm then
+        get_add_tag_rewrs ctxt ctag
+      else
+        mk_add_tag_thms ctag
+    val rewr_conv = Conv.rewrs_conv push_thms
+  in
+    params_conv (fn _ => rewr_conv) ctxt
+  end
+
+fun add_tags_conv (tag, tags) ctxt =
+  let
+    fun fold [] = Conv.all_conv
+      | fold ("_" :: ts) = Conv.implies_conv Conv.all_conv (fold ts)
+      | fold (t :: ts) = Conv.implies_conv (add_tag_conv false t ctxt) (fold ts)
+    val rewr_conv = fold tags
+    val rewr_conv = (if tag = "_" then rewr_conv else (rewr_conv then_conv add_tag_conv true tag ctxt))
+  in
+    params_conv (fn _ => rewr_conv) ctxt
+  end
+
+fun save_tags_fconv_rule conv thm =
+  let
+    val tags = Thm.get_tags thm
+  in
+    Conv.fconv_rule conv thm |> Thm.map_tags (K tags)
+  end
+
+fun tag_prems info ctxt =
+  let
+    fun fold [] = Conv.all_conv
+      | fold (t :: ts) = Conv.implies_conv (add_tags_conv t ctxt) (fold ts)
+    val conv = fold info
+  in
+    save_tags_fconv_rule conv
+  end
+
+fun add_tags_from_cases use_default_nums ctxt thm =
+  let
+    val has_cases = (Thm.get_tags thm |> AList.defined (op =)) "case_names"
+    val maybe_info_from_assms = case AList.lookup (op =) (Thm.get_tags thm) "assm_names" of
+      SOME s => s
+        |> space_explode ";"
+        |> List.map (fn s => if s = "" then "_" else s)
+        |> map (rpair []) |> SOME
+    | NONE => NONE
+    val (info, consumes_n) = Rule_Cases.get thm
+    val info = map fst info
+    val info = replicate consumes_n ("_", []) @ info
+    val info =
+      if has_cases then
+        info
+      else case maybe_info_from_assms of
+        NONE => if use_default_nums then info else []
+      | SOME info => info
+  in
+    tag_prems info ctxt thm
+  end
+
+fun add_tags use_default_nums tags =
+  if tags = [] then
+    add_tags_from_cases use_default_nums
+  else
+    tag_prems (map (fn t => (t, [])) tags)
+
+fun add_tags_from_cases use_default_nums tags = Thm.rule_attribute [] (fn context =>
+  add_tags use_default_nums tags (Context.proof_of context))
+
+fun add_asm_tag tag =
+  let
+    fun get_tag thm = case tag of
+      NONE =>
+        AList.lookup (op =) (Thm.get_tags thm) "name"
+        |> Option.map (space_explode "." #> rev #> hd)
+    | SOME t => SOME t
+  in
+    Thm.rule_attribute [] (fn context => fn thm =>
+      case get_tag thm of
+        NONE => thm
+      | SOME tag =>
+        thm |>
+        (add_tag_conv false tag (Context.proof_of context) |> concl_conv |> save_tags_fconv_rule)
+      )
+  end
+
+val rm_tags = Thm.rule_attribute [] (fn context =>
+  Conv.top_rewrs_conv @{thms rm_ASM_TAG TAG_def} (Context.proof_of context) |> save_tags_fconv_rule)
+\<close>
+
+attribute_setup tags =
+  \<open>Scan.lift (Scan.repeat Args.name) >> add_tags_from_cases true\<close>
+  \<open>add tags from case names\<close>
+
+attribute_setup tag =
+  \<open>Scan.lift (Scan.option Args.name) >> add_asm_tag\<close>
+  \<open>add tag from rule name\<close>
+
+attribute_setup untag =
+  \<open>Scan.succeed () >> (fn _ => rm_tags)\<close>
+  \<open>strip tags\<close>
+
+thm conjI[tags l r] disjE[tags _ l r] conjI[tags l r, untag] disjE[tags _ l r, untag]
+
+thm conjI[case_names A B, tags] disjE[case_names l [P] r [Q], consumes 1, tags] nat_induct[tags]
+ conjI[case_names A B, tags, untag] disjE[case_names l [P] r [Q], consumes 1, tags, untag]
+ nat_induct[tags, untag]
+
+\<comment> \<open>the \<open>assm_names\<close> slot is meant to retain assumption names from theorem statements:\<close>
+thm conjI[tags] disjE[tagged assm_names ";l;r", tags]
+
+thm conjI[tag] conjI[tag conj]
+
 subsection \<open>Globbing\<close>
 
 ML \<open>
 datatype 't glob = WILDCARD | ANY | TOKEN of 't
 
 fun
+  match_exact [] [] = SOME ([], [])
+| match_exact [] _  = NONE
+| match_exact (TOKEN t :: ps) (t' :: ts) = if t' = t then match_exact ps ts else NONE
+| match_exact (ANY :: ps) (_ :: ts) = match_exact ps ts
+| match_exact (WILDCARD :: ps) ts = SOME (WILDCARD :: ps, ts)
+| match_exact _ []  = NONE
+
+fun
   matches_glob [] [] = true
 | matches_glob [] _  = false
 | matches_glob (TOKEN t :: ps) (t' :: ts) = t' = t andalso matches_glob ps ts
 | matches_glob (ANY :: ps) (_ :: ts) = matches_glob ps ts
-| matches_glob (WILDCARD :: ps) (t :: ts) =
-  matches_glob ps (t :: ts) orelse matches_glob (WILDCARD :: ps) ts
+| matches_glob (WILDCARD :: ps) (t :: ts) = (
+  case match_exact ps (t :: ts) of
+    NONE => matches_glob (WILDCARD :: ps) ts
+  | SOME (ps, ts) => matches_glob ps ts)
 | matches_glob (WILDCARD :: ps) [] = matches_glob ps []
 | matches_glob _ [] = false
 
-fun assert b = (if b then () else error "assert")
+fun assert b = if b then () else error "assert"
 
 val p1 = [WILDCARD, TOKEN "a", WILDCARD, TOKEN "c"]
-val p2 = [ANY, TOKEN "a", WILDCARD, TOKEN "c"]
+val p2 = [ANY, TOKEN "a", WILDCARD, WILDCARD, TOKEN "c"]
 val it1 = assert ([
   matches_glob p1 ["b", "a", "c"],
   matches_glob p1 ["b", "a", "c", "d"],
@@ -350,13 +477,17 @@ fun prefer_by_pred_tac pred: tactic = fn thm =>
 fun prefer_by_tag_tac thy tag: tactic =
   prefer_by_pred_tac (matches_tag thy tag)
 
+fun tidy_tags_all_meth ctxt = tidy_tags_tac false ctxt |> TRYALL |> SIMPLE_METHOD
+
 fun prefer_pred pred st =
   let
     val st = Proof.assert_no_chain st
     val thy = Proof.theory_of st
   in
-    Proof.refine_singleton
-      (Method.Basic (fn _ => METHOD (fn _ => prefer_by_pred_tac (pred thy)))) st
+    st
+    |> Proof.refine_singleton (Method.Basic tidy_tags_all_meth)
+    |> Proof.refine_singleton
+      (Method.Basic (fn _ => METHOD (fn _ => prefer_by_pred_tac (pred thy))))
   end
 
 fun prefer_glob glob = prefer_pred (fn _ => matches_glob_term glob)
@@ -375,6 +506,13 @@ lemma
   "\<And>t. TAG ''p'' P \<and> TAG ''q'' Q"
   apply (rule conjI)
   preferT q
+  oops
+
+lemma
+  "P \<and> Q"
+  apply (rule conjI_tagged)
+  preferT r
+  preferT l
   oops
 
 subsection \<open>\<open>subgoalT\<close> and \<open>subgoalsT\<close>, and \<open>prefersT\<close>\<close>
@@ -410,12 +548,17 @@ fun note_of_thms (name, thms) =
   in
     (((binding, [])), [(thms, [untagged_attr])])
   end
-fun note_thms thms ctx =
+fun note_thms' thms_tags ctx =
   let
-    val thms_tags = map (fn thm => (tag_name_of_prop thm, thm)) thms
     val grouped = group_by fst thms_tags |> map (fn g => (fst (hd g), map snd g))
   in
     Proof_Context.note_thmss "" (map note_of_thms grouped) ctx |> snd
+  end
+fun note_thms thms =
+  let
+    val thms_tags = map (fn thm => (tag_name_of_prop thm, thm)) thms
+  in
+    note_thms' thms_tags
   end
 fun note_thms_tac thms (ctx, thm) = (note_thms thms ctx, thm) |> Seq.succeed |> Seq.make_results
 fun note_thms_meth x = (Scan.succeed () >>
@@ -426,9 +569,10 @@ method_setup note_thms = \<open>note_thms_meth\<close>
 
 ML \<open>
 local
+val fact_binding =
+  Parse.binding -- Parse.opt_attribs || Parse.attribs >> pair Binding.empty;
 val opt_fact_binding =
-  Scan.optional (Parse.binding -- Parse.opt_attribs || Parse.attribs >> pair Binding.empty)
-    Binding.empty_atts;
+  Scan.optional fact_binding Binding.empty_atts;
 
 val for_params =
   Scan.optional
@@ -437,11 +581,15 @@ val for_params =
         (Scan.repeat1 (Parse.maybe_position Parse.name_position))))
     (false, []);
 
-fun subgoal_cmd facts_name_opt param_specs st =
+fun subgoal_cmd binding facts_name_opt param_specs st =
   let
-    val (subgoal_focus, st) = Subgoal.subgoal_cmd (Binding.empty, []) facts_name_opt param_specs st
+    val (subgoal_focus, _) = Subgoal.subgoal_cmd binding facts_name_opt param_specs st
+    val names = #prems subgoal_focus |> map tag_name_of_prop \<comment> \<open>read tags first\<close>
+    val st = Proof.refine_singleton (Method.Basic (fn ctxt => SIMPLE_METHOD' (untag_tac ctxt))) st
+    val (subgoal_focus, st) = Subgoal.subgoal_cmd binding facts_name_opt param_specs st
     val prems = #prems subgoal_focus
-    val st = Proof.map_context (note_thms prems) st
+    val prems_names = names ~~ prems \<comment> \<open>note premises with tags stripped\<close>
+    val st = Proof.map_context (note_thms' prems_names) st
   in
     st
   end
@@ -449,17 +597,15 @@ fun subgoal_cmd facts_name_opt param_specs st =
 val _ =
   Outer_Syntax.command \<^command_keyword>\<open>subgoalT\<close>
     "subgoal for tags"
-    ((Scan.option parse_glob)
-      -- (Scan.option (\<^keyword>\<open>premises\<close> |-- Parse.!!! opt_fact_binding)) --
-      for_params >> (fn ((glob_opt, b), c) =>
-        Toplevel.proofs (
-          Seq.make_results
-        o Seq.single
-        o Proof.refine_singleton (Method.Basic (fn ctxt => SIMPLE_METHOD' (untag_tac ctxt)))
-        o subgoal_cmd b c
-        o (case glob_opt of SOME x => prefer_glob x | _ => fn x => x)
-        o Proof.refine_singleton (Method.Basic (tidy_tags_meth []))
-    )));
+    (Scan.optional (fact_binding --| Parse.$$$ ":") Binding.empty_atts --
+     Scan.option parse_glob --
+     (Scan.option (\<^keyword>\<open>premises\<close> |-- Parse.!!! opt_fact_binding)) --
+     for_params >> (fn (((binding, glob_opt), prems_opt), fixes_opt) =>
+       Toplevel.proof (
+         Proof.refine_singleton (Method.Basic (fn ctxt => SIMPLE_METHOD' (untag_tac ctxt)))
+       o subgoal_cmd binding prems_opt fixes_opt
+       o (case glob_opt of SOME x => prefer_glob x | _ => fn x => x)
+       o Proof.refine_singleton (Method.Basic tidy_tags_all_meth))));
 
 val parse_keep =
   Scan.optional (Args.parens (Args.$$$ "keep" >> K true)) false;
@@ -499,6 +645,16 @@ val _ =
       )))
 in end
 \<close>
+
+lemma
+  "\<paragraph> ''tag'' \<Longrightarrow> TAG ''p'' P \<Longrightarrow> TAG ''q'' Q \<Longrightarrow> P \<and> Q"
+  subgoalT foo[simp]: * tag premises
+  proof -
+    show ?thesis \<comment> \<open>correct thesis is retained\<close>
+      using p q ..
+  qed
+  thm foo
+  done
 
 lemma
   assumes "TAG ''p'' P" Q False
@@ -591,5 +747,138 @@ lemma
   subgoalT l premises
     using l by simp
   done
+
+subsection \<open>Syntax\<close>
+
+ML \<open>
+structure Tagging_Cartouche_Syntax =
+struct
+  val tagging_cartouche_syntax =
+    Attrib.setup_config_bool @{binding tagging_cartouche_syntax} (K true)
+
+  local
+    fun mk_char (s, pos) =
+      let
+        val c =
+          if Symbol.is_ascii s then ord s
+          else error ("String literal contains illegal symbol: " ^ quote s ^ Position.here pos);
+      in list_comb (Syntax.const \<^const_syntax>\<open>Char\<close>, String_Syntax.mk_bits_syntax 8 c) end;
+  
+    fun mk_string [] = Const (\<^const_syntax>\<open>Nil\<close>, \<^typ>\<open>string\<close>)
+      | mk_string (s :: ss) =
+          Syntax.const \<^const_syntax>\<open>Cons\<close> $ mk_char s $ mk_string ss;
+  
+    fun string_tr content arg =
+      let fun err () = raise TERM ("string_tr", [arg]) in
+        (case arg of
+          (c as Const (\<^syntax_const>\<open>_constrain\<close>, _)) $ Free (s, _) $ p =>
+            (case Term_Position.decode_position1 p of
+              SOME {pos, ...} => c $ mk_string (content (s, pos)) $ p
+            | NONE => err ())
+        | _ => err ())
+      end
+  
+  in
+    fun asm_tag_tr content ctxt args =
+      let fun err () = raise TERM ("asm_tag_tr", args) in
+        if Config.get ctxt tagging_cartouche_syntax then
+          case args of
+            [tag] => Syntax.const\<^const_name>\<open>ASM_TAG\<close> $ string_tr content tag
+          | _ => err ()
+        else raise Match
+      end
+    fun tag_tr content ctxt args =
+      let fun err () = raise TERM ("tag_tr", args) in
+        if Config.get ctxt tagging_cartouche_syntax then
+          case args of
+            [tag, trm] => Syntax.const\<^const_name>\<open>TAG\<close> $ string_tr content tag $ trm
+          | _ => err ()
+        else raise Match
+      end
+  end
+
+  local
+    val bit_type = \<^typ>\<open>bool \<Rightarrow> bool \<Rightarrow> bool \<Rightarrow> bool \<Rightarrow> bool \<Rightarrow> bool \<Rightarrow> bool \<Rightarrow> bool \<Rightarrow> char\<close>
+    fun mk_char (Const (\<^const_syntax>\<open>False\<close>, _))  = Const (\<^const_name>\<open>False\<close>, \<^typ>\<open>bool\<close>)
+      | mk_char (Const (\<^const_syntax>\<open>True\<close>,  _))  = Const (\<^const_name>\<open>True\<close>,  \<^typ>\<open>bool\<close>)
+      | mk_char (Const (\<^const_syntax>\<open>Char\<close>,  _)) = Const (\<^const_name>\<open>Char\<close>,  bit_type)
+      | mk_char (a $ b) = mk_char a $ mk_char b
+      | mk_char _ = error "Not a syntax bit"
+  
+    fun mk_string (Const (\<^const_syntax>\<open>Nil\<close>, \<^typ>\<open>string\<close>)) = \<^term>\<open>''''\<close>
+      | mk_string (Const (\<^const_syntax>\<open>Cons\<close>, \<^typ>\<open>char \<Rightarrow> string \<Rightarrow> string\<close>) $ x $ xs) =
+        Const (\<^const_name>\<open>Cons\<close>, \<^typ>\<open>char \<Rightarrow> string \<Rightarrow> string\<close>) $ mk_char x $ mk_string xs
+      | mk_string _ = error "Not a string"
+  
+    fun mk_list (Const (\<^const_syntax>\<open>Nil\<close>, \<^typ>\<open>string list\<close>)) = \<^term>\<open>[]::string list\<close>
+      | mk_list (Const (\<^const_syntax>\<open>Cons\<close>, \<^typ>\<open>string \<Rightarrow> string list \<Rightarrow> string list\<close>) $ x $ xs) =
+        Const (\<^const_name>\<open>Cons\<close>, \<^typ>\<open>string \<Rightarrow> string list \<Rightarrow> string list\<close>)
+        $ mk_string x $ mk_list xs
+      | mk_list _ = error "Not a string list"
+  
+    fun string_tp arg =
+      mk_string arg |> HOLogic.dest_string |> cartouche
+  
+    fun string_list_tp arg =
+      mk_list arg |> HOLogic.dest_list |> map HOLogic.dest_string |> space_implode " " |> cartouche
+  
+    fun string_or_list_tp t =
+      if fastype_of t = \<^typ>\<open>string list\<close> then string_list_tp t else
+      if fastype_of t = \<^typ>\<open>string\<close>      then string_tp t
+      else raise TERM ("Not a string tag", [t])
+  in
+    fun asm_tag_tp cnst ctxt args =
+      if Config.get ctxt tagging_cartouche_syntax then
+        case args of
+          [x] => (Free ("\<paragraph>" ^ string_tp x, \<^typ>\<open>_\<close>)
+            handle ERROR _ => Const (cnst, \<^typ>\<open>_\<close>) $ x)
+          | _ => raise Match
+      else raise Match
+    fun tag_tp cnst ctxt args =
+      if Config.get ctxt tagging_cartouche_syntax then
+        case args of
+          [tag, trm] => (
+            Const (cnst, \<^typ>\<open>_\<close>) $ Free (string_or_list_tp tag, \<^typ>\<open>_\<close>) $ trm
+            handle TERM _ => Const (cnst, \<^typ>\<open>_\<close>) $ tag $ trm)
+        | _ => raise Match
+      else raise Match
+  end
+
+end
+\<close>
+
+syntax "_ASM_TAG" :: \<open>cartouche_position \<Rightarrow> string\<close>  ("\<paragraph>_")
+
+parse_translation \<open>
+  [(\<^syntax_const>\<open>_ASM_TAG\<close>,
+    Tagging_Cartouche_Syntax.asm_tag_tr (Symbol_Pos.cartouche_content o Symbol_Pos.explode))]
+\<close>
+
+syntax "_TAG" :: \<open>cartouche_position \<Rightarrow> 'a \<Rightarrow> string\<close>  ("_ \<bar> _" [13, 13] 14)
+
+parse_translation \<open>
+  [(\<^syntax_const>\<open>_TAG\<close>,
+    Tagging_Cartouche_Syntax.tag_tr (Symbol_Pos.cartouche_content o Symbol_Pos.explode))]
+\<close>
+
+print_translation \<open>
+  [(\<^const_syntax>\<open>ASM_TAG\<close>, Tagging_Cartouche_Syntax.asm_tag_tp \<^syntax_const>\<open>_ASM_TAG\<close>)]
+\<close>
+
+syntax "_TAG" :: \<open>cartouche_position \<Rightarrow> 'a \<Rightarrow> string\<close>  ("_ \<bar> _" [13, 13] 14)
+
+print_translation \<open>
+  [(\<^const_syntax>\<open>TAG\<close>, Tagging_Cartouche_Syntax.tag_tp \<^syntax_const>\<open>_TAG\<close>)]
+\<close>
+
+term \<open>\<open>\<close> \<bar> a\<close>
+term \<open>\<open>ab\<close> \<bar> a\<close>
+term \<open>\<open>a_b',c\<close> \<bar> abc\<close>
+term "\<paragraph>\<open>AB\<close> \<bar> a = b"
+term \<open>[''a'', ''b''] \<bar> t\<close>
+term \<open>(\<open>a\<close> \<bar> b) x\<close>
+term \<open>(t \<bar> b) x\<close>
+term \<open>t \<bar> x\<close>
+term \<open>\<paragraph> t\<close>
 
 end

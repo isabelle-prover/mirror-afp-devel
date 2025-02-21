@@ -1,16 +1,15 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Neil Mitchell</title>
     <link>https://isa-afp.org/authors/mitchell/</link>
-    <description>AFP entries of Neil Mitchell</description>
-        <item>
-          <title>HOLCF-Prelude</title>
-          <link>https://isa-afp.org/entries/HOLCF-Prelude.html</link>
-          <pubDate>Sat, 15 Jul 2017 00:00:00 +0000</pubDate>
-          <description>HOLCF-Prelude in the AFP</description>
-            <category>Computer science/Functional programming</category>
-        </item>
+    <description>AFP entries of Neil Mitchell</description><item>
+  <title>HOLCF-Prelude</title>
+  <link>https://isa-afp.org/entries/HOLCF-Prelude.html</link>
+  <pubDate>Sat, 15 Jul 2017 00:00:00 +0000</pubDate>
+  <description>HOLCF-Prelude in the AFP</description>
+    <category>Computer science/Functional programming</category>
+</item>
 
   </channel>
 </rss>

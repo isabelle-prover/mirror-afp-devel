@@ -1,16 +1,15 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Sven Linker</title>
     <link>https://isa-afp.org/authors/linker/</link>
-    <description>AFP entries of Sven Linker</description>
-        <item>
-          <title>Hybrid Multi-Lane Spatial Logic</title>
-          <link>https://isa-afp.org/entries/Hybrid_Multi_Lane_Spatial_Logic.html</link>
-          <pubDate>Mon, 06 Nov 2017 00:00:00 +0000</pubDate>
-          <description>Hybrid Multi-Lane Spatial Logic in the AFP</description>
-            <category>Logic/General logic/Modal logic</category>
-        </item>
+    <description>AFP entries of Sven Linker</description><item>
+  <title>Hybrid Multi-Lane Spatial Logic</title>
+  <link>https://isa-afp.org/entries/Hybrid_Multi_Lane_Spatial_Logic.html</link>
+  <pubDate>Mon, 06 Nov 2017 00:00:00 +0000</pubDate>
+  <description>Hybrid Multi-Lane Spatial Logic in the AFP</description>
+    <category>Logic/General logic/Modal logic</category>
+</item>
 
   </channel>
 </rss>

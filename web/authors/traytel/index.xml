@@ -1,203 +1,210 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Dmitriy Traytel</title>
     <link>https://isa-afp.org/authors/traytel/</link>
-    <description>AFP entries of Dmitriy Traytel</description>
-        <item>
-          <title>A Verified Proof Checker for Metric First-Order Temporal Logic</title>
-          <link>https://isa-afp.org/entries/MFOTL_Checker.html</link>
-          <pubDate>Tue, 16 Apr 2024 00:00:00 +0000</pubDate>
-          <description>A Verified Proof Checker for Metric First-Order Temporal Logic in the AFP</description>
-            <category>Computer science/Data management systems</category>
-            <category>Computer science/Algorithms</category>
-            <category>Logic/General logic/Temporal logic</category>
-        </item>
-        <item>
-          <title>Pushdown Systems</title>
-          <link>https://isa-afp.org/entries/Pushdown_Systems.html</link>
-          <pubDate>Tue, 31 Oct 2023 00:00:00 +0000</pubDate>
-          <description>Pushdown Systems in the AFP</description>
-            <category>Computer science/Automata and formal languages</category>
-            <category>Computer science</category>
-        </item>
-        <item>
-          <title>Labeled Transition Systems</title>
-          <link>https://isa-afp.org/entries/Labeled_Transition_Systems.html</link>
-          <pubDate>Tue, 31 Oct 2023 00:00:00 +0000</pubDate>
-          <description>Labeled Transition Systems in the AFP</description>
-            <category>Computer science/Automata and formal languages</category>
-            <category>Computer science</category>
-        </item>
-        <item>
-          <title>Making Arbitrary Relational Calculus Queries Safe-Range</title>
-          <link>https://isa-afp.org/entries/Safe_Range_RC.html</link>
-          <pubDate>Wed, 28 Sep 2022 00:00:00 +0000</pubDate>
-          <description>Making Arbitrary Relational Calculus Queries Safe-Range in the AFP</description>
-            <category>Computer science/Data management systems</category>
-            <category>Logic/General logic/Classical first-order logic</category>
-        </item>
-        <item>
-          <title>Formalization of Timely Dataflow&#39;s Progress Tracking Protocol</title>
-          <link>https://isa-afp.org/entries/Progress_Tracking.html</link>
-          <pubDate>Tue, 13 Apr 2021 00:00:00 +0000</pubDate>
-          <description>Formalization of Timely Dataflow&#39;s Progress Tracking Protocol in the AFP</description>
-            <category>Computer science/Algorithms/Distributed</category>
-        </item>
-        <item>
-          <title>Syntax-Independent Logic Infrastructure</title>
-          <link>https://isa-afp.org/entries/Syntax_Independent_Logic.html</link>
-          <pubDate>Wed, 16 Sep 2020 00:00:00 +0000</pubDate>
-          <description>Syntax-Independent Logic Infrastructure in the AFP</description>
-            <category>Logic/Proof theory</category>
-        </item>
-        <item>
-          <title>Robinson Arithmetic</title>
-          <link>https://isa-afp.org/entries/Robinson_Arithmetic.html</link>
-          <pubDate>Wed, 16 Sep 2020 00:00:00 +0000</pubDate>
-          <description>Robinson Arithmetic in the AFP</description>
-            <category>Logic/Proof theory</category>
-        </item>
-        <item>
-          <title>An Abstract Formalization of G&ouml;del&#39;s Incompleteness Theorems</title>
-          <link>https://isa-afp.org/entries/Goedel_Incompleteness.html</link>
-          <pubDate>Wed, 16 Sep 2020 00:00:00 +0000</pubDate>
-          <description>An Abstract Formalization of G&amp;ouml;del&#39;s Incompleteness Theorems in the AFP</description>
-            <category>Logic/Proof theory</category>
-        </item>
-        <item>
-          <title>From Abstract to Concrete G&ouml;del&#39;s Incompleteness Theorems&mdash;Part II</title>
-          <link>https://isa-afp.org/entries/Goedel_HFSet_Semanticless.html</link>
-          <pubDate>Wed, 16 Sep 2020 00:00:00 +0000</pubDate>
-          <description>From Abstract to Concrete G&amp;ouml;del&#39;s Incompleteness Theorems&amp;mdash;Part II in the AFP</description>
-            <category>Logic/Proof theory</category>
-        </item>
-        <item>
-          <title>From Abstract to Concrete G&ouml;del&#39;s Incompleteness Theorems&mdash;Part I</title>
-          <link>https://isa-afp.org/entries/Goedel_HFSet_Semantic.html</link>
-          <pubDate>Wed, 16 Sep 2020 00:00:00 +0000</pubDate>
-          <description>From Abstract to Concrete G&amp;ouml;del&#39;s Incompleteness Theorems&amp;mdash;Part I in the AFP</description>
-            <category>Logic/Proof theory</category>
-        </item>
-        <item>
-          <title>A Formal Proof of The Chandy--Lamport Distributed Snapshot Algorithm</title>
-          <link>https://isa-afp.org/entries/Chandy_Lamport.html</link>
-          <pubDate>Tue, 21 Jul 2020 00:00:00 +0000</pubDate>
-          <description>A Formal Proof of The Chandy--Lamport Distributed Snapshot Algorithm in the AFP</description>
-            <category>Computer science/Algorithms/Distributed</category>
-        </item>
-        <item>
-          <title>Formalization of an Algorithm for Greedily Computing Associative Aggregations on Sliding Windows</title>
-          <link>https://isa-afp.org/entries/Sliding_Window_Algorithm.html</link>
-          <pubDate>Fri, 10 Apr 2020 00:00:00 +0000</pubDate>
-          <description>Formalization of an Algorithm for Greedily Computing Associative Aggregations on Sliding Windows in the AFP</description>
-            <category>Computer science/Algorithms</category>
-        </item>
-        <item>
-          <title>Formalization of an Optimized Monitoring Algorithm for Metric First-Order Dynamic Logic with Aggregations</title>
-          <link>https://isa-afp.org/entries/MFODL_Monitor_Optimized.html</link>
-          <pubDate>Thu, 09 Apr 2020 00:00:00 +0000</pubDate>
-          <description>Formalization of an Optimized Monitoring Algorithm for Metric First-Order Dynamic Logic with Aggregations in the AFP</description>
-            <category>Computer science/Algorithms</category>
-            <category>Logic/General logic/Modal logic</category>
-            <category>Computer science/Automata and formal languages</category>
-        </item>
-        <item>
-          <title>Formalization of a Monitoring Algorithm for Metric First-Order Temporal Logic</title>
-          <link>https://isa-afp.org/entries/MFOTL_Monitor.html</link>
-          <pubDate>Thu, 04 Jul 2019 00:00:00 +0000</pubDate>
-          <description>Formalization of a Monitoring Algorithm for Metric First-Order Temporal Logic in the AFP</description>
-            <category>Computer science/Algorithms</category>
-            <category>Logic/General logic/Temporal logic</category>
-            <category>Computer science/Automata and formal languages</category>
-        </item>
-        <item>
-          <title>Formalization of Generic Authenticated Data Structures</title>
-          <link>https://isa-afp.org/entries/LambdaAuth.html</link>
-          <pubDate>Tue, 14 May 2019 00:00:00 +0000</pubDate>
-          <description>Formalization of Generic Authenticated Data Structures in the AFP</description>
-            <category>Computer science/Security</category>
-            <category>Computer science/Programming languages/Lambda calculi</category>
-        </item>
-        <item>
-          <title>A Verified Functional Implementation of Bachmair and Ganzinger&#39;s Ordered Resolution Prover</title>
-          <link>https://isa-afp.org/entries/Functional_Ordered_Resolution_Prover.html</link>
-          <pubDate>Fri, 23 Nov 2018 00:00:00 +0000</pubDate>
-          <description>A Verified Functional Implementation of Bachmair and Ganzinger&#39;s Ordered Resolution Prover in the AFP</description>
-            <category>Logic/General logic/Mechanization of proofs</category>
-        </item>
-        <item>
-          <title>Formalization of Bachmair and Ganzinger&#39;s Ordered Resolution Prover</title>
-          <link>https://isa-afp.org/entries/Ordered_Resolution_Prover.html</link>
-          <pubDate>Thu, 18 Jan 2018 00:00:00 +0000</pubDate>
-          <description>Formalization of Bachmair and Ganzinger&#39;s Ordered Resolution Prover in the AFP</description>
-            <category>Logic/General logic/Mechanization of proofs</category>
-        </item>
-        <item>
-          <title>Operations on Bounded Natural Functors</title>
-          <link>https://isa-afp.org/entries/BNF_Operations.html</link>
-          <pubDate>Tue, 19 Dec 2017 00:00:00 +0000</pubDate>
-          <description>Operations on Bounded Natural Functors in the AFP</description>
-            <category>Tools</category>
-        </item>
-        <item>
-          <title>Abstract Soundness</title>
-          <link>https://isa-afp.org/entries/Abstract_Soundness.html</link>
-          <pubDate>Fri, 10 Feb 2017 00:00:00 +0000</pubDate>
-          <description>Abstract Soundness in the AFP</description>
-            <category>Logic/Proof theory</category>
-        </item>
-        <item>
-          <title>Formalization of Nested Multisets, Hereditary Multisets, and Syntactic Ordinals</title>
-          <link>https://isa-afp.org/entries/Nested_Multisets_Ordinals.html</link>
-          <pubDate>Sat, 12 Nov 2016 00:00:00 +0000</pubDate>
-          <description>Formalization of Nested Multisets, Hereditary Multisets, and Syntactic Ordinals in the AFP</description>
-            <category>Logic/Rewriting</category>
-        </item>
-        <item>
-          <title>Derivatives of Logical Formulas</title>
-          <link>https://isa-afp.org/entries/Formula_Derivatives.html</link>
-          <pubDate>Thu, 28 May 2015 00:00:00 +0000</pubDate>
-          <description>Derivatives of Logical Formulas in the AFP</description>
-            <category>Computer science/Automata and formal languages</category>
-            <category>Logic/General logic/Decidability of theories</category>
-        </item>
-        <item>
-          <title>A Zoo of Probabilistic Systems</title>
-          <link>https://isa-afp.org/entries/Probabilistic_System_Zoo.html</link>
-          <pubDate>Wed, 27 May 2015 00:00:00 +0000</pubDate>
-          <description>A Zoo of Probabilistic Systems in the AFP</description>
-            <category>Computer science/Automata and formal languages</category>
-        </item>
-        <item>
-          <title>Decision Procedures for MSO on Words Based on Derivatives of Regular Expressions</title>
-          <link>https://isa-afp.org/entries/MSO_Regex_Equivalence.html</link>
-          <pubDate>Thu, 12 Jun 2014 00:00:00 +0000</pubDate>
-          <description>Decision Procedures for MSO on Words Based on Derivatives of Regular Expressions in the AFP</description>
-            <category>Computer science/Automata and formal languages</category>
-            <category>Logic/General logic/Decidability of theories</category>
-        </item>
-        <item>
-          <title>Abstract Completeness</title>
-          <link>https://isa-afp.org/entries/Abstract_Completeness.html</link>
-          <pubDate>Wed, 16 Apr 2014 00:00:00 +0000</pubDate>
-          <description>Abstract Completeness in the AFP</description>
-            <category>Logic/Proof theory</category>
-        </item>
-        <item>
-          <title>Unified Decision Procedures for Regular Expression Equivalence</title>
-          <link>https://isa-afp.org/entries/Regex_Equivalence.html</link>
-          <pubDate>Thu, 30 Jan 2014 00:00:00 +0000</pubDate>
-          <description>Unified Decision Procedures for Regular Expression Equivalence in the AFP</description>
-            <category>Computer science/Automata and formal languages</category>
-        </item>
-        <item>
-          <title>A Codatatype of Formal Languages</title>
-          <link>https://isa-afp.org/entries/Coinductive_Languages.html</link>
-          <pubDate>Fri, 15 Nov 2013 00:00:00 +0000</pubDate>
-          <description>A Codatatype of Formal Languages in the AFP</description>
-            <category>Computer science/Automata and formal languages</category>
-        </item>
+    <description>AFP entries of Dmitriy Traytel</description><item>
+  <title>Formalization of (Conflict-)Serializability and Strict Two-Phase Locking</title>
+  <link>https://isa-afp.org/entries/Serializable.html</link>
+  <pubDate>Sat, 01 Feb 2025 00:00:00 +0000</pubDate>
+  <description>Formalization of (Conflict-)Serializability and Strict Two-Phase Locking in the AFP</description>
+    <category>Computer science/Data management systems</category>
+    <category>Computer science/Concurrency</category>
+</item>
+<item>
+  <title>A Verified Proof Checker for Metric First-Order Temporal Logic</title>
+  <link>https://isa-afp.org/entries/MFOTL_Checker.html</link>
+  <pubDate>Tue, 16 Apr 2024 00:00:00 +0000</pubDate>
+  <description>A Verified Proof Checker for Metric First-Order Temporal Logic in the AFP</description>
+    <category>Computer science/Data management systems</category>
+    <category>Computer science/Algorithms</category>
+    <category>Logic/General logic/Temporal logic</category>
+</item>
+<item>
+  <title>Pushdown Systems</title>
+  <link>https://isa-afp.org/entries/Pushdown_Systems.html</link>
+  <pubDate>Tue, 31 Oct 2023 00:00:00 +0000</pubDate>
+  <description>Pushdown Systems in the AFP</description>
+    <category>Computer science/Automata and formal languages</category>
+    <category>Computer science</category>
+</item>
+<item>
+  <title>Labeled Transition Systems</title>
+  <link>https://isa-afp.org/entries/Labeled_Transition_Systems.html</link>
+  <pubDate>Tue, 31 Oct 2023 00:00:00 +0000</pubDate>
+  <description>Labeled Transition Systems in the AFP</description>
+    <category>Computer science/Automata and formal languages</category>
+    <category>Computer science</category>
+</item>
+<item>
+  <title>Making Arbitrary Relational Calculus Queries Safe-Range</title>
+  <link>https://isa-afp.org/entries/Safe_Range_RC.html</link>
+  <pubDate>Wed, 28 Sep 2022 00:00:00 +0000</pubDate>
+  <description>Making Arbitrary Relational Calculus Queries Safe-Range in the AFP</description>
+    <category>Computer science/Data management systems</category>
+    <category>Logic/General logic/Classical first-order logic</category>
+</item>
+<item>
+  <title>Formalization of Timely Dataflow&#39;s Progress Tracking Protocol</title>
+  <link>https://isa-afp.org/entries/Progress_Tracking.html</link>
+  <pubDate>Tue, 13 Apr 2021 00:00:00 +0000</pubDate>
+  <description>Formalization of Timely Dataflow&#39;s Progress Tracking Protocol in the AFP</description>
+    <category>Computer science/Algorithms/Distributed</category>
+</item>
+<item>
+  <title>Syntax-Independent Logic Infrastructure</title>
+  <link>https://isa-afp.org/entries/Syntax_Independent_Logic.html</link>
+  <pubDate>Wed, 16 Sep 2020 00:00:00 +0000</pubDate>
+  <description>Syntax-Independent Logic Infrastructure in the AFP</description>
+    <category>Logic/Proof theory</category>
+</item>
+<item>
+  <title>Robinson Arithmetic</title>
+  <link>https://isa-afp.org/entries/Robinson_Arithmetic.html</link>
+  <pubDate>Wed, 16 Sep 2020 00:00:00 +0000</pubDate>
+  <description>Robinson Arithmetic in the AFP</description>
+    <category>Logic/Proof theory</category>
+</item>
+<item>
+  <title>An Abstract Formalization of G&ouml;del&#39;s Incompleteness Theorems</title>
+  <link>https://isa-afp.org/entries/Goedel_Incompleteness.html</link>
+  <pubDate>Wed, 16 Sep 2020 00:00:00 +0000</pubDate>
+  <description>An Abstract Formalization of G&amp;ouml;del&#39;s Incompleteness Theorems in the AFP</description>
+    <category>Logic/Proof theory</category>
+</item>
+<item>
+  <title>From Abstract to Concrete G&ouml;del&#39;s Incompleteness Theorems&mdash;Part II</title>
+  <link>https://isa-afp.org/entries/Goedel_HFSet_Semanticless.html</link>
+  <pubDate>Wed, 16 Sep 2020 00:00:00 +0000</pubDate>
+  <description>From Abstract to Concrete G&amp;ouml;del&#39;s Incompleteness Theorems&amp;mdash;Part II in the AFP</description>
+    <category>Logic/Proof theory</category>
+</item>
+<item>
+  <title>From Abstract to Concrete G&ouml;del&#39;s Incompleteness Theorems&mdash;Part I</title>
+  <link>https://isa-afp.org/entries/Goedel_HFSet_Semantic.html</link>
+  <pubDate>Wed, 16 Sep 2020 00:00:00 +0000</pubDate>
+  <description>From Abstract to Concrete G&amp;ouml;del&#39;s Incompleteness Theorems&amp;mdash;Part I in the AFP</description>
+    <category>Logic/Proof theory</category>
+</item>
+<item>
+  <title>A Formal Proof of The Chandy--Lamport Distributed Snapshot Algorithm</title>
+  <link>https://isa-afp.org/entries/Chandy_Lamport.html</link>
+  <pubDate>Tue, 21 Jul 2020 00:00:00 +0000</pubDate>
+  <description>A Formal Proof of The Chandy--Lamport Distributed Snapshot Algorithm in the AFP</description>
+    <category>Computer science/Algorithms/Distributed</category>
+</item>
+<item>
+  <title>Formalization of an Algorithm for Greedily Computing Associative Aggregations on Sliding Windows</title>
+  <link>https://isa-afp.org/entries/Sliding_Window_Algorithm.html</link>
+  <pubDate>Fri, 10 Apr 2020 00:00:00 +0000</pubDate>
+  <description>Formalization of an Algorithm for Greedily Computing Associative Aggregations on Sliding Windows in the AFP</description>
+    <category>Computer science/Algorithms</category>
+</item>
+<item>
+  <title>Formalization of an Optimized Monitoring Algorithm for Metric First-Order Dynamic Logic with Aggregations</title>
+  <link>https://isa-afp.org/entries/MFODL_Monitor_Optimized.html</link>
+  <pubDate>Thu, 09 Apr 2020 00:00:00 +0000</pubDate>
+  <description>Formalization of an Optimized Monitoring Algorithm for Metric First-Order Dynamic Logic with Aggregations in the AFP</description>
+    <category>Computer science/Algorithms</category>
+    <category>Logic/General logic/Modal logic</category>
+    <category>Computer science/Automata and formal languages</category>
+</item>
+<item>
+  <title>Formalization of a Monitoring Algorithm for Metric First-Order Temporal Logic</title>
+  <link>https://isa-afp.org/entries/MFOTL_Monitor.html</link>
+  <pubDate>Thu, 04 Jul 2019 00:00:00 +0000</pubDate>
+  <description>Formalization of a Monitoring Algorithm for Metric First-Order Temporal Logic in the AFP</description>
+    <category>Computer science/Algorithms</category>
+    <category>Logic/General logic/Temporal logic</category>
+    <category>Computer science/Automata and formal languages</category>
+</item>
+<item>
+  <title>Formalization of Generic Authenticated Data Structures</title>
+  <link>https://isa-afp.org/entries/LambdaAuth.html</link>
+  <pubDate>Tue, 14 May 2019 00:00:00 +0000</pubDate>
+  <description>Formalization of Generic Authenticated Data Structures in the AFP</description>
+    <category>Computer science/Security</category>
+    <category>Computer science/Programming languages/Lambda calculi</category>
+</item>
+<item>
+  <title>A Verified Functional Implementation of Bachmair and Ganzinger&#39;s Ordered Resolution Prover</title>
+  <link>https://isa-afp.org/entries/Functional_Ordered_Resolution_Prover.html</link>
+  <pubDate>Fri, 23 Nov 2018 00:00:00 +0000</pubDate>
+  <description>A Verified Functional Implementation of Bachmair and Ganzinger&#39;s Ordered Resolution Prover in the AFP</description>
+    <category>Logic/General logic/Mechanization of proofs</category>
+</item>
+<item>
+  <title>Formalization of Bachmair and Ganzinger&#39;s Ordered Resolution Prover</title>
+  <link>https://isa-afp.org/entries/Ordered_Resolution_Prover.html</link>
+  <pubDate>Thu, 18 Jan 2018 00:00:00 +0000</pubDate>
+  <description>Formalization of Bachmair and Ganzinger&#39;s Ordered Resolution Prover in the AFP</description>
+    <category>Logic/General logic/Mechanization of proofs</category>
+</item>
+<item>
+  <title>Operations on Bounded Natural Functors</title>
+  <link>https://isa-afp.org/entries/BNF_Operations.html</link>
+  <pubDate>Tue, 19 Dec 2017 00:00:00 +0000</pubDate>
+  <description>Operations on Bounded Natural Functors in the AFP</description>
+    <category>Tools</category>
+</item>
+<item>
+  <title>Abstract Soundness</title>
+  <link>https://isa-afp.org/entries/Abstract_Soundness.html</link>
+  <pubDate>Fri, 10 Feb 2017 00:00:00 +0000</pubDate>
+  <description>Abstract Soundness in the AFP</description>
+    <category>Logic/Proof theory</category>
+</item>
+<item>
+  <title>Formalization of Nested Multisets, Hereditary Multisets, and Syntactic Ordinals</title>
+  <link>https://isa-afp.org/entries/Nested_Multisets_Ordinals.html</link>
+  <pubDate>Sat, 12 Nov 2016 00:00:00 +0000</pubDate>
+  <description>Formalization of Nested Multisets, Hereditary Multisets, and Syntactic Ordinals in the AFP</description>
+    <category>Logic/Rewriting</category>
+</item>
+<item>
+  <title>Derivatives of Logical Formulas</title>
+  <link>https://isa-afp.org/entries/Formula_Derivatives.html</link>
+  <pubDate>Thu, 28 May 2015 00:00:00 +0000</pubDate>
+  <description>Derivatives of Logical Formulas in the AFP</description>
+    <category>Computer science/Automata and formal languages</category>
+    <category>Logic/General logic/Decidability of theories</category>
+</item>
+<item>
+  <title>A Zoo of Probabilistic Systems</title>
+  <link>https://isa-afp.org/entries/Probabilistic_System_Zoo.html</link>
+  <pubDate>Wed, 27 May 2015 00:00:00 +0000</pubDate>
+  <description>A Zoo of Probabilistic Systems in the AFP</description>
+    <category>Computer science/Automata and formal languages</category>
+</item>
+<item>
+  <title>Decision Procedures for MSO on Words Based on Derivatives of Regular Expressions</title>
+  <link>https://isa-afp.org/entries/MSO_Regex_Equivalence.html</link>
+  <pubDate>Thu, 12 Jun 2014 00:00:00 +0000</pubDate>
+  <description>Decision Procedures for MSO on Words Based on Derivatives of Regular Expressions in the AFP</description>
+    <category>Computer science/Automata and formal languages</category>
+    <category>Logic/General logic/Decidability of theories</category>
+</item>
+<item>
+  <title>Abstract Completeness</title>
+  <link>https://isa-afp.org/entries/Abstract_Completeness.html</link>
+  <pubDate>Wed, 16 Apr 2014 00:00:00 +0000</pubDate>
+  <description>Abstract Completeness in the AFP</description>
+    <category>Logic/Proof theory</category>
+</item>
+<item>
+  <title>Unified Decision Procedures for Regular Expression Equivalence</title>
+  <link>https://isa-afp.org/entries/Regex_Equivalence.html</link>
+  <pubDate>Thu, 30 Jan 2014 00:00:00 +0000</pubDate>
+  <description>Unified Decision Procedures for Regular Expression Equivalence in the AFP</description>
+    <category>Computer science/Automata and formal languages</category>
+</item>
+<item>
+  <title>A Codatatype of Formal Languages</title>
+  <link>https://isa-afp.org/entries/Coinductive_Languages.html</link>
+  <pubDate>Fri, 15 Nov 2013 00:00:00 +0000</pubDate>
+  <description>A Codatatype of Formal Languages in the AFP</description>
+    <category>Computer science/Automata and formal languages</category>
+</item>
 
   </channel>
 </rss>

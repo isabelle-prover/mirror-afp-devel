@@ -1,23 +1,22 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Clemens Ballarin</title>
     <link>https://isa-afp.org/authors/ballarin/</link>
-    <description>AFP entries of Clemens Ballarin</description>
-        <item>
-          <title>A Case Study in Basic Algebra</title>
-          <link>https://isa-afp.org/entries/Jacobson_Basic_Algebra.html</link>
-          <pubDate>Fri, 30 Aug 2019 00:00:00 +0000</pubDate>
-          <description>A Case Study in Basic Algebra in the AFP</description>
-            <category>Mathematics/Algebra</category>
-        </item>
-        <item>
-          <title>Fast Fourier Transform</title>
-          <link>https://isa-afp.org/entries/FFT.html</link>
-          <pubDate>Wed, 12 Oct 2005 00:00:00 +0000</pubDate>
-          <description>Fast Fourier Transform in the AFP</description>
-            <category>Computer science/Algorithms/Mathematical</category>
-        </item>
+    <description>AFP entries of Clemens Ballarin</description><item>
+  <title>A Case Study in Basic Algebra</title>
+  <link>https://isa-afp.org/entries/Jacobson_Basic_Algebra.html</link>
+  <pubDate>Fri, 30 Aug 2019 00:00:00 +0000</pubDate>
+  <description>A Case Study in Basic Algebra in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Fast Fourier Transform</title>
+  <link>https://isa-afp.org/entries/FFT.html</link>
+  <pubDate>Wed, 12 Oct 2005 00:00:00 +0000</pubDate>
+  <description>Fast Fourier Transform in the AFP</description>
+    <category>Computer science/Algorithms/Mathematical</category>
+</item>
 
   </channel>
 </rss>

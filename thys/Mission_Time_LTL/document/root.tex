@@ -1,0 +1,37 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+\usepackage{eufrak}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+
+\begin{document}
+
+\title{Formalizing MLTL in Isabelle/HOL}
+\author{Zili Wang and Elizabeth Sloan and Katherine Kosaian}
+\maketitle
+
+\begin{abstract}
+  We formalize the syntax, semantics, and some useful properties of Mission-time Linear Temporal Logic (MLTL) \cite{RRS14,LVR19}, following \cite{DBLP:conf/rv/LiR18,DBLP:conf/ifm/ElwingGSTWR23}.
+  MLTL is a variant of Linear Temporal Logic, which has already been formalized in Isabelle/HOL \cite{LTL-AFP}.
+  In contrast to LTL, MLTL includes finite discrete time bounds on the temporal operators.
+  We do not directly build on the LTL entry, but aim to mirror its style; in particular, we found it useful when defining our syntactic sugar binding precedences.
+  Another closely related AFP entry is \cite{MFOTL_Monitor-AFP}.
+  
+\end{abstract}
+
+\tableofcontents
+
+% include generated text of all theories
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}

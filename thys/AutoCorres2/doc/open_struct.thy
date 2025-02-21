@@ -88,10 +88,8 @@ init-autocorres [addressable_fields =
   data_struct1.d1.y4
   data_struct1.d2
   data_struct2.d
-  data_array.array,
- single_threaded  (* turn on to see timing info *)] "open_struct.c"
-
-text \<open>\<close>
+  data_array.array(*,
+  single_threaded *) (* turn on to see timing info *)] "open_struct.c"
 
 autocorres open_struct.c
 
@@ -1430,6 +1428,25 @@ begin
 thm ts_def
 thm ac_corres
 end
+
+context ts_definition_access_arr_struct
+begin
+thm access_arr_struct'_def [no_vars]
+lemma "access_arr_struct' p \<equiv> do {
+  i \<leftarrow> whileLoop (\<lambda>i s. i < 6)
+         (\<lambda>i. do {
+               _ \<leftarrow> guard (\<lambda>s. IS_VALID(arr_struct_C) s p);
+               _ \<leftarrow> modify (heap_arr_struct_C_update (\<lambda>a. a(p := arr2_C_update (\<lambda>a. Arrays.update a (unat i) 3) (a p))));
+               _ \<leftarrow> guard (\<lambda>s. i + 1 < 0xC);
+               _ \<leftarrow> modify (heap_arr_struct_C_update (\<lambda>a. a(p := arr2_C_update (fupdate (unat (i + 1)) (\<lambda>v. v + i)) (a p))));
+               return (i + 1)
+             })
+        0;
+  return 1
+}"
+  unfolding access_arr_struct'_def.
+end
+
 end
 
 

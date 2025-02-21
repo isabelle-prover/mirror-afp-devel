@@ -1,18 +1,17 @@
 chapter AFP
 
-(*****************************************************************************
- *
- * Project         : HOL-CSP - A Shallow Embedding of CSP in  Isabelle/HOL
+(*<*)
+\<comment>\<open> ********************************************************************
+ * Project         : HOL-CSP - A Shallow Embedding of CSP in Isabelle/HOL
  * Version         : 2.0
  *
- * Author          : Benoit Ballenghien, Safouan Taha, Burkhart Wolff & Lina Ye
+ * Author          : Benoît Ballenghien, Safouan Taha, Burkhart Wolff, Lina Ye.
  *                   (Based on HOL-CSP 1.0 by Haykal Tej and Burkhart Wolff)
  *
- * This file       : A Combined CSP Theory
+ * This file       : ROOT file
  *
  * Copyright (c) 2009 Université Paris-Sud, France
- * Copyright (c) 2023 Université Paris-Saclay, France
- *
+ * Copyright (c) 2025 Université Paris-Saclay, France
  *
  * All rights reserved.
  *
@@ -43,7 +42,11 @@ chapter AFP
  * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- ******************************************************************************)
+ ******************************************************************************\<close>
+(*>*)
+
+
+
 
 session "HOL-CSP" (AFP) = HOLCF +
   description \<open>HOL-CSP based on the original Roscoe-Book.\<close>
@@ -51,12 +54,33 @@ session "HOL-CSP" (AFP) = HOLCF +
   sessions
     "HOL-Eisbach"
   theories
-    "Introduction"
-    "Process"
-     Bot Skip Stop Det Ndet Seq Renaming Hiding Sync Mndetprefix Mprefix
-    "CSP_Induct" "CSP" "Assertions"
-    "Conclusion"
-    "CopyBuffer"
+    Introduction
+    Process
+    Constant_Processes
+    Deterministic_Choice
+    Non_Deterministic_Choice
+    Sliding_Choice
+    Multi_Deterministic_Prefix_Choice
+    Multi_Non_Deterministic_Prefix_Choice
+    Global_Non_Deterministic_Choice
+    Sequential_Composition
+    Synchronization_Product
+    Renaming
+    Hiding
+    CSP_Refinements
+    CSP_Monotonies
+    Non_Deterministic_CSP_Distributivity
+    Basic_CSP_Laws
+    Step_CSP_Laws
+    Step_CSP_Laws_Extended
+    Read_Write_CSP_Laws
+    CSP_Laws
+    Events_Ticks_CSP_Laws
+    CSP_Assertions
+    Induct_CSP_Rules
+    CSP
+    Conclusion
+    CopyBuffer
   document_files
     "root.tex"
     "adb-long.bib"

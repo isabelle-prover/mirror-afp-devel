@@ -103,6 +103,7 @@ sig
   (* used from ML antiquotations *)
   val fresh_var: int -> term -> term
   val get_maxidx: int -> term -> int
+  val infer_types: Proof.context -> term -> term
 end
 
 structure Synthesize_Rules : SYNTHESIZE_RULES =
@@ -346,10 +347,12 @@ fun first_mk_pattern (ps: (binding * (Proof.context -> int -> term -> term)) lis
                     " yields: " ^ quote (Syntax.string_of_term ctxt t'))
              in t' end
         | NONE => first_mk_pattern ps' ctxt i t )
-
+ 
 local
   fun pretty_match ctxt ((b, _), t) = Pretty.strs ["mk_pattern", More_Binding.here b, "yields:", quote (Syntax.string_of_term ctxt t)]
   fun pretty_matches ctxt header ms = Pretty.big_list header (map (pretty_match ctxt) ms)
+  fun pretty_bindings bs = Pretty.list "[" "]" (map (Pretty.str o More_Binding.here) bs)
+  val str_of_bindings = Pretty.string_of o pretty_bindings
 in
 fun check_mk_pattern fresh (ps: (binding * (Proof.context -> int -> term -> term)) list) ctxt i t =
   let
@@ -360,7 +363,7 @@ fun check_mk_pattern fresh (ps: (binding * (Proof.context -> int -> term -> term
       [] =>
         let
            val _ = if fresh then () else warning ("check_mk_pattern: no match found for " ^
-                    quote (Syntax.string_of_term ctxt t) ^ ". Using identity")
+                    quote (Syntax.string_of_term ctxt t) ^ ". Using identity. " ^ "\n " ^ "tried: " ^ str_of_bindings (map #1 ps))
         in t end
     | [((b, p), t')] =>
         let
@@ -777,6 +780,13 @@ fun get_maxidx maxidx t =
     then maxidx_of_term t
     else maxidx
 
+fun infer_types ctxt t = 
+  let
+    val ctxt' = ctxt 
+      |> Proof_Context.set_mode Proof_Context.mode_pattern 
+      |> Variable.declare_term t (* prohibit some unexpected behaviour with default sorts of schematic variables in infer_types *)
+  in singleton (Type_Infer_Context.infer_types ctxt') t end
+
 
 
 
@@ -968,12 +978,11 @@ fun mk_pattern atm var_pattern var_infer var_result t =
        [val_binding (term_wildcard true "" atm_dummy t) (ML_Syntax.print_term t)]
        (lam_pat ["ctxt", "mi", as_pat false "t" (term false var_pattern atm t)]
          (let_expr
-            [val_binding "mi" (apply "Synthesize_Rules.get_maxidx" ["mi","t"]),
-             val_binding "ctxt" "ctxt |> Proof_Context.set_mode Proof_Context.mode_pattern"]
+            [val_binding "mi" (apply "Synthesize_Rules.get_maxidx" ["mi","t"])]
             (apply
               (lam_pat [(term true var_infer atm t)]
                 (term true var_result atm t))
-              [apply "singleton" [apply "Type_Infer_Context.infer_types" ["ctxt"], term_dummy true "" atm t] ]))))
+              [apply "Synthesize_Rules.infer_types" ["ctxt" , term_dummy true "" atm t]]))))
   end
 
 fun number_suffixes s = s |> Symbol.explode |> take_suffix (Symbol.is_digit) |> read_int |> fst

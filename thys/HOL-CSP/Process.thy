@@ -1,15 +1,15 @@
 (*<*)
 \<comment>\<open> ********************************************************************
- * Project         : HOL-CSP - A Shallow Embedding of CSP in  Isabelle/HOL
+ * Project         : HOL-CSP - A Shallow Embedding of CSP in Isabelle/HOL
  * Version         : 2.0
  *
- * Author          : Benoit Ballenghien, Safouan Taha, Burkhart Wolff
+ * Author          : Benoît Ballenghien, Safouan Taha, Burkhart Wolff, Lina Ye.
  *                   (Based on HOL-CSP 1.0 by Haykal Tej and Burkhart Wolff)
  *
- * This file       : A Combined CSP Theory
+ * This file       : The notion of processes
  *
  * Copyright (c) 2009 Université Paris-Sud, France
- * Copyright (c) 2023 Université Paris-Saclay, France
+ * Copyright (c) 2025 Université Paris-Saclay, France
  *
  * All rights reserved.
  *
@@ -48,12 +48,14 @@ chapter\<open>The Notion of Processes\<close>
 text\<open>As mentioned earlier, we base the theory of CSP on HOLCF, a Isabelle/HOL library
 providing a theory of continuous functions, fixpoint induction and recursion.\<close>
 
+(*<*)
 theory Process
-  imports HOLCF
+  imports HOLCF "HOL-Library.Prefix_Order" "HOL-Eisbach.Eisbach"
 begin
+  (*>*)
 
-text\<open>Since HOLCF sets the default type class to @{class "cpo"}, while our 
-Process theory establishes links between standard types and @{class "pcpo"} 
+text\<open>HOLCF sets the default type class to @{class cpo}, while our 
+Process theory establishes links between standard types and @{class pcpo} 
 types. Consequently, we reset the default type class to the default in HOL.\<close>
 
 default_sort type
@@ -66,111 +68,160 @@ to occur only in the end of traces in order to signalize successful termination 
 a process. (In the original text of Hoare, this treatment was more
 liberal and lead to foundational problems: the process invariant
 could not be established for the sequential composition operator
-of CSP; see @{cite "tej.ea:corrected:1997"} for details.)\<close>
+of CSP; see \<^cite>\<open>"tej.ea:corrected:1997"\<close> for details.)\<close>
 
-datatype '\<alpha> event = ev '\<alpha> | tick
+text \<open>From the Isabelle-2025 version on, the classical constant tick (\<open>\<checkmark>\<close>) of the CSP theory
+      has been replaced by a parameterized version carrying a kind of return value.\<close>
 
-type_synonym '\<alpha> trace = "('\<alpha> event) list"
+datatype ('a, 'r) event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k =
+    is_ev   : ev   (of_ev   : 'a)
+  | is_tick : tick (of_tick : 'r) (\<open>\<checkmark>'(_')\<close>)
+
+
+text \<open>This type \<^typ>\<open>('a, 'r) event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close> is of course isomorphic to the sum type \<^typ>\<open>'a + 'r\<close>.\<close>
+text \<open>``ptick'' stands for parameterized tick, and we introduce the type synonym for
+      the classical process event type.\<close>
+
+type_synonym 'a event = \<open>('a, unit) event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close>
+
+abbreviation tick_unit :: \<open>'a event\<close> (\<open>\<checkmark>\<close>) where \<open>\<checkmark> \<equiv> \<checkmark>(())\<close>
+
+definition sum_of_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k :: \<open>('a, 'r) event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k \<Rightarrow> 'a + 'r\<close>
+  where \<open>sum_of_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k e \<equiv> case e of ev a \<Rightarrow> Inl a | \<checkmark>(r) \<Rightarrow> Inr r\<close>
+
+definition event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_of_sum :: \<open>'a + 'r \<Rightarrow> ('a, 'r) event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close>
+  where \<open>event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_of_sum s \<equiv> case s of Inl a \<Rightarrow> ev a | Inr r \<Rightarrow> \<checkmark>(r)\<close>
+
+lemma type_definition_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k : \<open>type_definition sum_of_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_of_sum UNIV\<close>
+proof unfold_locales
+  show \<open>sum_of_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k s \<in> UNIV\<close> for s :: \<open>('a, 'r) event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close> by simp
+next
+  show \<open>event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_of_sum (sum_of_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k e) = e\<close> for e :: \<open>('a, 'r) event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close>
+    by (cases e) (simp_all add: event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_of_sum_def sum_of_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_def)
+next
+  show \<open>sum_of_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k (event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_of_sum s) = s\<close> for s :: \<open>'a + 'r\<close>
+    by (cases s) (simp_all add: event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_of_sum_def sum_of_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_def)
+qed
+
+setup_lifting type_definition_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k
+
+lemma range_tick_Un_range_ev_is_UNIV [simp] : \<open>range tick \<union> range ev = UNIV\<close>
+  by (metis UNIV_eq_I UnCI event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.exhaust rangeI)
+
+text \<open>The generalization is done in a very straightforward way:
+      the old version is recovered by considering \<^typ>\<open>('a, unit) event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close>.\<close>
+
+(* 
+typedef ('a, 'r) event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k = \<open>UNIV :: ('a + 'r) set\<close>
+  morphisms event_of_sum sum_of_event by simp
+
+setup_lifting type_definition_event
+
+lift_definition ev :: \<open>'a \<Rightarrow> ('a, 'r) event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close> is \<open>\<lambda>a. Inl a\<close> .
+lift_definition tick :: \<open>'r \<Rightarrow> ('a, 'r) event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close> (\<open>\<checkmark>'(_')\<close>) is \<open>\<lambda>r. Inr r\<close> .
+
+free_constructors event for is_ev : ev of_ev | is_tick : tick of_tick
+proof transfer
+  show \<open>(\<And>x1. y = Inl x1 \<Longrightarrow> P) \<Longrightarrow> (\<And>x2. y = Inr x2 \<Longrightarrow> P) \<Longrightarrow> P\<close> for y :: \<open>'a + 'b\<close> and P
+    by (metis isl_def sum.collapse(2))
+next
+  show \<open>ev x = ev y \<longleftrightarrow> x = y\<close> for x y :: 'a by (metis ev.rep_eq sum.inject(1))
+next
+  show \<open>\<checkmark>(x) = \<checkmark>(y) \<longleftrightarrow> x = y\<close> for x y :: 'r by (metis sum.inject(2) tick.rep_eq)
+next
+  show \<open>ev x \<noteq> \<checkmark>(y)\<close> for x :: 'a and y :: 'r
+    by (metis Inl_Inr_False ev.rep_eq tick.rep_eq)
+qed
+
+this looks more natural, but does not work fine with the typedef of process
+ *)
+
+lemma not_is_ev   [simp] : \<open>\<not> is_ev   e \<longleftrightarrow> is_tick e\<close>
+  and not_is_tick [simp] : \<open>\<not> is_tick e \<longleftrightarrow> is_ev   e\<close>
+  by (use event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.exhaust_disc in blast)+
+
+
+type_synonym ('a, 'r) trace\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k = \<open>('a, 'r) event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k list\<close>
+
+text \<open>We recover the classical version with \<^typ>\<open>unit\<close>.\<close>
+
+type_synonym 'a trace = \<open>('a, unit) trace\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close>
+
 
 text\<open>We chose as standard ordering on traces the prefix ordering.\<close>
 
-instantiation  list :: (type) order
-begin 
-
-definition  le_list_def  : "(s::'a list) \<le> t \<longleftrightarrow> (\<exists> r. s @ r = t)"
-
-definition  less_list_def: "(s::'a list) < t \<longleftrightarrow> s \<le> t \<and> s \<noteq> t" 
-
-lemma A : "((x::'a list) < y) = (x \<le> y \<and> \<not> y \<le> x)"
-by(auto simp: le_list_def less_list_def)
-
-instance 
-proof
-   fix x y z ::"'a list"
-   show "(x < y) = (x \<le> y \<and> \<not> y \<le> x)" 
-     by(auto simp: le_list_def less_list_def)
-   show "x \<le> x"  by(simp add: le_list_def)
-   assume A:"x \<le> y" and B:"y \<le> z" thus "x \<le> z"
-     apply(insert A B, simp add: le_list_def, safe)  
-     apply(rename_tac r ra, rule_tac x="r@ra" in exI, simp)
-     done
-   assume A:"x \<le> y" and B:"y \<le> x" thus "x = y"
-     by(insert A B, auto simp: le_list_def)  
-qed
-
-end
 
 text\<open>Some facts on the prefix ordering.\<close>
 
-lemma nil_le[simp]: "[] \<le> s"
-by(induct "s", simp_all, auto simp: le_list_def) 
+lemma nil_le     [simp]: \<open>[] \<le> s\<close>
+  and nil_le2    [simp]: \<open>s \<le> [] \<longleftrightarrow> s = []\<close>
+  and nil_less   [simp]: \<open>\<not> t < []\<close>
+  and nil_less2  [simp]: \<open>[] < t @ [a]\<close>
+  and less_self  [simp]: \<open>t < t @ [a]\<close>
+  and le_cons    [simp]: \<open>a # s \<le> a # t \<longleftrightarrow> s \<le> t\<close>
+  and le_append  [simp]: \<open>b @ s \<le> b @ t \<longleftrightarrow> s \<le> t\<close>
+  and less_cons  [simp]: \<open>a # s < a # t \<longleftrightarrow> s < t\<close>
+  and less_append[simp]: \<open>b @ s < b @ t \<longleftrightarrow> s < t\<close>
 
-lemma nil_le2[simp]: "s \<le> [] = (s = [])"
-by(induct "s", auto simp:le_list_def)
+and   le_length_mono: \<open>s \<le> t \<Longrightarrow> length s \<le> length t\<close>
+and less_length_mono: \<open>s < t \<Longrightarrow> length s < length t\<close>
+and   le_tail: \<open>s \<noteq> [] \<Longrightarrow> s \<le> t \<Longrightarrow> tl s \<le> tl t\<close>
+and less_tail: \<open>s \<noteq> [] \<Longrightarrow> s < t \<Longrightarrow> tl s < tl t\<close>
+              apply (simp_all add: less_eq_list_def less_list_def prefix_length_le)
+    apply (metis prefix_length_less prefix_order.dual_order.not_eq_order_implies_strict)
+   apply (metis prefix_def tl_append2)
+  by (metis prefix_def prefix_order.eq_iff self_append_conv tl_append2)
 
-lemma nil_less[simp]: "\<not> t < []"
-by(simp add: less_list_def)
 
-lemma nil_less2[simp]: "[] < t @ [a]"
-by(simp add: less_list_def)
+lemma le_same_imp_eq_or_less: \<open>(s :: 'a list) \<le> u \<Longrightarrow> t \<le> u \<Longrightarrow> t = s \<or> s < t \<or> t < s\<close>
+  by (metis less_eq_list_def linorder_le_cases nless_le prefix_length_prefix)
 
-lemma less_self[simp]: "t < t@[a]"
-by(simp add:less_list_def le_list_def)
-   
-lemma le_length_mono: "s \<le> t \<Longrightarrow> length s \<le> length t"
-by(auto simp: le_list_def)
 
-lemma less_length_mono: "s < t \<Longrightarrow> length s < length t"
-by(auto simp: less_list_def le_list_def)
+lemma append_eq_first_pref_spec: \<open>s @ t = r @ [x] \<Longrightarrow> t \<noteq> [] \<Longrightarrow> s \<le> r\<close>
+  by (metis butlast_append butlast_snoc less_eq_list_def prefix_def)
 
-lemma less_cons: "s < t \<Longrightarrow> a # s < a # t"
-by (simp add: le_list_def less_list_def)
 
-lemma less_append: "s < t \<Longrightarrow> a @ s < a @ t"
-by (simp add: le_list_def less_list_def)
-
-lemma less_tail: "s \<noteq> [] \<Longrightarrow> s < t \<Longrightarrow> tl s < tl t"
-by (auto simp add: le_list_def less_list_def)
-
-\<comment>\<open>should be in the List library\<close>
-lemma list_nonMt_append: "s \<noteq> [] \<Longrightarrow> \<exists> a t. s = t @ [a]"
-by(erule rev_mp,induct "s",simp_all,case_tac "s = []",auto)
-
-lemma append_eq_first_pref_spec[rule_format]: "s @ t = r @ [x] \<and> t \<noteq> [] \<longrightarrow> s \<le> r"
-  apply(rule_tac x=s in spec)
-  apply(induct r,auto)
-    apply(erule rev_mp)
-    apply(rename_tac xa, rule_tac list=xa in list.induct, simp_all)
-  apply(simp add: le_list_def)
-  apply(drule list_nonMt_append, auto)
-  done
-
-lemma prefixes_fin: "let prefixes = {t. \<exists>t2. x = t @ t2} in finite prefixes \<and> card prefixes = length x + 1"  
-proof(induct x, simp)
-  case (Cons a x)
-  hence A:"finite {t. (\<exists>t2. x = t @ t2)}" using not_add_less2 by fastforce
-  have B:"inj_on Cons UNIV" by (metis injI list.inject)
-  from Cons A B inj_on_iff_eq_card have  C:"card ((\<lambda>x. a#x)`{t. (\<exists>t2. x = t @ t2)}) = length x + 1"
-    by fastforce
-  have D:"{t. \<exists>t2. a # x = t @ t2} = {[]} \<union> (\<lambda>x. a#x)`{t. (\<exists>t2. x = t @ t2)}" 
-    by(intro set_eqI iffI, auto simp add:Cons_eq_append_conv) 
-  from C D card_insert_if[of "(\<lambda>x. a#x)`{t. (\<exists>t2. x = t @ t2)}"] show ?case 
-    by (metis (no_types, lifting) One_nat_def Suc_eq_plus1 Un_insert_left finite.insertI 
-        finite_imageI image_iff list.distinct(1) list.size(4) local.A sup_bot.left_neutral)
+lemma prefixes_fin: \<open>finite {t. t \<le> s} \<and> card {t. t \<le> s} = Suc (length s)\<close>
+proof (induct s)
+  show \<open>finite {t. t \<le> []} \<and> card {t. t \<le> []} = Suc (length [])\<close> by simp
+next
+  case (Cons x s)
+  have * : \<open>{t. t \<le> x # s} = {[]} \<union> (\<lambda>t. x # t) ` {t. t \<le> s}\<close>
+    by (simp add: image_def less_eq_list_def set_eq_iff)
+      (meson Sublist.prefix_Cons)
+  show \<open>finite {t. t \<le> x # s} \<and> card {t. t \<le> x # s} = Suc (length (x # s))\<close>
+  proof (intro conjI)
+    show \<open>finite {t. t \<le> x # s}\<close> by (simp add: "*" Cons.hyps)
+  next
+    have \<open>finite ((\<lambda>t. x # t) ` {t. t \<le> s})\<close> by (simp add: Cons.hyps)
+    show \<open>card {t. t \<le> x # s} = Suc (length (x # s))\<close>
+      by (subst card_Un_disjoint[of \<open>{[]}\<close> \<open>(\<lambda>t. x # t) ` {t. t \<le> s}\<close>, folded "*"])
+        (auto simp add: card_image Cons.hyps)   
+  qed
 qed
 
-lemma sublists_fin: "finite {t. \<exists>t1 t2. x = t1 @ t @ t2}"
-  proof(induct x, simp)
-    case (Cons a x)
-    have "{t. \<exists>t1 t2. a # x = t1 @ t @ t2} \<subseteq> {t. \<exists>t1 t2. x = t1 @ t @ t2} \<union> {t. \<exists>t2. a#x = t @ t2}"
-      apply(auto) by (metis Cons_eq_append_conv)
-    with Cons prefixes_fin[of "a#x"] show ?case by (meson finite_UnI finite_subset)
-  qed
 
-lemma suffixes_fin: "finite {t. \<exists>t1. x = t1 @ t}"
-  apply(subgoal_tac "{t. \<exists>t1. x = t1 @ t} \<subseteq> {t. \<exists>t1 t2. x = t1 @ t @ t2}")
-  using infinite_super sublists_fin apply blast
-  by blast
+lemma sublists_fin: \<open>finite {t. \<exists>t1 t2. s = t1 @ t @ t2}\<close>
+proof (induct s)
+  show \<open>finite {t. \<exists>t1 t2. [] = t1 @ t @ t2}\<close> by simp
+next
+  case (Cons x s)
+  have \<open>{t. t \<le> x # s} = {t. \<exists>t2. x # s = t @ t2}\<close>
+    by (simp add: less_eq_list_def prefix_def)
+  with prefixes_fin[of \<open>x # s\<close>] have \<open>finite {t. \<exists>t2. x # s = t @ t2}\<close> by simp
+  have \<open>{t. \<exists>t1 t2. x # s = t1 @ t @ t2} \<subseteq>
+        {t. \<exists>t1 t2. s = t1 @ t @ t2} \<union> {t. \<exists>t2. x # s = t @ t2}\<close>
+    by (simp add: subset_iff) (meson Cons_eq_append_conv)
+  show \<open>finite {t. \<exists>t1 t2. x # s = t1 @ t @ t2}\<close>
+    by (rule finite_subset[OF \<open>?this\<close>], rule finite_UnI)
+      (simp_all add: Cons.hyps \<open>finite {t. \<exists>t2. x # s = t @ t2}\<close>)
+qed
+
+
+lemma suffixes_fin: \<open>finite {t. \<exists>t1. s = t1 @ t}\<close>
+  by (rule finite_subset[of _ \<open>{t. \<exists>t1 t2. s = t1 @ t @ t2}\<close>];
+      simp add: subset_iff sublists_fin) blast 
+
 
 text\<open>For the process invariant, it is a key element to
 reduce the notion of traces to traces that may only contain
@@ -178,572 +229,566 @@ one tick event at the very end. This is captured by the definition
 of the predicate \verb+front_tickFree+ and its stronger version
 \verb+tickFree+. Here is the theory of this concept.\<close>
 
-definition tickFree :: "'\<alpha> trace \<Rightarrow> bool"
-  where "tickFree s = (tick \<notin> set s)"
+definition tickFree :: \<open>('a, 'r) trace\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k \<Rightarrow> bool\<close> (\<open>tF\<close>)
+  where \<open>tF s \<equiv> range tick \<inter> set s = {}\<close>
 
-definition front_tickFree :: "'\<alpha> trace \<Rightarrow> bool"
-  where "front_tickFree s = (s =[] \<or> tickFree(tl(rev s)))"
+definition front_tickFree :: \<open>('a, 'r) trace\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k \<Rightarrow> bool\<close> (\<open>ftF\<close>)
+  where \<open>ftF s \<equiv> s = [] \<or> tickFree (tl (rev s))\<close>
 
-lemma tickFree_Nil [simp]: "tickFree []"
-by(simp add: tickFree_def)
+lemma tickFree_Nil        [simp] : \<open>tF []\<close>
+  and tickFree_Cons_iff   [simp] : \<open>tF (a # t) \<longleftrightarrow> is_ev a \<and> tF t\<close>
+  and tickFree_append_iff [simp] : \<open>tF (s @ t) \<longleftrightarrow> tF s    \<and> tF t\<close>
+  and tickFree_rev_iff    [simp] : \<open>tF (rev t) \<longleftrightarrow> tF t\<close>
+  and non_tickFree_tick   [simp] : \<open>\<not> tF [\<checkmark>(r)]\<close>
+  by (cases a; auto simp add: tickFree_def)+
 
-lemma tickFree_Cons [simp]: "tickFree (a # t) = (a \<noteq> tick \<and> tickFree t)"
-by(auto simp add: tickFree_def)
+lemma tickFree_iff_is_map_ev : \<open>tF t \<longleftrightarrow> (\<exists>u. t = map ev u)\<close>
+  by (induct t) (simp_all add: Cons_eq_map_conv is_ev_def)
 
-lemma tickFree_tl : "tickFree s \<Longrightarrow> tickFree(tl s)"
-by(case_tac s, simp_all)
-  
-lemma tickFree_append[simp]: "tickFree(s@t) = (tickFree s \<and> tickFree t)"
-by(simp add: tickFree_def member_def)
-
-lemma non_tickFree_tick [simp]: "\<not> tickFree [tick]"
-by(simp add: tickFree_def)
-
-lemma non_tickFree_implies_nonMt: "\<not> tickFree s \<Longrightarrow> s \<noteq> []"
-by(simp add:tickFree_def,erule rev_mp, induct s, simp_all)
-
-lemma  tickFree_rev : "tickFree(rev t) = (tickFree t)"
-by(simp  add: tickFree_def member_def)
-
-lemma front_tickFree_Nil[simp]: "front_tickFree []"
-by(simp add: front_tickFree_def)
-
-lemma front_tickFree_single[simp]: "front_tickFree [a]"
-by(simp add: front_tickFree_def)
-
-lemma tickFree_implies_front_tickFree: "tickFree s \<Longrightarrow> front_tickFree s"
-apply(simp add: tickFree_def front_tickFree_def member_def,safe)
-apply(erule contrapos_np, simp,(erule rev_mp)+)
-apply(rule_tac xs=s in List.rev_induct,simp_all)
-done
-
-lemma front_tickFree_charn: "front_tickFree s = (s = [] \<or> (\<exists>a t. s = t @ [a] \<and> tickFree t))"
-apply(simp add: front_tickFree_def)
-apply(cases "s=[]", simp_all)
-apply(drule list_nonMt_append, auto simp: tickFree_rev)
-done
-
-lemma front_tickFree_implies_tickFree: "front_tickFree (t @ [a]) \<Longrightarrow> tickFree t"
-by(simp add: tickFree_def front_tickFree_def member_def)
-
-lemma tickFree_implies_front_tickFree_single: "tickFree t \<Longrightarrow> front_tickFree (t @ [a])"
-by(simp add:front_tickFree_charn) 
+lemma front_tickFree_Nil   [simp] : \<open>ftF []\<close>
+  and front_tickFree_single[simp] : \<open>ftF [a]\<close>
+  by (simp_all add: front_tickFree_def)
 
 
-lemma nonTickFree_n_frontTickFree: "\<lbrakk>\<not> tickFree s; front_tickFree s \<rbrakk> \<Longrightarrow> \<exists>t. s = t @ [tick]"
-apply(frule non_tickFree_implies_nonMt)
-apply(drule front_tickFree_charn[THEN iffD1], auto)
-done
+lemma tickFree_tl : \<open>tF s \<Longrightarrow> tF (tl s)\<close>
+  by (cases s) simp_all
 
-lemma front_tickFree_dw_closed : "front_tickFree (s @ t) \<Longrightarrow>  front_tickFree s"
-apply(erule rev_mp, rule_tac x= s in spec)
-apply(rule_tac xs=t in List.rev_induct, simp, safe)
-apply(rename_tac x xs xa)
-apply(simp only: append_assoc[symmetric])
-apply(rename_tac x xs xa, erule_tac x="xa @ xs" in all_dupE)
-apply(drule front_tickFree_implies_tickFree)
-apply(erule_tac x="xa" in allE, auto)
-apply(auto dest!:tickFree_implies_front_tickFree)
-done
+lemma non_tickFree_imp_not_Nil: \<open>\<not> tF s \<Longrightarrow> s \<noteq> []\<close>
+  using tickFree_Nil by blast
 
-lemma front_tickFree_append: "\<lbrakk> tickFree s; front_tickFree t\<rbrakk> \<Longrightarrow> front_tickFree (s @ t)"
-apply(drule front_tickFree_charn[THEN iffD1], auto)
-apply(erule tickFree_implies_front_tickFree)
-apply(subst append_assoc[symmetric])
-apply(rule tickFree_implies_front_tickFree_single)
-apply(auto intro: tickFree_append)
-done
+lemma tickFree_butlast: \<open>tF s \<longleftrightarrow> tF (butlast s) \<and> (s \<noteq> [] \<longrightarrow> is_ev (last s))\<close>
+  by (induct s) simp_all
 
-lemma front_tickFree_mono: "front_tickFree (t @ r) \<and> r \<noteq> [] \<longrightarrow> tickFree t \<and> front_tickFree r"
-by(metis append_assoc append_butlast_last_id front_tickFree_charn 
-         front_tickFree_implies_tickFree tickFree_append)
+lemma front_tickFree_iff_tickFree_butlast: \<open>ftF s \<longleftrightarrow> tF (butlast s)\<close>
+  by (induct s) (auto simp add: front_tickFree_def)
+
+lemma front_tickFree_Cons_iff: \<open>ftF (a # s) \<longleftrightarrow> s = [] \<or> is_ev a \<and> ftF s\<close>
+  by (simp add: front_tickFree_iff_tickFree_butlast)
+
+lemma front_tickFree_append_iff:
+  \<open>ftF (s @ t) \<longleftrightarrow> (if t = [] then ftF s else tF s \<and> ftF t)\<close>
+  by (simp add: butlast_append front_tickFree_iff_tickFree_butlast)
+
+lemma tickFree_imp_front_tickFree [simp] : \<open>tF s \<Longrightarrow> ftF s\<close>
+  by (simp add: front_tickFree_def tickFree_tl)
+
+lemma front_tickFree_charn: \<open>ftF s \<longleftrightarrow> s = [] \<or> (\<exists>a t. s = t @ [a] \<and> tF t)\<close>
+  by (cases s rule: rev_cases) (simp_all add: front_tickFree_def)
 
 
-lemma tickFree_butlast: \<open>tickFree s \<longleftrightarrow> tickFree (butlast s) \<and> (s \<noteq> [] \<longrightarrow> last s \<noteq> tick)\<close>
-  by (induct s, simp_all)
+lemma nonTickFree_n_frontTickFree: \<open>\<not> tF s \<Longrightarrow> ftF s \<Longrightarrow> \<exists>t r. s = t @ [\<checkmark>(r)]\<close>
+  by (metis event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(1) event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.exhaust front_tickFree_append_iff list.distinct(1)
+      rev_exhaust tickFree_Cons_iff tickFree_Nil tickFree_append_iff)
 
-lemma front_tickFree_butlast: \<open>front_tickFree s \<longleftrightarrow> tickFree (butlast s)\<close>
-  by (induct s, auto simp add: front_tickFree_def)
+lemma front_tickFree_dw_closed : \<open>ftF (s @ t) \<Longrightarrow> ftF s\<close>
+  by (metis front_tickFree_append_iff tickFree_imp_front_tickFree)
+
+lemma front_tickFree_append: \<open>tF s \<Longrightarrow> ftF t \<Longrightarrow> ftF (s @ t)\<close>
+  by (simp add: front_tickFree_append_iff)
+
+lemma tickFree_imp_front_tickFree_snoc: \<open>tF s \<Longrightarrow> ftF (s @ [a])\<close>
+  by (simp add: front_tickFree_append)
+
+lemma front_tickFree_nonempty_append_imp: \<open>ftF (t @ r) \<Longrightarrow> r \<noteq> [] \<Longrightarrow> tF t \<and> ftF r\<close>
+  by (simp add: front_tickFree_append_iff)
+
+lemma tickFree_map_ev [simp] : \<open>tF (map ev t)\<close>
+  by (induct t) simp_all
+
+lemma tickFree_map_tick_iff [simp] : \<open>tF (map tick t) \<longleftrightarrow> t = []\<close>
+  by (induct t) simp_all
+
+lemma front_tickFree_map_tick_iff [simp] : \<open>ftF (map tick t) \<longleftrightarrow> t = [] \<or> (\<exists>r. t = [r])\<close>
+  by (simp add: front_tickFree_iff_tickFree_butlast map_butlast[symmetric])
+    (metis append_Nil append_butlast_last_id butlast.simps(1, 2))
+
+\<comment> \<open>\<^term>\<open>map ev (map f t)\<close> if automatically simplified into \<^term>\<open>map (ev \<circ> f) t\<close> by the
+    simplified, so we need to add the following versions.\<close>
+
+lemma tickFree_map_ev_comp [simp] : \<open>tF (map (ev \<circ> f) t)\<close>
+  by (metis list.map_comp tickFree_map_ev)
+
+lemma tickFree_map_tick_comp_iff [simp] : \<open>tF (map (tick \<circ> f) t) \<longleftrightarrow> t = []\<close>
+  by (fold map_map, unfold tickFree_map_tick_iff) simp
+
+lemma front_tickFree_map_tick_comp_iff [simp] : \<open>ftF (map (tick \<circ> f) t) \<longleftrightarrow> t = [] \<or> (\<exists>r. t = [r])\<close>
+  by (fold map_map, unfold front_tickFree_map_tick_iff)
+    (simp add: map_eq_Cons_conv)
+
 
 
 section\<open> Basic Types, Traces, Failures and Divergences \<close>
 
-type_synonym '\<alpha> refusal = "('\<alpha> event) set"
-type_synonym '\<alpha> failure = "'\<alpha> trace \<times> '\<alpha> refusal"
-type_synonym '\<alpha> divergence = "'\<alpha> trace set"
-type_synonym '\<alpha> process\<^sub>0 = "'\<alpha> failure set \<times> '\<alpha> divergence"
- 
-definition FAILURES :: "'\<alpha> process\<^sub>0 \<Rightarrow> ('\<alpha> failure set)"
-  where "FAILURES P = fst P"
+type_synonym ('a, 'r) refusal\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k = \<open>('a, 'r) event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k set\<close>
+type_synonym 'a refusal = \<open>('a, unit) refusal\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close>
+type_synonym ('a, 'r) failure\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k = \<open>('a, 'r) trace\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k \<times> ('a, 'r) refusal\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close>
+type_synonym 'a failure = \<open>('a, unit) failure\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close>
+type_synonym ('a, 'r) divergence\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k = \<open>('a, 'r) trace\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close>
+type_synonym 'a divergence = \<open>('a, unit) divergence\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close>
+type_synonym ('a, 'r) process\<^sub>0 = \<open>('a, 'r) failure\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k set \<times> ('a, 'r) divergence\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k set\<close>
 
-definition TRACES :: "'\<alpha> process\<^sub>0 \<Rightarrow> ('\<alpha> trace set)"
-  where "TRACES P = {tr. \<exists> a. a \<in> FAILURES P \<and> tr = fst a}"
+definition FAILURES :: \<open>('a, 'r) process\<^sub>0 \<Rightarrow> ('a, 'r) failure\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k set\<close>
+  where \<open>FAILURES P \<equiv> fst P\<close>
 
-definition DIVERGENCES :: "'\<alpha> process\<^sub>0 \<Rightarrow> '\<alpha> divergence"
-  where "DIVERGENCES P = snd P"
+definition TRACES :: \<open>('a, 'r) process\<^sub>0 \<Rightarrow> ('a, 'r) trace\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k set\<close>
+  where \<open>TRACES P \<equiv> {tr. \<exists>ref. (tr, ref) \<in> FAILURES P}\<close>
 
-definition REFUSALS :: "'\<alpha> process\<^sub>0 \<Rightarrow> ('\<alpha> refusal set)"
-  where "REFUSALS P = {ref.  \<exists> F. F \<in> FAILURES P \<and> F = ([],ref)}"
+definition DIVERGENCES :: \<open>('a, 'r) process\<^sub>0 \<Rightarrow> ('a, 'r) divergence\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k set\<close>
+  where \<open>DIVERGENCES P \<equiv> snd P\<close>
+
+definition REFUSALS :: \<open>('a, 'r) process\<^sub>0 \<Rightarrow> ('a, 'r) refusal\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k set\<close>
+  where \<open>REFUSALS P \<equiv> {ref. ([], ref) \<in> FAILURES P}\<close>
 
 section\<open> The Process Type Invariant \<close>
 
-definition is_process :: "'\<alpha> process\<^sub>0 \<Rightarrow> bool" where
-  "is_process P =
-      (([],{}) \<in> FAILURES P \<and>
-       (\<forall> s X.  (s,X) \<in> FAILURES P \<longrightarrow> front_tickFree s) \<and>
-       (\<forall> s t . (s@t,{}) \<in> FAILURES P \<longrightarrow> (s,{}) \<in> FAILURES P) \<and>
-       (\<forall> s X Y. (s,Y) \<in> FAILURES P & X <= Y \<longrightarrow> (s,X) \<in> FAILURES P) \<and> 
-       (\<forall> s X Y. (s,X) \<in> FAILURES P \<and>
-       (\<forall> c.      c \<in> Y \<longrightarrow> ((s@[c],{})\<notin>FAILURES P)) \<longrightarrow> 
-                                         (s,X \<union> Y)\<in>FAILURES P) \<and>
-       (\<forall> s X.  (s@[tick],{}) : FAILURES P \<longrightarrow> (s,X-{tick}) \<in> FAILURES P) \<and>
-       (\<forall> s t.  s \<in> DIVERGENCES P \<and> tickFree s \<and> front_tickFree t 
-                                      \<longrightarrow> s@t \<in> DIVERGENCES P)  \<and>
-       (\<forall> s X. s \<in> DIVERGENCES P \<longrightarrow> (s,X) \<in> FAILURES P) \<and>
-       (\<forall> s. s @ [tick] : DIVERGENCES P \<longrightarrow> s \<in> DIVERGENCES P))"
+definition is_process :: \<open>('a, 'r) process\<^sub>0 \<Rightarrow> bool\<close> where
+  \<open>is_process P \<equiv>
+   ([], {}) \<in> FAILURES P \<and>
+   (\<forall>s X. (s, X) \<in> FAILURES P \<longrightarrow> ftF s) \<and>
+   (\<forall>s t. (s @ t, {}) \<in> FAILURES P \<longrightarrow> (s, {}) \<in> FAILURES P) \<and>
+   (\<forall>s X Y. (s, Y) \<in> FAILURES P \<and> X \<subseteq> Y \<longrightarrow> (s, X) \<in> FAILURES P) \<and>
+   (\<forall>s X Y. (s, X) \<in> FAILURES P \<and> (\<forall>c. c \<in> Y \<longrightarrow> (s @ [c], {}) \<notin> FAILURES P)
+            \<longrightarrow> (s, X \<union> Y) \<in> FAILURES P) \<and>
+   (\<forall>s r X. (s @ [\<checkmark>(r)], {}) \<in> FAILURES P \<longrightarrow> (s, X - {\<checkmark>(r)}) \<in> FAILURES P) \<and>
+   (\<forall>s t. s \<in> DIVERGENCES P \<and> tF s \<and> ftF t \<longrightarrow> s @ t \<in> DIVERGENCES P) \<and>
+   (\<forall>s X. s \<in> DIVERGENCES P \<longrightarrow> (s, X) \<in> FAILURES P) \<and>
+   (\<forall>s r. s @ [\<checkmark>(r)] \<in> DIVERGENCES P \<longrightarrow> s \<in> DIVERGENCES P)\<close>
 
 
 lemma is_process_spec:
- "is_process P = 
-       (([],{}) \<in>  FAILURES P \<and>
-       (\<forall> s X. (s,X) \<in>  FAILURES P \<longrightarrow> front_tickFree s) \<and>
-       (\<forall> s t . (s @ t,{}) \<notin> FAILURES P \<or>   (s,{}) \<in> FAILURES P) \<and>
-       (\<forall> s X Y. (s,Y)  \<notin>  FAILURES P \<or> \<not>(X\<subseteq>Y) | (s,X) \<in> FAILURES P) \<and>
-       (\<forall> s X Y.(s,X) \<in> FAILURES P \<and> 
-       (\<forall> c. c \<in>  Y \<longrightarrow> ((s@[c],{}) \<notin>  FAILURES P)) \<longrightarrow>(s,X \<union> Y) \<in>  FAILURES P) \<and>
-       (\<forall> s X. (s@[tick],{}) \<in>  FAILURES P \<longrightarrow> (s,X - {tick}) \<in>  FAILURES P) \<and>
-       (\<forall> s t. s \<notin> DIVERGENCES P \<or> \<not>tickFree s \<or> \<not>front_tickFree t 
-                                 \<or> s @ t \<in> DIVERGENCES P) \<and>
-       (\<forall> s X. s \<notin> DIVERGENCES P \<or> (s,X) \<in>  FAILURES P) \<and>
-       (\<forall> s. s @ [tick] \<notin>  DIVERGENCES P \<or> s \<in>  DIVERGENCES P))"
-by(simp  only: is_process_def  HOL.nnf_simps(1)  HOL.nnf_simps(3) [symmetric]  
-                      HOL.imp_conjL[symmetric])
+  \<open>is_process P \<longleftrightarrow>
+  ([], {}) \<in> FAILURES P \<and>
+  (\<forall>s X. (s, X) \<in> FAILURES P \<longrightarrow> ftF s) \<and>
+  (\<forall>s t. (s @ t, {}) \<notin> FAILURES P \<or> (s, {}) \<in> FAILURES P) \<and>
+  (\<forall>s X Y. (s, Y) \<notin> FAILURES P \<or> \<not> X \<subseteq> Y \<or> (s, X) \<in> FAILURES P) \<and>
+  (\<forall>s X Y. (s, X) \<in> FAILURES P \<and> (\<forall>c. c \<in> Y \<longrightarrow> (s @ [c], {}) \<notin> FAILURES P)
+           \<longrightarrow> (s, X \<union> Y) \<in> FAILURES P) \<and>
+  (\<forall>s r X. (s @ [\<checkmark>(r)], {}) \<in> FAILURES P \<longrightarrow> (s, X - {\<checkmark>(r)}) \<in> FAILURES P) \<and>
+  (\<forall>s t. s \<notin> DIVERGENCES P \<or> \<not> tF s \<or> \<not> ftF t \<or> s @ t \<in> DIVERGENCES P) \<and>
+  (\<forall>s X. s \<notin> DIVERGENCES P \<or> (s, X) \<in> FAILURES P) \<and>
+  (\<forall>s r. s @ [\<checkmark>(r)] \<notin> DIVERGENCES P \<or> s \<in> DIVERGENCES P)\<close>
+  by (simp only: is_process_def HOL.nnf_simps(1)
+      HOL.nnf_simps(3) [symmetric] HOL.imp_conjL[symmetric])
 
 lemma Process_eqI :
-assumes A: "FAILURES P = FAILURES Q "
-assumes B: "DIVERGENCES P = DIVERGENCES Q"
-shows      "(P::'\<alpha> process\<^sub>0) = Q"
-apply(insert A B, unfold FAILURES_def DIVERGENCES_def) 
-apply(rule_tac t=P in surjective_pairing[symmetric,THEN subst])
-apply(rule_tac t=Q in surjective_pairing[symmetric,THEN subst])
-apply(simp)
-done
+  \<open>FAILURES P = FAILURES Q \<Longrightarrow> DIVERGENCES P = DIVERGENCES Q \<Longrightarrow> P = Q\<close>
+  by (metis DIVERGENCES_def FAILURES_def prod_eq_iff)
 
 lemma process_eq_spec:
-"((P::'a process\<^sub>0) = Q) = (FAILURES P = FAILURES Q \<and> DIVERGENCES P = DIVERGENCES Q)"
-apply(auto simp: FAILURES_def DIVERGENCES_def)
-apply(rule_tac t=P in surjective_pairing[symmetric,THEN subst])
-apply(rule_tac t=Q in surjective_pairing[symmetric,THEN subst])
-apply(simp)
-done
-
-lemma process_surj_pair: "(FAILURES P,DIVERGENCES P) = P"
-by(auto simp:FAILURES_def DIVERGENCES_def)
-
-lemma Fa_eq_imp_Tr_eq: "FAILURES P = FAILURES Q \<Longrightarrow> TRACES P = TRACES Q"
-by(auto simp:FAILURES_def DIVERGENCES_def TRACES_def) 
-
-lemma is_process1:  "is_process P \<Longrightarrow> ([],{})\<in> FAILURES P "
-by(auto simp: is_process_def)
-
-lemma is_process2: "is_process P \<Longrightarrow> \<forall> s X. (s,X) \<in> FAILURES P \<longrightarrow> front_tickFree s "
-by(simp only: is_process_spec, metis)
-
-lemma is_process3: "is_process P \<Longrightarrow> \<forall> s t. (s @ t,{}) \<in> FAILURES P \<longrightarrow> (s, {}) \<in> FAILURES P"
-by(simp only: is_process_spec, metis)
+  \<open>P = Q \<longleftrightarrow> FAILURES P = FAILURES Q \<and> DIVERGENCES P = DIVERGENCES Q\<close>
+  by (meson Process_eqI)
 
 
-lemma is_process3_S_pref: "\<lbrakk>is_process P; (t, {}) \<in> FAILURES P; s \<le> t\<rbrakk> \<Longrightarrow> (s, {}) \<in> FAILURES P"
-by(auto simp: le_list_def intro: is_process3 [rule_format])
+lemma process_surj_pair: \<open>(FAILURES P, DIVERGENCES P) = P\<close>
+  by(auto simp: FAILURES_def DIVERGENCES_def)
 
-lemma is_process4: "is_process P \<Longrightarrow> \<forall>s X Y. (s, Y) \<notin> FAILURES P \<or> \<not> X \<subseteq> Y \<or> (s, X) \<in> FAILURES P"
-by(simp only: is_process_spec, simp)
+lemma Fa_eq_imp_Tr_eq: \<open>FAILURES P = FAILURES Q \<Longrightarrow> TRACES P = TRACES Q\<close>
+  by (auto simp: FAILURES_def DIVERGENCES_def TRACES_def) 
 
-lemma is_process4_S: "\<lbrakk>is_process P; (s, Y) \<in> FAILURES P; X \<subseteq> Y\<rbrakk> \<Longrightarrow> (s, X) \<in> FAILURES P"
-by(drule is_process4, auto)
 
-lemma is_process4_S1: "\<lbrakk>is_process P; x \<in> FAILURES P; X \<subseteq> snd x\<rbrakk> \<Longrightarrow> (fst x, X) \<in> FAILURES P"
-by(drule is_process4_S, auto)
+
+lemma is_process1 : \<open>([], {}) \<in> FAILURES P\<close>
+  and is_process2 : \<open>(s, X) \<in> FAILURES P \<Longrightarrow> ftF s\<close>
+  and is_process3 : \<open>(s @ t, {}) \<in> FAILURES P \<Longrightarrow> (s, {}) \<in> FAILURES P\<close>
+  and is_process4 : \<open>\<lbrakk>is_process P; (s, Y) \<in> FAILURES P; X \<subseteq> Y\<rbrakk> \<Longrightarrow> (s, X) \<in> FAILURES P\<close>
+  and is_process5 : \<open>\<lbrakk>is_process P; (s, X) \<in> FAILURES P; \<forall>c. c \<in> Y \<longrightarrow> (s @ [c], {}) \<notin> FAILURES P\<rbrakk>
+                     \<Longrightarrow> (s, X \<union> Y) \<in> FAILURES P\<close>
+  and is_process6 : \<open>(s @ [\<checkmark>(r)], {}) \<in> FAILURES P \<Longrightarrow> (s, X - {\<checkmark>(r)}) \<in> FAILURES P\<close>
+  and is_process7 : \<open>\<lbrakk>s \<in> DIVERGENCES P; tF s; ftF t\<rbrakk> \<Longrightarrow> s @ t \<in> DIVERGENCES P\<close>
+  and is_process8 : \<open>s \<in> DIVERGENCES P \<Longrightarrow> (s, X) \<in> FAILURES P\<close>
+  and is_process9 : \<open>s @ [\<checkmark>(r)] \<in> DIVERGENCES P \<Longrightarrow> s \<in> DIVERGENCES P\<close>
+  if \<open>is_process P\<close>
+  using \<open>is_process P\<close> unfolding is_process_def by metis+
+
+
+(* 
+lemma is_process3_S_pref: \<open>\<lbrakk>is_process P; (t, {}) \<in> FAILURES P; s \<le> t\<rbrakk> \<Longrightarrow> (s, {}) \<in> FAILURES P\<close>
+  by (metis prefixE is_process3)
+
+lemma is_process4: \<open>is_process P \<Longrightarrow> \<forall>s X Y. (s, Y) \<notin> FAILURES P \<or> \<not> X \<subseteq> Y \<or> (s, X) \<in> FAILURES P\<close>
+  by (simp only: is_process_spec) simp
+
+lemma is_process4_S: \<open>\<lbrakk>is_process P; (s, Y) \<in> FAILURES P; X \<subseteq> Y\<rbrakk> \<Longrightarrow> (s, X) \<in> FAILURES P\<close>
+  by (drule is_process4, auto)
+
+lemma is_process4_S1: \<open>\<lbrakk>is_process P; x \<in> FAILURES P; X \<subseteq> snd x\<rbrakk> \<Longrightarrow> (fst x, X) \<in> FAILURES P\<close>
+  by (drule is_process4_S, auto)
 
 lemma is_process5:
-"is_process P \<Longrightarrow>
-    \<forall>sa X Y. (sa, X) \<in> FAILURES P \<and> (\<forall>c. c \<in> Y \<longrightarrow> (sa @ [c], {}) \<notin> FAILURES P) \<longrightarrow> (sa, X \<union> Y) \<in> FAILURES P"
-by(drule is_process_spec[THEN iffD1],metis)
+  \<open>is_process P \<Longrightarrow> \<forall>s X Y. (s, X) \<in> FAILURES P \<and> (\<forall>c. c \<in> Y \<longrightarrow> (s @ [c], {}) \<notin> FAILURES P)
+                            \<longrightarrow> (s, X \<union> Y) \<in> FAILURES P\<close>
+  by (drule is_process_spec[THEN iffD1],metis)
 
 lemma is_process5_S:
-"\<lbrakk>is_process P; (sa, X) \<in> FAILURES P; \<forall>c. c \<in> Y \<longrightarrow> (sa @ [c], {}) \<notin> FAILURES P\<rbrakk> \<Longrightarrow> (sa, X \<union> Y) \<in> FAILURES P"
-by(drule is_process5, metis)
+  \<open>\<lbrakk>is_process P; (sa, X) \<in> FAILURES P; \<forall>c. c \<in> Y \<longrightarrow> (sa @ [c], {}) \<notin> FAILURES P\<rbrakk>
+   \<Longrightarrow> (sa, X \<union> Y) \<in> FAILURES P\<close>
+  by (drule is_process5, metis)
 
 lemma is_process5_S1:
-"\<lbrakk>is_process P; (sa, X) \<in> FAILURES P; (sa, X \<union> Y) \<notin> FAILURES P\<rbrakk> \<Longrightarrow> \<exists>c. c \<in> Y \<and> (sa @ [c], {}) \<in> FAILURES P"
-by(erule contrapos_np, drule is_process5_S, simp_all)
+  \<open>\<lbrakk>is_process P; (sa, X) \<in> FAILURES P; (sa, X \<union> Y) \<notin> FAILURES P\<rbrakk>
+   \<Longrightarrow> \<exists>c. c \<in> Y \<and> (sa @ [c], {}) \<in> FAILURES P\<close>
+  by (erule contrapos_np, drule is_process5_S, simp_all)
 
-lemma is_process6: "is_process P \<Longrightarrow>  \<forall> s X. (s@[tick],{}) \<in> FAILURES P \<longrightarrow> (s,X-{tick}) \<in> FAILURES P"
-by(drule is_process_spec[THEN iffD1], metis)
+lemma is_process6: \<open>is_process P \<Longrightarrow> \<forall>s X. (s @ [\<checkmark>(r)], {}) \<in> FAILURES P \<longrightarrow> (s, X - {\<checkmark>(r)}) \<in> FAILURES P\<close>
+  by (drule is_process_spec[THEN iffD1], metis)
 
-lemma is_process6_S: "\<lbrakk>is_process P ;(s@[tick],{}) \<in> FAILURES P\<rbrakk> \<Longrightarrow>  (s,X-{tick}) \<in> FAILURES P"
-by(drule is_process6, metis)
+lemma is_process6_S: \<open>is_process P \<Longrightarrow> (s @ [\<checkmark>(r)], {}) \<in> FAILURES P \<Longrightarrow> (s, X - {\<checkmark>(r)}) \<in> FAILURES P\<close>
+  by (simp add: is_process6)
 
 lemma is_process7:
-"is_process P \<Longrightarrow> \<forall> s t. s \<notin> DIVERGENCES P \<or> \<not> tickFree s \<or> \<not> front_tickFree t \<or> s @ t \<in> DIVERGENCES P"
-by(drule is_process_spec[THEN iffD1], metis)
+  \<open>is_process P \<Longrightarrow> \<forall> s t. s \<notin> DIVERGENCES P \<or> \<not> tickFree s \<or> \<not> front_tickFree t \<or> s @ t \<in> DIVERGENCES P\<close>
+  by (drule is_process_spec[THEN iffD1], metis)
 
 lemma is_process7_S:
-"\<lbrakk> is_process P;s : DIVERGENCES P;tickFree s;front_tickFree t\<rbrakk> 
- \<Longrightarrow>  s @ t \<in> DIVERGENCES P"
-by(drule is_process7, metis)
+  \<open>is_process P \<Longrightarrow> s \<in> DIVERGENCES P \<Longrightarrow> tickFree s \<Longrightarrow>
+   front_tickFree t \<Longrightarrow> s @ t \<in> DIVERGENCES P\<close>
+  by (drule is_process7, metis)
 
-lemma is_process8: "is_process P \<Longrightarrow> \<forall>  s X. s \<notin> DIVERGENCES P \<or>  (s,X) \<in> FAILURES P"
-by(drule is_process_spec[THEN iffD1], metis)
+lemma is_process8: \<open>is_process P \<Longrightarrow> \<forall>s X. s \<notin> DIVERGENCES P \<or> (s, X) \<in> FAILURES P\<close>
+  by (drule is_process_spec[THEN iffD1], metis)
 
-lemma is_process8_S: "\<lbrakk> is_process P; s \<in> DIVERGENCES P \<rbrakk> \<Longrightarrow> (s,X)  \<in> FAILURES P"
-by(drule is_process8, metis)
+lemma is_process8_S: \<open>is_process P \<Longrightarrow> s \<in> DIVERGENCES P \<Longrightarrow> (s, X) \<in> FAILURES P\<close>
+  by (drule is_process8, metis)
 
-lemma is_process9: "is_process P \<Longrightarrow> \<forall>  s. s@[tick] \<notin> DIVERGENCES P \<or>  s \<in> DIVERGENCES P"
-by(drule is_process_spec[THEN iffD1], metis)
+lemma is_process9: \<open>is_process P \<Longrightarrow> \<forall>s. s @ [tick] \<notin> DIVERGENCES P \<or> s \<in> DIVERGENCES P\<close>
+  by (drule is_process_spec[THEN iffD1], metis)
 
-lemma is_process9_S: "\<lbrakk> is_process P;s@[tick] \<in> DIVERGENCES P \<rbrakk> \<Longrightarrow> s \<in> DIVERGENCES P"
-by(drule is_process9, metis)
+lemma is_process9_S: \<open>is_process P \<Longrightarrow> s @ [tick] \<in> DIVERGENCES P \<Longrightarrow> s \<in> DIVERGENCES P\<close>
+  by (drule is_process9, metis)
 
-lemma Failures_implies_Traces: " \<lbrakk>is_process P; (s, X) \<in> FAILURES P\<rbrakk> \<Longrightarrow> s \<in> TRACES P"
-by(simp add: TRACES_def, metis)
+lemma Failures_implies_Traces: \<open> \<lbrakk>is_process P; (s, X) \<in> FAILURES P\<rbrakk> \<Longrightarrow> s \<in> TRACES P\<close>
+  by( simp add: TRACES_def, metis)
 
 lemma is_process5_sing: 
-"\<lbrakk> is_process P ; (s,{x}) \<notin> FAILURES P;(s,{}) \<in> FAILURES P\<rbrakk> \<Longrightarrow> (s @ [x],{}) \<in> FAILURES P"
-by(drule_tac X="{}" in is_process5_S1, auto)
+  \<open>is_process P \<Longrightarrow> (s, {x}) \<notin> FAILURES P \<Longrightarrow> (s, {}) \<in> FAILURES P \<Longrightarrow> (s @ [x], {}) \<in> FAILURES P\<close>
+  by (drule_tac X = \<open>{}\<close> in is_process5_S1, auto)
 
 lemma is_process5_singT: 
-"\<lbrakk> is_process P ; (s,{x}) \<notin> FAILURES P;(s,{}) \<in> FAILURES P\<rbrakk>  \<Longrightarrow> s @ [x]  \<in> TRACES P"
-apply(drule is_process5_sing, auto)
-by(simp add: TRACES_def, auto)
+  \<open>is_process P \<Longrightarrow> (s, {x}) \<notin> FAILURES P \<Longrightarrow> (s, {}) \<in> FAILURES P \<Longrightarrow> s @ [x] \<in> TRACES P\<close>
+  by (drule is_process5_sing) (auto simp add: TRACES_def)
+ *)
 
-
-lemma front_trace_is_tickfree:
-assumes A: "is_process P" and B: "(t @ [tick],X) \<in> FAILURES P"
-shows     "tickFree t"
-proof -
-  have C: "front_tickFree(t @ [tick])" by(insert A B, drule is_process2, metis) 
-  show ?thesis  by(rule front_tickFree_implies_tickFree[OF C])   
-qed
-
-
-lemma trace_with_Tick_implies_tickFree_front : "\<lbrakk>is_process P; t @ [tick] \<in> TRACES P\<rbrakk> \<Longrightarrow> tickFree t"
-by(auto simp: TRACES_def intro: front_trace_is_tickfree)
+lemma trace_with_Tick_imp_tickFree_front :
+  \<open>is_process P \<Longrightarrow> t @ [\<checkmark>(r)] \<in> TRACES P \<Longrightarrow> tF t\<close>
+  by (simp add: TRACES_def) (meson front_tickFree_append_iff is_process2 neq_Nil_conv)
 
 
 section \<open> The Abstraction to the process-Type \<close>
 
-typedef 
-  '\<alpha> process = "{p :: '\<alpha> process\<^sub>0 . is_process p}"
+typedef ('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k = \<open>{p :: ('a, 'r) process\<^sub>0 . is_process p}\<close>
+  morphisms process\<^sub>0_of_process process_of_process\<^sub>0
 proof - 
-  have "({(s, X). s = []},{}) \<in> {p::'\<alpha> process\<^sub>0. is_process p}"
-    by(simp add: is_process_def  front_tickFree_def
-                 FAILURES_def TRACES_def DIVERGENCES_def )
+  have \<open>({(s, X). s = []}, {}) \<in> {p. is_process p}\<close>
+    by (simp add: DIVERGENCES_def FAILURES_def is_process_def)
   thus ?thesis by auto
 qed
 
-setup_lifting type_definition_process
+text \<open>Again, the old version without parameterized termination can be recovered
+      by considering \<^typ>\<open>('a, unit) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close>.\<close>
+
+type_synonym 'a process = \<open>('a, unit) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close>
+
+setup_lifting type_definition_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k
 
 text \<open>This is where we differ from previous versions: we lift definitions 
       using Isabelle's machinery instead of doing it by hand.\<close>
 
-lift_definition Failures :: "'\<alpha> process \<Rightarrow> ('\<alpha> failure set)" (\<open>\<F>\<close>)
-  is "\<lambda>P. FAILURES P" .
+lift_definition Failures :: \<open>('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k \<Rightarrow> ('a, 'r) failure\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k set\<close> (\<open>\<F>\<close>) is FAILURES .
+
+lift_definition Traces :: \<open>('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k \<Rightarrow> ('a, 'r) trace\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k set\<close> (\<open>\<T>\<close>) is TRACES .
+
+lift_definition Divergences :: \<open>('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k \<Rightarrow> ('a, 'r) divergence\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k set\<close> (\<open>\<D>\<close>) is DIVERGENCES .
+
+lift_definition Refusals :: \<open>('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k \<Rightarrow> ('a, 'r) refusal\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k set\<close> (\<open>\<R>\<close>) is REFUSALS .
+
+lemma Refusals_def_bis : \<open>\<R> P = {X. ([], X) \<in> \<F> P}\<close>
+  by (simp add: Failures.rep_eq REFUSALS_def Refusals.rep_eq)
+
+lemma Refusals_iff : \<open>X \<in> \<R> P \<longleftrightarrow> ([], X) \<in> \<F> P\<close>
+  by (simp add: Failures_def Refusals_def_bis)
+
+lemma T_def_spec: \<open>\<T> P = {tr. \<exists>f. f \<in> \<F> P \<and> tr = fst f}\<close>
+  by (simp add: Traces_def TRACES_def Failures_def)
+
+lemma T_F_spec : \<open>(t, {}) \<in> \<F> P \<longleftrightarrow> t \<in> \<T> P\<close>
+  by transfer (auto simp add: TRACES_def intro: is_process4)
 
 
-lift_definition Traces :: "'\<alpha> process \<Rightarrow>  ('\<alpha> trace set)"   (\<open>\<T>\<close>)
-  is "\<lambda>P. TRACES P" .
+lemma Process_spec: \<open>process_of_process\<^sub>0 (\<F> P, \<D> P) = P\<close>
+  by (simp add: Divergences.rep_eq Failures.rep_eq
+      process\<^sub>0_of_process_inverse process_surj_pair)
 
 
-lift_definition Divergences :: "'\<alpha> process \<Rightarrow> '\<alpha> divergence"     (\<open>\<D>\<close>)
-  is "\<lambda>P. DIVERGENCES P" .
-
-
-lift_definition Refusals :: "'\<alpha> process \<Rightarrow> ('\<alpha> refusal set)"  (\<open>\<R>\<close>)
-  is "\<lambda>P. REFUSALS P" .
-
-
-
-lemma is_process_Rep : "is_process (Rep_process P)"
-  using Rep_process by blast
-
-
-lemma Process_spec: "Abs_process (\<F> P, \<D> P) = P"
-  by (simp add: Divergences.rep_eq Failures.rep_eq Rep_process_inverse process_surj_pair)
-
-
-lemma Process_eq_spec: "(P = Q) = (\<F> P = \<F> Q \<and> \<D> P = \<D> Q)"
+lemma Process_eq_spec: \<open>P = Q \<longleftrightarrow> \<F> P = \<F> Q \<and> \<D> P = \<D> Q\<close>
   by (metis Process_spec)
-  
 
-lemma Process_eq_spec_optimized: "(P = Q) = (\<D> P = \<D> Q \<and> (\<D> P = \<D> Q \<longrightarrow> \<F> P = \<F> Q))"
+
+lemma Process_eq_spec_optimized: \<open>P = Q \<longleftrightarrow> \<D> P = \<D> Q \<and> (\<D> P = \<D> Q \<longrightarrow> \<F> P = \<F> Q)\<close>
   using Process_eq_spec by auto
 
 lemma is_processT:
-"([],{}) \<in> \<F> P \<and>
- (\<forall> s X. (s,X) \<in> \<F> P \<longrightarrow> front_tickFree s) \<and>
- (\<forall> s t .(s@t,{}) \<in> \<F> P \<longrightarrow> (s,{}) \<in> \<F> P) \<and>
- (\<forall> s X Y.(s,Y) \<in> \<F> P \<and> (X\<subseteq>Y) \<longrightarrow> (s,X) \<in> \<F> P) \<and>
- (\<forall> s X Y.(s,X) \<in> \<F> P \<and> (\<forall>c. c \<in> Y \<longrightarrow>((s@[c],{})\<notin> \<F> P)) \<longrightarrow> (s,X \<union> Y) \<in> \<F> P) \<and>
- (\<forall> s X. (s@[tick],{}) \<in> \<F> P \<longrightarrow> (s, X-{tick}) \<in> \<F> P) \<and>
- (\<forall> s t. s \<in> \<D> P \<and> tickFree s \<and> front_tickFree t \<longrightarrow> s @ t \<in> \<D> P) \<and>
- (\<forall> s X. s \<in> \<D> P \<longrightarrow> (s,X) \<in> \<F> P) \<and>
- (\<forall> s. s@[tick] \<in> \<D> P \<longrightarrow> s \<in> \<D> P)" 
-  apply (simp add: Divergences.rep_eq Failures.rep_eq)
-  by (meson is_process_spec[of \<open>Rep_process P\<close>, simplified Rep_process[simplified]])
-  
- 
+  \<open>([], {}) \<in> \<F> P \<and>
+   (\<forall>s X. (s, X) \<in> \<F> P \<longrightarrow> ftF s) \<and>
+   (\<forall>s t. (s @ t, {}) \<in> \<F> P \<longrightarrow> (s, {}) \<in> \<F> P) \<and>
+   (\<forall>s X Y. (s, Y) \<in> \<F> P \<and> X \<subseteq> Y \<longrightarrow> (s, X) \<in> \<F> P) \<and>
+   (\<forall>s X Y. (s, X) \<in> \<F> P \<and> (\<forall>c. c \<in> Y \<longrightarrow> (s @ [c], {}) \<notin> \<F> P) \<longrightarrow> (s, X \<union> Y) \<in> \<F> P) \<and>
+   (\<forall>s r X. (s @ [\<checkmark>(r)], {}) \<in> \<F> P \<longrightarrow> (s, X - {\<checkmark>(r)}) \<in> \<F> P) \<and>
+   (\<forall>s t. s \<in> \<D> P \<and> tF s \<and> ftF t \<longrightarrow> s @ t \<in> \<D> P) \<and>
+   (\<forall>s r X. s \<in> \<D> P \<longrightarrow> (s, X) \<in> \<F> P) \<and> (\<forall>s. s @ [\<checkmark>(r)] \<in> \<D> P \<longrightarrow> s \<in> \<D> P)\<close>
+  by transfer (unfold is_process_def, fast)
+
+text \<open>When the second type is set to \<^typ>\<open>unit\<close>, we recover the classical definition
+      as defined in the book by Roscoe.\<close>
+
+lemma is_processT_unit:
+  \<open>([], {}) \<in> \<F> P \<and>
+   (\<forall>s X. (s, X) \<in> \<F> P \<longrightarrow> ftF s) \<and>
+   (\<forall>s t. (s @ t, {}) \<in> \<F> P \<longrightarrow> (s, {}) \<in> \<F> P) \<and>
+   (\<forall>s X Y. (s, Y) \<in> \<F> P \<and> X \<subseteq> Y \<longrightarrow> (s, X) \<in> \<F> P) \<and>
+   (\<forall>s X Y. (s, X) \<in> \<F> P \<and> (\<forall>c. c \<in> Y \<longrightarrow> (s @ [c], {}) \<notin> \<F> P) \<longrightarrow> (s, X \<union> Y) \<in> \<F> P) \<and>
+   (\<forall>s X. (s @ [\<checkmark>], {}) \<in> \<F> P \<longrightarrow> (s, X - {\<checkmark>}) \<in> \<F> P) \<and>
+   (\<forall>s t. s \<in> \<D> P \<and> tF s \<and> ftF t \<longrightarrow> s @ t \<in> \<D> P) \<and>
+   (\<forall>s X. s \<in> \<D> P \<longrightarrow> (s, X) \<in> \<F> P) \<and> (\<forall>s. s @ [\<checkmark>] \<in> \<D> P \<longrightarrow> s \<in> \<D> P)\<close>
+  by transfer (unfold is_process_def, fast)
+
 
 lemma process_charn:
-  "([], {}) \<in> \<F> P \<and>
-    (\<forall>s X. (s, X) \<in> \<F> P \<longrightarrow> front_tickFree s) \<and>
-    (\<forall>s t. (s @ t, {}) \<notin> \<F> P \<or> (s, {}) \<in> \<F> P) \<and>
-    (\<forall>s X Y. (s, Y) \<notin> \<F> P \<or> \<not> X \<subseteq> Y \<or> (s, X) \<in> \<F> P) \<and>
-    (\<forall>s X Y. (s, X) \<in> \<F> P \<and> (\<forall>c. c \<in> Y \<longrightarrow> (s @ [c], {}) \<notin> \<F> P) \<longrightarrow> (s, X \<union> Y) \<in> \<F> P) \<and>
-    (\<forall>s X. (s @ [tick], {}) \<in> \<F> P \<longrightarrow> (s, X - {tick}) \<in> \<F> P) \<and>
-    (\<forall>s t. s \<notin> \<D> P \<or> \<not> tickFree s \<or> \<not> front_tickFree t \<or> s @ t \<in> \<D> P) \<and>
-    (\<forall>s X. s \<notin> \<D> P \<or> (s, X) \<in> \<F> P) \<and> (\<forall>s. s @ [tick] \<notin> \<D> P \<or> s \<in> \<D> P)"
-  (* by (meson is_processT) *)
-proof -
-  {
-    have A: "(\<forall>s t. (s @ t, {}) \<notin> \<F> P \<or>  (s, {}) \<in> \<F> P) = 
-      (\<forall>s t. (s @ t, {}) \<in> \<F> P \<longrightarrow> (s, {}) \<in> \<F> P)"
-      by metis
+  \<open>([], {}) \<in> \<F> P \<and>
+   (\<forall>s X. (s, X) \<in> \<F> P \<longrightarrow> ftF s) \<and>
+   (\<forall>s t. (s @ t, {}) \<notin> \<F> P \<or> (s, {}) \<in> \<F> P) \<and>
+   (\<forall>s X Y. (s, Y) \<notin> \<F> P \<or> \<not> X \<subseteq> Y \<or> (s, X) \<in> \<F> P) \<and>
+   (\<forall>s X Y. (s, X) \<in> \<F> P \<and> (\<forall>c. c \<in> Y \<longrightarrow> (s @ [c], {}) \<notin> \<F> P) \<longrightarrow> (s, X \<union> Y) \<in> \<F> P) \<and>
+   (\<forall>s r X. (s @ [\<checkmark>(r)], {}) \<in> \<F> P \<longrightarrow> (s, X - {\<checkmark>(r)}) \<in> \<F> P) \<and>
+   (\<forall>s t. s \<notin> \<D> P \<or> \<not> tF s \<or> \<not> ftF t \<or> s @ t \<in> \<D> P) \<and>
+   (\<forall>s r X. s \<notin> \<D> P \<or> (s, X) \<in> \<F> P) \<and> (\<forall>s. s @ [\<checkmark>(r)] \<notin> \<D> P \<or> s \<in> \<D> P)\<close>
+  by (meson is_processT)
 
-    have B : "(\<forall>s X Y. (s, Y) \<notin> \<F> P \<or> \<not> X \<subseteq> Y \<or> (s, X) \<in> \<F> P)  =
-      (\<forall>s X Y. (s, Y) \<in> \<F> P \<and> X \<subseteq> Y \<longrightarrow> (s, X) \<in> \<F> P) "
-      by metis
-
-    have C : "(\<forall>s t. s \<notin> \<D> P \<or> \<not> tickFree s \<or> 
-      \<not> front_tickFree t \<or> s @ t \<in> \<D> P)  =
-      (\<forall>s t. s \<in> \<D> P \<and> tickFree s \<and> front_tickFree t \<longrightarrow> s @ t \<in> \<D> P) "
-      by metis
-
-    have D:"(\<forall>s X. s \<notin> \<D> P \<or> (s, X) \<in> \<F> P) = (\<forall>s X. s \<in> \<D> P \<longrightarrow> (s, X) \<in> \<F> P)"
-      by metis
-
-    have E:"(\<forall>s. s @ [tick] \<notin> \<D> P \<or> s \<in> \<D> P) = 
-      (\<forall>s. s @ [tick] \<in> \<D> P \<longrightarrow> s \<in> \<D> P)"
-      by metis
-
-    note A B C D E 
-  }
-  note a = this
-  then
-  show ?thesis
-    apply(simp only: a)
-    apply(rule is_processT)
-    done
-qed
 
 
 text\<open> split of \verb+is_processT+: \<close>
 
-lemma is_processT1: "([], {}) \<in> \<F> P"
+lemma is_processT1          : \<open>([], {}) \<in> \<F> P\<close>
+  and is_processT1_TR       : \<open>[] \<in> \<T> P\<close>
+  and is_processT2          : \<open>(s, X) \<in> \<F> P \<Longrightarrow> ftF s\<close>
+  and is_processT2_TR       : \<open>s \<in> \<T> P \<Longrightarrow> ftF s\<close>
+  and is_processT3          : \<open>(s @ t, {}) \<in> \<F> P \<Longrightarrow> (s, {}) \<in> \<F> P\<close>
+  and is_processT3_pref     : \<open>(t, {}) \<in> \<F> P \<Longrightarrow> s \<le> t \<Longrightarrow> (s, {}) \<in> \<F> P\<close>
+  and is_processT3_TR       : \<open>t \<in> \<T> P \<Longrightarrow> s \<le> t \<Longrightarrow> s \<in> \<T> P\<close>
+  and is_processT3_TR_pref  : \<open>(t, {}) \<in> \<F> P \<Longrightarrow> s \<le> t \<Longrightarrow> (s, {}) \<in> \<F> P\<close>
+  and is_processT4          : \<open>(s, Y) \<in> \<F> P \<Longrightarrow> X \<subseteq> Y \<Longrightarrow> (s, X) \<in> \<F> P\<close> 
+  and is_processT5          : \<open>(s, X) \<in> \<F> P \<Longrightarrow> \<forall>c. c \<in> Y \<longrightarrow> (s @ [c], {}) \<notin> \<F> P
+                               \<Longrightarrow> (s, X \<union> Y) \<in> \<F> P\<close>
+  and is_processT6          : \<open>(s @ [\<checkmark>(r)], {}) \<in> \<F> P \<Longrightarrow> (s, X - {\<checkmark>(r)}) \<in> \<F> P\<close>
+  and is_processT6_TR       : \<open>s @ [\<checkmark>(r)] \<in> \<T> P \<Longrightarrow> (s, X - {\<checkmark>(r)}) \<in> \<F> P\<close>
+  and is_processT7          : \<open>s \<in> \<D> P \<Longrightarrow> tF s \<Longrightarrow> ftF t \<Longrightarrow> s @ t \<in> \<D> P\<close>
+  and is_processT8          : \<open>s \<in> \<D> P \<Longrightarrow> (s, X) \<in> \<F> P\<close>
+  and is_processT9          : \<open>s @ [\<checkmark>(r)] \<in> \<D> P \<Longrightarrow> s \<in> \<D> P\<close>
+  by (fold T_F_spec)
+    (use is_processT in \<open>metis [[metis_verbose=false]] prefixE\<close>)+
+
+lemma is_processT6_notin    : \<open>(s @ [\<checkmark>(r)], {}) \<in> \<F> P \<Longrightarrow> \<checkmark>(r) \<notin> X \<Longrightarrow> (s, X) \<in> \<F> P\<close>
+  and is_processT6_TR_notin : \<open>s @ [\<checkmark>(r)] \<in> \<T> P \<Longrightarrow> \<checkmark>(r) \<notin> X \<Longrightarrow> (s, X) \<in> \<F> P\<close>
+  by (metis Diff_insert_absorb is_processT6)
+    (metis Diff_insert_absorb is_processT6_TR)
+
+lemma is_processT3_TR_append : \<open>t @ u \<in> \<T> P \<Longrightarrow> t \<in> \<T> P\<close>
+  using is_processT3_TR by fastforce
+
+lemma nonempty_divE : 
+  \<open>\<D> P \<noteq> {} \<Longrightarrow> (\<And>t. tF t \<Longrightarrow> t \<in> \<D> P \<Longrightarrow> thesis) \<Longrightarrow> thesis\<close>
+  by (metis ex_in_conv front_tickFree_nonempty_append_imp is_processT2 is_processT8
+      is_processT9 neq_Nil_conv nonTickFree_n_frontTickFree)
+
+
+lemma div_butlast_when_non_tickFree_iff :
+  \<open>ftF s \<Longrightarrow> (if tF s then s else butlast s) \<in> \<D> P \<longleftrightarrow> s \<in> \<D> P\<close>
+  by (cases s rule: rev_cases; simp add: front_tickFree_iff_tickFree_butlast)
+    (metis front_tickFree_Cons_iff is_processT7 is_processT9 is_tick_def)
+
+
+(* lemma is_processT8_Pair: \<open>fst s \<in> \<D> P \<Longrightarrow> s \<in> \<F> P\<close>
+  by (metis eq_fst_iff is_processT8)
+
+lemma is_processT9: \<open>s @ [tick] \<in> \<D> P \<Longrightarrow> s \<in> \<D> P\<close>
+  by (insert process_charn[of P], metis)
+
+  by (simp add:process_charn)
+
+lemma is_processT2: \<open>(s, X) \<in> \<F> P \<Longrightarrow> front_tickFree s\<close>
 by(simp add:process_charn)
 
-lemma is_processT2: "\<forall>s X. (s, X) \<in> \<F> P \<longrightarrow> front_tickFree s"
-by(simp add:process_charn)
-
-lemma  is_processT2_TR : "\<forall>s. s \<in> \<T> P \<longrightarrow> front_tickFree s"
-  apply (simp add: Traces.rep_eq Traces_def TRACES_def Failures.rep_eq[symmetric])
-  using is_processT2 by blast
+lemma is_processT2_TR : \<open>s \<in> \<T> P \<Longrightarrow> front_tickFree s\<close>
+  by (simp add: Traces.rep_eq Traces_def TRACES_def Failures.rep_eq[symmetric])
+     (use is_processT2 in blast)
   
+(* 
+lemma is_proT2: \<open>(s, X) \<in> \<F> P \<Longrightarrow> s \<noteq> [] \<Longrightarrow> tick \<notin> set (tl (rev s))\<close>
+  using front_tickFree_def is_processT2 tickFree_def by blast
+ *)
 
-lemma is_proT2:
-  assumes A : " (s, X) \<in> \<F> P" and B : " s \<noteq> []"
-  shows   "tick \<notin> set (tl (rev s))"
-proof -
-  have C: "front_tickFree s" by(insert A B, simp add: is_processT2)
-  show ?thesis
-  by(insert C,simp add: B  tickFree_def front_tickFree_def) 
-qed
+lemma is_processT3 : \<open>(s @ t, {}) \<in> \<F> P \<Longrightarrow> (s, {}) \<in> \<F> P\<close>
+  by (metis process_charn)
 
-lemma is_processT3 : "\<forall>s t. (s @ t, {}) \<in> \<F> P \<longrightarrow> (s, {}) \<in> \<F> P"
-by(simp only: process_charn  HOL.nnf_simps(3), simp)
+lemma is_processT3_S_pref : \<open>(t, {}) \<in> \<F> P \<Longrightarrow> s \<le> t \<Longrightarrow> (s, {}) \<in> \<F> P\<close>
+  by (metis is_processT3 le_list_def)
 
-lemma is_processT3_S_pref : 
-"\<lbrakk>(t, {}) \<in> \<F> P; s \<le> t\<rbrakk> \<Longrightarrow> (s, {}) \<in> \<F> P"
-apply(simp only: le_list_def, safe)
-apply(erule is_processT3[rule_format])
-done
 
-lemma  is_processT4 : "\<forall>s X Y. (s, Y) \<in> \<F> P \<and> X \<subseteq> Y \<longrightarrow> (s, X) \<in> \<F> P"
-by(insert  process_charn [of P], metis)
+lemma  is_processT4 : \<open>(s, Y) \<in> \<F> P \<Longrightarrow> X \<subseteq> Y \<Longrightarrow> (s, X) \<in> \<F> P\<close>
+  by (meson process_charn)
 
-lemma is_processT4_S1 : "\<lbrakk>x \<in> \<F> P; X \<subseteq> snd x\<rbrakk> \<Longrightarrow> (fst x, X) \<in> \<F> P"
-apply(rule_tac Y = "snd x" in is_processT4[rule_format])
-apply simp
-done
+lemma is_processT4_S1 : \<open>x \<in> \<F> P \<Longrightarrow> X \<subseteq> snd x \<Longrightarrow> (fst x, X) \<in> \<F> P\<close>
+  by (metis is_processT4 prod.collapse)
 
-lemma is_processT5: 
-"\<forall>s X Y. (s, X) \<in> \<F> P \<and> (\<forall>c. c \<in> Y \<longrightarrow> (s @ [c], {}) \<notin> \<F> P) \<longrightarrow> (s, X \<union> Y) \<in> \<F> P"
-by(simp add: process_charn)
+lemma is_processT5:
+  \<open>(s, X) \<in> \<F> P \<Longrightarrow> \<forall>c. c \<in> Y \<longrightarrow> (s @ [c], {}) \<notin> \<F> P \<Longrightarrow> (s, X \<union> Y) \<in> \<F> P\<close>
+  by (simp add: process_charn)
 
 lemma is_processT5_S1: 
-"(s, X) \<in> \<F> P \<Longrightarrow> (s, X \<union> Y) \<notin> \<F> P \<Longrightarrow> \<exists>c. c \<in> Y \<and> (s @ [c], {}) \<in> \<F> P"
-by(erule contrapos_np, simp add: is_processT5[rule_format])
+  \<open>(s, X) \<in> \<F> P \<Longrightarrow> (s, X \<union> Y) \<notin> \<F> P \<Longrightarrow> \<exists>c. c \<in> Y \<and> (s @ [c], {}) \<in> \<F> P\<close>
+  by (erule contrapos_np, simp add: is_processT5)
 
-lemma is_processT5_S2: "(s, X) \<in> \<F> P \<Longrightarrow> (s @ [c], {}) \<notin> \<F> P \<Longrightarrow> (s, X \<union> {c}) \<in> \<F> P"
-by(rule is_processT5[rule_format,OF conjI], metis, safe)
+lemma is_processT5_S2: \<open>(s, X) \<in> \<F> P \<Longrightarrow> (s @ [c], {}) \<notin> \<F> P \<Longrightarrow> (s, X \<union> {c}) \<in> \<F> P\<close>
+  using is_processT5_S1 by blast
 
+lemma is_processT5_S2a: \<open>(s, X) \<in> \<F> P \<Longrightarrow> (s, X \<union> {c}) \<notin> \<F> P \<Longrightarrow> (s @ [c], {}) \<in> \<F> P\<close>
+  using is_processT5_S2 by blast
 
-lemma is_processT5_S2a: "(s, X) \<in> \<F> P \<Longrightarrow> (s, X \<union> {c}) \<notin> \<F> P \<Longrightarrow> (s @ [c], {}) \<in> \<F> P"
-apply(erule contrapos_np)
-apply(rule is_processT5_S2)
-apply(simp_all)
-done
+lemma  is_processT5_S3: \<open>(s, {}) \<in> \<F> P \<Longrightarrow> (s @ [c], {}) \<notin> \<F> P \<Longrightarrow> (s, {c}) \<in> \<F> P\<close>
+  using is_processT5_S2a by auto
 
-lemma  is_processT5_S3:
-assumes A: "(s, {}) \<in> \<F> P"
-and     B: "(s @ [c], {}) \<notin> \<F> P"
-shows      "(s, {c}) \<in> \<F> P"
-proof -
-   have C : " {c} = ({} Un {c})" by simp
-   show ?thesis
-   by(subst C, rule is_processT5_S2, simp_all add: A B)
-qed
    
-lemma is_processT5_S4: "(s, {}) \<in> \<F> P \<Longrightarrow> (s, {c}) \<notin> \<F> P \<Longrightarrow> (s @ [c], {}) \<in> \<F> P"
-by(erule contrapos_np, simp add: is_processT5_S3)
+lemma is_processT5_S4: \<open>(s, {}) \<in> \<F> P \<Longrightarrow> (s, {c}) \<notin> \<F> P \<Longrightarrow> (s @ [c], {}) \<in> \<F> P\<close>
+  by (erule contrapos_np, simp add: is_processT5_S3)
 
 
 lemma is_processT5_S5:
-"(s, X) \<in> \<F> P \<Longrightarrow> \<forall>c. c \<in> Y \<longrightarrow> (s, X \<union> {c}) \<notin> \<F> P \<Longrightarrow> \<forall>c. c \<in> Y \<longrightarrow> (s @ [c], {}) \<in> \<F> P"
-by(erule_tac Q = "\<forall>c. c \<in> Y \<longrightarrow> (s, X \<union> {c}) \<notin> \<F> P" in contrapos_pp, metis is_processT5_S2) 
+  \<open>(s, X) \<in> \<F> P \<Longrightarrow> \<forall>c. c \<in> Y \<longrightarrow> (s, X \<union> {c}) \<notin> \<F> P \<Longrightarrow>
+    \<forall>c. c \<in> Y \<longrightarrow> (s @ [c], {}) \<in> \<F> P\<close>
+  by (simp add: is_processT5_S2a)
 
-lemma is_processT5_S6: "([], {c}) \<notin> \<F> P \<Longrightarrow> ([c], {}) \<in> \<F> P"
-apply(rule_tac t="[c]" and s="[]@[c]" in subst, simp)
-apply(rule is_processT5_S4, simp_all add: is_processT1)
-done
+lemma is_processT5_S6: \<open>([], {c}) \<notin> \<F> P \<Longrightarrow> ([c], {}) \<in> \<F> P\<close>
+  by (metis append_self_conv2 is_processT1 is_processT5_S4)
 
-lemma is_processT6: "\<forall>s X. (s @ [tick], {}) \<in> \<F> P \<longrightarrow> (s, X - {tick}) \<in> \<F> P"
-by(simp add: process_charn)
+lemma is_processT6: \<open>(s @ [tick], {}) \<in> \<F> P \<Longrightarrow> (s, X - {tick}) \<in> \<F> P\<close>
+  by (simp add: process_charn)
 
+lemma is_processT7: \<open>s \<in> \<D> P \<Longrightarrow> tickFree s \<Longrightarrow> front_tickFree t \<Longrightarrow> s @ t \<in> \<D> P\<close>
+  by (insert process_charn[of P], metis)
 
-lemma is_processT7:  "\<forall>s t. s \<in> \<D> P \<and> tickFree s \<and> front_tickFree t \<longrightarrow> s @ t \<in> \<D> P"
-by(insert process_charn[of P], metis)
+lemma is_processT8: \<open>s \<in> \<D> P \<Longrightarrow> (s, X) \<in> \<F> P\<close>
+  by (insert process_charn[of P], metis)
 
-lemmas is_processT7_S = is_processT7[rule_format,OF conjI[THEN conjI, THEN  conj_commute[THEN iffD1]]]
+lemma is_processT8_Pair: \<open>fst s \<in> \<D> P \<Longrightarrow> s \<in> \<F> P\<close>
+  by (metis eq_fst_iff is_processT8)
 
-lemma is_processT8: "\<forall>s X. s \<in> \<D> P \<longrightarrow> (s, X) \<in> \<F> P"
-by(insert process_charn[of P], metis)
+lemma is_processT9: \<open>s @ [tick] \<in> \<D> P \<Longrightarrow> s \<in> \<D> P\<close>
+  by (insert process_charn[of P], metis)
 
-lemmas is_processT8_S = is_processT8[rule_format]
-
-lemma is_processT8_Pair: "fst s \<in> \<D> P \<Longrightarrow> s \<in> \<F> P"
-apply(subst surjective_pairing)
-apply(rule is_processT8_S, simp)
-done
-
-lemma is_processT9: "\<forall>s. s @ [tick] \<in> \<D> P \<longrightarrow> s \<in> \<D> P"
-by(insert process_charn[of P], metis)
-
-lemma is_processT9_S_swap: "s \<notin> \<D> P \<Longrightarrow> s @ [tick] \<notin> \<D> P"
-by(erule contrapos_nn,simp add: is_processT9[rule_format])
-
+lemma is_processT9_S_swap: \<open>s \<notin> \<D> P \<Longrightarrow> s @ [tick] \<notin> \<D> P\<close>
+  by (erule contrapos_nn, simp add: is_processT9)
+ *)
 
 section\<open> Some Consequences of the Process Characterization\<close>
 
-lemma no_Trace_implies_no_Failure: "s \<notin> \<T> P \<Longrightarrow> (s, {}) \<notin> \<F> P"
-by(simp add: Traces_def TRACES_def Failures_def)
+lemma F_T: \<open>(s, X) \<in> \<F> P \<Longrightarrow> s \<in> \<T> P\<close>
+  by (simp add: T_def_spec split_def, metis)
+
+lemma T_F: \<open>s \<in> \<T> P \<Longrightarrow> (s, {}) \<in> \<F> P\<close>
+  using is_processT4 by (auto simp add: T_def_spec)
+
+lemmas D_T = is_processT8 [THEN F_T]
+
+lemmas is_processT4_empty [elim!] = F_T [THEN T_F]
+
+
+(* 
+lemma no_Trace_implies_no_Failure: \<open>s \<notin> \<T> P \<Longrightarrow> (s, {}) \<notin> \<F> P\<close>
+  by (simp add: T_F_spec)
 
 lemmas  NT_NF = no_Trace_implies_no_Failure
 
-lemma T_def_spec: "\<T> P = {tr. \<exists>a. a \<in> \<F> P \<and> tr = fst a}"
-by(simp add: Traces_def TRACES_def Failures_def)
-
-lemma F_T: "(s, X) \<in> \<F> P \<Longrightarrow> s \<in> \<T> P"
-by(simp add: T_def_spec split_def, metis)
-
-lemma F_T1: "a \<in> \<F> P \<Longrightarrow> fst a \<in> \<T> P"
-by(rule_tac X="snd a" in F_T,simp)
 
 
-lemma T_F: "s \<in> \<T> P \<Longrightarrow> (s, {}) \<in> \<F> P"
-apply(auto simp: T_def_spec)
-apply(drule is_processT4_S1, simp_all)
-done
+lemma D_T_subset : \<open>\<D> P \<subseteq> \<T> P\<close> by(auto intro!:D_T)
 
-lemmas is_processT4_empty [elim!]= F_T [THEN T_F]
-
-lemma NF_NT: "(s, {}) \<notin> \<F> P \<Longrightarrow> s \<notin> \<T> P"
-  by(erule contrapos_nn, simp only: T_F)
-
-lemma  is_processT6_S1: "tick \<notin> X \<Longrightarrow> (s @ [tick], {}) \<in> \<F> P \<Longrightarrow> (s, X) \<in> \<F> P"
-by(subst Diff_triv[of X "{tick}", symmetric],
-   simp, erule is_processT6[rule_format])
-
-lemmas is_processT3_ST = T_F [THEN is_processT3[rule_format,THEN F_T]]
-
-lemmas is_processT3_ST_pref = T_F [THEN is_processT3_S_pref [THEN F_T]]
-
-lemmas is_processT3_SR = F_T [THEN T_F [THEN is_processT3[rule_format]]]
-
-lemmas D_T = is_processT8_S [THEN F_T]
-
-lemma D_T_subset : "\<D> P \<subseteq> \<T> P" by(auto intro!:D_T)
-
-lemma NF_ND : "(s, X) \<notin> \<F> P \<Longrightarrow> s \<notin> \<D> P"
-by(erule contrapos_nn, simp add: is_processT8_S)
+lemma NF_ND : \<open>(s, X) \<notin> \<F> P \<Longrightarrow> s \<notin> \<D> P\<close>
+  by (erule contrapos_nn, simp add: is_processT8)
 
 lemmas NT_ND = D_T_subset[THEN Set.contra_subsetD]
 
-lemma T_F_spec : "((t, {}) \<in> \<F> P) = (t \<in> \<T> P)"
-by(auto simp:T_F F_T)
+lemma F_T1: \<open>a \<in> \<F> P \<Longrightarrow> fst a \<in> \<T> P\<close>
+  by (rule_tac X=\<open>snd a\<close> in F_T, simp)
 
-lemma is_processT5_S7:  "t \<in> \<T> P \<Longrightarrow> (t, A) \<notin> \<F> P \<Longrightarrow> \<exists>x. x \<in> A \<and> t @ [x] \<in> \<T> P"
-apply(erule contrapos_np, simp)
-apply(rule is_processT5[rule_format, OF conjI,of _ "{}", simplified])
-apply(auto simp: T_F_spec)
-  done
+
+
+lemma NF_NT: \<open>(s, {}) \<notin> \<F> P \<Longrightarrow> s \<notin> \<T> P\<close>
+  by (erule contrapos_nn, simp only: T_F)
+
+lemma  is_processT6_S1: \<open>\<checkmark>(r) \<notin> X \<Longrightarrow> (s @ [\<checkmark>(r)], {}) \<in> \<F> P \<Longrightarrow> (s, X) \<in> \<F> P\<close>
+  by (metis Diff_insert_absorb is_processT6)
+
+lemmas is_processT3_ST = T_F [THEN is_processT3, THEN F_T]
+
+lemmas is_processT3_ST_pref = T_F [THEN is_processT3_S_pref, THEN F_T]
+
+lemmas is_processT3_SR = F_T [THEN T_F, THEN is_processT3]
+ *)
+
+
+
+
+lemma is_processT5_S7: \<open>t \<in> \<T> P \<Longrightarrow> (t, A) \<notin> \<F> P \<Longrightarrow> \<exists>x. x \<in> A \<and> t @ [x] \<in> \<T> P\<close>
+  by (metis T_F_spec is_processT5 sup_bot_left)
 
 lemma is_processT5_S7': 
-"(t, X) \<in> \<F> P \<Longrightarrow> (t, X \<union> A) \<notin> \<F> P \<Longrightarrow> \<exists>x. x \<in> A \<and> x \<notin> X \<and> t @ [x] \<in> \<T> P"
-  apply(erule contrapos_np, simp, subst Un_Diff_cancel[of X A, symmetric])
-  apply(rule is_processT5[rule_format])  
-  apply(auto simp: T_F_spec)
-  done
+  \<open>(t, X) \<in> \<F> P \<Longrightarrow> (t, X \<union> A) \<notin> \<F> P \<Longrightarrow> \<exists>x. x \<in> A \<and> x \<notin> X \<and> t @ [x] \<in> \<T> P\<close>
+  by (erule contrapos_np, subst Un_Diff_cancel[symmetric])
+    (rule is_processT5, auto simp: T_F_spec)
 
-lemma Nil_subset_T: "{[]} \<subseteq> \<T> P"
-by(auto simp: T_F_spec[symmetric] is_processT1)
+lemma trace_tick_continuation_or_all_tick_failuresE:
+  \<open>\<lbrakk>(s, {}) \<in> \<F> P; \<And>r. s @ [\<checkmark>(r)] \<in> \<T> P \<Longrightarrow> thesis; (s, range tick) \<in> \<F> P \<Longrightarrow> thesis\<rbrakk> \<Longrightarrow> thesis\<close>
+  by (metis F_T f_inv_into_f is_processT5_S7)
 
-lemma Nil_elem_T: "[] \<in> \<T> P"
-by(simp add: Nil_subset_T[THEN subsetD])
+(* lemma Nil_subset_T: \<open>{[]} \<subseteq> \<T> P\<close>
+  by (auto simp: T_F_spec[symmetric] is_processT1) *)
 
-lemmas D_imp_front_tickFree = is_processT8_S[THEN is_processT2[rule_format]]
+lemmas Nil_elem_T [simp] = is_processT1_TR
 
-lemma D_front_tickFree_subset : "\<D> P \<subseteq> Collect front_tickFree"
-by(auto simp: D_imp_front_tickFree)
-
-lemma F_D_part : "\<F> P = {(s, x). s \<in> \<D> P} \<union> {(s, x). s \<notin> \<D> P \<and> (s, x) \<in> \<F> P}"
-by(auto intro:is_processT8_Pair)
-
-lemma D_F : "{(s, x). s \<in> \<D> P} \<subseteq> \<F> P"
-by(auto intro:is_processT8_Pair)
-
-lemma append_T_imp_tickFree:  "t @ s \<in> \<T> P \<Longrightarrow> s \<noteq> [] \<Longrightarrow> tickFree t"
-by(frule is_processT2_TR[rule_format], 
-   simp add: front_tickFree_def tickFree_rev)
-
-corollary append_single_T_imp_tickFree : "t @ [a] \<in> \<T> P \<Longrightarrow> tickFree t"
-  by (simp add: append_T_imp_tickFree)
-
-lemma F_subset_imp_T_subset: "\<F> P \<subseteq> \<F> Q \<Longrightarrow> \<T> P \<subseteq> \<T> Q"
-by(auto simp: subsetD T_F_spec[symmetric])
-
-lemma is_processT6_S2: "tick \<notin> X \<Longrightarrow> [tick] \<in> \<T> P \<Longrightarrow> ([], X) \<in> \<F> P"
-by(erule is_processT6_S1, simp add: T_F_spec) 
-
-lemma is_processT9_tick: "[tick] \<in> \<D> P \<Longrightarrow> front_tickFree s \<Longrightarrow> s \<in> \<D> P"
-apply(rule append.simps(1) [THEN subst, of _ s])
-apply(rule is_processT7_S, simp_all)
-apply(rule is_processT9 [rule_format], simp)
-done
+lemmas F_imp_front_tickFree = is_processT2
+  and D_imp_front_tickFree = is_processT8[THEN is_processT2]
+  and T_imp_front_tickFree = T_F[THEN is_processT2]
 
 
-lemma T_nonTickFree_imp_decomp: "t \<in> \<T> P \<Longrightarrow> \<not> tickFree t \<Longrightarrow> \<exists>s. t = s @ [tick]"
-by(auto elim: is_processT2_TR[rule_format] nonTickFree_n_frontTickFree)
+lemma D_front_tickFree_subset : \<open>\<D> P \<subseteq> Collect ftF\<close>
+  by (auto simp: D_imp_front_tickFree)
+
+lemma F_D_part : \<open>\<F> P = {(s, x). s \<in> \<D> P} \<union> {(s, x). s \<notin> \<D> P \<and> (s, x) \<in> \<F> P}\<close>
+  by (auto simp add: is_processT8)
+
+lemma D_F : \<open>{(s, x). s \<in> \<D> P} \<subseteq> \<F> P\<close>
+  using F_D_part by blast
+
+lemma append_T_imp_tickFree:  \<open>t @ s \<in> \<T> P \<Longrightarrow> s \<noteq> [] \<Longrightarrow> tF t\<close>
+  by (meson front_tickFree_append_iff is_processT2_TR)
+
+lemma tick_T_F: \<open>t @ [\<checkmark>(r)] \<in> \<T> P \<Longrightarrow> (t @ [\<checkmark>(r)], X) \<in> \<F> P\<close>
+  by (meson append_T_imp_tickFree is_processT5_S7 list.discI non_tickFree_tick tickFree_append_iff)
+
+(* corollary append_single_T_imp_tickFree : \<open>t @ [a] \<in> \<T> P \<Longrightarrow> tickFree t\<close>
+  by (simp add: append_T_imp_tickFree) *)
+
+(* lemma F_subset_imp_T_subset: \<open>\<F> P \<subseteq> \<F> Q \<Longrightarrow> \<T> P \<subseteq> \<T> Q\<close>
+  by (auto simp: subsetD T_F_spec[symmetric]) *)
+
+(* lemma is_processT6_S2: \<open>\<checkmark>(r) \<notin> X \<Longrightarrow> [\<checkmark>(r)] \<in> \<T> P \<Longrightarrow> ([], X) \<in> \<F> P\<close>
+  by (metis Diff_insert_absorb append_Nil is_processT6_TR) *)
+
+lemma is_processT9_tick: \<open>[\<checkmark>(r)] \<in> \<D> P \<Longrightarrow> ftF s \<Longrightarrow> s \<in> \<D> P\<close>
+  by (metis append_Nil is_processT7 is_processT9 tickFree_Nil)
+
+lemma T_nonTickFree_imp_decomp: \<open>t \<in> \<T> P \<Longrightarrow> \<not> tF t \<Longrightarrow> \<exists>s r. t = s @ [\<checkmark>(r)]\<close>
+  by (simp add: is_processT2_TR nonTickFree_n_frontTickFree)
+
 
 
 section\<open> Process Approximation is a Partial Ordering, a Cpo, and a Pcpo \<close>
@@ -754,76 +799,78 @@ the \emph{refinement ordering} captures our intuition that a more concrete
 process is more deterministic and more defined than an abstract one.
 
 We start with the key-concepts of the approximation ordering, namely
-the predicates $min\_elems$ and $Ra$ (abbreviating \emph{refusals after}).
+the predicates $min\_elems$ and \<open>\<R>\<^sub>a\<close> (abbreviating \emph{refusals after}).
 The former provides just a set of minimal elements from a given set
 of elements of type-class $ord$ \ldots \<close>
 
-definition min_elems :: "('s::ord) set \<Rightarrow> 's set"
-  where   "min_elems X = {s \<in> X. \<forall>t. t \<in> X \<longrightarrow> \<not> (t < s)}"
+definition min_elems :: \<open>('s::ord) set \<Rightarrow> 's set\<close>
+  where   \<open>min_elems X \<equiv> {s \<in> X. \<forall>t \<in> X. \<not> (t < s)}\<close>
 
-lemma Nil_min_elems : "[] \<in> A \<Longrightarrow> [] \<in> min_elems A"
-by(simp add: min_elems_def)
+lemma Nil_min_elems : \<open>[] \<in> A \<Longrightarrow> [] \<in> min_elems A\<close>
+  by (simp add: min_elems_def)
 
-lemma min_elems_le_self[simp] : "(min_elems A) \<subseteq> A"
-by(auto simp: min_elems_def)
+lemma min_elems_le_self[simp] : \<open>(min_elems A) \<subseteq> A\<close>
+  by (auto simp: min_elems_def)
 
 lemmas elem_min_elems = Set.set_mp[OF min_elems_le_self]
 
-lemma min_elems_Collect_ftF_is_Nil : "min_elems (Collect front_tickFree) = {[]}"
-apply(auto simp: min_elems_def le_list_def)
-apply(drule front_tickFree_charn[THEN iffD1])
-apply(auto dest!: tickFree_implies_front_tickFree)
-done
+lemma min_elems_Collect_ftF_is_Nil : \<open>min_elems (Collect ftF) = {[]}\<close>
+  by (simp add: min_elems_def less_eq_list_def set_eq_iff)
+    (metis front_tickFree_charn nil_less nil_less2)
 
-lemma min_elems5 : 
-  assumes A: "(x::'a list) \<in> A"
-  shows      "\<exists>s\<le>x. s \<in> min_elems A"
+lemma min_elems5 : \<open>(s :: 'a list) \<in> A \<Longrightarrow> \<exists>t\<le>s. t \<in> min_elems A\<close>
 proof -
-   have * : "!! (x::'a list) (A::'a list set) (n::nat).
-                x \<in> A \<and> length x \<le> n \<longrightarrow> (\<exists>s\<le>x. s \<in> min_elems A)"
-            apply(rule_tac x=x in spec)
-            apply(rule_tac n=n in nat_induct) (* quirk in induct *)
-            apply(auto simp: Nil_min_elems)
-            apply(case_tac "\<exists> y.  y \<in> A \<and> y < x",auto)
-            apply(rename_tac A na x y, erule_tac x=y in allE, simp)
-            apply(erule impE,drule less_length_mono, arith)
-            apply(safe, rename_tac s, rule_tac x=s in exI,simp)
-            apply(rule_tac x=x in exI, simp add:min_elems_def)
-            done
-   show ?thesis by(rule_tac n="length x" in *[rule_format],simp add:A)
+  have * : \<open>x \<in> A \<Longrightarrow> length x \<le> n \<Longrightarrow> \<exists>s\<le>x. s \<in> min_elems A\<close> for x :: \<open>'a list\<close> and A n
+  proof (induct n arbitrary: x rule: nat_induct)
+    show \<open>x \<in> A \<Longrightarrow> length x \<le> 0 \<Longrightarrow> \<exists>s\<le>x. s \<in> min_elems A\<close> for x by (simp add: Nil_min_elems)
+  next
+    fix n x
+    assume \<open>x \<in> A\<close> \<open>length x \<le> Suc n\<close>
+    assume hyp : \<open>x \<in> A \<Longrightarrow> length x \<le> n \<Longrightarrow> \<exists>s\<le>x. s \<in> min_elems A\<close> for x
+    show \<open>\<exists>s\<le>x. s \<in> min_elems A\<close>
+    proof (cases \<open>\<exists>y \<in> A. y < x\<close>)
+      show \<open>\<exists>y\<in>A. y < x \<Longrightarrow> \<exists>s\<le>x. s \<in> min_elems A\<close>
+        by (elim bexE, frule hyp, drule less_length_mono, use \<open>length x \<le> Suc n\<close> in simp)
+          (meson dual_order.strict_trans2 less_list_def)
+    next
+      show \<open>\<not> (\<exists>y\<in>A. y < x) \<Longrightarrow> \<exists>s\<le>x. s \<in> min_elems A\<close>
+        using \<open>x \<in> A\<close> unfolding min_elems_def by auto
+    qed
+  qed
+  thus \<open>s \<in> A \<Longrightarrow> \<exists>t\<le>s. t \<in> min_elems A\<close> by auto
 qed
 
-lemma min_elems4: "A \<noteq> {} \<Longrightarrow> \<exists>s. (s :: 'a trace) \<in> min_elems A"
-by(auto dest: min_elems5)
+lemma min_elems4: \<open>A \<noteq> {} \<Longrightarrow> \<exists>s. (s :: ('a, 'r) trace\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k) \<in> min_elems A\<close>
+  by (auto dest: min_elems5)
 
-lemma min_elems_charn: "t \<in> A \<Longrightarrow> \<exists> t' r. t = (t' @ r) \<and> t' \<in> min_elems A"
-by(drule min_elems5[simplified le_list_def], auto)
+lemma min_elems_charn: \<open>t \<in> A \<Longrightarrow> \<exists> t' r. t = (t' @ r) \<and> t' \<in> min_elems A\<close>
+  by (meson prefixE min_elems5)
 
-lemmas min_elems_ex = min_elems_charn  (* Legacy *)
-
-lemma min_elems_no: "(x::'a list) \<in> min_elems A \<Longrightarrow> t \<in> A \<Longrightarrow> t \<le> x \<Longrightarrow> x = t" 
-  by (metis (no_types, lifting) less_list_def mem_Collect_eq min_elems_def)
+lemma min_elems_no: \<open>(s::'a list) \<in> min_elems A \<Longrightarrow> t \<in> A \<Longrightarrow> t \<le> s \<Longrightarrow> s = t\<close>
+  by (metis (mono_tags, lifting) mem_Collect_eq min_elems_def order_neq_le_trans)
 
 text\<open> \ldots while the second returns the set of possible
 refusal sets after a given trace $s$ and a given process
 $P$: \<close>
 
-definition Ra :: "['\<alpha> process, '\<alpha> trace] \<Rightarrow> ('\<alpha> refusal set)" (\<open>\<R>\<^sub>a\<close>)
-  where   "\<R>\<^sub>a P s = {X. (s, X) \<in> \<F> P}"
+definition Refusals_after :: \<open>[('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k, ('a, 'r) trace\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k] \<Rightarrow> ('a, 'r) refusal\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k set\<close> (\<open>\<R>\<^sub>a\<close>)
+  where   \<open>\<R>\<^sub>a P tr \<equiv> {ref. (tr, ref) \<in> \<F> P}\<close>
 
 text\<open> In the following, we link the process theory to the underlying 
 fixpoint/domain theory of HOLCF by identifying the approximation ordering 
 with HOLCF's pcpo's. \<close>
 
 instantiation 
-   process  ::  ("type") below     
+  process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k  ::  (type, type) below     
 begin
 text\<open> declares approximation ordering $\_ \sqsubseteq \_$ also written 
         \verb+_ << _+. \<close>
 
-definition le_approx_def : "P \<sqsubseteq> Q \<equiv> \<D> Q \<subseteq> \<D> P \<and>
+(* TODO: rename this with \<open>below\<close> ? *)
+
+definition le_approx_def : \<open>P \<sqsubseteq> Q \<equiv> \<D> Q \<subseteq> \<D> P \<and>
                                     (\<forall>s. s \<notin> \<D> P \<longrightarrow> \<R>\<^sub>a P s = \<R>\<^sub>a Q s) \<and> 
-                                     min_elems (\<D> P) \<subseteq> \<T> Q"
+                                     min_elems (\<D> P) \<subseteq> \<T> Q\<close>
 
 text\<open> The approximation ordering captures the fact that more concrete
 processes should be more defined by ordering the divergence sets
@@ -837,276 +884,185 @@ instance ..
 end
 
 
-lemma le_approx1: "P\<sqsubseteq>Q \<Longrightarrow> \<D> Q \<subseteq> \<D> P"
-by(simp add: le_approx_def)
+lemma le_approx1: \<open>P \<sqsubseteq> Q \<Longrightarrow> \<D> Q \<subseteq> \<D> P\<close>
+  by (simp add: le_approx_def)
 
 
-lemma le_approx2: "\<lbrakk> P\<sqsubseteq>Q; s \<notin> \<D> P\<rbrakk> \<Longrightarrow> (s,X) \<in> \<F> Q = ((s,X) \<in> \<F> P)" 
-by(auto simp: Ra_def le_approx_def)
+lemma le_approx2: \<open>P \<sqsubseteq> Q \<Longrightarrow> s \<notin> \<D> P \<Longrightarrow> ((s, X) \<in> \<F> Q) = ((s, X) \<in> \<F> P)\<close>
+  by (auto simp: Refusals_after_def le_approx_def)
 
 
-lemma le_approx3: "P \<sqsubseteq> Q \<Longrightarrow> min_elems(\<D> P) \<subseteq> \<T> Q"
-by(simp add: le_approx_def)
+lemma le_approx3: \<open>P \<sqsubseteq> Q \<Longrightarrow> min_elems(\<D> P) \<subseteq> \<T> Q\<close>
+  by (simp add: le_approx_def)
 
-lemma le_approx2T: "\<lbrakk> P\<sqsubseteq>Q; s \<notin> \<D> P\<rbrakk> \<Longrightarrow>  s \<in> \<T> Q = (s \<in> \<T> P)" 
-by(auto simp: le_approx2 T_F_spec[symmetric])
+lemma le_approx2T: \<open>P \<sqsubseteq> Q \<Longrightarrow> s \<notin> \<D> P \<Longrightarrow> s \<in> \<T> Q \<longleftrightarrow> s \<in> \<T> P\<close>
+  by (auto simp: le_approx2 T_F_spec[symmetric])
 
-lemma le_approx_lemma_F : "P\<sqsubseteq>Q \<Longrightarrow> \<F> Q \<subseteq> \<F> P"
-apply(subst F_D_part[of Q], subst F_D_part[of P])
-apply(auto simp:le_approx_def Ra_def min_elems_def)
-done
+lemma le_approx_lemma_F : \<open>P \<sqsubseteq> Q \<Longrightarrow> \<F> Q \<subseteq> \<F> P\<close>
+  by (meson le_approx2 process_charn subrelI)
 
 lemmas order_lemma = le_approx_lemma_F
 
-lemma le_approx_lemma_T: "P\<sqsubseteq>Q \<Longrightarrow> \<T> Q \<subseteq> \<T> P"
-by(auto dest!:le_approx_lemma_F simp: T_F_spec[symmetric])
+lemma le_approx_lemma_T: \<open>P \<sqsubseteq> Q \<Longrightarrow> \<T> Q \<subseteq> \<T> P\<close>
+  by(auto dest!:le_approx_lemma_F simp: T_F_spec[symmetric])
 
-lemma proc_ord2a :  " P \<sqsubseteq> Q \<Longrightarrow> s \<notin> \<D> P \<Longrightarrow> ((s, X) \<in> \<F> P) = ((s, X) \<in> \<F> Q)"
-by(auto simp: le_approx_def Ra_def)
+lemma proc_ord2a : \<open>P \<sqsubseteq> Q \<Longrightarrow> s \<notin> \<D> P \<Longrightarrow> (s, X) \<in> \<F> P \<longleftrightarrow> (s, X) \<in> \<F> Q\<close>
+  by (auto simp: le_approx_def Refusals_after_def)
 
 
-instance
-   process :: ("type") po
-proof
-   fix P::"'\<alpha> process"
-   show "P \<sqsubseteq> P" by(auto simp: le_approx_def min_elems_def elim: Process.D_T)
- next
-   fix P Q ::"'\<alpha> process" 
-   assume A:"P \<sqsubseteq> Q" and B:"Q \<sqsubseteq> P" thus "P = Q"
-   apply(insert A[THEN le_approx1] B[THEN le_approx1])
-   apply(insert A[THEN le_approx_lemma_F] B[THEN le_approx_lemma_F])
-   by(auto simp: Process_eq_spec)
- next
-   fix P Q R ::"'\<alpha> process" 
-   assume A: "P \<sqsubseteq> Q" and B: "Q \<sqsubseteq> R" thus "P \<sqsubseteq> R" 
-   proof -
-      have C : "\<D> R \<subseteq> \<D> P" 
-               by(insert A[THEN le_approx1] B[THEN le_approx1], auto)
-      have D : "\<forall>s. s \<notin> \<D> P \<longrightarrow> {X. (s, X) \<in> \<F> P} = {X. (s, X) \<in> \<F> R}" 
-               apply(rule allI, rule impI, rule set_eqI, simp)
-               apply(frule A[THEN le_approx1, THEN Set.contra_subsetD])
-               apply(frule B[THEN le_approx1, THEN Set.contra_subsetD])
-               apply(drule A[THEN le_approx2], drule B[THEN le_approx2]) 
-               apply auto
-               done
-      have E : "min_elems (\<D> P) \<subseteq> \<T> R"
-               apply(insert B[THEN le_approx3] A[THEN le_approx3] )
-               apply(insert B[THEN le_approx_lemma_T] A[THEN le_approx1] ) 
-               apply(rule subsetI, simp add: min_elems_def, auto)
-               apply(rename_tac x, case_tac "x \<in> \<D> Q")
-               apply(drule_tac B = "\<T> R" and t=x 
-                     in subset_iff[THEN iffD1,rule_format], auto)
-               apply(subst B [THEN le_approx2T],simp)
-               apply(rename_tac x, drule_tac B = "\<T> Q" and t=x 
-                     in subset_iff[THEN iffD1,rule_format],auto)
-               done
-      show ?thesis
-      by(insert C D E, simp add: le_approx_def Ra_def)
-   qed
+instance process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k :: (type, type) po
+proof intro_classes
+  show \<open>P \<sqsubseteq> P\<close> for P :: \<open>('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close>
+    by (metis D_T elem_min_elems le_approx_def subsetI)
+next
+  show \<open>P \<sqsubseteq> Q \<Longrightarrow> Q \<sqsubseteq> P \<Longrightarrow> P = Q\<close> for P Q :: \<open>('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close>
+    by (simp add: Process_eq_spec le_approx1 le_approx_lemma_F subset_antisym)
+next
+  fix P Q R :: \<open>('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close>
+  assume \<open>P \<sqsubseteq> Q\<close> and \<open>Q \<sqsubseteq> R\<close>
+  show \<open>P \<sqsubseteq> R\<close> 
+  proof (unfold le_approx_def, intro conjI allI impI)
+    show \<open>\<D> R \<subseteq> \<D> P\<close> by (meson \<open>P \<sqsubseteq> Q\<close> \<open>Q \<sqsubseteq> R\<close> dual_order.trans le_approx1)
+  next
+    show \<open>s \<notin> \<D> P \<Longrightarrow> \<R>\<^sub>a P s = \<R>\<^sub>a R s\<close> for s
+      by (metis \<open>P \<sqsubseteq> Q\<close> \<open>Q \<sqsubseteq> R\<close> le_approx_def subsetD)
+  next
+    from \<open>P \<sqsubseteq> Q\<close>[THEN le_approx1]  \<open>P \<sqsubseteq> Q\<close>[THEN le_approx3]
+      \<open>Q \<sqsubseteq> R\<close>[THEN le_approx2T] \<open>Q \<sqsubseteq> R\<close>[THEN le_approx3]
+    show \<open>min_elems (\<D> P) \<subseteq> \<T> R\<close>
+      by (simp add: min_elems_def subset_iff) blast
+  qed
 qed
+
 
 text\<open> At this point, we inherit quite a number of facts from the underlying
 HOLCF theory, which comprises a library of facts such as \verb+chain+,
 \verb+directed+(sets), upper bounds and least upper bounds, etc. \<close>
 
-
 text\<open>
 Some facts from the theory of complete partial orders:
 \begin{itemize}
-\item \verb+Cpo.chainE+ : @{thm "Cpo.chainE"}
-\item \verb+Cpo.chain_mono+ : @{thm "Cpo.chain_mono"}
-\item \verb+Cpo.is_ubD+ : @{thm "Cpo.is_ubD"}
-\item \verb+Cpo.ub_rangeI+ : \\ @{thm "Cpo.ub_rangeI"}
-\item \verb+Cpo.ub_imageD+ : @{thm "Cpo.ub_imageD"}
-\item \verb+Cpo.is_ub_upward+ : @{thm "Cpo.is_ub_upward"}
-\item \verb+Cpo.is_lubD1+ : @{thm "Cpo.is_lubD1"}
-\item \verb+Cpo.is_lubI+ : @{thm "Cpo.is_lubI"}
-\item \verb+Cpo.is_lub_maximal+ : @{thm "Cpo.is_lub_maximal"}
-\item \verb+Cpo.is_lub_lub+ : @{thm "Cpo.is_lub_lub"}
-\item \verb+Cpo.is_lub_range_shift+: \\ @{thm "Cpo.is_lub_range_shift"}
-\item \verb+Cpo.is_lub_rangeD1+: @{thm "Cpo.is_lub_rangeD1"}
-\item \verb+Cpo.lub_eqI+: @{thm "Cpo.lub_eqI"}
-\item \verb+Cpo.is_lub_unique+:@{thm "Cpo.is_lub_unique"}
+\item \verb+po_class.chainE+ : @{thm po_class.chainE}
+\item \verb+po_class.chain_mono+ : @{thm po_class.chain_mono}
+\item \verb+po_class.is_ubD+ : @{thm po_class.is_ubD}
+\item \verb+po_class.ub_rangeI+ : \\ @{thm po_class.ub_rangeI}
+\item \verb+po_class.ub_imageD+ : @{thm po_class.ub_imageD}
+\item \verb+po_class.is_ub_upward+ : @{thm po_class.is_ub_upward}
+\item \verb+po_class.is_lubD1+ : @{thm po_class.is_lubD1}
+\item \verb+po_class.is_lubI+ : @{thm po_class.is_lubI}
+\item \verb+po_class.is_lub_maximal+ : @{thm po_class.is_lub_maximal}
+\item \verb+po_class.is_lub_lub+ : @{thm po_class.is_lub_lub}
+\item \verb+po_class.is_lub_range_shift+: \\ @{thm po_class.is_lub_range_shift}
+\item \verb+po_class.is_lub_rangeD1+: @{thm po_class.is_lub_rangeD1}
+\item \verb+po_class.lub_eqI+: @{thm po_class.lub_eqI}
+\item \verb+po_class.is_lub_unique+:@{thm po_class.is_lub_unique}
 \end{itemize}
 \<close>
 
 
-definition lim_proc :: "('\<alpha> process) set \<Rightarrow> '\<alpha> process"
-  where   "lim_proc (X) = Abs_process (\<Inter> (\<F> ` X), \<Inter> (\<D> ` X))"
-
-lemma min_elems3: " s @ [c] \<in> \<D> P \<Longrightarrow> s @ [c] \<notin> min_elems (\<D> P) \<Longrightarrow> s \<in> \<D> P"
-apply(auto simp: min_elems_def le_list_def less_list_def)
-apply(rename_tac t r) 
-apply(subgoal_tac "t \<le> s")
-apply(subgoal_tac "r \<noteq> []")
-apply(simp add: le_list_def)
-apply(auto intro!: is_processT7_S append_eq_first_pref_spec)
-apply(auto dest!: D_T)
-apply(simp_all only: append_assoc[symmetric],
-      drule append_T_imp_tickFree,
-      simp_all add: tickFree_implies_front_tickFree)+
-done
-
-lemma min_elems1: "s \<notin> \<D> P \<Longrightarrow> s @ [c] \<in> \<D> P \<Longrightarrow> s @ [c] \<in> min_elems (\<D> P)"
-  by(erule contrapos_np, auto elim!: min_elems3)
-
-lemma min_elems2: "s \<notin> \<D> P \<Longrightarrow> s @ [c] \<in> \<D> P \<Longrightarrow> P \<sqsubseteq> S \<Longrightarrow> Q \<sqsubseteq> S \<Longrightarrow> (s @ [c], {}) \<in> \<F> Q"
-  apply(frule_tac P=Q and Q=S in le_approx_lemma_T)
-  apply(simp add: T_F_spec)
-  apply(rule_tac A="\<T> S" in subsetD, assumption)
-  apply(rule_tac A="min_elems(\<D> P)" in subsetD) 
-  apply(simp_all add: le_approx_def min_elems1)
-done
-
-lemma min_elems6: "s \<notin> \<D> P \<Longrightarrow> s @ [c] \<in> \<D> P \<Longrightarrow> P \<sqsubseteq> S \<Longrightarrow> (s @ [c], {}) \<in> \<F> S"
-by(auto intro!: min_elems2)
-
-lemma ND_F_dir2: "s \<notin> \<D> P \<Longrightarrow> (s, {}) \<in> \<F> P \<Longrightarrow> P \<sqsubseteq> S \<Longrightarrow> Q \<sqsubseteq> S \<Longrightarrow> (s, {}) \<in> \<F> Q"
-  apply(frule_tac P=Q and Q=S in le_approx_lemma_T)
-  apply(simp add: le_approx_def Ra_def T_F_spec, safe)
-  apply((erule_tac x=s in allE)+,simp)
-  apply(drule_tac x="{}" in eqset_imp_iff, auto simp: T_F_spec)
-done \<comment>\<open>orig version\<close>
-
-lemma ND_F_dir2': "s \<notin> \<D> P \<Longrightarrow> s \<in> \<T> P \<Longrightarrow> P \<sqsubseteq> S \<Longrightarrow> Q \<sqsubseteq> S \<Longrightarrow> s \<in> \<T> Q"
-  apply(frule_tac P=Q and Q=S in le_approx_lemma_T)
-  apply(simp add: le_approx_def Ra_def T_F_spec, safe)
-  apply((erule_tac x=s in allE)+,simp)
-  apply(drule_tac x="{}" in eqset_imp_iff, auto simp: T_F_spec)
-done
+lemma min_elems3: \<open>s @ [c] \<in> \<D> P \<Longrightarrow> s @ [c] \<notin> min_elems (\<D> P) \<Longrightarrow> s \<in> \<D> P\<close>
+  by (simp add: min_elems_def less_eq_list_def less_list_def)
+    (metis D_imp_front_tickFree append.right_neutral front_tickFree_append_iff
+      front_tickFree_dw_closed is_processT7 prefix_def)
 
 
-lemma chain_lemma: "\<lbrakk>chain S\<rbrakk> \<Longrightarrow> S i \<sqsubseteq> S k \<or> S k \<sqsubseteq> S i"
-by(case_tac "i \<le> k", auto intro:chain_mono chain_mono_less)
- 
+lemma min_elems1: \<open>s \<notin> \<D> P \<Longrightarrow> s @ [c] \<in> \<D> P \<Longrightarrow> s @ [c] \<in> min_elems (\<D> P)\<close>
+  using min_elems3 by blast
 
-lemma is_process_REP_LUB: 
-  assumes chain: "chain S"
-  shows "is_process (\<Inter> (\<F> ` range S), \<Inter> (\<D> ` range S))"
+lemma min_elems2: \<open>s \<notin> \<D> P \<Longrightarrow> s @ [c] \<in> \<D> P \<Longrightarrow> P \<sqsubseteq> S \<Longrightarrow> Q \<sqsubseteq> S \<Longrightarrow> (s @ [c], {}) \<in> \<F> Q\<close>
+  by (meson T_F in_mono le_approx3 le_approx_lemma_F min_elems3)
 
-proof (auto simp: is_process_def)
-   show   "([], {}) \<in> FAILURES (\<Inter> a::nat. \<F> (S a), \<Inter> a::nat. \<D> (S a))"
-          by(auto simp: FAILURES_def is_processT)
+lemma min_elems6: \<open>s \<notin> \<D> P \<Longrightarrow> s @ [c] \<in> \<D> P \<Longrightarrow> P \<sqsubseteq> S \<Longrightarrow> (s @ [c], {}) \<in> \<F> S\<close>
+  by (auto intro!: min_elems2)
+
+lemma ND_F_dir2: \<open>s \<notin> \<D> P \<Longrightarrow> (s, {}) \<in> \<F> P \<Longrightarrow> P \<sqsubseteq> S \<Longrightarrow> Q \<sqsubseteq> S \<Longrightarrow> (s, {}) \<in> \<F> Q\<close>
+  by (meson is_processT8 le_approx2)
+
+lemma ND_F_dir2': \<open>s \<notin> \<D> P \<Longrightarrow> s \<in> \<T> P \<Longrightarrow> P \<sqsubseteq> S \<Longrightarrow> Q \<sqsubseteq> S \<Longrightarrow> s \<in> \<T> Q\<close>
+  by (meson D_T le_approx2T)
+
+
+lemma chain_lemma: \<open>chain S \<Longrightarrow> S i \<sqsubseteq> S k \<or> S k \<sqsubseteq> S i\<close>
+  by (metis chain_mono_less not_le_imp_less po_class.chain_mono)
+
+
+context fixes S :: \<open>nat \<Rightarrow> ('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close>
+  assumes \<open>chain S\<close>
+begin
+
+lift_definition lim_proc :: \<open>('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close>
+  is \<open>(\<Inter> (\<F> ` range S), \<Inter> (\<D> ` range S))\<close>
+proof (unfold is_process_def FAILURES_def DIVERGENCES_def fst_conv snd_conv, intro conjI allI impI)
+  show \<open>([], {}) \<in> \<Inter> (\<F> ` range S)\<close> by (simp add: is_processT)
 next
-   fix s::"'a trace" fix X::"'a event set"
-   assume A : "(s, X) \<in> (FAILURES (\<Inter> a :: nat. \<F> (S a), \<Inter> a :: nat. \<D> (S a)))" 
-   thus   "front_tickFree s"
-          by(auto simp:   DIVERGENCES_def FAILURES_def
-                  intro!: is_processT2[rule_format])
+  show \<open>(s, X) \<in> \<Inter> (\<F> ` range S) \<Longrightarrow> ftF s\<close> for s X
+    by (meson INT_iff UNIV_I image_eqI is_processT2)
 next
-   fix s  t::"'a trace"
-   assume " (s @ t, {}) \<in> FAILURES (\<Inter> a::nat. \<F> (S a), \<Inter> a::nat. \<D> (S a)) "
-   thus "(s, {}) \<in> FAILURES (\<Inter> a::nat. \<F> (S a), \<Inter> a::nat. \<D> (S a))"
-          by(auto simp:  DIVERGENCES_def FAILURES_def
-                  intro: is_processT3[rule_format])
+  show \<open>(s @ t, {}) \<in> \<Inter> (\<F> ` range S) \<Longrightarrow>
+        (s, {}) \<in> \<Inter> (\<F> ` range S)\<close> for s t by (auto intro: is_processT3)
 next
-   fix s::"'a trace"   fix X Y ::"'a event set"
-   assume "(s, Y) \<in> FAILURES (\<Inter> a::nat. \<F> (S a), \<Inter> a::nat. \<D>(S a))" and "X \<subseteq> Y"
-   thus   "(s, X) \<in> FAILURES (\<Inter> a::nat. \<F> (S a), \<Inter> a::nat. \<D>(S a))"
-          by(auto simp:  DIVERGENCES_def FAILURES_def
-                  intro: is_processT4[rule_format])
+  show \<open>(s, Y) \<in> \<Inter> (\<F> ` range S) \<and> X \<subseteq> Y \<Longrightarrow> (s, X) \<in> \<Inter> (\<F> ` range S)\<close> for s X Y
+    by (metis (full_types) INT_iff is_processT4)
 next
-   fix s::"'a trace"   fix X Y ::" 'a event set"
-   assume A:"(s, X) \<in> FAILURES (\<Inter> a::nat. \<F> (S a), \<Inter> a::nat. \<D> (S a))"
-   assume B:"\<forall> c. c\<in>Y \<longrightarrow> (s@[c],{})\<notin>FAILURES(\<Inter> a::nat. \<F>(S a),\<Inter> a::nat. \<D>(S a))"
-   thus   "(s, X \<union> Y) \<in> FAILURES (\<Inter> a::nat. \<F> (S a), \<Inter> a::nat. \<D> (S a))"
-   txt\<open> What does this mean: All trace prolongations $c$ in all $Y$, 
-         which are blocking in the limit, will also occur in the refusal set 
-         of the limit. \<close>
-   using A B chain
-   proof (auto simp: DIVERGENCES_def FAILURES_def,
-          case_tac "\<forall> x. x \<in> (range S) \<longrightarrow> (s, X \<union> Y) \<in> \<F> x",
-          simp_all add:DIVERGENCES_def FAILURES_def,rename_tac a,
-          case_tac "s \<notin> \<D> (S a)",simp_all add: is_processT8)
-      fix a::nat 
-      assume X: "\<forall>a. (s, X) \<in> \<F> (S a)"
-                 have X_ref_at_a: "(s, X) \<in> \<F> (S a)"
-                 using X by auto
-      assume Y: "\<forall>c. c \<in> Y \<longrightarrow> (\<exists>a. (s @ [c], {}) \<notin> \<F> (S a))"
-      assume defined: "s \<notin> \<D> (S a)"
-      show   "(s::'a trace, X \<union> Y) \<in> \<F> (S a)"
-      proof(auto simp:X_ref_at_a
-                 intro!: is_processT5[rule_format],
-            frule Y[THEN spec, THEN mp], erule exE,
-            erule_tac Q="(s @ [c], {}) \<in> \<F> (S a)" in contrapos_pp)
-         fix c::"'a event" fix a' :: nat
-         assume s_c_trace_not_trace_somewhere: "(s @ [c], {}) \<notin> \<F> (S a')"
-         show "(s @ [c], {}) \<notin> \<F> (S a)"
-         proof(insert chain_lemma[OF chain, of "a" "a'"],erule disjE)
-           assume before: "S a \<sqsubseteq> S a'"
-           show "(s @ [c], {}) \<notin> \<F> (S a)"
-             using s_c_trace_not_trace_somewhere  before
-             apply(case_tac "s @ [c] \<notin> \<D> (S a)",
-                   simp_all add: T_F_spec before[THEN le_approx2T,symmetric])
-             apply(erule contrapos_nn)
-             apply(simp only: T_F_spec[symmetric])
-             apply(auto dest!:min_elems6[OF defined])
-             done
-         next
-           assume after:"S a' \<sqsubseteq> S a"
-           show "(s @ [c], {}) \<notin> \<F> (S a)"
-             using s_c_trace_not_trace_somewhere
-             by(simp add:T_F_spec after[THEN le_approx2T]
-                         s_c_trace_not_trace_somewhere[THEN NF_ND])
-         qed
-      qed
-   qed
+  show \<open>(s, X \<union> Y) \<in> \<Inter> (\<F> ` range S)\<close>
+    if assm : \<open>(s, X) \<in> \<Inter> (\<F> ` range S) \<and>
+               (\<forall>c. c \<in> Y \<longrightarrow> (s @ [c], {}) \<notin> \<Inter> (\<F> ` range S))\<close> for s X Y
+  proof (rule ccontr)
+    assume \<open>(s, X \<union> Y) \<notin> \<Inter> (\<F> ` range S)\<close>
+    then obtain i where \<open>(s, X \<union> Y) \<notin> \<F> (S i)\<close> by blast
+    moreover have \<open>(s, X) \<in> \<F> (S j)\<close> for j using assm by blast
+    ultimately obtain c where \<open>c \<in> Y\<close> and * : \<open>(s @ [c], {}) \<in> \<F> (S i)\<close> 
+      using is_processT5 by blast
+    from \<open>(s, X \<union> Y) \<notin> \<F> (S i)\<close> is_processT8 have \<open>s \<notin> \<D> (S i)\<close> by blast
+    from assm \<open>c \<in> Y\<close> obtain j where ** : \<open>(s @ [c], {}) \<notin> \<F> (S j)\<close> by blast
+
+    from chain_lemma[OF \<open>chain S\<close>, of i j] "*" "**" show False
+      by (elim disjE; use \<open>s \<notin> \<D> (S i)\<close> is_processT8 min_elems6 proc_ord2a in blast)
+  qed
 next
-   fix s::"'a trace"   fix X::"'a event set"
-   assume "(s @ [tick], {}) \<in> FAILURES (\<Inter> a::nat. \<F> (S a), \<Inter> a::nat. \<D> (S a))"
-   thus   "(s, X - {tick}) \<in> FAILURES (\<Inter> a::nat. \<F> (S a), \<Inter> a::nat. \<D> (S a))"
-          by(auto simp: DIVERGENCES_def FAILURES_def
-                  intro! : is_processT6[rule_format])
+  show \<open>(s @ [\<checkmark>(r)], {}) \<in> \<Inter> (\<F> ` range S) \<Longrightarrow>
+        (s, X - {\<checkmark>(r)}) \<in> \<Inter> (\<F> ` range S)\<close> for s r X by (simp add: is_processT6)
 next
-   fix s t ::"'a trace"
-   assume "s : DIVERGENCES (\<Inter> a::nat. \<F> (S a), \<Inter> a::nat. \<D> (S a))"
-   and    "tickFree s" and " front_tickFree t"
-   thus   "s @ t \<in> DIVERGENCES (\<Inter> a::nat. \<F> (S a), \<Inter> a::nat. \<D> (S a))"
-          by(auto simp: DIVERGENCES_def FAILURES_def
-                  intro: is_processT7[rule_format])
+  show \<open>s \<in> \<Inter> (\<D> ` range S) \<and> tF s \<and> ftF t \<Longrightarrow>
+        s @ t \<in> \<Inter> (\<D> ` range S)\<close> for s t by (simp add: is_processT7)
 next
-   fix s::"'a trace"  fix X::"'a event set"
-   assume "s \<in> DIVERGENCES (\<Inter> a::nat. \<F> (S a), \<Inter> a::nat. \<D> (S a)) "
-   thus   "(s, X) \<in> FAILURES (\<Inter> a::nat. \<F> (S a), \<Inter> a::nat. \<D> (S a))"
-          by(auto simp: DIVERGENCES_def FAILURES_def
-                       intro: is_processT8[rule_format])
+  show \<open>s \<in> \<Inter> (\<D> ` range S) \<Longrightarrow> (s, X) \<in> \<Inter> (\<F> ` range S)\<close> for s X
+    by (simp add: is_processT8)
 next
-   fix s::"'a trace"
-   assume "s @ [tick] \<in> DIVERGENCES (\<Inter> a::nat. \<F> (S a), \<Inter> a::nat. \<D> (S a)) "
-   thus   "s \<in> DIVERGENCES (\<Inter> a::nat. \<F> (S a), \<Inter> a::nat. \<D> (S a))"
-          by(auto simp: DIVERGENCES_def FAILURES_def
-                  intro: is_processT9[rule_format])
+  show \<open>s @ [\<checkmark>(r)] \<in> \<Inter> (\<D> ` range S) \<Longrightarrow> s \<in> \<Inter> (\<D> ` range S)\<close> for s r
+    by (auto intro: is_processT9)
 qed
 
 
+lemma F_LUB: \<open>\<F> lim_proc = \<Inter> (\<F> ` range S)\<close>
+  by (metis Failures.rep_eq lim_proc.rep_eq process_surj_pair prod.sel(1))
 
-lemmas Rep_Abs_LUB = Abs_process_inverse[simplified Rep_process, 
-                                         simplified, OF is_process_REP_LUB,
-                                         simplified]
+lemma D_LUB: \<open>\<D> lim_proc = \<Inter> (\<D> ` range S)\<close>
+  by (metis Divergences.rep_eq lim_proc.rep_eq process_surj_pair prod.inject)
 
-lemma F_LUB: "chain S \<Longrightarrow> \<F>(lim_proc(range S)) = \<Inter> (\<F> ` range S)"
-by(simp add: lim_proc_def , subst Failures_def, auto simp: FAILURES_def Rep_Abs_LUB)
+lemma T_LUB: \<open>\<T> lim_proc = \<Inter> (\<T> ` range S)\<close>
+  by (insert F_LUB, auto simp add: T_def_spec) (meson F_T T_F)
 
-lemma D_LUB: "chain S \<Longrightarrow> \<D>(lim_proc(range S)) = \<Inter> (\<D> ` range S)"
-by(simp add: lim_proc_def , subst Divergences_def, auto simp: DIVERGENCES_def Rep_Abs_LUB)
+lemmas LUB_projs = F_LUB D_LUB T_LUB
 
-lemma T_LUB: "chain S \<Longrightarrow> \<T> (lim_proc(range S)) = \<Inter> (\<T>  ` range S)"
-apply(simp add: lim_proc_def , subst Traces_def) 
-apply(simp add: TRACES_def FAILURES_def Rep_Abs_LUB)
-apply(auto intro: F_T, rule_tac x="{}" in exI, auto intro: T_F)
-done
+lemma Refusals_LUB: \<open>\<R> lim_proc = \<Inter> (\<R> ` range S)\<close>
+  by (auto simp add: Refusals_def_bis F_LUB)
 
-schematic_goal D_LUB_2: "chain S \<Longrightarrow> t \<in> \<D>(lim_proc(range S)) =  ?X"
-apply(subst D_LUB, simp)
-apply(rule trans, simp)
-apply(simp)
-done
+lemma Refusals_after_LUB: \<open>\<R>\<^sub>a lim_proc s = (\<Inter>i. (\<R>\<^sub>a (S i) s))\<close>
+  by (auto simp add: Refusals_after_def F_LUB)
 
-schematic_goal T_LUB_2: "chain S \<Longrightarrow> (t \<in> \<T> (lim_proc (range S))) = ?X"
-apply(subst T_LUB, simp)
-apply(rule trans, simp)
-apply(simp)
-done
+lemma F_LUB_2: \<open>(s, X) \<in> \<F> lim_proc \<longleftrightarrow> (\<forall>i. (s, X) \<in> \<F> (S i))\<close> 
+  and D_LUB_2: \<open>t \<in> \<D> lim_proc \<longleftrightarrow> (\<forall>i. t \<in> \<D> (S i))\<close>
+  and T_LUB_2: \<open>t \<in> \<T> lim_proc \<longleftrightarrow> (\<forall>i. t \<in> \<T> (S i))\<close>
+  and Refusals_LUB_2: \<open>X \<in> \<R> lim_proc \<longleftrightarrow> (\<forall>i. X \<in> \<R> (S i))\<close>
+  and Refusals_after_LUB_2: \<open>X \<in> \<R>\<^sub>a lim_proc s \<longleftrightarrow> (\<forall>i. X \<in> \<R>\<^sub>a (S i) s)\<close>
+  by (simp_all add: F_LUB D_LUB T_LUB Refusals_LUB Refusals_after_LUB)
+
+end
+
+
+text \<open>By exiting the context, terms like \<open>\<F> lim_proc\<close> will become \<^term>\<open>\<F> (lim_proc S)\<close>
+      and the assumption \<^term>\<open>chain S\<close> will be added.\<close>
 
 
 section\<open> Process Refinement is a Partial Ordering\<close>
@@ -1115,13 +1071,14 @@ text\<open> The following type instantiation declares the refinement order
 $\_ \le \_ $ written \verb+_  <= _+. It captures the intuition that more
 concrete processes should be more deterministic and more defined.\<close>
 
-instantiation
-   process :: (type) ord          
+instantiation process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k :: (type, type) ord
 begin
 
-definition  le_ref_def   : "P \<le> Q \<equiv> \<D> Q \<subseteq> \<D> P \<and> \<F> Q \<subseteq> \<F> P"
+definition less_eq_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k :: \<open>('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k \<Rightarrow> ('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k \<Rightarrow> bool\<close>
+  where \<open>less_eq_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k P Q \<equiv> \<D> Q \<subseteq> \<D> P \<and> \<F> Q \<subseteq> \<F> P\<close>
 
-definition  less_ref_def : "(P::'a process) < Q \<equiv> P \<le> Q \<and> P \<noteq> Q"
+definition less_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k :: \<open>('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k \<Rightarrow> ('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k \<Rightarrow> bool\<close>
+  where \<open>less_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k P Q \<equiv> P \<le> Q \<and> P \<noteq> Q\<close>
 
 instance ..
 
@@ -1133,174 +1090,201 @@ text\<open>Note that this just another syntax to our standard process refinement
      defined in the theory Process. \<close> 
 
 
-lemma le_approx_implies_le_ref:    "(P::'\<alpha> process) \<sqsubseteq> Q \<Longrightarrow> P \<le> Q"
-by(simp add: le_ref_def le_approx1 le_approx_lemma_F)
+lemma le_ref1  : \<open>P \<le> Q \<Longrightarrow> \<D> Q \<subseteq> \<D> P\<close>
+  and le_ref2  : \<open>P \<le> Q \<Longrightarrow> \<F> Q \<subseteq> \<F> P\<close>
+  and le_ref2T : \<open>P \<le> Q \<Longrightarrow> \<T> Q \<subseteq> \<T> P\<close>
+  and le_approx_imp_le_ref: \<open>(P::('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k) \<sqsubseteq> Q \<Longrightarrow> P \<le> Q\<close>
+  by (simp_all add: less_eq_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_def le_approx1 le_approx_lemma_F)
+    (use T_F_spec in blast)
 
-lemma le_ref1:                     "P \<le> Q \<Longrightarrow> \<D> Q \<subseteq> \<D> P"
-by(simp add: le_ref_def) 
+lemma F_subset_imp_T_subset : \<open>\<F> P \<subseteq> \<F> Q \<Longrightarrow> \<T> P \<subseteq> \<T> Q\<close>
+  using T_F_spec by blast
 
-lemma le_ref2:                     "P\<le>Q \<Longrightarrow> \<F> Q \<subseteq> \<F> P"
-by(simp add: le_ref_def) 
-
-lemma le_ref2T :                    "P\<le>Q \<Longrightarrow> \<T> Q \<subseteq> \<T> P"
-  by (rule subsetI) (simp add: T_F_spec[symmetric] le_ref2[THEN subsetD])
-
-
-instance  process :: (type) order
-proof
-   fix P Q R :: "'\<alpha> process"
-   {
-     show "(P < Q) = (P \<le> Q \<and> \<not> Q \<le>  P)"
-       by(auto simp: le_ref_def less_ref_def Process_eq_spec)
-   next
-     show "P \<le> P"  by(simp add: le_ref_def)
-   next
-     assume "P \<le> Q" and "Q \<le> R" then show "P \<le> R"
-       by (simp add: le_ref_def, auto)
-   next
-     assume "P \<le> Q" and "Q \<le> P" then show "P = Q"
-       by(auto simp: le_ref_def Process_eq_spec)  
-   }
-qed
-
-lemma lim_proc_is_ub:"chain S \<Longrightarrow> range S <| lim_proc (range S)" 
-  apply(auto simp: is_ub_def le_approx_def F_LUB D_LUB T_LUB Ra_def) 
-  using chain_lemma is_processT8 le_approx2 apply blast 
-  using D_T chain_lemma le_approx2T le_approx_def by blast
-
-lemma lim_proc_is_lub1: "chain S \<Longrightarrow> \<forall> u . (range S <| u \<longrightarrow>  \<D> u \<subseteq> \<D> (lim_proc (range S)))"
-  by(auto simp: D_LUB, frule_tac i=a in ub_rangeD, auto dest: le_approx1)
-
-lemma lim_proc_is_lub2: 
-  "chain S \<Longrightarrow> \<forall> u . range S <| u \<longrightarrow> (\<forall> s.  s \<notin> \<D> (lim_proc (range S))
-   \<longrightarrow> Ra (lim_proc (range S)) s = Ra u s)" 
-    apply(auto simp: is_ub_def D_LUB F_LUB Ra_def)
-    using proc_ord2a apply blast
-    using is_processT8_S proc_ord2a by blast
+lemma D_extended_is_D :
+  \<open>{t @ u |t u. t \<in> \<D> P \<and> tF t \<and> ftF u} = \<D> P\<close>
+  by (auto simp add: is_processT7)
+    (metis D_imp_front_tickFree append.right_neutral butlast_snoc front_tickFree_append_iff
+      front_tickFree_charn is_processT9 nonTickFree_n_frontTickFree tickFree_Nil)
 
 
-lemma lim_proc_is_lub3a: "front_tickFree s \<Longrightarrow> s \<notin> \<D> P \<longrightarrow> (\<forall>t. t \<in> \<D> P \<longrightarrow> \<not> t < s @ [c])" 
-apply(rule impI, erule contrapos_np, auto)
-  apply(auto simp: le_list_def  less_list_def)
-  by (metis butlast_append butlast_snoc front_tickFree_mono is_processT self_append_conv)
+lemma Process_eq_optimizedI :
+  \<open>\<lbrakk>\<And>t. t \<in> \<D> P \<Longrightarrow> t \<in> \<D> Q; \<And>t. t \<in> \<D> Q \<Longrightarrow> t \<in> \<D> P;
+    \<And>t X. (t, X) \<in> \<F> P \<Longrightarrow> t \<notin> \<D> P \<Longrightarrow> t \<notin> \<D> Q \<Longrightarrow> (t, X) \<in> \<F> Q;
+    \<And>t X. (t, X) \<in> \<F> Q \<Longrightarrow> t \<notin> \<D> Q \<Longrightarrow> t \<notin> \<D> P \<Longrightarrow> (t, X) \<in> \<F> P\<rbrakk> \<Longrightarrow> P = Q\<close>
+  by (simp add: Process_eq_spec_optimized, safe, auto intro: is_processT8)
 
 
 
-lemma lim_proc_is_lub3b:
-assumes 1 : "\<forall>x. x \<in> X \<longrightarrow> (\<forall>xa. xa \<in> \<D> x \<and> (\<forall>t. t \<in> \<D> x \<longrightarrow> \<not> t < xa) \<longrightarrow> xa \<in> \<T>  u)"
-and     2 : "xa \<in> X"
-and     3 : "\<forall>xa. xa \<in> X \<longrightarrow> x \<in> \<D> xa"
-and     4 : "\<forall>t. (\<forall>x. x \<in> X \<longrightarrow> t \<in> \<D> x) \<longrightarrow> \<not> t < x"
-shows       "x \<in> \<T>  u"
-proof (cases "\<forall>t. t \<in> \<D> xa \<longrightarrow> \<not> t < x") 
-      case True  from \<open>\<forall>t. t \<in> \<D> xa \<longrightarrow> \<not> t < x\<close>  show ?thesis using 1 2 3  by simp
+instance  process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k :: (type, type) order
+  by intro_classes (auto simp: less_eq_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_def less_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_def Process_eq_spec)
+
+
+lemma lim_proc_is_ub: \<open>chain S \<Longrightarrow> range S <| lim_proc S\<close>
+  by (simp add: is_ub_def le_approx_def F_LUB D_LUB T_LUB Refusals_after_def)
+    (intro allI conjI, blast, use chain_lemma is_processT8 le_approx2 in blast,
+      use D_T chain_lemma le_approx2T le_approx_def in blast)
+
+
+(* 
+lemma lim_proc_is_lub3a: \<open>front_tickFree s \<Longrightarrow> s \<notin> \<D> P \<Longrightarrow> t \<in> \<D> P \<Longrightarrow> \<not> t < s @ [c]\<close>
+  by (auto simp: le_list_def  less_list_def)
+     (metis butlast_append butlast_snoc front_tickFree_append_iff process_charn self_append_conv)
+ *)
+
+
+lemma chain_min_elem_div_is_min_for_sequel:
+  \<open>chain S \<Longrightarrow> s \<in> min_elems (\<D> (S i)) \<Longrightarrow> i \<le> j \<Longrightarrow> s \<in> \<D> (S j) \<Longrightarrow> s \<in> min_elems (\<D> (S j))\<close>
+  by (metis elem_min_elems insert_absorb insert_subset le_approx1 
+      min_elems5 min_elems_no po_class.chain_mono)
+
+
+lemma limproc_is_lub: \<open>range S <<| lim_proc S\<close> if \<open>chain S\<close>
+proof (unfold is_lub_def, intro conjI allI impI)
+  show \<open>range S <| lim_proc S\<close> by (simp add: lim_proc_is_ub \<open>chain S\<close>)
 next
-      case False from \<open>\<not>(\<forall>t. t \<in> \<D> xa \<longrightarrow> \<not> t < x)\<close> and 3 4
-                 have A: "\<exists>y r c. y \<in> X \<and> r \<notin> \<D> y \<and> r \<in> \<D> xa \<and> r @ [c] = x" 
-                         by (metis D_imp_front_tickFree front_tickFree_charn 
-                                   less_self lim_proc_is_lub3a nil_less 
-                                   tickFree_implies_front_tickFree)
-           show ?thesis
-              apply(insert A) apply(erule exE)+
-              using "1" "3" D_imp_front_tickFree lim_proc_is_lub3a by blast
+  show \<open>lim_proc S \<sqsubseteq> P\<close> if \<open>range S <| P\<close> for P
+  proof (unfold le_approx_def, intro conjI allI impI subsetI)
+    show \<open>s \<in> \<D> P \<Longrightarrow> s \<in> \<D> (lim_proc S)\<close> for s
+      by (meson D_LUB_2 \<open>chain S\<close> \<open>range S <| P\<close> is_ub_def le_approx1 rangeI subsetD)
+  next
+    show \<open>s \<notin> \<D> (lim_proc S) \<Longrightarrow> \<R>\<^sub>a (lim_proc S) s = \<R>\<^sub>a P s\<close> for s
+      by (metis \<open>chain S\<close> \<open>range S <| P\<close> D_LUB_2 le_approx_def lim_proc_is_ub ub_rangeD)
+  next
+    fix s
+    assume \<open>s \<in> min_elems (\<D> (lim_proc S))\<close>
+    from elem_min_elems[OF this] have \<open>\<forall>i. s \<in> \<D> (S i)\<close>
+      by (simp add: \<open>chain S\<close> D_LUB)
+    have \<open>\<exists>i. \<forall>j\<ge>i. s \<in> min_elems (\<D> (S j))\<close>
+    proof (rule ccontr)
+      assume \<open>\<nexists>i. \<forall>j\<ge>i. s \<in> min_elems (\<D> (S j))\<close>
+      hence \<open>\<forall>i. \<exists>j\<ge>i. s \<notin> min_elems (\<D> (S j))\<close> by simp
+      with \<open>\<forall>i. s \<in> \<D> (S i)\<close> chain_min_elem_div_is_min_for_sequel \<open>chain S\<close>
+      have \<open>\<forall>j. s \<notin> min_elems (\<D> (S j))\<close> by blast
+      from \<open>s \<in> min_elems (\<D> (lim_proc S))\<close> \<open>\<forall>i. s \<in> \<D> (S i)\<close> show False
+        by (cases s rule: rev_cases; simp add: min_elems_def D_LUB \<open>chain S\<close>)
+          (use Nil_min_elems \<open>\<forall>j. s \<notin> min_elems (\<D> (S j))\<close> in blast,
+            metis (no_types, lifting) INT_iff \<open>\<forall>j. s \<notin> min_elems (\<D> (S j))\<close> less_self min_elems3)
+    qed
+    thus \<open>s \<in> \<T> P\<close> by (meson le_approx3 order.refl subset_eq \<open>range S <| P\<close> ub_rangeD)
+  qed
 qed
 
-lemma lim_proc_is_lub3c: 
-assumes *:"chain S"
-and     **:"X = range S"  \<comment>\<open>protection for range - otherwise auto unfolds and gets lost\<close>
-shows   "\<forall> u. X <| u \<longrightarrow>  min_elems(\<D> (lim_proc X)) \<subseteq> \<T>  u"
-proof -
-  have B : "\<D> (lim_proc X) = \<Inter> (\<D> ` X)" by(simp add: * ** D_LUB)
-  show ?thesis
-     apply(auto simp: is_ub_def * **)
-     apply(auto simp: B min_elems_def le_approx_def HOL.imp_conjR HOL.all_conj_distrib Ball_def)
-      apply(simp add: subset_iff imp_conjL[symmetric])
-    apply(rule lim_proc_is_lub3b[of "range S", simplified])
-    using "**" B by auto
-qed
 
-lemma limproc_is_lub: "chain S \<Longrightarrow> range S <<| lim_proc (range S)"
-apply (auto simp: is_lub_def lim_proc_is_ub)
-apply (simp add: le_approx_def is_lub_def lim_proc_is_ub)
-by (simp add: lim_proc_is_lub1 lim_proc_is_lub2 lim_proc_is_lub3c)
-
-lemma limproc_is_thelub: "chain S \<Longrightarrow> Lub S = lim_proc (range S)"
-by (frule limproc_is_lub,frule po_class.lub_eqI, simp)
+lemma limproc_is_thelub: \<open>chain S \<Longrightarrow> (\<Squnion>i. S i) = lim_proc S\<close>
+  by (frule limproc_is_lub, frule po_class.lub_eqI, simp)
 
 
-instance
-   process :: (type) cpo
+instance process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k :: (type, type) cpo
+  by intro_classes (use limproc_is_lub in blast)
+
+
+
+instance process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k :: (type, type) pcpo
 proof
-   fix S ::"nat \<Rightarrow> '\<alpha> process"
-   assume C:"chain S" 
-   thus "\<exists> x. range S <<| x" using limproc_is_lub by blast
+  define bot\<^sub>0 :: \<open>('a, 'r) process\<^sub>0\<close> where \<open>bot\<^sub>0 \<equiv> ({(s, X). ftF s}, {d. ftF d})\<close>
+  define bot :: \<open>('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close> where \<open>bot \<equiv> process_of_process\<^sub>0 bot\<^sub>0\<close>
+
+  have \<open>is_process bot\<^sub>0\<close>
+    unfolding is_process_def bot\<^sub>0_def
+    by (simp add: FAILURES_def DIVERGENCES_def)
+      (meson front_tickFree_append_iff front_tickFree_dw_closed)
+  have F_bot : \<open>\<F> bot = {(s, X). ftF s}\<close>
+    by (metis CollectI FAILURES_def Failures.rep_eq \<open>is_process bot\<^sub>0\<close> 
+        bot\<^sub>0_def bot_def fst_eqD process_of_process\<^sub>0_inverse)
+  have D_bot : \<open>\<D> bot = {d. ftF d}\<close>
+    by (metis CollectI DIVERGENCES_def Divergences.rep_eq \<open>is_process bot\<^sub>0\<close>
+        bot\<^sub>0_def bot_def process_of_process\<^sub>0_inverse prod.sel(2))
+
+  show \<open>\<exists>x :: ('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k. \<forall> y. x \<sqsubseteq> y\<close> 
+  proof (intro exI allI)
+    show \<open>bot \<sqsubseteq> y\<close> for y
+    proof (unfold le_approx_def, intro conjI allI impI subsetI)
+      show \<open>s \<in> \<D> y \<Longrightarrow> s \<in> \<D> bot\<close> for s
+        by (simp add: D_bot D_imp_front_tickFree)
+    next
+      from F_imp_front_tickFree show \<open>s \<notin> \<D> bot \<Longrightarrow> \<R>\<^sub>a bot s = \<R>\<^sub>a y s\<close> for s
+        by (auto simp add: D_bot Refusals_after_def F_bot)
+    next
+      show \<open>s \<in> min_elems (\<D> bot) \<Longrightarrow> s \<in> \<T> y\<close> for s
+        by (simp add: D_bot min_elems_Collect_ftF_is_Nil)
+    qed
+  qed
 qed
 
-instance
-   process :: (type) pcpo
-proof
-  show "\<exists> x::'a process. \<forall> y::'a process. x \<sqsubseteq> y" 
-   proof -
-      have is_process_witness : 
-           "is_process({(s,X). front_tickFree s},{d. front_tickFree d})"
-           apply(auto simp:is_process_def FAILURES_def DIVERGENCES_def)
-           apply(auto elim!: tickFree_implies_front_tickFree front_tickFree_dw_closed
-                             front_tickFree_append)
-           done
-      have bot_inverse : 
-           "Rep_process(Abs_process({(s, X). front_tickFree s},Collect front_tickFree))=
-                          ({(s, X). front_tickFree s}, Collect front_tickFree)"
-           by(subst Abs_process_inverse, simp_all add: Rep_process is_process_witness)
-      have divergences_frontTickFree:
-           "\<And>y x. x \<in> snd (Rep_process y) \<Longrightarrow> front_tickFree x" 
-           by(rule D_imp_front_tickFree, simp add: Divergences_def DIVERGENCES_def)
-      have failures_frontTickFree:
-           "\<And>y s x. (s, x) \<in> fst (Rep_process y) \<Longrightarrow> front_tickFree s"
-           by(rule is_processT2[rule_format], 
-              simp add: Failures_def FAILURES_def)
-      have minelems_contains_mt:
-           "\<And>y x. x \<in> min_elems (Collect front_tickFree) \<Longrightarrow> x = []"
-           by(simp add: min_elems_def front_tickFree_charn,safe, 
-              auto simp: Nil_elem_T)
-      show ?thesis 
-      apply(rule_tac x="Abs_process ({(s,X). front_tickFree s},{d. front_tickFree d})" 
-            in exI)
-      apply(auto simp: le_approx_def bot_inverse Ra_def 
-                       Failures_def Divergences_def FAILURES_def DIVERGENCES_def
-                       divergences_frontTickFree failures_frontTickFree)
-      apply (metis minelems_contains_mt Nil_elem_T )
-      done
-   qed
-qed
 
 
 section\<open> Process Refinement is Admissible \<close>
 
-lemma le_adm[simp]: "cont (u::('a::cpo) \<Rightarrow> 'b process) \<Longrightarrow> monofun v \<Longrightarrow> adm(\<lambda>x. u x \<le> v x)"
-proof(auto simp add:le_ref_def cont2contlubE adm_def, goal_cases)
-  case (1 Y x)
-  hence "v (Y i)  \<sqsubseteq> v (\<Squnion>i. Y i)" for i by (simp add: is_ub_thelub monofunE)
-  hence "\<D> (v (\<Squnion>i. Y i)) \<subseteq> \<D> (u (Y i))" for i using "1"(4) le_approx1 by blast    
-  then show ?case 
-    using D_LUB[OF ch2ch_cont[OF 1(1) 1(3)]] limproc_is_thelub[OF ch2ch_cont[OF 1(1) 1(3)]] "1"(5) by force
-next
-  case (2 Y a b)
-  hence "v (Y i)  \<sqsubseteq> v (\<Squnion>i. Y i)" for i by (simp add: is_ub_thelub monofunE)
-  hence "\<F> (v (\<Squnion>i. Y i)) \<subseteq> \<F> (u (Y i))" for i using "2"(4) le_approx_lemma_F by blast   
-  then show ?case
-    using F_LUB[OF ch2ch_cont[OF 2(1) 2(3)]] limproc_is_thelub[OF ch2ch_cont[OF 2(1) 2(3)]] "2"(5) by force
-qed
+lemma le_FD_adm : \<open>cont (u :: ('b::cpo) \<Rightarrow> ('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k) \<Longrightarrow> monofun v \<Longrightarrow> adm (\<lambda>x. u x \<le> v x)\<close>
+  apply (unfold less_eq_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_def adm_def)
+  apply (simp add: cont2contlubE D_LUB F_LUB ch2ch_cont limproc_is_thelub monofun_def)
+  by (meson INF_greatest dual_order.trans is_ub_thelub le_approx1 le_approx_lemma_F)
 
-lemmas le_adm_cont[simp] = le_adm[OF _ cont2mono]
+lemmas le_FD_adm_cont[simp] = le_FD_adm[OF _ cont2mono]
 
 section\<open> The Conditional Statement is Continuous \<close>
 text\<open>The conditional operator of CSP is obtained by a direct shallow embedding. Here we prove it continuous\<close>
 
-lemma if_then_else_cont[simp]: 
-  assumes *:"(\<And>x. P x \<Longrightarrow> cont ((f::'c \<Rightarrow> ('a::cpo) \<Rightarrow> 'b process) x))"
-  and     **:"(\<And>x. \<not> P x \<Longrightarrow> cont (g x))"
-  shows "\<And>x. cont(\<lambda>y. if P x then f x y else g x y)"
-  using * ** by (auto simp:cont_def)
+lemma if_then_else_cont[simp]:
+  \<open>\<lbrakk>\<And>x. P x \<Longrightarrow> cont (f x); \<And>x. \<not> P x \<Longrightarrow> cont (g x)\<rbrakk> \<Longrightarrow>
+   cont (\<lambda>y. if P x then f x y else g x y)\<close>
+  for f :: \<open>'c \<Rightarrow> 'b :: cpo \<Rightarrow> ('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close>
+  by (auto simp: cont_def)
 
 
+section \<open>Tools for proving continuity\<close>
+
+\<comment> \<open>The following result is very useful (especially for ProcOmata).\<close>
+
+lemma cont_process_rec: \<open>P = (\<mu> X. f X) \<Longrightarrow> cont f \<Longrightarrow> P = f P\<close>
+  by (simp add: def_cont_fix_eq)
+
+
+lemma Inter_nonempty_finite_chained_sets: \<open>(\<Inter>i. S i) \<noteq> {}\<close>
+  if \<open>\<And>i. j \<le> i \<Longrightarrow> S i \<noteq> {}\<close> \<open>finite (S j)\<close> \<open>\<And>i. S (Suc i) \<subseteq> S i\<close> for S :: \<open>nat \<Rightarrow> 'a set\<close>
+proof -
+  have * : \<open>\<forall>i. S i \<noteq> {} \<Longrightarrow> finite (S 0) \<Longrightarrow> \<forall>i. S (Suc i) \<subseteq> S i \<Longrightarrow> (\<Inter>i. S i) \<noteq> {}\<close>
+    for S :: \<open>nat \<Rightarrow> 'a set\<close>
+  proof (induct \<open>card (S 0)\<close> arbitrary: S rule: nat_less_induct)
+    case 1
+    show ?case
+    proof (cases \<open>\<forall>i. S i = S 0\<close>)
+      case True
+      thus ?thesis by (metis "1.prems"(1) INT_iff ex_in_conv)
+    next 
+      case False
+      have f1: \<open>i \<le> j \<Longrightarrow> S j \<subseteq> S i\<close> for i j by (simp add: "1.prems"(3) lift_Suc_antimono_le)
+      with False obtain j m where f2: \<open>m < card (S 0)\<close> and f3: \<open>m = card (S j)\<close>
+        by (metis "1.prems"(2) psubsetI psubset_card_mono zero_le)
+      define T where \<open>T i \<equiv> S (i + j)\<close> for i
+      have f4: \<open>m = card (T 0)\<close> unfolding T_def by (simp add: f3)
+      from f1 have f5: \<open>(\<Inter>i. S i) = (\<Inter>i. T i)\<close> unfolding T_def by (auto intro: le_add1)
+      show ?thesis
+        apply (subst f5)
+        apply (rule "1.hyps"[rule_format, OF f2, of T, OF f4], unfold T_def)
+        by (simp_all add: "1.prems"(1, 3) lift_Suc_antimono_le)
+          (metis "1.prems"(2) add_0 f1 finite_subset le_add1)
+    qed
+  qed
+  define S' where \<open>S' i \<equiv> S (j + i)\<close> for i
+  have \<open>\<forall>i. S' i \<noteq> {}\<close> by (simp add: S'_def \<open>\<And>i. j \<le> i \<Longrightarrow> S i \<noteq> {}\<close>)
+  moreover have \<open>finite (S' 0)\<close> by (simp add: \<open>S' \<equiv> \<lambda>i. S (j + i)\<close> \<open>finite (S j)\<close>)
+  moreover have \<open>\<forall>i. S' (Suc i) \<subseteq> S' i\<close> by (simp add: S'_def \<open>\<And>i. S (Suc i) \<subseteq> S i\<close>)
+  ultimately have \<open>(\<Inter>i. S' i) \<noteq> {}\<close> by (fact "*")
+  also from lift_Suc_antimono_le[where f = S, OF \<open>\<And>i. S (Suc i) \<subseteq> S i\<close>]
+  have \<open>(\<Inter>i. S' i) = (\<Inter>i. S i)\<close>
+    by (simp add: INF_greatest INF_lower INF_mono' S'_def equalityI)
+  finally show \<open>(\<Inter>i. S i) \<noteq> {}\<close> .
+qed
+
+
+method prove_finite_subset_of_prefixes for t :: \<open>('a, 'r) trace\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close> =
+  \<comment>\<open>Useful for establishing the second hypothesis\<close>
+  solves \<open>(rule finite_UnI; prove_finite_subset_of_prefixes t) |
+          (rule finite_subset[of _ \<open>{u. u \<le> t}\<close>],
+           use prefixI in blast, simp add: prefixes_fin)\<close>
+
+
+(*<*)
 end
+  (*>*)

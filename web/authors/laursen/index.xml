@@ -1,17 +1,16 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Christian Pardillo-Laursen</title>
     <link>https://isa-afp.org/authors/laursen/</link>
-    <description>AFP entries of Christian Pardillo-Laursen</description>
-        <item>
-          <title>Optics</title>
-          <link>https://isa-afp.org/entries/Optics.html</link>
-          <pubDate>Thu, 25 May 2017 00:00:00 +0000</pubDate>
-          <description>Optics in the AFP</description>
-            <category>Computer science/Functional programming</category>
-            <category>Mathematics/Algebra</category>
-        </item>
+    <description>AFP entries of Christian Pardillo-Laursen</description><item>
+  <title>Optics</title>
+  <link>https://isa-afp.org/entries/Optics.html</link>
+  <pubDate>Thu, 25 May 2017 00:00:00 +0000</pubDate>
+  <description>Optics in the AFP</description>
+    <category>Computer science/Functional programming</category>
+    <category>Mathematics/Algebra</category>
+</item>
 
   </channel>
 </rss>

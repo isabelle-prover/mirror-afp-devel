@@ -1,16 +1,15 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Denis Nikiforov</title>
     <link>https://isa-afp.org/authors/nikiforov/</link>
-    <description>AFP entries of Denis Nikiforov</description>
-        <item>
-          <title>Safe OCL</title>
-          <link>https://isa-afp.org/entries/Safe_OCL.html</link>
-          <pubDate>Sat, 09 Mar 2019 00:00:00 +0000</pubDate>
-          <description>Safe OCL in the AFP</description>
-            <category>Computer science/Programming languages/Language definitions</category>
-        </item>
+    <description>AFP entries of Denis Nikiforov</description><item>
+  <title>Safe OCL</title>
+  <link>https://isa-afp.org/entries/Safe_OCL.html</link>
+  <pubDate>Sat, 09 Mar 2019 00:00:00 +0000</pubDate>
+  <description>Safe OCL in the AFP</description>
+    <category>Computer science/Programming languages/Language definitions</category>
+</item>
 
   </channel>
 </rss>

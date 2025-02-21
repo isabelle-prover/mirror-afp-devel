@@ -1,17 +1,16 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Eric Ren</title>
     <link>https://isa-afp.org/authors/ren/</link>
-    <description>AFP entries of Eric Ren</description>
-        <item>
-          <title>Babai&#39;s Nearest Plane Algorithm</title>
-          <link>https://isa-afp.org/entries/Babai_Nearest_Plane.html</link>
-          <pubDate>Thu, 26 Sep 2024 00:00:00 +0000</pubDate>
-          <description>Babai&#39;s Nearest Plane Algorithm in the AFP</description>
-            <category>Computer science/Security/Cryptography</category>
-            <category>Computer science/Algorithms/Mathematical</category>
-        </item>
+    <description>AFP entries of Eric Ren</description><item>
+  <title>Babai&#39;s Nearest Plane Algorithm</title>
+  <link>https://isa-afp.org/entries/Babai_Nearest_Plane.html</link>
+  <pubDate>Thu, 26 Sep 2024 00:00:00 +0000</pubDate>
+  <description>Babai&#39;s Nearest Plane Algorithm in the AFP</description>
+    <category>Computer science/Security/Cryptography</category>
+    <category>Computer science/Algorithms/Mathematical</category>
+</item>
 
   </channel>
 </rss>

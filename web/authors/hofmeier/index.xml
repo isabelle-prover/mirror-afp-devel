@@ -1,17 +1,16 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Paul Hofmeier</title>
     <link>https://isa-afp.org/authors/hofmeier/</link>
-    <description>AFP entries of Paul Hofmeier</description>
-        <item>
-          <title>Combinatorial Enumeration Algorithms</title>
-          <link>https://isa-afp.org/entries/Combinatorial_Enumeration_Algorithms.html</link>
-          <pubDate>Fri, 11 Nov 2022 00:00:00 +0000</pubDate>
-          <description>Combinatorial Enumeration Algorithms in the AFP</description>
-            <category>Mathematics/Combinatorics</category>
-            <category>Computer science/Algorithms</category>
-        </item>
+    <description>AFP entries of Paul Hofmeier</description><item>
+  <title>Combinatorial Enumeration Algorithms</title>
+  <link>https://isa-afp.org/entries/Combinatorial_Enumeration_Algorithms.html</link>
+  <pubDate>Fri, 11 Nov 2022 00:00:00 +0000</pubDate>
+  <description>Combinatorial Enumeration Algorithms in the AFP</description>
+    <category>Mathematics/Combinatorics</category>
+    <category>Computer science/Algorithms</category>
+</item>
 
   </channel>
 </rss>

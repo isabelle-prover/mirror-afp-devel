@@ -100,6 +100,7 @@ named_theorems fun_ptr_simps
 named_theorems fun_ptr_intros
 named_theorems fun_ptr_distinct
 named_theorems fun_ptr_subtree
+named_theorems disjoint_\<G>_\<S>
 
 text \<open>
 We integrate mllex and mlyacc directly into Isabelle:
@@ -526,6 +527,8 @@ lemma guarded_spec_body_wp [vcg_hoare]:
   apply (auto simp: image_def Bex_def)
   done
 
+named_theorems recursive_records_fold_congs and recursive_records_split_all_eqs
+
 ML_file "../lib/ml-helpers/StringExtras.ML"
 ML_file "topo_sort.ML"
 ML_file "isa_termstypes.ML"
@@ -574,6 +577,8 @@ simproc_setup size_of_bound (\<open>size_of TYPE('a::c_type) \<le> n\<close>) = 
   end
   handle Match => NONE)
 \<close>
+
+named_theorems enum_defs
 
 ML_file "heapstatetype.ML"
 ML_file "MemoryModelExtras-sig.ML"

@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
+<html lang="en"><head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -11,8 +10,7 @@
   <meta property="og:title" content="Finite Machine Word Library" />
   <meta property="og:url" content="https://isa-afp.org/entries/Word_Lib.html" />
   <meta property="og:image" content="https://isa-afp.org/images/afp.png" />
-  <meta property="og:type" content="article" />
-  
+    <meta property="og:type" content="article" />
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
 
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
@@ -20,11 +18,11 @@
     <script>
       MathJax = {
         tex: {
-          inlineMath: [['$', '$'], ['\\(', '\\)']]
+          inlineMath: [["$", "$"], ["\\(", "\\)"]]
         },
         processEscapes: true,
         svg: {
-          fontCache: 'global'
+          fontCache: "global"
         }
       };
     </script>
@@ -41,9 +39,8 @@
   <script src="../js/search-autocomplete.js"></script>
 </head>
 
-  <body class='mathjax_ignore'>
-    <aside>
-        <div id="menu-toggle">
+  <body class="mathjax_ignore">
+    <aside><div id="menu-toggle">
   <input id="toggle" type="checkbox" />
   <label for="toggle">
     <span>menu</span>
@@ -51,87 +48,65 @@
   </label>
 
   <a href="../" class="logo-link">
-    <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs"
-         class="logo">
+    <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
   </a>
 
   <nav id="menu">
     <div>
-      <a href="../" class='logo-link'>
-        <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs"
-             class="logo">
+      <a href="../" class="logo-link">
+        <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
       </a>
       <ul>
           <a href="../">
-            <li >
-              Home
-            </li>
+            <li >Home</li>
           </a>
           <a href="../topics/">
-            <li >
-              Topics
-            </li>
+            <li >Topics</li>
           </a>
           <a href="../download/">
-            <li >
-              Download
-            </li>
+            <li >Download</li>
           </a>
           <a href="../help/">
-            <li >
-              Help
-            </li>
+            <li >Help</li>
           </a>
           <a href="../submission/">
-            <li >
-              Submission
-            </li>
+            <li >Submission</li>
           </a>
           <a href="../statistics/">
-            <li >
-              Statistics
-            </li>
+            <li >Statistics</li>
           </a>
           <a href="../about/">
-            <li >
-              About
-            </li>
+            <li >About</li>
           </a>
       </ul>
     </div>
   </nav>
 </div>
     </aside>
-    <div class='content entries'>
-      <header>
+
+    <div class="content entries"><header>
     <form autocomplete="off" action="../search">
-      <div class='form-container'>
+      <div class="form-container">
         <input id="search-input" type="search" size="31" maxlength="255" value=""
-               aria-label="Search the AFP" list="autocomplete"><button
-               id="search-button" type="button">
-          <img src="../images/search.svg" alt="Search"/>
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="button">
+          <img src="../images/search.svg" alt="Search" />
         </button>
         <datalist id="autocomplete">
         </datalist>
       </div>
     </form>
-  <h1>
-    <span class='first'>F</span>inite <span class='first'>M</span>achine <span class='first'>W</span>ord <span class='first'>L</span>ibrary
-    
+  <h1 ><span class='first'>F</span>inite <span class='first'>M</span>achine <span class='first'>W</span>ord <span class='first'>L</span>ibrary
   </h1>
   <div>
-      <p>
-        <a href="../authors/beeren/">Joel Beeren</a>, <a href="../authors/fernandez/">Matthew Fernandez</a>, <a href="../authors/gao/">Xin Gao</a>, <a href="../authors/klein/">Gerwin Klein</a> <a href="http://www.cse.unsw.edu.au/~kleing/">🌐</a>, <a href="../authors/kolanski/">Rafal Kolanski</a>, <a href="../authors/lim/">Japheth Lim</a>, <a href="../authors/lewis/">Corey Lewis</a>, <a href="../authors/matichuk/">Daniel Matichuk</a> and <a href="../authors/sewell/">Thomas Sewell</a>
-
+      <p><a href="../authors/beeren/">Joel Beeren</a>, <a href="../authors/fernandez/">Matthew Fernandez</a>, <a href="../authors/gao/">Xin Gao</a>, <a href="../authors/klein/">Gerwin Klein</a> <a href="http://www.cse.unsw.edu.au/~kleing/">🌐</a>, <a href="../authors/kolanski/">Rafal Kolanski</a>, <a href="../authors/lim/">Japheth Lim</a>, <a href="../authors/lewis/">Corey Lewis</a>, <a href="../authors/matichuk/">Daniel Matichuk</a> and <a href="../authors/sewell/">Thomas Sewell</a>
       </p>
       <p class="date">June 9, 2016</p>
   </div>
 </header>
       <div>
-        
   <main>
-    <h3>Abstract</h3>
 
+    <h3>Abstract</h3>
     <div class="abstract mathjax_process">This entry contains an extension to the Isabelle library for
 fixed-width machine words. In particular, the entry adds quickcheck setup
 for words, printing as hexadecimals, additional operations, reasoning
@@ -144,6 +119,10 @@ commonly used 32 and 64-bit bases.</div>
     <div>
         <a href="https://isa-afp.org/LICENSE">BSD License</a>
     </div>
+      <h3>Contributions</h3>
+      <p>Multiple contributions and maintainance by Florian Haftmann since 2016</p>
+      <h3>Sep 2024</h3>
+      <p>Some proofs tidied by Lawrence C. Paulson</p>
       <h3>Topics</h3>
       <ul>
           <li><a href="../topics/computer-science/data-structures/">Computer science/Data structures</a></li>
@@ -205,51 +184,28 @@ commonly used 32 and 64-bit bases.</div>
       </ul>
 
     <div class="flex-wrap">
-      <div>
-        <h3>Used by</h3>
-        <ul class="horizontal-list">
-            <li>
-              <a href="../entries/IEEE_Floating_Point.html">A Formal Model of IEEE Floating Point Arithmetic</a>
-            </li>
-            <li>
-              <a href="../entries/Native_Word.html">Native Word</a>
-            </li>
-            <li>
-              <a href="../entries/IP_Addresses.html">IP Addresses</a>
-            </li>
-            <li>
-              <a href="../entries/SPARCv8.html">A formal model for the SPARCv8 ISA and a proof of non-interference for the LEON3 processor</a>
-            </li>
-            <li>
-              <a href="../entries/Complx.html">COMPLX: A Verification Framework for Concurrent Imperative Programs</a>
-            </li>
-            <li>
-              <a href="../entries/CakeML.html">CakeML</a>
-            </li>
-            <li>
-              <a href="../entries/Interval_Arithmetic_Word32.html">Interval Arithmetic on 32-bit Words</a>
-            </li>
-            <li>
-              <a href="../entries/X86_Semantics.html">X86 instruction semantics and basic block symbolic execution</a>
-            </li>
-            <li>
-              <a href="../entries/CHERI-C_Memory_Model.html">A Formal CHERI-C Memory Model</a>
-            </li>
-            <li>
-              <a href="../entries/AutoCorres2.html">AutoCorres2</a>
-            </li>
-            <li>
-              <a href="../entries/Schoenhage_Strassen.html">Schönhage-Strassen Multiplication</a>
-            </li>
-        </ul>
-      </div>
-      </div>
-    
+        <div>
+          <h3>Used by</h3>
+          <ul class="horizontal-list">
+              <li><a href="../entries/IEEE_Floating_Point.html">A Formal Model of IEEE Floating Point Arithmetic</a></li>
+              <li><a href="../entries/Native_Word.html">Native Word</a></li>
+              <li><a href="../entries/IP_Addresses.html">IP Addresses</a></li>
+              <li><a href="../entries/SPARCv8.html">A formal model for the SPARCv8 ISA and a proof of non-interference for the LEON3 processor</a></li>
+              <li><a href="../entries/Complx.html">COMPLX: A Verification Framework for Concurrent Imperative Programs</a></li>
+              <li><a href="../entries/CakeML.html">CakeML</a></li>
+              <li><a href="../entries/Interval_Arithmetic_Word32.html">Interval Arithmetic on 32-bit Words</a></li>
+              <li><a href="../entries/X86_Semantics.html">X86 instruction semantics and basic block symbolic execution</a></li>
+              <li><a href="../entries/CHERI-C_Memory_Model.html">A Formal CHERI-C Memory Model</a></li>
+              <li><a href="../entries/AutoCorres2.html">AutoCorres2</a></li>
+              <li><a href="../entries/Schoenhage_Strassen.html">Schönhage-Strassen Multiplication</a></li>
+          </ul>
+        </div>
+    </div>
   </main>
 
-  <nav class='links'>
-    <a class='popup-button' href="#cite-popup">Cite</a>
-    <a class='popup-button' href="#download-popup">Download</a>
+  <nav class="links">
+    <a class="popup-button" href="#cite-popup">Cite</a>
+    <a class="popup-button" href="#download-popup">Download</a>
     <h4>PDFs</h4>
     <a href="https://www.isa-afp.org/browser_info/current/AFP/Word_Lib/outline.pdf">Proof outline</a>
     <a href="https://www.isa-afp.org/browser_info/current/AFP/Word_Lib/document.pdf">Proof document</a>
@@ -283,80 +239,68 @@ commonly used 32 and 64-bit bases.</div>
     <div class="popup">
       <h2>Download</h2>
       <a class="close" href="#">&times;</a>
-      <a href="https://www.isa-afp.org/release/afp-Word_Lib-current.tar.gz"
-         download>Download latest</a>
+      <a href="https://www.isa-afp.org/release/afp-Word_Lib-current.tar.gz" download>
+        Download latest</a>
         <p>Older releases:</p>
         <ul>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Word_Lib-2024-05-26.tar.gz">
-                May 26, 2024
+              <a href="https://www.isa-afp.org/release/afp-Word_Lib-2024-05-26.tar.gz">May 26, 2024
               </a>
               : Isabelle2024
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Word_Lib-2023-09-13.tar.gz">
-                Sep 13, 2023
+              <a href="https://www.isa-afp.org/release/afp-Word_Lib-2023-09-13.tar.gz">Sep 13, 2023
               </a>
               : Isabelle2023
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Word_Lib-2022-10-27.tar.gz">
-                Oct 27, 2022
+              <a href="https://www.isa-afp.org/release/afp-Word_Lib-2022-10-27.tar.gz">Oct 27, 2022
               </a>
               : Isabelle2022
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Word_Lib-2021-12-14.tar.gz">
-                Dec 14, 2021
+              <a href="https://www.isa-afp.org/release/afp-Word_Lib-2021-12-14.tar.gz">Dec 14, 2021
               </a>
               : Isabelle2021-1
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Word_Lib-2021-02-23.tar.gz">
-                Feb 23, 2021
+              <a href="https://www.isa-afp.org/release/afp-Word_Lib-2021-02-23.tar.gz">Feb 23, 2021
               </a>
               : Isabelle2021
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Word_Lib-2020-04-20.tar.gz">
-                Apr 20, 2020
+              <a href="https://www.isa-afp.org/release/afp-Word_Lib-2020-04-20.tar.gz">Apr 20, 2020
               </a>
               : Isabelle2020
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Word_Lib-2019-06-11.tar.gz">
-                Jun 11, 2019
+              <a href="https://www.isa-afp.org/release/afp-Word_Lib-2019-06-11.tar.gz">Jun 11, 2019
               </a>
               : Isabelle2019
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Word_Lib-2018-08-16.tar.gz">
-                Aug 16, 2018
+              <a href="https://www.isa-afp.org/release/afp-Word_Lib-2018-08-16.tar.gz">Aug 16, 2018
               </a>
               : Isabelle2018
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Word_Lib-2017-10-10.tar.gz">
-                Oct 10, 2017
+              <a href="https://www.isa-afp.org/release/afp-Word_Lib-2017-10-10.tar.gz">Oct 10, 2017
               </a>
               : Isabelle2017
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Word_Lib-2016-12-17.tar.gz">
-                Dec 17, 2016
+              <a href="https://www.isa-afp.org/release/afp-Word_Lib-2016-12-17.tar.gz">Dec 17, 2016
               </a>
               : Isabelle2016-1
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Word_Lib-2016-06-09.tar.gz">
-                Jun 9, 2016
+              <a href="https://www.isa-afp.org/release/afp-Word_Lib-2016-06-09.tar.gz">Jun 9, 2016
               </a>
               : Isabelle2016
             </li>
         </ul>
     </div>
   </div>
-        
       </div>
     </div>
   </body>

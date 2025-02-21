@@ -1873,35 +1873,23 @@ begin
     proof
       fix \<mu>
       assume \<mu>: "B.arr \<mu>"
-      show "isomorphic (UP (src\<^sub>B \<mu>)) (src (UP \<mu>))"
+      show "UP (src\<^sub>B \<mu>) \<cong> src (UP \<mu>)"
       proof -
         let ?\<phi> = "MkArr \<^bold>\<langle>src\<^sub>B \<mu>\<^bold>\<rangle> \<^bold>\<langle>src\<^sub>B \<mu>\<^bold>\<rangle>\<^sub>0 (src\<^sub>B \<mu>)"
         have \<phi>: "\<guillemotleft>?\<phi> : UP (src\<^sub>B \<mu>) \<Rightarrow> src (UP \<mu>)\<guillemotright>"
-        proof
-          show 1: "arr ?\<phi>"
-            using \<mu> by (intro arrI, auto)
-          show "dom ?\<phi> = UP (src\<^sub>B \<mu>)"
-            using \<mu> 1 dom_char UP_def by simp
-          show "cod ?\<phi> = src (UP \<mu>)"
-            using \<mu> 1 cod_char src_def by auto
-        qed
+          using \<mu> UP_def src_def arr_UP
+          by (intro MkArr_in_hom) auto
         have "iso ?\<phi>"
           using \<mu> \<phi> iso_char src_def by auto
         thus ?thesis
           using \<phi> isomorphic_def by auto
       qed
-      show "isomorphic (UP (trg\<^sub>B \<mu>)) (trg (UP \<mu>))"
+      show "UP (trg\<^sub>B \<mu>) \<cong> trg (UP \<mu>)"
       proof -
         let ?\<phi> = "MkArr \<^bold>\<langle>trg\<^sub>B \<mu>\<^bold>\<rangle> \<^bold>\<langle>trg\<^sub>B \<mu>\<^bold>\<rangle>\<^sub>0 (trg\<^sub>B \<mu>)"
         have \<phi>: "\<guillemotleft>?\<phi> : UP (trg\<^sub>B \<mu>) \<Rightarrow> trg (UP \<mu>)\<guillemotright>"
-        proof
-          show 1: "arr ?\<phi>"
-            using \<mu> by (intro arrI, auto)
-          show "dom ?\<phi> = UP (trg\<^sub>B \<mu>)"
-            using \<mu> 1 dom_char UP_def by simp
-          show "cod ?\<phi> = trg (UP \<mu>)"
-            using \<mu> 1 cod_char trg_def by auto
-        qed
+          using \<mu> UP_def trg_def arr_UP
+          by (intro MkArr_in_hom) auto
         have "iso ?\<phi>"
           using \<mu> \<phi> iso_char trg_def by auto
         thus ?thesis
@@ -3100,55 +3088,16 @@ begin
         proof -
           let ?\<mu> = "MkArr (Dom f) (Dom f') \<nu>"
           have \<mu>: "\<guillemotleft>?\<mu> : f \<Rightarrow> f'\<guillemotright>"
-          proof
-            have "Map f = \<lbrace>Dom f\<rbrace>"
-              using f by simp
-            have "Map f' = \<lbrace>Dom f'\<rbrace>"
-              using f' by simp
-            have "Dom f' = Cod f'"
-              using f' Cod_ide by simp
-            show \<mu>: "arr ?\<mu>"
-            proof -
-              have "E.Nml (Dom ?\<mu>) \<and> E.Ide (Dom ?\<mu>)"
-              proof -
-                have "E.Nml (Dom f) \<and> E.Ide (Dom f)"
-                  using f ide_char arr_char by blast
-                thus ?thesis
-                  using f by simp
-              qed
-              moreover have "E.Nml (Cod ?\<mu>) \<and> E.Ide (Cod ?\<mu>)"
-              proof -
-                have "E.Nml (Dom f') \<and> E.Ide (Dom f')"
-                  using f' ide_char arr_char by blast
-                thus ?thesis
-                  using f' by simp
-              qed
-              moreover have "E.Src (Dom ?\<mu>) = E.Src (Cod ?\<mu>)"
-                using f f' \<nu> arr_char src_def eq_src ideD(1) by auto
-              moreover have "E.Trg (Dom ?\<mu>) = E.Trg (Cod ?\<mu>)"
-                using f f' \<nu> arr_char trg_def eq_trg ideD(1) by auto
-              moreover have "\<guillemotleft>Map ?\<mu> : \<lbrace>Dom ?\<mu>\<rbrace> \<Rightarrow>\<^sub>B \<lbrace>Cod ?\<mu>\<rbrace>\<guillemotright>"
-              proof -
-                have "\<guillemotleft>\<nu> : \<lbrace>Dom f\<rbrace> \<Rightarrow>\<^sub>B \<lbrace>Dom f'\<rbrace>\<guillemotright>"
-                  using f f' \<nu> ide_char arr_char DN_def Cod_ide Map_ide
-                  by (metis (no_types, lifting) ideD(1))
-                thus ?thesis by simp
-              qed
-              ultimately show ?thesis
-                using f f' \<nu> ide_char arr_char by blast
-            qed
-            show "dom ?\<mu> = f"
-              using f \<mu> dom_char MkArr_Map MkIde_Dom' by simp
-            show "cod ?\<mu> = f'"
-            proof -
-              have "cod ?\<mu> = MkIde (Dom f')"
-                using \<mu> cod_char by simp
-              also have "... = MkArr (Dom f') (Cod f') (Map f')"
-                using f' by auto
-              also have "... = f'"
-                using f' MkArr_Map by simp
-              finally show ?thesis by simp
-            qed
+          proof -
+            have "E.Src (Dom f) = E.Src (Dom f')"
+              using f f'
+              by (metis (no_types, lifting) eq_src ideD(1) src_simps(2))
+            moreover have "E.Trg (Dom f) = E.Trg (Dom f')"
+              using f f'
+              by (metis (no_types, lifting) eq_trg ideD(1) trg_simps(2))
+            ultimately show ?thesis
+              using f f' \<nu> DN_def MkArr_Map [of f] MkArr_Map [of f']
+              by (intro MkArr_in_hom) auto
           qed
           moreover have "DN ?\<mu> = \<nu>"
             using \<mu> DN_def by auto
@@ -3278,13 +3227,8 @@ begin
           apply (unfold arr_char, intro conjI)
           using assms by auto
         show "\<guillemotleft>MkArr \<^bold>\<langle>a\<^bold>\<rangle>\<^sub>0 \<^bold>\<langle>a\<^bold>\<rangle> a : UP.map\<^sub>0 a \<Rightarrow> UP a\<guillemotright>"
-        proof
-          show "arr (MkArr \<^bold>\<langle>a\<^bold>\<rangle>\<^sub>0 \<^bold>\<langle>a\<^bold>\<rangle> a)" by fact
-          show "dom (MkArr \<^bold>\<langle>a\<^bold>\<rangle>\<^sub>0 \<^bold>\<langle>a\<^bold>\<rangle> a) = UP.map\<^sub>0 a"
-            using assms 1 2 dom_char UP.map\<^sub>0_def UP_def src_def by auto
-          show "cod (MkArr \<^bold>\<langle>a\<^bold>\<rangle>\<^sub>0 \<^bold>\<langle>a\<^bold>\<rangle> a) = UP a"
-            using assms 1 2 cod_char UP.map\<^sub>0_def UP_def src_def by auto
-        qed
+          using assms 1 2 UP_def UP.map\<^sub>0_def src_def
+          by (intro MkArr_in_hom) auto
         show "iso (MkArr \<^bold>\<langle>a\<^bold>\<rangle>\<^sub>0 \<^bold>\<langle>a\<^bold>\<rangle> a)"
           using assms 1 iso_char by auto
         show "MkArr \<^bold>\<langle>a\<^bold>\<rangle>\<^sub>0 \<^bold>\<langle>a\<^bold>\<rangle> a \<cdot> \<i> (UP.map\<^sub>0 a) =

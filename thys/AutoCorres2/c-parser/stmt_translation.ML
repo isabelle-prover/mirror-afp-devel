@@ -295,7 +295,6 @@ fun dest_init_var cse e =
       |> Option.map (fn loc_info => (#init vinfo, x,  loc_info)))
     | _ => NONE
 
-
 fun stmt_term (ctxt : Proof.context)
               (cse : ProgramAnalysis.csenv)
               (state : CalculateState.mungedb)
@@ -374,7 +373,8 @@ fun stmt_term (ctxt : Proof.context)
     end
     val read_annotation = read_annotation ctxt state
 
-    fun seq_rest stmt = if null stmts then stmt else list_mk_seq [stmt, stmt_term stmts]
+    fun seq_rest' stmt stmts = if null stmts then stmt else list_mk_seq [stmt, stmt_term stmts]
+    fun seq_rest stmt = seq_rest' stmt stmts
   in
     case snode stmt of
       Block bilist => stmt_term (bilist2stmts bilist) |> seq_rest
@@ -580,7 +580,7 @@ fun stmt_term (ctxt : Proof.context)
         val (retvar_name, _, cretty, _) =
             hd (#outparams this_fn_info)
             handle Empty => error ("No return parameter for function "^fname)
-        val mvi = MungedVar {munge = MString.mk retvar_name, owned_by = NONE, fname=SOME fname, init=false}
+        val mvi = MungedVar {munge = MString.mk retvar_name, owned_by = NONE, fname=SOME fname, init=false, global=false}
         val retvar =
             ewrap (Var (retvar_name, Unsynchronized.ref (SOME (cretty, mvi))),
                    eleft s,
@@ -1021,7 +1021,7 @@ fun fndefn_term (state : CalculateState.mungedb) cse fninfo rcdinfo memsafe skip
 
   fun mk_init_addressed_param (n, ty, cty, true) =
     let
-      val v = Var (n, Unsynchronized.ref (SOME (cty, MungedVar {fname = SOME fname, init = true, munge = MString.mk n, owned_by = NONE})))
+      val v = Var (n, Unsynchronized.ref (SOME (cty, MungedVar {fname = SOME fname, init = true, munge = MString.mk n, owned_by = NONE, global=false})))
             |> RegionExtras.bogwrap |> ExprDatatype.E |> LocalInit |> RegionExtras.bogwrap |> StmtDeclDatatype.Stmt
     in
       v

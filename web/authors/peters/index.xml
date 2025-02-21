@@ -1,23 +1,22 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Kirstin Peters</title>
     <link>https://isa-afp.org/authors/peters/</link>
-    <description>AFP entries of Kirstin Peters</description>
-        <item>
-          <title>A Constructive Proof for FLP</title>
-          <link>https://isa-afp.org/entries/FLP.html</link>
-          <pubDate>Wed, 18 May 2016 00:00:00 +0000</pubDate>
-          <description>A Constructive Proof for FLP in the AFP</description>
-            <category>Computer science/Concurrency</category>
-        </item>
-        <item>
-          <title>Analysing and Comparing Encodability Criteria for Process Calculi</title>
-          <link>https://isa-afp.org/entries/Encodability_Process_Calculi.html</link>
-          <pubDate>Mon, 10 Aug 2015 00:00:00 +0000</pubDate>
-          <description>Analysing and Comparing Encodability Criteria for Process Calculi in the AFP</description>
-            <category>Computer science/Concurrency/Process calculi</category>
-        </item>
+    <description>AFP entries of Kirstin Peters</description><item>
+  <title>A Constructive Proof for FLP</title>
+  <link>https://isa-afp.org/entries/FLP.html</link>
+  <pubDate>Wed, 18 May 2016 00:00:00 +0000</pubDate>
+  <description>A Constructive Proof for FLP in the AFP</description>
+    <category>Computer science/Concurrency</category>
+</item>
+<item>
+  <title>Analysing and Comparing Encodability Criteria for Process Calculi</title>
+  <link>https://isa-afp.org/entries/Encodability_Process_Calculi.html</link>
+  <pubDate>Mon, 10 Aug 2015 00:00:00 +0000</pubDate>
+  <description>Analysing and Comparing Encodability Criteria for Process Calculi in the AFP</description>
+    <category>Computer science/Concurrency/Process calculi</category>
+</item>
 
   </channel>
 </rss>

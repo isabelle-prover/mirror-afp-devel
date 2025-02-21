@@ -38,6 +38,9 @@ lemma ccpo_Sup: "class.ccpo (Sup :: 'a::complete_lattice set \<Rightarrow> _) (\
 lemma ccpo_flat: "class.ccpo (flat_lub b) (flat_ord b) (mk_less (flat_ord b))"
   using Partial_Function.ccpo[OF flat_interpretation] .
 
+lemma ccpo_ccpo_class': "class.ccpo (Sup :: 'a::ccpo set \<Rightarrow> _) (\<le>) (<)"
+  proof qed
+
 lemma monotone_pair[partial_function_mono]:
   "monotone R orda f \<Longrightarrow> monotone R ordb g \<Longrightarrow> monotone R (rel_prod orda ordb) (\<lambda>x. (f x, g x))"
   by (simp add: monotone_def)
@@ -211,12 +214,35 @@ lemma monotone_bind_option[partial_function_mono]:
 lemma (in ccpo) admissible_ord: "ccpo.admissible Sup (\<le>) (\<lambda>x. x \<le> b)"
   by (clarsimp simp add: ccpo.admissible_def intro!: ccpo_Sup_least)
 
+named_theorems fixed_point_cleanup_simps \<open>Simp set for fixed_point\<close>
+
+lemma monotone_const[partial_function_mono]:
+  "monotone R (\<le>) (\<lambda>x. (c::'a::order))"
+  by (auto simp: monotone_def)
+
+lemma Sup_empty_ccpo[simp]: 
+  "Sup {} = (bot::'a::{ccpo, order_bot})"
+  by (intro le_bot ccpo_Sup_least chain_empty) simp
+
+lemmas [fixed_point_cleanup_simps] =
+  Inf_empty
+  Sup_empty
+  prod_lub_empty
+  fun_lub_empty
+  flat_lub_empty
+  Sup_empty_ccpo
+  fst_conv
+  snd_conv
+  split_paired_all
+  prod.collapse
+
 ML_file \<open>mutual_ccpo_recursion.ML\<close>
 
 setup \<open>
   (Mutual_CCPO_Rec.add_ccpo "option" Mutual_CCPO_Rec.synth_option
     #> Mutual_CCPO_Rec.add_ccpo "lfp" Mutual_CCPO_Rec.synth_lfp
-    #> Mutual_CCPO_Rec.add_ccpo "gfp" Mutual_CCPO_Rec.synth_gfp)
+    #> Mutual_CCPO_Rec.add_ccpo "gfp" Mutual_CCPO_Rec.synth_gfp
+    #> Mutual_CCPO_Rec.add_ccpo "ccpo" Mutual_CCPO_Rec.synth_ccpo_class)
   |> Context.theory_map \<close>
 
 no_notation top (\<open>\<top>\<close>)

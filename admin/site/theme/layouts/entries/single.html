@@ -7,8 +7,8 @@
         Please refer to release versions for citations.
       </strong>
     {{- end }}
-    <h3>Abstract</h3>
 
+    <h3>Abstract</h3>
     <div class="abstract mathjax_process">{{ trim .Params.abstract "\n" | safeHTML }}</div>
 
     <h3>License</h3>
@@ -18,7 +18,7 @@
       {{- else if (eq .Params.license "LGPL") }}
         <a href="{{ .Site.BaseURL }}LICENSE.LGPL">GNU Lesser General Public License (LGPL)</a>
       {{- else }}
-        {{ printf "%s License" .Params.license }}
+        {{- printf "%s License" .Params.license }}
       {{- end }}
     </div>
 
@@ -29,10 +29,10 @@
     {{- with.Params.history }}
       <h3>History</h3>
       <dl>
-      {{- range . }}
-        <dt>{{ dateFormat "January 2, 2006" .date }}</dt>
-        <dd>{{ .value | safeHTML }}</dd>
-      {{- end }}
+        {{- range . }}
+          <dt>{{ dateFormat "January 2, 2006" .date }}</dt>
+          <dd>{{ .value | safeHTML }}</dd>
+        {{- end }}
       </dl>
     {{- end }}
 
@@ -45,7 +45,7 @@
       <h3>Topics</h3>
       <ul>
         {{- range . }}
-        {{- $topic := page.GetPage (printf "/topics/%s" .) }}
+          {{- $topic := page.GetPage (printf "/topics/%s" .) }}
           <li><a href="{{ $topic.RelPermalink }}">{{ $topic.Title }}</a></li>
         {{- end }}
       </ul>
@@ -55,9 +55,7 @@
       <h3>Related publications</h3>
       <ul>
       {{- range . }}
-        <li>
-          {{- . | safeHTML }}
-        </li>
+        <li>{{ . | safeHTML }}</li>
       {{- end }}
       </ul>
     {{- end }}
@@ -73,50 +71,47 @@
     {{- end }}
 
     <div class="flex-wrap">
-    {{- with .Params.dependencies }}
-      <div>
-        <h3>Depends on</h3>
-        <ul class="horizontal-list">
-          {{- range . }}
-            {{- $entry := page.GetPage (printf "/entries/%s" .) }}
+      {{- with .Params.dependencies }}
+        <div>
+          <h3>Depends on</h3>
+          <ul class="horizontal-list">
+            {{- range . }}
+              {{- $entry := page.GetPage (printf "/entries/%s" .) }}
               <li><a href="{{ $entry.RelPermalink }}">{{ $entry.Title | safeHTML }}</a></li>
-          {{- end }}
-        </ul>
-      </div>
-    {{- end }}
+            {{- end }}
+          </ul>
+        </div>
+      {{- end }}
 
-    {{- with .Params.used_by }}
-      <div>
-        <h3>Used by</h3>
-        <ul class="horizontal-list">
-          {{- range . }}
-            {{- $entry := page.GetPage (printf "/entries/%s" .) }}
-            <li>
-              <a href="{{ $entry.RelPermalink }}">{{ $entry.Title | safeHTML }}</a>
-            </li>
-          {{- end }}
-        </ul>
-      </div>
-    {{- end }}
+      {{- with .Params.used_by }}
+        <div>
+          <h3>Used by</h3>
+          <ul class="horizontal-list">
+            {{- range . }}
+              {{- $entry := page.GetPage (printf "/entries/%s" .) }}
+              <li><a href="{{ $entry.RelPermalink }}">{{ $entry.Title | safeHTML }}</a></li>
+            {{- end }}
+          </ul>
+        </div>
+      {{- end }}
 
-    {{- with .Params.similar }}
-      <div>
-        <h3>Similar entries</h3>
-        <ul class="horizontal-list">
-          {{- range . }}
-            {{- $entry := page.GetPage (printf "/entries/%s" .) }}
-            <li><a href="{{ $entry.RelPermalink }}">{{ $entry.Title | safeHTML }}</a></li>
-          {{- end }}
-        </ul>
-      </div>
-    {{- end }}
-      </div>
-    
+      {{- with .Params.similar }}
+        <div>
+          <h3>Similar entries</h3>
+          <ul class="horizontal-list">
+            {{- range . }}
+              {{- $entry := page.GetPage (printf "/entries/%s" .) }}
+              <li><a href="{{ $entry.RelPermalink }}">{{ $entry.Title | safeHTML }}</a></li>
+            {{- end }}
+          </ul>
+        </div>
+      {{- end }}
+    </div>
   </main>
 
-  <nav class='links'>
-    <a class='popup-button' href="#cite-popup">Cite</a>
-    <a class='popup-button' href="#download-popup">Download</a>
+  <nav class="links">
+    <a class="popup-button" href="#cite-popup">Cite</a>
+    <a class="popup-button" href="#download-popup">Download</a>
     <h4>PDFs</h4>
     <a href="{{ $base_url }}/{{ .Site.Params.html_dir }}/AFP/{{ .Params.name }}/outline.pdf">Proof outline</a>
     <a href="{{ $base_url }}/{{ .Site.Params.html_dir }}/AFP/{{ .Params.name }}/document.pdf">Proof document</a>
@@ -150,11 +145,11 @@
           {{- $authors = $authors | append (.name | safeHTML) }}
         {{- end }}
         <pre id="copy-text">@article{{ "{" }}{{ .Params.name }}-AFP,
-  author  = {{ "{" }}{{ delimit $authors " and " }}},
-  title   = {{ "{" }}{{ .Title | safeHTML }}},
+  author  = { {{- delimit $authors " and " -}} },
+  title   = { {{- .Title | safeHTML -}} },
   journal = {Archive of Formal Proofs},
-  month   = { {{- dateFormat "January" .Params.date }}},
-  year    = { {{- dateFormat "2006" .Params.date }}},
+  month   = { {{- dateFormat "January" .Params.date -}} },
+  year    = { {{- dateFormat "2006" .Params.date -}} },
   note    = {\url{ {{- .Permalink -}} },
              Formal proof development},
   ISSN    = {2150-914x},
@@ -169,15 +164,17 @@
     <div class="popup">
       <h2>Download</h2>
       <a class="close" href="#">&times;</a>
-      <a href="{{ $base_url }}/{{ .Site.Params.release_dir }}/afp-{{ .Params.name }}-current.tar.gz"
-         download>Download latest</a>
+      <a href="{{ $base_url }}/{{ .Site.Params.release_dir }}/afp-{{ .Params.name }}-current.tar.gz" download>
+        Download latest
+        {{- "" -}}
+      </a>
       {{- with .Params.releases }}
         <p>Older releases:</p>
         <ul>
           {{- range . }}
             <li>
               <a href="{{ $base_url }}/{{ $.Site.Params.release_dir }}/afp-{{ $.Params.name }}-{{ .date }}.tar.gz">
-                {{ dateFormat "Jan 2, 2006" .date }}
+                {{- dateFormat "Jan 2, 2006" .date }}
               </a>
               : Isabelle{{ .isabelle }}
             </li>

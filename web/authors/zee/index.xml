@@ -1,16 +1,15 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Karen Zee</title>
     <link>https://isa-afp.org/authors/zee/</link>
-    <description>AFP entries of Karen Zee</description>
-        <item>
-          <title>File Refinement</title>
-          <link>https://isa-afp.org/entries/FileRefinement.html</link>
-          <pubDate>Thu, 09 Dec 2004 00:00:00 +0000</pubDate>
-          <description>File Refinement in the AFP</description>
-            <category>Computer science/Data structures</category>
-        </item>
+    <description>AFP entries of Karen Zee</description><item>
+  <title>File Refinement</title>
+  <link>https://isa-afp.org/entries/FileRefinement.html</link>
+  <pubDate>Thu, 09 Dec 2004 00:00:00 +0000</pubDate>
+  <description>File Refinement in the AFP</description>
+    <category>Computer science/Data structures</category>
+</item>
 
   </channel>
 </rss>

@@ -2,11 +2,11 @@
 \<comment>\<open> ********************************************************************
  * Project         : HOL-CSPM - Architectural operators for HOL-CSP
  *
- * Author          : Benoît Ballenghien, Safouan Taha, Burkhart Wolff
+ * Author          : Benoît Ballenghien, Safouan Taha, Burkhart Wolff.
  *
  * This file       : Dining Philosophers example
  *
- * Copyright (c) 2023 Université Paris-Saclay, France
+ * Copyright (c) 2025 Université Paris-Saclay, France
  *
  * All rights reserved.
  *
@@ -42,21 +42,23 @@
 
 
 chapter\<open> Example: Dining Philosophers \<close>
+
+(*<*)
 theory DiningPhilosophers                                               
-  imports CSPM
+  imports CSPM_Laws
 begin 
+  (*>*)
 
 
-
-section \<open>Classic Version\<close>
+section \<open>Classic version\<close>
 
 text \<open>We formalize here the Dining Philosophers problem with a locale.\<close>
 
 
 locale DiningPhilosophers =
-  
-  fixes N::nat
-  assumes N_g1[simp] : \<open>N > 1\<close>  
+
+fixes N::nat
+assumes N_g1[simp] : \<open>N > 1\<close>  
   \<comment>\<open>We assume that we have at least one right handed philosophers
     (so at least two philosophers with the left handed one).\<close>
 
@@ -65,7 +67,7 @@ begin
 text \<open>We use a datatype for representing the dinner's events.\<close>
 
 datatype dining_event  =    picks (phil:nat) (fork:nat) 
-                       | putsdown (phil:nat) (fork:nat)
+  | putsdown (phil:nat) (fork:nat)
 
 
 text \<open>We introduce the right handed philosophers, the left handed philosopher and the forks.\<close>
@@ -104,9 +106,9 @@ definition DINING :: \<open>dining_event process\<close>
 end
 
 
-section \<open>Formalization with \<^theory_text>\<open>fixrec\<close> Package\<close>
+section \<open>Formalization with fixrec package\<close>
 
-text \<open>The \<^theory_text>\<open>fixrec\<close> package of \<^session>\<open>HOLCF\<close> provides a more readable syntax
+text \<open>The fixrec package of \<^session>\<open>HOLCF\<close> provides a more readable syntax
       (essentially, it allows us to "get rid of \<open>\<mu>\<close>" in equations like \<^term>\<open>\<mu> X. P X\<close>).\<close>
 
 text \<open>First, we need to see \<^typ>\<open>nat\<close> as \<^class>\<open>cpo\<close>.\<close>
@@ -123,9 +125,9 @@ qed (rule below_nat_def)
 end
 
 locale DiningPhilosophers_fixrec =
-  
-  fixes N::nat
-  assumes N_g1[simp] : \<open>N > 1\<close>  
+
+fixes N::nat
+assumes N_g1[simp] : \<open>N > 1\<close>  
   \<comment>\<open>We assume that we have at least one right handed philosophers
     (so at least two philosophers with the left handed one).\<close>
 
@@ -134,23 +136,23 @@ begin
 text \<open>We use a datatype for representing the dinner's events.\<close>
 
 datatype dining_event  =    picks (phil:nat) (fork:nat) 
-                       | putsdown (phil:nat) (fork:nat)
+  | putsdown (phil:nat) (fork:nat)
 
 
 text \<open>We introduce the right handed philosophers, the left handed philosopher and the forks.\<close>
 
 fixrec     RPHIL  :: \<open>nat \<rightarrow> dining_event process\<close>
-       and LPHIL0 :: \<open>dining_event process\<close>
-       and FORK   :: \<open>nat \<rightarrow> dining_event process\<close>
-where 
-   RPHIL_rec [simp del] :
-   \<open>RPHIL\<cdot>i = (picks i i \<rightarrow> (picks i (i-1) \<rightarrow> 
+  and LPHIL0 :: \<open>dining_event process\<close>
+  and FORK   :: \<open>nat \<rightarrow> dining_event process\<close>
+  where 
+    RPHIL_rec [simp del] :
+    \<open>RPHIL\<cdot>i = (picks i i \<rightarrow> (picks i (i-1) \<rightarrow> 
               (putsdown i (i-1) \<rightarrow> (putsdown i i \<rightarrow> RPHIL\<cdot>i))))\<close>
- | LPHIL0_rec[simp del] :
-   \<open>LPHIL0 = (picks 0 (N-1) \<rightarrow> (picks 0 0 \<rightarrow> 
+  | LPHIL0_rec[simp del] :
+    \<open>LPHIL0 = (picks 0 (N-1) \<rightarrow> (picks 0 0 \<rightarrow> 
               (putsdown 0 0 \<rightarrow> (putsdown 0 (N-1) \<rightarrow> LPHIL0))))\<close>
- | FORK_rec  [simp del] :
-   \<open>FORK\<cdot>i  = (picks i i \<rightarrow> (putsdown i i \<rightarrow> FORK\<cdot>i)) \<box>
+  | FORK_rec  [simp del] :
+    \<open>FORK\<cdot>i  = (picks i i \<rightarrow> (putsdown i i \<rightarrow> FORK\<cdot>i)) \<box>
               (picks ((i+1) mod N) i \<rightarrow> (putsdown ((i+1) mod N) i \<rightarrow> FORK\<cdot>i))\<close>
 
 
@@ -174,4 +176,6 @@ definition DINING :: \<open>dining_event process\<close>
 
 end
 
+(*<*)
 end
+  (*>*)

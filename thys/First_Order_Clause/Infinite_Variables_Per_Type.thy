@@ -1,11 +1,11 @@
 theory Infinite_Variables_Per_Type
   imports
-    "HOL-Library.Countable_Set" 
+    "HOL-Library.Countable_Set"
     "HOL-Cardinals.Cardinals"
     Fresh_Identifiers.Fresh
 begin
 
-lemma infinite_prods: 
+lemma infinite_prods:
   fixes x :: "'a :: infinite"
   shows "infinite {p :: 'a \<times> 'a. fst p = x}"
 proof -
@@ -20,12 +20,12 @@ qed
 lemma surj_infinite_set: "surj g \<Longrightarrow> infinite {x. f x = ty} \<Longrightarrow> infinite {x. f (g x) = ty}"
   by (smt (verit) UNIV_I finite_imageI image_iff mem_Collect_eq rev_finite_subset subset_eq)
 
-definition infinite_variables_per_type :: "('v \<Rightarrow> 'ty) \<Rightarrow> bool" where 
+definition infinite_variables_per_type :: "('v \<Rightarrow> 'ty) \<Rightarrow> bool" where
   "infinite_variables_per_type \<V> \<equiv> \<forall>ty. infinite {x. \<V> x = ty}"
 
 lemma obtain_type_preserving_inj:
   fixes \<V> :: "'v \<Rightarrow> 'ty"
-  assumes 
+  assumes
     finite_X: "finite X" and
     \<V>: "infinite_variables_per_type \<V>"
   obtains f :: "'v \<Rightarrow> 'v" where
@@ -47,7 +47,7 @@ proof
       by auto
 
     then have "\<exists>g. bij_betw g {x. \<V> x = ty} {x. \<V> x = ty \<and> x \<notin> X}"
-      using card_of_ordIso someI 
+      using card_of_ordIso someI
       by blast
   }
   note exists_g = this
@@ -62,7 +62,7 @@ proof
     fix y
 
     have "\<And>g. bij_betw g {x. \<V> x = \<V> y} {x. \<V> x = \<V> y \<and> x \<notin> X} \<Longrightarrow> g y \<in> {x. \<V> x = \<V> y \<and> x \<notin> X}"
-      using exists_g bij_betwE 
+      using exists_g bij_betwE
       by blast
 
     then have "f y \<in> {x. \<V> x = \<V> y \<and> x \<notin> X}"
@@ -70,9 +70,9 @@ proof
       unfolding f_def get_g_def
       by (smt (verit, ccfv_threshold) someI)
   }
-  
+
   then show "X \<inter> f ` Y = {}"  "\<forall>y\<in>Y. \<V> (f y) = \<V> y"
-    by auto  
+    by auto
 
   show "inj f"
   proof (unfold inj_def, intro allI impI)
@@ -88,11 +88,11 @@ qed
 
 lemma obtain_type_preserving_injs:
   fixes \<V>\<^sub>1 \<V>\<^sub>2 :: "'v \<Rightarrow> 'ty"
-  assumes 
+  assumes
     finite_X: "finite X" and
     \<V>\<^sub>2: "infinite_variables_per_type \<V>\<^sub>2"
   obtains f f' :: "'v \<Rightarrow> 'v" where
-    "inj f" "inj f'" 
+    "inj f" "inj f'"
     "f ` X \<inter> f' ` Y = {}"
     "\<forall>x \<in> X. \<V>\<^sub>1 (f x) = \<V>\<^sub>1 x"
     "\<forall>x \<in> Y. \<V>\<^sub>2 (f' x) = \<V>\<^sub>2 x"
@@ -110,11 +110,11 @@ qed
 
 lemma obtain_type_preserving_injs':
   fixes \<V>\<^sub>1 \<V>\<^sub>2 :: "'v \<Rightarrow> 'ty"
-  assumes 
+  assumes
     finite_Y: "finite Y" and
     \<V>\<^sub>1: "infinite_variables_per_type \<V>\<^sub>1"
   obtains f f' :: "'v \<Rightarrow> 'v" where
-    "inj f" "inj f'" 
+    "inj f" "inj f'"
     "f ` X \<inter> f' ` Y = {}"
     "\<forall>x \<in> X. \<V>\<^sub>1 (f x) = \<V>\<^sub>1 x"
     "\<forall>x \<in> Y. \<V>\<^sub>2 (f' x) = \<V>\<^sub>2 x"
@@ -126,10 +126,10 @@ lemma exists_infinite_variables_per_type:
   shows "\<exists>\<V> :: 'v \<Rightarrow> 'ty. infinite_variables_per_type \<V>"
 proof-
   obtain g :: "'v \<Rightarrow> 'v \<times> 'v" where bij_g: "bij g"
-    using Times_same_infinite_bij_betw_types bij_betw_inv infinite_UNIV 
+    using Times_same_infinite_bij_betw_types bij_betw_inv infinite_UNIV
     by blast
 
-  define f :: "'v \<Rightarrow> 'v" where 
+  define f :: "'v \<Rightarrow> 'v" where
     "\<And>x. f x \<equiv> fst (g x)"
 
   {

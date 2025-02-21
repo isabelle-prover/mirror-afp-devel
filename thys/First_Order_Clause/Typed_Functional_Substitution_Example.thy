@@ -8,12 +8,12 @@ begin
 type_synonym ('f, 'ty) fun_types = "'f \<Rightarrow> 'ty list \<times> 'ty"
 
 text \<open>Inductive predicates defining well-typed terms.\<close>
-inductive typed :: "('f, 'ty) fun_types \<Rightarrow> ('v, 'ty) var_types \<Rightarrow> ('f,'v) term \<Rightarrow> 'ty \<Rightarrow> bool" 
+inductive typed :: "('f, 'ty) fun_types \<Rightarrow> ('v, 'ty) var_types \<Rightarrow> ('f,'v) term \<Rightarrow> 'ty \<Rightarrow> bool"
   for \<F> \<V> where
     Var: "\<V> x = \<tau> \<Longrightarrow> typed \<F> \<V> (Var x) \<tau>"
   | Fun: "\<F> f = (\<tau>s, \<tau>) \<Longrightarrow> typed \<F> \<V> (Fun f ts) \<tau>"
 
-inductive welltyped :: "('f, 'ty) fun_types \<Rightarrow> ('v, 'ty) var_types \<Rightarrow> ('f,'v) term \<Rightarrow> 'ty \<Rightarrow> bool" 
+inductive welltyped :: "('f, 'ty) fun_types \<Rightarrow> ('v, 'ty) var_types \<Rightarrow> ('f,'v) term \<Rightarrow> 'ty \<Rightarrow> bool"
   for \<F> \<V> where
     Var: "\<V> x = \<tau> \<Longrightarrow> welltyped \<F> \<V> (Var x) \<tau>"
   | Fun: "\<F> f = (\<tau>s, \<tau>) \<Longrightarrow> list_all2 (welltyped \<F> \<V>) ts \<tau>s \<Longrightarrow> welltyped \<F> \<V> (Fun f ts) \<tau>"
@@ -37,26 +37,26 @@ next
   qed
 next
   fix t \<tau>
-  assume "welltyped \<F> \<V> t \<tau>" 
+  assume "welltyped \<F> \<V> t \<tau>"
   then show "typed \<F> \<V> t \<tau>"
     by (metis (full_types) typed.simps welltyped.cases)
 qed
 
-global_interpretation "term": base_functional_substitution_typing where 
-  typed = "typed (\<F> :: ('f, 'ty) fun_types)" and welltyped = "welltyped \<F>" and 
+global_interpretation "term": base_functional_substitution_typing where
+  typed = "typed (\<F> :: ('f, 'ty) fun_types)" and welltyped = "welltyped \<F>" and
   subst = subst_apply_term and id_subst = Var and comp_subst = subst_compose and
   vars = "vars_term :: ('f, 'v) term \<Rightarrow> 'v set"
   by (unfold_locales; intro typed.Var welltyped.Var refl)
 
 text \<open>A selection of substitution properties for typed terms.\<close>
 locale typed_term_subst_properties =
-  typed: explicitly_typed_subst_stability where typed = "typed \<F>" + 
-  welltyped: explicitly_typed_subst_stability where typed = "welltyped \<F>" 
-for \<F> :: "('f, 'ty) fun_types" 
+  typed: explicitly_typed_subst_stability where typed = "typed \<F>" +
+  welltyped: explicitly_typed_subst_stability where typed = "welltyped \<F>"
+for \<F> :: "('f, 'ty) fun_types"
 
 global_interpretation "term": typed_term_subst_properties where
   subst = subst_apply_term and id_subst = Var and comp_subst = subst_compose and
-  vars = "vars_term :: ('f, 'v) term \<Rightarrow> 'v set" and \<F> = \<F> 
+  vars = "vars_term :: ('f, 'v) term \<Rightarrow> 'v set" and \<F> = \<F>
 for \<F> :: "'f \<Rightarrow> 'ty list \<times> 'ty"
 proof (unfold_locales)
   fix \<tau> and \<V> and t :: "('f, 'v) term" and \<sigma>
@@ -96,7 +96,7 @@ next
         by (metis subst_apply_eq_Var)
 
       have "welltyped \<F> \<V> t (\<V> x')"
-        unfolding t 
+        unfolding t
         by (simp add: welltyped.Var)
 
       moreover have "welltyped \<F> \<V> t (\<V> x)"
@@ -108,13 +108,13 @@ next
         using Var.hyps
         by (simp add: t welltyped.simps)
 
-      show ?case 
+      show ?case
         unfolding t \<V>_x'
         by (simp add: welltyped.Var)
     next
       case (Fun f \<tau>s \<tau> ts)
 
-      then show ?case 
+      then show ?case
         by (cases t) (simp_all add: list.rel_mono_strong list_all2_map1 welltyped.simps)
     qed
   qed

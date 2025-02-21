@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
+<html lang="en"><head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -11,8 +10,7 @@
   <meta property="og:title" content="Notes on Gödel’s and Scott’s Variants of the Ontological Argument (Isabelle/HOL dataset)" />
   <meta property="og:url" content="https://isa-afp.org/entries/Notes_On_Goedels_Ontological_Argument.html" />
   <meta property="og:image" content="https://isa-afp.org/images/afp.png" />
-  <meta property="og:type" content="article" />
-  
+    <meta property="og:type" content="article" />
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
 
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
@@ -20,11 +18,11 @@
     <script>
       MathJax = {
         tex: {
-          inlineMath: [['$', '$'], ['\\(', '\\)']]
+          inlineMath: [["$", "$"], ["\\(", "\\)"]]
         },
         processEscapes: true,
         svg: {
-          fontCache: 'global'
+          fontCache: "global"
         }
       };
     </script>
@@ -41,9 +39,8 @@
   <script src="../js/search-autocomplete.js"></script>
 </head>
 
-  <body class='mathjax_ignore'>
-    <aside>
-        <div id="menu-toggle">
+  <body class="mathjax_ignore">
+    <aside><div id="menu-toggle">
   <input id="toggle" type="checkbox" />
   <label for="toggle">
     <span>menu</span>
@@ -51,87 +48,65 @@
   </label>
 
   <a href="../" class="logo-link">
-    <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs"
-         class="logo">
+    <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
   </a>
 
   <nav id="menu">
     <div>
-      <a href="../" class='logo-link'>
-        <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs"
-             class="logo">
+      <a href="../" class="logo-link">
+        <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
       </a>
       <ul>
           <a href="../">
-            <li >
-              Home
-            </li>
+            <li >Home</li>
           </a>
           <a href="../topics/">
-            <li >
-              Topics
-            </li>
+            <li >Topics</li>
           </a>
           <a href="../download/">
-            <li >
-              Download
-            </li>
+            <li >Download</li>
           </a>
           <a href="../help/">
-            <li >
-              Help
-            </li>
+            <li >Help</li>
           </a>
           <a href="../submission/">
-            <li >
-              Submission
-            </li>
+            <li >Submission</li>
           </a>
           <a href="../statistics/">
-            <li >
-              Statistics
-            </li>
+            <li >Statistics</li>
           </a>
           <a href="../about/">
-            <li >
-              About
-            </li>
+            <li >About</li>
           </a>
       </ul>
     </div>
   </nav>
 </div>
     </aside>
-    <div class='content entries'>
-      <header>
+
+    <div class="content entries"><header>
     <form autocomplete="off" action="../search">
-      <div class='form-container'>
+      <div class="form-container">
         <input id="search-input" type="search" size="31" maxlength="255" value=""
-               aria-label="Search the AFP" list="autocomplete"><button
-               id="search-button" type="button">
-          <img src="../images/search.svg" alt="Search"/>
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="button">
+          <img src="../images/search.svg" alt="Search" />
         </button>
         <datalist id="autocomplete">
         </datalist>
       </div>
     </form>
-  <h1>
-    <span class='first'>N</span>otes on <span class='first'>G</span>ödel’s and <span class='first'>S</span>cott’s <span class='first'>V</span>ariants of the <span class='first'>O</span>ntological <span class='first'>A</span>rgument (<span class='first'>I</span>sabelle/<span class='first'>H</span><span class='first'>O</span><span class='first'>L</span> dataset)
-    
+  <h1 ><span class='first'>N</span>otes on <span class='first'>G</span>ödel’s and <span class='first'>S</span>cott’s <span class='first'>V</span>ariants of the <span class='first'>O</span>ntological <span class='first'>A</span>rgument (<span class='first'>I</span>sabelle/<span class='first'>H</span><span class='first'>O</span><span class='first'>L</span> dataset)
   </h1>
   <div>
-      <p>
-        <a href="../authors/benzmueller/">Christoph Benzmüller</a> <a class="obfuscated" data="eyJ1c2VyIjpbImMiLCJiZW56bXVlbGxlciJdLCJob3N0IjpbImdtYWlsIiwiY29tIl19">📧</a>
-
+      <p><a href="../authors/benzmueller/">Christoph Benzmüller</a> <a class="obfuscated" data="eyJ1c2VyIjpbImMiLCJiZW56bXVlbGxlciJdLCJob3N0IjpbImdtYWlsIiwiY29tIl19">📧</a> and <a href="../authors/scott/">Dana Scott</a> <a href="http://www.cs.cmu.edu/~scott/">🌐</a>
       </p>
       <p class="date">January 7, 2025</p>
   </div>
 </header>
       <div>
-        
   <main>
-    <h3>Abstract</h3>
 
+    <h3>Abstract</h3>
     <div class="abstract mathjax_process">Experimental studies with Isabelle/HOL on Kurt Gödel’s modal ontological argument and Dana Scott’s variant of it are presented. They implicitly answer some questions that the authors have received over the last decade(s). In addition, some new results are reported.
 
 Our contribution is explained in full detail in an associated journal article. This document presents the corresponding Isabelle/HOL dataset (which is only slightly modified to meet AFP requirements).</div>
@@ -147,8 +122,7 @@ Our contribution is explained in full detail in an associated journal article. T
       </ul>
       <h3>Related publications</h3>
       <ul>
-        <li>Notes on Gödel’s and Scott’s Variants of the Ontological Argument, Monatshefte für Mathematik, to appear.
-        </li>
+        <li>Notes on Gödel’s and Scott’s Variants of the Ontological Argument, Monatshefte für Mathematik, to appear.</li>
       </ul>
       <h3>Session Notes_On_Goedels_Ontological_Argument</h3>
       <ul>
@@ -185,13 +159,12 @@ Our contribution is explained in full detail in an associated journal article. T
       </ul>
 
     <div class="flex-wrap">
-      </div>
-    
+    </div>
   </main>
 
-  <nav class='links'>
-    <a class='popup-button' href="#cite-popup">Cite</a>
-    <a class='popup-button' href="#download-popup">Download</a>
+  <nav class="links">
+    <a class="popup-button" href="#cite-popup">Cite</a>
+    <a class="popup-button" href="#download-popup">Download</a>
     <h4>PDFs</h4>
     <a href="https://www.isa-afp.org/browser_info/current/AFP/Notes_On_Goedels_Ontological_Argument/outline.pdf">Proof outline</a>
     <a href="https://www.isa-afp.org/browser_info/current/AFP/Notes_On_Goedels_Ontological_Argument/document.pdf">Proof document</a>
@@ -206,7 +179,7 @@ Our contribution is explained in full detail in an associated journal article. T
       <div>
         <p style="display:none;" id="bibtex-filename">Notes_On_Goedels_Ontological_Argument-AFP</p>
         <pre id="copy-text">@article{Notes_On_Goedels_Ontological_Argument-AFP,
-  author  = {Christoph Benzmüller},
+  author  = {Christoph Benzmüller and Dana Scott},
   title   = {Notes on Gödel’s and Scott’s Variants of the Ontological Argument (Isabelle/HOL dataset)},
   journal = {Archive of Formal Proofs},
   month   = {January},
@@ -225,11 +198,10 @@ Our contribution is explained in full detail in an associated journal article. T
     <div class="popup">
       <h2>Download</h2>
       <a class="close" href="#">&times;</a>
-      <a href="https://www.isa-afp.org/release/afp-Notes_On_Goedels_Ontological_Argument-current.tar.gz"
-         download>Download latest</a>
+      <a href="https://www.isa-afp.org/release/afp-Notes_On_Goedels_Ontological_Argument-current.tar.gz" download>
+        Download latest</a>
     </div>
   </div>
-        
       </div>
     </div>
   </body>

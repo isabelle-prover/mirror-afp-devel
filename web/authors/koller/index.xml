@@ -1,16 +1,15 @@
-&lt;?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Lukas Koller</title>
     <link>https://isa-afp.org/authors/koller/</link>
-    <description>AFP entries of Lukas Koller</description>
-        <item>
-          <title>Knight&#39;s Tour Revisited Revisited</title>
-          <link>https://isa-afp.org/entries/Knights_Tour.html</link>
-          <pubDate>Tue, 04 Jan 2022 00:00:00 +0000</pubDate>
-          <description>Knight&#39;s Tour Revisited Revisited in the AFP</description>
-            <category>Mathematics/Graph theory</category>
-        </item>
+    <description>AFP entries of Lukas Koller</description><item>
+  <title>Knight&#39;s Tour Revisited Revisited</title>
+  <link>https://isa-afp.org/entries/Knights_Tour.html</link>
+  <pubDate>Tue, 04 Jan 2022 00:00:00 +0000</pubDate>
+  <description>Knight&#39;s Tour Revisited Revisited in the AFP</description>
+    <category>Mathematics/Graph theory</category>
+</item>
 
   </channel>
 </rss>

@@ -388,15 +388,18 @@ object AFP_Site_Gen {
     def theories_of(session_name: String): List[String] =
       sessions_deps(session_name).proper_session_theories.map(_.theory_base_name)
 
-    val distro_sessions =
-      (for ((session_name, (info, _)) <- sessions_structure.imports_graph.iterator if !info.is_afp)
-      yield session_name -> None).toList
-
     val afp_sessions =
       for {
         entry <- entries.values.toList
         session <- entry_sessions(entry)
       } yield session.name -> Some(entry.name)
+
+    val distro_sessions =
+      for {
+        session_name <- sessions_structure.imports_graph.all_preds(afp_sessions.map(_._1))
+        info = sessions_structure(session_name)
+        if !info.is_afp
+      } yield session_name -> None
 
     for ((session_name, entry) <- afp_sessions ::: distro_sessions) {
       val session_dir = browser_info.session_dir(session_name)
