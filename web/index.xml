@@ -35,6 +35,13 @@
           <description></description>
         </item>
         <item>
+          <title>Quantum Fourier Transform</title>
+          <link>/entries/Quantum_Fourier_Transform.html</link>
+          <pubDate>Tue, 28 Jan 2025 00:00:00 +0000</pubDate>
+          <guid>/entries/Quantum_Fourier_Transform.html</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Mission-time Linear Temporal Logic</title>
           <link>/entries/Mission_Time_LTL.html</link>
           <pubDate>Fri, 24 Jan 2025 00:00:00 +0000</pubDate>
@@ -10952,6 +10959,13 @@
           <link>/sessions/quantifier_elimination_hybrid/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
           <guid>/sessions/quantifier_elimination_hybrid/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Quantum_Fourier_Transform</title>
+          <link>/sessions/quantum_fourier_transform/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/quantum_fourier_transform/</guid>
           <description></description>
         </item>
         <item>

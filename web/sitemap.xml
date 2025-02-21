@@ -74,6 +74,15 @@
     <loc>/authors/traytel/</loc>
     <lastmod>2025-02-01T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>/dependencies/isabelle_marries_dirac/</loc>
+    <lastmod>2025-01-28T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/manrique/</loc>
+    <lastmod>2025-01-28T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Quantum_Fourier_Transform.html</loc>
+    <lastmod>2025-01-28T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>/authors/cordwell/</loc>
     <lastmod>2025-01-24T00:00:00+00:00</lastmod>
   </url><url>
@@ -2305,9 +2314,6 @@
   </url><url>
     <loc>/entries/Modular_arithmetic_LLL_and_HNF_algorithms.html</loc>
     <lastmod>2021-03-12T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/isabelle_marries_dirac/</loc>
-    <lastmod>2021-03-03T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/pi_transcendental/</loc>
     <lastmod>2021-03-03T00:00:00+00:00</lastmod>
@@ -7015,6 +7021,8 @@
     <loc>/sessions/quantales_converse/</loc>
   </url><url>
     <loc>/sessions/quantifier_elimination_hybrid/</loc>
+  </url><url>
+    <loc>/sessions/quantum_fourier_transform/</loc>
   </url><url>
     <loc>/sessions/quasi_borel_spaces/</loc>
   </url><url>

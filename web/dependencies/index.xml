@@ -49,6 +49,13 @@
           <description></description>
         </item>
         <item>
+          <title>Isabelle_Marries_Dirac</title>
+          <link>/dependencies/isabelle_marries_dirac/</link>
+          <pubDate>Tue, 28 Jan 2025 00:00:00 +0000</pubDate>
+          <guid>/dependencies/isabelle_marries_dirac/</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Mission_Time_LTL</title>
           <link>/dependencies/mission_time_ltl/</link>
           <pubDate>Fri, 24 Jan 2025 00:00:00 +0000</pubDate>
@@ -1544,13 +1551,6 @@
           <link>/dependencies/smith_normal_form/</link>
           <pubDate>Fri, 12 Mar 2021 00:00:00 +0000</pubDate>
           <guid>/dependencies/smith_normal_form/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Isabelle_Marries_Dirac</title>
-          <link>/dependencies/isabelle_marries_dirac/</link>
-          <pubDate>Wed, 03 Mar 2021 00:00:00 +0000</pubDate>
-          <guid>/dependencies/isabelle_marries_dirac/</guid>
           <description></description>
         </item>
         <item>

@@ -1,0 +1,31 @@
+title = "Quantum Fourier Transform"
+date = 2025-01-28
+topics = [
+  "Computer science/Algorithms/Quantum computing",
+  "Mathematics/Physics/Quantum information",
+]
+abstract = "This work presents a formalization of the Quantum Fourier Transform, a fundamental component of Shor's factoring algorithm, with proofs of its correctness and unitarity. The proof is carried out by induction, relying on the algorithm's recursive definition. This formalization builds upon the Isabelle Marries Dirac quantum computing library, developed by A. Bordg, H. Lachnitt, and Y. He."
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.manrique]
+email = "manrique_email"
+
+[contributors]
+
+[notify]
+manrique = "manrique_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = [
+  "10.1017/CBO9780511976667",
+  "10.1007/s10817-020-09584-7",
+  "10.48550/arXiv.2204.07112",
+]
+pubs = []
