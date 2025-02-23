@@ -4,9 +4,9 @@ text \<open>Here specifically results obtained from lifting existing results usi
 
 theory Misc_Tensor_Product_TTS
   imports
-    Complex_Bounded_Operators.Complex_Bounded_Linear_Function
+    Complex_Bounded_Operators.Complex_L2
+
     Misc_Tensor_Product
-    Misc_Tensor_Product_BO
     With_Type.With_Type
 begin
 

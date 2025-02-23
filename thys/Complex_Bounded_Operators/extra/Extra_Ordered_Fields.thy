@@ -895,11 +895,6 @@ proof intro_classes
 qed
 end
 
-lemma less_eq_complexI: "Re x \<le> Re y \<Longrightarrow> Im x = Im y \<Longrightarrow> x\<le>y" unfolding less_eq_complex_def
-  by simp
-lemma less_complexI: "Re x < Re y \<Longrightarrow> Im x = Im y \<Longrightarrow> x<y" unfolding less_complex_def
-  by simp
-
 lemma complex_of_real_mono:
   "x \<le> y \<Longrightarrow> complex_of_real x \<le> complex_of_real y"
   unfolding less_eq_complex_def by auto
@@ -919,17 +914,5 @@ lemma complex_of_real_nn_iff[simp]:
 lemma complex_of_real_pos_iff[simp]:
   "0 < complex_of_real y \<longleftrightarrow> 0 < y"
   unfolding less_complex_def by auto
-
-lemma Re_mono: "x \<le> y \<Longrightarrow> Re x \<le> Re y"
-  unfolding less_eq_complex_def by simp
-
-lemma comp_Im_same: "x \<le> y \<Longrightarrow> Im x = Im y"
-  unfolding less_eq_complex_def by simp
-
-lemma Re_strict_mono: "x < y \<Longrightarrow> Re x < Re y"
-  unfolding less_complex_def by simp
-
-lemma complex_of_real_cmod: \<open>complex_of_real (cmod x) = abs x\<close>
-  by (simp add: abs_complex_def)
 
 end

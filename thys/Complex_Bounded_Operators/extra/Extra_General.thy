@@ -104,6 +104,32 @@ lemma countable_leq_natLeq: \<open>|X| \<le>o natLeq\<close> if \<open>countable
 lemma set_Times_plus_distrib: \<open>(A \<times> B) + (C \<times> D) = (A + C) \<times> (B + D)\<close>
   by (auto simp: Sigma_def set_plus_def)
 
+definition (in order) \<open>is_Sup X s \<longleftrightarrow> (\<forall>x\<in>X. x \<le> s) \<and> (\<forall>y. (\<forall>x\<in>X. x \<le> y) \<longrightarrow> s \<le> y)\<close>
+definition (in order) \<open>has_Sup X \<longleftrightarrow> (\<exists>s. is_Sup X s)\<close>
+
+lemma (in order) is_SupI:
+  assumes \<open>\<And>x. x \<in> X \<Longrightarrow> x \<le> s\<close>
+  assumes \<open>\<And>y. (\<And>x. x \<in> X \<Longrightarrow> x \<le> y) \<Longrightarrow> s \<le> y\<close>
+  shows \<open>is_Sup X s\<close>
+  using assms by (auto simp add: is_Sup_def)
+
+lemma is_Sup_approx_below:
+  fixes b :: \<open>'a::linordered_ab_group_add\<close>
+  assumes \<open>is_Sup A b\<close>
+  assumes \<open>\<epsilon> > 0\<close>
+  shows \<open>\<exists>x\<in>A. b - \<epsilon> \<le> x\<close>
+proof (rule ccontr)
+  assume \<open>\<not> (\<exists>x\<in>A. b - \<epsilon> \<le> x)\<close>
+  then have \<open>b - \<epsilon> \<ge> x\<close> if \<open>x \<in> A\<close> for x
+    using that by auto
+  with assms
+  have \<open>b \<le> b - \<epsilon>\<close>
+    by (simp add: is_Sup_def)
+  with \<open>\<epsilon> > 0\<close>
+  show False
+    by simp
+qed
+
 subsection \<open>Not singleton\<close>
 
 class not_singleton =
@@ -474,6 +500,8 @@ proof -
     by (metis (mono_tags, lifting) case_prod_unfold prod.swap_def summable_on_cong)
 qed
 
+
+
 subsection \<open>Complex numbers\<close>
 
 lemma cmod_Re:
@@ -508,6 +536,81 @@ lemma complex_of_real_leq_1_iff[iff]: \<open>complex_of_real x \<le> 1 \<longlef
 
 lemma x_cnj_x: \<open>x * cnj x = (abs x)\<^sup>2\<close>
   by (metis cnj_x_x mult.commute)
+
+lemma has_sum_mono_neutral_complex:
+  fixes f :: "'a \<Rightarrow> complex"
+  assumes \<open>(f has_sum a) A\<close> and "(g has_sum b) B"
+  assumes \<open>\<And>x. x \<in> A\<inter>B \<Longrightarrow> f x \<le> g x\<close>
+  assumes \<open>\<And>x. x \<in> A-B \<Longrightarrow> f x \<le> 0\<close>
+  assumes \<open>\<And>x. x \<in> B-A \<Longrightarrow> g x \<ge> 0\<close>
+  shows "a \<le> b"
+proof -
+  have \<open>((\<lambda>x. Re (f x)) has_sum Re a) A\<close>
+    using assms(1) has_sum_Re has_sum_cong by blast
+  moreover have \<open>((\<lambda>x. Re (g x)) has_sum Re b) B\<close>
+    using assms(2) has_sum_Re has_sum_cong by blast
+  ultimately have Re: \<open>Re a \<le> Re b\<close>
+    apply (rule has_sum_mono_neutral)
+    using assms(3-5) by (simp_all add: less_eq_complex_def)
+  have \<open>((\<lambda>x. Im (f x)) has_sum Im a) A\<close>
+    using assms(1) has_sum_Im has_sum_cong by blast
+  then have \<open>((\<lambda>x. Im (f x)) has_sum Im a) (A \<inter> B)\<close>
+    apply (rule has_sum_cong_neutral[THEN iffD1, rotated -1])
+    using assms(3-5) by (auto simp add: less_eq_complex_def)
+  moreover have \<open>((\<lambda>x. Im (g x)) has_sum Im b) B\<close>
+    using assms(2) has_sum_Im has_sum_cong by blast
+  then have \<open>((\<lambda>x. Im (f x)) has_sum Im b) (A \<inter> B)\<close>
+    apply (rule has_sum_cong_neutral[THEN iffD1, rotated -1])
+    using assms(3-5) by (auto simp add: less_eq_complex_def)
+  ultimately have Im: \<open>Im a = Im b\<close>
+    by (rule has_sum_unique)
+  from Re Im show ?thesis
+    using less_eq_complex_def by blast
+qed
+
+lemma Re_mono: "x \<le> y \<Longrightarrow> Re x \<le> Re y"
+  unfolding less_eq_complex_def by simp
+
+lemma comp_Im_same: "x \<le> y \<Longrightarrow> Im x = Im y"
+  unfolding less_eq_complex_def by simp
+
+lemma Re_strict_mono: "x < y \<Longrightarrow> Re x < Re y"
+  unfolding less_complex_def by simp
+
+lemma complex_of_real_cmod: \<open>complex_of_real (cmod x) = abs x\<close>
+  by (simp add: abs_complex_def)
+
+lemma less_eq_complexI: "Re x \<le> Re y \<Longrightarrow> Im x = Im y \<Longrightarrow> x\<le>y" unfolding less_eq_complex_def
+  by simp
+lemma less_complexI: "Re x < Re y \<Longrightarrow> Im x = Im y \<Longrightarrow> x<y" unfolding less_complex_def
+  by simp
+
+lemma sums_le_complex: 
+  fixes f g :: "nat \<Rightarrow> complex"
+  assumes \<open>\<And>n. f n \<le> g n\<close>
+  assumes \<open>f sums s\<close>
+  assumes \<open>g sums t\<close>
+  shows \<open>s \<le> t\<close>
+proof -
+  have \<open>Re (f n) \<le> Re (g n)\<close> for n
+    by (simp add: Re_mono assms(1)) 
+  moreover have \<open>(\<lambda>n. Re (f n)) sums Re s\<close>
+    using assms(2) sums_Re by auto 
+  moreover have \<open>(\<lambda>n. Re (g n)) sums Re t\<close>
+    using assms(3) sums_Re by auto 
+  ultimately have re: \<open>Re s \<le> Re t\<close>
+    by (rule sums_le)
+  have \<open>Im (f n) = Im (g n)\<close> for n
+    by (simp add: assms(1) comp_Im_same) 
+  moreover have \<open>(\<lambda>n. Im (f n)) sums Im s\<close>
+    using assms(2) sums_Im by auto 
+  moreover have \<open>(\<lambda>n. Im (g n)) sums Im t\<close>
+    using assms(3) sums_Im by auto 
+  ultimately have im: \<open>Im s = Im t\<close>
+    using sums_unique2 by auto 
+  from re im show \<open>s \<le> t\<close>
+    using less_eq_complexI by auto 
+qed
 
 subsection \<open>List indices and enum\<close>
 
@@ -789,5 +892,51 @@ proof (intro in_closure_of[THEN iffD2] conjI impI allI)
     using eventually_happens' by blast
 qed
 
+subsection \<open>Separating sets\<close>
+
+definition separating_set :: \<open>(('a \<Rightarrow> 'b) \<Rightarrow> bool) \<Rightarrow> 'a set \<Rightarrow> bool\<close> where
+  \<open>separating_set P S \<longleftrightarrow> (\<forall>f g. P f \<longrightarrow> P g \<longrightarrow> (\<forall>x\<in>S. f x = g x) \<longrightarrow> f = g)\<close>
+
+lemma separating_set_mono: \<open>S \<subseteq> T \<Longrightarrow> separating_set P S \<Longrightarrow> separating_set P T\<close>
+  unfolding separating_set_def by fast
+
+lemma separating_set_UNIV[simp]: \<open>separating_set P UNIV\<close>
+  by (auto intro!: ext simp: separating_set_def)
+
+lemma eq_from_separatingI:
+  assumes \<open>separating_set P S\<close>
+  assumes \<open>P f\<close> and \<open>P g\<close>
+  assumes \<open>\<And>x. x \<in> S \<Longrightarrow> f x = g x\<close>
+  shows \<open>f = g\<close>
+  using assms by (simp add: separating_set_def)
+
+lemma eq_from_separatingIx:
+  \<comment> \<open>When using this as a rule, best instantiate \<^term>\<open>x\<close> explicitly.\<close>
+  assumes \<open>separating_set P S\<close>
+  assumes \<open>P f\<close> and \<open>P g\<close>
+  assumes \<open>\<And>x. x \<in> S \<Longrightarrow> f x = g x\<close>
+  shows \<open>f x = g x\<close>
+  using assms eq_from_separatingI by blast
+
+lemma eq_from_separatingI2:
+  assumes \<open>separating_set P ((\<lambda>(x,y). h x y) ` (S\<times>T))\<close>
+  assumes \<open>P f\<close> and \<open>P g\<close>
+  assumes \<open>\<And>x y. x \<in> S \<Longrightarrow> y \<in> T \<Longrightarrow> f (h x y) = g (h x y)\<close>
+  shows \<open>f = g\<close>
+  apply (rule eq_from_separatingI[OF assms(1)])
+  using assms(2-4) by auto
+
+lemma eq_from_separatingI2x:
+  \<comment> \<open>When using this as a rule, best instantiate \<^term>\<open>x\<close> explicitly.\<close>
+  assumes \<open>separating_set P ((\<lambda>(x,y). h x y) ` (S\<times>T))\<close>
+  assumes \<open>P f\<close> and \<open>P g\<close>
+  assumes \<open>\<And>x y. x \<in> S \<Longrightarrow> y \<in> T \<Longrightarrow> f (h x y) = g (h x y)\<close>
+  shows \<open>f x = g x\<close>
+  using assms eq_from_separatingI2 by blast
+
+lemma separating_setI:
+  assumes \<open>\<And>f g. P f \<Longrightarrow> P g \<Longrightarrow> (\<And>x. x\<in>S \<Longrightarrow> f x = g x) \<Longrightarrow> f = g\<close>
+  shows \<open>separating_set P S\<close>
+  by (simp add: assms separating_set_def)
 
 end

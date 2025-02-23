@@ -808,6 +808,24 @@ proof -
     by -
 qed
 
+lemma cfinite_dim_subspace_has_onb:
+  assumes \<open>cfinite_dim S\<close> and \<open>csubspace S\<close>
+  shows \<open>\<exists>B. finite B \<and> is_ortho_set B \<and> cspan B = S \<and> (\<forall>x\<in>B. norm x = 1)\<close>
+proof -
+  from assms
+  obtain C where \<open>finite C\<close> and \<open>cindependent C\<close> and \<open>cspan C = S\<close>
+    using cfinite_dim_subspace_has_basis by blast
+  obtain B where \<open>finite B\<close> and \<open>is_ortho_set B\<close> and \<open>cspan B = cspan C\<close>
+    and norm: \<open>x \<in> B \<Longrightarrow> norm x = 1\<close> for x
+    using orthonormal_basis_of_cspan[OF \<open>finite C\<close>]
+    by blast
+  with \<open>cspan C = S\<close> have \<open>cspan B = S\<close>
+    by simp
+  with \<open>finite B\<close> and \<open>is_ortho_set B\<close> and norm
+  show ?thesis
+    by blast
+qed
+
 
 subsection \<open>Projections\<close>
 
@@ -1822,7 +1840,10 @@ lemma orthogonal_spaces_leq_compl: \<open>orthogonal_spaces S T \<longleftrighta
   unfolding orthogonal_spaces_def apply transfer
   by (auto simp: orthogonal_complement_def)
 
-lemma orthogonal_bot[simp]: \<open>orthogonal_spaces S bot\<close>
+lemma orthogonal_spaces_bot_right[simp]: \<open>orthogonal_spaces S bot\<close>
+  by (simp add: orthogonal_spaces_def)
+
+lemma orthogonal_spaces_bot_left[simp]: \<open>orthogonal_spaces bot S\<close>
   by (simp add: orthogonal_spaces_def)
 
 lemma orthogonal_spaces_sym: \<open>orthogonal_spaces S T \<Longrightarrow> orthogonal_spaces T S\<close>
@@ -1843,6 +1864,16 @@ lemma orthogonal_sum:
 
 lemma orthogonal_spaces_ccspan: \<open>(\<forall>x\<in>S. \<forall>y\<in>T. is_orthogonal x y) \<longleftrightarrow> orthogonal_spaces (ccspan S) (ccspan T)\<close>
   by (meson ccspan_leq_ortho_ccspan ccspan_superset orthogonal_spaces_def orthogonal_spaces_leq_compl subset_iff)
+
+lemma orthogonal_spaces_SUP_left:
+  assumes \<open>\<And>x. x \<in> X \<Longrightarrow> orthogonal_spaces (A x) B\<close>
+  shows \<open>orthogonal_spaces (SUP x\<in>X. A x) B\<close>
+  by (meson SUP_least assms orthogonal_spaces_leq_compl) 
+
+lemma orthogonal_spaces_SUP_right:
+  assumes \<open>\<And>x. x \<in> X \<Longrightarrow> orthogonal_spaces A (B x)\<close>
+  shows \<open>orthogonal_spaces A (SUP x\<in>X. B x)\<close>
+  by (meson assms orthogonal_spaces_SUP_left orthogonal_spaces_sym) 
 
 subsection \<open>Orthonormal bases\<close>
 
@@ -2582,5 +2613,37 @@ proof -
   then show \<open>closure (cspan S) = UNIV\<close>
     by (simp add: orthogonal_complement_orthogonal_complement_closure_cspan)
 qed
+
+lemma antilinear_cinner:
+  shows \<open>antilinear (\<lambda>x. x \<bullet>\<^sub>C y)\<close>
+  by (simp add: antilinearI cinner_add_left)
+
+lemma cinner_extensionality_basis:
+  fixes g h :: \<open>'a::complex_inner\<close>
+  assumes \<open>ccspan B = top\<close>
+  assumes \<open>\<And>x. x \<in> B \<Longrightarrow> x \<bullet>\<^sub>C g = x \<bullet>\<^sub>C h\<close>
+  shows \<open>g = h\<close>
+proof (rule cinner_extensionality)
+  fix y :: 'a
+  have \<open>y \<in> closure (cspan B)\<close>
+    using assms(1) ccspan.rep_eq by fastforce
+  then obtain x where \<open>x \<longlonglongrightarrow> y\<close> and xB: \<open>x i \<in> cspan B\<close> for i
+    using closure_sequential by blast
+  have lin: \<open>antilinear (\<lambda>a. a \<bullet>\<^sub>C g - a \<bullet>\<^sub>C h)\<close>
+    by (intro antilinear_diff antilinear_cinner)
+  from lin have \<open>x i \<bullet>\<^sub>C g - x i \<bullet>\<^sub>C h = 0\<close> for i
+    apply (rule antilinear_eq_0_on_span[of _ B])
+    using xB assms by auto
+  then have \<open>(\<lambda>i. x i \<bullet>\<^sub>C g - x i \<bullet>\<^sub>C h) \<longlonglongrightarrow> 0\<close> for i
+    by simp
+  moreover have \<open>(\<lambda>i. x i \<bullet>\<^sub>C g - x i \<bullet>\<^sub>C h) \<longlonglongrightarrow> y \<bullet>\<^sub>C g - y \<bullet>\<^sub>C h\<close>
+    apply (rule_tac continuous_imp_tendsto[unfolded o_def, OF _ \<open>x \<longlonglongrightarrow> y\<close>])
+    by simp
+  ultimately have \<open>y \<bullet>\<^sub>C g - y \<bullet>\<^sub>C h = 0\<close>
+    using LIMSEQ_unique by blast
+  then show \<open>y \<bullet>\<^sub>C g = y \<bullet>\<^sub>C h\<close>
+    by simp
+qed
+
 
 end

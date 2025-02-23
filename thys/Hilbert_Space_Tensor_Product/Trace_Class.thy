@@ -1542,6 +1542,11 @@ end
 lemma from_trace_class_0[simp]: \<open>from_trace_class 0 = 0\<close>
   by (simp add: zero_trace_class.rep_eq)
 
+lemma not_not_singleton_tc_zero:
+  \<open>x = 0\<close> if \<open>\<not> class.not_singleton TYPE('a)\<close> for x :: \<open>('a::chilbert_space,'b::chilbert_space) trace_class\<close>
+  apply transfer'
+  using that by (rule not_not_singleton_cblinfun_zero)
+
 instantiation trace_class :: (chilbert_space, chilbert_space) "{complex_normed_vector}" begin
 (* Definitions related to the trace norm *)
 lift_definition norm_trace_class :: \<open>('a,'b) trace_class \<Rightarrow> real\<close> is trace_norm .
@@ -2530,6 +2535,10 @@ lemma norm_tc_butterfly: \<open>norm (tc_butterfly \<psi> \<phi>) = norm \<psi> 
   apply (transfer fixing: \<psi> \<phi>)
   by (simp add: trace_norm_butterfly)
 
+lemma trace_tc_butterfly: \<open>trace_tc (tc_butterfly x y) = y \<bullet>\<^sub>C x\<close>
+  apply (transfer fixing: x y)
+  by (rule trace_butterfly)
+
 lemma comp_tc_butterfly[simp]: \<open>tc_compose (tc_butterfly a b) (tc_butterfly c d) = (b \<bullet>\<^sub>C c) *\<^sub>C tc_butterfly a d\<close>
   apply transfer'
   by simp
@@ -3210,7 +3219,7 @@ proof -
       also from \<open>x \<le> z\<close> \<open>y \<le> z\<close> have \<open>\<dots> = (trace_tc z - trace_tc x) + (trace_tc z - trace_tc y)\<close>
         by (metis (no_types, lifting) cross3_simps(16) diff_left_mono diff_self norm_tc_pos of_real_add trace_tc_plus)
       also from \<open>x \<le> z\<close> \<open>y \<le> z\<close> have \<open>\<dots> = norm (trace_tc z - trace_tc x) + norm (trace_tc z - trace_tc y)\<close>                  
-        by (simp add: Extra_Ordered_Fields.complex_of_real_cmod trace_tc_mono abs_pos)
+        by (simp add: complex_of_real_cmod trace_tc_mono abs_pos)
       also have \<open>\<dots> = dist (trace_tc z) (trace_tc x) + dist (trace_tc z) (trace_tc y)\<close>
         using dist_complex_def by presburger
       also have \<open>\<dots> \<le> (dist (trace_tc z) l + dist (trace_tc x) l) + (dist (trace_tc z) l + dist (trace_tc y) l)\<close> 
@@ -3394,8 +3403,55 @@ proof -
     by (metis (mono_tags, lifting) assms(2) norm_tc_pos_Re summable_on_cong)
 qed
 
+lemma sandwich_tc_eq0_D:
+  assumes eq0: \<open>\<And>\<rho>. \<rho> \<ge> 0 \<Longrightarrow> norm \<rho> \<le> B \<Longrightarrow> sandwich_tc a \<rho> = 0\<close>
+  assumes Bpos: \<open>B > 0\<close>
+  shows \<open>a = 0\<close>
+proof (rule ccontr)
+  assume \<open>a \<noteq> 0\<close>
+  obtain h where \<open>a h \<noteq> 0\<close>
+  proof (atomize_elim, rule ccontr)
+    assume \<open>\<nexists>h. a *\<^sub>V h \<noteq> 0\<close>
+    then have \<open>a h = 0\<close> for h
+      by blast
+    then have \<open>a = 0\<close>
+      by (auto intro!: cblinfun_eqI)
+    with \<open>a \<noteq> 0\<close>
+    show False
+      by simp
+  qed
+  then have \<open>h \<noteq> 0\<close>
+    by force
 
+  define k where \<open>k = sqrt B *\<^sub>R sgn h\<close>
+  from \<open>a h \<noteq> 0\<close> Bpos have \<open>a k \<noteq> 0\<close>
+    by (smt (verit, best) cblinfun.scaleR_right k_def linordered_field_class.inverse_positive_iff_positive real_sqrt_gt_zero scaleR_simps(7) sgn_div_norm zero_less_norm_iff)
+  have \<open>norm (from_trace_class (sandwich_tc a (tc_butterfly k k))) = norm (butterfly (a k) (a k))\<close>
+    by (simp add: from_trace_class_sandwich_tc tc_butterfly.rep_eq sandwich_butterfly)
+  also have \<open>\<dots> = (norm (a k))\<^sup>2\<close>
+    by (simp add: norm_butterfly power2_eq_square)
+  also from \<open>a k \<noteq> 0\<close>
+  have \<open>\<dots> \<noteq> 0\<close>
+    by simp
+  finally have sand_neq0: \<open>sandwich_tc a (tc_butterfly k k) \<noteq> 0\<close>
+    by fastforce
 
+  have \<open>norm (tc_butterfly k k) = B\<close>
+    using \<open>h \<noteq> 0\<close> Bpos
+    by (simp add: norm_tc_butterfly k_def norm_sgn)
+  with sand_neq0 assms
+  show False
+    by simp
+qed
+
+lemma sandwich_tc_butterfly: \<open>sandwich_tc c (tc_butterfly a b) = tc_butterfly (c a) (c b)\<close>
+  by (metis from_trace_class_inverse from_trace_class_sandwich_tc sandwich_butterfly tc_butterfly.rep_eq)
+
+lemma tc_butterfly_0_left[simp]: \<open>tc_butterfly 0 t = 0\<close>
+  by (metis mult_eq_0_iff norm_eq_zero norm_tc_butterfly)
+
+lemma tc_butterfly_0_right[simp]: \<open>tc_butterfly t 0 = 0\<close>
+  by (metis mult_eq_0_iff norm_eq_zero norm_tc_butterfly)
 
 subsection \<open>More Hilbert-Schmidt\<close>
 
@@ -3858,6 +3914,15 @@ qed
 
 
 hide_fact finite_rank_tc_dense_aux
+
+lemma ccspan_finite_rank_tc[simp]: \<open>ccspan (Collect finite_rank_tc) = \<top>\<close>
+  apply transfer'
+  apply (rule order_top_class.top_le)
+  by (metis complex_vector.span_eq_iff csubspace_finite_rank_tc finite_rank_tc_dense order.refl)
+
+lemma ccspan_rank1_tc[simp]: \<open>ccspan (Collect rank1_tc) = \<top>\<close>
+  by (smt (verit, ccfv_SIG) basic_trans_rules(31) ccspan.rep_eq ccspan_finite_rank_tc ccspan_leqI ccspan_mono closure_subset
+      complex_vector.span_superset cspan_eqI finite_rank_tc_def' mem_Collect_eq order_trans_rules(24))
 
 
 lemma onb_butterflies_span_trace_class:
