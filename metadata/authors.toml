@@ -4347,6 +4347,23 @@ host = [
 [maletzky.homepages]
 maletzky_homepage = "https://risc.jku.at/m/alexander-maletzky/"
 
+[manrique]
+name = "Pablo Manrique"
+orcid = "0009-0000-8648-5843"
+
+[manrique.emails]
+
+[manrique.emails.manrique_email]
+user = [
+  "pablomm01",
+]
+host = [
+  "gmail",
+  "com",
+]
+
+[manrique.homepages]
+
 [mansky]
 name = "Susannah Mansky"
 

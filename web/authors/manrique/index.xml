@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Pablo Manrique</title>
+    <link>https://isa-afp.org/authors/manrique/</link>
+    <description>AFP entries of Pablo Manrique</description><item>
+  <title>Quantum Fourier Transform</title>
+  <link>https://isa-afp.org/entries/Quantum_Fourier_Transform.html</link>
+  <pubDate>Tue, 28 Jan 2025 00:00:00 +0000</pubDate>
+  <description>Quantum Fourier Transform in the AFP</description>
+    <category>Computer science/Algorithms/Quantum computing</category>
+    <category>Mathematics/Physics/Quantum information</category>
+</item>
+
+  </channel>
+</rss>

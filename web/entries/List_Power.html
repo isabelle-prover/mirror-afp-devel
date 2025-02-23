@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Power Operator for Lists - Archive of Formal Proofs</title>
+    <meta name="description" content="Power Operator for Lists in the Archive of Formal Proofs" />
+    <meta property="og:description" content="Power Operator for Lists in the Archive of Formal Proofs" />
+
+  <meta property="og:title" content="Power Operator for Lists" />
+  <meta property="og:url" content="https://isa-afp.org/entries/List_Power.html" />
+  <meta property="og:image" content="https://isa-afp.org/images/afp.png" />
+    <meta property="og:type" content="article" />
+  <link rel="stylesheet" type="text/css" href="../css/front.min.css">
+
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
+    
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [["$", "$"], ["\\(", "\\)"]]
+        },
+        processEscapes: true,
+        svg: {
+          fontCache: "global"
+        }
+      };
+    </script>
+    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
+    </script>
+    <script src="../js/entries.js"></script>
+
+  <script src="../js/obfuscate.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
+  <script src="../js/scroll-spy.js"></script>
+  <script src="../js/theory.js"></script>
+  <script src="../js/util.js"></script>
+    <script src="../js/header-search.js"></script>
+  <script src="../js/search-autocomplete.js"></script>
+</head>
+
+  <body class="mathjax_ignore">
+    <aside><div id="menu-toggle">
+  <input id="toggle" type="checkbox" />
+  <label for="toggle">
+    <span>menu</span>
+    <img src="../images/menu.svg" alt="Menu" />
+  </label>
+
+  <a href="../" class="logo-link">
+    <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
+  </a>
+
+  <nav id="menu">
+    <div>
+      <a href="../" class="logo-link">
+        <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
+      </a>
+      <ul>
+          <a href="../">
+            <li >Home</li>
+          </a>
+          <a href="../topics/">
+            <li >Topics</li>
+          </a>
+          <a href="../download/">
+            <li >Download</li>
+          </a>
+          <a href="../help/">
+            <li >Help</li>
+          </a>
+          <a href="../submission/">
+            <li >Submission</li>
+          </a>
+          <a href="../statistics/">
+            <li >Statistics</li>
+          </a>
+          <a href="../about/">
+            <li >About</li>
+          </a>
+      </ul>
+    </div>
+  </nav>
+</div>
+    </aside>
+
+    <div class="content entries"><header>
+    <form autocomplete="off" action="../search">
+      <div class="form-container">
+        <input id="search-input" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="button">
+          <img src="../images/search.svg" alt="Search" />
+        </button>
+        <datalist id="autocomplete">
+        </datalist>
+      </div>
+    </form>
+  <h1 ><span class='first'>P</span>ower <span class='first'>O</span>perator for <span class='first'>L</span>ists
+  </h1>
+  <div>
+      <p><a href="../authors/holub/">Štěpán Holub</a> <a class="obfuscated" data="eyJ1c2VyIjpbImhvbHViIl0sImhvc3QiOlsia2FybGluIiwibWZmIiwiY3VuaSIsImN6Il19">📧</a>, <a href="../authors/raska/">Martin Raška</a>, <a href="../authors/starosta/">Štěpán Starosta</a> <a class="obfuscated" data="eyJ1c2VyIjpbInN0ZXBhbiIsInN0YXJvc3RhIl0sImhvc3QiOlsiZml0IiwiY3Z1dCIsImN6Il19">📧</a> and <a href="../authors/nipkow/">Tobias Nipkow</a> <a class="obfuscated" data="eyJ1c2VyIjpbIm5pcGtvdyJdLCJob3N0IjpbImluIiwidHVtIiwiZGUiXX0=">📧</a>
+      </p>
+      <p class="date">January 29, 2025</p>
+  </div>
+</header>
+      <div>
+  <main>
+
+    <h3>Abstract</h3>
+    <div class="abstract mathjax_process">This entry defines the power operator <code>xs ^^ n</code>, the <code>n</code>-fold
+concatenation of <code>xs</code> with itself.
+<p>
+Much of the theory is taken from the AFP entry
+<a href="https://www.isa-afp.org/entries/Combinatorics_Words.html">Combinatorics on Words Basics</a>
+where the operator is called <code>^@</code>. This new entry uses the standard overloaded
+<code>^^</code> syntax and is aimed at becoming the central theory of the power operator for lists
+that can be extended easily.</div>
+
+    <h3>License</h3>
+    <div>
+        <a href="https://isa-afp.org/LICENSE">BSD License</a>
+    </div>
+      <h3>Topics</h3>
+      <ul>
+          <li><a href="../topics/computer-science/functional-programming/">Computer science/Functional programming</a></li>
+          <li><a href="../topics/computer-science/data-structures/">Computer science/Data structures</a></li>
+          <li><a href="../topics/computer-science/automata-and-formal-languages/">Computer science/Automata and formal languages</a></li>
+      </ul>
+      <h3>Session List_Power</h3>
+      <ul>
+          <li><a href="../sessions/list_power/#List_Power">List_Power</a></li>
+      </ul>
+
+    <div class="flex-wrap">
+    </div>
+  </main>
+
+  <nav class="links">
+    <a class="popup-button" href="#cite-popup">Cite</a>
+    <a class="popup-button" href="#download-popup">Download</a>
+    <h4>PDFs</h4>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/List_Power/outline.pdf">Proof outline</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/List_Power/document.pdf">Proof document</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/List_Power/session_graph.pdf">Dependencies</a>
+  </nav>
+
+  <div id="cite-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Cite</h2>
+      <a class="close" href="#">&times;</a>
+      <div>
+        <p style="display:none;" id="bibtex-filename">List_Power-AFP</p>
+        <pre id="copy-text">@article{List_Power-AFP,
+  author  = {Štěpán Holub and Martin Raška and Štěpán Starosta and Tobias Nipkow},
+  title   = {Power Operator for Lists},
+  journal = {Archive of Formal Proofs},
+  month   = {January},
+  year    = {2025},
+  note    = {\url{https://isa-afp.org/entries/List_Power.html},
+             Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
+        <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
+      </div>
+    </div>
+  </div>
+
+  <div id="download-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Download</h2>
+      <a class="close" href="#">&times;</a>
+      <a href="https://www.isa-afp.org/release/afp-List_Power-current.tar.gz" download>
+        Download latest</a>
+    </div>
+  </div>
+      </div>
+    </div>
+  </body>
+</html>

@@ -114,6 +114,11 @@ It is a fork of <a href="https://trustworthy.systems/projects/OLD/autocorres">Au
     <div>
         <a href="https://isa-afp.org/LICENSE">BSD License</a>
     </div>
+      <h3>History</h3>
+      <dl>
+          <dt>February 18, 2025</dt>
+          <dd>Some support for post increment / decrement in expressions, anonymous structs and unions, flexible array members of structs.</dd>
+      </dl>
       <h3>Topics</h3>
       <ul>
           <li><a href="../topics/computer-science/programming-languages/logics/">Computer science/Programming languages/Logics</a></li>
@@ -175,6 +180,7 @@ It is a fork of <a href="https://trustworthy.systems/projects/OLD/autocorres">Au
           <li><a href="../sessions/autocorres2/#Word_Mem_Encoding_X64">Word_Mem_Encoding_X64</a></li>
           <li><a href="../sessions/autocorres2/#Word_Mem_Encoding">Word_Mem_Encoding</a></li>
           <li><a href="../sessions/autocorres2/#Vanilla32">Vanilla32</a></li>
+          <li><a href="../sessions/autocorres2/#ML_Infer_Instantiate">ML_Infer_Instantiate</a></li>
           <li><a href="../sessions/autocorres2/#Arrays">Arrays</a></li>
           <li><a href="../sessions/autocorres2/#Padding">Padding</a></li>
           <li><a href="../sessions/autocorres2/#Lens">Lens</a></li>
@@ -192,7 +198,6 @@ It is a fork of <a href="https://trustworthy.systems/projects/OLD/autocorres">Au
           <li><a href="../sessions/autocorres2/#SepFrame">SepFrame</a></li>
           <li><a href="../sessions/autocorres2/#StructSupport">StructSupport</a></li>
           <li><a href="../sessions/autocorres2/#ArrayAssertion">ArrayAssertion</a></li>
-          <li><a href="../sessions/autocorres2/#ML_Infer_Instantiate">ML_Infer_Instantiate</a></li>
           <li><a href="../sessions/autocorres2/#CProof">CProof</a></li>
           <li><a href="../sessions/autocorres2/#Padding_Equivalence">Padding_Equivalence</a></li>
           <li><a href="../sessions/autocorres2/#CLanguage">CLanguage</a></li>
@@ -260,7 +265,7 @@ It is a fork of <a href="https://trustworthy.systems/projects/OLD/autocorres">Au
       <h3>Session AutoCorres2_Test</h3>
       <ul>
           <li><a href="../sessions/autocorres2_test/#aligned">aligned</a></li>
-          <li><a href="../sessions/autocorres2_test/#analsignedoverflow">analsignedoverflow</a></li>
+          <li><a href="../sessions/autocorres2_test/#arithmetic_right_shift">arithmetic_right_shift</a></li>
           <li><a href="../sessions/autocorres2_test/#asm_stmt">asm_stmt</a></li>
           <li><a href="../sessions/autocorres2_test/#array_of_ptr">array_of_ptr</a></li>
           <li><a href="../sessions/autocorres2_test/#arrays">arrays</a></li>
@@ -299,6 +304,7 @@ It is a fork of <a href="https://trustworthy.systems/projects/OLD/autocorres">Au
           <li><a href="../sessions/autocorres2_test/#globals_in_record">globals_in_record</a></li>
           <li><a href="../sessions/autocorres2_test/#globinits">globinits</a></li>
           <li><a href="../sessions/autocorres2_test/#guard_while">guard_while</a></li>
+          <li><a href="../sessions/autocorres2_test/#guardedsignedoverflow">guardedsignedoverflow</a></li>
           <li><a href="../sessions/autocorres2_test/#hexliteral">hexliteral</a></li>
           <li><a href="../sessions/autocorres2_test/#init_static">init_static</a></li>
           <li><a href="../sessions/autocorres2_test/#initialised_decls">initialised_decls</a></li>
@@ -354,6 +360,7 @@ It is a fork of <a href="https://trustworthy.systems/projects/OLD/autocorres">Au
           <li><a href="../sessions/autocorres2_test/#multidim_arrays">multidim_arrays</a></li>
           <li><a href="../sessions/autocorres2_test/#mutrec_modifies">mutrec_modifies</a></li>
           <li><a href="../sessions/autocorres2_test/#nested">nested</a></li>
+          <li><a href="../sessions/autocorres2_test/#padding_free">padding_free</a></li>
           <li><a href="../sessions/autocorres2_test/#parse_addr">parse_addr</a></li>
           <li><a href="../sessions/autocorres2_test/#parse_c99block">parse_c99block</a></li>
           <li><a href="../sessions/autocorres2_test/#parse_complit">parse_complit</a></li>
@@ -433,6 +440,7 @@ It is a fork of <a href="https://trustworthy.systems/projects/OLD/autocorres">Au
           <li><a href="../sessions/autocorres2_test/#while_loop_no_vars">while_loop_no_vars</a></li>
           <li><a href="../sessions/autocorres2_test/#word_abs_exn">word_abs_exn</a></li>
           <li><a href="../sessions/autocorres2_test/#write_to_global_array">write_to_global_array</a></li>
+          <li><a href="../sessions/autocorres2_test/#anonymous_nested_struct">anonymous_nested_struct</a></li>
           <li><a href="../sessions/autocorres2_test/#Asm_Labels">Asm_Labels</a></li>
           <li><a href="../sessions/autocorres2_test/#CustomWordAbs">CustomWordAbs</a></li>
           <li><a href="../sessions/autocorres2_test/#SignedWordAbsHeap">SignedWordAbsHeap</a></li>
@@ -442,6 +450,9 @@ It is a fork of <a href="https://trustworthy.systems/projects/OLD/autocorres">Au
           <li><a href="../sessions/autocorres2_test/#array_indirect_update">array_indirect_update</a></li>
           <li><a href="../sessions/autocorres2_test/#badnames">badnames</a></li>
           <li><a href="../sessions/autocorres2_test/#buffer">buffer</a></li>
+          <li><a href="../sessions/autocorres2_test/#flexible_array_member">flexible_array_member</a></li>
+          <li><a href="../sessions/autocorres2_test/#function_decay">function_decay</a></li>
+          <li><a href="../sessions/autocorres2_test/#function_pointer_array_decay">function_pointer_array_decay</a></li>
           <li><a href="../sessions/autocorres2_test/#globals">globals</a></li>
           <li><a href="../sessions/autocorres2_test/#global_array_update">global_array_update</a></li>
           <li><a href="../sessions/autocorres2_test/#Global_Structs">Global_Structs</a></li>
@@ -450,6 +461,7 @@ It is a fork of <a href="https://trustworthy.systems/projects/OLD/autocorres">Au
           <li><a href="../sessions/autocorres2_test/#In_Out_Parameters_Slow">In_Out_Parameters_Slow</a></li>
           <li><a href="../sessions/autocorres2_test/#int128">int128</a></li>
           <li><a href="../sessions/autocorres2_test/#nested_array">nested_array</a></li>
+          <li><a href="../sessions/autocorres2_test/#Nested_Field_Update">Nested_Field_Update</a></li>
           <li><a href="../sessions/autocorres2_test/#nested_struct">nested_struct</a></li>
           <li><a href="../sessions/autocorres2_test/#open_nested">open_nested</a></li>
           <li><a href="../sessions/autocorres2_test/#open_nested_array">open_nested_array</a></li>
@@ -458,6 +470,7 @@ It is a fork of <a href="https://trustworthy.systems/projects/OLD/autocorres">Au
           <li><a href="../sessions/autocorres2_test/#pointers_to_locals_skip_hl">pointers_to_locals_skip_hl</a></li>
           <li><a href="../sessions/autocorres2_test/#pointers_to_locals_skip_hl_wa">pointers_to_locals_skip_hl_wa</a></li>
           <li><a href="../sessions/autocorres2_test/#prototyped_functions">prototyped_functions</a></li>
+          <li><a href="../sessions/autocorres2_test/#side_effect_assignment">side_effect_assignment</a></li>
           <li><a href="../sessions/autocorres2_test/#skip_heap_abs">skip_heap_abs</a></li>
           <li><a href="../sessions/autocorres2_test/#skip_in_out_parameters">skip_in_out_parameters</a></li>
           <li><a href="../sessions/autocorres2_test/#struct">struct</a></li>
@@ -475,6 +488,8 @@ It is a fork of <a href="https://trustworthy.systems/projects/OLD/autocorres">Au
           <li><a href="../sessions/autocorres2_test/#unfold_bind_options">unfold_bind_options</a></li>
           <li><a href="../sessions/autocorres2_test/#bit_shuffle">bit_shuffle</a></li>
           <li><a href="../sessions/autocorres2_test/#fnptr_enum0">fnptr_enum0</a></li>
+          <li><a href="../sessions/autocorres2_test/#fnptr_io">fnptr_io</a></li>
+          <li><a href="../sessions/autocorres2_test/#fnptr_no_heap_abs">fnptr_no_heap_abs</a></li>
           <li><a href="../sessions/autocorres2_test/#fnptr_skip_heap_abs">fnptr_skip_heap_abs</a></li>
           <li><a href="../sessions/autocorres2_test/#fnptr_large_array">fnptr_large_array</a></li>
           <li><a href="../sessions/autocorres2_test/#underscore_funs">underscore_funs</a></li>
