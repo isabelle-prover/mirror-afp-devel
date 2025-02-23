@@ -74,6 +74,21 @@
     <loc>/authors/traytel/</loc>
     <lastmod>2025-02-01T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>/authors/holub/</loc>
+    <lastmod>2025-01-29T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/nipkow/</loc>
+    <lastmod>2025-01-29T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/List_Power.html</loc>
+    <lastmod>2025-01-29T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/raska/</loc>
+    <lastmod>2025-01-29T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/starosta/</loc>
+    <lastmod>2025-01-29T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>/dependencies/isabelle_marries_dirac/</loc>
     <lastmod>2025-01-28T00:00:00+00:00</lastmod>
   </url><url>
@@ -576,9 +591,6 @@
     <lastmod>2024-06-13T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/farkas/</loc>
-    <lastmod>2024-06-13T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/nipkow/</loc>
     <lastmod>2024-06-13T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/thiemann/</loc>
@@ -1466,16 +1478,7 @@
     <loc>/dependencies/combinatorics_words_graph_lemma/</loc>
     <lastmod>2023-01-03T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/authors/holub/</loc>
-    <lastmod>2023-01-03T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/entries/Two_Generated_Word_Monoids_Intersection.html</loc>
-    <lastmod>2023-01-03T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/raska/</loc>
-    <lastmod>2023-01-03T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/starosta/</loc>
     <lastmod>2023-01-03T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Quantifier_Elimination_Hybrid.html</loc>
@@ -6543,6 +6546,8 @@
     <loc>/sessions/list_interleaving/</loc>
   </url><url>
     <loc>/sessions/list_inversions/</loc>
+  </url><url>
+    <loc>/sessions/list_power/</loc>
   </url><url>
     <loc>/sessions/list_update/</loc>
   </url><url>

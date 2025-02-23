@@ -1,0 +1,11 @@
+chapter AFP
+
+session List_Power = HOL +
+
+  options [timeout = 300]
+
+  theories
+    List_Power
+
+  document_files
+    "root.tex"

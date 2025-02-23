@@ -11,8 +11,15 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Tue, 03 Jan 2023 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Wed, 29 Jan 2025 00:00:00 +0000</lastBuildDate>
       <atom:link href="/authors/raska/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Power Operator for Lists</title>
+          <link>/entries/List_Power.html</link>
+          <pubDate>Wed, 29 Jan 2025 00:00:00 +0000</pubDate>
+          <guid>/entries/List_Power.html</guid>
+          <description></description>
+        </item>
         <item>
           <title>Binary codes that do not preserve primitivity</title>
           <link>/entries/Binary_Code_Imprimitive.html</link>

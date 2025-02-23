@@ -35,6 +35,13 @@
           <description></description>
         </item>
         <item>
+          <title>Power Operator for Lists</title>
+          <link>/entries/List_Power.html</link>
+          <pubDate>Wed, 29 Jan 2025 00:00:00 +0000</pubDate>
+          <guid>/entries/List_Power.html</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Quantum Fourier Transform</title>
           <link>/entries/Quantum_Fourier_Transform.html</link>
           <pubDate>Tue, 28 Jan 2025 00:00:00 +0000</pubDate>
@@ -9566,6 +9573,13 @@
           <link>/sessions/list_inversions/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
           <guid>/sessions/list_inversions/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>List_Power</title>
+          <link>/sessions/list_power/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/list_power/</guid>
           <description></description>
         </item>
         <item>

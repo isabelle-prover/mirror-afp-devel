@@ -1,0 +1,45 @@
+title = "Power Operator for Lists"
+date = 2025-01-29
+topics = [
+  "Computer science/Functional programming",
+  "Computer science/Data structures",
+  "Computer science/Automata and formal languages",
+]
+abstract = """
+This entry defines the power operator <code>xs ^^ n</code>, the <code>n</code>-fold
+concatenation of <code>xs</code> with itself.
+<p>
+Much of the theory is taken from the AFP entry
+<a href=\"https://www.isa-afp.org/entries/Combinatorics_Words.html\">Combinatorics on Words Basics</a>
+where the operator is called <code>^@</code>. This new entry uses the standard overloaded
+<code>^^</code> syntax and is aimed at becoming the central theory of the power operator for lists
+that can be extended easily."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.holub]
+email = "holub_email"
+
+[authors.raska]
+
+[authors.starosta]
+email = "starosta_email"
+
+[authors.nipkow]
+email = "nipkow_email"
+
+[contributors]
+
+[notify]
+holub = "holub_email"
+nipkow = "nipkow_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []
