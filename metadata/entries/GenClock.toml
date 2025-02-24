@@ -15,7 +15,7 @@ homepage = "tiu_homepage"
 [contributors]
 
 [notify]
-klein = "klein_email"
+tiu = "tiu_email"
 
 [history]
 
