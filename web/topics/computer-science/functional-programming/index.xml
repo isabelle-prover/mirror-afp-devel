@@ -4,6 +4,15 @@
     <title>Computer science/Functional programming</title>
     <link>https://isa-afp.org/topics/computer-science/functional-programming/</link>
     <description>AFP entries in Functional programming</description><item>
+  <title>Power Operator for Lists</title>
+  <link>https://isa-afp.org/entries/List_Power.html</link>
+  <pubDate>Wed, 29 Jan 2025 00:00:00 +0000</pubDate>
+  <description>Power Operator for Lists in the AFP</description>
+    <category>Computer science/Functional programming</category>
+    <category>Computer science/Data structures</category>
+    <category>Computer science/Automata and formal languages</category>
+</item>
+<item>
   <title>More Operations on Lazy Lists</title>
   <link>https://isa-afp.org/entries/More_LazyLists.html</link>
   <pubDate>Fri, 24 May 2024 00:00:00 +0000</pubDate>

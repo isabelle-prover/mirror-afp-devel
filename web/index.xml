@@ -26,6 +26,23 @@
     <category>Computer science/Concurrency</category>
 </item>
 <item>
+  <title>Power Operator for Lists</title>
+  <link>https://isa-afp.org/entries/List_Power.html</link>
+  <pubDate>Wed, 29 Jan 2025 00:00:00 +0000</pubDate>
+  <description>Power Operator for Lists in the AFP</description>
+    <category>Computer science/Functional programming</category>
+    <category>Computer science/Data structures</category>
+    <category>Computer science/Automata and formal languages</category>
+</item>
+<item>
+  <title>Quantum Fourier Transform</title>
+  <link>https://isa-afp.org/entries/Quantum_Fourier_Transform.html</link>
+  <pubDate>Tue, 28 Jan 2025 00:00:00 +0000</pubDate>
+  <description>Quantum Fourier Transform in the AFP</description>
+    <category>Computer science/Algorithms/Quantum computing</category>
+    <category>Mathematics/Physics/Quantum information</category>
+</item>
+<item>
   <title>Mission-time Linear Temporal Logic to Regular Expressions</title>
   <link>https://isa-afp.org/entries/Mission_Time_LTL_to_Regular_Expression.html</link>
   <pubDate>Fri, 24 Jan 2025 00:00:00 +0000</pubDate>

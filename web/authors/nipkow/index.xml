@@ -4,6 +4,15 @@
     <title>Tobias Nipkow</title>
     <link>https://isa-afp.org/authors/nipkow/</link>
     <description>AFP entries of Tobias Nipkow</description><item>
+  <title>Power Operator for Lists</title>
+  <link>https://isa-afp.org/entries/List_Power.html</link>
+  <pubDate>Wed, 29 Jan 2025 00:00:00 +0000</pubDate>
+  <description>Power Operator for Lists in the AFP</description>
+    <category>Computer science/Functional programming</category>
+    <category>Computer science/Data structures</category>
+    <category>Computer science/Automata and formal languages</category>
+</item>
+<item>
   <title>Alpha-Beta Pruning</title>
   <link>https://isa-afp.org/entries/Alpha_Beta_Pruning.html</link>
   <pubDate>Thu, 13 Jun 2024 00:00:00 +0000</pubDate>

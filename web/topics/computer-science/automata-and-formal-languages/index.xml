@@ -4,6 +4,15 @@
     <title>Computer science/Automata and formal languages</title>
     <link>https://isa-afp.org/topics/computer-science/automata-and-formal-languages/</link>
     <description>AFP entries in Automata and formal languages</description><item>
+  <title>Power Operator for Lists</title>
+  <link>https://isa-afp.org/entries/List_Power.html</link>
+  <pubDate>Wed, 29 Jan 2025 00:00:00 +0000</pubDate>
+  <description>Power Operator for Lists in the AFP</description>
+    <category>Computer science/Functional programming</category>
+    <category>Computer science/Data structures</category>
+    <category>Computer science/Automata and formal languages</category>
+</item>
+<item>
   <title>Mission-time Linear Temporal Logic to Regular Expressions</title>
   <link>https://isa-afp.org/entries/Mission_Time_LTL_to_Regular_Expression.html</link>
   <pubDate>Fri, 24 Jan 2025 00:00:00 +0000</pubDate>

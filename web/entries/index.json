@@ -56,6 +56,47 @@
   "year": "2025"
  },
  {
+  "abstract": "This entry defines the power operator xs ^^ n, the n-fold concatenation of xs with itself. Much of the theory is taken from the AFP entry Combinatorics on Words Basics where the operator is called ^@. This new entry uses the standard overloaded ^^ syntax and is aimed at becoming the central theory of the power operator for lists that can be extended easily.",
+  "authors": [
+   "Štěpán Holub",
+   "Martin Raška",
+   "Štěpán Starosta",
+   "Tobias Nipkow"
+  ],
+  "link": "/entries/List_Power.html",
+  "shortname": "List_Power",
+  "title": "Power Operator for Lists",
+  "topic_links": [
+   "/topics/computer-science/functional-programming/",
+   "/topics/computer-science/data-structures/",
+   "/topics/computer-science/automata-and-formal-languages/"
+  ],
+  "topics": [
+   "Computer science/Functional programming",
+   "Computer science/Data structures",
+   "Computer science/Automata and formal languages"
+  ],
+  "year": "2025"
+ },
+ {
+  "abstract": "This work presents a formalization of the Quantum Fourier Transform, a fundamental component of Shor's factoring algorithm, with proofs of its correctness and unitarity. The proof is carried out by induction, relying on the algorithm's recursive definition. This formalization builds upon the Isabelle Marries Dirac quantum computing library, developed by A. Bordg, H. Lachnitt, and Y. He.",
+  "authors": [
+   "Pablo Manrique"
+  ],
+  "link": "/entries/Quantum_Fourier_Transform.html",
+  "shortname": "Quantum_Fourier_Transform",
+  "title": "Quantum Fourier Transform",
+  "topic_links": [
+   "/topics/computer-science/algorithms/quantum-computing/",
+   "/topics/mathematics/physics/quantum-information/"
+  ],
+  "topics": [
+   "Computer science/Algorithms/Quantum computing",
+   "Mathematics/Physics/Quantum information"
+  ],
+  "year": "2025"
+ },
+ {
   "abstract": "We formalize the syntax, semantics, and some useful properties of Mission-time Linear Temporal Logic (MLTL), following the literature. MLTL is a variant of Linear Temporal Logic, which has already been formalized in Isabelle/HOL. In contrast to LTL, MLTL includes finite discrete time bounds on the temporal operators. We do not directly build on the LTL AFP entry, but aim to mirror its style; in particular, we found it useful when defining our syntactic sugar binding precedences. Another closely related AFP entry is the formalization of MFOTL.",
   "authors": [
    "Katherine Kosaian",
