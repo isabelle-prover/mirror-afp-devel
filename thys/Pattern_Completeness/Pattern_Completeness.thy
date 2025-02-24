@@ -75,11 +75,11 @@ definition decide_pat_complete_lhss ::
     return (decide_pat_complete C (pats_of_lhss D lhss))
   }"  
 
-definition decide_pat_complete_lhss_idl :: 
+definition decide_pat_complete_lhss_fidl :: 
   "_ \<Rightarrow> _ \<Rightarrow> _ \<Rightarrow> (('f \<times> 's list) \<times> 's)list \<Rightarrow> (('f \<times> 's list) \<times> 's)list \<Rightarrow> ('f,'v)term list \<Rightarrow> showsl + bool" where
-  "decide_pat_complete_lhss_idl rn rv idl C D lhss = do {
+  "decide_pat_complete_lhss_fidl rn rv fidl_solver C D lhss = do {
     check_signatures C D;
-    return (decide_pat_complete_idl rn rv idl C (pats_of_lhss D lhss))
+    return (decide_pat_complete_fidl rn rv fidl_solver C (pats_of_lhss D lhss))
   }"  
 
 lemma pats_of_lhss_vars: assumes condD: "\<forall>x\<in>set D. \<forall>a b. (\<forall>x2. x \<noteq> ((a, b), x2)) \<or> (\<forall>x\<in>set b. x \<in> S)"
@@ -303,11 +303,11 @@ proof -
   finally show ?thesis unfolding pat_complete_lhss_def .
 qed
 
-theorem decide_pat_complete_lhss_idl:
+theorem decide_pat_complete_lhss_fidl:
   fixes C D :: "(('f \<times> 's list) \<times> 's) list" and lhss :: "('f,'v)term list"
-  assumes "decide_pat_complete_lhss_idl rn rv idl C D lhss = return b" 
+  assumes "decide_pat_complete_lhss_fidl rn rv fidl_solver C D lhss = return b" 
     and ren: "renaming_funs rn rv" 
-    and idl: "idl_smt_solver idl"
+    and idl: "finite_idl_solver fidl_solver"
   shows "b = pat_complete_lhss (map_of C) (map_of D) (set lhss)" 
 proof -
   let ?C = "map_of C"
@@ -315,9 +315,9 @@ proof -
   define S where "S = sorts_of_ssig_list C"
   define P where "P = pats_of_lhss D lhss"
   have sig: "isOK(check_signatures C D)" 
-    and b: "b = decide_pat_complete_idl rn rv idl C P"
+    and b: "b = decide_pat_complete_fidl rn rv fidl_solver C P"
     using assms
-     apply (unfold decide_pat_complete_lhss_idl_def)
+     apply (unfold decide_pat_complete_lhss_fidl_def)
      apply (unfold Let_def P_def[symmetric] S_def[symmetric])
     by auto
   note * = check_signatures[OF sig]
@@ -328,7 +328,7 @@ proof -
     using * by (auto simp: S_def)
   have "b = pats_complete ?C (pat_list ` set P)"
     apply (unfold b)
-    apply (rule decide_pat_complete_idl[OF distC dec[unfolded S_def] _ ren idl])
+    apply (rule decide_pat_complete_fidl[OF distC dec[unfolded S_def] _ ren idl])
     apply (unfold P_def)
     apply (rule pats_of_lhss_vars[OF condD[unfolded P_def S_def]])
     done

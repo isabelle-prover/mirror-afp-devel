@@ -5,6 +5,9 @@ theory Test_Pat_Complete
     Pattern_Completeness
     "HOL-Library.Code_Abstract_Char"
     "HOL-Library.Code_Target_Numeral"
+    "HOL-Library.RBT_Mapping" 
+    "HOL-Library.Product_Lexorder" 
+    "HOL-Library.List_Lexorder" 
     "Show.Number_Parser" 
 begin
 
@@ -36,10 +39,10 @@ lemma renaming_string: "renaming_funs rn_string rv_string"
   unfolding renaming_funs_def 
   by (auto simp: inj_def rn_string_def rv_string_def) 
 
-definition "decide_pat_complete_lhss_idl_string = decide_pat_complete_lhss_idl rn_string rv_string" 
+definition "decide_pat_complete_lhss_fidl_string = decide_pat_complete_lhss_fidl rn_string rv_string" 
 
-lemmas decide_pat_complete_lhss_idl_string = decide_pat_complete_lhss_idl[OF _ renaming_string,
-    folded decide_pat_complete_lhss_idl_string_def]
+lemmas decide_pat_complete_lhss_fidl_string = decide_pat_complete_lhss_fidl[OF _ renaming_string,
+    folded decide_pat_complete_lhss_fidl_string_def]
 
 definition "int_bool = [ 
    ((''zero'', []), ''int''),
@@ -77,6 +80,12 @@ lemma decide_pat_complete_wrapper:
   assumes "(case decide_pat_complete_lhss C D lhss of Inr b \<Rightarrow> Some b | Inl _ \<Rightarrow> None) = Some res"
   shows "pat_complete_lhss (map_of C) (map_of D) (set lhss) = res" 
   using decide_pat_complete_lhss[of C D lhss] assms by (auto split: sum.splits)
+
+lemma decide_pat_complete_wrapper_fidl: 
+  assumes "(case decide_pat_complete_lhss_fidl_string solver C D lhss of Inr b \<Rightarrow> Some b | Inl _ \<Rightarrow> None) = Some res"
+    and "finite_idl_solver solver" 
+  shows "pat_complete_lhss (map_of C) (map_of D) (set lhss) = res" 
+  using decide_pat_complete_lhss_fidl_string[of solver C D lhss] assms by (auto split: sum.splits)
 
 lemma decide_strong_quasi_reducible_wrapper: 
   assumes "(case decide_strong_quasi_reducible C D lhss of Inr b \<Rightarrow> Some b | Inl _ \<Rightarrow> None) = Some res"
@@ -120,12 +129,17 @@ value "decide_pat_complete_linear_lhss nat_bool [((''f'',[''nat'',''nat'',''nat'
 value "decide_pat_complete_lhss nat_bool [((''f'',[''nat'',''nat'',''nat'']),''bool'')] non_lin_lhss" 
 value "decide_pat_complete_lhss nat_bool [((''f'',[''bool'',''bool'',''bool'']),''bool'')] non_lin_lhss" 
 
-(* inf-var-conflict, so idl solver (undefined) is not required in this example *)
-value "decide_pat_complete_lhss_idl_string (\<lambda> _ _. undefined) nat_bool [((''f'',[''nat'',''nat'',''nat'']),''bool'')] non_lin_lhss"
+(* inf-var-conflict, so fidl solver (undefined) is not required in this example *)
+lemma "\<not> pat_complete_lhss (map_of nat_bool) (map_of [((''f'',[''nat'',''nat'',''nat'']),''bool'')]) (set non_lin_lhss)" 
+  apply (subst decide_pat_complete_wrapper_fidl[of dummy_fidl_solver _ _ _ False])
+    apply eval
+   apply (rule dummy_fidl_solver)
+  apply eval
+  done
 
-(* incorrect idl-solvers can cause wrong results *)
-value "decide_pat_complete_lhss_idl_string (\<lambda> _ _. True) nat_bool [((''f'',[''bool'',''bool'',''bool'']),''bool'')] non_lin_lhss"
-value "decide_pat_complete_lhss_idl_string (\<lambda> _ _. False) nat_bool [((''f'',[''bool'',''bool'',''bool'']),''bool'')] non_lin_lhss" 
+(* incorrect fidl-solvers can cause wrong results *)
+value "decide_pat_complete_lhss_fidl_string (\<lambda> _. True) nat_bool [((''f'',[''bool'',''bool'',''bool'']),''bool'')] non_lin_lhss"
+value "decide_pat_complete_lhss_fidl_string (\<lambda> _. False) nat_bool [((''f'',[''bool'',''bool'',''bool'']),''bool'')] non_lin_lhss" 
 
 definition "testproblem (c :: nat) n = (let s = String.implode; s = id;
     c1 = even c;
