@@ -321,15 +321,12 @@ lemma SN_supt:
 
 lemma supt_not_refl[elim!]:
   assumes "t \<rhd> t" shows False
-proof -
-  from assms have "t \<noteq> t" by auto
-  then show False by simp
-qed
+  using assms order.strict_iff_order by blast
 
 lemma supteq_not_supt [elim]:
   assumes "s \<unrhd> t" and "\<not> (s \<rhd> t)"
   shows "s = t"
-  using assms by (induct) auto
+  using assms suptI by blast
 
 lemma supteq_not_supt_conv [simp]:
   "{\<unrhd>} - {\<rhd>} = Id" by auto
@@ -496,7 +493,8 @@ lemma ctxt_imp_supteq [simp]:
 
 lemma supteq_ctxtE[elim]:
   assumes "s \<unrhd> t" obtains C where "s = C\<langle>t\<rangle>"
-  using assms proof (induct arbitrary: thesis)
+  using assms 
+proof (induct arbitrary: thesis)
   case (refl s)
   have "s = \<box>\<langle>s\<rangle>" by simp
   from refl[OF this] show ?case .
@@ -510,86 +508,34 @@ qed
 
 lemma ctxt_supteq[intro]:
   assumes "s = C\<langle>t\<rangle>" shows "s \<unrhd> t"
-proof (cases C)
-  case Hole then show ?thesis using assms by auto
-next
-  case (More f ss1 D ss2)
-  with assms have s: "s = Fun f (ss1 @ D\<langle>t\<rangle> # ss2)" (is "_ = Fun _ ?ss") by simp
-  have "D\<langle>t\<rangle> \<in> set ?ss" by simp
-  moreover have "D\<langle>t\<rangle> \<unrhd> t" by (induct D) auto
-  ultimately show ?thesis unfolding s ..
-qed
+  by (simp add: assms)
 
-lemma supteq_ctxt_conv: "(s \<unrhd> t) = (\<exists>C. s = C\<langle>t\<rangle>)" by auto
+lemma supteq_ctxt_conv: "(s \<unrhd> t) = (\<exists>C. s = C\<langle>t\<rangle>)" 
+  by auto
 
 lemma supt_ctxtE[elim]:
   assumes "s \<rhd> t" obtains C where "C \<noteq> \<box>" and "s = C\<langle>t\<rangle>"
-  using assms
-proof (induct arbitrary: thesis)
-  case (arg s ss f)
-  from split_list[OF \<open>s \<in> set ss\<close>] obtain ss1 and ss2 where ss: "ss = ss1 @ s # ss2" by auto
-  let ?C = "More f ss1 \<box> ss2"
-  have "?C \<noteq> \<box>" by simp
-  moreover have "Fun f ss = ?C\<langle>s\<rangle>" by (simp add: ss)
-  ultimately show ?case using arg by best
-next
-  case (subt s ss t f)
-  then obtain C where "C \<noteq> \<box>" and "s = C\<langle>t\<rangle>" by auto
-  from split_list[OF \<open>s \<in> set ss\<close>] obtain ss1 and ss2 where ss: "ss = ss1 @ s # ss2" by auto
-  have "More f ss1 C ss2 \<noteq> \<box>" by simp
-  moreover have "Fun f ss = (More f ss1 C ss2)\<langle>t\<rangle>" using \<open>s = C\<langle>t\<rangle>\<close> by (simp add: ss)
-  ultimately show ?case using subt(4) by best
-qed
+  by (metis assms intp_actxt.simps(1) subterm.less_le_not_le supteq_ctxtE)
 
 lemma ctxt_supt[intro 2]:
   assumes "C \<noteq> \<box>" and "s = C\<langle>t\<rangle>" shows "s \<rhd> t"
-proof (cases C)
-  case Hole with assms show ?thesis by simp
-next
-  case (More f ss1 D ss2)
-  with assms have s: "s = Fun f (ss1 @ D\<langle>t\<rangle> # ss2)" by simp
-  have "D\<langle>t\<rangle> \<in> set (ss1 @ D\<langle>t\<rangle> # ss2)" by simp
-  then have "s \<rhd> D\<langle>t\<rangle>" unfolding s ..
-  also have "D\<langle>t\<rangle> \<unrhd> t" by (induct D) auto
-  finally show "s \<rhd> t" .
-qed
+  by (metis assms ctxt_supteq not_less_iff_gr_or_eq size_ne_ctxt suptI)
 
 lemma supt_ctxt_conv: "(s \<rhd> t) = (\<exists>C. C \<noteq> \<box> \<and> s = C\<langle>t\<rangle>)" (is "_ = ?rhs")
-proof
-  assume "s \<rhd> t"
-  then have "s \<unrhd> t" and "s \<noteq> t" by auto
-  from \<open>s \<unrhd> t\<close> obtain C where "s = C\<langle>t\<rangle>" by auto
-  with \<open>s \<noteq> t\<close> have "C \<noteq> \<box>" by auto
-  with \<open>s = C\<langle>t\<rangle>\<close> show "?rhs" by auto
-next
-  assume "?rhs" then show "s \<rhd> t" by auto
-qed
+  by auto
 
-lemma nectxt_imp_supt_ctxt: "C \<noteq> \<box> \<Longrightarrow> C\<langle>t\<rangle> \<rhd> t" by auto
+lemma nectxt_imp_supt_ctxt: "C \<noteq> \<box> \<Longrightarrow> C\<langle>t\<rangle> \<rhd> t" 
+  by auto
 
 lemma supt_var: "\<not> (Var x \<rhd> u)"
-proof
-  assume "Var x \<rhd> u"
-  then obtain C where "C \<noteq> \<box>" and "Var x = C\<langle>u\<rangle>" ..
-  then show False by (cases C) auto
-qed
+  using supt.cases by blast
 
 lemma supt_const: "\<not> (Fun f [] \<rhd> u)"
-proof
-  assume "Fun f [] \<rhd> u"
-  then obtain C where "C \<noteq> \<box>" and "Fun f [] = C\<langle>u\<rangle>" ..
-  then show False by (cases C) auto
-qed
+  by (metis empty_iff empty_set subterm.less_le_not_le supteq.cases term.sel(4))
 
 lemma supteq_var_imp_eq:
   "(Var x \<unrhd> t) = (t = Var x)" (is "_ = (_ = ?x)")
-proof
-  assume "t = Var x" then show "Var x \<unrhd> t" by auto
-next
-  assume st: "?x \<unrhd> t"
-  from st obtain C where "?x = C\<langle>t\<rangle>" by best
-  then show "t = ?x" by (cases C) auto
-qed
+  by (metis subterm.order.eq_iff suptI supt_var)
 
 lemma Var_supt [elim!]:
   assumes "Var x \<rhd> t" shows P
@@ -644,7 +590,7 @@ lemma supt_imp_funas_term_subset:
 lemma supteq_imp_funas_term_subset[simp]:
   assumes "s \<unrhd> t"
   shows "funas_term t \<subseteq> funas_term s"
-  using assms by induct auto
+  by (metis order_eq_iff assms suptI supt_imp_funas_term_subset)
 
 text \<open>The set of all function symbol/arity pairs occurring in a context.\<close>
 fun funas_ctxt :: "('f, 'v) ctxt \<Rightarrow> 'f sig"
