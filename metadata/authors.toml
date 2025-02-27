@@ -7458,7 +7458,8 @@ name = "Sophie Tourret"
 
 [tourret.emails.tourret_email]
 user = [
-  "sophie.tourret",
+  "sophie",
+  "tourret",
 ]
 host = [
   "loria",
