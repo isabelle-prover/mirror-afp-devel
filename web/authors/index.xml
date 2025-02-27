@@ -11,8 +11,22 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Wed, 12 Feb 2025 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Wed, 26 Feb 2025 00:00:00 +0000</lastBuildDate>
       <atom:link href="/authors/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>paulson</title>
+          <link>/authors/paulson/</link>
+          <pubDate>Wed, 26 Feb 2025 00:00:00 +0000</pubDate>
+          <guid>/authors/paulson/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>tourret</title>
+          <link>/authors/tourret/</link>
+          <pubDate>Wed, 26 Feb 2025 00:00:00 +0000</pubDate>
+          <guid>/authors/tourret/</guid>
+          <description></description>
+        </item>
         <item>
           <title>ballenghien</title>
           <link>/authors/ballenghien/</link>
@@ -137,13 +151,6 @@
           <link>/authors/argyraki/</link>
           <pubDate>Mon, 20 Jan 2025 00:00:00 +0000</pubDate>
           <guid>/authors/argyraki/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>paulson</title>
-          <link>/authors/paulson/</link>
-          <pubDate>Mon, 20 Jan 2025 00:00:00 +0000</pubDate>
-          <guid>/authors/paulson/</guid>
           <description></description>
         </item>
         <item>
@@ -1082,13 +1089,6 @@
           <link>/authors/qiu/</link>
           <pubDate>Wed, 25 Jan 2023 00:00:00 +0000</pubDate>
           <guid>/authors/qiu/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>tourret</title>
-          <link>/authors/tourret/</link>
-          <pubDate>Wed, 25 Jan 2023 00:00:00 +0000</pubDate>
-          <guid>/authors/tourret/</guid>
           <description></description>
         </item>
         <item>

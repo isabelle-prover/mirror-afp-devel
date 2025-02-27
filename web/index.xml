@@ -11,8 +11,15 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Wed, 12 Feb 2025 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Wed, 26 Feb 2025 00:00:00 +0000</lastBuildDate>
       <atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Compactness Theorem for First-Order Logic</title>
+          <link>/entries/FOL_Compactness.html</link>
+          <pubDate>Wed, 26 Feb 2025 00:00:00 +0000</pubDate>
+          <guid>/entries/FOL_Compactness.html</guid>
+          <description></description>
+        </item>
         <item>
           <title>A Proof of Hilbert Basis Theorem and            an Extension to Formal Power Series</title>
           <link>/entries/Hilbert_Basis.html</link>
@@ -8215,6 +8222,13 @@
           <link>/sessions/fol_axiomatic/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
           <guid>/sessions/fol_axiomatic/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>FOL_Compactness</title>
+          <link>/sessions/fol_compactness/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/fol_compactness/</guid>
           <description></description>
         </item>
         <item>

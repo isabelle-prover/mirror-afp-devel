@@ -11,8 +11,22 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Wed, 12 Feb 2025 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Wed, 26 Feb 2025 00:00:00 +0000</lastBuildDate>
       <atom:link href="/dependencies/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>First_Order_Terms</title>
+          <link>/dependencies/first_order_terms/</link>
+          <pubDate>Wed, 26 Feb 2025 00:00:00 +0000</pubDate>
+          <guid>/dependencies/first_order_terms/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Propositional_Proof_Systems</title>
+          <link>/dependencies/propositional_proof_systems/</link>
+          <pubDate>Wed, 26 Feb 2025 00:00:00 +0000</pubDate>
+          <guid>/dependencies/propositional_proof_systems/</guid>
+          <description></description>
+        </item>
         <item>
           <title>Padic_Field</title>
           <link>/dependencies/padic_field/</link>
@@ -361,13 +375,6 @@
           <link>/dependencies/case_labeling/</link>
           <pubDate>Mon, 16 Sep 2024 00:00:00 +0000</pubDate>
           <guid>/dependencies/case_labeling/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>First_Order_Terms</title>
-          <link>/dependencies/first_order_terms/</link>
-          <pubDate>Mon, 16 Sep 2024 00:00:00 +0000</pubDate>
-          <guid>/dependencies/first_order_terms/</guid>
           <description></description>
         </item>
         <item>
@@ -1593,13 +1600,6 @@
           <link>/dependencies/ai_planning_languages_semantics/</link>
           <pubDate>Thu, 29 Oct 2020 00:00:00 +0000</pubDate>
           <guid>/dependencies/ai_planning_languages_semantics/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Propositional_Proof_Systems</title>
-          <link>/dependencies/propositional_proof_systems/</link>
-          <pubDate>Thu, 29 Oct 2020 00:00:00 +0000</pubDate>
-          <guid>/dependencies/propositional_proof_systems/</guid>
           <description></description>
         </item>
         <item>

@@ -3,21 +3,42 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>/</loc>
-    <lastmod>2025-02-12T00:00:00+00:00</lastmod>
+    <lastmod>2025-02-26T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/</loc>
+    <lastmod>2025-02-26T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/FOL_Compactness.html</loc>
+    <lastmod>2025-02-26T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/</loc>
+    <lastmod>2025-02-26T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/</loc>
+    <lastmod>2025-02-26T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/first_order_terms/</loc>
+    <lastmod>2025-02-26T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/logic/</loc>
+    <lastmod>2025-02-26T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/paulson/</loc>
+    <lastmod>2025-02-26T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/propositional_proof_systems/</loc>
+    <lastmod>2025-02-26T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/</loc>
+    <lastmod>2025-02-26T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/tourret/</loc>
+    <lastmod>2025-02-26T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Hilbert_Basis.html</loc>
     <lastmod>2025-02-12T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/authors/</loc>
-    <lastmod>2025-02-12T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/authors/ballenghien/</loc>
-    <lastmod>2025-02-12T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/</loc>
-    <lastmod>2025-02-12T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/entries/</loc>
     <lastmod>2025-02-12T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/topics/mathematics/</loc>
@@ -27,9 +48,6 @@
     <lastmod>2025-02-12T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/puyobro/</loc>
-    <lastmod>2025-02-12T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/</loc>
     <lastmod>2025-02-12T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/wolff/</loc>
@@ -101,9 +119,6 @@
     <loc>/authors/cordwell/</loc>
     <lastmod>2025-01-24T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/topics/logic/</loc>
-    <lastmod>2025-01-24T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/dependencies/mission_time_ltl/</loc>
     <lastmod>2025-01-24T00:00:00+00:00</lastmod>
   </url><url>
@@ -120,9 +135,6 @@
     <lastmod>2025-01-24T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/argyraki/</loc>
-    <lastmod>2025-01-20T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/paulson/</loc>
     <lastmod>2025-01-20T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/pluennecke_ruzsa_inequality/</loc>
@@ -390,9 +402,6 @@
     <lastmod>2024-09-16T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/case_labeling/</loc>
-    <lastmod>2024-09-16T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/first_order_terms/</loc>
     <lastmod>2024-09-16T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/haslbeckm/</loc>
@@ -1430,9 +1439,6 @@
     <loc>/authors/qiu/</loc>
     <lastmod>2023-01-25T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/authors/tourret/</loc>
-    <lastmod>2023-01-25T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/dependencies/propositional_logic_class/</loc>
     <lastmod>2023-01-22T00:00:00+00:00</lastmod>
   </url><url>
@@ -2418,9 +2424,6 @@
     <lastmod>2020-10-29T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/kurz/</loc>
-    <lastmod>2020-10-29T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/propositional_proof_systems/</loc>
     <lastmod>2020-10-29T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Verified_SAT_Based_AI_Planning.html</loc>
@@ -5972,6 +5975,8 @@
     <loc>/sessions/fol/</loc>
   </url><url>
     <loc>/sessions/fol_axiomatic/</loc>
+  </url><url>
+    <loc>/sessions/fol_compactness/</loc>
   </url><url>
     <loc>/sessions/fol_harrison/</loc>
   </url><url>

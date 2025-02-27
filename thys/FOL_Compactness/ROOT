@@ -1,0 +1,15 @@
+chapter AFP
+
+session "FOL_Compactness" = Propositional_Proof_Systems +
+  options [timeout=300]
+  sessions   
+    First_Order_Terms
+   
+  theories
+    Canonical_Models
+
+(*commit_ignore_start*)
+  document_files
+    "root.bib"
+    "root.tex"
+(*commit_ignore_end*)
