@@ -9,7 +9,7 @@ lemma eq_resolution_preserves_typing:
   assumes "eq_resolution (D, \<V>) (C, \<V>)"
   shows "clause.is_welltyped \<V> D \<longleftrightarrow> clause.is_welltyped \<V> C"
   using assms
-  by(cases "(D, \<V>)" "(C, \<V>)" rule: eq_resolution.cases) auto
+  by (cases "(D, \<V>)" "(C, \<V>)" rule: eq_resolution.cases) auto
 
 lemma eq_factoring_preserves_typing:
   assumes "eq_factoring (D, \<V>) (C, \<V>)"

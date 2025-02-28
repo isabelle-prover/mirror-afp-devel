@@ -32,9 +32,9 @@ interpretation term_order_notation.
 inductive eq_resolution :: "('f, 'v, 'ty) typed_clause \<Rightarrow> ('f, 'v, 'ty) typed_clause \<Rightarrow> bool" where
   eq_resolutionI:
   "D = add_mset l D' \<Longrightarrow>
-    l = t !\<approx> t' \<Longrightarrow>
-    C = D' \<cdot> \<mu> \<Longrightarrow>
-    eq_resolution (D, \<V>) (C, \<V>)" 
+   l = t !\<approx> t' \<Longrightarrow>
+   C = D' \<cdot> \<mu> \<Longrightarrow>
+   eq_resolution (D, \<V>) (C, \<V>)" 
 if 
   "welltyped_imgu_on (clause.vars D) \<V> t t' \<mu>"
   "select D = {#} \<Longrightarrow> is_maximal (l \<cdot>l \<mu>) (D \<cdot> \<mu>)"
@@ -43,10 +43,10 @@ if
 inductive eq_factoring :: "('f, 'v, 'ty) typed_clause \<Rightarrow> ('f, 'v, 'ty) typed_clause \<Rightarrow> bool" where
   eq_factoringI:
   "D = add_mset l\<^sub>1 (add_mset l\<^sub>2 D') \<Longrightarrow>
-    l\<^sub>1 = t\<^sub>1 \<approx> t\<^sub>1' \<Longrightarrow>
-    l\<^sub>2 = t\<^sub>2 \<approx> t\<^sub>2' \<Longrightarrow>
-    C = add_mset (t\<^sub>1 \<approx> t\<^sub>2') (add_mset (t\<^sub>1' !\<approx> t\<^sub>2') D') \<cdot> \<mu> \<Longrightarrow>
-    eq_factoring (D, \<V>) (C, \<V>)"
+   l\<^sub>1 = t\<^sub>1 \<approx> t\<^sub>1' \<Longrightarrow>
+   l\<^sub>2 = t\<^sub>2 \<approx> t\<^sub>2' \<Longrightarrow>
+   C = add_mset (t\<^sub>1 \<approx> t\<^sub>2') (add_mset (t\<^sub>1' !\<approx> t\<^sub>2') D') \<cdot> \<mu> \<Longrightarrow>
+   eq_factoring (D, \<V>) (C, \<V>)"
 if
   "select D = {#}"
   "is_maximal (l\<^sub>1 \<cdot>l \<mu>) (D \<cdot> \<mu>)"

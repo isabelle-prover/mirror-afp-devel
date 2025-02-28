@@ -572,8 +572,8 @@ lemma obtain_merged_grounding:
     "vars (expr \<cdot> \<rho>\<^sub>1) \<inter> vars (expr' \<cdot> \<rho>\<^sub>2) = {}"
     "base.is_typed_on (vars expr) \<V>\<^sub>1 \<rho>\<^sub>1"
     "base.is_typed_on (vars expr') \<V>\<^sub>2 \<rho>\<^sub>2"
-    "\<forall>X \<subseteq> vars expr. \<forall>x\<in> X. \<gamma>\<^sub>1 x = (\<rho>\<^sub>1 \<odot> \<gamma>) x"
-    "\<forall>X \<subseteq> vars expr'. \<forall>x\<in> X. \<gamma>\<^sub>2 x = (\<rho>\<^sub>2 \<odot> \<gamma>) x"
+    "\<forall>x \<in> vars expr. \<gamma>\<^sub>1 x = (\<rho>\<^sub>1 \<odot> \<gamma>) x"
+    "\<forall>x \<in> vars expr'. \<gamma>\<^sub>2 x = (\<rho>\<^sub>2 \<odot> \<gamma>) x"
 proof-
 
   obtain \<rho>\<^sub>1 \<rho>\<^sub>2 where
@@ -624,7 +624,7 @@ proof-
         by (metis \<rho>\<^sub>1_inv base.comp_subst_iff base.left_neutral y)
     qed
 
-    then show "\<forall>X\<subseteq> vars expr. \<forall>x\<in>X. \<gamma>\<^sub>1 x = (\<rho>\<^sub>1 \<odot> \<gamma>) x"
+    then show "\<forall>x \<in> vars expr. \<gamma>\<^sub>1 x = (\<rho>\<^sub>1 \<odot> \<gamma>) x"
       by auto
 
   next
@@ -650,7 +650,7 @@ proof-
         by (metis \<rho>\<^sub>2_inv base.comp_subst_iff base.left_neutral y)
     qed
 
-    then show "\<forall>X\<subseteq> vars expr'. \<forall>x\<in>X. \<gamma>\<^sub>2 x = (\<rho>\<^sub>2 \<odot> \<gamma>) x"
+    then show "\<forall>x \<in> vars expr'. \<gamma>\<^sub>2 x = (\<rho>\<^sub>2 \<odot> \<gamma>) x"
       by auto
   qed
 qed
@@ -670,8 +670,8 @@ lemma obtain_merged_grounding':
     "vars (expr \<cdot> \<rho>\<^sub>1) \<inter> vars (expr' \<cdot> \<rho>\<^sub>2) = {}"
     "base.is_typed_on (vars expr) \<V>\<^sub>1 \<rho>\<^sub>1"
     "base.is_typed_on (vars expr') \<V>\<^sub>2 \<rho>\<^sub>2"
-    "\<forall>X \<subseteq> vars expr. \<forall>x\<in> X. \<gamma>\<^sub>1 x = (\<rho>\<^sub>1 \<odot> \<gamma>) x"
-    "\<forall>X \<subseteq> vars expr'. \<forall>x\<in> X. \<gamma>\<^sub>2 x = (\<rho>\<^sub>2 \<odot> \<gamma>) x"
+    "\<forall>x \<in> vars expr. \<gamma>\<^sub>1 x = (\<rho>\<^sub>1 \<odot> \<gamma>) x"
+    "\<forall>x \<in> vars expr'. \<gamma>\<^sub>2 x = (\<rho>\<^sub>2 \<odot> \<gamma>) x"
   using obtain_merged_grounding[OF typed_\<gamma>\<^sub>2 typed_\<gamma>\<^sub>1 expr'_grounding expr_grounding \<V>\<^sub>1 finite_vars]
   by (smt (verit, ccfv_threshold) inf_commute)
 

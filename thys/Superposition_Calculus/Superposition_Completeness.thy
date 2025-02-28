@@ -1564,11 +1564,11 @@ proof-
   obtain \<rho>\<^sub>1 \<rho>\<^sub>2 \<gamma> :: "('f, 'v) subst" where
     \<rho>\<^sub>1: "term_subst.is_renaming \<rho>\<^sub>1" and
     \<rho>\<^sub>2: "term_subst.is_renaming \<rho>\<^sub>2" and
-    rename_apart:  "clause.vars (E \<cdot> \<rho>\<^sub>1) \<inter> clause.vars (D \<cdot> \<rho>\<^sub>2) = {}" and
+    rename_apart: "clause.vars (E \<cdot> \<rho>\<^sub>1) \<inter> clause.vars (D \<cdot> \<rho>\<^sub>2) = {}" and
     \<rho>\<^sub>1_is_welltyped: "term.subst.is_welltyped_on (clause.vars E) \<V>\<^sub>1 \<rho>\<^sub>1" and
     \<rho>\<^sub>2_is_welltyped: "term.subst.is_welltyped_on (clause.vars D) \<V>\<^sub>2 \<rho>\<^sub>2" and
-    \<gamma>\<^sub>1_\<gamma>: "\<forall>X \<subseteq> clause.vars E. \<forall>x\<in> X. \<gamma>\<^sub>1 x = (\<rho>\<^sub>1 \<odot> \<gamma>) x" and
-    \<gamma>\<^sub>2_\<gamma>: "\<forall>X \<subseteq> clause.vars D. \<forall>x\<in> X. \<gamma>\<^sub>2 x = (\<rho>\<^sub>2 \<odot> \<gamma>) x"
+    \<gamma>\<^sub>1_\<gamma>: "\<forall>x \<in> clause.vars E. \<gamma>\<^sub>1 x = (\<rho>\<^sub>1 \<odot> \<gamma>) x" and
+    \<gamma>\<^sub>2_\<gamma>: "\<forall>x \<in> clause.vars D. \<gamma>\<^sub>2 x = (\<rho>\<^sub>2 \<odot> \<gamma>) x"
     using
       clause.is_welltyped.obtain_merged_grounding[OF \<gamma>\<^sub>1_is_welltyped \<gamma>\<^sub>2_is_welltyped E_grounding
         D_grounding \<V>\<^sub>2 clause.finite_vars].
@@ -1605,8 +1605,8 @@ proof-
       by fast
 
     moreover have "select E \<cdot> \<gamma>\<^sub>1 = select E \<cdot> \<rho>\<^sub>1 \<cdot> \<gamma>"
-      using clause.subst_eq \<gamma>\<^sub>1_\<gamma> select_vars_subset
-      by (metis clause.comp_subst.left.monoid_action_compatibility)
+      using clause.subst_eq \<gamma>\<^sub>1_\<gamma> select_vars_subset[of E]
+      by (metis (no_types, lifting) clause.comp_subst.left.monoid_action_compatibility in_mono)
 
     ultimately show ?thesis
       using select_from_E
@@ -1622,8 +1622,8 @@ proof-
       by fast
 
     moreover have "select D \<cdot> \<gamma>\<^sub>2 = select D \<cdot> \<rho>\<^sub>2 \<cdot> \<gamma>"
-      using clause.subst_eq \<gamma>\<^sub>2_\<gamma> select_vars_subset
-      by (metis clause.comp_subst.left.monoid_action_compatibility)
+      using clause.subst_eq \<gamma>\<^sub>2_\<gamma> select_vars_subset[of D]
+      by (metis (no_types, lifting) clause.comp_subst.left.monoid_action_compatibility in_mono)
 
     ultimately show ?thesis
       using select_from_D
