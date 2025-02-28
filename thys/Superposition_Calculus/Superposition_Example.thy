@@ -222,7 +222,7 @@ locale superposition_example =
 begin
 
 sublocale wellfounded_strict_order "trivial_tiebreakers C\<^sub>G"
-  using trivial_tiebreakers.
+  using trivial_tiebreakers .
 
 sublocale nonground_term_with_context .
 

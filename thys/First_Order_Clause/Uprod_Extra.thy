@@ -54,14 +54,14 @@ qed
 definition mset_uprod :: "'a uprod \<Rightarrow> 'a multiset" where
   "mset_uprod = case_uprod (Abs_commute (\<lambda>x y. {#x, y#}))"
 
-lemma Abs_commute_inverse_mset[simp]:
+lemma Abs_commute_inverse_mset [simp]:
   "apply_commute (Abs_commute (\<lambda>x y. {#x, y#})) = (\<lambda>x y. {#x, y#})"
   by (simp add: Abs_commute_inverse)
 
-lemma set_mset_mset_uprod[simp]: "set_mset (mset_uprod up) = set_uprod up"
+lemma set_mset_mset_uprod [simp]: "set_mset (mset_uprod up) = set_uprod up"
   by (simp add: mset_uprod_def case_uprod.rep_eq set_uprod.rep_eq case_prod_beta)
 
-lemma mset_uprod_Upair[simp]: "mset_uprod (Upair x y) = {#x, y#}"
+lemma mset_uprod_Upair [simp]: "mset_uprod (Upair x y) = {#x, y#}"
   by (simp add: mset_uprod_def)
 
 lemma map_uprod_inverse: "(\<And>x. f (g x) = x) \<Longrightarrow> (\<And>y. map_uprod f (map_uprod g y) = y)"

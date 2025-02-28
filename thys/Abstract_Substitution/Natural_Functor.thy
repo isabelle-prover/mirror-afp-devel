@@ -18,14 +18,25 @@ begin
 
 lemma map_id [simp]: "map id b = b"
   unfolding id_def
-  by(rule map_ident)
+  using map_ident .
 
 lemma map_cong [cong]: 
   assumes "b = b'" "\<And>a. a \<in> to_set b' \<Longrightarrow> f a = g a" 
   shows "map f b = map g b'"
   using map_cong0 assms
   by blast
-  
+
+lemma map_id_cong [simp]:
+  assumes "\<And>a. a \<in> to_set b \<Longrightarrow> f a = a"
+  shows "map f b = b"
+  using assms
+  by simp
+
+lemma to_set_map_not_ident:
+  assumes "a \<in> to_set b" "f a \<notin> to_set b"
+  shows "map f b \<noteq> b"
+  using assms
+  by (metis rev_image_eqI to_set_map)
 
 end
 

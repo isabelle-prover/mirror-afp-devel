@@ -155,18 +155,18 @@ proof(unfold_locales; (intro typed.Var welltyped.Var refl)?)
   assume is_typed_on: "\<forall>x \<in> term.vars t. typed \<V> (\<sigma> x) (\<V> x)"
 
   show "typed \<V> (t \<cdot>t \<sigma>) \<tau> \<longleftrightarrow> typed \<V> t \<tau>"
-  proof(rule iffI)
+  proof (rule iffI)
     assume "typed \<V> t \<tau>"
 
     then show "typed \<V> (t \<cdot>t \<sigma>) \<tau>"
       using is_typed_on
-      by(induction rule: typed.induct)(auto simp: typed.Fun)
+      by (induction rule: typed.induct) (auto simp: typed.Fun)
   next
     assume "typed \<V> (t \<cdot>t \<sigma>) \<tau>"
 
     then show "typed \<V> t \<tau>"
       using is_typed_on
-      by(induction t)(auto simp: typed.simps)
+      by (induction t) (auto simp: typed.simps)
   qed
 next
   fix \<tau> and \<V> and t :: "('f, 'v) term" and \<sigma>
@@ -174,21 +174,21 @@ next
   assume is_welltyped_on: "\<forall>x \<in> term.vars t. welltyped \<V> (\<sigma> x) (\<V> x)"
 
   show "welltyped \<V> (t \<cdot>t \<sigma>) \<tau> \<longleftrightarrow> welltyped \<V> t \<tau>"
-  proof(rule iffI)
+  proof (rule iffI)
 
     assume "welltyped \<V> t \<tau>"
 
     then show "welltyped \<V> (t \<cdot>t \<sigma>) \<tau>"
       using is_welltyped_on
-      by(induction rule: welltyped.induct)
-        (auto simp: list.rel_mono_strong list_all2_map1 welltyped.simps)
+      by (induction rule: welltyped.induct)
+         (auto simp: list.rel_mono_strong list_all2_map1 welltyped.simps)
   next
 
     assume "welltyped \<V> (t \<cdot>t \<sigma>) \<tau>"
 
     then show "welltyped \<V> t \<tau>"
       using is_welltyped_on
-    proof(induction "t \<cdot>t \<sigma>" \<tau> arbitrary: t rule: welltyped.induct)
+    proof (induction "t \<cdot>t \<sigma>" \<tau> arbitrary: t rule: welltyped.induct)
       case (Var x \<tau>)
 
       then obtain x' where t: "t = Var x'"

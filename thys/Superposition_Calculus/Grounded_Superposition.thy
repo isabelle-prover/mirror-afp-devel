@@ -117,8 +117,6 @@ proof-
     by blast
 qed
 
-thm option.sel
-
 sublocale lifting:
   tiebreaker_lifting
     "\<bottom>\<^sub>F"

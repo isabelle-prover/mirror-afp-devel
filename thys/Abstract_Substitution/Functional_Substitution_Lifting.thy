@@ -20,18 +20,6 @@ notation sub_subst (infixl "\<cdot>\<^sub>s" 70)
 definition subst :: "'expr \<Rightarrow> ('var \<Rightarrow> 'base) \<Rightarrow> 'expr" (infixl "\<cdot>" 70) where
   "expr \<cdot> \<sigma> \<equiv> map (\<lambda>sub. sub \<cdot>\<^sub>s \<sigma>) expr"
 
-lemma map_id_cong [simp]:
-  assumes "\<And>sub. sub \<in> to_set expr \<Longrightarrow> f sub = sub"
-  shows "map f expr = expr"
-  using assms
-  by simp
-
-lemma to_set_map_not_ident:
-  assumes "sub \<in> to_set expr" "f sub \<notin> to_set expr"
-  shows "map f expr \<noteq> expr"
-  using assms
-  by (metis rev_image_eqI to_set_map)
-
 lemma subst_in_to_set_subst [intro]:
   assumes "sub \<in> to_set expr"
   shows "sub \<cdot>\<^sub>s \<sigma> \<in> to_set (expr \<cdot> \<sigma>)"

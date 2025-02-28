@@ -23,7 +23,7 @@ sublocale predicate_typed "typed \<V>"
   using predicate_typed .
 
 abbreviation is_typed_on :: "'var set \<Rightarrow> ('var, 'ty) var_types \<Rightarrow> ('var \<Rightarrow> 'base) \<Rightarrow> bool" where
-  "\<And>\<V>. is_typed_on X \<V> \<sigma> \<equiv> \<forall>x \<in> X. typed \<V> (\<sigma> x) (\<V> x)"
+  "is_typed_on X \<V> \<sigma> \<equiv> \<forall>x \<in> X. typed \<V> (\<sigma> x) (\<V> x)"
 
 lemma subst_update:
   assumes "typed \<V> (id_subst var) \<tau>" "typed \<V> update \<tau>"  "is_typed_on X \<V> \<gamma>"
@@ -45,7 +45,7 @@ end
 
 locale inhabited_explicitly_typed_functional_substitution =
  explicitly_typed_functional_substitution +
- assumes types_inhabited: "\<And>\<tau>. \<exists>b. is_ground b \<and> typed \<V> b \<tau>"
+ assumes types_inhabited: "\<And>\<V> \<tau>. \<exists>b. is_ground b \<and> typed \<V> b \<tau>"
 
 locale typed_functional_substitution =
   base: explicitly_typed_functional_substitution where
@@ -132,12 +132,14 @@ proof (rule that)
       have "base.is_ground (\<gamma>' x)"
       proof(cases "x \<in> vars expr")
         case True
+
         then show ?thesis
           unfolding \<gamma>'_def
           using variable_grounding[OF grounding]
           by auto
       next
         case False
+
         then show ?thesis
           unfolding \<gamma>'_def
           by (smt (verit) base.types_inhabited tfl_some)
@@ -236,7 +238,7 @@ lemma replace_\<V>_iff:
   using assms
   by (metis replace_\<V>)
 
-lemma is_ground_typed:
+lemma is_ground_typed:                
   assumes "is_ground expr"
   shows "is_typed \<V> expr \<longleftrightarrow> is_typed \<V>' expr"
   using replace_\<V>_iff assms

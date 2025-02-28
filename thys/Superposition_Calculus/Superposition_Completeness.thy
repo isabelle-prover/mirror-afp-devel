@@ -137,46 +137,47 @@ proof(cases D\<^sub>G C\<^sub>G rule: ground.eq_resolution.cases)
   proof(rule that)
 
     show eq_resolution: "eq_resolution (D, \<V>) (C' \<cdot> \<mu>, \<V>)"
-    proof (rule eq_resolutionI, rule D, rule l, rule imgu)
-      show "select D = {#} \<and> is_maximal (l \<cdot>l \<mu>) (D \<cdot> \<mu>) \<or> is_maximal (l \<cdot>l \<mu>) ((select D) \<cdot> \<mu>)"
-      proof(cases ?select\<^sub>G_empty)
-        case True
+    proof (rule eq_resolutionI, rule imgu)
 
-        moreover have "is_maximal (l \<cdot>l \<mu>) (D \<cdot> \<mu>)"
-        proof-
-          have "l \<cdot>l \<mu> \<in># D \<cdot> \<mu>"
-            using l_in_D
-            by blast
+      show "select D = {#} \<Longrightarrow> is_maximal (l \<cdot>l \<mu>) (D \<cdot> \<mu>)"
+      proof -
+        assume "select D = {#}"
 
-          then show ?thesis
-            using l_\<gamma>_is_maximal[OF True] is_maximal_if_grounding_is_maximal D_grounding
-            unfolding \<gamma>
-            by simp
-        qed
+        then have "?select\<^sub>G_empty"
+          using select 
+          by auto
 
-        ultimately show ?thesis
-          using select
-          by simp
-      next
-        case False
-
-        have "l \<cdot>l \<mu> \<in># select D \<cdot> \<mu>"
-          using l_selected[OF False] maximal_in_clause
+        moreover have "l \<cdot>l \<mu> \<in># D \<cdot> \<mu>"
+          using l_in_D
           by blast
 
-        then have "is_maximal (l \<cdot>l \<mu>) (select D \<cdot> \<mu>)"
+        ultimately show "is_maximal (l \<cdot>l \<mu>) (D \<cdot> \<mu>)"
+          using l_\<gamma>_is_maximal is_maximal_if_grounding_is_maximal D_grounding
+          unfolding \<gamma>
+          by simp
+      qed
+
+      show "select D \<noteq> {#} \<Longrightarrow> is_maximal (l \<cdot>l \<mu>) (select D \<cdot> \<mu>)"
+      proof -
+        assume "select D \<noteq> {#}"
+
+        then have "\<not>?select\<^sub>G_empty"
+          using select 
+          by auto
+
+        moreover then have "l \<cdot>l \<mu> \<in># select D \<cdot> \<mu>"
+          using l_selected maximal_in_clause
+          by blast
+
+        ultimately show ?thesis
           using
             select_ground_subst[OF D_grounding]
-            l_\<gamma>_selected[OF False]
+            l_\<gamma>_selected
             is_maximal_if_grounding_is_maximal
           unfolding \<gamma>
           by auto
-
-        then show ?thesis
-          using select
-          by blast
       qed
-    qed (rule refl)
+    qed (rule D, rule l, rule refl)
 
     show C'_\<mu>_\<gamma>: "C' \<cdot> \<mu> \<cdot> \<gamma> = C \<cdot> \<gamma>"
     proof-
