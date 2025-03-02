@@ -1,5 +1,22 @@
 [
  {
+  "abstract": "This is a translation of a HOL Light formalization covering foundational results in first-order model theory, including the compactness of first-order logic. The original work is described in the following paper: Formalizing Basic First Order Model Theory John Harrison Proceedings of the 11th International Conference on Theorem Proving in Higher Order Logics, TPHOLs'98, Springer LNCS 1497, pp. 153-170. The corresponding HOL Light theories can be found on GitHub.",
+  "authors": [
+   "Sophie Tourret",
+   "Lawrence C. Paulson"
+  ],
+  "link": "/entries/FOL_Compactness.html",
+  "shortname": "FOL_Compactness",
+  "title": "Compactness Theorem for First-Order Logic",
+  "topic_links": [
+   "/topics/logic/general-logic/classical-first-order-logic/"
+  ],
+  "topics": [
+   "Logic/General logic/Classical first-order logic"
+  ],
+  "year": "2025"
+ },
+ {
   "abstract": " The Hilbert Basis Theorem is enlisted in the extension of Wiedijk's catalogue \"Formalizing 100 Theorems\", a well-known collection of challenge problems for the formalization of mathematics. In this paper, we present a formal proof of several versions of this theorem in Isabelle/HOL. Hilbert's basis theorem asserts that every ideal of a polynomial ring over a commutative ring has a finite generating family (a finite basis in Hilbert's terminology). A prominent alternative formulation is: every polynomial ring over a Noetherian ring is also Noetherian. In more detail, the statement and our generalization can be presented as follows: Hilbert's Basis Theorem. Let \\( \\mathcal{R}[X] \\) denote the ring of polynomials in the indeterminate \\( X \\) over the commutative ring \\( \\mathcal{R} \\). Then \\( \\mathcal{R}[X] \\) is Noetherian if and only if \\( \\mathcal{R} \\) is. Corollary. \\( \\mathcal{R}[X_1, \\ldots, X_n] \\) is Noetherian if and only if \\( \\mathcal{R} \\) is. Extension. If \\( \\mathcal{R} \\) is a Noetherian ring, then \\( \\mathcal{R}[[X]] \\) is a Noetherian ring, where \\( \\mathcal{R}[[X]] \\) denotes the formal power series over the ring \\( \\mathcal{R} \\). We also provide isomorphisms between the three types of polynomial rings defined in HOL-Algebra. Together with the fact that the Noetherian property is preserved by isomorphism, we get Hilbert's Basis Theorem for all three models. We believe that this technique has a wider potential of applications in the AFP library.\n",
   "authors": [
    "Benjamin Puyobro",

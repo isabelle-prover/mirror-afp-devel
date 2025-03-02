@@ -7438,16 +7438,16 @@ name = "Sophie Tourret"
 
 [tourret.emails.tourret_email]
 user = [
-  "stourret",
+  "sophie",
+  "tourret",
 ]
 host = [
-  "mpi-inf",
-  "mpg",
-  "de",
+  "loria",
+  "fr",
 ]
 
 [tourret.homepages]
-tourret_homepage = "https://www.mpi-inf.mpg.de/departments/automation-of-logic/people/sophie-tourret/"
+tourret_homepage = "https://members.loria.fr/sophie.tourret/"
 
 [trachtenherz]
 name = "David Trachtenherz"
