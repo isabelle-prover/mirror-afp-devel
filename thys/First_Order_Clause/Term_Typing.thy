@@ -2,7 +2,7 @@ theory Term_Typing
   imports Typing Context_Extra
 begin
 
-type_synonym ('f, 'ty) fun_types = "'f \<Rightarrow> 'ty list \<times> 'ty"
+type_synonym ('f, 'ty) fun_types = "'f \<Rightarrow> nat \<Rightarrow> 'ty list \<times> 'ty"
 
 locale context_compatible_typing =
   fixes Fun typed

@@ -30,13 +30,13 @@ begin
 inductive typed :: "('v, 'ty) var_types \<Rightarrow> ('f,'v) term \<Rightarrow> 'ty \<Rightarrow> bool"
   for \<V> where
     Var: "\<V> x = \<tau> \<Longrightarrow> typed \<V> (Var x) \<tau>"
-  | Fun: "\<F> f = (\<tau>s, \<tau>) \<Longrightarrow> typed \<V> (Fun f ts) \<tau>"
+  | Fun: "\<F> f (length ts) = (\<tau>s, \<tau>) \<Longrightarrow> typed \<V> (Fun f ts) \<tau>"
 
 text\<open>Note: Implicitly implies that every function symbol has a fixed arity\<close>
 inductive welltyped :: "('v, 'ty) var_types \<Rightarrow> ('f,'v) term \<Rightarrow> 'ty \<Rightarrow> bool"
   for \<V> where
     Var: "\<V> x = \<tau> \<Longrightarrow> welltyped \<V> (Var x) \<tau>"
-  | Fun: "\<F> f = (\<tau>s, \<tau>) \<Longrightarrow> list_all2 (welltyped \<V>) ts \<tau>s \<Longrightarrow> welltyped \<V> (Fun f ts) \<tau>"
+  | Fun: "\<F> f (length ts) = (\<tau>s, \<tau>) \<Longrightarrow> list_all2 (welltyped \<V>) ts \<tau>s \<Longrightarrow> welltyped \<V> (Fun f ts) \<tau>"
 
 sublocale "term": explicit_typing "typed (\<V> :: ('v, 'ty) var_types)" "welltyped \<V>"
 proof unfold_locales
@@ -91,8 +91,9 @@ proof unfold_locales
 
       show ?thesis
       proof (rule welltyped.Fun)
-        show "\<F> f = (\<tau>s, \<tau>)"
-          using \<open>\<F> f = (\<tau>s, \<tau>)\<close> .
+        show "\<F> f (length (ss1 @ c\<langle>t'\<rangle> # ss2)) = (\<tau>s, \<tau>)"
+          using Fun 
+          by simp
       next
         show "list_all2 (welltyped \<V>) (ss1 @ c\<langle>t'\<rangle> # ss2) \<tau>s"
           using \<open>list_all2 (welltyped \<V>) (ss1 @ c\<langle>t\<rangle> # ss2) \<tau>s\<close>
@@ -309,12 +310,16 @@ next
         by auto
 
       then obtain \<tau>s where \<tau>s:
-        "list_all2 (welltyped \<V>') (map (\<lambda>s. s \<cdot>t \<rho>) ts) \<tau>s" "\<F> f = (\<tau>s, \<tau>)"
+        "list_all2 (welltyped \<V>') (map (\<lambda>s. s \<cdot>t \<rho>) ts) \<tau>s" 
+        "\<F> f (length (map (\<lambda>s. s \<cdot>t \<rho>) ts)) = (\<tau>s, \<tau>)"
         using welltyped.simps
         by blast
 
+      then have \<F>: "\<F> f (length ts) = (\<tau>s, \<tau>)"
+        by simp
+       
       show ?case
-      proof(rule welltyped.Fun[OF \<tau>s(2)])
+      proof(rule welltyped.Fun[OF \<F>])
 
         show "list_all2 (welltyped \<V>) ts \<tau>s"
           using \<tau>s(1) Fun.IH
@@ -336,11 +341,11 @@ next
         using term.id_subst_rename[OF renaming]
         by (metis eval_term.simps(1) welltyped.Var)
     next
-      case (Fun f \<tau>s \<tau> ts)
+      case (Fun f ts \<tau>s \<tau>)
 
       have "list_all2 (welltyped \<V>') (map (\<lambda>s. s \<cdot>t \<rho>) ts) \<tau>s"
         using Fun
-        by(auto simp: list.rel_mono_strong list_all2_map1)
+        by (auto simp: list.rel_mono_strong list_all2_map1)
 
       then show ?case
         by (simp add: Fun.hyps welltyped.simps)
@@ -352,7 +357,7 @@ end
 
 locale nonground_term_inhabited_typing =
   nonground_term_typing where \<F> = \<F> for \<F> :: "('f, 'ty) fun_types" +
-  assumes types_inhabited: "\<And>\<tau>. \<exists>f. \<F> f = ([], \<tau>)"
+  assumes types_inhabited: "\<And>\<tau>. \<exists>f. \<F> f 0 = ([], \<tau>)"
 begin
 
 sublocale base_inhabited_typing_properties where
@@ -362,7 +367,7 @@ sublocale base_inhabited_typing_properties where
 proof unfold_locales
   fix \<V> :: "('v, 'ty) var_types" and \<tau>
 
-  obtain f where f: "\<F> f = ([], \<tau>)"
+  obtain f where f: "\<F> f 0 = ([], \<tau>)"
     using types_inhabited
     by blast
 
@@ -373,8 +378,9 @@ proof unfold_locales
       by simp
   next
 
-    show "\<F> f = ([], \<tau>)"
-      by(rule f)
+    show "\<F> f (length []) = ([], \<tau>)"
+      using f
+      by simp
   next
 
     show "list_all2 (welltyped \<V>) [] []"

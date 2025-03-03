@@ -6,10 +6,10 @@ theory Ground_Typing
 begin
 
 inductive typed for \<F> where
-  GFun: "\<F> f = (\<tau>s, \<tau>) \<Longrightarrow> typed \<F> (GFun f ts) \<tau>"
+  GFun: "\<F> f (length ts) = (\<tau>s, \<tau>) \<Longrightarrow> typed \<F> (GFun f ts) \<tau>"
 
 inductive welltyped for \<F> where
-  GFun: "\<F> f = (\<tau>s, \<tau>) \<Longrightarrow> list_all2 (welltyped \<F>) ts \<tau>s \<Longrightarrow> welltyped \<F> (GFun f ts) \<tau>"
+  GFun: "\<F> f (length ts) = (\<tau>s, \<tau>) \<Longrightarrow> list_all2 (welltyped \<F>) ts \<tau>s \<Longrightarrow> welltyped \<F> (GFun f ts) \<tau>"
 
 locale ground_term_typing =
   fixes \<F> :: "('f, 'ty) fun_types"
@@ -79,9 +79,12 @@ proof unfold_locales
 
       show ?thesis
       proof (rule welltyped.GFun)
-        show "\<F> f = (\<tau>s, \<tau>)"
-          using \<open>\<F> f = (\<tau>s, \<tau>)\<close> .
+
+        show "\<F> f (length (ss1 @ c\<langle>t'\<rangle>\<^sub>G # ss2)) = (\<tau>s, \<tau>)"
+          using GFun(1)
+          by simp
       next
+
         show "list_all2 welltyped (ss1 @ c\<langle>t'\<rangle>\<^sub>G # ss2) \<tau>s"
           using \<open>list_all2 welltyped (ss1 @ c\<langle>t\<rangle>\<^sub>G # ss2) \<tau>s\<close>
           using More.IH

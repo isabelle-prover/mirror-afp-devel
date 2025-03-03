@@ -75,7 +75,7 @@ abbreviation trivial_select :: "'a clause \<Rightarrow> 'a clause" where
   "trivial_select _ \<equiv> {#}"
 
 abbreviation unit_types where
-  "unit_types _ \<equiv> ([], ())"
+  "unit_types _ _ \<equiv> ([], ())"
 
 sublocale selection_function trivial_select
   by unfold_locales auto
@@ -94,9 +94,9 @@ context nonground_equality_order
 begin
 
 abbreviation select_max where
-  "select_max C \<equiv> 
-    if \<exists>l\<in>#C. is_maximal l C \<and> is_neg l 
-    then {#SOME l. is_maximal l C \<and> is_neg l#} 
+  "select_max C \<equiv>
+    if \<exists>l\<in>#C. is_maximal l C \<and> is_neg l
+    then {#SOME l. is_maximal l C \<and> is_neg l#}
     else {#}"
 
 sublocale select_max: selection_function select_max
@@ -161,7 +161,7 @@ definition least where
   "least x \<longleftrightarrow> (\<forall>y. x \<le> y)"
 
 definition weight :: "'f \<times> nat \<Rightarrow> nat" where
-  "weight p = 1" 
+  "weight p = 1"
 
 abbreviation weights where "weights \<equiv>
   \<lparr>w = weight, w0 = 1, pr_strict = pr_strict\<inverse>\<inverse>, least = least, scf = \<lambda>_ _. 1\<rparr>"
@@ -169,9 +169,10 @@ abbreviation weights where "weights \<equiv>
 interpretation weighted weights
 proof (unfold_locales, unfold weights.select_convs weight_def least_def pr_strict_def lex_prodp_def)
  
-  show "SN {(fn  :: ('b :: wellorder) \<times> nat, gm). 
+  show "SN {(fn  :: ('b :: wellorder) \<times> nat, gm).
               (\<lambda>x y. fst x < fst y \<or> fst x = fst y \<and> snd x < snd y)\<inverse>\<inverse> fn gm}"
   proof (fold lex_prodp_def pr_strict_def, rule wf_imp_SN)
+
     show "wf ({(fn, gm). pr_strict\<inverse>\<inverse> fn gm}\<inverse>)"
       using wfp_pr_strict
       by (simp add: wfp_pr_strict converse_def wfp_def)
@@ -195,16 +196,12 @@ instance
 
 end
 
-fun repeat :: "nat \<Rightarrow> 'a \<Rightarrow> 'a list" where
-  "repeat 0 _ = []"
-| "repeat (Suc n) x = x # repeat n x"
+abbreviation types :: "nat \<Rightarrow> nat \<Rightarrow> type list \<times> type" where
+  "types f n \<equiv>
+    let type = if even f then A else B
+    in (replicate n type, type)"
 
-abbreviation types :: "nat \<Rightarrow> type list \<times> type" where
-  "types n \<equiv>
-    let type = if even n then A else B
-    in (repeat (n div 2) type, type)"
-
-lemma types_inhabited: "\<exists>f. types f = ([], \<tau>)"
+lemma types_inhabited: "\<exists>f. types f 0 = ([], \<tau>)"
 proof (cases \<tau>)
   case A
   show ?thesis
@@ -237,7 +234,7 @@ sublocale
     trivial_tiebreakers
 proof unfold_locales
   fix \<tau>
-  show "\<exists>f. types f = ([], \<tau>)"
+  show "\<exists>f. types f 0 = ([], \<tau>)"
     using types_inhabited .
 next
   show "|UNIV :: type set| \<le>o |UNIV :: nat set|"
