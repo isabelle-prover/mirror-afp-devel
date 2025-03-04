@@ -18,11 +18,11 @@ proof -
     by auto
 qed
 
-lemma surj_infinite_set: "surj g \<Longrightarrow> infinite {x. f x = ty} \<Longrightarrow> infinite {x. f (g x) = ty}"
+lemma surj_infinite_set: "surj g \<Longrightarrow> infinite {x. f x = \<tau>} \<Longrightarrow> infinite {x. f (g x) = \<tau>}"
   by (smt (verit) UNIV_I finite_imageI image_iff mem_Collect_eq rev_finite_subset subset_eq)
 
 definition infinite_variables_per_type_on :: "'var set \<Rightarrow> ('var \<Rightarrow> 'ty) \<Rightarrow> bool" where
-  "infinite_variables_per_type_on X \<V> \<equiv> \<forall>ty \<in> \<V> ` X. infinite {x. \<V> x = ty}"
+  "infinite_variables_per_type_on X \<V> \<equiv> \<forall>\<tau> \<in> \<V> ` X. infinite {x. \<V> x = \<tau>}"
 
 abbreviation infinite_variables_per_type :: "('var \<Rightarrow> 'ty) \<Rightarrow> bool" where
   "infinite_variables_per_type \<equiv> infinite_variables_per_type_on UNIV"
@@ -39,26 +39,26 @@ lemma obtain_type_preserving_inj:
 proof (rule that)
 
   {
-    fix ty
-    assume "ty \<in> range \<V>"
+    fix \<tau>
+    assume "\<tau> \<in> range \<V>"
 
-    then have "|{x. \<V> x = ty}| =o |{x. \<V> x = ty } - X|"
+    then have "|{x. \<V> x = \<tau>}| =o |{x. \<V> x = \<tau> } - X|"
       using \<V> finite_X card_of_infinite_diff_finite ordIso_symmetric
       unfolding infinite_variables_per_type_on_def
       by blast
 
-    then have "|{x. \<V> x = ty}| =o |{x. \<V> x = ty \<and> x \<notin> X}|"
+    then have "|{x. \<V> x = \<tau>}| =o |{x. \<V> x = \<tau> \<and> x \<notin> X}|"
       using set_diff_eq[of _ X]
       by auto
 
-    then have "\<exists>g. bij_betw g {x. \<V> x = ty} {x. \<V> x = ty \<and> x \<notin> X}"
+    then have "\<exists>g. bij_betw g {x. \<V> x = \<tau>} {x. \<V> x = \<tau> \<and> x \<notin> X}"
       using card_of_ordIso someI
       by blast
   }
   note exists_g = this
 
   define get_g where
-    "\<And>ty. get_g ty \<equiv> SOME g. bij_betw g {x. \<V> x = ty} {x. \<V> x = ty \<and> x \<notin> X}"
+    "\<And>\<tau>. get_g \<tau> \<equiv> SOME g. bij_betw g {x. \<V> x = \<tau>} {x. \<V> x = \<tau> \<and> x \<notin> X}"
 
   define f where
     "\<And>x. f x \<equiv> get_g (\<V> x) x"
@@ -224,7 +224,7 @@ lemma infinite_variables_per_type_on_subset:
   by blast
 
 definition infinite_variables_for_all_types :: "('v \<Rightarrow> 'ty) \<Rightarrow> bool" where
-  "infinite_variables_for_all_types \<V> \<equiv> \<forall>ty. infinite {x. \<V> x = ty}"
+  "infinite_variables_for_all_types \<V> \<equiv> \<forall>\<tau>. infinite {x. \<V> x = \<tau>}"
 
 lemma exists_infinite_variables_for_all_types:
   assumes "|UNIV :: 'ty set| \<le>o |UNIV :: ('v :: infinite) set|"

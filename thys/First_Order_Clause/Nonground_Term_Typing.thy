@@ -32,7 +32,6 @@ inductive typed :: "('v, 'ty) var_types \<Rightarrow> ('f,'v) term \<Rightarrow>
     Var: "\<V> x = \<tau> \<Longrightarrow> typed \<V> (Var x) \<tau>"
   | Fun: "\<F> f (length ts) = (\<tau>s, \<tau>) \<Longrightarrow> typed \<V> (Fun f ts) \<tau>"
 
-text\<open>Note: Implicitly implies that every function symbol has a fixed arity\<close>
 inductive welltyped :: "('v, 'ty) var_types \<Rightarrow> ('f,'v) term \<Rightarrow> 'ty \<Rightarrow> bool"
   for \<V> where
     Var: "\<V> x = \<tau> \<Longrightarrow> welltyped \<V> (Var x) \<tau>"
