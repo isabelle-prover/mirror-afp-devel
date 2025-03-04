@@ -1,30 +1,23 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Mission_Time_LTL on Archive of Formal Proofs
+    <title>rosentrater on Archive of Formal Proofs
     </title>
-    <link>/dependencies/mission_time_ltl/</link>
+    <link>/authors/rosentrater/</link>
     <description>
-        Recent content in Mission_Time_LTL 
+        Recent content in rosentrater 
         on Archive of Formal Proofs
     </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
       <lastBuildDate>Mon, 03 Mar 2025 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/dependencies/mission_time_ltl/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="/authors/rosentrater/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Language Partitioning for Mission-time Linear Temporal Logic</title>
           <link>/entries/Mission_Time_LTL_Language_Partition.html</link>
           <pubDate>Mon, 03 Mar 2025 00:00:00 +0000</pubDate>
           <guid>/entries/Mission_Time_LTL_Language_Partition.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Mission-time Linear Temporal Logic to Regular Expressions</title>
-          <link>/entries/Mission_Time_LTL_to_Regular_Expression.html</link>
-          <pubDate>Fri, 24 Jan 2025 00:00:00 +0000</pubDate>
-          <guid>/entries/Mission_Time_LTL_to_Regular_Expression.html</guid>
           <description></description>
         </item>
   </channel>

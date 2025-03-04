@@ -6089,6 +6089,23 @@ host = [
 
 [romanos.homepages]
 
+[rosentrater]
+name = "Alec Rosentrater"
+orcid = "0009-0007-8186-3631"
+
+[rosentrater.emails]
+
+[rosentrater.emails.rosentrater_email]
+user = [
+  "alecrose",
+]
+host = [
+  "iastate",
+  "edu",
+]
+
+[rosentrater.homepages]
+
 [rosskopf]
 name = "Simon Roßkopf"
 

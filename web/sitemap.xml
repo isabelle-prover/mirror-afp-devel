@@ -3,33 +3,54 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>/</loc>
-    <lastmod>2025-02-26T00:00:00+00:00</lastmod>
+    <lastmod>2025-03-03T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/</loc>
-    <lastmod>2025-02-26T00:00:00+00:00</lastmod>
+    <lastmod>2025-03-03T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/computer-science/</loc>
+    <lastmod>2025-03-03T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/cordwell/</loc>
+    <lastmod>2025-03-03T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/</loc>
+    <lastmod>2025-03-03T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/</loc>
+    <lastmod>2025-03-03T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Mission_Time_LTL_Language_Partition.html</loc>
+    <lastmod>2025-03-03T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/logic/</loc>
+    <lastmod>2025-03-03T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/mission_time_ltl/</loc>
+    <lastmod>2025-03-03T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/rosentrater/</loc>
+    <lastmod>2025-03-03T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/show/</loc>
+    <lastmod>2025-03-03T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/</loc>
+    <lastmod>2025-03-03T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/wangz/</loc>
+    <lastmod>2025-03-03T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/FOL_Compactness.html</loc>
     <lastmod>2025-02-26T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/dependencies/</loc>
-    <lastmod>2025-02-26T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/entries/</loc>
-    <lastmod>2025-02-26T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/dependencies/first_order_terms/</loc>
-    <lastmod>2025-02-26T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/logic/</loc>
     <lastmod>2025-02-26T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/paulson/</loc>
     <lastmod>2025-02-26T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/propositional_proof_systems/</loc>
-    <lastmod>2025-02-26T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/</loc>
     <lastmod>2025-02-26T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/tourret/</loc>
@@ -52,9 +73,6 @@
   </url><url>
     <loc>/authors/wolff/</loc>
     <lastmod>2025-02-12T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/computer-science/</loc>
-    <lastmod>2025-02-05T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/finite_fields/</loc>
     <lastmod>2025-02-05T00:00:00+00:00</lastmod>
@@ -116,12 +134,6 @@
     <loc>/entries/Quantum_Fourier_Transform.html</loc>
     <lastmod>2025-01-28T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/authors/cordwell/</loc>
-    <lastmod>2025-01-24T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/mission_time_ltl/</loc>
-    <lastmod>2025-01-24T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/entries/Mission_Time_LTL.html</loc>
     <lastmod>2025-01-24T00:00:00+00:00</lastmod>
   </url><url>
@@ -129,9 +141,6 @@
     <lastmod>2025-01-24T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/sloan/</loc>
-    <lastmod>2025-01-24T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/wangz/</loc>
     <lastmod>2025-01-24T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/argyraki/</loc>
@@ -531,9 +540,6 @@
     <lastmod>2024-08-14T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/floyd_warshall/</loc>
-    <lastmod>2024-08-14T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/show/</loc>
     <lastmod>2024-08-14T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/wimmer/</loc>
@@ -6731,6 +6737,8 @@
     <loc>/sessions/minsky_machines/</loc>
   </url><url>
     <loc>/sessions/mission_time_ltl/</loc>
+  </url><url>
+    <loc>/sessions/mission_time_ltl_language_partition/</loc>
   </url><url>
     <loc>/sessions/mission_time_ltl_to_regular_expression/</loc>
   </url><url>

@@ -11,8 +11,22 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Wed, 26 Feb 2025 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Mon, 03 Mar 2025 00:00:00 +0000</lastBuildDate>
       <atom:link href="/dependencies/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Mission_Time_LTL</title>
+          <link>/dependencies/mission_time_ltl/</link>
+          <pubDate>Mon, 03 Mar 2025 00:00:00 +0000</pubDate>
+          <guid>/dependencies/mission_time_ltl/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Show</title>
+          <link>/dependencies/show/</link>
+          <pubDate>Mon, 03 Mar 2025 00:00:00 +0000</pubDate>
+          <guid>/dependencies/show/</guid>
+          <description></description>
+        </item>
         <item>
           <title>First_Order_Terms</title>
           <link>/dependencies/first_order_terms/</link>
@@ -67,13 +81,6 @@
           <link>/dependencies/isabelle_marries_dirac/</link>
           <pubDate>Tue, 28 Jan 2025 00:00:00 +0000</pubDate>
           <guid>/dependencies/isabelle_marries_dirac/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Mission_Time_LTL</title>
-          <link>/dependencies/mission_time_ltl/</link>
-          <pubDate>Fri, 24 Jan 2025 00:00:00 +0000</pubDate>
-          <guid>/dependencies/mission_time_ltl/</guid>
           <description></description>
         </item>
         <item>
@@ -501,13 +508,6 @@
           <link>/dependencies/floyd_warshall/</link>
           <pubDate>Wed, 14 Aug 2024 00:00:00 +0000</pubDate>
           <guid>/dependencies/floyd_warshall/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Show</title>
-          <link>/dependencies/show/</link>
-          <pubDate>Wed, 14 Aug 2024 00:00:00 +0000</pubDate>
-          <guid>/dependencies/show/</guid>
           <description></description>
         </item>
         <item>

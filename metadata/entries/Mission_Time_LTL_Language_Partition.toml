@@ -1,0 +1,37 @@
+title = "Language Partitioning for Mission-time Linear Temporal Logic"
+date = 2025-03-03
+topics = [
+  "Computer science/Automata and formal languages",
+  "Logic/General logic/Temporal logic",
+]
+abstract = "Building on the existing formalization of Mission-time Linear Temporal Logic (MLTL), we formalize the notions of language decomposition and language partition for MLTL. More specifically, we formalize an algorithm to compute a language partition for MLTL and formally prove its correctness. Our algorithm is executable, and we export it to Haskell via Isabelle/HOL's code generator."
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.wangz]
+email = "wangz_email"
+
+[authors.cordwell]
+email = "cordwell_email"
+
+[authors.rosentrater]
+email = "rosentrater_email"
+
+[contributors]
+
+[notify]
+wangz = "wangz_email"
+cordwell = "cordwell_email"
+rosentrater = "rosentrater_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = [
+  "Alec Rosentrater, Zili Wang, Katherine Kosaian, Kristin Yvonne Rozier. Language Partitioning for Mission-time Linear Temporal Logic. To appear in NASA Formal Methods (NFM) 2025.",
+]
