@@ -32,8 +32,8 @@ next
   assume "less_kbo t\<^sub>1 t\<^sub>2"
 
   then show "less_kbo c\<langle>t\<^sub>1\<rangle> c\<langle>t\<^sub>2\<rangle>"
-    using KBO.S_ctxt less_kbo_def
-    by blast
+    unfolding less_kbo_def
+    by (rule KBO.S_ctxt)
 next
   fix
     t\<^sub>1 t\<^sub>2 :: "('f, 'v) term" and
@@ -42,18 +42,14 @@ next
   assume "less_kbo t\<^sub>1 t\<^sub>2"
 
   then show "less_kbo (t\<^sub>1 \<cdot>t \<gamma>) (t\<^sub>2 \<cdot>t \<gamma>)"
-    using less_kbo_subst by blast
+    by (rule less_kbo_subst)
 next
-  fix
-    t :: "('f, 'v) term" and
-    c :: "('f, 'v) context"
-  assume
-    "term.is_ground t"
-    "context.is_ground c"
-    "c \<noteq> \<box>"
+  fix t and c :: "('f, 'v) context"
+  assume "c \<noteq> \<box>"
 
   then show "less_kbo t c\<langle>t\<rangle>"
-    by (simp add: KBO.S_supt less_kbo_def nectxt_imp_supt_ctxt)
+    unfolding less_kbo_def
+    by (intro KBO.S_supt nectxt_imp_supt_ctxt)
 qed
 
 (* TODO: use strictly_generalizes *)
@@ -110,7 +106,7 @@ proof unfold_locales
       by blast
   
     then have "(SOME l. is_maximal l C \<and> is_neg l) \<in># C"
-      by(rule someI2_ex) (simp add: maximal_in_clause)
+      by (rule someI2_ex) (simp add: maximal_in_clause)
   }
 
   then show "select_max C \<subseteq># C"
@@ -135,50 +131,41 @@ qed
 
 end
 
-datatype type = A | B
-
-definition pr_strict :: "('f :: wellorder \<times> nat) \<Rightarrow> _ \<Rightarrow> bool" where
-  "pr_strict = lex_prodp ((<) :: 'f \<Rightarrow> 'f \<Rightarrow> bool) ((<) :: nat \<Rightarrow> nat \<Rightarrow> bool)"
+abbreviation pr_strict :: "('f :: wellorder \<times> nat) \<Rightarrow> _ \<Rightarrow> bool" where
+  "pr_strict \<equiv> lex_prodp ((<) :: 'f \<Rightarrow> 'f \<Rightarrow> bool) ((<) :: nat \<Rightarrow> nat \<Rightarrow> bool)"
 
 lemma wfp_pr_strict: "wfp pr_strict"
-  by (simp add: lex_prodp_wfP pr_strict_def)
+  by (simp add: lex_prodp_wfP)
 
-lemma transp_pr_strict: "transp pr_strict"
-proof (rule transpI)
-  show "\<And>x y z. pr_strict x y \<Longrightarrow> pr_strict y z \<Longrightarrow> pr_strict x z"
-    unfolding pr_strict_def lex_prodp_def
-    by force
-qed
+abbreviation least where
+  "least x \<equiv> \<forall>y. x \<le> y"
 
-definition least where
-  "least x \<longleftrightarrow> (\<forall>y. x \<le> y)"
+abbreviation weight :: "'f \<times> nat \<Rightarrow> nat" where
+  "weight _ \<equiv> 1"
 
-definition weight :: "'f \<times> nat \<Rightarrow> nat" where
-  "weight p = 1"
-
-abbreviation weights where "weights \<equiv>
-  \<lparr>w = weight, w0 = 1, pr_strict = pr_strict\<inverse>\<inverse>, least = least, scf = \<lambda>_ _. 1\<rparr>"
-                                  
-interpretation weighted weights
-proof (unfold_locales, unfold weights.select_convs weight_def least_def pr_strict_def lex_prodp_def)
- 
-  show "SN {(fn  :: ('b :: wellorder) \<times> nat, gm).
-              (\<lambda>x y. fst x < fst y \<or> fst x = fst y \<and> snd x < snd y)\<inverse>\<inverse> fn gm}"
-  proof (fold lex_prodp_def pr_strict_def, rule wf_imp_SN)
-
-    show "wf ({(fn, gm). pr_strict\<inverse>\<inverse> fn gm}\<inverse>)"
-      using wfp_pr_strict
-      by (simp add: wfp_pr_strict converse_def wfp_def)
-  qed
-qed (auto simp: order.order_iff_strict)
+abbreviation weights where 
+  "weights \<equiv> \<lparr>w = weight, w0 = 1, pr_strict = pr_strict\<inverse>\<inverse>, least = least, scf = \<lambda>_ _. 1\<rparr>"
 
 instantiation nat :: weighted begin
 
-definition weights_nat :: "nat weights" where "weights_nat \<equiv> weights"
+definition weights_nat :: "nat weights" where
+  "weights_nat \<equiv> weights"
 
 instance
-  using weights_adm pr_strict_total pr_strict_asymp
-  by (intro_classes, unfold weights_nat_def) auto
+proof -
+
+  have "SN {(fn  :: nat \<times> nat, gm). fst gm < fst fn \<or> fst gm = fst fn \<and> snd gm < snd fn}"
+  proof (fold lex_prodp_def, rule wf_imp_SN)
+  
+    show "wf ({(fn, gm). pr_strict gm fn}\<inverse>)"
+      using wfp_pr_strict
+      by (simp add: converse_def wfp_def)
+  qed
+
+  then show "OFCLASS(nat, weighted_class)"
+    by (intro_classes, unfold weights_nat_def lex_prodp_def admissible_kbo_def) 
+       (auto simp: order.order_iff_strict)
+qed
 
 end
 
@@ -188,6 +175,8 @@ instance
   by intro_classes simp
 
 end
+
+datatype type = A | B
 
 abbreviation types :: "nat \<Rightarrow> nat \<Rightarrow> type list \<times> type" where
   "types f n \<equiv>
