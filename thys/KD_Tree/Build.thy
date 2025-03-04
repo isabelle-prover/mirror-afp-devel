@@ -32,7 +32,7 @@ proof (induction xs arbitrary: n rule: list.induct)
   proof (cases n)
     case 0
     thus ?thesis
-      using Cons.prems(1,3) filter_mset_is_empty_iff by fastforce
+      using Cons.prems(1,3) filter_mset_eq_mempty_iff by fastforce
   next
     case (Suc n')
     thus ?thesis

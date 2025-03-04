@@ -11,40 +11,6 @@ begin
 
 subsection \<open>Some facts about lists and multisets\<close>
 
-lemma mset_concat: "mset (concat xss) = sum_list (map mset xss)"
-  by (induction xss) simp_all
-
-lemma set_mset_sum_list [simp]: "set_mset (sum_list xs) = (\<Union>x\<in>set xs. set_mset x)"
-  by (induction xs) auto
-
-lemma filter_mset_image_mset:
-  "filter_mset P (image_mset f A) = image_mset f (filter_mset (\<lambda>x. P (f x)) A)"
-  by (induction A) auto
-
-lemma filter_mset_sum_list: "filter_mset P (sum_list xs) = sum_list (map (filter_mset P) xs)"
-  by (induction xs) simp_all
-
-lemma sum_mset_mset_mono: 
-  assumes "(\<And>x. x \<in># A \<Longrightarrow> f x \<subseteq># g x)"
-  shows   "(\<Sum>x\<in>#A. f x) \<subseteq># (\<Sum>x\<in>#A. g x)"
-  using assms by (induction A) (auto intro!: subset_mset.add_mono)
-
-lemma mset_filter_mono:
-  assumes "A \<subseteq># B" "\<And>x. x \<in># A \<Longrightarrow> P x \<Longrightarrow> Q x"
-  shows   "filter_mset P A \<subseteq># filter_mset Q B"
-  by (rule mset_subset_eqI) (insert assms, auto simp: mset_subset_eq_count count_eq_zero_iff)
-
-lemma size_mset_sum_mset_distrib: "size (sum_mset A :: 'a multiset) = sum_mset (image_mset size A)"
-  by (induction A) auto
-
-lemma sum_mset_mono:
-  assumes "\<And>x. x \<in># A \<Longrightarrow> f x \<le> (g x :: 'a :: {ordered_ab_semigroup_add,comm_monoid_add})"
-  shows   "(\<Sum>x\<in>#A. f x) \<le> (\<Sum>x\<in>#A. g x)"
-  using assms by (induction A) (auto intro!: add_mono)
-
-lemma filter_mset_is_empty_iff: "filter_mset P A = {#} \<longleftrightarrow> (\<forall>x. x \<in># A \<longrightarrow> \<not>P x)"
-  by (auto simp: multiset_eq_iff count_eq_zero_iff)
-
 lemma sorted_filter_less_subset_take:
   assumes "sorted xs" "i < length xs"
   shows   "{# x \<in># mset xs. x < xs ! i #} \<subseteq># mset (take i xs)"
@@ -54,7 +20,7 @@ proof (induction xs arbitrary: i rule: list.induct)
   show ?case
   proof (cases i)
     case 0
-    thus ?thesis using Cons.prems by (auto simp: filter_mset_is_empty_iff)
+    thus ?thesis using Cons.prems by (auto simp: filter_mset_eq_mempty_iff)
   next
     case (Suc i')
     have "{#y \<in># mset (x # xs). y < (x # xs) ! i#} \<subseteq># add_mset x {#y \<in># mset xs. y < xs ! i'#}"
@@ -76,7 +42,7 @@ proof (induction xs arbitrary: i rule: list.induct)
   show ?case
   proof (cases i)
     case 0
-    thus ?thesis by (auto simp: sorted_append filter_mset_is_empty_iff)
+    thus ?thesis by (auto simp: sorted_append filter_mset_eq_mempty_iff)
   next
     case (Suc i')
     have "{#y \<in># mset (x # xs). y > (x # xs) ! i#} \<subseteq># {#y \<in># mset xs. y > xs ! i'#}"
@@ -485,13 +451,14 @@ proof -
                (\<Sum>ys\<in>#YS1. {#y \<in># mset ys. y < x#}) + (\<Sum>ys\<in>#YS2. {#y \<in># mset ys. y < x#})"
     by simp
   also have "\<dots> \<subseteq># (\<Sum>ys\<in>#YS1. mset ys) + (\<Sum>ys\<in>#YS2. {#y \<in># mset ys. y < med ys#})"
-    by (intro subset_mset.add_mono sum_mset_mset_mono mset_filter_mono) (auto simp: YS2_def)
+    by (intro subset_mset.add_mono sum_mset_image_mset_mono_strong filter_mset_mono_strong)
+      (auto simp: YS2_def)
   finally have "{# y \<in># mset xs. y < x #} \<subseteq># \<dots>" .
   hence "size {# y \<in># mset xs. y < x #} \<le> size \<dots>" by (rule size_mset_mono)
 
   \<comment> \<open>We do some further straightforward estimations and arrive at our goal.\<close>
   also have "\<dots> = (\<Sum>ys\<in>#YS1. length ys) + (\<Sum>x\<in>#YS2. size {#y \<in># mset x. y < med x#})"
-    by (simp add: size_mset_sum_mset_distrib multiset.map_comp o_def)
+    by (simp add: multiset.map_comp o_def)
   also have "(\<Sum>ys\<in>#YS1. length ys) \<le> (\<Sum>ys\<in>#YS1. d)"
     by (intro sum_mset_mono) (auto simp: YS1_def length_chop_part_le)
   also have "\<dots> = size YS1 * d" by simp
