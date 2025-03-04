@@ -23,9 +23,9 @@ sublocale ground: ground_superposition_calculus where
 rewrites
   "multiset_extension.multiset_extension (\<prec>\<^sub>t\<^sub>G) mset_lit = (\<prec>\<^sub>l\<^sub>G)" and
   "multiset_extension.multiset_extension (\<prec>\<^sub>l\<^sub>G) (\<lambda>x. x) = (\<prec>\<^sub>c\<^sub>G)" and
-  "\<And>l C. ground.is_maximal l C \<longleftrightarrow> is_maximal (literal.from_ground l) (clause.from_ground C)" and
-  "\<And>l C. ground.is_strictly_maximal l C \<longleftrightarrow>
-    is_strictly_maximal (literal.from_ground l) (clause.from_ground C)"
+  "\<And>l\<^sub>G C\<^sub>G. ground.is_maximal l\<^sub>G C\<^sub>G \<longleftrightarrow> ground_is_maximal l\<^sub>G C\<^sub>G" and
+  "\<And>l\<^sub>G C\<^sub>G. ground.is_strictly_maximal l\<^sub>G C\<^sub>G \<longleftrightarrow> ground_is_strictly_maximal l\<^sub>G C\<^sub>G"
+  unfolding is_maximal_rewrite[symmetric] is_strictly_maximal_rewrite[symmetric]
   by unfold_locales simp_all
 
 abbreviation is_inference_ground_instance_one_premise where
