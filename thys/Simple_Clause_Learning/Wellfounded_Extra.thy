@@ -27,13 +27,7 @@ subsubsection \<open>Minimal-element characterization of well-foundedness\<close
 lemma minimal_if_wf_on:
   assumes wf: "wf_on A R" and "B \<subseteq> A" and "B \<noteq> {}"
   shows "\<exists>z \<in> B. \<forall>y. (y, z) \<in> R \<longrightarrow> y \<notin> B"
-  using wf_onE_pf[OF wf \<open>B \<subseteq> A\<close>]
-  by (metis Image_iff assms(3) subsetI)
-
-lemma wfE_min:
-  assumes wf: "wf R" and Q: "x \<in> Q"
-  obtains z where "z \<in> Q" "\<And>y. (y, z) \<in> R \<Longrightarrow> y \<notin> Q"
-  using Q wfE_pf[OF wf, of Q] by blast
+  using wf_on_iff_ex_minimal[THEN iffD1, rule_format, OF assms] .
 
 lemma wfE_min':
   "wf R \<Longrightarrow> Q \<noteq> {} \<Longrightarrow> (\<And>z. z \<in> Q \<Longrightarrow> (\<And>y. (y, z) \<in> R \<Longrightarrow> y \<notin> Q) \<Longrightarrow> thesis) \<Longrightarrow> thesis"
@@ -42,11 +36,7 @@ lemma wfE_min':
 lemma wf_on_if_minimal:
   assumes "\<And>B. B \<subseteq> A \<Longrightarrow> B \<noteq> {} \<Longrightarrow> \<exists>z \<in> B. \<forall>y. (y, z) \<in> R \<longrightarrow> y \<notin> B"
   shows "wf_on A R"
-proof (rule wf_onI_pf)
-  fix B
-  show "B \<subseteq> A \<Longrightarrow> B \<subseteq> R `` B \<Longrightarrow> B = {}"
-  using assms by (metis ImageE subset_eq)
-qed
+  using wf_on_iff_ex_minimal[THEN iffD2, rule_format, OF assms] .
 
 lemma ex_trans_min_element_if_wf_on:
   assumes wf: "wf_on A r" and x_in: "x \<in> A"
