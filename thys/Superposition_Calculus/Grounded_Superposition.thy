@@ -132,8 +132,8 @@ sublocale lifting:
 proof(unfold_locales; (intro impI typed_tiebreakers.wfp typed_tiebreakers.transp)?)
 
   show "\<bottom>\<^sub>F \<noteq> {}"
-    using exists_infinite_variables_per_type[OF types_ordLeq_variables]
-    by blast
+    using obtain_infinite_variables_per_type_on''[of "{}"]
+    by auto
 next
   fix bottom
   assume "bottom \<in> \<bottom>\<^sub>F"

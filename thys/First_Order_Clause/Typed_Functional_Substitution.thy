@@ -3,7 +3,6 @@ theory Typed_Functional_Substitution
     Typing
     Abstract_Substitution.Functional_Substitution
     Infinite_Variables_Per_Type
-    Collect_Extra
 begin
 
 type_synonym ('var, 'ty) var_types = "'var \<Rightarrow> 'ty"
@@ -425,12 +424,49 @@ lemma (in renaming_variables) obtain_merged_\<V>:
     \<rho>\<^sub>1: "is_renaming \<rho>\<^sub>1" and
     \<rho>\<^sub>2: "is_renaming \<rho>\<^sub>2" and
     rename_apart: "vars (expr \<cdot> \<rho>\<^sub>1) \<inter> vars (expr' \<cdot> \<rho>\<^sub>2) = {}" and
-    \<V>\<^sub>2: "infinite_variables_per_type \<V>\<^sub>2" and
+    finite_vars: "finite (vars expr)" "finite (vars expr')" and
+    infinite_UNIV: "infinite (UNIV :: 'a set)"
+  obtains \<V>\<^sub>3 where
+    "infinite_variables_per_type_on X \<V>\<^sub>3"
+    "\<forall>x\<in>vars expr. \<V>\<^sub>1 x = \<V>\<^sub>3 (rename \<rho>\<^sub>1 x)"
+    "\<forall>x\<in>vars expr'. \<V>\<^sub>2 x = \<V>\<^sub>3 (rename \<rho>\<^sub>2 x)"
+proof-
+
+  have finite: "finite (vars (expr \<cdot> \<rho>\<^sub>1))" "finite (vars (expr' \<cdot> \<rho>\<^sub>2))"
+    using finite_vars
+    by (simp_all add: \<rho>\<^sub>1 \<rho>\<^sub>2 rename_variables)
+
+  obtain \<V>\<^sub>3 where 
+    \<V>\<^sub>3: "infinite_variables_per_type_on X \<V>\<^sub>3" and
+    \<V>\<^sub>3_\<V>\<^sub>1: "\<forall>x\<in>vars (expr \<cdot> \<rho>\<^sub>1). \<V>\<^sub>3 x = \<V>\<^sub>1 (inv \<rho>\<^sub>1 (id_subst x))" and
+    \<V>\<^sub>3_\<V>\<^sub>2: "\<forall>x\<in>vars (expr' \<cdot> \<rho>\<^sub>2). \<V>\<^sub>3 x = \<V>\<^sub>2 (inv \<rho>\<^sub>2 (id_subst x))"
+    using obtain_infinite_variables_per_type_on[OF infinite_UNIV finite rename_apart].
+
+  show ?thesis
+  proof (rule that[OF \<V>\<^sub>3])
+
+    show "\<forall>x\<in>vars expr. \<V>\<^sub>1 x = \<V>\<^sub>3 (rename \<rho>\<^sub>1 x)"
+      using \<V>\<^sub>3_\<V>\<^sub>1 \<rho>\<^sub>1 inv_renaming rename_variables
+      by auto
+  next
+
+    show "\<forall>x\<in>vars expr'. \<V>\<^sub>2 x = \<V>\<^sub>3 (rename \<rho>\<^sub>2 x)"
+      using \<V>\<^sub>3_\<V>\<^sub>2 \<rho>\<^sub>2 inv_renaming rename_variables
+      by auto
+  qed
+qed
+
+lemma (in renaming_variables) obtain_merged_\<V>_infinite_variables_for_all_types:
+  assumes
+    \<rho>\<^sub>1: "is_renaming \<rho>\<^sub>1" and
+    \<rho>\<^sub>2: "is_renaming \<rho>\<^sub>2" and
+    rename_apart: "vars (expr \<cdot> \<rho>\<^sub>1) \<inter> vars (expr' \<cdot> \<rho>\<^sub>2) = {}" and
+    \<V>\<^sub>2: "infinite_variables_for_all_types \<V>\<^sub>2" and
     finite_vars: "finite (vars expr)"
   obtains \<V>\<^sub>3 where
     "\<forall>x\<in>vars expr. \<V>\<^sub>1 x = \<V>\<^sub>3 (rename \<rho>\<^sub>1 x)"
     "\<forall>x\<in>vars expr'. \<V>\<^sub>2 x = \<V>\<^sub>3 (rename \<rho>\<^sub>2 x)"
-    "infinite_variables_per_type \<V>\<^sub>3"
+    "infinite_variables_for_all_types \<V>\<^sub>3"
 proof (rule that)
 
   define \<V>\<^sub>3 where
@@ -480,29 +516,29 @@ proof (rule that)
 
       show "infinite {x. \<V>\<^sub>2 x = \<tau>}"
         using \<V>\<^sub>2
-        unfolding infinite_variables_per_type_def
+        unfolding infinite_variables_for_all_types_def
         by blast
     qed
   }
 
-  ultimately show "infinite_variables_per_type \<V>\<^sub>3"
-    unfolding infinite_variables_per_type_def \<V>\<^sub>3_def if_distrib if_distribR Collect_if_eq
+  ultimately show "infinite_variables_for_all_types \<V>\<^sub>3"
+    unfolding infinite_variables_for_all_types_def \<V>\<^sub>3_def if_distrib if_distribR Collect_if_eq
       Collect_not_mem_conj_eq
     by auto
 qed
 
-lemma (in renaming_variables) obtain_merged_\<V>':
+lemma (in renaming_variables) obtain_merged_\<V>'_infinite_variables_for_all_types:
   assumes
     \<rho>\<^sub>1: "is_renaming \<rho>\<^sub>1" and
     \<rho>\<^sub>2: "is_renaming \<rho>\<^sub>2" and
     rename_apart: "vars (expr \<cdot> \<rho>\<^sub>1) \<inter> vars (expr' \<cdot> \<rho>\<^sub>2) = {}" and
-    \<V>\<^sub>1: "infinite_variables_per_type \<V>\<^sub>1" and
+    \<V>\<^sub>1: "infinite_variables_for_all_types \<V>\<^sub>1" and
     finite_vars: "finite (vars expr')"
   obtains \<V>\<^sub>3 where
     "\<forall>x\<in>vars expr. \<V>\<^sub>1 x = \<V>\<^sub>3 (rename \<rho>\<^sub>1 x)"
     "\<forall>x\<in>vars expr'. \<V>\<^sub>2 x = \<V>\<^sub>3 (rename \<rho>\<^sub>2 x)"
-    "infinite_variables_per_type \<V>\<^sub>3"
-  using obtain_merged_\<V>[OF \<rho>\<^sub>2 \<rho>\<^sub>1 _ \<V>\<^sub>1 finite_vars] rename_apart
+    "infinite_variables_for_all_types \<V>\<^sub>3"
+  using obtain_merged_\<V>_infinite_variables_for_all_types[OF \<rho>\<^sub>2 \<rho>\<^sub>1 _ \<V>\<^sub>1 finite_vars] rename_apart
   by (metis disjoint_iff)
 
 locale based_typed_renaming =

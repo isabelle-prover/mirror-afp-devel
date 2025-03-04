@@ -135,14 +135,7 @@ qed
 
 end
 
-
 datatype type = A | B
-
-lemma UNIV_type [simp]: "(UNIV :: type set) = {A, B}"
-  using type.exhaust by blast
-
-lemma UNIV_type_ordLeq_UNIV_nat: "|UNIV :: type set| \<le>o |UNIV :: nat set|"
-  by (simp add: ordLeq3_finite_infinite)
 
 definition pr_strict :: "('f :: wellorder \<times> nat) \<Rightarrow> _ \<Rightarrow> bool" where
   "pr_strict = lex_prodp ((<) :: 'f \<Rightarrow> 'f \<Rightarrow> bool) ((<) :: nat \<Rightarrow> nat \<Rightarrow> bool)"
@@ -236,9 +229,6 @@ proof unfold_locales
   fix \<tau>
   show "\<exists>f. types f 0 = ([], \<tau>)"
     using types_inhabited .
-next
-  show "|UNIV :: type set| \<le>o |UNIV :: nat set|"
-    using UNIV_type_ordLeq_UNIV_nat .
 qed
 
 end

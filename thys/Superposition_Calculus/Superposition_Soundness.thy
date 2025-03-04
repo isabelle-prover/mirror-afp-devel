@@ -60,9 +60,8 @@ proof (cases D C rule: eq_resolution.cases)
         by auto
     next
       show "clause.is_welltyped \<V> D"
-       using C_is_welltyped
-       unfolding
-         eq_resolution_preserves_typing[OF eq_resolution[unfolded eq_resolutionI(1, 2)]].
+        using C_is_welltyped
+        unfolding eq_resolution_preserves_typing[OF eq_resolution[unfolded eq_resolutionI(1, 2)]] .
     next
       show "term.subst.is_welltyped_on (clause.vars D) \<V> (\<mu> \<odot> \<gamma>')"
         using \<gamma>'_is_welltyped \<mu>_is_welltyped

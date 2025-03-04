@@ -9,9 +9,6 @@ sublocale typed: superposition_calculus where \<F> = "\<lambda>f n. (replicate n
 proof unfold_locales
   show "\<And>\<tau>. \<exists>f. (replicate 0 (), ()) = ([], \<tau>)"
     by simp
-next
-  show "|UNIV :: unit set| \<le>o |UNIV :: 'v set|"
-    by (simp add: infinite_UNIV ordLeq3_finite_infinite)
 qed
 
 lemma all_welltyped [intro]: "typed.welltyped \<V> t ()"
@@ -35,8 +32,8 @@ qed
 
 lemma all_infinite_variables_per_type [intro]: 
   fixes \<V> :: "'v \<Rightarrow> unit"
-  shows "infinite_variables_per_type \<V>"
-  unfolding infinite_variables_per_type_def
+  shows "infinite_variables_per_type_on X \<V>"
+  unfolding infinite_variables_per_type_on_def
   using infinite_UNIV
   by auto
 
@@ -226,7 +223,7 @@ proof unfold_locales
 
   assume "\<iota> \<in> inferences"
 
-  then have  "empty_typed_inference \<iota> \<in> typed.inferences"
+  then have "empty_typed_inference \<iota> \<in> typed.inferences"
     by simp
 
   then have "empty_typed_inference \<iota> \<in> typed.Red_I_\<G> {empty_typed (concl_of \<iota>)}"

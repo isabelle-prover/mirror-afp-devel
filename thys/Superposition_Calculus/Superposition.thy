@@ -22,9 +22,7 @@ locale superposition_calculus =
     select :: "('f, 'v :: infinite) select" and
     less\<^sub>t :: "('f, 'v) term \<Rightarrow> ('f, 'v) term \<Rightarrow> bool" and
     \<F> :: "('f, 'ty) fun_types" and
-    tiebreakers :: "('f, 'v) tiebreakers" +
-  assumes
-    types_ordLeq_variables: "|UNIV :: 'ty set| \<le>o |UNIV :: 'v set|"
+    tiebreakers :: "('f, 'v) tiebreakers"
 begin
 
 interpretation term_order_notation.
@@ -99,7 +97,7 @@ definition inferences :: "('f, 'v, 'ty) typed_clause inference set" where
   "inferences \<equiv> superposition_inferences \<union> eq_resolution_inferences \<union> eq_factoring_inferences"
 
 abbreviation bottom\<^sub>F :: "('f, 'v, 'ty) typed_clause set" ("\<bottom>\<^sub>F") where
-  "bottom\<^sub>F \<equiv> {({#}, \<V>) | \<V>. infinite_variables_per_type \<V> }"
+  "bottom\<^sub>F \<equiv> {({#}, \<V>) | \<V>. infinite_variables_per_type_on UNIV \<V> }"
 
 subsubsection \<open>Alternative Specification of the Superposition Rule\<close>
 
@@ -145,7 +143,7 @@ proof (intro ext iffI)
     case (superpositionI \<P> \<V>\<^sub>1 \<V>\<^sub>2 \<rho>\<^sub>1 \<rho>\<^sub>2 E D t\<^sub>1 \<V>\<^sub>3 t\<^sub>2 \<mu> c\<^sub>1 t\<^sub>1' t\<^sub>2' l\<^sub>1 l\<^sub>2 E' D' C)
 
     show ?thesis
-    proof (unfold superpositionI(1-3), rule superposition'I[of \<V>\<^sub>1 \<V>\<^sub>2 \<rho>\<^sub>1 \<rho>\<^sub>2]; (rule superpositionI)?)
+    proof (unfold superpositionI(1-3), rule superposition'I; (rule superpositionI)?)
 
       show "\<P> = Pos \<and> select E = {#} \<and> is_strictly_maximal (l\<^sub>1 \<cdot>l \<rho>\<^sub>1 \<odot> \<mu>) (E \<cdot> \<rho>\<^sub>1 \<odot> \<mu>) \<or>
        \<P> = Neg \<and> (select E = {#} \<and> is_maximal (l\<^sub>1 \<cdot>l \<rho>\<^sub>1 \<odot> \<mu>) (E \<cdot> \<rho>\<^sub>1 \<odot> \<mu>) \<or>
@@ -210,9 +208,9 @@ lemma superposition_if_pos_superposition:
   shows "superposition D E C"
   using assms
 proof (cases rule: pos_superposition.cases)
-  case (pos_superpositionI \<V>\<^sub>1 \<V>\<^sub>2 \<rho>\<^sub>1 \<rho>\<^sub>2 E D l\<^sub>1 E' l\<^sub>2 D' c\<^sub>1 t\<^sub>1 t\<^sub>1' t\<^sub>2 t\<^sub>2' \<V>\<^sub>3 \<mu> C)
+  case (pos_superpositionI E \<V>\<^sub>1 D \<V>\<^sub>2 \<rho>\<^sub>1 \<rho>\<^sub>2 l\<^sub>1 E' l\<^sub>2 D' c\<^sub>1 t\<^sub>1 t\<^sub>1' t\<^sub>2 t\<^sub>2' \<V>\<^sub>3 \<mu> C)
   then show ?thesis
-    using superpositionI[of Pos \<V>\<^sub>1 \<V>\<^sub>2 \<rho>\<^sub>1 \<rho>\<^sub>2 E D t\<^sub>1 \<V>\<^sub>3 t\<^sub>2 \<mu> c\<^sub>1 t\<^sub>1' t\<^sub>2' l\<^sub>1 l\<^sub>2 E' D' C]
+    using superpositionI[of Pos E \<V>\<^sub>1 D \<V>\<^sub>2 \<rho>\<^sub>1 \<rho>\<^sub>2 t\<^sub>1 \<V>\<^sub>3 t\<^sub>2 \<mu> c\<^sub>1 t\<^sub>1' t\<^sub>2' l\<^sub>1 l\<^sub>2 E' D' C]
     by blast
 qed
 
