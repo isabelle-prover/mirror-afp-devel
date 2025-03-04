@@ -25,10 +25,10 @@ proof (induct "depth_mltl (to_mltl \<phi>)" arbitrary: \<phi> rule: less_induct)
                 convert_nnf (to_mltl \<phi>))"
     assume shape: "\<phi> = Not\<^sub>c \<psi>"
     show ?thesis
-      using less ih shape apply (induct \<psi>) by simp_all
+      using less ih shape by (induct \<psi>) simp_all
   qed
-  show ?case using less
-    apply(cases \<phi>) apply simp_all using not by blast
+  show ?case using less not
+    by(cases \<phi>) auto
 qed
 
   
@@ -272,10 +272,10 @@ proof(induction "depth_mltl (to_mltl \<phi>)" arbitrary: \<phi> rule: less_induc
                        Suc (depth_mltl (to_mltl G)) \<Longrightarrow>
            convert_nnf_ext (convert_nnf_ext F) = convert_nnf_ext F)"
     assume \<phi>_is: "\<phi> = Not\<^sub>c G"
-    show ?thesis using less \<phi>_is apply (cases G) by simp_all
+    show ?thesis using less \<phi>_is by (cases G) simp_all
   qed
-  show ?case using less 
-    apply (cases \<phi>) apply simp_all using not_case by fastforce 
+  show ?case using less not_case
+    by (cases \<phi>) fastforce+
 qed
 
 
@@ -283,23 +283,22 @@ subsection \<open>Cases where to mltl is bijective\<close>
 lemma to_mltl_true_bijective:
   assumes "to_mltl \<phi> = True\<^sub>m"
   shows "\<phi> = True\<^sub>c"
-  using assms apply (cases \<phi>) by simp_all
+  using assms by (cases \<phi>) simp_all
 
 lemma to_mltl_false_bijective:
   assumes "to_mltl \<phi> = False\<^sub>m"
   shows "\<phi> = False\<^sub>c"
-  using assms apply (cases \<phi>) by simp_all
+  using assms by (cases \<phi>) simp_all
 
 lemma to_mltl_prop_bijective:
   assumes "to_mltl \<phi> = Prop\<^sub>m (p)"
   shows "\<phi> = Prop\<^sub>c (p)"
-  using assms apply (cases \<phi>) by simp_all
+  using assms by (cases \<phi>) simp_all
 
 lemma to_mltl_not_prop_bijective:
   assumes "to_mltl \<phi> = Not\<^sub>m (Prop\<^sub>m (p))"
   shows "\<phi> = Not\<^sub>c (Prop\<^sub>c (p))"
-  using assms apply (cases \<phi>) apply simp_all
-  by (simp add: to_mltl_prop_bijective) 
+  using assms by (cases \<phi>) (simp_all add: to_mltl_prop_bijective)
 
 
 section \<open>Lemmas about Integer Composition\<close>
@@ -457,7 +456,7 @@ lemma interval_times_diff_ge_general:
 proof (induct "j-1" arbitrary: i j)
   case 0 
   then have "i = 0" and "j = 1" 
-     apply simp_all done
+     by simp_all
   then show ?case
     using interval_times_diff_ge 0 by fastforce
 next
@@ -757,8 +756,7 @@ lemma sum_list_constants:
   fixes L::"nat list" and k::"nat"
   assumes "\<forall>i<length L. L ! i = k"
   shows "sum_list L = k*(length L)"
-  using assms 
-  apply(induct L) apply simp by force
+  using assms by(induct L) force+
 
 lemma length_is_composition_allones:
   assumes "is_composition_allones n L"
@@ -839,7 +837,7 @@ lemma allones_implies_is_composition_MLTL:
   assumes "is_composition_MLTL_allones \<phi>"
   shows "is_composition_MLTL \<phi>"
   using assms allones_implies_is_composition 
-  apply(induct \<phi>) apply simp_all .
+  by (induct \<phi>) simp_all
 
 
 section \<open>MLTL Decomposition Lemmas\<close>
@@ -1052,7 +1050,7 @@ subsection \<open>Helper Lemmas\<close>
 
 lemma wpd_geq_one: 
   shows "wpd_mltl \<phi> \<ge> 1"
-  apply(induct \<phi>) apply simp_all .
+  by (induct \<phi>) simp_all
 
 lemma wpd_convert_nnf:
   fixes \<phi>::"'a mltl"
@@ -1067,11 +1065,9 @@ proof(induction "depth_mltl \<phi>" arbitrary: \<phi> rule: less_induct)
     assume ih: "\<And>\<phi>. depth_mltl \<phi> < Suc (depth_mltl p) \<Longrightarrow>
                 wpd_mltl (convert_nnf \<phi>) = wpd_mltl \<phi>"
     assume notcase: "\<phi> = Not\<^sub>m p"
-    show ?thesis using ih notcase less apply (induct p)
-      apply simp_all.
+    show ?thesis using ih notcase less by (induct p) simp_all
   qed
-  show ?case using less
-    apply (cases \<phi>) apply simp_all using not by blast
+  show ?case using less not by (cases \<phi>) auto
 qed
 
 lemma convert_nnf_ext_preserves_wpd: 
@@ -1092,12 +1088,10 @@ proof(induction "depth_mltl (to_mltl \<phi>)" arbitrary: \<phi> rule: less_induc
                 wpd_mltl (to_mltl (convert_nnf_ext \<phi>)) =
                 wpd_mltl (to_mltl \<phi>))"
     assume shape: "\<phi> = Not\<^sub>c x"
-    show ?thesis using ih shape less apply (induct x)
-      apply simp_all .
+    show ?thesis using ih shape less by (induct x) simp_all
   qed
-  show ?case using less
-    apply (cases \<phi>) unfolding to_mltl.simps apply simp_all
-    using not by blast
+  show ?case using less not
+    by (cases \<phi>) auto
 qed  
 
 
@@ -1110,9 +1104,8 @@ proof (induct "depth_mltl F1" arbitrary: F1 rule: less_induct)
   have iwd: "intervals_welldef F2 \<Longrightarrow>
           F1 = Not\<^sub>m F2 \<Longrightarrow>
           intervals_welldef (convert_nnf (Not\<^sub>m F2))"
-    for F2 apply (cases F2) using less by simp_all
-  then show ?case using less
-    apply (cases F1) by simp_all
+    for F2  using less by (cases F2) simp_all
+  then show ?case using less by (cases F1) simp_all
 qed
 
 lemma is_composition_convert_nnf_ext: 
@@ -1132,10 +1125,8 @@ proof(induct "depth_mltl (to_mltl \<phi>)" arbitrary: \<phi> rule: less_induct)
           is_composition_MLTL x4 \<Longrightarrow>
           \<phi> = Not\<^sub>c x4 \<Longrightarrow>
           is_composition_MLTL (convert_nnf_ext (Not\<^sub>c x4))" for x4
-    using less
-      apply (induct x4) apply simp_all done 
-   show ?case using less
-    apply (cases \<phi>) apply simp_all using not_case by blast
+    using less by (induct x4) simp_all 
+   show ?case using less not_case by (cases \<phi>) auto
 qed
 
 
@@ -1156,10 +1147,9 @@ proof(induct "depth_mltl (to_mltl \<phi>)" arbitrary: \<phi> rule: less_induct)
           is_composition_MLTL_allones x4 \<Longrightarrow>
           \<phi> = Not\<^sub>c x4 \<Longrightarrow>
           is_composition_MLTL_allones (convert_nnf_ext (Not\<^sub>c x4))" for x4
-    using less
-      apply (induct x4) apply simp_all done 
-   show ?case using less
-    apply (cases \<phi>) apply simp_all using not_case by blast
+    using less by (induct x4) simp_all 
+   show ?case using less not_case
+     by (cases \<phi>) auto
 qed
 
 
@@ -1168,9 +1158,8 @@ function Ands_mltl_ext:: "'a mltl_ext list \<Rightarrow> 'a mltl_ext"
   where "Ands_mltl_ext [] = True_mltl_ext"
   | "Ands_mltl_ext (H@[t]) = (if (length H = 0) then t 
      else (And_mltl_ext (Ands_mltl_ext H) t))"
-  using rev_exhaust apply blast apply blast apply simp by blast
-termination apply (relation  "measure (\<lambda>L. length L)")
-  by auto
+  using rev_exhaust by auto
+termination by (relation  "measure (\<lambda>L. length L)") auto
 
 
 lemma Ands_mltl_semantics: 
@@ -1558,9 +1547,9 @@ next
     then have a_leq_b: "a \<le> b"
       using Suc (2) Global_mltl_ext nnf_intervals_welldef 
       by fastforce
-    have \<alpha>_composition: "is_composition_MLTL \<alpha>" and
-         L_composition: "is_composition (b-a+1) L"
-      using Suc(4) Global_mltl_ext Suc.prems(1) is_composition_convert_nnf_ext apply fastforce
+    have \<alpha>_composition: "is_composition_MLTL \<alpha>"
+      using Suc(4) Global_mltl_ext Suc.prems(1) is_composition_convert_nnf_ext by fastforce
+    have L_composition: "is_composition (b-a+1) L"
       by (metis Global_mltl_ext Suc.prems(1) Suc.prems(3) is_composition_MLTL.simps(3) is_composition_convert_nnf_ext) 
     {assume *: "length ?D_\<phi> \<le> 1"
       then have \<psi>: "\<psi> = Global_mltl_ext a b L \<alpha>"
@@ -1710,7 +1699,7 @@ next
     then have composition_L: "is_composition (b-a+1) L" 
           and composition_\<alpha>: "is_composition_MLTL \<alpha>" 
           and composition_\<beta>: "is_composition_MLTL \<beta>"
-      unfolding is_composition_MLTL.simps apply simp_all . 
+      unfolding is_composition_MLTL.simps by simp_all 
     have length_L: "length L > 0"
       using composition_length_lb composition_L by auto
     have sfirst: "?s!0 = a"
@@ -1834,10 +1823,10 @@ next
       by (metis convert_nnf_ext.simps(4) convert_nnf_ext_convert_nnf_ext mltl_ext.inject(3)) 
     have \<alpha>_welldef: "intervals_welldef (to_mltl \<alpha>)" and
          \<beta>_welldef: "intervals_welldef (to_mltl \<beta>)"
-      using Suc(3) unfolding And_mltl_ext apply simp_all done
+      using Suc(3) unfolding And_mltl_ext by simp_all
     have \<alpha>_composition: "is_composition_MLTL \<alpha>" and 
          \<beta>_composition: "is_composition_MLTL \<beta>"
-      using Suc(5) unfolding And_mltl_ext is_composition_MLTL.simps apply simp_all done
+      using Suc(5) unfolding And_mltl_ext is_composition_MLTL.simps by simp_all
     have x_ih: "wpd_mltl (to_mltl x) \<le> wpd_mltl (to_mltl \<alpha>)"
       using Suc.hyps[of \<alpha> x, OF \<alpha>_nnf \<alpha>_welldef x_in \<alpha>_composition] by blast
     have y_ih: "wpd_mltl (to_mltl y) \<le> wpd_mltl (to_mltl \<beta>)"
@@ -1857,10 +1846,10 @@ next
       by (metis convert_nnf_ext.simps(5) convert_nnf_ext_convert_nnf_ext mltl_ext.inject(4)) 
     have \<alpha>_welldef: "intervals_welldef (to_mltl \<alpha>)" and
          \<beta>_welldef: "intervals_welldef (to_mltl \<beta>)"
-      using Suc(3) unfolding Or_mltl_ext apply simp_all done
+      using Suc(3) unfolding Or_mltl_ext by simp_all
     have \<alpha>_composition: "is_composition_MLTL \<alpha>" and 
          \<beta>_composition: "is_composition_MLTL \<beta>"
-      using Suc(5) unfolding Or_mltl_ext is_composition_MLTL.simps apply simp_all done
+      using Suc(5) unfolding Or_mltl_ext is_composition_MLTL.simps by simp_all
     {
       assume *: "\<psi> \<in> set (And_mltl_list ?Dx ?Dy)"
       then obtain x y where \<psi>_is: "\<psi> = And_mltl_ext x y" 
@@ -1917,7 +1906,7 @@ next
       by blast
     have composition_L: "is_composition (b-a+1) L" and
          composition_\<alpha>: "is_composition_MLTL \<alpha>" using Suc(5)
-      unfolding Future_mltl_ext is_composition_MLTL.simps apply simp_all . 
+      unfolding Future_mltl_ext is_composition_MLTL.simps by simp_all 
     have \<alpha>_nnf: "\<exists>\<phi>_init. \<alpha> = convert_nnf_ext \<phi>_init"
       using Suc(2) unfolding Future_mltl_ext 
       by (metis convert_nnf_ext.simps(6) convert_nnf_ext_convert_nnf_ext mltl_ext.inject(5)) 
@@ -1986,9 +1975,9 @@ next
     have a_leq_b: "a \<le> b" and \<alpha>_welldef: "intervals_welldef (to_mltl \<alpha>)" 
       using Suc(3) 
       unfolding Global_mltl_ext to_mltl.simps intervals_welldef.simps
-       apply simp_all . 
+       by simp_all 
     have composition_\<alpha>: "is_composition_MLTL \<alpha>" using Suc(5)
-      unfolding Global_mltl_ext is_composition_MLTL.simps apply simp_all . 
+      unfolding Global_mltl_ext is_composition_MLTL.simps by simp_all 
     have \<alpha>_nnf: "\<exists>\<phi>_init. \<alpha> = convert_nnf_ext \<phi>_init"
       using Suc(2) unfolding Global_mltl_ext 
       by (metis convert_nnf_ext.simps(7) convert_nnf_ext_convert_nnf_ext mltl_ext.inject(6)) 
@@ -2100,11 +2089,11 @@ next
                           and \<beta>_weldef: "intervals_welldef (to_mltl \<alpha>)" 
       using Suc(3) 
       unfolding Until_mltl_ext to_mltl.simps intervals_welldef.simps
-       apply simp_all . 
+       by simp_all 
     have composition_\<alpha>: "is_composition_MLTL \<alpha>" and 
          composition_\<beta>: "is_composition_MLTL \<beta>" and 
          composition_L: "is_composition (b-a+1) L" using Suc(5)
-      unfolding Until_mltl_ext is_composition_MLTL.simps apply simp_all . 
+      unfolding Until_mltl_ext is_composition_MLTL.simps by simp_all 
     have \<alpha>_nnf: "\<exists>\<phi>_init. \<alpha> = convert_nnf_ext \<phi>_init"
       using Suc(2) unfolding Until_mltl_ext 
       by (metis convert_nnf_ext.simps(8) convert_nnf_ext_convert_nnf_ext mltl_ext.inject(7)) 
@@ -2113,10 +2102,10 @@ next
       by (metis convert_nnf_ext.simps(8) convert_nnf_ext_convert_nnf_ext mltl_ext.inject(7))
     have \<alpha>_welldef: "intervals_welldef (to_mltl \<alpha>)" and 
          \<beta>_welldef: "intervals_welldef (to_mltl \<beta>)"
-      using Suc(3) unfolding Until_mltl_ext apply simp_all .
-    have convert_\<alpha>: "convert_nnf_ext \<alpha> = \<alpha>" and 
-         convert_\<beta>: "convert_nnf_ext \<beta> = \<beta>" 
-       apply (metis \<alpha>_nnf convert_nnf_ext_convert_nnf_ext)
+      using Suc(3) unfolding Until_mltl_ext by simp_all
+    have convert_\<alpha>: "convert_nnf_ext \<alpha> = \<alpha>"
+      by (metis \<alpha>_nnf convert_nnf_ext_convert_nnf_ext)
+    have convert_\<beta>: "convert_nnf_ext \<beta> = \<beta>"
       by (metis Suc.prems(1) Until_mltl_ext convert_nnf_ext.simps(8) convert_nnf_ext_convert_nnf_ext mltl_ext.inject(7))
     have slast: "interval_times a L ! (length L) = b+1"
         using interval_times_last[OF a_leq_b composition_L] by blast
@@ -2201,11 +2190,11 @@ next
                           and \<beta>_weldef: "intervals_welldef (to_mltl \<alpha>)" 
       using Suc(3) 
       unfolding Release_mltl_ext to_mltl.simps intervals_welldef.simps
-       apply simp_all . 
+       by simp_all 
     have composition_\<alpha>: "is_composition_MLTL \<alpha>" and 
          composition_\<beta>: "is_composition_MLTL \<beta>" and 
          composition_L: "is_composition (b-a+1) L" using Suc(5)
-      unfolding Release_mltl_ext is_composition_MLTL.simps apply simp_all . 
+      unfolding Release_mltl_ext is_composition_MLTL.simps by simp_all 
     have \<alpha>_nnf: "\<exists>\<phi>_init. \<alpha> = convert_nnf_ext \<phi>_init"
       using Suc(2) unfolding Release_mltl_ext 
       by (metis convert_nnf_ext.simps(9) convert_nnf_ext_convert_nnf_ext mltl_ext.inject(8)) 
@@ -2214,10 +2203,10 @@ next
       by (metis convert_nnf_ext.simps(9) convert_nnf_ext_convert_nnf_ext mltl_ext.inject(8))
     have \<alpha>_welldef: "intervals_welldef (to_mltl \<alpha>)" and 
          \<beta>_welldef: "intervals_welldef (to_mltl \<alpha>)"
-      using Suc(3) unfolding Release_mltl_ext apply simp_all .
-    have convert_\<alpha>: "convert_nnf_ext \<alpha> = \<alpha>" and 
-         convert_\<beta>: "convert_nnf_ext \<beta> = \<beta>" 
-       apply (metis \<alpha>_nnf convert_nnf_ext_convert_nnf_ext)
+      using Suc(3) unfolding Release_mltl_ext by simp_all
+    have convert_\<alpha>: "convert_nnf_ext \<alpha> = \<alpha>"
+      by (metis \<alpha>_nnf convert_nnf_ext_convert_nnf_ext)
+    have convert_\<beta>: "convert_nnf_ext \<beta> = \<beta>" 
       by (metis Suc.prems(1) Release_mltl_ext convert_nnf_ext.simps(9) convert_nnf_ext_convert_nnf_ext mltl_ext.inject(8))
     have slast: "interval_times a L ! (length L) = b+1"
       using interval_times_last[OF a_leq_b composition_L] by blast
@@ -2365,11 +2354,11 @@ next
       by (metis convert_nnf_ext.simps(4) convert_nnf_ext_convert_nnf_ext mltl_ext.inject(3))
     have \<alpha>_welldef: "intervals_welldef (to_mltl \<alpha>)" and 
          \<beta>_welldef: "intervals_welldef (to_mltl \<beta>)"
-      using Suc(3) unfolding And_mltl_ext apply simp_all .
+      using Suc(3) unfolding And_mltl_ext by simp_all
     have \<alpha>_composition: "is_composition_MLTL \<alpha>" and
          \<beta>_composition: "is_composition_MLTL \<beta>"
       using Suc(4) unfolding And_mltl_ext is_composition_MLTL.simps 
-      apply simp_all .
+      by simp_all
     have \<alpha>_ih: "LP_mltl_aux \<alpha> k \<noteq> []"
       using Suc(1)[OF \<alpha>_nnf \<alpha>_welldef \<alpha>_composition] by simp
     have \<beta>_ih: "LP_mltl_aux \<beta> k \<noteq> []"
@@ -2388,11 +2377,11 @@ next
       by (metis convert_nnf_ext.simps(5) convert_nnf_ext_convert_nnf_ext mltl_ext.inject(4))
     have \<alpha>_welldef: "intervals_welldef (to_mltl \<alpha>)" and 
          \<beta>_welldef: "intervals_welldef (to_mltl \<beta>)"
-      using Suc(3) unfolding Or_mltl_ext apply simp_all .
+      using Suc(3) unfolding Or_mltl_ext by simp_all
     have \<alpha>_composition: "is_composition_MLTL \<alpha>" and
          \<beta>_composition: "is_composition_MLTL \<beta>"
       using Suc(4) unfolding Or_mltl_ext is_composition_MLTL.simps 
-      apply simp_all .
+      by simp_all
     have \<alpha>_ih: "LP_mltl_aux \<alpha> k \<noteq> []"
       using Suc(1)[OF \<alpha>_nnf \<alpha>_welldef \<alpha>_composition] by simp
     have \<beta>_ih: "LP_mltl_aux \<beta> k \<noteq> []"
@@ -2406,10 +2395,10 @@ next
       using Suc(2) unfolding Future_mltl_ext 
       by (metis convert_nnf_ext.simps(6) convert_nnf_ext_convert_nnf_ext mltl_ext.inject(5)) 
     have \<alpha>_welldef: "intervals_welldef (to_mltl \<alpha>)"
-      using Suc(3) unfolding Future_mltl_ext apply simp_all .
+      using Suc(3) unfolding Future_mltl_ext by simp_all
     have \<alpha>_composition: "is_composition_MLTL \<alpha>" 
       using Suc(4) unfolding Future_mltl_ext is_composition_MLTL.simps 
-      apply simp_all .
+      by simp_all
     have \<alpha>_ih: "LP_mltl_aux \<alpha> k \<noteq> []"
       using Suc(1)[OF \<alpha>_nnf \<alpha>_welldef \<alpha>_composition] by simp
     then show ?thesis 
@@ -2423,10 +2412,10 @@ next
     then have \<alpha>_convert: "convert_nnf_ext \<alpha> = \<alpha>"
       using convert_nnf_ext_convert_nnf_ext by metis
     have \<alpha>_welldef: "intervals_welldef (to_mltl \<alpha>)"
-      using Suc(3) unfolding Global_mltl_ext apply simp_all .
+      using Suc(3) unfolding Global_mltl_ext by simp_all
      have \<alpha>_composition: "is_composition_MLTL \<alpha>" 
       using Suc(4) unfolding Global_mltl_ext is_composition_MLTL.simps 
-      apply simp_all .
+      by simp_all
     have \<alpha>_ih: "LP_mltl_aux \<alpha> k \<noteq> []"
       using Suc(1)[OF \<alpha>_nnf \<alpha>_welldef \<alpha>_composition] by simp
     let ?D = "LP_mltl_aux \<alpha> k"
@@ -2454,12 +2443,12 @@ next
     have \<alpha>_welldef: "intervals_welldef (to_mltl \<alpha>)" and 
          \<beta>_welldef: "intervals_welldef (to_mltl \<beta>)" and
          a_leq_b: "a \<le> b"
-      using Suc(3) unfolding Until_mltl_ext apply simp_all .
+      using Suc(3) unfolding Until_mltl_ext by simp_all
     have \<alpha>_composition: "is_composition_MLTL \<alpha>" and
          \<beta>_composition: "is_composition_MLTL \<beta>" and 
          L_composition: "is_composition (b-a+1) L"
       using Suc(4) unfolding Until_mltl_ext is_composition_MLTL.simps 
-      apply simp_all .
+      by simp_all
     have \<alpha>_ih: "LP_mltl_aux \<alpha> k \<noteq> []"
       using Suc(1)[OF \<alpha>_nnf \<alpha>_welldef \<alpha>_composition] by simp
     have \<beta>_ih: "LP_mltl_aux \<beta> k \<noteq> []"
@@ -2672,28 +2661,28 @@ next
     case (And_mltl_ext \<alpha> \<beta>)
     have \<alpha>_welldef: "intervals_welldef (to_mltl \<alpha>)" and 
          \<beta>_welldef: "intervals_welldef (to_mltl \<beta>)"
-      using Suc(2) unfolding And_mltl_ext apply simp_all done
-    have \<alpha>_nnf: "\<exists>\<phi>_init. \<alpha> = convert_nnf_ext \<phi>_init" and 
-         \<beta>_nnf: "\<exists>\<phi>_init. \<beta> = convert_nnf_ext \<phi>_init"
+      using Suc(2) unfolding And_mltl_ext by simp_all
+    have \<alpha>_nnf: "\<exists>\<phi>_init. \<alpha> = convert_nnf_ext \<phi>_init"
       using Suc(3) unfolding And_mltl_ext
-      apply (metis convert_nnf_ext.simps(4) convert_nnf_ext_convert_nnf_ext mltl_ext.inject(3))
+      by (metis convert_nnf_ext.simps(4) convert_nnf_ext_convert_nnf_ext mltl_ext.inject(3))
+    have \<beta>_nnf: "\<exists>\<phi>_init. \<beta> = convert_nnf_ext \<phi>_init"
       by (metis And_mltl_ext Suc.prems(2) convert_nnf_ext.simps(4) convert_nnf_ext_convert_nnf_ext mltl_ext.inject(3)) 
     have \<alpha>_composition: "is_composition_MLTL \<alpha>" and 
          \<beta>_composition: "is_composition_MLTL \<beta>"
       using Suc(4) unfolding And_mltl_ext is_composition_MLTL.simps 
-      apply simp_all done
+      by simp_all
     have \<alpha>_semantics: "semantics_mltl_ext \<pi> \<alpha>" and 
          \<beta>_semantics: "semantics_mltl_ext \<pi> \<beta>"
       using Suc(6) unfolding And_mltl_ext semantics_mltl_ext_def 
-       apply simp_all done
+       by simp_all
     have \<alpha>_wpd: "wpd_mltl (to_mltl \<alpha>) \<le> length \<pi>" and
          \<beta>_wpd: "wpd_mltl (to_mltl \<beta>) \<le> length \<pi>"
       using Suc(7) unfolding And_mltl_ext to_mltl.simps wpd_mltl.simps 
-      apply simp_all done
-    have \<alpha>_ih: "\<exists>xa\<in>set (LP_mltl_aux \<alpha> k). semantics_mltl_ext \<pi> xa" and
-         \<beta>_ih: "\<exists>xb\<in>set (LP_mltl_aux \<beta> k). semantics_mltl_ext \<pi> xb"
-      using Suc(1)[OF \<alpha>_welldef \<alpha>_nnf \<alpha>_composition _ \<alpha>_semantics \<alpha>_wpd] apply blast  
-      using Suc(1)[OF \<beta>_welldef \<beta>_nnf \<beta>_composition _ \<beta>_semantics \<beta>_wpd] by blast 
+      by simp_all
+    have \<alpha>_ih: "\<exists>xa\<in>set (LP_mltl_aux \<alpha> k). semantics_mltl_ext \<pi> xa"
+      using Suc(1)[OF \<alpha>_welldef \<alpha>_nnf \<alpha>_composition _ \<alpha>_semantics \<alpha>_wpd] by blast
+    have \<beta>_ih: "\<exists>xb\<in>set (LP_mltl_aux \<beta> k). semantics_mltl_ext \<pi> xb"
+      using Suc(1)[OF \<beta>_welldef \<beta>_nnf \<beta>_composition _ \<beta>_semantics \<beta>_wpd] by blast
     then obtain xa where xa_in: "xa \<in> set (LP_mltl_aux \<alpha> k)" and xa_semantics: "semantics_mltl_ext \<pi> xa"
       using \<alpha>_ih by blast
     then obtain xb where xb_in: "xb \<in> set (LP_mltl_aux \<beta> k)" and xb_semantics: "semantics_mltl_ext \<pi> xb"
@@ -2710,20 +2699,20 @@ next
     case (Or_mltl_ext \<alpha> \<beta>)
     have \<alpha>_welldef: "intervals_welldef (to_mltl \<alpha>)" and 
          \<beta>_welldef: "intervals_welldef (to_mltl \<beta>)"
-      using Suc(2) unfolding Or_mltl_ext apply simp_all done
-    have \<alpha>_nnf: "\<exists>\<phi>_init. \<alpha> = convert_nnf_ext \<phi>_init" and 
-         \<beta>_nnf: "\<exists>\<phi>_init. \<beta> = convert_nnf_ext \<phi>_init"
+      using Suc(2) unfolding Or_mltl_ext by simp_all
+    have \<alpha>_nnf: "\<exists>\<phi>_init. \<alpha> = convert_nnf_ext \<phi>_init"
       using Suc(3) unfolding Or_mltl_ext
-      apply (metis convert_nnf_ext.simps(5) convert_nnf_ext_convert_nnf_ext mltl_ext.inject(4))
+      by (metis convert_nnf_ext.simps(5) convert_nnf_ext_convert_nnf_ext mltl_ext.inject(4)) 
+    have \<beta>_nnf: "\<exists>\<phi>_init. \<beta> = convert_nnf_ext \<phi>_init"
       by (metis Or_mltl_ext Suc.prems(2) convert_nnf_ext.simps(5) convert_nnf_ext_convert_nnf_ext mltl_ext.inject(4)) 
     have \<alpha>_composition: "is_composition_MLTL \<alpha>" and 
          \<beta>_composition: "is_composition_MLTL \<beta>"
       using Suc(4) unfolding Or_mltl_ext is_composition_MLTL.simps 
-       apply simp_all done
+       by simp_all
     have \<alpha>_wpd: "wpd_mltl (to_mltl \<alpha>) \<le> length \<pi>" and
          \<beta>_wpd: "wpd_mltl (to_mltl \<beta>) \<le> length \<pi>"
       using Suc(7) unfolding Or_mltl_ext to_mltl.simps wpd_mltl.simps 
-      apply simp_all done
+      by simp_all
     have \<alpha>\<beta>_semantics: "semantics_mltl_ext \<pi> \<alpha> \<or> semantics_mltl_ext \<pi> \<beta>"
       using Suc(6) unfolding Or_mltl_ext semantics_mltl_ext_def 
       by simp
@@ -2773,9 +2762,9 @@ next
       have ?thesis using \<alpha>xb_in \<alpha>xb_semantics by blast
     } moreover {
       assume *: "semantics_mltl_ext \<pi> \<alpha> \<and> semantics_mltl_ext \<pi> \<beta>"
-      have \<alpha>_ih: "\<exists>xa\<in>set (LP_mltl_aux \<alpha> k). semantics_mltl_ext \<pi> xa" and
-         \<beta>_ih: "\<exists>xb\<in>set (LP_mltl_aux \<beta> k). semantics_mltl_ext \<pi> xb"
-      using * Suc(1)[OF \<alpha>_welldef \<alpha>_nnf \<alpha>_composition _ _ \<alpha>_wpd] apply blast
+      have \<alpha>_ih: "\<exists>xa\<in>set (LP_mltl_aux \<alpha> k). semantics_mltl_ext \<pi> xa"
+        using * Suc(1)[OF \<alpha>_welldef \<alpha>_nnf \<alpha>_composition _ _ \<alpha>_wpd] by blast
+      have \<beta>_ih: "\<exists>xb\<in>set (LP_mltl_aux \<beta> k). semantics_mltl_ext \<pi> xb"
       using * Suc(1)[OF \<beta>_welldef \<beta>_nnf \<beta>_composition _ _ \<beta>_wpd] by blast
       then obtain xa where xa_in: "xa \<in> set (LP_mltl_aux \<alpha> k)" and xa_semantics: "semantics_mltl_ext \<pi> xa"
         using \<alpha>_ih by blast  
@@ -2809,7 +2798,7 @@ next
       using Suc(6) \<alpha>_wpd 
       unfolding Future_mltl_ext semantics_mltl_ext_def to_mltl.simps semantics_mltl.simps
       using wpd_geq_one[of "(to_mltl \<alpha>)"]
-      apply simp_all done
+      by simp_all
     have composition_L: "is_composition (b - a + 1) L"
       using Suc(4) unfolding Future_mltl_ext is_composition_MLTL.simps by blast
     then have s0: "(interval_times a L ! 0) = a"
@@ -3039,12 +3028,13 @@ ns = interval_times a L in Future_mltl_list ms (ns ! 0) (ns ! 1 - 1)
     have \<alpha>_wpd: "b + wpd_mltl (to_mltl \<alpha>) \<le> length \<pi>"
       using Suc(7) unfolding Global_mltl_ext to_mltl.simps wpd_mltl.simps 
       by simp
-    have a_leq_b: "a \<le> b" and length_\<pi>_geq_b: "b < length \<pi>" 
+    have a_leq_b: "a \<le> b"
+      using Suc(6) \<alpha>_wpd unfolding Global_mltl_ext semantics_mltl_ext_def to_mltl.simps semantics_mltl.simps
+      by blast
+    have length_\<pi>_geq_b: "b < length \<pi>"
     and semantics: "\<forall>i. a \<le> i \<and> i \<le> b \<longrightarrow> semantics_mltl (drop i \<pi>) (to_mltl \<alpha>)"
       using Suc(6) \<alpha>_wpd unfolding Global_mltl_ext semantics_mltl_ext_def to_mltl.simps semantics_mltl.simps
-        apply blast 
-      using Suc(6) \<alpha>_wpd unfolding Global_mltl_ext semantics_mltl_ext_def to_mltl.simps semantics_mltl.simps
-      using wpd_geq_one[of "(to_mltl \<alpha>)"] apply auto .
+      using wpd_geq_one[of "(to_mltl \<alpha>)"] by auto
     let ?D_\<alpha> = "LP_mltl_aux \<alpha> k"
     {
       assume *: "length ?D_\<alpha> \<le> 1"
@@ -3115,11 +3105,11 @@ ns = interval_times a L in Future_mltl_list ms (ns ! 0) (ns ! 1 - 1)
     case (Until_mltl_ext \<alpha> a b L \<beta>)
     have \<alpha>_welldef: "intervals_welldef (to_mltl \<alpha>)" 
      and \<beta>_welldef: "intervals_welldef (to_mltl \<beta>)"
-      using Suc(2) unfolding Until_mltl_ext apply simp_all .
+      using Suc(2) unfolding Until_mltl_ext by simp_all
     have \<alpha>_nnf: "\<exists>\<phi>_init. \<alpha> = convert_nnf_ext \<phi>_init"
-     and \<beta>_nnf: "\<exists>\<phi>_init. \<beta> = convert_nnf_ext \<phi>_init"
       using Suc(3) unfolding Until_mltl_ext
-      apply (metis convert_nnf_ext.simps(8) convert_nnf_ext_convert_nnf_ext mltl_ext.inject(7))
+      by (metis convert_nnf_ext.simps(8) convert_nnf_ext_convert_nnf_ext mltl_ext.inject(7))
+    have \<beta>_nnf: "\<exists>\<phi>_init. \<beta> = convert_nnf_ext \<phi>_init"
       using Suc(3) unfolding Until_mltl_ext
       by (metis convert_nnf_ext.simps(8) convert_nnf_ext_convert_nnf_ext mltl_ext.inject(7))
     have \<alpha>_convert: "convert_nnf_ext \<alpha> = \<alpha>"
@@ -3130,11 +3120,11 @@ ns = interval_times a L in Future_mltl_list ms (ns ! 0) (ns ! 1 - 1)
      and \<beta>_composition: "is_composition_MLTL \<beta>"
      and L_composition: "is_composition (b-a+1) L"
       using Suc(4) unfolding Until_mltl_ext is_composition_MLTL.simps 
-      apply simp_all . 
+      by simp_all 
     have \<alpha>_wpd: "b + wpd_mltl (to_mltl \<alpha>)-1 \<le> length \<pi>"
      and \<beta>_wpd: "b + wpd_mltl (to_mltl \<beta>) \<le> length \<pi>"
       using Suc(7) unfolding Until_mltl_ext to_mltl.simps wpd_mltl.simps 
-      apply simp_all .
+      by simp_all
     have a_leq_b: "a \<le> b" and length_\<pi>_ge_b: "b < length \<pi>" 
     and semantics: "(\<exists>i. (a \<le> i \<and> i \<le> b) \<and>
          semantics_mltl (drop i \<pi>) (to_mltl \<beta>) \<and>
@@ -3142,7 +3132,7 @@ ns = interval_times a L in Future_mltl_list ms (ns ! 0) (ns ! 1 - 1)
               semantics_mltl (drop j \<pi>) (to_mltl \<alpha>)))"
       using Suc(6) \<alpha>_wpd unfolding Until_mltl_ext semantics_mltl_ext_def to_mltl.simps semantics_mltl.simps
       using wpd_geq_one[of "to_mltl \<beta>"] \<beta>_wpd
-      apply simp_all .
+      by simp_all
     let ?D_\<beta> = "LP_mltl_aux \<beta> k"
     let ?s = "interval_times a L"
     have sfirst: "?s!0 = a"
@@ -3329,11 +3319,11 @@ ns = interval_times a L in Future_mltl_list ms (ns ! 0) (ns ! 1 - 1)
     case (Release_mltl_ext \<alpha> a b L \<beta>)
     have \<alpha>_welldef: "intervals_welldef (to_mltl \<alpha>)" 
      and \<beta>_welldef: "intervals_welldef (to_mltl \<beta>)"
-      using Suc(2) unfolding Release_mltl_ext apply simp_all .
+      using Suc(2) unfolding Release_mltl_ext by simp_all
     have \<alpha>_nnf: "\<exists>\<phi>_init. \<alpha> = convert_nnf_ext \<phi>_init"
-     and \<beta>_nnf: "\<exists>\<phi>_init. \<beta> = convert_nnf_ext \<phi>_init"
       using Suc(3) unfolding Release_mltl_ext
-      apply (metis convert_nnf_ext.simps(9) convert_nnf_ext_convert_nnf_ext mltl_ext.inject(8))
+      by (metis convert_nnf_ext.simps(9) convert_nnf_ext_convert_nnf_ext mltl_ext.inject(8))
+    have \<beta>_nnf: "\<exists>\<phi>_init. \<beta> = convert_nnf_ext \<phi>_init"
       using Suc(3) unfolding Release_mltl_ext
       by (metis convert_nnf_ext.simps(9) convert_nnf_ext_convert_nnf_ext mltl_ext.inject(8))
     have \<alpha>_convert: "convert_nnf_ext \<alpha> = \<alpha>"
@@ -3344,22 +3334,24 @@ ns = interval_times a L in Future_mltl_list ms (ns ! 0) (ns ! 1 - 1)
      and \<beta>_composition: "is_composition_MLTL \<beta>"
      and L_composition: "is_composition (b-a+1) L"
       using Suc(4) unfolding Release_mltl_ext is_composition_MLTL.simps 
-      apply simp_all . 
+      by simp_all 
     have \<alpha>_wpd: "b + wpd_mltl (to_mltl \<alpha>) \<le> length \<pi>"
      and \<beta>_wpd: "b + wpd_mltl (to_mltl \<beta>) \<le> length \<pi>"
       using Suc(7) unfolding Release_mltl_ext to_mltl.simps wpd_mltl.simps 
-       apply simp_all .
+       by simp_all
     have length_\<pi>_ge_b: "b < length \<pi>" 
       using wpd_geq_one[of "to_mltl \<beta>"] \<beta>_wpd
       by auto
-    have a_leq_b: "a \<le> b" and semantics: "(\<forall>i. a \<le> i \<and> i \<le> b \<longrightarrow>
+    have a_leq_b: "a \<le> b"
+      using Suc(6) \<alpha>_wpd unfolding Release_mltl_ext semantics_mltl_ext_def to_mltl.simps semantics_mltl.simps
+      by blast
+    have semantics: "(\<forall>i. a \<le> i \<and> i \<le> b \<longrightarrow>
           semantics_mltl (drop i \<pi>) (to_mltl \<beta>)) \<or>
      (\<exists>j\<ge>a. j \<le> b - 1 \<and>
              semantics_mltl (drop j \<pi>) (to_mltl \<alpha>) \<and>
              (\<forall>k. a \<le> k \<and> k \<le> j \<longrightarrow>
                   semantics_mltl (drop k \<pi>) (to_mltl \<beta>)))"
-      using Suc(6) \<alpha>_wpd unfolding Release_mltl_ext semantics_mltl_ext_def to_mltl.simps semantics_mltl.simps
-       apply blast using Suc(6) unfolding Release_mltl_ext semantics_mltl_ext_def to_mltl.simps semantics_mltl.simps
+      using Suc(6) unfolding Release_mltl_ext semantics_mltl_ext_def to_mltl.simps semantics_mltl.simps
       using length_\<pi>_ge_b by auto
     let ?D = "LP_mltl_aux \<alpha> k"
     let ?s = "interval_times a L"
@@ -3571,7 +3563,7 @@ next
     case (And_mltl_ext \<alpha> \<beta>)
     have \<alpha>_welldef: "intervals_welldef (to_mltl \<alpha>)" and
          \<beta>_welldef: "intervals_welldef (to_mltl \<beta>)"
-      using Suc(2) unfolding And_mltl_ext apply simp_all done
+      using Suc(2) unfolding And_mltl_ext by simp_all
     have \<alpha>_nnf: "\<exists>\<phi>_init. \<alpha> = convert_nnf_ext \<phi>_init"
       using Suc(3) unfolding And_mltl_ext
       by (metis convert_nnf_ext.simps(4) convert_nnf_ext_convert_nnf_ext mltl_ext.inject(3)) 
@@ -3580,15 +3572,15 @@ next
       by (metis convert_nnf_ext.simps(4) convert_nnf_ext_convert_nnf_ext mltl_ext.inject(3)) 
     have \<alpha>_composition: "is_composition_MLTL \<alpha>" and 
          \<beta>_composition: "is_composition_MLTL \<beta>"
-      using Suc(4) unfolding And_mltl_ext is_composition_MLTL.simps apply simp_all done
-    have \<alpha>_convert: "convert_nnf_ext \<alpha> = \<alpha>" and
-         \<beta>_convert: "convert_nnf_ext \<beta> = \<beta>"
-      using \<alpha>_nnf \<beta>_nnf convert_nnf_ext_convert_nnf_ext apply metis 
-      using \<alpha>_nnf \<beta>_nnf convert_nnf_ext_convert_nnf_ext apply metis .
+      using Suc(4) unfolding And_mltl_ext is_composition_MLTL.simps by simp_all
+    have \<alpha>_convert: "convert_nnf_ext \<alpha> = \<alpha>"
+      using \<alpha>_nnf \<beta>_nnf convert_nnf_ext_convert_nnf_ext by metis
+    have \<beta>_convert: "convert_nnf_ext \<beta> = \<beta>"
+      using \<alpha>_nnf \<beta>_nnf convert_nnf_ext_convert_nnf_ext by metis
     have \<alpha>_wpd: "length \<pi> \<ge> wpd_mltl (to_mltl \<alpha>)" and
          \<beta>_wpd: "length \<pi> \<ge> wpd_mltl (to_mltl \<beta>)"
       using Suc(5) unfolding And_mltl_ext to_mltl.simps wpd_mltl.simps
-      apply simp_all .
+      by simp_all
     obtain \<psi> where \<psi>_in: "\<psi> \<in> set D"
                and \<psi>_semantics: "semantics_mltl_ext \<pi> \<psi>"
       using Suc(7) by blast
@@ -3603,7 +3595,7 @@ next
     have x_semantics: "semantics_mltl_ext \<pi> x" and
          y_semantics: "semantics_mltl_ext \<pi> y"
       using \<psi>_semantics unfolding semantics_mltl_ext_def \<psi>_is to_mltl.simps
-      apply simp_all .
+      by simp_all
     have \<alpha>_ih: "semantics_mltl_ext \<pi> \<alpha>"
       using Suc(1)[OF \<alpha>_welldef \<alpha>_nnf \<alpha>_composition \<alpha>_wpd, of ?Da]
       using x_in x_semantics by blast
@@ -3616,7 +3608,7 @@ next
     case (Or_mltl_ext \<alpha> \<beta>)
     have \<alpha>_welldef: "intervals_welldef (to_mltl \<alpha>)" and
          \<beta>_welldef: "intervals_welldef (to_mltl \<beta>)"
-      using Suc(2) unfolding Or_mltl_ext apply simp_all done
+      using Suc(2) unfolding Or_mltl_ext by simp_all
     have \<alpha>_nnf: "\<exists>\<phi>_init. \<alpha> = convert_nnf_ext \<phi>_init"
       using Suc(3) unfolding Or_mltl_ext
       by (metis convert_nnf_ext.simps(5) convert_nnf_ext_convert_nnf_ext mltl_ext.inject(4)) 
@@ -3625,15 +3617,15 @@ next
       by (metis convert_nnf_ext.simps(5) convert_nnf_ext_convert_nnf_ext mltl_ext.inject(4)) 
     have \<alpha>_composition: "is_composition_MLTL \<alpha>" and 
          \<beta>_composition: "is_composition_MLTL \<beta>"
-      using Suc(4) unfolding Or_mltl_ext is_composition_MLTL.simps apply simp_all done
-    have \<alpha>_convert: "convert_nnf_ext \<alpha> = \<alpha>" and
-         \<beta>_convert: "convert_nnf_ext \<beta> = \<beta>"
-      using \<alpha>_nnf \<beta>_nnf convert_nnf_ext_convert_nnf_ext apply metis 
-      using \<alpha>_nnf \<beta>_nnf convert_nnf_ext_convert_nnf_ext apply metis .
+      using Suc(4) unfolding Or_mltl_ext is_composition_MLTL.simps by simp_all
+    have \<alpha>_convert: "convert_nnf_ext \<alpha> = \<alpha>"
+      using \<alpha>_nnf \<beta>_nnf convert_nnf_ext_convert_nnf_ext by metis
+    have \<beta>_convert: "convert_nnf_ext \<beta> = \<beta>"
+      using \<alpha>_nnf \<beta>_nnf convert_nnf_ext_convert_nnf_ext by metis
     have \<alpha>_wpd: "length \<pi> \<ge> wpd_mltl (to_mltl \<alpha>)" and
          \<beta>_wpd: "length \<pi> \<ge> wpd_mltl (to_mltl \<beta>)"
       using Suc(5) unfolding Or_mltl_ext to_mltl.simps wpd_mltl.simps
-      apply simp_all .
+      by simp_all
     obtain \<psi> where \<psi>_in: "\<psi> \<in> set D"
                and \<psi>_semantics: "semantics_mltl_ext \<pi> \<psi>"
       using Suc(7) by blast
@@ -3656,7 +3648,7 @@ next
       have x_semantics: "semantics_mltl_ext \<pi> x" and
            y_semantics: "semantics_mltl_ext \<pi> y"
         using \<psi>_semantics unfolding semantics_mltl_ext_def \<psi>_is to_mltl.simps
-        apply simp_all .
+        by simp_all
       have \<alpha>_ih: "semantics_mltl_ext \<pi> \<alpha>"
         using Suc(1)[OF \<alpha>_welldef \<alpha>_nnf \<alpha>_composition \<alpha>_wpd, of ?Da]
         using x_in x_semantics by blast
@@ -3675,7 +3667,7 @@ next
       have x_semantics: "semantics_mltl_ext \<pi> (Not\<^sub>c \<alpha>)" and
            y_semantics: "semantics_mltl_ext \<pi> y"
         using \<psi>_semantics unfolding semantics_mltl_ext_def \<psi>_is to_mltl.simps
-        apply simp_all .
+        by simp_all
       have \<beta>_ih: "semantics_mltl_ext \<pi> \<beta>"
         using Suc(1)[OF \<beta>_welldef \<beta>_nnf \<beta>_composition \<beta>_wpd, of ?Db]
         using y_in y_semantics by blast
@@ -3692,7 +3684,7 @@ next
       have x_semantics: "semantics_mltl_ext \<pi> x" and
            y_semantics: "semantics_mltl_ext \<pi> (Not\<^sub>c \<beta>)"
         using \<psi>_semantics unfolding semantics_mltl_ext_def \<psi>_is to_mltl.simps
-        apply simp_all .
+        by simp_all
       have \<alpha>_ih: "semantics_mltl_ext \<pi> \<alpha>"
         using Suc(1)[OF \<alpha>_welldef \<alpha>_nnf \<alpha>_composition \<alpha>_wpd, of ?Da]
         using x_in x_semantics by blast
@@ -3704,18 +3696,18 @@ next
     case (Future_mltl_ext a b L \<alpha>)
     have \<alpha>_welldef: "intervals_welldef (to_mltl \<alpha>)" and
          a_leq_b: "a \<le> b"
-      using Suc(2) unfolding Future_mltl_ext apply simp_all done
+      using Suc(2) unfolding Future_mltl_ext by simp_all
     have \<alpha>_nnf: "\<exists>\<phi>_init. \<alpha> = convert_nnf_ext \<phi>_init"
       using Suc(3) unfolding Future_mltl_ext
       by (metis convert_nnf_ext.simps(6) convert_nnf_ext_convert_nnf_ext mltl_ext.inject(5)) 
     have \<alpha>_composition: "is_composition_MLTL \<alpha>" and
          L_composition: "is_composition (b-a+1) L"
-      using Suc(4) unfolding Future_mltl_ext is_composition_MLTL.simps apply simp_all done
+      using Suc(4) unfolding Future_mltl_ext is_composition_MLTL.simps by simp_all
     have \<alpha>_convert: "convert_nnf_ext \<alpha> = \<alpha>"
       using \<alpha>_nnf convert_nnf_ext_convert_nnf_ext by metis 
     have \<alpha>_wpd: "length \<pi> \<ge> b + wpd_mltl (to_mltl \<alpha>)"
       using Suc(5) unfolding Future_mltl_ext to_mltl.simps wpd_mltl.simps
-      apply simp_all .
+      by simp_all
     then have length_\<pi>_ge_b: "length \<pi> > b"
       using wpd_geq_one[of "to_mltl \<alpha>"] by auto
     obtain \<psi> where \<psi>_in: "\<psi> \<in> set D"
@@ -3801,17 +3793,17 @@ next
     case (Global_mltl_ext a b L \<alpha>)
     have \<alpha>_welldef: "intervals_welldef (to_mltl \<alpha>)" and
          a_leq_b: "a \<le> b"
-      using Suc(2) unfolding Global_mltl_ext apply simp_all done
+      using Suc(2) unfolding Global_mltl_ext by simp_all
     have \<alpha>_nnf: "\<exists>\<phi>_init. \<alpha> = convert_nnf_ext \<phi>_init"
       using Suc(3) unfolding Global_mltl_ext
       by (metis convert_nnf_ext.simps(7) convert_nnf_ext_convert_nnf_ext mltl_ext.inject(6)) 
     have \<alpha>_composition: "is_composition_MLTL \<alpha>"
-      using Suc(4) unfolding Global_mltl_ext is_composition_MLTL.simps apply simp_all done
+      using Suc(4) unfolding Global_mltl_ext is_composition_MLTL.simps by simp_all
     have \<alpha>_convert: "convert_nnf_ext \<alpha> = \<alpha>"
       using \<alpha>_nnf convert_nnf_ext_convert_nnf_ext by metis 
     have \<alpha>_wpd: "length \<pi> \<ge> b + wpd_mltl (to_mltl \<alpha>)"
       using Suc(5) unfolding Global_mltl_ext to_mltl.simps wpd_mltl.simps
-      apply simp_all .
+      by simp_all
     then have length_\<pi>_ge_b: "length \<pi> > b"
       using wpd_geq_one[of "to_mltl \<alpha>"] by auto
     obtain \<psi> where \<psi>_in: "\<psi> \<in> set D"
@@ -3877,7 +3869,7 @@ next
     have \<alpha>_welldef: "intervals_welldef (to_mltl \<alpha>)" and
          \<beta>_welldef: "intervals_welldef (to_mltl \<beta>)" and
          a_leq_b: "a \<le> b"
-      using Suc(2) unfolding Until_mltl_ext apply simp_all done
+      using Suc(2) unfolding Until_mltl_ext by simp_all
     have \<alpha>_nnf: "\<exists>\<phi>_init. \<alpha> = convert_nnf_ext \<phi>_init"
       using Suc(3) unfolding Until_mltl_ext
       by (metis convert_nnf_ext.simps(8) convert_nnf_ext_convert_nnf_ext mltl_ext.inject(7))
@@ -3887,7 +3879,7 @@ next
     have \<alpha>_composition: "is_composition_MLTL \<alpha>" and
          \<beta>_composition: "is_composition_MLTL \<beta>" and
          L_composition: "is_composition (b-a+1) L"
-      using Suc(4) unfolding Until_mltl_ext is_composition_MLTL.simps apply simp_all done
+      using Suc(4) unfolding Until_mltl_ext is_composition_MLTL.simps by simp_all
     have \<alpha>_convert: "convert_nnf_ext \<alpha> = \<alpha>"
       using \<alpha>_nnf convert_nnf_ext_convert_nnf_ext by metis
     have \<beta>_convert: "convert_nnf_ext \<beta> = \<beta>"
@@ -3895,7 +3887,7 @@ next
     have \<alpha>_wpd: "length \<pi> \<ge> b+wpd_mltl (to_mltl \<alpha>)-1" and
          \<beta>_wpd: "length \<pi> \<ge> b+wpd_mltl (to_mltl \<beta>)"
       using Suc(5) unfolding Until_mltl_ext to_mltl.simps wpd_mltl.simps
-      apply simp_all .
+      by simp_all
     then have length_\<pi>_ge_b: "length \<pi> > b"
       using wpd_geq_one[of "to_mltl \<beta>"] by auto
     obtain \<psi> where \<psi>_in: "\<psi> \<in> set D"
@@ -4047,7 +4039,7 @@ next
     have \<alpha>_welldef: "intervals_welldef (to_mltl \<alpha>)" and
          \<beta>_welldef: "intervals_welldef (to_mltl \<beta>)" and
          a_leq_b: "a \<le> b"
-      using Suc(2) unfolding Release_mltl_ext apply simp_all done
+      using Suc(2) unfolding Release_mltl_ext by simp_all
     have \<alpha>_nnf: "\<exists>\<phi>_init. \<alpha> = convert_nnf_ext \<phi>_init"
       using Suc(3) unfolding Release_mltl_ext
       by (metis convert_nnf_ext.simps(9) convert_nnf_ext_convert_nnf_ext mltl_ext.inject(8))
@@ -4057,7 +4049,7 @@ next
     have \<alpha>_composition: "is_composition_MLTL \<alpha>" and
          \<beta>_composition: "is_composition_MLTL \<beta>" and
          L_composition: "is_composition (b-a+1) L"
-      using Suc(4) unfolding Release_mltl_ext is_composition_MLTL.simps apply simp_all done
+      using Suc(4) unfolding Release_mltl_ext is_composition_MLTL.simps by simp_all
     have \<alpha>_convert: "convert_nnf_ext \<alpha> = \<alpha>"
       using \<alpha>_nnf convert_nnf_ext_convert_nnf_ext by metis
     have \<beta>_convert: "convert_nnf_ext \<beta> = \<beta>"
@@ -4065,7 +4057,7 @@ next
     have \<alpha>_wpd: "length \<pi> \<ge> b+wpd_mltl (to_mltl \<alpha>)" and
          \<beta>_wpd: "length \<pi> \<ge> b+wpd_mltl (to_mltl \<beta>)"
       using Suc(5) unfolding Release_mltl_ext to_mltl.simps wpd_mltl.simps
-      apply simp_all .
+      by simp_all
     then have length_\<pi>_ge_b: "length \<pi> > b"
       using wpd_geq_one[of "to_mltl \<beta>"] by auto
     obtain \<psi> where \<psi>_in: "\<psi> \<in> set D"
@@ -4530,7 +4522,7 @@ lemma LP_mltl_language_disjoint_aux_helper:
         using Suc(7) \<psi>1_is \<psi>2_is by blast
       have \<alpha>iwd: "intervals_welldef (to_mltl \<alpha>)" and
            \<beta>iwd: "intervals_welldef (to_mltl \<beta>)"
-          using Suc(2) unfolding And_mltl_ext apply simp_all .
+          using Suc(2) unfolding And_mltl_ext by simp_all
       have \<alpha>nnf: "\<exists>\<phi>_init. \<alpha> = convert_nnf_ext \<phi>_init"
         using Suc(3) unfolding And_mltl_ext
         by (metis convert_nnf_ext.simps(4) convert_nnf_ext_convert_nnf_ext mltl_ext.inject(3))
@@ -4539,7 +4531,7 @@ lemma LP_mltl_language_disjoint_aux_helper:
         by (metis convert_nnf_ext.simps(4) convert_nnf_ext_convert_nnf_ext mltl_ext.inject(3))
       have \<alpha>is_comp_allones: "is_composition_MLTL_allones \<alpha>" and
            \<beta>is_comp_allones: "is_composition_MLTL_allones \<beta>"
-        using Suc(4) unfolding And_mltl_ext is_composition_MLTL_allones.simps apply simp_all .
+        using Suc(4) unfolding And_mltl_ext is_composition_MLTL_allones.simps by simp_all
       have \<alpha>is_comp: "is_composition_MLTL \<alpha>"
         using \<alpha>is_comp_allones allones_implies_is_composition_MLTL 
         by blast
@@ -4548,7 +4540,7 @@ lemma LP_mltl_language_disjoint_aux_helper:
         by blast
       have \<alpha>wpd: "wpd_mltl (to_mltl \<alpha>) \<le> length \<pi>" and
            \<beta>wpd: "wpd_mltl (to_mltl \<beta>) \<le> length \<pi>"
-        using Suc(5) unfolding And_mltl_ext apply simp_all .
+        using Suc(5) unfolding And_mltl_ext by simp_all
       let ?r = "wpd_mltl (to_mltl \<alpha>)"
       {
         assume xs_neq: "x1 \<noteq> x2"
@@ -4624,7 +4616,7 @@ lemma LP_mltl_language_disjoint_aux_helper:
           by (metis in_set_member)
         have x1_semantics: "semantics_mltl_ext \<pi> x1" and 
              y1_semantics: "semantics_mltl_ext \<pi> y1"
-          using Suc(8) unfolding semantics_mltl_ext_def \<psi>1_is apply simp_all .
+          using Suc(8) unfolding semantics_mltl_ext_def \<psi>1_is by simp_all
         have \<alpha>_semantics: "semantics_mltl_ext \<pi> \<alpha>" using LP_mltl_aux_language_union_converse
           by (metis \<alpha>_wpd \<alpha>_is_comp \<alpha>_iwd \<alpha>_nnf allones_implies_is_composition_MLTL convert_nnf_ext_convert_nnf_ext x1_semantics x1y1)
         have \<beta>_semantics: "semantics_mltl_ext \<pi> \<beta>" using LP_mltl_aux_language_union_converse
@@ -4638,7 +4630,7 @@ lemma LP_mltl_language_disjoint_aux_helper:
             by (metis in_set_member)
           have x2_semantics: "semantics_mltl_ext \<pi> x2" and 
                y2_semantics: "semantics_mltl_ext \<pi> y2"
-            using Suc(9) unfolding semantics_mltl_ext_def \<psi>2_is apply simp_all .
+            using Suc(9) unfolding semantics_mltl_ext_def \<psi>2_is by simp_all
           have xs_ys_eo: "x1 \<noteq> x2 \<or> y1 \<noteq> y2"
             using x1y1 x2y2 Suc(7) \<psi>1_is \<psi>2_is by blast
           have xs_neq: "x1 \<noteq> x2 \<Longrightarrow> False" 
@@ -4659,7 +4651,7 @@ lemma LP_mltl_language_disjoint_aux_helper:
             using x2y2 by auto
           have x2_semantics: "semantics_mltl_ext \<pi> x2" and 
                y2_semantics: "semantics_mltl_ext \<pi> y2"
-            using Suc(9) unfolding semantics_mltl_ext_def \<psi>2_is apply simp_all .
+            using Suc(9) unfolding semantics_mltl_ext_def \<psi>2_is by simp_all
           have xs_ys_eo: "x1 \<noteq> x2 \<or> y1 \<noteq> y2"
             using x1y1 x2y2 Suc(7) \<psi>1_is \<psi>2_is by blast
           have ?thesis
@@ -4675,7 +4667,7 @@ lemma LP_mltl_language_disjoint_aux_helper:
             using x2y2 by auto
           have x2_semantics: "semantics_mltl_ext \<pi> x2" and 
                y2_semantics: "semantics_mltl_ext \<pi> y2"
-            using Suc(9) unfolding semantics_mltl_ext_def \<psi>2_is apply simp_all .
+            using Suc(9) unfolding semantics_mltl_ext_def \<psi>2_is by simp_all
           have xs_ys_eo: "x1 \<noteq> x2 \<or> y1 \<noteq> y2"
             using x1y1 x2y2 Suc(7) \<psi>1_is \<psi>2_is by blast
           have ?thesis
@@ -4692,7 +4684,7 @@ lemma LP_mltl_language_disjoint_aux_helper:
           by (metis member_def member_rec(1) member_rec(2))
         have x1_semantics: "semantics_mltl_ext \<pi> x1" and 
              y1_semantics: "semantics_mltl_ext \<pi> y1"
-          using Suc(8) unfolding semantics_mltl_ext_def \<psi>1_is apply simp_all .
+          using Suc(8) unfolding semantics_mltl_ext_def \<psi>1_is by simp_all
         have x1_is: "x1 = Not\<^sub>c \<alpha>"
             using x1y1 by auto
         have not_\<alpha>_semantics: "\<not>semantics_mltl_ext \<pi> \<alpha>"
@@ -4747,7 +4739,7 @@ lemma LP_mltl_language_disjoint_aux_helper:
           by (metis member_def member_rec(1) member_rec(2)) 
         have x1_semantics: "semantics_mltl_ext \<pi> x1" and 
              y1_semantics: "semantics_mltl_ext \<pi> y1"
-          using Suc(8) unfolding semantics_mltl_ext_def \<psi>1_is apply simp_all .
+          using Suc(8) unfolding semantics_mltl_ext_def \<psi>1_is by simp_all
         have x1_is: "y1 = Not\<^sub>c \<beta>"
             using x1y1 by auto
         have not_\<beta>_semantics: "\<not>semantics_mltl_ext \<pi> \<beta>"
@@ -4802,7 +4794,7 @@ lemma LP_mltl_language_disjoint_aux_helper:
       have a_leq_b: "a \<le> b" and
            \<alpha>_welldef: "intervals_welldef (to_mltl \<alpha>)"
         using Suc(2) unfolding intervals_welldef.simps Future_mltl_ext to_mltl.simps
-         apply simp_all .
+         by simp_all
       have \<alpha>_nnf: "\<exists>\<phi>_init. \<alpha> = convert_nnf_ext \<phi>_init"
         using Suc(3) unfolding Future_mltl_ext
         by (metis convert_nnf_ext.simps(6) convert_nnf_ext_convert_nnf_ext mltl_ext.inject(5)) 
@@ -4810,10 +4802,10 @@ lemma LP_mltl_language_disjoint_aux_helper:
         using \<alpha>_nnf convert_nnf_ext_convert_nnf_ext by metis
       have \<alpha>_composition_allones: "is_composition_MLTL_allones \<alpha>" and
            L_composition_allones: "is_composition_allones (b-a+1) L"
-        using Future_mltl_ext Suc.prems(3) apply simp_all .
-      have \<alpha>_composition: "is_composition_MLTL \<alpha>" and
-           L_composition: "is_composition (b-a+1) L"
-        using Future_mltl_ext Suc.prems(3) allones_implies_is_composition_MLTL apply auto[1]
+        using Future_mltl_ext Suc.prems(3) by simp_all
+      have \<alpha>_composition: "is_composition_MLTL \<alpha>"
+        using Future_mltl_ext Suc.prems(3) allones_implies_is_composition_MLTL by auto
+      have L_composition: "is_composition (b-a+1) L"
         using Future_mltl_ext Suc.prems(3) allones_implies_is_composition_MLTL is_composition_MLTL.simps(5) by blast
       have \<alpha>_wpd: "b + wpd_mltl (to_mltl \<alpha>) \<le> length \<pi>"
         using Suc(5) unfolding Future_mltl_ext to_mltl.simps wpd_mltl.simps
@@ -4996,16 +4988,16 @@ lemma LP_mltl_language_disjoint_aux_helper:
       have a_leq_b: "a \<le> b" and
            \<alpha>_welldef: "intervals_welldef (to_mltl \<alpha>)"
         using Suc(2) unfolding intervals_welldef.simps Global_mltl_ext to_mltl.simps
-         apply simp_all .
+         by simp_all
       have \<alpha>_nnf: "\<exists>\<phi>_init. \<alpha> = convert_nnf_ext \<phi>_init"
         using Suc(3) unfolding Global_mltl_ext
         by (metis convert_nnf_ext.simps(7) convert_nnf_ext_convert_nnf_ext mltl_ext.inject(6)) 
       have \<alpha>_convert: "convert_nnf_ext \<alpha> = \<alpha>"
         using \<alpha>_nnf convert_nnf_ext_convert_nnf_ext by metis
       have \<alpha>_composition_allones: "is_composition_MLTL_allones \<alpha>"
-        using Global_mltl_ext Suc.prems(3) apply simp_all .
+        using Global_mltl_ext Suc.prems(3) by simp_all
       have \<alpha>_composition: "is_composition_MLTL \<alpha>"
-        using Global_mltl_ext Suc.prems(3) allones_implies_is_composition_MLTL apply auto[1] .
+        using Global_mltl_ext Suc.prems(3) allones_implies_is_composition_MLTL by auto
       have \<alpha>_wpd: "b + wpd_mltl (to_mltl \<alpha>) \<le> length \<pi>"
         using Suc(5) unfolding Global_mltl_ext to_mltl.simps wpd_mltl.simps
         by auto
@@ -5078,7 +5070,7 @@ lemma LP_mltl_language_disjoint_aux_helper:
            \<alpha>_welldef: "intervals_welldef (to_mltl \<alpha>)" and 
            \<beta>_welldef: "intervals_welldef (to_mltl \<beta>)"
         using Suc(2) unfolding intervals_welldef.simps Until_mltl_ext to_mltl.simps
-        apply simp_all .
+        by simp_all
       have \<alpha>_nnf: "\<exists>\<phi>_init. \<alpha> = convert_nnf_ext \<phi>_init"
         using Suc(3) unfolding Until_mltl_ext
         by (metis convert_nnf_ext.simps(8) convert_nnf_ext_convert_nnf_ext mltl_ext.inject(7)) 
@@ -5092,13 +5084,13 @@ lemma LP_mltl_language_disjoint_aux_helper:
       have \<alpha>_composition_allones: "is_composition_MLTL_allones \<alpha>" and
            \<beta>_composition_allones: "is_composition_MLTL_allones \<beta>" and
            L_composition_allones: "is_composition_allones (b-a+1) L"
-        using Until_mltl_ext Suc.prems(3) apply simp_all .
-      have \<alpha>_composition: "is_composition_MLTL \<alpha>" and
-           \<beta>_composition: "is_composition_MLTL \<beta>" and
-           L_composition: "is_composition (b-a+1) L"
-        using Until_mltl_ext Suc.prems(3) allones_implies_is_composition_MLTL apply auto[1]
+        using Until_mltl_ext Suc.prems(3) by simp_all
+      have \<alpha>_composition: "is_composition_MLTL \<alpha>"
+        using Until_mltl_ext Suc.prems(3) allones_implies_is_composition_MLTL by auto
+      have \<beta>_composition: "is_composition_MLTL \<beta>"
         using Until_mltl_ext Suc.prems(3) allones_implies_is_composition_MLTL is_composition_MLTL.simps(5) 
-        apply force
+        by force
+      have L_composition: "is_composition (b-a+1) L"
         using L_composition_allones allones_implies_is_composition by auto 
       have \<alpha>_wpd: "b + wpd_mltl (to_mltl \<alpha>)-1 \<le> length \<pi>" and
            \<beta>_wpd: "b + wpd_mltl (to_mltl \<beta>) \<le> length \<pi>"
@@ -5278,7 +5270,7 @@ lemma LP_mltl_language_disjoint_aux_helper:
            \<alpha>_welldef: "intervals_welldef (to_mltl \<alpha>)" and 
            \<beta>_welldef: "intervals_welldef (to_mltl \<beta>)"
         using Suc(2) unfolding intervals_welldef.simps Release_mltl_ext to_mltl.simps
-        apply simp_all .
+        by simp_all
       have \<alpha>_nnf: "\<exists>\<phi>_init. \<alpha> = convert_nnf_ext \<phi>_init"
         using Suc(3) unfolding Release_mltl_ext
         by (metis convert_nnf_ext.simps(9) convert_nnf_ext_convert_nnf_ext mltl_ext.inject(8)) 
@@ -5292,13 +5284,13 @@ lemma LP_mltl_language_disjoint_aux_helper:
       have \<alpha>_composition_allones: "is_composition_MLTL_allones \<alpha>" and
            \<beta>_composition_allones: "is_composition_MLTL_allones \<beta>" and
            L_composition_allones: "is_composition_allones (b-a+1) L"
-        using Release_mltl_ext Suc.prems(3) apply simp_all .
-      have \<alpha>_composition: "is_composition_MLTL \<alpha>" and
-           \<beta>_composition: "is_composition_MLTL \<beta>" and
-           L_composition: "is_composition (b-a+1) L"
-        using Release_mltl_ext Suc.prems(3) allones_implies_is_composition_MLTL apply auto[1]
+        using Release_mltl_ext Suc.prems(3) by simp_all
+      have \<alpha>_composition: "is_composition_MLTL \<alpha>"
+        using Release_mltl_ext Suc.prems(3) allones_implies_is_composition_MLTL by auto
+      have \<beta>_composition: "is_composition_MLTL \<beta>" 
         using Release_mltl_ext Suc.prems(3) allones_implies_is_composition_MLTL is_composition_MLTL.simps(5) 
-        apply force
+        by force
+      have L_composition: "is_composition (b-a+1) L"
         using L_composition_allones allones_implies_is_composition by auto 
       have \<alpha>_wpd: "b + wpd_mltl (to_mltl \<alpha>) \<le> length \<pi>" and
            \<beta>_wpd: "b + wpd_mltl (to_mltl \<beta>) \<le> length \<pi>"
@@ -5629,7 +5621,7 @@ proof-
          len: "length \<pi> \<ge> wpd_mltl (to_mltl \<phi>)"
       using in1 in2 assms(6)
       unfolding language_mltl_r_def semantics_mltl_ext_def
-        apply simp_all . 
+        by simp_all 
     have "False"
       using LP_mltl_language_disjoint_aux_helper[OF assms(1-3) len assms(4, 5) sem1 sem2]
       by simp
@@ -5794,7 +5786,7 @@ proof(cases \<phi>)
         by (metis And_mltl_list_member \<open>List.member (And_mltl_list [convert_nnf_ext \<alpha>] [convert_nnf_ext \<beta>]) \<psi>1\<close> member_rec(1) member_rec(2))
       have x1_semantics: "semantics_mltl_ext \<pi> \<alpha>" and 
            y1_semantics: "semantics_mltl_ext \<pi> \<beta>"
-        using assms(7) unfolding \<psi>1_is semantics_mltl_ext_def apply simp_all .
+        using assms(7) unfolding \<psi>1_is semantics_mltl_ext_def by simp_all
       {
         assume "List.member (And_mltl_list ?Dx ?Dy) \<psi>2 "
         then have \<psi>2_is: "\<psi>2 = And_mltl_ext \<alpha> \<beta>" 
@@ -5811,7 +5803,7 @@ proof(cases \<phi>)
           by (metis And_mltl_list_member \<open>List.member (And_mltl_list [Not\<^sub>c \<alpha>] [convert_nnf_ext \<beta>]) \<psi>2\<close> member_rec(1) member_rec(2))
         have x2_semantics: "semantics_mltl_ext \<pi> (Not\<^sub>c \<alpha>)" and 
              y2_semantics: "semantics_mltl_ext \<pi> \<beta>"
-          using assms unfolding semantics_mltl_ext_def \<psi>2_is apply simp_all .
+          using assms unfolding semantics_mltl_ext_def \<psi>2_is by simp_all
         then have ?thesis
           using x1_semantics unfolding semantics_mltl_ext_def by simp
       } moreover {
@@ -5822,7 +5814,7 @@ proof(cases \<phi>)
           by (metis And_mltl_list_member \<open>List.member (And_mltl_list [convert_nnf_ext \<alpha>] [Not\<^sub>c \<beta>]) \<psi>2\<close> member_rec(1) member_rec(2))
         have x2_semantics: "semantics_mltl_ext \<pi> \<alpha>" and 
              y2_semantics: "semantics_mltl_ext \<pi> (Not\<^sub>c \<beta>)"
-          using assms unfolding semantics_mltl_ext_def \<psi>2_is apply simp_all .
+          using assms unfolding semantics_mltl_ext_def \<psi>2_is by simp_all
         then have ?thesis
           using y1_semantics unfolding semantics_mltl_ext_def by simp
       }      
@@ -5836,7 +5828,7 @@ proof(cases \<phi>)
         by (metis And_mltl_list_member \<open>List.member (And_mltl_list [Not\<^sub>c \<alpha>] [convert_nnf_ext \<beta>]) \<psi>1\<close> member_rec(1) member_rec(2))
       have x1_semantics: "semantics_mltl_ext \<pi> (Not\<^sub>c \<alpha>)" and 
            y1_semantics: "semantics_mltl_ext \<pi> (\<beta>)"
-        using assms unfolding semantics_mltl_ext_def \<psi>1_is apply simp_all .
+        using assms unfolding semantics_mltl_ext_def \<psi>1_is by simp_all
       (* Inner case split on \<psi>2*)
       {
         assume "List.member (And_mltl_list ?Dx ?Dy) \<psi>2 "
@@ -5854,7 +5846,7 @@ proof(cases \<phi>)
           by (metis And_mltl_list_member \<open>List.member (And_mltl_list [Not\<^sub>c \<alpha>] [convert_nnf_ext \<beta>]) \<psi>2\<close> member_rec(1) member_rec(2))
         have x2_semantics: "semantics_mltl_ext \<pi> (Not\<^sub>c \<alpha>)" and 
              y2_semantics: "semantics_mltl_ext \<pi> \<beta>"
-          using assms unfolding semantics_mltl_ext_def \<psi>2_is apply simp_all .
+          using assms unfolding semantics_mltl_ext_def \<psi>2_is by simp_all
         then have ?thesis
           using \<psi>1_is \<psi>2_is assms by blast
       } moreover {
@@ -5865,7 +5857,7 @@ proof(cases \<phi>)
           by (metis And_mltl_list_member \<open>List.member (And_mltl_list [convert_nnf_ext \<alpha>] [Not\<^sub>c \<beta>]) \<psi>2\<close> member_rec(1) member_rec(2))
         have x2_semantics: "semantics_mltl_ext \<pi> \<alpha>" and 
              y2_semantics: "semantics_mltl_ext \<pi> (Not\<^sub>c \<beta>)"
-          using assms unfolding semantics_mltl_ext_def \<psi>2_is apply simp_all .
+          using assms unfolding semantics_mltl_ext_def \<psi>2_is by simp_all
         then have ?thesis
           using y1_semantics unfolding semantics_mltl_ext_def by simp
       }      
@@ -5879,7 +5871,7 @@ proof(cases \<phi>)
         by (metis And_mltl_list_member \<open>List.member (And_mltl_list [convert_nnf_ext \<alpha>] [Not\<^sub>c \<beta>]) \<psi>1\<close> member_rec(1) member_rec(2))
       have x1_semantics: "semantics_mltl_ext \<pi> \<alpha>" and 
            y1_semantics: "semantics_mltl_ext \<pi> (Not\<^sub>c \<beta>)"
-        using assms unfolding semantics_mltl_ext_def \<psi>1_is apply simp_all .
+        using assms unfolding semantics_mltl_ext_def \<psi>1_is by simp_all
     (* Inner case split on \<psi>2*)
       {
         assume "List.member (And_mltl_list ?Dx ?Dy) \<psi>2 "
@@ -5897,7 +5889,7 @@ proof(cases \<phi>)
           by (metis And_mltl_list_member \<open>List.member (And_mltl_list [Not\<^sub>c \<alpha>] [convert_nnf_ext \<beta>]) \<psi>2\<close> member_rec(1) member_rec(2))
         have x2_semantics: "semantics_mltl_ext \<pi> (Not\<^sub>c \<alpha>)" and 
              y2_semantics: "semantics_mltl_ext \<pi> \<beta>"
-          using assms unfolding semantics_mltl_ext_def \<psi>2_is apply simp_all .
+          using assms unfolding semantics_mltl_ext_def \<psi>2_is by simp_all
         then have ?thesis
           using x1_semantics x2_semantics unfolding semantics_mltl_ext_def by auto
       } moreover {
@@ -5908,7 +5900,7 @@ proof(cases \<phi>)
           by (metis And_mltl_list_member \<open>List.member (And_mltl_list [convert_nnf_ext \<alpha>] [Not\<^sub>c \<beta>]) \<psi>2\<close> member_rec(1) member_rec(2))
         have x2_semantics: "semantics_mltl_ext \<pi> \<alpha>" and 
              y2_semantics: "semantics_mltl_ext \<pi> (Not\<^sub>c \<beta>)"
-          using assms unfolding semantics_mltl_ext_def \<psi>2_is apply simp_all .
+          using assms unfolding semantics_mltl_ext_def \<psi>2_is by simp_all
         then have ?thesis
           using \<psi>1_is \<psi>2_is assms by blast
       }       
@@ -5922,7 +5914,7 @@ proof(cases \<phi>)
     have a_leq_b: "a \<le> b" and
          \<alpha>_welldef: "intervals_welldef (to_mltl \<alpha>)"
       using assms unfolding intervals_welldef.simps Future_mltl_ext to_mltl.simps
-       apply simp_all .
+       by simp_all
     have \<alpha>_nnf: "\<exists>\<phi>_init. \<alpha> = convert_nnf_ext \<phi>_init"
       using assms unfolding Future_mltl_ext
       by (metis convert_nnf_ext.simps(6) convert_nnf_ext_convert_nnf_ext mltl_ext.inject(5)) 
@@ -5930,7 +5922,7 @@ proof(cases \<phi>)
       using \<alpha>_nnf convert_nnf_ext_convert_nnf_ext by metis
     have \<alpha>_composition: "is_composition_MLTL \<alpha>" and
          L_composition: "is_composition (b-a+1) L"
-      using Future_mltl_ext assms apply simp_all .
+      using Future_mltl_ext assms by simp_all
     have \<alpha>_wpd: "b + wpd_mltl (to_mltl \<alpha>) \<le> length \<pi>"
       using assms unfolding Future_mltl_ext to_mltl.simps wpd_mltl.simps
       by auto
@@ -6104,14 +6096,14 @@ proof(cases \<phi>)
     have a_leq_b: "a \<le> b" and
          \<alpha>_welldef: "intervals_welldef (to_mltl \<alpha>)"
       using assms unfolding intervals_welldef.simps Global_mltl_ext to_mltl.simps
-       apply simp_all .
+       by simp_all
     have \<alpha>_nnf: "\<exists>\<phi>_init. \<alpha> = convert_nnf_ext \<phi>_init"
       using assms unfolding Global_mltl_ext
       by (metis convert_nnf_ext.simps(7) convert_nnf_ext_convert_nnf_ext mltl_ext.inject(6)) 
     have \<alpha>_convert: "convert_nnf_ext \<alpha> = \<alpha>"
       using \<alpha>_nnf convert_nnf_ext_convert_nnf_ext by metis
     have \<alpha>_composition: "is_composition_MLTL \<alpha>"
-      using Global_mltl_ext assms apply simp_all .
+      using Global_mltl_ext assms by simp_all
     have \<alpha>_wpd: "b + wpd_mltl (to_mltl \<alpha>) \<le> length \<pi>"
       using assms unfolding Global_mltl_ext to_mltl.simps wpd_mltl.simps
       by auto
@@ -6126,7 +6118,7 @@ proof(cases \<phi>)
          \<alpha>_welldef: "intervals_welldef (to_mltl \<alpha>)" and 
          \<beta>_welldef: "intervals_welldef (to_mltl \<beta>)"
       using assms unfolding intervals_welldef.simps Until_mltl_ext to_mltl.simps
-      apply simp_all .
+      by simp_all
     have \<alpha>_nnf: "\<exists>\<phi>_init. \<alpha> = convert_nnf_ext \<phi>_init"
       using assms unfolding Until_mltl_ext
       by (metis convert_nnf_ext.simps(8) convert_nnf_ext_convert_nnf_ext mltl_ext.inject(7)) 
@@ -6140,7 +6132,7 @@ proof(cases \<phi>)
     have \<alpha>_composition: "is_composition_MLTL \<alpha>" and
          \<beta>_composition: "is_composition_MLTL \<beta>" and
          L_composition: "is_composition (b-a+1) L"
-      using Until_mltl_ext assms apply simp_all .
+      using Until_mltl_ext assms by simp_all
     have \<alpha>_wpd: "b + wpd_mltl (to_mltl \<alpha>) \<le> length \<pi>" and
          \<beta>_wpd: "b + wpd_mltl (to_mltl \<beta>) \<le> length \<pi>"
       using assms unfolding Until_mltl_ext to_mltl.simps wpd_mltl.simps
@@ -6319,7 +6311,7 @@ proof(cases \<phi>)
          \<alpha>_welldef: "intervals_welldef (to_mltl \<alpha>)" and 
          \<beta>_welldef: "intervals_welldef (to_mltl \<beta>)"
       using assms unfolding intervals_welldef.simps Release_mltl_ext to_mltl.simps
-      apply simp_all .
+      by simp_all
     have \<alpha>_nnf: "\<exists>\<phi>_init. \<alpha> = convert_nnf_ext \<phi>_init"
       using assms unfolding Release_mltl_ext
       by (metis convert_nnf_ext.simps(9) convert_nnf_ext_convert_nnf_ext mltl_ext.inject(8)) 
@@ -6333,7 +6325,7 @@ proof(cases \<phi>)
     have \<alpha>_composition: "is_composition_MLTL \<alpha>" and
          \<beta>_composition: "is_composition_MLTL \<beta>" and
          L_composition: "is_composition (b-a+1) L"
-      using Release_mltl_ext assms apply simp_all .
+      using Release_mltl_ext assms by simp_all
     have \<alpha>_wpd: "b + wpd_mltl (to_mltl \<alpha>) \<le> length \<pi>" and
          \<beta>_wpd: "b + wpd_mltl (to_mltl \<beta>) \<le> length \<pi>"
       using assms unfolding Release_mltl_ext to_mltl.simps wpd_mltl.simps
@@ -6640,7 +6632,7 @@ proof-
          len: "length \<pi> \<ge> wpd_mltl (to_mltl \<phi>)"
       using in1 in2 assms(6)
       unfolding language_mltl_r_def semantics_mltl_ext_def
-        apply simp_all . 
+        by simp_all 
     have "False"
       by (metis D_decomp LP_mltl_language_disjoint_aux_helper_k1 One_nat_def composition diff_formulas intervals_welldef is_nnf len sem1 sem2) 
   }
