@@ -191,7 +191,7 @@ proof -
           ((<) :: nat \<Rightarrow> nat \<Rightarrow> bool)))"
 
   show "wfp_on {S. invars S} scl_without_backtrack\<inverse>\<inverse>"
-  proof (rule wfp_on_if_convertible_to_wfp)
+  proof (rule wfp_on_if_convertible_to_wfp_on)
     fix S' S :: "('f, 'v) state"
     assume "S' \<in> {S. invars S}" and "S \<in> {S. invars S}" and step: "scl_without_backtrack\<inverse>\<inverse> S' S"
     hence
