@@ -1574,8 +1574,8 @@ proof-
     \<rho>\<^sub>2_is_welltyped: "term.subst.is_welltyped_on (clause.vars D) \<V>\<^sub>2 \<rho>\<^sub>2" and
     \<gamma>\<^sub>1_\<gamma>: "\<forall>x \<in> clause.vars E. \<gamma>\<^sub>1 x = (\<rho>\<^sub>1 \<odot> \<gamma>) x" and
     \<gamma>\<^sub>2_\<gamma>: "\<forall>x \<in> clause.vars D. \<gamma>\<^sub>2 x = (\<rho>\<^sub>2 \<odot> \<gamma>) x"
-    using clause.is_welltyped.obtain_merged_grounding[OF \<gamma>\<^sub>1_is_welltyped \<gamma>\<^sub>2_is_welltyped E_grounding
-                                                      D_grounding \<V>\<^sub>2 clause.finite_vars].
+    using clause.is_welltyped.obtain_merged_grounding[OF
+            \<gamma>\<^sub>1_is_welltyped \<gamma>\<^sub>2_is_welltyped E_grounding D_grounding \<V>\<^sub>2 clause.finite_vars].
 
   have E_grounding: "clause.is_ground (E \<cdot> \<rho>\<^sub>1 \<odot> \<gamma>)"
     using clause.subst_eq \<gamma>\<^sub>1_\<gamma> E_grounding
@@ -1609,7 +1609,7 @@ proof-
       by fast
 
     moreover have "select E \<cdot> \<gamma>\<^sub>1 = select E \<cdot> \<rho>\<^sub>1 \<cdot> \<gamma>"
-      using clause.subst_eq \<gamma>\<^sub>1_\<gamma> select_vars_subset[of E]
+      using clause.subst_eq \<gamma>\<^sub>1_\<gamma> select_vars_subset
       by (metis (no_types, lifting) clause.comp_subst.left.monoid_action_compatibility in_mono)
 
     ultimately show ?thesis
