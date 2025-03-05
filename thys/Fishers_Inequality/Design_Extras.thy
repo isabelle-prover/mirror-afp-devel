@@ -143,7 +143,7 @@ proof -
   finally have "(\<Sum> x \<in> \<V>. \<B> rep x) = size (\<Sum>\<^sub># (image_mset (\<lambda> v. {#b \<in># \<B>. v \<in> b#}) (mset_set \<V>)))" 
     using size_big_union_sum by metis 
   then show ?thesis using bss
-    by (simp add: size_mset_mono)
+    by (simp add: size_mset_mono del: size_mset_sum_mset_conv)
 qed
 
 end
