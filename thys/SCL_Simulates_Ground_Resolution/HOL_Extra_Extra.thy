@@ -30,13 +30,6 @@ lemma (in order) greater_wfp_on_finite_set: "finite \<X> \<Longrightarrow> Wellf
 lemma (in order) less_wfp_on_finite_set: "finite \<X> \<Longrightarrow> Wellfounded.wfp_on \<X> (<)"
   using strict_partial_order_wfp_on_finite_set[OF transp_on_less asymp_on_less] .
 
-
-lemma sorted_wrt_dropWhile: "sorted_wrt R xs \<Longrightarrow> sorted_wrt R (dropWhile P xs)"
-  by (auto dest: sorted_wrt_drop simp: dropWhile_eq_drop)
-
-lemma sorted_wrt_takeWhile: "sorted_wrt R xs \<Longrightarrow> sorted_wrt R (takeWhile P xs)"
-  by (subst takeWhile_eq_take) (auto dest: sorted_wrt_take)
-
 lemma distinct_if_sorted_wrt_asymp:
   assumes "asymp_on (set xs) R" and "sorted_wrt R xs"
   shows "distinct xs"
@@ -85,25 +78,7 @@ lemma dropWhile_append_eq_rhs:
     "\<And>x. x \<in> set xs \<Longrightarrow> P x" and
     "\<And>y. y \<in> set ys \<Longrightarrow> \<not> P y"
   shows "dropWhile P (xs @ ys) = ys"
-  using assms
-proof (induction xs)
-  case Nil
-  then show ?case
-    by (metis append_Nil dropWhile_eq_self_iff hd_in_set)
-next
-  case (Cons x xs)
-  then show ?case
-    by (metis dropWhile_append dropWhile_cong dropWhile_eq_self_iff member_rec(2))
-qed
-
-lemma (in linorder) ex1_sorted_list_for_set_if_finite:
-  "finite X \<Longrightarrow> \<exists>!xs. sorted_wrt (<) xs \<and> set xs = X"
-  by (metis local.sorted_list_of_set.finite_set_strict_sorted local.strict_sorted_equal)
-
-lemma dropWhile_ident_if_pred_always_false:
-  assumes "\<And>x. x \<in> set xs \<Longrightarrow> \<not> P x"
-  shows "dropWhile P xs = xs"
-  using assms dropWhile_eq_self_iff hd_in_set by auto
+  using assms by simp
 
 lemma mem_set_dropWhile_conv_if_list_sorted_and_pred_monotone:
   fixes R :: "'a \<Rightarrow> 'a \<Rightarrow> bool" and xs :: "'a list" and P :: "'a \<Rightarrow> bool"
