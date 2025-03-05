@@ -930,7 +930,7 @@ proof -
       by (intro is_pref_profile_lift_profile) fact
   qed (use xy in auto)
   hence "{#z \<in># r (lift_profile A). z \<in> {x, y}#} \<noteq> {#}"
-    by force
+    by (metis not_one_le_zero size_empty)
   thus ?thesis
     by auto
 qed
