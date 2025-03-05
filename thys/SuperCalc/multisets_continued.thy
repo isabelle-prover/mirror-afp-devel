@@ -141,7 +141,8 @@ proof (cases)
       show "\<exists>j \<in> set_mset ?M2''. (k, j) \<in> r" by auto
   qed
   from \<open>M1 \<noteq> M2\<close> have  "?M2'' \<noteq> {#}"
-    using \<open>M1 = image_mset f1 {# u \<in># L. f1 u = f2 u#} + image_mset f1 {# u \<in># L. f1 u \<noteq> f2 u#}\<close> \<open>M2 = image_mset f2 {# u \<in># L. f1 u = f2 u#} + image_mset f2 {# u \<in># L. f1 u \<noteq> f2 u#}\<close> \<open>image_mset f1 {# u \<in># L. f1 u = f2 u#} = image_mset f2 {# u \<in># L. f1 u = f2 u#}\<close> by auto 
+    using \<open>M1 = image_mset f1 {# u \<in># L. f1 u = f2 u#} + image_mset f1 {# u \<in># L. f1 u \<noteq> f2 u#}\<close> \<open>M2 = image_mset f2 {# u \<in># L. f1 u = f2 u#} + image_mset f2 {# u \<in># L. f1 u \<noteq> f2 u#}\<close> \<open>image_mset f1 {# u \<in># L. f1 u = f2 u#} = image_mset f2 {# u \<in># L. f1 u = f2 u#}\<close>
+    by force
   from this and dom and \<open>M1 = ?M1' + ?M1''\<close> \<open>M2 = ?M2' + ?M2''\<close> \<open>?M1'=?M2'\<close> 
   have "(M1,M2) \<in> (mult r)" by (simp add: one_step_implies_mult)
   from this show ?thesis by auto

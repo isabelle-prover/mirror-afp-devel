@@ -349,7 +349,8 @@ next
 
     have subs: "{#(D, ia) \<in># N + {#(D, j) \<in># P. D \<noteq> C'#} + (Q + {#(C', i')#}). ia \<le> weight (C, i)#}
       \<subseteq># {#(D, ia) \<in># {#} + (P + {#(C', i')#}) + Q. ia \<le> weight (C, i)#}"
-      using n_low_weight_empty by (auto simp: multiset_filter_mono)
+      using n_low_weight_empty
+      by (auto simp add: multiset_filter_mono simp del: filter_mset_eq_mempty_iff)
 
     have "fst3 (RP_combined_measure (weight (C, i)) St')
       \<le> fst3 (RP_combined_measure (weight (C, i)) St)"
