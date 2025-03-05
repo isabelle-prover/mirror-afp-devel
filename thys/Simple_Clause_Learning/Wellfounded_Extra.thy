@@ -23,25 +23,6 @@ lemma wf_on_if_minimal:
   shows "wf_on A R"
   using wf_on_iff_ex_minimal[THEN iffD2, rule_format, OF assms] .
 
-lemma bex_rtrancl_min_element_if_wf_on:
-  assumes wf: "wf_on A r" and x_in: "x \<in> A"
-  shows "\<exists>y \<in> A. (y, x) \<in> r\<^sup>* \<and> \<not>(\<exists>z \<in> A. (z, y) \<in> r)"
-  using wf
-proof (induction x rule: wf_on_induct)
-  case in_set
-  thus ?case
-    using x_in by metis
-next
-  case (less x)
-  thus ?case
-    by (metis rtrancl.rtrancl_into_rtrancl rtrancl.rtrancl_refl)
-qed
-
-lemma bex_rtransclp_min_element_if_wfp_on: "wfp_on A R \<Longrightarrow> x \<in> A \<Longrightarrow> \<exists>y\<in>A. R\<^sup>*\<^sup>* y x \<and> \<not> (\<exists>z\<in>A. R z y)"
-  by (rule bex_rtrancl_min_element_if_wf_on[to_pred])
-
-text \<open>Well-foundedness of the empty relation\<close>
-
 definition inv_imagep_on :: "'a set \<Rightarrow> ('b \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" where
   "inv_imagep_on A R f = (\<lambda>x y. x \<in> A \<and> y \<in> A \<and> R (f x) (f y))"
 
