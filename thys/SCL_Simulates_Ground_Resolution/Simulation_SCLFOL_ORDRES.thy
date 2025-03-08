@@ -6627,7 +6627,7 @@ proof (cases S10 S11 rule: ord_res_10_matches_ord_res_11.cases)
           using dropWhile_append2 AAA by simp
 
         also have "\<dots> = (- L, None) # dropWhile (\<lambda>Ln. atm_of L \<preceq>\<^sub>t atm_of (fst Ln)) \<Gamma>\<^sub>0"
-          using CCC by (simp add: dropWhile_ident_if_pred_always_false)
+          using CCC by simp
 
         also have "\<dots> = (- L, None) # dropWhile (\<lambda>Ln. atm_of L \<preceq>\<^sub>t atm_of (fst Ln)) \<Gamma>"
           unfolding \<open>\<Gamma> = (Pos A, Some C) # \<Gamma>\<^sub>1 @ (- L, None) # \<Gamma>\<^sub>0\<close>

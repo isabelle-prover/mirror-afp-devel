@@ -1,0 +1,9 @@
+chapter AFP
+
+session Quantum_Fourier_Transform = Isabelle_Marries_Dirac +
+  options [timeout = 600]
+  theories
+    QFT
+  document_files
+    "root.bib"
+    "root.tex"

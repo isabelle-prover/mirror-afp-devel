@@ -30,13 +30,6 @@ lemma (in order) greater_wfp_on_finite_set: "finite \<X> \<Longrightarrow> Wellf
 lemma (in order) less_wfp_on_finite_set: "finite \<X> \<Longrightarrow> Wellfounded.wfp_on \<X> (<)"
   using strict_partial_order_wfp_on_finite_set[OF transp_on_less asymp_on_less] .
 
-
-lemma sorted_wrt_dropWhile: "sorted_wrt R xs \<Longrightarrow> sorted_wrt R (dropWhile P xs)"
-  by (auto dest: sorted_wrt_drop simp: dropWhile_eq_drop)
-
-lemma sorted_wrt_takeWhile: "sorted_wrt R xs \<Longrightarrow> sorted_wrt R (takeWhile P xs)"
-  by (subst takeWhile_eq_take) (auto dest: sorted_wrt_take)
-
 lemma distinct_if_sorted_wrt_asymp:
   assumes "asymp_on (set xs) R" and "sorted_wrt R xs"
   shows "distinct xs"
@@ -85,16 +78,7 @@ lemma dropWhile_append_eq_rhs:
     "\<And>x. x \<in> set xs \<Longrightarrow> P x" and
     "\<And>y. y \<in> set ys \<Longrightarrow> \<not> P y"
   shows "dropWhile P (xs @ ys) = ys"
-  using assms
-proof (induction xs)
-  case Nil
-  then show ?case
-    by (metis append_Nil dropWhile_eq_self_iff hd_in_set)
-next
-  case (Cons x xs)
-  then show ?case
-    by (metis dropWhile_append dropWhile_cong dropWhile_eq_self_iff member_rec(2))
-qed
+  using assms by simp
 
 lemma mem_set_dropWhile_conv_if_list_sorted_and_pred_monotone:
   fixes R :: "'a \<Rightarrow> 'a \<Rightarrow> bool" and xs :: "'a list" and P :: "'a \<Rightarrow> bool"
@@ -138,40 +122,7 @@ lemma ball_set_dropWhile_if_sorted_wrt_and_monotone_on:
   fixes R :: "'a \<Rightarrow> 'a \<Rightarrow> bool" and xs :: "'a list" and P :: "'a \<Rightarrow> bool"
   assumes "sorted_wrt R xs" and "monotone_on (set xs) R (\<ge>) P"
   shows "\<forall>x \<in> set (dropWhile P xs). \<not> P x"
-  using assms
-proof (induction xs)
-  case Nil
-  show ?case
-    by simp
-next
-  case (Cons x xs)
-  have "\<forall>y \<in> set xs. R x y" and "sorted_wrt R xs"
-    using \<open>sorted_wrt R (x # xs)\<close> by simp_all
-
-  moreover have "monotone_on (set xs) R (\<ge>) P"
-    using \<open>monotone_on (set (x # xs)) R (\<ge>) P\<close>
-    by (metis monotone_on_subset set_subset_Cons)
-
-  ultimately have "\<forall>x\<in>set (dropWhile P xs). \<not> P x"
-    using Cons.IH \<open>sorted_wrt R xs\<close> by metis
-
-  moreover have "\<not> P x \<Longrightarrow> \<not> P y" if "y \<in> set xs" for y
-  proof -
-    have "x \<in> set (x # xs)"
-      by simp
-    moreover have "y \<in> set (x # xs)"
-      using \<open>y \<in> set xs\<close> by simp
-    moreover have "R x y"
-      using \<open>\<forall>y\<in>set xs. R x y\<close> \<open>y \<in> set xs\<close> by metis
-    ultimately have "P y \<le> P x"
-      using \<open>monotone_on (set (x # xs)) R (\<ge>) P\<close>[unfolded monotone_on_def] by metis
-    thus "\<not> P x \<Longrightarrow> \<not> P y"
-      by simp
-  qed
-
-  ultimately show ?case
-    by simp
-qed
+  using mem_set_dropWhile_conv_if_list_sorted_and_pred_monotone[OF assms] by metis
 
 lemma filter_set_eq_filter_set_minus_singleton:
   assumes "\<not> P y"
@@ -192,17 +143,8 @@ lemma Collect_eq_image_filter_Collect_if_bij_betw:
   using ex1_subset_eq_image_if_bij_betw[OF bij sub]
   by (smt (verit, best) Collect_cong image_def in_mono mem_Collect_eq)
 
-lemma (in linorder) ex1_sorted_list_for_set_if_finite:
-  "finite X \<Longrightarrow> \<exists>!xs. sorted_wrt (<) xs \<and> set xs = X"
-  by (metis local.sorted_list_of_set.finite_set_strict_sorted local.strict_sorted_equal)
-
 lemma restrict_map_ident_if_dom_subset: "dom \<M> \<subseteq> A \<Longrightarrow> restrict_map \<M> A = \<M>"
   by (metis domIff ext in_mono restrict_map_def)
-
-lemma dropWhile_ident_if_pred_always_false:
-  assumes "\<And>x. x \<in> set xs \<Longrightarrow> \<not> P x"
-  shows "dropWhile P xs = xs"
-  using assms dropWhile_eq_self_iff hd_in_set by auto
 
 
 subsection \<open>Move to \<^theory>\<open>HOL.Transitive_Closure\<close>\<close>

@@ -1,0 +1,34 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+
+\begin{document}
+
+\title{Power Operator for Lists}
+\author{\v{S}t\v{e}pán Holub, Martin Ra\v{s}ka, \v{S}t\v{e}pán Starosta and Tobias Nipkow}
+\maketitle
+
+\begin{abstract}
+  This entry defines the power operator \verb!xs ^^ n!, the \texttt{n}-fold
+  concatenation of \texttt{xs} with itself.
+
+  Much of the theory is taken from the AFP entry
+  \href{https://www.isa-afp.org/entries/Combinatorics_Words.html}
+  {Combinatorics on Words Basics} where
+  the operator is called \verb!^@!. This new entry uses the
+  standard overloaded \verb!^^! syntax and is aimed at becoming the
+  central theory of the power operator for lists that can be extended easily.
+\end{abstract}
+
+% include generated text of all theories
+\input{session}
+
+\end{document}

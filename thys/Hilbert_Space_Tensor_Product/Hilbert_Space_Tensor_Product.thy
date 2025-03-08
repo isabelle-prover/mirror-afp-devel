@@ -344,6 +344,7 @@ lemma tensor_ell2_left_scale: \<open>tensor_ell2_left (a *\<^sub>C \<psi>) = a *
 
 lemma tensor_ell2_right_0[simp]: \<open>tensor_ell2_right 0 = 0\<close>
   by (auto intro!: cblinfun_eqI)
+
 lemma tensor_ell2_left_0[simp]: \<open>tensor_ell2_left 0 = 0\<close>
   by (auto intro!: cblinfun_eqI)
 
@@ -1878,6 +1879,14 @@ lemma tc_tensor_0_left[simp]: \<open>tc_tensor 0 x = 0\<close>
   by transfer' simp
 lemma tc_tensor_0_right[simp]: \<open>tc_tensor x 0 = 0\<close>
   by transfer' simp
+
+lemma sandwich_tensor_ell2_right': \<open>sandwich (tensor_ell2_right \<psi>) *\<^sub>V a = a \<otimes>\<^sub>o selfbutter \<psi>\<close>
+  apply (rule cblinfun_cinner_tensor_eqI)
+  by (simp add: sandwich_apply tensor_op_ell2 cblinfun.scaleC_right)
+
+lemma sandwich_tensor_ell2_left': \<open>sandwich (tensor_ell2_left \<psi>) *\<^sub>V a = selfbutter \<psi> \<otimes>\<^sub>o a\<close>
+  apply (rule cblinfun_cinner_tensor_eqI)
+  by (simp add: sandwich_apply tensor_op_ell2 cblinfun.scaleC_right)
 
 
 subsection \<open>Tensor product of subspaces\<close>

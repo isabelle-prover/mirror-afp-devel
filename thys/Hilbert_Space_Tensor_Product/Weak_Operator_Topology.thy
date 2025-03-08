@@ -992,7 +992,7 @@ lemma infsum_wot_boundedI:
   assumes bounded: \<open>\<And>F. finite F \<Longrightarrow> F \<subseteq> X \<Longrightarrow> sum f F \<le> B\<close>
   assumes pos: \<open>\<And>x. x \<in> X \<Longrightarrow> f x \<ge> 0\<close>
   shows \<open>infsum_in cweak_operator_topology f X \<le> B\<close>
-proof (rule less_eq_cblinfunI)
+proof (rule cblinfun_leI)
   fix h
   have summ: \<open>summable_on_in cweak_operator_topology f X\<close>
     using assms by (rule summable_wot_boundedI)
@@ -1025,6 +1025,44 @@ proof (rule less_eq_cblinfunI)
   finally show \<open>h \<bullet>\<^sub>C (infsum_in cweak_operator_topology f X *\<^sub>V h) \<le> h \<bullet>\<^sub>C (B *\<^sub>V h)\<close>
     by -
 qed
+
+lemma summable_imp_wot_summable: 
+  assumes \<open>f summable_on A\<close>
+  shows \<open>summable_on_in cweak_operator_topology f A\<close>
+  apply (rule summable_on_in_weaker_topology)
+   apply (rule cweak_operator_topology_weaker_than_euclidean)
+  by (simp add: assms summable_on_euclidean_eq)
+
+lemma triangle_ineq_wot:
+  assumes \<open>f abs_summable_on A\<close>
+  shows \<open>norm (infsum_in cweak_operator_topology f A) \<le> (\<Sum>\<^sub>\<infinity>x\<in>A. norm (f x))\<close>
+proof -
+  wlog summable: \<open>summable_on_in cweak_operator_topology f A\<close>
+    by (simp add: infsum_nonneg negation not_summable_infsum_in_0)
+  have \<open>cmod (\<psi> \<bullet>\<^sub>C (infsum_in cweak_operator_topology f A *\<^sub>V \<phi>)) \<le> (\<Sum>\<^sub>\<infinity>x\<in>A. norm (f x))\<close>
+    if \<open>norm \<psi> = 1\<close> and \<open>norm \<phi> = 1\<close> for \<psi> \<phi>
+  proof -
+    have sum1: \<open>(\<lambda>a. \<psi> \<bullet>\<^sub>C (f a *\<^sub>V \<phi>)) abs_summable_on A\<close>
+      by (metis local.summable summable_on_iff_abs_summable_on_complex summable_on_in_cweak_operator_topology_pointwise)
+    have \<open>\<psi> \<bullet>\<^sub>C infsum_in cweak_operator_topology f A \<phi> = (\<Sum>\<^sub>\<infinity>a\<in>A. \<psi> \<bullet>\<^sub>C f a \<phi>)\<close>
+      using summable by (rule infsum_in_cweak_operator_topology_pointwise)
+    then have \<open>cmod (\<psi> \<bullet>\<^sub>C (infsum_in cweak_operator_topology f A *\<^sub>V \<phi>)) = norm (\<Sum>\<^sub>\<infinity>a\<in>A. \<psi> \<bullet>\<^sub>C f a \<phi>)\<close>
+      by presburger
+    also have \<open>\<dots> \<le> (\<Sum>\<^sub>\<infinity>a\<in>A. norm (\<psi> \<bullet>\<^sub>C f a \<phi>))\<close>
+      apply (rule norm_infsum_bound)
+      by (metis summable summable_on_iff_abs_summable_on_complex
+          summable_on_in_cweak_operator_topology_pointwise)
+    also have \<open>\<dots> \<le> (\<Sum>\<^sub>\<infinity>a\<in>A. norm (f a))\<close>
+      using sum1 assms apply (rule infsum_mono)
+      by (smt (verit) complex_inner_class.Cauchy_Schwarz_ineq2 mult_cancel_left1 mult_cancel_right1 norm_cblinfun that(1,2))
+    finally show ?thesis
+      by -
+  qed
+  then show ?thesis
+    apply (rule_tac norm_cblinfun_bound_both_sides)
+    by (auto simp: infsum_nonneg)
+qed
+
 
 unbundle no cblinfun_syntax
 

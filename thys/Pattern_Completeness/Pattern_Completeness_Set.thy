@@ -482,6 +482,7 @@ if "\<And> t l. (t,l) \<in> mp \<Longrightarrow> l = Var y \<and> root t = Some 
 inductive mp_fail :: "('f,'v,'s)match_problem_set \<Rightarrow> bool" where
   mp_clash: "(f,length ts) \<noteq> (g,length ls) \<Longrightarrow> mp_fail (insert (Fun f ts, Fun g ls) mp)" 
 | mp_clash': "Conflict_Clash s t \<Longrightarrow> mp_fail ({(s,Var x),(t, Var x)} \<union> mp)"
+| mp_clash_sort: "\<T>(C,\<V>) s \<noteq> \<T>(C,\<V>) t \<Longrightarrow> mp_fail ({(s,Var x),(t, Var x)} \<union> mp)"
 
 inductive pp_step :: "('f,'v,'s)pat_problem_set \<Rightarrow> ('f,'v,'s)pat_problem_set \<Rightarrow> bool"
 (infix \<open>\<Rightarrow>\<^sub>s\<close> 50) where
@@ -696,6 +697,89 @@ next
       have "\<sigma> y : snd y in \<T>(C,X)" "\<sigma> z : snd z in \<T>(C,X)"
         by (auto intro!: *(2)[THEN sorted_mapD] simp: hastype_restrict tvars_match_def)
       with ty yz show False by (auto simp: has_same_type)
+    qed
+  qed
+next
+  case *: (mp_clash_sort s t x mp)
+  show ?case
+  proof
+    assume "match_complete_wrt \<sigma> ({(s, Var x), (t, Var x)} \<union> mp)"
+    from this[unfolded match_complete_wrt_def]
+    have eq: "s \<cdot> \<sigma> = t \<cdot> \<sigma>" by auto
+    define V where "V = tvars_match ({(s, Var x), (t, Var x)} \<union> mp)" 
+    from *(2) have \<sigma>: "\<sigma> :\<^sub>s \<V> |` V \<rightarrow> \<T>(C,X)" unfolding V_def .
+    have vars: "vars s \<union> vars t \<subseteq> V" unfolding V_def tvars_match_def by auto
+    show False
+    proof (cases "None \<in> {\<T>(C,\<V>) s, \<T>(C,\<V>) t}")
+      case False
+      from False obtain \<sigma>s \<sigma>t where st: "s : \<sigma>s in \<T>(C,\<V>)" "t : \<sigma>t in \<T>(C,\<V>)" 
+        by (cases "\<T>(C,\<V>) s"; cases "\<T>(C,\<V>) t"; auto simp: hastype_def)
+      from st(1) vars \<sigma> have "(s \<cdot> \<sigma>) : \<sigma>s in  \<T>(C,X)" 
+        by (meson le_supE restrict_map_mono_right sorted_algebra.eval_has_same_type_vars sorted_map_cmono
+            term.sorted_algebra_axioms)
+      moreover from st(2) vars \<sigma> have "(t \<cdot> \<sigma>) : \<sigma>t in  \<T>(C,X)" 
+        by (meson le_supE restrict_map_mono_right sorted_algebra.eval_has_same_type_vars sorted_map_cmono
+            term.sorted_algebra_axioms)
+      ultimately have "\<sigma>s = \<sigma>t" unfolding eq hastype_def by auto
+      with st *(1) show False by (auto simp: hastype_def)
+    next
+      case True
+      have "\<exists> s \<sigma>s. vars s \<subseteq> V \<and> s \<cdot> \<sigma> : \<sigma>s in \<T>(C,X) \<and> \<T>(C,\<V>) s = None" 
+      proof (cases "\<T>(C,\<V>) s")
+        case None
+        with *(1) obtain \<sigma>t where "t : \<sigma>t in \<T>(C,\<V>)" by (cases "\<T>(C,\<V>) t"; force simp: hastype_def)
+        from this vars \<sigma> have "(t \<cdot> \<sigma>) : \<sigma>t in  \<T>(C,X)" 
+          by (meson le_supE restrict_map_mono_right sorted_algebra.eval_has_same_type_vars sorted_map_cmono
+            term.sorted_algebra_axioms)
+        from this[folded eq] None vars show ?thesis by auto
+      next
+        case (Some \<sigma>s)
+        with True have None: "\<T>(C,\<V>) t = None" and Some: "s : \<sigma>s in \<T>(C,\<V>)" by (auto simp: hastype_def)
+        from Some vars \<sigma> have "(s \<cdot> \<sigma>) : \<sigma>s in  \<T>(C,X)" 
+          by (meson le_supE restrict_map_mono_right sorted_algebra.eval_has_same_type_vars sorted_map_cmono
+            term.sorted_algebra_axioms)
+        from this[unfolded eq] None vars show ?thesis by auto
+      qed
+      then obtain s \<sigma>s where "vars s \<subseteq> V" "s \<cdot> \<sigma>: \<sigma>s in \<T>(C,X)" "\<T>(C,\<V>) s = None" by auto
+      thus False
+      proof (induct s arbitrary: \<sigma>s)
+        case (Fun f ss \<tau>)
+        hence mem: "Fun f (map (\<lambda>s. s \<cdot> \<sigma>) ss) : \<tau> in \<T>(C,X)" by auto
+        from this[unfolded Fun_hastype]  
+        obtain \<tau>s where f: "f : \<tau>s \<rightarrow> \<tau> in C" and args: "map (\<lambda>s. s \<cdot> \<sigma>) ss :\<^sub>l \<tau>s in \<T>(C,X)" by auto
+        {
+          fix s 
+          assume "s \<in> set ss" 
+          hence "s \<cdot> \<sigma> \<in> set (map (\<lambda>s. s \<cdot> \<sigma>) ss)" by auto
+          hence "\<exists> \<tau>. s \<cdot> \<sigma> : \<tau> in \<T>(C,X)"
+            by (metis Fun_in_dom_imp_arg_in_dom mem hastype_imp_dom in_dom_hastypeE)
+        } note arg = this
+        show ?case
+        proof (cases "\<exists> s \<in> set ss. \<T>(C,\<V>) s = None") 
+          case True
+          then obtain s where s: "s \<in> set ss" and None: "\<T>(C,\<V>) s = None" by auto
+          from arg[OF s] obtain \<tau> where Some: "s \<cdot> \<sigma> : \<tau> in \<T>(C,X) " by auto
+          from Fun(1)[OF s _ Some None] s Fun(2) show False by auto
+        next
+          case False
+          have "Fun f ss : \<tau> in \<T>(C,\<V>)" 
+          proof (intro Fun_hastypeI[OF f], unfold list_all2_conv_all_nth, intro conjI allI impI)
+            show "length ss = length \<tau>s" using args[unfolded list_all2_conv_all_nth] by auto
+            fix i
+            assume i: "i < length ss" 
+            hence ssi: "ss ! i \<in> set ss" by auto
+            with False obtain \<tau>i where type: "ss ! i : \<tau>i in \<T>(C,\<V>)" by (auto simp: hastype_def)
+            from ssi Fun(2) have vars: "vars (ss ! i) \<subseteq> V" by auto
+            from vars type \<sigma> have "ss ! i \<cdot> \<sigma> : \<tau>i in \<T>(C,X)"
+              by (meson restrict_map_mono_right sorted_map_cmono term.eval_has_same_type_vars)
+            moreover from args i have "ss ! i \<cdot> \<sigma> : \<tau>s ! i in \<T>(C,X)"
+              unfolding list_all2_conv_all_nth by auto
+            ultimately have "\<tau>i = \<tau>s ! i" by (auto simp: hastype_def)
+            with type show "ss ! i : \<tau>s ! i in \<T>(C,\<V>)" by auto
+          qed
+          with Fun(4) show False unfolding hastype_def using not_None_eq by blast
+        qed 
+      qed auto
     qed
   qed
 qed

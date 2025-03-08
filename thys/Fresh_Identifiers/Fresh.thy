@@ -19,8 +19,8 @@ possible, given a notion of distance.
 
 class fresh =
   fixes fresh :: "'a set \<Rightarrow> 'a \<Rightarrow> 'a"
-  assumes fresh_notIn: "\<And> xs x. finite xs \<Longrightarrow> fresh xs x \<notin> xs"
-  and fresh_eq: "\<And> xs x. x \<notin> xs \<Longrightarrow> fresh xs x = x"
+  assumes fresh_notIn: "finite F \<Longrightarrow> fresh F x \<notin> F"
+  and fresh_eq: "x \<notin> A \<Longrightarrow> fresh A x = x"
 
 
 text \<open>The type class \<^class>\<open>fresh\<close> is essentially the same as
@@ -35,6 +35,6 @@ the former).\<close>
 
 subclass (in fresh) infinite
   apply (standard)
-  using finite_list local.fresh_notIn by auto
+  using local.fresh_notIn by auto
 
 end

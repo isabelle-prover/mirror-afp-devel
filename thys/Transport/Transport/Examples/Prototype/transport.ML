@@ -176,9 +176,9 @@ val binding_related_rewritten = \<^binding>\<open>related'\<close>
 val binding_def_simplified = \<^binding>\<open>eq\<close>
 val binding_def_eta_expanded_simplified = \<^binding>\<open>app_eq\<close>
 
-fun note_facts (binding, mixfix) ctxt related_thm y binding_thms_attribs =
+fun note_facts attrs (binding, mixfix) ctxt related_thm y binding_thms_attribs =
   let
-    val ((_, (_, y_def)), ctxt) = Util.create_local_theory_def (binding, mixfix) [] y ctxt
+    val ((_, (_, y_def)), ctxt) = Util.create_local_theory_def (binding, mixfix) attrs y ctxt
     (*create simplified definition theorems*)
     val transport_defs = Transport_Defs.get ctxt
     val (y_def_simplified, y_def_eta_expanded_simplified) =
@@ -206,7 +206,7 @@ fun note_facts (binding, mixfix) ctxt related_thm y binding_thms_attribs =
   in Local_Theory.notes facts ctxt end
 
 (*black-box transport as described in the Transport paper*)
-fun after_qed_blackbox (binding, mixfix) [thms as [per_thm, in_dom_thm]] ctxt =
+fun after_qed_blackbox attrs (binding, mixfix) [thms as [per_thm, in_dom_thm]] ctxt =
   let
     val transport_per_thm = List.foldl (op INCR_COMP) transport_per_start_thm thms
     (*fix possibly occurring meta type variables*)
@@ -220,15 +220,15 @@ fun after_qed_blackbox (binding, mixfix) [thms as [per_thm, in_dom_thm]] ctxt =
         (binding_in_dom, in_dom_thm,
           [Util.attrib_to_src (Binding.pos_of binding) Transport_in_dom.add])
       ]
-  in note_facts (binding, mixfix) ctxt related_thm y binding_thms end
+  in note_facts attrs (binding, mixfix) ctxt related_thm y binding_thms end
 
 (*experimental white-box transport support*)
-fun after_qed_whitebox (binding, mixfix) [[related_thm]] ctxt =
+fun after_qed_whitebox attrs (binding, mixfix) [[related_thm]] ctxt =
   let
     (*fix possibly occurring meta type variables*)
     val ((_, [related_thm]), ctxt) = Variable.importT [related_thm] ctxt
     val y = Util.real_thm_concl related_thm |> dest_hom_Galois_y
-  in note_facts (binding, mixfix) ctxt related_thm y [] end
+  in note_facts attrs (binding, mixfix) ctxt related_thm y [] end
 
 fun setup_goals_blackbox ctxt (L, R, cx) maxidx =
   let
@@ -289,9 +289,9 @@ fun setup_proof ((((binding, opt_yT, mixfix), params), unfolds), whitebox) lthy 
       [PA.get_L_safe params, PA.get_R_safe params, PA.get_y_safe params] ctxt cx yT
     (*initialise goals and callback*)
     val (goals, after_qed) = if whitebox
-      then (setup_goals_whitebox ctxt (yT, L, R, cx, y) maxidx, snd ooo after_qed_whitebox)
+      then (setup_goals_whitebox ctxt (yT, L, R, cx, y) maxidx, snd ooo after_qed_whitebox [])
       (*TODO: consider y in blackbox proofs*)
-      else (setup_goals_blackbox ctxt (L, R, cx) maxidx, snd ooo after_qed_blackbox)
+      else (setup_goals_blackbox ctxt (L, R, cx) maxidx, snd ooo after_qed_blackbox [])
   in
     Proof.theorem NONE (after_qed (binding, mixfix)) [map (rpair []) goals] ctxt
     |> Proof.refine_singleton Util.split_conjunctions

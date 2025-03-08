@@ -3,7 +3,8 @@ section \<open>\<open>Positive_Operators\<close> -- Positive bounded operators\<
 theory Positive_Operators
   imports
     Ordinary_Differential_Equations.Cones
-    Misc_Tensor_Product_BO
+    Complex_Bounded_Operators.Complex_L2
+
     Strong_Operator_Topology
 begin
 
@@ -1004,7 +1005,7 @@ qed
 (* TODO Potentially move to Complex_Bounded_Linear_Functions and replace partial_isometry_square_proj by this.
         But the proof uses facts from this theory. *)
 lemma partial_isometry_iff_square_proj:
-  \<comment> \<open>@{cite conway2013course}, Exercise VIII.3.15\<close>
+  \<comment> \<open>\<^cite>\<open>conway2013course\<close>, Exercise VIII.3.15\<close>
   fixes A :: \<open>'a :: chilbert_space \<Rightarrow>\<^sub>C\<^sub>L 'b :: chilbert_space\<close>
   shows \<open>partial_isometry A \<longleftrightarrow> is_Proj (A* o\<^sub>C\<^sub>L A)\<close>
 proof (rule iffI)
@@ -1380,7 +1381,7 @@ lemma diagonal_operator_pos:
 proof (cases \<open>bdd_above (range (\<lambda>x. cmod (f x)))\<close>)
   case True
   have [simp]: \<open>csqrt (f x) = sqrt (cmod (f x))\<close> for x
-    by (simp add: Extra_Ordered_Fields.complex_of_real_cmod assms abs_pos of_real_sqrt)
+    by (simp add: complex_of_real_cmod assms abs_pos of_real_sqrt)
   have bdd: \<open>bdd_above (range (\<lambda>x. sqrt (cmod (f x))))\<close>
   proof -
     from True obtain B where \<open>cmod (f x) \<le> B\<close> for x

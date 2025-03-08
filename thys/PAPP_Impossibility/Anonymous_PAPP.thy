@@ -425,7 +425,7 @@ proof
   hence "size {#x \<in># r A. \<exists>X\<in>#G. x \<in> X#} \<ge> 1"
     using justified_proportional_representation[of A G 1] by auto
   hence "{#x \<in># r A. \<exists>X\<in>#G. x \<in> X#} \<noteq> {#}"
-    by auto
+    by force
   thus "\<exists>X x. X \<in># G \<and> x \<in> X \<and> x \<in># r A"
     by fastforce
 qed

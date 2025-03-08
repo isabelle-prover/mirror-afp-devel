@@ -878,7 +878,7 @@ proof -
     also have "\<dots> \<le> card {i. lrow \<le> i \<and> i < urow \<and> m (i, j) = x}"
       using j f by (intro card_mono) (auto simp: g_def)
     also have "\<dots> = count (mset (col m j)) x"
-      by (simp add: count_conv_size_mset mset_col filter_image_mset)
+      by (simp add: count_conv_size_mset mset_col filter_mset_image_mset)
     finally show ?thesis .
   qed
 

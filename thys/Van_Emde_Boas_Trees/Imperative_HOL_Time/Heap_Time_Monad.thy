@@ -113,7 +113,7 @@ lemma success_ifI:
 subsubsection \<open>Predicate for a simple relational calculus\<close>
 
 text \<open>
-  The \<open>effect\<close> vebt_predicate states that when a computation \<open>c\<close>
+  The \<open>effect\<close> vebt\_predicate states that when a computation \<open>c\<close>
   runs with the heap \<open>h\<close> will result in return value \<open>r\<close>
   and a heap \<open>h'\<close>, i.e.~no exception occurs. AND consume time \<open>n\<close>
 \<close>  

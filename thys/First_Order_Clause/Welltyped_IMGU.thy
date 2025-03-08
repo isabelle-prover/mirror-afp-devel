@@ -16,12 +16,13 @@ lemma Fun_arg_types:
   assumes
     "welltyped \<V> (Fun f fs) \<tau>"
     "welltyped \<V> (Fun f gs) \<tau>"
+    "length fs = length gs"
   obtains \<tau>s where
-    "\<F> f = (\<tau>s, \<tau>)"
+    "\<F> f (length fs) = (\<tau>s, \<tau>)"
     "list_all2 (welltyped \<V>) fs \<tau>s"
     "list_all2 (welltyped \<V>) gs \<tau>s"
   using assms
-  by (metis Pair_inject term.distinct(1) term.inject(2) welltyped.simps)
+  by (metis prod.inject term.distinct(1) term.inject(2) welltyped.simps)
 
 lemma welltyped_zip_option:
   assumes
@@ -35,7 +36,8 @@ proof -
   obtain \<tau>s where
     "list_all2 (welltyped \<V>) ts \<tau>s"
     "list_all2 (welltyped \<V>) ss \<tau>s"
-    using Fun_arg_types[OF assms(1, 2)].
+    using Fun_arg_types[OF assms(1, 2)]
+    by (metis assms(3) zip_option_elims(1))
 
   with assms(3) show ?thesis
   proof(induction ts ss arbitrary: \<tau>s es rule: zip_induct)

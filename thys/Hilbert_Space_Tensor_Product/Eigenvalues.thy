@@ -37,7 +37,7 @@ lemma invariant_subspace_top[simp]: \<open>invariant_subspace \<top> A\<close>
   by (simp add: invariant_subspaceI) 
 
 lemma reducing_subspace_bot[simp]: \<open>reducing_subspace \<bottom> A\<close>
-  by (metis cblinfun_image_bot eq_refl orthogonal_bot orthogonal_spaces_leq_compl reducing_subspaceI) 
+  by (metis cblinfun_image_bot eq_refl orthogonal_spaces_bot_right orthogonal_spaces_leq_compl reducing_subspaceI) 
 
 lemma reducing_subspace_top[simp]: \<open>reducing_subspace \<top> A\<close>
   by (simp add: reducing_subspace_def)

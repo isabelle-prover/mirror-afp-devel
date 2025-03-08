@@ -3,7 +3,6 @@ theory Non_Redundancy
     SCL_FOL
     Trail_Induced_Ordering
     Initial_Literals_Generalize_Learned_Literals
-    Multiset_Order_Extra
 begin
 
 context scl_fol_calculus begin

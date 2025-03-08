@@ -4,6 +4,13 @@
     <title>Sophie Tourret</title>
     <link>https://isa-afp.org/authors/tourret/</link>
     <description>AFP entries of Sophie Tourret</description><item>
+  <title>Compactness Theorem for First-Order Logic</title>
+  <link>https://isa-afp.org/entries/FOL_Compactness.html</link>
+  <pubDate>Wed, 26 Feb 2025 00:00:00 +0000</pubDate>
+  <description>Compactness Theorem for First-Order Logic in the AFP</description>
+    <category>Logic/General logic/Classical first-order logic</category>
+</item>
+<item>
   <title>Given Clause Loops</title>
   <link>https://isa-afp.org/entries/Given_Clause_Loops.html</link>
   <pubDate>Wed, 25 Jan 2023 00:00:00 +0000</pubDate>

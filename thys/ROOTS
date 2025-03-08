@@ -250,6 +250,7 @@ FFT
 FLP
 FOL-Fitting
 FOL_Axiomatic
+FOL_Compactness
 FOL_Harrison
 FOL_Seq_Calc1
 FOL_Seq_Calc2
@@ -471,6 +472,7 @@ List-Index
 List-Infinite
 List_Interleaving
 List_Inversions
+List_Power
 List_Update
 LL1_Parser
 LocalLexing
@@ -651,6 +653,7 @@ QR_Decomposition
 Quantales
 Quantales_Converse
 Quantifier_Elimination_Hybrid
+Quantum_Fourier_Transform
 Quasi_Borel_Spaces
 Quaternions
 Query_Optimization

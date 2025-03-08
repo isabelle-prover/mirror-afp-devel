@@ -15,7 +15,7 @@ homepage = "gammie_homepage"
 [contributors]
 
 [notify]
-klein = "klein_email"
+gammie = "gammie_email"
 
 [history]
 2012-03-06 = "Add some more views and revive the code generation."

@@ -13,10 +13,7 @@ the \textsf{IsaFoR} library.
 \<close>
 
 theory IsaFoR_Term_Copy
-  imports
-    First_Order_Terms.Unification
-    "HOL-Cardinals.Wellorder_Extension"
-    Knuth_Bendix_Order.KBO
+  imports Knuth_Bendix_Order.KBO
 begin
 
 text \<open>

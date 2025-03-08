@@ -2,7 +2,7 @@ theory Term_Typing
   imports Typing Context_Extra
 begin
 
-type_synonym ('f, 'ty) fun_types = "'f \<Rightarrow> 'ty list \<times> 'ty"
+type_synonym ('f, 'ty) fun_types = "'f \<Rightarrow> nat \<Rightarrow> 'ty list \<times> 'ty"
 
 locale context_compatible_typing =
   fixes Fun typed
@@ -17,7 +17,7 @@ locale context_compatible_typing =
 locale subterm_typing =
   fixes Fun typed
   assumes
-    subterm': "\<And>f ts \<tau> . typed (Fun f ts) \<tau> \<Longrightarrow> \<forall>t\<in>set ts. \<exists>\<tau>'. typed t \<tau>'"
+    subterm': "\<And>f ts \<tau>. typed (Fun f ts) \<tau> \<Longrightarrow> \<forall>t\<in>set ts. \<exists>\<tau>'. typed t \<tau>'"
 begin
 
 lemma subterm: "typed (Fun\<langle>c; t\<rangle>) \<tau> \<Longrightarrow> \<exists>\<tau>. typed t \<tau>"

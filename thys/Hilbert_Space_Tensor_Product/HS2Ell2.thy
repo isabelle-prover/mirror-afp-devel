@@ -1,7 +1,7 @@
 section \<open>\<open>HS2Ell2\<close> -- Representing any Hilbert space as $\ell_2(X)$\<close>
 
 theory HS2Ell2
-  imports Complex_Bounded_Operators.Complex_L2 Misc_Tensor_Product_BO
+  imports Complex_Bounded_Operators.Complex_L2
 begin
 
 unbundle cblinfun_syntax

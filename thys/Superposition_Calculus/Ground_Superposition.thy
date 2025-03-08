@@ -24,7 +24,7 @@ inductive superposition ::
   "'f gatom clause \<Rightarrow> 'f gatom clause \<Rightarrow> 'f gatom clause \<Rightarrow> bool"
 where
   superpositionI:
-     "E = add_mset L\<^sub>E E' \<Longrightarrow>
+   "E = add_mset L\<^sub>E E' \<Longrightarrow>
     D = add_mset L\<^sub>D D' \<Longrightarrow>
     D \<prec>\<^sub>c E \<Longrightarrow>
     \<P> \<in> {Pos, Neg} \<Longrightarrow>

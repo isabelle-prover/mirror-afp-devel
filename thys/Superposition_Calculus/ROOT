@@ -13,6 +13,8 @@ session Superposition_Calculus = Saturation_Framework_Extensions +
     Superposition_Completeness
     Superposition_Soundness
     Superposition_Example
+    Untyped_Superposition_Completeness
+    Untyped_Superposition_Soundness
   document_files
     "root.bib"
     "root.tex"

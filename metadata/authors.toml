@@ -4347,6 +4347,23 @@ host = [
 [maletzky.homepages]
 maletzky_homepage = "https://risc.jku.at/m/alexander-maletzky/"
 
+[manrique]
+name = "Pablo Manrique"
+orcid = "0009-0000-8648-5843"
+
+[manrique.emails]
+
+[manrique.emails.manrique_email]
+user = [
+  "pablomm01",
+]
+host = [
+  "gmail",
+  "com",
+]
+
+[manrique.homepages]
+
 [mansky]
 name = "Susannah Mansky"
 
@@ -7421,16 +7438,16 @@ name = "Sophie Tourret"
 
 [tourret.emails.tourret_email]
 user = [
-  "stourret",
+  "sophie",
+  "tourret",
 ]
 host = [
-  "mpi-inf",
-  "mpg",
-  "de",
+  "loria",
+  "fr",
 ]
 
 [tourret.homepages]
-tourret_homepage = "https://www.mpi-inf.mpg.de/departments/automation-of-logic/people/sophie-tourret/"
+tourret_homepage = "https://members.loria.fr/sophie.tourret/"
 
 [trachtenherz]
 name = "David Trachtenherz"

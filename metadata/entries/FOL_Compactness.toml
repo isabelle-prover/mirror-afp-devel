@@ -1,0 +1,39 @@
+title = "Compactness Theorem for First-Order Logic"
+date = 2025-02-26
+topics = [
+  "Logic/General logic/Classical first-order logic",
+]
+abstract = """
+This is a translation of a HOL Light formalization covering foundational results in first-order model theory, including the compactness of first-order logic. The original work is described in the following <a href=\"https://www.cl.cam.ac.uk/~jrh13/papers/model.html\" target=\"blank\">paper</a>:
+
+Formalizing Basic First Order Model Theory
+John Harrison
+Proceedings of the 11th International Conference on Theorem Proving in Higher Order Logics, TPHOLs'98, Springer LNCS 1497, pp. 153-170.
+
+The corresponding HOL Light theories can be found <a href=\"https://github.com/jrh13/hol-light/tree/master/Logic\" target=\"blank\">on GitHub</a>."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.tourret]
+email = "tourret_email"
+
+[authors.paulson]
+email = "paulson_email"
+
+[contributors]
+
+[notify]
+tourret = "tourret_email"
+paulson = "paulson_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = [
+  "10.1007/BFb0055135",
+]
+pubs = []

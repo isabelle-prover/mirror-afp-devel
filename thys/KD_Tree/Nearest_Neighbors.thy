@@ -39,7 +39,7 @@ lemma sorted_wrt_dist_insort_key:
 lemma sorted_wrt_dist_take_drop:
   assumes "sorted_wrt_dist p ps"
   shows "\<forall>p\<^sub>0 \<in> set (take n ps). \<forall>p\<^sub>1 \<in> set (drop n ps). dist p\<^sub>0 p \<le> dist p\<^sub>1 p"
-  using assms sorted_wrt_append[of _ "take n ps" "drop n ps"] by (simp add: sorted_wrt_dist_def)
+  using assms sorted_wrt_append unfolding sorted_wrt_dist_def by (metis append_take_drop_id)
 
 lemma sorted_wrt_dist_last_take_mono:
   assumes "sorted_wrt_dist p ps" "n \<le> length ps" "0 < n"

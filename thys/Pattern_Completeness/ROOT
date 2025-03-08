@@ -7,6 +7,9 @@ session Pattern_Completeness = First_Order_Terms +
     Certification_Monads
     Sorted_Terms
     FinFun
+  theories
+    Singleton_List
+    Finite_IDL_Solver_Interface    
   theories     
     Pattern_Completeness     
     Test_Pat_Complete 

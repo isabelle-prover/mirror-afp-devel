@@ -18,7 +18,7 @@ homepage = "merz_homepage"
 [contributors]
 
 [notify]
-klein = "klein_email"
+merz = "merz_email"
 
 [history]
 

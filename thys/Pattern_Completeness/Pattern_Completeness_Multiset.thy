@@ -62,6 +62,7 @@ inductive match_fail :: "('f,'v,'s)match_problem_mset \<Rightarrow> bool" where
   match_clash: "(f,length ts) \<noteq> (g,length ls)  
     \<Longrightarrow> match_fail (add_mset (Fun f ts, Fun g ls) mp)" 
 | match_clash': "Conflict_Clash s t \<Longrightarrow> match_fail (add_mset (s, Var x) (add_mset (t, Var x) mp))"       
+| match_clash_sort: "\<T>(C,\<V>) s \<noteq> \<T>(C,\<V>) t \<Longrightarrow> match_fail (add_mset (s, Var x) (add_mset (t, Var x) mp))"       
 
 inductive pp_step_mset :: "('f,'v,'s)pat_problem_mset \<Rightarrow> ('f,'v,'s)pats_problem_mset \<Rightarrow> bool"
   (infix \<open>\<Rightarrow>\<^sub>m\<close> 50) where
@@ -1096,6 +1097,9 @@ proof (induct mp rule: match_fail.induct)
 next
   case *: (match_clash' s t x mp)
   show ?case by (rule mp_fail_cong[OF mp_clash'], insert *, auto)
+next
+  case *: (match_clash_sort s t x mp)
+  show ?case by (rule mp_fail_cong[OF mp_clash_sort], insert *, auto)
 qed
 
 lemma P_step_set_cong: "P \<Rrightarrow>\<^sub>s Q \<Longrightarrow> P = P' \<Longrightarrow> Q = Q' \<Longrightarrow> P' \<Rrightarrow>\<^sub>s Q'" by auto

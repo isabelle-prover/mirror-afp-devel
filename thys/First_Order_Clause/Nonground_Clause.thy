@@ -143,14 +143,35 @@ lemmas obtain_from_literal_subst = obtain_from_pos_literal_subst obtain_from_neg
 
 subsection \<open>Nonground Literals - Alternative\<close>
 
-lemma uprod_literal [simp]:
-  fixes l
-  shows
-  "functional_substitution_lifting.subst (\<cdot>t) map_uprod_literal l \<sigma> = l \<cdot>l \<sigma>"
-  "functional_substitution_lifting.vars term.vars uprod_literal_to_set l = literal.vars l"
-  "grounding_lifting.from_ground term.from_ground map_uprod_literal l\<^sub>G = literal.from_ground l\<^sub>G"
-  "grounding_lifting.to_ground term.to_ground map_uprod_literal l = literal.to_ground l"
-proof -
+lemma uprod_literal_subst_eq_literal_subst: "map_uprod_literal (\<lambda>t. t \<cdot>t \<sigma>) l = l \<cdot>l \<sigma>"
+  unfolding atom.subst_def literal.subst_def
+  by auto
+
+lemma uprod_literal_vars_eq_literal_vars: "\<Union> (term.vars ` uprod_literal_to_set l) = literal.vars l"
+  unfolding literal.vars_def atom.vars_def
+  by(cases l) simp_all
+
+lemma uprod_literal_from_ground_eq_literal_from_ground:
+  "map_uprod_literal term.from_ground l\<^sub>G = literal.from_ground l\<^sub>G"
+  unfolding literal.from_ground_def atom.from_ground_def ..
+
+lemma uprod_literal_to_ground_eq_literal_to_ground:
+  "map_uprod_literal term.to_ground l = literal.to_ground l"
+  unfolding literal.to_ground_def atom.to_ground_def ..
+
+sublocale uprod_literal: term_based_lifting where
+  sub_subst = "(\<cdot>t)" and sub_vars = term.vars and map = map_uprod_literal and
+  to_set = uprod_literal_to_set and sub_to_ground = term.to_ground and
+  sub_from_ground = term.from_ground and to_ground_map = map_uprod_literal and
+  from_ground_map = map_uprod_literal and ground_map = map_uprod_literal and
+  to_set_ground = uprod_literal_to_set
+rewrites
+  uprod_literal_subst [simp]: "\<And>l \<sigma>. uprod_literal.subst l \<sigma> = literal.subst l \<sigma>" and
+  uprod_literal_vars [simp]: "\<And>l. uprod_literal.vars l = literal.vars l" and
+  uprod_literal_from_ground [simp]: "\<And>l\<^sub>G. uprod_literal.from_ground l\<^sub>G = literal.from_ground l\<^sub>G" and
+  uprod_literal_to_ground [simp]:"\<And>l. uprod_literal.to_ground l = literal.to_ground l"
+proof unfold_locales
+
   interpret term_based_lifting where
     sub_vars = term.vars and sub_subst = "(\<cdot>t)" and map = map_uprod_literal and
     to_set = uprod_literal_to_set and sub_to_ground = term.to_ground and
@@ -177,35 +198,6 @@ proof -
   show "to_ground l = literal.to_ground l"
     unfolding to_ground_def literal.to_ground_def atom.to_ground_def..
 qed
-
-lemma uprod_literal_subst_eq_literal_subst: "map_uprod_literal (\<lambda>t. t \<cdot>t \<sigma>) l = l \<cdot>l \<sigma>"
-  unfolding atom.subst_def literal.subst_def
-  by auto
-
-lemma uprod_literal_vars_eq_literal_vars: "\<Union> (term.vars ` uprod_literal_to_set l) = literal.vars l"
-  unfolding literal.vars_def atom.vars_def
-  by(cases l) simp_all
-
-lemma uprod_literal_from_ground_eq_literal_from_ground:
-  "map_uprod_literal term.from_ground l\<^sub>G = literal.from_ground l\<^sub>G"
-  unfolding literal.from_ground_def atom.from_ground_def ..
-
-lemma uprod_literal_to_ground_eq_literal_to_ground:
-  "map_uprod_literal term.to_ground l = literal.to_ground l"
-  unfolding literal.to_ground_def atom.to_ground_def ..
-
-sublocale uprod_literal: term_based_lifting where
-  sub_subst = "(\<cdot>t)" and sub_vars = term.vars and map = map_uprod_literal and
-  to_set = uprod_literal_to_set and sub_to_ground = term.to_ground and
-  sub_from_ground = term.from_ground and to_ground_map = map_uprod_literal and
-  from_ground_map = map_uprod_literal and ground_map = map_uprod_literal and
-  to_set_ground = uprod_literal_to_set
-rewrites
-  "\<And>l \<sigma>. uprod_literal.subst l \<sigma> = literal.subst l \<sigma>" and
-  "\<And>l. uprod_literal.vars l = literal.vars l" and
-  "\<And>l\<^sub>G. uprod_literal.from_ground l\<^sub>G = literal.from_ground l\<^sub>G" and
-  "\<And>l. uprod_literal.to_ground l = literal.to_ground l"
-  by unfold_locales simp_all
 
 lemma mset_literal_from_ground:
   "mset_lit (literal.from_ground l) = image_mset term.from_ground (mset_lit l)"

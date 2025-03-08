@@ -18,7 +18,7 @@ lemma eq_resolution_sound:
   shows "{D} \<TTurnstile>\<^sub>F {C}"
   using eq_resolution
 proof (cases D C rule: eq_resolution.cases)
-  case (eq_resolutionI D l D' t t' \<V> \<mu> C)
+  case (eq_resolutionI D \<V> t t' \<mu> l D' C)
 
   {
     fix I :: "'f ground_term rel" and \<gamma> :: "('f, 'v) subst"
@@ -60,9 +60,8 @@ proof (cases D C rule: eq_resolution.cases)
         by auto
     next
       show "clause.is_welltyped \<V> D"
-       using C_is_welltyped
-       unfolding
-         eq_resolution_preserves_typing[OF eq_resolution[unfolded eq_resolutionI(1, 2)]].
+        using C_is_welltyped
+        unfolding eq_resolution_preserves_typing[OF eq_resolution[unfolded eq_resolutionI(1, 2)]] .
     next
       show "term.subst.is_welltyped_on (clause.vars D) \<V> (\<mu> \<odot> \<gamma>')"
         using \<gamma>'_is_welltyped \<mu>_is_welltyped
@@ -87,7 +86,7 @@ proof (cases D C rule: eq_resolution.cases)
       moreover have "atm_of l\<^sub>G \<in> ?I"
       proof-
         have "?t\<^sub>G = ?t\<^sub>G'"
-          using eq_resolutionI(5) term_subst.is_imgu_unifies_pair
+          using eq_resolutionI(3) term_subst.is_imgu_unifies_pair
           by metis
 
         then show ?thesis
@@ -124,7 +123,7 @@ lemma eq_factoring_sound:
   shows "{D} \<TTurnstile>\<^sub>F {C}"
   using eq_factoring
 proof (cases D C rule: eq_factoring.cases)
-  case (eq_factoringI D l\<^sub>1 l\<^sub>2 D' t\<^sub>1 t\<^sub>1' t\<^sub>2 t\<^sub>2' \<mu> \<V> C)
+  case (eq_factoringI D l\<^sub>1 \<mu> t\<^sub>1 t\<^sub>1' \<V> t\<^sub>2 l\<^sub>2 D' t\<^sub>2' C)
 
   {
     fix I :: "'f ground_term rel" and \<gamma> :: "('f, 'v) subst"
@@ -157,7 +156,7 @@ proof (cases D C rule: eq_factoring.cases)
     let ?C\<^sub>G = "clause.to_ground (C \<cdot> \<gamma>')"
 
     have \<mu>_is_welltyped: "term.subst.is_welltyped_on (clause.vars D) \<V> \<mu>"
-      using eq_factoringI(9)
+      using eq_factoringI(6)
       by blast
 
     have "?D\<^sub>G \<in> clause.welltyped_ground_instances (D, \<V>)"
@@ -187,7 +186,7 @@ proof (cases D C rule: eq_factoring.cases)
       by (auto simp: true_cls_def)
 
     have [simp]: "?t\<^sub>G\<^sub>2 = ?t\<^sub>G\<^sub>1"
-      using eq_factoringI(9) term_subst.is_imgu_unifies_pair
+      using eq_factoringI(6) term_subst.is_imgu_unifies_pair
       by metis
 
     have [simp]: "?l\<^sub>G\<^sub>1 = ?t\<^sub>G\<^sub>1 \<approx> ?t\<^sub>G\<^sub>1'"
@@ -249,7 +248,7 @@ lemma superposition_sound:
   shows "{E, D} \<TTurnstile>\<^sub>F {C}"
   using superposition
 proof (cases D E C rule: superposition.cases)
-  case (superpositionI \<V>\<^sub>1 \<V>\<^sub>2 \<rho>\<^sub>1 \<rho>\<^sub>2 E D l\<^sub>1 E' l\<^sub>2 D' \<P> c\<^sub>1 t\<^sub>1 t\<^sub>1' t\<^sub>2 t\<^sub>2' \<V>\<^sub>3 \<mu> C)
+  case (superpositionI \<P> \<V>\<^sub>1 \<V>\<^sub>2 \<rho>\<^sub>1 \<rho>\<^sub>2 E D t\<^sub>1 \<V>\<^sub>3 t\<^sub>2 \<mu> c\<^sub>1 t\<^sub>1' t\<^sub>2' l\<^sub>1 l\<^sub>2 E' D' C)
 
   {
     fix I :: "'f gterm rel" and \<gamma> :: "'v \<Rightarrow> ('f, 'v) Term.term"
@@ -293,15 +292,15 @@ proof (cases D E C rule: superposition.cases)
     let ?C\<^sub>G = "clause.to_ground (C \<cdot> \<gamma>')"
 
     have \<P>_subst [simp]: "\<And>a \<sigma>. \<P> a \<cdot>l \<sigma> = \<P> (a \<cdot>a \<sigma>)"
-      using superpositionI(11)
+      using superpositionI(4)
       by auto
 
     have [simp]: "\<And>\<V> a. literal.is_welltyped \<V> (\<P> a) \<longleftrightarrow> atom.is_welltyped \<V> a"
-      using superpositionI(11)
+      using superpositionI(4)
       by (auto simp: literal_is_welltyped_iff_atm_of)
 
     have [simp]: "\<And>a. literal.vars (\<P> a) = atom.vars a"
-      using superpositionI(11)
+      using superpositionI(4)
       by auto
 
     have \<mu>_\<gamma>'_is_ground_subst:
@@ -310,7 +309,7 @@ proof (cases D E C rule: superposition.cases)
 
     have \<mu>_is_welltyped:
       "term.subst.is_welltyped_on (clause.vars (E \<cdot> \<rho>\<^sub>1) \<union> clause.vars (D \<cdot> \<rho>\<^sub>2)) \<V>\<^sub>3 \<mu>"
-      using superpositionI(15)
+      using superpositionI(11)
       by blast
 
     have D_is_welltyped: "clause.is_welltyped \<V>\<^sub>2 D"
@@ -347,8 +346,7 @@ proof (cases D E C rule: superposition.cases)
       show "term.subst.is_welltyped_on (clause.vars E) \<V>\<^sub>1 (\<rho>\<^sub>1 \<odot> \<mu> \<odot> \<gamma>')"
         using
           is_welltyped_\<mu>_\<gamma>
-          is_welltyped_\<rho>_\<mu>_\<gamma>[OF
-            superpositionI(6) _  superpositionI(18, 16)[unfolded clause.vars_subst]]
+          is_welltyped_\<rho>_\<mu>_\<gamma>[OF  superpositionI(7) _ superpositionI(23, 21)]
         by (simp add: subst_compose_assoc clause.vars_subst)
     qed
 
@@ -372,8 +370,7 @@ proof (cases D E C rule: superposition.cases)
       show "term.subst.is_welltyped_on (clause.vars D) \<V>\<^sub>2 (\<rho>\<^sub>2 \<odot> \<mu> \<odot> \<gamma>')"
         using
           is_welltyped_\<mu>_\<gamma>
-          is_welltyped_\<rho>_\<mu>_\<gamma>[OF
-            superpositionI(7) _ superpositionI(19, 17)[unfolded clause.vars_subst]]
+          is_welltyped_\<rho>_\<mu>_\<gamma>[OF superpositionI(8) _ superpositionI(24, 22)]
         by (simp add: subst_compose_assoc clause.vars_subst)
     qed
 
@@ -391,7 +388,7 @@ proof (cases D E C rule: superposition.cases)
       case False
 
       have imgu: "term.is_imgu \<mu> {{t\<^sub>1 \<cdot>t \<rho>\<^sub>1, t\<^sub>2 \<cdot>t \<rho>\<^sub>2}}"
-        using superpositionI(15)
+        using superpositionI(11)
         by blast
 
       interpret clause_entailment I
@@ -404,7 +401,7 @@ proof (cases D E C rule: superposition.cases)
         literal_entails_unfolds
         term.is_imgu_unifies_pair[OF imgu]
 
-      from literal_cases[OF superpositionI(11)]
+      from literal_cases[OF superpositionI(4)]
       have "\<not> ?I \<TTurnstile>l ?l\<^sub>G\<^sub>1 \<or> \<not> ?I \<TTurnstile>l ?l\<^sub>G\<^sub>2"
       proof cases
         case Pos: 1

@@ -23,9 +23,9 @@ sublocale ground: ground_superposition_calculus where
 rewrites
   "multiset_extension.multiset_extension (\<prec>\<^sub>t\<^sub>G) mset_lit = (\<prec>\<^sub>l\<^sub>G)" and
   "multiset_extension.multiset_extension (\<prec>\<^sub>l\<^sub>G) (\<lambda>x. x) = (\<prec>\<^sub>c\<^sub>G)" and
-  "\<And>l C. ground.is_maximal l C \<longleftrightarrow> is_maximal (literal.from_ground l) (clause.from_ground C)" and
-  "\<And>l C. ground.is_strictly_maximal l C \<longleftrightarrow>
-    is_strictly_maximal (literal.from_ground l) (clause.from_ground C)"
+  "\<And>l\<^sub>G C\<^sub>G. ground.is_maximal l\<^sub>G C\<^sub>G \<longleftrightarrow> ground_is_maximal l\<^sub>G C\<^sub>G" and
+  "\<And>l\<^sub>G C\<^sub>G. ground.is_strictly_maximal l\<^sub>G C\<^sub>G \<longleftrightarrow> ground_is_strictly_maximal l\<^sub>G C\<^sub>G"
+  unfolding is_maximal_rewrite[symmetric] is_strictly_maximal_rewrite[symmetric]
   by unfold_locales simp_all
 
 abbreviation is_inference_ground_instance_one_premise where
@@ -42,18 +42,18 @@ abbreviation is_inference_ground_instance_one_premise where
 abbreviation is_inference_ground_instance_two_premises where
   "is_inference_ground_instance_two_premises D E C \<iota>\<^sub>G \<gamma> \<rho>\<^sub>1 \<rho>\<^sub>2 \<equiv>
     case (D, E, C) of ((D, \<V>\<^sub>2), (E, \<V>\<^sub>1), (C, \<V>\<^sub>3)) \<Rightarrow>
-          term_subst.is_renaming \<rho>\<^sub>1
-        \<and> term_subst.is_renaming \<rho>\<^sub>2
-        \<and> clause.vars (E \<cdot> \<rho>\<^sub>1) \<inter> clause.vars (D \<cdot> \<rho>\<^sub>2) = {}
-        \<and> inference.is_ground (Infer [D \<cdot> \<rho>\<^sub>2, E \<cdot> \<rho>\<^sub>1] C \<cdot>\<iota> \<gamma>)
-        \<and> \<iota>\<^sub>G = inference.to_ground (Infer [D \<cdot> \<rho>\<^sub>2, E \<cdot> \<rho>\<^sub>1] C \<cdot>\<iota> \<gamma>)
-        \<and> clause.is_welltyped \<V>\<^sub>1 E
-        \<and> clause.is_welltyped \<V>\<^sub>2 D
-        \<and> term.subst.is_welltyped_on (clause.vars C) \<V>\<^sub>3 \<gamma>
-        \<and> clause.is_welltyped \<V>\<^sub>3 C
-        \<and> infinite_variables_per_type \<V>\<^sub>1
-        \<and> infinite_variables_per_type \<V>\<^sub>2
-        \<and> infinite_variables_per_type \<V>\<^sub>3"
+      term_subst.is_renaming \<rho>\<^sub>1 \<and>
+      term_subst.is_renaming \<rho>\<^sub>2 \<and>
+      clause.vars (E \<cdot> \<rho>\<^sub>1) \<inter> clause.vars (D \<cdot> \<rho>\<^sub>2) = {} \<and>
+      inference.is_ground (Infer [D \<cdot> \<rho>\<^sub>2, E \<cdot> \<rho>\<^sub>1] C \<cdot>\<iota> \<gamma>) \<and>
+      \<iota>\<^sub>G = inference.to_ground (Infer [D \<cdot> \<rho>\<^sub>2, E \<cdot> \<rho>\<^sub>1] C \<cdot>\<iota> \<gamma>) \<and>
+      clause.is_welltyped \<V>\<^sub>1 E \<and>
+      clause.is_welltyped \<V>\<^sub>2 D \<and>
+      term.subst.is_welltyped_on (clause.vars C) \<V>\<^sub>3 \<gamma> \<and>
+      clause.is_welltyped \<V>\<^sub>3 C \<and>
+      infinite_variables_per_type \<V>\<^sub>1 \<and>
+      infinite_variables_per_type \<V>\<^sub>2 \<and>
+      infinite_variables_per_type \<V>\<^sub>3"
 
 abbreviation is_inference_ground_instance where
   "is_inference_ground_instance \<iota> \<iota>\<^sub>G \<gamma> \<equiv>
@@ -88,7 +88,7 @@ lemma is_inference_ground_instance_two_premises:
 lemma ground_inference\<^sub>_concl_in_welltyped_ground_instances:
   assumes "\<iota>\<^sub>G \<in> inference_ground_instances \<iota>"
   shows "concl_of \<iota>\<^sub>G \<in> clause.welltyped_ground_instances (concl_of \<iota>)"
-proof-
+proof -
   obtain "premises" C \<V> where
     \<iota>: "\<iota> = Infer premises (C, \<V>)"
     using Calculus.inference.exhaust
@@ -103,7 +103,7 @@ qed
 lemma ground_inference_red_in_welltyped_ground_instances_of_concl:
   assumes "\<iota>\<^sub>G \<in> inference_ground_instances \<iota>"
   shows "\<iota>\<^sub>G \<in> ground.Red_I (clause.welltyped_ground_instances (concl_of \<iota>))"
-proof-
+proof -
   from assms have "\<iota>\<^sub>G \<in> ground.G_Inf"
     unfolding inference_ground_instances_def
     by blast
@@ -116,8 +116,6 @@ proof-
     using ground.Red_I_of_Inf_to_N
     by blast
 qed
-
-thm option.sel
 
 sublocale lifting:
   tiebreaker_lifting
@@ -134,8 +132,8 @@ sublocale lifting:
 proof(unfold_locales; (intro impI typed_tiebreakers.wfp typed_tiebreakers.transp)?)
 
   show "\<bottom>\<^sub>F \<noteq> {}"
-    using exists_infinite_variables_per_type[OF types_ordLeq_variables]
-    by blast
+    using obtain_infinite_variables_per_type_on''[of "{}"]
+    by auto
 next
   fix bottom
   assume "bottom \<in> \<bottom>\<^sub>F"

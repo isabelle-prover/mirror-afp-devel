@@ -3,12 +3,15 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://isa-afp.org/entries/index.json</loc>
-    <lastmod>2025-02-12T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://isa-afp.org/entries/Hilbert_Basis.html</loc>
-    <lastmod>2025-02-12T00:00:00+00:00</lastmod>
+    <lastmod>2025-02-26T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/</loc>
+    <lastmod>2025-02-26T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/FOL_Compactness.html</loc>
+    <lastmod>2025-02-26T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Hilbert_Basis.html</loc>
     <lastmod>2025-02-12T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/entries/CVM_Distinct_Elements.html</loc>
@@ -16,6 +19,12 @@
   </url><url>
     <loc>https://isa-afp.org/entries/Serializable.html</loc>
     <lastmod>2025-02-01T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/List_Power.html</loc>
+    <lastmod>2025-01-29T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Quantum_Fourier_Transform.html</loc>
+    <lastmod>2025-01-28T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/entries/Mission_Time_LTL.html</loc>
     <lastmod>2025-01-24T00:00:00+00:00</lastmod>
@@ -3637,6 +3646,8 @@
   </url><url>
     <loc>https://isa-afp.org/sessions/fol_axiomatic/</loc>
   </url><url>
+    <loc>https://isa-afp.org/sessions/fol_compactness/</loc>
+  </url><url>
     <loc>https://isa-afp.org/sessions/fol_harrison/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/fol_seq_calc1/</loc>
@@ -4353,6 +4364,8 @@
   </url><url>
     <loc>https://isa-afp.org/sessions/list_inversions/</loc>
   </url><url>
+    <loc>https://isa-afp.org/sessions/list_power/</loc>
+  </url><url>
     <loc>https://isa-afp.org/sessions/list_update/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/list-index/</loc>
@@ -4821,6 +4834,8 @@
   </url><url>
     <loc>https://isa-afp.org/authors/havle/</loc>
   </url><url>
+    <loc>https://isa-afp.org/authors/manrique/</loc>
+  </url><url>
     <loc>https://isa-afp.org/sessions/pac_checker/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/package_logic/</loc>
@@ -5024,6 +5039,8 @@
     <loc>https://isa-afp.org/sessions/quantales_converse/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/quantifier_elimination_hybrid/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/sessions/quantum_fourier_transform/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/quasi_borel_spaces/</loc>
   </url><url>

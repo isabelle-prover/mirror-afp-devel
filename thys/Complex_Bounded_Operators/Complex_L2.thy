@@ -1201,6 +1201,9 @@ proof -
     by (simp add: * )
 qed
 
+lemma separating_set_ket: \<open>separating_set bounded_clinear (range ket)\<close>
+  by (simp add: bounded_clinear_equal_ket separating_setI)
+
 subsection \<open>Butterflies\<close>
 
 lemma cspan_butterfly_ket: \<open>cspan {butterfly (ket i) (ket j)| (i::'b::finite) (j::'a::finite). True} = UNIV\<close>
@@ -1489,6 +1492,93 @@ proof (rule ccontr, unfold not_not)
     with F_geq show False
       by (smt (verit, ccfv_threshold) B sqrt_le_D)
   qed
+qed
+
+subsection \<open>Diagonal operators\<close>
+
+
+definition diagonal_operator where \<open>diagonal_operator f = 
+  (if bdd_above (range (\<lambda>x. cmod (f x))) then explicit_cblinfun (\<lambda>x y. of_bool (x=y) * f x) else 0)\<close>
+
+
+lemma diagonal_operator_exists:
+  assumes \<open>bdd_above (range (\<lambda>x. cmod (f x)))\<close>
+  shows \<open>explicit_cblinfun_exists (\<lambda>x y. of_bool (x = y) * f x)\<close>
+proof -
+  from assms obtain B where B: \<open>cmod (f x) \<le> B\<close> for x
+    by (auto simp: bdd_above_def)
+  show ?thesis
+  proof (rule explicit_cblinfun_exists_bounded)
+    fix S T :: \<open>'a set\<close> and \<psi> :: \<open>'a \<Rightarrow> complex\<close>
+    assume [simp]: \<open>finite S\<close> \<open>finite T\<close>
+    assume \<open>\<psi> a = 0\<close> if \<open>a \<notin> T\<close> for a
+    have \<open>(\<Sum>b\<in>S. (cmod (\<Sum>a\<in>T. \<psi> a *\<^sub>C (of_bool (b = a) * f b)))\<^sup>2)
+        = (\<Sum>b\<in>S. (cmod (of_bool (b \<in> T) * \<psi> b * f b))\<^sup>2)\<close>
+      apply (rule sum.cong[OF refl])
+      subgoal for b
+        apply (subst sum_single[where i=b])
+        by auto
+      by -
+    also have \<open>\<dots> = (\<Sum>b\<in>S\<inter>T. (cmod (\<psi> b * f b))\<^sup>2)\<close>
+      apply (rule sum.mono_neutral_cong_right)
+      by auto
+    also have \<open>\<dots> \<le> (\<Sum>b\<in>T. (cmod (\<psi> b * f b))\<^sup>2)\<close>
+      by (simp add: sum_mono2)
+    also have \<open>\<dots> \<le> (\<Sum>b\<in>T. B\<^sup>2 * (cmod (\<psi> b))\<^sup>2)\<close>
+      by (rule sum_mono)
+         (auto intro!: mult_left_mono  power_mono B
+               simp: norm_mult power_mult_distrib mult.commute[of "B ^ 2"])
+    also have \<open>\<dots> = B\<^sup>2 * (\<Sum>b\<in>T. (cmod (\<psi> b))\<^sup>2)\<close>
+      by (simp add: vector_space_over_itself.scale_sum_right)
+    finally
+    show \<open>(\<Sum>b\<in>S. (cmod (\<Sum>a\<in>T. \<psi> a *\<^sub>C (of_bool (b = a) * f b)))\<^sup>2)
+       \<le> B\<^sup>2 * (\<Sum>a\<in>T. (cmod (\<psi> a))\<^sup>2)\<close> .
+  qed
+qed
+
+
+lemma diagonal_operator_ket:
+  assumes \<open>bdd_above (range (\<lambda>x. cmod (f x)))\<close>
+  shows \<open>diagonal_operator f (ket x) = f x *\<^sub>C ket x\<close>
+proof -
+  have [simp]: \<open>has_ell2_norm (\<lambda>b. of_bool (b = x) * f b)\<close>
+    by (auto intro!: finite_nonzero_values_imp_summable_on simp: has_ell2_norm_def)
+  have \<open>Abs_ell2 (\<lambda>b. of_bool (b = x) * f b) = f x *\<^sub>C ket x\<close>
+    by (rule Rep_ell2_inject[THEN iffD1])
+       (auto simp: Abs_ell2_inverse scaleC_ell2.rep_eq ket.rep_eq)
+  then show ?thesis
+    by (auto intro!: simp: diagonal_operator_def assms explicit_cblinfun_ket diagonal_operator_exists)
+qed
+
+lemma diagonal_operator_invalid:
+  assumes \<open>\<not> bdd_above (range (\<lambda>x. cmod (f x)))\<close>
+  shows \<open>diagonal_operator f = 0\<close>
+  by (simp add: assms diagonal_operator_def)
+
+
+lemma diagonal_operator_adj: \<open>diagonal_operator f* = diagonal_operator (\<lambda>x. cnj (f x))\<close>
+  by (cases \<open>bdd_above (range (\<lambda>x. cmod (f x)))\<close>)
+     (auto intro!: equal_ket cinner_ket_eqI 
+           simp: diagonal_operator_ket cinner_adj_right diagonal_operator_invalid)
+
+lemma diagonal_operator_comp:
+  assumes \<open>bdd_above (range (\<lambda>x. cmod (f x)))\<close>
+  assumes \<open>bdd_above (range (\<lambda>x. cmod (g x)))\<close>
+  shows \<open>diagonal_operator f o\<^sub>C\<^sub>L diagonal_operator g = diagonal_operator (\<lambda>x. (f x * g x))\<close>
+proof -
+  have \<open>bdd_above (range (\<lambda>x. cmod (f x * g x)))\<close>
+  proof -
+    from assms(1) obtain F where \<open>cmod (f x) \<le> F\<close> for x
+      by (auto simp: bdd_above_def)
+    moreover from assms(2) obtain G where \<open>cmod (g x) \<le> G\<close> for x
+      by (auto simp: bdd_above_def)
+    ultimately have \<open>cmod (f x * g x) \<le> F * G\<close> for x
+      by (smt (verit, del_insts) mult_right_mono norm_ge_zero norm_mult ordered_comm_semiring_class.comm_mult_left_mono)
+    then show ?thesis
+      by fast
+  qed
+  then show ?thesis
+    by (auto intro!: equal_ket simp: diagonal_operator_ket assms cblinfun.scaleC_right)
 qed
 
 subsection \<open>Classical operators\<close>
