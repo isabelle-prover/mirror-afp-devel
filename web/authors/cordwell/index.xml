@@ -4,6 +4,14 @@
     <title>Katherine Kosaian</title>
     <link>https://isa-afp.org/authors/cordwell/</link>
     <description>AFP entries of Katherine Kosaian</description><item>
+  <title>Language Partitioning for Mission-time Linear Temporal Logic</title>
+  <link>https://isa-afp.org/entries/Mission_Time_LTL_Language_Partition.html</link>
+  <pubDate>Mon, 03 Mar 2025 00:00:00 +0000</pubDate>
+  <description>Language Partitioning for Mission-time Linear Temporal Logic in the AFP</description>
+    <category>Computer science/Automata and formal languages</category>
+    <category>Logic/General logic/Temporal logic</category>
+</item>
+<item>
   <title>Mission-time Linear Temporal Logic to Regular Expressions</title>
   <link>https://isa-afp.org/entries/Mission_Time_LTL_to_Regular_Expression.html</link>
   <pubDate>Fri, 24 Jan 2025 00:00:00 +0000</pubDate>

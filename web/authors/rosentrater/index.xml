@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Alec Rosentrater</title>
+    <link>https://isa-afp.org/authors/rosentrater/</link>
+    <description>AFP entries of Alec Rosentrater</description><item>
+  <title>Language Partitioning for Mission-time Linear Temporal Logic</title>
+  <link>https://isa-afp.org/entries/Mission_Time_LTL_Language_Partition.html</link>
+  <pubDate>Mon, 03 Mar 2025 00:00:00 +0000</pubDate>
+  <description>Language Partitioning for Mission-time Linear Temporal Logic in the AFP</description>
+    <category>Computer science/Automata and formal languages</category>
+    <category>Logic/General logic/Temporal logic</category>
+</item>
+
+  </channel>
+</rss>

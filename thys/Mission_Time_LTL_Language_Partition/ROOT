@@ -1,0 +1,13 @@
+chapter AFP
+
+session Mission_Time_LTL_Language_Partition = Mission_Time_LTL +
+  options [timeout = 600]
+  sessions
+    Show
+  theories
+    MLTL_Language_Partition_Algorithm
+    MLTL_Language_Partition_Proof
+    MLTL_Language_Partition_Codegen
+  document_files 
+    "root.tex"
+    "root.bib"

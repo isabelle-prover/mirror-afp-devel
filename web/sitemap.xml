@@ -3,10 +3,13 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://isa-afp.org/entries/index.json</loc>
-    <lastmod>2025-02-26T00:00:00+00:00</lastmod>
+    <lastmod>2025-03-03T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/</loc>
-    <lastmod>2025-02-26T00:00:00+00:00</lastmod>
+    <lastmod>2025-03-03T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Mission_Time_LTL_Language_Partition.html</loc>
+    <lastmod>2025-03-03T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/entries/FOL_Compactness.html</loc>
     <lastmod>2025-02-26T00:00:00+00:00</lastmod>
@@ -2744,6 +2747,8 @@
   </url><url>
     <loc>https://isa-afp.org/authors/rizaldi/</loc>
   </url><url>
+    <loc>https://isa-afp.org/authors/rosentrater/</loc>
+  </url><url>
     <loc>https://isa-afp.org/authors/campo/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/londono/</loc>
@@ -4673,6 +4678,8 @@
     <loc>https://isa-afp.org/authors/spasic/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/mission_time_ltl/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/sessions/mission_time_ltl_language_partition/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/mission_time_ltl_to_regular_expression/</loc>
   </url><url>
