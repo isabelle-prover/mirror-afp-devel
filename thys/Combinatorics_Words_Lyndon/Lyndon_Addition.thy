@@ -3,6 +3,8 @@
     Author:     Štěpán Starosta, CTU in Prague
 
 Part of Combinatorics on Words Formalized. See https://gitlab.com/formalcow/combinatorics-on-words-formalized/
+
+A version of the theory is included in the AFP. See https://www.isa-afp.org/entries/Combinatorics_Words_Lyndon.html
 *)
 
 theory Lyndon_Addition

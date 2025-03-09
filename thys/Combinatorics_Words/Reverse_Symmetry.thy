@@ -2,6 +2,8 @@
     Author:     Martin Raška, Charles University
 
 Part of Combinatorics on Words Formalized. See https://gitlab.com/formalcow/combinatorics-on-words-formalized/
+
+A version of the theory is included in the AFP. See https://www.isa-afp.org/entries/Combinatorics_Words.html
 *)
 
 theory Reverse_Symmetry
@@ -66,7 +68,7 @@ qed
 
 lemma Ex1_bij_conv: assumes "bij f" shows "(\<exists>!x. P (f x)) \<longleftrightarrow> (\<exists>!y. P y)"
 proof
-  have imp: "\<exists>!y. Q y" if bij: "bij g" and ex1: "\<exists>!x. Q (g x)" for g Q
+  have imp: "\<exists>!y. Q y" if bij: "bij g" and ex1: "\<exists>!x. Q (g x)" for Q and g :: "'c \<Rightarrow> 'd"
   proof -
     from ex1E[OF ex1, rule_format]
     obtain x where ex: "Q (g x)" and uniq: "\<And>x'. Q (g x') \<Longrightarrow> x' = x" by blast
@@ -167,7 +169,7 @@ private lemma map_Nil: "map f [] \<equiv> []"
 private lemma image_empty: "f ` Set.empty \<equiv> Set.empty"
   by simp
 
-definition COMP :: "('b \<Rightarrow> prop) \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> 'a \<Rightarrow> prop" (infixl \<open>oo\<close> 55)
+definition COMP :: "('b \<Rightarrow> prop) \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> 'a \<Rightarrow> prop" (infixl "oo" 55)
   where "F oo g \<equiv> (\<lambda>x. F (g x))"
 
 lemma COMP_assoc: "F oo (f o g) \<equiv> (F oo f) oo g"

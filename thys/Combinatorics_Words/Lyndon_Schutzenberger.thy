@@ -3,6 +3,8 @@
     Author:     Štěpán Starosta, CTU in Prague
 
 Part of Combinatorics on Words Formalized. See https://gitlab.com/formalcow/combinatorics-on-words-formalized/
+
+A version of the theory is included in the AFP. See https://www.isa-afp.org/entries/Combinatorics_Words.html
 *)
 
 theory Lyndon_Schutzenberger
@@ -26,8 +28,8 @@ The main result, proved by Lyndon and Schützenberger is that the equation has p
 In this formalization we consider the equation in words only. Then the original result can be formulated as saying that all words
 $x$, $y$ and $z$ satisfying the equality ith $2 \leq a,b,c$ pairwise commute.
 
-The result in free groups was first proved in @{cite LySch62}.
-For words, there are several proofs to be found in the literature (for instance @{cite Lo83 and Dmsi2006}).
+The result in free groups was first proved in \cite{ LySch62}.
+For words, there are several proofs to be found in the literature (for instance \cite{Lo83} and \cite{Dmsi2006}).
 The presented proof is the authors' proof.
 
 In addition, we give a full parametric solution of the equation for any $a$, $b$ and $c$.
@@ -40,11 +42,11 @@ text\<open>If $x^a$ or $y^b$ is sufficiently long, then the claim follows from t
 lemma LS_per_lemma_case1:
   assumes eq: "x\<^sup>@a\<cdot>y\<^sup>@b = z\<^sup>@c" and "0 < a" and "0 < b" and "\<^bold>|z\<^bold>| + \<^bold>|x\<^bold>| - 1 \<le> \<^bold>|x\<^sup>@a\<^bold>|"
   shows "x \<cdot> y = y \<cdot> x" and "x \<cdot> z = z \<cdot> x"
-proof
+proof  (rule nemp_comm)
   have "x\<^sup>@a \<le>p (z\<^sup>@c) \<cdot> x\<^sup>@a" "x \<^sup>@ a \<le>p x \<cdot> x \<^sup>@ a"
     unfolding eq[symmetric] shifts_rev by blast+
   hence "x\<^sup>@a \<le>p z \<cdot> x\<^sup>@a"
-    using eq pref_prod_root triv_pref by metis
+    using eq pref_pow_root triv_pref by metis
   from two_pers_1[OF this \<open>x \<^sup>@ a \<le>p x \<cdot> x \<^sup>@ a\<close> \<open>\<^bold>|z\<^bold>| + \<^bold>|x\<^bold>| - 1 \<le> \<^bold>|x \<^sup>@ a\<^bold>|\<close>, symmetric]
   show "x \<cdot> z = z \<cdot> x".
   hence "z\<^sup>@c\<cdot>x\<^sup>@a = x\<^sup>@a\<cdot>z\<^sup>@c"
@@ -177,25 +179,28 @@ proof-
   have "x \<le>p u\<cdot>w\<cdot>v"
     by (simp add: \<open>x = u \<cdot> w\<close>)
   have "period x d" using per_pref'[OF \<open>x\<noteq>\<epsilon>\<close>  \<open>period (u\<cdot>w\<cdot>v) d \<close> \<open>x \<le>p u \<cdot>w\<cdot>v\<close>].
-  hence "x \<in> (take d x)*"
-    using \<open>d dvd \<^bold>|x\<^bold>|\<close>
-    using root_divisor by blast
+  hence "x \<in> \<langle>{take d x}\<rangle>"
+    using \<open>d dvd \<^bold>|x\<^bold>|\<close>  by (rule root_divisor)
 
   hence "period u d " using \<open>x = u \<cdot> w\<close> per_pref'
     using \<open>period x d\<close> \<open>u \<noteq> \<epsilon>\<close> by blast
   have " take d x = take d u" using \<open>u\<noteq>\<epsilon>\<close>  \<open>x = u \<cdot> w\<close> pref_share_take
     by (simp add: \<open>d = gcd  \<^bold>|y\<^bold>| \<^bold>|u\<^bold>|\<close>)
   from root_divisor[OF \<open>period u d\<close> \<open>d dvd \<^bold>|u\<^bold>|\<close>, folded this]
-  have "u \<in> (take d x)*".
+  have "u \<in> \<langle>{take d x}\<rangle>".
 
 
-  hence "z \<in> (take d x)*"
-    using \<open>x\<cdot>u=z\<close> \<open>x \<in> (take d x)*\<close> add_roots by blast
-  from root_pref_cancel[OF _ root_pow_root[OF  \<open>x \<in> take d x*\<close>, of a],of "y\<^sup>@b", unfolded eq, OF root_pow_root[OF  this, of c]]
-  have "y\<^sup>@b \<in> (take d x)*".
-  from  comm_rootI[OF root_pow_root[OF  \<open>x \<in> take d x*\<close>, of a] this]
+  hence "z \<in> \<langle>{take d x}\<rangle>"
+    using \<open>x\<cdot>u=z\<close> \<open>x \<in> \<langle>{take d x}\<rangle>\<close>
+    by blast
+  from comm_rootI[OF \<open>u \<in> \<langle>{take d x}\<rangle>\<close> \<open>x \<in> \<langle>{take d x}\<rangle>\<close> ]
+  have "y\<^sup>@b \<in> \<langle>{take d x}\<rangle>"
+    using \<open>u \<cdot> w \<cdot> v = u \<cdot> x\<close>[unfolded \<open>u \<cdot> x = x \<cdot> u\<close> \<open>u \<cdot> w \<cdot> v = x \<cdot> v\<close> cancel]
+   \<open>u \<in> \<langle>{take d x}\<rangle>\<close> \<open>v \<cdot> u \<cdot> z = y \<^sup>@ b\<close> \<open>x \<in> \<langle>{take d x}\<rangle>\<close> \<open>z \<in> \<langle>{take d x}\<rangle>\<close> hull_closed
+    by metis
+  from comm_rootI[OF \<open>x \<in> \<langle>{take d x}\<rangle>\<close> this]
   show "x \<cdot> y = y \<cdot> x"
-    unfolding comm_pow_roots[OF \<open>0 < a\<close> \<open>0 < b\<close>, of x y].
+    using comm_pow_roots[OF \<open>0 < a\<close> \<open>0 < b\<close>, of x y] comm_add_exp'  by meson
 qed
 
 
@@ -222,8 +227,8 @@ proof (induction "\<^bold>|z\<^bold>| + b* \<^bold>|y\<^bold>|" arbitrary: x y z
     using lenarg[OF \<open>x\<^sup>@a\<cdot>y\<^sup>@b = z\<^sup>@c\<close>] unfolding pow_len lenmorph.
 
   show "x \<cdot> y = y \<cdot> x"
-  proof
-    assume "x \<noteq> \<epsilon>" and "y \<noteq> \<epsilon>"
+  proof  (rule nemp_comm)
+    assume "x \<noteq> \<epsilon>" and "y \<noteq> \<epsilon>" and "x \<noteq> y"
     show "x \<cdot> y = y \<cdot> x"
     proof (cases "\<^bold>|x \<^sup>@ a\<^bold>| < \<^bold>|y \<^sup>@ b\<^bold>|")
 
@@ -263,7 +268,7 @@ proof (induction "\<^bold>|z\<^bold>| + b* \<^bold>|y\<^bold>|" arbitrary: x y z
         consider (c_is_3) "c = 3" | (c_is_2) "c = 2"
           using \<open>c < 4\<close> \<open>2 \<le> c\<close> by linarith
         then show "x \<cdot> y = y \<cdot> x"
-        proof(cases)
+        proof  (cases)
           case c_is_3
           show "x \<cdot> y = y \<cdot> x"
             using
@@ -283,7 +288,7 @@ proof (induction "\<^bold>|z\<^bold>| + b* \<^bold>|y\<^bold>|" arbitrary: x y z
             using \<open>2 \<le> a\<close> unfolding a'_def by auto
           from eq2[folded \<open>Suc a' = a\<close>, unfolded pow_Suc' rassoc]  pow_Suc'[of x a', unfolded this, symmetric]
           have eq3: "x \<^sup>@ a' \<cdot> x \<cdot> y \<^sup>@ b = z \<cdot> z" and aa':"x \<^sup>@ a' \<cdot> x = x \<^sup>@ a ".
-          hence "\<^bold>|x\<^sup>@a'\<^bold>| < \<^bold>|z\<^bold>|"
+          have "\<^bold>|x\<^sup>@a'\<^bold>| < \<^bold>|z\<^bold>|"
             using \<open>Suc a' = a\<close> lenx unfolding  pow_len minus by fastforce
           hence "\<^bold>|x\<^bold>| < \<^bold>|z\<^bold>|"
             using  mult_le_mono[of 1 a' "\<^bold>|z\<^bold>|" "\<^bold>|x\<^bold>|", OF \<open>1 \<le> a'\<close>, THEN leD] unfolding pow_len
@@ -331,8 +336,8 @@ proof-
   have "0 < c" and  "0 < b"
     using  \<open>2 \<le> c\<close> \<open>2 \<le> b\<close> by auto
   have "x \<cdot> x\<^sup>@a \<cdot> y\<^sup>@b = x\<^sup>@a \<cdot> y\<^sup>@b \<cdot> x" and "y \<cdot> x\<^sup>@a \<cdot> y\<^sup>@b = x\<^sup>@a \<cdot> y\<^sup>@b \<cdot> y"
-    unfolding comm_add_exp[OF \<open>x \<cdot> y = y \<cdot> x\<close>[symmetric], of b]
-    unfolding lassoc pow_comm comm_add_exp[OF \<open>x \<cdot> y = y \<cdot> x\<close>, symmetric, of a] by blast+
+    unfolding comm_add_exp'[OF \<open>x \<cdot> y = y \<cdot> x\<close>[symmetric], of b]
+    unfolding lassoc pow_comm comm_add_exp'[OF \<open>x \<cdot> y = y \<cdot> x\<close>, symmetric, of a] by blast+
   thus "x\<cdot>z = z\<cdot>x" and "y\<cdot>z = z\<cdot>y"
     using comm_drop_exp[OF \<open>0 < c\<close>] unfolding lassoc \<open>x\<^sup>@a\<cdot>y\<^sup>@b = z\<^sup>@c\<close> by metis+
 qed
@@ -357,7 +362,7 @@ qed
 
 lemma Lyndon_Schutzenberger_prim: assumes "\<not> primitive x" and "\<not> primitive y" and "\<not> primitive (x \<cdot> y)"
   shows "x \<cdot> y = y \<cdot> x"
-proof
+proof (rule nemp_comm)
   assume "x \<noteq> \<epsilon>" and "y \<noteq> \<epsilon>"
   from not_prim_primroot_expE[OF \<open>\<not> primitive y\<close>]
   obtain m where "\<rho> y\<^sup>@m = y" and "2 \<le> m".
@@ -369,7 +374,7 @@ proof
        OF _  \<open>2 \<le> k\<close> \<open>2 \<le> m\<close> \<open>2 \<le> l\<close>]
   show "x \<cdot> y = y \<cdot> x"
     unfolding \<open>\<rho> y\<^sup>@m = y\<close> \<open>\<rho> x\<^sup>@k = x\<close> \<open>\<rho>(x \<cdot> y)\<^sup>@l = x \<cdot> y\<close>
-    comp_primroot_conv'[of x y] by blast
+    comm_primroot_conv'[of x y] by blast
 qed
 
 lemma Lyndon_Schutzenberger_rotate: assumes "x\<^sup>@c = r \<^sup>@ k \<cdot> u\<^sup>@b \<cdot> r \<^sup>@ k'"
@@ -408,9 +413,9 @@ proof-
   from lenarg[OF eq, unfolded lenmorph, unfolded pow_len]
     add_less_mono1[OF this, of "\<^bold>|y\<^bold>|",  unfolded pow_len]
   show "\<^bold>|z\<^bold>| < \<^bold>|x\<^bold>| + \<^bold>|y\<^bold>|"
-    using mult_le_mono1[OF \<open>2 \<le> l\<close>, unfolded mult_2, of "\<^bold>|z\<^bold>|"] by linarith
+    using mult_le_mono1[OF \<open>2 \<le> l\<close>, unfolded mult_2, of "\<^bold>|z\<^bold>|"] by force
   with \<open>\<^bold>|x\<^sup>@j\<^bold>| < \<^bold>|z\<^bold>| + \<^bold>|x\<^bold>|\<close>
-  show "\<^bold>|x\<^sup>@j\<^bold>| < \<^bold>|y\<^bold>| + 2*\<^bold>|x\<^bold>|" and "\<^bold>|x\<^bold>| < \<^bold>|z\<^bold>|"
+  show "\<^bold>|x\<^bold>| < \<^bold>|z\<^bold>|" and  "\<^bold>|x\<^sup>@j\<^bold>| < \<^bold>|y\<^bold>| + 2*\<^bold>|x\<^bold>|"
     unfolding \<open>j = Suc (Suc j')\<close> pow_Suc lenmorph mult_2 by linarith+
 qed
 
@@ -440,7 +445,7 @@ proof-
   hence "r \<noteq> \<epsilon>" and "q \<noteq> \<epsilon>"
     by blast+
   have "2 \<le> \<^bold>|r \<cdot> q\<^bold>|"
-    using nemp_pos_len[OF \<open>r \<noteq> \<epsilon>\<close>] nemp_pos_len[OF \<open>q \<noteq> \<epsilon>\<close>]
+    using nemp_len[OF \<open>r \<noteq> \<epsilon>\<close>] nemp_len[OF \<open>q \<noteq> \<epsilon>\<close>]
     unfolding lenmorph by linarith
   have "\<^bold>|x\<^bold>| + \<^bold>|y\<^bold>| \<ge> 4"
     unfolding x y lenmorph[symmetric] shifts
@@ -646,7 +651,7 @@ proof-
 
   have "z\<cdot>y \<noteq> y\<cdot>z"
     using non_comm
-    using comm_add_exp[of z y l, folded eq,
+    using comm_add_exp'[of z y l, folded eq,
         unfolded rassoc pow_comm, unfolded lassoc cancel_right
         \<open>j = 1\<close> pow_1]
     by blast
@@ -832,9 +837,8 @@ proof(rule iffI)
    (?cond_j2k1l2 \<and> ?sol_j2k1l2))"
   proof(cases)
     assume "x\<cdot>y = y\<cdot>x"
-    from comm_primrootE[OF this]
-    obtain r m n where "x = r \<^sup>@ m" "y = r \<^sup>@ n" "primitive r"
-      using rootE by metis
+    from comm_primrootE'[OF this]
+    obtain r m n where "x = r \<^sup>@ m" "y = r \<^sup>@ n" "primitive r".
 
     note eqs = eq[unfolded this, folded pow_mult add_exps, symmetric]
     obtain t where "z = r \<^sup>@ t"
@@ -874,7 +878,7 @@ proof(rule iffI)
     next
       case 3
       with case_j1k2_b[OF this, of "?sol_j1k2_b"]
-      have "?sol_j1k2_b" by auto
+      have "?sol_j1k2_b" by metis
       thus ?thesis
         using \<open>j = 1\<close> \<open>2 \<le> k\<close> by blast
     next
@@ -959,8 +963,8 @@ two imprimitive words @{term "x\<^sup>@j\<cdot>y\<^sup>@k"} and @{term "x\<^sup>
 only if the two words are equals, that is, if @{term "j=j'"} and @{term "k=k'"}.\<close>
 
 lemma LS_unique_same: assumes "x \<cdot> y \<noteq> y \<cdot> x"
-  and "1 \<le> j" and "1 \<le> k" and "\<not> primitive(x\<^sup>@j\<cdot>y\<^sup>@k)"
-  and "1 \<le> k'" and "\<not> primitive(x\<^sup>@j\<cdot>y\<^sup>@k')"
+  and "0 < j" and "0 < k" and "\<not> primitive(x\<^sup>@j\<cdot>y\<^sup>@k)"
+  and "0 < k'" and "\<not> primitive(x\<^sup>@j\<cdot>y\<^sup>@k')"
 shows "k = k'"
 proof(rule ccontr)
   assume "k \<noteq> k'"
@@ -973,7 +977,7 @@ proof(rule ccontr)
   then obtain dif where [symmetric]: "ka + dif = ka'" and "dif \<noteq> 0"
     using less_imp_add_positive by blast
   have "ka \<noteq> 0" and "ka' \<noteq> 0" and \<open>j \<noteq> 0\<close>
-    unfolding ka_def ka'_def using \<open>1 \<le> k\<close> \<open>1 \<le> k'\<close> \<open>1 \<le> j\<close> by force+
+    unfolding ka_def ka'_def using \<open>0 < k\<close> \<open>0 < k'\<close> \<open>0 < j\<close> by force+
 
   have "\<not> primitive(x\<^sup>@j\<cdot>y\<^sup>@ka)" "\<not> primitive(x\<^sup>@j\<cdot>y\<^sup>@ka')"
     unfolding ka_def ka'_def using assms(4) assms(6) by presburger+
@@ -1048,14 +1052,14 @@ proof-
   have per1: "x \<cdot> q \<cdot> r \<le>p (r \<cdot> q) \<cdot> x \<cdot> q \<cdot> r"
     unfolding x by comparison
   have per2: "x \<cdot> q \<cdot> r \<le>p z' \<cdot> x \<cdot> q \<cdot> r"
-    by (rule pref_prod_root[of _ _ l'],
+    by (rule pref_pow_root[of _ _ l'],
     unfold \<open>x\<cdot>y\<^sup>@k = z'\<^sup>@l'\<close>[unfolded  y  pow_pos[OF \<open>0 < k\<close>], symmetric])
     comparison
   have "(r \<cdot> q) \<cdot> z' \<noteq> z' \<cdot> (r \<cdot> q)"
   proof
     assume "(r \<cdot> q) \<cdot> z' = z' \<cdot> (r \<cdot> q)"
     hence "(r \<cdot> q) \<cdot> z'\<^sup>@l' = z'\<^sup>@l' \<cdot> r \<cdot> q"
-      by (simp add: comm_add_exp)
+      by (simp add: comm_add_exp')
     from this[unfolded z']
     have "r \<cdot> q = q \<cdot> r"
       using \<open>0 < k\<close> by mismatch
@@ -1091,18 +1095,18 @@ shows False
   using LS_unique_distinct_le[OF assms] LS_unique_distinct_le[reversed, OF assms(1,4-5,2-3)] by fastforce
 
 lemma LS_unique': assumes "x \<cdot> y \<noteq> y \<cdot> x"
-  and "1 \<le> j" and "1 \<le> k"  and "\<not> primitive(x\<^sup>@j\<cdot>y\<^sup>@k)"
-  and "1 \<le> j'" and "1 \<le> k'"  and "\<not> primitive(x\<^sup>@j'\<cdot>y\<^sup>@k')"
+  and "0 < j" and "0 < k"  and "\<not> primitive(x\<^sup>@j\<cdot>y\<^sup>@k)"
+  and "0 < j'" and "0 < k'"  and "\<not> primitive(x\<^sup>@j'\<cdot>y\<^sup>@k')"
 shows "k = k'"
 proof-
   have "j = 1 \<or> k = 1"
     using Lyndon_Schutzenberger_prim[OF pow_non_prim pow_non_prim,
         OF _ _  \<open>\<not> primitive (x \<^sup>@ j \<cdot> y \<^sup>@ k)\<close>, THEN comm_drop_exps]
-       \<open>1 \<le> j\<close> \<open>1 \<le> k\<close> \<open>x \<cdot> y \<noteq> y \<cdot> x\<close> by linarith
+       \<open>0 < j\<close> \<open>0 < k\<close> \<open>x \<cdot> y \<noteq> y \<cdot> x\<close> by linarith
   have "j' = 1 \<or> k' = 1"
     using Lyndon_Schutzenberger_prim[OF pow_non_prim pow_non_prim,
         OF _ _  \<open>\<not> primitive (x \<^sup>@ j' \<cdot> y \<^sup>@ k')\<close>, THEN comm_drop_exps]
-       \<open>1 \<le> j'\<close> \<open>1 \<le> k'\<close> \<open>x \<cdot> y \<noteq> y \<cdot> x\<close> by linarith
+       \<open>0 < j'\<close> \<open>0 < k'\<close> \<open>x \<cdot> y \<noteq> y \<cdot> x\<close> by linarith
   show "k = k'"
   proof (cases "j = j'")
     assume "j = j'"
@@ -1114,7 +1118,7 @@ proof-
     proof(rule ccontr, cases "j = 1")
       assume "k \<noteq> k'" and  "j = 1"
       hence "2 \<le> j'" and "k' = 1" and "2 \<le> k"
-        using \<open>j \<noteq> j'\<close> \<open>1 \<le> j'\<close> \<open>k \<noteq> k'\<close> \<open>1 \<le> k\<close>  \<open>j' = 1 \<or> k' = 1\<close> by auto
+        using \<open>j \<noteq> j'\<close> \<open>0 < j'\<close> \<open>k \<noteq> k'\<close> \<open>0 < k\<close>  \<open>j' = 1 \<or> k' = 1\<close> by auto
       from LS_unique_distinct[OF \<open>x \<cdot> y \<noteq> y \<cdot> x\<close>  \<open>2 \<le> j'\<close> _ \<open>2 \<le> k\<close>]
       show False
         using \<open>\<not> primitive(x\<^sup>@j'\<cdot>y\<^sup>@k')\<close>[unfolded \<open>k'=1\<close> pow_1] \<open>\<not> primitive(x\<^sup>@j\<cdot>y\<^sup>@k)\<close>[unfolded \<open>j=1\<close> pow_1]
@@ -1122,7 +1126,7 @@ proof-
     next
       assume "k \<noteq> k'" and  "j \<noteq> 1"
       hence "2 \<le> j" and "k = 1" and "2 \<le> k'" and "j' = 1"
-        using \<open>1 \<le> j\<close> \<open>j = 1 \<or> k = 1\<close> \<open>1 \<le> k'\<close> \<open>j' = 1 \<or> k' = 1\<close> by auto
+        using \<open>0 < j\<close> \<open>j = 1 \<or> k = 1\<close> \<open>0 < k'\<close> \<open>j' = 1 \<or> k' = 1\<close> by auto
       from LS_unique_distinct[OF \<open>x \<cdot> y \<noteq> y \<cdot> x\<close> \<open>2 \<le> j\<close> _ \<open>2 \<le> k'\<close>]
       show False
         using \<open>\<not> primitive(x\<^sup>@j'\<cdot>y\<^sup>@k')\<close>[unfolded \<open>j'=1\<close> pow_1] \<open>\<not> primitive(x\<^sup>@j\<cdot>y\<^sup>@k)\<close>[unfolded \<open>k=1\<close> pow_1]
@@ -1132,15 +1136,15 @@ proof-
 qed
 
 lemma LS_unique: assumes "x \<cdot> y \<noteq> y \<cdot> x"
-  and "1 \<le> j" and "1 \<le> k"  and "\<not> primitive(x\<^sup>@j\<cdot>y\<^sup>@k)"
-  and "1 \<le> j'" and "1 \<le> k'"  and "\<not> primitive(x\<^sup>@j'\<cdot>y\<^sup>@k')"
+  and "0 < j" and "0 < k"  and "\<not> primitive(x\<^sup>@j\<cdot>y\<^sup>@k)"
+  and "0 < j'" and "0 < k'"  and "\<not> primitive(x\<^sup>@j'\<cdot>y\<^sup>@k')"
 shows "j = j'" and "k = k'"
   using  LS_unique'[OF \<open>x \<cdot> y \<noteq> y \<cdot> x\<close>
-      \<open>1 \<le> j\<close> \<open>1 \<le> k\<close>  \<open>\<not> primitive (x \<^sup>@ j \<cdot> y \<^sup>@ k)\<close>
-      \<open>1 \<le> j'\<close> \<open>1 \<le> k'\<close> \<open>\<not> primitive (x \<^sup>@ j'\<cdot> y \<^sup>@ k')\<close>]
+      \<open>0 < j\<close> \<open>0 < k\<close>  \<open>\<not> primitive (x \<^sup>@ j \<cdot> y \<^sup>@ k)\<close>
+      \<open>0 < j'\<close> \<open>0 < k'\<close> \<open>\<not> primitive (x \<^sup>@ j'\<cdot> y \<^sup>@ k')\<close>]
     LS_unique'[reversed, OF \<open>x \<cdot> y \<noteq> y \<cdot> x\<close>
-      \<open>1 \<le> k\<close> \<open>1 \<le> j\<close>   \<open>\<not> primitive (x \<^sup>@ j \<cdot> y \<^sup>@ k)\<close>
-      \<open>1 \<le> k'\<close> \<open>1 \<le> j'\<close> \<open>\<not> primitive (x \<^sup>@ j'\<cdot> y \<^sup>@ k')\<close>]
+      \<open>0 < k\<close> \<open>0 < j\<close>   \<open>\<not> primitive (x \<^sup>@ j \<cdot> y \<^sup>@ k)\<close>
+      \<open>0 < k'\<close> \<open>0 < j'\<close> \<open>\<not> primitive (x \<^sup>@ j'\<cdot> y \<^sup>@ k')\<close>]
   by blast+
 
 section "The bound on the exponent in Lyndon-Schützenberger equation"
@@ -1261,7 +1265,7 @@ proof-
   proof(rule le_cases)
     assume "\<^bold>|y\<^bold>| \<le> \<^bold>|x\<^bold>|"
     then interpret LS_len_le x y 1 k l z
-      using assms by (unfold_locales, auto)
+      using assms by unfold_locales (blast, blast, force, blast+)
     from case_j1k2_exp_le[OF refl \<open>k \<ge> 2\<close>]
     show ?thesis.
   next
@@ -1275,7 +1279,7 @@ proof-
       by blast
     interpret LS_len_le y x k 1 l z'
       using \<open>\<^bold>|x\<^bold>| \<le> \<^bold>|y\<^bold>|\<close> \<open>y \<cdot> x \<noteq> x \<cdot> y\<close> \<open>y\<^sup>@k \<cdot> x = z' \<^sup>@ l\<close> \<open>2 \<le> l\<close> \<open>1 \<le> k\<close>
-      by (unfold_locales, auto)
+      by (unfold_locales) (blast, blast, force, blast+)
     from case_j2k1_exp_le[OF \<open>2 \<le> k\<close> refl]
     show ?thesis.
      qed
