@@ -158,4 +158,117 @@ qed
 lemma pow_list_in_lists: "0 < k \<Longrightarrow> u ^^ k \<in> lists B \<Longrightarrow> u \<in> lists B"
 by (metis Suc_pred in_lists_conv_set pow_list_set)
 
+text \<open>For code generation. \<close>
+(*inspired by Nat.thy*)
+context
+begin
+
+qualified definition list_pow :: "nat \<Rightarrow> 'a list \<Rightarrow> 'a  list"
+  where list_pow_code_def [code_abbrev]: "list_pow = compow"
+
+lemma [code]:
+  "list_pow (Suc n) u = u @ list_pow n u"
+  "list_pow 0 u = []"
+  by (simp_all add: list_pow_code_def)
+
+end
+
+lemma pows_list_comm: "t^^k @ t^^m = t^^m @ t^^k"
+  using add.commute pow_list_add by metis
+
+lemma comm_append_pow_list_iff: "u @ v = v @ u \<longleftrightarrow> (\<exists> r k m. u = r^^k \<and> v = r^^m)"
+    using  comm_append_are_replicate[of u v, folded pow_list_alt] pows_list_comm by auto
+
+lemma pow_list_comm_comm: assumes "0 < j" and "x^^j = y^^k" shows "x @ y = y @ x"
+proof (cases "k = 0")
+  assume "k = 0"
+  hence "x = []"
+    using assms by (simp add: pow_list_Nil_iff_Nil) 
+  thus "x @ y = y @ x"
+    by force
+next
+  assume "k \<noteq> 0"
+  from this[folded zero_less_iff_neq_zero]
+  have popy1 : "y^^k = y @ y^^(k-1)"
+    using pow_list_Suc[of "k-1" y, folded Suc_pred'[OF \<open>0 < k\<close>]] by simp
+  have popy2 : "y^^k = y^^(k-1)@y"
+    using pow_list_Suc2[of "k-1" y, folded Suc_pred'[OF \<open>0 < k\<close>]].  
+  have popx1 : "x^^j = x @ x^^(j-1)"
+    using pow_list_Suc[of "j-1" x, folded Suc_pred'[OF \<open>0 < j\<close>]].
+  have popx2 : "x^^j = x^^(j-1)@x"
+    using pow_list_Suc2[of "j-1" x, folded Suc_pred'[OF \<open>0 < j\<close>]].
+
+  have "y @ x @ x^^(j-1) @ y^^(k-1) = y @ x^^j @ y^^(k-1)"
+    unfolding popx1 append_assoc..
+  also have "... = x^^j @ x^^j"
+    unfolding \<open>x^^j = y^^k\<close> using popy1 popy2 by force
+  also have "... = x @ y^^k @ x^^(j-1)"
+    unfolding \<open>x^^j = y^^k\<close>[symmetric] using popx1 popx2 by force
+  also have "... = x @ y @ y^^(k-1) @ x^^(j-1)"
+    unfolding popy1 append_assoc..
+  finally have "(x @ y) @ y^^(k-1) @ x^^(j-1) = (y @ x) @ x^^(j-1) @ y^^(k-1)"
+    unfolding append_assoc by simp
+  thus "x @ y = y @ x"
+    using append_eq_append_conv[of "x @ y" "y @ x"] by simp
+qed
+     
+lemma comm_list_common_pow_iff: "u @ v = v @ u \<longleftrightarrow> u ^^ length v = v ^^ length u"
+proof (cases "v = []")
+  assume "v = []"
+  thus ?thesis
+    using append.left_neutral append.right_neutral list.size(3) pow_list.simps(1) pow_list_Nil by metis  
+next
+  assume "v \<noteq> []" 
+  show ?thesis
+  proof
+    assume "u @ v = v @ u"
+    then obtain r k m where "u = r^^k" "v = r^^m"
+      unfolding comm_append_pow_list_iff by blast
+    hence "r \<noteq> []"
+      using \<open>v \<noteq> []\<close> pow_list_Nil[of m] by blast 
+    show "u ^^ length v = v ^^ length u"
+      unfolding \<open>u = r^^k\<close> \<open>v = r^^m\<close> length_pow_list pow_list_mult[symmetric] 
+      eq_pow_list_iff_eq_exp[OF \<open>r \<noteq> []\<close>] by simp
+  next
+    assume "u ^^ length v = v ^^ length u"
+    show  "u @ v = v @ u"
+      by (rule pow_list_comm_comm[OF _ \<open>u ^^ length v = v ^^ length u\<close>]) (use \<open>v \<noteq> []\<close> in blast)
+  qed
+qed
+
+thm count_list_pow_list
+
+lemma rotate1_pow_list_swap: "rotate1 (u ^^ k) = (rotate1 u) ^^ k" 
+proof (cases "u = [] \<or> k = 0")
+  assume "\<not> (u = [] \<or> k = 0)"
+  hence "u^^k \<noteq> []" "u \<noteq> []" "k \<noteq> 0"
+    using pow_list_Nil_iff_0[of u k] by blast+ 
+  show "rotate1 (u ^^ k) = rotate1 u ^^ k"
+    unfolding  rotate1_hd_tl[OF \<open>u \<noteq> []\<close>] rotate1_hd_tl[OF \<open>u^^k \<noteq> []\<close>]
+    using \<open>k \<noteq> 0\<close>
+  proof (induct k, blast)
+    case (Suc k)
+    then show ?case 
+    proof (cases "k = 0", force)
+      assume "k \<noteq> 0"
+      show ?case
+      proof-
+        have "[hd u] @ tl u = u"
+          using \<open>u \<noteq> []\<close> by simp
+        have "tl (u ^^ Suc k) = tl (u^^k) @ [hd u] @ tl u"
+          unfolding pow_list_Suc2 tl_append_if \<open>[hd u] @ tl u = u\<close>
+          using \<open>k \<noteq> 0\<close> pow_list_Nil_iff_0[OF \<open>u \<noteq> []\<close>, of k] by force 
+        have "hd (u^^k) = hd u" "hd (u^^Suc k) = hd u"
+          using \<open>u \<noteq> []\<close> \<open>k \<noteq> 0\<close> hd_pow_list[folded neq0_conv] by blast+  
+        show ?case
+          using Suc.hyps[OF \<open>k \<noteq> 0\<close>] unfolding \<open>hd (u^^k) = hd u\<close> \<open>hd (u^^Suc k) = hd u\<close>
+            \<open>tl (u ^^ Suc k) = tl (u^^k) @ [hd u] @ tl u\<close> append_assoc unfolding pow_list_Suc2 by force
+      qed 
+    qed
+  qed
+qed (metis pow_list_Nil pow_list_eq_if rotate1_is_Nil_conv)
+   
+lemma rotate_pow_list_swap: "rotate n (u ^^ k) = (rotate n u) ^^ k"
+  by (induct n, force) (metis rotate_Suc rotate1_pow_list_swap)  
+
 end
