@@ -1,5 +1,25 @@
 [
  {
+  "abstract": "Building on the existing formalization of Mission-time Linear Temporal Logic (MLTL), we formalize the notions of language decomposition and language partition for MLTL. More specifically, we formalize an algorithm to compute a language partition for MLTL and formally prove its correctness. Our algorithm is executable, and we export it to Haskell via Isabelle/HOL's code generator.",
+  "authors": [
+   "Zili Wang",
+   "Katherine Kosaian",
+   "Alec Rosentrater"
+  ],
+  "link": "/entries/Mission_Time_LTL_Language_Partition.html",
+  "shortname": "Mission_Time_LTL_Language_Partition",
+  "title": "Language Partitioning for Mission-time Linear Temporal Logic",
+  "topic_links": [
+   "/topics/computer-science/automata-and-formal-languages/",
+   "/topics/logic/general-logic/temporal-logic/"
+  ],
+  "topics": [
+   "Computer science/Automata and formal languages",
+   "Logic/General logic/Temporal logic"
+  ],
+  "year": "2025"
+ },
+ {
   "abstract": "This is a translation of a HOL Light formalization covering foundational results in first-order model theory, including the compactness of first-order logic. The original work is described in the following paper: Formalizing Basic First Order Model Theory John Harrison Proceedings of the 11th International Conference on Theorem Proving in Higher Order Logics, TPHOLs'98, Springer LNCS 1497, pp. 153-170. The corresponding HOL Light theories can be found on GitHub.",
   "authors": [
    "Sophie Tourret",

@@ -4,6 +4,14 @@
     <title>Computer science/Automata and formal languages</title>
     <link>https://isa-afp.org/topics/computer-science/automata-and-formal-languages/</link>
     <description>AFP entries in Automata and formal languages</description><item>
+  <title>Language Partitioning for Mission-time Linear Temporal Logic</title>
+  <link>https://isa-afp.org/entries/Mission_Time_LTL_Language_Partition.html</link>
+  <pubDate>Mon, 03 Mar 2025 00:00:00 +0000</pubDate>
+  <description>Language Partitioning for Mission-time Linear Temporal Logic in the AFP</description>
+    <category>Computer science/Automata and formal languages</category>
+    <category>Logic/General logic/Temporal logic</category>
+</item>
+<item>
   <title>Power Operator for Lists</title>
   <link>https://isa-afp.org/entries/List_Power.html</link>
   <pubDate>Wed, 29 Jan 2025 00:00:00 +0000</pubDate>
