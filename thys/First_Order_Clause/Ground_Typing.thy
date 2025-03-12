@@ -18,7 +18,7 @@ begin
 abbreviation typed where "typed \<equiv> Ground_Typing.typed \<F>"
 abbreviation welltyped where "welltyped \<equiv> Ground_Typing.welltyped \<F>"
 
-sublocale explicit_typing where typed = typed and welltyped = welltyped
+sublocale base_typing where typed = typed and welltyped = welltyped
 proof unfold_locales
 
   show "right_unique typed"
@@ -107,13 +107,13 @@ next
 
   assume "welltyped (GFun f ts) \<tau>"
 
-  then show "\<forall>t\<in>set ts. is_welltyped t"
+  then show "\<forall>t\<in>set ts. \<exists>\<tau>'. welltyped t \<tau>'"
     by (metis gterm.inject in_set_conv_nth list_all2_conv_all_nth welltyped.simps)
 next
   fix t
 
   show "is_typed t"
-    by (cases t) (meson surj_pair typed.intros)
+    by (cases t) (simp add: split_pairs2 typed.simps)
 qed
 
 end

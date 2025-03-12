@@ -22,7 +22,7 @@ lemma ground_superposition_preserves_typing:
   shows "clause.is_welltyped C"
   using assms
   by (cases rule: superposition.cases) (auto 4 3)
-
+  
 lemma ground_eq_resolution_preserves_typing:
   assumes "eq_resolution D C" "clause.is_welltyped D"
   shows "clause.is_welltyped C"

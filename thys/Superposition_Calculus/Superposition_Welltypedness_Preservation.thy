@@ -15,7 +15,7 @@ lemma eq_factoring_preserves_typing:
   assumes "eq_factoring (D, \<V>) (C, \<V>)"
   shows "clause.is_welltyped \<V> D \<longleftrightarrow> clause.is_welltyped \<V> C"
   using assms
-  by (cases "(D, \<V>)" "(C, \<V>)" rule: eq_factoring.cases) fastforce
+  by (cases "(D, \<V>)" "(C, \<V>)" rule: eq_factoring.cases) force
 
 lemma superposition_preserves_typing_C:
   assumes
@@ -28,7 +28,7 @@ proof (cases "(D, \<V>\<^sub>2)" "(E, \<V>\<^sub>1)" "(C, \<V>\<^sub>3)" rule: s
   case (superpositionI \<P> \<rho>\<^sub>1 \<rho>\<^sub>2 t\<^sub>1 t\<^sub>2 \<mu> c\<^sub>1 t\<^sub>1' t\<^sub>2' l\<^sub>1 l\<^sub>2 E' D')
 
   then have welltyped_\<mu>:
-    "term.subst.is_welltyped_on (clause.vars (E \<cdot> \<rho>\<^sub>1) \<union> clause.vars (D \<cdot> \<rho>\<^sub>2)) \<V>\<^sub>3 \<mu>"
+    "is_welltyped_on (clause.vars (E \<cdot> \<rho>\<^sub>1) \<union> clause.vars (D \<cdot> \<rho>\<^sub>2)) \<V>\<^sub>3 \<mu>"
     by meson
 
   have "clause.is_welltyped \<V>\<^sub>3 (E \<cdot> \<rho>\<^sub>1)"
@@ -67,7 +67,7 @@ proof (cases "(D, \<V>\<^sub>2)" "(E, \<V>\<^sub>1)" "(C, \<V>\<^sub>3)" rule: s
   case (superpositionI \<P> \<rho>\<^sub>1 \<rho>\<^sub>2 t\<^sub>1 t\<^sub>2 \<mu> c\<^sub>1 t\<^sub>1' t\<^sub>2' l\<^sub>1 l\<^sub>2 E' D')
 
   have \<mu>_is_welltyped:
-    "term.subst.is_welltyped_on (clause.vars (E \<cdot> \<rho>\<^sub>1) \<union> clause.vars (D \<cdot> \<rho>\<^sub>2)) \<V>\<^sub>3 \<mu>"
+    "is_welltyped_on (clause.vars (E \<cdot> \<rho>\<^sub>1) \<union> clause.vars (D \<cdot> \<rho>\<^sub>2)) \<V>\<^sub>3 \<mu>"
     using superpositionI(8)
     by blast
 
@@ -108,7 +108,7 @@ proof (cases "(D, \<V>\<^sub>2)" "(E, \<V>\<^sub>1)" "(C, \<V>\<^sub>3)" rule: s
 
         moreover obtain \<tau>' where \<tau>': "welltyped \<V>\<^sub>3 (t\<^sub>2' \<cdot>t \<rho>\<^sub>2) \<tau>'"
         proof-
-          have \<mu>_is_welltyped: "term.subst.is_welltyped_on (term.vars ((c\<^sub>1 \<cdot>t\<^sub>c \<rho>\<^sub>1)\<langle>t\<^sub>2' \<cdot>t \<rho>\<^sub>2\<rangle>)) \<V>\<^sub>3 \<mu>"
+          have \<mu>_is_welltyped: "is_welltyped_on (term.vars ((c\<^sub>1 \<cdot>t\<^sub>c \<rho>\<^sub>1)\<langle>t\<^sub>2' \<cdot>t \<rho>\<^sub>2\<rangle>)) \<V>\<^sub>3 \<mu>"
             using \<mu>_is_welltyped superpositionI(1)
             unfolding superpositionI
             by auto
@@ -119,7 +119,7 @@ proof (cases "(D, \<V>\<^sub>2)" "(E, \<V>\<^sub>1)" "(C, \<V>\<^sub>3)" rule: s
             by auto
 
           then show ?thesis
-            unfolding term.welltyped.explicit_subst_stability[OF \<mu>_is_welltyped]
+            unfolding term.welltyped.subst_stability[OF \<mu>_is_welltyped]
             using that term.welltyped.subterm
             by meson
         qed
@@ -130,7 +130,7 @@ proof (cases "(D, \<V>\<^sub>2)" "(E, \<V>\<^sub>1)" "(C, \<V>\<^sub>3)" rule: s
             using
               \<tau> \<tau>'
               superpositionI(19)
-              term.welltyped.explicit_typed_renaming[OF superpositionI(5)]
+              term.welltyped.typed_renaming[OF superpositionI(5)]
             unfolding superpositionI
             by(auto simp: Set.ball_Un)
 
@@ -178,7 +178,7 @@ proof (cases "(D, \<V>\<^sub>2)" "(E, \<V>\<^sub>1)" "(C, \<V>\<^sub>3)" rule: s
     by auto
 
   have \<mu>_is_welltyped:
-    "term.subst.is_welltyped_on (clause.vars (E \<cdot> \<rho>\<^sub>1) \<union> clause.vars (D \<cdot> \<rho>\<^sub>2)) \<V>\<^sub>3 \<mu>"
+    "is_welltyped_on (clause.vars (E \<cdot> \<rho>\<^sub>1) \<union> clause.vars (D \<cdot> \<rho>\<^sub>2)) \<V>\<^sub>3 \<mu>"
     using superpositionI(8)
     by blast
 
@@ -214,7 +214,7 @@ proof (cases "(D, \<V>\<^sub>2)" "(E, \<V>\<^sub>1)" "(C, \<V>\<^sub>3)" rule: s
       proof-
 
         have \<mu>_is_welltyped:
-          "term.subst.is_welltyped_on
+          "is_welltyped_on
             (clause.vars (add_mset (\<P> (Upair (c\<^sub>1 \<cdot>t\<^sub>c \<rho>\<^sub>1)\<langle>t\<^sub>2' \<cdot>t \<rho>\<^sub>2\<rangle> (t\<^sub>1' \<cdot>t \<rho>\<^sub>1))) (E' \<cdot> \<rho>\<^sub>1 + D' \<cdot> \<rho>\<^sub>2)))
              \<V>\<^sub>3 \<mu>"
           using \<mu>_is_welltyped
@@ -241,7 +241,7 @@ proof (cases "(D, \<V>\<^sub>2)" "(E, \<V>\<^sub>1)" "(C, \<V>\<^sub>3)" rule: s
       then show ?thesis
         using literal.is_welltyped.typed_renaming[OF superpositionI(4) \<V>\<^sub>1_\<V>\<^sub>3]
         unfolding superpositionI
-        by simp
+        by force
     qed
 
     ultimately show ?thesis
@@ -258,7 +258,7 @@ lemma superposition_preserves_typing:
     superposition_preserves_typing_D
     superposition_preserves_typing_E
     assms
-  by blast
+  by fast
 
 end
 

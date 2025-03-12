@@ -43,7 +43,7 @@ proof-
      "\<forall>C\<^sub>G \<in> ?N\<^sub>G. \<exists>\<gamma>. \<exists>(C, \<V>) \<in> N. \<exists>select\<^sub>G.
          select_subst_stability_on_clause select select\<^sub>G C\<^sub>G C \<V> \<gamma>"
     unfolding clause.welltyped_ground_instances_def
-    by auto
+    by force
 
   then have select\<^sub>G_exists_for_premises:
      "\<forall>C\<^sub>G \<in> ?N\<^sub>G. \<exists>select\<^sub>G \<gamma>. \<exists>(C, \<V>) \<in> N.

@@ -10,7 +10,8 @@ locale functional_substitution = substitution where
     subst :: "'expr \<Rightarrow> ('var \<Rightarrow> 'base) \<Rightarrow> 'expr" (infixl "\<cdot>" 69) and
     vars :: "'expr \<Rightarrow> 'var set" +
   assumes
-    subst_eq: "\<And>expr \<sigma> \<tau>. (\<And>x. x \<in> vars expr \<Longrightarrow> \<sigma> x = \<tau> x) \<Longrightarrow> expr \<cdot> \<sigma> = expr \<cdot> \<tau>"
+    (* TODO: Interesting that not both directions are required *)
+    subst_eq: "\<And>expr \<sigma> \<tau>. (\<And>x. x \<in> vars expr \<Longrightarrow> \<sigma> x = \<tau> x) \<Longrightarrow> expr \<cdot> \<sigma> = expr \<cdot> \<tau>" 
 begin
 
 abbreviation is_ground where "is_ground expr \<equiv> vars expr = {}"
@@ -142,6 +143,10 @@ lemma renaming_inv_in_vars:
   shows "inv \<rho> (id_subst x) \<in> vars expr"
   using assms rename_variables_id_subst[OF assms(1)]
   by (metis image_eqI image_inv_f_f is_renaming_iff)
+
+lemma inj_id_subst: "inj id_subst"
+  using is_renaming_id_subst is_renaming_iff
+  by blast
 
 end
 
