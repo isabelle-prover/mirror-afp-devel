@@ -29,7 +29,7 @@ abbreviation less_eq where "less_eq \<equiv> (\<prec>)\<^sup>=\<^sup>="
 notation less_eq (infix "\<preceq>" 50)
 
 sublocale order "(\<preceq>)" "(\<prec>)"
-  by(rule order_reflclp_if_transp_and_asymp[OF transp asymp])
+  by (rule order_reflclp_if_transp_and_asymp[OF transp asymp])
 
 end
 

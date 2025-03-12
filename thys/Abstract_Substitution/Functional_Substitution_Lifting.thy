@@ -197,11 +197,6 @@ qed (rule sub.is_renaming_iff)
 
 end
 
-locale based_renaming_variables_lifting = 
-  renaming_variables_lifting +
-  based_functional_substitution_lifting +
-  base: renaming_variables where vars = base_vars and subst = base_subst
-
 locale variables_in_base_imgu_lifting =
   based_functional_substitution_lifting +
   sub: variables_in_base_imgu where vars = sub_vars and subst = sub_subst

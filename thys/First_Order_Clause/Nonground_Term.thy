@@ -87,7 +87,7 @@ next
     by simp
 next
   fix t :: "('f, 'v) term"
-  show "(vars t = {}) = (\<forall>\<sigma>. t \<cdot>t \<sigma> = t)"
+  show "(vars t = {}) \<longleftrightarrow> (\<forall>\<sigma>. t \<cdot>t \<sigma> = t)"
     using is_ground_trm_iff_ident_forall_subst.
 next
   fix t :: "('f, 'v) term" and ts :: "('f, 'v) term set"

@@ -46,7 +46,7 @@ qed
 end
 
 locale term_typing =
-  explicit_typing +
+  base_typing +
   typed: context_compatible_typing where typed = typed +
   welltyped: context_compatible_typing where typed = welltyped +
   welltyped: subterm_typing where typed = welltyped +
