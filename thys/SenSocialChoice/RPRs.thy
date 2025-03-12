@@ -136,9 +136,9 @@ text\<open>Rational preference relations, also known as weak orders and (I
 guess) complete pre-orders.\<close>
 
 definition rpr :: "'a set \<Rightarrow> 'a RPR \<Rightarrow> bool" where
-  "rpr A r \<equiv> complete A r \<and> refl_on A r \<and> trans r"
+  "rpr A r \<equiv> complete A r \<and> r \<subseteq> A \<times> A \<and> refl_on A r \<and> trans r"
 
-lemma rprI[intro]: "\<lbrakk> complete A r; refl_on A r; trans r \<rbrakk> \<Longrightarrow> rpr A r"
+lemma rprI[intro]: "\<lbrakk> complete A r; r \<subseteq> A \<times> A; refl_on A r; trans r \<rbrakk> \<Longrightarrow> rpr A r"
   unfolding rpr_def by simp
 
 lemma rprD: "rpr A r \<Longrightarrow> complete A r \<and> refl_on A r \<and> trans r"

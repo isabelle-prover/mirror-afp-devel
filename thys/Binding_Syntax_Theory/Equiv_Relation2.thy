@@ -37,10 +37,10 @@ apply(rule ext)+ by simp
 lemma P2R_R2P[simp]: "P2R (R2P r) = r"
 using Collect_mem_eq P2R_def R2P_P2R  case_prod_curry by metis
 
-definition "reflP P \<phi> \<equiv> (\<forall> x y. \<phi> x y \<or> \<phi> y x \<longrightarrow> P x) \<and> (\<forall> x. P x \<longrightarrow> \<phi> x x)"
+definition "reflP P \<phi> \<equiv> (\<forall> x. P x \<longrightarrow> \<phi> x x)"
 definition "symP \<phi> \<equiv> \<forall> x y. \<phi> x y \<longrightarrow> \<phi> y x"
 definition transP where "transP \<phi> \<equiv> \<forall> x y z. \<phi> x y \<and> \<phi> y z \<longrightarrow> \<phi> x z"
-definition "equivP A \<phi> \<equiv> reflP A \<phi> \<and> symP \<phi> \<and> transP \<phi>"
+definition "equivP A \<phi> \<equiv> (\<forall> x y. \<phi> x y \<or> \<phi> y x \<longrightarrow> A x) \<and> reflP A \<phi> \<and> symP \<phi> \<and> transP \<phi>"
 
 lemma refl_on_P2R[simp]: "refl_on (Collect P) (P2R \<phi>) \<longleftrightarrow> reflP P \<phi>"
 unfolding reflP_def refl_on_def by force
@@ -61,7 +61,7 @@ lemma transP_R2P[simp]: "transP (R2P r) \<longleftrightarrow> trans r"
 unfolding transP_def trans_def by auto
 
 lemma equiv_P2R[simp]: "equiv (Collect P) (P2R \<phi>) \<longleftrightarrow> equivP P \<phi>"
-unfolding equivP_def equiv_def by auto
+unfolding equivP_def equiv_def by force
 
 lemma equivP_R2P[simp]: "equivP (S2P A) (R2P r) \<longleftrightarrow> equiv A r"
 unfolding equivP_def equiv_def by auto
@@ -121,10 +121,11 @@ unfolding equiv_P2R[symmetric] quotientP_def quotient_eq_iff
 by (metis S2P_def in_P2R_pair quotient_eq_iff)
 
 lemma in_quotientP_imp_closed:
-"\<lbrakk>equivP P \<phi>; (P///\<phi>) X; x \<in> X; \<phi> x y\<rbrakk> \<Longrightarrow> y \<in> X"
-using S2P_Collect S2P_def equivP_def proj_P2R_raw proj_def
-        quotientE quotientP_def transP_def 
-by metis 
+"\<lbrakk>equivP P \<phi>; (P///\<phi>) X; x \<in> X; \<phi> x y\<rbrakk> \<Longrightarrow> y \<in> X" 
+  using [[metis_instantiate]]
+  by (metis (no_types, opaque_lifting) proj_P2R_raw[of \<phi>] S2P_Collect[of "\<phi> _"] S2P_def[of X]
+      S2P_def[of "Collect P // P2R \<phi>"] transP_def[of \<phi>] quotientE[of X "Collect P" "P2R \<phi>"]
+      proj_def[of \<phi>] quotientP_def[of P \<phi>] equivP_def[of P \<phi>])
 
 lemma in_quotientP_imp_subset:
 assumes "equivP P \<phi>" and "(P///\<phi>) X"

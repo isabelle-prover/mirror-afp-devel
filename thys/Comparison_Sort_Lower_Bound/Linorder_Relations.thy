@@ -107,7 +107,7 @@ lemma sorted_wrt_conv_nth:
 subsection \<open>Linear orderings\<close>
 
 definition linorder_on :: "'a set \<Rightarrow> ('a \<times> 'a) set \<Rightarrow> bool"  where
-  "linorder_on A R \<longleftrightarrow> refl_on A R \<and> antisym R \<and> trans R \<and> total_on A R"
+  "linorder_on A R \<longleftrightarrow> R \<subseteq> A \<times> A \<and> refl_on A R \<and> antisym R \<and> trans R \<and> total_on A R"
  
 lemma linorder_on_cases:
   assumes "linorder_on A R" "x \<in> A" "y \<in> A"
@@ -516,8 +516,8 @@ proof (intro bij_betw_byWitness[where f' = "\<lambda>R. sorted_wrt_list_of_set R
 next
   case (2 R)
   hence R: "linorder_on A R" by simp
-  from R have in_R: "x \<in> A" "y \<in> A" if "(x,y) \<in> R" for x y using that 
-    by (auto simp: linorder_on_def refl_on_def)
+  from R have in_R: "x \<in> A" "y \<in> A" if "(x,y) \<in> R" for x y
+    using that by (auto simp: linorder_on_def refl_on_def)
   let ?xs = "sorted_wrt_list_of_set R A"
   have xs: "distinct ?xs" "set ?xs = A" "sorted_wrt R ?xs"
     by (rule linorder_sorted_wrt_list_of_set[OF R] assms order.refl)+

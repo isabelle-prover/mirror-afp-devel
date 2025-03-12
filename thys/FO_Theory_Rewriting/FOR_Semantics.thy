@@ -93,8 +93,16 @@ subsection \<open>Defining properties of @{const gcomp_rel} and @{const gtrancl_
 lemma gcomp_rel_sig:
   assumes "R \<subseteq> \<T>\<^sub>G \<F> \<times> \<T>\<^sub>G \<F>" and "S \<subseteq> \<T>\<^sub>G \<F> \<times> \<T>\<^sub>G \<F>"
   shows "gcomp_rel \<F> R S \<subseteq> \<T>\<^sub>G \<F> \<times> \<T>\<^sub>G \<F>"
-  using assms subsetD[OF signature_pres_funas_cl(2)[OF assms(1)]]
-  by (auto simp: gcomp_rel_def lift_root_step.simps gmctxt_cl_gmctxtex_onp_conv) (metis refl_onD2 relf_on_gmctxtcl_funas)
+proof -
+  have "R O gmctxt_cl \<F> S \<subseteq> \<T>\<^sub>G \<F> \<times> \<T>\<^sub>G \<F>"
+    using assms
+    by (metis gmctxt_cl_gmctxtex_onp_conv relcomp_subset_Sigma signature_pres_funas_cl(2))
+  moreover have "gmctxt_cl \<F> R O S \<subseteq> \<T>\<^sub>G \<F> \<times> \<T>\<^sub>G \<F>"
+    using assms
+    by (metis gmctxt_cl_gmctxtex_onp_conv relcomp_subset_Sigma signature_pres_funas_cl(2))
+  ultimately show ?thesis
+    unfolding gcomp_rel_def by simp
+qed
 
 lemma gtrancl_rel_sig:
   assumes "R \<subseteq> \<T>\<^sub>G \<F> \<times> \<T>\<^sub>G \<F>"

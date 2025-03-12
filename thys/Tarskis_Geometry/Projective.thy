@@ -22,12 +22,14 @@ begin
   definition non_zero_vectors :: "'b set" where
     "non_zero_vectors \<equiv> {x. x \<noteq> 0}"
 
+  lemma proportionality_subset:
+    "local.proportionality \<subseteq> local.non_zero_vectors \<times> local.non_zero_vectors"
+    unfolding proportionality_def non_zero_vectors_def
+    by auto
+
   lemma proportionality_refl_on: "refl_on local.non_zero_vectors local.proportionality"
   proof -
-    have "local.proportionality \<subseteq> local.non_zero_vectors \<times> local.non_zero_vectors"
-      unfolding proportionality_def non_zero_vectors_def
-      by auto
-    moreover have "\<forall>x\<in>local.non_zero_vectors. (x, x) \<in> local.proportionality"
+    have "\<forall>x\<in>local.non_zero_vectors. (x, x) \<in> local.proportionality"
     proof
       fix x
       assume "x \<in> local.non_zero_vectors"
@@ -37,8 +39,8 @@ begin
         unfolding proportionality_def
         by blast
     qed
-    ultimately show "refl_on local.non_zero_vectors local.proportionality"
-      unfolding refl_on_def ..
+    thus "refl_on local.non_zero_vectors local.proportionality"
+      by (simp add: refl_onI)
   qed
 
   lemma proportionality_sym: "sym local.proportionality"
@@ -82,6 +84,7 @@ begin
   theorem proportionality_equiv: "equiv local.non_zero_vectors local.proportionality"
     unfolding equiv_def
     by (simp add:
+      proportionality_subset      
       proportionality_refl_on
       proportionality_sym
       proportionality_trans)

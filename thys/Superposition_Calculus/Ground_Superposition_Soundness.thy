@@ -41,7 +41,8 @@ proof (cases P1 P2 C rule: superposition.cases)
           hence "(s\<langle>t'\<rangle>\<^sub>G, s') \<in> I"
             using \<open>(t, t') \<in> I\<close>
             using \<open>compatible_with_gctxt I\<close> \<open>refl I\<close> \<open>sym I\<close> \<open>trans I\<close>
-            by (meson compatible_with_gctxtD refl_onD1 symD trans_onD)
+            by (metis compatible_with_gctxtD[of I t' t s] symE[of I t t']
+                transE[of I "s\<langle>t'\<rangle>\<^sub>G" "s\<langle>t\<rangle>\<^sub>G" s'])
           hence "?I' \<TTurnstile>l Pos (Upair s\<langle>t'\<rangle>\<^sub>G s')"
             by blast
           thus ?thesis

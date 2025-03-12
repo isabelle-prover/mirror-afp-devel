@@ -71,7 +71,8 @@ declare isIntv.cases[elim!] isConst.cases[elim!] isGreater.cases[elim!]
 
 inductive valid_region :: "'c set \<Rightarrow> ('c \<Rightarrow> nat) \<Rightarrow> ('c \<Rightarrow> intv) \<Rightarrow> ('c \<Rightarrow> 'c \<Rightarrow> intv') \<Rightarrow> 'c rel \<Rightarrow> bool"
 where
-  "\<lbrakk>X\<^sub>0 = {x \<in> X. \<exists> d. I x = Intv d}; refl_on X\<^sub>0 r; trans r; total_on X\<^sub>0 r; \<forall> x \<in> X. valid_intv (k x) (I x);
+  "\<lbrakk>X\<^sub>0 = {x \<in> X. \<exists> d. I x = Intv d}; r \<subseteq> X\<^sub>0 \<times> X\<^sub>0; refl_on X\<^sub>0 r; trans r; total_on X\<^sub>0 r;
+    \<forall> x \<in> X. valid_intv (k x) (I x);
     \<forall> x \<in> X. \<forall> y \<in> X. isGreater (I x) \<or> isGreater (I y) \<longrightarrow> valid_intv' (k y) (k x) (J x y)\<rbrakk>
   \<Longrightarrow> valid_region X k I J r"
 
@@ -489,7 +490,7 @@ proof -
   { fix I J r assume A: "valid_region X k I J r"
     let ?X\<^sub>0 = "{x \<in> X. \<exists>d. I x = Intv d}"
     from A have "refl_on ?X\<^sub>0 r" by auto
-    then have "r \<subseteq> X \<times> X" by (auto simp: refl_on_def)
+    from A have "r \<subseteq> X \<times> X" by auto
     then have "r \<in> Pow (X \<times> X)" by auto
   }
   then have "{r. \<exists>I J. valid_region X k I J r} \<subseteq> Pow (X \<times> X)" by auto
@@ -1841,6 +1842,7 @@ proof -
       have "valid_region X k I ?J r"
       proof
         show "?X\<^sub>0 = ?X\<^sub>0" ..
+        show "r \<subseteq> ?X\<^sub>0 \<times> ?X\<^sub>0" using R' by auto
         show "refl_on ?X\<^sub>0 r" using R' by auto
         show "trans r" using R' by auto
         show "total_on ?X\<^sub>0 r" using R' by auto
@@ -2006,15 +2008,16 @@ proof -
         qed
       qed
       have "valid_region X k I ?J r"
-      proof (standard, goal_cases)
+      proof (rule valid_region.intros)
         show "?X\<^sub>0 = ?X\<^sub>0" ..
+        show "r \<subseteq> ?X\<^sub>0 \<times> ?X\<^sub>0" using R' by auto
         show "refl_on ?X\<^sub>0 r" using R' by auto
         show "trans r" using R' by auto
         show "total_on ?X\<^sub>0 r" using R' by auto
         show "\<forall>x\<in>X. valid_intv (k x) (I x)" using R' by auto
       next
-        case 6
-        then show ?case
+        show "\<forall>xa\<in>X. \<forall>ya\<in>X. isGreater (I xa) \<or> isGreater (I ya) \<longrightarrow>
+          valid_intv' (int (k ya)) (int (k xa)) (if x = xa \<and> y = ya then intv else J xa ya)"
         proof (clarify, goal_cases)
           case (1 a b)
           show ?case

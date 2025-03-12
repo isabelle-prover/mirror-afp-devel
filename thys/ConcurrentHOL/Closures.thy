@@ -662,11 +662,13 @@ using rtrancl_cl.closed_conv by fast
 subsubsection\<open> Relation image \<close>
 
 lemma idempotent_Image:
+  assumes "r \<subseteq> Y \<times> Y"
   assumes "refl_on Y r"
   assumes "trans r"
   assumes "X \<subseteq> Y"
   shows "r `` r `` X = r `` X"
-using assms by (auto elim: transE intro: refl_onD refl_onD2)
+  using assms
+  by (auto elim: transE intro: refl_onD refl_onD)
 
 lemmas distributive_Image = Image_eq_UN
 
@@ -676,9 +678,23 @@ lemma closure_powerset_distributive_ImageI:
   assumes "trans r"
   shows "closure_powerset_distributive cl"
 proof -
-  from assms have "closure_axioms (\<subseteq>) cl"
+  have "closure_axioms (\<subseteq>) cl"
     unfolding order.closure_axioms_alt_def
-    by (force simp: idempotent_Image Image_mono monotoneI dest: refl_onD)
+  proof (intro conjI)
+    show "\<forall>x. x \<subseteq> cl x"
+      unfolding \<open>cl = Image r\<close>
+      using \<open>refl r\<close>
+      by (metis subset_refl Image_Id refl_alt_def[of r] Image_mono[of Id r])
+  next
+    show "mono cl"
+      unfolding \<open>cl = Image r\<close>
+      using mono_Image .
+  next
+    show "\<forall>x. cl (cl x) = cl x"
+      unfolding \<open>cl = Image r\<close>
+      using \<open>refl r\<close> \<open>trans r\<close>
+      by (metis top_greatest top_greatest[of r] UNIV_Times_UNIV idempotent_Image[of r UNIV])
+  qed
   with \<open>cl = Image r\<close> show ?thesis
     by - (intro_locales; auto simp: closure_complete_lattice_distributive_axioms_def)
 qed

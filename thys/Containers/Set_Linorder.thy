@@ -437,7 +437,7 @@ by(rule set_less_eq_aux''_spec)(rule linear_order)
 
 lemma set_less_eq_aux''_refl [iff]: "A \<sqsubseteq>''' A \<longleftrightarrow> A \<in> infinite_complement_partition"
 using set_less_eq_aux''_linear_order
-by(auto simp add: linear_order_on_def partial_order_on_def preorder_on_def dest: refl_onD refl_onD1)
+by(auto simp add: linear_order_on_def partial_order_on_def preorder_on_def dest: refl_onD)
 
 lemma set_less_eq_aux'_into_set_less_eq_aux'':
   assumes "A \<sqsubseteq>'' B" 

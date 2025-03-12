@@ -1465,8 +1465,8 @@ proof (rule iffI, erule conjE, erule conjE, erule conjE)
                    \<and> (\<forall>S T. (SourceTerm S, TargetTerm T) \<in> Rel \<longrightarrow> (\<lbrakk>S\<rbrakk>, T) \<in> TRel)
                    \<and> preorder Rel
                    \<and> weak_reduction_correspondence_simulation Rel (STCal Source Target)"
-      unfolding preorder_on_def
-    by blast
+    unfolding preorder_on_def
+    by auto
 next
   assume "\<exists>Rel. (\<forall>S. (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel)
           \<and> TRel = {(T1, T2). (TargetTerm T1, TargetTerm T2) \<in> Rel}
@@ -1495,8 +1495,7 @@ next
       using weak_reduction_correspondence_simulation_impl_WOC[where Rel="Rel" and TRel="TRel"]
     by simp
   moreover from B6 B7 have "preorder TRel"
-      unfolding preorder_on_def
-    by blast
+      unfolding preorder_on_def by simp
   moreover from B2 B5 B7 B8 have "weak_reduction_correspondence_simulation TRel Target"
       using rel_includes_TRel_modulo_preorder[where Rel="Rel" and TRel="TRel"]
             rel_with_target_impl_transC_TRel_is_weak_reduction_correspondence_simulation[where
@@ -1678,8 +1677,7 @@ proof (rule iffI, erule conjE, erule conjE, erule conjE)
                    \<and> (\<forall>S T. (SourceTerm S, TargetTerm T) \<in> Rel \<longrightarrow> (\<lbrakk>S\<rbrakk>, T) \<in> TRel)
                    \<and> preorder Rel
                    \<and> weak_reduction_bisimulation Rel (STCal Source Target)"
-      unfolding preorder_on_def
-    by blast
+      unfolding preorder_on_def by auto
 next
   assume "\<exists>Rel. (\<forall>S. (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel)
           \<and> TRel = {(T1, T2). (TargetTerm T1, TargetTerm T2) \<in> Rel}
@@ -1723,8 +1721,7 @@ next
   with B8 B9 have "operational_corresponding TRel \<and> weak_reduction_bisimulation TRel Target"
     by simp
   moreover from B6 B7 have "preorder TRel"
-      unfolding preorder_on_def
-    by blast
+    unfolding preorder_on_def by simp
   ultimately show "operational_corresponding TRel \<and> preorder TRel
                    \<and> weak_reduction_bisimulation TRel Target"
     by blast
@@ -2259,8 +2256,7 @@ proof (rule iffI, erule conjE, erule conjE, erule conjE)
                    \<and> (\<forall>S T. (SourceTerm S, TargetTerm T) \<in> Rel \<longrightarrow> (\<lbrakk>S\<rbrakk>, T) \<in> TRel)
                    \<and> preorder Rel
                    \<and> strong_reduction_bisimulation Rel (STCal Source Target)"
-      unfolding preorder_on_def
-    by blast
+    unfolding preorder_on_def by auto
 next
   assume "\<exists>Rel. (\<forall>S. (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel)
           \<and> TRel = {(T1, T2). (TargetTerm T1, TargetTerm T2) \<in> Rel}
@@ -2303,8 +2299,7 @@ next
   have "strongly_operational_corresponding TRel \<and> strong_reduction_bisimulation TRel Target"
     by simp
   moreover from B6 B7 have "preorder TRel"
-      unfolding preorder_on_def
-    by blast
+    unfolding preorder_on_def by simp
   ultimately show "strongly_operational_corresponding TRel \<and> preorder TRel
                    \<and> strong_reduction_bisimulation TRel Target"
     by blast

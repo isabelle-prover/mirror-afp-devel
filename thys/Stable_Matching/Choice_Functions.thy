@@ -779,8 +779,6 @@ lemma rwp_on_refl_on:
   assumes "decisive_on A f"
   shows "refl_on A (rwp_on A f)"
 proof %invisible (rule refl_onI)
-  from \<open>f_range_on A f\<close> show "rwp_on A f \<subseteq> A \<times> A"
-    unfolding rwp_on_def f_range_on_def by blast
   fix x assume "x \<in> A"
   with assms show "(x, x) \<in> rwp_on A f"
     unfolding rwp_on_def decisive_on_def f_range_on_def
@@ -1106,7 +1104,8 @@ lemma wca_on_V_axiom_on_preorder_on: \<comment> \<open>\citet[T.1, T.3 part]{Sen
 (is "?lhs \<longleftrightarrow> ?rhs")
 proof(rule iffI)
   assume ?lhs with rwp_on_refl_on rwp_on_trans wca_on_V_axiom_on wca_on_total_on assms show ?rhs
-    unfolding preorder_on_def by blast
+    unfolding preorder_on_def
+    using FieldI1 FieldI2 rwp_on_Field by fastforce
 next
   assume rhs: ?rhs
   show ?lhs
@@ -1124,7 +1123,10 @@ qed
 (*>*)
 text\<open>\<close>
 
+declare [[metis_instantiate]]
+
 lemma wca_on_rwp_on_rspR_on: \<comment> \<open>\citet[T.2]{Sen:1970}\<close>
+  fixes A :: "'a set" and f :: "'a set \<Rightarrow> 'a set"
   assumes "wca_on A f"
   assumes "f_range_on A f"
   assumes "decisive_on A f"
@@ -1132,9 +1134,32 @@ lemma wca_on_rwp_on_rspR_on: \<comment> \<open>\citet[T.2]{Sen:1970}\<close>
 (*<*)
 (is "?lhs = ?rhs")
 proof(rule set_elem_equalityI)
-  fix x assume "x \<in> ?lhs"
-  with \<open>wca_on A f\<close> rwp_on_refl_on[OF assms(2,3)] show "x \<in> ?rhs"
-    unfolding wca_on_def rsp_on_def rspR_on_def by (force dest: refl_onD1 refl_onD2)
+  fix p :: "'a \<times> 'a"
+  obtain x y :: 'a where "p = (x, y)"
+    by force
+
+  assume "p \<in> ?lhs"
+
+  show "p \<in> ?rhs"
+    unfolding rspR_on_def mem_Collect_eq \<open>p = (x, y)\<close> prod.case
+  proof (intro conjI)
+    have "x \<in> Field (rwp_on A f)" and "y \<in> Field (rwp_on A f)"
+      using \<open>p \<in> ?lhs\<close>
+      unfolding \<open>p = (x, y)\<close>
+      by (auto intro: FieldI1 FieldI2)
+    moreover have "Field (rwp_on A f) \<subseteq> A"
+      using rwp_on_Field[OF \<open>f_range_on A f\<close>] .
+    ultimately show "{x, y} \<subseteq> A"
+      by blast
+  next
+    have "\<forall>B\<subseteq>A. x \<in> f B \<and> y \<in> B \<longrightarrow> y \<in> f B"
+      using \<open>p \<in> ?lhs\<close> \<open>wca_on A f\<close>
+      unfolding \<open>p = (x, y)\<close> wca_on_def
+      by blast
+    thus "(y, x) \<notin> rsp_on A f"
+      unfolding rsp_on_def mem_Collect_eq prod.case
+      by blast
+  qed
 next
   fix x assume "x \<in> ?rhs"
   with assms show "x \<in> ?lhs"
@@ -1871,11 +1896,22 @@ proof %invisible -
   moreover
   from path_independent_on_Chernoff_on[OF assms(1,2)] Chernoff_on_iia_on
   have "iia_on A f" by blast
-  then have "\<forall>r\<in>Rs. refl_on A r \<and> total_on A r \<longleftrightarrow> decisive_on A f"
-    using mk_linear_orders_total_on_decisive_on[OF assms(2)]
-          mk_linear_orders_decisive_on_refl_on[OF assms(2)]
-          mk_linear_orders_decisive_on_total_on[OF assms(2)]
-    by clarsimp (meson linord_of_list_refl_on refl_onD refl_onD1 subsetI)
+  have "refl_on A r \<and> total_on A r \<longleftrightarrow> decisive_on A f" if "r \<in> Rs" for r
+  proof (rule iffI)
+    assume "refl_on A r \<and> total_on A r"
+    thus "decisive_on A f"
+      using mk_linear_orders_total_on_decisive_on[OF assms(2) _ _ \<open>iia_on A f\<close>]
+      by (metis FieldI1[of _ _ r] Rs_def
+          UN_E[of r "\<lambda>uub. linord_of_list ` mk_linear_orders f uub A" "Pow A"]
+          imageE[of r linord_of_list "mk_linear_orders f _ A"] linord_of_list_Field
+          refl_on_def[of A r] subsetI[of A "Field r"] that)
+  next
+    assume "decisive_on A f"
+    then show "refl_on A r \<and> total_on A r"
+      using mk_linear_orders_decisive_on_refl_on[OF assms(2)]
+      using mk_linear_orders_decisive_on_total_on[OF assms(2)]
+      using Rs_def that by blast
+  qed
   ultimately show ?thesis by blast
 qed
 

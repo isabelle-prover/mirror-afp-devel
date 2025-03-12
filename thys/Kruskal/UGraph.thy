@@ -220,11 +220,19 @@ lemma uconnected_symI: "(u,v) \<in> uconnected E \<Longrightarrow> (v,u) \<in> u
   using uconnected_sym sym_def by fast
 
 lemma "equiv UNIV (uconnected E)"
-  apply (rule equivI)
-  subgoal by (auto simp: refl_on_def uconnected_def) 
-  subgoal apply(clarsimp simp: sym_def uconnected_def) subgoal for x y p apply (rule exI[where x="rev p"]) by auto done
-  by (fact uconnected_trans)
-
+proof (rule equivI)
+  show "uconnected E \<subseteq> UNIV \<times> UNIV"
+    by simp
+next
+  show "refl (uconnected E)"
+    by (auto simp: refl_on_def uconnected_def)
+next
+  show "sym (uconnected E)"
+    by (simp add: uconnected_sym)
+next
+  show "trans (uconnected E)"
+    using uconnected_trans .
+qed
 
 lemma uconnected_refcl: "(uconnected E)\<^sup>* = (uconnected E)\<^sup>="
   apply(rule trans_rtrancl_eq_reflcl)
@@ -451,11 +459,19 @@ abbreviation "uconnectedV E' \<equiv> Restr (uconnected E') verts"
 
 
 lemma equiv_unconnected_on: "equiv V (uconnected_on E' V)"
-  apply (rule equivI)
-  subgoal by (auto simp: refl_on_def uconnected_def) 
-  subgoal apply(clarsimp simp: sym_def uconnected_def) subgoal for x y p apply (rule exI[where x="rev p"]) by (auto) done
-  subgoal apply(clarsimp simp: trans_def uconnected_def) subgoal for x y z p q apply (rule exI[where x="p@q"]) by auto done
-  done
+proof (rule equivI)
+  show "Restr (uconnected E') V \<subseteq> V \<times> V"
+    by simp
+next
+  show "refl_on V (Restr (uconnected E') V)"
+    by (auto simp: refl_on_def uconnected_def) 
+next
+  show "sym (Restr (uconnected E') V)"
+    by (metis mem_Sigma_iff symI sym_Int uconnected_sym)
+next
+  show "trans (Restr (uconnected E') V)"
+    by (simp add: trans_Restr uconnected_trans)
+qed
 
 lemma uconnectedV_refl: "E'\<subseteq>E \<Longrightarrow> refl_on verts (uconnectedV E')"
   by(auto simp: refl_on_def uconnected_def) 

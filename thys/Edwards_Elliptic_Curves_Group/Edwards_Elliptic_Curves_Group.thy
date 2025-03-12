@@ -1394,8 +1394,9 @@ definition e'_aff_bit :: "(('a \<times> 'a) \<times> bool) set" where
  "e'_aff_bit = e'_aff \<times> UNIV"
 
 lemma eq_rel: "equiv e'_aff_bit gluing"
-  unfolding equiv_def
-proof(safe)
+proof (rule equivI)
+  show "gluing \<subseteq> e'_aff_bit \<times> e'_aff_bit"
+    using e'_aff_bit_def gluing_def by auto
   show "refl_on e'_aff_bit gluing"
     unfolding refl_on_def e'_aff_bit_def gluing_def by auto
   show "sym gluing" 
