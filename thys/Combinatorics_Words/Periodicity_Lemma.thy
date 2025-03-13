@@ -3,7 +3,6 @@
 
 Part of Combinatorics on Words Formalized. See https://gitlab.com/formalcow/combinatorics-on-words-formalized/
 
-A version of the theory is included in the AFP. See https://www.isa-afp.org/entries/Combinatorics_Words.html
 *)
 
 theory Periodicity_Lemma
@@ -364,7 +363,8 @@ lemma fw_base_match: assumes "i < \<^bold>|fw_base k d\<^bold>|" "j < \<^bold>|f
 proof (atomize (full), cases)
   assume "d = 0"
   hence "fw_base k d = [0]"
-    unfolding fw_base_def fw_per_def by simp
+    unfolding fw_base_def fw_per_def
+    by simp
   have "i = j"
     using assms(1-3) unfolding \<open>fw_base k d = [0]\<close> sing_len by blast
   thus "i mod d = j mod d \<and> i \<noteq> \<^bold>|fw_per k d\<^bold>| \<and> j \<noteq> \<^bold>|fw_per k d\<^bold>|"
@@ -546,13 +546,6 @@ qed
 
 text\<open>Calculation examples\<close>
 
-value "FW_word 3 4"
-value "FW_word 4 7"
-value "FW_word 3 7"
-value "FW_word 5 7"
-value "FW_word 5 13"
-value "FW_word 4 6"
-value "FW_word 12 18"
 
 section \<open>Optimality of the Fine and Wilf word.\<close>
 
@@ -819,7 +812,7 @@ proof -
     "w = (r \<cdot> s) \<^sup>@ m \<cdot> r" and
     "primitive (r \<cdot> s)"
     using len[unfolded conjug_len[OF \<open>p \<sim> p'\<close>] conjug_len[OF \<open>q \<sim> q'\<close>]]
-    by blast
+    by metis
   moreover have "\<rho> p' = r\<cdot>s"
     using \<open>p' = (r \<cdot> s) \<^sup>@ k\<close> \<open>primitive (r \<cdot> s)\<close> \<open>p' \<noteq> \<epsilon>\<close> primroot_unique
     by meson
@@ -847,7 +840,7 @@ lemma fac_two_conjug_primroot''_gcd:
   assumes facs: "u \<le>f r\<^sup>@k" "u \<le>f s\<^sup>@l" and "u \<noteq> \<epsilon>" and len: "\<^bold>|r\<^bold>| + \<^bold>|s\<^bold>| - gcd (\<^bold>|r\<^bold>|) (\<^bold>|s\<^bold>|) \<le> \<^bold>|u\<^bold>|"
   shows "\<rho> r \<sim> \<rho> s"
 proof -
-  have nemps: "r \<noteq> \<epsilon>" "s \<noteq> \<epsilon>" using facs \<open>u \<noteq> \<epsilon>\<close> by auto
+  have nemps: "r \<noteq> \<epsilon>" "s \<noteq> \<epsilon>" using facs \<open>u \<noteq> \<epsilon>\<close> by force+
   show "conjugate (\<rho> r) (\<rho> s)" using fac_two_conjug_primroot'_gcd[OF facs nemps len].
 qed
 

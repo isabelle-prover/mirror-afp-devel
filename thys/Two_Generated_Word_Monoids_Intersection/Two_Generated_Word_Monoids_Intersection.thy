@@ -1,11 +1,10 @@
-(*  Title:      CoW_Binary_Monoids_Intersection
-    File:       Two_Generated_Word_Monoids_Intersection.CoW_Binary_Monoids_Intersection
+(*  Title:      Two_Generated_Word_Monoids_Intersection
+    File:       Two_Generated_Word_Monoids_Intersection.Two_Generated_Word_Monoids_Intersection
     Author:     Štěpán Holub, Charles University
     Author:     Štěpán Starosta, CTU in Prague
 
 Part of Combinatorics on Words Formalized. See https://gitlab.com/formalcow/combinatorics-on-words-formalized/
 
-A version of the theory is included in the AFP. See https://www.isa-afp.org/entries/Two_Generated_Word_Monoids_Intersection.html
 *)
 
 theory Two_Generated_Word_Monoids_Intersection
@@ -457,7 +456,7 @@ lemma rich_block_suf_fst':
   assumes "coin_block (z \<cdot> [1-c] \<cdot> [c]\<^sup>@Suc i)"
   shows "gm.bin_code_lcs \<cdot> g\<^sub>m p \<le>s g\<^sub>m (\<ee> ([1-c]\<cdot>[c]\<^sup>@Suc i))"
 proof-
-  from last_letter_fst_suf assms[unfolded pow_Suc' lassoc]
+  from last_letter_fst_suf assms[unfolded pow_Suc2 lassoc]
   have "p <s \<ee> [c]"
     by blast
   hence "\<ee> [c] = [c] \<cdot> tl (\<ee> [c])"
@@ -465,7 +464,7 @@ proof-
   then obtain p' where "\<ee> [c] = [c] \<cdot> p' \<cdot> p"
     using ssufE[OF \<open>p <s \<ee> [c]\<close>] ssuf_tl_suf suffix_def by metis
   hence *: "\<ee>([1-c] \<cdot> [c]\<^sup>@Suc i) = \<ee> ([1-c] \<cdot> [c]\<^sup>@i) \<cdot> [c] \<cdot> p' \<cdot> p"
-    unfolding pow_Suc' marked.sucs.g.morph by force
+    unfolding pow_Suc2 marked.sucs.g.morph by force
   have f1: "[c] \<le>f \<ee> ([1 - c] \<cdot> [c] \<^sup>@ i) \<cdot> [c] \<cdot> p'"
     by fast
   have "[1 - c] \<le>f ([1 - c] \<cdot> tl (\<ee> [1 - c])) \<cdot> \<ee> ([c] \<^sup>@ i) \<cdot> [c] \<cdot> p'"
@@ -515,7 +514,7 @@ proof (cases)
   then obtain i where "z = [c]\<^sup>@i"
     unfolding sing_pow_exp by blast
   have "z \<cdot> [c] = [c]\<^sup>@Suc i"
-    unfolding \<open>z = [c]\<^sup>@i\<close> pow_Suc'..
+    unfolding \<open>z = [c]\<^sup>@i\<close> pow_Suc2..
   have "\<ee> (z \<cdot> [c]) = (\<ee> [c])\<^sup>@Suc i" and "\<ff> (z \<cdot> [c]) = (\<ff> [c])\<^sup>@Suc i"
     unfolding \<open>z \<cdot> [c] = [c]\<^sup>@Suc i\<close> marked.sucs.g.pow_morph marked.sucs.h.pow_morph by simp_all
   from \<open>coin_block (z \<cdot> [c])\<close>[unfolded coin_block_def this]
@@ -549,15 +548,15 @@ next
     assume "\<not> q \<le>s q \<cdot> \<ff> [c]"
       \<comment> \<open>suffix of @{term q}\<close>
     hence "\<not> q \<le>s q \<cdot> \<ff> ([c]\<^sup>@ Suc t)"
-      unfolding marked.sucs.h.pow_morph using per_drop_exp'[reversed] by blast
+      unfolding marked.sucs.h.pow_morph using per_drop_exp[reversed] by blast
     hence "\<not> q \<le>s \<beta>\<^sub>\<hh> \<cdot> \<ff> ([c]\<^sup>@Suc t)"
       using suf_prolong_per_root[OF _ marked.sucs.revs.h.bin_lcp_pref_all[reversed], of q "[c]\<^sup>@Suc t"] by blast
 
 \<comment> \<open>analysis of q\<close>
     have "q \<le>s q \<cdot> \<ff>(z' \<cdot> [b] \<cdot> [c]\<^sup>@Suc t)"
       using \<open>coin_block (z \<cdot> [c])\<close>
-      unfolding z coin_block_def rassoc pow_Suc' by blast
-    note per_exp_pref[reversed, OF this, of 2, unfolded pow_two]
+      unfolding z coin_block_def rassoc pow_Suc2 by blast
+    note per_exp_pref[reversed, OF this, of 2, unfolded pow_list_2]
     hence suf1:  "q \<le>s q \<cdot> \<ff> (z' \<cdot> [b]) \<cdot> \<ff> ([c] \<^sup>@ Suc t \<cdot> z' \<cdot> [b]) \<cdot> \<ff> ([c] \<^sup>@ Suc t)"
       unfolding marked.sucs.h.morph rassoc.
     have "[\<dd> b] \<cdot> \<beta>\<^sub>\<hh> \<le>s \<ff> ([c]\<^sup>@Suc t \<cdot> z') \<cdot> \<ff> [b]"
@@ -585,7 +584,7 @@ next
     have ineq1: "\<^bold>|\<beta>\<^sub>G\<^bold>| \<le> \<^bold>|\<beta>\<^sub>H\<^bold>| + \<^bold>|h\<^sub>m \<beta>\<^sub>\<hh>\<^bold>|"
       using lenarg[OF lcp_diff, unfolded lenmorph] by linarith
         \<comment> \<open>2. inequality\<close>
-    from begin_block[unfolded q_factors, unfolded pow_Suc' marked.sucs.h.morph hm.morph, folded sucs_eq[of "[c]"], unfolded \<open>\<ee>[c] = [c] \<cdot> tl p' \<cdot> p\<close> gm.morph lassoc cancel_right, unfolded rassoc]
+    from begin_block[unfolded q_factors, unfolded pow_Suc2 marked.sucs.h.morph hm.morph, folded sucs_eq[of "[c]"], unfolded \<open>\<ee>[c] = [c] \<cdot> tl p' \<cdot> p\<close> gm.morph lassoc cancel_right, unfolded rassoc]
     have "\<alpha> = h\<^sub>m q' \<cdot> h\<^sub>m [\<dd> b] \<cdot> h\<^sub>m \<beta>\<^sub>\<hh> \<cdot> h\<^sub>m (\<ff> ([c] \<^sup>@ t)) \<cdot> g\<^sub>m [c] \<cdot> g\<^sub>m (tl p')".
     from lenarg[OF this] lenarg[OF lcp_diff]
     have ineq2: "\<^bold>|h\<^sub>m [\<dd> b]\<^bold>| + \<^bold>|g\<^sub>m [c]\<^bold>| + \<^bold>|h\<^sub>m \<beta>\<^sub>\<hh>\<^bold>| \<le> \<^bold>|\<alpha>\<^sub>g\<^bold>|"
@@ -683,7 +682,7 @@ proof-
   have "q \<le>s q \<cdot> \<ff> ([a1] \<cdot> [1 - a1] \<^sup>@ Suc t)"
     unfolding Suc_minus[OF nemp_len_not0[OF q_nemp]] by blast
   thus "coin_block ([a1] \<cdot> [1-a1]\<^sup>@Suc t)"
-    unfolding pow_Suc' marked.sucs.g.morph coin_block_def
+    unfolding pow_Suc2 marked.sucs.g.morph coin_block_def
     using suf_ext[OF ssufD1[OF p_suf], of "p \<cdot> \<ee> [a1] \<cdot> \<ee> ([1 - a1] \<^sup>@ t)", unfolded rassoc] by blast
 next
   fix j assume "j \<le> t"
@@ -710,7 +709,7 @@ qed
 lemma q_suf_conv: "q \<le>s \<ff> ([a1]\<cdot>[1-a1]\<^sup>@Suc k) \<longleftrightarrow> t \<le> k"
 proof
   have psuf': "p \<le>s p \<cdot> \<ee> ([a1] \<cdot> [1 - a1] \<^sup>@ Suc k)" for k
-    unfolding pow_Suc' using  marked.sucs.g.morph ssufD1[OF p_suf] suffix_appendI by metis
+    unfolding pow_Suc2 using  marked.sucs.g.morph ssufD1[OF p_suf] suffix_appendI by metis
   assume "q \<le>s \<ff> ([a1] \<cdot> [1 - a1] \<^sup>@ Suc k)"
   hence  "\<not> Suc k  \<le> t"
     using coin_exp_min[of "Suc k"] psuf'[of k] suf_ext[of q _ q] unfolding coin_block_def by blast
@@ -722,7 +721,7 @@ next
     using coin_block_def swap_coin_block by blast
   have "q \<le>s \<ff> [a1] \<cdot> \<ff> ([1-a1]\<^sup>@Suc t)"
     using coin_exp rich_block_suf_snd[of \<epsilon> "1 - a1" t, unfolded emp_simps binA_simps] unfolding marked.sucs.h.morph  by blast
-  from suf_prolong[OF per_exp_suf[OF \<open>q \<le>s q \<cdot> \<ff>[1-a1]\<close>, folded marked.sucs.h.pow_morph] this, of "k-t", folded marked.sucs.h.morph lassoc, folded add_exps[of "[1-a1]" "Suc t"]]
+  from suf_prolong[OF per_exp_suf[OF \<open>q \<le>s q \<cdot> \<ff>[1-a1]\<close>, folded marked.sucs.h.pow_morph] this, of "k-t", folded marked.sucs.h.morph lassoc, folded pow_add[of "Suc t" _ "[1-a1]"]]
   show "q \<le>s \<ff> ([a1] \<cdot> [1-a1]\<^sup>@Suc k)"
     using \<open>t \<le>k\<close> by fastforce
 qed
@@ -740,16 +739,16 @@ proof-
   proof(cases)
     assume "i = 0"
     have "\<not> [1 - a1] \<^sup>@ Suc t \<le>s w' \<cdot> [a1]"
-      unfolding pow_Suc' using bin_swap_neq[of a1]
+      unfolding pow_Suc2 using bin_swap_neq[of a1]
       by simp
     then show "coin_block w \<longleftrightarrow> [1-a1]\<^sup>@Suc t \<le>s w"
       unfolding w \<open>i = 0\<close> cow_simps using last_letter_block non_block by meson
   next
     assume "i \<noteq> 0"
     have psuf: "p \<le>s p \<cdot> \<ee> (w' \<cdot> [a1] \<cdot> [1 - a1] \<^sup>@ Suc k)" for k
-      unfolding pow_Suc' using  marked.sucs.g.morph ssufD1[OF p_suf] suffix_appendI by metis
+      unfolding pow_Suc2 using  marked.sucs.g.morph ssufD1[OF p_suf] suffix_appendI by metis
     have psuf': "p \<le>s p \<cdot> \<ee> ([a1] \<cdot> [1 - a1] \<^sup>@ Suc k)" for k
-      unfolding pow_Suc' using  marked.sucs.g.morph ssufD1[OF p_suf] suffix_appendI by metis
+      unfolding pow_Suc2 using  marked.sucs.g.morph ssufD1[OF p_suf] suffix_appendI by metis
     have equiv1: "coin_block (w'\<cdot>[a1]\<cdot>[1-a1]\<^sup>@Suc k) \<longleftrightarrow> q \<le>s \<ff> ([a1]\<cdot>[1-a1]\<^sup>@Suc k)" for k
     proof
       show "coin_block (w' \<cdot> [a1] \<cdot> [1 - a1] \<^sup>@ Suc k) \<Longrightarrow> q \<le>s \<ff> ([a1] \<cdot> [1 - a1] \<^sup>@ Suc k)"
@@ -794,8 +793,8 @@ lemma \<W>_fac: "x \<in> \<W> \<Longrightarrow>  \<not> [1-a1]\<^sup>@Suc t \<le
 proof (induction x rule: \<W>.induct)
   show "\<not> [1 - a1] \<^sup>@ Suc t \<le>f butlast ([a1] \<cdot> [1 - a1] \<^sup>@ Suc t)"
     using fac_len_eq[of "[1 - a1] \<^sup>@ Suc t" "butlast ([a1] \<cdot> [1 - a1] \<^sup>@ Suc t)"]
-    unfolding pow_Suc' lassoc butlast_snoc  sing_pow_len lenmorph sing_len
-    unfolding pow_comm[of "[1-a1]"] add.commute[of t] cancel_right
+    unfolding pow_Suc2 lassoc butlast_snoc  sing_pow_len lenmorph sing_len
+    unfolding pow_comm[of _ "[1-a1]"] add.commute[of t] cancel_right
     using bin_swap_neq by fast
   fix x' i
   assume "x' \<in> \<W>" and notf: "\<not> [1 - a1] \<^sup>@ Suc t \<le>f butlast x'" and "i \<le> t"
@@ -824,7 +823,7 @@ proof (induction x rule: \<W>.induct)
     have "([1 - a1] \<^sup>@ Suc t)!(Suc i - \<^bold>|pp\<^bold>|) = a1"
       using \<open>\<^bold>|pp\<^bold>| \<le> i\<close> by force
     thus False
-      unfolding sing_pow_nth[OF \<open>Suc i -\<^bold>|pp\<^bold>| < Suc t\<close>]
+      unfolding nth_pow_list_single[OF \<open>Suc i -\<^bold>|pp\<^bold>| < Suc t\<close>]
       using bin_swap_neq by blast
   qed
 qed
@@ -943,7 +942,7 @@ next
           hence "\<not> [a1]\<cdot>[1-a1]\<^sup>@(Suc t) <p x"
             using coin_exp non_ex by blast
           hence "\<not> [a1]\<cdot>[1-a1]\<^sup>@Suc(Suc t) \<le>p x"
-            unfolding pow_Suc'[of _ "Suc t"] lassoc
+            unfolding pow_Suc2[of "Suc t"] lassoc
             using prefix_snocD by metis
           from Least_le[of "\<lambda> i. \<not> ([a1]\<cdot>[1-a1]\<^sup>@Suc i) \<le>p x", OF this, folded j_def]
           have "j \<le> Suc t".
@@ -971,8 +970,8 @@ next
               by auto
             from \<open>\<not> [a1] \<cdot> [1-a1]\<^sup>@Suc j \<le>p x\<close> hd_tl[OF this]
             have "hd x' = a1"
-              unfolding \<open>x = [a1] \<cdot> [1-a1]\<^sup>@j \<cdot> x'\<close> pow_Suc' pref_cancel_conv
-              using bin_neq_iff'[of "hd x'" "1-a1", unfolded binA_simps] by fastforce
+              unfolding \<open>x = [a1] \<cdot> [1-a1]\<^sup>@j \<cdot> x'\<close> pow_Suc2 pref_cancel_conv
+              using bin_neq_iff'[of "hd x'" "1-a1", unfolded binA_simps] by force
             from \<open>[hd x'] \<cdot> tl x' = x'\<close>[unfolded this]
               \<open>coin_block x\<close>[unfolded coin_block_with_bad_letter[OF \<open>a1 \<in> set x\<close>]]
             have "[1-a1]\<^sup>@Suc t \<le>s [a1] \<cdot> [1 - a1] \<^sup>@ j \<cdot> [a1] \<cdot> tl x'"
@@ -1206,7 +1205,7 @@ proof-
           k': "\<beta> \<cdot> (\<gamma> \<cdot> \<beta>)\<^sup>@k'  = h q1 \<cdot> \<alpha>\<^sub>h" and "\<gamma> \<noteq> \<epsilon>"
           unfolding hm.morph h.morph shift_pow by blast
         have bgb_q: "\<beta> \<cdot> (\<gamma> \<cdot> \<beta>)\<^sup>@(k' + k) = \<alpha>\<^sub>h \<cdot> h\<^sub>m q"
-          unfolding add_exps lassoc \<open>\<beta> \<cdot> (\<gamma> \<cdot> \<beta>)\<^sup>@k'  = h q1 \<cdot> \<alpha>\<^sub>h\<close>
+          unfolding pow_add lassoc \<open>\<beta> \<cdot> (\<gamma> \<cdot> \<beta>)\<^sup>@k'  = h q1 \<cdot> \<alpha>\<^sub>h\<close>
           unfolding \<open>\<gamma> \<cdot> \<beta> = h\<^sub>m (q2 \<cdot> q1)\<close> h.marked_version_conjugates[symmetric]
             rassoc cancel q_def shift_pow unfolding hm.morph hm.pow_morph..
         define \<delta> where "\<delta> = h\<^sub>m (\<ff> [a1])"
@@ -1327,7 +1326,7 @@ proof-
           assume "\<not> \<alpha>\<^sub>h \<cdot> h\<^sub>m q <s h\<^sub>m (\<ff> ([1-a1]\<^sup>@Suc t))"
           note not_suf = this[unfolded marked.sucs.h.pow_morph q21]
           have "\<alpha>\<^sub>h \<cdot> h\<^sub>m q \<le>s (\<alpha>\<^sub>h \<cdot> h\<^sub>m q) \<cdot> h\<^sub>m ((q2 \<cdot> q1) \<^sup>@ Suc t)"
-            unfolding q_def shift_pow rassoc hm.morph[symmetric] pows_comm[of _ k]
+            unfolding q_def shift_pow rassoc hm.morph[symmetric] pows_comm[of k]
             unfolding hm.morph lassoc suf_cancel_conv
             unfolding rassoc hm.morph[symmetric] shift_pow[symmetric]
             unfolding hm.morph lassoc suf_cancel_conv
@@ -1337,17 +1336,17 @@ proof-
           have "h\<^sub>m ((q2\<cdot>q1)\<^sup>@Suc t) \<le>s \<alpha>\<^sub>h \<cdot> h\<^sub>m q"
             unfolding marked.sucs.h.pow_morph q21 using not_suf by force
           from this[unfolded q_def shift_pow hm.morph, unfolded hm.pow_morph, folded gb_def[unfolded q21], unfolded lassoc,
-              folded k'[folded h.marked_version_conjugates], unfolded rassoc add_exps[symmetric]]
+              folded k'[folded h.marked_version_conjugates], unfolded rassoc pow_add[symmetric]]
           have "Suc t \<le> k' + k"
             using comp_pows_suf'[OF \<open>\<gamma> \<noteq> \<epsilon>\<close>] by blast
           from le_add_diff_inverse2[OF this]
           have split: "\<beta> \<cdot> (\<gamma> \<cdot> \<beta>) \<^sup>@ (k' + k) = \<beta> \<cdot> (\<gamma> \<cdot> \<beta>) \<^sup>@ (k' + k - Suc t) \<cdot> (\<gamma> \<cdot> \<beta>) \<^sup>@ Suc t"
-            unfolding add_exps[symmetric] by argo
+            unfolding pow_add[symmetric] by argo
 
           have "\<alpha>\<^sub>h \<cdot> h\<^sub>m q = \<beta> \<cdot> (\<gamma> \<cdot> \<beta>) \<^sup>@ (k' + k)"
             unfolding q_def shift_pow hm.morph
             unfolding hm.pow_morph gb_def[symmetric, unfolded q21] lassoc k'[folded h.marked_version_conjugates, symmetric]
-            unfolding rassoc add_exps..
+            unfolding rassoc pow_add..
 
           have q_suf: "q \<le>s \<ff> ([a1] \<cdot> [1 - a1] \<^sup>@ Suc t)"
             unfolding q_suf_conv by blast
@@ -1366,7 +1365,7 @@ proof-
             unfolding cancel_right[symmetric, of "h ((q \<cdot> \<ff> (w \<cdot> [a1] \<cdot> [1 - a1] \<^sup>@ Suc t))\<^sup><\<inverse>q)" _ "(\<beta> \<cdot> (\<gamma> \<cdot> \<beta>) \<^sup>@ (k' + k - Suc t))"]
             unfolding rassoc rq_suf[OF delta_suf]
             unfolding cancel_right[symmetric, of _ "\<beta> \<cdot> (\<gamma> \<cdot> \<beta>) \<^sup>@ (k' + k) \<cdot> h\<^sub>m (\<ff> w) \<cdot> \<delta>" "(\<gamma> \<cdot> \<beta>) \<^sup>@ Suc t"]
-            unfolding rassoc add_exps[symmetric] \<open>k' + k - Suc t + Suc t = k' + k\<close>  bgb_q[unfolded h.marked_version_conjugates]
+            unfolding rassoc pow_add[symmetric] \<open>k' + k - Suc t + Suc t = k' + k\<close>  bgb_q[unfolded h.marked_version_conjugates]
             unfolding lassoc h.morph[symmetric]
             unfolding rassoc rq_suf[OF q_suf', unfolded rassoc, of w]
             unfolding h.marked_version_conjugates[symmetric] hm.morph marked.sucs.h.morph

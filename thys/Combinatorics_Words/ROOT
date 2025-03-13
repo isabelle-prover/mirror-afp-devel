@@ -2,6 +2,8 @@ chapter AFP
 
 session Combinatorics_Words  = "HOL-Eisbach" +
   options [timeout = 600]
+  sessions
+    List_Power  
   theories
     Arithmetical_Hints
     Border_Array

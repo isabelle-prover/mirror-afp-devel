@@ -5,7 +5,6 @@
 
 Part of Combinatorics on Words Formalized. See https://gitlab.com/formalcow/combinatorics-on-words-formalized/
 
-A version of the theory is included in the AFP. See https://www.isa-afp.org/entries/Binary_Code_Imprimitive.html
 *)
 
 theory Binary_Code_Imprimitive
@@ -44,7 +43,7 @@ proof (elim contrapos_nn)
     using  prefixE[OF \<open>vs \<le>p ws'\<^sup>@n\<close>].
   from conjug_pow[OF \<open>z \<cdot> concat ws = concat ws' \<cdot> z\<close>[symmetric], symmetric]
   have "z \<cdot> concat (ws\<^sup>@n)  = concat (ws'\<^sup>@n) \<cdot> z"
-    unfolding concat_pow.
+    unfolding concat_pow_list.
   from this[ unfolded \<open>ws\<^sup>@n = us \<cdot> us'\<close> \<open>ws'\<^sup>@n = vs \<cdot> vs'\<close> concat_morph rassoc
       \<open>z \<cdot> concat us = concat vs\<close>[symmetric] cancel]
   have "concat vs' \<cdot> z = concat us'"..
@@ -129,7 +128,7 @@ proof-
       unfolding concat_morph \<open>concat ps \<cdot> p = z\<close>[symmetric] rassoc cancel.
     thus False
       using shift_disjoint[OF \<open>ws \<in> lists \<C>\<close> \<open>ws' \<in> lists \<C>\<close> \<open>z \<notin> \<langle>\<C>\<rangle>\<close>
-          \<open>z \<cdot> concat ws = concat ws' \<cdot> z\<close> \<open>us' \<le>p ws \<cdot> ws\<close>[folded pow_two] \<open>ps \<cdot> vs' \<le>p ws' \<cdot> ws'\<close>[folded pow_two]] by fast
+          \<open>z \<cdot> concat ws = concat ws' \<cdot> z\<close> \<open>us' \<le>p ws \<cdot> ws\<close>[folded pow_list_2] \<open>ps \<cdot> vs' \<le>p ws' \<cdot> ws'\<close>[folded pow_list_2]] by fast
   qed
   from disjoint[of \<epsilon> \<epsilon>]
   have "p \<noteq> \<epsilon>" by blast
@@ -166,7 +165,7 @@ proof-
     then obtain zs where "zs \<in> lists \<C>" and "concat zs = z"
       using hull_concat_lists0 by blast
     from is_code[OF \<open>ws \<in> lists \<C>\<close> pow_in_lists[OF \<open>zs \<in> lists \<C>\<close>],
-        unfolded concat_pow \<open>concat ws = z\<^sup>@n\<close> \<open>concat zs = z\<close>, of n]
+        unfolded concat_pow_list \<open>concat ws = z\<^sup>@n\<close> \<open>concat zs = z\<close>, of n]
     show False
       using \<open>primitive ws\<close> \<open>2 \<le> n\<close> pow_nemp_imprim by blast
   qed
@@ -263,7 +262,7 @@ proof (cases "x = y")
     using eq_append_not_prim by blast
   moreover have "ws = [x,y,x] \<or> ws = [y,x,y]"
     using \<open>ws \<in> lists {x,y}\<close> sing_pow_exp[of ws x, unfolded \<open>\<^bold>|ws\<^bold>| = 3\<close>]
-     unfolding \<open>x = y\<close> by auto
+     unfolding \<open>x = y\<close> pow_list_3 by auto
    ultimately show ?thesis
      by blast
  next
@@ -377,7 +376,7 @@ proof (standard, rule ccontr)
   from uniform_square_interp(1)[OF \<open>x \<cdot> y \<noteq> y \<cdot> x\<close> \<open>\<^bold>|x\<^bold>| = \<^bold>|y\<^bold>|\<close> \<open>vs \<in> lists {x,y}\<close> _ _]
        \<open>primitive (x \<cdot> y)\<close> disj_interpD0[OF this(1), simplified] disj_interp_nemp(1)[OF this(1)]
   show False
-    by auto
+    by blast
 qed (simp add: prim_concat_prim)
 
 \<comment> \<open>A stronger version is implied by the following lemma.\<close>
@@ -395,7 +394,7 @@ proof-
   obtain u v l m where [symmetric]: "z = u \<cdot> v" and "v \<noteq> \<epsilon>" "x = (u\<cdot>v) \<^sup>@ l \<cdot> u"  "y = (v \<cdot> u) \<^sup>@ m \<cdot> v" "k = l + m + 1".
   have "u \<cdot> v \<noteq> v \<cdot> u"
     using  \<open>x \<cdot> y \<noteq> y \<cdot> x\<close> unfolding \<open>x = (u\<cdot>v) \<^sup>@ l \<cdot> u\<close> \<open>y = (v \<cdot> u) \<^sup>@ m \<cdot> v\<close>
-      shifts unfolding add_exps[symmetric] add.commute[of m] by force
+      shifts unfolding pow_add[symmetric] add.commute[of m] by force
   have "u \<noteq> \<epsilon>" and "v \<noteq> \<epsilon>" and "u \<noteq> v"
     using \<open>u \<cdot> v \<noteq> v \<cdot> u\<close> by blast+
   have "m = l" and "\<^bold>|u\<^bold>| = \<^bold>|v\<^bold>|"
@@ -410,7 +409,7 @@ proof-
   have "2 \<le> \<^bold>|?w\<^bold>|"
     using \<open>l \<noteq> 0\<close> unfolding lenmorph pow_len by fastforce
   have "concat ?w = x"
-    using \<open>x = (u \<cdot> v) \<^sup>@ l \<cdot> u\<close> by simp
+    using \<open>x = (u \<cdot> v) \<^sup>@ l \<cdot> u\<close>  by (simp add: concat_pow_list)
   from bin_uniform_prim_morph[OF \<open>u \<cdot> v \<noteq> v \<cdot> u\<close> \<open>\<^bold>|u\<^bold>| = \<^bold>|v\<^bold>|\<close> \<open>primitive z\<close>[folded \<open>u \<cdot> v = z\<close>] \<open>?w \<in> lists {u,v}\<close> \<open>2 \<le> \<^bold>|?w\<^bold>|\<close>]
   show "primitive x"
     unfolding \<open>concat ?w = x\<close> using alternate_prim[OF \<open>u \<noteq> v\<close>] by blast
@@ -466,7 +465,7 @@ proof-
 
   from not_prim_primroot_expE[OF this]
   obtain z l where [symmetric]: "z\<^sup>@l = x\<^sup>@(count_list ws x) \<cdot> y\<^sup>@1" and "2 \<le> l"
-    unfolding pow_1.
+    unfolding pow_list_1.
 
   interpret LS_len_le x y "count_list ws x" 1 l z
     by (unfold_locales)
@@ -476,7 +475,7 @@ proof-
   from case_j2k1[OF \<open>2 \<le> count_list ws x\<close> refl]
   have "primitive x" and "primitive y" and "count_list ws x = 2" by blast+
 
-  with \<open>ws \<sim> [x]\<^sup>@count_list ws x \<cdot> [y]\<close>[unfolded this(3) pow_two append_Cons append_Nil]
+  with \<open>ws \<sim> [x]\<^sup>@count_list ws x \<cdot> [y]\<close>[unfolded this(3) pow_list_2 append_Cons append_Nil]
   show  "primitive x" and "primitive y" and "ws \<sim> [x,x,y]"
     by simp_all
 
@@ -616,8 +615,8 @@ proof-
     have "z \<cdot> xp \<noteq> xp \<cdot> z"
     proof
       assume "z \<cdot> xp = xp \<cdot> z"
-      from comm_add_exp'[symmetric, OF this[symmetric], of 2,
-          THEN comm_add_exp', of n, unfolded pow_two]
+      from comm_pow_comm[symmetric, OF this[symmetric], of 2,
+          THEN comm_pow_comm, of n, unfolded pow_list_2]
       have "z\<^sup>@n \<cdot> xp \<cdot> xp = xp \<cdot> xp \<cdot> z\<^sup>@n"
         unfolding  rassoc.
       hence "concat ws' \<cdot> concat [x,x,y] = concat [x,x,y] \<cdot> concat ws'"
@@ -638,7 +637,7 @@ proof-
       from comm_comp_eq[OF this[unfolded concat_morph], unfolded \<open>concat [x,x,y] = xp \<cdot> xp\<close> con_ws]
       have "z \<^sup>@ n \<cdot> xp\<^sup>@Suc(Suc 0) = xp\<^sup>@Suc(Suc 0) \<cdot> z \<^sup>@ n"
         unfolding pow_Suc pow_zero emp_simps rassoc.
-      from comm_drop_exps[OF this]
+      from comm_drop_exps[OF _ _ this]
       show False
         using \<open>z \<cdot> xp \<noteq> xp \<cdot> z\<close> \<open>2 \<le> n\<close> by force
     qed
@@ -652,9 +651,9 @@ proof-
       unfolding lcp_ws_def by inlists
 
     have lcp_xp_z: "concat (ws' \<cdot> [x,x,y]) \<and>\<^sub>p concat ([x,x,y] \<cdot> ws') = bin_lcp z (x \<cdot> p)"
-      unfolding concat_morph con_ws \<open>concat [x,x,y] = xp \<cdot> xp\<close> add_exps[symmetric]
+      unfolding concat_morph con_ws \<open>concat [x,x,y] = xp \<cdot> xp\<close> pow_add[symmetric]
       using bin_lcp_pows[OF \<open>0 < n\<close>, of 2]
-      unfolding pow_two pow_pos[OF \<open>0 < n\<close>] rassoc xp_def by force
+      unfolding pow_list_2 pow_pos[OF \<open>0 < n\<close>] rassoc xp_def by force
 
     have "(concat lcp_ws) \<cdot> bin_lcp x y = bin_lcp z (x \<cdot> p)"
     proof (rule xy.bin_code_lcp_concat'[OF _ _  \<open>\<not> concat (ws' \<cdot> [x, x, y]) \<bowtie> concat ([x, x, y] \<cdot> ws')\<close>, folded lcp_ws_def, unfolded lcp_xp_z, symmetric])
@@ -689,7 +688,7 @@ proof-
       unfolding concat_morph con_ws \<open>concat ws'' = z \<cdot> xp\<close> pow_Suc
       unfolding lcp_ext_left[symmetric] bin_lcp_def shifts
       unfolding rassoc lcp_ext_left cancel
-      using bin_lcp_pows[OF \<open>0 < n\<close>, of 1 \<epsilon>  "z\<^sup>@(n-1)", unfolded pow_1, folded pow_pos[OF \<open>0 < n\<close>]]
+      using bin_lcp_pows[OF \<open>0 < n\<close>, of 1 \<epsilon>  "z\<^sup>@(n-1)", unfolded pow_list_1, folded pow_pos[OF \<open>0 < n\<close>]]
       unfolding bin_lcp_def xp_def rassoc emp_simps by linarith
 
     have "z \<cdot> bin_lcp z (x \<cdot> p) = concat (lcp_ws') \<cdot> bin_lcp x y"
@@ -702,9 +701,9 @@ proof-
       show "\<not> concat (ws' \<cdot> ws'') \<bowtie> concat (ws'' \<cdot> ws')"
         unfolding concat_morph con_ws \<open>concat ws'' = z \<cdot> xp\<close> pow_pos[OF \<open>0 < n\<close>]
         unfolding rassoc comp_cancel
-        unfolding lassoc pow_pos[OF \<open>0 < n\<close>, symmetric] pow_pos'[OF \<open>0 < n\<close>, symmetric]
+        unfolding lassoc pow_pos[OF \<open>0 < n\<close>, symmetric] pow_pos2[OF \<open>0 < n\<close>, symmetric]
            comm_comp_eq_conv
-        using  comm_drop_exp'[OF _ \<open>0 < n\<close>, of z n xp] non_comm by argo
+        using  comm_drop_exp'[OF _ \<open>0 < n\<close>, of n z xp] non_comm by argo
     qed
 
     have "concat lcp_ws' = z \<cdot> concat lcp_ws"
@@ -736,8 +735,8 @@ proof-
     also have "... = z \<cdot> concat (ws' \<cdot> ws' \<cdot> ws')"
       unfolding rassoc \<open>ws' \<cdot> ws' \<cdot> ws' = lcp_ws \<cdot> ws''\<^sub>1\<close> concat_morph..
     also have "... = concat (ws' \<cdot> ws' \<cdot> ws') \<cdot> z"
-      unfolding concat_morph con_ws add_exps[symmetric]
-        pow_Suc[symmetric] pow_Suc'[symmetric]..
+      unfolding concat_morph con_ws pow_add[symmetric]
+        pow_Suc[symmetric] pow_Suc2[symmetric]..
     also have "... = concat lcp_ws'\<cdot> concat ws''\<^sub>2 \<cdot> z"
       unfolding \<open>ws' \<cdot> ws' \<cdot> ws' = lcp_ws' \<cdot> ws''\<^sub>2\<close> concat_morph rassoc..
     finally have "concat ws''\<^sub>1 = concat ws''\<^sub>2 \<cdot> z"
@@ -830,7 +829,7 @@ proof (rule bin_imprim_both_squares_prim)
     using Suc_minus2 primroot_exp_nemp[OF \<open>x \<noteq> \<epsilon>\<close>] by simp
   have "Ref\<^sub>\<rho> [x,x] = [\<rho> x] \<^sup>@ (Suc (e\<^sub>\<rho> x -1) + Suc (e\<^sub>\<rho> x - 1))"
     unfolding  Suc_minus_pos[OF primroot_exp_nemp[OF \<open>x \<noteq> \<epsilon>\<close>]]
-      root_ref_def by (simp add: add_exps)
+      root_ref_def by (simp add: pow_add)
   hence "[\<rho> x, \<rho> x] \<le>f Ref\<^sub>\<rho> [x,x]"
     by auto
   thus "[\<rho> x, \<rho> x] \<le>f ws' \<cdot> ws'"
@@ -840,7 +839,7 @@ proof (rule bin_imprim_both_squares_prim)
     using Suc_minus2 primroot_exp_nemp[OF \<open>y \<noteq> \<epsilon>\<close>] by simp
   have "Ref\<^sub>\<rho> [y,y] = [\<rho> y] \<^sup>@ (Suc (e\<^sub>\<rho> y -1) + Suc (e\<^sub>\<rho> y - 1))"
     unfolding  Suc_minus_pos[OF primroot_exp_nemp[OF \<open>y \<noteq> \<epsilon>\<close>]] root_ref_def
-    by (simp add: add_exps)
+    by (simp add: pow_add)
   hence "[\<rho> y, \<rho> y] \<le>f Ref\<^sub>\<rho> [y,y]"
     by auto
   thus "[\<rho> y, \<rho> y] \<le>f ws' \<cdot> ws'"
@@ -1022,7 +1021,7 @@ proof-
     using \<open>[x] \<^sup>@ j1 \<cdot> [y] \<cdot> [x] \<^sup>@ j2 = ws\<close> \<open>2 \<le> \<^bold>|ws\<^bold>|\<close> not_less_eq_eq  by fastforce
   have "ws \<sim> [x]\<^sup>@(j2+j1)\<cdot>[y]\<^sup>@1"
     using conjugI'[of "[x] \<^sup>@ j1 \<cdot> [y]" "[x] \<^sup>@ j2"]
-    unfolding \<open>[x] \<^sup>@ j1 \<cdot> [y] \<cdot> [x] \<^sup>@ j2 = ws\<close>[symmetric] add_exps rassoc pow_1.
+    unfolding \<open>[x] \<^sup>@ j1 \<cdot> [y] \<cdot> [x] \<^sup>@ j2 = ws\<close>[symmetric] pow_add rassoc pow_list_1.
   from that[OF \<open>1 \<le> j2 + j1\<close> _ _ this]
   show ?thesis
     by blast
@@ -1040,13 +1039,13 @@ proof-
 
   from \<open>ws \<in> lists {x,y}\<close>
     sing_lists_exp_len[of ws y]
-    prim_exp_one[OF \<open>primitive ws\<close>, of "[y]" "\<^bold>|ws\<^bold>|"]
+    prim_exp_one[OF \<open>primitive ws\<close>, of "\<^bold>|ws\<^bold>|" "[y]"]
   have "count_list ws x \<noteq> 0"
-    using \<open>2 \<le> \<^bold>|ws\<^bold>|\<close> unfolding count_list_0_iff by fastforce
+    using \<open>2 \<le> \<^bold>|ws\<^bold>|\<close> unfolding count_list_0_iff by force
 
   from \<open>ws \<in> lists {y,x}\<close>
     sing_lists_exp_len[of ws x]
-    prim_exp_one[OF \<open>primitive ws\<close>, of "[x]" "\<^bold>|ws\<^bold>|"]
+    prim_exp_one[OF \<open>primitive ws\<close>, of "\<^bold>|ws\<^bold>|" "[x]"]
   have "count_list ws y \<noteq> 0"
     using \<open>2 \<le> \<^bold>|ws\<^bold>|\<close> unfolding count_list_0_iff by fastforce
 
@@ -1093,7 +1092,7 @@ proof-
 
   have "\<not> primitive (x\<^sup>@j \<cdot> y\<^sup>@k)"
     using \<open>\<not> primitive (concat ws)\<close>
-    unfolding concat_morph  concat_sing_pow
+    unfolding concat_morph  concat_pow_list_single
       conjug_prim_iff[OF conjug_concat_conjug[OF \<open>ws \<sim> [x] \<^sup>@ j \<cdot> [y] \<^sup>@ k\<close>]].
 
   from not_prim_primroot_expE[OF this]
@@ -1115,7 +1114,7 @@ proof-
 
       have "\<not> primitive (x \<^sup>@ j'\<cdot> y \<^sup>@ k')"
         using  \<open>\<not> primitive (concat ws')\<close>
-        unfolding concat_morph  concat_sing_pow
+        unfolding concat_morph  concat_pow_list_single
           conjug_prim_iff[OF conjug_concat_conjug[OF \<open>ws' \<sim> [x] \<^sup>@ j' \<cdot> [y] \<^sup>@ k'\<close>]].
 
       have "j = j'" "k = k'"

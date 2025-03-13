@@ -1,5 +1,7 @@
 (*
 Author: Tobias Nipkow
+Author: Štěpán Holub, Charles University
+
 Based on the AFP entry Combinatorics_Words by Holub, Raška and Starosta
 *)
 
@@ -47,6 +49,8 @@ lemmas pow_list_zero = power.power_0 and
 
 end
 
+lemmas[simp] = pow_list_Nil pow_list_zero pow_list_one pow_list_1 pow_list_Suc pow_list_2
+
 lemma pow_list_alt: "xs^^n = concat (replicate n xs)"
 by (induct n) auto
 
@@ -90,7 +94,7 @@ lemma pow_list_Nil_iff_0: "xs \<noteq> [] \<Longrightarrow> xs ^^ m = [] \<longl
 by (simp add: pow_list_eq_if)
 
 lemma pow_list_Nil_iff_Nil: "0 < m \<Longrightarrow> xs ^^ m = [] \<longleftrightarrow>  xs = []"
-by (cases xs) (auto simp add: pow_list_Nil pow_list_Nil_iff_0)
+by (cases xs) (auto simp add: pow_list_Nil_iff_0)
 
 lemma pow_eq_eq:
   assumes "xs ^^ k = ys ^^ k" and "0 < k"
@@ -212,7 +216,7 @@ next
     using append_eq_append_conv[of "x @ y" "y @ x"] by simp
 qed
      
-lemma comm_list_common_pow_iff: "u @ v = v @ u \<longleftrightarrow> u ^^ length v = v ^^ length u"
+lemma comm_common_pow_list_iff: "u @ v = v @ u \<longleftrightarrow> u ^^ length v = v ^^ length u"
 proof (cases "v = []")
   assume "v = []"
   thus ?thesis
@@ -236,7 +240,27 @@ next
   qed
 qed
 
-thm count_list_pow_list
+lemma comm_pows_list_comm: assumes  "0 < k" "0 < m"  
+  shows "u ^^ k @ v ^^ m  = v ^^ m @ u ^^ k \<longleftrightarrow> u @ v = v @ u"
+proof (cases "v = []")
+  assume "v \<noteq> []"
+  hence "0 < k * length (v^^m)"
+    by (simp add: pow_list_Nil_iff_Nil  \<open>0 < k\<close> \<open>0 < m\<close>) 
+  show ?thesis
+  proof
+    show "u ^^ k @ v ^^ m  = v ^^ m @ u ^^ k \<Longrightarrow> u @ v = v @ u"
+      using  pow_list_comm_comm \<open>0 < k * length (v^^m)\<close>
+      unfolding comm_common_pow_list_iff pow_list_mult[symmetric] by blast
+    show  "u ^^ k @ v ^^ m  = v ^^ m @ u ^^ k" if "u @ v = v @ u"
+    proof-
+      have "(u ^^ (length v))^^(k*m) =  (v^^(length u))^^(m*k)"
+        unfolding \<open>u @ v = v @ u\<close>[unfolded comm_common_pow_list_iff] mult.commute[of k]..
+      then show "u ^^ k @ v ^^ m  = v ^^ m @ u ^^ k"   
+        unfolding comm_common_pow_list_iff pow_list_mult[symmetric] length_pow_list 
+          mult.assoc[symmetric] mult.commute[of _ "length _"].
+    qed
+  qed
+qed simp
 
 lemma rotate1_pow_list_swap: "rotate1 (u ^^ k) = (rotate1 u) ^^ k" 
 proof (cases "u = [] \<or> k = 0")

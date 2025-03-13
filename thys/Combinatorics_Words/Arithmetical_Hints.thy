@@ -5,7 +5,6 @@
 
 Part of Combinatorics on Words Formalized. See https://gitlab.com/formalcow/combinatorics-on-words-formalized/
 
-A version of the theory is included in the AFP. See https://www.isa-afp.org/entries/Combinatorics_Words.html
 *)
 
 theory Arithmetical_Hints
@@ -36,6 +35,8 @@ lemma plus_one_between:  "(a :: nat) < b \<Longrightarrow> \<not> b < a + 1"
 
 lemma quotient_smaller: "k \<noteq> (0 :: nat) \<Longrightarrow>  b \<le> k * b"
   by simp
+
+  thm mult_right_le_imp_le
 
 lemma add_lessD2: "k + m < (n::nat) \<Longrightarrow> m < n"
 unfolding add.commute[of k] using add_lessD1.

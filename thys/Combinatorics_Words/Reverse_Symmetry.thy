@@ -3,7 +3,6 @@
 
 Part of Combinatorics on Words Formalized. See https://gitlab.com/formalcow/combinatorics-on-words-formalized/
 
-A version of the theory is included in the AFP. See https://www.isa-afp.org/entries/Combinatorics_Words.html
 *)
 
 theory Reverse_Symmetry
@@ -68,7 +67,7 @@ qed
 
 lemma Ex1_bij_conv: assumes "bij f" shows "(\<exists>!x. P (f x)) \<longleftrightarrow> (\<exists>!y. P y)"
 proof
-  have imp: "\<exists>!y. Q y" if bij: "bij g" and ex1: "\<exists>!x. Q (g x)" for Q and g :: "'c \<Rightarrow> 'd"
+  have imp: "\<exists>!y. Q y" if bij: "bij g" and ex1: "\<exists>!x. Q (g x)" for g Q
   proof -
     from ex1E[OF ex1, rule_format]
     obtain x where ex: "Q (g x)" and uniq: "\<And>x'. Q (g x') \<Longrightarrow> x' = x" by blast

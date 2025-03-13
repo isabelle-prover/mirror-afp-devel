@@ -4,7 +4,6 @@
 
 Part of Combinatorics on Words Formalized. See https://gitlab.com/formalcow/combinatorics-on-words-formalized/
 
-A version of the theory is included in the AFP. See https://www.isa-afp.org/entries/Combinatorics_Words.html
 *)
 
 theory Lyndon_Schutzenberger
@@ -29,7 +28,7 @@ In this formalization we consider the equation in words only. Then the original 
 $x$, $y$ and $z$ satisfying the equality ith $2 \leq a,b,c$ pairwise commute.
 
 The result in free groups was first proved in \cite{ LySch62}.
-For words, there are several proofs to be found in the literature (for instance \cite{Lo83} and \cite{Dmsi2006}).
+For words, there are several proofs to be found in the literature (for instance \cite{Lo83,Dmsi2006}).
 The presented proof is the authors' proof.
 
 In addition, we give a full parametric solution of the equation for any $a$, $b$ and $c$.
@@ -50,7 +49,7 @@ proof  (rule nemp_comm)
   from two_pers_1[OF this \<open>x \<^sup>@ a \<le>p x \<cdot> x \<^sup>@ a\<close> \<open>\<^bold>|z\<^bold>| + \<^bold>|x\<^bold>| - 1 \<le> \<^bold>|x \<^sup>@ a\<^bold>|\<close>, symmetric]
   show "x \<cdot> z = z \<cdot> x".
   hence "z\<^sup>@c\<cdot>x\<^sup>@a = x\<^sup>@a\<cdot>z\<^sup>@c"
-    by (simp add: comm_add_exps)
+    by (simp add: comm_pows_comm)
   from this[folded eq, unfolded rassoc cancel, symmetric]
   have "x\<^sup>@a \<cdot> y\<^sup>@b = y\<^sup>@b \<cdot> x\<^sup>@a".
   from this[unfolded  comm_pow_roots[OF \<open>0 < a\<close> \<open>0 < b\<close>]]
@@ -91,7 +90,7 @@ proof-
   have "a = 2" using \<open>2 \<le> a\<close> by force
 
   hence "\<^bold>|y\<^bold>| \<le> \<^bold>|x\<^bold>|" using \<open>b*\<^bold>|y\<^bold>| \<le> a*\<^bold>|x\<^bold>|\<close> \<open>2 \<le> b\<close>
-      pow_len[of x 2]  pow_len[of y b]
+      pow_len[of 2 x]  pow_len[of b y]
       mult_le_less_imp_less[of a b "\<^bold>|x\<^bold>|" "\<^bold>|y\<^bold>|"] not_le
     by auto
   have "x\<cdot>x\<cdot>y\<^sup>@b = z\<cdot>z\<cdot>z" using \<open>2 \<le> a\<close> eq \<open>c=3\<close> \<open>a=2\<close>
@@ -200,7 +199,7 @@ proof-
     by metis
   from comm_rootI[OF \<open>x \<in> \<langle>{take d x}\<rangle>\<close> this]
   show "x \<cdot> y = y \<cdot> x"
-    using comm_pow_roots[OF \<open>0 < a\<close> \<open>0 < b\<close>, of x y] comm_add_exp'  by meson
+    using comm_pow_roots[OF \<open>0 < a\<close> \<open>0 < b\<close>, of x y] comm_pow_comm  by meson
 qed
 
 
@@ -286,7 +285,7 @@ proof (induction "\<^bold>|z\<^bold>| + b* \<^bold>|y\<^bold>|" arbitrary: x y z
           define a' where "a' \<equiv> a - 1"
           have "Suc a' = a" and "1 \<le> a'"
             using \<open>2 \<le> a\<close> unfolding a'_def by auto
-          from eq2[folded \<open>Suc a' = a\<close>, unfolded pow_Suc' rassoc]  pow_Suc'[of x a', unfolded this, symmetric]
+          from eq2[folded \<open>Suc a' = a\<close>, unfolded pow_Suc2 rassoc]  pow_Suc2[of a' x, unfolded this, symmetric]
           have eq3: "x \<^sup>@ a' \<cdot> x \<cdot> y \<^sup>@ b = z \<cdot> z" and aa':"x \<^sup>@ a' \<cdot> x = x \<^sup>@ a ".
           have "\<^bold>|x\<^sup>@a'\<^bold>| < \<^bold>|z\<^bold>|"
             using \<open>Suc a' = a\<close> lenx unfolding  pow_len minus by fastforce
@@ -306,7 +305,7 @@ proof (induction "\<^bold>|z\<^bold>| + b* \<^bold>|y\<^bold>|" arbitrary: x y z
 
 \<comment> \<open>Induction step: new equation with shorter z\<close>
           have "w\<^sup>@2\<cdot>y\<^sup>@b = (w\<cdot>u)\<^sup>@a"
-            unfolding pow_two using \<open>w \<cdot> y \<^sup>@ b = z\<close> \<open>x \<^sup>@ a' \<cdot> u = z\<close> \<open>u\<cdot>w=x\<close> pow_slide[of w u a', unfolded \<open>Suc a' = a\<close>] by simp
+            unfolding pow_list_2 using \<open>w \<cdot> y \<^sup>@ b = z\<close> \<open>x \<^sup>@ a' \<cdot> u = z\<close> \<open>u\<cdot>w=x\<close> pow_list_slide[of w a' u, unfolded \<open>Suc a' = a\<close>] by simp
           from "less.hyps"[OF _ this _ \<open>2 \<le> b\<close> \<open>2 \<le> a\<close>, unfolded \<open>\<^bold>|w\<cdot>u\<^bold>| = \<^bold>|x\<^bold>|\<close>]
           have "y\<cdot>w = w\<cdot>y"
             using  \<open>\<^bold>|x\<^bold>| < \<^bold>|z\<^bold>|\<close>  by force
@@ -315,7 +314,7 @@ proof (induction "\<^bold>|z\<^bold>| + b* \<^bold>|y\<^bold>|" arbitrary: x y z
             unfolding \<open>w \<cdot> y\<^sup>@b = z\<close>[symmetric] lassoc \<open>y\<cdot>w = w\<cdot>y\<close>
             by (simp add: pow_comm)
           hence "z\<^sup>@c\<cdot>y\<^sup>@b = y\<^sup>@b\<cdot>z\<^sup>@c"
-            by (simp add: comm_add_exps)
+            by (simp add: comm_pows_comm)
           from this[folded \<open>x\<^sup>@a\<cdot>y\<^sup>@b = z\<^sup>@c\<close>, unfolded lassoc]
           have "x\<^sup>@a\<cdot>y\<^sup>@b = y\<^sup>@b\<cdot>x\<^sup>@a"
             using cancel_right by blast
@@ -336,8 +335,8 @@ proof-
   have "0 < c" and  "0 < b"
     using  \<open>2 \<le> c\<close> \<open>2 \<le> b\<close> by auto
   have "x \<cdot> x\<^sup>@a \<cdot> y\<^sup>@b = x\<^sup>@a \<cdot> y\<^sup>@b \<cdot> x" and "y \<cdot> x\<^sup>@a \<cdot> y\<^sup>@b = x\<^sup>@a \<cdot> y\<^sup>@b \<cdot> y"
-    unfolding comm_add_exp'[OF \<open>x \<cdot> y = y \<cdot> x\<close>[symmetric], of b]
-    unfolding lassoc pow_comm comm_add_exp'[OF \<open>x \<cdot> y = y \<cdot> x\<close>, symmetric, of a] by blast+
+    unfolding comm_pow_comm[OF \<open>x \<cdot> y = y \<cdot> x\<close>[symmetric], of b]
+    unfolding lassoc pow_comm comm_pow_comm[OF \<open>x \<cdot> y = y \<cdot> x\<close>, symmetric, of a] by blast+
   thus "x\<cdot>z = z\<cdot>x" and "y\<cdot>z = z\<cdot>y"
     using comm_drop_exp[OF \<open>0 < c\<close>] unfolding lassoc \<open>x\<^sup>@a\<cdot>y\<^sup>@b = z\<^sup>@c\<close> by metis+
 qed
@@ -350,12 +349,12 @@ proof-
   obtain r s where "u = r \<cdot> s" and "v = s \<cdot> r"
     using \<open>u \<sim> v\<close> by blast
   have "u \<cdot> v \<sim> r\<^sup>@2 \<cdot> s\<^sup>@2"
-    using conjugI'[of "r \<cdot> s \<cdot> s" r] unfolding \<open>u = r \<cdot> s\<close> \<open>v = s \<cdot> r\<close> pow_two rassoc.
+    using conjugI'[of "r \<cdot> s \<cdot> s" r] unfolding \<open>u = r \<cdot> s\<close> \<open>v = s \<cdot> r\<close> pow_list_2 rassoc.
   hence "\<not> primitive (r\<^sup>@2 \<cdot> s\<^sup>@2)"
     using \<open>\<not> primitive (u \<cdot> v)\<close> prim_conjug by auto
   from not_prim_primroot_expE[OF this, of "r \<cdot> s = s \<cdot> r"]
   have "r \<cdot> s = s \<cdot> r"
-    using Lyndon_Schutzenberger(1)[of r 2 s 2, OF _ order.refl order.refl] by metis
+    using Lyndon_Schutzenberger(1)[of 2 r 2 s, OF _ order.refl order.refl] by metis
   thus "u \<cdot> v = v \<cdot> u"
     using \<open>u = r \<cdot> s\<close> \<open>v = s \<cdot> r\<close> by presburger
 qed
@@ -370,7 +369,7 @@ proof (rule nemp_comm)
   obtain k where "\<rho> x\<^sup>@k = x" and "2 \<le> k".
   from not_prim_primroot_expE[OF \<open>\<not> primitive (x \<cdot> y)\<close>]
   obtain l where "\<rho>(x \<cdot> y)\<^sup>@l = x \<cdot> y" and "2 \<le> l".
-  from Lyndon_Schutzenberger(1)[of "\<rho> x" k "\<rho> y" m "\<rho> (x \<cdot> y)" l,
+  from Lyndon_Schutzenberger(1)[of k "\<rho> x" m "\<rho> y" l "\<rho> (x \<cdot> y)",
        OF _  \<open>2 \<le> k\<close> \<open>2 \<le> m\<close> \<open>2 \<le> l\<close>]
   show "x \<cdot> y = y \<cdot> x"
     unfolding \<open>\<rho> y\<^sup>@m = y\<close> \<open>\<rho> x\<^sup>@k = x\<close> \<open>\<rho>(x \<cdot> y)\<^sup>@l = x \<cdot> y\<close>
@@ -393,7 +392,7 @@ proof(rule comm_drop_exps)
       unfolding assms(1)[symmetric].
     from this[unfolded conjug_prim_iff[OF conjugI'[of "r \<^sup>@ k" "u \<^sup>@ b \<cdot> r \<^sup>@ k'"]] rassoc]
     show "\<not> primitive (u \<^sup>@ b \<cdot> r \<^sup>@ (k' + k))"
-      unfolding add_exps[symmetric] by force
+      unfolding pow_add[symmetric] by force
   qed
 qed (use assms in force)+
 
@@ -407,7 +406,7 @@ proof-
   define j' where "j' \<equiv> j - 2"
   have "0 < j" "j = Suc(Suc j')"
     unfolding j'_def using \<open>2 \<le> j\<close> by force+
-  from LS_per_lemma_case[of _ _ _ 1, unfolded pow_1, OF eq \<open>0 < j\<close>]
+  from LS_per_lemma_case[of _ _ 1, unfolded pow_list_1, OF eq \<open>0 < j\<close>]
   show "\<^bold>|x\<^sup>@j\<^bold>| < \<^bold>|z\<^bold>| + \<^bold>|x\<^bold>|"
     using \<open>x \<cdot> y \<noteq> y \<cdot> x\<close> by linarith
   from lenarg[OF eq, unfolded lenmorph, unfolded pow_len]
@@ -440,7 +439,7 @@ proof-
   from non_comm[unfolded x y]
   have "r \<cdot> q \<noteq> q \<cdot> r"
     unfolding shifts
-    unfolding lassoc add_exps[symmetric] pow_Suc[symmetric] add.commute[of m]
+    unfolding lassoc pow_add[symmetric] pow_Suc[symmetric] add.commute[of m]
     by force
   hence "r \<noteq> \<epsilon>" and "q \<noteq> \<epsilon>"
     by blast+
@@ -449,7 +448,7 @@ proof-
     unfolding lenmorph by linarith
   have "\<^bold>|x\<^bold>| + \<^bold>|y\<^bold>| \<ge> 4"
     unfolding x y lenmorph[symmetric] shifts
-    unfolding add_exps[symmetric] lassoc lenmorph[of "r \<cdot> q"]
+    unfolding pow_add[symmetric] lassoc lenmorph[of "r \<cdot> q"]
     mult_Suc[symmetric] pow_len Suc_eq_plus1 l[symmetric]
     using mult_le_mono[OF \<open>2 \<le> l\<close> \<open>2 \<le> \<^bold>|r \<cdot> q\<^bold>|\<close>]
     by presburger
@@ -493,8 +492,8 @@ lemma case_j2k1: assumes "2 \<le> j" "k = 1"
     "j = 2" and "l = 2" and "r\<cdot>q \<noteq> q\<cdot>r" and
     "primitive x" and "primitive y"
 proof-
-  note eq' = eq[unfolded \<open>k = 1\<close> pow_1]
-  note xjy_imprim_len[OF non_comm eq[unfolded \<open>k = 1\<close> pow_1] \<open>2 \<le> j\<close> l_min]
+  note eq' = eq[unfolded \<open>k = 1\<close> pow_list_1]
+  note xjy_imprim_len[OF non_comm eq[unfolded \<open>k = 1\<close> pow_list_1] \<open>2 \<le> j\<close> l_min]
 
   obtain j' where "j = Suc (Suc j')"
     using \<open>2 \<le> j\<close> using at_least2_Suc by metis
@@ -511,7 +510,7 @@ proof-
   hence "j = 2"
     using  \<open>j = Suc (Suc j')\<close> by simp
 
-  note eq[ unfolded \<open>k = 1\<close> pow_1 \<open>j = 2\<close> \<open>l = 2\<close> pow_two rassoc]
+  note eq[ unfolded \<open>k = 1\<close> pow_list_1 \<open>j = 2\<close> \<open>l = 2\<close> pow_list_2 rassoc]
   from eqd[OF this less_imp_le[OF \<open>\<^bold>|x\<^bold>| < \<^bold>|z\<^bold>|\<close>]]
   obtain p where "x \<cdot> p = z" and "p \<cdot> z = x \<cdot> y"
     by blast
@@ -570,7 +569,7 @@ lemma case_j1k2_primitive: assumes "j = 1" "2 \<le> k"
   using Lyndon_Schutzenberger_prim[OF _ pow_nemp_imprim
       pow_nemp_imprim[OF l_min, of z, folded eq], OF _ \<open>2 \<le> k\<close>]
     comm_pow_roots[of j k x y] k_min non_comm
-  unfolding \<open>j = 1\<close> pow_1
+  unfolding \<open>j = 1\<close> pow_list_1
   by linarith
 
 lemma case_j1k2_a: assumes "j = 1" "2 \<le> k" "z \<le>s y\<^sup>@k"
@@ -610,16 +609,16 @@ proof-
         folded \<open>v \<cdot> u = y\<close>, unfolded rassoc cancel,
         unfolded \<open>v \<cdot> u = y\<close>, symmetric].
 
-  note eq[unfolded pow_pos'[OF \<open>0 < l\<close>] \<open>y\<^sup>@k = v\<cdot>z\<close> lassoc cancel_right
-      \<open>j = 1\<close> pow_1]
+  note eq[unfolded pow_pos2[OF \<open>0 < l\<close>] \<open>y\<^sup>@k = v\<cdot>z\<close> lassoc cancel_right
+      \<open>j = 1\<close> pow_list_1]
 
   obtain u' where "u'\<cdot>v = y"
   proof-
     have "v \<le>s z\<^sup>@(l-1)"
       using \<open>x \<cdot> v = z \<^sup>@ (l - 1)\<close> by blast
     moreover have "y \<le>s z\<^sup>@(l-1)"
-      unfolding \<open>z = u\<cdot>y\<^sup>@(k-1)\<close> pow_pos'[OF \<open>0 < k - 1\<close>]
-        pow_pos'[OF \<open>0 < l - 1\<close>] lassoc
+      unfolding \<open>z = u\<cdot>y\<^sup>@(k-1)\<close> pow_pos2[OF \<open>0 < k - 1\<close>]
+        pow_pos2[OF \<open>0 < l - 1\<close>] lassoc
       by blast
     ultimately have "v \<le>s y"
       using order_less_imp_le[OF \<open>\<^bold>|v\<^bold>| < \<^bold>|y\<^bold>|\<close>] suffix_length_suffix by blast
@@ -635,15 +634,15 @@ proof-
 
   have y: "y = r \<cdot> (q \<cdot> r) \<^sup>@ Suc t"
     using \<open>u' \<cdot> v = y\<close>[symmetric, folded \<open>(r \<cdot> q) \<^sup>@ t \<cdot> r = v\<close> \<open>r \<cdot> q = u'\<close>]
-    unfolding rassoc pow_slide[symmetric].
+    unfolding rassoc pow_list_slide[symmetric].
   have z: "z = (q \<cdot> r) \<cdot> (r \<cdot> (q \<cdot> r) \<^sup>@ Suc t) \<^sup>@ (k - 1)"
     using \<open>q \<cdot> r = u\<close> \<open>z = u \<cdot> y \<^sup>@ (k - 1)\<close> y by blast
 
   let ?x = "((q \<cdot> r) \<cdot> (r \<cdot> (q \<cdot> r) \<^sup>@ Suc t) \<^sup>@ (k - 1)) \<^sup>@ (l - 2) \<cdot>
       (((q \<cdot> r) \<cdot> (r \<cdot> (q \<cdot> r) \<^sup>@ Suc t) \<^sup>@ (k - 2)) \<cdot> r) \<cdot> q"
   have "?x \<cdot> v = z \<^sup>@ (l - 1)"
-    unfolding z \<open>(r \<cdot> q) \<^sup>@ t \<cdot> r = v\<close>[symmetric] pow_pos'[OF \<open>0 < k - 1\<close>]
-    pow_pos'[OF \<open>0 < l - 1\<close>] diff_diff_left nat_1_add_1
+    unfolding z \<open>(r \<cdot> q) \<^sup>@ t \<cdot> r = v\<close>[symmetric] pow_pos2[OF \<open>0 < k - 1\<close>]
+    pow_pos2[OF \<open>0 < l - 1\<close>] diff_diff_left nat_1_add_1
     by (simp only: shifts)
   from \<open>x \<cdot> v = z \<^sup>@ (l - 1)\<close>[folded this]
   have x: "x = ?x"
@@ -651,13 +650,13 @@ proof-
 
   have "z\<cdot>y \<noteq> y\<cdot>z"
     using non_comm
-    using comm_add_exp'[of z y l, folded eq,
+    using comm_pow_comm[of z y l, folded eq,
         unfolded rassoc pow_comm, unfolded lassoc cancel_right
-        \<open>j = 1\<close> pow_1]
+        \<open>j = 1\<close> pow_list_1]
     by blast
   hence "r\<cdot>q \<noteq> q\<cdot>r"
     unfolding \<open>q \<cdot> r = u\<close> \<open>r \<cdot> q = u'\<close> \<open>u'\<cdot> v  = y\<close>[symmetric]
-      \<open>z = u \<cdot> y \<^sup>@ (k - 1)\<close> pow_pos'[OF \<open>0 < k\<close>] rassoc
+      \<open>z = u \<cdot> y \<^sup>@ (k - 1)\<close> pow_pos2[OF \<open>0 < k\<close>] rassoc
       \<open>y \<^sup>@ k = v \<cdot> z\<close>[unfolded \<open>u' \<cdot> v = y\<close>[symmetric]
         \<open>z = u \<cdot> y \<^sup>@ (k - 1)\<close>, symmetric] cancel_right..
   show thesis
@@ -676,7 +675,7 @@ proof-
     by blast
   have "0 < l" using l_min by linarith
   have "x = (q\<cdot>y\<^sup>@k)\<^sup>@(l-1)\<cdot>q"
-    using eq[unfolded pow_pos'[OF \<open>0 < l\<close>] \<open>j = 1\<close> pow_1,
+    using eq[unfolded pow_pos2[OF \<open>0 < l\<close>] \<open>j = 1\<close> pow_list_1,
         unfolded \<open>z = q\<cdot>y\<^sup>@k\<close> lassoc cancel_right].
   have "q\<cdot>y \<noteq> y\<cdot>q"
     using
@@ -704,15 +703,15 @@ proof-
   have "0 < j"
     using j_min by linarith
   have "z \<noteq> \<epsilon>"
-    using eq nemp_pow_nemp[of z l] bin_fst_nemp[folded nonzero_pow_emp[OF \<open>0 < j\<close>, of x], THEN pref_nemp]
+    using eq nemp_pow_nemp[of l z] bin_fst_nemp[folded pow_list_Nil_iff_Nil[OF \<open>0 < j\<close>, of x], THEN pref_nemp]
     by force
   have "z \<noteq> y\<^sup>@k"
   proof
     assume "z = y\<^sup>@k"
-    with eq[unfolded pow_pos'[OF \<open>0 < l\<close>], folded this, unfolded cancel_right]
+    with eq[unfolded pow_pos2[OF \<open>0 < l\<close>], folded this, unfolded cancel_right]
     have "x\<^sup>@j \<cdot> y\<^sup>@k = y\<^sup>@k \<cdot> x\<^sup>@j"
       using pow_comm by auto
-    from comm_drop_exps[OF this \<open>0 < j\<close> \<open>0 < k\<close>]
+    from comm_drop_exps[OF \<open>0 < j\<close> \<open>0 < k\<close> this]
     show False
       using non_comm by blast
   qed
@@ -785,7 +784,7 @@ proof-
       using that(3) by blast
   next
     case 4
-    from case_j1k1[OF eq[unfolded \<open>k = 1\<close> \<open>j = 1\<close> pow_1] non_comm l_min, of thesis]
+    from case_j1k1[OF eq[unfolded \<open>k = 1\<close> \<open>j = 1\<close> pow_list_1] non_comm l_min, of thesis]
     show thesis
       using that(1).
   qed
@@ -840,9 +839,9 @@ proof(rule iffI)
     from comm_primrootE'[OF this]
     obtain r m n where "x = r \<^sup>@ m" "y = r \<^sup>@ n" "primitive r".
 
-    note eqs = eq[unfolded this, folded pow_mult add_exps, symmetric]
+    note eqs = eq[unfolded this, folded pow_mult, folded pow_add[of "m*j" "n*k" r ], symmetric]
     obtain t where "z = r \<^sup>@ t"
-      using l_min pow_comm_comm[OF eqs,
+      using l_min pow_list_comm_comm[OF _ eqs,
           THEN prim_comm_exp[OF \<open>primitive r\<close>]]
       by auto
     from eqs[unfolded this, folded pow_mult, symmetric]
@@ -883,7 +882,7 @@ proof(rule iffI)
         using \<open>j = 1\<close> \<open>2 \<le> k\<close> by blast
     next
       case 4
-      with case_j1k1[OF eq[unfolded \<open>k = 1\<close> \<open>j = 1\<close> pow_1] non_comm l_min, of ?sol_j1k1]
+      with case_j1k1[OF eq[unfolded \<open>k = 1\<close> \<open>j = 1\<close> pow_list_1] non_comm l_min, of ?sol_j1k1]
       have"?sol_j1k1"
         unfolding Suc_eq_plus1 shift_pow
         by blast
@@ -907,7 +906,7 @@ next
       and "m * j + n * k = t * l"
     show ?thesis
       unfolding sol
-      unfolding pow_mult[symmetric] add_exps[symmetric]
+      unfolding pow_mult[symmetric] pow_add[symmetric]
       unfolding \<open>m * j + n * k = t * l\<close>..
   next
     fix r q m n
@@ -918,17 +917,17 @@ next
       by simp
     show ?thesis
       unfolding sol
-      unfolding \<open>j = 1\<close> \<open>k = 1\<close> \<open>Suc (m + n) = l\<close>[symmetric] pow_1
-      unfolding lassoc pow_Suc add_exps
-      unfolding pow_comm[of _ m, symmetric] lassoc..
+      unfolding \<open>j = 1\<close> \<open>k = 1\<close> \<open>Suc (m + n) = l\<close>[symmetric] pow_list_1
+      unfolding lassoc pow_Suc pow_add
+      unfolding pow_comm[of m, symmetric] lassoc..
   next
     fix r q
     assume "j = 1" "2 \<le> k" and sol: "x = (q \<cdot> r \<^sup>@ k) \<^sup>@ (l - 1) \<cdot> q" "y = r" "z = q \<cdot> r \<^sup>@ k"
     have "0 < l"
       using \<open>2 \<le> l\<close> by force
     show ?thesis
-      unfolding sol \<open>j = 1\<close> pow_1
-      unfolding pow_pos'[OF \<open>0 < l\<close>] rassoc..
+      unfolding sol \<open>j = 1\<close> pow_list_1
+      unfolding pow_pos2[OF \<open>0 < l\<close>] rassoc..
   next
     fix r q t
     assume "j = 1" "2 \<le> k" and sol:
@@ -951,7 +950,7 @@ next
       "y = q \<cdot> r \<cdot> r \<cdot> q" "z = (r \<cdot> q) \<^sup>@ t \<cdot> r \<cdot> r \<cdot> q"
       "2 \<le> t"
     show "x \<^sup>@ j \<cdot> y \<^sup>@ k = z \<^sup>@ l"
-      unfolding \<open>j = 2\<close> \<open>k = 1\<close> \<open>l = 2\<close> sol pow_1 pow_two
+      unfolding \<open>j = 2\<close> \<open>k = 1\<close> \<open>l = 2\<close> sol pow_list_1 pow_list_2
       by comparison
   qed
 qed
@@ -983,7 +982,7 @@ proof(rule ccontr)
     unfolding ka_def ka'_def using assms(4) assms(6) by presburger+
 
   have "x\<^sup>@j\<cdot>y\<^sup>@ka' = x\<^sup>@j\<cdot>y\<^sup>@ka\<cdot>y\<^sup>@dif"
-    unfolding add_exps[symmetric] \<open>ka' = ka + dif\<close>..
+    unfolding pow_add[symmetric] \<open>ka' = ka + dif\<close>..
 
   consider "dif = 1" | "2 \<le> dif"
     using \<open>ka < ka'\<close> \<open>ka' = ka + dif\<close> by fastforce
@@ -992,10 +991,10 @@ proof(rule ccontr)
     assume "dif = 1"
     define u where "u = x\<^sup>@j\<cdot>y\<^sup>@(ka - 1)"
     have "\<not> primitive (u \<cdot> y)"
-      unfolding u_def rassoc pow_Suc'[symmetric]  Suc_minus[OF \<open>ka \<noteq> 0\<close>] by fact
+      unfolding u_def rassoc pow_Suc2[symmetric]  Suc_minus[OF \<open>ka \<noteq> 0\<close>] by fact
     have "\<not> primitive (u \<cdot> y \<cdot> y)"
-      unfolding u_def rassoc using \<open>\<not> primitive(x\<^sup>@j\<cdot>y\<^sup>@ka')\<close>[unfolded \<open>x\<^sup>@j\<cdot>y\<^sup>@ka' = x\<^sup>@j\<cdot>y\<^sup>@ka\<cdot>y\<^sup>@dif\<close> \<open>dif = 1\<close> pow_1]
-      unfolding pow_Suc'[of y "ka - 1", unfolded Suc_minus[OF \<open>ka \<noteq> 0\<close>]] rassoc.
+      unfolding u_def rassoc using \<open>\<not> primitive(x\<^sup>@j\<cdot>y\<^sup>@ka')\<close>[unfolded \<open>x\<^sup>@j\<cdot>y\<^sup>@ka' = x\<^sup>@j\<cdot>y\<^sup>@ka\<cdot>y\<^sup>@dif\<close> \<open>dif = 1\<close> pow_list_1]
+      unfolding pow_Suc2[of "ka - 1" y, unfolded Suc_minus[OF \<open>ka \<noteq> 0\<close>]] rassoc.
     from imprim_ext_suf_comm[OF \<open>\<not> primitive (u \<cdot> y)\<close> \<open>\<not> primitive (u \<cdot> y \<cdot> y)\<close>]
     have "(x \<^sup>@ j \<cdot> y \<^sup>@ (ka - 1)) \<cdot> y = y \<cdot> x \<^sup>@ j \<cdot> y \<^sup>@ (ka - 1)"
       unfolding u_def.
@@ -1047,19 +1046,19 @@ proof-
     using \<open>2 \<le> l'\<close> by auto
   have "r \<cdot> q \<cdot> r \<cdot> q \<le>p x"
    using pref_extD[of "r\<cdot>q\<cdot>r\<cdot>q" "(r \<cdot> q) \<^sup>@ (t - 2) \<cdot> r"]
-    unfolding  x[folded pop_pow[OF \<open>2 \<le> t\<close>], unfolded pow_two] rassoc by blast
+    unfolding  x[folded pop_pow[OF \<open>2 \<le> t\<close>], unfolded pow_list_2] rassoc by blast
 
   have per1: "x \<cdot> q \<cdot> r \<le>p (r \<cdot> q) \<cdot> x \<cdot> q \<cdot> r"
     unfolding x by comparison
   have per2: "x \<cdot> q \<cdot> r \<le>p z' \<cdot> x \<cdot> q \<cdot> r"
-    by (rule pref_pow_root[of _ _ l'],
+    by (rule pref_pow_root[of _ l'],
     unfold \<open>x\<cdot>y\<^sup>@k = z'\<^sup>@l'\<close>[unfolded  y  pow_pos[OF \<open>0 < k\<close>], symmetric])
     comparison
   have "(r \<cdot> q) \<cdot> z' \<noteq> z' \<cdot> (r \<cdot> q)"
   proof
     assume "(r \<cdot> q) \<cdot> z' = z' \<cdot> (r \<cdot> q)"
     hence "(r \<cdot> q) \<cdot> z'\<^sup>@l' = z'\<^sup>@l' \<cdot> r \<cdot> q"
-      by (simp add: comm_add_exp')
+      by (simp add: comm_pow_comm)
     from this[unfolded z']
     have "r \<cdot> q = q \<cdot> r"
       using \<open>0 < k\<close> by mismatch
@@ -1071,7 +1070,7 @@ proof-
     unfolding lenmorph by linarith
 
   from eqdE[OF \<open>x\<cdot>y\<^sup>@k = z'\<^sup>@l'\<close>[unfolded pow_pos[OF \<open>0 < l'\<close>]
-       pow_pos'[OF \<open>0 < l'-1\<close>]] \<open>\<^bold>|x\<^bold>| \<le> \<^bold>|z'\<^bold>|\<close> ]
+       pow_pos2[OF \<open>0 < l'-1\<close>]] \<open>\<^bold>|x\<^bold>| \<le> \<^bold>|z'\<^bold>|\<close> ]
   obtain w where "x \<cdot> w = z'" "w \<cdot> z' \<^sup>@ (l' - 1 - 1) \<cdot> z' = y \<^sup>@ k".
   from this(1) this(2)[unfolded lassoc]
   have  "x \<le>f y\<^sup>@k"
@@ -1101,12 +1100,12 @@ shows "k = k'"
 proof-
   have "j = 1 \<or> k = 1"
     using Lyndon_Schutzenberger_prim[OF pow_non_prim pow_non_prim,
-        OF _ _  \<open>\<not> primitive (x \<^sup>@ j \<cdot> y \<^sup>@ k)\<close>, THEN comm_drop_exps]
-       \<open>0 < j\<close> \<open>0 < k\<close> \<open>x \<cdot> y \<noteq> y \<cdot> x\<close> by linarith
+        OF _ _  \<open>\<not> primitive (x \<^sup>@ j \<cdot> y \<^sup>@ k)\<close>]
+        comm_drop_exps[OF \<open>0 < j\<close> \<open>0 < k\<close>]  \<open>x \<cdot> y \<noteq> y \<cdot> x\<close>  by blast
   have "j' = 1 \<or> k' = 1"
     using Lyndon_Schutzenberger_prim[OF pow_non_prim pow_non_prim,
-        OF _ _  \<open>\<not> primitive (x \<^sup>@ j' \<cdot> y \<^sup>@ k')\<close>, THEN comm_drop_exps]
-       \<open>0 < j'\<close> \<open>0 < k'\<close> \<open>x \<cdot> y \<noteq> y \<cdot> x\<close> by linarith
+        OF _ _  \<open>\<not> primitive (x \<^sup>@ j' \<cdot> y \<^sup>@ k')\<close>]
+        comm_drop_exps[OF \<open>0 < j'\<close> \<open>0 < k'\<close>]  \<open>x \<cdot> y \<noteq> y \<cdot> x\<close>  by blast
   show "k = k'"
   proof (cases "j = j'")
     assume "j = j'"
@@ -1121,7 +1120,7 @@ proof-
         using \<open>j \<noteq> j'\<close> \<open>0 < j'\<close> \<open>k \<noteq> k'\<close> \<open>0 < k\<close>  \<open>j' = 1 \<or> k' = 1\<close> by auto
       from LS_unique_distinct[OF \<open>x \<cdot> y \<noteq> y \<cdot> x\<close>  \<open>2 \<le> j'\<close> _ \<open>2 \<le> k\<close>]
       show False
-        using \<open>\<not> primitive(x\<^sup>@j'\<cdot>y\<^sup>@k')\<close>[unfolded \<open>k'=1\<close> pow_1] \<open>\<not> primitive(x\<^sup>@j\<cdot>y\<^sup>@k)\<close>[unfolded \<open>j=1\<close> pow_1]
+        using \<open>\<not> primitive(x\<^sup>@j'\<cdot>y\<^sup>@k')\<close>[unfolded \<open>k'=1\<close> pow_list_1] \<open>\<not> primitive(x\<^sup>@j\<cdot>y\<^sup>@k)\<close>[unfolded \<open>j=1\<close> pow_list_1]
         by blast
     next
       assume "k \<noteq> k'" and  "j \<noteq> 1"
@@ -1129,7 +1128,7 @@ proof-
         using \<open>0 < j\<close> \<open>j = 1 \<or> k = 1\<close> \<open>0 < k'\<close> \<open>j' = 1 \<or> k' = 1\<close> by auto
       from LS_unique_distinct[OF \<open>x \<cdot> y \<noteq> y \<cdot> x\<close> \<open>2 \<le> j\<close> _ \<open>2 \<le> k'\<close>]
       show False
-        using \<open>\<not> primitive(x\<^sup>@j'\<cdot>y\<^sup>@k')\<close>[unfolded \<open>j'=1\<close> pow_1] \<open>\<not> primitive(x\<^sup>@j\<cdot>y\<^sup>@k)\<close>[unfolded \<open>k=1\<close> pow_1]
+        using \<open>\<not> primitive(x\<^sup>@j'\<cdot>y\<^sup>@k')\<close>[unfolded \<open>j'=1\<close> pow_list_1] \<open>\<not> primitive(x\<^sup>@j\<cdot>y\<^sup>@k)\<close>[unfolded \<open>k=1\<close> pow_list_1]
         by blast
     qed
   qed
@@ -1159,7 +1158,7 @@ proof-
 
   consider "y \<^sup>@ k <s z" | "z \<le>s y\<^sup>@k"
     using ruler_eq'[reversed,
-    OF \<open>x \<cdot> y\<^sup>@k = z\<^sup>@l\<close>[symmetric, unfolded pow_pos'[OF \<open>0 < l\<close>]]] by blast
+    OF \<open>x \<cdot> y\<^sup>@k = z\<^sup>@l\<close>[symmetric, unfolded pow_pos2[OF \<open>0 < l\<close>]]] by blast
   thus ?thesis
   proof(cases)
     assume "y\<^sup>@k <s z"
@@ -1255,7 +1254,7 @@ proof-
   proof(cases)
     assume "k=1"
     have "4 \<le> \<^bold>|x\<^bold>| + \<^bold>|y\<^bold>|"
-      using case_j1k1[OF eq[unfolded \<open>k = 1\<close> pow_1] \<open>x \<cdot> y \<noteq> y \<cdot> x\<close> \<open>2 \<le> l\<close>]
+      using case_j1k1[OF eq[unfolded \<open>k = 1\<close> pow_list_1] \<open>x \<cdot> y \<noteq> y \<cdot> x\<close> \<open>2 \<le> l\<close>]
       by blast
     thus ?thesis
       unfolding \<open>k = 1\<close> by force
@@ -1275,7 +1274,7 @@ proof-
     define z' where "z' = rotate \<^bold>|x\<^bold>| z"
     hence "y\<^sup>@k \<cdot> x = z' \<^sup>@ l"
       using arg_cong[OF assms(1), of "\<lambda>t. rotate \<^bold>|x\<^bold>| t"]
-      unfolding rotate_append rotate_pow_comm
+      unfolding rotate_append rotate_pow_list_swap
       by blast
     interpret LS_len_le y x k 1 l z'
       using \<open>\<^bold>|x\<^bold>| \<le> \<^bold>|y\<^bold>|\<close> \<open>y \<cdot> x \<noteq> x \<cdot> y\<close> \<open>y\<^sup>@k \<cdot> x = z' \<^sup>@ l\<close> \<open>2 \<le> l\<close> \<open>1 \<le> k\<close>

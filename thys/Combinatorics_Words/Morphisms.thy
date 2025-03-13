@@ -4,7 +4,6 @@
 
 Part of Combinatorics on Words Formalized. See https://gitlab.com/formalcow/combinatorics-on-words-formalized/
 
-A version of the theory is included in the AFP. See https://www.isa-afp.org/entries/Combinatorics_Words.html
 *)
 
 theory Morphisms
@@ -448,7 +447,8 @@ proof (intro nonerI notI)
     using \<open>f\<^sup>\<C> a = \<epsilon>\<close> unfolding morph
     by (simp add: core_def eq_append_not_prim)
   have "primitive ([a] \<cdot> [b] \<cdot> [b])"
-    using prim_abk[OF \<open>a \<noteq> b\<close>, of 2] by simp
+    using prim_abk[OF \<open>a \<noteq> b\<close>, of 2]
+    by (simp add: pow_list_2)
   from prim_morph[OF _ this] \<open>\<not> primitive (f ([a] \<cdot> [b] \<cdot> [b]))\<close>
   show False
     by simp
@@ -917,7 +917,7 @@ proof
       by blast
     from arg_cong[OF this(2), of concat]
     show False
-      unfolding concat.simps(1) concat_sing_pow primroot_exp_eq
+      unfolding concat.simps(1) concat_pow_list_single primroot_exp_eq
       using emp_not_in \<open>u \<in> \<C>\<close> by blast
   qed
   fix us vs
@@ -1331,7 +1331,7 @@ proof (rule ccontr)
   note  min_solD[OF assms]
   have "g (\<rho> sol) = h (\<rho> sol)"
     by (rule pow_eq_eq[OF _ \<open>0 < k\<close>])
-    (unfold g.pow_morph[of "\<rho> sol" k, symmetric] h.pow_morph[of "\<rho> sol" k, symmetric] \<open>(\<rho> sol)\<^sup>@k = sol\<close>, fact)
+    (unfold g.pow_morph[of k "\<rho> sol", symmetric] h.pow_morph[of k "\<rho> sol", symmetric] \<open>(\<rho> sol)\<^sup>@k = sol\<close>, fact)
   thus False
     using \<open>\<not> primitive sol\<close>  min_solD_min[OF \<open>sol \<in> g =\<^sub>M h\<close> primroot_nemp primroot_pref] \<open>sol \<noteq> \<epsilon>\<close>
     unfolding prim_primroot_conv[OF \<open>sol \<noteq> \<epsilon>\<close>, symmetric] by blast
@@ -1358,7 +1358,7 @@ proof-
         using \<open>s1 \<in> g =\<^sub>M h\<close> \<open>\<not> u \<in> g =\<^sub>M h\<close>[folded \<open>s1 \<cdot> u' = u\<close>] by force
       obtain exp where "(\<rho> u')\<^sup>@exp = u'" "0 < exp"
         using primroot_expE.
-      from pow_eq_eq[of "g (\<rho> u')" exp "h (\<rho> u')", folded g.pow_morph h.pow_morph, unfolded this(1), OF \<open>g u' = h u'\<close> \<open>0 < exp\<close>]
+      from pow_eq_eq[of exp "g (\<rho> u')" "h (\<rho> u')", folded g.pow_morph h.pow_morph, unfolded this(1), OF \<open>g u' = h u'\<close> \<open>0 < exp\<close>]
       have "g (\<rho> u') = h (\<rho> u')".
       have "\<^bold>|\<rho> u'\<^bold>| < \<^bold>|u\<^bold>|"
         using add_strict_increasing[OF nemp_len [OF min_solD'[OF \<open>s1 \<in> g =\<^sub>M h\<close>]] primroot_len_le[OF \<open>u' \<noteq> \<epsilon>\<close>]]
@@ -1909,7 +1909,7 @@ proof(cases "set w \<subseteq> {hd w}")
   assume  "set w \<subseteq> {hd w}"
   then obtain l where "w = [hd w]\<^sup>@l"
     by blast
-  from nemp_exp_pos[OF \<open>w \<noteq> \<epsilon>\<close>, of "[hd w]" l, folded this]
+  from nemp_exp_pos[OF \<open>w \<noteq> \<epsilon>\<close>, of l "[hd w]", folded this]
   have "0 < l"
     by fast
   from \<open>g w = h w\<close>
@@ -1954,7 +1954,7 @@ next
       unfolding   hd_append2[of _ "h [b] \<cdot> h w'", OF \<open>t\<^sup>@(k*l-m*l) \<noteq> \<epsilon>\<close>, folded *] \<open>hd (t\<^sup>@(k*l-m*l)) = hd t\<close>.
     have "hd t = hd (g [hd w])"
       using g.hd_im_hd_hd[OF \<open>w \<noteq> \<epsilon>\<close>, unfolded  \<open>g\<^sup>\<C> (hd w) = t \<^sup>@ m\<close>[unfolded core_def]]
-            hd_append2[OF \<open>t \<noteq> \<epsilon>\<close>, of "t\<^sup>@(m-1)", unfolded pow_Suc, folded pow_Suc[of t "m-1", unfolded Suc_minus[OF \<open>m \<noteq> 0\<close>]]]
+            hd_append2[OF \<open>t \<noteq> \<epsilon>\<close>, of "t\<^sup>@(m-1)", unfolded pow_Suc, folded pow_Suc[of "m-1" t, unfolded Suc_minus[OF \<open>m \<noteq> 0\<close>]]]
             g.hd_im_hd_hd[OF \<open>w \<noteq> \<epsilon>\<close>] by force
     thus False
       unfolding \<open>hd t = hd (g [b])\<close> using \<open>b \<noteq> hd w\<close> g.marked_morph by blast
@@ -2160,7 +2160,7 @@ proof-
   have "[a] \<^sup>@ \<^bold>|h [b]\<^bold>| \<noteq> \<epsilon>"
     using nemp_len[OF h.sing_to_nemp, of b] by simp
   obtain e f where "g e =\<^sub>m h f" and "e \<le>p [a] \<^sup>@ \<^bold>|h [b]\<^bold>|" and "f \<le>p [b] \<^sup>@ \<^bold>|g [a]\<^bold>|"
-    using   min_coin_prefE[OF comm_common_power[OF assms,folded g.pow_morph h.pow_morph]
+    using   min_coin_prefE[OF comm_common_pow_list_iff[OF assms,folded g.pow_morph h.pow_morph]
      \<open>[a] \<^sup>@ \<^bold>|h [b]\<^bold>| \<noteq> \<epsilon>\<close>, of thesis] by blast
   note e =  pref_sing_pow[OF \<open>e \<le>p [a] \<^sup>@ \<^bold>|h [b]\<^bold>|\<close>]
   note f = pref_sing_pow[OF \<open>f \<le>p [b] \<^sup>@ \<^bold>|g [a]\<^bold>|\<close>]
@@ -2168,7 +2168,7 @@ proof-
   have exps: "\<^bold>|e\<^bold>| = Suc (\<^bold>|e\<^bold>| - 1)" "\<^bold>|f\<^bold>| = Suc (\<^bold>|f\<^bold>| - 1)"
     by auto
   have "hd e = a"
-    using \<open>e = [a] \<^sup>@ \<^bold>|e\<^bold>|\<close>[unfolded pow_Suc[of "[a]" "\<^bold>|e\<^bold>| - 1", folded \<open>\<^bold>|e\<^bold>| = Suc (\<^bold>|e\<^bold>| - 1)\<close>], folded hd_word[of a "[a] \<^sup>@ (\<^bold>|e\<^bold>| - 1)"]]
+    using \<open>e = [a] \<^sup>@ \<^bold>|e\<^bold>|\<close>[unfolded pow_Suc[of "\<^bold>|e\<^bold>| - 1" "[a]", folded \<open>\<^bold>|e\<^bold>| = Suc (\<^bold>|e\<^bold>| - 1)\<close>], folded hd_word[of a "[a] \<^sup>@ (\<^bold>|e\<^bold>| - 1)"]]
     list.sel(1)[of a "[a] \<^sup>@ (\<^bold>|e\<^bold>| - 1)"] by argo
   from that suc_morph_sings[OF \<open>g e =\<^sub>m h f\<close>, unfolded this] e f exps
   show thesis

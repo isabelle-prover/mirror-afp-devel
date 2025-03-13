@@ -5,7 +5,6 @@
 
 Part of Combinatorics on Words Formalized. See https://gitlab.com/formalcow/combinatorics-on-words-formalized/
 
-A version of the theory is included in the AFP. See https://www.isa-afp.org/entries/Combinatorics_Words.html
 *)
 
 theory Binary_Code_Morphisms
@@ -381,7 +380,7 @@ proof-
   have len: "\<^bold>|f w\<^bold>| = \<^bold>|(f [a])\<^sup>@(count_list w a) \<cdot> (f [1-a])\<^sup>@(count_list w (1-a))\<^bold>|"
     using  bin_len_count_im unfolding lenmorph pow_len.
   have *: "(f [a])\<^sup>@(count_list w a) \<cdot> (f [1-a])\<^sup>@(count_list w (1-a)) = mroot\<^sup>@(fn0 * (count_list w bina) +  fn1 * (count_list w binb))"
-    by (induct a) (unfold binA_simps bin0_im bin1_im, unfold pow_mult[symmetric] add_exps[symmetric], simp_all add: add.commute)
+    by (induct a) (unfold binA_simps bin0_im bin1_im, unfold pow_mult[symmetric] pow_add[symmetric], simp_all add: add.commute)
   show ?thesis
     using len nemp_len[OF prim_nemp[OF per_morph_root_prim]]
     unfolding * \<open>f w = mroot\<^sup>@k\<close> pow_len by force
@@ -389,7 +388,7 @@ qed
 
 lemma bin_per_morph_expI: "f u = mroot\<^sup>@((im_exp \<aa>) * (count_list u bina) + im_exp \<bb> * (count_list u binb))"
   using sorted_image[of u bina, unfolded binA_simps]
-  by (simp add: add_exps per_morph_im_exp pow_mult)
+  by (simp add: pow_add per_morph_im_exp pow_mult)
 
 end
 
@@ -785,8 +784,9 @@ lemma bin_lcp_pref: assumes "set w = binUNIV"
 
 
 lemma bin_lcp_pref'': "[a] \<le>f w \<Longrightarrow> [1-a] \<le>f w  \<Longrightarrow> \<alpha> \<le>p (f w)"
-  using  bin_lcp_pref[of w]  sing_pow_fac[OF bin_distinct(1),of w] sing_pow_fac[OF bin_distinct(2), of w]
-  apply (cases rule: finite_2.exhaust[of a]) apply fastforce
+  using  bin_lcp_pref[of w]  sing_pow_fac[OF bin_distinct(1), of w] sing_pow_fac[OF bin_distinct(2), of w]
+  apply (cases rule: finite_2.exhaust[of a])
+  apply (simp add: sing_fac_set)
   by (meson bin_UNIV_I sing_fac_set)
 lemma bin_lcp_pref': "\<aa> \<le>f w \<Longrightarrow> \<bb> \<le>f w  \<Longrightarrow> \<alpha> \<le>p (f w)"
   using bin_lcp_pref''[of bina, unfolded binA_simps].

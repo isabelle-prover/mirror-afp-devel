@@ -5,7 +5,6 @@
 
 Part of Combinatorics on Words Formalized. See https://gitlab.com/formalcow/combinatorics-on-words-formalized/
 
-A version of the theory is included in the AFP. See https://www.isa-afp.org/entries/Binary_Code_Imprimitive.html
 *)
 
 theory Binary_Square_Interpretation
@@ -123,7 +122,7 @@ proof (cases "u \<cdot> v = \<epsilon>")
 
   assume "u \<cdot> v \<noteq> \<epsilon>"
   have "?p \<noteq> \<epsilon>" and "?s \<noteq> \<epsilon>" and "v \<cdot> u \<noteq> \<epsilon>"
-    using \<open>u \<cdot> v \<noteq> \<epsilon>\<close> nonzero_pow_emp[of _ "u\<cdot>v"] k_pos m_pos by blast+
+    using \<open>u \<cdot> v \<noteq> \<epsilon>\<close> pow_list_Nil_iff_Nil[of _ "u\<cdot>v"] k_pos m_pos by blast+
   obtain r where "u \<in> \<langle>{r}\<rangle>"  and "v \<in> \<langle>{r}\<rangle>" and "primitive r"
     using comm_primrootE'[OF \<open>u \<cdot> v = v \<cdot> u\<close>] pow_sing_gen by metis
   hence "r \<noteq> \<epsilon>"
@@ -137,7 +136,7 @@ proof (cases "u \<cdot> v = \<epsilon>")
     using  \<open>?p \<in> \<langle>{r}\<rangle>\<close> \<open>x \<le>p ?p \<cdot> x\<close> \<open>?p \<noteq> \<epsilon>\<close> by blast
   have "v \<cdot> u \<le>s x"
     using ruler_le[reversed, OF _ _ \<open>\<^bold>|u \<cdot> v\<^bold>| \<le> \<^bold>|x\<^bold>|\<close>[unfolded swap_len[of u]],
-        of  "(x \<cdot> (u \<cdot> v) \<^sup>@ (m-1) \<cdot> u) \<cdot> v \<cdot> u", OF triv_suf, unfolded rassoc, OF \<open>x \<le>s x \<cdot> ?s\<close>[unfolded pow_pos'[OF m_pos] rassoc]].
+        of  "(x \<cdot> (u \<cdot> v) \<^sup>@ (m-1) \<cdot> u) \<cdot> v \<cdot> u", OF triv_suf, unfolded rassoc, OF \<open>x \<le>s x \<cdot> ?s\<close>[unfolded pow_pos2[OF m_pos] rassoc]].
   have "r \<le>s  v \<cdot> u"
     using  per_root_suf[OF \<open>v \<cdot> u \<noteq> \<epsilon>\<close>  \<open>v \<cdot> u \<in> \<langle>{r}\<rangle>\<close>].
   have "r \<le>s r \<cdot> x"
@@ -221,7 +220,7 @@ next
 
 \<comment> \<open>obtain the left complement\<close>
   from   eqdE[reversed, of p1 ov "v \<cdot> (u \<cdot> v)\<^sup>@(k-1)" "u \<cdot> v", unfolded rassoc,
-      OF \<open>p1 \<cdot> ov = ?p\<close>[unfolded pow_pos'[OF k_pos]]]
+      OF \<open>p1 \<cdot> ov = ?p\<close>[unfolded pow_pos2[OF k_pos]]]
   have "v \<cdot> (u \<cdot> v) \<^sup>@ (k -1)  \<le>p p1"
     unfolding lenmorph prefix_def eq_commute[of p1] rassoc
     using trans_le_add1[OF \<open>\<^bold>|ov\<^bold>| \<le> \<^bold>|u\<^bold>|\<close>] by metis
@@ -251,7 +250,7 @@ next
       hence "?p \<cdot> v \<cdot> u \<le>p x"
         using \<open>x \<le>p ?p \<cdot> x\<close> \<open>v \<cdot> u \<le>p x\<close> pref_prod_longer by blast
       hence "v \<cdot> (u \<cdot> v)\<^sup>@(k-1) \<cdot> u \<cdot> v \<cdot> v \<cdot> u \<le>p x"
-        unfolding pow_pos'[OF k_pos] rassoc.
+        unfolding pow_pos2[OF k_pos] rassoc.
 
       have "\<^bold>|v \<cdot> (u \<cdot> v)\<^sup>@(k-1) \<cdot> u \<cdot> v \<cdot> v \<cdot> u\<^bold>| = \<^bold>|v \<cdot> (u \<cdot> v)\<^sup>@(k-1) \<cdot> q \<cdot> u \<cdot> v \<cdot> ov\<^bold>|"
         using lenarg[OF \<open>p1 \<cdot> ov = ?p\<close>[folded \<open>v \<cdot> (u \<cdot> v)\<^sup>@(k-1) \<cdot> q = p1\<close>, unfolded pow_pos[OF k_pos] rassoc cancel]]
@@ -273,7 +272,7 @@ next
           using \<open>v \<cdot> (u \<cdot> v) \<^sup>@ (k-1) \<cdot> q = p1\<close> by auto
       qed
       show "v \<cdot> u \<le>s x"
-        using \<open>?s \<le>s x\<close>[unfolded pow_pos'[OF m_pos] rassoc] suf_extD by metis
+        using \<open>?s \<le>s x\<close>[unfolded pow_pos2[OF m_pos] rassoc] suf_extD by metis
       show "\<^bold>|q\<^bold>| \<le> \<^bold>|v \<cdot> u\<^bold>|"
         using lenarg[OF \<open>u \<cdot> v \<cdot> v \<cdot> u \<cdot> s' = q \<cdot> u \<cdot> v \<cdot> u\<close>] lenarg[OF \<open>ov \<cdot> s' = u\<close>] by force
     qed
@@ -295,7 +294,7 @@ next
   hence "?p \<le>p x"
     using \<open>x \<le>p ?p \<cdot> x\<close> pref_prod_long by blast
   hence  "v \<cdot> (u \<cdot> v)\<^sup>@(k-1) \<cdot> u \<cdot> v \<cdot> v \<le>p ?p \<cdot> x"
-    using \<open>x \<le>p ?p \<cdot> x\<close>  unfolding pow_pos'[OF k_pos] rassoc  by (auto simp add: prefix_def)
+    using \<open>x \<le>p ?p \<cdot> x\<close>  unfolding pow_pos2[OF k_pos] rassoc  by (auto simp add: prefix_def)
 
   have "\<^bold>|?s\<^bold>| \<le> \<^bold>|x\<^bold>|"
     using  len2 unfolding pow_pos[OF k_pos] pow_len lenmorph by auto
@@ -308,16 +307,16 @@ next
     using len1[folded \<open>p' \<cdot> ?s = x\<close>] by force
 
   have "\<^bold>|v \<cdot> (u \<cdot> v)\<^sup>@(k-1)\<^bold>|  < \<^bold>|p'\<^bold>|"
-    using len2[folded \<open>p' \<cdot> ?s = x\<close>] unfolding pow_pos'[OF k_pos] by force
+    using len2[folded \<open>p' \<cdot> ?s = x\<close>] unfolding pow_pos2[OF k_pos] by force
 
   from less_imp_le[OF this]
   obtain p where "v \<cdot> (u \<cdot> v)\<^sup>@(k-1) \<cdot> p = p'"
     using ruler_le[OF \<open>?p \<le>p x\<close> \<open>p' \<cdot> u \<cdot> v \<le>p x\<close>,
-        unfolded pow_pos'[OF k_pos] lassoc, THEN pref_cancel_right, THEN pref_cancel_right]
+        unfolded pow_pos2[OF k_pos] lassoc, THEN pref_cancel_right, THEN pref_cancel_right]
     unfolding lenmorph  by (auto simp add: prefix_def)
 
   have "\<^bold>|p\<^bold>| \<le> \<^bold>|v\<^bold>|"
-    using \<open>v \<cdot> (u \<cdot> v)\<^sup>@(k-1) \<cdot> p = p'\<close> \<open>\<^bold>|p' \<cdot> u \<cdot> v\<^bold>| \<le> \<^bold>|?p \<cdot> v\<^bold>|\<close> unfolding pow_pos'[OF k_pos] by force
+    using \<open>v \<cdot> (u \<cdot> v)\<^sup>@(k-1) \<cdot> p = p'\<close> \<open>\<^bold>|p' \<cdot> u \<cdot> v\<^bold>| \<le> \<^bold>|?p \<cdot> v\<^bold>|\<close> unfolding pow_pos2[OF k_pos] by force
 
   show "u \<cdot> v = v \<cdot> u"
   proof (rule uv_fac_uvv)
@@ -325,18 +324,18 @@ next
     proof (rule pref_cancel[of "v \<cdot> (u \<cdot> v)\<^sup>@(k-1)"], rule ruler_le)
       show "(v \<cdot> (u \<cdot> v) \<^sup>@ (k-1)) \<cdot> p \<cdot> u \<cdot> v \<le>p ?p \<cdot> x"
         unfolding lassoc \<open>v \<cdot> (u \<cdot> v)\<^sup>@(k-1) \<cdot> p = p'\<close>[unfolded lassoc]
-        using \<open>p' \<cdot> u \<cdot> v \<le>p x\<close> \<open>x \<le>p ?p \<cdot> x\<close> unfolding pow_pos'[OF k_pos] by force
+        using \<open>p' \<cdot> u \<cdot> v \<le>p x\<close> \<open>x \<le>p ?p \<cdot> x\<close> unfolding pow_pos2[OF k_pos] by force
       show "(v \<cdot> (u \<cdot> v) \<^sup>@ (k-1)) \<cdot> u \<cdot> v \<cdot> v \<le>p (v \<cdot> (u \<cdot> v) \<^sup>@ k) \<cdot> x"
-        unfolding pow_pos'[OF k_pos] rassoc
+        unfolding pow_pos2[OF k_pos] rassoc
         using \<open>v \<cdot> (u \<cdot> v) \<^sup>@ k \<le>p x\<close> by (auto simp add: prefix_def)
       show "\<^bold>|(v \<cdot> (u \<cdot> v) \<^sup>@ (k-1)) \<cdot> p \<cdot> u \<cdot> v\<^bold>| \<le> \<^bold>|(v \<cdot> (u \<cdot> v) \<^sup>@ (k-1)) \<cdot> u \<cdot> v \<cdot> v\<^bold>|"
-        using \<open>v \<cdot> (u \<cdot> v)\<^sup>@(k-1) \<cdot> p = p'\<close> \<open>\<^bold>|p' \<cdot> u \<cdot> v\<^bold>| \<le> \<^bold>|?p \<cdot> v\<^bold>|\<close> unfolding pow_pos'[OF k_pos] by force
+        using \<open>v \<cdot> (u \<cdot> v)\<^sup>@(k-1) \<cdot> p = p'\<close> \<open>\<^bold>|p' \<cdot> u \<cdot> v\<^bold>| \<le> \<^bold>|?p \<cdot> v\<^bold>|\<close> unfolding pow_pos2[OF k_pos] by force
     qed
 
     have "p \<le>s x"
       using  \<open>p' \<cdot> ?s = x\<close>[folded \<open>v \<cdot> (u \<cdot> v)\<^sup>@(k-1) \<cdot> p = p'\<close>] \<open>x \<le>s x \<cdot> ?s\<close> suf_cancel suf_extD by metis
 
-    from ruler_le[reversed, OF this \<open>?s \<le>s x\<close>, unfolded pow_pos'[OF m_pos] rassoc]
+    from ruler_le[reversed, OF this \<open>?s \<le>s x\<close>, unfolded pow_pos2[OF m_pos] rassoc]
     show "p \<le>s (u \<cdot> v) \<^sup>@ (m-1) \<cdot> u \<cdot> v \<cdot> u"
       using  \<open>\<^bold>|p\<^bold>| \<le> \<^bold>|v\<^bold>|\<close> unfolding  lenmorph by auto
 
@@ -424,7 +423,7 @@ lemma pref_xx_exp_le: assumes "(\<rho> x)\<^sup>@e \<le>p x \<cdot> x"
   shows "e \<le> e\<^sub>\<rho> x*2"
 proof-
   have "x \<cdot> x = (\<rho> x)\<^sup>@(e\<^sub>\<rho> x * 2)"
-    unfolding pow_mult pow_two by simp
+    unfolding pow_mult pow_list_2 by simp
   from pref_len[OF assms, unfolded this pow_len]
   show "e \<le> e\<^sub>\<rho> x * 2"
     using nemp_len[OF primroot_nemp[OF xy_code.bin_fst_nemp]] by force
@@ -440,7 +439,7 @@ proof (rule pref_xx_root_expE[OF \<open>p1 \<le>p [x,x]\<close>, of ?thesis])
   assume "concat p1 = \<rho> x \<^sup>@ e" "e \<le> e\<^sub>\<rho> x * 2"
   show "p \<cdot> concat p1 \<noteq> concat p2"
     using disj_interpD1[OF disj_root _ \<open>p2 \<le>p ws\<close>, of "[\<rho> x]\<^sup>@e"]
-    unfolding \<open>concat p1 = \<rho> x \<^sup>@ e\<close> xy_code.ref_fst_sq concat_pow concat_sing'
+    unfolding \<open>concat p1 = \<rho> x \<^sup>@ e\<close> xy_code.ref_fst_sq concat_pow_list concat_sing'
     using le_exps_pref[OF \<open>e \<le> e\<^sub>\<rho> x * 2\<close>].
 qed
 
@@ -500,16 +499,16 @@ proof-
       \<open>mid_ws = rs \<cdot> [x] \<cdot> qs\<close> by simp
     from comm_primroot_exp[OF xy_code.bin_fst_nemp pref_marker_sq[OF this[unfolded lassoc]]]
     obtain e where e: "concat ([\<rho> x]\<^sup>@e) = p' \<cdot> concat rs"
-      unfolding concat_sing' concat_pow.
+      unfolding concat_sing' concat_pow_list.
     hence "concat ([hd ws] \<cdot> rs) = p \<cdot> (\<rho> x)\<^sup>@e"
       unfolding \<open>hd ws = p \<cdot> p'\<close> by fastforce
-    from \<open>p' \<cdot> concat rs \<cdot> x \<le>p x \<cdot> x\<close>[folded rassoc e, unfolded concat_sing' concat_pow]
+    from \<open>p' \<cdot> concat rs \<cdot> x \<le>p x \<cdot> x\<close>[folded rassoc e, unfolded concat_sing' concat_pow_list]
     have "e \<le> e\<^sub>\<rho> x * 2"
       using pref_xx_exp_le append_prefixD by blast
     from le_exps_pref[OF this]  disj_interpD1[OF disj_root _ \<open>[hd ws] \<cdot> rs \<le>p ws\<close>,
     unfolded xy_code.ref_fst_sq, of "[\<rho> x]\<^sup>@e"]
     show False
-      unfolding concat_sing' concat_pow \<open>concat ([hd ws] \<cdot> rs) = p \<cdot> \<rho> x \<^sup>@ e\<close> by blast
+      unfolding concat_sing' concat_pow_list \<open>concat ([hd ws] \<cdot> rs) = p \<cdot> \<rho> x \<^sup>@ e\<close> by blast
   qed
   hence "mid_ws \<in> lists {y}"
     using \<open>mid_ws \<in> lists {x,y}\<close> by force
@@ -524,7 +523,7 @@ lemma l_mE: obtains m u v l where "(hd ws)\<cdot>y\<^sup>@m\<cdot>u = p\<cdot>x"
   note fac_interpD[OF interp]
   obtain k where "[hd ws] \<cdot> [y]\<^sup>@k \<cdot> [last ws] = ws"
     using kE.
-  from arg_cong[OF this, of concat, folded interpret_concat, unfolded concat_morph rassoc concat_sing' concat_sing_pow]
+  from arg_cong[OF this, of concat, folded interpret_concat, unfolded concat_morph rassoc concat_sing' concat_pow_list_single]
   have "hd ws \<cdot> y\<^sup>@k \<cdot> last ws = p \<cdot> x \<cdot> x \<cdot> s".
   have "\<^bold>|hd ws\<^bold>| \<le> \<^bold>|p \<cdot> x\<^bold>|"
     unfolding lenmorph by (rule two_elem_cases[OF hd_ws_lists])
@@ -549,7 +548,7 @@ lemma l_mE: obtains m u v l where "(hd ws)\<cdot>y\<^sup>@m\<cdot>u = p\<cdot>x"
   have "y\<^sup>@m \<cdot> u \<cdot> (u\<inverse>\<^sup>>y) \<cdot> y\<^sup>@(k - m - 1) = y\<^sup>@m \<cdot> y \<cdot> y\<^sup>@(k - m - 1)"
     using \<open>u <p y\<close>  by (auto simp add: prefix_def)
   also have "... = y\<^sup>@(m + 1 + (k-m-1))"
-    using rassoc add_exps pow_1 by comparison
+    using rassoc pow_add pow_list_1 by comparison
   also have "... = y\<^sup>@k"
     using \<open>m < k\<close>  by auto
   finally obtain l v where "u\<cdot>v = y" and "y\<^sup>@m \<cdot> u \<cdot> v \<cdot> y\<^sup>@l = y\<^sup>@k"
@@ -559,7 +558,7 @@ lemma l_mE: obtains m u v l where "(hd ws)\<cdot>y\<^sup>@m\<cdot>u = p\<cdot>x"
   have "v \<noteq> \<epsilon>"
     using \<open>u <p y\<close> \<open>u\<cdot>v = y\<close>  by force
   have "[hd ws] \<cdot> [y] \<^sup>@ m \<le>p ws"
-    using \<open>[hd ws] \<cdot> [y]\<^sup>@k \<cdot> [last ws] = ws\<close>[folded pop_pow[OF less_imp_le[OF \<open>m < k\<close>]]] by fastforce
+    using \<open>[hd ws] \<cdot> [y]\<^sup>@k \<cdot> [last ws] = ws\<close>[folded pop_pow[OF less_imp_le[OF \<open>m < k\<close>]]]  by force
   from disjoint[OF _ this, of "[x]", unfolded \<open>concat ([hd ws] \<cdot> [y] \<^sup>@ m) = hd ws \<cdot> y \<^sup>@ m\<close>]
   have "u \<noteq> \<epsilon>"
     using \<open>(hd ws) \<cdot> ya = p \<cdot> x\<close>[folded \<open>y\<^sup>@m \<cdot> u = ya\<close>] s_nemp by force
@@ -589,7 +588,7 @@ proof(rule ccontr)
 
   from \<open>v \<cdot> y\<^sup>@l \<cdot> (last ws) = x \<cdot> s\<close>[unfolded \<open>last ws = y\<close>, folded \<open>u \<cdot> v = y\<close>]
   have "x \<le>p (v \<cdot> u)\<^sup>@Suc l \<cdot> v"
-    unfolding pow_Suc' rassoc using append_eq_appendI prefix_def shift_pow by metis
+    unfolding pow_Suc2 rassoc using append_eq_appendI prefix_def shift_pow by metis
   moreover have "(v \<cdot> u) \<^sup>@ Suc l \<cdot> v \<le>p (v \<cdot> u) \<cdot> (v \<cdot> u) \<^sup>@ Suc l \<cdot> v"
     unfolding lassoc pow_comm[symmetric] using rassoc by blast
   ultimately have "x \<le>p (v \<cdot> u) \<cdot> x"
@@ -599,7 +598,7 @@ proof(rule ccontr)
   proof (cases "m = 0")
     assume "m \<noteq> 0"
     have "v \<cdot> u \<le>s x"
-      using \<open>(hd ws)\<cdot>y\<^sup>@m\<cdot>u = p\<cdot>x\<close>[folded \<open>u \<cdot> v = y\<close>, unfolded pow_pos'[OF \<open>m \<noteq> 0\<close>[unfolded neq0_conv]] rassoc]
+      using \<open>(hd ws)\<cdot>y\<^sup>@m\<cdot>u = p\<cdot>x\<close>[folded \<open>u \<cdot> v = y\<close>, unfolded pow_pos2[OF \<open>m \<noteq> 0\<close>[unfolded neq0_conv]] rassoc]
         suf_extD[THEN suf_prod_long[OF _ \<open>\<^bold>|v \<cdot> u\<^bold>| \<le> \<^bold>|x\<^bold>|\<close>], of p "hd ws \<cdot> (u \<cdot> v) \<^sup>@ (m-1) \<cdot> u", unfolded rassoc] by simp
     have [symmetric]: "(v \<cdot> u) \<cdot> x = x \<cdot> (v \<cdot> u)"
       using root_suf_comm'[OF  \<open>x \<le>p (v \<cdot> u) \<cdot> x\<close> \<open>(v \<cdot> u) \<le>s x\<close>].
@@ -620,7 +619,7 @@ proof(rule ccontr)
         show "x \<cdot> x \<le>f  y\<^sup>@Suc (Suc (Suc (m+l)))"
           using facI[of "x\<cdot>x" p s,unfolded \<open>p \<cdot> (x \<cdot> x) \<cdot> s = y\<^sup>@Suc (Suc (Suc (m+l)))\<close>].
         show "x \<cdot> x \<le>f x\<^sup>@2"
-          unfolding pow_two by blast
+          unfolding pow_list_2 by blast
         show "\<^bold>|x\<^bold>| + \<^bold>|y\<^bold>| \<le> \<^bold>|x \<cdot> x\<^bold>|"
           using y_le_x unfolding lenmorph by auto
       qed
@@ -677,7 +676,7 @@ proof (unfold_locales)
     by (unfold_locales, unfold rev_append[symmetric]) (use non_comm[symmetric] in blast)
   have aux: "Ref {\<rho> (rev x), rev y} [rev x, rev x] = rev (map rev (Ref {\<rho> x, y} [x, x]))"
     unfolding xy_code.ref_fst_sq xy_rev.ref_fst_sq rev_map rev_pow sing_pow_palindrom'
-    unfolding  primroot_rev cow_simps list.simps map_pow..
+    unfolding  primroot_rev cow_simps list.simps map_pow_list..
   show "(rev s) (Ref {\<rho> (rev x), rev y} [rev x, rev x]) (rev p) \<sim>\<^sub>\<D> rev (map rev ws)"
     using disj_root unfolding aux rev_disj_interp_iff.
 qed
@@ -871,9 +870,9 @@ proof-
     unfolding interpret_concat[symmetric] using fst_x snd_x by force
   from this[folded ws, unfolded \<open>u' \<cdot> v' = y\<close> \<open>m = 0\<close> \<open>l = 0\<close> pow_zero emp_simps]
   have "k = 1"
-    unfolding eq_pow_exp[OF \<open>y \<noteq> \<epsilon>\<close>, of k 1, symmetric] pow_1 concat_morph concat_pow
+    unfolding eq_pow_exp[OF \<open>y \<noteq> \<epsilon>\<close>, of k 1, symmetric] pow_list_1 concat_morph concat_pow_list
     by simp
-  from ws[unfolded this pow_1]
+  from ws[unfolded this pow_list_1]
     show "ws = [x,y,x]" by simp
   show "u \<cdot> v  = y"
     unfolding \<open>u' = u\<close>[symmetric] \<open>v' = v\<close>[symmetric] by fact+
@@ -940,7 +939,8 @@ proof-
 
   from \<open>(r \<cdot> t)\<^sup>@m \<cdot> r = x\<close>[unfolded pow_pos[OF \<open>0 < m\<close>]]
   have "r \<cdot> t \<le>p x"
-    by fast
+    by blast
+
 
   have "r \<cdot> t = \<rho> v"
   proof (rule ruler_eq_len[of "\<rho> v" "x" "r \<cdot> t", symmetric])
@@ -970,8 +970,8 @@ proof-
       by comparison
     have "x \<cdot> (v \<cdot> u) = (v \<cdot> u) \<cdot> x"
       unfolding \<open>(t \<cdot> r) \<^sup>@  k = u\<close>[symmetric] \<open>(r \<cdot> t) \<^sup>@ l = v\<close>[symmetric]
-      unfolding  \<open>(r \<cdot> t)\<^sup>@m \<cdot> r = x\<close>[symmetric]  add_exps[symmetric] \<open>r \<cdot> t = t \<cdot> r\<close> aux rassoc
-      unfolding lassoc cancel_right add_exps[symmetric]
+      unfolding  \<open>(r \<cdot> t)\<^sup>@m \<cdot> r = x\<close>[symmetric]  pow_add[symmetric] \<open>r \<cdot> t = t \<cdot> r\<close> aux rassoc
+      unfolding lassoc cancel_right pow_add[symmetric]
       by (simp add: add.commute)
     thus False
       using vu_x_non_comm by blast
@@ -1235,7 +1235,7 @@ proof-
     by (rule fac_interpI) force+
 qed
 
-text \<open>A cube cover with long \<open>y\<close>\<close>
+text \<open>Cube cover with a long \<open>y\<close>\<close>
 
 lemma example_cube_cover:
   fixes x y p s
@@ -1265,7 +1265,7 @@ lemma example_pow_cover:
     "p x\<^sup>@n s \<sim>\<^sub>\<I> [x,y,x]"
 proof-
   have xn: "x\<^sup>@n = x\<cdot>x\<^sup>@(n-2)\<cdot>x"
-    unfolding pow_Suc'[symmetric] pow_Suc[symmetric] Suc_minus2[OF \<open>2 \<le> n\<close>]..
+    unfolding pow_Suc2[symmetric] pow_Suc[symmetric] Suc_minus2[OF \<open>2 \<le> n\<close>]..
   show "x \<cdot> y \<noteq> y \<cdot> x" and "\<^bold>|x\<^bold>| + \<^bold>|y\<^bold>| \<le> \<^bold>|x\<^sup>@n\<^bold>|"
     unfolding xn unfolding x_def y_def by simp_all
   show "primitive x"

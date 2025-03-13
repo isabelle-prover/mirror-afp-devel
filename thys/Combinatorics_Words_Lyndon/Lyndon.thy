@@ -4,8 +4,8 @@
 
 Part of Combinatorics on Words Formalized. See https://gitlab.com/formalcow/combinatorics-on-words-formalized/
 
-A version of the theory is included in the AFP. See https://www.isa-afp.org/entries/Combinatorics_Words_Lyndon.html
 *)
+
 theory Lyndon
   imports Combinatorics_Words.CoWBasic
 begin
@@ -14,9 +14,9 @@ chapter "Lyndon words"
 
 text\<open>A Lyndon word is a non-empty word that is lexicographically
 strictly smaller than any other word in its conjugacy class, i.e., than any its rotations.
-They are named after R. Lyndon who introduced them in \cite{ Lyndon54} as ``standard'' sequences.
+They are named after R. Lyndon who introduced them in \cite{Lyndon54} as ``standard'' sequences.
 
-We present elementary results on Lyndon words, mostly covered by results in \cite[\<open>Chapter 5\<close>]{Lo83} and \cite{Duval80, Duval83}.
+We present elementary results on Lyndon words, mostly covered by results in \cite[Chapter 5]{Lo83} and \cite{Duval80,Duval83}.
 
 This definition assumes a linear order on letters given by the context.
 \<close>
@@ -271,14 +271,14 @@ proof-
   obtain q k where "q \<noteq> \<epsilon>" "1 < k" "q\<^sup>@k=w" "w\<noteq>q" \<comment> \<open>the exact match of @{thm non_prim} fastens the proof considerably\<close>
     using non_prim[OF \<open>\<not> primitive w\<close> \<open>w \<noteq> \<epsilon>\<close>] by blast
   hence "q \<le>s w" "q \<noteq> \<epsilon>" "q \<noteq> w"
-    unfolding pow_eq_if_list[of q k] pow_comm[symmetric]
+    unfolding pow_list_eq_if[of k q] pow_comm[symmetric]
     using sufI[of "q \<^sup>@ (k - 1)" q w]
     by presburger+
   hence "w <lex q"
     using assms(2) by blast
   have "q <p w"
     using \<open>1 < k\<close>  \<open>q \<^sup>@ k = w\<close>
-    unfolding pow_eq_if_list[of q k] pow_eq_if_list[of q "k-1"]
+    unfolding pow_list_eq_if[of k q] pow_list_eq_if[of "k-1" q]
     using \<open>w \<noteq> \<epsilon>\<close>  by auto
   from lexordp_append_rightI[of "q\<inverse>\<^sup>>w" q,
       unfolded lq_spref[OF this], OF lq_spref_nemp[OF this]]
