@@ -89,7 +89,8 @@ where
 
 lemma equiv_subseteq_in_sym:
   "\<lbrakk> r `` X \<subseteq> X;  (x, y) \<in> r; y \<in> X; equiv Y r; X \<subseteq> Y \<rbrakk> \<Longrightarrow> x \<in> X"
-  unfolding equiv_def by (auto dest: symD)
+  unfolding equiv_def
+  by (meson ImageI subsetD symE)
 
 lemma FIXME_refl_on_insert_absorb[simp]:
   "\<lbrakk> refl_on A r; x \<in> A \<rbrakk> \<Longrightarrow> insert x (r `` {x}) = r `` {x}"

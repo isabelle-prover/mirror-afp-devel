@@ -1230,9 +1230,12 @@ lemma view_partition_rel_ipurge:
  "view_partition P D (rel_ipurge P I D)"
 proof (subst view_partition_def, rule ballI, rule equivI)
   fix u
+  show "rel_ipurge P I D u \<subseteq> traces P \<times> traces P"
+    by (rule subsetI) (simp add: rel_ipurge_def split_paired_all)
+next
+  fix u
   show "refl_on (traces P) (rel_ipurge P I D u)"
-  proof (rule refl_onI, simp_all add: rel_ipurge_def)
-  qed (rule subsetI, simp add: split_paired_all)
+    by (rule refl_onI) (simp add: rel_ipurge_def)
 next
   fix u
   show "sym (rel_ipurge P I D u)"

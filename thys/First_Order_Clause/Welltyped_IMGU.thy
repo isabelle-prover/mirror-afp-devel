@@ -7,7 +7,7 @@ begin
 
 lemma is_welltyped_subst:
   assumes "welltyped \<V> (Var x) \<tau>" "welltyped \<V> t \<tau>"
-  shows "term.subst.is_welltyped \<V> (subst x t)"
+  shows "is_welltyped \<V> (subst x t)"
   using assms
   unfolding subst_def
   by (simp add: welltyped.simps)
@@ -105,8 +105,8 @@ lemma is_welltyped_unify:
   assumes
     "unify es bs = Some unifier"
     "\<forall>(t, t') \<in> set es. \<exists>\<tau>. welltyped \<V> t \<tau> \<and> welltyped \<V> t' \<tau>"
-    "term.subst.is_welltyped \<V> (subst_of bs)"
-  shows "term.subst.is_welltyped \<V> (subst_of unifier)"
+    "is_welltyped \<V> (subst_of bs)"
+  shows "is_welltyped \<V> (subst_of unifier)"
   using assms
 proof(induction es bs rule: unify.induct)
   case (1 bs)
@@ -170,7 +170,7 @@ next
 
         assume s_s': "(s, s') \<in> set es"
 
-        have "term.subst.is_welltyped \<V> (Var(x := t))"
+        have "is_welltyped \<V> (Var(x := t))"
           using 3(4) term.welltyped.subst_update
           by auto
 
@@ -184,11 +184,11 @@ next
         by fastforce
     next
 
-      have "term.subst.is_welltyped \<V> (subst x t)"
+      have "is_welltyped \<V> (subst x t)"
         using 3(4) is_welltyped_subst
         by fastforce
 
-      then show "term.subst.is_welltyped \<V> (subst_of ((x, t) # bs))"
+      then show "is_welltyped \<V> (subst_of ((x, t) # bs))"
         using 3(5)
         by (simp add: subst_compose_def)
     qed
@@ -220,7 +220,7 @@ next
         using 4(3)
         by auto
 
-      then have "term.subst.is_welltyped \<V> (Var(x := ?t))"
+      then have "is_welltyped \<V> (Var(x := ?t))"
         using term.welltyped.subst_update
         by auto
 
@@ -234,11 +234,11 @@ next
       by fastforce
   next
 
-    have "term.subst.is_welltyped \<V> (subst x ?t)"
+    have "is_welltyped \<V> (subst x ?t)"
       using 4(3) is_welltyped_subst
       by fastforce
 
-    then show "term.subst.is_welltyped \<V> (subst_of ((x, ?t) # bs))"
+    then show "is_welltyped \<V> (subst_of ((x, ?t) # bs))"
       using 4(4)
       by (simp add: subst_compose_def)
   qed
@@ -248,7 +248,7 @@ lemma is_welltyped_unify_single:
   assumes
     unify: "unify [(t, t')] [] = Some unifier" and
     \<tau>: "\<exists>\<tau>. welltyped \<V> t \<tau> \<and> welltyped \<V> t' \<tau>"
-  shows "term.subst.is_welltyped \<V> (subst_of unifier)"
+  shows "is_welltyped \<V> (subst_of unifier)"
   using is_welltyped_unify[OF unify] \<tau>
   by auto
 
@@ -256,7 +256,7 @@ lemma welltyped_the_mgu:
   assumes
     the_mgu: "the_mgu t t' = \<mu>" and
     \<tau>: "\<exists>\<tau>. welltyped \<V> t \<tau> \<and> welltyped \<V> t' \<tau>"
-  shows "term.subst.is_welltyped \<V> \<mu>"
+  shows "is_welltyped \<V> \<mu>"
   using assms is_welltyped_unify_single[of t t' _ \<V>]
   unfolding the_mgu_def mgu_def
   by (auto simp: welltyped.Var split: option.splits)
@@ -264,7 +264,7 @@ lemma welltyped_the_mgu:
 abbreviation welltyped_imgu_on where
   "welltyped_imgu_on X \<V> t t' \<mu> \<equiv>
     (\<exists>\<tau>. welltyped \<V> t \<tau> \<and> welltyped \<V> t' \<tau>) \<and>
-    term.subst.is_welltyped_on X \<V> \<mu> \<and>
+    is_welltyped_on X \<V> \<mu> \<and>
     term_subst.is_imgu \<mu> {{t, t'}}"
 
 abbreviation welltyped_imgu where

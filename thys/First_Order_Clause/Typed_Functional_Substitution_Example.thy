@@ -1,6 +1,5 @@
 theory Typed_Functional_Substitution_Example
   imports
-    Functional_Substitution_Typing
     Typed_Functional_Substitution
     Abstract_Substitution.Functional_Substitution_Example
 begin
@@ -18,7 +17,7 @@ inductive welltyped :: "('f, 'ty) fun_types \<Rightarrow> ('v, 'ty) var_types \<
     Var: "\<V> x = \<tau> \<Longrightarrow> welltyped \<F> \<V> (Var x) \<tau>"
   | Fun: "\<F> f = (\<tau>s, \<tau>) \<Longrightarrow> list_all2 (welltyped \<F> \<V>) ts \<tau>s \<Longrightarrow> welltyped \<F> \<V> (Fun f ts) \<tau>"
 
-global_interpretation "term": explicit_typing "typed \<F> \<V>" "welltyped \<F> \<V>"
+global_interpretation "term": base_typing "typed \<F> \<V>" "welltyped \<F> \<V>"
 proof unfold_locales
   show "right_unique (typed \<F> \<V>)"
   proof (rule right_uniqueI)
@@ -42,16 +41,16 @@ next
     by (metis (full_types) typed.simps welltyped.cases)
 qed
 
-global_interpretation "term": base_functional_substitution_typing where
+global_interpretation functional_substitution_typing where
   typed = "typed (\<F> :: ('f, 'ty) fun_types)" and welltyped = "welltyped \<F>" and
   subst = subst_apply_term and id_subst = Var and comp_subst = subst_compose and
   vars = "vars_term :: ('f, 'v) term \<Rightarrow> 'v set"
-  by (unfold_locales; intro typed.Var welltyped.Var refl)
+  by unfold_locales (simp_all add: typed.Var  welltyped.Var)
 
 text \<open>A selection of substitution properties for typed terms.\<close>
 locale typed_term_subst_properties =
-  typed: explicitly_typed_subst_stability where typed = "typed \<F>" +
-  welltyped: explicitly_typed_subst_stability where typed = "welltyped \<F>"
+  typed: base_typed_subst_stability where typed = "typed \<F>" +
+  welltyped: base_typed_subst_stability where typed = "welltyped \<F>"
 for \<F> :: "('f, 'ty) fun_types"
 
 global_interpretation "term": typed_term_subst_properties where
@@ -123,25 +122,23 @@ qed
 text \<open>Examples of generated lemmas and definitions\<close>
 thm
   term.welltyped.right_unique
-  term.welltyped.explicit_subst_stability
   term.welltyped.subst_stability
-  term.welltyped.subst_update
 
   term.typed.right_unique
-  term.typed.explicit_subst_stability
   term.typed.subst_stability
-  term.typed.subst_update
 
-  term.is_welltyped_on_subset
-  term.is_typed_on_subset
-  term.is_welltyped_id_subst
-  term.is_typed_id_subst
+  is_welltyped_subst_update
+  is_typed_subst_update
+  is_welltyped_on_subset
+  is_typed_on_subset
+  is_welltyped_id_subst
+  is_typed_id_subst
 
 term term.is_welltyped
-term term.subst.is_welltyped_on
-term term.subst.is_welltyped
+term is_welltyped_on
+term is_welltyped
 term term.is_typed
-term term.subst.is_typed_on
-term term.subst.is_typed
+term is_typed_on
+term is_typed
 
 end

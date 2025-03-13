@@ -1749,20 +1749,23 @@ lemma rcoset_equiv :
   assumes "Subgroup H"
   shows   "equiv G (rcoset_rel H)"
 proof (rule equivI)
+  show "rcoset_rel H \<subseteq> G \<times> G"
+    using rcoset_rel_def by auto
+next
   show "refl_on G (rcoset_rel H)"
   proof (rule refl_onI)
-    show "(rcoset_rel H) \<subseteq> G \<times> G" using rcoset_rel_def by auto
-  next
     fix x assume "x \<in> G"
     with assms show "(x,x) \<in> (rcoset_rel H)"
       using rcoset_rel_def Group.zero_closed by auto
   qed
+next
   show "sym (rcoset_rel H)"
   proof (rule symI)
     fix a b assume "(a,b) \<in> (rcoset_rel H)"
     with assms show "(b,a) \<in> (rcoset_rel H)"
       using rcoset_rel_def Group.neg_closed[of H "a - b"] minus_diff_eq by simp
   qed
+next
   show "trans (rcoset_rel H)"
   proof (rule transI)
     fix x y z assume "(x,y) \<in> (rcoset_rel H)" "(y,z) \<in> (rcoset_rel H)"
@@ -7775,7 +7778,7 @@ proof (rule VecEnd_GMap_is_FGModuleEnd)
   qed
 
   have sumCP_V: "\<And>v. v \<in> V \<Longrightarrow> (\<Sum>g\<in>G. CP g v) \<in> V"
-    using finiteG im_CP_V sum_closed by force
+    using im_CP_V[THEN sum_closed[OF finiteG]] .
 
   show "VectorSpaceEnd (\<sharp>\<cdot>) V T"
   proof (

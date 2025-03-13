@@ -93,8 +93,8 @@ proof (rule allI, rule impI, rule allI)
       by (metis * add.commute add_le_cancel_left not_le mult_less_cancel_right_pos util_def_conf)
   next
     case 2
-    then show ?case 
-      by (meson refl_on_domain util_imp_refl)
+    then show ?case
+      using x_y_in_carrier by blast
   qed
 qed
 
@@ -206,16 +206,15 @@ sublocale ordinal_utility \<subseteq> rational_preference carrier relation
 proof
   fix x and y
   assume xy: "x \<succeq>[relation] y"
-  then show "x \<in> carrier"
-    and "y \<in> carrier"
-    using not_outside by (simp)
-      (meson xy refl_onD2 util_imp_refl)
+  then show "x \<in> carrier" and "y \<in> carrier"
+    unfolding atomize_conj
+    by (metis x_y_in_carrier)
 next
   show "preorder_on carrier relation"
   proof-
     have "trans relation" using util_imp_trans by auto
     then have "preorder_on carrier relation"
-      by (simp add: preorder_on_def util_imp_refl)
+      using preorder_on_def relation_subset_crossp util_imp_refl by auto
     then show ?thesis .
   qed
 next
@@ -279,9 +278,11 @@ corollary obt_u_fnt_carrier:
 theorem ordinal_util_imp_rat_prefs:
   assumes "ordinal_utility carrier relation u"
   shows "rational_preference carrier relation"
-  by (metis (full_types) assms order_on_defs(1) ordinal_utility.util_imp_refl 
-      ordinal_utility.util_imp_total ordinal_utility.util_imp_trans ordinal_utility_def 
-      preference.intro rational_preference.intro rational_preference_axioms_def)
+  by (metis assms ordinal_utility.relation_subset_crossp
+      ordinal_utility.util_imp_refl ordinal_utility.util_imp_total
+      ordinal_utility.util_imp_trans ordinal_utility.x_y_in_carrier
+      preference.intro preorder_on_def rational_preference.intro
+      rational_preference_axioms_def)
 
 subsection \<open> Utility function on  Euclidean Space \<close>
 
@@ -341,9 +342,7 @@ proof
 next
   assume "\<exists>u. ordinal_utility carrier relation u"
   then show "rational_preference carrier relation" 
-    by (metis (full_types) order_on_defs(1) ordinal_utility.util_imp_refl 
-        ordinal_utility.util_imp_total ordinal_utility.util_imp_trans ordinal_utility_def 
-        preference.intro rational_preference_axioms_def rational_preference_def)
+    by (metis ordinal_util_imp_rat_prefs)
 qed
 
 

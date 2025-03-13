@@ -842,23 +842,17 @@ lemma incl_lsbis2: "sbis B1 B2 s1 s2 R1 R2 \<Longrightarrow> R2 \<subseteq> lsbi
   done
 
 lemma equiv_lsbis1: "coalg B1 B2 s1 s2 \<Longrightarrow> equiv B1 (lsbis1 B1 B2 s1 s2)"
-  apply (rule iffD2[OF equiv_def])
+  apply (rule equivI)
+     apply (rule lsbis1_incl)
 
-  apply (rule conjI)
-   apply (rule iffD2[OF refl_on_def])
-   apply (rule conjI)
-    apply (rule lsbis1_incl)
-   apply (rule ballI)
-   apply (rule subsetD)
-    apply (rule incl_lsbis1)
-    apply (rule bis_diag)
-    apply assumption
-   apply (erule Id_onI)
+    apply (rule refl_onI)
+    apply (rule subsetD)
+     apply (rule incl_lsbis1)
+     apply (rule bis_diag)
+     apply assumption
+    apply (erule Id_onI)
 
-  apply (rule conjI)
-   apply (rule iffD2[OF sym_def])
-   apply (rule allI)+
-   apply (rule impI)
+   apply (rule symI)
    apply (rule subsetD)
     apply (rule incl_lsbis1)
     apply (rule bis_converse)
@@ -880,9 +874,9 @@ lemma equiv_lsbis1: "coalg B1 B2 s1 s2 \<Longrightarrow> equiv B1 (lsbis1 B1 B2 
 lemma equiv_lsbis2: "coalg B1 B2 s1 s2 \<Longrightarrow> equiv B2 (lsbis2 B1 B2 s1 s2)"
   unfolding equiv_def refl_on_def sym_def trans_def
   apply (rule conjI)
+    apply (rule lsbis2_incl)
 
    apply (rule conjI)
-    apply (rule lsbis2_incl)
    apply (rule ballI)
    apply (rule subsetD)
     apply (rule incl_lsbis2)

@@ -1187,7 +1187,7 @@ lemma sym_eq: "sym eq"
   unfolding eq_def symcl_def sym_def by auto
 
 lemma equiv_eq: "lin_sat b \<Longrightarrow> equiv UNIV eq"
-  by (rule equivI) (use refl_eq trans_eq sym_eq in safe)
+  by (rule equivI) (use refl_eq trans_eq sym_eq UNIV_I in safe)
 
 lemma not_dominated_if_pwits:
   assumes "x \<in> Var ` pwits b" shows "\<not> s \<rightarrow>\<^bsub>bgraph b\<^esub> x"

@@ -188,10 +188,10 @@ equivalence relation:\<close>
 lemma same_orbit_is_equiv:
   shows "equiv M same_orbit_rel"
 proof(rule equivI)
+  show "same_orbit_rel \<subseteq> M \<times> M" unfolding same_orbit_rel_def by auto
+next
   show "refl_on M same_orbit_rel"
   proof(rule refl_onI)
-    show "same_orbit_rel \<subseteq> M \<times> M" unfolding same_orbit_rel_def by auto
-  next
     fix m
     assume "m \<in> M"
     hence "(\<phi> \<one>) m = m" by(rule one_is_id)

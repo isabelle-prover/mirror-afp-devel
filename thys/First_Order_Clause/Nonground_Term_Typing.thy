@@ -2,25 +2,29 @@ theory Nonground_Term_Typing
   imports
     Term_Typing
     Typed_Functional_Substitution
-    Functional_Substitution_Typing
     Nonground_Term
 begin
 
+(* TODO: Create base version to avoid parameters? *)
 locale base_typed_properties =
-  explicitly_typed_subst_stability +
-  explicitly_replaceable_\<V> +
-  explicitly_typed_renaming +
-  explicitly_typed_grounding_functional_substitution
+  base_typed_renaming +
+  base_typed_subst_stability +
+  replaceable_\<V> where
+  base_subst = subst and base_vars = vars and base_typed = typed +
+  typed_grounding_functional_substitution where 
+  base_subst = subst and base_vars = vars and base_typed = typed
 
 locale base_typing_properties =
-  base_functional_substitution_typing +
-  typed: base_typed_properties +
+  typed: base_typed_properties where typed = typed +
   welltyped: base_typed_properties where typed = welltyped
+for welltyped typed :: "('var, 'ty) var_types \<Rightarrow> 'base \<Rightarrow> 'ty \<Rightarrow> bool" 
 
 locale base_inhabited_typing_properties =
   base_typing_properties +
-  typed: inhabited_explicitly_typed_functional_substitution +
-  welltyped: inhabited_explicitly_typed_functional_substitution where typed = welltyped
+  typed: inhabited_typed_functional_substitution where 
+  base_subst = subst and base_vars = vars and base_typed = typed +
+  welltyped: inhabited_typed_functional_substitution where 
+  typed = welltyped and base_subst = subst and base_vars = vars and base_typed = welltyped
 
 locale nonground_term_typing =
   "term": nonground_term +
@@ -37,7 +41,7 @@ inductive welltyped :: "('v, 'ty) var_types \<Rightarrow> ('f,'v) term \<Rightar
     Var: "\<V> x = \<tau> \<Longrightarrow> welltyped \<V> (Var x) \<tau>"
   | Fun: "\<F> f (length ts) = (\<tau>s, \<tau>) \<Longrightarrow> list_all2 (welltyped \<V>) ts \<tau>s \<Longrightarrow> welltyped \<V> (Fun f ts) \<tau>"
 
-sublocale "term": explicit_typing "typed (\<V> :: ('v, 'ty) var_types)" "welltyped \<V>"
+sublocale "term": base_typing "typed (\<V> :: ('v, 'ty) var_types)" "welltyped \<V>"
 proof unfold_locales
   show "right_unique (typed \<V>)"
   proof (rule right_uniqueI)
@@ -138,7 +142,7 @@ next
 next
   fix f ts \<tau>
   assume "welltyped \<V> (Fun f ts) \<tau>"
-  then show "\<forall>t\<in>set ts. term.is_welltyped \<V> t"
+  then show " \<forall>t\<in>set ts. \<exists>\<tau>'. welltyped \<V> t \<tau>'"
     by (cases rule: welltyped.cases) (metis in_set_conv_nth list_all2_conv_all_nth)
 next
   fix t
@@ -351,6 +355,11 @@ next
     qed
   qed
 qed
+
+sublocale functional_substitution_typing where 
+  id_subst = "Var :: 'v \<Rightarrow> ('f, 'v) term" and comp_subst = "(\<odot>)" and subst = "(\<cdot>t)" and
+  vars = term.vars and welltyped = welltyped and typed = typed
+  by unfold_locales
 
 end
 

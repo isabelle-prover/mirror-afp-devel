@@ -338,8 +338,10 @@ lemma isomorphic_is_transitive: "(X \<cong> Y \<and> Y \<cong> Z) \<longrightarr
 
 lemma is_isomorphic_equiv:
   "equiv UNIV {(X, Y). X \<cong> Y}"
-  unfolding equiv_def
-proof safe
+proof (rule equivI)
+  show "{(X, Y). X \<cong> Y} \<subseteq> UNIV \<times> UNIV"
+    by simp
+next
   show "refl {(x, y). x \<cong> y}"
     unfolding refl_on_def using isomorphic_is_reflexive by auto
 next

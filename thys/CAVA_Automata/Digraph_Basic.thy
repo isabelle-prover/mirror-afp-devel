@@ -536,7 +536,7 @@ lemma mconn_trans': "trans (mconn E)"
 
 lemma mconn_equiv: "equiv UNIV (mconn E)"
   using mconn_refl' mconn_sym' mconn_trans'
-  by (rule equivI)
+  by (auto intro!: equivI)
 
 
 lemma is_scc_mconn_eqclasses: "is_scc E U \<longleftrightarrow> U \<in> UNIV // mconn E"

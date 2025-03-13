@@ -146,7 +146,7 @@ proof -
     assume m:"maintained (reflexivity_rule l) G" (is "maintained ?r G")
     note [simp] = reflexivity_rule_def
     show r:"refl_on (vertices G) (getRel l G)"
-    proof(rule refl_onI[OF gr]) fix x
+    proof(rule refl_onI) fix x
       assume assm:"x \<in> vertices G"  define f where "f = {(0::nat,x)}"
       have "graph_homomorphism (fst ?r) G f" using assm
         by (auto simp:graph_homomorphism_def univalent_def f_def)
@@ -181,6 +181,8 @@ lemma equivalence:
   assumes gr:"graph G" and m:"maintainedA {reflexivity_rule I,transitive_rule I,symmetry_rule I} G"
   shows "equiv (vertices G) (getRel I G)"
 proof(rule equivI)
+  show "getRel I G \<subseteq> vertices G \<times> vertices G"
+    by (metis gr semantics.simps(4) semantics_subset_vertices)
   show "refl_on (vertices G) (getRel I G)" using m by(intro reflexivity_rule[OF gr],auto)
   show "sym (getRel I G)" using m by(intro symmetry_rule[OF gr],auto)
   show "trans (getRel I G)" using m by(intro transitive_rule[OF gr],auto)
@@ -295,9 +297,11 @@ proof -
   hence [intro]:"x \<in> vertices G \<Longrightarrow> (x, x) \<in> getRel S_Idt G" for x unfolding refl_on_def by auto
   hence vert_P:"x \<in> vertices G \<Longrightarrow> (x, Eps (P x)) \<in> getRel S_Idt G" for x
      unfolding P getRel_def by (metis tfl_some Image_singleton_iff getRel_def)
-  have r1:"x \<in> vertices G \<longleftrightarrow> P x x" for x using refl unfolding refl_on_def P by auto
+  have r1:"x \<in> vertices G \<longleftrightarrow> P x x" for x using refl unfolding refl_on_def P
+    by (metis Image_singleton_iff assms(1) getRel_dom(2))
   have r2[simp]:"getRel S_Idt G `` {x} = {} \<longleftrightarrow> x \<notin> vertices G" for x
-    using refl assms(1) unfolding refl_on_def by auto
+    using refl assms(1) unfolding refl_on_def
+    by (metis Image_singleton_iff empty_iff equals0I getRel_dom(1))
   { fix x y assume "(S_Idt,x,y)\<in> edges G"
     hence "(x,y) \<in> getRel S_Idt G" unfolding getRel_def by auto
     hence "getRel S_Idt G `` {x} = getRel S_Idt G `` {y}"

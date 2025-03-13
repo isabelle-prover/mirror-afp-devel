@@ -1488,10 +1488,7 @@ lemma linear_order_from_list_position_total:
 
 lemma linear_order_from_list_position_refl: 
   "refl_on (set xs) (set (linear_order_from_list_position xs))"  
-proof 
-  show "set (linear_order_from_list_position xs) \<subseteq> set xs \<times> set xs"
-    unfolding linear_order_from_list_position_set
-    using non_sym_dist_pairs_subset[of xs] by auto
+proof (rule refl_onI)
   show "\<And>x. x \<in> set xs \<Longrightarrow> (x, x) \<in> set (linear_order_from_list_position xs)"
     unfolding linear_order_from_list_position_set
     using non_sym_dist_pairs_subset[of xs] by auto

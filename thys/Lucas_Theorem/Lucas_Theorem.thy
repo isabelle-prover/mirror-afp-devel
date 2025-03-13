@@ -27,6 +27,7 @@ lemma fpsrel_iff [simp]: "(f, g) \<in> fpsmodrel p \<longleftrightarrow> (\<fora
 
 lemma fps_equiv: "equiv UNIV (fpsmodrel p)" 
 proof (rule equivI)
+  show "fpsmodrel p \<subseteq> UNIV \<times> UNIV" by simp
   show "refl (fpsmodrel p)" by (simp add: refl_on_def fpsmodrel_def)
   show "sym (fpsmodrel p)" by (simp add: sym_def fpsmodrel_def)
   show "trans (fpsmodrel p)" by (intro transI) (simp add: fpsmodrel_def)

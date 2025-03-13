@@ -142,7 +142,8 @@ definition "wf_sort sub S = (normalized_sort sub S \<and> sort_ex sub S)"
 
 text \<open>Wellformedness of osig\<close>
 
-definition [simp]: "wf_subclass rel = (trans rel \<and> antisym rel \<and> Refl rel)"
+definition [simp]: "wf_subclass rel =
+  (rel \<subseteq> Field rel \<times> Field rel \<and> trans rel \<and> antisym rel \<and> Refl rel)"
 
 definition "complete_tcsigs sub tcs \<equiv> (\<forall>ars \<in> ran tcs . 
   \<forall>(c\<^sub>1, c\<^sub>2) \<in> sub . c\<^sub>1\<in>dom ars \<longrightarrow> c\<^sub>2\<in>dom ars)"

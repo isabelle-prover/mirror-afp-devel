@@ -513,7 +513,10 @@ by(rule transpI)(auto elim!: action_orderE intro: action_orderI)
 
 lemma porder_action_order:
   "porder_on (actions E) (action_order E)"
-by(blast intro: porder_onI refl_action_order antisym_action_order trans_action_order)
+proof (rule porder_onI)
+  show "\<And>a a'. E \<turnstile> a \<le>a a' \<Longrightarrow> a \<in> actions E \<and> a' \<in> actions E"
+    using action_orderE by blast
+qed (intro refl_action_order antisym_action_order trans_action_order)+
 
 lemma total_action_order:
   "total_onP (actions E) (action_order E)"
@@ -612,7 +615,10 @@ by(rule transpI)(auto elim!: program_orderE intro: program_orderI dest: transPD[
 
 lemma porder_program_order:
   "porder_on (actions E) (program_order E)"
-by(blast intro: porder_onI refl_on_program_order antisym_program_order trans_program_order)
+proof (rule porder_onI)
+  show "\<And>a a'. E \<turnstile> a \<le>po a' \<Longrightarrow> a \<in> actions E \<and> a' \<in> actions E"
+    using action_orderE program_order_def by blast
+qed (intro refl_on_program_order antisym_program_order trans_program_order)+
 
 lemma total_program_order_on_tactions:
   "total_onP (tactions E t) (program_order E)"
@@ -645,7 +651,10 @@ by(rule transpI)(auto elim!: sync_orderE intro: sync_orderI dest: transPD[OF tra
 
 lemma porder_sync_order:
   "porder_on (sactions P E) (sync_order P E)"
-by(blast intro: porder_onI refl_on_sync_order antisym_sync_order trans_sync_order)
+proof (rule porder_onI)
+  show "\<And>a a'. P,E \<turnstile> a \<le>so a' \<Longrightarrow> a \<in> sactions P E \<and> a' \<in> sactions P E"
+    using sync_orderE by blast
+qed (intro refl_on_sync_order antisym_sync_order trans_sync_order)+
 
 lemma total_sync_order:
   "total_onP (sactions P E) (sync_order P E)"
@@ -1893,12 +1902,13 @@ next
     
     note tsa_ok moreover
     from porder_happens_before[of E P] have "a \<in> actions E"
-      by(rule porder_onE)(erule refl_onPD1, rule \<open>P,E \<turnstile> a \<le>hb a'\<close>)
+      by (meson hb porder_onE)
     hence "a \<in> actions E'" using an by(rule actions_change_prefix[OF _ prefix])
     moreover
     from \<open>po_sw P E a' a''\<close> refl_on_program_order[of E] refl_on_sync_order[of P E]
     have "a'' \<in> actions E"
-      unfolding po_sw_def by(auto dest: refl_onPD2 elim!: sync_withE)
+      unfolding po_sw_def
+      using action_orderE po_sw_into_action_order step.hyps(2) by blast
     hence "a'' \<in> actions E'" using \<open>enat a'' < n\<close> by(rule actions_change_prefix[OF _ prefix])
     moreover
     from new_a action_obs_change_prefix[OF prefix an] 

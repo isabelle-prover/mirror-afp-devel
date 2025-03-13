@@ -240,13 +240,10 @@ qed
 lemma refl_on_tranclI :
   assumes "refl_on A r"
   shows "refl_on A (trancl r)"
-  proof
-    show "r\<^sup>+ \<subseteq> A \<times> A"
-      by( rule trancl_subset_Sigma
-        , auto simp: assms[THEN refl_onD1] assms[THEN refl_onD2])
-    show "x \<in> A \<Longrightarrow> (x, x) \<in> r\<^sup>+" for x
-      using assms[THEN refl_onD] by auto
-  qed
+proof (rule refl_onI)
+  show "x \<in> A \<Longrightarrow> (x, x) \<in> r\<^sup>+" for x
+    using assms[THEN refl_onD] by auto
+qed
 
 definition idempotent where
   "idempotent r \<equiv> r O r = r"
@@ -257,7 +254,7 @@ lemma trans_def: "trans r = ((Id \<union> r) O r = r)" "trans r = (r O (Id \<uni
 lemma idempotent_impl_trans: "idempotent r \<Longrightarrow> trans r"
   by(auto simp:trans_def idempotent_def)
 
-lemma refl_trans_impl_idempotent[intro]: "refl_on A r \<Longrightarrow> trans r \<Longrightarrow> idempotent r"
+lemma refl_trans_impl_idempotent[intro]: "r \<subseteq> A \<times> A \<Longrightarrow> refl_on A r \<Longrightarrow> trans r \<Longrightarrow> idempotent r"
   by(auto simp:refl_on_def trans_def idempotent_def)
 
 lemma idempotent_subset:

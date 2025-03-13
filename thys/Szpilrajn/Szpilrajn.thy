@@ -51,7 +51,7 @@ lemma trans_sym_factor[simp]: "trans r \<Longrightarrow> trans (sym_factor r)"
 
 lemma refl_on_sym_factor[simp]: "refl_on A r \<Longrightarrow> refl_on A (sym_factor r)"
   unfolding sym_factor_def
-  by (auto intro!: refl_onI dest: refl_onD refl_onD1)
+  by (auto intro!: refl_onI dest: refl_onD)
 
 lemma sym_factor_absorb_if_sym[simp]: "sym r \<Longrightarrow> sym_factor r = r"
   unfolding sym_factor_def'
@@ -278,25 +278,25 @@ lemma preorder_onD[dest?]:
   shows "refl_on A r" "trans r"
   using assms unfolding preorder_on_def by blast+
 
-lemma preorder_onI[intro]: "refl_on A r \<Longrightarrow> trans r \<Longrightarrow> preorder_on A r"
+lemma preorder_onI[intro]: "r \<subseteq> A \<times> A \<Longrightarrow> refl_on A r \<Longrightarrow> trans r \<Longrightarrow> preorder_on A r"
   unfolding preorder_on_def by (intro conjI)
 
 abbreviation "preorder \<equiv> preorder_on UNIV"
 
 lemma preorder_rtrancl: "preorder (r\<^sup>*)"
-  by (intro preorder_onI refl_rtrancl trans_rtrancl)
+  by (auto intro: preorder_onI refl_rtrancl trans_rtrancl)
 
 definition "total_preorder_on A r \<equiv> preorder_on A r \<and> total_on A r"
 
 abbreviation "total_preorder r \<equiv> total_preorder_on UNIV r"
 
 lemma total_preorder_onI[intro]:
-  "refl_on A r \<Longrightarrow> trans r \<Longrightarrow> total_on A r \<Longrightarrow> total_preorder_on A r"
-  unfolding total_preorder_on_def by (intro conjI preorder_onI)
+  "r \<subseteq> A \<times> A \<Longrightarrow> refl_on A r \<Longrightarrow> trans r \<Longrightarrow> total_on A r \<Longrightarrow> total_preorder_on A r"
+  by (auto simp: total_preorder_on_def intro: preorder_onI)
 
 lemma total_preorder_onD[dest?]:
   assumes "total_preorder_on A r"
-  shows "refl_on A r" "trans r" "total_on A r"
+  shows "r \<subseteq> A \<times> A" "refl_on A r" "trans r" "total_on A r"
   using assms unfolding total_preorder_on_def preorder_on_def by blast+
 
 definition "strict_partial_order r \<equiv> trans r \<and> irrefl r"
@@ -319,11 +319,11 @@ lemma strict_partial_order_acyclic:
 abbreviation "partial_order \<equiv> partial_order_on UNIV"
 
 lemma partial_order_onI[intro]:
-  "refl_on A r \<Longrightarrow> trans r \<Longrightarrow> antisym r \<Longrightarrow> partial_order_on A r"
+  "r \<subseteq> A \<times> A \<Longrightarrow> refl_on A r \<Longrightarrow> trans r \<Longrightarrow> antisym r \<Longrightarrow> partial_order_on A r"
   using partial_order_on_def by blast
 
 lemma linear_order_onI[intro]:
-  "refl_on A r \<Longrightarrow> trans r \<Longrightarrow> antisym r \<Longrightarrow> total_on A r \<Longrightarrow> linear_order_on A r"
+  "r \<subseteq> A \<times> A \<Longrightarrow> refl_on A r \<Longrightarrow> trans r \<Longrightarrow> antisym r \<Longrightarrow> total_on A r \<Longrightarrow> linear_order_on A r"
   using linear_order_on_def by blast
 
 lemma linear_order_onD[dest?]:
@@ -359,7 +359,8 @@ lemma can_extend_preorder:
 proof -
   note preorder_onD[OF \<open>preorder_on A r\<close>]
   then have "insert (x, y) r \<subseteq> A \<times> A"
-    using \<open>y \<in> A\<close> \<open>x \<in> A\<close> refl_on_domain by fast
+    using \<open>y \<in> A\<close> \<open>x \<in> A\<close>
+    by (metis SigmaI assms(1) insert_subsetI preorder_on_def)
   with \<open>refl_on A r\<close> show "preorder_on A ((insert (x, y) r)\<^sup>+)"
     by (intro preorder_onI refl_onI trans_trancl)
        (auto simp: trancl_subset_Sigma intro!: r_into_trancl' dest: refl_onD)
@@ -445,18 +446,24 @@ proof -
       which is a partial order as shown above.
     \<close>
 
-    from reflp_strict_extends transp_strict_extends
-    have "Refl {(r, s). strict_extends r base_r \<and> strict_extends s r}"
-      unfolding refl_on_def Field_def by (auto elim: transpE reflpE)
-    moreover have "trans {(r, s). strict_extends r base_r \<and> strict_extends s r}"
-      using transp_strict_extends  by (auto elim: transpE intro: transI)
-    moreover have "antisym {(r, s). strict_extends r base_r \<and> strict_extends s r}"
-      using antisymp_strict_extends by (fastforce dest: antisympD intro: antisymI)
-
-    ultimately show "Partial_order order_of_orders"
-      unfolding order_of_orders_def order_on_defs
-      using Field_order_of_orders Refl_Restr trans_Restr antisym_Restr
-      by blast
+    show "Partial_order order_of_orders"
+    proof (intro partial_order_onI)
+      show "order_of_orders \<subseteq> Field order_of_orders \<times> Field order_of_orders"
+        using Restr_Field by blast
+    next
+      show "Refl order_of_orders"
+        using Field_order_of_orders order_of_orders_def refl_on_def by fastforce
+    next
+      show "trans order_of_orders"
+        unfolding order_of_orders_def
+        using transp_strict_extends
+        by (auto elim: transpE intro: transI)
+    next
+      show "antisym order_of_orders"
+        unfolding order_of_orders_def
+        using antisymp_strict_extends
+        by (fastforce dest: antisympD intro: antisymI)
+    qed
 
     text \<open>Also, our order is obviously not empty since it contains \<^term>\<open>(base_r, base_r)\<close>:\<close>
 
@@ -495,6 +502,9 @@ proof -
 
       have preorder_UnC: "preorder_on A (\<Union>C)"
       proof(intro preorder_onI)
+        show "\<Union> C \<subseteq> A \<times> A"
+          by (metis Sup_le_iff[of C "A \<times> A"] preorder_r preorder_on_def[of A])
+      next
         show "refl_on A (\<Union>C)"
           using preorder_onD(1)[OF preorder_r] C_nonempty
           unfolding refl_on_def by auto
@@ -784,7 +794,7 @@ text \<open>
 corollary order_extension_iff_consistent:
   "(\<exists>r_ext. extends r_ext r \<and> total_preorder r_ext) \<longleftrightarrow> consistent r"
   using order_extension_if_consistent consistent_if_extends_trans
-  by (metis total_preorder_onD(2))
+  by (metis total_preorder_onD(3))
 
 
 text \<open>
@@ -795,6 +805,70 @@ text \<open>
   orderings by Bossert and Suzumura). Unfortunately, we were not able to generalise the theorem
   to allow for strict extensions.
 \<close>
+
+lemma trans_on_union:
+  assumes "trans_on A r" and "trans_on A s" and
+    trans_r_s: "\<And>x y z.
+      x \<in> A \<Longrightarrow> y \<in> A \<Longrightarrow> z \<in> A \<Longrightarrow> (x, y) \<in> r \<Longrightarrow> (y, z) \<in> s \<Longrightarrow> (x, z) \<in> r \<union> s" and
+    trans_s_r: "\<And>x y z.
+      x \<in> A \<Longrightarrow> y \<in> A \<Longrightarrow> z \<in> A \<Longrightarrow> (x, y) \<in> s \<Longrightarrow> (y, z) \<in> r \<Longrightarrow> (x, z) \<in> r \<union> s"
+  shows "trans_on A (r \<union> s)"
+proof (rule trans_onI, elim UnE)
+  fix x y z
+  assume "x \<in> A" "y \<in> A" "z \<in> A" "(x, y) \<in> r" and "(y, z) \<in> r"
+  hence "(x, z) \<in> r"
+    using \<open>trans_on A r\<close>[THEN trans_onD] by iprover
+  thus "(x, z) \<in> r \<union> s"
+    by simp
+next
+  fix x y z
+  assume "x \<in> A" "y \<in> A" "z \<in> A" "(x, y) \<in> s" and "(y, z) \<in> s"
+  hence "(x, z) \<in> s"
+    using \<open>trans_on A s\<close>[THEN trans_onD] by iprover
+  thus "(x, z) \<in> r \<union> s"
+    by simp
+next
+  fix x y z
+  assume "x \<in> A" "y \<in> A" "z \<in> A" "(x, y) \<in> r" and "(y, z) \<in> s"
+  thus "(x, z) \<in> r \<union> s"
+    using trans_r_s by iprover
+next
+  fix x y z
+  assume "x \<in> A" "y \<in> A" "z \<in> A" "(x, y) \<in> s" and "(y, z) \<in> r"
+  thus "(x, z) \<in> r \<union> s"
+    using trans_s_r by iprover
+qed
+
+lemma trans_union:
+  assumes "trans r" and "trans s" and
+    trans_r_s: "\<And>x y z. (x, y) \<in> r \<Longrightarrow> (y, z) \<in> s \<Longrightarrow> (x, z) \<in> r \<union> s" and
+    trans_s_r: "\<And>x y z. (x, y) \<in> s \<Longrightarrow> (y, z) \<in> r \<Longrightarrow> (x, z) \<in> r \<union> s"
+  shows "trans (r \<union> s)"
+  using trans_on_union[OF assms(1,2), simplified] assms(3,4) by blast
+
+lemma trans_relcompI:
+  assumes trans_r_s_r_s: "\<And>x xy y yz z.
+      (x, xy) \<in> r \<Longrightarrow> (xy, y) \<in> s \<Longrightarrow> (y, yz) \<in> r \<Longrightarrow> (yz, z) \<in> s \<Longrightarrow> (x, z) \<in> r O s"
+  shows "trans (r O s)"
+proof (rule transI)
+  fix x y z
+
+  assume "(x, y) \<in> r O s" and "(y, z) \<in> r O s"
+  then obtain xy yz where "(x, xy) \<in> r" and "(xy, y) \<in> s" and "(y,  yz) \<in> r" and "(yz, z) \<in> s"
+    by blast
+
+  hence "\<exists>b. (x, b) \<in> r \<and> (b, z) \<in> s"
+    using trans_r_s_r_s by blast
+
+  thus "(x, z) \<in> r O s"
+    by blast
+qed
+
+lemma mem_O_rtranclI: "x \<in> Q \<Longrightarrow> x \<in> Q O R\<^sup>*"
+  by (metis R_O_Id Un_iff relcomp_distrib rtrancl_trancl_reflcl)
+
+lemma mem_rtrancl_OI: "x \<in> R \<Longrightarrow> x \<in> Q\<^sup>* O R"
+  by (metis Id_O_R Un_iff relcomp_distrib2 rtrancl_reflcl_absorb)
 
 theorem general_order_extension_iff_consistent:
   assumes "\<And>x y. \<lbrakk> x \<in> S; y \<in> S; x \<noteq> y \<rbrakk> \<Longrightarrow> (x, y) \<notin> Q\<^sup>+"
@@ -823,20 +897,148 @@ next
 
   define Q' where "Q' \<equiv> Q\<^sup>* \<union> Ord \<union> Ord O Q\<^sup>* \<union> Q\<^sup>* O Ord \<union> (Q\<^sup>* O Ord) O Q\<^sup>*"
 
-  have "refl (Q\<^sup>*)" "trans (Q\<^sup>*)" "refl_on S Ord" "trans Ord" "total_on S Ord"
+  have "refl (Q\<^sup>*)" "trans (Q\<^sup>*)" "Ord \<subseteq> S \<times> S" "refl_on S Ord" "trans Ord" "total_on S Ord"
     using refl_rtrancl trans_rtrancl total_preorder_onD[OF \<open>total_preorder_on S Ord\<close>]
     by - assumption
 
   have preorder_Q': "preorder Q'"
-  proof
+  proof (rule preorder_onI)
+    show "Q' \<subseteq> UNIV \<times> UNIV"
+      by simp
+  next
     show "refl Q'"
       unfolding Q'_def refl_on_def by auto
+  next
+    show "trans Q'"
+    proof (rule transI)
+      fix x y z
+      assume x_y_in: "(x, y) \<in> Q'" and y_z_in: "(y, z) \<in> Q'"
 
-    from \<open>trans (Q\<^sup>*)\<close> \<open>refl_on S Ord\<close> \<open>trans Ord\<close> show "trans Q'"
-      unfolding Q'_def[simplified]
-      apply(safe intro!: transI)
-      unfolding relcomp.simps
-      by (metis assms(1) refl_on_domain rtranclD transD)+
+      then consider
+        (x_y_in_Qstar) "(x, y) \<in> Q\<^sup>*" |
+        (y_z_in_Qstar) "(y, z) \<in> Q\<^sup>*" |
+        (remaining)
+          "(x, y) \<in> Ord \<union> Ord O Q\<^sup>* \<union> Q\<^sup>* O Ord \<union> Q\<^sup>* O Ord O Q\<^sup>*" and
+          "(y, z) \<in> Ord \<union> Ord O Q\<^sup>* \<union> Q\<^sup>* O Ord \<union> Q\<^sup>* O Ord O Q\<^sup>*"
+        unfolding Q'_def O_assoc by blast
+
+      then show "(x, z) \<in> Q'"
+      proof cases
+        case x_y_in_Qstar
+        then show ?thesis
+          using y_z_in
+          unfolding Q'_def O_assoc
+          by (smt (verit, ccfv_threshold) Un_iff relcomp.simps
+              rtrancl_idemp_self_comp)
+      next
+        case y_z_in_Qstar
+        then show ?thesis
+          using x_y_in
+          unfolding Q'_def O_assoc
+          by fastforce
+      next
+        case remaining
+        thus ?thesis
+        proof (elim UnE)
+          show "(x, y) \<in> Ord \<Longrightarrow> (y, z) \<in> Ord \<Longrightarrow> (x, z) \<in> Q'"
+            unfolding Q'_def O_assoc
+            using \<open>trans Ord\<close>[THEN transD]
+            by blast
+        next
+          show "(x, y) \<in> Ord \<Longrightarrow> (y, z) \<in> Ord O Q\<^sup>* \<Longrightarrow> (x, z) \<in> Q'"
+            unfolding Q'_def O_assoc
+            using \<open>trans Ord\<close>[THEN transD]
+            by (metis Un_iff prod.inject relcomp.relcompI relcompE)
+        next
+          show "(x, y) \<in> Ord \<Longrightarrow> (y, z) \<in> Q\<^sup>* O Ord \<Longrightarrow> (x, z) \<in> Q'"
+            unfolding Q'_def O_assoc
+            using \<open>trans Ord\<close>[THEN transD]
+            by (smt (verit, del_insts) Un_iff \<open>Ord \<subseteq> S \<times> S\<close> assms(1) mem_Sigma_iff relcomp.simps
+                rtranclD subset_iff)
+        next
+          show "(x, y) \<in> Ord \<Longrightarrow> (y, z) \<in> Q\<^sup>* O Ord O Q\<^sup>* \<Longrightarrow> (x, z) \<in> Q'"
+            unfolding Q'_def O_assoc
+            using \<open>trans Ord\<close>[THEN transD]
+            by (smt (verit, del_insts) Un_iff \<open>Ord \<subseteq> S \<times> S\<close> assms(1) mem_Sigma_iff relcomp.simps
+                rtranclD subset_iff)
+        next
+          show "(x, y) \<in> Ord O Q\<^sup>* \<Longrightarrow> (y, z) \<in> Ord \<Longrightarrow> (x, z) \<in> Q'"
+            unfolding Q'_def O_assoc
+            using \<open>trans Ord\<close>[THEN transD]
+            by (smt (verit, del_insts) Un_iff \<open>Ord \<subseteq> S \<times> S\<close> assms(1) mem_Sigma_iff
+                relcomp.simps rtranclD subset_iff)
+        next
+          show "(x, y) \<in> Q\<^sup>* O Ord \<Longrightarrow> (y, z) \<in> Ord \<Longrightarrow> (x, z) \<in> Q'"
+            unfolding Q'_def O_assoc
+            using \<open>trans Ord\<close>[THEN transD]
+            by blast
+        next
+          show "(x, y) \<in> Q\<^sup>* O Ord O Q\<^sup>* \<Longrightarrow> (y, z) \<in> Ord \<Longrightarrow> (x, z) \<in> Q'"
+            unfolding Q'_def O_assoc
+            using \<open>trans Ord\<close>[THEN transD]
+            by (smt (verit, del_insts) Un_iff \<open>Ord \<subseteq> S \<times> S\<close> assms(1) mem_Sigma_iff
+                relcomp.simps rtranclD subset_iff)
+        next
+          show "(x, y) \<in> Ord O Q\<^sup>* \<Longrightarrow> (y, z) \<in> Ord O Q\<^sup>* \<Longrightarrow> (x, z) \<in> Q'"
+            unfolding Q'_def O_assoc
+            using \<open>trans Ord\<close>[THEN transD]
+            by (smt (verit) Un_iff \<open>Ord \<subseteq> S \<times> S\<close> assms(1) mem_Sigma_iff relcomp.simps
+                rtrancl_eq_or_trancl subset_iff)
+        next
+          show "(x, y) \<in> Ord O Q\<^sup>* \<Longrightarrow> (y, z) \<in> Q\<^sup>* O Ord \<Longrightarrow> (x, z) \<in> Q'"
+            by (smt (verit, ccfv_threshold) Q'_def Un_iff \<open>Ord \<subseteq> S \<times> S\<close> \<open>trans Ord\<close>
+                assms(1) mem_Sigma_iff prod.simps(1) relcomp.relcompI relcompE
+                rtrancl_eq_or_trancl rtrancl_idemp_self_comp subset_iff transE)
+        next
+          show "(x, y) \<in> Q\<^sup>* O Ord \<Longrightarrow> (y, z) \<in> Ord O Q\<^sup>* \<Longrightarrow> (x, z) \<in> Q'"
+            by (smt (verit, ccfv_threshold) Q'_def UnCI \<open>trans Ord\<close> relcomp.simps transE)
+        next
+          show "(x, y) \<in> Q\<^sup>* O Ord \<Longrightarrow> (y, z) \<in> Q\<^sup>* O Ord \<Longrightarrow> (x, z) \<in> Q'"
+            by (smt (verit, del_insts) Q'_def Un_iff \<open>Ord \<subseteq> S \<times> S\<close> \<open>trans Ord\<close> assms(1)
+                mem_Sigma_iff relcomp.simps rtranclD subset_iff transE)
+        next
+          assume "(y, z) \<in> Q\<^sup>* O Ord O Q\<^sup>*" and "(x, y) \<in> Ord O Q\<^sup>*"
+          hence "(x, z) \<in> Q\<^sup>* O Ord O Q\<^sup>*"
+            using \<open>Ord \<subseteq> S \<times> S\<close> \<open>trans Ord\<close>[THEN transD] assms(1)
+            by (smt (verit, del_insts) mem_Sigma_iff mem_rtrancl_OI relcomp.simps
+                rtranclD rtrancl_idemp_self_comp subset_iff)
+          thus "(x, z) \<in> Q'"
+            unfolding Q'_def O_assoc by simp
+        next
+          assume "(x, y) \<in> Q\<^sup>* O Ord" and "(y, z) \<in> Q\<^sup>* O Ord O Q\<^sup>*"
+          hence "(x, z) \<in> Q\<^sup>* O Ord O Q\<^sup>*"
+            using \<open>Ord \<subseteq> S \<times> S\<close> \<open>trans Ord\<close>[THEN transD] assms(1)
+            by (smt (verit, del_insts) mem_Sigma_iff relcomp.simps rtrancl_eq_or_trancl
+                subset_iff)
+          then show "(x, z) \<in> Q'"
+            unfolding Q'_def O_assoc by simp
+        next
+          assume "(x, y) \<in> Q\<^sup>* O Ord O Q\<^sup>*" and "(y, z) \<in> Ord O Q\<^sup>*"
+          hence "(x, z) \<in> Q\<^sup>* O Ord O Q\<^sup>*"
+            using \<open>Ord \<subseteq> S \<times> S\<close> \<open>trans Ord\<close>[THEN transD] assms(1)
+            by (smt (verit, del_insts) mem_Sigma_iff relcomp.simps
+                rtranclD rtrancl_idemp_self_comp subset_iff)
+          thus "(x, z) \<in> Q'"
+            unfolding Q'_def O_assoc by simp
+        next
+          assume "(x, y) \<in> Q\<^sup>* O Ord O Q\<^sup>*" and "(y, z) \<in> Q\<^sup>* O Ord"
+          hence "(x, z) \<in> Q\<^sup>* O Ord O Q\<^sup>*"
+            using \<open>Ord \<subseteq> S \<times> S\<close> \<open>trans Ord\<close>[THEN transD] assms(1)
+            by (smt (verit, ccfv_threshold) mem_Sigma_iff prod.inject relcomp.relcompI relcompE
+                rtrancl_eq_or_trancl rtrancl_idemp_self_comp subset_iff)
+          thus "(x, z) \<in> Q'"
+            unfolding Q'_def O_assoc by simp
+        next
+          assume "(x, y) \<in> Q\<^sup>* O Ord O Q\<^sup>*" and "(y, z) \<in> Q\<^sup>* O Ord O Q\<^sup>*"
+          hence "(x, z) \<in> Q\<^sup>* O Ord O Q\<^sup>*"
+            using \<open>Ord \<subseteq> S \<times> S\<close> \<open>trans Ord\<close>[THEN transD] assms(1)
+            by (smt (verit, del_insts) mem_Sigma_iff relcomp.simps
+                rtrancl_eq_or_trancl rtrancl_idemp_self_comp subset_iff)
+          thus "(x, z) \<in> Q'"
+            unfolding Q'_def O_assoc by simp
+        qed
+      qed
+    qed
   qed
 
   have "consistent Q'"
@@ -852,7 +1054,7 @@ next
     from \<open>consistent Q\<close> have consistentD: "(x, y) \<in> Q\<^sup>+ \<Longrightarrow> (y, x) \<in> Q \<Longrightarrow> (x, y) \<in> Q" for x y
       unfolding consistent_def asym_factor_def using rtranclD by fastforce
     have refl_on_domainE: "\<lbrakk> (x, y) \<in> Ord; x \<in> S \<Longrightarrow> y \<in> S \<Longrightarrow> P \<rbrakk> \<Longrightarrow> P" for x y P
-      using refl_on_domain[OF \<open>refl_on S Ord\<close>] by blast
+      using \<open>Ord \<subseteq> S \<times> S\<close> by blast
 
     show "asym_factor Q \<subseteq> asym_factor Q'"
       unfolding Q'_def asym_factor_def Field_def
@@ -866,17 +1068,38 @@ next
     unfolding strict_extends_def
     by (metis transpE transp_extends)
 
-  have not_in_Q': "x \<in> S \<Longrightarrow> y \<in> S \<Longrightarrow> (x, y) \<notin> Ord \<Longrightarrow> (x, y) \<notin> Q'" for x y
-    using assms(1) unfolding Q'_def
-    apply(safe)
-    by (metis \<open>refl_on S Ord\<close> refl_on_def refl_on_domain rtranclD)+
+  have not_in_Q': "(x, y) \<notin> Ord \<Longrightarrow> (x, y) \<notin> Q'" if "x \<in> S" and "y \<in> S" for x y
+      unfolding Q'_def
+  proof (elim contrapos_nn UnE)
+    assume "(x, y) \<in> Q\<^sup>*"
+    thus "(x, y) \<in> Ord"
+      by (metis \<open>refl_on S Ord\<close> assms(1) refl_onD rtranclD that(1,2))
+  next
+    assume "(x, y) \<in> Ord"
+    thus "(x, y) \<in> Ord" .
+  next
+    assume "(x, y) \<in> Ord O Q\<^sup>*"
+    thus "(x, y) \<in> Ord"
+      by (metis (no_types, lifting) \<open>Ord \<subseteq> S \<times> S\<close> assms(1) mem_Sigma_iff prod.inject
+          relcompE rtranclD subsetD that(2))
+  next
+    assume "(x, y) \<in> Q\<^sup>* O Ord"
+    thus "(x, y) \<in> Ord"
+      by (metis (no_types, lifting) \<open>Ord \<subseteq> S \<times> S\<close> assms(1) mem_Sigma_iff prod.inject
+          relcompE rtranclD subsetD that(1))
+  next
+    assume "(x, y) \<in> (Q\<^sup>* O Ord) O Q\<^sup>*"
+    thus "(x, y) \<in> Ord"
+      by (smt (verit, ccfv_SIG) \<open>Ord \<subseteq> S \<times> S\<close> assms(1) mem_Sigma_iff prod.inject
+          relcompE rtrancl_eq_or_trancl subset_iff that(1,2))
+  qed
 
   have "Restr Ext S = Ord"
   proof
     from \<open>extends Ext Q'\<close> have "Ord \<subseteq> Ext"
       unfolding Q'_def extends_def by auto
-    with \<open>refl_on S Ord\<close> show "Ord \<subseteq> Restr Ext S"
-      using refl_on_domain by fast
+    with \<open>Ord \<subseteq> S \<times> S\<close> show "Ord \<subseteq> Restr Ext S"
+      by simp
   next
     have "(x, y) \<in> Ord" if "x \<in> S" and "y \<in> S" and "(x, y) \<in> Ext" for x y
     proof(rule ccontr)

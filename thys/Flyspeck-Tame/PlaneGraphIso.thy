@@ -87,13 +87,19 @@ apply (simp add:funpow_add)
 done
 
 lemma equiv_EqF: "equiv (UNIV::'a list set) {\<cong>}"
-apply(unfold equiv_def sym_def trans_def refl_on_def)
-apply(rule conjI)
- apply simp
-apply(rule conjI)
- apply(fastforce intro:congs_sym)
-apply(fastforce intro:congs_trans)
-done
+proof (rule equivI)
+  show "{\<cong>} \<subseteq> UNIV \<times> UNIV"
+    by simp
+next
+  show "refl {\<cong>}"
+    using refl_on_def by fastforce
+next
+  show "sym {\<cong>}"
+    by (simp add: congs_sym sym_on_def)
+next
+  show "trans {\<cong>}"
+    by (metis Iso_def congs_trans transpI transp_trans)
+qed
 
 lemma congs_distinct:
   "F\<^sub>1 \<cong> F\<^sub>2 \<Longrightarrow> distinct F\<^sub>2 = distinct F\<^sub>1"
