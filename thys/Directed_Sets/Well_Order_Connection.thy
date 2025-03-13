@@ -18,7 +18,8 @@ lemma preorder_on_relation_of: "preorder_on A (relation_of r A) \<longleftrighta
 proof (rule iffI)
   assume "preorder_on A (relation_of r A)"
   thus "quasi_ordered_set A r"
-    by (simp add: preorder_on_def refl_on_relation_of trans_relation_of quasi_ordered_set_def)
+    by (simp add: preorder_on_def refl_on_relation_of trans_relation_of quasi_ordered_set_def
+        del: Order_Relation.trans_relation_of)
 next
   assume "quasi_ordered_set A r"
   thus "preorder_on A (relation_of r A)"
@@ -33,8 +34,9 @@ lemma antisym_relation_of: "antisym (relation_of r A) \<longleftrightarrow> anti
 
 lemma partial_order_on_relation_of:
   "partial_order_on A (relation_of r A) \<longleftrightarrow> partially_ordered_set A r"
-  by (auto simp: partial_order_on_def preorder_on_relation_of antisym_relation_of
-      quasi_ordered_set_def partially_ordered_set_def)
+  by (auto simp add: partial_order_on_def preorder_on_relation_of antisym_relation_of
+      quasi_ordered_set_def partially_ordered_set_def
+      simp del: Order_Relation.antisym_relation_of)
 
 lemma total_on_relation_of: "total_on A (relation_of r A) \<longleftrightarrow> semiconnex A r"
   by (auto simp: total_on_def relation_of_def semiconnex_def)
