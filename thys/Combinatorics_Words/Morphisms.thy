@@ -989,6 +989,8 @@ qed
 
 
 section \<open>Primitivity preserving morphisms\<close>
+(* by Martin Raška *)
+
 
 locale primitivity_preserving_morphism = nonerasing_morphism +
   assumes prim_morph : "2 \<le> \<^bold>|u\<^bold>| \<Longrightarrow> primitive u \<Longrightarrow> primitive (f u)"
