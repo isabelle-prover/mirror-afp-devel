@@ -3861,7 +3861,8 @@ name = "Peter Lammich"
 
 [lammich.emails.lammich_email]
 user = [
-  "p.lammich",
+  "p",
+  "lammich",
 ]
 host = [
   "utwente",
@@ -8054,7 +8055,8 @@ user = [
   "wolff",
 ]
 host = [
-  "lmf.cnrs",
+  "lmf",
+  "cnrs",
   "fr",
 ]
 
