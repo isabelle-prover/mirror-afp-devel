@@ -19,7 +19,6 @@ session "Topological_Semantics" = "HOL" +
     logics_quantifiers_example
     logics_LFI
     logics_LFU
-
   document_files
     "root.tex"
     "root.bib"
