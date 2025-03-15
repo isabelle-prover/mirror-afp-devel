@@ -12,7 +12,7 @@ lemma Uniq_full_run:
   shows "\<exists>\<^sub>\<le>\<^sub>1y. full_run R x y"
   unfolding full_run_def
   using assms
-  by (smt (verit, best) Uniq_I right_unique_iff rtranclp_complete_run_right_unique)
+  by (smt (verit, best) Uniq_I right_unique_iff_Uniq rtranclp_complete_run_right_unique)
 
 lemma ex1_full_run:
   assumes Uniq_R: "\<And>x. \<exists>\<^sub>\<le>\<^sub>1y. R x y" and wfP_R: "wfP R\<inverse>\<inverse>"
