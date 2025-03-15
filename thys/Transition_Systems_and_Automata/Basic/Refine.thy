@@ -25,7 +25,7 @@ begin
   (* TODO Peter: it would be nice if there were corresponding constants for all the relation predicates
     in Transfer.thy (left_total, left_unique, right_total, right_unique, bi_total, bi_unique *)
   lemma right_unique_pred_set_conv[pred_set_conv]: "right_unique = single_valuedp"
-    unfolding right_unique_def single_valuedp_def by auto
+    using single_valuedp_eq_right_unique[symmetric] .
   lemma bi_unique_pred_set_conv[pred_set_conv]: "bi_unique (\<lambda> x y. (x, y) \<in> R) \<longleftrightarrow> bijective R"
     unfolding bi_unique_def bijective_def by blast
 

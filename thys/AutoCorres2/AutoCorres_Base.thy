@@ -38,8 +38,8 @@ definition funp:: "('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> bool" 
 lemma funp_witness: "fun_of_rel r f \<Longrightarrow> funp r"
   by (auto simp add: funp_def)
 
-lemma funp_to_single_valuedp: "funp r \<Longrightarrow> single_valuedp r"
-  by (auto simp add: single_valuedp_def funp_def fun_of_rel_def)
+lemma funp_to_right_unique: "funp r \<Longrightarrow> right_unique r"
+  by (rule right_uniqueI) (auto simp add: funp_def fun_of_rel_def)
 
 lemma fun_of_rel_xval[fun_of_rel_intros]:
   "fun_of_rel L f_l \<Longrightarrow> fun_of_rel R f_r \<Longrightarrow> fun_of_rel (rel_xval L R) (map_xval f_l f_r)"

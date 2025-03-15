@@ -182,10 +182,10 @@ lemma wf_subcls1:
   "wf_prog wf_md P \<Longrightarrow> wfP ((subcls1 P)\<inverse>\<inverse>)"
 by(rule acyclicP_wf_subcls1)(rule acyclic_subcls1)
 
-lemma single_valued_subcls1:
-  "wf_prog wf_md G \<Longrightarrow> single_valuedp (subcls1 G)"
+lemma right_unique_subcls1:
+  "wf_prog wf_md G \<Longrightarrow> right_unique (subcls1 G)"
 (*<*)
-by(auto simp:wf_prog_def distinct_fst_def single_valuedp_def dest!:subcls1D)
+by (rule right_uniqueI) (auto simp: wf_prog_def distinct_fst_def dest!: subcls1D)
 (*>*)
 
 

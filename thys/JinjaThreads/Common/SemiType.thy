@@ -98,8 +98,8 @@ proof(rule single_valuedI)
   thus "y = z"
   proof(induct arbitrary: z rule: widen1.induct)
     case widen1_Class
-    with single_valued_subcls1[OF wf] show ?case
-      by(auto dest: single_valuedpD)
+    with right_unique_subcls1[OF wf] show ?case
+      by (auto dest: right_uniqueD)
   next
     case (widen1_Array_Array T U z)
     from \<open>P \<turnstile> T\<lfloor>\<rceil> <\<^sup>1 z\<close> \<open>P \<turnstile> T <\<^sup>1 U\<close> \<open>\<not> is_NT_Array T\<close>
