@@ -48,8 +48,8 @@ function usage()
   echo "  -t <isabelle> <tag> use specified path to isabelle tool script"
   echo
   echo "Examples:"
-  echo "  $PRG -r 2009 Example-Submission"
-  echo "  $PRG -t /usr/proj/Isabelle2009/bin/isabelle Isabelle2009 Example-Submission"
+  echo "  $PRG -r 2025 Example-Submission"
+  echo "  $PRG -t /usr/proj/Isabelle2025/bin/isabelle Example-Submission"
   echo
   echo "  $PRG Example-Submission"
   exit 1
