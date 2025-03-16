@@ -15,8 +15,8 @@ overloading pow_list == "compow :: nat \<Rightarrow> 'a list \<Rightarrow> 'a li
 begin
 
 primrec pow_list :: "nat \<Rightarrow> 'a list \<Rightarrow> 'a list" where
-"pow_list 0 xs = []" |
-"pow_list (Suc n) xs = xs @ pow_list n xs"
+  "pow_list 0 xs = []" |
+  "pow_list (Suc n) xs = xs @ pow_list n xs"
 
 end
 
@@ -52,34 +52,34 @@ end
 lemmas[simp] = pow_list_Nil pow_list_zero pow_list_one pow_list_1 pow_list_Suc pow_list_2
 
 lemma pow_list_alt: "xs^^n = concat (replicate n xs)"
-by (induct n) auto
+  by (induct n) auto
 
 lemma pow_list_single: "[a] ^^ m = replicate m a"
-by(simp add: pow_list_alt)
+  by(simp add: pow_list_alt)
 
 lemma length_pow_list_single [simp]: "length([a] ^^ n) = n"
-by (simp add: pow_list_single)
+  by (simp add: pow_list_single)
 
 lemma nth_pow_list_single: "i < m \<Longrightarrow> ([a] ^^ m) ! i = a"
-by (simp add: pow_list_single)
+  by (simp add: pow_list_single)
 
 lemma pow_list_not_NilD: "xs ^^ m \<noteq> [] \<Longrightarrow> 0 < m"
-by (cases m) auto
+  by (cases m) auto
 
 lemma length_pow_list:  "length(xs ^^ k) = k * length xs"
-by (induction k) simp+
+  by (induction k) simp+
 
 lemma pow_list_set: "set (w ^^ Suc k) = set w"
-by (induction k)(simp_all)
+  by (induction k)(simp_all)
 
 lemma pow_list_slide: "xs @ (ys @ xs) ^^ n  @ ys = (xs @ ys)^^(Suc n)"
-by (induction n) simp+
+  by (induction n) simp+
 
 lemma hd_pow_list: "0 < n \<Longrightarrow> hd(xs ^^ n) = hd xs"
-by(auto simp: pow_list_alt hd_append gr0_conv_Suc)
+  by(auto simp: pow_list_alt hd_append gr0_conv_Suc)
 
 lemma rev_pow_list: "rev (xs ^^ m) = (rev xs) ^^ m"
-by (induction m)(auto simp: pow_list_comm)
+  by (induction m)(auto simp: pow_list_comm)
 
 lemma eq_pow_list_iff_eq_exp[simp]: assumes "xs \<noteq> []" shows "xs ^^ k = xs ^^ m \<longleftrightarrow> k = m"
 proof
@@ -91,10 +91,10 @@ next
 qed
 
 lemma pow_list_Nil_iff_0: "xs \<noteq> [] \<Longrightarrow> xs ^^ m = [] \<longleftrightarrow> m = 0"
-by (simp add: pow_list_eq_if)
+  by (simp add: pow_list_eq_if)
 
 lemma pow_list_Nil_iff_Nil: "0 < m \<Longrightarrow> xs ^^ m = [] \<longleftrightarrow>  xs = []"
-by (cases xs) (auto simp add: pow_list_Nil_iff_0)
+  using pow_list_Nil_iff_0 by fastforce
 
 lemma pow_eq_eq:
   assumes "xs ^^ k = ys ^^ k" and "0 < k"
@@ -106,19 +106,19 @@ proof-
 qed
 
 lemma map_pow_list[simp]: "map f (xs ^^ k) = (map f xs) ^^ k"
-by (induction k) simp_all
+  by (induction k) simp_all
 
 lemma concat_pow_list: "concat (xs ^^ k) = (concat xs) ^^ k"
-by (induction k) simp_all
+  by (induction k) simp_all
 
 lemma concat_pow_list_single[simp]: "concat ([a] ^^ k) = a ^^ k"
-by (simp add: pow_list_alt)
+  by (simp add: pow_list_alt)
 
 lemma pow_list_single_Nil_iff: "[a] ^^ n = [] \<longleftrightarrow> n = 0"
-by (simp add: pow_list_single)
+  by (simp add: pow_list_single)
 
 lemma hd_pow_list_single: "k \<noteq> 0 \<Longrightarrow> hd ([a] ^^ k) = a"
-by (cases k) simp+
+  by (cases k) simp+
 
 lemma index_pow_mod: "i < length(xs ^^ k) \<Longrightarrow> (xs ^^ k)!i = xs!(i mod length xs)"
 proof(induction k)
@@ -145,10 +145,10 @@ lemma unique_letter_word: assumes "\<And>c. c \<in> set w \<Longrightarrow> c = 
 qed simp
 
 lemma count_list_pow_list: "count_list (w ^^ k) a = k * (count_list w a)"
-by (induction k) simp+
+  by (induction k) simp+
 
 lemma sing_pow_lists: "a \<in> A \<Longrightarrow> [a] ^^ n \<in> lists A"
-by (induction n) auto
+  by (induction n) auto
 
 lemma one_generated_list_power: "u \<in> lists {x} \<Longrightarrow> \<exists>k. concat u = x ^^ k"
 proof(induction u rule: lists.induct)
