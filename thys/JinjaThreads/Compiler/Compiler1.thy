@@ -57,7 +57,7 @@ where
 by pat_completeness auto
 termination
 apply(relation "case_sum (\<lambda>p. size (snd p)) (\<lambda>p. size_list size (snd p)) <*mlex*> {}")
-apply(rule wf_mlex[OF wf_empty])
+apply(rule wf_mlex[OF wf_on_bot])
 apply(rule mlex_less, simp)+
 done
 

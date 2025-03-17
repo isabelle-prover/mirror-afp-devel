@@ -19,7 +19,7 @@ function ennexp::"ereal \<Rightarrow> ennreal" where
 | "ennexp (\<infinity>) = \<infinity>"
 | "ennexp (-\<infinity>) = 0"
 by (auto intro: ereal_cases)
-termination by standard (rule wf_empty)
+termination by standard (rule wf_on_bot)
 
 lemma ennexp_0 [simp]:
   "ennexp 0 = 1"
@@ -29,7 +29,7 @@ function eln::"ennreal \<Rightarrow> ereal" where
 "eln (ennreal r) = (if r \<le> 0 then -\<infinity> else ereal (ln r))"
 | "eln (\<infinity>) = \<infinity>"
 by (auto intro: ennreal_cases, metis ennreal_eq_0_iff, simp add: ennreal_neg)
-termination by standard (rule wf_empty)
+termination by standard (rule wf_on_bot)
 
 lemma eln_simps [simp]:
   "eln 0 = -\<infinity>"

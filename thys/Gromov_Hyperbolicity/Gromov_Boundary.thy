@@ -2701,7 +2701,7 @@ function to_real_Gromov_completion::"ereal \<Rightarrow> real Gromov_completion"
   | "to_real_Gromov_completion (\<infinity>) = abs_Gromov_completion (\<lambda>n. n)"
   | "to_real_Gromov_completion (-\<infinity>) = abs_Gromov_completion (\<lambda>n. -n)"
 by (auto intro: ereal_cases)
-termination by standard (rule wf_empty)
+termination by standard (rule wf_on_bot)
 
 text \<open>To prove the bijectivity, we prove by hand injectivity and surjectivity using the above
 lemmas.\<close>
