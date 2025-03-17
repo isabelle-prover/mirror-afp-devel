@@ -7511,7 +7511,7 @@ lemma rb_aux_domI:
   shows "rb_aux_dom args"
 proof -
   let ?rel = "rb_aux_term <*lex*> ({}::(nat \<times> nat) set)"
-  from wf_rb_aux_term wf_empty have "wf ?rel" ..
+  from wf_rb_aux_term wf_on_bot have "wf ?rel" ..
   thus ?thesis using assms
   proof (induct args)
     case (less args)
