@@ -28,11 +28,11 @@ function usage()
   echo "$PRG Example-Submission"
   echo   "same as above, but only test Example-Submission"
   echo
-  echo "$PRG -t /usr/proj/isabelle/Isabelle2009/bin/isabelle Example-Submission"
-  echo   "uses the Isabelle2009 release version to run the test"
+  echo "$PRG -t /usr/proj/isabelle/Isabelle2025/bin/isabelle Example-Submission"
+  echo   "uses the Isabelle2025 release version to run the test"
   echo
-  echo "$PRG -r 2009 Example-Submission"
-  echo   "uses the distribution $ISABELLE_RELEASES/Isabelle2009 to test Example-Submission"
+  echo "$PRG -r 2025 Example-Submission"
+  echo   "uses the distribution $ISABELLE_RELEASES/Isabelle2025 to test Example-Submission"
   exit 1
 }
 
