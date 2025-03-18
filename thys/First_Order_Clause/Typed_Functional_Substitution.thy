@@ -11,57 +11,57 @@ locale base_typed_functional_substitution =
   base_functional_substitution where id_subst = id_subst
 for
   id_subst :: "'v \<Rightarrow> 'base" and
-  typed :: "('v, 'ty) var_types \<Rightarrow> 'base \<Rightarrow> 'ty \<Rightarrow> bool" +
+  welltyped :: "('v, 'ty) var_types \<Rightarrow> 'base \<Rightarrow> 'ty \<Rightarrow> bool" +
 assumes
-  base_typed: "\<And>\<V>. Typing.typed (typed \<V>)" and
-  typed_id_subst [intro]: "\<And>\<V> x. typed \<V> (id_subst x) (\<V> x)"
+  base_typing: "\<And>\<V>. Typing.typing (welltyped \<V>)" and
+  typed_id_subst [intro]: "\<And>\<V> x. welltyped \<V> (id_subst x) (\<V> x)"
 begin
 
-sublocale typed "typed \<V>"
-  using base_typed .
+sublocale typing "welltyped \<V>"
+  using base_typing .
 
-abbreviation is_typed_on :: "'v set \<Rightarrow> ('v, 'ty) var_types \<Rightarrow> ('v \<Rightarrow> 'base) \<Rightarrow> bool" where
-  "is_typed_on X \<V> \<sigma> \<equiv> \<forall>x \<in> X. typed \<V> (\<sigma> x) (\<V> x)"
+abbreviation is_welltyped_on :: "'v set \<Rightarrow> ('v, 'ty) var_types \<Rightarrow> ('v \<Rightarrow> 'base) \<Rightarrow> bool" where
+  "is_welltyped_on X \<V> \<sigma> \<equiv> \<forall>x \<in> X. welltyped \<V> (\<sigma> x) (\<V> x)"
 
 lemma subst_update:
-  assumes "typed \<V> (id_subst var) \<tau>" "typed \<V> update \<tau>"  "is_typed_on X \<V> \<gamma>"
-  shows "is_typed_on X \<V> (\<gamma>(var := update))"
+  assumes "welltyped \<V> (id_subst var) \<tau>" "welltyped \<V> update \<tau>"  "is_welltyped_on X \<V> \<gamma>"
+  shows "is_welltyped_on X \<V> (\<gamma>(var := update))"
   using assms typed_id_subst
   by fastforce
 
 lemma is_typed_on_subset:
-  assumes "is_typed_on Y \<V> \<sigma>" "X \<subseteq> Y"
-  shows "is_typed_on X \<V> \<sigma>"
+  assumes "is_welltyped_on Y \<V> \<sigma>" "X \<subseteq> Y"
+  shows "is_welltyped_on X \<V> \<sigma>"
   using assms
   by blast
 
-lemma is_typed_id_subst [intro]: "is_typed_on X \<V> id_subst"
+lemma is_typed_id_subst [intro]: "is_welltyped_on X \<V> id_subst"
   by auto
 
 end
 
 locale typed_functional_substitution =
-  base: base_typed_functional_substitution 
-  where subst = base_subst and vars = base_vars and typed = base_typed +
+  base: base_typed_functional_substitution where
+    subst = base_subst and vars = base_vars and welltyped = base_welltyped +
   based_functional_substitution where vars = vars
 for
-  base_typed :: "('v, 'ty) var_types \<Rightarrow> 'base \<Rightarrow> 'ty \<Rightarrow> bool" and 
+  base_welltyped :: "('v, 'ty) var_types \<Rightarrow> 'base \<Rightarrow> 'ty \<Rightarrow> bool" and 
   vars :: "'expr \<Rightarrow> 'v set" and
-  typed :: "('v, 'ty) var_types \<Rightarrow> 'expr \<Rightarrow> 'ty' \<Rightarrow> bool" +
+  welltyped :: "('v, 'ty) var_types \<Rightarrow> 'expr \<Rightarrow> 'ty' \<Rightarrow> bool" +
 assumes
-   typed: "\<And>\<V>. Typing.typed (typed \<V>)"
+  base_typing0: "\<And>\<V>. Typing.typing (welltyped \<V>)"
 begin
 
-sublocale typed "typed \<V>"
-  using typed .
+sublocale typing "welltyped \<V>"
+  using base_typing0 .
 
 (* TOOD NOW *)
 (* TODO: Quite specific definition *)
-abbreviation is_typed_ground_instance where
-  "is_typed_ground_instance expr \<V> \<gamma> \<equiv>
+abbreviation is_welltyped_ground_instance where
+  "is_welltyped_ground_instance expr \<V> \<gamma> \<equiv>
     is_ground (expr \<cdot> \<gamma>) \<and>
-    (\<exists>\<tau>. typed \<V> expr \<tau>) \<and>
-    base.is_typed_on (vars expr) \<V> \<gamma> \<and>
+    (\<exists>\<tau>. welltyped \<V> expr \<tau>) \<and>
+    base.is_welltyped_on (vars expr) \<V> \<gamma> \<and>
     infinite_variables_per_type \<V>"
 
 end
@@ -69,17 +69,17 @@ end
 (* TODO: Name witnessed *)
 locale inhabited_typed_functional_substitution =
  typed_functional_substitution +
- assumes types_inhabited: "\<And>\<V> \<tau>. \<exists>b. base.is_ground b \<and> base_typed \<V> b \<tau>"
+ assumes types_inhabited: "\<And>\<V> \<tau>. \<exists>b. base.is_ground b \<and> base_welltyped \<V> b \<tau>"
 begin
 
 lemma ground_subst_extension:
   assumes
     grounding: "is_ground (expr \<cdot> \<gamma>)" and
-    \<gamma>_is_typed_on: "base.is_typed_on (vars expr) \<V> \<gamma>"
+    \<gamma>_is_typed_on: "base.is_welltyped_on (vars expr) \<V> \<gamma>"
   obtains \<gamma>'
   where
     "base.is_ground_subst \<gamma>'"
-    "base.is_typed_on UNIV \<V> \<gamma>'"
+    "base.is_welltyped_on UNIV \<V> \<gamma>'"
     "\<forall>x \<in> vars expr. \<gamma> x = \<gamma>' x"
 proof (rule that)
 
@@ -87,7 +87,7 @@ proof (rule that)
     "\<And>x. \<gamma>' x \<equiv>
       if x \<in> vars expr
       then \<gamma> x
-      else SOME base. base.is_ground base \<and> base_typed \<V> base (\<V> x)"
+      else SOME base. base.is_ground base \<and> base_welltyped \<V> base (\<V> x)"
 
   show "base.is_ground_subst \<gamma>'"
   proof(unfold base.is_ground_subst_def, intro allI)
@@ -118,7 +118,7 @@ proof (rule that)
       by auto
   qed
 
-  show "base.is_typed_on UNIV \<V> \<gamma>'"
+  show "base.is_welltyped_on UNIV \<V> \<gamma>'"
     unfolding \<gamma>'_def
     using \<gamma>_is_typed_on types_inhabited
     by (simp add: verit_sko_ex_indirect)
@@ -130,11 +130,11 @@ qed
 lemma grounding_extension:
   assumes
     grounding: "is_ground (expr \<cdot> \<gamma>)" and
-    \<gamma>_is_typed_on: "base.is_typed_on (vars expr) \<V> \<gamma>"
+    \<gamma>_is_typed_on: "base.is_welltyped_on (vars expr) \<V> \<gamma>"
   obtains \<gamma>'
   where
     "is_ground (expr' \<cdot> \<gamma>')"
-    "base.is_typed_on (vars expr') \<V> \<gamma>'"
+    "base.is_welltyped_on (vars expr') \<V> \<gamma>'"
     "\<forall>x \<in> vars expr. \<gamma> x = \<gamma>' x"
   using ground_subst_extension[OF grounding \<gamma>_is_typed_on]
   unfolding base.is_ground_subst_def is_grounding_iff_vars_grounded
@@ -143,56 +143,56 @@ lemma grounding_extension:
 end
 
 sublocale base_typed_functional_substitution \<subseteq> typed_functional_substitution where
-  base_subst = subst and base_vars = vars and base_typed = typed
+  base_subst = subst and base_vars = vars and base_welltyped = welltyped
   by unfold_locales
 
 locale typed_grounding_functional_substitution =
   typed_functional_substitution + grounding
 begin
 
-definition typed_ground_instances where
-  "typed_ground_instances typed_expr =
+definition welltyped_ground_instances where
+  "welltyped_ground_instances typed_expr =
     { to_ground (fst typed_expr \<cdot> \<gamma>) | \<gamma>.
-      is_typed_ground_instance (fst typed_expr) (snd typed_expr) \<gamma> }"
+      is_welltyped_ground_instance (fst typed_expr) (snd typed_expr) \<gamma> }"
 
 lemma typed_ground_instances_ground_instances':
-  "typed_ground_instances (expr, \<V>) \<subseteq> ground_instances' expr"
-  unfolding typed_ground_instances_def ground_instances'_def
+  "welltyped_ground_instances (expr, \<V>) \<subseteq> ground_instances' expr"
+  unfolding welltyped_ground_instances_def ground_instances'_def
   by auto
 
 end
 
 locale typed_subst_stability = typed_functional_substitution +
 assumes
-  subst_stability [simp]:
-   "\<And>\<V> expr \<sigma> \<tau>. base.is_typed_on (vars expr) \<V> \<sigma> \<Longrightarrow> typed \<V> (expr \<cdot> \<sigma>) \<tau> \<longleftrightarrow> typed \<V> expr \<tau>"
+  subst_stability [simp]: "\<And>\<V> expr \<sigma> \<tau>.
+    base.is_welltyped_on (vars expr) \<V> \<sigma> \<Longrightarrow> welltyped \<V> (expr \<cdot> \<sigma>) \<tau> \<longleftrightarrow> welltyped \<V> expr \<tau>"
 begin
 
 lemma subst_stability_UNIV [simp]:
-  "base.is_typed_on UNIV \<V> \<sigma> \<Longrightarrow> typed \<V> (expr \<cdot> \<sigma>) \<tau> \<longleftrightarrow> typed \<V> expr \<tau>"
+  "base.is_welltyped_on UNIV \<V> \<sigma> \<Longrightarrow> welltyped \<V> (expr \<cdot> \<sigma>) \<tau> \<longleftrightarrow> welltyped \<V> expr \<tau>"
   by simp
 
 end
 
 locale base_typed_subst_stability = 
   base_typed_functional_substitution +
-  typed_subst_stability where base_subst = subst and base_vars = vars and base_typed = typed
+  typed_subst_stability where base_subst = subst and base_vars = vars and base_welltyped = welltyped
 begin
 
 lemma typed_subst_compose [intro]:
   assumes
-    "is_typed_on X \<V> \<sigma>"
-    "is_typed_on (\<Union>(vars ` \<sigma> ` X)) \<V> \<sigma>'"
-  shows "is_typed_on X \<V> (\<sigma> \<odot> \<sigma>')"
+    "is_welltyped_on X \<V> \<sigma>"
+    "is_welltyped_on (\<Union>(vars ` \<sigma> ` X)) \<V> \<sigma>'"
+  shows "is_welltyped_on X \<V> (\<sigma> \<odot> \<sigma>')"
   using assms
   unfolding comp_subst_iff
   by auto
 
 lemma typed_subst_compose_UNIV [intro]:
   assumes
-    "is_typed_on UNIV \<V> \<sigma>"
-    "is_typed_on UNIV \<V> \<sigma>'"
-  shows "is_typed_on UNIV \<V> (\<sigma> \<odot> \<sigma>')"
+    "is_welltyped_on UNIV \<V> \<sigma>"
+    "is_welltyped_on UNIV \<V> \<sigma>'"
+  shows "is_welltyped_on UNIV \<V> (\<sigma> \<odot> \<sigma>')"
   using assms
   unfolding comp_subst_iff
   by auto
@@ -201,18 +201,18 @@ end
 
 locale replaceable_\<V> = typed_functional_substitution +
   assumes replace_\<V>:
-    "\<And>expr \<V> \<V>' \<tau>. \<forall>x\<in> vars expr. \<V> x = \<V>' x \<Longrightarrow> typed \<V> expr \<tau> \<Longrightarrow> typed \<V>' expr \<tau>"
+    "\<And>expr \<V> \<V>' \<tau>. \<forall>x\<in> vars expr. \<V> x = \<V>' x \<Longrightarrow> welltyped \<V> expr \<tau> \<Longrightarrow> welltyped \<V>' expr \<tau>"
 begin
 
 lemma replace_\<V>_iff:
   assumes "\<forall>x\<in> vars expr. \<V> x = \<V>' x"
-  shows "typed \<V> expr \<tau> \<longleftrightarrow> typed \<V>' expr \<tau>"
+  shows "welltyped \<V> expr \<tau> \<longleftrightarrow> welltyped \<V>' expr \<tau>"
   using assms
   by (metis replace_\<V>)
 
 lemma is_ground_typed:                
   assumes "is_ground expr"
-  shows "typed \<V> expr \<tau> \<longleftrightarrow> typed \<V>' expr \<tau>"
+  shows "welltyped \<V> expr \<tau> \<longleftrightarrow> welltyped \<V>' expr \<tau>"
   using replace_\<V>_iff assms
   by blast
 
@@ -225,30 +225,33 @@ locale typed_renaming =
     typed_renaming [simp]:
     "\<And>\<V> \<V>' expr \<rho> \<tau>. base.is_renaming \<rho> \<Longrightarrow>
       \<forall>x \<in> vars expr. \<V> x = \<V>' (rename \<rho> x) \<Longrightarrow>
-      typed \<V>' (expr \<cdot> \<rho>) \<tau> \<longleftrightarrow> typed \<V> expr \<tau>"
+      welltyped \<V>' (expr \<cdot> \<rho>) \<tau> \<longleftrightarrow> welltyped \<V> expr \<tau>"
 
 locale base_typed_renaming =
-  base_typed_functional_substitution where typed = typed +
+  base_typed_functional_substitution where
+    welltyped = welltyped +
   typed_renaming where
-  base_subst = subst and base_vars = vars and base_typed = typed and typed = typed +
+    base_subst = subst and base_vars = vars and base_welltyped = welltyped and
+    welltyped = welltyped +
   replaceable_\<V> where
-  base_subst = subst and base_vars = vars and base_typed = typed and typed = typed
-for typed :: "('v, 'ty) var_types \<Rightarrow> 'expr \<Rightarrow> 'ty \<Rightarrow> bool"
+    base_subst = subst and base_vars = vars and base_welltyped = welltyped and
+    welltyped = welltyped
+  for welltyped :: "('v, 'ty) var_types \<Rightarrow> 'expr \<Rightarrow> 'ty \<Rightarrow> bool"
 begin
 
 lemma renaming_ground_subst:
   assumes
     "is_renaming \<rho>"
-    "is_typed_on (\<Union>(vars ` \<rho> ` X)) \<V>' \<gamma>"
-    "is_typed_on X \<V> \<rho>"
+    "is_welltyped_on (\<Union>(vars ` \<rho> ` X)) \<V>' \<gamma>"
+    "is_welltyped_on X \<V> \<rho>"
     "is_ground_subst \<gamma>"
     "\<forall>x \<in> X. \<V> x = \<V>' (rename \<rho> x)"
-  shows "is_typed_on X \<V> (\<rho> \<odot> \<gamma>)"
+  shows "is_welltyped_on X \<V> (\<rho> \<odot> \<gamma>)"
 proof(intro ballI)
   fix x
   assume x_in_X: "x \<in> X"
 
-  then have "typed \<V> (\<rho> x) (\<V> x)"
+  then have "welltyped \<V> (\<rho> x) (\<V> x)"
     by (simp add: assms(3))
 
   define y where "y \<equiv> (rename \<rho> x)"
@@ -258,11 +261,11 @@ proof(intro ballI)
     unfolding y_def
     by (metis UN_iff assms(1) id_subst_rename image_eqI singletonI vars_id_subst)
 
-  moreover then have "typed \<V> (\<gamma> y) (\<V>' y)"
+  moreover then have "welltyped \<V> (\<gamma> y) (\<V>' y)"
     using replace_\<V>
     by (metis assms(2,4) left_neutral emptyE is_ground_subst_is_ground comp_subst_iff)
 
-  ultimately have "typed \<V> (\<gamma> y) (\<V> x)"
+  ultimately have "welltyped \<V> (\<gamma> y) (\<V> x)"
     unfolding y_def
     using assms(5) x_in_X
     by fastforce
@@ -271,7 +274,7 @@ proof(intro ballI)
     unfolding y_def
     by (metis assms(1) comp_subst_iff id_subst_rename left_neutral)
 
-  ultimately show "typed \<V> ((\<rho> \<odot> \<gamma>) x) (\<V> x)"
+  ultimately show "welltyped \<V> ((\<rho> \<odot> \<gamma>) x) (\<V> x)"
     by argo
 qed
 
@@ -283,7 +286,7 @@ lemma obtain_typed_renaming:
   obtains \<rho> :: "'v \<Rightarrow> 'expr" where
     "is_renaming \<rho>"
     "id_subst ` X \<inter> \<rho> ` Y = {}"
-    "is_typed_on Y \<V> \<rho>"
+    "is_welltyped_on Y \<V> \<rho>"
 proof-
 
   obtain renaming :: "'v \<Rightarrow> 'v" where
@@ -310,7 +313,7 @@ proof-
       by blast
   next
 
-    show "is_typed_on Y \<V> \<rho>"
+    show "is_welltyped_on Y \<V> \<rho>"
       using preserve_type
       unfolding \<rho>_def
       by (metis typed_id_subst)
@@ -326,8 +329,8 @@ lemma obtain_typed_renamings:
     "is_renaming \<rho>\<^sub>1"
     "is_renaming \<rho>\<^sub>2"
     "\<rho>\<^sub>1 ` X \<inter> \<rho>\<^sub>2 ` Y = {}"
-    "is_typed_on X \<V>\<^sub>1 \<rho>\<^sub>1"
-    "is_typed_on Y \<V>\<^sub>2 \<rho>\<^sub>2"
+    "is_welltyped_on X \<V>\<^sub>1 \<rho>\<^sub>1"
+    "is_welltyped_on Y \<V>\<^sub>2 \<rho>\<^sub>2"
   using obtain_typed_renaming[OF assms] is_renaming_id_subst typed_id_subst
   by metis
 
@@ -340,17 +343,17 @@ lemma obtain_typed_renamings':
     "is_renaming \<rho>\<^sub>1"
     "is_renaming \<rho>\<^sub>2"
     "\<rho>\<^sub>1 ` X \<inter> \<rho>\<^sub>2 ` Y = {}"
-    "is_typed_on X \<V>\<^sub>1 \<rho>\<^sub>1"
-    "is_typed_on Y \<V>\<^sub>2 \<rho>\<^sub>2"
+    "is_welltyped_on X \<V>\<^sub>1 \<rho>\<^sub>1"
+    "is_welltyped_on Y \<V>\<^sub>2 \<rho>\<^sub>2"
   using obtain_typed_renamings[OF assms]
   by (metis inf_commute)
 
 lemma renaming_subst_compose:
   assumes
     "is_renaming \<rho>"
-    "is_typed_on X \<V> (\<rho> \<odot> \<sigma>)"
-    "is_typed_on X \<V> \<rho>"
-  shows "is_typed_on (\<Union> (vars ` \<rho> ` X)) \<V> \<sigma>"
+    "is_welltyped_on X \<V> (\<rho> \<odot> \<sigma>)"
+    "is_welltyped_on X \<V> \<rho>"
+  shows "is_welltyped_on (\<Union> (vars ` \<rho> ` X)) \<V> \<sigma>"
    using assms
    unfolding is_renaming_iff
    by (smt (verit) UN_E comp_subst_iff image_iff is_typed_id_subst left_neutral right_uniqueD
@@ -482,18 +485,18 @@ lemma (in renaming_variables) obtain_merged_\<V>'_infinite_variables_for_all_typ
 
 locale based_typed_renaming =
   base: base_typed_renaming where
-  subst = base_subst and vars = "base_vars :: 'base \<Rightarrow> 'v set" and
-  typed = "base_typed :: ('v \<Rightarrow> 'ty) \<Rightarrow> 'base \<Rightarrow> 'ty \<Rightarrow> bool" +
+    subst = base_subst and vars = "base_vars :: 'base \<Rightarrow> 'v set" and
+    welltyped = "base_welltyped :: ('v \<Rightarrow> 'ty) \<Rightarrow> 'base \<Rightarrow> 'ty \<Rightarrow> bool" +
   typed_renaming
 begin
 
 lemma renaming_grounding:
   assumes
     renaming: "base.is_renaming \<rho>" and
-    \<rho>_\<gamma>_is_welltyped: "base.is_typed_on (vars expr) \<V> (\<rho> \<odot> \<gamma>)" and
+    \<rho>_\<gamma>_is_welltyped: "base.is_welltyped_on (vars expr) \<V> (\<rho> \<odot> \<gamma>)" and
     grounding: "is_ground (expr \<cdot> \<rho> \<odot> \<gamma>)" and
     \<V>_\<V>': "\<forall>x \<in> vars expr. \<V> x = \<V>' (rename \<rho> x)"
-  shows "base.is_typed_on (vars (expr \<cdot> \<rho>)) \<V>' \<gamma>"
+  shows "base.is_welltyped_on (vars (expr \<cdot> \<rho>)) \<V>' \<gamma>"
 proof(intro ballI)
   fix x
 
@@ -510,12 +513,12 @@ proof(intro ballI)
     using variable_grounding[OF grounding y_in_vars]
     by (metis base.comp_subst_iff base.left_neutral)
 
-  moreover have "base_typed \<V> (base_subst (id_subst y) (\<rho> \<odot> \<gamma>)) (\<V> y)"
+  moreover have "base_welltyped \<V> (base_subst (id_subst y) (\<rho> \<odot> \<gamma>)) (\<V> y)"
     using \<rho>_\<gamma>_is_welltyped y_in_vars
     unfolding y_def
     by (metis base.comp_subst_iff base.left_neutral)
 
-  ultimately have "base_typed \<V>' (base_subst (id_subst y) (\<rho> \<odot> \<gamma>)) (\<V> y)"
+  ultimately have "base_welltyped \<V>' (base_subst (id_subst y) (\<rho> \<odot> \<gamma>)) (\<V> y)"
     by (meson base.is_ground_typed)
 
   moreover have "base_subst (id_subst y) (\<rho> \<odot> \<gamma>) = \<gamma> x"
@@ -523,7 +526,7 @@ proof(intro ballI)
     unfolding y_def vars_subst base.comp_subst_iff
     by (metis (no_types, lifting) UN_E f_inv_into_f)
 
-  ultimately show "base_typed \<V>' (\<gamma> x) (\<V>' x)"
+  ultimately show "base_welltyped \<V>' (\<gamma> x) (\<V>' x)"
     using \<V>_\<V>'[rule_format]
     by (metis base.right_uniqueD base.typed_id_subst id_subst_rename renaming renaming_inv_into
         x_in_expr y_def y_in_vars)
@@ -532,8 +535,8 @@ qed
 lemma obtain_merged_grounding:
   fixes \<V>\<^sub>1 \<V>\<^sub>2 :: "'v \<Rightarrow> 'ty"
   assumes
-    "base.is_typed_on (vars expr) \<V>\<^sub>1 \<gamma>\<^sub>1"
-    "base.is_typed_on (vars expr') \<V>\<^sub>2 \<gamma>\<^sub>2"
+    "base.is_welltyped_on (vars expr) \<V>\<^sub>1 \<gamma>\<^sub>1"
+    "base.is_welltyped_on (vars expr') \<V>\<^sub>2 \<gamma>\<^sub>2"
     "is_ground (expr \<cdot> \<gamma>\<^sub>1)"
     "is_ground (expr' \<cdot> \<gamma>\<^sub>2)" and
     \<V>\<^sub>2: "infinite_variables_per_type \<V>\<^sub>2" and
@@ -542,8 +545,8 @@ lemma obtain_merged_grounding:
     "base.is_renaming \<rho>\<^sub>1"
     "base.is_renaming \<rho>\<^sub>2"
     "vars (expr \<cdot> \<rho>\<^sub>1) \<inter> vars (expr' \<cdot> \<rho>\<^sub>2) = {}"
-    "base.is_typed_on (vars expr) \<V>\<^sub>1 \<rho>\<^sub>1"
-    "base.is_typed_on (vars expr') \<V>\<^sub>2 \<rho>\<^sub>2"
+    "base.is_welltyped_on (vars expr) \<V>\<^sub>1 \<rho>\<^sub>1"
+    "base.is_welltyped_on (vars expr') \<V>\<^sub>2 \<rho>\<^sub>2"
     "\<forall>x \<in> vars expr. \<gamma>\<^sub>1 x = (\<rho>\<^sub>1 \<odot> \<gamma>) x"
     "\<forall>x \<in> vars expr'. \<gamma>\<^sub>2 x = (\<rho>\<^sub>2 \<odot> \<gamma>) x"
 proof-
@@ -552,8 +555,8 @@ proof-
     \<rho>\<^sub>1: "base.is_renaming \<rho>\<^sub>1" and
     \<rho>\<^sub>2: "base.is_renaming \<rho>\<^sub>2" and
     rename_apart: "\<rho>\<^sub>1 ` (vars expr) \<inter> \<rho>\<^sub>2 ` (vars expr') = {}" and
-    \<rho>\<^sub>1_is_welltyped: "base.is_typed_on (vars expr) \<V>\<^sub>1 \<rho>\<^sub>1" and
-    \<rho>\<^sub>2_is_welltyped: "base.is_typed_on (vars expr') \<V>\<^sub>2 \<rho>\<^sub>2"
+    \<rho>\<^sub>1_is_welltyped: "base.is_welltyped_on (vars expr) \<V>\<^sub>1 \<rho>\<^sub>1" and
+    \<rho>\<^sub>2_is_welltyped: "base.is_welltyped_on (vars expr') \<V>\<^sub>2 \<rho>\<^sub>2"
     using base.obtain_typed_renamings[OF finite_vars \<V>\<^sub>2].
 
   have rename_apart: "vars (expr \<cdot> \<rho>\<^sub>1) \<inter> vars (expr' \<cdot> \<rho>\<^sub>2) = {}"
@@ -630,8 +633,8 @@ qed
 lemma obtain_merged_grounding':
   fixes \<V>\<^sub>1 \<V>\<^sub>2 :: "'v \<Rightarrow> 'ty"
   assumes
-    typed_\<gamma>\<^sub>1: "base.is_typed_on (vars expr) \<V>\<^sub>1 \<gamma>\<^sub>1" and
-    typed_\<gamma>\<^sub>2: "base.is_typed_on (vars expr') \<V>\<^sub>2 \<gamma>\<^sub>2" and
+    typed_\<gamma>\<^sub>1: "base.is_welltyped_on (vars expr) \<V>\<^sub>1 \<gamma>\<^sub>1" and
+    typed_\<gamma>\<^sub>2: "base.is_welltyped_on (vars expr') \<V>\<^sub>2 \<gamma>\<^sub>2" and
     expr_grounding: "is_ground (expr \<cdot> \<gamma>\<^sub>1)" and
     expr'_grounding: "is_ground (expr' \<cdot> \<gamma>\<^sub>2)" and
     \<V>\<^sub>1: "infinite_variables_per_type \<V>\<^sub>1" and
@@ -640,8 +643,8 @@ lemma obtain_merged_grounding':
     "base.is_renaming \<rho>\<^sub>1"
     "base.is_renaming \<rho>\<^sub>2"
     "vars (expr \<cdot> \<rho>\<^sub>1) \<inter> vars (expr' \<cdot> \<rho>\<^sub>2) = {}"
-    "base.is_typed_on (vars expr) \<V>\<^sub>1 \<rho>\<^sub>1"
-    "base.is_typed_on (vars expr') \<V>\<^sub>2 \<rho>\<^sub>2"
+    "base.is_welltyped_on (vars expr) \<V>\<^sub>1 \<rho>\<^sub>1"
+    "base.is_welltyped_on (vars expr') \<V>\<^sub>2 \<rho>\<^sub>2"
     "\<forall>x \<in> vars expr. \<gamma>\<^sub>1 x = (\<rho>\<^sub>1 \<odot> \<gamma>) x"
     "\<forall>x \<in> vars expr'. \<gamma>\<^sub>2 x = (\<rho>\<^sub>2 \<odot> \<gamma>) x"
   using obtain_merged_grounding[OF typed_\<gamma>\<^sub>2 typed_\<gamma>\<^sub>1 expr'_grounding expr_grounding \<V>\<^sub>1 finite_vars]
@@ -650,41 +653,26 @@ lemma obtain_merged_grounding':
 end
 
 sublocale base_typed_renaming \<subseteq>
-  based_typed_renaming where base_vars = vars and base_subst = subst and base_typed = typed
+  based_typed_renaming where base_vars = vars and base_subst = subst and base_welltyped = welltyped
   by unfold_locales
 
 locale functional_substitution_typing =
-  typed: base_typed_functional_substitution where typed = typed +
-  welltyped: base_typed_functional_substitution where typed = welltyped
+  welltyped: base_typed_functional_substitution where welltyped = welltyped
 for
-  typed welltyped :: "('var, 'ty) var_types \<Rightarrow> 'expr \<Rightarrow> 'ty \<Rightarrow> bool"
+  welltyped :: "('var, 'ty) var_types \<Rightarrow> 'expr \<Rightarrow> 'ty \<Rightarrow> bool"
 begin
 
-abbreviation is_typed_on where
-  "is_typed_on \<equiv> typed.is_typed_on"
-
 abbreviation is_welltyped_on where
-  "is_welltyped_on \<equiv> welltyped.is_typed_on"
-
-abbreviation is_typed where
-  "is_typed \<equiv> is_typed_on UNIV"
+  "is_welltyped_on \<equiv> welltyped.is_welltyped_on"
 
 abbreviation is_welltyped where
   "is_welltyped \<equiv> is_welltyped_on UNIV"
 
-lemmas typed_id_subst = typed.typed_id_subst
-
 lemmas welltyped_id_subst = welltyped.typed_id_subst
-
-lemmas is_typed_id_subst = typed.is_typed_id_subst
 
 lemmas is_welltyped_id_subst = welltyped.is_typed_id_subst
 
-lemmas is_typed_on_subset = typed.is_typed_on_subset
-
 lemmas is_welltyped_on_subset = welltyped.is_typed_on_subset
-
-lemmas is_typed_subst_update = typed.subst_update
 
 lemmas is_welltyped_subst_update = welltyped.subst_update
 

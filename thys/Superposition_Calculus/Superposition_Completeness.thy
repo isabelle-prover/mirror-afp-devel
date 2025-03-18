@@ -1276,8 +1276,7 @@ proof(cases D\<^sub>G E\<^sub>G C\<^sub>G rule: ground.superposition.cases)
         unfolding D l\<^sub>2
         by auto
 
-      then show "\<And>\<tau> \<tau>'. \<lbrakk>typed \<V>\<^sub>2 t\<^sub>2 \<tau>; typed \<V>\<^sub>2 t\<^sub>2' \<tau>'\<rbrakk> \<Longrightarrow> \<tau> = \<tau>'"
-        using term.typed_if_welltyped
+      then show "\<And>\<tau> \<tau>'. \<lbrakk>welltyped \<V>\<^sub>2 t\<^sub>2 \<tau>; welltyped \<V>\<^sub>2 t\<^sub>2' \<tau>'\<rbrakk> \<Longrightarrow> \<tau> = \<tau>'"
         by blast
     qed
 

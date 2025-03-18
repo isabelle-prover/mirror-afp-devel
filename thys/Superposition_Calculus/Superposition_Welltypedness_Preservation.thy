@@ -136,7 +136,7 @@ proof (cases "(D, \<V>\<^sub>2)" "(E, \<V>\<^sub>1)" "(C, \<V>\<^sub>3)" rule: s
 
           then show ?thesis
             using superpositionI(22)
-            by (simp add: term.typed_if_welltyped)
+            by simp
         qed
 
         ultimately show ?thesis

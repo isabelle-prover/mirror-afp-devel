@@ -4,11 +4,16 @@ theory Ground_Superposition_Welltypedness_Preservation
     First_Order_Clause.Ground_Typing
 begin
 
-context ground_superposition_calculus
+context ground_superposition_calculus                          
 begin
 
-sublocale ground_typing where \<F> = "\<F> :: ('f, 'ty) fun_types"
-  by unfold_locales
+sublocale ground_typing where \<F> = "\<F> :: ('f, 'ty) fun_types" .
+
+term clause.is_welltyped
+(*
+"clause.is_welltyped"
+  :: "'f gterm uprod literal multiset \<Rightarrow> bool"
+*)
 
 context
   fixes \<F> :: "('f, 'ty) fun_types"
