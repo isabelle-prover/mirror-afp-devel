@@ -9,12 +9,6 @@ begin
 
 sublocale ground_typing where \<F> = "\<F> :: ('f, 'ty) fun_types" .
 
-term clause.is_welltyped
-(*
-"clause.is_welltyped"
-  :: "'f gterm uprod literal multiset \<Rightarrow> bool"
-*)
-
 context
   fixes \<F> :: "('f, 'ty) fun_types"
 begin
