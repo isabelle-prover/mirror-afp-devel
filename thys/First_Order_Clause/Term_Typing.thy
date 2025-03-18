@@ -47,7 +47,6 @@ end
 
 locale term_typing =
   base_typing +
-  typed: context_compatible_typing where welltyped = welltyped +
   welltyped: context_compatible_typing where welltyped = welltyped +
   welltyped: subterm_typing where welltyped = welltyped
 
