@@ -130,8 +130,8 @@ lemma obtain_type_preserving_injs':
 lemma obtain_infinite_variables_per_type_on:
   assumes 
     infinite_UNIV: "infinite (UNIV :: 'v set)" and 
-    finite_Y: "finite Y" and 
-    finite_Z: "finite Z" and 
+    finite_Y: "finite Y" and (* Could be made weaker: infinite (UNIV - Y) *)
+    finite_Z: "finite Z" and (* Could be made weaker: infinite (UNIV - Z) *)
     disjoint: "Y \<inter> Z = {}"
   obtains \<V> :: "'v \<Rightarrow> 'ty"
   where "infinite_variables_per_type_on X \<V>" "\<forall>x \<in> Y. \<V> x = \<V>' x" "\<forall>x \<in> Z. \<V> x = \<V>'' x"
@@ -189,15 +189,18 @@ next
 
   show ?thesis
   proof (rule that)
+
     show "infinite_variables_per_type_on X (\<V> \<circ> f)"
       using \<V>_X
       unfolding infinite_variables_per_type_on_def comp_def
       by (metis image_image)
   next
+
     show "\<forall>x\<in>Y. (\<V> \<circ> f) x = \<V>' x"
       unfolding f_def \<V>_def
       by auto
   next
+
     show "\<forall>x\<in>Z. (\<V> \<circ> f) x = \<V>'' x"
       using disjoint
       unfolding f_def \<V>_def

@@ -656,6 +656,7 @@ sublocale base_typed_renaming \<subseteq>
   based_typed_renaming where base_vars = vars and base_subst = subst and base_welltyped = welltyped
   by unfold_locales
 
+(* TODO: Remove *)
 locale functional_substitution_typing =
   welltyped: base_typed_functional_substitution where welltyped = welltyped
 for

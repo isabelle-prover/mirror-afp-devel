@@ -270,6 +270,86 @@ abbreviation welltyped_imgu_on where
 abbreviation welltyped_imgu where
   "welltyped_imgu \<equiv> welltyped_imgu_on UNIV"
 
+(* TODO: If we could make sure that unifier just exist for welltyped terms, 
+   we could remove " (\<exists>\<tau>. welltyped \<V> t \<tau> \<and> welltyped \<V> t' \<tau>)" from the definition of 
+   welltyped_imgu_on.
+   Strictly speaking it would be right now already enough, if just one of the terms is well-typed.
+*)
+lemma unifier_same_type:
+  assumes "is_welltyped_on (term.vars t \<union> term.vars t') \<V> \<mu>"
+  shows "term_subst.is_unifier \<mu> {t, t'} \<Longrightarrow> 
+    welltyped \<V> t = welltyped \<V> t'"
+proof (rule ccontr)
+  assume
+    unifier: "term.is_unifier \<mu> {t, t'}" and 
+    not_same_type:"welltyped \<V> t \<noteq> welltyped \<V> t'"
+
+  show False
+  proof (cases "\<exists>\<tau>. welltyped \<V> t \<tau>")
+    case True
+
+    then obtain \<tau> where "welltyped \<V> t \<tau>"
+      by presburger
+
+    moreover then have "welltyped \<V> (t \<cdot>t \<mu>) \<tau>"
+      using assms
+      by auto
+
+    then have "welltyped \<V> (t' \<cdot>t \<mu>) \<tau>"
+      using unifier
+      unfolding term.is_unifier_def term.subst_set_def
+      by (metis finite.simps insertCI term_subst.is_unifier_iff_if_finite unifier)
+
+    then have "welltyped \<V> t' \<tau>"
+      using assms
+      by simp
+
+    ultimately show ?thesis
+      using not_same_type
+      by fast
+  next
+    case False
+
+
+    then show ?thesis 
+    proof (cases "\<exists>\<tau>. welltyped \<V> t' \<tau>")
+      case True
+
+      then obtain \<tau> where "welltyped \<V> t' \<tau>"
+        by presburger
+
+      moreover then have "welltyped \<V> (t' \<cdot>t \<mu>) \<tau>"
+        using assms
+        by auto
+
+      then have "welltyped \<V> (t \<cdot>t \<mu>) \<tau>"
+        using unifier
+        unfolding term.is_unifier_def term.subst_set_def
+        by (metis finite.simps insertCI term_subst.is_unifier_iff_if_finite unifier)
+
+      then have "welltyped \<V> t \<tau>"
+        using assms
+        by simp
+
+      ultimately show ?thesis
+        using not_same_type
+        by fast
+    next
+      assume "\<not> term.is_welltyped \<V> t" "\<not> term.is_welltyped \<V> t'"
+      then show ?thesis
+        using not_same_type
+        by presburger
+    qed
+  qed
+qed
+
+lemma imgu_same_type:
+  assumes "is_welltyped_on (term.vars t \<union> term.vars t') \<V> \<mu>"
+  shows "term_subst.is_imgu \<mu> {{t, t'}} \<Longrightarrow> welltyped \<V> t =  welltyped \<V> t'"
+  using unifier_same_type assms
+  unfolding term.is_imgu_def term.is_unifier_set_def
+  by blast
+
 lemma obtain_welltyped_imgu:
   fixes \<upsilon> :: "('f, 'v) subst"
   assumes unified: "t \<cdot>t \<upsilon> = t' \<cdot>t \<upsilon>" and welltyped: "welltyped \<V> t \<tau>" "welltyped \<V> t' \<tau>"
