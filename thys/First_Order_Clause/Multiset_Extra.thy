@@ -6,8 +6,8 @@ theory Multiset_Extra
     Abstract_Substitution.Natural_Magma_Functor
 begin
 
-lemma exists_multiset [intro]: "\<exists>M. x \<in> set_mset M"
-  by (meson union_single_eq_member)
+lemma exists_non_empty_multiset [intro]: "\<exists>M. M \<noteq> {#}"
+  by (metis empty_not_add_mset)
 
 global_interpretation muliset_magma: natural_magma_with_empty where
   to_set = set_mset and plus = "(+)" and wrap = "\<lambda>l. {#l#}" and add = add_mset and empty = "{#}"
