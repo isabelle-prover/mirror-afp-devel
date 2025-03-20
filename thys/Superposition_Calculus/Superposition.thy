@@ -16,14 +16,19 @@ locale superposition_calculus =
   nonground_inhabited_typing \<F> +
   nonground_equality_order less\<^sub>t +
   nonground_selection_function select +
-  typed_tiebreakers tiebreakers +
   ground_critical_pair_theorem "TYPE('f)"
   for
     select :: "('f, 'v :: infinite) select" and
     less\<^sub>t :: "('f, 'v) term \<Rightarrow> ('f, 'v) term \<Rightarrow> bool" and
     \<F> :: "('f, 'ty) fun_types" and
-    tiebreakers :: "('f, 'v) tiebreakers"
+    tiebreakers :: "('f, 'v) tiebreakers" +
+  assumes
+    wfp_tiebreakers[iff]: "\<And>C\<^sub>G. wfp (tiebreakers C\<^sub>G)" and
+    transp_tiebreakers[iff]: "\<And>C\<^sub>G. transp (tiebreakers C\<^sub>G)"
 begin
+
+sublocale typed_tiebreakers tiebreakers
+  by unfold_locales simp_all
 
 interpretation term_order_notation.
 

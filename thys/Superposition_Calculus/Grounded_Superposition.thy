@@ -129,7 +129,7 @@ sublocale lifting:
     clause.welltyped_ground_instances
     "Some \<circ> inference_ground_instances"
     typed_tiebreakers
-proof(unfold_locales; (intro impI typed_tiebreakers.wfp typed_tiebreakers.transp)?)
+proof(unfold_locales; (intro impI wfp_typed_tiebreakers transp_typed_tiebreakers)?)
 
   show "\<bottom>\<^sub>F \<noteq> {}"
     using obtain_infinite_variables_per_type_on''[of "{}"]
