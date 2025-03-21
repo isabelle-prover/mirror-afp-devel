@@ -2709,9 +2709,8 @@ fun gen_theorem schematic bundle_includes prep_att prep_stmt
       |> prep_statement (prep_att lthy) prep_stmt elems raw_concl;
     val atts = more_atts @ map (prep_att lthy) raw_atts;
 
-    val pos = Position.thread_data ();
     val print_results =
-      Proof_Display.print_results {interactive = int, pos = pos, proof_state = false};
+      Proof_Display.print_results {interactive = int, pos = Position.thread_data ()};
 
     fun after_qed' results goal_ctxt' =
       let
