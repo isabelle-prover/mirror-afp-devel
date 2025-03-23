@@ -187,18 +187,26 @@ lemma tc_equiv:
       and is_nempty: "is \<noteq> {}"
   shows "equiv A ((\<Union>i\<in>is. f i)\<^sup>+)"
 proof(rule equivI)
-  from E is_nempty show "refl_on A ((\<Union>i\<in>is. f i)\<^sup>+)"
-    unfolding equiv_def
-    apply -
-    apply (rule refl_onI)
-    apply (rule trancl_Int_subset)
-    apply (auto dest: refl_onD refl_onD1 refl_onD2)
-    done
-  from E show "sym ((\<Union>i\<in>is. f i)\<^sup>+)"
-    apply -
-    apply (rule sym_trancl)
-    unfolding equiv_def sym_def by blast
-  show "trans  ((\<Union>i\<in>is. f i)\<^sup>+)" by (rule trans_trancl)
+  show "(\<Union> (f ` is))\<^sup>+ \<subseteq> A \<times> A"
+  proof (rule trancl_Int_subset)
+    show "\<Union> (f ` is) \<subseteq> A \<times> A"
+      by (simp add: E UN_least equiv_type)
+  next
+    show "Restr ((\<Union> (f ` is))\<^sup>+) A O \<Union> (f ` is) \<subseteq> A \<times> A"
+      using E equiv_def by fastforce
+  qed
+next
+  show "refl_on A ((\<Union>i\<in>is. f i)\<^sup>+)"
+    using E is_nempty
+    by (smt (verit, ccfv_threshold) UN_iff equals0I equiv_def
+        refl_on_def trancl.r_into_trancl)
+next
+  show "sym ((\<Union>i\<in>is. f i)\<^sup>+)"
+    using E
+    by (simp add: equiv_def sym_UNION sym_trancl)
+next
+  show "trans  ((\<Union>i\<in>is. f i)\<^sup>+)"
+    using trans_trancl .
 qed
 
 lemma S5n_tc_rels_eq:
@@ -463,6 +471,8 @@ lemma gen_model_S5n:
   assumes S5n: "S5n M"
   shows "S5n (gen_model M w)"
 proof(intro S5nI equivI)
+  show "\<And>n. relations (gen_model M w) n \<subseteq> worlds (gen_model M w) \<times> worlds (gen_model M w)"
+    by (simp add: gen_model_rels_worlds subrelI)
   show "\<And>n. refl_on (worlds (gen_model M w)) (relations (gen_model M w) n)"
     apply (rule equivE[OF S5nD[OF S5n]])
     by - (rule refl_onI, auto simp add: refl_on_def gen_model_def)
@@ -806,6 +816,9 @@ lemma sim_S5n:
       and sim: "sim M M' f"
   shows "S5n M'"
 proof(intro S5nI equivI)
+  show "\<And>a. relations M' a \<subseteq> worlds M' \<times> worlds M'"
+    by (metis S5n S5n_kripke kripke_def sim sim_kripke)
+next
   fix a from S5n sim show "refl_on (worlds M') (relations M' a)"
      using sim_kripke S5n_kripke
      unfolding S5n_def equiv_def sim_def sim_f_def sim_range_def

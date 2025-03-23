@@ -36,7 +36,8 @@ abbreviation "total_preorder r \<equiv> refl r \<and> trans r"
 
 inductive valid_region :: "'c set \<Rightarrow> ('c \<Rightarrow> nat) \<Rightarrow> ('c \<Rightarrow> intv) \<Rightarrow> 'c rel \<Rightarrow> bool"
 where
-  "\<lbrakk>X\<^sub>0 = {x \<in> X. \<exists> d. I x = Intv d}; refl_on X\<^sub>0 r; trans r; total_on X\<^sub>0 r; \<forall> x \<in> X. valid_intv (k x) (I x)\<rbrakk>
+  "\<lbrakk>X\<^sub>0 = {x \<in> X. \<exists> d. I x = Intv d}; r \<subseteq> X\<^sub>0 \<times> X\<^sub>0; refl_on X\<^sub>0 r; trans r; total_on X\<^sub>0 r;
+    \<forall> x \<in> X. valid_intv (k x) (I x)\<rbrakk>
   \<Longrightarrow> valid_region X k I r"
 
 inductive_set region for X I r
@@ -403,8 +404,7 @@ lemma finite_\<R>:
 proof -
   { fix I r assume A: "valid_region X k I r"
     let ?X\<^sub>0 = "{x \<in> X. \<exists>d. I x = Intv d}"
-    from A have "refl_on ?X\<^sub>0 r" by auto
-    then have "r \<subseteq> X \<times> X" by (auto simp: refl_on_def)
+    from A have "r \<subseteq> X \<times> X" by auto
     then have "r \<in> Pow (X \<times> X)" by auto
   }
   then have "{r. \<exists>I. valid_region X k I r} \<subseteq> Pow (X \<times> X)" by auto
@@ -729,8 +729,7 @@ proof (safe, goal_cases)
               proof (safe, goal_cases)
                 case 1
                 from d' have "y \<notin> ?X\<^sub>0" by auto
-                moreover from assms(8) have "refl_on ?X\<^sub>0 r" by auto
-                ultimately show ?case unfolding refl_on_def using 1 by auto
+                with assms(8) show ?case using 1 by auto
               next
                 case 2
                 with F show ?case by simp
@@ -885,18 +884,18 @@ proof
   let ?X\<^sub>0' = "{x \<in> X. \<exists>d. I' x = Intv d}"
   let ?S = "{(x, y). x \<in> Z \<and> y \<in> X \<and> intv_const (I x) < k x \<and> isIntv (I' y)}"
   show "?X\<^sub>0' = ?X\<^sub>0'" ..
-  from assms(8) have refl: "refl_on ?X\<^sub>0 r" and total: "total_on ?X\<^sub>0 r" and trans: "trans r"
-    and valid: "\<And> x. x \<in> X \<Longrightarrow> valid_intv (k x) (I x)"
-  by auto
-  then have "r \<subseteq> ?X\<^sub>0 \<times> ?X\<^sub>0" unfolding refl_on_def by auto
+  have r_subset: "r \<subseteq> ?X\<^sub>0 \<times> ?X\<^sub>0" and refl: "refl_on ?X\<^sub>0 r" and total: "total_on ?X\<^sub>0 r" and
+    trans: "trans r" and valid: "\<And> x. x \<in> X \<Longrightarrow> valid_intv (k x) (I x)"
+    using assms(8) by auto
   then have "r \<subseteq> ?X\<^sub>0' \<times> ?X\<^sub>0'" unfolding I'_def Z_def by auto
   moreover have "?S \<subseteq> ?X\<^sub>0' \<times> ?X\<^sub>0'"
     apply (auto)
     apply (auto simp: Z_def)[]
     apply (auto simp: I'_def)[]
   done
-  ultimately have "r'\<subseteq> ?X\<^sub>0' \<times> ?X\<^sub>0'" unfolding r'_def by auto
-  then show "refl_on ?X\<^sub>0' r'" unfolding refl_on_def
+  ultimately show "r'\<subseteq> ?X\<^sub>0' \<times> ?X\<^sub>0'" unfolding r'_def by auto
+
+  show "refl_on ?X\<^sub>0' r'" unfolding refl_on_def
   proof auto
     fix x d assume A: "x \<in> X" "I' x = Intv d"
     show "(x, x) \<in> r'"
@@ -942,14 +941,14 @@ proof
     show "(x, z) \<in> r'"
     proof (cases "(x,y) \<in> r")
       case True
-      then have "y \<notin> Z" using refl unfolding Z_def refl_on_def by auto
+      then have "y \<notin> Z" using r_subset unfolding Z_def by auto
       then have "(y, z) \<in> r" using A unfolding r'_def by auto
       with trans True show ?thesis unfolding trans_def r'_def by blast
     next
       case False
       with A(1) have F: "x \<in> Z" "intv_const (I x) < k x" unfolding r'_def by auto
-      moreover from A(2) refl have "z \<in> X" "isIntv (I' z)"
-      by (auto simp: r'_def refl_on_def) (auto simp: I'_def Z_def)
+      moreover from A(2) r_subset have "z \<in> X" "isIntv (I' z)"
+        by (auto simp: r'_def) (auto simp: I'_def Z_def)
       ultimately show ?thesis unfolding r'_def by auto
     qed
   qed
@@ -1240,13 +1239,13 @@ proof
   let ?X\<^sub>0 = "{x \<in> X. \<exists>d. I x = Intv d}"
   let ?X\<^sub>0' = "{x \<in> X. \<exists>d. I' x = Intv d}"
   show "?X\<^sub>0' = ?X\<^sub>0'" ..
-  from assms(9) have refl: "refl_on ?X\<^sub>0 r" and total: "total_on ?X\<^sub>0 r" and trans: "trans r"
-    and valid: "\<And> x. x \<in> X \<Longrightarrow> valid_intv (k x) (I x)"
-  by auto
+  have r_subset: "r \<subseteq> ?X\<^sub>0 \<times> ?X\<^sub>0" and refl: "refl_on ?X\<^sub>0 r" and total: "total_on ?X\<^sub>0 r" and
+    trans: "trans r" and valid: "\<And> x. x \<in> X \<Longrightarrow> valid_intv (k x) (I x)"
+    using assms(9) by auto
   have subs: "r' \<subseteq> r" unfolding r'_def by auto
-  from refl have "r \<subseteq> ?X\<^sub>0 \<times> ?X\<^sub>0" unfolding refl_on_def by auto
-  then have "r'\<subseteq> ?X\<^sub>0' \<times> ?X\<^sub>0'" unfolding r'_def I'_def by auto
-  then show "refl_on ?X\<^sub>0' r'" unfolding refl_on_def
+  show "r'\<subseteq> ?X\<^sub>0' \<times> ?X\<^sub>0'" using r_subset unfolding r'_def I'_def by auto
+
+  show "refl_on ?X\<^sub>0' r'" unfolding refl_on_def
   proof auto
     fix x d assume A: "x \<in> X" "I' x = Intv d"
     then have "x \<notin> M" by (force simp: I'_def)
@@ -2086,11 +2085,16 @@ proof -
   let ?X\<^sub>0 = "{x \<in> X. \<exists> c. I x = Intv c}"
   let ?X\<^sub>0' = "{x \<in> X. \<exists> c. ?I x = Intv c}"
 
-  from R(2) have refl: "refl_on ?X\<^sub>0 r" and trans: "trans r" and total: "total_on ?X\<^sub>0 r" by auto
+  have r_subset: "r \<subseteq> ?X\<^sub>0 \<times> ?X\<^sub>0" and refl: "refl_on ?X\<^sub>0 r" and trans: "trans r" and
+    total: "total_on ?X\<^sub>0 r"
+    using R(2) by auto
 
   have valid: "valid_region X k ?I ?r"
   proof
     show "?X\<^sub>0 - {x} = ?X\<^sub>0'" by auto
+  next
+    show "?r \<subseteq> (?X\<^sub>0 - {x}) \<times> (?X\<^sub>0 - {x})"
+      using r_subset by blast
   next
     from refl show "refl_on (?X\<^sub>0 - {x}) ?r" unfolding refl_on_def by auto
   next
@@ -2142,7 +2146,7 @@ proof -
         qed
       next
         from Const show "?X\<^sub>0' = ?X\<^sub>0" by auto
-        with refl have "r \<subseteq> ?X\<^sub>0' \<times> ?X\<^sub>0'" unfolding refl_on_def by auto
+        with r_subset have "r \<subseteq> ?X\<^sub>0' \<times> ?X\<^sub>0'" by auto
         then have r: "?r = r" by auto
         from v have "\<forall> y \<in> ?X\<^sub>0'. \<forall> z \<in> ?X\<^sub>0'. (y,z) \<in> ?r \<longleftrightarrow> frac (v y) \<le> frac (v z)" by fastforce
         with r show "\<forall> y \<in> ?X\<^sub>0'. \<forall> z \<in> ?X\<^sub>0'. (y,z) \<in> r \<longleftrightarrow> frac (?v y) \<le> frac (?v z)"
@@ -2167,7 +2171,7 @@ proof -
         qed
       next
         from Greater show "?X\<^sub>0' = ?X\<^sub>0" by auto
-        with refl have "r \<subseteq> ?X\<^sub>0' \<times> ?X\<^sub>0'" unfolding refl_on_def by auto
+        with r_subset have "r \<subseteq> ?X\<^sub>0' \<times> ?X\<^sub>0'" by auto
         then have r: "?r = r" by auto
         from v have "\<forall> y \<in> ?X\<^sub>0'. \<forall> z \<in> ?X\<^sub>0'. (y,z) \<in> ?r \<longleftrightarrow> frac (v y) \<le> frac (v z)" by fastforce
         with r show "\<forall> y \<in> ?X\<^sub>0'. \<forall> z \<in> ?X\<^sub>0'. (y,z) \<in> r \<longleftrightarrow> frac (?v y) \<le> frac (?v z)"
@@ -2609,7 +2613,7 @@ proof -
         qed
       next
         from \<open>x \<in> X\<close> Intv show "?X\<^sub>0' \<union> {x} = ?X\<^sub>0" by auto
-        with refl have "r \<subseteq> (?X\<^sub>0' \<union> {x}) \<times> (?X\<^sub>0' \<union> {x})" unfolding refl_on_def by auto
+        with r_subset have "r \<subseteq> (?X\<^sub>0' \<union> {x}) \<times> (?X\<^sub>0' \<union> {x})" by auto
         have "\<forall> x \<in> ?X\<^sub>0'. \<forall> y \<in> ?X\<^sub>0'. (x,y) \<in> r \<longleftrightarrow> (x,y) \<in> ?r" by auto
         with v have "\<forall> x \<in> ?X\<^sub>0'. \<forall> y \<in> ?X\<^sub>0'. (x,y) \<in> r \<longleftrightarrow> frac (v x) \<le> frac (v y)" by fastforce
         then have "\<forall> x \<in> ?X\<^sub>0'. \<forall> y \<in> ?X\<^sub>0'. (x,y) \<in> r \<longleftrightarrow> frac (?v x) \<le> frac (?v y)" by auto
@@ -2692,11 +2696,16 @@ proof -
   let ?X\<^sub>0 = "{x \<in> X. \<exists> c. I x = Intv c}"
   let ?X\<^sub>0' = "{x \<in> X. \<exists> c. ?I x = Intv c}"
 
-  from R(2) have refl: "refl_on ?X\<^sub>0 r" and trans: "trans r" and total: "total_on ?X\<^sub>0 r" by auto
+  have r_subset: "r \<subseteq> ?X\<^sub>0 \<times> ?X\<^sub>0" and refl: "refl_on ?X\<^sub>0 r" and trans: "trans r" and
+    total: "total_on ?X\<^sub>0 r"
+    using R(2) by auto
 
   have valid: "valid_region X k' ?I ?r"
   proof
     show "?X\<^sub>0' = ?X\<^sub>0'" by auto
+  next
+    show "?r \<subseteq> ?X\<^sub>0' \<times> ?X\<^sub>0'"
+      using r_subset by auto
   next
     from refl show "refl_on ?X\<^sub>0' ?r" unfolding refl_on_def by auto
   next

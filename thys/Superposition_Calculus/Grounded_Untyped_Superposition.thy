@@ -9,7 +9,7 @@ sublocale typed: superposition_calculus where \<F> = "\<lambda>f n. (replicate n
 proof unfold_locales
   show "\<And>\<tau>. \<exists>f. (replicate 0 (), ()) = ([], \<tau>)"
     by simp
-qed
+qed simp_all
 
 lemma all_welltyped [intro]: "typed.welltyped \<V> t ()"
 proof (induction t)

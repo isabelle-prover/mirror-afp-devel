@@ -34,7 +34,7 @@ abbreviation is_inference_ground_instance_one_premise where
       inference.is_ground (Infer [D] C \<cdot>\<iota> \<gamma>) \<and>
       \<iota>\<^sub>G = inference.to_ground (Infer [D] C \<cdot>\<iota> \<gamma>) \<and>
       clause.is_welltyped \<V> D \<and>
-      term.subst.is_welltyped_on (clause.vars C) \<V> \<gamma> \<and>
+      is_welltyped_on (clause.vars C) \<V> \<gamma> \<and>
       clause.is_welltyped \<V> C \<and>
       \<V> = \<V>' \<and>
       infinite_variables_per_type \<V>"
@@ -49,7 +49,7 @@ abbreviation is_inference_ground_instance_two_premises where
       \<iota>\<^sub>G = inference.to_ground (Infer [D \<cdot> \<rho>\<^sub>2, E \<cdot> \<rho>\<^sub>1] C \<cdot>\<iota> \<gamma>) \<and>
       clause.is_welltyped \<V>\<^sub>1 E \<and>
       clause.is_welltyped \<V>\<^sub>2 D \<and>
-      term.subst.is_welltyped_on (clause.vars C) \<V>\<^sub>3 \<gamma> \<and>
+      is_welltyped_on (clause.vars C) \<V>\<^sub>3 \<gamma> \<and>
       clause.is_welltyped \<V>\<^sub>3 C \<and>
       infinite_variables_per_type \<V>\<^sub>1 \<and>
       infinite_variables_per_type \<V>\<^sub>2 \<and>
@@ -129,7 +129,7 @@ sublocale lifting:
     clause.welltyped_ground_instances
     "Some \<circ> inference_ground_instances"
     typed_tiebreakers
-proof(unfold_locales; (intro impI typed_tiebreakers.wfp typed_tiebreakers.transp)?)
+proof(unfold_locales; (intro impI wfp_typed_tiebreakers transp_typed_tiebreakers)?)
 
   show "\<bottom>\<^sub>F \<noteq> {}"
     using obtain_infinite_variables_per_type_on''[of "{}"]
@@ -140,7 +140,7 @@ next
 
   then show "clause.welltyped_ground_instances bottom \<noteq> {}"
     unfolding clause.welltyped_ground_instances_def
-    by auto
+    by fastforce
 next
   fix bottom
   assume "bottom \<in> \<bottom>\<^sub>F"

@@ -45,11 +45,11 @@ abbreviation Pos_Upair (infix "\<approx>" 66) where
 abbreviation Neg_Upair (infix "!\<approx>" 66) where
   "Neg_Upair t t' \<equiv> Neg (Upair t t')"
 
-lemma exists_literal_for_atom [intro]: "\<exists>l. a \<in> set_literal l"
-  by (meson literal.set_intros(1))
+lemma set_literal_not_empty [iff]: "set_literal l \<noteq> {}"
+  by (cases l) simp_all
 
-lemma exists_literal_for_term [intro]: "\<exists>l. t \<in># mset_lit l"
-  by (metis exists_uprod mset_lit.simps(1) set_mset_mset_uprod)
+lemma mset_lit_not_empty [iff]: "mset_lit l \<noteq> {#}"
+  by (cases l) simp_all
 
 lemma finite_set_literal [intro]: "finite (set_literal l)"
   unfolding set_literal_atm_of
@@ -138,8 +138,8 @@ global_interpretation uprod_literal_functor: natural_functor_conversion where
   map_from = map_uprod_literal and map' = map_uprod_literal and to_set' = uprod_literal_to_set
   by unfold_locales (auto simp: mset_lit_image_mset)
 
-lemma exists_inference [intro]: "\<exists>\<iota>. f \<in> set_inference \<iota>"
-  by (metis inference.set_intros(2))
+lemma set_inference_not_empty [iff]: " set_inference \<iota> \<noteq> {}"
+  by(cases \<iota>) simp
 
 lemma finite_set_inference [intro]: "finite (set_inference \<iota>)"
   by (metis inference.exhaust inference.set List.finite_set finite.simps finite_Un)

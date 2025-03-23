@@ -28,7 +28,7 @@ lemma eq_resolution_lifting:
     C_grounding: "clause.is_ground (C \<cdot> \<gamma>)" and
     select: "clause.from_ground (select\<^sub>G D\<^sub>G) = (select D) \<cdot> \<gamma>" and
     D_is_welltyped: "clause.is_welltyped \<V> D" and
-    \<gamma>_is_welltyped: "term.subst.is_welltyped_on (clause.vars D) \<V> \<gamma>" and
+    \<gamma>_is_welltyped: "is_welltyped_on (clause.vars D) \<V> \<gamma>" and
     \<V>: "infinite_variables_per_type \<V>"
   obtains C'
   where
@@ -232,7 +232,7 @@ proof(cases D\<^sub>G C\<^sub>G rule: ground.eq_resolution.cases)
           unfolding D l
           by auto
 
-        then show "term.subst.is_welltyped_on (clause.vars (C' \<cdot> \<mu>)) \<V> \<gamma>"
+        then show "is_welltyped_on (clause.vars (C' \<cdot> \<mu>)) \<V> \<gamma>"
           using D_is_welltyped \<gamma>_is_welltyped
           by blast
       next
@@ -263,7 +263,7 @@ lemma eq_factoring_lifting:
     C_grounding: "clause.is_ground (C \<cdot> \<gamma>)" and
     select: "clause.from_ground (select\<^sub>G D\<^sub>G) = (select D) \<cdot> \<gamma>" and
     D_is_welltyped: "clause.is_welltyped \<V> D" and
-    \<gamma>_is_welltyped: "term.subst.is_welltyped_on (clause.vars D) \<V> \<gamma>" and
+    \<gamma>_is_welltyped: "is_welltyped_on (clause.vars D) \<V> \<gamma>" and
     \<V>: "infinite_variables_per_type \<V>"
   obtains C'
   where
@@ -451,7 +451,7 @@ proof(cases D\<^sub>G C\<^sub>G rule: ground.eq_factoring.cases)
           unfolding D l\<^sub>1 l\<^sub>2
           by auto
 
-        then show "term.subst.is_welltyped_on (clause.vars ?C') \<V> \<gamma>"
+        then show "is_welltyped_on (clause.vars ?C') \<V> \<gamma>"
           using D_is_welltyped \<gamma>_is_welltyped
           by blast
       next
@@ -494,10 +494,10 @@ lemma superposition_lifting:
     select_from_D: "clause.from_ground (select\<^sub>G D\<^sub>G) = (select D) \<cdot> \<rho>\<^sub>2 \<odot> \<gamma>" and
     E_is_welltyped: "clause.is_welltyped \<V>\<^sub>1 E" and
     D_is_welltyped: "clause.is_welltyped \<V>\<^sub>2 D" and
-    \<rho>\<^sub>1_\<gamma>_is_welltyped: "term.subst.is_welltyped_on (clause.vars E) \<V>\<^sub>1 (\<rho>\<^sub>1 \<odot> \<gamma>)" and
-    \<rho>\<^sub>2_\<gamma>_is_welltyped: "term.subst.is_welltyped_on (clause.vars D) \<V>\<^sub>2 (\<rho>\<^sub>2 \<odot> \<gamma>)" and
-    \<rho>\<^sub>1_is_welltyped: "term.subst.is_welltyped_on (clause.vars E) \<V>\<^sub>1 \<rho>\<^sub>1" and
-    \<rho>\<^sub>2_is_welltyped: "term.subst.is_welltyped_on (clause.vars D) \<V>\<^sub>2 \<rho>\<^sub>2" and
+    \<rho>\<^sub>1_\<gamma>_is_welltyped: "is_welltyped_on (clause.vars E) \<V>\<^sub>1 (\<rho>\<^sub>1 \<odot> \<gamma>)" and
+    \<rho>\<^sub>2_\<gamma>_is_welltyped: "is_welltyped_on (clause.vars D) \<V>\<^sub>2 (\<rho>\<^sub>2 \<odot> \<gamma>)" and
+    \<rho>\<^sub>1_is_welltyped: "is_welltyped_on (clause.vars E) \<V>\<^sub>1 \<rho>\<^sub>1" and
+    \<rho>\<^sub>2_is_welltyped: "is_welltyped_on (clause.vars D) \<V>\<^sub>2 \<rho>\<^sub>2" and
     \<V>\<^sub>1: "infinite_variables_per_type \<V>\<^sub>1" and
     \<V>\<^sub>2: "infinite_variables_per_type \<V>\<^sub>2" and
     not_redundant: "\<iota>\<^sub>G \<notin> ground.Red_I N\<^sub>G"
@@ -797,7 +797,7 @@ proof(cases D\<^sub>G E\<^sub>G C\<^sub>G rule: ground.superposition.cases)
               using E_grounding
               by simp
 
-            show "term.subst.is_welltyped_on (clause.vars E) \<V>\<^sub>1 (\<rho>\<^sub>1 \<odot> \<gamma>')"
+            show "is_welltyped_on (clause.vars E) \<V>\<^sub>1 (\<rho>\<^sub>1 \<odot> \<gamma>')"
             proof(intro term.welltyped.typed_subst_compose \<rho>\<^sub>1_is_welltyped)
 
               have "welltyped \<V>\<^sub>1 ?t\<^sub>G (\<V>\<^sub>1 x)"
@@ -848,7 +848,7 @@ proof(cases D\<^sub>G E\<^sub>G C\<^sub>G rule: ground.superposition.cases)
                     by auto
 
                   then show ?thesis
-                    using that term.welltyped.explicit_replace_\<V>_iff[of _ \<V>\<^sub>2 \<V>\<^sub>1]
+                    using that term.welltyped.replace_\<V>_iff[of _ \<V>\<^sub>2 \<V>\<^sub>1]
                     by simp
                 qed
 
@@ -856,11 +856,11 @@ proof(cases D\<^sub>G E\<^sub>G C\<^sub>G rule: ground.superposition.cases)
                   by auto
               qed
 
-              moreover have "term.subst.is_welltyped_on (\<Union> (term.vars ` \<rho>\<^sub>1 ` clause.vars E)) \<V>\<^sub>1 \<gamma>"
+              moreover have "is_welltyped_on (\<Union> (term.vars ` \<rho>\<^sub>1 ` clause.vars E)) \<V>\<^sub>1 \<gamma>"
                 by (intro term.welltyped.renaming_subst_compose \<rho>\<^sub>1_\<gamma>_is_welltyped \<rho>\<^sub>1_is_welltyped \<rho>\<^sub>1)
 
               ultimately show
-                "term.subst.is_welltyped_on (\<Union> (term.vars ` \<rho>\<^sub>1 ` clause.vars E)) \<V>\<^sub>1 \<gamma>'"
+                "is_welltyped_on (\<Union> (term.vars ` \<rho>\<^sub>1 ` clause.vars E)) \<V>\<^sub>1 \<gamma>'"
                 unfolding \<gamma>'_def
                 by simp
             qed
@@ -1046,16 +1046,15 @@ proof(cases D\<^sub>G E\<^sub>G C\<^sub>G rule: ground.superposition.cases)
     using clause.obtain_merged_\<V>[OF \<rho>\<^sub>1 \<rho>\<^sub>2 rename_apart clause.finite_vars clause.finite_vars 
                                  infinite_UNIV] .
 
-  have \<gamma>_is_welltyped:
-    "term.subst.is_welltyped_on (clause.vars (E \<cdot> \<rho>\<^sub>1) \<union> clause.vars (D \<cdot> \<rho>\<^sub>2)) \<V>\<^sub>3 \<gamma>"
+  have \<gamma>_is_welltyped: "is_welltyped_on (clause.vars (E \<cdot> \<rho>\<^sub>1) \<union> clause.vars (D \<cdot> \<rho>\<^sub>2)) \<V>\<^sub>3 \<gamma>"
   proof(unfold Set.ball_Un, intro conjI)
 
-    show "term.subst.is_welltyped_on (clause.vars (E \<cdot> \<rho>\<^sub>1)) \<V>\<^sub>3 \<gamma>"
-      using clause.is_welltyped.renaming_grounding[OF \<rho>\<^sub>1 \<rho>\<^sub>1_\<gamma>_is_welltyped E_grounding \<V>\<^sub>1_\<V>\<^sub>3].
+    show "is_welltyped_on (clause.vars (E \<cdot> \<rho>\<^sub>1)) \<V>\<^sub>3 \<gamma>"
+      using clause.is_welltyped.renaming_grounding[OF \<rho>\<^sub>1 \<rho>\<^sub>1_\<gamma>_is_welltyped E_grounding \<V>\<^sub>1_\<V>\<^sub>3] .
   next
 
-    show "term.subst.is_welltyped_on (clause.vars (D \<cdot> \<rho>\<^sub>2)) \<V>\<^sub>3 \<gamma>"
-      using clause.is_welltyped.renaming_grounding[OF \<rho>\<^sub>2 \<rho>\<^sub>2_\<gamma>_is_welltyped D_grounding \<V>\<^sub>2_\<V>\<^sub>3].
+    show "is_welltyped_on (clause.vars (D \<cdot> \<rho>\<^sub>2)) \<V>\<^sub>3 \<gamma>"
+      using clause.is_welltyped.renaming_grounding[OF \<rho>\<^sub>2 \<rho>\<^sub>2_\<gamma>_is_welltyped D_grounding \<V>\<^sub>2_\<V>\<^sub>3] .
   qed
 
   obtain \<mu> \<sigma> where
@@ -1080,7 +1079,7 @@ proof(cases D\<^sub>G E\<^sub>G C\<^sub>G rule: ground.superposition.cases)
 
       then have "welltyped \<V>\<^sub>3 (term.from_ground t\<^sub>G\<^sub>1) \<tau>"
         using term.welltyped.is_ground_typed
-        by (meson term.ground_is_ground term.welltyped.explicit_is_ground_typed)
+        by (meson term.ground_is_ground term.welltyped.is_ground_typed)
 
       then have "welltyped \<V>\<^sub>3 (t\<^sub>1 \<cdot>t \<rho>\<^sub>1 \<odot> \<gamma>) \<tau>" "welltyped \<V>\<^sub>3 (t\<^sub>2 \<cdot>t \<rho>\<^sub>2 \<odot> \<gamma>) \<tau>"
         using t\<^sub>1_\<gamma> t\<^sub>2_\<gamma>
@@ -1277,8 +1276,7 @@ proof(cases D\<^sub>G E\<^sub>G C\<^sub>G rule: ground.superposition.cases)
         unfolding D l\<^sub>2
         by auto
 
-      then show "\<And>\<tau> \<tau>'. \<lbrakk>typed \<V>\<^sub>2 t\<^sub>2 \<tau>; typed \<V>\<^sub>2 t\<^sub>2' \<tau>'\<rbrakk> \<Longrightarrow> \<tau> = \<tau>'"
-        using term.typed_if_welltyped
+      then show "\<And>\<tau> \<tau>'. \<lbrakk>welltyped \<V>\<^sub>2 t\<^sub>2 \<tau>; welltyped \<V>\<^sub>2 t\<^sub>2' \<tau>'\<rbrakk> \<Longrightarrow> \<tau> = \<tau>'"
         by blast
     qed
 
@@ -1335,8 +1333,8 @@ proof(cases D\<^sub>G E\<^sub>G C\<^sub>G rule: ground.superposition.cases)
           by blast
       next
 
-        show "term.subst.is_welltyped_on (clause.vars C') \<V>\<^sub>3 \<gamma>"
-        proof(rule term.is_welltyped_on_subset[OF \<gamma>_is_welltyped])
+        show "is_welltyped_on (clause.vars C') \<V>\<^sub>3 \<gamma>"
+        proof(rule is_welltyped_on_subset[OF \<gamma>_is_welltyped])
 
           show "clause.vars C' \<subseteq> clause.vars (E \<cdot> \<rho>\<^sub>1) \<union> clause.vars (D \<cdot> \<rho>\<^sub>2)"
           proof (unfold subset_eq, intro ballI)
@@ -1424,7 +1422,7 @@ lemma single_premise_ground_instance:
     clause.is_ground (C \<cdot> \<gamma>);
     clause.from_ground (select\<^sub>G (clause.to_ground (D \<cdot> \<gamma>))) = select D \<cdot> \<gamma>;
     clause.is_welltyped \<V> D; 
-    term.subst.is_welltyped_on (clause.vars D) \<V> \<gamma>;
+    is_welltyped_on (clause.vars D) \<V> \<gamma>;
     infinite_variables_per_type \<V>;
     \<And>C'. \<lbrakk>
         inference (D, \<V>) (C', \<V>);
@@ -1451,7 +1449,7 @@ proof-
   obtain D \<gamma> \<V> where
     D_grounding: "clause.is_ground (D \<cdot> \<gamma>)" and
     D_is_welltyped: "clause.is_welltyped \<V> D" and
-    \<gamma>_is_welltyped: "term.subst.is_welltyped_on (clause.vars D) \<V> \<gamma>" and
+    \<gamma>_is_welltyped: "is_welltyped_on (clause.vars D) \<V> \<gamma>" and
     \<V>: "infinite_variables_per_type \<V>" and
     D_in_N: "(D, \<V>)\<in>N" and
     "select\<^sub>G D\<^sub>G = clause.to_ground (select D \<cdot> \<gamma>)"
@@ -1537,7 +1535,7 @@ proof-
   obtain E \<V>\<^sub>1 \<gamma>\<^sub>1 where
     E_grounding: "clause.is_ground (E \<cdot> \<gamma>\<^sub>1)" and
     E_is_welltyped: "clause.is_welltyped \<V>\<^sub>1 E" and
-    \<gamma>\<^sub>1_is_welltyped: "term.subst.is_welltyped_on (clause.vars E) \<V>\<^sub>1 \<gamma>\<^sub>1" and
+    \<gamma>\<^sub>1_is_welltyped: "is_welltyped_on (clause.vars E) \<V>\<^sub>1 \<gamma>\<^sub>1" and
     \<V>\<^sub>1: "infinite_variables_per_type \<V>\<^sub>1" and
     E_in_N: "(E, \<V>\<^sub>1)\<in>N" and
     "select\<^sub>G E\<^sub>G = clause.to_ground (select E \<cdot> \<gamma>\<^sub>1)"
@@ -1553,7 +1551,7 @@ proof-
   obtain D \<V>\<^sub>2 \<gamma>\<^sub>2 where
     D_grounding: "clause.is_ground (D \<cdot> \<gamma>\<^sub>2)" and
     D_is_welltyped: "clause.is_welltyped \<V>\<^sub>2 D" and
-    \<gamma>\<^sub>2_is_welltyped: "term.subst.is_welltyped_on (clause.vars D) \<V>\<^sub>2 \<gamma>\<^sub>2" and
+    \<gamma>\<^sub>2_is_welltyped: "is_welltyped_on (clause.vars D) \<V>\<^sub>2 \<gamma>\<^sub>2" and
     \<V>\<^sub>2: "infinite_variables_per_type \<V>\<^sub>2" and
     D_in_N: "(D, \<V>\<^sub>2)\<in>N" and
     "select\<^sub>G D\<^sub>G = clause.to_ground (select D \<cdot> \<gamma>\<^sub>2)"
@@ -1570,8 +1568,8 @@ proof-
     \<rho>\<^sub>1: "term_subst.is_renaming \<rho>\<^sub>1" and
     \<rho>\<^sub>2: "term_subst.is_renaming \<rho>\<^sub>2" and
     rename_apart: "clause.vars (E \<cdot> \<rho>\<^sub>1) \<inter> clause.vars (D \<cdot> \<rho>\<^sub>2) = {}" and
-    \<rho>\<^sub>1_is_welltyped: "term.subst.is_welltyped_on (clause.vars E) \<V>\<^sub>1 \<rho>\<^sub>1" and
-    \<rho>\<^sub>2_is_welltyped: "term.subst.is_welltyped_on (clause.vars D) \<V>\<^sub>2 \<rho>\<^sub>2" and
+    \<rho>\<^sub>1_is_welltyped: "is_welltyped_on (clause.vars E) \<V>\<^sub>1 \<rho>\<^sub>1" and
+    \<rho>\<^sub>2_is_welltyped: "is_welltyped_on (clause.vars D) \<V>\<^sub>2 \<rho>\<^sub>2" and
     \<gamma>\<^sub>1_\<gamma>: "\<forall>x \<in> clause.vars E. \<gamma>\<^sub>1 x = (\<rho>\<^sub>1 \<odot> \<gamma>) x" and
     \<gamma>\<^sub>2_\<gamma>: "\<forall>x \<in> clause.vars D. \<gamma>\<^sub>2 x = (\<rho>\<^sub>2 \<odot> \<gamma>) x"
     using clause.is_welltyped.obtain_merged_grounding[OF
@@ -1593,11 +1591,11 @@ proof-
     using clause.subst_eq \<gamma>\<^sub>2_\<gamma> D\<^sub>G
     by fastforce
 
-  have \<rho>\<^sub>1_\<gamma>_is_welltyped: "term.subst.is_welltyped_on (clause.vars E) \<V>\<^sub>1 (\<rho>\<^sub>1 \<odot> \<gamma>)"
+  have \<rho>\<^sub>1_\<gamma>_is_welltyped: "is_welltyped_on (clause.vars E) \<V>\<^sub>1 (\<rho>\<^sub>1 \<odot> \<gamma>)"
     using \<gamma>\<^sub>1_is_welltyped \<gamma>\<^sub>1_\<gamma>
     by fastforce
 
-  have \<rho>\<^sub>2_\<gamma>_is_welltyped: "term.subst.is_welltyped_on (clause.vars D) \<V>\<^sub>2 (\<rho>\<^sub>2 \<odot> \<gamma>)"
+  have \<rho>\<^sub>2_\<gamma>_is_welltyped: "is_welltyped_on (clause.vars D) \<V>\<^sub>2 (\<rho>\<^sub>2 \<odot> \<gamma>)"
     using \<gamma>\<^sub>2_is_welltyped \<gamma>\<^sub>2_\<gamma>
     by fastforce
 
@@ -1757,6 +1755,7 @@ proof(unfold static_empty_ord_inter_equiv_static_inter,
     rule ballI)
   fix select\<^sub>G
   assume "select\<^sub>G \<in> select\<^sub>G\<^sub>s"
+
   then interpret grounded_superposition_calculus
     where select\<^sub>G = select\<^sub>G
     by unfold_locales (simp add: select\<^sub>G\<^sub>s_def)

@@ -32,7 +32,8 @@ definition irreflclp :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 
 where "r\<^sup>\<noteq>\<^sup>\<noteq> a b = (r a b \<and> a \<noteq> b)"
 
 definition porder_on :: "'a set \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> bool"
-where "porder_on A r \<longleftrightarrow> refl_onP A r \<and> transp r \<and> antisymp r"
+  where "porder_on A r \<longleftrightarrow>
+    (\<forall>a a'. r a a' \<longrightarrow> a \<in> A \<and> a' \<in> A) \<and> refl_onP A r \<and> transp r \<and> antisymp r"
 
 definition torder_on :: "'a set \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> bool"
 where "torder_on A r \<longleftrightarrow> porder_on A r \<and> total_onP A r"
@@ -46,17 +47,11 @@ where "(r |` A) a b \<longleftrightarrow> r a b \<and> a \<in> A \<and> b \<in> 
 definition inv_imageP :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> ('b \<Rightarrow> 'a) \<Rightarrow> 'b \<Rightarrow> 'b \<Rightarrow> bool"
 where [iff]: "inv_imageP r f a b \<longleftrightarrow> r (f a) (f b)"
 
-lemma refl_onPI: "(\<And>a a'. r a a' \<Longrightarrow> a \<in> A \<and> a' \<in> A) \<Longrightarrow> (\<And>a. a : A \<Longrightarrow> r a a) \<Longrightarrow> refl_onP A r"
+lemma refl_onPI: "(\<And>a. a : A \<Longrightarrow> r a a) \<Longrightarrow> refl_onP A r"
 by(rule refl_onI)(auto)
 
 lemma refl_onPD: "refl_onP A r ==> a : A ==> r a a"
 by(drule (1) refl_onD)(simp)
-
-lemma refl_onPD1: "refl_onP A r ==> r a b ==> a : A"
-by(erule refl_onD1)(simp)
-
-lemma refl_onPD2: "refl_onP A r ==> r a b ==> b : A"
-by(erule refl_onD2)(simp)
 
 lemma refl_onP_Int: "refl_onP A r ==> refl_onP B s ==> refl_onP (A \<inter> B) (\<lambda>a a'. r a a' \<and> s a a')"
 by(drule (1) refl_on_Int)(simp add: split_def inf_fun_def inf_set_def)
@@ -71,11 +66,6 @@ lemma refl_onP_tranclp:
   assumes "refl_onP A r"
   shows "refl_onP A r^++"
 proof(rule refl_onPI)
-  fix a a'
-  assume "r^++ a a'"
-  thus "a \<in> A \<and> a' \<in> A"
-    by(induct)(blast intro: refl_onPD1[OF assms] refl_onPD2[OF assms])+
-next
   fix a
   assume "a \<in> A"
   from refl_onPD[OF assms this] show "r^++ a a" ..
@@ -133,12 +123,12 @@ by(blast dest: symD)
 subsection \<open>Easy properties\<close>
 
 lemma porder_onI:
-  "\<lbrakk> refl_onP A r; antisymp r; transp r \<rbrakk> \<Longrightarrow> porder_on A r"
+  "\<lbrakk>(\<And>a a'. r a a' \<Longrightarrow> a \<in> A \<and> a' \<in> A); refl_onP A r; antisymp r; transp r \<rbrakk> \<Longrightarrow> porder_on A r"
 unfolding porder_on_def by blast
 
 lemma porder_onE:
   assumes "porder_on A r"
-  obtains "refl_onP A r" "antisymp r" "transp r"
+  obtains "\<forall>a a'. r a a' \<longrightarrow> a \<in> A \<and> a' \<in> A" "refl_onP A r" "antisymp r" "transp r"
 using assms unfolding porder_on_def by blast
 
 lemma torder_onI:
@@ -227,7 +217,8 @@ proof(atomize_elim)
     proof
       assume "s x y"
       with s have "x \<in> B" "y \<in> B"
-        by(blast elim: torder_onE porder_onE dest: refl_onPD1 refl_onPD2)+
+        unfolding atomize_conj
+        by (simp add: porder_on_def torder_on_def)
       with B_subset_A have "x \<in> A" "y \<in> A" by blast+
       with refl_onPD[OF \<open>refl_onP A r\<close>, of x] refl_onPD[OF \<open>refl_onP A r\<close>, of y] \<open>s x y\<close>
       show ?thesis by(iprover)
@@ -242,7 +233,8 @@ proof(atomize_elim)
     proof
       assume "s y z"
       with \<open>refl_onP B s\<close> have "y \<in> B" "z \<in> B"
-        by(blast dest: refl_onPD2 refl_onPD1)+
+        unfolding atomize_conj
+        by (metis porder_on_def s torder_on_def)
       from IH show ?thesis
       proof
         assume "r x y"
@@ -252,7 +244,8 @@ proof(atomize_elim)
       next
         assume "\<exists>u v. r x u \<and> s u v \<and> r v y"
         then obtain u v where "r x u" "s u v" "r v y" by blast
-        from \<open>refl_onP B s\<close> \<open>s u v\<close> have "v \<in> B" by(rule refl_onPD2)
+        from \<open>s u v\<close> have "v \<in> B"
+          by (metis porder_on_def s torder_on_def)
         with \<open>total_onP B s\<close> \<open>refl_onP B s\<close> order_consistent_sym[OF consist]
         have "s v y" using \<open>y \<in> B\<close> \<open>r v y\<close>
           by(rule total_on_refl_on_consistent_into)
@@ -314,8 +307,10 @@ proof(rule antisymPI)
     next
       case (step u' v')
       note r_into_s = total_on_refl_on_consistent_into[OF \<open>total_onP B s\<close> \<open>refl_onP B s\<close> order_consistent_sym[OF consist]]
-      from \<open>refl_onP B s\<close> \<open>s u v\<close> \<open>s u' v'\<close>
-      have "u \<in> B" "v \<in> B" "u' \<in> B" "v' \<in> B" by(blast dest: refl_onPD1 refl_onPD2)+
+      from \<open>s u v\<close> \<open>s u' v'\<close>
+      have "u \<in> B" "v \<in> B" "u' \<in> B" "v' \<in> B"
+        unfolding atomize_conj
+        by (metis porder_on_def s torder_on_def)
       from \<open>r v' x\<close> \<open>r x u\<close> have "r v' u" by(rule transPD[OF \<open>transp r\<close>])
       with \<open>v' \<in> B\<close> \<open>u \<in> B\<close> have "s v' u" by(rule r_into_s)
       also note \<open>s u v\<close>
@@ -341,6 +336,9 @@ lemma porder_on_torder_on_tranclp_porder_onI:
   shows "porder_on A (\<lambda>a b. r a b \<or> s a b)^++"
 proof(rule porder_onI)
   let ?rs = "\<lambda>a b. r a b \<or> s a b"
+  show "\<And>a a'. ?rs\<^sup>+\<^sup>+ a a' \<Longrightarrow> a \<in> A \<and> a' \<in> A"
+    using consist porder_on_def[of A r] porder_torder_tranclpE[of A r B s] r s
+      subset by blast
   from r have "refl_onP A r" by(rule porder_onE)
   moreover from s have "refl_onP B s" by(blast elim: torder_onE porder_onE)
   ultimately have "refl_onP (A \<union> B) ?rs" by(rule refl_onP_Un)
@@ -363,6 +361,11 @@ lemma porder_on_sub_torder_on_tranclp_porder_onI:
 proof(rule porder_onI)
   let ?rt = "\<lambda>x y. r x y \<or> t x y"
   let ?rs = "\<lambda>x y. r x y \<or> s x y"
+
+  show "\<And>a a'. ?rt\<^sup>+\<^sup>+ a a' \<Longrightarrow> a \<in> A \<and> a' \<in> A"
+    by (smt (verit, del_insts) converse_tranclpE in_mono porder_on_def r s subset t
+        torder_onE tranclp.cases)
+
   from r s consist subset have "antisymp ?rs^++"
     by(rule torder_on_porder_on_consistent_tranclp_antisym)
   thus "antisymp ?rt^++"
@@ -377,18 +380,14 @@ proof(rule porder_onI)
     assume "t x y"
     hence "s x y" by(rule t)
     hence "x \<in> B" "y \<in> B"
-      by(blast dest: refl_onPD1[OF \<open>refl_onP B s\<close>] refl_onPD2[OF \<open>refl_onP B s\<close>])+
+      unfolding atomize_conj
+      by (metis porder_on_def s torder_on_def)
     with subset have "x \<in> A" "y \<in> A" by blast+ }
   note t_reflD = this
 
   from r have "refl_onP A r" by(rule porder_onE)
   show "refl_onP A ?rt^++"
   proof(rule refl_onPI)
-    fix a a'
-    assume "?rt^++ a a'"
-    thus "a \<in> A \<and> a' \<in> A"
-      by(induct)(auto dest: refl_onPD1[OF \<open>refl_onP A r\<close>] refl_onPD2[OF \<open>refl_onP A r\<close>] t_reflD)
-  next
     fix a
     assume "a \<in> A"
     with \<open>refl_onP A r\<close> have "r a a" by(rule refl_onPD)
@@ -414,7 +413,7 @@ by(simp add: restrictP_def[abs_def])
 
 lemma refl_on_restrictPI:
   "refl_onP A r \<Longrightarrow> refl_onP (A \<inter> B) (r |` B)"
-by(rule refl_onPI)(blast dest: refl_onPD1 refl_onPD2 refl_onPD)+
+by(rule refl_onPI)(blast dest: refl_onPD)+
 
 lemma refl_on_restrictPI':
   "\<lbrakk> refl_onP A r; B = A \<inter> C \<rbrakk> \<Longrightarrow> refl_onP B (r |` C)"
@@ -430,7 +429,8 @@ by(rule transPI)(blast dest: transPD)
 
 lemma porder_on_restrictPI:
   "porder_on A r \<Longrightarrow> porder_on (A \<inter> B) (r |` B)"
-by(blast elim: porder_onE intro: refl_on_restrictPI antisym_restrictPI trans_restrictPI porder_onI)
+  by (smt (verit, ccfv_SIG) IntI antisym_restrictPI porder_on_def
+      refl_on_restrictPI restrictP_def trans_restrictPI)
 
 lemma porder_on_restrictPI':
   "\<lbrakk> porder_on A r; B = A \<inter> C \<rbrakk> \<Longrightarrow> porder_on B (r |` C)"
@@ -480,22 +480,22 @@ definition max_torder :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow>
 where "max_torder r a b = (if Domainp r a \<and> Domainp r b then if r a b then b else a
   else if a = b then a else SOME a. \<not> Domainp r a)"
 
-lemma refl_on_DomainD: "refl_on A r \<Longrightarrow> A = Domain r"
-by(auto simp add: Domain_unfold dest: refl_onD refl_onD1)
-
-lemma refl_onP_DomainPD: "refl_onP A r \<Longrightarrow> A = {a. Domainp r a}"
-by(drule refl_on_DomainD) auto
-
 lemma semilattice_max_torder:
   assumes tot: "torder_on A r"
   shows "semilattice (max_torder r)"
 proof -
-  from tot have as: "antisymp r" 
+  from tot have r_domain_range: "\<forall>a a'. r a a' \<longrightarrow> a \<in> A \<and> a' \<in> A"
+    and as: "antisymp r" 
     and to: "total_onP A r" 
     and trans: "transp r"
     and refl: "refl_onP A r" 
     by(auto elim: torder_onE porder_onE)
-  from refl have "{a. Domainp r a} = A" by (rule refl_onP_DomainPD[symmetric])
+
+  have "{a. Domainp r a} = A"
+    using r_domain_range
+    by (metis (mono_tags, opaque_lifting) Domainp.simps local.refl mem_Collect_eq
+        refl_onPD subset_antisym subset_iff)
+
   from this [symmetric] have "domain": "\<And>a. Domainp r a \<longleftrightarrow> a \<in> A" by simp
   show ?thesis
   proof
@@ -503,14 +503,45 @@ proof -
     show "max_torder r (max_torder r x y) z = max_torder r x (max_torder r y z)"
     proof (cases "x \<noteq> y \<and> x \<noteq> z \<and> y \<noteq> z")
       case True
-      have *: "\<And>a b. a \<noteq> b \<Longrightarrow> max_torder r a b = (if Domainp r a \<and> Domainp r b then
-        if r a b then b else a else SOME a. \<not> Domainp r a)"
-        by (auto simp add: max_torder_def)
-      with True show ?thesis
-        apply (simp only: max_torder_def "domain")
-        apply (auto split!: if_splits)
-        apply (blast dest: total_onPD [OF to] transPD [OF trans] antisymPD [OF as] refl_onPD1 [OF refl] refl_onPD2 [OF refl] someI [where P="\<lambda>a. a \<notin> A"])+
-        done
+
+      have *: "\<And>a b. a \<noteq> b \<Longrightarrow> max_torder r a b = (if a \<in> A \<and> b \<in> A then
+        if r a b then b else a else SOME a. a \<notin> A)"
+        by (auto simp add: max_torder_def "domain")
+
+      show ?thesis
+      proof (cases "x \<in> A"; cases "y \<in> A"; cases "z \<in> A")
+        show "x \<in> A \<Longrightarrow> y \<in> A \<Longrightarrow> z \<in> A \<Longrightarrow> ?thesis"
+          using True
+          by (simp add: *) (metis trans[THEN transpD] to[THEN total_onPD])
+      next
+        show "x \<in> A \<Longrightarrow> y \<in> A \<Longrightarrow> z \<notin> A \<Longrightarrow> ?thesis"
+          using True
+          by (simp add: *) (metis "*" someI_ex)
+      next
+        show "x \<in> A \<Longrightarrow> y \<notin> A \<Longrightarrow> z \<in> A \<Longrightarrow> ?thesis"
+          using True
+          by (simp add: *) (metis (no_types, lifting) "*" someI_ex)
+      next
+        show "x \<in> A \<Longrightarrow> y \<notin> A \<Longrightarrow> z \<notin> A \<Longrightarrow> ?thesis"
+          using True
+          by (simp add: *) (metis (no_types, lifting) "*" max_torder_def someI_ex)
+      next
+        show "x \<notin> A \<Longrightarrow> y \<in> A \<Longrightarrow> z \<in> A \<Longrightarrow> ?thesis"
+          using True
+          by (simp add: *) (metis "*" someI_ex)
+      next
+        show "x \<notin> A \<Longrightarrow> y \<in> A \<Longrightarrow> z \<notin> A \<Longrightarrow> ?thesis"
+          using True
+          by (simp add: * domain max_torder_def)
+      next
+        show "x \<notin> A \<Longrightarrow> y \<notin> A \<Longrightarrow> z \<in> A \<Longrightarrow> ?thesis"
+          using True
+          by (simp add: *) (metis (no_types, lifting) "*" max_torder_def some_eq_imp)
+      next
+        show "x \<notin> A \<Longrightarrow> y \<notin> A \<Longrightarrow> z \<notin> A \<Longrightarrow> ?thesis"
+          using True
+          by (simp add: * domain max_torder_def)
+      qed
     next
       have max_torder_idem: "\<And>a. max_torder r a a = a" by (simp add: max_torder_def)
       case False then show ?thesis
@@ -533,12 +564,16 @@ lemma max_torder_ge_conv_disj:
   assumes tot: "torder_on A r" and x: "x \<in> A" and y: "y \<in> A"
   shows "r z (max_torder r x y) \<longleftrightarrow> r z x \<or> r z y"
 proof -
-  from tot have as: "antisymp r" 
+  from tot have r_domain_range: "\<forall>a a'. r a a' \<longrightarrow> a \<in> A \<and> a' \<in> A"
+    and as: "antisymp r" 
     and to: "total_onP A r" 
     and trans: "transp r"
     and refl: "refl_onP A r" 
     by(auto elim: torder_onE porder_onE)
-  from refl have "{a. Domainp r a} = A" by (rule refl_onP_DomainPD[symmetric])
+  have "{a. Domainp r a} = A"
+    using r_domain_range
+    by (metis (mono_tags, lifting) Domainp.simps local.refl mem_Collect_eq
+        refl_onPD subset_antisym subset_iff)
   from this [symmetric] have "domain": "\<And>a. Domainp r a \<longleftrightarrow> a \<in> A" by simp
   show ?thesis using x y
     by(simp add: max_torder_def "domain")(blast dest: total_onPD[OF to] transPD[OF trans])
@@ -561,7 +596,8 @@ lemma domain:
   "Domainp r a \<longleftrightarrow> a \<in> A"
 proof -
   from tot have "{a. Domainp r a} = A"
-    by (auto elim: torder_onE porder_onE dest: refl_onP_DomainPD [symmetric])
+    by (smt (verit, ccfv_threshold) Domainp.simps mem_Collect_eq porder_on_def
+        refl_onPD subset_antisym subset_iff torder_onE)
   from this [symmetric] show ?thesis by simp
 qed
 

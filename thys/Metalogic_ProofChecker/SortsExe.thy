@@ -345,7 +345,8 @@ qed
 lemma antisym_iff_exe_antisym: "antisym (set l) = exe_antisym l"
   using antisym_imp_exe_antisym exe_antisym_imp_antisym by blast
 
-definition "exe_wf_subclass cs = (trans (set cs) \<and> exe_antisym cs \<and> Refl (set cs))"
+definition "exe_wf_subclass cs \<longleftrightarrow>
+  set cs \<subseteq> Field (set cs) \<times> Field (set cs) \<and> trans (set cs) \<and> exe_antisym cs \<and> Refl (set cs)"
 
 lemma wf_classes_iff_exe_wf_classes: "wf_subclass (set cs) \<longleftrightarrow> exe_wf_subclass cs"
   by (simp add: antisym_iff_exe_antisym exe_wf_subclass_def)

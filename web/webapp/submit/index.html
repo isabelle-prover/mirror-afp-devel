@@ -89,7 +89,7 @@
   <div><iframe id="iframe" name="iframe" style="border-style: none; width: 100%" onload='(function() {
   window.addEventListener("message", (event) => {
     if (Number.isInteger(event.data)) {
-      this.style.height=event.data + 32 + "px"
+      this.style.height=event.data + "px"
     }
   })
   }).call(this)'></iframe>

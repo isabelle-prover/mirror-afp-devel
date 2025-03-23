@@ -24,8 +24,6 @@ begin
 
   (* TODO Peter: it would be nice if there were corresponding constants for all the relation predicates
     in Transfer.thy (left_total, left_unique, right_total, right_unique, bi_total, bi_unique *)
-  lemma right_unique_pred_set_conv[pred_set_conv]: "right_unique = single_valuedp"
-    unfolding right_unique_def single_valuedp_def by auto
   lemma bi_unique_pred_set_conv[pred_set_conv]: "bi_unique (\<lambda> x y. (x, y) \<in> R) \<longleftrightarrow> bijective R"
     unfolding bi_unique_def bijective_def by blast
 
@@ -230,7 +228,7 @@ begin
       then show "y = z" by simp
     qed
     show "single_valued A \<Longrightarrow> single_valued (\<langle>A\<rangle> stream_rel)"
-      using stream.right_unique_rel[to_set, to_set] by this
+      using stream.right_unique_rel[to_set] by this
   qed
 
   lemmas stream_rel_simps[simp] =

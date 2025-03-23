@@ -65,7 +65,8 @@ lemma right_total_rel_poly [transfer_rule]:
   assumes "right_total R" "left_unique R" "R 0 0"
   shows   "right_total (rel_poly R)"
   using left_total_rel_poly[of "\<lambda>x y. R y x"] assms
-  by (metis left_totalE left_totalI left_unique_iff rel_poly_swap right_total_def right_unique_iff)
+  by (metis left_totalE left_totalI left_unique_iff_Uniq rel_poly_swap right_total_def
+      right_unique_iff_Uniq)
 
 lemma bi_total_rel_poly [transfer_rule]:
   assumes "bi_total R" "bi_unique R" "R 0 0"

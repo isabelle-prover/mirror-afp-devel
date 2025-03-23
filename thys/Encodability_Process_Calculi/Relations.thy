@@ -61,7 +61,7 @@ lemma refl_symcl_of_refl_rel:
   assumes "refl_on A Rel"
   shows "refl_on A (symcl Rel)"
       using assms
-    by (auto simp add: refl_on_def' symcl_def)
+    by (auto simp add: refl_on_def symcl_def)
 
 text \<open>Accordingly, the reflexive, symmetric, and transitive closure of a relation is equal to its
         symmetric, reflexive, and transitive closure.\<close>

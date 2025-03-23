@@ -571,7 +571,7 @@ termination
 proof (relation "(\<lambda>(A,f,l,a,b). card A) <*mlex*> (\<lambda>(A,f,l,a,b). Max (f ` A) - l) <*mlex*> {}", goal_cases)
   case 1
   then show ?case
-    by(intro wf_mlex wf_empty)
+    by(intro wf_mlex wf_on_bot)
 next
   case 2
   then show ?case
@@ -607,7 +607,7 @@ proof (relation "(\<lambda>(xs,f,l,a,b). length xs) <*mlex*> (\<lambda>(xs,f,l,a
        goal_cases)
   case 1
   then show ?case
-    by(intro wf_mlex wf_empty)
+    by(intro wf_mlex wf_on_bot)
 next
   case 2
   then show ?case

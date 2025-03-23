@@ -12,6 +12,7 @@ session Superposition_Calculus = Saturation_Framework_Extensions +
     Ground_Superposition_Welltypedness_Preservation
     Superposition_Completeness
     Superposition_Soundness
+    Superposition_Welltypedness_Preservation
     Superposition_Example
     Untyped_Superposition_Completeness
     Untyped_Superposition_Soundness

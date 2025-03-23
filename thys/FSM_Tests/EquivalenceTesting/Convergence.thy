@@ -810,8 +810,8 @@ proof -
 
 
     have "refl_on (states M2) ?r" unfolding refl_on_def
-    proof 
-      show "{(q1, q2) |q1 q2. q1 \<in> FSM.states M2 \<and> q2 \<in> partition q1} \<subseteq> FSM.states M2 \<times> FSM.states M2"
+    proof -
+      have "{(q1, q2) |q1 q2. q1 \<in> FSM.states M2 \<and> q2 \<in> partition q1} \<subseteq> FSM.states M2 \<times> FSM.states M2"
         using \<open>\<And> q .partition q \<subseteq> states M2\<close> by blast
       show "\<forall>x\<in>FSM.states M2. (x, x) \<in> {(q1, q2) |q1 q2. q1 \<in> FSM.states M2 \<and> q2 \<in> partition q1}"
       proof

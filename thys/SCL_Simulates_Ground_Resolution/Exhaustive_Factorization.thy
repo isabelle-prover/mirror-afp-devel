@@ -15,7 +15,7 @@ lemma ex1_efac_eq_factoring_chain:
   "\<exists>!C'. efac C = C' \<and> ord_res.ground_factoring\<^sup>*\<^sup>* C C' \<and> (\<nexists>C''. ord_res.ground_factoring C' C'')"
 proof -
   have "right_unique (\<lambda>x y. ord_res.ground_factoring\<^sup>*\<^sup>* x y \<and> (\<nexists>z. ord_res.ground_factoring y z))"
-    using ord_res.unique_ground_factoring right_unique_terminating_rtranclp right_unique_iff
+    using ord_res.unique_ground_factoring right_unique_terminating_rtranclp right_unique_iff_Uniq
     by blast
 
   moreover obtain C' where "ord_res.ground_factoring\<^sup>*\<^sup>* C C' \<and> (\<nexists>C''. ord_res.ground_factoring C' C'')"

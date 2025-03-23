@@ -2,6 +2,7 @@
     Author:     Martin Raška, Charles University
 
 Part of Combinatorics on Words Formalized. See https://gitlab.com/formalcow/combinatorics-on-words-formalized/
+
 *)
 
 theory Reverse_Symmetry
@@ -167,7 +168,7 @@ private lemma map_Nil: "map f [] \<equiv> []"
 private lemma image_empty: "f ` Set.empty \<equiv> Set.empty"
   by simp
 
-definition COMP :: "('b \<Rightarrow> prop) \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> 'a \<Rightarrow> prop" (infixl \<open>oo\<close> 55)
+definition COMP :: "('b \<Rightarrow> prop) \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> 'a \<Rightarrow> prop" (infixl "oo" 55)
   where "F oo g \<equiv> (\<lambda>x. F (g x))"
 
 lemma COMP_assoc: "F oo (f o g) \<equiv> (F oo f) oo g"

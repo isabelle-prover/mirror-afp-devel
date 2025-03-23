@@ -5,89 +5,49 @@ theory Ground_Typing
     Term_Typing
 begin
 
-inductive typed for \<F> where
-  GFun: "\<F> f (length ts) = (\<tau>s, \<tau>) \<Longrightarrow> typed \<F> (GFun f ts) \<tau>"
-
 inductive welltyped for \<F> where
   GFun: "\<F> f (length ts) = (\<tau>s, \<tau>) \<Longrightarrow> list_all2 (welltyped \<F>) ts \<tau>s \<Longrightarrow> welltyped \<F> (GFun f ts) \<tau>"
 
-locale ground_term_typing =
-  fixes \<F> :: "('f, 'ty) fun_types"
-begin
-
-abbreviation typed where "typed \<equiv> Ground_Typing.typed \<F>"
-abbreviation welltyped where "welltyped \<equiv> Ground_Typing.welltyped \<F>"
-
-sublocale explicit_typing where typed = typed and welltyped = welltyped
-proof unfold_locales
-
-  show "right_unique typed"
-  proof (rule right_uniqueI)
-    fix t \<tau>\<^sub>1 \<tau>\<^sub>2
-
-    assume "typed t \<tau>\<^sub>1" and "typed t \<tau>\<^sub>2"
-
-    thus "\<tau>\<^sub>1 = \<tau>\<^sub>2"
-      by (auto elim!: typed.cases)
-  qed
-next
-
-  show "right_unique welltyped"
-  proof (rule right_uniqueI)
-    fix t \<tau>\<^sub>1 \<tau>\<^sub>2
-
-    assume "welltyped t \<tau>\<^sub>1" and "welltyped t \<tau>\<^sub>2"
-
-    thus "\<tau>\<^sub>1 = \<tau>\<^sub>2"
-      by (auto elim!: welltyped.cases)
-  qed
-next
-  fix t \<tau>
-
-  assume "welltyped t \<tau>"
-
-  then show "typed t \<tau>"
-    by (metis typed.intros welltyped.cases)
+lemma right_unique_welltyped[iff]: "right_unique (welltyped \<F>)"
+proof (rule right_uniqueI)
+  fix t \<tau>\<^sub>1 \<tau>\<^sub>2
+  assume "welltyped \<F> t \<tau>\<^sub>1" and "welltyped \<F> t \<tau>\<^sub>2"
+  thus "\<tau>\<^sub>1 = \<tau>\<^sub>2"
+    by (auto elim!: welltyped.cases)
 qed
 
-sublocale term_typing where typed = typed and welltyped = welltyped and Fun = GFun
-proof unfold_locales
-  fix t t' c \<tau> \<tau>'
-
-  assume
-    t_type: "welltyped t \<tau>'" and
-    t'_type: "welltyped t' \<tau>'" and
-    c_type: "welltyped c\<langle>t\<rangle>\<^sub>G \<tau>"
-
-  from c_type show "welltyped c\<langle>t'\<rangle>\<^sub>G \<tau>"
+lemma welltyped_context_compatible:
+  assumes
+    t_type: "welltyped \<F> t \<tau>'" and
+    t'_type: "welltyped \<F> t' \<tau>'" and
+    c_type: "welltyped \<F> c\<langle>t\<rangle>\<^sub>G \<tau>"
+  shows "welltyped \<F> c\<langle>t'\<rangle>\<^sub>G \<tau>"
+proof -
+  from c_type show "welltyped \<F> c\<langle>t'\<rangle>\<^sub>G \<tau>"
   proof (induction c arbitrary: \<tau>)
     case Hole
-
-    then show ?case
+    thus ?case
       using t_type t'_type
-      by auto
+      using right_unique_welltyped[THEN right_uniqueD]
+      by fastforce
   next
     case (More f ss1 c ss2)
 
-    have "welltyped (GFun f (ss1 @ c\<langle>t\<rangle>\<^sub>G # ss2)) \<tau>"
+    have "welltyped \<F> (GFun f (ss1 @ c\<langle>t\<rangle>\<^sub>G # ss2)) \<tau>"
       using More.prems
       by simp
 
-    then have "welltyped (GFun f (ss1 @ c\<langle>t'\<rangle>\<^sub>G # ss2)) \<tau>"
+    hence "welltyped \<F> (GFun f (ss1 @ c\<langle>t'\<rangle>\<^sub>G # ss2)) \<tau>"
     proof (cases \<F> "GFun f (ss1 @ c\<langle>t\<rangle>\<^sub>G # ss2)" \<tau> rule: welltyped.cases)
       case (GFun \<tau>s)
-
       show ?thesis
       proof (rule welltyped.GFun)
-
         show "\<F> f (length (ss1 @ c\<langle>t'\<rangle>\<^sub>G # ss2)) = (\<tau>s, \<tau>)"
           using GFun(1)
           by simp
       next
-
-        show "list_all2 welltyped (ss1 @ c\<langle>t'\<rangle>\<^sub>G # ss2) \<tau>s"
-          using \<open>list_all2 welltyped (ss1 @ c\<langle>t\<rangle>\<^sub>G # ss2) \<tau>s\<close>
-          using More.IH
+        show "list_all2 (welltyped \<F>) (ss1 @ c\<langle>t'\<rangle>\<^sub>G # ss2) \<tau>s"
+          using GFun(2) More.IH
           by (smt (verit, del_insts) list_all2_Cons1 list_all2_append1 list_all2_lengthD)
       qed
     qed
@@ -95,35 +55,24 @@ proof unfold_locales
     thus ?case
       by simp
   qed
-next
-  fix t t' c \<tau> \<tau>'
-
-  assume "typed t \<tau>'" "typed t' \<tau>'" "typed c\<langle>t\<rangle>\<^sub>G \<tau>"
-
-  then show "typed c\<langle>t'\<rangle>\<^sub>G \<tau>"
-    by(induction c arbitrary: \<tau>) (auto simp: typed.simps)
-next
-  fix f ts \<tau>
-
-  assume "welltyped (GFun f ts) \<tau>"
-
-  then show "\<forall>t\<in>set ts. is_welltyped t"
-    by (metis gterm.inject in_set_conv_nth list_all2_conv_all_nth welltyped.simps)
-next
-  fix t
-
-  show "is_typed t"
-    by (cases t) (meson surj_pair typed.intros)
 qed
 
-end
+lemma welltyped_subterms:
+  fixes f ts \<tau>
+  assumes "welltyped \<F> (GFun f ts) \<tau>"
+  shows "\<forall>t\<in>set ts. \<exists>\<tau>'. welltyped \<F> t \<tau>'"
+  using assms
+  by (metis gterm.inject in_set_conv_nth list_all2_conv_all_nth welltyped.simps)
 
-locale ground_typing = "term": ground_term_typing
-begin
-
-sublocale clause_typing where term_typed = term.typed and term_welltyped = term.welltyped
+global_interpretation "term": term_typing where
+  welltyped = "welltyped \<F>" and Fun = GFun
+  for \<F> :: "('f, 'ty) fun_types"
   by unfold_locales
+    (auto intro: welltyped_context_compatible welltyped_subterms[rule_format])
 
-end
+global_interpretation clause_typing where
+  term_welltyped = "welltyped \<F>"
+  for \<F> :: "('f, 'ty) fun_types"
+  by unfold_locales
 
 end

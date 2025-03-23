@@ -2,108 +2,49 @@ theory Typing
   imports Main
 begin
 
-locale predicate_typed =
-  fixes typed :: "'expr \<Rightarrow> 'ty \<Rightarrow> bool"
-  assumes right_unique: "right_unique typed"
+locale typing =
+  fixes welltyped :: "'expr \<Rightarrow> 'ty \<Rightarrow> bool"
+  assumes right_unique: "right_unique welltyped"
 begin
-
-abbreviation is_typed where
-  "is_typed expr \<equiv> \<exists>\<tau>. typed expr \<tau>"
 
 lemmas right_uniqueD [dest] = right_uniqueD[OF right_unique]
 
 end
 
-definition uniform_typed_lifting where
-  "uniform_typed_lifting to_set sub_typed expr \<equiv> \<exists>\<tau>. \<forall>sub \<in> to_set expr. sub_typed sub \<tau>"
-
-definition is_typed_lifting where
-  "is_typed_lifting to_set sub_is_typed expr \<equiv> \<forall>sub \<in> to_set expr. sub_is_typed sub"
-
-locale typing =
-  fixes is_typed is_welltyped
-  assumes is_typed_if_is_welltyped:
-    "\<And>expr. is_welltyped expr \<Longrightarrow> is_typed expr"
-
-locale explicit_typing =
-  typed: predicate_typed where typed = typed +
-  welltyped: predicate_typed where typed = welltyped
-for typed welltyped :: "'expr \<Rightarrow> 'ty \<Rightarrow> bool" +
-assumes typed_if_welltyped: "\<And>expr \<tau>. welltyped expr \<tau> \<Longrightarrow> typed expr \<tau>"
+locale base_typing = typing
 begin
 
-abbreviation is_typed where
-  "is_typed \<equiv> typed.is_typed"
-
-abbreviation is_welltyped where
-  "is_welltyped \<equiv> welltyped.is_typed"
-
-sublocale typing where is_typed = is_typed and is_welltyped = is_welltyped
-   using typed_if_welltyped
-   by unfold_locales auto
-
-lemma typed_welltyped_same_type:
-  assumes "typed expr \<tau>" "welltyped expr \<tau>'"
-  shows "\<tau> = \<tau>'"
-  using assms typed_if_welltyped
-  by blast
+abbreviation is_welltyped where 
+  "is_welltyped expr \<equiv> \<exists>\<tau>. welltyped expr \<tau>"
 
 end
 
-locale uniform_typing_lifting =
-  sub: explicit_typing where typed = sub_typed and welltyped = sub_welltyped
-for sub_typed sub_welltyped :: "'sub \<Rightarrow> 'ty \<Rightarrow> bool" +
-fixes to_set :: "'expr \<Rightarrow> 'sub set"
+locale typing_lifting = sub: typing where welltyped = sub_welltyped 
+  for sub_welltyped :: "'sub \<Rightarrow> 'ty \<Rightarrow> bool" +
+  fixes to_set :: "'expr \<Rightarrow> 'sub set" 
 begin
 
-abbreviation is_typed where
-  "is_typed \<equiv> uniform_typed_lifting to_set sub_typed"
+definition is_welltyped where
+  "is_welltyped expr \<equiv> \<exists>\<tau>. \<forall>sub \<in> to_set expr. sub_welltyped sub \<tau>"
 
-lemmas is_typed_def = uniform_typed_lifting_def[of to_set sub_typed]
+abbreviation welltyped where
+  "welltyped expr (_::unit) \<equiv> is_welltyped expr"
 
-abbreviation is_welltyped where
-  "is_welltyped \<equiv> uniform_typed_lifting to_set sub_welltyped"
-
-lemmas is_welltyped_def = uniform_typed_lifting_def[of to_set sub_welltyped]
-
-sublocale typing where is_typed = is_typed and is_welltyped = is_welltyped
-proof unfold_locales
-  fix expr
-  assume "is_welltyped expr"
-  then show "is_typed expr"
-    using sub.typed_if_welltyped
-    unfolding is_typed_def is_welltyped_def
-    by auto
-qed
+sublocale typing where welltyped = welltyped
+  by unfold_locales (auto simp: right_unique_def)
 
 end
 
-locale typing_lifting =
-  sub: typing where is_typed = sub_is_typed and is_welltyped = sub_is_welltyped
-for sub_is_typed sub_is_welltyped :: "'sub \<Rightarrow> bool" +
-fixes
-  to_set :: "'expr \<Rightarrow> 'sub set"
+locale typing_lifting' =
+  fixes
+    sub_welltyped :: "'extra \<Rightarrow> 'sub \<Rightarrow> 'ty' \<Rightarrow> bool" and 
+    to_set :: "'expr \<Rightarrow> 'sub set"
+  assumes lifting: "\<And>extra. typing_lifting (sub_welltyped extra)"
 begin
 
-abbreviation is_typed where
-  "is_typed \<equiv> is_typed_lifting to_set sub_is_typed"
-
-lemmas is_typed_def = is_typed_lifting_def[of to_set sub_is_typed]
-
-abbreviation is_welltyped where
-  "is_welltyped \<equiv> is_typed_lifting to_set sub_is_welltyped"
-
-lemmas is_welltyped_def = is_typed_lifting_def[of to_set sub_is_welltyped]
-
-sublocale typing where is_typed = is_typed and is_welltyped = is_welltyped
-proof unfold_locales
-  fix expr
-  assume "is_welltyped expr"
-  then show "is_typed expr"
-    using sub.is_typed_if_is_welltyped
-    unfolding is_typed_def is_welltyped_def
-    by simp
-qed
+sublocale typing_lifting where
+  sub_welltyped = "sub_welltyped \<V>" and to_set = to_set
+  by (rule lifting)
 
 end
 

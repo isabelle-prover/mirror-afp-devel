@@ -235,10 +235,10 @@ lemma right_unique_at_set_iff_right_unique_at_pred [iff]:
   "right_unique_at (S :: 'a set) (R :: 'b \<Rightarrow> 'a \<Rightarrow> bool) \<longleftrightarrow> right_unique_at (mem_of S) R"
   by simp
 
-lemma Transfer_right_unique_eq_right_unique [HOL_bin_rel_alignment]:
-  "Transfer.right_unique = Binary_Relations_Right_Unique.right_unique"
-  by (intro ext) (blast intro: Transfer.right_uniqueI
-    dest: Transfer.right_uniqueD Binary_Relations_Right_Unique.right_uniqueD)
+lemma Relation_right_unique_eq_right_unique [HOL_bin_rel_alignment]:
+  "Relation.right_unique = Binary_Relations_Right_Unique.right_unique"
+  by (intro ext) (blast intro: Relation.right_uniqueI
+    dest: Relation.right_uniqueD Binary_Relations_Right_Unique.right_uniqueD)
 
 
 subparagraph \<open>Surjective\<close>

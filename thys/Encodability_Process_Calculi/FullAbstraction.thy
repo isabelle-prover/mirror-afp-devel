@@ -1346,8 +1346,8 @@ proof -
       by blast
   qed
   ultimately show ?thesis
-      unfolding preorder_on_def
-    by blast
+    unfolding preorder_on_def
+    by auto
 qed
 
 lemma (in encoding) fully_abstract_impl_symcl_source_target_relation_is_preorder:

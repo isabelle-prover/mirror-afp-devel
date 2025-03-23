@@ -542,7 +542,8 @@ lemma vert_connected_rel_trans: "trans vert_connected_rel"
   unfolding trans_def using vert_connected_trans by blast
 
 lemma equiv_vert_connected: "equiv V vert_connected_rel"
-  unfolding equiv_def using vert_connected_rel_refl vert_connected_rel_sym vert_connected_rel_trans by blast
+  by (intro equivI vert_connected_rel_on_V vert_connected_rel_refl vert_connected_rel_sym
+      vert_connected_rel_trans)
 
 lemma connected_component_non_empty: "V' \<in> connected_components \<Longrightarrow> V' \<noteq> {}"
   unfolding connected_components_def using equiv_vert_connected in_quotient_imp_non_empty by auto

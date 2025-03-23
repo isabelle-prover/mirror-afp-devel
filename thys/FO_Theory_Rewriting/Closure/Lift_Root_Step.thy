@@ -391,8 +391,10 @@ lemma gtrancl_rel_cl:
   shows "gmctxtcl_funas \<F> (gtrancl_rel \<F> \<R>) \<subseteq> (gmctxtcl_funas \<F> \<R>)\<^sup>+"
 proof -
  have *:"(s, t) \<in> \<R> \<Longrightarrow> (s, t) \<in> gmctxtcl_funas \<F> \<R>" for s t
-    by (metis bot.extremum funas_gmctxt.simps(2) gmctxtex_closure subsetD)
-  have "gmctxtcl_funas \<F> ((gmctxtcl_funas \<F> \<R>)\<^sup>+) \<subseteq> (gmctxtcl_funas \<F> \<R>)\<^sup>+"
+   by (metis bot.extremum funas_gmctxt.simps(2) gmctxtex_closure subsetD)
+  have "gmctxtcl_funas \<F> \<R> \<subseteq> \<T>\<^sub>G \<F> \<times> \<T>\<^sub>G \<F>"
+    using \<open>\<R> \<subseteq> \<T>\<^sub>G \<F> \<times> \<T>\<^sub>G \<F>\<close> by simp
+  hence "gmctxtcl_funas \<F> ((gmctxtcl_funas \<F> \<R>)\<^sup>+) \<subseteq> (gmctxtcl_funas \<F> \<R>)\<^sup>+"
     unfolding gtrancl_rel_def using relf_on_gmctxtcl_funas[OF assms]
     by (intro gmctxtex_onp_substep_trancl, intro gmctxtex_pred_cmp_subseteq2)
        (auto simp: less_sup_gmctxt_args_funas_gmctxt refl_on_def)

@@ -225,6 +225,7 @@ proof -
     show "rpr A (?P i)"
     proof
       show "complete A (?P i)" by (simp, blast)
+      from threeA iis show "?P i \<subseteq> A \<times> A" by auto
       from threeA iis show "refl_on A (?P i)" by (simp, blast)
       from threeA iis show "trans (?P i)" by (clarsimp simp add: trans_def)
     qed
@@ -261,6 +262,7 @@ proof -
     show "rpr A (?P i)"
     proof
       show "complete A (?P i)" by (simp, blast)
+      from fourA iis show "?P i \<subseteq> A \<times> A" by auto
       from fourA iis show "refl_on A (?P i)" by (simp, blast)
       from fourA iis show "trans (?P i)" by (clarsimp simp add: trans_def)
     qed
@@ -395,7 +397,7 @@ proof -
       by (simp add: SDF_def choiceFn_def)
     with yPx uPy xPu have False
       by (unfold choiceSet_def strict_pref_def, blast)
-  }
+  }                                                     
   moreover
   {
     assume xu: "x \<noteq> u" and xv: "x \<noteq> v" and yu: "y \<noteq> u" and yv: "y \<noteq> v"

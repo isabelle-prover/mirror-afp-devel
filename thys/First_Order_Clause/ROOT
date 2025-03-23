@@ -20,6 +20,7 @@ session First_Order_Clause = Abstract_Substitution +
     Nonground_Order
     Typed_Functional_Substitution_Example
     Typed_Functional_Substitution_Lifting_Example
+    Typed_Tiebreakers
   document_files
     "root.tex"
 

@@ -5,6 +5,15 @@ theory Superposition_Example
     VeriComp.Well_founded
 begin
 
+lemma asymp_bot[iff]: "asymp \<bottom>"
+  by (simp add: asymp_on_def)
+
+lemma transp_bot[iff]: "transp \<bottom>"
+  by (simp add: transp_def)
+
+lemma wfp_bot[iff]: "wfp \<bottom>"
+  by (simp add: wfp_def)
+
 sublocale nonground_term_with_context \<subseteq>
   nonground_term_order "less_kbo :: ('f :: weighted,'v) term \<Rightarrow> ('f,'v) term \<Rightarrow> bool"
 proof unfold_locales
@@ -55,10 +64,7 @@ qed
 (* TODO: use strictly_generalizes *)
 abbreviation trivial_tiebreakers :: 
   "'f gatom clause \<Rightarrow> ('f,'v) atom clause \<Rightarrow> ('f,'v) atom clause \<Rightarrow> bool" where
-  "trivial_tiebreakers _ _ _ \<equiv> False"
-
-lemma trivial_tiebreakers: "wellfounded_strict_order (trivial_tiebreakers C\<^sub>G)"
-  by unfold_locales auto
+  "trivial_tiebreakers \<equiv> \<bottom>"
 
 (* TODO: We have to get the ground_critical_pair_theorem into the afp *)
 locale trivial_superposition_example =
@@ -200,9 +206,6 @@ locale superposition_example =
   ground_critical_pair_theorem "TYPE(nat)"
 begin
 
-sublocale wellfounded_strict_order "trivial_tiebreakers C\<^sub>G"
-  using trivial_tiebreakers .
-
 sublocale nonground_term_with_context .
 
 sublocale nonground_equality_order less_kbo
@@ -218,7 +221,7 @@ proof unfold_locales
   fix \<tau>
   show "\<exists>f. types f 0 = ([], \<tau>)"
     using types_inhabited .
-qed
+qed simp_all
 
 end
 

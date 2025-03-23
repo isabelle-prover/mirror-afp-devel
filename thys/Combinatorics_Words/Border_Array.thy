@@ -3,6 +3,7 @@
     Author:     Štěpán Holub, Charles University
 
 Part of Combinatorics on Words Formalized. See https://gitlab.com/formalcow/combinatorics-on-words-formalized/
+
 *)
 
 theory Border_Array
@@ -267,7 +268,7 @@ proof-
     using assms[unfolded KMP_valid_def max_borderP_def diff_Suc_1] by blast+
   have all_k_neq: "\<And> k. k < \<^bold>|arr\<^bold>| \<Longrightarrow> take (arr ! k) (drop (Suc i + k) w) \<noteq> drop (Suc i + k) w"
     using \<open>Suc i + bord < \<^bold>|w\<^bold>|\<close> \<open>\<^bold>|arr\<^bold>| + Suc i = \<^bold>|w\<^bold>|\<close> all_k_neq0
-    add.commute add_le_imp_le_left drop_all_iff le_antisym less_imp_le_nat less_not_refl2 by metis
+    add.commute add_le_imp_le_left drop_eq_Nil le_antisym less_imp_le_nat less_not_refl2 by metis
 
   have "w \<noteq> \<epsilon>"
     using \<open>\<^bold>|arr\<^bold>| + Suc i = \<^bold>|w\<^bold>|\<close> by auto
@@ -414,13 +415,16 @@ proof-
             fix v assume "v \<le>b w!i # ?w'"  \<comment> \<open>Now consider a border of the extended word\<close>
             show "\<^bold>|v\<^bold>| \<le> Suc (arr ! ?k)"
             proof (cases "\<^bold>|v\<^bold>| \<le> Suc 0")
-              assume "\<not> \<^bold>|v\<^bold>| \<le> Suc 0" hence "Suc 0 < \<^bold>|v\<^bold>|" by simp
-              from hd_tl_longE[OF this]
-              obtain a v' where "v = a#v'" and "v' \<noteq> \<epsilon>"
+              assume "\<not> \<^bold>|v\<^bold>| \<le> Suc 0"
+              hence "Suc 0 < \<^bold>|v\<^bold>|" "0 < \<^bold>|v\<^bold>|" by auto
+              from hd_tl_lenE[OF \<open>0 < \<^bold>|v\<^bold>|\<close>]
+              obtain a v' where "v = a#v'"
                 by blast
+              have "v' \<noteq> \<epsilon>"
+                 using \<open>Suc 0 < \<^bold>|v\<^bold>|\<close>[unfolded \<open>v = a#v'\<close>] by simp
               with borderD_pref[OF \<open>v \<le>b w!i # ?w'\<close>, unfolded prefix_Cons]
               have "v = w!i#v'"
-                by simp
+                using \<open>v = a#v'\<close> by simp
               from extendable[OF \<open>v \<le>b w!i # ?w'\<close>[unfolded \<open>v = w!i#v'\<close>] \<open>v' \<noteq> \<epsilon>\<close>]
               show ?thesis
                 by (simp add: \<open>v = a # v'\<close>)
@@ -515,7 +519,7 @@ proof-
   hence  "max_border (drop m (rev w)) = take (rev (border_array w)!m) (drop m (rev w))"
     using max_borderP_max_border by blast
   hence  "\<^bold>|max_border (drop m (rev w))\<^bold>| =  rev (border_array w)!m"
-    by (metis \<open>m < \<^bold>|rev w\<^bold>|\<close> drop_all_iff leD max_border_nemp_neq nat_le_linear take_all take_len)
+    by (metis \<open>m < \<^bold>|rev w\<^bold>|\<close> drop_eq_Nil leD max_border_nemp_neq nat_le_linear take_all take_len)
   thus ?thesis
     using m_def
     by (metis Suc_diff_Suc \<open>k < \<^bold>|rev w\<^bold>|\<close> \<open>m < \<^bold>|rev w\<^bold>|\<close> border_array_len diff_diff_cancel drop_rev length_rev less_imp_le_nat max_border_len_rev rev_nth)

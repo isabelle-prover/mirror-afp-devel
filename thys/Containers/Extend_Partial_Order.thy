@@ -39,12 +39,10 @@ by(auto simp add: order_consistent_def dest: antisymD)
 lemma refl_on_trancl:
   assumes "refl_on A r"
   shows "refl_on A (r^+)"
-proof(rule refl_onI, safe del: conjI)
-  fix a b
-  assume "(a, b) \<in> r^+"
-  thus "a \<in> A \<and> b \<in> A"
-    by induct(blast intro: refl_onD1[OF assms] refl_onD2[OF assms])+
-qed(blast dest: refl_onD[OF assms])
+proof (rule refl_onI)
+  show "\<And>x. x \<in> A \<Longrightarrow> (x, x) \<in> r\<^sup>+"
+    using assms refl_on_def by fastforce
+qed
 
 lemma total_on_refl_on_consistent_into:
   assumes r: "total_on A r" "refl_on A r"
@@ -82,7 +80,9 @@ proof(atomize_elim)
     proof
       assume "(x, y) \<in> s"
       with \<open>refl_on B s\<close> have "x \<in> B" "y \<in> B"
-        by(blast dest: refl_onD1 refl_onD2)+
+        unfolding atomize_conj
+        using order_on_defs(1)[of B s] order_on_defs(2)[of B s] order_on_defs(3)[of B s] s
+        by blast
       with B_subset_A have "x \<in> A" "y \<in> A" by blast+
       hence "(x, x) \<in> r" "(y, y) \<in> r"
         using \<open>refl_on A r\<close> by(blast intro: refl_onD)+
@@ -94,7 +94,9 @@ proof(atomize_elim)
     proof
       assume "(y, z) \<in> s"
       with \<open>refl_on B s\<close> have "y \<in> B" "z \<in> B"
-        by(blast dest: refl_onD2 refl_onD1)+
+        unfolding atomize_conj
+        using linear_order_on_def[of B s] order_on_defs(1)[of B s] partial_order_on_def[of B s] s
+        by blast
       from step.IH show ?thesis
       proof
         assume "(x, y) \<in> r"
@@ -104,7 +106,9 @@ proof(atomize_elim)
       next
         assume "\<exists>u v. (x, u) \<in> r \<and> (u, v) \<in> s \<and> (v, y) \<in> r"
         then obtain u v where "(x, u) \<in> r" "(u, v) \<in> s" "(v, y) \<in> r" by blast
-        from \<open>refl_on B s\<close> \<open>(u, v) \<in> s\<close> have "v \<in> B" by(rule refl_onD2)
+        from \<open>(u, v) \<in> s\<close> have "v \<in> B"
+          using linear_order_on_def[of B s] order_on_defs(1)[of B s] partial_order_on_def[of B s] s
+          by blast
         with \<open>total_on B s\<close> \<open>refl_on B s\<close> order_consistent_sym[OF consist]
         have "(v, y) \<in> s" using \<open>y \<in> B\<close> \<open>(v, y) \<in> r\<close>
           by(rule total_on_refl_on_consistent_into)
@@ -172,7 +176,10 @@ proof(rule antisymI)
       case (step u' v')
       note r_into_s = total_on_refl_on_consistent_into[OF \<open>total_on B s\<close> \<open>refl_on B s\<close> order_consistent_sym[OF consist]]
       from \<open>refl_on B s\<close> \<open>(u, v) \<in> s\<close> \<open>(u', v') \<in> s\<close>
-      have "u \<in> B" "v \<in> B" "u' \<in> B" "v' \<in> B" by(blast dest: refl_onD1 refl_onD2)+
+      have "u \<in> B" "v \<in> B" "u' \<in> B" "v' \<in> B"
+        unfolding atomize_conj
+        using linear_order_on_def[of B s] partial_order_on_def[of B s] preorder_on_def[of B s] s
+        by blast
       from \<open>trans r\<close> \<open>(v', x) \<in> r\<close> \<open>(x, u) \<in> r\<close> have "(v', u) \<in> r" by(rule transD)
       with \<open>v' \<in> B\<close> \<open>u \<in> B\<close> have "(v', u) \<in> s" by(rule r_into_s)
       also note \<open>(u, v) \<in> s\<close> also (transD[OF \<open>trans s\<close>])
@@ -200,6 +207,9 @@ lemma porder_on_linorder_on_tranclp_porder_onI:
   unfolding partial_order_on_def preorder_on_def
 proof(intro conjI)
   let ?rs = "r \<union> s"
+  show "?rs\<^sup>+ \<subseteq> A \<times> A"
+    by (smt (verit, ccfv_threshold) consist mem_Sigma_iff order_on_defs(1,2)
+        porder_linorder_tranclpE r s subrelI subset subset_iff)
   from r have "refl_on A r" by(simp add: partial_order_on_def preorder_on_def)
   moreover from s have "refl_on B s"
     by(simp add: linear_order_on_def partial_order_on_def preorder_on_def)
@@ -240,15 +250,19 @@ proof(atomize_elim)
       have "partial_order_on A (\<Union>c)"
         unfolding partial_order_on_def preorder_on_def
       proof(intro conjI)
-        show "refl_on A (\<Union>c)"
-        proof(rule refl_onI[OF subsetI])
+        show "\<Union> c \<subseteq> A \<times> A"
+        proof (rule subsetI)
           fix x
           assume "x \<in> \<Union>c"
           then obtain X where "X \<in> c" and "x \<in> X" by blast
           from \<open>X \<in> c\<close> \<open>c \<subseteq> S\<close> have "X \<in> S" ..
           hence "partial_order_on A X" unfolding S_def by simp
           with \<open>x \<in> X\<close> show "x \<in> A \<times> A"
-            by(cases x)(auto simp add: partial_order_on_def preorder_on_def dest: refl_onD1 refl_onD2)
+            using partial_order_onD by fastforce
+        qed
+      next
+        show "refl_on A (\<Union>c)"
+        proof(rule refl_onI)
         next
           fix x
           assume "x \<in> A"

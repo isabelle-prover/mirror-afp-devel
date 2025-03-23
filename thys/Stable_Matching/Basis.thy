@@ -353,7 +353,7 @@ unfolding linord_of_list_def by (simp add: linord_of_listP_append)
 lemma linord_of_list_refl_on:
   shows "refl_on (set xs) (linord_of_list xs)"
 unfolding linord_of_list_def
-by (induct xs) (auto intro!: refl_onI simp: refl_onD1 refl_onD2 dest: refl_onD subsetD[OF linord_of_list_range])
+by (induct xs) (auto intro!: refl_onI simp: refl_onD dest: refl_onD subsetD[OF linord_of_list_range])
 
 lemma linord_of_list_trans:
   assumes "distinct xs"

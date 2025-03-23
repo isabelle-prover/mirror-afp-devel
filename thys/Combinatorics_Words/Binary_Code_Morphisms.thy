@@ -4,6 +4,7 @@
                 Martin Raška, Charles University
 
 Part of Combinatorics on Words Formalized. See https://gitlab.com/formalcow/combinatorics-on-words-formalized/
+
 *)
 
 theory Binary_Code_Morphisms
@@ -17,9 +18,9 @@ section "Datatype of a binary alphabet"
 
 text\<open>Basic elements for construction of binary words.\<close>
 
-type_notation Enum.finite_2 (\<open>binA\<close>)
-notation finite_2.a\<^sub>1 (\<open>bina\<close>)
-notation finite_2.a\<^sub>2 (\<open>binb\<close>)
+type_notation Enum.finite_2 ("binA")
+notation finite_2.a\<^sub>1 ("bina")
+notation finite_2.a\<^sub>2 ("binb")
 
 lemmas bin_distinct = Enum.finite_2.distinct
 lemmas bin_exhaust = Enum.finite_2.exhaust
@@ -28,13 +29,13 @@ lemmas bin_UNIV = Enum.UNIV_finite_2
 lemmas bin_eq_neq_iff = Enum.neq_finite_2_a\<^sub>2_iff
 lemmas bin_eq_neq_iff' = Enum.neq_finite_2_a\<^sub>1_iff
 
-abbreviation bin_word_a  :: "binA list" (\<open>\<aa>\<close>) where
+abbreviation bin_word_a  :: "binA list" ("\<aa>") where
   "bin_word_a \<equiv> [bina]"
 
-abbreviation bin_word_b :: "binA list" (\<open>\<bb>\<close>) where
+abbreviation bin_word_b :: "binA list" ("\<bb>") where
   "bin_word_b \<equiv> [binb]"
 
-abbreviation (input) binUNIV :: "binA set" where "binUNIV \<equiv> UNIV"
+abbreviation binUNIV :: "binA set" where "binUNIV \<equiv> UNIV"
 
 lemma binUNIV_I [simp, intro]: "bina \<in> A \<Longrightarrow> binb \<in> A \<Longrightarrow> A = UNIV"
   unfolding UNIV_finite_2 by auto
@@ -163,12 +164,12 @@ lemma binA_neq_cases_swap: assumes neq: "a \<noteq> (b :: binA)"
 lemma im_swap_neq: "f a = f b \<Longrightarrow> f bina \<noteq> f binb \<Longrightarrow> a = b"
   using binA_neq_cases_swap[of a b bina False, unfolded binA_simps] by fastforce
 
-lemma bin_without_letter: assumes "(a1 :: binA) \<notin> set w"
-  obtains k where "w = [1-a1]\<^sup>@k"
+lemma bin_without_letter: assumes "(a :: binA) \<notin> set w"
+  obtains k where "w = [1-a]\<^sup>@k"
 proof-
-  have "\<forall> c. c \<in> set w \<longrightarrow> c = 1-a1"
+  have "set w \<subseteq> {1-a}"
     using assms bin_swap_exhaust by blast
-  from that unique_letter_wordE'[OF this]
+  from that sing_set_wordE[OF this]
   show thesis by blast
 qed
 
@@ -190,8 +191,26 @@ proof (rule sym, intro iffI conjI, elim conjE)
   then show "A = {a}" by blast
 qed simp_all
 
-lemma bin_set_cases: obtains "S = {}" | "S = {bina}" | "S = {binb}" | "S = binUNIV"
-  unfolding bin_empty_iff[of _ "bina"] bin_UNIV_iff[of _ "bina"] bin_sing_iff
+lemma set_binUNIV_iff: "\<not> set w \<subseteq> {hd w} \<longleftrightarrow> set w = binUNIV"
+proof
+ show "set w = binUNIV \<Longrightarrow> \<not> set w \<subseteq> {hd w}"
+   using bin_sing_iff by blast
+next
+  assume "\<not> set w \<subseteq> {hd w}"
+  hence "w \<noteq> \<epsilon>" and "set w \<noteq> {hd w}"
+    by force+
+  hence "hd w \<in> set w"
+    by force
+  with \<open>set w \<noteq> {hd w}\<close>[unfolded bin_sing_iff]
+  have "1 - hd w \<in> set w"
+    by blast
+  show "set w = binUNIV"
+    using two_in_bin_UNIV[OF _ \<open>hd w \<in> set w\<close> \<open>1-hd w \<in> set w\<close>]
+    by force
+qed
+
+lemma bin_set_cases: obtains "S = {}" | "S = {a}" | "S = {1-a}" | "S = binUNIV"
+  unfolding bin_empty_iff[of _ "a"] bin_UNIV_iff[of _ "1-a"] bin_sing_iff
   by fastforce
 
 lemma not_UNIV_E: assumes "A \<noteq> binUNIV" obtains a where "A \<subseteq> {a}"
@@ -203,8 +222,7 @@ lemma not_UNIV_nempE: assumes "A \<noteq> binUNIV" and "A \<noteq> {}" obtains a
 lemma bin_sing_gen_iff: "x \<in> \<langle>{[a]}\<rangle> \<longleftrightarrow> 1-(a :: binA) \<notin> set x"
   unfolding sing_gen_lists[symmetric] in_lists_conv_set using bin_empty_iff bin_sing_iff by metis
 
-lemma set_hd_pow_conv: "w \<in> [hd w]* \<longleftrightarrow> set w \<noteq> binUNIV"
-  unfolding root_sing_set_iff
+lemma set_hd_pow_conv: "set w \<subseteq> {hd w} \<longleftrightarrow> set w \<noteq> binUNIV"
 proof
   assume "set w \<subseteq> {hd w}"
   thus "set w \<noteq> binUNIV"
@@ -362,15 +380,15 @@ proof-
   have len: "\<^bold>|f w\<^bold>| = \<^bold>|(f [a])\<^sup>@(count_list w a) \<cdot> (f [1-a])\<^sup>@(count_list w (1-a))\<^bold>|"
     using  bin_len_count_im unfolding lenmorph pow_len.
   have *: "(f [a])\<^sup>@(count_list w a) \<cdot> (f [1-a])\<^sup>@(count_list w (1-a)) = mroot\<^sup>@(fn0 * (count_list w bina) +  fn1 * (count_list w binb))"
-    by (induct a) (unfold binA_simps bin0_im bin1_im, unfold pow_mult[symmetric] add_exps[symmetric], simp_all add: add.commute)
+    by (induct a) (unfold binA_simps bin0_im bin1_im, unfold pow_mult[symmetric] pow_add[symmetric], simp_all add: add.commute)
   show ?thesis
     using len nemp_len[OF prim_nemp[OF per_morph_root_prim]]
     unfolding * \<open>f w = mroot\<^sup>@k\<close> pow_len by force
 qed
 
-lemma bin_per_morph_expI: "f u = mroot\<^sup>@((mexp bina) * (count_list u bina) + (mexp binb) * (count_list u binb))"
+lemma bin_per_morph_expI: "f u = mroot\<^sup>@((im_exp \<aa>) * (count_list u bina) + im_exp \<bb> * (count_list u binb))"
   using sorted_image[of u bina, unfolded binA_simps]
-  by (simp add: add_exps per_morph_expI' pow_mult)
+  by (simp add: pow_add per_morph_im_exp pow_mult)
 
 end
 
@@ -450,7 +468,7 @@ lemma rev_morphs: "two_binary_morphisms (rev_map g) (rev_map h)"
 lemma solution_UNIV:
   assumes "s \<noteq> \<epsilon>" and "g s = h s" and "\<And>a. g [a] \<noteq> h [a]"
   shows "set s = UNIV"
-proof (rule ccontr, elim not_UNIV_E unique_letter_wordE'')
+proof (rule ccontr, elim not_UNIV_E sing_set_wordE)
   fix a k assume *: "s = [a] \<^sup>@ k"
   then have "0 < k" using \<open>s \<noteq> \<epsilon>\<close> by blast
   have "g [a] = h [a]" using \<open>g s = h s\<close> unfolding * g.pow_morph h.pow_morph
@@ -553,14 +571,14 @@ sublocale swap: binary_code "f \<bb>" "f \<aa>"
 sublocale binary_code "f \<aa>" "f \<bb>"
   using swap.bin_code_swap.
 
-notation bin_code_lcp (\<open>\<alpha>\<close>) and
-         bin_code_lcs (\<open>\<beta>\<close>) and
-         bin_code_mismatch_fst (\<open>c\<^sub>0\<close>) and
-         bin_code_mismatch_snd (\<open>c\<^sub>1\<close>)
+notation bin_code_lcp ("\<alpha>") and
+         bin_code_lcs ("\<beta>") and
+         bin_code_mismatch_fst ("c\<^sub>0") and
+         bin_code_mismatch_snd ("c\<^sub>1")
 term "bin_lcp (f \<aa>) (f \<bb>)"
-abbreviation bin_morph_mismatch (\<open>\<cc>\<close>)
+abbreviation bin_morph_mismatch ("\<cc>")
   where "bin_morph_mismatch a \<equiv> bin_mismatch (f[a]) (f[1-a])"
-abbreviation bin_morph_mismatch_suf (\<open>\<dd>\<close>)
+abbreviation bin_morph_mismatch_suf ("\<dd>")
   where "bin_morph_mismatch_suf a \<equiv> bin_mismatch_suf (f[1-a]) (f[a])"
 
 lemma bin_lcp_def': "\<alpha> =  f ([a] \<cdot> [1-a]) \<and>\<^sub>p f ([1-a] \<cdot> [a])"
@@ -612,10 +630,14 @@ lemma bin_code_morph_sing: "binary_code (f [a]) (f [1-a])"
 lemma bin_mismatch_swap_neq: "\<cc> a \<noteq> \<cc> (1-a)"
   using bin_code_morph_sing binary_code.bin_mismatch_neq by auto
 
+lemma "set w \<subseteq> {hd w} \<longleftrightarrow> (\<exists> k. w = [hd w]\<^sup>@k)"
+  using sing_pow_set' sing_set_pow by metis
+
+
 lemma long_bin_lcp_hd: assumes "\<^bold>|f w\<^bold>| \<le> \<^bold>|\<alpha>\<^bold>|"
-  shows "w \<in> [hd w]*"
+  shows "set w \<subseteq> {hd w}"
 proof (rule ccontr)
-  assume "\<not> w \<in> [hd w]*"
+  assume "\<not> set w \<subseteq> {hd w}"
   from distinct_letter_in_hd[OF this]
   obtain m b suf where w: "[hd w]\<^sup>@m \<cdot> [b]\<cdot> suf = w" and "b \<noteq> hd w" and "m \<noteq> 0".
   have ineq: "\<^bold>|f [b]\<^bold>| + \<^bold>|f [hd w]\<^bold>| \<le> \<^bold>|f w\<^bold>|"
@@ -660,12 +682,12 @@ proof-
     unfolding \<open>w' = w \<cdot> z\<close> morph rassoc pref_cancel_conv using bin_lcp_pref_all.
 qed
 
-lemma long_bin_lcp: assumes "w \<noteq> \<epsilon>" and "\<^bold>|f w\<^bold>| \<le> \<^bold>|\<alpha>\<^bold>|"
-  shows "w \<in> [hd w]*"
+lemma long_bin_lcp: assumes "\<^bold>|f w\<^bold>| \<le> \<^bold>|\<alpha>\<^bold>|"
+  shows "set w \<subseteq> {hd w}"
 proof(rule ccontr)
-  assume "w \<notin> [hd w]*"
+  assume "\<not> set w \<subseteq> {hd w}"
     obtain m b q where "[hd w]\<^sup>@m \<cdot> [b] \<cdot> q = w" and "b \<noteq> hd w" and "m \<noteq> 0"
-      using  distinct_letter_in_hd[OF \<open>w \<notin> [hd w]*\<close>].
+      using  distinct_letter_in_hd[OF \<open>\<not> set w \<subseteq> {hd w}\<close>].
     have ineq: "\<^bold>|f ([hd w]\<^sup>@m \<cdot> [b])\<^bold>| \<le> \<^bold>|f w\<^bold>|"
       using arg_cong[OF \<open>[hd w] \<^sup>@ m \<cdot> [b] \<cdot> q = w\<close>, of "\<lambda> x. \<^bold>|f x\<^bold>|"]
       unfolding morph lenmorph by force
@@ -755,23 +777,17 @@ lemma bin_mismatch_swap_not_comp: "\<not> f [a] \<cdot> f w \<cdot> \<alpha>  \<
 lemma bin_lcp_root: "\<alpha> <p f [a] \<cdot> \<alpha>"
   using alphabet_or[of a] per_rootI[OF bin_lcp_pref_all[of \<bb>] bin_snd_nemp] per_rootI[OF bin_lcp_pref_all[of \<aa>] bin_fst_nemp] by blast
 
-lemma bin_lcp_pref: assumes "w \<notin> \<bb>*" and  "w \<notin> \<aa>*"
+lemma bin_lcp_pref: assumes "set w = binUNIV"
   shows "\<alpha> \<le>p (f w)"
-proof-
-  have "w \<noteq> \<epsilon>"
-    using \<open>\<not> (w \<in> \<bb>*)\<close> emp_all_roots by blast
-  have "w \<notin> [hd w]*"
-    using assms alphabet_or[of "hd w"]  by presburger
-  hence "\<^bold>|\<alpha>\<^bold>| \<le> \<^bold>|f w\<^bold>|"
-    using long_bin_lcp[OF \<open>w \<noteq> \<epsilon>\<close>] nat_le_linear[of "\<^bold>|f w\<^bold>|" "\<^bold>|\<alpha>\<^bold>|" ] by blast
-  show ?thesis
-    using  pref_prod_le[OF bin_lcp_pref_all \<open>\<^bold>|\<alpha>\<^bold>| \<le> \<^bold>|f w\<^bold>|\<close>].
-qed
+  using pref_prod_le[OF bin_lcp_pref_all _, of w] long_bin_lcp[of w]
+  assms[folded set_binUNIV_iff] by linarith
 
 
 lemma bin_lcp_pref'': "[a] \<le>f w \<Longrightarrow> [1-a] \<le>f w  \<Longrightarrow> \<alpha> \<le>p (f w)"
-  using  bin_lcp_pref[of w]  sing_pow_fac'[OF bin_distinct(1),of w] sing_pow_fac'[OF bin_distinct(2), of w]
-  by (cases rule: finite_2.exhaust[of a]) force+
+  using  bin_lcp_pref[of w]  sing_pow_fac[OF bin_distinct(1), of w] sing_pow_fac[OF bin_distinct(2), of w]
+  apply (cases rule: finite_2.exhaust[of a])
+  apply (simp add: sing_fac_set)
+  by (meson bin_UNIV_I sing_fac_set)
 lemma bin_lcp_pref': "\<aa> \<le>f w \<Longrightarrow> \<bb> \<le>f w  \<Longrightarrow> \<alpha> \<le>p (f w)"
   using bin_lcp_pref''[of bina, unfolded binA_simps].
 
@@ -792,25 +808,25 @@ lemma bin_lcp_comp_hd: "\<alpha> \<bowtie> f (\<aa> \<cdot> w0) \<and>\<^sub>p  
       pref_trans[OF lcp_pref[of "f (\<aa> \<cdot> w0)" "f (\<bb> \<cdot> w1)"], of "f (\<aa> \<cdot> w0) \<cdot> \<alpha>", OF triv_pref]]
   unfolding prefix_comparable_def.
 
-lemma sing_mismatch: assumes "f \<aa> \<in> [a]*" shows "c\<^sub>0 = a"
+lemma sing_mismatch: assumes "set (f \<aa>) \<subseteq> {a}" shows "c\<^sub>0 = a"
 proof-
-  have "\<alpha> \<in> [a]*"
-    using per_one[OF per_root_trans[OF bin_lcp_root assms]].
-  hence "f \<aa> \<cdot> \<alpha> \<in> [a]*"
-    using \<open>f \<aa> \<in> [a]*\<close> add_roots by blast
-  from sing_pow_fac'[OF _ this, of "c\<^sub>0"]
+  have "set \<alpha> \<subseteq> {a}"
+    using  per_one'[OF assms bin_lcp_root[of bina]] by blast
+  hence "set (f \<aa> \<cdot> \<alpha>) \<subseteq> {a}"
+    using \<open>set (f \<aa>) \<subseteq> {a}\<close> by simp
+  from sing_pow_fac[OF _ this, of "c\<^sub>0"]
   show "c\<^sub>0 = a"
     using facI'[OF lq_pref[OF bin_fst_mismatch, unfolded rassoc]] by blast
 qed
 
-lemma sing_mismatch': assumes "f \<bb> \<in> [a]*" shows "c\<^sub>1 = a"
+lemma sing_mismatch': assumes "set (f \<bb>) \<subseteq> {a}" shows "c\<^sub>1 = a"
 proof-
-  have "\<alpha> \<in> [a]*"
-    using per_one[OF per_root_trans[OF bin_lcp_root assms]].
-  hence "f \<bb> \<cdot> \<alpha> \<in> [a]*"
-    using \<open>f \<bb> \<in> [a]*\<close> add_roots by blast
-  from sing_pow_fac'[OF _ this, of "c\<^sub>1"]
-  show ?thesis
+  have "set \<alpha> \<subseteq> {a}"
+    using  per_one'[OF assms bin_lcp_root[of binb]] by blast
+  hence "set (f \<bb> \<cdot> \<alpha>) \<subseteq> {a}"
+    using \<open>set (f \<bb>) \<subseteq> {a}\<close> by simp
+  from sing_pow_fac[OF _ this, of "c\<^sub>1"]
+  show "c\<^sub>1 = a"
     using facI'[OF lq_pref[OF bin_snd_mismatch, unfolded rassoc]] by blast
 qed
 
@@ -907,7 +923,7 @@ proof (induct w)
 qed simp
 
 lemma im_comm_lcp_nemp: assumes "f w \<cdot> \<alpha> = \<alpha> \<cdot> f w" and "w \<noteq> \<epsilon>" and "\<alpha> \<noteq> \<epsilon>"
-  obtains k where "w = [hd w]\<^sup>@Suc k"
+  obtains k where "w = [hd w]\<^sup>@k" and "0 < k"
 proof-
   have "set w = {hd w}"
   proof-
@@ -923,7 +939,7 @@ proof-
     thus "set w = {hd w}"
       using \<open>hd w \<in> set w\<close> by blast
   qed
-  from unique_letter_wordE[OF this]
+  from sing_set_wordE'[OF this]
   show thesis
     using that by blast
 qed
@@ -1088,7 +1104,7 @@ lemma bin_marked': "(f \<aa>)!0 \<noteq> (f \<bb>)!0"
   using bin_marked unfolding hd_conv_nth[OF bin_snd_nemp] hd_conv_nth[OF bin_fst_nemp].
 
 
-lemma marked_bin_morph_pref_code: "r \<bowtie> s \<or> f (r \<cdot> z1) \<and>\<^sub>p f (s \<cdot> z2) = f (r \<and>\<^sub>p s)"
+lemma marked_bin_morph_prefix_code: "r \<bowtie> s \<or> f (r \<cdot> z1) \<and>\<^sub>p f (s \<cdot> z2) = f (r \<and>\<^sub>p s)"
  using lcp_ext_right marked_morph_lcp[of "r \<cdot> z1" "s \<cdot> z2"] by metis
 
 
@@ -1114,7 +1130,7 @@ context binary_code_morphism
 
 begin
 
-definition  marked_version (\<open>f\<^sub>m\<close>) where "f\<^sub>m = (\<lambda> w. \<alpha>\<inverse>\<^sup>>(f w \<cdot> \<alpha>))"
+definition  marked_version ("f\<^sub>m") where "f\<^sub>m = (\<lambda> w. \<alpha>\<inverse>\<^sup>>(f w \<cdot> \<alpha>))"
 
 lemma marked_version_conjugates: "\<alpha> \<cdot> f\<^sub>m w = f w \<cdot> \<alpha>"
   unfolding marked_version_def using lq_pref[OF bin_lcp_pref_all, of w].
@@ -1127,7 +1143,8 @@ lemma marked_marked: assumes "marked_morphism f" shows "f\<^sub>m = f"
   by blast
 
 lemma  marked_version_all_nemp: "w \<noteq> \<epsilon> \<Longrightarrow> f\<^sub>m w \<noteq> \<epsilon>"
-  unfolding marked_version_def  using bin_lcp_pref_all nonerasing conjug_emp_emp marked_version_def by blast
+  unfolding marked_version_def
+  using conjug_emp_emp[OF bin_lcp_pref_all, THEN nonerasing] by blast
 
 lemma marked_version_binary_code_morph: "binary_code_morphism f\<^sub>m"
   unfolding bin_code_morph_iff' morphism_def
@@ -1325,10 +1342,10 @@ locale  two_binary_code_morphisms =
 
 begin
 
-notation  h.bin_code_lcp (\<open>\<alpha>\<^sub>h\<close>)
-notation  g.bin_code_lcp (\<open>\<alpha>\<^sub>g\<close>)
-notation "g.marked_version" (\<open>g\<^sub>m\<close>)
-notation "h.marked_version" (\<open>h\<^sub>m\<close>)
+notation  h.bin_code_lcp ("\<alpha>\<^sub>h")
+notation  g.bin_code_lcp ("\<alpha>\<^sub>g")
+notation "g.marked_version" ("g\<^sub>m")
+notation "h.marked_version" ("h\<^sub>m")
 
 sublocale gm: marked_binary_morphism g\<^sub>m
   by (simp add: g.marked_version_marked_morph marked_binary_morphism.intro)
@@ -1457,7 +1474,7 @@ lemma  alphas_pref: "\<alpha>\<^sub>h \<le>p \<alpha>\<^sub>g"
   using alphas_pref[OF alphas_len] coin_ex by force
 
 definition \<alpha> where "\<alpha> \<equiv> \<alpha>\<^sub>h\<inverse>\<^sup>>\<alpha>\<^sub>g"
-definition critical_overflow (\<open>\<c>\<close>) where "critical_overflow \<equiv> \<alpha>\<^sub>g\<^sup><\<inverse>\<alpha>\<^sub>h"
+definition critical_overflow ("\<c>") where "critical_overflow \<equiv> \<alpha>\<^sub>g\<^sup><\<inverse>\<alpha>\<^sub>h"
 
 lemma lcp_diff: "\<alpha>\<^sub>h \<cdot> \<alpha> = \<alpha>\<^sub>g"
   unfolding \<alpha>_def lq_pref using lq_pref[OF alphas_pref].
@@ -1482,11 +1499,13 @@ definition g' where "g' = (if \<^bold>|\<alpha>\<^sub>g\<^bold>| \<le> \<^bold>|
 definition h' where "h' = (if \<^bold>|\<alpha>\<^sub>g\<^bold>| \<le> \<^bold>|\<alpha>\<^sub>h\<^bold>| then (\<lambda> w. \<alpha>'\<inverse>\<^sup>>(h w \<cdot> \<alpha>')) else (\<lambda> w. \<alpha>'\<inverse>\<^sup>>(g w \<cdot> \<alpha>')))"
 
 lemma shift_pref_fst: "\<alpha>' \<le>p \<alpha>\<^sub>g"
-  unfolding \<alpha>'_def
-proof (cases "\<^bold>|\<alpha>\<^sub>g\<^bold>| \<le> \<^bold>|\<alpha>\<^sub>h\<^bold>|", simp)
-  show "\<not> \<^bold>|\<alpha>\<^sub>g\<^bold>| \<le> \<^bold>|\<alpha>\<^sub>h\<^bold>| \<Longrightarrow> (if \<^bold>|\<alpha>\<^sub>g\<^bold>| \<le> \<^bold>|\<alpha>\<^sub>h\<^bold>| then \<alpha>\<^sub>g else \<alpha>\<^sub>h) \<le>p \<alpha>\<^sub>g"
-    using  alphas_pref coinE  by fastforce
-qed
+proof (cases "\<^bold>|\<alpha>\<^sub>g\<^bold>| \<le> \<^bold>|\<alpha>\<^sub>h\<^bold>|")
+  assume a: "\<not> \<^bold>|\<alpha>\<^sub>g\<^bold>| \<le> \<^bold>|\<alpha>\<^sub>h\<^bold>|"
+  hence a': "\<^bold>|\<alpha>\<^sub>h\<^bold>| \<le> \<^bold>|\<alpha>\<^sub>g\<^bold>|"
+    by fastforce
+  show "\<alpha>' \<le>p \<alpha>\<^sub>g"
+    unfolding \<alpha>'_def[unfolded if_not_P[OF a]] using  coinE[OF alphas_pref[OF a']] by auto
+qed (simp add: \<alpha>'_def)
 
 interpretation gshift: binary_code_morphism_shift g \<alpha>'
    using shift_pref_fst by unfold_locales
@@ -1889,6 +1908,5 @@ lemma bin_prim_symm [sym]: "bin_prim x y \<Longrightarrow> bin_prim y x"
 
 lemma bin_prim_commutes: "bin_prim x y \<longleftrightarrow> bin_prim y x"
   by (blast intro: bin_prim_symm)
-
 
 end

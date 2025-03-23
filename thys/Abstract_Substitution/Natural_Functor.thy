@@ -2,8 +2,6 @@ theory Natural_Functor \<^marker>\<open>contributor \<open>Balazs Toth\<close>\<
   imports Main
 begin
 
-(* TODO: Integration with built-in functor command possible? *)
-
 locale natural_functor =
   fixes
     map :: "('a \<Rightarrow> 'a) \<Rightarrow> 'b \<Rightarrow> 'b" and
@@ -13,7 +11,7 @@ locale natural_functor =
     map_ident [simp]: "\<And>b. map (\<lambda>x. x) b = b" and
     map_cong0 [cong]: "\<And>b f g. (\<And>a. a \<in> to_set b \<Longrightarrow> f a = g a) \<Longrightarrow> map f b = map g b" and
     to_set_map [simp]: "\<And>b f. to_set (map f b) = f ` to_set b" and
-    exists_functor [intro]: "\<And>a. \<exists>b. a \<in> to_set b"
+    exists_non_empty: "\<exists>b. to_set b \<noteq> {}"
 begin
 
 lemma map_id [simp]: "map id b = b"
@@ -38,6 +36,23 @@ lemma to_set_map_not_ident:
   using assms
   by (metis rev_image_eqI to_set_map)
 
+lemma exists_functor [intro]: "\<exists>b. a \<in> to_set b"
+proof -
+
+  obtain a' b where "a' \<in> to_set b"
+    using exists_non_empty
+    by blast
+
+  then have "a \<in> to_set (map (\<lambda>_. a) b)"
+    by auto
+  
+  then show ?thesis
+    by blast
+qed
+
+lemma to_set_const [simp]: "to_set b \<noteq> {} \<Longrightarrow> to_set (map (\<lambda>_. a) b) = {a}"
+  by auto
+
 end
 
 locale finite_natural_functor = natural_functor +
@@ -55,5 +70,18 @@ locale natural_functor_conversion =
     to_set_map_to [simp]: "\<And>f c. to_set' (map_to f c) = f ` to_set c" and
     conversion_map_comp [simp]: "\<And>c f g. map_from f (map_to g c) = map (\<lambda>x. f (g x)) c" and
     conversion_map_comp' [simp]: "\<And>d f g. map_to f (map_from g d) = map' (\<lambda>x. f (g x)) d"
+
+(* TODO: Integration with built-in functor command possible?
+
+ML \<open>fun all_bnfs ctxt =
+  ctxt |>
+  Proof_Context.theory_of |>
+  Theory.defs_of |> 
+  Defs.all_specifications_of |>
+  map_filter (fn ((kind, name), _) => if kind = Defs.Type then BNF_Def.bnf_of ctxt name else NONE)\<close>
+
+declare [[ML_print_depth=100]]
+ML \<open>all_bnfs @{context} |> map BNF_Def.T_of_bnf\<close>
+ *)
 
 end

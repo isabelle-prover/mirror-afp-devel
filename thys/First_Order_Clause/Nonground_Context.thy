@@ -18,8 +18,8 @@ global_interpretation "context": finite_natural_functor where
 proof unfold_locales
   fix t :: 't
 
-  show "\<exists>c. t \<in> set2_actxt c"
-    by (metis actxt.set_intros(5) list.set_intros(1))
+  show "\<exists>c. set2_actxt c \<noteq> {}"
+    by (metis actxt.set_intros(5) empty_iff in_set_conv_decomp)
 next
   fix c :: "('f, 't) actxt"
 

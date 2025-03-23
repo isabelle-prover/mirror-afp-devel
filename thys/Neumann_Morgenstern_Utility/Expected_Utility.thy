@@ -222,7 +222,8 @@ next
   have "refl_on (lotteries_on outcomes) relation"
     by (meson assms order_refl refl_on_def vNM_utility_def)
   then show ?case
-    using preorder_on_def t by blast
+    using preorder_on_def t
+    by (metis assms vNM_utility_def[of outcomes relation u])
 next
   case 4
   have "total_on (lotteries_on outcomes) relation"

@@ -988,18 +988,19 @@ lemma equiv_relation_to_projection:
   fixes R :: "('a \<times> 'a) set"
   assumes equiv: "equiv UNIV R"
   shows "\<exists>f :: 'a \<Rightarrow> 'a set. \<forall>x y. f x = f y \<longleftrightarrow> (x, y) \<in> R"
-  apply (rule exI [of _ "\<lambda>x. {y. (x, y) \<in> R}"])
-  apply clarsimp
-  subgoal for x y
-    apply (cases "(x, y) \<in> R")
-     apply clarsimp
-     apply (rule set_eqI)
-     apply clarsimp
-     apply (metis equivE sym_def trans_def equiv)
-    apply (clarsimp)
-    apply (metis UNIV_I equiv equivE mem_Collect_eq refl_on_def)
-    done
-  done
+proof (intro exI allI)
+  fix x y
+  show "({y. (x, y) \<in> R} = {ya. (y, ya) \<in> R}) = ((x, y) \<in> R)"
+  proof (cases "(x, y) \<in> R")
+    case True
+    thus ?thesis
+      by (metis Image_singleton equiv equiv_class_eq_iff)
+  next
+    case False
+    thus ?thesis
+      by (metis equiv equiv_def mem_Collect_eq reflD)
+  qed
+qed
 
 lemma range_constant [simp]:
   "range (\<lambda>_. k) = {k}"

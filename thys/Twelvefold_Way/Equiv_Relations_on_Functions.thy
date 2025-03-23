@@ -17,11 +17,11 @@ where
 lemma equiv_domain_permutation:
   "equiv (A \<rightarrow>\<^sub>E B) (domain_permutation A B)"
 proof (rule equivI)
+  show "domain_permutation A B \<subseteq> (A \<rightarrow>\<^sub>E B) \<times> (A \<rightarrow>\<^sub>E B)"
+    unfolding domain_permutation_def by auto
+next
   show "refl_on (A \<rightarrow>\<^sub>E B) (domain_permutation A B)"
   proof (rule refl_onI)
-    show "domain_permutation A B \<subseteq> (A \<rightarrow>\<^sub>E B) \<times> (A \<rightarrow>\<^sub>E B)"
-      unfolding domain_permutation_def by auto
-  next
     fix f
     assume "f \<in> A \<rightarrow>\<^sub>E B"
     from this show "(f, f) \<in> domain_permutation A B"
@@ -133,7 +133,7 @@ proof (rule congruentI)
     unfolding domain_permutation_def by auto
   have "bij_betw f A B \<longleftrightarrow> bij_betw (f' o p) A B"
     using \<open>\<forall>x\<in>A. f x = f' (p x)\<close>
-    by (metis (mono_tags, opaque_lifting) bij_betw_cong comp_apply)
+    by (metis (mono_tags, opaque_lifting) comp_apply[of f' p] bij_betw_cong[of A f "f' \<circ> p" B])
   also have "... \<longleftrightarrow> bij_betw f' A B"
     using \<open>p permutes A\<close>
     by (auto intro!: bij_betw_comp_iff[symmetric] permutes_imp_bij)
@@ -160,11 +160,11 @@ where
 lemma equiv_range_permutation:
   "equiv (A \<rightarrow>\<^sub>E B) (range_permutation A B)"
 proof (rule equivI)
+  show "range_permutation A B \<subseteq> (A \<rightarrow>\<^sub>E B) \<times> (A \<rightarrow>\<^sub>E B)"
+    unfolding range_permutation_def by auto
+next
   show "refl_on (A \<rightarrow>\<^sub>E B) (range_permutation A B)"
   proof (rule refl_onI)
-    show "range_permutation A B \<subseteq> (A \<rightarrow>\<^sub>E B) \<times> (A \<rightarrow>\<^sub>E B)"
-      unfolding range_permutation_def by auto
-  next
     fix f
     assume "f \<in> A \<rightarrow>\<^sub>E B"
     from this show "(f, f) \<in> range_permutation A B"
@@ -311,11 +311,11 @@ where
 lemma equiv_domain_and_range_permutation:
   "equiv (A \<rightarrow>\<^sub>E B) (domain_and_range_permutation A B)"
 proof (rule equivI)
+  show "domain_and_range_permutation A B \<subseteq> (A \<rightarrow>\<^sub>E B) \<times> (A \<rightarrow>\<^sub>E B)"
+    unfolding domain_and_range_permutation_def by auto
+next
   show "refl_on (A \<rightarrow>\<^sub>E B) (domain_and_range_permutation A B)"
   proof (rule refl_onI)
-    show "domain_and_range_permutation A B \<subseteq> (A \<rightarrow>\<^sub>E B) \<times> (A \<rightarrow>\<^sub>E B)"
-      unfolding domain_and_range_permutation_def by auto
-  next
     fix f
     assume "f \<in> A \<rightarrow>\<^sub>E B"
     from this show "(f, f) \<in> domain_and_range_permutation A B"
