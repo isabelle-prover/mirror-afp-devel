@@ -16,6 +16,7 @@ sig
 
   val between : prio * prio -> prio
   val halve : prio -> prio
+  val double : prio -> prio
 
   val inc : prio -> prio
   val dec : prio -> prio
@@ -51,6 +52,7 @@ val VERY_HIGH = Prio (dest_prio HIGH * two_rat)
 
 fun between (p1, p2) = Prio ((dest_prio p1 + dest_prio p2) / two_rat)
 fun halve p = between (BOTTOM_EXCLUSIVE, p)
+fun double p = Prio (dest_prio p * two_rat) (*assumption: BOTTOM_EXCLUSIVE = 0*)
 
 val epsilon = Rat.make (1, 100)
 fun inc p = Prio (dest_prio p + epsilon)
