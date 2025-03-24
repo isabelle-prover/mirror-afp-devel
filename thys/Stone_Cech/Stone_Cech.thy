@@ -858,8 +858,8 @@ proof -
       proof -
         have "F i ` R \<subseteq> V" using R_def by auto
         hence "F i ` R \<inter> (T i) closure_of (F i ` A) = {}" using V_def by auto
-        moreover have "F i ` A \<subseteq> (T i) closure_of (F i ` A)" 
-          by (metis Aprops assms(2) closure_of_eq continuous_map_subset_aux1 iprops)
+        moreover have "F i ` A \<subseteq> (T i) closure_of (F i ` A)"
+          by (metis Aprops assms(2) closure_of_eq continuous_map_image_closure_subset iprops) 
         ultimately have "F i ` R \<inter> (F i `A) = {}" by auto
         hence "R \<inter> A = {}" by auto
         thus ?thesis using A_def R_def by auto
@@ -1313,11 +1313,7 @@ proof -
       using continuous_map_into_fulltopology[of X euclideanreal "{0..(1::real)}" f]
       by auto
     moreover have "fbounded f X"
-    proof -
-      have "\<forall> x \<in> topspace X . 0 \<le> f x \<and> f x \<le> 1" using fprops 
-        by (simp add: continuous_map_in_subtopology image_subset_iff)
-      thus ?thesis by auto
-    qed
+      by (meson atLeastAtMost_iff continuous_map_upper_lower_semicontinuous_le_gen fprops)
     ultimately have f_in_cstar: "f \<in> (C* X)" by auto
 
     moreover have f_separates: "f x \<notin> (euclideanreal closure_of (f ` S))"
@@ -1415,86 +1411,73 @@ next
     using cstar_types_restricted[of X] scT_def[of X] W_def cstar_nonempty[of X]
           weak_topology_topspace[of W "topspace X" "cstar_id X" "scT X" "C* X"]
     by auto
-  moreover have "\<forall>f\<in> C* X  . continuous_map X (scT X f) f"
-    unfolding scT_def range'_def
-    by (metis (mono_tags, lifting) closure_of_subset continuous_map_image_subset_topspace 
-              continuous_map_in_subtopology mem_Collect_eq restrict_apply')
-  ultimately have  "\<forall> U . openin W U \<longrightarrow> openin X U" 
-    using W_def cstar_types_restricted[of X] scT_def[of X] cstar_id_def[of X]
-          weak_topology_is_weakest[of W "(topspace X)" "(cstar_id X)" "(scT X)"  "C* X" X]
-    by (smt (verit, ccfv_threshold) restrict_apply')
-   
-  moreover have "\<forall> U . openin X U \<longrightarrow> openin W U" 
+  moreover have "\<forall>f. continuous_map X euclideanreal f \<and> fbounded f X \<longrightarrow>
+        continuous_map X (top_of_set (closure (f ` topspace X))) f"
+    using closure_subset continuous_map_into_subtopology image_subset_iff by fastforce
+  ultimately have  "openin X U" if "openin W U" for U
+    using cstar_types_restricted[of X] scT_def[of X] cstar_id_def[of X] weak_topology_is_weakest [OF W_def] that
+    by (simp add: range'_def)
+
+  moreover have "openin W U" if U: "openin X U" for U
   proof -
-    { fix U assume props: "openin X U"
-      { fix x assume xprops: "x \<in> U"
-        hence x_in_X: "x \<in> topspace X" 
-          using openin_subset props by fastforce
-  
-        define S where "S = topspace X - U"
-        hence props': "x \<in> topspace X - S \<and> closedin X S" 
-          using props openin_closedin_eq xprops  by fastforce
-        then obtain f where fprops: "continuous_map X (top_of_set {0..1::real}) f \<and> f x = 0 \<and> f ` S \<subseteq> {1}" 
-          using assms(1) completely_regular_space_def[of X]
-          by meson
-        then obtain ffull 
-          where ffullprops: "(ffull \<in> C X) \<and> ffull x = (0::real) \<and> ffull ` S \<subseteq> {1}"
-          using continuous_map_into_fulltopology 
-          by (metis mem_Collect_eq)
-        
-        define F where "F = fbound ffull 0 1"
-        hence Fcstar: "F \<in> C* X" using ffullprops fbound_cstar[of ffull X 0 1] by auto
-        hence Ftype: "F \<in> topspace X \<rightarrow> topspace euclideanreal"
-          unfolding continuous_map_def by auto
-  
-        define I where "I = {(-1) <..< 1::real}"
-        hence Iprops: "openin euclideanreal I" 
-          by (simp add: openin_delete)
-  
-        define V where "V = inverse' F (topspace X) I"
-  
-        have crprops: "F x = 0 \<and> F ` S \<subseteq> {1}"
-          using ffullprops F_def 
-          unfolding fbound_def fmid_def fmin_def fmax_def min_def max_def
-          by auto
-  
-        hence "V \<subseteq> U" 
-        proof -
-          { fix v assume "v \<in> V"
-            hence "v \<in> topspace X \<and> F v \<in> I" unfolding inverse'_def V_def by auto
-            hence "v \<in> U" using S_def crprops I_def by auto
-          }
-          thus ?thesis by auto
-        qed
-        moreover have "x \<in> V" 
-          using crprops I_def x_in_X unfolding inverse'_def V_def by auto  
-        moreover have "openin W V" (* sledgehammer needs step-by-step guidance *)
-        proof -
-          have "V \<in> open_sets_induced_by_func F (topspace X) euclideanreal"
-            unfolding open_sets_induced_by_func_def using Ftype V_def Iprops
-            by blast
-          moreover have "open_sets_induced_by_func F (topspace X) euclideanreal \<subseteq>
+    have "\<exists> V . x \<in> V \<and> V \<subseteq> U \<and> openin W V" if x: "x \<in> U" for x
+    proof -
+      have x_in_X: "x \<in> topspace X" 
+        using openin_subset U x by fastforce
+
+      define S where "S = topspace X - U"
+      hence props': "x \<in> topspace X - S \<and> closedin X S" 
+        using U openin_closedin_eq x  by fastforce
+      then obtain f where fprops: "continuous_map X (top_of_set {0..1::real}) f \<and> f x = 0 \<and> f ` S \<subseteq> {1}" 
+        using assms(1) completely_regular_space_def[of X]
+        by meson
+      then obtain ffull 
+        where ffullprops: "(ffull \<in> C X) \<and> ffull x = (0::real) \<and> ffull ` S \<subseteq> {1}"
+        using continuous_map_into_fulltopology 
+        by (metis mem_Collect_eq)
+
+      define F where "F = fbound ffull 0 1"
+      hence Fcstar: "F \<in> C* X" using ffullprops fbound_cstar[of ffull X 0 1] by auto
+      hence Ftype: "F \<in> topspace X \<rightarrow> topspace euclideanreal"
+        unfolding continuous_map_def by auto
+
+      define I where "I = {(-1) <..< 1::real}"
+      hence Iprops: "openin euclideanreal I" 
+        by (simp add: openin_delete)
+
+      define V where "V = inverse' F (topspace X) I"
+
+      have crprops: "F x = 0 \<and> F ` S \<subseteq> {1}"
+        using ffullprops F_def 
+        unfolding fbound_def fmid_def fmin_def fmax_def min_def max_def
+        by auto
+      hence "V \<subseteq> U" 
+        by (auto simp: S_def I_def inverse'_def V_def)
+      moreover have "x \<in> V" 
+        using crprops I_def x_in_X unfolding inverse'_def V_def by auto  
+      moreover have "openin W V" (* sledgehammer needs step-by-step guidance *)
+      proof -
+        have "V \<in> open_sets_induced_by_func F (topspace X) euclideanreal"
+          unfolding open_sets_induced_by_func_def using Ftype V_def Iprops
+          by blast
+        moreover have "open_sets_induced_by_func F (topspace X) euclideanreal \<subseteq>
                          weak_generators (topspace X) (cstar_id X) (scT_full X) (C* X)"
-            using weak_generators_def[of "topspace X" "(cstar_id X)" "scT_full X" "C* X"] 
-                  scT_full_def[of X] cstar_id_def[of X] Fcstar 
-            by (smt (verit, ccfv_SIG) Sup_upper mem_Collect_eq restrict_apply')
-          ultimately have "V \<in> weak_generators (topspace X) (cstar_id X) (scT_full X) (C* X)"
-            by auto
-          hence "openin (topology_generated_by (weak_generators (topspace X) (cstar_id X) (scT_full X) (C* X))) V"
-            using generators_are_open[of "weak_generators (topspace X) (cstar_id X) (scT_full X) (C* X)"]
-                  topology_generated_by_Basis by blast
-          thus ?thesis 
-            using W_def weak_restricted_topology_eq_weak[of X]
-            unfolding scT_def scT_full_def weak_topology_def
-            by simp
-        qed
-        ultimately have "x \<in> V \<and> V \<subseteq> U \<and> openin W V" by auto
-        hence "\<exists> V . x \<in> V \<and> V \<subseteq> U \<and> openin W V" by auto
-      }
-      hence "\<forall> x \<in> U . \<exists> V . x \<in> V \<and> V \<subseteq> U \<and> openin W V" by blast
-      hence "openin W U" by (meson openin_subopen)
-    }
-    thus ?thesis by auto
+          using weak_generators_def[of "topspace X" "(cstar_id X)" "scT_full X" "C* X"] 
+            scT_full_def[of X] cstar_id_def[of X] Fcstar 
+          by (smt (verit, ccfv_SIG) Sup_upper mem_Collect_eq restrict_apply')
+        ultimately have "V \<in> weak_generators (topspace X) (cstar_id X) (scT_full X) (C* X)"
+          by auto
+        hence "openin (topology_generated_by (weak_generators (topspace X) (cstar_id X) (scT_full X) (C* X))) V"
+          using generators_are_open[of "weak_generators (topspace X) (cstar_id X) (scT_full X) (C* X)"]
+            topology_generated_by_Basis by blast
+        thus ?thesis 
+          using W_def weak_restricted_topology_eq_weak[of X]
+          unfolding scT_def scT_full_def weak_topology_def
+          by simp
+      qed
+      ultimately show ?thesis by auto
+    qed
+    thus ?thesis by (meson openin_subopen)
   qed
   ultimately have "\<forall> U . openin X U \<longleftrightarrow> openin W U" by auto
   hence "X = W" by (simp add: topology_eq)
@@ -1781,10 +1764,7 @@ proof -
 
   { fix g assume gprops: "g \<in> C* K"
     have "continuous_map K (scT K g) g"
-      using scT_def[of K] range'_def[of K g] cstar_types_restricted[of K] assms(2)
-            gprops weak_generators_continuous[of K "topspace K" "cstar_id K" "(scT K)" "(C* K)" g]
-      by (metis (mono_tags, lifting) closure_of_topspace continuous_map_image_closure_subset 
-                 continuous_map_in_subtopology mem_Collect_eq restrict_apply')     
+      using closure_subset gprops by (fastforce simp: continuous_map_in_subtopology scT_def range'_def)
     hence cts_scT: "continuous_map X (scT K g) (g o f)" 
       using assms by (simp add: continuous_map_compose)
     hence gofprops: "(g o f) \<in> (C X)"
@@ -1972,11 +1952,10 @@ proof-
       have "(\<lambda> p \<in> topspace (\<beta> X) . restrict H (topspace \<beta> X) p) \<in> cts[\<beta> X, scProduct K]" 
         using Hcts Xspace_def continuous_map_from_subtopology scCompactification_def
         by (metis closedin_subset closedin_topspace mem_Collect_eq restrict_continuous_map)
-      moreover have "H ` (topspace \<beta> X) \<subseteq> topspace (\<beta> K)"
+      moreover have "H \<in> (topspace \<beta> X) \<rightarrow> topspace (\<beta> K)"
         using Xspace_def H_on_beta Xspace_def scCompactification_def[of K] onto by blast
       ultimately have "(\<lambda> p \<in> topspace (\<beta> X) . restrict H (topspace \<beta> X) p) \<in> cts[\<beta> X, \<beta> K]"
-        using scCompactification_def[of K]
-        by (metis closed closure_of_closedin continuous_map_in_subtopology image_restrict_eq mem_Collect_eq onto)
+        using scCompactification_def[of K] by (simp add: Pi_iff continuous_map_into_subtopology)
       moreover have "e' \<in> cts[ \<beta> K, K ]" using e'props by simp
       ultimately show ?thesis
         using F_def continuous_map_compose[of "\<beta> X" "\<beta> K" "(\<lambda> p \<in> topspace (\<beta> X) . restrict H (topspace \<beta> X) p)"]
