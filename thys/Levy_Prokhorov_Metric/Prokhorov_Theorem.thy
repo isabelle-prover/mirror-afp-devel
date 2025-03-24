@@ -245,7 +245,7 @@ proof -
       have T_cont: "continuous_map (subtopology LPm.mtopology ?N) (subtopology Cb' B) T"
         unfolding continuous_map_in_subtopology
       proof
-        show "T ` topspace (subtopology LPm.mtopology ?N) \<subseteq> B"
+        show "T \<in> topspace (subtopology LPm.mtopology ?N) \<rightarrow> B"
           unfolding B_def Cb'_def
         proof safe
           fix N
