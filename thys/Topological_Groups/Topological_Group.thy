@@ -324,7 +324,8 @@ proof -
       using closure_of_mono by meson
     moreover have "(conjugation \<sigma>)`(T closure_of N) \<subseteq> T closure_of (conjugation \<sigma>)`N"
       using h\<sigma> conjugation_homeo
-      by (meson continuous_map_eq_image_closure_subset homeomorphic_imp_continuous_map)
+      by (metis continuous_map_image_closure_subset[of T T "conjugation \<sigma>" N]
+        homeomorphic_imp_continuous_map[of T T "conjugation \<sigma>"])
     ultimately show ?thesis by blast
   qed
   moreover have "subgroup (T closure_of N) G" using subgroup_closure
