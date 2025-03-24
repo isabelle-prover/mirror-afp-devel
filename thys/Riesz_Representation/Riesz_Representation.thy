@@ -824,7 +824,7 @@ proof -
       hence "\<exists>hi. ?iscont hi \<and> hi ` topspace X \<subseteq> {0..1} \<and> hi ` (topspace X - Vi i) \<subseteq> {0} \<and>
                   hi ` Hi i \<subseteq> {1} \<and> disjnt (X closure_of {x\<in>topspace X. hi x \<noteq> 0}) (topspace X - Vi i) \<and>
                   ?csupp hi"
-        by (simp add: continuous_map_in_subtopology disjnt_def has_compact_support_on_def)
+        by (auto simp add: continuous_map_in_subtopology disjnt_def has_compact_support_on_def)
     }
     hence "\<exists>hi. \<forall>i\<in>{..n}. ?iscont (hi i) \<and> hi i ` topspace X \<subseteq> {0..1} \<and>
                 hi i ` (topspace X - Vi i) \<subseteq> {0} \<and> hi i ` Hi i \<subseteq> {1} \<and>

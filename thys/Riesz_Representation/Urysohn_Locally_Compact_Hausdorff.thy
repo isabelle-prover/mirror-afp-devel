@@ -748,8 +748,18 @@ proof -
     have [simp]:"0 \<le> y \<and> y \<le> 1 \<Longrightarrow> (b - a) * y + a \<le> b" for y
       using assms(3) by (meson diff_ge_0_iff_ge le_diff_eq mult_left_le)
     show ?thesis
-      using f(1) assms(3) by(auto simp: image_subset_iff continuous_map_in_subtopology g_def
-                                intro!: continuous_map_add continuous_map_real_mult_left)
+      unfolding continuous_map_in_subtopology
+    proof (rule conjI)
+      show "continuous_map X euclideanreal g"
+        using f(1)
+        by (auto simp: continuous_map_in_subtopology g_def
+            intro: continuous_map_add continuous_map_real_mult_left)
+    next
+      show "g \<in> topspace X \<rightarrow> {a..b}"
+        using f(1) assms(3)
+        by (auto simp add: continuous_map_in_subtopology g_def Pi_iff
+            simp flip: image_subset_iff_funcset)
+    qed
   qed  
   moreover have "g ` S \<subseteq> {a}" "g ` T \<subseteq> {b}"
     using f(2,3) by(auto simp: g_def)
