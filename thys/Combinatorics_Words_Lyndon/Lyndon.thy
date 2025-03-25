@@ -98,7 +98,7 @@ primrec Lyndon_rec :: "'a list \<Rightarrow> nat \<Rightarrow> bool" where
     "Lyndon_rec w (Suc n) = (if w <lex rotate (Suc n) w then Lyndon_rec w n else False)"
 
 lemma Lyndon_rec_all: assumes "Lyndon_rec (a # w) (\<^bold>|w\<^bold>|)"
-  shows "n < \<^bold>|a#w\<^bold>| \<Longrightarrow> 0 < n \<Longrightarrow> Lyndon_rec (a#w) n"
+  shows "n < \<^bold>|a#w\<^bold>| \<Longrightarrow> Lyndon_rec (a#w) n"
 proof(induction n rule: strict_inc_induct)
   case (base i)
   then show ?case
@@ -110,13 +110,13 @@ next
 qed
 
 lemma Lyndon_Lyndon_rec: assumes "Lyndon w"
-  shows "0 < n \<Longrightarrow> n < \<^bold>|w\<^bold>| \<Longrightarrow> Lyndon_rec w n"
+  shows "n < \<^bold>|w\<^bold>| \<Longrightarrow> Lyndon_rec w n"
 proof(induction n, simp)
   case (Suc n)
   have "w <lex rotate (Suc n) w"
-    using LyndonD Suc.prems(2) assms by blast
+    using LyndonD Suc.prems(1) assms by blast
   then show ?case
-    using Suc.IH[OF _ Suc_lessD[OF \<open>Suc n < \<^bold>|w\<^bold>|\<close>], folded neq0_conv] Lyndon_rec.simps(1)[of w]
+    using Suc.IH[OF Suc_lessD[OF \<open>Suc n < \<^bold>|w\<^bold>|\<close>], folded neq0_conv] Lyndon_rec.simps(1)[of w]
     unfolding Lyndon_rec.simps(2)
     by metis
 qed
@@ -130,17 +130,11 @@ proof-
     by simp
   have ax: "0 < n \<Longrightarrow> Lyndon_rec (a#w) n \<Longrightarrow> (a#w) <lex rotate n (a#w)" for n
     using Lyndon_rec.simps(2)[of "a#w"] gr0_implies_Suc[of n] by metis
-  have bx: "Lyndon_rec (a # w) (\<^bold>|w\<^bold>|) = (\<forall>n. n < \<^bold>|a#w\<^bold>| \<and> 0 < n \<longrightarrow> Lyndon_rec (a#w) n)"
-  proof(cases "w = \<epsilon>", simp)
-    assume "w \<noteq> \<epsilon>"
-    from this[folded length_greater_0_conv]
-    show ?thesis
-      using Lyndon_rec_all[of a w] length_Cons[of a w] lessI[of "\<^bold>|w\<^bold>|"]
-      by fastforce
-  qed
+  have bx: "Lyndon_rec (a # w) (\<^bold>|w\<^bold>|) = (\<forall>n. n < \<^bold>|a#w\<^bold>| \<longrightarrow> Lyndon_rec (a#w) n)"
+    using Lyndon_rec_all by auto
   show "Lyndon (a # w) = Lyndon_rec (a # w) \<^bold>|w\<^bold>|"
     unfolding bx Lyndon.simps
-    using ax  LyndonI[OF \<open>a # w \<noteq> \<epsilon>\<close>]Lyndon_Lyndon_rec by blast
+    using ax LyndonI[OF \<open>a # w \<noteq> \<epsilon>\<close>]Lyndon_Lyndon_rec by blast
 qed
 
 subsection "Properties of Lyndon words"
