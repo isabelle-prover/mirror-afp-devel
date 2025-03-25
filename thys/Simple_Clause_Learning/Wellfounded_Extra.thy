@@ -205,7 +205,7 @@ proof (rule iffI)
   hence "wfp (\<lambda>z y. R\<inverse>\<inverse> z y \<and> z \<in> {x. R\<^sup>*\<^sup>* x\<^sub>0 x} \<and> y \<in> {x. R\<^sup>*\<^sup>* x\<^sub>0 x})"
     using wfp_on_iff_wfp by blast
   hence "wfp (\<lambda>z y. R y z \<and> R\<^sup>*\<^sup>* x\<^sub>0 y)"
-    by (auto elim: wfp_on_antimono_strong)
+    by (auto elim: wfp_on_mono_strong)
   hence "\<nexists>xs. \<not> lfinite xs \<and> Lazy_List_Chain.chain (\<lambda>y z. R y z \<and> R\<^sup>*\<^sup>* x\<^sub>0 y) xs"
     unfolding wfP_iff_no_infinite_down_chain_llist
     by (metis (no_types, lifting) Lazy_List_Chain.chain_mono conversepI)
@@ -242,7 +242,7 @@ next
     unfolding wfP_iff_no_infinite_down_chain_llist
     using Lazy_List_Chain.chain_mono by fastforce
   hence "wfp (\<lambda>z y. R\<inverse>\<inverse> z y \<and> z \<in> {x. R\<^sup>*\<^sup>* x\<^sub>0 x} \<and> y \<in> {x. R\<^sup>*\<^sup>* x\<^sub>0 x})"
-    by (auto elim: wfp_on_antimono_strong)
+    by (auto elim: wfp_on_mono_strong)
   thus "wfp_on {x. R\<^sup>*\<^sup>* x\<^sub>0 x} R\<inverse>\<inverse>"
     unfolding wfp_on_iff_wfp[of "{x. R\<^sup>*\<^sup>* x\<^sub>0 x}" "R\<inverse>\<inverse>"] by argo
 qed

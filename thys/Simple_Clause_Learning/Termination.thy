@@ -458,7 +458,7 @@ corollary termination_stragegy_without_back:
       factorize N \<beta> \<squnion> resolve N \<beta>"
   assumes strategy_stronger: "\<And>S S'. strategy S S' \<Longrightarrow> scl_without_backtrack S S'"
   shows "wfp_on {S. strategy\<^sup>*\<^sup>* initial_state S} strategy\<inverse>\<inverse>"
-proof (rule wfp_on_antimono_strong)
+proof (rule wfp_on_mono_strong)
   show "wfp_on {S. strategy\<^sup>*\<^sup>* initial_state S} scl_without_backtrack\<inverse>\<inverse>"
   proof (rule wfp_on_subset)
     show "wfp_on {S. scl_without_backtrack\<^sup>*\<^sup>* initial_state S} scl_without_backtrack\<inverse>\<inverse>"
@@ -732,7 +732,7 @@ theorem termination_regular_scl_invars:
       sound_state N \<beta> \<sqinter> almost_no_conflict_with_trail N \<beta> \<sqinter> regular_conflict_resolution N \<beta>"
   shows
     "wfp_on {S. invars S} (regular_scl N \<beta>)\<inverse>\<inverse>"
-proof (rule wfp_on_antimono_strong)
+proof (rule wfp_on_mono_strong)
   fix S S' assume "(regular_scl N \<beta>)\<inverse>\<inverse> S S'"
   thus "(backtrack N \<beta> \<squnion> (propagate N \<beta> \<squnion> decide N \<beta> \<squnion> conflict N \<beta> \<squnion> skip N \<beta> \<squnion> factorize N \<beta> \<squnion>
       resolve N \<beta>))\<inverse>\<inverse> S S'"
@@ -857,7 +857,7 @@ corollary termination_projectable_strategy:
     "\<And>S S'. strategy\<^sup>*\<^sup>* strategy_init S \<Longrightarrow> strategy S S' \<Longrightarrow> regular_scl N \<beta> (proj S) (proj S')" and
     initial_state: "proj strategy_init = initial_state"
   shows "wfp_on {S. strategy\<^sup>*\<^sup>* strategy_init S} strategy\<inverse>\<inverse>"
-proof (rule wfp_on_antimono_stronger)
+proof (rule wfp_on_mono_stronger)
   show "wfp_on {proj S | S. strategy\<^sup>*\<^sup>* strategy_init S} (regular_scl N \<beta>)\<inverse>\<inverse>"
   proof (rule wfp_on_subset)
     show "wfp_on {S. (regular_scl N \<beta>)\<^sup>*\<^sup>* initial_state S} (regular_scl N \<beta>)\<inverse>\<inverse>"
