@@ -4295,6 +4295,22 @@ host = [
 
 [lux.homepages]
 
+[maadoori]
+name = "Vivek Soorya Maadoori"
+
+[maadoori.emails]
+
+[maadoori.emails.maadoori_email]
+user = [
+  "wewakesoorya",
+]
+host = [
+  "gmail",
+  "com",
+]
+
+[maadoori.homepages]
+
 [madarasz]
 name = "Judit Madarasz"
 
@@ -4570,6 +4586,25 @@ host = [
 ]
 
 [meel.homepages]
+
+[meesum]
+name = "Syed Mohammad Meesum"
+orcid = "0000-0002-1771-403X"
+
+[meesum.emails]
+
+[meesum.emails.meesum_email]
+user = [
+  "meesum",
+  "syed",
+]
+host = [
+  "krea",
+  "edu",
+  "in",
+]
+
+[meesum.homepages]
 
 [meis]
 name = "Rene Meis"
@@ -5497,6 +5532,22 @@ name = "Edward Pierzchalski"
 
 [pierzchalski.homepages]
 
+[pillai]
+name = "Shiv Pillai"
+
+[pillai.emails]
+
+[pillai.emails.pillai_email]
+user = [
+  "shivpillai2010",
+]
+host = [
+  "gmail",
+  "com",
+]
+
+[pillai.homepages]
+
 [platzer]
 name = "André Platzer"
 
@@ -5612,6 +5663,24 @@ host = [
 ]
 
 [prathamesh.homepages]
+
+[prathamesht]
+name = "T. V. H. Prathamesh"
+
+[prathamesht.emails]
+
+[prathamesht.emails.prathamesht_email]
+user = [
+  "prathamesh",
+  "turaga",
+]
+host = [
+  "krea",
+  "edu",
+  "in",
+]
+
+[prathamesht.homepages]
 
 [preoteasa]
 name = "Viorel Preoteasa"
@@ -7191,6 +7260,22 @@ name = "Geoff Sutcliffe"
 [sutcliffe.emails]
 
 [sutcliffe.homepages]
+
+[swami]
+name = "Aditya Swami"
+
+[swami.emails]
+
+[swami.emails.swami_email]
+user = [
+  "adityaswami2004",
+]
+host = [
+  "gmail",
+  "com",
+]
+
+[swami.homepages]
 
 [sylvestre]
 name = "Jeremy Sylvestre"

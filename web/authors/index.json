@@ -28,6 +28,10 @@
   "name": "Achim D. Brucker"
  },
  {
+  "link": "/authors/swami/",
+  "name": "Aditya Swami"
+ },
+ {
   "link": "/authors/mateo/",
   "name": "Adrián Doña Mateo"
  },
@@ -1748,6 +1752,10 @@
   "name": "Shenggang Ying"
  },
  {
+  "link": "/authors/pillai/",
+  "name": "Shiv Pillai"
+ },
+ {
   "link": "/authors/song/",
   "name": "Shuhao Song"
  },
@@ -1856,12 +1864,20 @@
   "name": "Sven Linker"
  },
  {
+  "link": "/authors/meesum/",
+  "name": "Syed Mohammad Meesum"
+ },
+ {
   "link": "/authors/grewe/",
   "name": "Sylvia Grewe"
  },
  {
   "link": "/authors/makarios/",
   "name": "T. J. M. Makarios"
+ },
+ {
+  "link": "/authors/prathamesht/",
+  "name": "T. V. H. Prathamesh"
  },
  {
   "link": "/authors/prathamesh/",
@@ -1998,6 +2014,10 @@
  {
   "link": "/authors/preoteasa/",
   "name": "Viorel Preoteasa"
+ },
+ {
+  "link": "/authors/maadoori/",
+  "name": "Vivek Soorya Maadoori"
  },
  {
   "link": "/authors/guttmann/",

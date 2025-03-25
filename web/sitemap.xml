@@ -3,10 +3,13 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://isa-afp.org/entries/index.json</loc>
-    <lastmod>2025-03-03T00:00:00+00:00</lastmod>
+    <lastmod>2025-03-25T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/</loc>
-    <lastmod>2025-03-03T00:00:00+00:00</lastmod>
+    <lastmod>2025-03-25T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Dilworth.html</loc>
+    <lastmod>2025-03-25T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/entries/Mission_Time_LTL_Language_Partition.html</loc>
     <lastmod>2025-03-03T00:00:00+00:00</lastmod>
@@ -2725,6 +2728,8 @@
   </url><url>
     <loc>https://isa-afp.org/sessions/adaptive_state_counting/</loc>
   </url><url>
+    <loc>https://isa-afp.org/authors/swami/</loc>
+  </url><url>
     <loc>https://isa-afp.org/authors/mateo/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/ads_functor/</loc>
@@ -3440,6 +3445,8 @@
     <loc>https://isa-afp.org/sessions/digitsinbase/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/dijkstra_shortest_path/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/sessions/dilworth/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/vytiniotis/</loc>
   </url><url>
@@ -5320,6 +5327,8 @@
   </url><url>
     <loc>https://isa-afp.org/authors/ying/</loc>
   </url><url>
+    <loc>https://isa-afp.org/authors/pillai/</loc>
+  </url><url>
     <loc>https://isa-afp.org/sessions/shivers-cfa/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/shortestpath/</loc>
@@ -5508,6 +5517,8 @@
   </url><url>
     <loc>https://isa-afp.org/authors/linker/</loc>
   </url><url>
+    <loc>https://isa-afp.org/authors/meesum/</loc>
+  </url><url>
     <loc>https://isa-afp.org/authors/grewe/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/symmetric_polynomials/</loc>
@@ -5521,6 +5532,8 @@
     <loc>https://isa-afp.org/sessions/szpilrajn/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/makarios/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/authors/prathamesht/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/prathamesh/</loc>
   </url><url>
@@ -5707,6 +5720,8 @@
     <loc>https://isa-afp.org/authors/preoteasa/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/virtual_substitution/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/authors/maadoori/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/volpanosmith/</loc>
   </url><url>
