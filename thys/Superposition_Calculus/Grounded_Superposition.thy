@@ -128,8 +128,8 @@ sublocale lifting:
     ground.GRed_F
     clause.welltyped_ground_instances
     "Some \<circ> inference_ground_instances"
-    typed_tiebreakers
-proof(unfold_locales; (intro impI wfp_typed_tiebreakers transp_typed_tiebreakers)?)
+    tiebreakers.typed_tiebreakers
+proof (unfold_locales; (intro impI tiebreakers.typed.wfp tiebreakers.typed.transp)?)
 
   show "\<bottom>\<^sub>F \<noteq> {}"
     using obtain_infinite_variables_per_type_on''[of "{}"]
@@ -189,8 +189,8 @@ sublocale
     "\<bottom>\<^sub>F"
     "\<lambda>_. clause.welltyped_ground_instances"
     "\<lambda>select\<^sub>G. Some \<circ> (grounded_superposition_calculus.inference_ground_instances (\<prec>\<^sub>t) select\<^sub>G \<F>)"
-    typed_tiebreakers
-proof(unfold_locales; (intro ballI)?)
+    tiebreakers.typed_tiebreakers
+proof (unfold_locales; (intro ballI)?)
   show "select\<^sub>G\<^sub>s \<noteq> {}"
     using select\<^sub>G_simple
     unfolding select\<^sub>G\<^sub>s_def
@@ -216,7 +216,7 @@ next
           ground.GRed_F
           clause.welltyped_ground_instances
           (Some \<circ> inference_ground_instances)
-          typed_tiebreakers"
+          tiebreakers.typed_tiebreakers"
     by unfold_locales
 qed
 

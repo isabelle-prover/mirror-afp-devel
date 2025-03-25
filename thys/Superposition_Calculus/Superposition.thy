@@ -16,19 +16,14 @@ locale superposition_calculus =
   nonground_inhabited_typing \<F> +
   nonground_equality_order less\<^sub>t +
   nonground_selection_function select +
+  tiebreakers: tiebreakers tiebreakers +
   ground_critical_pair_theorem "TYPE('f)"
   for
     select :: "('f, 'v :: infinite) select" and
     less\<^sub>t :: "('f, 'v) term \<Rightarrow> ('f, 'v) term \<Rightarrow> bool" and
     \<F> :: "('f, 'ty) fun_types" and
-    tiebreakers :: "('f, 'v) tiebreakers" +
-  assumes
-    wfp_tiebreakers[iff]: "\<And>C\<^sub>G. wfp (tiebreakers C\<^sub>G)" and
-    transp_tiebreakers[iff]: "\<And>C\<^sub>G. transp (tiebreakers C\<^sub>G)"
+    tiebreakers :: "('f, 'v) tiebreakers"
 begin
-
-sublocale typed_tiebreakers tiebreakers
-  by unfold_locales simp_all
 
 interpretation term_order_notation.
 
@@ -102,7 +97,7 @@ definition inferences :: "('f, 'v, 'ty) typed_clause inference set" where
   "inferences \<equiv> superposition_inferences \<union> eq_resolution_inferences \<union> eq_factoring_inferences"
 
 abbreviation bottom\<^sub>F :: "('f, 'v, 'ty) typed_clause set" ("\<bottom>\<^sub>F") where
-  "bottom\<^sub>F \<equiv> {({#}, \<V>) | \<V>. infinite_variables_per_type_on UNIV \<V> }"
+  "bottom\<^sub>F \<equiv> {({#}, \<V>) | \<V>. infinite_variables_per_type \<V> }"
 
 subsubsection \<open>Alternative Specification of the Superposition Rule\<close>
 
