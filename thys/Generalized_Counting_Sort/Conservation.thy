@@ -1176,7 +1176,7 @@ lemma offs_equal [rule_format]:
     (\<forall>k \<in> {i..<j}. ns ! k = 0) \<longrightarrow> offs ns m ! i = offs ns m ! j"
 proof (erule strict_inc_induct, rule_tac [!] impI, simp_all, erule offs_equal_suc, simp)
   fix i
-  assume A: "i < j" and "j < length ns"
+  assume A: "Suc i < j" and "j < length ns"
   hence "Suc i < length ns" by simp
   moreover assume "\<forall>k \<in> {i..<j}. ns ! k = 0"
   hence "ns ! i = 0"
