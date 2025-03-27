@@ -238,7 +238,7 @@ Last 50 lines from stderr (if available):
         }
       },
       other_settings =
-        List("ISABELLE_TOOL_JAVA_OPTIONS=\"$ISABELLE_TOOL_JAVA_OPTIONS -Xmx8G -Xss64M\""),
+        List("ISABELLE_TOOL_JAVA_OPTIONS=\"$ISABELLE_TOOL_JAVA_OPTIONS -Xmx16G -Xss64M\""),
       trigger = Build_CI.Timed.nightly())
 
 
