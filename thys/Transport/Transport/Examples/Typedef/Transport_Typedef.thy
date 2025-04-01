@@ -92,7 +92,7 @@ context
   assumes [trp_uhint]:
   (*proven for all natural functors*)
   "L \<equiv> rel_set (L1 :: int \<Rightarrow> int \<Rightarrow> bool) \<Longrightarrow> R \<equiv> rel_set (R1 :: pint \<Rightarrow> pint \<Rightarrow> bool)
-  \<Longrightarrow> r \<equiv> image r1 \<Longrightarrow> S \<equiv> (\<^bsub>L1\<^esub>\<lessapprox>\<^bsub>R1 r1\<^esub>) \<Longrightarrow> (\<^bsub>L\<^esub>\<lessapprox>\<^bsub>R r\<^esub>) \<equiv> rel_set S"
+  \<Longrightarrow> r \<equiv> Set.image r1 \<Longrightarrow> S \<equiv> (\<^bsub>L1\<^esub>\<lessapprox>\<^bsub>R1 r1\<^esub>) \<Longrightarrow> (\<^bsub>L\<^esub>\<lessapprox>\<^bsub>R r\<^esub>) \<equiv> rel_set S"
 begin
 
 trp_term insert_add_pint_set_whitebox :: "pint set"
@@ -105,16 +105,16 @@ end
 end
 
 lemma image_parametric [trp_in_dom]:
-  "(((=) \<Rrightarrow> (=)) \<Rrightarrow> typedef_fset.L \<Rrightarrow> typedef_fset.L) image image"
+  "(((=) \<Rrightarrow> (=)) \<Rrightarrow> typedef_fset.L \<Rrightarrow> typedef_fset.L) Set.image Set.image"
   by (intro Fun_Rel_relI) auto
 
-trp_term fimage :: "('a \<Rightarrow> 'b) \<Rightarrow> 'a fset \<Rightarrow> 'b fset" where x = image
+trp_term fimage :: "('a \<Rightarrow> 'b) \<Rightarrow> 'a fset \<Rightarrow> 'b fset" where x = Set.image
   by trp_prover
 
 (*experiments with compositions*)
 
 lemma image_parametric' [trp_related_intro]:
-  "((R \<Rrightarrow> S) \<Rrightarrow> rel_set R \<Rrightarrow> rel_set S) image image"
+  "((R \<Rrightarrow> S) \<Rrightarrow> rel_set R \<Rrightarrow> rel_set S) Set.image Set.image"
   using transfer_raw[simplified HOL_fun_alignment Transfer.Rel_def]
   by simp
 
@@ -129,7 +129,7 @@ context
   fixes L1 R1 l1 r1 L R l r
   assumes per1: "(L1 \<equiv>\<^bsub>PER\<^esub> R1) l1 r1"
   defines "L \<equiv> rel_set L1" and "R \<equiv> rel_set R1"
-  and "l \<equiv> image l1" and "r \<equiv> image r1"
+  and "l \<equiv> Set.image l1" and "r \<equiv> Set.image r1"
 begin
 
 interpretation transport L R l r .
@@ -153,7 +153,7 @@ trp_term fempty_param :: "'b fset"
   apply (auto intro!: galois_rel.left_GaloisI in_codomI empty_transfer)
   done
 
-definition "set_succ \<equiv> image ((+) (1 :: int))"
+definition "set_succ \<equiv> Set.image ((+) (1 :: int))"
 
 lemma set_succ_parametric [trp_in_dom]:
   "(typedef_fset.L \<Rrightarrow> typedef_fset.L) set_succ set_succ"

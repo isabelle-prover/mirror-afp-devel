@@ -165,7 +165,6 @@ lemma Fun_comp_eq_comp [HOL_fun_alignment]: "Fun.comp = Functions_Base.comp"
 lemma map_fun_eq_fun_map [HOL_fun_alignment]: "map_fun = fun_map"
   by (intro ext) simp
 
-
 paragraph \<open>Relators\<close>
 
 lemma rel_fun_eq_Fun_Rel_rel [HOL_fun_alignment]: "BNF_Def.rel_fun = Fun_Rel"

@@ -75,10 +75,9 @@ lemma fun_map_id_eq_comp [simp]: "fun_map id = (\<circ>)"
 lemma fun_map_id_eq_comp' [simp]: "(f \<leadsto> id) h = h \<circ> f"
   by (intro ext) simp
 
-
 consts has_inverse_on :: "'a \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> bool"
 
-definition "has_inverse_on_pred (P :: 'a \<Rightarrow> bool) f \<equiv> in_codom_on P ((=) \<circ> f)"
+definition "has_inverse_on_pred (P :: 'a \<Rightarrow> bool) \<equiv> in_codom_on P \<circ> ((\<circ>) (=))"
 adhoc_overloading has_inverse_on \<rightleftharpoons> has_inverse_on_pred
 
 lemma has_inverse_on_pred_eq_in_codom_on: "has_inverse_on P = in_codom_on P \<circ> ((\<circ>) (=))"
@@ -138,5 +137,31 @@ lemma has_inverseE [elim]:
   assumes "has_inverse f y"
   obtains x where "y = f x"
   using assms by (urule (e) has_inverse_onE)
+
+consts image :: "'a \<Rightarrow> 'b \<Rightarrow> 'c"
+
+definition "image_pred (f :: 'a \<Rightarrow> 'b) (P :: 'a \<Rightarrow> bool) \<equiv> has_inverse_on P f"
+adhoc_overloading image \<rightleftharpoons> image_pred
+
+lemma image_pred_eq_has_inverse_on [simp]: "image f P = has_inverse_on P f"
+  unfolding image_pred_def by simp
+
+lemma image_pred_eq_has_inverse_on_uhint [uhint]:
+  assumes "f \<equiv> f'"
+  and "P \<equiv> P'"
+  shows "image f P \<equiv> has_inverse_on P' f'"
+  using assms by simp
+
+definition "equaliser f g \<equiv> \<lambda>x. f x = g x"
+
+lemma equaliserI [intro]:
+  assumes "f x = g x"
+  shows "equaliser f g x"
+  using assms unfolding equaliser_def by auto
+
+lemma equaliserD [dest]:
+  assumes "equaliser f g x"
+  shows "f x = g x"
+  using assms unfolding equaliser_def by auto
 
 end
