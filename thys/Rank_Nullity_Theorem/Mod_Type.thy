@@ -93,14 +93,14 @@ proof (unfold bij_betw_def, rule conjI)
   show "range Rep = {0..<int CARD('a)}" using Typedef.type_definition.Rep_range[OF type] .
 qed
 
-lemma mono_Rep: "mono Rep" by (metis strict_mono_Rep strict_mono_mono)
-
 lemma Rep_ge_0: "0 \<le> Rep x" using bij_Rep unfolding bij_betw_def by auto
 
 lemma bij_Abs: "bij_betw (Abs) {0..<int CARD('a)} (UNIV::'a set)"
 proof (unfold bij_betw_def, rule conjI)
-  show "inj_on Abs {0..<int CARD('a)}" by (metis inj_on_inverseI type type_definition.Abs_inverse)
-  show "Abs ` {0..<int CARD('a)} = (UNIV::'a set)" by (metis type type_definition.univ)
+  show "inj_on Abs {0..<int CARD('a)}" 
+    by (metis inj_on_inverseI type type_definition.Abs_inverse)
+  show "Abs ` {0..<int CARD('a)} = (UNIV::'a set)" 
+    by (metis type type_definition.univ)
 qed
 
 corollary bij_Abs': "bij_betw (Abs') {0..<int CARD('a)} (UNIV::'a set)"
