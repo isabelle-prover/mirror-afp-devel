@@ -22,6 +22,22 @@
   "year": "2025"
  },
  {
+  "abstract": "Morley's trisector theorem states that in any triangle,  the three points of intersection of the adjacent angle trisectors  form an equilateral triangle,  called the first Morley triangle or simply the Morley triangle. This theorem is listed in the 100 theorem list.  In this theory, we define some basics elements on complex geometry such as axial symmetry, rotations. We also define basic property of congruent triangles in the complex field following the model already presented in the afp. In addition we demonstrate sines law in the complex context.  Finally we prove the Morley theorem using Alain Connes's proof.",
+  "authors": [
+   "Benjamin Puyobro"
+  ],
+  "link": "/entries/Morley_Theorem.html",
+  "shortname": "Morley_Theorem",
+  "title": "Morley Theorem",
+  "topic_links": [
+   "/topics/mathematics/"
+  ],
+  "topics": [
+   "Mathematics"
+  ],
+  "year": "2025"
+ },
+ {
   "abstract": "Building on the existing formalization of Mission-time Linear Temporal Logic (MLTL), we formalize the notions of language decomposition and language partition for MLTL. More specifically, we formalize an algorithm to compute a language partition for MLTL and formally prove its correctness. Our algorithm is executable, and we export it to Haskell via Isabelle/HOL's code generator.",
   "authors": [
    "Zili Wang",

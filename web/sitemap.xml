@@ -11,6 +11,9 @@
     <loc>https://isa-afp.org/entries/Dilworth.html</loc>
     <lastmod>2025-03-25T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>https://isa-afp.org/entries/Morley_Theorem.html</loc>
+    <lastmod>2025-03-07T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>https://isa-afp.org/entries/Mission_Time_LTL_Language_Partition.html</loc>
     <lastmod>2025-03-03T00:00:00+00:00</lastmod>
   </url><url>
@@ -4717,6 +4720,8 @@
     <loc>https://isa-afp.org/sessions/monomorphic_monad/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/more_lazylists/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/sessions/morley_theorem/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/schou/</loc>
   </url><url>
