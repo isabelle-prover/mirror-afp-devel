@@ -141,6 +141,11 @@ lemma to_nome_2 [simp]: "to_nome 2 = 1"
   by (simp add: to_nome_def exp_eq_polar mult.commute[of pi])
 
 
+lemma has_field_derivative_to_nome [derivative_intros]:
+  assumes "(f has_field_derivative f') (at x within A)"
+  shows   "((\<lambda>x. to_nome (f x)) has_field_derivative (\<i> * pi * to_nome (f x) * f')) (at x within A)"
+  unfolding to_nome_def by (auto intro!: derivative_eq_intros assms)
+
 lemma holomorphic_to_nome [holomorphic_intros]:
   "f holomorphic_on A \<Longrightarrow> (\<lambda>z. to_nome (f z)) holomorphic_on A"
   unfolding to_nome_def by (intro holomorphic_intros)

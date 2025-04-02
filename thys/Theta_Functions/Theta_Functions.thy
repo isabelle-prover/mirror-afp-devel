@@ -1560,6 +1560,9 @@ lemma jacobi_theta_11_plus1_left: "jacobi_theta_11 (z + 1) t = -jacobi_theta_11 
   using jacobi_theta_00_left.plus_1[of "z + t / 2 + 1 / 2" t] 
   by (simp add: jacobi_theta_11_def to_nome_add algebra_simps)
 
+lemma jacobi_theta_11_minus1_left: "jacobi_theta_11 (z - 1) t = -jacobi_theta_11 z t"
+  using jacobi_theta_11_plus1_left[of "z - 1" t] by simp
+
 lemma jacobi_theta_10_plus2_right: "jacobi_theta_10 z (t + 2) = \<i> * jacobi_theta_10 z t"
   using jacobi_theta_00_right.plus_1[of "z + t / 2" t] 
         jacobi_theta_00_left.plus_1[of "z + t / 2" "t + 2"] 
@@ -1678,6 +1681,156 @@ lemma analytic_jacobi_theta_11 [analytic_intros]:
   assumes "f analytic_on A" "g analytic_on A" "\<And>z. z \<in> A \<Longrightarrow> Im (g z) > 0"
   shows   "(\<lambda>z. jacobi_theta_11 (f z) (g z)) analytic_on A"
   unfolding jacobi_theta_11_def by (intro analytic_intros assms(1,2)) (use assms(3-) in auto)
+
+
+subsection \<open>The heat equation\<close>
+
+text \<open>
+  The Jacobi $\vartheta$ function in the complex plane is a solution of the the partial 
+  differential equation
+  \[\frac{\partial^2}{\partial z^2} \vartheta(z,t) = 
+    4i\pi \frac{\partial}{\partial t} \vartheta(z,t)\]
+  This is a one-dimensional heat equation.
+\<close>
+theorem jacobi_theta_00_heat_equation:
+  assumes "Im t > 0"
+  shows   "(deriv ^^ 2) (\<lambda>z. jacobi_theta_00 z t) z = 4*pi*\<i> * deriv (\<lambda>t. jacobi_theta_00 z t) t"
+proof -
+  define f where 
+    "f = (\<lambda>z t. ramanujan_theta (to_nome t * to_nome (2*z)) (to_nome t / to_nome (2*z)))"
+  define to_ab where "to_ab = (\<lambda>(z,t). (to_nome t * to_nome (2*z), to_nome t / to_nome (2*z)))"
+  define q where "q = (\<lambda>t. to_nome t)"
+  define A where "A = cball z 1"
+  define B where "B = cball t (Im t / 2)"
+  have AB: "compact (A \<times> B)"
+    unfolding A_def B_def by (auto simp: compact_Times)
+  have B: "Im t' > 0" if "t' \<in> B" for t'
+  proof -
+    have "0 < Im t - Im t / 2"
+      using assms by simp
+    also have "\<dots> \<le> Im t - dist t' t"
+      using that by (intro diff_left_mono) (auto simp: B_def dist_commute)
+    also have "Im (t - t') \<le> dist t t'"
+      unfolding dist_norm using abs_Im_le_cmod[of "t - t'"] by linarith 
+    hence "Im t - dist t' t \<le> Im t'"
+      by (simp add: dist_commute)
+    finally show "Im t' > 0" .
+  qed
+
+  define AB' where "AB' = to_ab ` (A \<times> B)"
+  have AB': "compact AB'" "\<And>a b. (a, b) \<in> AB' \<Longrightarrow> norm (a*b) < 1"
+  proof -
+    show "compact AB'"
+      unfolding AB'_def to_ab_def case_prod_unfold                          
+      by (intro compact_continuous_image continuous_intros) (auto simp: compact_Times A_def B_def)
+    show "norm (a*b) < 1" if "(a, b) \<in> AB'" for a b
+    proof -
+      from that obtain z' t' 
+        where z't': "a = to_nome t' * to_nome (2*z')" "b = to_nome t' / to_nome (2*z')"
+                    "dist t' t \<le> Im t / 2"
+        by (auto simp: AB'_def B_def to_ab_def to_nome_add dist_commute)
+      have "norm (a * b) = norm (to_nome (2*t'))"
+        by (simp add: z't'(1,2) to_nome_power flip: power2_eq_square)
+      also have "\<dots> < 1"
+        using B[of t'] z't' by (simp add: norm_to_nome B_def dist_commute)
+      finally show ?thesis .
+    qed
+  qed
+  have AB_subset: "to_ab ` (A \<times> B) \<subseteq> AB'"
+    by (auto simp: AB'_def)
+
+  let ?F = "finite_subsets_at_top UNIV :: int set filter"
+  define f where "f = (\<lambda>n (w,q). \<Sum>n\<in>n. to_nome (of_int n ^ 2 * q + 2 * of_int n * w))"
+  have "uniform_limit (A \<times> B) f (\<lambda>(w,q). \<Sum>\<^sub>\<infinity>n. to_nome (of_int n ^ 2 * q + 2 * of_int n * w)) ?F"
+    using uniform_limit_compose'[OF uniform_limit_ramanujan_theta[OF AB'], of "A\<times>B" to_ab] AB_subset
+    by (simp add: to_ab_def case_prod_unfold to_nome_power_int power_int_mult_distrib f_def subset_iff
+                  power_int_divide_distrib add_divide_distrib diff_divide_distrib of_int_div
+                  ring_distribs power2_eq_square mult_ac flip: to_nome_add to_nome_diff)
+  also have "?this \<longleftrightarrow> uniform_limit (A \<times> B) f (\<lambda>(w,q). jacobi_theta_00 w q) ?F"
+  proof (intro uniform_limit_cong always_eventually allI ballI refl, safe)
+    fix z t assume z: "z \<in> A" and t: "t \<in> B"
+    from t have "Im t > 0"
+      by (rule B)
+    show "(\<Sum>\<^sub>\<infinity>n. to_nome ((complex_of_int n)\<^sup>2 * t + 2 * complex_of_int n * z)) = jacobi_theta_00 z t"
+      using has_sum_jacobi_theta_00[OF \<open>Im t > 0\<close>, of z]
+      by (simp add: has_sum_iff)
+  qed
+  finally have ulim: "uniform_limit (ball z 1 \<times> ball t (Im t/2)) f 
+                        (\<lambda>(w,q). jacobi_theta_00 w q) finite_sets_at_top"
+    by (rule uniform_limit_on_subset) (auto simp: A_def B_def)
+
+  have ulim1: "uniform_limit (ball z 1) (\<lambda>n z. f n (z, t)) 
+                 (\<lambda>z. jacobi_theta_00 z t) finite_sets_at_top"
+    using uniform_limit_compose'[OF ulim, of "ball z 1" "\<lambda>z. (z, t)"] assms
+    by (auto simp: B_def subset_iff image_def)
+
+  have ulim2: "uniform_limit (ball t (Im t / 2)) 
+                 (\<lambda>n t. f n (z, t)) (\<lambda>t. jacobi_theta_00 z t) finite_sets_at_top"
+    using uniform_limit_compose'[OF ulim, of "ball t (Im t / 2)" "\<lambda>t. (z, t)"]
+    by (auto simp: A_def subset_iff image_def)
+
+  define f' where 
+    "f' = (\<lambda>X z. (\<Sum>n\<in>X. 2 * \<i> * pi * of_int n * to_nome ((of_int n)\<^sup>2 * t + 2 * of_int n * z)))"
+  define f'' where 
+    "f'' = (\<lambda>X. (\<Sum>n\<in>X. \<i> * pi * of_int n ^ 2 * to_nome ((of_int n)\<^sup>2 * t + 2 * of_int n * z)))"
+
+  
+  show ?thesis
+  proof (rule tendsto_unique)
+    have "((\<lambda>X. 4 * pi * \<i> * (deriv ^^ 1) (\<lambda>t. f X (z, t)) t)
+            \<longlongrightarrow> 4 * pi * \<i> * (deriv ^^ 1) (jacobi_theta_00 z) t) finite_sets_at_top"
+    proof (intro tendsto_mult tendsto_const higher_deriv_complex_uniform_limit[OF ulim2])
+      have "(\<lambda>t. f X (z, t)) holomorphic_on ball t (Im t / 2)" for X
+        unfolding f_def case_prod_unfold by (intro holomorphic_intros) auto
+      thus "\<forall>\<^sub>F X in finite_sets_at_top. (\<lambda>t. f X (z, t)) holomorphic_on ball t (Im t / 2)"
+        by blast
+    qed (use \<open>Im t > 0\<close> in \<open>auto simp: B_def\<close>)
+    also have "(\<lambda>X. 4 * pi * \<i> * (deriv ^^ 1) (\<lambda>t. f X (z, t)) t) = (\<lambda>X. 4 * pi * \<i>* f'' X)"
+    proof
+      fix X :: "int set"
+      have *: "((\<lambda>t. f X (z, t)) has_field_derivative f'' X) (at t)"
+        unfolding f_def f''_def prod.case by (auto intro!: derivative_eq_intros simp: mult_ac)
+      show "4 * pi * \<i> * (deriv ^^ 1) (\<lambda>t. f X (z, t)) t = 4 * pi * \<i> * f'' X"
+        using DERIV_imp_deriv[OF *] by (simp add: f''_def)
+    qed
+    finally show "((\<lambda>X. 4 * pi * \<i> * f'' X) \<longlongrightarrow> 
+                    4 * pi * \<i> * deriv (jacobi_theta_00 z) t) finite_sets_at_top"
+      by simp
+  next
+    have "((\<lambda>X. (deriv ^^ 2) (\<lambda>z. f X (z, t)) z)
+            \<longlongrightarrow> (deriv ^^ 2) (\<lambda>z. jacobi_theta_00 z t) z) finite_sets_at_top"
+    proof (intro higher_deriv_complex_uniform_limit[OF ulim1])
+      have "(\<lambda>z. f X (z, t)) holomorphic_on ball z 1" for X
+        unfolding f_def case_prod_unfold by (intro holomorphic_intros) auto
+      thus "\<forall>\<^sub>F X in finite_sets_at_top. (\<lambda>z. f X (z, t)) holomorphic_on ball z 1"
+        by blast
+    qed (use \<open>Im t > 0\<close> in \<open>auto simp: B_def\<close>)
+    also have "(\<lambda>X. (deriv ^^ 2) (\<lambda>z. f X (z, t)) z) = (\<lambda>X. 4 * pi * \<i> * f'' X)"
+    proof
+      fix X :: "int set"
+      have "(deriv ^^ 2) (\<lambda>z. f X (z, t)) z = deriv (deriv (\<lambda>z. f X (z, t))) z"
+        by (simp add: numeral_2_eq_2)
+      also have "deriv (\<lambda>z. f X (z, t)) = f' X"
+      proof (rule ext, rule DERIV_imp_deriv)
+        fix z' :: complex
+        show "((\<lambda>z. f X (z, t)) has_field_derivative (f' X z')) (at z')" for z'
+          unfolding f_def f'_def prod.case 
+          by (auto intro!: derivative_eq_intros simp: mult_ac sum_distrib_left sum_distrib_right)
+      qed
+      also have "deriv (f' X) z = 4 * pi * \<i> * f'' X"
+      proof (rule DERIV_imp_deriv)
+        show "(f' X has_field_derivative (4 * pi * \<i> * f'' X)) (at z)"
+          unfolding f'_def f''_def 
+          by (auto intro!: derivative_eq_intros simp: mult_ac power2_eq_square sum_distrib_left)
+      qed
+      finally show "(deriv ^^ 2) (\<lambda>z. f X (z, t)) z = 4 * pi * \<i> * f'' X"  .
+    qed
+    finally show "((\<lambda>X. 4 * pi * \<i> * f'' X) \<longlongrightarrow> 
+                    (deriv ^^ 2) (\<lambda>z. jacobi_theta_00 z t) z) finite_sets_at_top"
+      by simp
+  qed auto
+qed
+
 
 (* TODO: transformations under the modular group *)
 
