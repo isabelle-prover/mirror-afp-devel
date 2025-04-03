@@ -1,6 +1,6 @@
 section \<open>$q$-analogues of basic combinatorial symbols\<close>
 theory Q_Analogues
-imports "HOL-Complex_Analysis.Complex_Analysis" Q_Library
+imports "HOL-Complex_Analysis.Complex_Analysis" 
 begin
 
 text \<open>
@@ -1307,7 +1307,7 @@ proof -
                qpochhammer (int k) (q ^ Suc (n - k)) q * qpochhammer (int (n - k)) q q"
     using qpochhammer_nat_add[of "n - k" k q q] assms by (simp add: of_nat_diff mult_ac)
   have [simp]: "q ^ k \<noteq> 1" if "k > 0" for k
-    using assms by (simp add: q_power_neq_1 that)
+    using assms power_eq_1_iff that by fastforce
   have "qbinomial q n k = (qpochhammer (int n) q q / qpochhammer (int n - int k) q q) / (qpochhammer (int k) q q)"
     by (subst qbinomial_conv_qpochhammer) (use assms in \<open>auto simp: field_simps\<close>)
   also have "\<dots> = qpochhammer (int k) (q ^ (n + 1 - k)) q / qpochhammer (int k) q q"
@@ -1323,7 +1323,7 @@ lemma norm_qbinomial_le:
 proof (cases "k \<le> n")
   case True
   have [simp]: "q ^ k \<noteq> 1" if "k > 0" for k
-    using assms(1) q_power_neq_1 that by blast
+    using assms(1) power_eq_1_iff that by force
   have "norm (qbinomial q n k) = 
           norm (qpochhammer (int k) (q ^ (Suc n - k)) q) / norm (qpochhammer (int k) q q)"
     by (subst qbinomial_conv_qpochhammer')
@@ -1347,7 +1347,7 @@ lemma norm_qbinomial_ge:
   shows   "norm (qbinomial q n k) \<ge> ((1 - norm q) / (1 + norm q)) ^ k"
 proof -
   have not_one: "q ^ k \<noteq> 1" if "k > 0" for k
-    using assms(1) q_power_neq_1 that by blast
+    using assms(1) power_eq_1_iff that by force
   have [simp]: "qpochhammer (int i) q q \<noteq> 0" for i
   proof
     assume "qpochhammer (int i) q q = 0"

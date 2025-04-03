@@ -489,7 +489,7 @@ lemma tendsto_qbinomial1:
   shows   "(\<lambda>n. qbinomial q n m) \<longlonglongrightarrow> 1 / qpochhammer m q q"
 proof -
   have not_one: "q ^ k \<noteq> 1" if "k > 0" for k :: nat
-    using q_power_neq_1[of q k] that q by simp
+    using power_eq_1_iff[of q k] that q by force
   have [simp]: "q \<noteq> 1"
     using q by auto
 
@@ -533,7 +533,7 @@ lemma tendsto_qbinomial2:
   shows   "((\<lambda>n. qbinomial q (f n) (g n)) \<longlongrightarrow> 1 / qpochhammer_inf q q) F"
 proof -
   have not_one: "q ^ k \<noteq> 1" if "k > 0" for k :: nat
-    using q_power_neq_1[of q k] that q by simp
+    using power_eq_1_iff[of q k] that q by force
   have [simp]: "q \<noteq> 1"
     using q by auto
 
