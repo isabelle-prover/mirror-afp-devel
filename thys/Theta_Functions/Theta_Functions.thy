@@ -1742,7 +1742,9 @@ proof -
   let ?F = "finite_subsets_at_top UNIV :: int set filter"
   define f where "f = (\<lambda>n (w,q). \<Sum>n\<in>n. to_nome (of_int n ^ 2 * q + 2 * of_int n * w))"
   have "uniform_limit (A \<times> B) f (\<lambda>(w,q). \<Sum>\<^sub>\<infinity>n. to_nome (of_int n ^ 2 * q + 2 * of_int n * w)) ?F"
-    using uniform_limit_compose'[OF uniform_limit_ramanujan_theta[OF AB'], of "A\<times>B" to_ab] AB_subset
+    using uniform_limit_compose'[OF uniform_limit_ramanujan_theta[OF AB'], 
+                                 where B= "A\<times>B" and h=to_ab] 
+      AB_subset
     by (simp add: to_ab_def case_prod_unfold to_nome_power_int power_int_mult_distrib f_def subset_iff
                   power_int_divide_distrib add_divide_distrib diff_divide_distrib of_int_div
                   ring_distribs power2_eq_square mult_ac flip: to_nome_add to_nome_diff)
@@ -1761,12 +1763,12 @@ proof -
 
   have ulim1: "uniform_limit (ball z 1) (\<lambda>n z. f n (z, t)) 
                  (\<lambda>z. jacobi_theta_00 z t) finite_sets_at_top"
-    using uniform_limit_compose'[OF ulim, of "ball z 1" "\<lambda>z. (z, t)"] assms
+    using uniform_limit_compose'[OF ulim, of "\<lambda>z. (z, t)" "ball z 1"] assms
     by (auto simp: B_def subset_iff image_def)
 
   have ulim2: "uniform_limit (ball t (Im t / 2)) 
                  (\<lambda>n t. f n (z, t)) (\<lambda>t. jacobi_theta_00 z t) finite_sets_at_top"
-    using uniform_limit_compose'[OF ulim, of "ball t (Im t / 2)" "\<lambda>t. (z, t)"]
+    using uniform_limit_compose'[OF ulim, of "\<lambda>t. (z, t)" "ball t (Im t / 2)"]
     by (auto simp: A_def subset_iff image_def)
 
   define f' where 
