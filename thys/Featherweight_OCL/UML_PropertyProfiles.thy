@@ -44,7 +44,7 @@
 
 
 theory UML_PropertyProfiles
-imports  UML_Logic
+imports  UML_Logic Featherweight_OCL_Assert
 begin
 
 section\<open>Property Profiles for OCL Operators via Isabelle Locales\<close>

@@ -44,8 +44,6 @@ chapter\<open>Formalization I: OCL Types and Core Definitions \label{sec:focl-ty
 
 theory    UML_Types
 imports   HOL.Transcendental
-keywords "Assert" :: thy_decl
-     and "Assert_local" :: thy_decl
 begin
 
 section\<open>Preliminaries\<close>
@@ -588,64 +586,6 @@ We do not formalize the representation map here; however, its principles are qui
 text\<open>Note, furthermore, that our construction of ``fully abstract types'' (no junk, no confusion)
 assures that the logical equality to be defined in the next section works correctly and comes
 as element of the ``lingua franca'', \ie{} HOL.\<close>
-
-(*<*)
-section\<open>Miscelleaneous: ML assertions\<close>
-
-text\<open>We introduce here a new command \emph{Assert} similar as \emph{value} for proving
- that the given term in argument is a true proposition. The difference with \emph{value} is that
-\emph{Assert} fails if the normal form of the term evaluated is not equal to @{term True}. 
-Moreover, in case \emph{value} could not normalize the given term, as another strategy of reduction
- we try to prove it with a single ``simp'' tactic.\<close>
-
-ML\<open>
-fun disp_msg title msg status = title ^ ": '" ^ msg ^ "' " ^ status
-
-fun lemma msg specification_theorem concl in_local thy =
-  SOME
-    (in_local (fn lthy =>
-           specification_theorem Thm.theoremK NONE (K I) Binding.empty_atts [] [] 
-             (Element.Shows [(Binding.empty_atts, [(concl lthy, [])])])
-             false lthy
-        |> Proof.global_terminal_proof
-             ((Method.Combinator ( Method.no_combinator_info
-                                 , Method.Then
-                                 , [Method.Basic (fn ctxt => SIMPLE_METHOD (asm_full_simp_tac ctxt 1))]),
-               (Position.none, Position.none)), NONE))
-              thy)
-  handle ERROR s =>
-    (warning s; writeln (disp_msg "KO" msg "failed to normalize"); NONE)
-
-fun outer_syntax_command command_spec theory in_local =
-  Outer_Syntax.command command_spec "assert that the given specification is true"
-    (Parse.term >> (fn elems_concl => theory (fn thy =>
-      case
-        lemma "nbe" (Specification.theorem true)
-          (fn lthy => 
-            let val expr = Nbe.dynamic_value lthy (Syntax.read_term lthy elems_concl)
-                val thy = Proof_Context.theory_of lthy
-                open HOLogic in
-            if Sign.typ_equiv thy (fastype_of expr, @{typ "prop"}) then
-              expr
-            else mk_Trueprop (mk_eq (@{term "True"}, expr))
-            end)
-          in_local
-          thy
-      of  NONE => 
-            let val attr_simp = "simp" in
-            case lemma attr_simp (Specification.theorem_cmd true) (K elems_concl) in_local thy of
-               NONE => raise (ERROR "Assertion failed")
-             | SOME thy => 
-                (writeln (disp_msg "OK" "simp" "finished the normalization");
-                 thy)
-            end
-        | SOME thy => thy)))
-
-val () = outer_syntax_command @{command_keyword Assert} Toplevel.theory Named_Target.theory_map
-val () = outer_syntax_command @{command_keyword Assert_local} (Toplevel.local_theory NONE NONE) I
-\<close>
-(*>*)
-
 
 end
 
