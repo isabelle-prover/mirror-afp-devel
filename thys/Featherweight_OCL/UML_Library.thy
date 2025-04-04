@@ -237,13 +237,20 @@ Assert "\<not> (\<tau> \<Turnstile> (Set{null::'a Integer} \<doteq> Set{}))"
 
 Assert "\<not> (\<tau> \<Turnstile> (Set{true} \<doteq> Set{false}))"
 Assert "\<not> (\<tau> \<Turnstile> (Set{true,true} \<doteq> Set{false}))"
-Assert "\<not> (\<tau> \<Turnstile> (Set{\<two>} \<doteq> Set{\<one>}))"
-Assert    "\<tau> \<Turnstile> (Set{\<two>,null,\<two>} \<doteq> Set{null,\<two>})"
-Assert    "\<tau> \<Turnstile> (Set{\<one>,null,\<two>} <> Set{null,\<two>})"
-Assert    "\<tau> \<Turnstile> (Set{Set{\<two>,null}} \<doteq> Set{Set{null,\<two>}})"
-Assert    "\<tau> \<Turnstile> (Set{Set{\<two>,null}} <> Set{Set{null,\<two>},null})"
-Assert    "\<tau> \<Turnstile> (Set{null}->select\<^sub>S\<^sub>e\<^sub>t(x | not x) \<doteq> Set{null})"
-Assert    "\<tau> \<Turnstile> (Set{null}->reject\<^sub>S\<^sub>e\<^sub>t(x | not x) \<doteq> Set{null})"
+lemma "\<not> (\<tau> \<Turnstile> (Set{\<two>} \<doteq> Set{\<one>}))"
+  by simp
+lemma "\<tau> \<Turnstile> (Set{\<two>,null,\<two>} \<doteq> Set{null,\<two>})"
+  by simp
+lemma "\<tau> \<Turnstile> (Set{\<one>,null,\<two>} <> Set{null,\<two>})"
+  by simp
+lemma "\<tau> \<Turnstile> (Set{Set{\<two>,null}} \<doteq> Set{Set{null,\<two>}})"
+  by simp
+lemma "\<tau> \<Turnstile> (Set{Set{\<two>,null}} <> Set{Set{null,\<two>},null})"
+  by simp
+lemma "\<tau> \<Turnstile> (Set{null}->select\<^sub>S\<^sub>e\<^sub>t(x | not x) \<doteq> Set{null})"
+  by simp
+lemma "\<tau> \<Turnstile> (Set{null}->reject\<^sub>S\<^sub>e\<^sub>t(x | not x) \<doteq> Set{null})"
+  by simp
 
 lemma     "const (Set{Set{\<two>,null}, invalid})" by(simp add: const_ss)
 

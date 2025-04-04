@@ -191,16 +191,6 @@ Assert   "(\<tau> \<Turnstile> (Pair{\<lambda>_. \<lfloor>\<lfloor>x\<rfloor>\<r
 Assert   "(\<tau> \<Turnstile> (Pair{\<lambda>_. \<lfloor>x\<rfloor>,\<lambda>_. \<lfloor>x\<rfloor>} \<doteq> Pair{\<lambda>_. \<lfloor>x\<rfloor>,\<lambda>_. \<lfloor>x\<rfloor>}))"
 *)
 
-instantiation Pair\<^sub>b\<^sub>a\<^sub>s\<^sub>e  :: (equal,equal)equal
-begin
-  definition "HOL.equal k l \<longleftrightarrow>  (k::('a::equal,'b::equal)Pair\<^sub>b\<^sub>a\<^sub>s\<^sub>e) =  l"
-  instance   by standard (rule equal_Pair\<^sub>b\<^sub>a\<^sub>s\<^sub>e_def)
-end
-
-lemma equal_Pair\<^sub>b\<^sub>a\<^sub>s\<^sub>e_code [code]:
-  "HOL.equal k (l::('a::{equal,null},'b::{equal,null})Pair\<^sub>b\<^sub>a\<^sub>s\<^sub>e) \<longleftrightarrow> Rep_Pair\<^sub>b\<^sub>a\<^sub>s\<^sub>e k = Rep_Pair\<^sub>b\<^sub>a\<^sub>s\<^sub>e l"
-  by (auto simp add: equal Pair\<^sub>b\<^sub>a\<^sub>s\<^sub>e.Rep_Pair\<^sub>b\<^sub>a\<^sub>s\<^sub>e_inject)
-
 Assert "\<tau> \<Turnstile> invalid .First() \<triangleq> invalid "
 Assert "\<tau> \<Turnstile> null .First() \<triangleq> invalid "
 Assert "\<tau> \<Turnstile> null .Second() \<triangleq> invalid .Second() "

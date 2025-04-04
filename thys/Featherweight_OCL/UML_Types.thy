@@ -43,7 +43,7 @@
 chapter\<open>Formalization I: OCL Types and Core Definitions \label{sec:focl-types}\<close>
 
 theory    UML_Types
-imports   HOL.Transcendental
+imports   Complex_Main
 begin
 
 section\<open>Preliminaries\<close>
@@ -383,7 +383,9 @@ text\<open>The core of an own type construction is done via a type
 
 typedef (overloaded) ('\<alpha>, '\<beta>) Pair\<^sub>b\<^sub>a\<^sub>s\<^sub>e = "{X::('\<alpha>::null \<times> '\<beta>::null) option option.
                                            X = bot \<or> X = null \<or> (fst\<lceil>\<lceil>X\<rceil>\<rceil> \<noteq> bot \<and> snd\<lceil>\<lceil>X\<rceil>\<rceil> \<noteq> bot)}"
-                            by (rule_tac x="bot" in exI, simp)
+  by (rule_tac x="bot" in exI, simp)
+
+setup_lifting type_definition_Pair\<^sub>b\<^sub>a\<^sub>s\<^sub>e
 
 text\<open>We ``carve'' out from the concrete type @{typ "('\<alpha>::null \<times> '\<beta>::null) option option"} 
 the new fully abstract type, which will not contain representations like @{term "\<lfloor>\<lfloor>(\<bottom>,a)\<rfloor>\<rfloor>"}
@@ -391,26 +393,44 @@ or @{term "\<lfloor>\<lfloor>(b,\<bottom>)\<rfloor>\<rfloor>"}. The type constuc
 identify these with @{term "invalid"}.
 \<close>
 
-instantiation   Pair\<^sub>b\<^sub>a\<^sub>s\<^sub>e  :: (null,null)bot
+instantiation Pair\<^sub>b\<^sub>a\<^sub>s\<^sub>e  :: (null, null) bot
 begin
-   definition bot_Pair\<^sub>b\<^sub>a\<^sub>s\<^sub>e_def: "(bot_class.bot :: ('a::null,'b::null) Pair\<^sub>b\<^sub>a\<^sub>s\<^sub>e) \<equiv> Abs_Pair\<^sub>b\<^sub>a\<^sub>s\<^sub>e None"
 
-   instance proof show "\<exists>x::('a,'b) Pair\<^sub>b\<^sub>a\<^sub>s\<^sub>e. x \<noteq> bot"
-                  apply(rule_tac x="Abs_Pair\<^sub>b\<^sub>a\<^sub>s\<^sub>e \<lfloor>None\<rfloor>" in exI)
-                  by(simp add: bot_Pair\<^sub>b\<^sub>a\<^sub>s\<^sub>e_def  Abs_Pair\<^sub>b\<^sub>a\<^sub>s\<^sub>e_inject  null_option_def bot_option_def)
-            qed
+lift_definition bot_Pair\<^sub>b\<^sub>a\<^sub>s\<^sub>e :: "('a, 'b) Pair\<^sub>b\<^sub>a\<^sub>s\<^sub>e" is None
+  by (simp add: bot_option_def)
+
+instance by (standard; transfer)
+  (auto simp add: null_option_def bot_option_def)
+
 end
 
-instantiation   Pair\<^sub>b\<^sub>a\<^sub>s\<^sub>e  :: (null,null)null
-begin
-   definition null_Pair\<^sub>b\<^sub>a\<^sub>s\<^sub>e_def: "(null::('a::null,'b::null) Pair\<^sub>b\<^sub>a\<^sub>s\<^sub>e) \<equiv> Abs_Pair\<^sub>b\<^sub>a\<^sub>s\<^sub>e \<lfloor> None \<rfloor>"
+lemma Abs_Pair\<^sub>b\<^sub>a\<^sub>s\<^sub>e_invalid_eq [simp]:
+  \<open>Abs_Pair\<^sub>b\<^sub>a\<^sub>s\<^sub>e (invalid \<tau>) = invalid \<tau>\<close>
+  by (simp add: invalid_def bot_Pair\<^sub>b\<^sub>a\<^sub>s\<^sub>e_def bot_option_def)
 
-   instance proof show "(null::('a::null,'b::null) Pair\<^sub>b\<^sub>a\<^sub>s\<^sub>e) \<noteq> bot"
-                  by(simp add: bot_Pair\<^sub>b\<^sub>a\<^sub>s\<^sub>e_def null_Pair\<^sub>b\<^sub>a\<^sub>s\<^sub>e_def Abs_Pair\<^sub>b\<^sub>a\<^sub>s\<^sub>e_inject 
-                               null_option_def bot_option_def)
-            qed
+instantiation Pair\<^sub>b\<^sub>a\<^sub>s\<^sub>e  :: (null, null) null
+begin
+
+lift_definition null_Pair\<^sub>b\<^sub>a\<^sub>s\<^sub>e :: "('a, 'b) Pair\<^sub>b\<^sub>a\<^sub>s\<^sub>e" is "\<lfloor>None\<rfloor>"
+  by (simp add: null_option_def bot_option_def)
+
+instance by (standard; transfer)
+  (auto simp add: null_option_def bot_option_def)
+
+
 end
 
+instantiation Pair\<^sub>b\<^sub>a\<^sub>s\<^sub>e  :: ("{null, equal}", "{null, equal}") equal
+begin
+
+lift_definition equal_Pair\<^sub>b\<^sub>a\<^sub>s\<^sub>e :: "('a, 'b) Pair\<^sub>b\<^sub>a\<^sub>s\<^sub>e \<Rightarrow> ('a, 'b) Pair\<^sub>b\<^sub>a\<^sub>s\<^sub>e \<Rightarrow> bool"
+  is "HOL.equal :: ('a \<times> 'b) option option \<Rightarrow> _"
+  .
+
+instance by (standard; transfer)
+  (simp add: equal)
+
+end
 
 text\<open>...  and lifting this type to the format of a valuation gives us:\<close>
 type_synonym    ('\<AA>,'\<alpha>,'\<beta>) Pair  = "('\<AA>, ('\<alpha>,'\<beta>) Pair\<^sub>b\<^sub>a\<^sub>s\<^sub>e) val"
@@ -511,30 +531,45 @@ typedef (overloaded) '\<alpha> Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e ="{X::('
                                         X = bot \<or> X = null \<or> (\<forall>x\<in>set \<lceil>\<lceil>X\<rceil>\<rceil>. x \<noteq> bot)}"
           by (rule_tac x="bot" in exI, simp)
 
-instantiation   Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e  :: (null)bot
+setup_lifting type_definition_Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e
+
+instantiation Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e :: (null) bot
 begin
 
-   definition bot_Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e_def: "(bot::('a::null) Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e) \<equiv> Abs_Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e None"
+lift_definition bot_Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e :: "'a Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e" is None
+  by (simp add: null_option_def bot_option_def)
 
-   instance proof show "\<exists>x::'a Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e. x \<noteq> bot"
-                  apply(rule_tac x="Abs_Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e \<lfloor>None\<rfloor>" in exI)
-                  by(auto simp:bot_Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e_def Abs_Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e_inject 
-                               null_option_def bot_option_def)
-            qed
+instance by (standard; transfer)
+  (auto simp add: null_option_def bot_option_def)
+
 end
 
+lemma Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e_invalid_eq [simp]:
+  \<open>Abs_Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e (invalid \<tau>) = invalid \<tau>\<close>
+  by (simp add: invalid_def bot_Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e_def bot_option_def)
 
-instantiation   Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e  :: (null)null
+instantiation Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e  :: (null) null
 begin
 
-   definition null_Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e_def: "(null::('a::null) Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e) \<equiv> Abs_Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e \<lfloor> None \<rfloor>"
+lift_definition null_Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e :: "'a Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e" is "\<lfloor>None\<rfloor>"
+  by (simp add: null_option_def bot_option_def)
 
-   instance proof show "(null::('a::null) Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e) \<noteq> bot"
-                  by(auto simp:bot_Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e_def null_Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e_def Abs_Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e_inject 
-                               null_option_def bot_option_def)
-            qed
+instance by (standard; transfer)
+  (auto simp add: null_option_def bot_option_def)
+
 end
 
+instantiation Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e :: ("{null, equal}") equal
+begin
+
+lift_definition equal_Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e :: "'a Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e \<Rightarrow> 'a Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e\<Rightarrow> bool"
+  is "HOL.equal :: 'a list option option \<Rightarrow> _"
+  .
+
+instance by (standard; transfer)
+  (simp add: equal)
+
+end
 
 text\<open>...  and lifting this type to the format of a valuation gives us:\<close>
 type_synonym    ('\<AA>,'\<alpha>) Sequence  = "('\<AA>, '\<alpha> Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e) val"
@@ -588,4 +623,3 @@ assures that the logical equality to be defined in the next section works correc
 as element of the ``lingua franca'', \ie{} HOL.\<close>
 
 end
-
