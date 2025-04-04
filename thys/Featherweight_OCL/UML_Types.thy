@@ -318,6 +318,11 @@ the space of valuation to @{typ "bool option option"}, \ie{} the Boolean base ty
 type_synonym Boolean\<^sub>b\<^sub>a\<^sub>s\<^sub>e  = "bool option option"
 type_synonym ('\<AA>)Boolean = "('\<AA>,Boolean\<^sub>b\<^sub>a\<^sub>s\<^sub>e) val"
 
+lemma Boolean\<^sub>b\<^sub>a\<^sub>s\<^sub>e_cases:
+  fixes b :: \<open>Boolean\<^sub>b\<^sub>a\<^sub>s\<^sub>e\<close>
+  obtains \<open>b = \<bottom>\<close> | \<open>b = \<lfloor>\<bottom>\<rfloor>\<close> | \<open>b = \<lfloor>\<lfloor>False\<rfloor>\<rfloor>\<close> | \<open>b = \<lfloor>\<lfloor>True\<rfloor>\<rfloor>\<close>
+  using that by (cases b) auto
+
 text\<open>Because of the previous class definitions, Isabelle type-inference establishes that
 @{typ "('\<AA>)Boolean"} lives actually both in the type class @{term bot} and @{term null};
 this type is sufficiently rich to contain at least these two elements.

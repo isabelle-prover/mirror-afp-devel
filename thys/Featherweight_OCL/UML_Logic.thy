@@ -596,13 +596,13 @@ done
 lemma OclAnd_null2[simp]: "\<And>\<tau>. X \<tau> \<noteq> false \<tau> \<Longrightarrow> X \<tau> \<noteq> bot \<tau> \<Longrightarrow> (X and null) \<tau> = null \<tau>"
   by(simp add: OclAnd_commute)
 
-lemma OclAnd_assoc: "(X and (Y and Z)) = (X and Y and Z)"
-  apply(rule ext, simp add: OclAnd_def)
-  apply(auto simp:true_def false_def null_def invalid_def
-             split: option.split option.split_asm
-                    bool.split bool.split_asm)
-done
-
+lemma OclAnd_assoc: "(X and (Y and Z)) = (X and Y and Z)"  (is \<open>?lhs = ?rhs\<close>)
+proof (rule ext)
+  fix p
+  show \<open>?lhs p = ?rhs p\<close>
+    by (cases \<open>X p\<close> rule: Boolean\<^sub>b\<^sub>a\<^sub>s\<^sub>e_cases; cases \<open>Y p\<close> rule: Boolean\<^sub>b\<^sub>a\<^sub>s\<^sub>e_cases; cases \<open>Z p\<close> rule: Boolean\<^sub>b\<^sub>a\<^sub>s\<^sub>e_cases)
+      (simp_all add: OclAnd_def)
+qed
 
 lemma OclOr1[simp]: "(invalid or true) = true"
 by(rule ext, simp add: OclOr_def OclNot_def OclAnd_def null_def invalid_def true_def false_def
