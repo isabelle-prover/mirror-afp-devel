@@ -6,7 +6,6 @@ chapter \<open>Unsigned words of 8 bits\<close>
 
 theory Uint8
   imports
-    "HOL-Library.Code_Target_Bit_Shifts"
     Uint_Common
     Code_Target_Word
     Code_Int_Integer_Conversion

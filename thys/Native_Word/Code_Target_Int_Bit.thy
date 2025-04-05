@@ -7,7 +7,6 @@ chapter \<open>Implementation of bit operations on int by target language operat
 theory Code_Target_Int_Bit
   imports
     "HOL-Library.Code_Target_Int"
-    "HOL-Library.Code_Target_Bit_Shifts"
     Code_Int_Integer_Conversion
 begin
 

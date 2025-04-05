@@ -5,8 +5,7 @@
 chapter \<open>Unsigned words of 64 bits\<close>
 
 theory Uint64
-  imports
-    "HOL-Library.Code_Target_Bit_Shifts"
+imports
     Uint_Common
     Code_Target_Word
     Code_Int_Integer_Conversion

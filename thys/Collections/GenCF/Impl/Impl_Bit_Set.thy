@@ -1,7 +1,6 @@
 section "Bitvector based Sets of Naturals"
 theory Impl_Bit_Set
   imports
-    "HOL-Library.Code_Target_Bit_Shifts"
     "../../Iterator/Iterator"
     "../Intf/Intf_Set"
 begin

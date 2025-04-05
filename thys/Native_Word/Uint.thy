@@ -7,7 +7,6 @@ chapter \<open>Unsigned words of default size\<close>
 
 theory Uint
   imports
-    "HOL-Library.Code_Target_Bit_Shifts"
     Uint_Common
     Code_Target_Word
     Code_Int_Integer_Conversion
