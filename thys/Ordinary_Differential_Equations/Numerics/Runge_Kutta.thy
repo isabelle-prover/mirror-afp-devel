@@ -99,10 +99,10 @@ proof (rule dense_eq0_I, cases)
   obtain d1 d3
   where d1: "gauge d1"
     "\<And>p. p tagged_division_of cbox a b \<Longrightarrow> d1 fine p \<Longrightarrow>
-      norm ((\<Sum>(x, k)\<in>p. content k *\<^sub>R f x) - I) < e"
+      norm ((\<Sum>(x, k)\<in>p. measure lborel k *\<^sub>R f x) - I) < e"
   and d3: "gauge d3"
     "\<And>p. p tagged_division_of cbox a b \<Longrightarrow> d3 fine p \<Longrightarrow>
-      norm ((\<Sum>(x, k)\<in>p. content k *\<^sub>R f x *\<^sub>R g x) - P) < e"
+      norm ((\<Sum>(x, k)\<in>p. measure lborel k *\<^sub>R f x *\<^sub>R g x) - P) < e"
     by auto
   define d where "d x = d1 x \<inter> d3 x" for x
   from d1(1) d3(1)
@@ -115,20 +115,20 @@ proof (rule dense_eq0_I, cases)
 
   from \<open>d fine p\<close> have "d1 fine p" "d3 fine p"
     by (auto simp: d_def [abs_def] fine_Int)
-  have f_less: "norm ((\<Sum>(x, k)\<in>p. content k *\<^sub>R f x) - I) < e"
+  have f_less: "norm ((\<Sum>(x, k)\<in>p. measure lborel k *\<^sub>R f x) - I) < e"
     (is "norm (?f - I) < _")
     by (rule d1(2)[OF p(1)]) fact
-  have "norm ((\<Sum>(x, k)\<in>p. content k *\<^sub>R f x *\<^sub>R g x) - P) < e"
+  have "norm ((\<Sum>(x, k)\<in>p. measure lborel k *\<^sub>R f x *\<^sub>R g x) - P) < e"
     (is "norm (?s - P) < _")
     by (rule d3(2)[OF p(1)]) fact
 
-  hence "dist (\<Sum>(x, k)\<in>p. content k *\<^sub>R f x *\<^sub>R g x) P < e"
+  hence "dist (\<Sum>(x, k)\<in>p. measure lborel k *\<^sub>R f x *\<^sub>R g x) P < e"
     by (simp add: dist_norm)
   also
-  let ?h = "(\<lambda>x k y. (content k * f x) *\<^sub>R y)"
+  let ?h = "(\<lambda>x k y. (measure lborel k * f x) *\<^sub>R y)"
   let ?s' = "\<lambda>y. sum (\<lambda>(x, k). ?h x k y) p"
   let ?g = "\<lambda>(x, k). g x"
-  let ?c = "\<lambda>(x, k). content k * f x"
+  let ?c = "\<lambda>(x, k). measure lborel k * f x"
   have Pi: "\<And>x. x \<in> p \<Longrightarrow> ?g x \<in> G" "\<And>x. x \<in> p \<Longrightarrow> ?c x \<ge> 0"
     using nonneg G p
     using tag_in_interval[OF p(1)]
@@ -137,11 +137,11 @@ proof (rule dense_eq0_I, cases)
     by (rule sum_by_parts_ivt[OF \<open>finite p\<close> \<open>convex G\<close> Pi])
       (auto simp: split_beta' scaleR_sum_left \<open>G \<noteq> {}\<close>)
   note this(2)
-  also have "(\<Sum>(x, k)\<in>p. (content k * f x) *\<^sub>R y) = ?f *\<^sub>R y"
+  also have "(\<Sum>(x, k)\<in>p. (measure lborel k * f x) *\<^sub>R y) = ?f *\<^sub>R y"
     by (auto simp: scaleR_left.sum intro!: sum.cong)
-  finally have "dist P ((\<Sum>(x, k)\<in>p. content k *\<^sub>R f x) *\<^sub>R y) \<le> e"
+  finally have "dist P ((\<Sum>(x, k)\<in>p. measure lborel k *\<^sub>R f x) *\<^sub>R y) \<le> e"
     by (simp add: dist_commute)
-  moreover have "dist (I *\<^sub>R y) ((\<Sum>(x, k)\<in>p. content k *\<^sub>R f x) *\<^sub>R y) \<le> norm y * e"
+  moreover have "dist (I *\<^sub>R y) ((\<Sum>(x, k)\<in>p. measure lborel k *\<^sub>R f x) *\<^sub>R y) \<le> norm y * e"
     using f_less
     by (auto simp add: dist_real_def mult.commute [of _ "norm y"]
       intro!: mult_left_mono)
@@ -518,7 +518,7 @@ next
   have Taylor: "((\<lambda>xa. (t + h - xa) *\<^sub>R f' (xa, x xa) (1, f xa (x xa))) has_integral x (t + h) - (x t + h *\<^sub>R f t (x t))) {t..t + h}"
     by (simp add: eval_nat_numeral diff_def)
 
-  have *: "h\<^sup>2 / 2 = content {t..t + h} *\<^sub>R (t + h) - (if t \<le> t + h then (t + h)\<^sup>2 / 2 - t\<^sup>2 / 2 else 0)"
+  have *: "h\<^sup>2 / 2 = measure lborel {t..t + h} *\<^sub>R (t + h) - (if t \<le> t + h then (t + h)\<^sup>2 / 2 - t\<^sup>2 / 2 else 0)"
     using \<open>0 \<le> h\<close>
     by (simp add: algebra_simps power2_eq_square divide_simps)
   have integral: "((-) (t + h) has_integral h\<^sup>2 / 2) (cbox t (t + h))"

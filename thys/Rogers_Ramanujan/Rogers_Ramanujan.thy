@@ -205,7 +205,7 @@ proof -
     case [simp]: False
     note q = \<open>norm q < 1\<close>
     have q_pow_neq_1: "q ^ n \<noteq> 1" if "n > 0" for n
-      using q_power_neq_1[of q n] that q by simp
+      using power_eq_1_iff q that by fastforce
     have [simp]: "(q; q)\<^sub>\<infinity> \<noteq> 0"
       using q qpochhammer_inf_nonzero by blast
     have [simp]: "qpochhammer (int j) q q \<noteq> 0" for j

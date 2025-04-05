@@ -1,7 +1,7 @@
 theory Simulation_Graphs
   imports
     "library/CTL"
-    "library/More_List"
+    "library/More_List1"
 begin
 
 lemmas [simp] = holds.simps

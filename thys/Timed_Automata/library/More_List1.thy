@@ -3,7 +3,7 @@ chapter Miscellaneous
 
 section \<open>Lists\<close>
 
-theory More_List
+theory More_List1
   imports
     Main
     Instantiate_Existentials
