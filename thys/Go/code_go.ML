@@ -194,12 +194,12 @@ fun print_go_stmt gen_stringer undefineds infinite_types tyco_syntax const_synta
       print_classrels classrels (print_plain_dict tyvars x)
     and print_plain_dict tyvars (Dict_Const (inst, args)) = let
         val needs_mono = true (* not (length args = 0)*)
-        val (typargs, dss) = split_list args
+        val (typargs, dictss) = split_list args
         val wrap = if needs_mono
           then fn head => apply_constraints tyvars head typargs
           else I
       in wrap ((Pretty.str o deresolve_inst) inst)
-         :: (if needs_mono then [((Pretty.enum "," "(" ")") o map (print_dict tyvars) o flat) dss] else []) end
+         :: (if needs_mono then [((Pretty.enum "," "(" ")") o map (print_dict tyvars) o flat) dictss] else []) end
     | print_plain_dict tyvars (Dict_Var { var, index, length, ... }) =
       [Pretty.str (if length = 1 then var ^ "_"
          else var ^ string_of_int (index + 1) ^ "_")]
@@ -216,7 +216,7 @@ fun print_go_stmt gen_stringer undefineds infinite_types tyco_syntax const_synta
       end
 
     fun print_app_expr const_syntax tyvars some_thm vars
-        (app as ({ sym, dicts, dom, range, typargs, ... }, ts)) = let
+        (app as ({ sym, dictss, dom, range, typargs, ... }, ts)) = let
         val k = length dom
         val l = args_num sym
       in if length ts = k then
@@ -224,7 +224,7 @@ fun print_go_stmt gen_stringer undefineds infinite_types tyco_syntax const_synta
           val is_constr = is_constr sym
           val is_sum_type = is_sum_type sym
           val is_class_param = is_class_param sym
-          val dict_args = map (print_dict tyvars) (flat dicts)
+          val dict_args = map (print_dict tyvars) (flat dictss)
           val typ = case snd (Code_Thingol.unfold_fun range) of
             name `%% _ => name | ITyVar name => name
           val allowed_infinite = List.exists (fn n => n = typ) infinite_types
@@ -530,10 +530,10 @@ fun print_go_stmt gen_stringer undefineds infinite_types tyco_syntax const_synta
         val sym = Class_Instance (target, class)
         val instance_name = deresolve_inst (target, class)
         val superinsts_fields = superinsts
-          |> map (fn (super, dicts) => block [
+          |> map (fn (super, dictss) => block [
               (Pretty.str o Long_Name.base_name o deresolve_classrel) (class, super),
               Pretty.str ":", Pretty.brk 1,
-              print_dict tyvars (Dict ([], Dict_Const ((tyco, super), dicts))), Pretty.str ","
+              print_dict tyvars (Dict ([], Dict_Const ((tyco, super), dictss))), Pretty.str ","
             ])
          fun print_classparam_instance ((classparam, (const as { dom, ... }, dom_length)), (thm, _)) =
            let
