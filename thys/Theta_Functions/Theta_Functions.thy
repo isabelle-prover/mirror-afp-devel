@@ -1620,7 +1620,6 @@ lemma analytic_jacobi_theta_01 [analytic_intros]:
   shows   "(\<lambda>z. jacobi_theta_01 (f z) (g z)) analytic_on A"
   unfolding jacobi_theta_01_def by (intro analytic_intros assms(1,2)) (use assms(3-) in auto)
 
-
 lemma tendsto_jacobi_theta_10 [tendsto_intros]:
   assumes "(f \<longlongrightarrow> w) F" "(g \<longlongrightarrow> q) F" "Im q > 0"
   shows   "((\<lambda>z. jacobi_theta_10 (f z) (g z)) \<longlongrightarrow> jacobi_theta_10 w q) F"
@@ -1823,7 +1822,7 @@ proof -
       proof (rule DERIV_imp_deriv)
         show "(f' X has_field_derivative (4 * pi * \<i> * f'' X)) (at z)"
           unfolding f'_def f''_def 
-          by (auto intro!: derivative_eq_intros simp: mult_ac power2_eq_square sum_distrib_left)
+          by (simp add: mult_ac power2_eq_square sum_distrib_left | rule derivative_eq_intros)+
       qed
       finally show "(deriv ^^ 2) (\<lambda>z. f X (z, t)) z = 4 * pi * \<i> * f'' X"  .
     qed

@@ -741,7 +741,7 @@ qed
 lemma jacobi_theta_00_0_left_nonzero:
   assumes "Im t > 0"
   shows   "jacobi_theta_00 0 t \<noteq> 0"
-  by (rule jacobi_theta_00_nonzero) (use assms in auto)
+  by (simp add: assms minus_in_Ints_iff jacobi_theta_00_nonzero)
 
 lemma jacobi_theta_nome_nonzero_complex:
   fixes q w :: complex
@@ -820,7 +820,7 @@ qed
 lemma jacobi_theta_nome_1_left_nonzero_complex:
   assumes "norm (q :: complex) < 1"
   shows   "jacobi_theta_nome 1 q \<noteq> 0"
-  by (rule jacobi_theta_nome_nonzero_complex) (use assms in auto)
+  by (simp add: assms minus_in_Ints_iff jacobi_theta_nome_nonzero_complex)
 
 lemma jacobi_theta_nome_1_left_nonzero_real:
   assumes "\<bar>q::real\<bar> < 1"
