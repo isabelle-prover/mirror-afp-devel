@@ -34,33 +34,48 @@ text \<open>
   rs_Union}. The rest is standard.
 \<close>
 
-interpretation set_access "\<lambda> as bs. rs.union bs (rs.from_list as)" rs.\<alpha> rs.memb "rs.empty ()"
-  by (unfold_locales, auto simp: rs.correct)
+interpretation set_access 
+  RBT_list_union 
+  RBT_keys
+  RBT_is_key 
+  RBT.empty
+proof ((unfold_locales; unfold o_def RBT_defs), goal_cases)
+  case (2 x t)
+  show ?case by (auto split: option.splits)
+next
+  case (1 as bs)
+  show ?case using RBT_from_list[of as] unfolding lookup_union lookup_bulkload RBT_keys_def
+    by auto
+qed auto
 
 abbreviation rm_succ :: "('a :: linorder \<times> 'a) list \<Rightarrow> 'a list \<Rightarrow> 'a list"
 where
   "rm_succ \<equiv> (\<lambda> r. let rm = elem_list_to_rm fst r in
-    (\<lambda> as. rs.to_list (rs_Union (map (\<lambda> a. rs.from_list (map snd (rm_set_lookup rm a))) as))))"
+    (\<lambda> as. RBT.keys (rs_Union (map (\<lambda> a. RBT_from_list (map snd (rm_set_lookup rm a))) as))))"
 
-definition rtrancl_rbt_impl :: "('a :: linorder \<times> 'a) list \<Rightarrow> 'a list \<Rightarrow> 'a rs"
+definition rtrancl_rbt_impl :: "('a :: linorder \<times> 'a) list \<Rightarrow> 'a list \<Rightarrow> ('a,unit)RBT.rbt"
 where
   "rtrancl_rbt_impl = rtrancl_impl rm_succ
-    (\<lambda> as bs. rs.union bs (rs.from_list as)) rs.memb (rs.empty ())" 
+    RBT_list_union RBT_is_key RBT.empty" 
 
-definition trancl_rbt_impl :: "('a :: linorder \<times> 'a) list \<Rightarrow> 'a list \<Rightarrow> 'a rs"
+definition trancl_rbt_impl :: "('a :: linorder \<times> 'a) list \<Rightarrow> 'a list \<Rightarrow> ('a,unit)RBT.rbt"
 where
   "trancl_rbt_impl = trancl_impl rm_succ
-    (\<lambda> as bs. rs.union bs (rs.from_list as)) rs.memb (rs.empty ())" 
+    RBT_list_union RBT_is_key RBT.empty" 
 
 lemma rtrancl_rbt_impl:
-  "rs.\<alpha> (rtrancl_rbt_impl r as) = {b. \<exists> a \<in> set as. (a,b) \<in> (set r)\<^sup>*}"
+  "RBT_keys (rtrancl_rbt_impl r as) = {b. \<exists> a \<in> set as. (a,b) \<in> (set r)\<^sup>*}"
   unfolding rtrancl_rbt_impl_def
-  by (rule set_access_gen.rtrancl_impl, unfold_locales, unfold Let_def, simp add: rs.correct elem_list_to_rm.rm_set_lookup, force)
+  apply (rule set_access_gen.rtrancl_impl, unfold_locales, unfold Let_def set_RBT_keys)
+  apply (simp add: elem_list_to_rm.rm_set_lookup)
+  by force
 
 lemma trancl_rbt_impl:
-  "rs.\<alpha> (trancl_rbt_impl r as) = {b. \<exists> a \<in> set as. (a,b) \<in> (set r)\<^sup>+}"
+  "RBT_keys (trancl_rbt_impl r as) = {b. \<exists> a \<in> set as. (a,b) \<in> (set r)\<^sup>+}"
   unfolding trancl_rbt_impl_def
-  by (rule set_access_gen.trancl_impl, unfold_locales, unfold Let_def, simp add: rs.correct elem_list_to_rm.rm_set_lookup, force)
+  apply (rule set_access_gen.trancl_impl, unfold_locales, unfold Let_def set_RBT_keys)
+  apply (simp add: elem_list_to_rm.rm_set_lookup)
+  by force
 
 subsection \<open>Precomputing Closures for Single States\<close>
 
@@ -70,30 +85,30 @@ text \<open>
   implemented as red black trees.
 \<close>
 
-definition memo_rbt_rtrancl :: "('a :: linorder \<times> 'a) list \<Rightarrow> ('a \<Rightarrow> 'a rs)"
+definition memo_rbt_rtrancl :: "('a :: linorder \<times> 'a) list \<Rightarrow> ('a \<Rightarrow> ('a,unit)RBT.rbt)"
 where
   "memo_rbt_rtrancl r =
     (let 
       tr = rtrancl_rbt_impl r;
-      rm = rm.to_map (map (\<lambda> a. (a, tr [a])) ((rs.to_list \<circ> rs.from_list \<circ> map fst) r))
+      rm = RBT.bulkload (map (\<lambda> a. (a, tr [a])) ((RBT.keys \<circ> RBT_from_list \<circ> map fst) r))
     in
-      (\<lambda>a. case rm.lookup a rm of 
-        None \<Rightarrow> rs.from_list [a] 
+      (\<lambda>a. case RBT.lookup rm a of 
+        None \<Rightarrow> RBT_from_list [a] 
       | Some as \<Rightarrow> as))"
 
 lemma memo_rbt_rtrancl:
-  "rs.\<alpha> (memo_rbt_rtrancl r a) = {b. (a, b) \<in> (set r)\<^sup>*}" (is "?l = ?r")
+  "RBT_keys (memo_rbt_rtrancl r a) = {b. (a, b) \<in> (set r)\<^sup>*}" (is "?l = ?r")
 proof -
-  let ?rm = "rm.to_map
-    (map (\<lambda>a. (a, rtrancl_rbt_impl r [a])) ((rs.to_list \<circ> rs.from_list \<circ> map fst) r))"
+  let ?rm = "RBT.bulkload
+    (map (\<lambda>a. (a, rtrancl_rbt_impl r [a])) ((RBT.keys \<circ> RBT_from_list \<circ> map fst) r))"
   show ?thesis
-  proof (cases "rm.lookup a ?rm")
+  proof (cases "RBT.lookup ?rm a")
     case None
     have one: "?l = {a}"
       unfolding memo_rbt_rtrancl_def Let_def None
-      by (simp add: rs.correct)
-    from None [unfolded rm.lookup_correct [OF rm.invar], simplified rm.correct map_of_eq_None_iff]
-    have a: "a \<notin> fst ` set r" by (simp add: rs.correct, force)
+      by auto
+    from None[simplified, unfolded map_of_eq_None_iff, simplified]
+    have a: "a \<notin> fst ` set r" by force
     {
       fix b
       assume "b \<in> ?r"
@@ -105,38 +120,37 @@ proof -
     then have "?r = {a}" by auto
     then show ?thesis unfolding one by simp
   next
-    case (Some as) 
-    have as: "rs.\<alpha> as = {b. (a,b) \<in> (set r)\<^sup>*}"
-      using map_of_SomeD [OF Some [unfolded rm.lookup_correct [OF rm.invar], simplified rm.correct]]
-        rtrancl_rbt_impl [of r "[a]"] by force
+    case (Some as)
+    from map_of_SomeD[OF Some[simplified], simplified] rtrancl_rbt_impl[of r "[a]"]
+    have as: "RBT_keys as = {b. (a,b) \<in> (set r)\<^sup>*}" by auto
     then show ?thesis unfolding memo_rbt_rtrancl_def Let_def Some by simp
   qed
 qed
 
-definition memo_rbt_trancl :: "('a :: linorder \<times> 'a) list \<Rightarrow> ('a \<Rightarrow> 'a rs)" 
+definition memo_rbt_trancl :: "('a :: linorder \<times> 'a) list \<Rightarrow> ('a \<Rightarrow> ('a,unit)RBT.rbt)" 
 where
   "memo_rbt_trancl r =
     (let
       tr = trancl_rbt_impl r;
-      rm = rm.to_map (map (\<lambda> a. (a, tr [a])) ((rs.to_list \<circ> rs.from_list \<circ> map fst) r))
+      rm = RBT.bulkload (map (\<lambda> a. (a, tr [a])) ((RBT.keys \<circ> RBT_from_list \<circ> map fst) r))
     in (\<lambda> a.
-      (case rm.lookup a rm of
-        None \<Rightarrow> rs.empty ()
+      (case RBT.lookup rm a of
+        None \<Rightarrow> RBT.empty
       | Some as \<Rightarrow> as)))"
 
 lemma memo_rbt_trancl:
-  "rs.\<alpha> (memo_rbt_trancl r a) = {b. (a, b) \<in> (set r)\<^sup>+}" (is "?l = ?r")
+  "RBT_keys (memo_rbt_trancl r a) = {b. (a, b) \<in> (set r)\<^sup>+}" (is "?l = ?r")
 proof -
-  let ?rm = "rm.to_map
-    (map (\<lambda> a. (a, trancl_rbt_impl r [a])) ((rs.to_list \<circ> rs.from_list \<circ> map fst) r))"
+  let ?rm = "RBT.bulkload
+    (map (\<lambda>a. (a, trancl_rbt_impl r [a])) ((RBT.keys \<circ> RBT_from_list \<circ> map fst) r))"
   show ?thesis
-  proof (cases "rm.lookup a ?rm")
+  proof (cases "RBT.lookup ?rm a")
     case None
     have one: "?l = {}"
       unfolding memo_rbt_trancl_def Let_def None
-      by (simp add: rs.correct)
-    from None [unfolded rm.lookup_correct [OF rm.invar], simplified rm.correct map_of_eq_None_iff]
-    have a: "a \<notin> fst ` set r" by (simp add: rs.correct, force)
+      by (auto simp: RBT_keys_def)
+    from None[simplified, unfolded map_of_eq_None_iff, simplified]
+    have a: "a \<notin> fst ` set r" by force
     {
       fix b
       assume "b \<in> ?r"
@@ -146,9 +160,8 @@ proof -
     then show ?thesis unfolding one by simp
   next
     case (Some as) 
-    have as: "rs.\<alpha> as = {b. (a,b) \<in> (set r)\<^sup>+}"
-      using map_of_SomeD [OF Some [unfolded rm.lookup_correct [OF rm.invar], simplified rm.correct]]
-        trancl_rbt_impl [of r "[a]"] by force
+    from map_of_SomeD[OF Some[simplified], simplified] trancl_rbt_impl[of r "[a]"]
+    have as: "RBT_keys as = {b. (a,b) \<in> (set r)\<^sup>+}" by auto
     then show ?thesis unfolding memo_rbt_trancl_def Let_def Some by simp
   qed
 qed

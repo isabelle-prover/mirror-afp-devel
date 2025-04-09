@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Transitive-Closure" = Collections +
+session "Transitive-Closure" = "HOL-Library" +
   options [timeout = 600]
   sessions
     Matrix
