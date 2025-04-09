@@ -4467,6 +4467,26 @@ host = [
 [maricf.homepages]
 maricf_homepage = "http://www.matf.bg.ac.rs/~filip"
 
+[markovic]
+name = "Jelena Markovic"
+orcid = "0009-0007-4797-2666"
+
+[markovic.emails]
+
+[markovic.emails.markovic_email]
+user = [
+  "jelena",
+  "markovic",
+]
+host = [
+  "matf",
+  "bg",
+  "ac",
+  "rs",
+]
+
+[markovic.homepages]
+
 [marmsoler]
 name = "Diego Marmsoler"
 

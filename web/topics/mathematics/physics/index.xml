@@ -4,6 +4,13 @@
     <title>Mathematics/Physics</title>
     <link>https://isa-afp.org/topics/mathematics/physics/</link>
     <description>AFP entries in Physics</description><item>
+  <title>Formalization of Gyrovector Spaces as Models of Hyperbolic Geometry and Special Relativity</title>
+  <link>https://isa-afp.org/entries/GyrovectorSpaces.html</link>
+  <pubDate>Sun, 16 Mar 2025 00:00:00 +0000</pubDate>
+  <description>Formalization of Gyrovector Spaces as Models of Hyperbolic Geometry and Special Relativity in the AFP</description>
+    <category>Mathematics/Physics</category>
+</item>
+<item>
   <title>The Halting Problem is Soluble in Malament-Hogarth Spacetimes</title>
   <link>https://isa-afp.org/entries/MHComputation.html</link>
   <pubDate>Sat, 29 Apr 2023 00:00:00 +0000</pubDate>
