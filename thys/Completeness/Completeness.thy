@@ -797,14 +797,12 @@ proof (induction A rule: measure_induct_rule [where f = size])
       by (metis list.map_comp map_X_map_counterAssign notEvContainsBothAtoms)
   next
     case (FConjP A B)
-    with assms show ?case
-      apply (simp add: evalPCounterModel counterEvalP_def list.map_comp)
-      by (meson evContainsConj less_add_Suc1 less_add_Suc2)
+    with assms sizelemmas show ?case
+      by (metis evContainsConj evalFConj sign.simps(1))
   next
     case (FConjN A B)
-    with assms show ?case
-      apply (clarsimp simp add: evalPCounterModel counterEvalP_def list.map_comp)
-      using evContainsDisj less_add_Suc1 less_add_Suc2 by blast
+    with assms sizelemmas show ?case
+      by (metis evContainsDisj evalFConj sign.simps(2))
   next
     case (FAllP A)
     with assms obtain v where "EV (contains f (0, instanceF v A))"
