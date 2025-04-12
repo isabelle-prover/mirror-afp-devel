@@ -1081,7 +1081,7 @@ qed
 lemma fixed_point_unique: "\<exists>!x\<in>iter_space. P x = x"
   using lipschitz lipschitz_bound_maxmin lipschitz_P T_def
       complete_UNIV iv_defined
-  by (intro banach_fix)
+  by (intro Banach_fix)
     (auto
       intro: P_self_mapping split_mult_pos_le
       intro!: closed_iter_space iter_space_notempty mult_nonneg_nonneg

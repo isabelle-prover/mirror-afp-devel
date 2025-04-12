@@ -2675,7 +2675,7 @@ lemma (in auto_ll_on_open) Poincare_Banach_fixed_pointI:
   assumes B: "B < 1"
   shows "\<exists>!x. x \<in> S \<and> poincare_map \<Sigma> x = x"
   using c _ B
-proof (rule banach_fix)
+proof (rule Banach_fix)
   from derivative_bounded c show "0 \<le> B"
     by (auto dest!: has_derivative_bounded_linear onorm_pos_le)
   from derivative_bounded show "poincare_map \<Sigma> ` S \<subseteq> S" by auto
