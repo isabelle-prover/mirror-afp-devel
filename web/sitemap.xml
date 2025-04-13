@@ -3,10 +3,16 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://isa-afp.org/entries/index.json</loc>
-    <lastmod>2025-04-12T00:00:00+00:00</lastmod>
+    <lastmod>2025-04-13T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/</loc>
-    <lastmod>2025-04-12T00:00:00+00:00</lastmod>
+    <lastmod>2025-04-13T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/First_Order_Rewriting.html</loc>
+    <lastmod>2025-04-13T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Proof_Terms_Term_Rewriting.html</loc>
+    <lastmod>2025-04-13T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/entries/Completeness_Decreasing_Diagrams_for_N1.html</loc>
     <lastmod>2025-04-12T00:00:00+00:00</lastmod>
@@ -3101,6 +3107,8 @@
   </url><url>
     <loc>https://isa-afp.org/authors/urban/</loc>
   </url><url>
+    <loc>https://isa-afp.org/authors/kirk/</loc>
+  </url><url>
     <loc>https://isa-afp.org/authors/lindenberg/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/rickmann/</loc>
@@ -3630,6 +3638,8 @@
     <loc>https://isa-afp.org/authors/nielsen/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/first_order_clause/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/sessions/first_order_rewriting/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/first_order_terms/</loc>
   </url><url>
@@ -4537,6 +4547,8 @@
   </url><url>
     <loc>https://isa-afp.org/sessions/marriage/</loc>
   </url><url>
+    <loc>https://isa-afp.org/authors/avanzini/</loc>
+  </url><url>
     <loc>https://isa-afp.org/authors/desharnais/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/hofmann/</loc>
@@ -5027,6 +5039,8 @@
   </url><url>
     <loc>https://isa-afp.org/sessions/proof_strategy_language/</loc>
   </url><url>
+    <loc>https://isa-afp.org/sessions/proof_terms_term_rewriting/</loc>
+  </url><url>
     <loc>https://isa-afp.org/sessions/prop_compactness/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/propositional_logic_class/</loc>
@@ -5264,6 +5278,8 @@
     <loc>https://isa-afp.org/authors/decova/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/tilscher/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/authors/winkler/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/boehme/</loc>
   </url><url>

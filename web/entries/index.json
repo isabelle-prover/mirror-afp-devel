@@ -1,5 +1,45 @@
 [
  {
+  "abstract": "This entry, derived from the Isabelle Formalization of Rewriting (IsaFoR), provides a formalized foundation for first-order term rewriting. This serves as the basis for the certifier CeTA, which is generated from IsaFoR and verifies termination, confluence, and complexity proofs for term rewrite systems (TRSs). This formalization covers fundamental results for term rewriting, as presented in the foundational textbooks by Baader and Nipkow and TeReSe. These include: Various types of rewrite steps, such as root, ground, parallel, and multi-steps. Special cases of TRSs, such as linear and left-linear TRSs. A definition of critical pairs and key results, including the critical pair lemma. Orthogonality, notably that weak orthogonality implies confluence. Executable versions of relevant definitions, such as parallel and multi-step rewriting. ",
+  "authors": [
+   "René Thiemann",
+   "Christian Sternagel",
+   "Christina Kirk",
+   "Martin Avanzini",
+   "Bertram Felgenhauer",
+   "Julian Nagele",
+   "Thomas Sternagel",
+   "Sarah Winkler",
+   "Akihisa Yamada"
+  ],
+  "link": "/entries/First_Order_Rewriting.html",
+  "shortname": "First_Order_Rewriting",
+  "title": "First-Order Rewriting",
+  "topic_links": [
+   "/topics/logic/rewriting/"
+  ],
+  "topics": [
+   "Logic/Rewriting"
+  ],
+  "year": "2025"
+ },
+ {
+  "abstract": "Proof terms are first-order terms that represent reductions in term rewriting. They were initially introduced in TeReSe by van Oostrom and de Vrijer to study equivalences of reductions in left-linear rewrite systems. This entry formalizes proof terms for multi-steps in first-order term rewrite systems. We define simple proof terms (i.e., without a composition operator) and establish the correspondence to multi-steps: each proof term represents a multi-step with the same source and target, and every multi-step can be expressed as a proof term. The formalization moreover includes operations on proof terms, such as residuals, join, and deletion and a method for labeling proof term sources to identify overlaps between two proof terms. This formalization is part of the Isabelle Formalization of Rewriting (IsaFoR) and is an essential component of several formalized confluence and commutation results involving multi-steps.",
+  "authors": [
+   "Christina Kirk"
+  ],
+  "link": "/entries/Proof_Terms_Term_Rewriting.html",
+  "shortname": "Proof_Terms_Term_Rewriting",
+  "title": "Proof Terms for Term Rewriting",
+  "topic_links": [
+   "/topics/logic/rewriting/"
+  ],
+  "topics": [
+   "Logic/Rewriting"
+  ],
+  "year": "2025"
+ },
+ {
   "abstract": "In Decreasing-Diagrams it was formally proved that the decreasing diagrams method is sound for proving confluence: if a binary relation $r$ has $LD$ property defined in Decreasing-Diagrams, then it has $CR$ property defined in Abstract-Rewriting.\nIn this formal theory it is proved that if the cardinality of $r$ does not exceed the first uncountable cardinal, then $r$ has $CR$ property if and only if $r$ has $LD$ property. As a consequence, the decreasing diagrams method is complete for proving confluence of relations of the least uncountable cardinality. A paper that describes details of this proof has been submitted to the FSCD 2025 conference.\n",
   "authors": [
    "Ievgen Ivanov"
