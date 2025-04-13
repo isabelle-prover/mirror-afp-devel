@@ -192,6 +192,23 @@ name = "Fahad Ausaf"
 [ausaf.homepages]
 ausaf_homepage = "http://kcl.academia.edu/FahadAusaf"
 
+[avanzini]
+name = "Martin Avanzini"
+
+[avanzini.emails]
+
+[avanzini.emails.avanzini_email]
+user = [
+  "martin",
+  "avanzini",
+]
+host = [
+  "inria",
+  "fr",
+]
+
+[avanzini.homepages]
+
 [avigad]
 name = "Jeremy Avigad"
 
@@ -3620,6 +3637,26 @@ host = [
 
 [kirchner.homepages]
 
+[kirk]
+name = "Christina Kirk"
+orcid = "0000-0002-8470-2485"
+
+[kirk.emails]
+
+[kirk.emails.kirk_email]
+user = [
+  "christina",
+  "kirk",
+]
+host = [
+  "student",
+  "uibk",
+  "ac",
+  "at",
+]
+
+[kirk.homepages]
+
 [klein]
 name = "Gerwin Klein"
 
@@ -5061,6 +5098,15 @@ host = [
   "uibk",
   "ac",
   "at",
+]
+
+[nagele.emails.nagele_email1]
+user = [
+  "mail",
+]
+host = [
+  "jnagele",
+  "net",
 ]
 
 [nagele.homepages]
@@ -8164,6 +8210,24 @@ host = [
 
 [wimmer.homepages]
 wimmer_homepage = "http://home.in.tum.de/~wimmers/"
+
+[winkler]
+name = "Sarah Winkler"
+orcid = "0000-0001-8114-3107"
+
+[winkler.emails]
+
+[winkler.emails.winkler_email]
+user = [
+  "winkler",
+]
+host = [
+  "inf",
+  "unibz",
+  "it",
+]
+
+[winkler.homepages]
 
 [wirt]
 name = "Kai Wirt"

@@ -1,0 +1,44 @@
+title = "Proof Terms for Term Rewriting"
+date = 2025-04-13
+topics = [
+  "Logic/Rewriting",
+]
+abstract = """
+Proof terms are first-order terms that represent reductions in term rewriting.
+They were initially introduced in TeReSe by van Oostrom and de Vrijer to study 
+equivalences of reductions in left-linear rewrite systems.
+This entry formalizes proof terms for multi-steps in first-order term rewrite systems.
+We define simple proof terms (i.e., without a composition operator) and establish
+the correspondence to multi-steps: each proof term represents a multi-step
+with the same source and target, and every multi-step can be expressed as a proof term.
+The formalization moreover includes operations on proof terms, such as residuals,
+join, and deletion and a method for labeling proof term sources to identify
+overlaps between two proof terms.
+<br>
+This formalization is part of the <i>Isabelle Formalization of Rewriting</i>
+(<a href=\"http://cl-informatik.uibk.ac.at/isafor/\">IsaFoR</a>) and is an essential component
+of several formalized confluence and commutation results
+involving multi-steps."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.kirk]
+email = "kirk_email"
+
+[contributors]
+
+[notify]
+kirk = "kirk_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = [
+  "10.1145/3573105.3575667",
+  "10.1145/3703595.3705881",
+]
+pubs = []

@@ -1,0 +1,66 @@
+title = "First-Order Rewriting"
+date = 2025-04-13
+topics = [
+  "Logic/Rewriting",
+]
+abstract = """
+This entry, derived from the <i>Isabelle Formalization of Rewriting</i>
+  (<a href=\"http://cl-informatik.uibk.ac.at/isafor/\">IsaFoR</a>), provides a formalized foundation for first-order
+  term rewriting. This serves as the basis for the certifier CeTA, which is
+  generated from IsaFoR and verifies termination, confluence, and complexity
+  proofs for term rewrite systems (TRSs).
+
+  This formalization covers fundamental results for term rewriting, as presented
+  in the foundational textbooks by Baader and Nipkow and TeReSe.
+  These include:
+  <ul>
+    <li>Various types of rewrite steps, such as root, ground, parallel, and multi-steps.</li>
+    <li>Special cases of TRSs, such as linear and left-linear TRSs.</li>
+    <li>A definition of critical pairs and key results, including the critical pair lemma.</li>
+    <li>Orthogonality, notably that weak orthogonality implies confluence.</li>
+    <li>Executable versions of relevant definitions, such as parallel and multi-step rewriting.</li>
+  </ul>"""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.thiemann]
+email = "thiemann_email"
+
+[authors.sternagel]
+email = "sternagel_email"
+
+[authors.kirk]
+email = "kirk_email"
+
+[authors.avanzini]
+email = "avanzini_email"
+
+[authors.felgenhauer]
+email = "felgenhauer_email1"
+
+[authors.nagele]
+email = "nagele_email1"
+
+[authors.sternagelt]
+
+[authors.winkler]
+email = "winkler_email"
+
+[authors.yamada]
+email = "yamada_email2"
+
+[contributors]
+
+[notify]
+thiemann = "thiemann_email"
+kirk = "kirk_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

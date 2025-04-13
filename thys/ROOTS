@@ -275,6 +275,7 @@ Finite_Fields
 Finitely_Generated_Abelian_Groups
 First_Order_Terms
 First_Order_Clause
+First_Order_Rewriting
 First_Welfare_Theorem
 Fishburn_Impossibility
 Fisher_Yates
@@ -641,6 +642,7 @@ Projective_Geometry
 Projective_Measurements
 Promela
 Proof_Strategy_Language
+Proof_Terms_Term_Rewriting
 PropResPI
 Propositional_Logic_Class
 Propositional_Proof_Systems

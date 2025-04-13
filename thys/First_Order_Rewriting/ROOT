@@ -1,0 +1,34 @@
+chapter AFP
+
+session First_Order_Rewriting = First_Order_Terms +
+  description "First-Order Rewriting"
+  options [timeout = 600]
+  sessions
+    Certification_Monads
+    "Transitive-Closure"
+  theories (*Preliminaries*)
+    FOR_Preliminaries
+    Option_Util
+    SubList
+  theories (*First Order Terms*)
+    Unification_More
+    Unifiers_More
+    Term_Impl
+  theories (*Abstract Rewriting*)
+    Abstract_Rewriting_Impl
+    Relation_Closure
+  theories 
+    Critical_Pairs
+  theories
+    Parallel_Rewriting
+  theories
+    Orthogonality
+  theories
+    Multistep
+  theories
+    Trs_Impl
+  theories
+    Rewrite_Relations_Impl
+  document_files
+    "root.tex"
+    "root.bib"
