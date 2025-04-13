@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Completeness of Decreasing Diagrams for the Least Uncountable Cardinality - Archive of Formal Proofs</title>
+    <meta name="description" content="Completeness of Decreasing Diagrams for the Least Uncountable Cardinality in the Archive of Formal Proofs" />
+    <meta property="og:description" content="Completeness of Decreasing Diagrams for the Least Uncountable Cardinality in the Archive of Formal Proofs" />
+
+  <meta property="og:title" content="Completeness of Decreasing Diagrams for the Least Uncountable Cardinality" />
+  <meta property="og:url" content="https://isa-afp.org/entries/Completeness_Decreasing_Diagrams_for_N1.html" />
+  <meta property="og:image" content="https://isa-afp.org/images/afp.png" />
+    <meta property="og:type" content="article" />
+  <link rel="stylesheet" type="text/css" href="../css/front.min.css">
+
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
+    
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [["$", "$"], ["\\(", "\\)"]]
+        },
+        processEscapes: true,
+        svg: {
+          fontCache: "global"
+        }
+      };
+    </script>
+    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
+    </script>
+    <script src="../js/entries.js"></script>
+
+  <script src="../js/obfuscate.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
+  <script src="../js/scroll-spy.js"></script>
+  <script src="../js/theory.js"></script>
+  <script src="../js/util.js"></script>
+    <script src="../js/header-search.js"></script>
+  <script src="../js/search-autocomplete.js"></script>
+</head>
+
+  <body class="mathjax_ignore">
+    <aside><div id="menu-toggle">
+  <input id="toggle" type="checkbox" />
+  <label for="toggle">
+    <span>menu</span>
+    <img src="../images/menu.svg" alt="Menu" />
+  </label>
+
+  <a href="../" class="logo-link">
+    <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
+  </a>
+
+  <nav id="menu">
+    <div>
+      <a href="../" class="logo-link">
+        <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
+      </a>
+      <ul>
+          <a href="../">
+            <li >Home</li>
+          </a>
+          <a href="../topics/">
+            <li >Topics</li>
+          </a>
+          <a href="../download/">
+            <li >Download</li>
+          </a>
+          <a href="../help/">
+            <li >Help</li>
+          </a>
+          <a href="../submission/">
+            <li >Submission</li>
+          </a>
+          <a href="../statistics/">
+            <li >Statistics</li>
+          </a>
+          <a href="../about/">
+            <li >About</li>
+          </a>
+      </ul>
+    </div>
+  </nav>
+</div>
+    </aside>
+
+    <div class="content entries"><header>
+    <form autocomplete="off" action="../search">
+      <div class="form-container">
+        <input id="search-input" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="button">
+          <img src="../images/search.svg" alt="Search" />
+        </button>
+        <datalist id="autocomplete">
+        </datalist>
+      </div>
+    </form>
+  <h1 ><span class='first'>C</span>ompleteness of <span class='first'>D</span>ecreasing <span class='first'>D</span>iagrams for the <span class='first'>L</span>east <span class='first'>U</span>ncountable <span class='first'>C</span>ardinality
+  </h1>
+  <div>
+      <p><a href="../authors/ivanov/">Ievgen Ivanov</a>
+      </p>
+      <p class="date">April 12, 2025</p>
+  </div>
+</header>
+      <div>
+  <main>
+
+    <h3>Abstract</h3>
+    <div class="abstract mathjax_process"><p>In <a href="https://isa-afp.org/entries/Decreasing-Diagrams.html">Decreasing-Diagrams</a> it was formally proved that the decreasing diagrams method is sound for proving confluence: if a binary relation $r$ has $LD$ property defined in <a href="https://isa-afp.org/entries/Decreasing-Diagrams.html">Decreasing-Diagrams</a>, then it has $CR$ property defined in <a href="https://isa-afp.org/entries/Abstract-Rewriting.html">Abstract-Rewriting</a>.</p>
+
+<p>In this formal theory it is proved that if the cardinality of $r$ does not exceed the first uncountable cardinal, then $r$ has $CR$ property if and only if $r$ has $LD$ property. As a consequence, the decreasing diagrams method is complete for proving confluence of relations of the least uncountable cardinality.<p>
+
+<p>A paper that describes details of this proof has been submitted to the FSCD 2025 conference.</p></div>
+
+    <h3>License</h3>
+    <div>
+        <a href="https://isa-afp.org/LICENSE.LGPL">GNU Lesser General Public License (LGPL)</a>
+    </div>
+      <h3>Topics</h3>
+      <ul>
+          <li><a href="../topics/logic/rewriting/">Logic/Rewriting</a></li>
+      </ul>
+      <h3>Related publications</h3>
+      <ul>
+        <li>Ivanov, I. (2024). <i>Formal proof of completeness of the decreasing diagrams method for proving confluence of relations of the least uncountable cardinality</i>. Zenodo. https://doi.org/10.5281/ZENODO.14254256</li>
+        <li>Ivanov, I. (2025). <i>Modified version of a formal proof of completeness of the decreasing diagrams method for proving confluence of relations of the least uncountable cardinality</i>. Zenodo. https://doi.org/10.5281/ZENODO.15190469</li>
+        <li>Ivanov, I. (2025). <i>Formalization of a confluent abstract rewriting system of the least uncountable cardinality outside of the class DCR2</i>. Zenodo. https://doi.org/10.5281/ZENODO.14740062</li>
+        <li>Ivanov, I. (2024). <i>Formalization of an abstract rewriting system in the class DCR3\DCR2</i>. Zenodo. https://doi.org/10.5281/ZENODO.11571490</li>
+        <li>V. van Oostrom. Confluence by decreasing diagrams. Theoretical computer science, Vol. 126, P. 259-280, 1994.</li>
+        <li>I. Ivanov. On Non-triviality of the Hierarchy of Decreasing Church-Rosser Abstract Rewriting Systems. Proceedings of the 13th International Workshop on Confluence, P. 30-35, 2024.</li>
+      </ul>
+      <h3>Session Completeness_Decreasing_Diagrams_for_N1</h3>
+      <ul>
+          <li><a href="../sessions/completeness_decreasing_diagrams_for_n1/#Finite_DCR_Hierarchy">Finite_DCR_Hierarchy</a></li>
+          <li><a href="../sessions/completeness_decreasing_diagrams_for_n1/#DCR3_Method">DCR3_Method</a></li>
+          <li><a href="../sessions/completeness_decreasing_diagrams_for_n1/#DCR3_Optimality">DCR3_Optimality</a></li>
+          <li><a href="../sessions/completeness_decreasing_diagrams_for_n1/#Main_Result_DCR_N1">Main_Result_DCR_N1</a></li>
+      </ul>
+
+    <div class="flex-wrap">
+        <div>
+          <h3>Depends on</h3>
+          <ul class="horizontal-list">
+              <li><a href="../entries/Abstract-Rewriting.html">Abstract Rewriting</a></li>
+              <li><a href="../entries/Decreasing-Diagrams.html">Decreasing Diagrams</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3>Similar entries</h3>
+          <ul class="horizontal-list">
+              <li><a href="../entries/Directed_Sets.html">Formalizing Results on Directed Sets</a></li>
+          </ul>
+        </div>
+    </div>
+  </main>
+
+  <nav class="links">
+    <a class="popup-button" href="#cite-popup">Cite</a>
+    <a class="popup-button" href="#download-popup">Download</a>
+    <h4>PDFs</h4>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Completeness_Decreasing_Diagrams_for_N1/outline.pdf">Proof outline</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Completeness_Decreasing_Diagrams_for_N1/document.pdf">Proof document</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Completeness_Decreasing_Diagrams_for_N1/session_graph.pdf">Dependencies</a>
+  </nav>
+
+  <div id="cite-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Cite</h2>
+      <a class="close" href="#">&times;</a>
+      <div>
+        <p style="display:none;" id="bibtex-filename">Completeness_Decreasing_Diagrams_for_N1-AFP</p>
+        <pre id="copy-text">@article{Completeness_Decreasing_Diagrams_for_N1-AFP,
+  author  = {Ievgen Ivanov},
+  title   = {Completeness of Decreasing Diagrams for the Least Uncountable Cardinality},
+  journal = {Archive of Formal Proofs},
+  month   = {April},
+  year    = {2025},
+  note    = {\url{https://isa-afp.org/entries/Completeness_Decreasing_Diagrams_for_N1.html},
+             Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
+        <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
+      </div>
+    </div>
+  </div>
+
+  <div id="download-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Download</h2>
+      <a class="close" href="#">&times;</a>
+      <a href="https://www.isa-afp.org/release/afp-Completeness_Decreasing_Diagrams_for_N1-current.tar.gz" download>
+        Download latest</a>
+    </div>
+  </div>
+      </div>
+    </div>
+  </body>
+</html>

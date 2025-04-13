@@ -3,10 +3,13 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://isa-afp.org/entries/index.json</loc>
-    <lastmod>2025-03-25T00:00:00+00:00</lastmod>
+    <lastmod>2025-04-12T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/</loc>
-    <lastmod>2025-03-25T00:00:00+00:00</lastmod>
+    <lastmod>2025-04-12T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Completeness_Decreasing_Diagrams_for_N1.html</loc>
+    <lastmod>2025-04-12T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/entries/Dilworth.html</loc>
     <lastmod>2025-03-25T00:00:00+00:00</lastmod>
@@ -3168,6 +3171,8 @@
   </url><url>
     <loc>https://isa-afp.org/sessions/completeness/</loc>
   </url><url>
+    <loc>https://isa-afp.org/sessions/completeness_decreasing_diagrams_for_n1/</loc>
+  </url><url>
     <loc>https://isa-afp.org/sessions/complex_bounded_operators/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/complex_bounded_operators_dependencies/</loc>
@@ -4007,6 +4012,8 @@
     <loc>https://isa-afp.org/authors/roessle/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/ieee_floating_point/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/authors/ivanov/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/ifc_tracking/</loc>
   </url><url>

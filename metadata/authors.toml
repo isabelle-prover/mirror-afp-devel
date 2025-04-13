@@ -2636,6 +2636,23 @@ host = [
 [haftmann.homepages]
 haftmann_homepage = "http://isabelle.in.tum.de/~haftmann"
 
+[hall]
+name = "Ray Hall"
+
+[hall.emails]
+
+[hall.emails.hall_email]
+user = [
+  "formal",
+  "scheme243",
+]
+host = [
+  "slmails",
+  "com",
+]
+
+[hall.homepages]
+
 [haslbeck]
 name = "Max W. Haslbeck"
 
@@ -3166,6 +3183,13 @@ host = [
 ]
 
 [ito.homepages]
+
+[ivanov]
+name = "Ievgen Ivanov"
+
+[ivanov.emails]
+
+[ivanov.homepages]
 
 [iwama]
 name = "Fumiya Iwama"

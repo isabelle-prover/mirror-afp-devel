@@ -1,5 +1,21 @@
 [
  {
+  "abstract": "In Decreasing-Diagrams it was formally proved that the decreasing diagrams method is sound for proving confluence: if a binary relation $r$ has $LD$ property defined in Decreasing-Diagrams, then it has $CR$ property defined in Abstract-Rewriting.\nIn this formal theory it is proved that if the cardinality of $r$ does not exceed the first uncountable cardinal, then $r$ has $CR$ property if and only if $r$ has $LD$ property. As a consequence, the decreasing diagrams method is complete for proving confluence of relations of the least uncountable cardinality. A paper that describes details of this proof has been submitted to the FSCD 2025 conference.\n",
+  "authors": [
+   "Ievgen Ivanov"
+  ],
+  "link": "/entries/Completeness_Decreasing_Diagrams_for_N1.html",
+  "shortname": "Completeness_Decreasing_Diagrams_for_N1",
+  "title": "Completeness of Decreasing Diagrams for the Least Uncountable Cardinality",
+  "topic_links": [
+   "/topics/logic/rewriting/"
+  ],
+  "topics": [
+   "Logic/Rewriting"
+  ],
+  "year": "2025"
+ },
+ {
   "abstract": "A chain is defined as a totally ordered subset of a partially ordered set. A chain cover refers to a collection of chains of a partially ordered set whose union equals the entire set. A chain decomposition is a chain cover consisting of pairwise disjoint sets. An antichain is a subset of elements of a partially ordered set in which no two elements are comparable.\nIn 1950, Dilworth proved that in any finite partially ordered set, the cardinality of a largest antichain equals the cardinality of a smallest chain decomposition.\nIn this paper, we formalise a proof of the theorem above, also known as Dilworth's theorem, based on a proof by Perles (1963). We draw on the formalisation of Dilworth's theorem in Coq by Abhishek Kr. Singh, and depend on the AFP entry containing formalisation of minimal and maximal elements in a set by Martin Desharnais .\n",
   "authors": [
    "Vivek Soorya Maadoori",
