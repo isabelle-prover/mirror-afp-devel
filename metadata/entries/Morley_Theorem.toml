@@ -1,0 +1,38 @@
+title = "Morley's Theorem"
+date = 2025-03-07
+topics = [
+  "Mathematics",
+]
+abstract = """
+Morley's trisector theorem states that in any triangle, 
+the three points of intersection of the adjacent angle trisectors 
+form an equilateral triangle, 
+called the first Morley triangle or simply the Morley triangle. This theorem is
+listed in the 100 theorem list.
+
+In this theory, we define some basics elements on complex geometry such as
+axial symmetry, rotations. We also define basic property of congruent triangles in the
+complex field following the model already presented in the afp.
+In addition we demonstrate sines law in the complex context.
+
+Finally we prove the Morley theorem using Alain Connes's proof."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.puyobro]
+email = "puyobro_email"
+
+[contributors]
+
+[notify]
+puyobro = "puyobro_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

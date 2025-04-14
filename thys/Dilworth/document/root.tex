@@ -1,0 +1,78 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+
+% further packages required for unusual symbols (see also
+% isabellesym.sty), use only when needed
+
+\usepackage{amssymb}
+  %for \<leadsto>, \<box>, \<diamond>, \<sqsupset>, \<mho>, \<Join>,
+  %\<lhd>, \<lesssim>, \<greatersim>, \<lessapprox>, \<greaterapprox>,
+  %\<triangleq>, \<yen>, \<lozenge>
+
+%\usepackage{eurosym}
+  %for \<euro>
+
+%\usepackage[only,bigsqcap,bigparallel,fatsemi,interleave,sslash]{stmaryrd}
+  %for \<Sqinter>, \<Parallel>, \<Zsemi>, \<Parallel>, \<sslash>
+
+%\usepackage{eufrak}
+  %for \<AA> ... \<ZZ>, \<aa> ... \<zz> (also included in amssymb)
+
+%\usepackage{textcomp}
+  %for \<onequarter>, \<onehalf>, \<threequarters>, \<degree>, \<cent>,
+  %\<currency>
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+% for uniform font size
+%\renewcommand{\isastyle}{\isastyleminor}
+
+
+\begin{document}
+
+\title{Formal Proof of Dilworth's Theorem}
+\author{Vivek Soorya Maadoori \and S. M. Meesum \and Shiv Pillai \and T. V. H. Prathamesh \and Aditya Swami}
+
+\maketitle
+
+\begin{abstract}
+A \emph{chain} is defined as a totally ordered subset of a partially ordered set. A \emph{chain cover} refers to 
+a collection of chains of a partially ordered set whose union equals the entire set. A \emph{chain 
+decomposition} is a chain cover consisting of pairwise disjoint sets. An \emph{antichain} is a subset of
+ elements of a partially ordered set in which no two elements are comparable.
+
+In 1950, Dilworth proved that in any finite partially ordered set, the cardinality of a  largest antichain equals the cardinality of a smallest chain decomposition.\cite{dilworth1950}
+
+
+In this paper, we formalise a proof of the theorem above, also known as \emph{Dilworth's theorem}, based 
+on a proof by Perles (1963) \cite{perles1963proof}. Our formalisation draws on the formalisation of Dilworth's theorem 
+for chain covers in Coq by Abhishek Kr. Singh \cite{singh2017fully}, and builds on the AFP entry containing formalisation of minimal and maximal elements in a set by Martin Desharnais \cite{Min_Max_Least_Greatest-AFP}. Our formalisation extends the prior work in Coq by including a formal proof of  Dilworth's theorem for chain decomposition.
+\end{abstract}
+
+\tableofcontents
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+% generated text of all theories
+\input{session}
+
+\section*{Acknowledgement}
+We would like thank Divakaran D. for valuable suggestions.
+
+% optional bibliography
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

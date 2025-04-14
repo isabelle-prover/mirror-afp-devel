@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Shiv Pillai</title>
+    <link>https://isa-afp.org/authors/pillai/</link>
+    <description>AFP entries of Shiv Pillai</description><item>
+  <title>Formal Proof of Dilworth&#39;s Theorem</title>
+  <link>https://isa-afp.org/entries/Dilworth.html</link>
+  <pubDate>Tue, 25 Mar 2025 00:00:00 +0000</pubDate>
+  <description>Formal Proof of Dilworth&#39;s Theorem in the AFP</description>
+    <category>Mathematics/Order</category>
+    <category>Mathematics/Combinatorics</category>
+</item>
+
+  </channel>
+</rss>

@@ -4,6 +4,49 @@
     <title>Archive of Formal Proofs</title>
     <link>https://isa-afp.org/</link>
     <description>Formal developments in the AFP</description><item>
+  <title>Proof Terms for Term Rewriting</title>
+  <link>https://isa-afp.org/entries/Proof_Terms_Term_Rewriting.html</link>
+  <pubDate>Sun, 13 Apr 2025 00:00:00 +0000</pubDate>
+  <description>Proof Terms for Term Rewriting in the AFP</description>
+    <category>Logic/Rewriting</category>
+</item>
+<item>
+  <title>First-Order Rewriting</title>
+  <link>https://isa-afp.org/entries/First_Order_Rewriting.html</link>
+  <pubDate>Sun, 13 Apr 2025 00:00:00 +0000</pubDate>
+  <description>First-Order Rewriting in the AFP</description>
+    <category>Logic/Rewriting</category>
+</item>
+<item>
+  <title>Completeness of Decreasing Diagrams for the Least Uncountable Cardinality</title>
+  <link>https://isa-afp.org/entries/Completeness_Decreasing_Diagrams_for_N1.html</link>
+  <pubDate>Sat, 12 Apr 2025 00:00:00 +0000</pubDate>
+  <description>Completeness of Decreasing Diagrams for the Least Uncountable Cardinality in the AFP</description>
+    <category>Logic/Rewriting</category>
+</item>
+<item>
+  <title>Formal Proof of Dilworth&#39;s Theorem</title>
+  <link>https://isa-afp.org/entries/Dilworth.html</link>
+  <pubDate>Tue, 25 Mar 2025 00:00:00 +0000</pubDate>
+  <description>Formal Proof of Dilworth&#39;s Theorem in the AFP</description>
+    <category>Mathematics/Order</category>
+    <category>Mathematics/Combinatorics</category>
+</item>
+<item>
+  <title>Formalization of Gyrovector Spaces as Models of Hyperbolic Geometry and Special Relativity</title>
+  <link>https://isa-afp.org/entries/GyrovectorSpaces.html</link>
+  <pubDate>Sun, 16 Mar 2025 00:00:00 +0000</pubDate>
+  <description>Formalization of Gyrovector Spaces as Models of Hyperbolic Geometry and Special Relativity in the AFP</description>
+    <category>Mathematics/Physics</category>
+</item>
+<item>
+  <title>Morley&#39;s Theorem</title>
+  <link>https://isa-afp.org/entries/Morley_Theorem.html</link>
+  <pubDate>Fri, 07 Mar 2025 00:00:00 +0000</pubDate>
+  <description>Morley&#39;s Theorem in the AFP</description>
+    <category>Mathematics</category>
+</item>
+<item>
   <title>Language Partitioning for Mission-time Linear Temporal Logic</title>
   <link>https://isa-afp.org/entries/Mission_Time_LTL_Language_Partition.html</link>
   <pubDate>Mon, 03 Mar 2025 00:00:00 +0000</pubDate>

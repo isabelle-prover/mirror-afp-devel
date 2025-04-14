@@ -4,6 +4,13 @@
     <title>René Thiemann</title>
     <link>https://isa-afp.org/authors/thiemann/</link>
     <description>AFP entries of René Thiemann</description><item>
+  <title>First-Order Rewriting</title>
+  <link>https://isa-afp.org/entries/First_Order_Rewriting.html</link>
+  <pubDate>Sun, 13 Apr 2025 00:00:00 +0000</pubDate>
+  <description>First-Order Rewriting in the AFP</description>
+    <category>Logic/Rewriting</category>
+</item>
+<item>
   <title>A Preprocessor for Linear Diophantine Equalities and Inequalities</title>
   <link>https://isa-afp.org/entries/Linear_Diophantine_Preprocessor.html</link>
   <pubDate>Thu, 13 Jun 2024 00:00:00 +0000</pubDate>

@@ -28,6 +28,10 @@
   "name": "Achim D. Brucker"
  },
  {
+  "link": "/authors/swami/",
+  "name": "Aditya Swami"
+ },
+ {
   "link": "/authors/mateo/",
   "name": "Adrián Doña Mateo"
  },
@@ -346,6 +350,10 @@
  {
   "link": "/authors/urban/",
   "name": "Christian Urban"
+ },
+ {
+  "link": "/authors/kirk/",
+  "name": "Christina Kirk"
  },
  {
   "link": "/authors/lindenberg/",
@@ -816,6 +824,10 @@
   "name": "Ian Roessle"
  },
  {
+  "link": "/authors/ivanov/",
+  "name": "Ievgen Ivanov"
+ },
+ {
   "link": "/authors/nemeti/",
   "name": "István Németi"
  },
@@ -886,6 +898,10 @@
  {
   "link": "/authors/ketland/",
   "name": "Jeffrey Ketland"
+ },
+ {
+  "link": "/authors/markovic/",
+  "name": "Jelena Markovic"
  },
  {
   "link": "/authors/sauer/",
@@ -1262,6 +1278,10 @@
  {
   "link": "/authors/tasch/",
   "name": "Markus Tasch"
+ },
+ {
+  "link": "/authors/avanzini/",
+  "name": "Martin Avanzini"
  },
  {
   "link": "/authors/desharnais/",
@@ -1700,6 +1720,10 @@
   "name": "Sarah Tilscher"
  },
  {
+  "link": "/authors/winkler/",
+  "name": "Sarah Winkler"
+ },
+ {
   "link": "/authors/boehme/",
   "name": "Sascha Böhme"
  },
@@ -1746,6 +1770,10 @@
  {
   "link": "/authors/ying/",
   "name": "Shenggang Ying"
+ },
+ {
+  "link": "/authors/pillai/",
+  "name": "Shiv Pillai"
  },
  {
   "link": "/authors/song/",
@@ -1856,12 +1884,20 @@
   "name": "Sven Linker"
  },
  {
+  "link": "/authors/meesum/",
+  "name": "Syed Mohammad Meesum"
+ },
+ {
   "link": "/authors/grewe/",
   "name": "Sylvia Grewe"
  },
  {
   "link": "/authors/makarios/",
   "name": "T. J. M. Makarios"
+ },
+ {
+  "link": "/authors/prathamesht/",
+  "name": "T. V. H. Prathamesh"
  },
  {
   "link": "/authors/prathamesh/",
@@ -1998,6 +2034,10 @@
  {
   "link": "/authors/preoteasa/",
   "name": "Viorel Preoteasa"
+ },
+ {
+  "link": "/authors/maadoori/",
+  "name": "Vivek Soorya Maadoori"
  },
  {
   "link": "/authors/guttmann/",

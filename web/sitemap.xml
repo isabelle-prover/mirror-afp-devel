@@ -3,10 +3,28 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://isa-afp.org/entries/index.json</loc>
-    <lastmod>2025-03-03T00:00:00+00:00</lastmod>
+    <lastmod>2025-04-13T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/</loc>
-    <lastmod>2025-03-03T00:00:00+00:00</lastmod>
+    <lastmod>2025-04-13T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/First_Order_Rewriting.html</loc>
+    <lastmod>2025-04-13T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Proof_Terms_Term_Rewriting.html</loc>
+    <lastmod>2025-04-13T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Completeness_Decreasing_Diagrams_for_N1.html</loc>
+    <lastmod>2025-04-12T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Dilworth.html</loc>
+    <lastmod>2025-03-25T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/GyrovectorSpaces.html</loc>
+    <lastmod>2025-03-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Morley_Theorem.html</loc>
+    <lastmod>2025-03-07T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/entries/Mission_Time_LTL_Language_Partition.html</loc>
     <lastmod>2025-03-03T00:00:00+00:00</lastmod>
@@ -2725,6 +2743,8 @@
   </url><url>
     <loc>https://isa-afp.org/sessions/adaptive_state_counting/</loc>
   </url><url>
+    <loc>https://isa-afp.org/authors/swami/</loc>
+  </url><url>
     <loc>https://isa-afp.org/authors/mateo/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/ads_functor/</loc>
@@ -3087,6 +3107,8 @@
   </url><url>
     <loc>https://isa-afp.org/authors/urban/</loc>
   </url><url>
+    <loc>https://isa-afp.org/authors/kirk/</loc>
+  </url><url>
     <loc>https://isa-afp.org/authors/lindenberg/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/rickmann/</loc>
@@ -3156,6 +3178,8 @@
     <loc>https://isa-afp.org/sessions/complete_non_orders/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/completeness/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/sessions/completeness_decreasing_diagrams_for_n1/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/complex_bounded_operators/</loc>
   </url><url>
@@ -3441,6 +3465,8 @@
   </url><url>
     <loc>https://isa-afp.org/sessions/dijkstra_shortest_path/</loc>
   </url><url>
+    <loc>https://isa-afp.org/sessions/dilworth/</loc>
+  </url><url>
     <loc>https://isa-afp.org/authors/vytiniotis/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/diophantine_eqns_lin_hom/</loc>
@@ -3612,6 +3638,8 @@
     <loc>https://isa-afp.org/authors/nielsen/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/first_order_clause/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/sessions/first_order_rewriting/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/first_order_terms/</loc>
   </url><url>
@@ -3821,6 +3849,8 @@
   </url><url>
     <loc>https://isa-afp.org/authors/grov/</loc>
   </url><url>
+    <loc>https://isa-afp.org/sessions/gyrovectorspaces/</loc>
+  </url><url>
     <loc>https://isa-afp.org/authors/murao/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/hahn_jordan_decomposition/</loc>
@@ -3993,6 +4023,8 @@
   </url><url>
     <loc>https://isa-afp.org/sessions/ieee_floating_point/</loc>
   </url><url>
+    <loc>https://isa-afp.org/authors/ivanov/</loc>
+  </url><url>
     <loc>https://isa-afp.org/sessions/ifc_tracking/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/ill/</loc>
@@ -4120,6 +4152,8 @@
     <loc>https://isa-afp.org/authors/esparza/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/ketland/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/authors/markovic/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/sauer/</loc>
   </url><url>
@@ -4513,6 +4547,8 @@
   </url><url>
     <loc>https://isa-afp.org/sessions/marriage/</loc>
   </url><url>
+    <loc>https://isa-afp.org/authors/avanzini/</loc>
+  </url><url>
     <loc>https://isa-afp.org/authors/desharnais/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/hofmann/</loc>
@@ -4710,6 +4746,8 @@
     <loc>https://isa-afp.org/sessions/monomorphic_monad/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/more_lazylists/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/sessions/morley_theorem/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/schou/</loc>
   </url><url>
@@ -5001,6 +5039,8 @@
   </url><url>
     <loc>https://isa-afp.org/sessions/proof_strategy_language/</loc>
   </url><url>
+    <loc>https://isa-afp.org/sessions/proof_terms_term_rewriting/</loc>
+  </url><url>
     <loc>https://isa-afp.org/sessions/prop_compactness/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/propositional_logic_class/</loc>
@@ -5239,6 +5279,8 @@
   </url><url>
     <loc>https://isa-afp.org/authors/tilscher/</loc>
   </url><url>
+    <loc>https://isa-afp.org/authors/winkler/</loc>
+  </url><url>
     <loc>https://isa-afp.org/authors/boehme/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/satsolververification/</loc>
@@ -5319,6 +5361,8 @@
     <loc>https://isa-afp.org/sessions/shadow_sc_dom/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/ying/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/authors/pillai/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/shivers-cfa/</loc>
   </url><url>
@@ -5508,6 +5552,8 @@
   </url><url>
     <loc>https://isa-afp.org/authors/linker/</loc>
   </url><url>
+    <loc>https://isa-afp.org/authors/meesum/</loc>
+  </url><url>
     <loc>https://isa-afp.org/authors/grewe/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/symmetric_polynomials/</loc>
@@ -5521,6 +5567,8 @@
     <loc>https://isa-afp.org/sessions/szpilrajn/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/makarios/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/authors/prathamesht/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/prathamesh/</loc>
   </url><url>
@@ -5707,6 +5755,8 @@
     <loc>https://isa-afp.org/authors/preoteasa/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/virtual_substitution/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/authors/maadoori/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/volpanosmith/</loc>
   </url><url>

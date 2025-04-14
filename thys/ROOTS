@@ -142,6 +142,7 @@ Comparison_Sort_Lower_Bound
 Compiling-Exceptions-Correctly
 Complete_Non_Orders
 Completeness
+Completeness_Decreasing_Diagrams_for_N1
 Complex_Bounded_Operators
 Complex_Geometry
 Complx
@@ -208,6 +209,7 @@ Differential_Privacy
 DigitsInBase
 Digit_Expansions
 Dijkstra_Shortest_Path
+Dilworth
 Diophantine_Eqns_Lin_Hom
 Directed_Sets
 Dirichlet_L
@@ -273,6 +275,7 @@ Finite_Fields
 Finitely_Generated_Abelian_Groups
 First_Order_Terms
 First_Order_Clause
+First_Order_Rewriting
 First_Welfare_Theorem
 Fishburn_Impossibility
 Fisher_Yates
@@ -332,6 +335,7 @@ Groebner_Macaulay
 Gromov_Hyperbolicity
 Grothendieck_Schemes
 Group-Ring-Module
+GyrovectorSpaces
 HOL-CSP
 HOL-CSPM
 HOL-CSP_OpSem
@@ -528,6 +532,7 @@ MonoBoolTranAlgebra
 MonoidalCategory
 Monomorphic_Monad
 More_LazyLists
+Morley_Theorem
 MuchAdoAboutTwo
 Multi_Party_Computation
 Multirelations
@@ -637,6 +642,7 @@ Projective_Geometry
 Projective_Measurements
 Promela
 Proof_Strategy_Language
+Proof_Terms_Term_Rewriting
 PropResPI
 Propositional_Logic_Class
 Propositional_Proof_Systems

@@ -1,0 +1,73 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+
+\usepackage{amssymb}
+\usepackage{authblk}
+
+%\usepackage{eurosym}
+
+%\usepackage[only,bigsqcap,bigparallel,fatsemi,interleave,sslash]{stmaryrd}
+
+%\usepackage{eufrak}
+
+%\usepackage{textcomp}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+\newcommand\isafor{\textsf{Isa\kern-0.15exF\kern-0.15exo\kern-0.15exR}}
+\newcommand\ceta{\textsf{C\kern-0.15exe\kern-0.45exT\kern-0.45exA}}
+
+% for uniform font size
+%\renewcommand{\isastyle}{\isastyleminor}
+
+
+\begin{document}
+
+\title{Proof Terms for Term Rewriting}
+\author{Christina Kirk (Kohl)}
+\affil{University of Innsbruck, Austria}
+\maketitle
+
+\begin{abstract}
+  Proof terms are first-order terms that represent reductions in term rewriting.
+  They were initially introduced in \cite{vOdV02} and \cite[Chapter 8]{TeReSe}
+  by van Oostrom and de Vrijer to study equivalences of reductions in left-linear
+  rewrite systems.
+  This entry formalizes proof terms for multi-steps in first-order term rewrite systems.
+  We define simple proof terms (i.e., without a composition operator) and establish
+  the correspondence to multi-steps: each proof term represents a multi-step
+  with the same source and target, and every multi-step can be expressed as a proof term.
+  The formalization moreover includes operations on proof terms, such as residuals,
+  join, and deletion and a method for labeling proof term sources to identify
+  overlaps between two proof terms.
+
+  This formalization is part of the \emph{Isabelle Formalization of Rewriting}
+  \href{http://cl-informatik.uibk.ac.at/isafor/}{\isafor{}} and is an essential component
+  of several formalized confluence and commutation results
+  involving multi-steps~\cite{KM23a, KM23b, KM23c, KM25}.
+\end{abstract}
+
+\tableofcontents
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+% generated text of all theories
+\input{session}
+
+% optional bibliography
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

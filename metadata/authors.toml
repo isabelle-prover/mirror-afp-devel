@@ -192,6 +192,23 @@ name = "Fahad Ausaf"
 [ausaf.homepages]
 ausaf_homepage = "http://kcl.academia.edu/FahadAusaf"
 
+[avanzini]
+name = "Martin Avanzini"
+
+[avanzini.emails]
+
+[avanzini.emails.avanzini_email]
+user = [
+  "martin",
+  "avanzini",
+]
+host = [
+  "inria",
+  "fr",
+]
+
+[avanzini.homepages]
+
 [avigad]
 name = "Jeremy Avigad"
 
@@ -2636,6 +2653,23 @@ host = [
 [haftmann.homepages]
 haftmann_homepage = "http://isabelle.in.tum.de/~haftmann"
 
+[hall]
+name = "Ray Hall"
+
+[hall.emails]
+
+[hall.emails.hall_email]
+user = [
+  "formal",
+  "scheme243",
+]
+host = [
+  "slmails",
+  "com",
+]
+
+[hall.homepages]
+
 [haslbeck]
 name = "Max W. Haslbeck"
 
@@ -3167,6 +3201,13 @@ host = [
 
 [ito.homepages]
 
+[ivanov]
+name = "Ievgen Ivanov"
+
+[ivanov.emails]
+
+[ivanov.homepages]
+
 [iwama]
 name = "Fumiya Iwama"
 
@@ -3595,6 +3636,26 @@ host = [
 ]
 
 [kirchner.homepages]
+
+[kirk]
+name = "Christina Kirk"
+orcid = "0000-0002-8470-2485"
+
+[kirk.emails]
+
+[kirk.emails.kirk_email]
+user = [
+  "christina",
+  "kirk",
+]
+host = [
+  "student",
+  "uibk",
+  "ac",
+  "at",
+]
+
+[kirk.homepages]
 
 [klein]
 name = "Gerwin Klein"
@@ -4295,6 +4356,22 @@ host = [
 
 [lux.homepages]
 
+[maadoori]
+name = "Vivek Soorya Maadoori"
+
+[maadoori.emails]
+
+[maadoori.emails.maadoori_email]
+user = [
+  "wewakesoorya",
+]
+host = [
+  "gmail",
+  "com",
+]
+
+[maadoori.homepages]
+
 [madarasz]
 name = "Judit Madarasz"
 
@@ -4451,6 +4528,26 @@ host = [
 [maricf.homepages]
 maricf_homepage = "http://www.matf.bg.ac.rs/~filip"
 
+[markovic]
+name = "Jelena Markovic"
+orcid = "0009-0007-4797-2666"
+
+[markovic.emails]
+
+[markovic.emails.markovic_email]
+user = [
+  "jelena",
+  "markovic",
+]
+host = [
+  "matf",
+  "bg",
+  "ac",
+  "rs",
+]
+
+[markovic.homepages]
+
 [marmsoler]
 name = "Diego Marmsoler"
 
@@ -4570,6 +4667,25 @@ host = [
 ]
 
 [meel.homepages]
+
+[meesum]
+name = "Syed Mohammad Meesum"
+orcid = "0000-0002-1771-403X"
+
+[meesum.emails]
+
+[meesum.emails.meesum_email]
+user = [
+  "meesum",
+  "syed",
+]
+host = [
+  "krea",
+  "edu",
+  "in",
+]
+
+[meesum.homepages]
 
 [meis]
 name = "Rene Meis"
@@ -4982,6 +5098,15 @@ host = [
   "uibk",
   "ac",
   "at",
+]
+
+[nagele.emails.nagele_email1]
+user = [
+  "mail",
+]
+host = [
+  "jnagele",
+  "net",
 ]
 
 [nagele.homepages]
@@ -5497,6 +5622,22 @@ name = "Edward Pierzchalski"
 
 [pierzchalski.homepages]
 
+[pillai]
+name = "Shiv Pillai"
+
+[pillai.emails]
+
+[pillai.emails.pillai_email]
+user = [
+  "shivpillai2010",
+]
+host = [
+  "gmail",
+  "com",
+]
+
+[pillai.homepages]
+
 [platzer]
 name = "André Platzer"
 
@@ -5612,6 +5753,24 @@ host = [
 ]
 
 [prathamesh.homepages]
+
+[prathamesht]
+name = "T. V. H. Prathamesh"
+
+[prathamesht.emails]
+
+[prathamesht.emails.prathamesht_email]
+user = [
+  "prathamesh",
+  "turaga",
+]
+host = [
+  "krea",
+  "edu",
+  "in",
+]
+
+[prathamesht.homepages]
 
 [preoteasa]
 name = "Viorel Preoteasa"
@@ -7192,6 +7351,22 @@ name = "Geoff Sutcliffe"
 
 [sutcliffe.homepages]
 
+[swami]
+name = "Aditya Swami"
+
+[swami.emails]
+
+[swami.emails.swami_email]
+user = [
+  "adityaswami2004",
+]
+host = [
+  "gmail",
+  "com",
+]
+
+[swami.homepages]
+
 [sylvestre]
 name = "Jeremy Sylvestre"
 
@@ -8035,6 +8210,24 @@ host = [
 
 [wimmer.homepages]
 wimmer_homepage = "http://home.in.tum.de/~wimmers/"
+
+[winkler]
+name = "Sarah Winkler"
+orcid = "0000-0001-8114-3107"
+
+[winkler.emails]
+
+[winkler.emails.winkler_email]
+user = [
+  "winkler",
+]
+host = [
+  "inf",
+  "unibz",
+  "it",
+]
+
+[winkler.homepages]
 
 [wirt]
 name = "Kai Wirt"

@@ -1,5 +1,116 @@
 [
  {
+  "abstract": "This entry, derived from the Isabelle Formalization of Rewriting (IsaFoR), provides a formalized foundation for first-order term rewriting. This serves as the basis for the certifier CeTA, which is generated from IsaFoR and verifies termination, confluence, and complexity proofs for term rewrite systems (TRSs). This formalization covers fundamental results for term rewriting, as presented in the foundational textbooks by Baader and Nipkow and TeReSe. These include: Various types of rewrite steps, such as root, ground, parallel, and multi-steps. Special cases of TRSs, such as linear and left-linear TRSs. A definition of critical pairs and key results, including the critical pair lemma. Orthogonality, notably that weak orthogonality implies confluence. Executable versions of relevant definitions, such as parallel and multi-step rewriting. ",
+  "authors": [
+   "René Thiemann",
+   "Christian Sternagel",
+   "Christina Kirk",
+   "Martin Avanzini",
+   "Bertram Felgenhauer",
+   "Julian Nagele",
+   "Thomas Sternagel",
+   "Sarah Winkler",
+   "Akihisa Yamada"
+  ],
+  "link": "/entries/First_Order_Rewriting.html",
+  "shortname": "First_Order_Rewriting",
+  "title": "First-Order Rewriting",
+  "topic_links": [
+   "/topics/logic/rewriting/"
+  ],
+  "topics": [
+   "Logic/Rewriting"
+  ],
+  "year": "2025"
+ },
+ {
+  "abstract": "Proof terms are first-order terms that represent reductions in term rewriting. They were initially introduced in TeReSe by van Oostrom and de Vrijer to study equivalences of reductions in left-linear rewrite systems. This entry formalizes proof terms for multi-steps in first-order term rewrite systems. We define simple proof terms (i.e., without a composition operator) and establish the correspondence to multi-steps: each proof term represents a multi-step with the same source and target, and every multi-step can be expressed as a proof term. The formalization moreover includes operations on proof terms, such as residuals, join, and deletion and a method for labeling proof term sources to identify overlaps between two proof terms. This formalization is part of the Isabelle Formalization of Rewriting (IsaFoR) and is an essential component of several formalized confluence and commutation results involving multi-steps.",
+  "authors": [
+   "Christina Kirk"
+  ],
+  "link": "/entries/Proof_Terms_Term_Rewriting.html",
+  "shortname": "Proof_Terms_Term_Rewriting",
+  "title": "Proof Terms for Term Rewriting",
+  "topic_links": [
+   "/topics/logic/rewriting/"
+  ],
+  "topics": [
+   "Logic/Rewriting"
+  ],
+  "year": "2025"
+ },
+ {
+  "abstract": "In Decreasing-Diagrams it was formally proved that the decreasing diagrams method is sound for proving confluence: if a binary relation $r$ has $LD$ property defined in Decreasing-Diagrams, then it has $CR$ property defined in Abstract-Rewriting.\nIn this formal theory it is proved that if the cardinality of $r$ does not exceed the first uncountable cardinal, then $r$ has $CR$ property if and only if $r$ has $LD$ property. As a consequence, the decreasing diagrams method is complete for proving confluence of relations of the least uncountable cardinality. A paper that describes details of this proof has been submitted to the FSCD 2025 conference.\n",
+  "authors": [
+   "Ievgen Ivanov"
+  ],
+  "link": "/entries/Completeness_Decreasing_Diagrams_for_N1.html",
+  "shortname": "Completeness_Decreasing_Diagrams_for_N1",
+  "title": "Completeness of Decreasing Diagrams for the Least Uncountable Cardinality",
+  "topic_links": [
+   "/topics/logic/rewriting/"
+  ],
+  "topics": [
+   "Logic/Rewriting"
+  ],
+  "year": "2025"
+ },
+ {
+  "abstract": "A chain is defined as a totally ordered subset of a partially ordered set. A chain cover refers to a collection of chains of a partially ordered set whose union equals the entire set. A chain decomposition is a chain cover consisting of pairwise disjoint sets. An antichain is a subset of elements of a partially ordered set in which no two elements are comparable.\nIn 1950, Dilworth proved that in any finite partially ordered set, the cardinality of a largest antichain equals the cardinality of a smallest chain decomposition.\nIn this paper, we formalise a proof of the theorem above, also known as Dilworth's theorem, based on a proof by Perles (1963). We draw on the formalisation of Dilworth's theorem in Coq by Abhishek Kr. Singh, and depend on the AFP entry containing formalisation of minimal and maximal elements in a set by Martin Desharnais .\n",
+  "authors": [
+   "Vivek Soorya Maadoori",
+   "Syed Mohammad Meesum",
+   "Shiv Pillai",
+   "T. V. H. Prathamesh",
+   "Aditya Swami"
+  ],
+  "link": "/entries/Dilworth.html",
+  "shortname": "Dilworth",
+  "title": "Formal Proof of Dilworth's Theorem",
+  "topic_links": [
+   "/topics/mathematics/order/",
+   "/topics/mathematics/combinatorics/"
+  ],
+  "topics": [
+   "Mathematics/Order",
+   "Mathematics/Combinatorics"
+  ],
+  "year": "2025"
+ },
+ {
+  "abstract": "In this paper, we present an Isabelle/HOL formalization of noncommutative and nonassociative algebraic structures known as gyrogroups and gyrovector spaces. These concepts were introduced by Abraham A. Ungar and have deep connections to hyperbolic geometry and special relativity. Gyrovector spaces can be used to define models of hyperbolic geometry. Unlike other models, gyrovector spaces offer the advantage that all definitions exhibit remarkable syntactical similarities to standard Euclidean and Cartesian geometry (e.g., points on the line between a and b satisfy the parametric equation \\[ a \\oplus t \\otimes (\\ominus a \\oplus b), \\quad \\text{for } t \\in \\mathbb{R}, \\] while the hyperbolic Pythagorean theorem is expressed as \\[ a^2 \\oplus b^2 = c^2, \\] where \\( \\otimes \\), \\( \\oplus \\), and \\( \\ominus \\) represent gyro operations). We begin by formally defining gyrogroups and gyrovector spaces and proving their numerous properties. Next, we formalize Möbius and Einstein models of these abstract structures (formulated in the two-dimensional, complex plane), and then demonstrate that these are equivalent to the Poincaré and Klein-Beltrami models, satisfying Tarski’s geometry axioms for hyperbolic geometry.\n",
+  "authors": [
+   "Filip Marić",
+   "Jelena Markovic"
+  ],
+  "link": "/entries/GyrovectorSpaces.html",
+  "shortname": "GyrovectorSpaces",
+  "title": "Formalization of Gyrovector Spaces as Models of Hyperbolic Geometry and Special Relativity",
+  "topic_links": [
+   "/topics/mathematics/physics/"
+  ],
+  "topics": [
+   "Mathematics/Physics"
+  ],
+  "year": "2025"
+ },
+ {
+  "abstract": "Morley's trisector theorem states that in any triangle,  the three points of intersection of the adjacent angle trisectors  form an equilateral triangle,  called the first Morley triangle or simply the Morley triangle. This theorem is listed in the 100 theorem list.  In this theory, we define some basics elements on complex geometry such as axial symmetry, rotations. We also define basic property of congruent triangles in the complex field following the model already presented in the afp. In addition we demonstrate sines law in the complex context.  Finally we prove the Morley theorem using Alain Connes's proof.",
+  "authors": [
+   "Benjamin Puyobro"
+  ],
+  "link": "/entries/Morley_Theorem.html",
+  "shortname": "Morley_Theorem",
+  "title": "Morley's Theorem",
+  "topic_links": [
+   "/topics/mathematics/"
+  ],
+  "topics": [
+   "Mathematics"
+  ],
+  "year": "2025"
+ },
+ {
   "abstract": "Building on the existing formalization of Mission-time Linear Temporal Logic (MLTL), we formalize the notions of language decomposition and language partition for MLTL. More specifically, we formalize an algorithm to compute a language partition for MLTL and formally prove its correctness. Our algorithm is executable, and we export it to Haskell via Isabelle/HOL's code generator.",
   "authors": [
    "Zili Wang",

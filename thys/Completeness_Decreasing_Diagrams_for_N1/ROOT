@@ -1,0 +1,15 @@
+chapter AFP
+
+session Completeness_Decreasing_Diagrams_for_N1 = "HOL-Cardinals" +
+  options [timeout = 900]
+  sessions
+    "Abstract-Rewriting"
+    "Decreasing-Diagrams"
+  theories
+    Finite_DCR_Hierarchy
+    DCR3_Method
+    DCR3_Optimality
+    Main_Result_DCR_N1
+  document_files
+    "root.tex"
+    "root.bib"

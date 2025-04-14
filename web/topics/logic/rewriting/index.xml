@@ -4,6 +4,27 @@
     <title>Logic/Rewriting</title>
     <link>https://isa-afp.org/topics/logic/rewriting/</link>
     <description>AFP entries in Rewriting</description><item>
+  <title>Proof Terms for Term Rewriting</title>
+  <link>https://isa-afp.org/entries/Proof_Terms_Term_Rewriting.html</link>
+  <pubDate>Sun, 13 Apr 2025 00:00:00 +0000</pubDate>
+  <description>Proof Terms for Term Rewriting in the AFP</description>
+    <category>Logic/Rewriting</category>
+</item>
+<item>
+  <title>First-Order Rewriting</title>
+  <link>https://isa-afp.org/entries/First_Order_Rewriting.html</link>
+  <pubDate>Sun, 13 Apr 2025 00:00:00 +0000</pubDate>
+  <description>First-Order Rewriting in the AFP</description>
+    <category>Logic/Rewriting</category>
+</item>
+<item>
+  <title>Completeness of Decreasing Diagrams for the Least Uncountable Cardinality</title>
+  <link>https://isa-afp.org/entries/Completeness_Decreasing_Diagrams_for_N1.html</link>
+  <pubDate>Sat, 12 Apr 2025 00:00:00 +0000</pubDate>
+  <description>Completeness of Decreasing Diagrams for the Least Uncountable Cardinality in the AFP</description>
+    <category>Logic/Rewriting</category>
+</item>
+<item>
   <title>Sorted Terms</title>
   <link>https://isa-afp.org/entries/Sorted_Terms.html</link>
   <pubDate>Mon, 27 May 2024 00:00:00 +0000</pubDate>

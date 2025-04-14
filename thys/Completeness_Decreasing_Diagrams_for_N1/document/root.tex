@@ -1,0 +1,35 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{authblk}
+\usepackage{isabelle,isabellesym}
+\usepackage{amssymb}
+% this should be the last package used
+\usepackage{pdfsetup}
+
+\urlstyle{rm}
+\isabellestyle{it}
+
+\begin{document}
+
+\title{Completeness of Decreasing Diagrams for the Least Uncountable Cardinality}
+\author{Ievgen Ivanov}
+\affil{Taras Shevchenko National University of Kyiv}
+\date{}
+\maketitle
+
+\begin{abstract}
+In \cite{Zankl2013-AFP} it was formally proved that the decreasing diagrams method \cite{Oostrom94} is sound for proving confluence: if a binary relation $r$ has $LD$ property defined in \cite{Zankl2013-AFP}, then it has $CR$ property defined in \cite{Sternagel2010-AFP}. 
+
+In this formal theory it is proved that if the cardinality of $r$ does not exceed the first uncountable cardinal, then $r$ has $CR$ property if and only if $r$ has $LD$ property. As a consequence, the decreasing diagrams method is complete for proving confluence of relations of the least uncountable cardinality. 
+
+A paper that describes details of this proof has been submitted to the FSCD 2025 conference. This formalization extends formalizations \cite{formal1,formal2,formal3,formal4} and the paper \cite{IWC24}.
+\end{abstract}
+
+\tableofcontents
+
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}

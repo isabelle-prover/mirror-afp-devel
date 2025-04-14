@@ -1,0 +1,100 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+
+\usepackage{amssymb}
+\usepackage{authblk}
+
+%\usepackage{eurosym}
+
+%\usepackage[only,bigsqcap,bigparallel,fatsemi,interleave,sslash]{stmaryrd}
+
+%\usepackage{eufrak}
+
+%\usepackage{textcomp}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+\newcommand\isafor{\textsf{Isa\kern-0.15exF\kern-0.15exo\kern-0.15exR}}
+\newcommand\ceta{\textsf{C\kern-0.15exe\kern-0.45exT\kern-0.45exA}}
+
+% for uniform font size
+%\renewcommand{\isastyle}{\isastyleminor}
+
+
+\begin{document}
+
+\title{First-Order Rewriting}
+\author{René Thiemann}
+\author{Christian Sternagel}
+\author{Christina Kirk (Kohl)}
+\author{Martin Avanzini}
+\author{Bertram Felgenhauer}
+\author{Julian Nagele}
+\author{Thomas Sternagel}
+\author{Sarah Winkler}
+\author{Akihisa Yamada}
+\affil{University of Innsbruck, Austria}
+\maketitle
+
+\begin{abstract}
+  This entry, derived from the \emph{Isabelle Formalization of Rewriting}
+  (\isafor)~\cite{TS09}, provides a formalized foundation for first-order
+  term rewriting. This serves as the basis for the certifier \ceta, which is
+  generated from \isafor{} and verifies termination, confluence, and complexity
+  proofs for term rewrite systems (TRSs).
+
+  This formalization covers fundamental results for term rewriting, as presented
+  in the foundational textbooks by Baader and Nipkow~\cite{BN98} and TeReSe~\cite{TeReSe}.
+  These include:
+  \begin{itemize}
+    \item Various types of rewrite steps, such as root, ground, parallel, and multi-steps.
+    \item Special cases of TRSs, such as linear and left-linear TRSs.
+    \item A definition of critical pairs and key results, including the critical pair lemma.
+    \item Orthogonality, notably that weak orthogonality implies confluence.
+    \item Executable versions of relevant definitions, such as parallel and multi-step rewriting.
+  \end{itemize}
+
+\end{abstract}
+
+\tableofcontents
+
+\section{Introduction}
+
+A TRS, as formalized here, is defined as a binary relation over first-order terms.
+Given a TRS $\mathcal{R}$, a rule $(\ell, r) \in \mathcal{R}$ is typically
+written as $\ell \to r$. The rewrite relation induced by $\mathcal{R}$,
+denoted $\to_{\mathcal{R}}$, is defined as follows:
+a term $s$ rewrites to a term $t$ using the TRS $\mathcal{R}$ (i.e,
+$s \to_\mathcal{R} t$) if there are a context $C$, a substitution $\sigma$,
+and a rule $(\ell, r) \in \mathcal{R}$ such that $s = C[\ell\sigma]$ and
+$t = C[r\sigma]$.
+
+The literature typically assumes two restrictions on the variables in a rule
+$\ell \to r$ of a TRS: $\ell$ must not be a variable, and all variables in $r$
+must appear in $\ell$. However, many results in term rewriting do not depend
+on these conditions. In this entry, such constraints are enforced only where
+necessary. A TRS that meets these criteria is called a \emph{well-formed} TRSs
+(\isa{wf-trs}) in the formalization.
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+% generated text of all theories
+\input{session}
+
+% optional bibliography
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

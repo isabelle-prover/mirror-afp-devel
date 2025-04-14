@@ -4,6 +4,14 @@
     <title>Mathematics/Order</title>
     <link>https://isa-afp.org/topics/mathematics/order/</link>
     <description>AFP entries in Order</description><item>
+  <title>Formal Proof of Dilworth&#39;s Theorem</title>
+  <link>https://isa-afp.org/entries/Dilworth.html</link>
+  <pubDate>Tue, 25 Mar 2025 00:00:00 +0000</pubDate>
+  <description>Formal Proof of Dilworth&#39;s Theorem in the AFP</description>
+    <category>Mathematics/Order</category>
+    <category>Mathematics/Combinatorics</category>
+</item>
+<item>
   <title>Minimal, Maximal, Least, and Greatest Elements w.r.t. Restricted Ordering</title>
   <link>https://isa-afp.org/entries/Min_Max_Least_Greatest.html</link>
   <pubDate>Thu, 24 Oct 2024 00:00:00 +0000</pubDate>

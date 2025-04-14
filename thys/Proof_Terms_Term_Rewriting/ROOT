@@ -1,0 +1,19 @@
+chapter AFP
+
+session Proof_Terms_Term_Rewriting = First_Order_Rewriting +
+  description "Proof Terms for Term Rewriting"
+  options [timeout = 300]
+  sessions
+    Well_Quasi_Orders
+  theories (*Preliminaries*)
+    Proof_Term_Utils
+    Linear_Matching
+  theories
+    Labels_and_Overlaps
+    Orthogonal_PT
+    Proof_Terms
+    Redex_Patterns
+    Residual_Join_Deletion
+  document_files
+    "root.tex"
+    "root.bib"
