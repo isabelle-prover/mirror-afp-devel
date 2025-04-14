@@ -789,7 +789,7 @@ lemma non_collapsing_impl[simp]: "non_collapsing_impl R = non_collapsing (set R)
 type_synonym ('f, 'v) term_map = "'f \<times> nat \<Rightarrow> ('f, 'v) term list"
 
 definition term_map :: "('f::compare_order, 'v) term list \<Rightarrow> ('f, 'v) term_map" where
-  "term_map ts = fun_of_map (rm.\<alpha> (elem_list_to_rm (the \<circ> root) ts)) []"
+  "term_map ts = fun_of_map (RBT.lookup (elem_list_to_rm (the \<circ> root) ts)) []"
 
 definition
   is_NF_main :: "bool \<Rightarrow> bool \<Rightarrow> ('f::compare_order, 'v) term_map \<Rightarrow> ('f, 'v) term \<Rightarrow> bool"
