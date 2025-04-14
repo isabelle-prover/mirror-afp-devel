@@ -952,6 +952,9 @@ proof (rule sums_lambert_powser)
   finally show "dirichlet_prod a (\<lambda>_. 1) = b" ..
 qed
 
+lemma lambert_conv_radius_power_of_nat: "lambert_conv_radius (\<lambda>n. of_nat n ^ k) = 1"
+  by (simp add: lambert_conv_radius_def not_summable_power_of_nat conv_radius_power_of_nat)
+
 
 subsubsection \<open>Divisor \<open>\<sigma>\<close> function\<close>
 

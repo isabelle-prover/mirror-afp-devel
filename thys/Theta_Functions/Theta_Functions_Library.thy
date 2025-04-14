@@ -1,8 +1,53 @@
 theory Theta_Functions_Library
 imports
-  "HOL-Computational_Algebra.Computational_Algebra"
+  "HOL-Computational_Algebra.Computational_Algebra" "HOL-Analysis.Analysis"
 begin
-            
+
+lemma add_in_Ints_iff_left [simp]: "x \<in> \<int> \<Longrightarrow> x + y \<in> \<int> \<longleftrightarrow> y \<in> \<int>"
+  by (metis Ints_add Ints_diff add_diff_cancel_left')
+
+lemma add_in_Ints_iff_right [simp]: "y \<in> \<int> \<Longrightarrow> x + y \<in> \<int> \<longleftrightarrow> x \<in> \<int>"
+  by (subst add.commute) auto
+
+lemma diff_in_Ints_iff_left [simp]: "x \<in> \<int> \<Longrightarrow> x - y \<in> \<int> \<longleftrightarrow> y \<in> \<int>"
+  by (metis Ints_diff add_in_Ints_iff_left diff_add_cancel)
+
+lemma diff_in_Ints_iff_right [simp]: "y \<in> \<int> \<Longrightarrow> x - y \<in> \<int> \<longleftrightarrow> x \<in> \<int>"
+  by (metis Ints_minus diff_in_Ints_iff_left minus_diff_eq)
+
+lemmas [simp] = minus_in_Ints_iff
+
+lemma of_int_div_of_int_in_Ints_iff:
+  "(of_int n / of_int m :: 'a :: field_char_0) \<in> \<int> \<longleftrightarrow> m = 0 \<or> m dvd n"
+proof
+  assume *: "(of_int n / of_int m :: 'a) \<in> \<int>"
+  {
+    assume "m \<noteq> 0"
+    from * obtain k where k: "(of_int n / of_int m :: 'a) = of_int k"
+      by (auto elim!: Ints_cases)
+    hence "of_int n = (of_int k * of_int m :: 'a)"
+      using \<open>m \<noteq> 0\<close> by (simp add: field_simps)
+    also have "\<dots> = of_int (k * m)"
+      by simp
+    finally have "n = k * m"
+      by (subst (asm) of_int_eq_iff)
+    hence "m dvd n" by auto
+  }
+  thus "m = 0 \<or> m dvd n" by blast
+qed auto
+
+lemma fraction_numeral_not_in_Ints [simp]:
+  assumes "\<not>(numeral b :: int) dvd numeral a"
+  shows   "numeral a / numeral b \<notin> (\<int> :: 'a :: {division_ring, ring_char_0} set)"
+  using fraction_not_in_ints[of "numeral b" "numeral a", where ?'a = 'a] assms by simp
+
+lemma fraction_numeral_not_in_Ints' [simp]:
+  assumes "b \<noteq> Num.One"
+  shows   "1 / numeral b \<notin> (\<int> :: 'a :: {division_ring, ring_char_0} set)"
+  using fraction_not_in_ints[of "numeral b" 1, where ?'a = 'a] assms by simp
+
+lemmas [simp] = not_in_Ints_imp_not_in_nonpos_Ints minus_in_Ints_iff
+
 lemma of_int_div: "b dvd a \<Longrightarrow> of_int (a div b) = (of_int a / of_int b :: 'a :: field_char_0)"
   by auto
       

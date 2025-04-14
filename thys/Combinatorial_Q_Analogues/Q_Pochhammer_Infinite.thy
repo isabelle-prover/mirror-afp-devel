@@ -3,6 +3,7 @@ theory Q_Pochhammer_Infinite
 imports
   More_Infinite_Products
   Q_Analogues
+  "Gauss_Sums.Complex_Roots_Of_Unity"
 begin
 
 subsection \<open>Definition and basic properties\<close>
@@ -681,7 +682,7 @@ text \<open>
   by grouping factors:
   \[(a; q^m)_\infty\, (aq; q^m)_\infty\, \cdots\, (aq^{m-1}; q^m)_\infty = (a; q)_\infty\]
 \<close>
-lemma prod_qpochhammer_group:
+lemma prod_qpochhammer_inf_group:
   assumes "norm q < 1" and "m > 0"
   shows   "(\<Prod>i<m. qpochhammer_inf (a * q^i) (q^m)) = qpochhammer_inf a q"
 proof (rule has_prod_unique2)
@@ -705,6 +706,39 @@ next
 qed
 
 text \<open>
+  In a similar fashion, let $w = \exp(2i\pi/n)$ denote the primitive $n$-th root of unity.
+  Then: \[(a; q)_\infty\, (aw; q)_\infty\, (aw^2; q)_\infty\, \cdots\, (aw^{m-1}; q)_\infty = 
+          (a^m; q^m)_\infty\]
+\<close>
+(* TODO: could be generalised to allow more flexibility in picking the root, also other types. *)
+lemma prod_qpochhammer_group_unity_root:
+  assumes "norm q < 1" "m > 0"
+  defines "w \<equiv> (\<lambda>k. unity_root m (int k))"
+  shows   "(\<Prod>k<m. qpochhammer_inf (w k * a) q) = qpochhammer_inf (a^m) (q^m)"
+proof (rule has_prod_unique2)
+  show "(\<lambda>i. 1 - a ^ m * (q ^ m) ^ i) has_prod qpochhammer_inf (a^m) (q^m)"
+    by (rule has_prod_qpochhammer_inf) (use assms in \<open>auto simp: norm_power power_less_one_iff\<close>)
+next
+  have "(\<lambda>i. \<Prod>k<m. 1 - (w k * a) * q ^ i) has_prod (\<Prod>k<m. qpochhammer_inf (w k * a) q)"
+    by (intro has_prod_prod has_prod_qpochhammer_inf) (use assms in auto)
+  also have "(\<lambda>i. \<Prod>k<m. 1 - (w k * a) * q ^ i) = (\<lambda>i. 1 - a^m * (q^m)^i)"
+  proof
+    fix i :: nat
+    have "(\<Prod>k<m. 1 - (w k * a) * q ^ i) = poly (\<Prod>k<m. [:1, -unity_root m (int k):]) (a * q ^ i)"
+      by (simp add: poly_prod w_def mult_ac)
+    also have "(\<Prod>k<m. [:1, -unity_root m (int k):]) = 1 - Polynomial.monom 1 m"
+      by (rule cyclotomic_poly_conv_prod_unity_root' [symmetric]) fact
+    also have "poly \<dots> (a * q ^ i) = 1 - a^m * (q^m)^i"
+      by (simp add: poly_monom power_mult_distrib mult_ac flip: power_mult)
+    finally show "(\<Prod>k<m. 1 - (w k * a) * q ^ i) = 1 - a^m * (q^m)^i" .
+  qed
+  finally show "(\<lambda>i. 1 - a ^ m * (q ^ m) ^ i) has_prod (\<Prod>k<m. qpochhammer_inf (w k * a) q)" 
+    by simp
+qed
+
+
+text \<open>
+  The particular instance of the above for $m = 2$ is the following:
   A product of two $q$-Pochhammer symbols $(\pm a; q)_\infty$ can be combined into
   a single $q$-Pochhammer symbol:
 \<close>

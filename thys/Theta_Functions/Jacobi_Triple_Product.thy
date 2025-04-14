@@ -545,7 +545,7 @@ proof -
     by (subst ramanujan_theta_triple_product_complex)
        (use q in \<open>simp_all flip: power_Suc add: norm_power power_less_one_iff eval_nat_numeral\<close>)
   also have "\<dots> = (q ; q)\<^sub>\<infinity>"
-    by (rule prod_qpochhammer_group) (use q in auto)
+    by (rule prod_qpochhammer_inf_group) (use q in auto)
   finally show ?thesis ..
 qed
 
