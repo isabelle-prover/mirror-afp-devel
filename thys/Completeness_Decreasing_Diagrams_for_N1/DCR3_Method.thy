@@ -367,7 +367,8 @@ proof -
     have c1: "Field ordLeq = {\<alpha>::'U rel. Well_order \<alpha>}" 
       using ordLeq_Well_order_simp ordLeq_reflexive unfolding Field_def by blast
     then have "Refl ordLeq" using ordLeq_refl_on by metis
-    then have "Preorder ordLeq" using ordLeq_trans unfolding preorder_on_def by blast
+    then have "Preorder ordLeq" using ordLeq_trans unfolding preorder_on_def
+      using subset_antisym c1 by auto
     then have "Preorder ?oleqO" using Preorder_Restr by blast
     moreover have "\<forall>\<alpha> \<beta>::'U rel. (\<alpha>, \<beta>) \<in> ?oleqO \<longrightarrow> (\<beta>, \<alpha>) \<in> ?oleqO \<longrightarrow> \<alpha> = \<beta>"
     proof (intro allI impI)
@@ -10998,7 +10999,8 @@ proof -
     obtain a b c where c3: "c \<in> D1 \<inter> D2 \<and> D1 = (r^<->*) `` {a} \<and> D2 = (r^<->*) `` {b}" using b1 c1 c2 by blast
     then have "(a,c) \<in> r^<->* \<and> (b,c) \<in> r^<->*" by blast
     then have "(a,b) \<in> r^<->*" by (metis conversion_inv conversion_rtrancl rtrancl.intros(2))
-    moreover have "equiv UNIV (r^<->*)" unfolding equiv_def by (metis conversion_def refl_rtrancl conversion_sym trans_rtrancl)
+    moreover have "equiv UNIV (r^<->*)" unfolding equiv_def
+      by (simp add: conversion_sym conversion_trans refl_on_def)
     ultimately have "D1 = D2" using c3 equiv_class_eq by simp
     then show "s1 = s2" using c1 by blast
   qed
