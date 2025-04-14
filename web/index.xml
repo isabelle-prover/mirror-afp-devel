@@ -25,6 +25,13 @@
     <category>Logic/Rewriting</category>
 </item>
 <item>
+  <title>The Kolmogorov-Chentsov theorem</title>
+  <link>https://isa-afp.org/entries/Kolmogorov_Chentsov.html</link>
+  <pubDate>Sun, 06 Apr 2025 00:00:00 +0000</pubDate>
+  <description>The Kolmogorov-Chentsov theorem in the AFP</description>
+    <category>Mathematics/Probability theory</category>
+</item>
+<item>
   <title>Formal Proof of Dilworth&#39;s Theorem</title>
   <link>https://isa-afp.org/entries/Dilworth.html</link>
   <pubDate>Tue, 25 Mar 2025 00:00:00 +0000</pubDate>

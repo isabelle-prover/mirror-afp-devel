@@ -1,0 +1,53 @@
+title = "The Kolmogorov-Chentsov theorem"
+date = 2025-04-06
+topics = [
+  "Mathematics/Probability theory",
+]
+abstract = """
+<p>
+Continuous-time stochastic processes often carry the condition of having
+almost-surely continuous paths. If some process \\(X\\) satisfies certain
+bounds on its expectation, then the Kolmogorov-Chentsov theorem lets us
+construct a modification of \\(X\\), i.e. a process \\(X'\\) such that
+\\(\\forall t. X_t = X'_t\\) almost surely, that has Hölder continuous
+paths.
+</p>
+
+<p>
+In this work, we mechanise the Kolmogorov-Chentsov theorem. To get there, we
+develop a theory of stochastic processes, together with Hölder continuity,
+convergence in measure, and arbitrary intervals of dyadic rationals.
+</p>
+
+<p>
+With this, we pave the way towards a construction of Brownian motion. The
+work is based on the exposition in <a
+    href=https://link.springer.com/book/10.1007/978-3-030-56402-5>
+        Achim Klenke's probability theory text</a>.
+</p>"""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.laursen]
+email = "laursen_email"
+
+[authors.fosters]
+email = "fosters_email"
+
+[contributors]
+
+[notify]
+laursen = "laursen_email"
+fosters = "fosters_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = [
+  "10.1007/978-3-030-56402-5",
+]
+pubs = []

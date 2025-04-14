@@ -1,0 +1,55 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+\usepackage{latexsym}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage[english]{babel}
+\usepackage{wasysym}
+\usepackage{eufrak}
+\usepackage{textcomp}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+
+\begin{document}
+
+\title{The Kolmogorov-Chentsov Theorem}
+\author{Christian Pardillo Laursen and Simon Foster\\[.5ex] University of York, UK \\[2ex] \texttt{\small $\{$christian.laursen,simon.foster$\}$@york.ac.uk}}
+\maketitle
+
+\begin{abstract}
+Continuous-time stochastic processes often carry the condition of having
+almost-surely continuous paths. If some process \(X\) satisfies certain
+bounds on its expectation, then the Kolmogorov-Chentsov theorem lets us
+construct a modification of \(X\), i.e. a process \(X'\) such that
+\(\forall t. X_t = X'_t\) almost surely, that has H{\"o}lder continuous
+paths.
+
+In this work, we mechanise the Kolmogorov-Chentsov theorem. To get there, we
+develop a theory of stochastic processes, together with H{\"o}lder continuity,
+convergence in measure, and arbitrary intervals of dyadic rationals.
+
+With this, we pave the way towards a construction of Brownian motion. The
+work is based on the exposition in Achim Klenke's probability theory text~\cite{klenke2020}.
+\end{abstract}
+
+\tableofcontents
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+% include generated text of all theories
+\input{session}
+
+\vspace{4ex}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
