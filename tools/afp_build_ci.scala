@@ -87,7 +87,7 @@ object AFP_Build_CI {
       for {
         session <- results.sessions
         result = results(session)
-        if !result.ok && !results.cancelled(session)
+        if !result.ok && !result.interrupted && !results.cancelled(session)
         entry <- context.session_entry(session)
       } {
         val subject = "Build of AFP entry " + entry + " failed"
