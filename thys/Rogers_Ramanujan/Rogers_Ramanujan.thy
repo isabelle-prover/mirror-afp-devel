@@ -179,7 +179,7 @@ proof -
          (simp_all add: B_def qpochhammer_inf_zero_iff norm_power power_less_one_iff 
                         q q_pow_eq_1_iff flip: power_mult power_Suc power_add)
     also have "(\<Prod>i<5. (q ^ (i+1); q ^ 5)\<^sub>\<infinity>) = (q; q)\<^sub>\<infinity>"
-      using prod_qpochhammer_group[of q 5 q] q by simp
+      using prod_qpochhammer_inf_group[of q 5 q] q by simp
     also have "B = {N, 3 - N}"
       unfolding A_def B_def using N_cases by auto
     also have "(\<Prod>i\<in>{N, 3 - N}. (q ^ (i + 1) ; q ^ 5)\<^sub>\<infinity>) = (q^(1+N); q^5)\<^sub>\<infinity> * (q^(4-N); q^5)\<^sub>\<infinity>"
