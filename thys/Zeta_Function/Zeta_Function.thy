@@ -729,6 +729,38 @@ proof -
   thus "zeta (of_nat n) = (\<Sum>k. 1 / of_nat (Suc k) ^ n)" by (simp add: sums_iff)
 qed
 
+corollary has_sum_zeta_symmetric:
+  fixes k :: nat
+  assumes k: "k \<ge> 2" "even k"
+  shows "((\<lambda>n. 1 / of_int n ^ k) has_sum (2 * zeta (of_nat k))) (-{0})"
+proof -
+  have "(\<lambda>n. 1 / of_nat (Suc n) ^ k) sums zeta (of_nat k)"
+    by (rule sums_zeta_nat) (use assms in auto)
+  moreover have "summable (\<lambda>n. norm (1 / of_nat (Suc n) ^ k :: complex))"
+    using summable_zeta_real[of "of_nat k"] assms
+    by (auto simp: norm_divide powr_minus norm_power field_simps powr_realpow simp del: of_nat_Suc)
+  ultimately have "((\<lambda>n. 1 / of_nat (Suc n) ^ k) has_sum zeta (of_nat k)) UNIV"
+    using norm_summable_imp_has_sum by fast
+  also have "?this \<longleftrightarrow> ((\<lambda>n. 1 / of_int n ^ k) has_sum zeta (of_nat k)) {1..}"
+    by (rule has_sum_reindex_bij_witness[of _ "\<lambda>n. nat (n - 1)" "\<lambda>n. int n + 1"])
+       (auto simp: add_ac)
+  finally have sum1: "((\<lambda>n. 1 / of_int n ^ k) has_sum zeta (of_nat k)) {1..}" .
+
+  note sum1
+  also have "((\<lambda>n. 1 / of_int n ^ k) has_sum zeta (of_nat k)) {1..} \<longleftrightarrow>
+             ((\<lambda>n. 1 / of_int n ^ k) has_sum zeta (of_nat k)) {..-1}"
+    by (rule has_sum_reindex_bij_witness[of _ uminus uminus]) (use k in auto)
+  finally have sum2: "((\<lambda>n. 1 / of_int n ^ k) has_sum zeta (of_nat k)) {..-1}" .
+
+  have "((\<lambda>n. 1 / of_int n ^ k) has_sum (zeta (of_nat k) + zeta (of_nat k))) ({..-1} \<union> {1..})"
+    by (intro has_sum_Un_disjoint sum1 sum2) auto
+  also have "{..-1} \<union> {1..} = -{0::int}"
+    by auto
+  also have "zeta (of_nat k) + zeta (of_nat k) = 2 * zeta (of_nat k)"
+    by simp
+  finally show "((\<lambda>n. 1 / of_int n ^ k) has_sum (2 * zeta (of_nat k))) (-{0})" .
+qed
+
 lemma pre_zeta_aux_cnj [simp]: 
   assumes "a > 0"
   shows   "pre_zeta_aux n a (cnj z) = cnj (pre_zeta_aux n a z)"
