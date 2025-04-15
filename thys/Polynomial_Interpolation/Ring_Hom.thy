@@ -133,12 +133,23 @@ begin
     hence "hom 0 = hom (x * y)" by simp
     thus ?thesis by (auto simp:hom_distribs)
   qed
+
+lemma hom_of_nat [hom_distribs]: "hom (of_nat n) = of_nat n"
+  by (induction n) (auto simp: hom_distribs)
+
+lemma hom_numeral [hom_distribs]: "hom (numeral n) = numeral n"
+  using hom_of_nat[of "numeral n"] by simp
+
 end
 
 locale ring_hom = semiring_hom hom
   for hom :: "'a :: ring_1 \<Rightarrow> 'b :: ring_1"
 begin
-  sublocale ab_group_add_hom hom..
+sublocale ab_group_add_hom hom..
+
+lemma hom_of_int [hom_distribs]: "hom (of_int n) = of_int n"
+  by (induction n) (auto simp: hom_distribs)
+
 end
 
 locale comm_semiring_hom = semiring_hom hom
