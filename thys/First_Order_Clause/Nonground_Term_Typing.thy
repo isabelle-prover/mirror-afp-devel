@@ -3,9 +3,9 @@ theory Nonground_Term_Typing
     Term_Typing
     Typed_Functional_Substitution
     Nonground_Term
+    Ground_Term_Typing
 begin
 
-(* TODO: Create base version to avoid parameters? *)
 locale base_typed_properties =
   base_typed_renaming +
   base_typed_subst_stability +
@@ -15,12 +15,12 @@ locale base_typed_properties =
     base_subst = subst and base_vars = vars and base_welltyped = welltyped
 
 locale base_typing_properties =
-  welltyped: base_typed_properties where welltyped = welltyped
+  base_typed_properties where welltyped = welltyped
   for welltyped :: "('var, 'ty) var_types \<Rightarrow> 'base \<Rightarrow> 'ty \<Rightarrow> bool" 
 
 locale base_inhabited_typing_properties =
   base_typing_properties +
-  welltyped: inhabited_typed_functional_substitution where 
+  inhabited_typed_functional_substitution where 
     welltyped = welltyped and base_subst = subst and base_vars = vars and base_welltyped = welltyped
 
 locale nonground_term_typing =
@@ -28,10 +28,11 @@ locale nonground_term_typing =
   fixes \<F> :: "('f, 'ty) fun_types"
 begin
 
-inductive welltyped :: "('v, 'ty) var_types \<Rightarrow> ('f,'v) term \<Rightarrow> 'ty \<Rightarrow> bool"
+inductive welltyped :: "('v, 'ty) var_types \<Rightarrow> ('f,'v) term \<Rightarrow> 'ty \<Rightarrow> bool" (\<open>_ \<turnstile> _ : _\<close> [1000, 0] 1000) (* TODO! *)
   for \<V> where
     Var: "\<V> x = \<tau> \<Longrightarrow> welltyped \<V> (Var x) \<tau>"
   | Fun: "\<F> f (length ts) = (\<tau>s, \<tau>) \<Longrightarrow> list_all2 (welltyped \<V>) ts \<tau>s \<Longrightarrow> welltyped \<V> (Fun f ts) \<tau>"
+                                  
 
 sublocale "term": base_typing where
   welltyped = "welltyped \<V>" for \<V>
@@ -243,7 +244,7 @@ locale nonground_term_inhabited_typing =
   assumes types_inhabited: "\<And>\<tau>. \<exists>f. \<F> f 0 = ([], \<tau>)"
 begin
 
-sublocale base_inhabited_typing_properties where
+sublocale "term": base_inhabited_typing_properties where
   id_subst = "Var :: 'v \<Rightarrow> ('f, 'v) term" and comp_subst = "(\<odot>)" and subst = "(\<cdot>t)" and
   vars = term.vars and welltyped = welltyped and to_ground = term.to_ground and
   from_ground = term.from_ground

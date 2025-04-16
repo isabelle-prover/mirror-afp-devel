@@ -1,5 +1,8 @@
 theory Grounded_Multiset_Extension
-  imports Grounded_Order Multiset_Extension
+  imports 
+    Grounded_Order 
+    Multiset_Extension
+    Natural_Functor_To_Multiset
 begin
 
 section \<open>Grounded Multiset Extensions\<close>
@@ -7,16 +10,12 @@ section \<open>Grounded Multiset Extensions\<close>
 locale functional_substitution_multiset_extension =
   sub: strict_order where less = "(\<prec>) :: 'sub \<Rightarrow> 'sub \<Rightarrow> bool" +
   multiset_extension where to_mset = to_mset +
-  functional_substitution_lifting where id_subst = id_subst and to_set = to_set
+  functional_substitution_lifting where id_subst = id_subst and to_set = to_set +
+  natural_functor_to_multiset where to_set = to_set and to_mset = to_mset
 for
   to_mset :: "'expr \<Rightarrow> 'sub multiset" and
   id_subst :: "'var \<Rightarrow> 'base" and
-  to_set :: "'expr \<Rightarrow> 'sub set" +
-assumes
-    (* TODO: Does it make sense to have these in separate locales? *)
-  to_mset_to_set: "\<And>expr. set_mset (to_mset expr) = to_set expr" and
-  to_mset_map: "\<And>f b. to_mset (map f b) = image_mset f (to_mset b)" and
-  inj_to_mset: "inj to_mset"
+  to_set :: "'expr \<Rightarrow> 'sub set"
 begin
 
 (* TODO *)
@@ -62,7 +61,14 @@ locale total_grounded_multiset_extension =
   sub: total_strict_order_restriction where lift = "sub_from_ground"
 begin
 
-sublocale total_strict_order_restriction "(\<prec>\<^sub>m)" from_ground
+sublocale sub: grounded_restricted_total_strict_order where
+  subst = sub_subst and vars = sub_vars and to_ground = sub_to_ground and
+  from_ground = sub_from_ground
+  by unfold_locales
+
+sublocale grounded_restricted_total_strict_order where
+  subst = subst and vars = vars and to_ground = to_ground and
+  from_ground = from_ground and less = "(\<prec>\<^sub>m)"
 proof unfold_locales
   have "totalp_on {expr. set_mset expr \<subseteq> range sub_from_ground} (multp (\<prec>))"
     using sub.totalp totalp_on_multp

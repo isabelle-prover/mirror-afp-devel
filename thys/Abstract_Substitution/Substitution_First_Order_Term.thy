@@ -138,7 +138,7 @@ lemma is_unifier_the_mgu: \<^marker>\<open>contributor \<open>Balazs Toth\<close
 
 lemma obtains_imgu_from_unifier_and_the_mgu: \<^marker>\<open>contributor \<open>Balazs Toth\<close>\<close>
   fixes \<upsilon> :: "('f, 'v) subst"
-  assumes "t \<cdot> \<upsilon> = t' \<cdot> \<upsilon>" "P t t' (Unification.the_mgu t t')"
+  assumes "t \<cdot> \<upsilon> = t' \<cdot> \<upsilon>" "P t t' (the_mgu t t')"
   obtains \<mu> :: "('f, 'v) subst"
   where "\<upsilon> = \<mu> \<circ>\<^sub>s \<upsilon>" "term_subst.is_imgu \<mu> {{t, t'}}" "P t t' \<mu>"
 proof
@@ -168,7 +168,7 @@ proof
     by blast
 
   show "P t t' (the_mgu t t')"
-    using assms(2).
+    using assms(2) .
 qed
 
 lemma obtains_imgu: \<^marker>\<open>contributor \<open>Balazs Toth\<close>\<close>

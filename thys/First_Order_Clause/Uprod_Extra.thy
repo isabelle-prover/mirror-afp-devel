@@ -110,4 +110,10 @@ global_interpretation uprod_functor: natural_functor_conversion where
   map' = map_uprod and to_set' = set_uprod
   by unfold_locales (auto simp: uprod.set_map uprod.map_comp)
 
+lemma uprod_mem_image_iff_prod_mem [simp]:
+  assumes "sym I"
+  shows "(Upair t t') \<in> (\<lambda>(t\<^sub>1, t\<^sub>2). Upair t\<^sub>1 t\<^sub>2) ` I \<longleftrightarrow> (t, t') \<in> I"
+  using \<open>sym I\<close>[THEN symD] 
+  by auto
+
 end

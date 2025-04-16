@@ -1,16 +1,13 @@
 theory Nonground_Selection_Function
   imports
-    Nonground_Clause
+    Nonground_Clause_Generic
     Selection_Function
 begin
 
-type_synonym 'f ground_select = "'f ground_atom clause \<Rightarrow> 'f ground_atom clause"
-type_synonym ('f, 'v) select = "('f, 'v) atom clause \<Rightarrow> ('f, 'v) atom clause"
-
-context nonground_clause
+context nonground_clause_generic
 begin
 
-definition is_select_grounding :: "('f, 'v) select \<Rightarrow> 'f ground_select \<Rightarrow> bool" where
+definition is_select_grounding :: "'a select \<Rightarrow> 'g select \<Rightarrow> bool" where
   "is_select_grounding select select\<^sub>G \<equiv> \<forall>C\<^sub>G. \<exists>C \<gamma>.
     clause.is_ground (C \<cdot> \<gamma>) \<and>
     C\<^sub>G = clause.to_ground (C \<cdot> \<gamma>) \<and>
@@ -19,12 +16,14 @@ definition is_select_grounding :: "('f, 'v) select \<Rightarrow> 'f ground_selec
 end
 
 locale nonground_selection_function =
-  nonground_clause +
+  nonground_clause_generic where atom_to_ground = atom_to_ground +
   selection_function select
-  for select :: "('f, 'v) atom clause \<Rightarrow> ('f, 'v) atom clause"
+for 
+  select :: "'a clause \<Rightarrow> 'a clause" and
+  atom_to_ground :: "'a \<Rightarrow> 'g"
 begin
 
-abbreviation is_grounding :: "'f ground_select \<Rightarrow> bool" where
+abbreviation is_grounding :: "'g select \<Rightarrow> bool" where
   "is_grounding select\<^sub>G \<equiv> is_select_grounding select select\<^sub>G"
 
 definition select\<^sub>G\<^sub>s where

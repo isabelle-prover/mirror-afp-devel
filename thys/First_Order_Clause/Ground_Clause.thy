@@ -4,6 +4,7 @@ theory Ground_Clause
     Ground_Term_Extra
     Ground_Context
     Uprod_Extra
+    Uprod_Literal_Functor
 begin
 
 type_synonym 'f gatom = "'f gterm uprod"

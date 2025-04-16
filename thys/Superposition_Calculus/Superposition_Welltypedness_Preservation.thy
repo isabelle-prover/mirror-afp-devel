@@ -32,7 +32,7 @@ proof (cases "(D, \<V>\<^sub>2)" "(E, \<V>\<^sub>1)" "(C, \<V>\<^sub>3)" rule: s
     by meson
 
   have "clause.is_welltyped \<V>\<^sub>3 (E \<cdot> \<rho>\<^sub>1)"
-    using E_is_welltyped clause.is_welltyped.typed_renaming[OF superpositionI(4, 18)]
+    using E_is_welltyped clause.welltyped_renaming[OF superpositionI(4, 18)]
     by blast
 
   then have E\<mu>_is_welltyped: "clause.is_welltyped \<V>\<^sub>3 (E \<cdot> \<rho>\<^sub>1 \<odot> \<mu>)"
@@ -40,7 +40,7 @@ proof (cases "(D, \<V>\<^sub>2)" "(E, \<V>\<^sub>1)" "(C, \<V>\<^sub>3)" rule: s
     by simp
 
   have "clause.is_welltyped \<V>\<^sub>3 (D \<cdot> \<rho>\<^sub>2)"
-    using D_is_welltyped clause.is_welltyped.typed_renaming[OF superpositionI(5, 19)]
+    using D_is_welltyped clause.welltyped_renaming[OF superpositionI(5, 19)]
     by blast
 
   then have D\<mu>_is_welltyped: "clause.is_welltyped \<V>\<^sub>3 (D \<cdot> \<rho>\<^sub>2 \<odot> \<mu>)"
@@ -87,7 +87,7 @@ proof (cases "(D, \<V>\<^sub>2)" "(E, \<V>\<^sub>1)" "(C, \<V>\<^sub>3)" rule: s
         by simp
 
       ultimately show ?thesis
-        using clause.is_welltyped.typed_renaming[OF superpositionI(5)]
+        using clause.welltyped_renaming[OF superpositionI(5)]
         unfolding superpositionI
         by blast
     qed
@@ -119,8 +119,8 @@ proof (cases "(D, \<V>\<^sub>2)" "(E, \<V>\<^sub>1)" "(C, \<V>\<^sub>3)" rule: s
             by auto
 
           then show ?thesis
-            unfolding term.welltyped.subst_stability[OF \<mu>_is_welltyped]
-            using that term.welltyped.subterm
+            unfolding term.welltyped_subst_stability[OF \<mu>_is_welltyped]
+            using that term.welltyped_subterm
             by meson
         qed
 
@@ -130,7 +130,7 @@ proof (cases "(D, \<V>\<^sub>2)" "(E, \<V>\<^sub>1)" "(C, \<V>\<^sub>3)" rule: s
             using
               \<tau> \<tau>'
               superpositionI(19)
-              term.welltyped.typed_renaming[OF superpositionI(5)]
+              term.welltyped_renaming[OF superpositionI(5)]
             unfolding superpositionI
             by(auto simp: Set.ball_Un)
 
@@ -145,7 +145,7 @@ proof (cases "(D, \<V>\<^sub>2)" "(E, \<V>\<^sub>1)" "(C, \<V>\<^sub>3)" rule: s
       qed
 
       then show ?thesis
-        using literal.is_welltyped.typed_renaming[OF superpositionI(5) \<V>\<^sub>2_\<V>\<^sub>3]
+        using literal.welltyped_renaming[OF superpositionI(5) \<V>\<^sub>2_\<V>\<^sub>3]
         unfolding superpositionI
         by simp
     qed
@@ -197,7 +197,7 @@ proof (cases "(D, \<V>\<^sub>2)" "(E, \<V>\<^sub>1)" "(C, \<V>\<^sub>3)" rule: s
         by simp
 
       ultimately show ?thesis
-        using clause.is_welltyped.typed_renaming[OF superpositionI(4)]
+        using clause.welltyped_renaming[OF superpositionI(4)]
         unfolding superpositionI
         by blast
     qed
@@ -225,13 +225,13 @@ proof (cases "(D, \<V>\<^sub>2)" "(E, \<V>\<^sub>1)" "(C, \<V>\<^sub>3)" rule: s
           using
             superpositionI(8)
             superposition_preserves_typing_D[OF superposition C_is_welltyped]
-            clause.is_welltyped.typed_renaming[OF superpositionI(5) superpositionI(19)]
+            clause.welltyped_renaming[OF superpositionI(5) superpositionI(19)]
           unfolding superpositionI
           by auto
 
         moreover have "literal.is_welltyped \<V>\<^sub>3 (\<P> (Upair (c\<^sub>1 \<cdot>t\<^sub>c \<rho>\<^sub>1)\<langle>t\<^sub>2' \<cdot>t \<rho>\<^sub>2\<rangle> (t\<^sub>1' \<cdot>t \<rho>\<^sub>1)))"
           using C_is_welltyped
-          unfolding superpositionI clause.is_welltyped.subst_stability[OF \<mu>_is_welltyped]
+          unfolding superpositionI clause.welltyped_subst_stability[OF \<mu>_is_welltyped]
           by simp
 
         ultimately show ?thesis
@@ -239,7 +239,7 @@ proof (cases "(D, \<V>\<^sub>2)" "(E, \<V>\<^sub>1)" "(C, \<V>\<^sub>3)" rule: s
       qed
 
       then show ?thesis
-        using literal.is_welltyped.typed_renaming[OF superpositionI(4) \<V>\<^sub>1_\<V>\<^sub>3]
+        using literal.welltyped_renaming[OF superpositionI(4) \<V>\<^sub>1_\<V>\<^sub>3]
         unfolding superpositionI
         by force
     qed

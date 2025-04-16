@@ -5,12 +5,70 @@ theory Term_Order_Lifting
     Term_Order_Notation
 begin
 
+locale atom_to_mset =
+  fixes 
+    pos_to_mset neg_to_mset :: "'a \<Rightarrow> 't multiset" 
+  assumes 
+    inj_pos_to_mset: "inj pos_to_mset" and
+    inj_neg_to_mset: "inj neg_to_mset" and
+    pos_neg_neq: "\<And>a a'. pos_to_mset a \<noteq> neg_to_mset a'"
+
 locale restricted_term_order_lifting =
-  term.order: restricted_wellfounded_total_strict_order where less = less\<^sub>t
-for less\<^sub>t :: "'t \<Rightarrow> 't \<Rightarrow> bool" +
-fixes literal_to_mset :: "'a literal \<Rightarrow> 't multiset"
-assumes inj_literal_to_mset: "inj literal_to_mset"
+  term.order: restricted_wellfounded_total_strict_order where less = less\<^sub>t +
+  atom_to_mset where pos_to_mset = pos_to_mset and neg_to_mset = neg_to_mset
+for 
+  less\<^sub>t :: "'t \<Rightarrow> 't \<Rightarrow> bool" and 
+  pos_to_mset neg_to_mset :: "'a \<Rightarrow> 't multiset"
 begin
+
+primrec literal_to_mset :: "'a literal \<Rightarrow> 't multiset" where
+  "literal_to_mset (Pos a) = pos_to_mset a" |
+  "literal_to_mset (Neg a) = neg_to_mset a"
+
+lemma inj_literal_to_mset: "inj literal_to_mset"
+proof(unfold inj_def, intro allI impI)
+  fix l l' :: "'a literal"
+  assume literal_to_mset: "literal_to_mset l = literal_to_mset l'"
+
+  then show "l = l'"
+  proof(cases l)
+    case l: (Pos a)
+    show ?thesis
+    proof(cases l')
+      case l': (Pos a')
+
+      show ?thesis
+        using literal_to_mset inj_pos_to_mset
+        unfolding l l' inj_def 
+        by auto
+    next
+      case l': (Neg a')
+
+      show ?thesis
+        using literal_to_mset pos_neg_neq
+        unfolding l l'
+        by auto
+    qed
+  next
+    case l: (Neg a)
+    then show ?thesis
+     proof(cases l')
+      case l': (Pos a')
+
+      show ?thesis
+        using literal_to_mset pos_neg_neq
+        unfolding l l'
+        by (metis literal_to_mset.simps)
+    next
+      case l': (Neg a')
+
+      show ?thesis
+        using literal_to_mset inj_neg_to_mset 
+        unfolding l l' inj_def
+        by auto
+    qed
+  qed
+qed
 
 sublocale term_order_notation.
 

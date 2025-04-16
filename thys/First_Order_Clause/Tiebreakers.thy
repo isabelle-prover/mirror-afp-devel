@@ -1,12 +1,12 @@
 theory Tiebreakers
-  imports Restricted_Order Nonground_Clause
+  imports Restricted_Order Nonground_Clause_Generic
 begin
 
-type_synonym ('f, 'v) tiebreakers = 
-  "'f gatom clause \<Rightarrow> ('f, 'v) atom clause \<Rightarrow> ('f, 'v) atom clause \<Rightarrow> bool"
+type_synonym ('g, 'a) tiebreakers = 
+  "'g clause \<Rightarrow> 'a clause \<Rightarrow> 'a clause \<Rightarrow> bool"
 
 locale tiebreakers =
-  fixes tiebreakers :: "('f, 'v) tiebreakers"
+  fixes tiebreakers :: "('g, 'a) tiebreakers"
   assumes "\<And>C\<^sub>G. wfp (tiebreakers C\<^sub>G) \<and> transp (tiebreakers C\<^sub>G)"
 begin
 

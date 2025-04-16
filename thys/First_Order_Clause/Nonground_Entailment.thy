@@ -1,7 +1,7 @@
 theory Nonground_Entailment
   imports
     Nonground_Context
-    Nonground_Clause
+    Nonground_Clause_With_Equality
     Term_Rewrite_System
     Entailment_Lifting
     Fold_Extra

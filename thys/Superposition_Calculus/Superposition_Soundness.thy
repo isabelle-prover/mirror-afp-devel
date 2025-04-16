@@ -37,7 +37,9 @@ proof (cases D C rule: eq_resolution.cases)
       \<gamma>'_is_ground_subst: "term_subst.is_ground_subst \<gamma>'" and
       \<gamma>'_is_welltyped: "is_welltyped \<V> \<gamma>'" and
       \<gamma>'_\<gamma>: "\<forall>x \<in> clause.vars C. \<gamma> x = \<gamma>' x"
-      using clause.welltyped.ground_subst_extension[OF C_is_ground \<gamma>_is_welltyped].
+
+      
+      using clause.welltyped_ground_subst_extension[OF C_is_ground \<gamma>_is_welltyped].
 
     let ?D\<^sub>G = "clause.to_ground (D \<cdot> \<mu> \<cdot> \<gamma>')"
     let ?l\<^sub>G = "literal.to_ground (l \<cdot>l \<mu> \<cdot>l \<gamma>')"
@@ -145,7 +147,7 @@ proof (cases D C rule: eq_factoring.cases)
       \<gamma>'_is_ground_subst: "term_subst.is_ground_subst \<gamma>'" and
       \<gamma>'_is_welltyped: "is_welltyped \<V> \<gamma>'" and
       \<gamma>'_\<gamma>: "\<forall>x \<in> clause.vars C. \<gamma> x = \<gamma>' x"
-      using clause.welltyped.ground_subst_extension[OF C_is_ground \<gamma>_is_welltyped].
+      using clause.welltyped_ground_subst_extension[OF C_is_ground \<gamma>_is_welltyped].
 
     let ?D\<^sub>G = "clause.to_ground (D \<cdot> \<mu> \<cdot> \<gamma>')"
     let ?D\<^sub>G' = "clause.to_ground (D' \<cdot> \<mu> \<cdot> \<gamma>')"
@@ -274,7 +276,7 @@ proof (cases D E C rule: superposition.cases)
       \<gamma>'_is_ground_subst: "term_subst.is_ground_subst \<gamma>'" and
       \<gamma>'_is_welltyped: "is_welltyped \<V>\<^sub>3 \<gamma>'" and
       \<gamma>'_\<gamma>: "\<forall>x \<in> clause.vars C. \<gamma> x = \<gamma>' x"
-      using clause.welltyped.ground_subst_extension[OF C_is_ground \<gamma>_is_welltyped].
+      using clause.welltyped_ground_subst_extension[OF C_is_ground \<gamma>_is_welltyped].
 
     let ?E\<^sub>G = "clause.to_ground (E \<cdot> \<rho>\<^sub>1 \<cdot> \<mu> \<cdot> \<gamma>')"
     let ?D\<^sub>G = "clause.to_ground (D \<cdot> \<rho>\<^sub>2 \<cdot> \<mu> \<cdot> \<gamma>')"
@@ -329,9 +331,9 @@ proof (cases D E C rule: superposition.cases)
     have is_welltyped_\<mu>_\<gamma>:
       "is_welltyped_on (clause.vars (E \<cdot> \<rho>\<^sub>1) \<union> clause.vars (D \<cdot> \<rho>\<^sub>2)) \<V>\<^sub>3 (\<mu> \<odot> \<gamma>')"
       using \<gamma>'_is_welltyped \<mu>_is_welltyped
-      by (simp add: term.welltyped.typed_subst_compose)
+      by (simp add: term.typed_subst_compose)
 
-    note is_welltyped_\<rho>_\<mu>_\<gamma> = term.welltyped.renaming_ground_subst[OF _ _ _ \<mu>_\<gamma>'_is_ground_subst]
+    note is_welltyped_\<rho>_\<mu>_\<gamma> = term.renaming_ground_subst[OF _ _ _ \<mu>_\<gamma>'_is_ground_subst]
 
     have "?E\<^sub>G \<in> clause.welltyped_ground_instances (E, \<V>\<^sub>1)"
     proof(

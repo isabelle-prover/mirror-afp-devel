@@ -9,19 +9,13 @@ text \<open>All property locales have corresponding lifting locales\<close>
 
 
 locale nonground_typing_lifting =
-  is_welltyped: typed_subst_stability_lifting where 
-    sub_welltyped = sub_welltyped and base_welltyped = "welltyped \<F>"
+   typed_subst_stability_lifting where 
+   sub_welltyped = sub_welltyped and base_welltyped = "welltyped \<F>"
 for \<F> :: "('f, 'ty) fun_types" and sub_welltyped :: "('v \<Rightarrow> 'ty) \<Rightarrow> 'sub \<Rightarrow> 'ty' \<Rightarrow> bool"
 
 locale example_typing_lifting =
   fixes \<F> :: "('f, 'ty) fun_types"
 begin
-
-sublocale equation:
-  typing_lifting' where
-    sub_welltyped = "welltyped \<F>" and
-  to_set = fset
-  by unfold_locales
 
 sublocale equation:
   nonground_typing_lifting where
@@ -34,29 +28,24 @@ sublocale equation:
 text \<open>Lifted lemmas and definitions\<close>
 thm
   equation.is_welltyped_def
-  equation.is_welltyped.subst_stability
+  equation.welltyped_subst_stability
 
 term equation.is_welltyped
 
 text \<open>We can lift multiple levels\<close>
-sublocale equation_set:
-  typing_lifting where
-    sub_welltyped = "equation.is_welltyped.welltyped \<V>" and
-  to_set = fset
-  by unfold_locales
 
 sublocale equation_set:
   nonground_typing_lifting where
   base_vars = vars_term and base_subst = subst_apply_term and map = fimage and
   to_set = fset and comp_subst = subst_compose and id_subst = Var and
   sub_vars = equation_subst.vars and sub_subst = equation_subst.subst and
-  sub_welltyped = equation.is_welltyped.welltyped
+  sub_welltyped = equation.welltyped
   by unfold_locales
 
 text \<open>Lifted lemmas and definitions\<close>
 thm
   equation_set.is_welltyped_def
-  equation_set.is_welltyped.subst_stability
+  equation_set.welltyped_subst_stability
 
 term equation_set.is_welltyped
 

@@ -171,7 +171,7 @@ next
         assume s_s': "(s, s') \<in> set es"
 
         have "is_welltyped \<V> (Var(x := t))"
-          using 3(4) term.welltyped.subst_update
+          using 3(4) term.welltyped_subst_update
           by auto
 
         then have "\<exists>\<tau>. welltyped \<V> (s \<cdot>t Var(x := t)) \<tau> \<and> welltyped \<V> (s' \<cdot>t Var(x := t)) \<tau>"
@@ -221,7 +221,7 @@ next
         by auto
 
       then have "is_welltyped \<V> (Var(x := ?t))"
-        using term.welltyped.subst_update
+        using term.welltyped_subst_update
         by auto
 
       then have "\<exists>\<tau>. welltyped \<V> (s \<cdot>t Var(x := ?t)) \<tau> \<and> welltyped \<V> (s' \<cdot>t Var(x := ?t)) \<tau>"

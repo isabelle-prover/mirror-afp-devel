@@ -360,14 +360,6 @@ proof(unfold inj_def, intro allI impI)
   qed
 qed
 
-(* TODO: Should be possible
-lemma
-  assumes "wfP (multp\<^sub>D\<^sub>M R)" (* "asymp (multp\<^sub>D\<^sub>M R)" "transp (multp\<^sub>D\<^sub>M R)" ? *)
-  shows "wfP R"
-  using assms
-  sorry
-*)
-
 (* TODO: everywhere less_eq \<rightarrow> lesseq *)
 lemma multp_image_lesseq_if_all_lesseq:
    assumes
@@ -459,5 +451,16 @@ lemma not_less_empty_multp: "\<not> multp R X {#}"
   using not_less_empty_mult
   unfolding multp_def
   by blast
+
+(* TODO: Adapt these in HOL-Library *)
+lemma trans_mult: "trans (mult r)"
+  unfolding mult_def
+  using trans_trancl 
+  by blast
+
+lemma transp_multp: "transp (multp r)"
+  using trans_mult
+  by (metis multp_def transD transp_onI)
+
 
 end

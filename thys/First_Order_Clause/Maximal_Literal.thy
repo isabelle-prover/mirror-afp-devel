@@ -1,6 +1,6 @@
 theory Maximal_Literal
   imports
-    Clausal_Calculus_Extra
+    Saturation_Framework_Extensions.Clausal_Calculus
     Min_Max_Least_Greatest.Min_Max_Least_Greatest_Multiset
     Restricted_Order
 begin

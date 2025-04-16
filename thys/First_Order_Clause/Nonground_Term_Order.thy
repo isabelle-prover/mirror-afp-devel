@@ -2,7 +2,8 @@ theory Nonground_Term_Order
   imports
     Nonground_Term
     Nonground_Context
-    Ground_Order
+    Ground_Term_Order 
+    Grounded_Order 
 begin
 
 locale ground_context_compatible_order =

@@ -1,19 +1,31 @@
 theory Ground_Order
-  imports Ground_Term_Order Term_Order_Lifting
+  imports Ground_Order_Generic
 begin
 
-locale ground_order =
-  term.order: ground_term_order +
-  term_order_lifting
+abbreviation (input) pos_to_mset where 
+  "pos_to_mset a \<equiv> {# a #}"
 
-(* TODO: Name *)
-locale ground_order_with_equality =
+abbreviation (input) neg_to_mset where 
+  "neg_to_mset a \<equiv> {# a, a #}"
+
+global_interpretation term_atom_to_mset: atom_to_mset where 
+  pos_to_mset = pos_to_mset and neg_to_mset = neg_to_mset
+proof unfold_locales
+
+  show "inj pos_to_mset"
+    by (simp add: inj_def)
+next
+
+  show "inj neg_to_mset"
+    by (meson add_eq_conv_ex empty_not_add_mset injI)
+qed simp
+
+locale ground_order =
   term.order: ground_term_order
 begin
 
-sublocale ground_order
-  where literal_to_mset = mset_lit
-  by unfold_locales (rule inj_mset_lit)
+sublocale ground_order_generic where pos_to_mset = pos_to_mset and neg_to_mset = neg_to_mset
+  by unfold_locales
 
 end
 

@@ -33,7 +33,7 @@ global_interpretation functional_substitution_typing where
 
 text \<open>A selection of substitution properties for typed terms.\<close>
 locale typed_term_subst_properties =
-  welltyped: base_typed_subst_stability where welltyped = "welltyped \<F>"
+  base_typed_subst_stability where welltyped = "welltyped \<F>"
   for \<F> :: "('f, 'ty) fun_types"
 
 global_interpretation "term": typed_term_subst_properties where
@@ -86,13 +86,10 @@ proof (unfold_locales)
   qed
 qed
 
-find_theorems name: "is_welltyped_subst_update"
-
 text \<open>Examples of generated lemmas and definitions\<close>
 thm
-  (* term.welltyped.right_unique *)
-  term.right_unique                        
-  term.welltyped.subst_stability
+  term.right_unique
+  term.welltyped_subst_stability
 
   is_welltyped_subst_update
   is_welltyped_on_subset

@@ -1,11 +1,11 @@
 theory Grounded_Selection_Function
   imports
     Nonground_Selection_Function
-    Nonground_Typing
+    Nonground_Typing_Generic
     HOL_Extra
 begin
 
-context nonground_typing
+context nonground_typing_generic
 begin
 
 abbreviation select_subst_stability_on_clause where
@@ -20,7 +20,7 @@ abbreviation select_subst_stability_on where
     select_subst_stability_on_clause select select\<^sub>G C\<^sub>G C \<V> \<gamma>"
 
 lemma obtain_subst_stable_on_select_grounding:
-  fixes select :: "('f, 'v) select"
+  fixes select :: "'a select"
   obtains select\<^sub>G where
     "select_subst_stability_on select select\<^sub>G N"
     "is_select_grounding select select\<^sub>G"
@@ -78,11 +78,12 @@ qed
 end
 
 locale grounded_selection_function =
-  nonground_selection_function select +
-  nonground_typing \<F>
-  for
-    select :: "('f, 'v :: infinite) atom clause \<Rightarrow> ('f, 'v) atom clause" and
-    \<F> :: "('f, 'ty) fun_types" +
+  nonground_selection_function where select = select and atom_subst = atom_subst +
+  nonground_typing_generic where \<F> = \<F> and atom_subst = atom_subst
+  for               
+    select :: "'a select" and
+    \<F> :: "('f, 'ty) fun_types" and
+    atom_subst :: "'a \<Rightarrow> ('f, 'v) subst \<Rightarrow> 'a" +
 fixes select\<^sub>G
 assumes select\<^sub>G: "is_select_grounding select select\<^sub>G"
 begin

@@ -10,18 +10,19 @@ begin
 
 locale grounded_superposition_calculus =
   superposition_calculus where select = select and \<F> = \<F> +
-  grounded_selection_function where select = select and \<F> = \<F>
+  grounded_selection_function where
+  select = select and \<F> = \<F> and atom_subst = "(\<cdot>a)" and atom_vars = atom.vars and
+  atom_to_ground = atom.to_ground and atom_from_ground = atom.from_ground and
+  atom_welltyped = atom.welltyped
   for
-    select :: "('f, 'v :: infinite) select" and
+    select :: "('f, 'v :: infinite) atom select" and
     \<F> :: "('f, 'ty) fun_types"
 begin
-
-sublocale nonground_inference.
 
 sublocale ground: ground_superposition_calculus where
   less\<^sub>t = "(\<prec>\<^sub>t\<^sub>G)" and select = select\<^sub>G
 rewrites
-  "multiset_extension.multiset_extension (\<prec>\<^sub>t\<^sub>G) mset_lit = (\<prec>\<^sub>l\<^sub>G)" and
+  "multiset_extension.multiset_extension (\<prec>\<^sub>t\<^sub>G) ground.literal_to_mset = (\<prec>\<^sub>l\<^sub>G)" and
   "multiset_extension.multiset_extension (\<prec>\<^sub>l\<^sub>G) (\<lambda>x. x) = (\<prec>\<^sub>c\<^sub>G)" and
   "\<And>l\<^sub>G C\<^sub>G. ground.is_maximal l\<^sub>G C\<^sub>G \<longleftrightarrow> ground_is_maximal l\<^sub>G C\<^sub>G" and
   "\<And>l\<^sub>G C\<^sub>G. ground.is_strictly_maximal l\<^sub>G C\<^sub>G \<longleftrightarrow> ground_is_strictly_maximal l\<^sub>G C\<^sub>G"

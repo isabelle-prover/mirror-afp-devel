@@ -5,13 +5,13 @@ theory Superposition_Example
     VeriComp.Well_founded
 begin
 
-lemma asymp_bot[iff]: "asymp \<bottom>"
+lemma asymp_bot [iff]: "asymp \<bottom>"
   by (simp add: asymp_on_def)
 
-lemma transp_bot[iff]: "transp \<bottom>"
+lemma transp_bot [iff]: "transp \<bottom>"
   by (simp add: transp_def)
 
-lemma wfp_bot[iff]: "wfp \<bottom>"
+lemma wfp_bot [iff]: "wfp \<bottom>"
   by (simp add: wfp_def)
 
 sublocale nonground_term_with_context \<subseteq>
@@ -71,28 +71,26 @@ locale trivial_superposition_example =
   ground_critical_pair_theorem "TYPE('f :: weighted)"
 begin
 
-sublocale nonground_term_with_context.
+(* TODO: Why is this needed? *)
+sublocale nonground_clause .
 
 abbreviation trivial_select :: "'a clause \<Rightarrow> 'a clause" where
   "trivial_select _ \<equiv> {#}"
 
-abbreviation unit_types where
-  "unit_types _ _ \<equiv> ([], ())"
-
-sublocale selection_function trivial_select
-  by unfold_locales auto
+abbreviation unit_typing where
+  "unit_typing _ _ \<equiv> ([], ())"
                                            
 sublocale
-  superposition_calculus
-    "trivial_select :: ('f , 'v :: infinite) select"
-    less_kbo
-    unit_types
-    trivial_tiebreakers
-  by unfold_locales (auto simp: UNIV_unit)
+  superposition_calculus where
+    select = "trivial_select :: (('f , 'v :: infinite) atom) select" and
+    less\<^sub>t = less_kbo and
+    \<F> = unit_typing and
+    tiebreakers = trivial_tiebreakers
+  by unfold_locales auto
 
 end
 
-context nonground_equality_order
+context nonground_order
 begin
 
 abbreviation select_max where
@@ -175,7 +173,8 @@ qed
 
 end
 
-instantiation nat :: infinite begin
+instantiation nat :: infinite 
+begin
 
 instance
   by intro_classes simp
@@ -208,12 +207,12 @@ begin
 
 sublocale nonground_term_with_context .
 
-sublocale nonground_equality_order less_kbo
+sublocale nonground_order less_kbo
   by unfold_locales
 
 sublocale
   superposition_calculus
-    "select_max :: (nat, nat) select"
+    "select_max :: (nat, nat) atom select"
     less_kbo
     types
     trivial_tiebreakers

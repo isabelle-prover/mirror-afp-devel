@@ -3,13 +3,15 @@ theory Untyped_Superposition
 begin
 
 locale untyped_superposition_calculus =
-  nonground_equality_order less\<^sub>t +
-  nonground_selection_function select +
+  nonground_order less\<^sub>t +
+  nonground_selection_function where
+  select = select and atom_subst = "(\<cdot>a)" and atom_vars = atom.vars and
+  atom_to_ground = atom.to_ground and atom_from_ground = atom.from_ground +
   ground_critical_pair_theorem "TYPE('f)"
   for
-    select :: "('f, 'v :: infinite) select" and
+    select :: "('f, 'v :: infinite) atom select" and
     less\<^sub>t :: "('f, 'v) term \<Rightarrow> ('f, 'v) term \<Rightarrow> bool" and
-    tiebreakers :: "('f, 'v) tiebreakers" +
+    tiebreakers :: "('f ground_atom, ('f, 'v) atom) tiebreakers" +
   assumes
     wfp_tiebreakers[iff]: "\<And>C\<^sub>G. wfp (tiebreakers C\<^sub>G)" and
     transp_tiebreakers[iff]: "\<And>C\<^sub>G. transp (tiebreakers C\<^sub>G)"
@@ -50,7 +52,7 @@ inductive superposition ::
    l\<^sub>2 = t\<^sub>2 \<approx> t\<^sub>2' \<Longrightarrow>
    C = add_mset (\<P> (Upair (c\<^sub>1 \<cdot>t\<^sub>c \<rho>\<^sub>1)\<langle>t\<^sub>2' \<cdot>t \<rho>\<^sub>2\<rangle> (t\<^sub>1' \<cdot>t \<rho>\<^sub>1))) (E' \<cdot> \<rho>\<^sub>1 + D' \<cdot> \<rho>\<^sub>2) \<cdot> \<mu> \<Longrightarrow>
    superposition D E C"
-if 
+if
   "\<P> \<in> {Pos, Neg}"
   "term_subst.is_renaming \<rho>\<^sub>1"
   "term_subst.is_renaming \<rho>\<^sub>2"

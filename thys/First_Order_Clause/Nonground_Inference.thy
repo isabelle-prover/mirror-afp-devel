@@ -1,8 +1,10 @@
 theory Nonground_Inference
-  imports Nonground_Clause Nonground_Typing
+  imports
+    Nonground_Clause_Generic
+    Inference_Functor
 begin
 
-locale nonground_inference = nonground_clause
+context nonground_clause_generic
 begin
 
 sublocale inference: term_based_lifting where

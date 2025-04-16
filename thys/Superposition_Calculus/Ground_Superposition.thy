@@ -2,7 +2,7 @@ theory Ground_Superposition
   imports
     Ground_Critical_Pairs
     First_Order_Clause.Selection_Function
-    First_Order_Clause.Ground_Order
+    First_Order_Clause.Ground_Order_With_Equality
     First_Order_Clause.Ground_Clause
 begin
 
@@ -10,7 +10,7 @@ section \<open>Superposition Calculus\<close>
 
 
 locale ground_superposition_calculus =
-  ground_order_with_equality where less\<^sub>t = less\<^sub>t +
+  ground_order where less\<^sub>t = less\<^sub>t +
   selection_function select +
   ground_critical_pair_theorem "TYPE('f)"
 for
@@ -107,7 +107,7 @@ next
     case (superpositionI L\<^sub>1 P\<^sub>1' L\<^sub>2 P\<^sub>2' \<P> s t s' t')
     thus ?thesis
       using superposition'I
-      by (metis literals_distinct(2))
+      by auto
   qed
 qed
 
@@ -137,7 +137,7 @@ proof (cases P\<^sub>2 P\<^sub>1 C rule: pos_superposition.cases)
   case (pos_superpositionI L\<^sub>1 P\<^sub>1' L\<^sub>2 P\<^sub>2' s t s' t')
   thus ?thesis
     using superpositionI
-    by (metis insert_iff)
+    by blast
 qed
 
 inductive neg_superposition ::
@@ -165,7 +165,7 @@ proof (cases P\<^sub>2 P\<^sub>1 C rule: neg_superposition.cases)
   case (neg_superpositionI L\<^sub>1 P\<^sub>1' L\<^sub>2 P\<^sub>2' s t s' t')
   then show ?thesis
     using superpositionI
-    by (metis insert_iff)
+    by blast
 qed
 
 lemma superposition_iff_pos_or_neg:
@@ -179,7 +179,7 @@ proof (rule iffI)
     then show ?thesis
       using pos_superpositionI[of P\<^sub>1 L\<^sub>1 P\<^sub>1' P\<^sub>2 L\<^sub>2 P\<^sub>2' s t s' t']
       using neg_superpositionI[of P\<^sub>1 L\<^sub>1 P\<^sub>1' P\<^sub>2 L\<^sub>2 P\<^sub>2' s t s' t']
-      by metis
+      by blast
   qed
 next
   assume "pos_superposition P\<^sub>2 P\<^sub>1 C \<or> neg_superposition P\<^sub>2 P\<^sub>1 C"

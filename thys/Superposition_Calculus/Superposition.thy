@@ -1,28 +1,29 @@
 theory Superposition
   imports
-    First_Order_Clause.Nonground_Order
+    First_Order_Clause.Nonground_Order_With_Equality
     First_Order_Clause.Nonground_Selection_Function
-    First_Order_Clause.Nonground_Typing
+    First_Order_Clause.Nonground_Typing_With_Equality
     First_Order_Clause.Typed_Tiebreakers
     First_Order_Clause.Welltyped_IMGU
 
     Ground_Superposition
 begin
 
-
 section \<open>Nonground Layer\<close>
 
 locale superposition_calculus =
   nonground_inhabited_typing \<F> +
-  nonground_equality_order less\<^sub>t +
-  nonground_selection_function select +
+  nonground_order less\<^sub>t +
+  nonground_selection_function where
+  select = select and atom_subst = "(\<cdot>a)" and atom_vars = atom.vars and
+  atom_to_ground = atom.to_ground and atom_from_ground = atom.from_ground +
   tiebreakers: tiebreakers tiebreakers +
   ground_critical_pair_theorem "TYPE('f)"
   for
-    select :: "('f, 'v :: infinite) select" and
+    select :: "('f, 'v :: infinite) atom select" and
     less\<^sub>t :: "('f, 'v) term \<Rightarrow> ('f, 'v) term \<Rightarrow> bool" and
     \<F> :: "('f, 'ty) fun_types" and
-    tiebreakers :: "('f, 'v) tiebreakers"
+    tiebreakers :: "('f ground_atom, ('f, 'v) atom) tiebreakers"
 begin
 
 interpretation term_order_notation.

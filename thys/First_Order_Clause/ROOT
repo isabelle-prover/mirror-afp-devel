@@ -13,14 +13,16 @@ session First_Order_Clause = Abstract_Substitution +
     Regular_Tree_Relations
     Saturation_Framework_Extensions
   theories
-    Ground_Typing
+    Ground_Term_Typing
     Grounded_Selection_Function
     Nonground_Entailment
     Nonground_Inference
     Nonground_Order
+    Nonground_Order_With_Equality
+    Nonground_Typing
+    Nonground_Typing_With_Equality
     Typed_Functional_Substitution_Example
     Typed_Functional_Substitution_Lifting_Example
     Typed_Tiebreakers
   document_files
     "root.tex"
-

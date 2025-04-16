@@ -18,7 +18,7 @@ notation multiset_extension (infix "\<prec>\<^sub>m" 50)
 sublocale strict_order "(\<prec>\<^sub>m)"
 proof unfold_locales
   show "transp (\<prec>\<^sub>m)"
-    using transp_multp[OF order.transp]
+    using transp_multp
     unfolding multiset_extension_def transp_on_def
     by blast
 next

@@ -97,11 +97,12 @@ proof(cases D\<^sub>G C\<^sub>G rule: ground.eq_resolution.cases)
           that
           obtain_maximal_literal[OF _ select_ground_subst[OF D_grounding]]
           unique_maximal_in_ground_clause[OF select_ground_subst[OF D_grounding]]
-        by (metis is_maximal_not_empty clause.magma_subst_empty)
+        by (metis (lifting) clause.magma_subst_empty(1) is_maximal_not_empty)
     qed
 
     moreover then have "selected_l \<in># D" if ?select\<^sub>G_not_empty
-      by (meson that maximal_in_clause mset_subset_eqD select_subset)
+      using that maximal_in_clause mset_subset_eqD select_subset
+      by metis
 
     ultimately show ?thesis
       using that
@@ -543,7 +544,7 @@ proof(cases D\<^sub>G E\<^sub>G C\<^sub>G rule: ground.superposition.cases)
       "positive_l\<^sub>1 \<cdot>l \<rho>\<^sub>1 \<odot> \<gamma> = literal.from_ground l\<^sub>G\<^sub>1"
     if "\<P>\<^sub>G = Pos"
       using obtain_strictly_maximal_literal[OF E_grounding]
-      by metis
+      by (metis (lifting))
 
     moreover then have "positive_l\<^sub>1 \<in># E" if "\<P>\<^sub>G = Pos"
       using that strictly_maximal_in_clause
@@ -560,7 +561,7 @@ proof(cases D\<^sub>G E\<^sub>G C\<^sub>G rule: ground.superposition.cases)
       using
         obtain_maximal_literal[OF E_not_empty E_grounding[folded clause.subst_comp_subst]]
         unique_maximal_in_ground_clause[OF E_grounding[folded clause.subst_comp_subst]]
-      by metis
+      by (metis (lifting))
 
     moreover then have "negative_maximal_l\<^sub>1 \<in># E" if "\<P>\<^sub>G = Neg" ?select\<^sub>G_empty
       using that maximal_in_clause
@@ -583,12 +584,12 @@ proof(cases D\<^sub>G E\<^sub>G C\<^sub>G rule: ground.superposition.cases)
           clause.magma_subst_empty)
 
     moreover then have "negative_selected_l\<^sub>1 \<in># E" if "\<P>\<^sub>G = Neg" ?select\<^sub>G_not_empty
-      using that
-      by (meson maximal_in_clause mset_subset_eqD select_subset)
+      using that maximal_in_clause mset_subset_eqD select_subset
+      by meson
 
     ultimately show ?thesis
       using that ground_superpositionI(9)
-      by (metis literals_distinct(1))
+      by (metis (lifting) literals_distinct(1))
   qed
 
   obtain E' where E: "E = add_mset l\<^sub>1 E'"
@@ -798,7 +799,7 @@ proof(cases D\<^sub>G E\<^sub>G C\<^sub>G rule: ground.superposition.cases)
               by simp
 
             show "is_welltyped_on (clause.vars E) \<V>\<^sub>1 (\<rho>\<^sub>1 \<odot> \<gamma>')"
-            proof(intro term.welltyped.typed_subst_compose \<rho>\<^sub>1_is_welltyped)
+            proof(intro term.typed_subst_compose \<rho>\<^sub>1_is_welltyped)
 
               have "welltyped \<V>\<^sub>1 ?t\<^sub>G (\<V>\<^sub>1 x)"
               proof-
@@ -839,7 +840,7 @@ proof(cases D\<^sub>G E\<^sub>G C\<^sub>G rule: ground.superposition.cases)
                     unfolding
                       D\<^sub>G_def
                       clause.to_ground_inverse[OF D_grounding]
-                      clause.is_welltyped.subst_stability[OF \<rho>\<^sub>2_\<gamma>_is_welltyped].
+                      clause.welltyped_subst_stability[OF \<rho>\<^sub>2_\<gamma>_is_welltyped].
 
                   then obtain \<tau> where
                     "welltyped \<V>\<^sub>2 (term.from_ground t\<^sub>G\<^sub>1) \<tau>"
@@ -848,7 +849,7 @@ proof(cases D\<^sub>G E\<^sub>G C\<^sub>G rule: ground.superposition.cases)
                     by auto
 
                   then show ?thesis
-                    using that term.welltyped.replace_\<V>_iff[of _ \<V>\<^sub>2 \<V>\<^sub>1]
+                    using that term.replace_\<V>_iff[of _ \<V>\<^sub>2 \<V>\<^sub>1]
                     by simp
                 qed
 
@@ -857,7 +858,7 @@ proof(cases D\<^sub>G E\<^sub>G C\<^sub>G rule: ground.superposition.cases)
               qed
 
               moreover have "is_welltyped_on (\<Union> (term.vars ` \<rho>\<^sub>1 ` clause.vars E)) \<V>\<^sub>1 \<gamma>"
-                by (intro term.welltyped.renaming_subst_compose \<rho>\<^sub>1_\<gamma>_is_welltyped \<rho>\<^sub>1_is_welltyped \<rho>\<^sub>1)
+                by (intro term.renaming_subst_compose \<rho>\<^sub>1_\<gamma>_is_welltyped \<rho>\<^sub>1_is_welltyped \<rho>\<^sub>1)
 
               ultimately show
                 "is_welltyped_on (\<Union> (term.vars ` \<rho>\<^sub>1 ` clause.vars E)) \<V>\<^sub>1 \<gamma>'"
@@ -1013,7 +1014,7 @@ proof(cases D\<^sub>G E\<^sub>G C\<^sub>G rule: ground.superposition.cases)
 
     then show ?thesis
       using obtain_strictly_maximal_literal[OF D_grounding] that
-      by metis
+      by (metis (lifting))
   qed
 
   then have l\<^sub>2_in_D: "l\<^sub>2 \<in># D"
@@ -1050,11 +1051,11 @@ proof(cases D\<^sub>G E\<^sub>G C\<^sub>G rule: ground.superposition.cases)
   proof(unfold Set.ball_Un, intro conjI)
 
     show "is_welltyped_on (clause.vars (E \<cdot> \<rho>\<^sub>1)) \<V>\<^sub>3 \<gamma>"
-      using clause.is_welltyped.renaming_grounding[OF \<rho>\<^sub>1 \<rho>\<^sub>1_\<gamma>_is_welltyped E_grounding \<V>\<^sub>1_\<V>\<^sub>3] .
+      using clause.renaming_grounding[OF \<rho>\<^sub>1 \<rho>\<^sub>1_\<gamma>_is_welltyped E_grounding \<V>\<^sub>1_\<V>\<^sub>3] .
   next
 
     show "is_welltyped_on (clause.vars (D \<cdot> \<rho>\<^sub>2)) \<V>\<^sub>3 \<gamma>"
-      using clause.is_welltyped.renaming_grounding[OF \<rho>\<^sub>2 \<rho>\<^sub>2_\<gamma>_is_welltyped D_grounding \<V>\<^sub>2_\<V>\<^sub>3] .
+      using clause.renaming_grounding[OF \<rho>\<^sub>2 \<rho>\<^sub>2_\<gamma>_is_welltyped D_grounding \<V>\<^sub>2_\<V>\<^sub>3] .
   qed
 
   obtain \<mu> \<sigma> where
@@ -1070,7 +1071,7 @@ proof(cases D\<^sub>G E\<^sub>G C\<^sub>G rule: ground.superposition.cases)
     proof-
       have "clause.is_welltyped \<V>\<^sub>2 (D \<cdot> \<rho>\<^sub>2 \<odot> \<gamma>)"
         using \<rho>\<^sub>2_\<gamma>_is_welltyped D_is_welltyped
-        by (metis clause.is_welltyped.subst_stability)
+        by (metis clause.welltyped_subst_stability)
 
       then obtain \<tau> where
         "welltyped \<V>\<^sub>2 (term.from_ground t\<^sub>G\<^sub>1) \<tau>"
@@ -1078,8 +1079,7 @@ proof(cases D\<^sub>G E\<^sub>G C\<^sub>G rule: ground.superposition.cases)
         by auto
 
       then have "welltyped \<V>\<^sub>3 (term.from_ground t\<^sub>G\<^sub>1) \<tau>"
-        using term.welltyped.is_ground_typed
-        by (meson term.ground_is_ground term.welltyped.is_ground_typed)
+        by (meson term.ground_is_ground term.is_ground_typed)
 
       then have "welltyped \<V>\<^sub>3 (t\<^sub>1 \<cdot>t \<rho>\<^sub>1 \<odot> \<gamma>) \<tau>" "welltyped \<V>\<^sub>3 (t\<^sub>2 \<cdot>t \<rho>\<^sub>2 \<odot> \<gamma>) \<tau>"
         using t\<^sub>1_\<gamma> t\<^sub>2_\<gamma>
@@ -1319,7 +1319,7 @@ proof(cases D\<^sub>G E\<^sub>G C\<^sub>G rule: ground.superposition.cases)
             (rule \<rho>\<^sub>1 \<rho>\<^sub>2 rename_apart D_is_welltyped E_is_welltyped refl \<V>\<^sub>1 \<V>\<^sub>2 \<V>\<^sub>3)?)
 
         show "inference.is_ground (Infer [D \<cdot> \<rho>\<^sub>2, E \<cdot> \<rho>\<^sub>1] C' \<cdot>\<iota> \<gamma>)"
-          using  D_grounding E_grounding C_grounding C'_\<gamma>
+          using D_grounding E_grounding C_grounding C'_\<gamma>
           by auto
       next
 
@@ -1572,7 +1572,7 @@ proof-
     \<rho>\<^sub>2_is_welltyped: "is_welltyped_on (clause.vars D) \<V>\<^sub>2 \<rho>\<^sub>2" and
     \<gamma>\<^sub>1_\<gamma>: "\<forall>x \<in> clause.vars E. \<gamma>\<^sub>1 x = (\<rho>\<^sub>1 \<odot> \<gamma>) x" and
     \<gamma>\<^sub>2_\<gamma>: "\<forall>x \<in> clause.vars D. \<gamma>\<^sub>2 x = (\<rho>\<^sub>2 \<odot> \<gamma>) x"
-    using clause.is_welltyped.obtain_merged_grounding[OF
+    using clause.obtain_merged_grounding[OF
             \<gamma>\<^sub>1_is_welltyped \<gamma>\<^sub>2_is_welltyped E_grounding D_grounding \<V>\<^sub>2 clause.finite_vars].
 
   have E_grounding: "clause.is_ground (E \<cdot> \<rho>\<^sub>1 \<odot> \<gamma>)"
@@ -1750,7 +1750,7 @@ proof-
 qed
 
 sublocale statically_complete_calculus "\<bottom>\<^sub>F" inferences entails_\<G> Red_I_\<G> Red_F_\<G>
-proof(unfold static_empty_ord_inter_equiv_static_inter,
+proof (unfold static_empty_ord_inter_equiv_static_inter,
     rule stat_ref_comp_to_non_ground_fam_inter,
     rule ballI)
   fix select\<^sub>G
