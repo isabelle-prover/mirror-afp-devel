@@ -39,12 +39,12 @@ qed auto
 lemma fraction_numeral_not_in_Ints [simp]:
   assumes "\<not>(numeral b :: int) dvd numeral a"
   shows   "numeral a / numeral b \<notin> (\<int> :: 'a :: {division_ring, ring_char_0} set)"
-  using fraction_not_in_ints[of "numeral b" "numeral a", where ?'a = 'a] assms by simp
+  using fraction_not_in_Ints[of "numeral b" "numeral a", where ?'a = 'a] assms by simp
 
 lemma fraction_numeral_not_in_Ints' [simp]:
   assumes "b \<noteq> Num.One"
   shows   "1 / numeral b \<notin> (\<int> :: 'a :: {division_ring, ring_char_0} set)"
-  using fraction_not_in_ints[of "numeral b" 1, where ?'a = 'a] assms by simp
+  using fraction_not_in_Ints[of "numeral b" 1, where ?'a = 'a] assms by simp
 
 lemmas [simp] = not_in_Ints_imp_not_in_nonpos_Ints minus_in_Ints_iff
 
