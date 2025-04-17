@@ -42,6 +42,65 @@ email = "coghetto_email"
 coghetto = "coghetto_email"
 
 [history]
+2021-01-31 = """
+Initial Version
+INITIAL:
+
+CREATE: Tarski_Neutral.thy
+==========================
+
+locale Tarski_neutral_dimensionless
+locale Tarski_2D
+
+context Tarski_neutral_dimensionless
+
+Definitions (with arity left,right)
+-----------------------------------
+OFSC(4,4) Cong3(3,3) Col(0,3) Bet4(0,4) BetS(0,3) FSC(4,4) IFSC(4,4)
+Le(2,2) Lt(2,2) Ge(2,2) Gt(2,2) Out(1,2) Midpoint(1,2) Per(0,3) PerpAt(1,4)
+Perp(2,2) Coplanar(0,4) TS(2,2) ReflectL(2,2) Reflect(2,2) InAngle(1,3)
+ParStrict(2,2) Par(2,2) Plg(0,4) ParallelogramStrict(0,4)
+ParallelogramFlat(0,4) Parallelogram(0,4) Rhombus(0,4) Rectangle(0,4)
+Square(0,4) Lambert(0,4) OS(0,4) TSP(3,2) OSP(3,2) Saccheri(0,4)
+ReflectLAt(1,4) ReflectAt(1,4) upper_dim_axiom[UpperDimAxiom](0,0)
+all_coplanar_axiom[AllCoplanarAxiom](0,0) CongA(3,3) LeA(3,3) LtA(3,3)
+GtA(3,3) Acute(0,3) Obtuse(0,3) OrthAt(1,4) Orth(3,3) SuppA(3,3) SumA(6,3)
+TriSumA(3,3) SAMS(0,6) Inter(1,4) Perp2(1,4) QCong(0,1) TarskiLen(0,3)
+QCongNull(0,1) QCongA(0,1) Ang(3,1) QCongAAcute(0,1) AngAcute(3,1)
+QCongANullAcute(0,1) QCongAnNull(0,1) QCongAnFlat(0,1) IsNullAngaP(0,1)
+QCongANull(0,1) AngFlat(0,1)
+tarski_s_parallel_postulate[TarskiParallelPostulate](0,0)
+euclid_5[Euclid5](0,0)
+euclid_s_parallel_postulate[EuclidSParallelPostulate](0,0)
+playfair_s_postulate[PlayFairSPostulate](0,0)
+
+Porting Files
+-------------
+
+theories/Main/Tarski_dev/Ch02_cong.v
+theories/Main/Tarski_dev/Ch03_bet.v
+theories/Main/Tarski_dev/Ch04_col.v
+theories/Main/Tarski_dev/Ch04_cong_bet.v
+theories/Main/Tarski_dev/Ch05_bet_le.v
+theories/Main/Tarski_dev/Ch06_out_lines.v
+theories/Main/Tarski_dev/Ch07_midpoint.v
+theories/Main/Tarski_dev/Ch08_orthogonality.v
+theories/Main/Tarski_dev/Ch09_plane.v
+theories/Main/Tarski_dev/Ch10_line_reflexivity.v
+theories/Main/Tarski_dev/Ch10_line_reflexivity_2.v
+theories/Main/Tarski_dev/Ch11_angles.v
+theories/Main/Annexes/suma.v
+theories/Main/Tarski_dev/Ch12_parallel.v
+theories/Main/Tarski_dev/Ch12_parallel_inter_dec.v
+theories/Main/Tarski_dev/Ch13_1.v
+theories/Main/Tarski_dev/Ch13_2_length.v
+theories/Main/Tarski_dev/Ch13_3_angles.v
+theories/Main/Meta_theory/Parallel_postulates/euclid_5_original_euclid.v
+theories/Main/Meta_theory/Parallel_postulates/tarski_euclid.v
+theories/Main/Meta_theory/Parallel_postulates/tarski_playfair.v
+
+(revision f5710bbb2d80) <br>
+"""
 
 [extra]
 
