@@ -1374,11 +1374,11 @@ name = "Roland Coghetto"
 
 [coghetto.emails.coghetto_email]
 user = [
-  "roland_coghetto",
+  "roland.coghetto",
 ]
 host = [
-  "hotmail",
-  "com",
+  "cafr-msa2p",
+  "be",
 ]
 
 [coghetto.homepages]
