@@ -1,8 +1,8 @@
-(* IsageoCoq
+(* IsaGeoCoq
 
 Port part of GeoCoq 3.4.0 (https://geocoq.github.io/GeoCoq/) in Isabelle/Hol (Isabelle2021)
 
-Copyright (C) 2021  Roland Coghetto roland_coghetto (at) hotmail.com
+Copyright (C) 2021-2025  Roland Coghetto roland_coghetto (at) cafr-msa2p.be
 
 License: LGPL
 
