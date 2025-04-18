@@ -4,6 +4,9 @@ session IsaGeoCoq = HOL +
   options [timeout = 600]
   theories
     Tarski_Neutral
+    Tarski_Neutral_2D
+    Tarski_Postulate_Parallels
+
   document_files
     "root.bib"
     "root.tex"
