@@ -104,6 +104,18 @@ theories/Main/Meta_theory/Parallel_postulates/tarski_playfair.v
 (revision f5710bbb2d80) <br>
 """
 
+2025-04-18 = """
+Split Tarski_Neutral.thy into 3 files:
+  Tarski_Neutral.thy
+  Tarski_Neutral_2D.thy
+  Tarski_Postulate_Parallels.thy
+Modify ROOT
+Move locale Tarski_neutral_2D and 2D-lemma to Tarski_Neutral_2D.thy
+Move 2D-lemma to Tarski_Neutral_2D.thy
+Move postulate-lemma to Tarski_postulate_Parallels.thy
+
+(revision 90b76ef4bc10) <br>
+"""
 [extra]
 
 [related]
