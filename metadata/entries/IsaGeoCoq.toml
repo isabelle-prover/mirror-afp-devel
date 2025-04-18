@@ -56,6 +56,8 @@ context Tarski_neutral_dimensionless
 
 Definitions (with arity left,right)
 -----------------------------------
+WARNING: Perp2(1,4): GeoCoq Perp2 A B C D E :: IsaGeoCoq E Perp2 A B C D
+
 OFSC(4,4) Cong3(3,3) Col(0,3) Bet4(0,4) BetS(0,3) FSC(4,4) IFSC(4,4)
 Le(2,2) Lt(2,2) Ge(2,2) Gt(2,2) Out(1,2) Midpoint(1,2) Per(0,3) PerpAt(1,4)
 Perp(2,2) Coplanar(0,4) TS(2,2) ReflectL(2,2) Reflect(2,2) InAngle(1,3)
