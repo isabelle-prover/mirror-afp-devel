@@ -118,8 +118,8 @@ Move postulate-lemma to Tarski_postulate_Parallels.thy
 """
 
 2025-04-19 = """
-New Definitions (with arity left,right)
----------------------------------------
+New Definitions (with arity left,right): Tarski_Neutral.thy
+-----------------------------------------------------------
 WARNING: Ar2p4(0,7): GeoCoq Ar2_4 O E E' A B C D :: IsaGeoCoq Ar2p4 PO E E' A B C D 
 
 EqLTarski(1,1) EqA(1,1)
@@ -141,8 +141,29 @@ Porting Files (context Tarski_neutral_dimensionless)
 
 Add some postulate-definition to Tarski_postulate_Paralles.thy, (forgot 2025-04-18)
 
+New Definitions (with arity left,right): Tarski_Neutral_Archimedes.thy
+----------------------------------------------------------------------
+WARNING: GeoCoq: Grad A B C :: IsaGeoCoq: Grad A B C <--> GradI A B C
+         Grad 'GeoCoq' === GradI 'IsaGeoCoq'
+	 
+greenberg_s_axiom[GreenBergsAxiom](0,0)
+aristotle_s_axiom[AristotleAxiom](0,0)
+Axiom1(0,0) PreGrad(0,4) (fun)Sym(0,3) (fun)Gradn(0,3) Grad(0,3)
+(inductive)GradI(0,3) Reach(0,4)
+archimedes_axiom[ArchimedesAxiom](0,0)
+(inductive)GradA(0,6) (inductive)GradAExp(0,6)
+Grad2(0,6) (fun)SymR(0,2) (fun)GradExpn(0,3) GradExp(0,3)
+GradExp2(0,6) (fun)MidR(0,2) (fun)GradExpInvn(0,3)
+GradExpInv(0,3)
 
-(revision 6f14e6fc) <br>
+Porting Files (context Tarski_neutral_dimensionless)
+-------------
+  theories/Axioms/continuity_axioms.v
+  theories/Main/Meta_theory/Continuity/grad.v
+  theories/Main/Meta_theory/Continuity/archimedes.v
+  
+(revision d8b69e02f8b3) <br>
+
 """
 
 [extra]

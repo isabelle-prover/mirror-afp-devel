@@ -155,9 +155,7 @@ fun GradExpInvn :: "'p \<Rightarrow> 'p \<Rightarrow> nat \<Rightarrow> 'p" wher
 definition GradExpInv :: "'p \<Rightarrow> 'p \<Rightarrow> 'p \<Rightarrow> bool" where
   "GradExpInv A B C \<equiv>  \<exists> n. B = GradExpInvn A C n"
 
-
-
-subsubsection "Propositions"
+subsection "Propositions"
 
 lemma PreGrad_lem1:
   assumes "A \<noteq> B" and 
