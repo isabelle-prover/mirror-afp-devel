@@ -118,5 +118,15 @@ lemma perp2_par:
   shows "A B Par C D"
   using Perp2_def l12_9_2D Perp_perm assms by blast
 
+lemma not_par_strict_inter_exists:
+  assumes "\<not> A1 B1 ParStrict A2 B2" 
+  shows "\<exists> X. Col X A1 B1 \<and> Col X A2 B2" 
+  using ParStrict_def all_coplanar assms by presburger
+
+lemma not_par_inter_exists:
+  assumes "\<not> A1 B1 Par A2 B2" 
+  shows "\<exists> X. Col X A1 B1 \<and> Col X A2 B2" 
+  using all_coplanar assms cop_npar__inter_exists by blast
+
 end
 end
