@@ -32,6 +32,50 @@ context Tarski_neutral_dimensionless
 
 begin
 
+section "Parallel's definition Postulate"
+
+definition tarski_s_parallel_postulate ::
+  "bool"
+  ("TarskiSParallelPostulate")
+  where
+    "tarski_s_parallel_postulate \<equiv> 
+
+     \<forall> A B C D T.
+     Bet A D T \<and> Bet B D C \<and> A \<noteq> D 
+\<longrightarrow>
+     (\<exists> X Y. Bet A B X \<and> Bet A C Y \<and> Bet X T Y)"
+
+definition euclid_5 ::
+  "bool" ("Euclid5")
+  where
+    "euclid_5 \<equiv> 
+
+     \<forall> P Q R S T U.
+     BetS P T Q \<and> BetS R T S \<and> BetS Q U R \<and> \<not> Col P Q S \<and> Cong P T Q T \<and> Cong R T S T
+\<longrightarrow>
+     (\<exists> I. BetS S Q I \<and> BetS P U I)"
+
+definition euclid_s_parallel_postulate ::
+  "bool" ("EuclidSParallelPostulate")
+  where
+    "euclid_s_parallel_postulate \<equiv> 
+
+     \<forall> A B C D P Q R.
+     B C OS A D \<and> SAMS A B C B C D \<and> A B C B C D SumA P Q R \<and> \<not> Bet P Q R 
+\<longrightarrow>
+     (\<exists> Y. B Out A Y \<and> C Out D Y)"
+
+definition playfair_s_postulate ::
+  "bool"
+  ("PlayfairSPostulate")
+  where
+    "playfair_s_postulate \<equiv> 
+
+     \<forall> A1 A2 B1 B2 C1 C2 P.
+     A1 A2 Par B1 B2 \<and> Col P B1 B2 \<and> A1 A2 Par C1 C2 \<and> Col P C1 C2 
+\<longrightarrow>
+     Col C1 B1 B2 \<and> Col C2 B1 B2"
+
 section "Some postulates of the parallels"
 
 lemma euclid_5__original_euclid:
