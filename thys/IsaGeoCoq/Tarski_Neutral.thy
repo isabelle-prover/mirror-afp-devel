@@ -89,11 +89,11 @@ Bet b q c
 
 and   lower_dim:  "\<not> Bet TPA TPB TPC \<and> \<not> Bet TPB TPC TPA \<and> \<not> Bet TPC TPA TPB"
 
+subsection "Definitions"
+
 context Tarski_neutral_dimensionless
 
 begin
-
-subsection "Definitions"
 
 definition OFSC ::
   "['p,'p,'p,'p,'p,'p,'p,'p] \<Rightarrow> bool"

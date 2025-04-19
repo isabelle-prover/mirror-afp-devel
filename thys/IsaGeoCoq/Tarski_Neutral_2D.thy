@@ -28,8 +28,9 @@ imports
 
 begin
 
+section "Tarski's axiom system for neutral geometry: 2D"
 
-subsection "Tarski's axiom system for neutral geometry: 2D"
+subsection "Definitions"
 
 locale Tarski_neutral_2D = Tarski_neutral_dimensionless +
   assumes upper_dim: "\<forall> a b c p q.
@@ -39,6 +40,9 @@ locale Tarski_neutral_2D = Tarski_neutral_dimensionless +
                       Cong c p c q
                       \<longrightarrow>
                       (Bet a b c \<or> Bet b c a \<or> Bet c a b)"
+
+subsection "Propositions"
+
 context Tarski_neutral_2D
 
 begin
