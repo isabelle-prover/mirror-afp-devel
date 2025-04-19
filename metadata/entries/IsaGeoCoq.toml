@@ -118,6 +118,19 @@ Move postulate-lemma to Tarski_postulate_Parallels.thy
 """
 
 2025-04-19 = """
+New Definitions (with arity left,right)
+---------------------------------------
+WARNING: Ar2p4(0,7): GeoCoq Ar2_4 O E E' A B C D :: IsaGeoCoq Ar2p4 PO E E' A B C D 
+
+EqLTarski(1,1) EqA(1,1)
+hypothesis_of_right_saccheri_quadrilaterals[HypothesisRightSaccheriQuadrilaterals](0,0)
+hypothesis_of_acute_saccheri_quadrilaterals[HypothesisAcuteSaccheriQuadrilaterals](0,0)
+hypothesis_of_obtuse_saccheri_quadrilaterals[HypothesisObtuseSaccheriQuadrilaterals](0,0)
+Defect(0,6) Ar1(0,5) Ar2(0,6) Pj(2,2) Sum(0,6) Proj(2,4) Sump(0,6)
+Prod(0,6) Prodp(0,6) Opp(0,5) Diff(0,6) sum3(0,7) Sum4(0,8) sum22(0,8) Ar2p4(0,7) 
+Ps(0,3) Ng(0,3) LtP(0,5) LeP(0,5) Length(0,6) IsLength(0,6) Sumg(0,6) Prodg(0,6)
+PythRel(0,6) SinEq(0,4) LtPs(0,5)
+
 Porting Files (context Tarski_neutral_dimensionless)
 -------------
   theories/Main/Meta_theory/Dimension_axioms/upper_dim_3.v
@@ -127,6 +140,7 @@ Porting Files (context Tarski_neutral_dimensionless)
   theories/Main/Highschool/triangles.v
 
 Add some postulate-definition to Tarski_postulate_Paralles.thy, (forgot 2025-04-18)
+
 
 (revision 6f14e6fc) <br>
 """
