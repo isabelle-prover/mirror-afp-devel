@@ -5,7 +5,7 @@
 theory Native_Word_Test_Emu
   imports
   Native_Word_Test
-  Code_Target_Int_Bit
+  Code_Target_Int_Integer_Conversion
 begin
 
 section \<open>Test cases for emulation of native words\<close>
@@ -14,7 +14,7 @@ subsection \<open>Tests for \<^typ>\<open>uint8\<close>\<close>
 
 text \<open>
   Test that \<^typ>\<open>uint8\<close> is emulated for OCaml via \<^typ>\<open>8 word\<close>
-  if \<^theory>\<open>Native_Word.Code_Target_Int_Bit\<close> is imported.
+  if \<^theory>\<open>Native_Word.Code_Target_Int_Integer_Conversion\<close> is imported.
 \<close>
 
 definition test_uint8_emulation :: bool
@@ -28,7 +28,7 @@ subsection \<open>Tests for \<^typ>\<open>uint16\<close>\<close>
 
 text \<open>
   Test that \<^typ>\<open>uint16\<close> is emulated for PolyML and OCaml via \<^typ>\<open>16 word\<close>
-  if \<^theory>\<open>Native_Word.Code_Target_Int_Bit\<close> is imported.
+  if \<^theory>\<open>Native_Word.Code_Target_Int_Integer_Conversion\<close> is imported.
 \<close>
 
 definition test_uint16_emulation :: bool

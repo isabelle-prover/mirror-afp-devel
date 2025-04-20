@@ -3,7 +3,8 @@ theory Lucas_Lehmer_Code
 imports
   Lucas_Lehmer
   "HOL-Library.Code_Target_Numeral"
-  "Native_Word.Code_Target_Int_Bit"
+  "HOL-Library.Code_Bit_Shifts_for_Arithmetic"
+  Native_Word.Code_Target_Int_Integer_Conversion
 begin
 
 subsection \<open>Efficient computation of remainders modulo a Mersenne number\<close>

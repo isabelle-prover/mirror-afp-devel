@@ -1,14 +1,13 @@
-(*  Title:      Code_Target_Int_Bit.thy
+(*  Title:      Code_Target_Int_Integer_Conversion.thy
     Author:     Andreas Lochbihler, ETH Zurich
 *)
 
-chapter \<open>Implementation of bit operations on int by target language operations\<close>
+chapter \<open>Implementation of conversion of integer to int\<close>
 
-theory Code_Target_Int_Bit
+theory Code_Target_Int_Integer_Conversion
   imports
     "HOL-Library.Code_Target_Int"
     Code_Int_Integer_Conversion
-    "HOL-Library.Code_Bit_Shifts_for_Arithmetic"
 begin
 
 lemma int_of_integer_symbolic_code [code drop: int_of_integer_symbolic, code]:

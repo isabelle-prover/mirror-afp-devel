@@ -14,7 +14,7 @@ begin
 text \<open>
   Restriction for OCaml code generation:
   OCaml does not provide an int8 type, so no special code generation 
-  for this type is set up. If the theory \<^text>\<open>Code_Target_Int_Bit\<close>
+  for this type is set up. If the theory \<^text>\<open>Code_Target_Int_Integer_Conversion\<close>
   is imported, the type \<open>uint8\<close> is emulated via \<^typ>\<open>8 word\<close>.
 \<close>
 

@@ -17,8 +17,9 @@ imports
   Arithmetic_Record_Based
   Native_Word.Uint32 
   Native_Word.Uint64
-  "HOL-Library.Code_Target_Numeral"  
-  Native_Word.Code_Target_Int_Bit
+  "HOL-Library.Code_Target_Numeral"
+  "HOL-Library.Code_Bit_Shifts_for_Arithmetic"
+  Native_Word.Code_Target_Int_Integer_Conversion
 begin
 
 (* mod on standard case which can immediately be mapped to 
