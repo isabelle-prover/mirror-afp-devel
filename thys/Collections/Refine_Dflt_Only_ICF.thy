@@ -3,7 +3,6 @@ theory Refine_Dflt_Only_ICF
 imports
   Refine_Monadic.Refine_Monadic
   "ICF/Collections"
-  "Lib/Code_Target_ICF"
 begin
 
 text \<open>Contains the Monadic Refinement Framework and the original

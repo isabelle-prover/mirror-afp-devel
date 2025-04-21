@@ -15,7 +15,6 @@ session "Separation_Logic_Imperative_HOL" = "HOL-Library" +
     "Tools/Imperative_HOL_Add"
     "Tools/Syntax_Match"
     Collections.HashCode
-    Collections.Code_Target_ICF
     Automatic_Refinement.Misc
   theories
     Sep_Main

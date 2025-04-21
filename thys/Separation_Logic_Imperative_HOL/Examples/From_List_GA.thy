@@ -3,8 +3,6 @@ theory From_List_GA
 imports Imp_Set_Spec Imp_List_Spec Hash_Set_Impl Array_Set_Impl
 begin
 
-term fold
-
   primrec from_list_ga_aux where
     "from_list_ga_aux ins [] s = return s"
   | "from_list_ga_aux ins (x#l) s 

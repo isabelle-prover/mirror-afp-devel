@@ -1,8 +1,9 @@
 section \<open>Example for locale-code\<close>
 theory Locale_Code_Ex
-imports 
+imports
   Locale_Code   
-  "../../Lib/Code_Target_ICF"
+  "HOL-Library.Code_Target_Numeral"
+  "HOL-Library.Code_Bit_Shifts_for_Arithmetic"
 begin
 
 definition [simp, code del]: "NOCODE \<equiv> id"
