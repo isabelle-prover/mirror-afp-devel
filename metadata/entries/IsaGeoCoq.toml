@@ -167,6 +167,155 @@ Porting Files (context Tarski_neutral_dimensionless)
 
 """
 
+2025-04-21 = """
+Tarski_Neutral_Archimedes.thy
+--------------------------------
+add section 'Equivalence Greenberg - Aristotle'
+add lemma aristotle__greenberg
+add lemma greenberg_aristotle
+   (Note GeoCoq: This proof is inspired by
+                 The elementary Archimedean axiom in absolute geometry, 
+                 by Victor Pambuccian *) 
+add theorem equiv_aristotle___greenberg
+
+New Definitions (with arity left,right): Tarski_Neutral_Parallels.thy
+---------------------------------------------------------------------
+
+decidability_of_intersection[decidability_of_intersection](0,0)
+alternate_interior_angles_postulate[AlternateInteriorAnglesPostulate](0,0)
+consecutive_interior_angles_postulate[ConsecutiveInteriorAnglesPostulate](0,0)
+alternative_playfair_s_postulate[AlternativePlayfairSPostulate](0,0)
+proclus_postulate[ProclusPostulate](0,0) triangle_postulate[TrianglePostulate](0,0)
+bachmann_s_lotschnittaxiom[BachmannsLotschnittaxiom](0,0)
+legendre_s_parallel_postulate[LegendresParallelPostulate](0,0)
+weak_inverse_projection_postulate[WeakInverseProjectionPostulate](0,0)
+weak_triangle_circumscription_principle[WeakTriangleCircumscriptionPrinciple](0,0)
+weak_tarski_s_parallel_postulate[WeakTarskiParallelPostulate](0,0)
+existential_playfair_s_postulate[ExistentialPlayfairPostulate](0,0)
+postulate_of_right_saccheri_quadrilaterals[PostulateRightSaccheriQuadrilaterals](0,0)
+postulate_of_existence_of_a_right_saccheri_quadrilateral[PostulateExistenceRightSaccheriQuadrilateral](0,0)
+postulate_of_existence_of_a_triangle_whose_angles_sum_to_two_rights[PostulateExistenceTriangleAnglesSumTwoRights](0,0)
+inverse_projection_postulate[inverse_projection_postulate](0,0)
+alternative_proclus_postulate[AlternativeProclusPostulate](0,0)
+strong_parallel_postulate[StrongParallelPostulate](0,0)
+triangle_circumscription_principle[TriangleCircumscriptionPrinciple](0,0)
+thales_converse_postulate[ThalesConversePostulate](0,0)
+existential_thales_postulate[ExistentialThalesPostulate](0,0)
+thales_postulate[ThalesPostulate](0,0)
+posidonius_postulate[PosidoniusPostulate](0,0)
+postulate_of_right_lambert_quadrilaterals[PostulateOfRightLambertQuadrilaterals](0,0)
+postulate_of_existence_of_a_right_lambert_quadrilateral[PostulateExistenceRightLambertQuadrilateral](0,0)
+postulate_of_existence_of_similar_triangles[PostulateOfExistenceOfSimilarTriangles](0,0)
+midpoint_converse_postulate[MidpointConversePostulate](0,0)
+postulate_of_transitivity_of_parallelism[PostulateOfTransitivityOfParallelism](0,0)
+perpendicular_transversal_postulate[PerpendicularTransversalPostulate](0,0)
+postulate_of_parallelism_of_perpendicular_transversals[PostulateOfParallelismOfPerpendicularTransversals](0,0)
+universal_posidonius_postulate[UniversalPosidoniusPostulate](0,0)
+alternative_strong_parallel_postulate[AlternativeStrongParallelPostulate](0,0)
+
+Redefinitions
+=============
+Postulate01:tarski_s_parallel_postulate
+Postulate17:euclid_5
+Postulate20:euclid_s_parallel_postulate
+Postulate02:playfair_s_postulate
+Postulate07:alternate_interior_angles_postulate
+Postulate08:consecutive_interior_angles_postulate
+Postulate12:alternative_playfair_s_postulate
+Postulate13:proclus_postulate
+Postulate03:triangle_postulate
+Postulate04:bachmann_s_lotschnittaxiom
+Postulate34:legendre_s_parallel_postulate
+Postulate31:weak_inverse_projection_postulate
+Postulate33:weak_triangle_circumscription_principle
+Postulate32:weak_tarski_s_parallel_postulate
+postulate35:existential_playfair_s_postulate
+Postulate27:postulate_of_right_saccheri_quadrilaterals
+Postulate28:postulate_of_existence_of_a_right_saccheri_quadrilateral
+Postulate21:postulate_of_existence_of_a_triangle_whose_angles_sum_to_two_rights
+Postulate16:inverse_projection_postulate
+Postulate14:alternative_proclus_postulate
+Postulate18:strong_parallel_postulate
+Postulate15:triangle_circumscription_principle
+Postulate25:thales_converse_postulate
+Postulate26:existential_thales_postulate
+Postulate24:thales_postulate
+Postulate22:posidonius_postulate
+Postulate29:postulate_of_right_lambert_quadrilaterals
+Postulate30:postulate_of_existence_of_a_right_lambert_quadrilateral
+Postulate23:postulate_of_existence_of_similar_triangles
+Postulate06:midpoint_converse_postulate
+Postulate05:postulate_of_transitivity_of_parallelism
+Postulate09:perpendicular_transversal_postulate
+Postulate10:postulate_of_parallelism_of_perpendicular_transversals
+Postulate11:universal_posidonius_postulate
+Postulate19:alternative_strong_parallel_postulate
+
+Porting Files (context Tarski_neutral_dimensionless)
+-------------
+Main/Meta_theory/Parallel_postulates/tarski_s_euclid_remove_degenerated_cases.v
+Main/Meta_theory/Parallel_postulates/alternate_interior_angles_consecutive_interior_angles.v
+Main/Meta_theory/Parallel_postulates/alternate_interior_angles_playfair_bis.v
+Main/Meta_theory/Parallel_postulates/alternate_interior_angles_proclus.v
+Main/Meta_theory/Parallel_postulates/alternate_interior_angles_triangle.v
+Main/Meta_theory/Parallel_postulates/bachmann_s_lotschnittaxiom_variant.v
+Main/Meta_theory/Parallel_postulates/bachmann_s_lotschnittaxiom_legendre_s_parallel_postulate.v
+Main/Meta_theory/Parallel_postulates/bachmann_s_lotschnittaxiom_weak_inverse_projection_postulate.v
+Main/Meta_theory/Parallel_postulates/bachmann_s_lotschnittaxiom_weak_triangle_circumscription_principle.v
+Main/Meta_theory/Parallel_postulates/consecutive_interior_angles_alternate_interior_angles.v
+Main/Meta_theory/Parallel_postulates/existential_playfair_rah.v
+Main/Meta_theory/Parallel_postulates/existential_saccheri_rah.v
+Main/Meta_theory/Parallel_postulates/existential_triangle_rah.v
+Main/Meta_theory/Parallel_postulates/inverse_projection_postulate_proclus_bis.v
+Main/Meta_theory/Parallel_postulates/SPP_ID.v
+Main/Meta_theory/Parallel_postulates/TCP_tarski.v
+Main/Meta_theory/Parallel_postulates/thales_converse_postulate_thales_existence.v
+Main/Meta_theory/Parallel_postulates/thales_converse_postulate_weak_triangle_circumscription_principle.v
+Main/Meta_theory/Parallel_postulates/thales_existence_rah.v
+Main/Meta_theory/Parallel_postulates/thales_postulate_thales_converse_postulate.v
+Main/Meta_theory/Parallel_postulates/triangle_existential_triangle.v
+Main/Meta_theory/Parallel_postulates/triangle_playfair_bis.v
+Main/Meta_theory/Parallel_postulates/rah_existential_saccheri.v
+Main/Meta_theory/Parallel_postulates/rah_posidonius_postulate.v
+Main/Meta_theory/Parallel_postulates/rah_rectangle_principle.v
+Main/Meta_theory/Parallel_postulates/rah_similar.v
+Main/Meta_theory/Parallel_postulates/rah_thales_postulate.v
+Main/Meta_theory/Parallel_postulates/rah_triangle.v
+Main/Meta_theory/Parallel_postulates/rectangle_principle_rectangle_existence.v
+Main/Meta_theory/Parallel_postulates/similar_rah.v
+Main/Meta_theory/Parallel_postulates/SPP_tarski.v
+Main/Meta_theory/Parallel_postulates/midpoint_playfair.v
+Main/Meta_theory/Parallel_postulates/playfair_par_trans.v
+Main/Meta_theory/Parallel_postulates/par_trans_playfair.v
+Main/Meta_theory/Parallel_postulates/par_perp_perp_par_perp_2_par.v
+Main/Meta_theory/Parallel_postulates/par_perp_2_par_par_perp_perp.v
+Main/Meta_theory/Parallel_postulates/par_perp_perp_playfair.v
+Main/Meta_theory/Parallel_postulates/playfair_universal_posidonius_postulate.v
+Main/Meta_theory/Parallel_postulates/weak_inverse_projection_postulate_bachmann_s_lotschnittaxiom.v
+Main/Meta_theory/Parallel_postulates/weak_triangle_circumscription_principle_bachmann_s_lotschnittaxiom.v
+Main/Meta_theory/Parallel_postulates/universal_posidonius_postulate_par_perp_perp.v
+Main/Meta_theory/Parallel_postulates/playfair_alternate_interior_angles.v
+Main/Meta_theory/Parallel_postulates/playfair_bis_playfair.v
+Main/Meta_theory/Parallel_postulates/playfair_midpoint.v
+Main/Meta_theory/Parallel_postulates/par_perp_perp_TCP.v
+Main/Meta_theory/Parallel_postulates/original_euclid_original_spp.v
+Main/Meta_theory/Parallel_postulates/original_spp_inverse_projection_postulate.v
+Main/Meta_theory/Parallel_postulates/proclus_bis_proclus.v
+Main/Meta_theory/Parallel_postulates/proclus_SPP.v
+Main/Meta_theory/Parallel_postulates/rectangle_existence_rah.v
+Main/Meta_theory/Parallel_postulates/posidonius_postulate_rah.v
+Main/Meta_theory/Parallel_postulates/playfair_existential_playfair.v
+Main/Meta_theory/Parallel_postulates/proclus_aristotle.v
+Main/Meta_theory/Continuity/aristotle.v
+Main/Meta_theory/Parallel_postulates/parallel_postulates.v
+Main/Meta_theory/Parallel_postulates/legendre.v
+Main/Meta_theory/Parallel_postulates/szmielew.v
+
+(revision 8bcb3f040eba) <br>
+
+"""
+
+
 [extra]
 
 [related]

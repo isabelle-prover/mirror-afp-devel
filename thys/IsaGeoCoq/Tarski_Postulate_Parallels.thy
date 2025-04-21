@@ -569,7 +569,7 @@ definition Postulate34 :: "bool" where
   "Postulate34 \<equiv> legendre_s_parallel_postulate"
 
 (* (35) existential_playfair_s_postulate *)
-definition Postulate35:: "bool" where 
+definition Postulate35 :: "bool" where 
   "Postulate35 \<equiv> existential_playfair_s_postulate"
 
 subsection "Propositions"
@@ -1238,6 +1238,7 @@ proof -
     using playfair_s_postulate_def
     by (metis \<open>\<And>P C2 C1 B2 B1 A2 A1. \<not> Col P A1 A2 \<and> A1 A2 Par B1 B2 \<and> Col P B1 B2 \<and> A1 A2 Par C1 C2 \<and> Col P C1 C2 \<Longrightarrow> Col C1 B1 B2 \<and> Col C2 B1 B2\<close>)
 qed
+
 lemma tarski_s_euclid_remove_degenerated_cases:
   assumes "\<forall> A B C D T. A \<noteq> B \<and> A \<noteq> C \<and> A \<noteq> D \<and> 
                         A \<noteq> T \<and> B \<noteq> C \<and> B \<noteq> D \<and> B \<noteq> T \<and> C \<noteq> D \<and>
@@ -1380,7 +1381,6 @@ qed
 *)
 
 (** The consecutive interior angles between two parallel lines are supplementary. *)
-
 
 lemma alternate_interior__consecutive_interior:
   assumes "AlternateInteriorAnglesPostulate"
@@ -10811,7 +10811,6 @@ proof -
     using universal_posidonius_postulate_def by blast
 qed
 
-(** ROLAND:remonter vers le bachmann... *)
 (** Formalization of a proof from Bachmann's article "Zur Parallelenfrage" *)
 
 lemma weak_inverse_projection_postulate__bachmann_s_lotschnittaxiom_aux:
@@ -14652,7 +14651,7 @@ lemma Axiom1ProofIsabelleHOL:
   shows "Axiom1" 
   using Axiom1_def by blast
 
-lemma equivalent_postulates_without_decidability_of_intersection_of_lines:
+theorem equivalent_postulates_without_decidability_of_intersection_of_lines:
   shows "(Postulate07 \<longleftrightarrow> Postulate12) \<and> 
          (Postulate12 \<longleftrightarrow> Postulate08) \<and>
          (Postulate08 \<longleftrightarrow> Postulate06) \<and> 
