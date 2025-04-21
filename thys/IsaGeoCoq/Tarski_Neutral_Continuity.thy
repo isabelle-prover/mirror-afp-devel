@@ -338,7 +338,7 @@ inductive FOF :: "bool \<Rightarrow> bool"
   | exists_fof : "FOF (\<exists> A::'p. P A)" if "FOF (P A)" for P :: "'p \<Rightarrow> bool"
 
 definition FirstOrderDedekind :: bool
-  ("FirstOrderDedeking" 50)
+  ("FirstOrderDedekind" 50)
   where
     "FirstOrderDedekind \<equiv> 
 \<forall> Alpha Beta :: 'p\<Rightarrow>bool.
