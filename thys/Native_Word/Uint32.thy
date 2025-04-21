@@ -8,7 +8,6 @@ theory Uint32
   imports
     Uint_Common
     Code_Target_Word
-    Code_Int_Integer_Conversion
 begin
 
 section \<open>Type definition and primitive operations\<close>
@@ -258,14 +257,13 @@ lemma Uint32_code [code]:
   including undefined_transfer and integer.lifting unfolding Uint32_signed_def
   apply transfer
   apply (subst word_of_int_via_signed)
-     apply (auto simp add: push_bit_of_1 mask_eq_exp_minus_1 word_of_int_via_signed cong del: if_cong)
+     apply (auto simp add: mask_eq_exp_minus_1 word_of_int_via_signed cong del: if_cong)
   done
 
 lemma Uint32_signed_code [code]:
   "Rep_uint32 (Uint32_signed i) = 
-  (if i < -(0x80000000) \<or> i \<ge> 0x80000000 then Rep_uint32 (undefined Uint32 i) else word_of_int (int_of_integer_symbolic i))"
-unfolding Uint32_signed_def Uint32_def int_of_integer_symbolic_def 
-by(simp add: Abs_uint32_inverse)
+  (if i < -(0x80000000) \<or> i \<ge> 0x80000000 then Rep_uint32 (undefined Uint32 i) else word_of_int (int_of_integer i))"
+  unfolding Uint32_signed_def Uint32_def by (simp add: Abs_uint32_inverse)
 
 end
 

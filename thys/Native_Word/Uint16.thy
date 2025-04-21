@@ -8,7 +8,6 @@ theory Uint16
   imports
     Uint_Common
     Code_Target_Word
-    Code_Int_Integer_Conversion
 begin
 
 text \<open>
@@ -19,8 +18,7 @@ text \<open>
   rather than \<open>SML\<close>.  This ensures that code generation still
   works as long as \<open>uint16\<close> is not involved.
   For the target \<open>SML\<close> itself, no special code generation 
-  for this type is set up. Nevertheless, it should work by emulation via \<^typ>\<open>16 word\<close>
-  if the theory \<^text>\<open>Code_Target_Int_Integer_Conversion\<close> is imported.
+  for this type is set up. Nevertheless, it should work by emulation via \<^typ>\<open>16 word\<close>.
 
   Restriction for OCaml code generation:
   OCaml does not provide an int16 type, so no special code generation 
@@ -242,8 +240,8 @@ lemma term_of_uint16_code [code]:
        (term_of_class.term_of (Rep_uint16' x))"
 by(simp add: term_of_anything)
 
-lemma Uint16_code [code]: "Rep_uint16 (Uint16 i) = word_of_int (int_of_integer_symbolic i)"
-unfolding Uint16_def int_of_integer_symbolic_def by(simp add: Abs_uint16_inverse)
+lemma Uint16_code [code]: "Rep_uint16 (Uint16 i) = word_of_int (int_of_integer i)"
+  by (fact Uint16.rep_eq)
 
 code_printing
   type_constructor uint16 \<rightharpoonup>

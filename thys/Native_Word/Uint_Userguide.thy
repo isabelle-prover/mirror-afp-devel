@@ -8,7 +8,6 @@ chapter \<open>User guide for native words\<close>
 theory Uint_Userguide imports
   Uint32
   Uint16
-  Code_Target_Int_Integer_Conversion
 begin
 (*>*)
 
@@ -49,9 +48,7 @@ text \<open>
   theory file for each type mentions at the top the restrictions for
   code generation. For example, PolyML does not provide the Word16
   structure, and OCaml provides neither Word8 nor Word16.
-  You can still use these theories provided that you also import
-  the theory @{theory Native_Word.Code_Target_Int_Integer_Conversion} (which implements
-  @{typ int} by target-language integers), but these words will
+  You can still use these theories, but these words will
   be implemented via Isabelle's \<open>Word\<close> library, i.e.,
   you do not gain anything in terms of efficiency.
 

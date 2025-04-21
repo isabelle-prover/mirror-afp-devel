@@ -8,14 +8,11 @@ theory Uint8
   imports
     Uint_Common
     Code_Target_Word
-    Code_Int_Integer_Conversion
 begin
 
 text \<open>
   Restriction for OCaml code generation:
-  OCaml does not provide an int8 type, so no special code generation 
-  for this type is set up. If the theory \<^text>\<open>Code_Target_Int_Integer_Conversion\<close>
-  is imported, the type \<open>uint8\<close> is emulated via \<^typ>\<open>8 word\<close>.
+  OCaml does not provide an int8 type, so no special code generation for this type is set up.
 \<close>
 
 section \<open>Type definition and primitive operations\<close>
@@ -248,8 +245,8 @@ lemma term_of_uint8_code [code]:
        (term_of_class.term_of (Rep_uint8' x))"
 by(simp add: term_of_anything)
 
-lemma Uin8_code [code]: "Rep_uint8 (Uint8 i) = word_of_int (int_of_integer_symbolic i)"
-unfolding Uint8_def int_of_integer_symbolic_def by(simp add: Abs_uint8_inverse)
+lemma Uint8_code [code]: "Rep_uint8 (Uint8 i) = word_of_int (int_of_integer i)"
+  by (fact Uint8.rep_eq)
 
 code_printing type_constructor uint8 \<rightharpoonup>
   (SML) "Word8.word" and

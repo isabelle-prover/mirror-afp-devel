@@ -4,7 +4,6 @@ theory Wasm_Interpreter_Printing_Pure
     Wasm_Type_Abs_Printing
     "HOL-Library.Code_Target_Numeral"
     "HOL-Library.Code_Bit_Shifts_for_Arithmetic"
-    Native_Word.Code_Target_Int_Integer_Conversion
 begin
 
 axiomatization where

@@ -8,7 +8,6 @@ theory Uint64
 imports
     Uint_Common
     Code_Target_Word
-    Code_Int_Integer_Conversion
 begin
 
 text \<open>
@@ -450,14 +449,13 @@ lemma Uint64_code [code]:
   including undefined_transfer and integer.lifting unfolding Uint64_signed_def
   apply transfer
   apply (subst word_of_int_via_signed)
-     apply (auto simp add: push_bit_of_1 mask_eq_exp_minus_1 word_of_int_via_signed cong del: if_cong)
+     apply (auto simp add: mask_eq_exp_minus_1 word_of_int_via_signed cong del: if_cong)
   done
 
 lemma Uint64_signed_code [code]:
   "Rep_uint64 (Uint64_signed i) = 
-  (if i < -(0x8000000000000000) \<or> i \<ge> 0x8000000000000000 then Rep_uint64 (undefined Uint64 i) else word_of_int (int_of_integer_symbolic i))"
-unfolding Uint64_signed_def Uint64_def int_of_integer_symbolic_def
-by(simp add: Abs_uint64_inverse)
+  (if i < -(0x8000000000000000) \<or> i \<ge> 0x8000000000000000 then Rep_uint64 (undefined Uint64 i) else word_of_int (int_of_integer i))"
+  unfolding Uint64_signed_def Uint64_def by (simp add: Abs_uint64_inverse)
 
 end
 
