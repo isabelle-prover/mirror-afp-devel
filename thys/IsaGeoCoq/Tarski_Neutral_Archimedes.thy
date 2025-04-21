@@ -41,8 +41,7 @@ definition greenberg_s_axiom ::
   ("GreenBergsAxiom")
   where
     "greenberg_s_axiom \<equiv> \<forall> P Q R A B C. 
-\<not> Col A B C \<and> Acute A B C \<and> Q \<noteq> R \<and> Per P Q R \<longrightarrow>
-(\<exists> S. P S Q LtA A B C \<and> Q Out S R)"
+ \<not> Col A B C \<and> Acute A B C \<and> Q \<noteq> R \<and> Per P Q R \<longrightarrow> (\<exists> S. P S Q LtA A B C \<and> Q Out S R)"
 
 definition aristotle_s_axiom ::
   "bool"
@@ -6677,6 +6676,869 @@ proof -
   thus ?thesis
     by blast
 qed
+
+subsection "Equivalence Greenberg - Aristotle"
+
+lemma aristotle__greenberg: 
+  assumes "aristotle_s_axiom" 
+  shows "greenberg_s_axiom" 
+proof -
+  {
+    fix P Q R A B C
+    assume "\<not> Col A B C" and
+      "Acute A B C" and "Q \<noteq> R" and "Per P Q R"
+    have "\<exists> S. P S Q LtA A B C \<and> Q Out S R" 
+    proof (cases "P = Q")
+      case True
+      have "P R P LtA A B C" 
+      proof -
+        have "P R P LeA A B C" 
+          using True \<open>Q \<noteq> R\<close> \<open>\<not> Col A B C\<close> 
+            lea121345 not_col_distincts by presburger
+        moreover
+        have "\<not> P R P CongA A B C" 
+          using \<open>\<not> Col A B C\<close> col_conga_col col_trivial_3 by blast
+        ultimately
+        show ?thesis 
+          by (simp add: LtA_def)
+      qed
+      moreover
+      have "P Out R R" 
+        using True \<open>Q \<noteq> R\<close> out_trivial by auto
+      ultimately
+      show ?thesis 
+        using True by blast
+    next
+      case False
+      have "\<exists> X Y. B Out A X \<and> B Out C Y \<and> Per B X Y \<and> P Q Lt X Y" 
+        using aristotle_s_axiom_def \<open>\<not> Col A B C\<close> 
+          \<open>Acute A B C\<close> assms by blast
+      then obtain X Y where "B Out A X" and "B Out C Y" and 
+        "Per B X Y" and "P Q Lt X Y" 
+        by blast
+      have "P Q Le X Y" 
+        by (simp add: \<open>P Q Lt X Y\<close> lt__le)
+      have "\<not> Cong P Q X Y" 
+        using \<open>P Q Lt X Y\<close> cong__nlt by blast
+      have "X \<noteq> Y" 
+        using \<open>P Q Lt X Y\<close> lt_diff by presburger
+      have "P \<noteq> Q" 
+        using False by blast
+      hence "\<exists> T. Q Out T P \<and> Cong Q T X Y" 
+        using l6_11_existence \<open>X \<noteq> Y\<close> by simp
+      then obtain T where "Q Out T P" and "Cong Q T X Y"
+        by blast 
+      have "X \<noteq> B" 
+        using \<open>B Out A X\<close> out_diff2 by blast
+      have "R \<noteq> Q" 
+        using \<open>Q \<noteq> R\<close> by auto
+      hence "\<exists> S. Q Out S R \<and> Cong Q S X B" 
+        using l6_11_existence \<open>R \<noteq> Q\<close> \<open>X \<noteq> B\<close> by simp
+      then obtain S where "Q Out S R" and "Cong Q S X B"
+        by blast 
+      have "Per S Q P" 
+      proof -
+        have "Per R Q P" 
+          using \<open>Per P Q R\<close> l8_2 by blast
+        moreover
+        have "Col Q R S" 
+          using \<open>Q Out S R\<close> l6_6 out_col by blast
+        ultimately
+        show ?thesis 
+          using l8_3 \<open>R \<noteq> Q\<close> by blast
+      qed
+      have "Per T Q S" 
+      proof -
+        have "Per P Q S" 
+          by (simp add: \<open>Per S Q P\<close> l8_2)
+        moreover
+        have" Col Q P T" 
+          by (simp add: \<open>Q Out T P\<close> l6_6 out_col)
+        ultimately
+        show ?thesis 
+          by (metis False l8_2 per_col)
+      qed
+      have "P \<noteq> S" 
+        using \<open>Per S Q P\<close> \<open>Q Out S R\<close> l6_3_1 l8_8 by blast
+      have "T \<noteq> S" 
+        using \<open>Per T Q S\<close> \<open>Q Out T P\<close> l6_3_1 l8_8 by blast
+      have "P S Q LtA A B C" 
+      proof -
+        have "P S Q CongA P S Q" 
+          by (metis \<open>P \<noteq> S\<close> \<open>Q Out S R\<close> conga_refl out_diff1)
+        moreover
+        have "T S Q CongA A B C" 
+        proof -
+          have "T S Q CongA X B Y" 
+            by (metis Per_cases cong_diff_3 \<open>Cong Q S X B\<close> 
+                \<open>Cong Q T X Y\<close> \<open>Per B X Y\<close> \<open>Per T Q S\<close> \<open>Q Out T P\<close> 
+                \<open>T \<noteq> S\<close> \<open>X \<noteq> B\<close> conga_right_comm l10_12 
+                l11_51 l6_3_1 not_cong_2143)
+          moreover
+          have "X B Y CongA A B C" 
+            by (simp add: \<open>B Out A X\<close> \<open>B Out C Y\<close> out2__conga)
+          ultimately
+          show ?thesis 
+            using not_conga by blast
+        qed
+        moreover
+        have "P S Q LtA T S Q" 
+        proof -
+          have "Q S P LeA Q S T"
+          proof -
+            have "P InAngle Q S T" 
+            proof -
+              have "Bet Q P T" 
+              proof -
+                have "Q Out P T" 
+                  by (simp add: \<open>Q Out T P\<close> l6_6)
+                moreover
+                have "Q P Le Q T" 
+                proof -
+                  have "Q P Le X Y" 
+                    using Le_cases \<open>P Q Le X Y\<close> by blast
+                  moreover
+                  have "X Y Le Q T" 
+                    by (simp add: \<open>Cong Q T X Y\<close> cong__le3412)
+                  ultimately
+                  show ?thesis 
+                    using le_transitivity by blast
+                qed
+                ultimately
+                show ?thesis 
+                  by (simp add: l6_13_1)
+              qed
+              moreover
+              have "P = S \<or> S Out P P" 
+                using out_trivial by blast
+              ultimately
+              show ?thesis 
+                using InAngle_def Out_def \<open>P \<noteq> S\<close> \<open>Q Out S R\<close> \<open>T \<noteq> S\<close> by auto
+            qed
+            moreover
+            have "Q S T CongA Q S T" 
+              by (metis \<open>Q Out S R\<close> \<open>T \<noteq> S\<close> conga_refl l6_3_1)
+            ultimately
+            show ?thesis 
+              by (simp add: inangle__lea)
+          qed
+          hence "P S Q LeA T S Q" 
+            by (simp add: lea_comm)
+          moreover
+          {
+            assume "P S Q CongA T S Q" 
+            have "Cong Q P Q T \<and> Cong S P S T \<and> Q P S CongA Q T S" 
+            proof -
+              {
+                assume "Col Q S P"
+                hence "Col S Q P" 
+                  using Col_cases by blast
+                hence "S = Q \<or> P = Q" 
+                  by (simp add: \<open>Per S Q P\<close> l8_9)
+                hence False 
+                  using False Out_def \<open>Q Out S R\<close> by blast
+              }
+              hence "\<not> Col Q S P" 
+                by blast
+              moreover
+              have "S Q P CongA S Q T" 
+                using \<open>Q Out S R\<close> \<open>Q Out T P\<close> out2__conga 
+                  out_diff1 out_trivial by force
+              moreover
+              have "Q S P CongA Q S T" 
+                by (simp add: \<open>P S Q CongA T S Q\<close> conga_comm)
+              moreover
+              have "Cong Q S Q S" 
+                by (simp add: cong_reflexivity)
+              ultimately
+              show ?thesis 
+                by (metis l11_50_1)
+            qed
+            have "Cong P Q X Y" 
+            proof -
+              have "Cong P Q T Q" 
+                using Cong_cases 
+                  \<open>Cong Q P Q T \<and> Cong S P S T \<and> Q P S CongA Q T S\<close> 
+                by blast
+              moreover
+              have "Cong T Q X Y" 
+                by (meson \<open>Cong Q T X Y\<close> not_cong_2134)
+              ultimately
+              show ?thesis 
+                using cong_transitivity by blast
+            qed
+            hence False 
+              using \<open>\<not> Cong P Q X Y\<close> by auto
+          }
+          hence "\<not> P S Q CongA T S Q" 
+            by auto
+          ultimately
+          show ?thesis 
+            by (simp add: LtA_def)
+        qed
+        ultimately
+        show ?thesis 
+          using conga_preserves_lta by blast
+      qed
+      moreover
+      have "Q Out S R" 
+        by (simp add: \<open>Q Out S R\<close>)
+      ultimately
+      show ?thesis 
+        by blast
+    qed
+  }
+  thus ?thesis 
+    by (simp add: greenberg_s_axiom_def)
+qed
+
+(** This proof is inspired by The elementary Archimedean axiom in absolute geometry, 
+by Victor Pambuccian *)
+
+lemma greenberg__aristotle:
+  assumes "greenberg_s_axiom" 
+  shows "aristotle_s_axiom" 
+proof -  
+  {
+    fix P Q A B C
+    assume "\<not> Col A B C" and "Acute A B C"
+    obtain D' where "A B Perp D' B" and "A B OS C D'" 
+      using \<open>\<not> Col A B C\<close> col_trivial_2 l10_15 by blast
+    have "\<exists> X. Col A B X \<and> A B Perp C X" 
+      using \<open>\<not> Col A B C\<close> l8_18_existence by auto
+    then obtain X where "Col A B X" and "A B Perp C X" 
+      by blast
+    have "\<exists> X Y. B Out A X \<and> B Out C Y \<and> Per B X Y \<and> P Q Lt X Y" 
+    proof (cases "P = Q")
+      case True
+      have "B Out A X" 
+      proof -
+        have "Acute C B A" 
+          by (simp add: \<open>Acute A B C\<close> acute_sym)
+        moreover
+        have "Col B A X" 
+          using \<open>Col A B X\<close> not_col_permutation_4 by blast
+        moreover
+        have "B A Perp C X" 
+          by (simp add: perp_left_comm \<open>A B Perp C X\<close>)
+        ultimately
+        show ?thesis 
+          using acute_col_perp__out l6_6 by blast
+      qed
+      moreover
+      have "B Out C C" 
+        by (metis \<open>\<not> Col A B C\<close> col_trivial_2 out_trivial)
+      moreover
+      have "Per B X C" 
+      proof (cases "B = X")
+        case True
+        thus ?thesis 
+          using l8_20_1_R1 by force
+      next
+        case False
+        have "Col A B B" 
+          using col_trivial_2 by blast
+        thus ?thesis 
+          by (metis \<open>Col A B X\<close> \<open>A B Perp C X\<close> False perp_col2 perp_per_1)
+      qed
+      moreover
+      have "X \<noteq> C" 
+        using \<open>Col A B X\<close> \<open>\<not> Col A B C\<close> by auto
+      hence "P P Lt X C" 
+        using lt1123 by simp
+      ultimately
+      show ?thesis 
+        using True by blast
+    next
+      case False
+      hence "P \<noteq> Q" 
+        by simp
+      have "B \<noteq> D'" 
+        using \<open>A B OS C D'\<close> os_distincts by blast
+      then obtain P' where "B Out D' P'" and "Cong B P' P Q" 
+        using segment_construction_3 \<open>P \<noteq> Q\<close> by blast
+      have "\<exists> C'. P' C' B LtA A B C \<and> B Out C' A" 
+      proof -
+        have "B \<noteq> A" 
+          using \<open>\<not> Col A B C\<close> col_trivial_1 by blast
+        moreover
+        have "Per P' B A" 
+          by (metis Perp_cases \<open>A B Perp D' B\<close>
+              \<open>B Out D' P'\<close> l8_20_1_R1 out_col
+              perp_col perp_per_1)
+        ultimately
+        show ?thesis 
+          using  \<open>\<not> Col A B C\<close> \<open>Acute A B C\<close> 
+            greenberg_s_axiom_def assms by blast
+      qed
+      then obtain C' where "P' C' B LtA A B C" and "B Out C' A" 
+        by blast
+      have "\<exists> D''. B C' Perp D'' C' \<and> B C' OS C D''" 
+      proof -
+        have "Col B C' C'" 
+          using col_trivial_2 by blast
+        moreover
+        have "\<not> Col B C' C" 
+          by (metis Out_def \<open>B Out C' A\<close> \<open>\<not> Col A B C\<close>
+              col_transitivity_1 not_col_permutation_4 out_col)
+        ultimately
+        show ?thesis 
+          by (simp add: l10_15)
+      qed
+      then obtain D'' where "B C' Perp D'' C'" and "B C' OS C D''" 
+        by blast
+      have "C' \<noteq> D''" 
+        using \<open>B C' Perp D'' C'\<close> perp_not_eq_2 by blast
+      then obtain P'' where "C' Out D'' P''" and "Cong C' P'' P Q"
+        using False segment_construction_3 by blast 
+      have "B \<noteq> C" 
+        using \<open>\<not> Col A B C\<close> col_trivial_2 by blast
+      have "B \<noteq> P''" 
+        by (metis Col_cases \<open>B C' OS C D''\<close> 
+            \<open>C' Out D'' P''\<close> one_side_not_col124 out_col)
+      then obtain Z where "B Out C Z" and "Cong B Z B P''" 
+        using segment_construction_3 \<open>B \<noteq> C\<close> by blast 
+      have "\<not> Col A B Z" 
+        by (metis Col_cases Out_def \<open>B Out C Z\<close>
+            \<open>\<not> Col A B C\<close> l6_16_1 out_col)
+      then obtain Z' where "Col A B Z'" and "A B Perp Z Z'" 
+        using l8_18_existence by blast
+      have "B Out A Z'" 
+        by (metis \<open>A B Perp Z Z'\<close> \<open>Acute A B C\<close> 
+            \<open>B Out C Z\<close> \<open>B Out C' A\<close> \<open>Col A B Z'\<close> 
+            acute_col_perp__out acute_out2__acute 
+            acute_sym bet2__out l6_3_1 l6_6 
+            not_col_permutation_4 perp_left_comm)
+      moreover
+      have "B Out C Z" 
+        by (simp add: \<open>B Out C Z\<close>)
+      moreover
+      have "Per B Z' Z" 
+      proof -
+        have "A B Perp Z' Z" 
+          using Perp_perm \<open>A B Perp Z Z'\<close> by blast
+        moreover
+        have "Z \<noteq> B" 
+          using \<open>\<not> Col A B Z\<close> col_trivial_2 by blast
+        moreover
+        have "Col A B Z'" 
+          by (simp add: \<open>Col A B Z'\<close>)
+        moreover
+        have "Col A B B" 
+          by (simp add: col_trivial_2)
+        ultimately
+        show ?thesis 
+          by (meson l8_16_1 \<open>A B Perp Z Z'\<close> l8_2)
+      qed
+      moreover
+      have "C' P'' Lt Z' Z" 
+      proof -
+        have "Per B Z' Z" 
+          by (simp add: calculation(3))
+        moreover
+        have "Per B C' P''" 
+          by (metis out_distinct \<open>B C' Perp D'' C'\<close> 
+              \<open>C' Out D'' P''\<close> out_col perp_col1 
+              perp_comm perp_per_2)
+        moreover
+        have "B Z' Lt B C'" 
+        proof -
+          have "B C' P' CongA A B P''" 
+          proof -
+            have "B C' P' CongA C' B P''" 
+            proof -
+              have "P' B C' CongA P'' C' B" 
+              proof -
+                have "B P' Perp C' B" 
+                proof -
+                  have "B D' Perp C' B" 
+                  proof -
+                    have "B A Perp B D'" 
+                      using Perp_perm \<open>A B Perp D' B\<close> by blast
+                    moreover
+                    have "C' \<noteq> B" 
+                      using \<open>B Out C' A\<close> l6_3_1 by auto
+                    moreover
+                    have "Col B A C'" 
+                      using Out_cases \<open>B Out C' A\<close> out_col by blast
+                    moreover
+                    have "Col B A B" 
+                      by (simp add: col_trivial_3)
+                    ultimately
+                    show ?thesis 
+                      using perp_col0 by blast
+                  qed
+                  moreover
+                  have "B \<noteq> P'" 
+                    using \<open>B Out D' P'\<close> out_distinct by blast
+                  moreover
+                  have "Col B D' B" 
+                    by (simp add: col_trivial_3)
+                  moreover
+                  have "Col B D' P'" 
+                    using \<open>B Out D' P'\<close> out_col by auto
+                  ultimately
+                  show ?thesis 
+                    using perp_col by blast
+                qed
+                hence "Per P' B C'" 
+                  using perp_per_1 by blast
+                moreover
+                have "P' \<noteq> B" 
+                  using \<open>B Out D' P'\<close> out_diff2 by auto
+                moreover
+                have "C' \<noteq> B" 
+                  using \<open>P' C' B LtA A B C\<close> lta_distincts by blast
+                moreover
+                have "Per P'' C' B" 
+                  using \<open>Per B C' P''\<close> l8_2 by blast
+                moreover
+                have "P'' \<noteq> C'" 
+                  using False \<open>Cong C' P'' P Q\<close> cong_diff_3 by blast
+                moreover
+                have "B \<noteq> C'" 
+                  using calculation(3) by auto
+                ultimately
+                show ?thesis 
+                  by (simp add: l11_16)
+              qed
+              moreover
+              have "Cong B P' C' P''" 
+                by (meson \<open>Cong B P' P Q\<close> \<open>Cong C' P'' P Q\<close>
+                    cong_inner_transitivity cong_symmetry)
+              moreover
+              have "Cong B C' C' B" 
+                using cong_pseudo_reflexivity by blast
+              moreover
+              have "P' \<noteq> C'" 
+                using \<open>P' C' B LtA A B C\<close> lta_distincts by blast
+              ultimately
+              show ?thesis 
+                using l11_49 by blast
+            qed
+            moreover
+            have "C' Out B B" 
+              using \<open>P' C' B LtA A B C\<close> 
+                lta_distincts out_trivial by blast
+            moreover
+            have "C' \<noteq> P'" 
+              using \<open>P' C' B LtA A B C\<close> lta_distincts by blast
+            hence "C' Out P' P'" 
+              using out_trivial by auto
+            moreover
+            have "B Out A C'" 
+              using Out_cases \<open>B Out C' A\<close> by auto
+            moreover
+            have "B Out P'' P''" 
+              using \<open>B \<noteq> P''\<close> out_trivial by auto
+            ultimately
+            show ?thesis 
+              using l11_10 by blast
+          qed
+          have "P'' InAngle Z' B Z"
+          proof -
+            have "P'' InAngle A B C" 
+            proof -
+              have "A B P'' LeA A B C" 
+              proof -
+                have "B C' P' LeA A B C" 
+                  by (meson \<open>P' C' B LtA A B C\<close> 
+                      lea_left_comm lta__lea)
+                moreover
+                have "B C' P' CongA A B P''" 
+                  by (simp add: \<open>B C' P' CongA A B P''\<close>)
+                moreover
+                have "A B C CongA A B C" 
+                  using \<open>Acute A B C\<close> acute_distincts
+                    conga_refl by blast
+                ultimately
+                show ?thesis 
+                  using l11_30 by blast
+              qed
+              moreover
+              have "A B OS C P''" 
+              proof -
+                have "A B OS C D''" 
+                proof -
+                  have "A \<noteq> B" 
+                    using \<open>\<not> Col A B C\<close> not_col_distincts by blast
+                  moreover
+                  have "Col B C' A" 
+                    by (simp add: \<open>B Out C' A\<close> out_col)
+                  moreover
+                  have "Col B C' B" 
+                    by (simp add: col_trivial_3)
+                  ultimately
+                  show ?thesis 
+                    using \<open>B C' OS C D''\<close> col2_os__os by blast
+                qed
+                moreover
+                have "A B OS D'' P''" 
+                proof -
+                  have "\<not> Col B C' D''" 
+                    using \<open>B C' OS C D''\<close> col124__nos by blast
+                  hence "\<not> Col A B D''" 
+                    using calculation col124__nos by blast
+                  moreover
+                  have "Col A B C'" 
+                    using \<open>B Out C' A\<close> col_permutation_2 out_col by blast
+                  moreover
+                  have "C' Out D'' P''" 
+                    using \<open>C' Out D'' P''\<close> by auto
+                  ultimately
+                  show ?thesis using out_one_side_1 by blast
+                qed
+                ultimately
+                show ?thesis 
+                  using one_side_transitivity by blast
+              qed
+              ultimately
+              show ?thesis 
+                by (simp add: lea_in_angle)
+            qed
+            moreover
+            have "B Out Z' A" 
+              by (simp add: \<open>B Out A Z'\<close> l6_6)
+            moreover
+            have "B Out Z C" 
+              using Out_cases \<open>B Out C Z\<close> by blast
+            moreover
+            have "B Out P'' P''" 
+              using \<open>B \<noteq> P''\<close> out_trivial by auto
+            ultimately
+            show ?thesis 
+              using l11_25 by blast
+          qed
+          hence H3: "Z' \<noteq> B \<and> Z \<noteq> B \<and> P'' \<noteq> B \<and>
+                 (\<exists> X. Bet Z' X Z \<and> (X = B \<or> B Out X P''))" 
+            using InAngle_def by blast
+          then consider T where "Bet Z' T Z" and "T = B \<or> B Out T P''" 
+            by blast
+
+          have "\<exists> T. Bet Z' T Z \<and> (Bet B T P'' \<or> Bet B P'' T)" 
+          proof - 
+            have "T = B \<longrightarrow> (Bet B T P'' \<or> Bet B P'' T)" 
+              using between_trivial2 by auto 
+            moreover
+            {
+              assume "B Out T P''" 
+              hence "Bet B T P'' \<or> Bet B P'' T" 
+                using Out_def by blast
+            }
+            ultimately
+            show ?thesis 
+              by (metis Out_def 
+                  \<open>\<And>thesis. (\<And>T. \<lbrakk>Bet Z' T Z; T = B \<or> B Out T P''\<rbrakk> \<Longrightarrow> thesis) \<Longrightarrow> thesis\<close> 
+                  between_trivial2)
+          qed
+          then obtain T where "Bet Z' T Z" and "Bet B T P'' \<or> Bet B P'' T" 
+            by blast
+          have "Z Z' Par C' P''" 
+          proof -
+            have "Coplanar B C' Z C'"     
+              by (meson ncop_distincts)
+            moreover
+            have "Coplanar B C' Z P''" 
+            proof -
+              have "Coplanar B Z C C'" 
+                using Out_cases \<open>B Out C Z\<close> out__coplanar by blast
+              moreover
+              have "Coplanar C' P'' D'' B" 
+                using Out_cases \<open>C' Out D'' P''\<close> out__coplanar by blast
+              moreover
+              have "Coplanar C' B D'' C" 
+                using \<open>B C' OS C D''\<close> ncoplanar_perm_7 os__coplanar by blast
+              moreover have "\<not> Col B C' D''" 
+                using \<open>B C' OS C D''\<close> one_side_not_col124 by auto
+              moreover have "\<not> Col B C' C" 
+                using \<open>B C' OS C D''\<close> col123__nos by blast
+              moreover have "Coplanar B C' Z C" 
+                using calculation(1) ncoplanar_perm_3 by blast
+              moreover have "Coplanar C' B P'' D''" 
+                using calculation(2) ncoplanar_perm_3 by blast
+              moreover have "Coplanar C' C B D''" 
+                using calculation(3) ncoplanar_perm_3 by blast
+              ultimately
+              show ?thesis 
+                by (meson col_permutation_4 coplanar_perm_1 l9_30 ncop_distincts)
+            qed
+            moreover
+            have "Coplanar B C' Z' C'" 
+              by (meson ncop_distincts)
+            moreover
+            have "Coplanar B C' Z' P''" 
+              using \<open>B Out A Z'\<close> \<open>B Out C' A\<close> l6_7 out__coplanar by blast
+            moreover
+            have "Z Z' Perp B C'" 
+              by (metis Out_cases Perp_cases \<open>A B Perp Z Z'\<close> 
+                  \<open>B C' Perp D'' C'\<close> \<open>B Out C' A\<close> out_col 
+                  perp_col1 perp_not_eq_1)
+            moreover
+            have "C' P'' Perp B C'" 
+              by (metis False Perp_perm \<open>B C' Perp D'' C'\<close> 
+                  \<open>C' Out D'' P''\<close> \<open>Cong C' P'' P Q\<close> cong_diff_3 
+                  out_col perp_col1)
+            ultimately
+            show ?thesis 
+              using l12_9 by blast
+          qed
+          {
+            assume "T = Z"
+            have "A B P'' CongA A B C" 
+            proof -
+              have "B Out A A" 
+                using \<open>B Out C' A\<close> out_diff2 out_trivial by blast
+              moreover
+              have "B Out P'' C" 
+                using \<open>B Out C Z\<close> \<open>Bet B T P'' \<or> Bet B P'' T\<close> 
+                  \<open>Cong B Z B P''\<close> \<open>T = Z\<close> between_cong 
+                  cong_symmetry l6_6 by blast
+              ultimately
+              show ?thesis 
+                by (meson l6_6 out2__conga)
+            qed
+            hence "P' C' B CongA A B C" 
+              by (meson conga_trans \<open>B C' P' CongA A B P''\<close> conga_left_comm)
+            hence False 
+              using \<open>P' C' B LtA A B C\<close> lta_not_conga by blast
+          }
+          hence "T \<noteq> Z" 
+            by auto
+          have "T \<noteq> Z'" 
+            by (metis Col_cases \<open>A B OS C D'\<close> \<open>B C' P' CongA A B P''\<close>
+                \<open>B Out A Z'\<close> \<open>B Out C' A\<close> \<open>B Out D' P'\<close>
+                \<open>Bet B T P'' \<or> Bet B P'' T\<close> bet_col ncol_conga_ncol
+                one_side_not_col123 one_side_not_col124 out_one_side)
+          {
+            assume "T = P''" 
+            have "Acute B T Z" 
+              by (metis \<open>B \<noteq> P''\<close> \<open>Cong B Z B P''\<close> \<open>T = P''\<close>
+                  \<open>T \<noteq> Z\<close> cong__acute not_cong_3412)
+            have "Obtuse B T Z" 
+            proof -
+              have "Acute B T Z'" 
+              proof -
+                have "Per B Z' T" 
+                proof -
+                  have "A B Perp T Z'" 
+                  proof -
+                    have "Z Z' Perp A B" 
+                      by (meson Perp_perm \<open>A B Perp Z Z'\<close>)
+                    moreover
+                    have "Col Z Z' T" 
+                      by (simp add: Col_def \<open>Bet Z' T Z\<close>)
+                    moreover
+                    have "Col Z Z' Z'" 
+                      using not_col_distincts by auto
+                    ultimately
+                    show ?thesis 
+                      using \<open>T \<noteq> Z'\<close> perp_col0 by blast
+                  qed
+                  moreover
+                  have "Z' \<noteq> B" 
+                    by (simp add: H3)
+                  moreover
+                  have "Col A B B" 
+                    by (simp add: col_trivial_2)
+                  ultimately
+                  show ?thesis 
+                    by (meson \<open>Col A B Z'\<close> perp_col2 perp_per_1)
+                qed
+                hence "Per B Z' T \<or> Obtuse B Z' T" 
+                  by simp
+                thus ?thesis 
+                  by (metis acute_sym \<open>T \<noteq> Z'\<close> H3 l11_43)
+              qed
+              moreover
+              have "B T Z' SuppA B T Z" 
+              proof-
+                have "Z' \<noteq> T" 
+                  using \<open>T \<noteq> Z'\<close> by auto
+                moreover
+                have "T \<noteq> B" 
+                  using \<open>B \<noteq> P''\<close> \<open>T = P''\<close> by blast
+                moreover
+                have "T \<noteq> Z" 
+                  by (simp add: \<open>T \<noteq> Z\<close>)
+                moreover
+                have "Bet Z' T Z" 
+                  using \<open>Bet Z' T Z\<close> by auto
+                ultimately
+                show ?thesis 
+                  by (simp add: bet__suppa suppa_left_comm)
+              qed
+              ultimately
+              show ?thesis 
+                using acute_suppa__obtuse by blast
+            qed
+            hence False 
+              using \<open>B \<noteq> P''\<close> \<open>Cong B Z B P''\<close> \<open>T = P''\<close> 
+                \<open>T \<noteq> Z\<close> acute__not_obtuse cong__acute 
+                not_cong_3412 by blast
+          }
+          hence "T \<noteq> P''" 
+            by blast
+          {
+            assume "Bet B P'' T"
+            have "Obtuse Z T B" 
+            proof -
+              have "Acute B T Z'" 
+              proof -
+                have "Z' \<noteq> B" 
+                  using H3 by blast
+                moreover
+                have "Z' \<noteq> T" 
+                  using \<open>T \<noteq> Z'\<close> by auto
+                moreover
+                have "Per B Z' T \<or> Obtuse B Z' T" 
+                  by (metis Per_perm l8_3 \<open>Bet Z' T Z\<close> \<open>Per B Z' Z\<close> 
+                      bet_col bet_col1 bet_neq23__neq 
+                      calculation(2) col_transitivity_1)
+                ultimately
+                show ?thesis 
+                  by (meson acute_sym l11_43)
+              qed
+              moreover
+              have "B  T Z' SuppA Z T B" 
+              proof -
+                have "Z' \<noteq> T" 
+                  using \<open>T \<noteq> Z'\<close> by fastforce
+                moreover
+                have "T \<noteq> B" 
+                  using \<open>B \<noteq> P''\<close> \<open>Bet B P'' T\<close> bet_neq32__neq by blast
+                ultimately
+                show ?thesis 
+                  by (simp add: \<open>T \<noteq> Z\<close> \<open>Bet Z' T Z\<close> 
+                      bet__suppa suppa_comm)
+              qed
+              ultimately
+              show ?thesis 
+                using acute_suppa__obtuse by blast
+            qed
+            have "B Z T LtA B T Z" 
+            proof -
+              have "Acute B Z T" 
+              proof -
+                have "T \<noteq> B" 
+                  using \<open>B \<noteq> P''\<close> \<open>Bet B P'' T\<close> between_identity by blast
+                moreover
+                have "Per B T Z \<or> Obtuse B T Z" 
+                  using \<open>Obtuse Z T B\<close> obtuse_sym by blast
+                ultimately
+                show ?thesis 
+                  by (simp add:  \<open>T \<noteq> Z\<close> \<open>Obtuse Z T B\<close> 
+                      acute_sym l11_43_aux)
+              qed
+              moreover
+              have "Obtuse B T Z" 
+                by (simp add: \<open>Obtuse Z T B\<close> obtuse_sym)
+              ultimately
+              show ?thesis 
+                using acute_obtuse__lta by blast
+            qed
+            moreover
+            have "B T Z LtA B Z T" 
+            proof -
+              have "\<not> Col Z B T" 
+                by (metis NCol_perm \<open>Bet Z' T Z\<close> \<open>Col A B Z'\<close>
+                    \<open>T \<noteq> Z\<close> H3 \<open>\<not> Col A B Z\<close> bet_out_1 
+                    col_trivial_2 l6_21 out_col)
+              moreover
+              have "B Z Lt B T" 
+                by (metis nlt__le \<open>B \<noteq> P''\<close> \<open>Bet B P'' T\<close> 
+                    \<open>Cong B Z B P''\<close> \<open>T \<noteq> P''\<close> bet_out between_equality_2 
+                    cong_reflexivity l5_6 l6_13_1 l6_6)
+              ultimately
+              show ?thesis 
+                using col_permutation_3 l11_44_2 by blast
+            qed
+            ultimately
+            have False 
+              using not_and_lta by blast
+          }
+          hence "Bet B T P''" 
+            using \<open>Bet B T P'' \<or> Bet B P'' T\<close> by auto
+          have "C' P'' Par Z Z'" 
+            by (simp add: \<open>Z Z' Par C' P''\<close> par_symmetry)
+          have "Col Z Z' T" 
+            using Col_def \<open>Bet Z' T Z\<close> by blast
+          have "\<not> Col C' P'' T" 
+            by (metis Col_cases H3 \<open>Bet B T P''\<close> \<open>Col A B Z'\<close> 
+                \<open>Col Z Z' T\<close> \<open>T = P'' \<Longrightarrow> False\<close> \<open>Z Z' Par C' P''\<close> \<open>\<not> Col A B Z\<close> 
+                bet_col col2__eq not_strict_par2)
+          hence "C' P'' ParStrict Z Z'" 
+            using par_not_col_strict \<open>C' P'' Par Z Z'\<close> 
+              \<open>Col Z Z' T\<close> by blast
+          have "Z Z' OS C' P''" 
+            by (simp add: \<open>C' P'' ParStrict Z Z'\<close> pars__os3412)
+          have "P'' Out T B" 
+            by (simp add: \<open>Bet B T P''\<close> \<open>T \<noteq> P''\<close> bet_out_1)
+          have "B Out C' Z'" 
+            using \<open>B Out A Z'\<close> \<open>B Out C' A\<close> l6_7 by blast
+          hence "Bet B Z' C' \<or> Bet B C' Z'" 
+            using Out_def by force
+          {
+            assume "Bet B Z' C'"
+            have "Z' \<noteq> C'" 
+              using \<open>Z Z' OS C' P''\<close> col123__nos col_trivial_2 by blast
+            hence "B Z' Lt B C'" 
+              using bet__lt1213 by (simp add: \<open>Bet B Z' C'\<close>)
+          }
+          moreover
+          {
+            assume "Bet B C' Z'"
+            have "Z Z' TS B P''" 
+            proof -
+              have "\<not> Col P'' Z Z'" 
+                by (metis \<open>Col A B Z'\<close> \<open>Col Z Z' T\<close> 
+                    \<open>P'' InAngle Z' B Z\<close> \<open>P'' Out T B\<close> \<open>\<not> Col A B Z\<close> 
+                    \<open>\<not> Col C' P'' T\<close> col_permutation_1 colx 
+                    inangle_distincts not_col_distincts out_col)
+              moreover
+              have "Col T Z Z'" 
+                by (simp add: Col_def \<open>Bet Z' T Z\<close>)
+              moreover
+              have "Bet B T P''" 
+                using \<open>Bet B T P''\<close> by blast
+              ultimately
+              show ?thesis
+                by (metis \<open>Col A B Z'\<close> \<open>P'' InAngle Z' B Z\<close> 
+                    \<open>\<not> Col A B Z\<close> bet_col inangle_distincts l6_21 l9_18_R2
+                    not_col_distincts not_col_permutation_2
+                    not_col_permutation_5)
+            qed
+            moreover
+            have "Z Z' OS B C'" 
+              by (metis \<open>Bet B C' Z'\<close> \<open>Z Z' OS C' P''\<close> 
+                  bet_out between_symmetry col_trivial_2 l9_19_R2 
+                  one_side_not_col123 one_side_symmetry)
+            ultimately
+            have False 
+              using \<open>Z Z' OS C' P''\<close> l9_9 one_side_transitivity by blast
+            hence "B Z' Lt B C'" 
+              by blast
+          }
+          thus ?thesis 
+            using \<open>Bet B Z' C' \<or> Bet B C' Z'\<close> calculation by fastforce
+        qed
+        ultimately
+        show ?thesis 
+          using  \<open>Cong B Z B P''\<close> cong_lt_per2__lt_1 by blast
+      qed
+      hence "P Q Lt Z' Z" 
+        by (meson \<open>Cong C' P'' P Q\<close> cong__nlt le3456_lt__lt nle__lt)
+      ultimately
+      show ?thesis 
+        by blast
+    qed
+  }
+  thus ?thesis 
+    by (simp add: aristotle_s_axiom_def)
+qed
+
+theorem equiv_aristotle___greenberg: 
+  shows  "aristotle_s_axiom \<longleftrightarrow> greenberg_s_axiom"
+  using aristotle__greenberg greenberg__aristotle by blast
 
 end
 end
