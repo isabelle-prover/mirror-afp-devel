@@ -4,6 +4,7 @@ imports
   More_Infinite_Products
   Q_Analogues
   "Gauss_Sums.Complex_Roots_Of_Unity"
+  "Lambert_Series.Lambert_Series"
 begin
 
 subsection \<open>Definition and basic properties\<close>
@@ -1229,5 +1230,85 @@ lemma tendsto_euler_phi [tendsto_intros]:
   assumes [tendsto_intros]: "(f \<longlongrightarrow> c) F" and "norm c < 1"
   shows   "((\<lambda>x. euler_phi (f x)) \<longlongrightarrow> euler_phi c) F"
   unfolding euler_phi_def using assms by (auto intro!: tendsto_intros)
+
+lemma uniform_limit_euler_phi:
+  fixes A :: "complex set"
+  assumes A: "compact A" "A \<subseteq> ball 0 1"
+  shows "uniform_limit A (\<lambda>n q. \<Prod>k<n. 1 - q ^ Suc k) euler_phi sequentially"
+proof -
+  have "uniform_limit (A \<times> A)
+          (\<lambda>n (a, q). \<Prod>k<n. 1 - a * q ^ k) (\<lambda>(a, q). qpochhammer_inf a q) sequentially"
+    by (rule uniform_limit_qpochhammer_inf) (use A in \<open>auto intro!: compact_Times\<close>)
+  hence "uniform_limit A (\<lambda>n q. case (q, q) of (a, q) \<Rightarrow> \<Prod>k<n. 1 - a * q ^ k) 
+           (\<lambda>q. case (q,q) of (a,q) \<Rightarrow> qpochhammer_inf a q) sequentially"
+    by (rule uniform_limit_compose) auto
+  thus ?thesis
+    by (simp add: euler_phi_def [abs_def])
+qed
+
+text \<open>
+  The logarithmic derivative of $\phi$ is given by the following Lambert-style series:
+  \[\frac{\phi'(q)}{\phi(q)} = \sum_{k=0}^\infty (k+1) \frac{q^k}{q^{k+1}-1}\]
+\<close>
+lemma sums_logderiv_euler_phi:
+  fixes q :: complex
+  assumes q: "norm q < 1"
+  shows   "(\<lambda>k. of_nat (Suc k) * q ^ k / (q ^ Suc k - 1)) sums (deriv euler_phi q / euler_phi q)"
+proof -
+  from q obtain r where r: "norm q < r" "r < 1"
+    using dense by blast
+
+  have "(\<lambda>k. deriv (\<lambda>q. 1 - q ^ Suc k) q / (1 - q ^ Suc k)) sums (deriv euler_phi q / euler_phi q)"
+  proof (rule logderiv_prodinf_complex_uniform_limit)
+    show "open (ball 0 r :: complex set)" "q \<in> ball 0 r"
+      using q r by auto
+  next
+    have "uniform_limit (cball 0 r :: complex set) (\<lambda>n x. \<Prod>k<n. 1 - x ^ Suc k) euler_phi sequentially"
+      by (rule uniform_limit_euler_phi) (use r in auto)
+    thus "uniform_limit (ball 0 r :: complex set) (\<lambda>n x. \<Prod>k<n. 1 - x ^ Suc k) euler_phi sequentially"
+      by (rule uniform_limit_on_subset) auto
+  qed (use q in \<open>auto intro!: holomorphic_intros\<close>)
+  also have "(\<lambda>k. deriv (\<lambda>q. 1 - q ^ Suc k) q / (1 - q ^ Suc k)) =
+               (\<lambda>k. of_nat (Suc k) * q ^ k / (q ^ Suc k - 1))"
+  proof
+    fix k :: nat
+    have "deriv (\<lambda>q. 1 - q ^ Suc k) q = -(of_nat (k+1) * q ^ k)"
+      by (auto intro!: DERIV_imp_deriv derivative_eq_intros simp del: power_Suc)
+    thus "deriv (\<lambda>q. 1 - q ^ Suc k) q / (1 - q ^ Suc k) = of_nat (Suc k) * q ^ k / (q ^ Suc k - 1)"
+      by (simp add: divide_simps del: power_Suc) (auto simp: algebra_simps)?
+  qed
+  finally show ?thesis .
+qed
+
+lemma deriv_euler_phi_aux:
+  fixes q :: complex
+  assumes q: "norm q < 1"
+  shows   "q * deriv euler_phi q = -lambert of_nat q * euler_phi q"
+proof -
+  have "(\<lambda>k. of_nat (Suc k) * q ^ Suc k / (1 - q ^ (Suc k))) sums lambert of_nat q"
+    by (rule sums_lambert)
+       (use q lambert_conv_radius_power_of_nat[of 1, where ?'a = complex] in auto)
+  hence "(\<lambda>k. -(of_nat (Suc k) * q ^ Suc k / (1 - q ^ (Suc k)))) sums 
+           (-lambert of_nat q)"
+    by (intro sums_minus)
+  also have "(\<lambda>k. -(of_nat (Suc k) * q ^ Suc k / (1 - q ^ (Suc k)))) =
+             (\<lambda>k. q * (of_nat (Suc k) * q ^ k / (q ^ (Suc k) - 1)))"
+    using q by (auto simp: fun_eq_iff divide_simps) (auto simp: algebra_simps)?
+  finally have "(\<lambda>k. q * (of_nat (Suc k) * q ^ k / (q ^ (Suc k) - 1))) sums (-lambert of_nat q)" .
+
+  moreover have "(\<lambda>k. q * (of_nat (Suc k) * q ^ k / (q ^ Suc k - 1))) sums 
+                   (q * (deriv euler_phi q / euler_phi q))"
+    by (intro sums_mult sums_logderiv_euler_phi) (fact q)
+  ultimately have "-lambert of_nat q = q * (deriv euler_phi q / euler_phi q)"
+    using sums_unique2 by blast
+  thus ?thesis
+    using q by (simp add: field_simps)
+qed
+
+theorem deriv_euler_phi:
+  fixes q :: complex
+  assumes q: "norm q < 1" "q \<noteq> 0"
+  shows   "deriv euler_phi q = -lambert of_nat q * euler_phi q / q"
+  using deriv_euler_phi_aux[of q] assms by (simp add: field_simps)
 
 end
