@@ -1,6 +1,9 @@
 section \<open>The Jacobi Triple Product\<close>
 theory Jacobi_Triple_Product
-  imports Theta_Functions "Lambert_Series.Lambert_Series_Library"
+imports
+  Theta_Functions
+  "Lambert_Series.Lambert_Series_Library"
+  "Combinatorial_Q_Analogues.Euler_Function"
 begin
 
 (*<*)

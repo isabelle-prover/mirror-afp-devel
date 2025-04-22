@@ -11,6 +11,7 @@ session Combinatorial_Q_Analogues (AFP) = "HOL-Complex_Analysis" +
     Q_Analogues
     Q_Pochhammer_Infinite
     Q_Binomial_Identities
+    Euler_Function
   document_files
     "root.tex"
     "root.bib"
