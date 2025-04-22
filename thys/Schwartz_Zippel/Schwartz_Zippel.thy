@@ -484,7 +484,7 @@ next
     moreover have " ... \<le> 
       measure_pmf.prob (Pi_pmf (insert x V) 0 (\<lambda>i. pmf_of_set S)) ?E2 +
       measure_pmf.prob (Pi_pmf (insert x V) 0 (\<lambda>i. pmf_of_set S)) ?E12"
-      by (auto intro!: measure_pmf.finite_measure_subadditive)
+      by (simp add: measure_Un_le)
     moreover have "... \<le> (d-l) / card S + l / card S"
       using e2 e12 by auto
     
