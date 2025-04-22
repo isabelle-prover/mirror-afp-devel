@@ -2680,18 +2680,14 @@ proof (rule Banach_fix)
     by (auto dest!: has_derivative_bounded_linear onorm_pos_le)
   from derivative_bounded show "poincare_map \<Sigma> ` S \<subseteq> S" by auto
   obtain D where D:
-    "\<forall>x \<in> S. (poincare_map \<Sigma> has_derivative D x) (at x within T) \<and>
-      onorm (D x) \<le> B"
-    apply atomize_elim
-    apply (rule bchoice)
-    using derivative_bounded
-    by auto
+    "\<forall>x \<in> S. (poincare_map \<Sigma> has_derivative D x) (at x within T) \<and> onorm (D x) \<le> B"
+    using derivative_bounded by metis
   with \<open>S \<subseteq> T\<close> have "(\<And>x. x \<in> S \<Longrightarrow> (poincare_map \<Sigma> has_derivative D x) (at x within S))"
     by (auto intro: has_derivative_subset)
   from bounded_derivative_imp_lipschitz[of S "poincare_map \<Sigma>" D B, OF this] \<open>convex S\<close> D c
     \<open>0 \<le> B\<close>
   have "B-lipschitz_on S (poincare_map \<Sigma>)" by auto
-  then show "\<forall>x\<in>S. \<forall>y\<in>S. dist (poincare_map \<Sigma> x) (poincare_map \<Sigma> y) \<le> B * dist x y"
+  then show "\<And>x y. \<lbrakk>x\<in>S; y\<in>S\<rbrakk> \<Longrightarrow> dist (poincare_map \<Sigma> x) (poincare_map \<Sigma> y) \<le> B * dist x y"
     by (auto simp: lipschitz_on_def)
 qed
 

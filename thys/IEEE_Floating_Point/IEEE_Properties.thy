@@ -396,7 +396,7 @@ lemma is_infinity_cases:
 proof (cases rule: sign_cases[of x])
   assume "sign x = 0"
   then have "x = plus_infinity" using assms
-    apply (unfold float_defs)
+    unfolding float_defs
     apply transfer
     apply (auto simp add: unat_eq_of_nat emax_def of_nat_mask_eq)
     done
@@ -404,7 +404,7 @@ proof (cases rule: sign_cases[of x])
 next
   assume "sign x = 1"
   then have "x = minus_infinity" using assms
-    apply (unfold float_defs)
+    unfolding float_defs
     apply transfer
     apply (auto simp add: unat_eq_of_nat emax_def of_nat_mask_eq)
     done
@@ -1018,8 +1018,7 @@ qed
 
 lemma valof_one [simp]: "valof (1 :: ('e, 'f) float) = of_bool (LENGTH('e) > 1)"
   apply transfer
-  apply (auto simp add: bias_def unat_mask_eq simp flip: mask_eq_exp_minus_1)
-  apply (simp add: mask_eq_exp_minus_1)
-  done
+  apply (simp add: bias_def unat_mask_eq flip: mask_eq_exp_minus_1)
+  by (metis Suc_lessI Suc_mask_eq_exp diff_Suc_1' len_gt_0)
 
 end

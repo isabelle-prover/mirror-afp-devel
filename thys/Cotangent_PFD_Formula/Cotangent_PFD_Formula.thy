@@ -855,17 +855,8 @@ proof -
     show "open (-\<int> :: complex set)" "connected (-\<int> :: complex set)"
       by (auto intro!: path_connected_imp_connected path_connected_complement_countable countable_int)
   next
-    show "\<real> - \<int> \<subseteq> (-\<int> :: complex set)"
-      by auto
-  next
     show "(1 / 2 :: complex) islimpt \<real> - \<int>"
       by (rule one_half_limit_point_Reals_minus_Ints)
-  next
-    show "1 / (2 :: complex) \<in> -\<int>"
-      using fraction_not_in_ints[of 2 1, where ?'a = complex] by auto
-  next
-    show "z \<in> -\<int>"
-      using assms by simp
   next
     show "?f z = 0" if "z \<in> \<real> - \<int>" for z
     proof -
@@ -876,7 +867,7 @@ proof -
         by (subst cot_pfd_formula_real) (use that in \<open>auto elim!: Reals_cases\<close>)
       finally show ?thesis .
     qed
-  qed
+  qed (use assms in auto)
   thus ?thesis
     by algebra
 qed

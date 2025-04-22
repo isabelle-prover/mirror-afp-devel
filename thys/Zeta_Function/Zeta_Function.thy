@@ -1924,13 +1924,11 @@ lemma fds_perzeta_one_half: "fds_perzeta (1 / 2) = fds (\<lambda>n. (-1) ^ n)"
 
 lemma perzeta_one_half_1 [simp]: "perzeta (1 / 2) 1 = -ln 2"
 proof (rule sums_unique2)
-  have *: "(1 / 2 :: real) \<notin> \<int>"
-    using fraction_not_in_ints[of 2 1] by auto
   have "fds_converges (fds_perzeta (1 / 2)) 1"
-    by (rule fds_converges, rule le_less_trans, rule conv_abscissa_perzeta') (use * in auto)
+    by (intro fds_converges le_less_trans [OF conv_abscissa_perzeta']) auto
   hence "(\<lambda>n. (-1) ^ Suc n / Suc n) sums eval_fds (fds_perzeta (1 / 2)) 1"
     unfolding fds_converges_altdef by (simp add: fds_perzeta_one_half)
-  also from * have "eval_fds (fds_perzeta (1 / 2)) 1 = perzeta (1 / 2) 1"
+  also have "eval_fds (fds_perzeta (1 / 2)) 1 = perzeta (1 / 2) 1"
     by (simp add: perzeta_def)
   finally show "(\<lambda>n. -complex_of_real ((-1) ^ n / Suc n)) sums perzeta (1 / 2) 1"
     by simp

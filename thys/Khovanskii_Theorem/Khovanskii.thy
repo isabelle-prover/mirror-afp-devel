@@ -431,13 +431,13 @@ qed
 
 lemma sum_up_index_split':
   assumes "N \<le> n" shows "(\<Sum>i\<le>n. f i) = (\<Sum>i\<le>n-N. f i) + (\<Sum>i=Suc (n-N)..n. f i)"
-  by (metis assms diff_add sum_up_index_split)
+  by (metis diff_le_self nat_le_iff_add sum_up_index_split)
 
 lemma sum_invert: "N \<le> n \<Longrightarrow> (\<Sum>i = Suc (n - N)..n. f (n - i)) = (\<Sum>j<N. f j)"
 proof (induction N)
   case (Suc N)
   then show ?case
-    apply (auto simp: Suc_diff_Suc)
+    apply (simp add: Suc_diff_Suc)
     by (metis sum.atLeast_Suc_atMost Suc_leD add.commute diff_diff_cancel diff_le_self)
 qed auto
 

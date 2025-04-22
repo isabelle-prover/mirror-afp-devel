@@ -369,7 +369,7 @@ proof -
   have "catalan \<sim>[at_top] (\<lambda>n. 2 * (- 4) ^ n * (1/2 gchoose (n+1)))"
     by (subst catalan_closed_form_gbinomial) simp_all
   also have "(\<lambda>n. 1/2 gchoose (n+1)) \<sim>[at_top] (\<lambda>n. (-1)^(n+1) / (Gamma (-(1/2)) * real n powr (1/2 + 1)))"
-    using fraction_not_in_nats[of 2 1] by (intro asymp_equiv_intros gbinomial_asymptotic') simp_all
+    by (intro asymp_equiv_intros gbinomial_asymptotic') simp_all
   also have "(\<lambda>n. 2 * (- 4) ^ n * \<dots> n) = (\<lambda>n. 4 ^ n / (sqrt pi * n powr (3/2)))"
     by (intro ext) (simp add: Gamma_minus_one_half_real power_mult_distrib [symmetric])
   finally show ?thesis by - (simp_all add: asymp_equiv_intros)
@@ -411,7 +411,8 @@ lemma trees_of_size_Suc:
   "trees_of_size (Suc n) = (\<lambda>(l,r). Node l r) ` (\<Union>k\<le>n. trees_of_size k \<times> trees_of_size (n - k))"
     (is "?lhs = ?rhs")
 proof (rule set_eqI)
-  fix t show "t \<in> ?lhs \<longleftrightarrow> t \<in> ?rhs" by (cases t) (auto simp: trees_of_size_def)
+  fix t show "t \<in> ?lhs \<longleftrightarrow> t \<in> ?rhs" 
+    by (cases t) (auto simp: trees_of_size_def)
 qed
 
 lemma finite_trees_of_size [simp,intro]: "finite (trees_of_size n)"
