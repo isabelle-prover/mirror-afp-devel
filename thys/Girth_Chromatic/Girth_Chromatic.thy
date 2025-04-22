@@ -685,7 +685,7 @@ proof -
 
   from probs have "ES.prob ({es \<in> space ES.P. n/2 \<le> short_count (?ug n es)}
       \<union> {es \<in> space ES.P. 1/2 * n/k \<le> \<alpha> (?ug n es)}) \<le> pf_short_count n + pf_\<alpha> n"
-    unfolding pf_short_count_def pf_\<alpha>_def  by (subst ES.finite_measure_subadditive) auto
+    unfolding pf_short_count_def pf_\<alpha>_def  by (subst measure_Un_le) auto
   also have "\<dots> < 1" using probs by auto
   finally have "0 < ES.prob (space ES.P - ({es \<in> space ES.P. n/2 \<le> short_count (?ug n es)}
       \<union> {es \<in> space ES.P. 1/2 * n/k \<le> \<alpha> (?ug n es)}))" (is "0 < ES.prob ?S")

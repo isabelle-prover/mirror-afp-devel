@@ -999,7 +999,7 @@ proof -
             have  "measure (Ni n) B \<le> measure (Ni n) (A \<union> (M - (\<Union>j\<le>k. mball (ai j) (ri j))))"
               by(auto intro!: Ni.finite_measure_mono[OF 2])
             also have "... \<le> measure (Ni n) A + measure (Ni n) (M - (\<Union>j\<le>k. mball (ai j) (ri j)))"
-              by(auto intro!: Ni.finite_measure_subadditive)
+              by(simp add: measure_Un_le)
             also have "... < measure N A + 4 * r'"
               using 4 A_in n by(auto simp: abs_diff_less_iff)
             also have "... \<le> measure N (\<Union>a\<in>B. mball a r') + 4 * r'"
@@ -1014,7 +1014,7 @@ proof -
             have "measure N B \<le> measure N (A \<union> (M - (\<Union>j\<le>k. mball (ai j) (ri j))))"
               by(auto intro!: N.finite_measure_mono[OF 2])
             also have "... \<le> measure N A + measure N (M - (\<Union>j\<le>k. mball (ai j) (ri j)))"
-              by(auto intro!: N.finite_measure_subadditive)
+              by(simp add: measure_Un_le)
             also have "... < measure (Ni n) A + 2 * r'"
               using 3 A_in n by(auto simp: abs_diff_less_iff)
             also have "... \<le> measure (Ni n) (\<Union>a\<in>B. mball a r') + 2 * r'"

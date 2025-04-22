@@ -445,7 +445,7 @@ proof(cases "F = \<bottom>")
     by(auto simp: space_borel_of interior_of_union_frontier_of[symmetric]
         simp del: interior_of_union_frontier_of intro!: N.finite_measure_mono)
   also have "... \<le> measure N A + measure N (mtopology frontier_of A)"
-    by(simp add: N.finite_measure_subadditive)
+    by(simp add: measure_Un_le)
   also have "... = measure N A" by(simp add: assms)
   finally have 1: "Limsup F (\<lambda>n. measure (Ni n) A) \<le> measure N A" .
   have "ereal (measure N A) = measure N A - measure N (mtopology frontier_of A)"
@@ -579,7 +579,7 @@ proof(cases "F = \<bottom>")
                 by(auto simp: \<nu>_def measure_distr intro!: N.finite_measure_mono) (auto simp: space_N)
             qed
             also have "... \<le> measure \<nu> {tn j} + measure \<nu> {tn (Suc j)}"
-              using \<nu>.finite_measure_subadditive[of "{tn (Suc j)}" "{tn j}"] by auto
+              using measure_Un_le[of "{tn (Suc j)}" \<nu> "{tn j}"] by auto
             also have "... = 0"
               by(simp add: tn)
             finally show ?thesis
