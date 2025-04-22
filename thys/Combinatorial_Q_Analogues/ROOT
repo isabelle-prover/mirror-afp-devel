@@ -5,6 +5,7 @@ session Combinatorial_Q_Analogues (AFP) = "HOL-Complex_Analysis" +
   sessions
     "HOL-Computational_Algebra"
     Gauss_Sums
+    Lambert_Series
   theories
     More_Infinite_Products
     Q_Analogues
