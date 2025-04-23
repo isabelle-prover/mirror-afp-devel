@@ -3,7 +3,7 @@ theory Q_Pochhammer_Infinite
 imports
   More_Infinite_Products
   Q_Analogues
-  "Gauss_Sums.Complex_Roots_Of_Unity"
+  Primitive_Roots
 begin
 
 subsection \<open>Definition and basic properties\<close>
@@ -706,36 +706,47 @@ next
 qed
 
 text \<open>
-  In a similar fashion, let $w = \exp(2i\pi/n)$ denote the primitive $n$-th root of unity.
+  In a similar fashion, let $w$ be a primitive $n$-th root of unity.
   Then: \[(a; q)_\infty\, (aw; q)_\infty\, (aw^2; q)_\infty\, \cdots\, (aw^{m-1}; q)_\infty = 
           (a^m; q^m)_\infty\]
 \<close>
-(* TODO: could be generalised to allow more flexibility in picking the root, also other types. *)
-lemma prod_qpochhammer_group_unity_root:
-  assumes "norm q < 1" "m > 0"
-  defines "w \<equiv> (\<lambda>k. unity_root m (int k))"
-  shows   "(\<Prod>k<m. qpochhammer_inf (w k * a) q) = qpochhammer_inf (a^m) (q^m)"
+lemma prod_qpochhammer_group_primroot:
+  assumes "norm q < 1"
+  assumes "primroot m w"
+  shows   "(\<Prod>k<m. qpochhammer_inf (w ^ k * a) q) = qpochhammer_inf (a^m) (q^m)"
 proof (rule has_prod_unique2)
+  interpret primroot m w
+    by fact
   show "(\<lambda>i. 1 - a ^ m * (q ^ m) ^ i) has_prod qpochhammer_inf (a^m) (q^m)"
-    by (rule has_prod_qpochhammer_inf) (use assms in \<open>auto simp: norm_power power_less_one_iff\<close>)
+    by (rule has_prod_qpochhammer_inf)
+       (use assms pos_order in \<open>auto simp: norm_power power_less_one_iff\<close>)
 next
-  have "(\<lambda>i. \<Prod>k<m. 1 - (w k * a) * q ^ i) has_prod (\<Prod>k<m. qpochhammer_inf (w k * a) q)"
+  interpret primroot m w
+    by fact
+  have "(\<lambda>i. \<Prod>k<m. 1 - (w ^ k * a) * q ^ i) has_prod (\<Prod>k<m. qpochhammer_inf (w ^ k * a) q)"
     by (intro has_prod_prod has_prod_qpochhammer_inf) (use assms in auto)
-  also have "(\<lambda>i. \<Prod>k<m. 1 - (w k * a) * q ^ i) = (\<lambda>i. 1 - a^m * (q^m)^i)"
+  also have "(\<lambda>i. \<Prod>k<m. 1 - (w ^ k * a) * q ^ i) = (\<lambda>i. 1 - a^m * (q^m)^i)"
   proof
     fix i :: nat
-    have "(\<Prod>k<m. 1 - (w k * a) * q ^ i) = poly (\<Prod>k<m. [:1, -unity_root m (int k):]) (a * q ^ i)"
-      by (simp add: poly_prod w_def mult_ac)
-    also have "(\<Prod>k<m. [:1, -unity_root m (int k):]) = 1 - Polynomial.monom 1 m"
-      by (rule cyclotomic_poly_conv_prod_unity_root' [symmetric]) fact
+    have "(\<Prod>k<m. 1 - (w ^ k * a) * q ^ i) = poly (\<Prod>k<m. [:1, -(w ^ k):]) (a * q ^ i)"
+      by (simp add: poly_prod mult_ac)
+    also have "(\<Prod>k<m. [:1, -(w ^ k):]) = 1 - Polynomial.monom 1 m"
+      by (rule cyclotomic_poly_conv_prod_unity_root' [symmetric])
     also have "poly \<dots> (a * q ^ i) = 1 - a^m * (q^m)^i"
       by (simp add: poly_monom power_mult_distrib mult_ac flip: power_mult)
-    finally show "(\<Prod>k<m. 1 - (w k * a) * q ^ i) = 1 - a^m * (q^m)^i" .
+    finally show "(\<Prod>k<m. 1 - (w ^ k * a) * q ^ i) = 1 - a^m * (q^m)^i" .
   qed
-  finally show "(\<lambda>i. 1 - a ^ m * (q ^ m) ^ i) has_prod (\<Prod>k<m. qpochhammer_inf (w k * a) q)" 
+  finally show "(\<lambda>i. 1 - a ^ m * (q ^ m) ^ i) has_prod (\<Prod>k<m. qpochhammer_inf (w ^ k * a) q)" 
     by simp
 qed
 
+lemma (in primroot_cis) prod_qpochhammer_group_cis:
+  assumes "norm q < 1"
+  defines "w \<equiv> (\<lambda>j. cis (2 * pi * j * k / n))"
+  shows   "(\<Prod>j<n. qpochhammer_inf (w j * a) q) = qpochhammer_inf (a^n) (q^n)"
+  using prod_qpochhammer_group_primroot[OF assms(1) primroot_axioms, of a]
+  by (simp add: w_def mult_ac Complex.DeMoivre)
+  
 
 text \<open>
   The particular instance of the above for $m = 2$ is the following:
@@ -747,16 +758,9 @@ lemma qpochhammer_inf_square:
   shows   "qpochhammer_inf a q * qpochhammer_inf (-a) q = qpochhammer_inf (a^2) (q^2)"
           (is "?lhs = ?rhs")
 proof -
-  have "(\<lambda>n. (1 - a * q ^ n) * (1 - (-a) * q ^ n)) has_prod
-          (qpochhammer_inf a q * qpochhammer_inf (-a) q)"
-    by (intro has_prod_qpochhammer_inf has_prod_mult) (use q in auto)
-  also have "(\<lambda>n. (1 - a * q ^ n) * (1 - (-a) * q ^ n)) = (\<lambda>n. (1 - a ^ 2 * (q ^ 2) ^ n))"
-    by (auto simp: fun_eq_iff algebra_simps power2_eq_square simp flip: power_add mult_2)
-  finally have "(\<lambda>n. (1 - a ^ 2 * (q ^ 2) ^ n)) has_prod ?lhs" .
-  moreover have "(\<lambda>n. (1 - a ^ 2 * (q ^ 2) ^ n)) has_prod qpochhammer_inf (a^2) (q^2)"
-    by (intro has_prod_qpochhammer_inf) (use assms in \<open>auto simp: norm_power power_less_one_iff\<close>)
-  ultimately show ?thesis
-    using has_prod_unique2 by blast
+  have *: "primroot 2 (-1 :: 'a)" ..
+  show ?thesis
+    using prod_qpochhammer_group_primroot[OF assms *] by (simp add: numeral_2_eq_2)
 qed
 
 
