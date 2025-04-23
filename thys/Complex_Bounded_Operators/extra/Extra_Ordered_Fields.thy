@@ -37,7 +37,7 @@ class partial_abs_if = minus + uminus + ord + zero + abs +
   assumes abs_neg: "a \<le> 0 \<Longrightarrow> abs a = -a"
   assumes abs_pos: "a \<ge> 0 \<Longrightarrow> abs a = a"
 
-class ordered_semiring_1 = ordered_semiring + semiring_1
+class ordered_semiring_1 = ordered_semiring + semiring_1 + zero_neq_one
   \<comment> \<open>missing class analogous to \<^class>\<open>linordered_semiring_1\<close> without requiring a total order\<close>
 begin
 
