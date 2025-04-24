@@ -3,7 +3,7 @@ section\<open>Preliminaries\<close>
 theory Proof_Term_Utils
 imports 
   First_Order_Terms.Matching
-  First_Order_Rewriting.Term_Impl
+  First_Order_Terms.Term_Impl
 begin
 
 subsection\<open>Utilities for Lists\<close>
