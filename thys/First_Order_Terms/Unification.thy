@@ -10,6 +10,7 @@ theory Unification
     Abstract_Unification
     Option_Monad
     Renaming2
+    Subterm_and_Context
 begin
 
 definition
@@ -45,6 +46,10 @@ lemma subst_list_append:
   "subst_list \<sigma> (xs @ ys) = subst_list \<sigma> xs @ subst_list \<sigma> ys"
 by (auto simp: subst_list_def)
 
+lemma set_subst_list [simp]:
+  "set (subst_list \<sigma> E) = subst_set \<sigma> (set E)"
+  by (simp add: subst_list_def subst_set_def)
+
 function (sequential)
   unify ::
     "('f, 'v) equation list \<Rightarrow> ('v \<times> ('f, 'v) term) list \<Rightarrow> ('v \<times> ('f, 'v) term) list option"
@@ -66,83 +71,6 @@ termination
   by (standard, rule wf_inv_image [of "unif\<inverse>" "mset \<circ> fst", OF wf_converse_unif])
      (force intro: UNIF1.intros simp: unif_def union_commute)+
 
-lemma unify_append_prefix_same: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
-  "(\<forall>e \<in> set es1. fst e = snd e) \<Longrightarrow> unify (es1 @ es2) bs = unify es2 bs"
-proof (induction "es1 @ es2" bs arbitrary: es1 es2 bs rule: unify.induct)
-  case (1 bs)
-  thus ?case by simp
-next
-  case (2 f ss g ts E bs)
-  show ?case
-  proof (cases es1)
-    case Nil
-    thus ?thesis by simp
-  next
-    case (Cons e es1')
-    hence e_def: "e = (Fun f ss, Fun g ts)" and E_def: "E = es1' @ es2"
-      using "2" by simp_all
-    hence "f = g" and "ss = ts"
-      using "2.prems" local.Cons by auto
-    hence "unify (es1 @ es2) bs = unify ((zip ts ts @ es1') @ es2) bs"
-      by (simp add: Cons e_def)
-    also have "\<dots> = unify es2 bs"
-    proof (rule "2.hyps"(1))
-      show "decompose (Fun f ss) (Fun g ts) = Some (zip ts ts)"
-        by (simp add: \<open>f = g\<close> \<open>ss = ts\<close>)
-    next
-      show "zip ts ts @ E = (zip ts ts @ es1') @ es2"
-        by (simp add: E_def)
-    next
-      show "\<forall>e\<in>set (zip ts ts @ es1'). fst e = snd e"
-        using "2.prems" by (auto simp: Cons zip_same)
-    qed
-    finally show ?thesis .
-  qed
-next
-  case (3 x t E bs)
-  show ?case
-  proof (cases es1)
-    case Nil
-    thus ?thesis by simp
-  next
-    case (Cons e es1')
-    hence e_def: "e = (Var x, t)" and E_def: "E = es1' @ es2"
-      using 3 by simp_all
-    show ?thesis
-    proof (cases "t = Var x")
-      case True
-      show ?thesis
-        using 3(1)[OF True E_def]
-        using "3.hyps"(3) "3.prems" local.Cons by fastforce
-    next
-      case False
-      thus ?thesis
-        using "3.prems" e_def local.Cons by force
-    qed
-  qed
-next
-  case (4 v va x E bs)
-  then show ?case
-  proof (cases es1)
-    case Nil
-    thus ?thesis by simp
-  next
-    case (Cons e es1')
-    hence e_def: "e = (Fun v va, Var x)" and E_def: "E = es1' @ es2"
-      using 4 by simp_all
-    thus ?thesis
-      using "4.prems" local.Cons by fastforce
-  qed
-qed
-
-corollary unify_Cons_same: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
-  "fst e = snd e \<Longrightarrow> unify (e # es) bs = unify es bs"
-  by (rule unify_append_prefix_same[of "[_]", simplified])
-
-corollary unify_same: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
-  "(\<forall>e \<in> set es. fst e = snd e) \<Longrightarrow> unify es bs = Some bs"
-  by (rule unify_append_prefix_same[of _ "[]", simplified])
-
 definition subst_of :: "('v \<times> ('f, 'v) term) list \<Rightarrow> ('f, 'v) subst"
   where
     "subst_of ss = List.foldr (\<lambda>(x, t) \<sigma>. \<sigma> \<circ>\<^sub>s subst x t) ss Var"
@@ -163,6 +91,59 @@ lemma subst_of_simps [simp]:
 lemma subst_of_append [simp]:
   "subst_of (ss @ ts) = subst_of ts \<circ>\<^sub>s subst_of ss"
   by (induct ss) (auto simp: ac_simps)
+
+lemma not_elem_subst_of:
+  assumes "x \<notin> set (map fst xs)"
+  shows "(subst_of xs) x = Var x"
+  using assms proof (induct xs)
+  case (Cons y xs)
+  then show ?case unfolding subst_of_simps
+    by (metis Term.term.simps(17) insert_iff list.simps(15) list.simps(9) singletonD subst_compose subst_ident)
+qed simp
+
+lemma subst_of_id:
+  assumes "\<And>s. s \<in> (set ss) \<longrightarrow> (\<exists>x t. s = (x, t) \<and> t = Var x)" 
+  shows "subst_of ss = Var" 
+  using assms proof(induct ss)
+  case (Cons s ss)
+  then obtain y t where s:"s = (y, t)" and t:"t = Var y"
+    by (metis list.set_intros(1))
+  from Cons have "subst_of ss = Var"
+    by simp 
+  then show ?case 
+    unfolding subst_of_def foldr.simps o_apply s t by simp
+qed simp
+
+(*The variable x is mapped to term t if (x, t) appears in the list given to subst_of
+and no variable of t is bound to another value by the constructed substitution.*)
+lemma subst_of_apply:
+  assumes "(x, t) \<in> set ss"
+    and "\<forall>(y,s) \<in> set ss. (y = x \<longrightarrow> s = t)"
+    and "set (map fst ss) \<inter> vars_term t = {}"
+  shows "subst_of ss x = t"
+  using assms proof(induct ss)
+  case (Cons a ss)
+  show ?case proof(cases "(x,t) \<in> set ss")
+    case True
+    from Cons(1)[OF True] Cons(3,4) have sub:"subst_of ss x = t"
+      by (simp add: disjoint_iff) 
+    from Cons(2,4) have "fst a \<notin> vars_term t"
+      by fastforce 
+    then show ?thesis 
+      unfolding subst_of_simps subst_compose sub by simp 
+  next
+    case False
+    then have "x \<notin> set (map fst ss)"
+      using Cons(3) by auto
+    then have sub:"subst_of ss x = Var x"
+      by (meson not_elem_subst_of) 
+    from Cons(2) False have "a = (x, t)"
+      by simp 
+    then show ?thesis 
+      unfolding subst_of_simps subst_compose sub by simp 
+  qed
+qed simp
+
 
 text \<open>The concrete algorithm \<open>unify\<close> can be simulated by the inference
   rules of \<open>UNIF\<close>.\<close>
@@ -386,6 +367,215 @@ proof -
   then show ?thesis
     by (auto simp: unifiable_def)
 qed
+
+lemma unify_append_prefix_same: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
+  "(\<forall>e \<in> set es1. fst e = snd e) \<Longrightarrow> unify (es1 @ es2) bs = unify es2 bs"
+proof (induction "es1 @ es2" bs arbitrary: es1 es2 bs rule: unify.induct)
+  case (1 bs)
+  thus ?case by simp
+next
+  case (2 f ss g ts E bs)
+  show ?case
+  proof (cases es1)
+    case Nil
+    thus ?thesis by simp
+  next
+    case (Cons e es1')
+    hence e_def: "e = (Fun f ss, Fun g ts)" and E_def: "E = es1' @ es2"
+      using "2" by simp_all
+    hence "f = g" and "ss = ts"
+      using "2.prems" local.Cons by auto
+    hence "unify (es1 @ es2) bs = unify ((zip ts ts @ es1') @ es2) bs"
+      by (simp add: Cons e_def)
+    also have "\<dots> = unify es2 bs"
+    proof (rule "2.hyps"(1))
+      show "decompose (Fun f ss) (Fun g ts) = Some (zip ts ts)"
+        by (simp add: \<open>f = g\<close> \<open>ss = ts\<close>)
+    next
+      show "zip ts ts @ E = (zip ts ts @ es1') @ es2"
+        by (simp add: E_def)
+    next
+      show "\<forall>e\<in>set (zip ts ts @ es1'). fst e = snd e"
+        using "2.prems" by (auto simp: Cons zip_same)
+    qed
+    finally show ?thesis .
+  qed
+next
+  case (3 x t E bs)
+  show ?case
+  proof (cases es1)
+    case Nil
+    thus ?thesis by simp
+  next
+    case (Cons e es1')
+    hence e_def: "e = (Var x, t)" and E_def: "E = es1' @ es2"
+      using 3 by simp_all
+    show ?thesis
+    proof (cases "t = Var x")
+      case True
+      show ?thesis
+        using 3(1)[OF True E_def]
+        using "3.hyps"(3) "3.prems" local.Cons by fastforce
+    next
+      case False
+      thus ?thesis
+        using "3.prems" e_def local.Cons by force
+    qed
+  qed
+next
+  case (4 v va x E bs)
+  then show ?case
+  proof (cases es1)
+    case Nil
+    thus ?thesis by simp
+  next
+    case (Cons e es1')
+    hence e_def: "e = (Fun v va, Var x)" and E_def: "E = es1' @ es2"
+      using 4 by simp_all
+    thus ?thesis
+      using "4.prems" local.Cons by fastforce
+  qed
+qed
+
+corollary unify_Cons_same: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
+  "fst e = snd e \<Longrightarrow> unify (e # es) bs = unify es bs"
+  by (rule unify_append_prefix_same[of "[_]", simplified])
+
+corollary unify_same: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
+  "(\<forall>e \<in> set es. fst e = snd e) \<Longrightarrow> unify es bs = Some bs"
+  by (rule unify_append_prefix_same[of _ "[]", simplified])
+
+lemma unify_equation_same:
+  assumes "fst e = snd e" 
+  shows "unify (E1@e#E2) ys = unify (E1@E2) ys" 
+  using assms
+proof (induction "E1@e#E2" ys arbitrary: E1 E2 e ys rule: unify.induct)
+  case (2 f ss g ts E bs)
+  show ?case proof(cases E1)
+    case Nil
+    with 2(3) show ?thesis
+      by (simp add: unify_Cons_same)
+  next
+    case (Cons e1 es1)
+    then have e1:"e1 = (Fun f ss, Fun g ts)" 
+      using 2(2) by simp 
+    show ?thesis proof(cases "decompose (Fun f ss) (Fun g ts)")
+      case None
+      then show ?thesis unfolding Cons e1 by simp
+    next
+      case (Some us)
+      have us:"us @ E = (us @ es1) @ e # E2" 
+        using 2(2) Cons e1 by simp  
+      from 2(1)[OF Some us 2(3)] show ?thesis unfolding Cons e1 append_Cons unify.simps Some by simp
+    qed
+  qed
+next
+  case (3 x t E bs)
+  show ?case 
+  proof(cases E1)
+    case Nil
+    with 3(4) show ?thesis
+      by (simp add: unify_Cons_same)
+  next
+    case (Cons e1 es1)
+    with 3(3) have e1:"e1 = (Var x, t)" 
+      by simp
+    with 3(3) Cons have E:"E = es1 @ e # E2" 
+      by simp
+    show ?thesis proof(cases "t = Var x")
+      case True
+      from 3(1)[OF True E 3(4)] show ?thesis 
+        unfolding Cons e1 True by simp
+    next
+      case False
+      then show ?thesis proof(cases "x \<notin> vars_term t")
+        case True
+        let ?\<sigma>="(subst x t)"
+        have substs:"subst_list ?\<sigma> E = (subst_list ?\<sigma> es1) @ (fst e \<cdot> ?\<sigma>,  snd e \<cdot> ?\<sigma>) # (subst_list ?\<sigma> E2)"
+          unfolding E by (simp add: subst_list_def)
+        from 3(2)[OF False True substs] 3(4) show ?thesis 
+          unfolding Cons e1 append_Cons unify.simps using False True
+          by (smt (verit, ccfv_SIG) E fst_eqD snd_eqD subst_list_append substs) 
+      next
+        case False
+        then show ?thesis 
+          unfolding Cons e1 append_Cons unify.simps using 3 Cons by auto 
+      qed
+    qed
+  qed
+next
+  case (4 f ts x E bs)
+  show ?case 
+  proof(cases E1)
+    case Nil
+    with 4(3) show ?thesis
+      by (simp add: unify_Cons_same)
+  next
+    case (Cons e1 es1)
+    with 4(2) have e1:"e1 = (Fun f ts, Var x)" 
+      by simp
+    with 4(2) Cons have E:"E = es1 @ e # E2" 
+      by simp
+    show ?thesis proof(cases "x \<notin> vars_term (Fun f ts)")
+      case True
+      let ?\<sigma>="(subst x (Fun f ts))"
+      have substs:"subst_list ?\<sigma> E = (subst_list ?\<sigma> es1) @ (fst e \<cdot> ?\<sigma>,  snd e \<cdot> ?\<sigma>) # (subst_list ?\<sigma> E2)"
+        unfolding E by (simp add: subst_list_def)
+      from 4(1)[OF True substs] 4(3) show ?thesis 
+        unfolding Cons e1 append_Cons unify.simps using True
+        by (metis E fst_conv snd_conv subst_list_append substs) 
+    next
+      case False
+      then show ?thesis 
+        unfolding Cons e1 append_Cons unify.simps using 4 Cons by auto 
+    qed
+  qed
+qed simp
+
+lemma unify_filter_same: 
+  shows "unify (filter (\<lambda>e. fst e \<noteq> snd e) E) ys = unify E ys" 
+proof(induction "length E" arbitrary:E rule:full_nat_induct)
+  case 1
+  show ?case 
+  proof(cases E)
+    case (Cons e es)
+    then show ?thesis 
+    proof(cases "filter (\<lambda>e. fst e \<noteq> snd e) E = E")
+      case False
+      then obtain E1 e E2 where E:"E = E1 @ e # E2" and eq:"fst e = snd e"
+        by (meson filter_True split_list) 
+      with unify_equation_same have "unify E ys = unify (E1 @ E2) ys"
+        by blast 
+      moreover from 1 E have "unify (filter (\<lambda>e. fst e \<noteq> snd e) (E1 @ E2)) ys = unify (E1 @ E2) ys"
+        by (metis (no_types, lifting) add_Suc_right length_Cons length_append order_refl) 
+      moreover have "filter (\<lambda>e. fst e \<noteq> snd e) E = filter (\<lambda>e. fst e \<noteq> snd e) (E1 @ E2)" 
+        unfolding E using eq by auto 
+      ultimately show ?thesis
+        by presburger 
+    qed simp
+  qed simp
+qed
+
+lemma unify_ctxt_same:
+  shows "unify ((C\<langle>s\<rangle>, C\<langle>t\<rangle>)#xs) ys = unify ((s, t)#xs) ys" 
+proof(induct C)
+  case (More f ss1 C ss2)
+  let ?us="zip (ss1 @ C\<langle>s\<rangle> # ss2) (ss1 @ C\<langle>t\<rangle> # ss2)" 
+  have decomp:"decompose (Fun f (ss1 @ C\<langle>s\<rangle> # ss2)) (Fun f (ss1 @ C\<langle>t\<rangle> # ss2)) = Some ?us" 
+    unfolding decompose_def by (simp add: zip_option_zip_conv)
+  have unif:"unify (((More f ss1 C ss2)\<langle>s\<rangle>, (More f ss1 C ss2)\<langle>t\<rangle>) # xs) ys = unify (?us @ xs) ys" 
+    unfolding intp_actxt.simps unify.simps decomp by simp
+  have *:"?us = (zip ss1 ss1) @ (C\<langle>s\<rangle>, C\<langle>t\<rangle>) # (zip ss2 ss2)"
+    by simp 
+  have filter_us:"filter (\<lambda>e. fst e \<noteq> snd e) ?us = filter (\<lambda>e. fst e \<noteq> snd e) [(C\<langle>s\<rangle>, C\<langle>t\<rangle>)]" 
+    unfolding * filter_append filter.simps by (smt (verit, ccfv_SIG) filter_False in_set_zip self_append_conv2) 
+  have "filter (\<lambda>e. fst e \<noteq> snd e) (?us@xs) = filter (\<lambda>e. fst e \<noteq> snd e) ((C\<langle>s\<rangle>, C\<langle>t\<rangle>)#xs)"
+    unfolding filter_append filter_us filter.simps by simp
+  with More have "unify (?us @ xs) ys = unify ((s, t)#xs) ys" 
+    using unify_filter_same by (smt (verit, ccfv_threshold))
+  with unif show ?case by simp
+qed simp
+
 
 corollary ex_unify_if_unifiers_not_empty: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
   "unifiers es \<noteq> {} \<Longrightarrow> set xs = es \<Longrightarrow> \<exists>ys. unify xs [] = Some ys"
@@ -857,7 +1047,7 @@ proof -
   {
     fix \<mu> :: "('f,'v,'v+'v)gsubst" and \<tau> :: "('f,'v + 'v)subst"
     have "?m' (\<mu> \<circ>\<^sub>s \<tau>) = \<mu> \<circ>\<^sub>s ?m' \<tau>"
-      by (rule ext, unfold eval_subst_def, simp add: map_vars_term_subst)
+      by (rule ext, unfold eval_subst_def, simp)
   } note id' = this
   from arg_cong[OF \<sigma>, of ?m', unfolded id id'] have \<sigma>: "\<sigma> = \<mu>1 \<circ>\<^sub>s ?m' \<tau>" .
   from arg_cong[OF \<delta>, of ?m', unfolded id id'] have \<delta>: "\<delta> = \<mu>2 \<circ>\<^sub>s ?m' \<tau>" .
@@ -884,5 +1074,69 @@ lemma mgu_vd_complete:
     s \<cdot> \<mu>1 = t \<cdot> \<mu>2"
   unfolding mgu_vd_def
   by (rule mgu_var_disjoint_generic_complete[OF rename_12 unif_disj])
+
+text \<open>A lemma for variable disjoint unification where a renaming function is
+  applied on the right term \<open>t\<close> when trying to unify \<open>s\<close> and \<open>t\<close>.\<close>
+lemma mgu_var_disjoint_right:
+  fixes s t :: "('f, 'v) term" and \<sigma> \<tau> :: "('f, 'v) subst" and T 
+  assumes s: "vars_term s \<subseteq> S"
+    and inj: "inj T"
+    and ST: "S \<inter> range T = {}"
+    and id: "s \<cdot> \<sigma> = t \<cdot> \<tau>"
+  shows "\<exists> \<mu> \<delta>. mgu s (map_vars_term T t) = Some \<mu> \<and>
+    s \<cdot> \<sigma> = s \<cdot> \<mu> \<cdot> \<delta> \<and>
+    (\<forall>t::('f, 'v) term. t \<cdot> \<tau> = map_vars_term T t \<cdot> \<mu> \<cdot> \<delta>) \<and>
+    (\<forall>x\<in>S. \<sigma> x = \<mu> x \<cdot> \<delta>)"
+proof -
+  let ?\<sigma> = "\<lambda> x. if x \<in> S then \<sigma> x else \<tau> ((the_inv T) x)"
+  let ?t = "map_vars_term T t"
+  have ids: "s \<cdot> \<sigma> = s \<cdot> ?\<sigma>"
+    by (rule term_subst_eq, insert s, auto)
+  have "t \<cdot> \<tau> = map_vars_term (the_inv T) ?t \<cdot> \<tau>"
+    unfolding map_vars_term_compose o_def using the_inv_f_f[OF inj] by (auto simp: term.map_ident)
+  also have "... = ?t \<cdot> (\<tau> \<circ> the_inv T)" unfolding apply_subst_map_vars_term ..
+  also have "... = ?t \<cdot> ?\<sigma>"
+  proof (rule term_subst_eq)
+    fix x
+    assume "x \<in> vars_term ?t"
+    then have "x \<in> T ` UNIV" unfolding term.set_map by auto
+    then have "x \<notin> S" using ST by auto
+    then show "(\<tau> \<circ> the_inv T) x = ?\<sigma> x" by simp
+  qed
+  finally have idt: "t \<cdot> \<tau> = ?t \<cdot> ?\<sigma>" by simp
+  from id[unfolded ids idt] have id: "s \<cdot> ?\<sigma> = ?t \<cdot> ?\<sigma>" .
+  with mgu_complete[of s ?t] id obtain \<mu> where \<mu>: "mgu s ?t = Some \<mu>"
+    unfolding unifiers_def  by (cases "mgu s ?t", auto)
+  from the_mgu[OF id] have id: "s \<cdot> \<mu> = map_vars_term T t \<cdot> \<mu>" and \<sigma>: "?\<sigma> = \<mu> \<circ>\<^sub>s ?\<sigma>"
+    unfolding the_mgu_def \<mu> by auto
+  have "s \<cdot> \<sigma> = s \<cdot> (\<mu> \<circ>\<^sub>s ?\<sigma>)" unfolding ids using \<sigma> by simp
+  also have "... = s \<cdot> \<mu> \<cdot> ?\<sigma>" by simp
+  finally have ids: "s \<cdot> \<sigma> = s \<cdot> \<mu> \<cdot> ?\<sigma>" .
+  {
+    fix x
+    have "\<tau> x = ?\<sigma> (T x)" using ST unfolding the_inv_f_f[OF inj] by auto
+    also have "... = (\<mu> \<circ>\<^sub>s ?\<sigma>) (T x)" using \<sigma> by simp
+    also have "... = \<mu> (T x) \<cdot> ?\<sigma>" unfolding subst_compose_def by simp
+    finally have "\<tau> x = \<mu> (T x) \<cdot> ?\<sigma>" .
+  } note \<tau> = this
+  {
+    fix t :: "('f,'v)term"
+    have "t \<cdot> \<tau> = t \<cdot> (\<lambda> x. \<mu> (T x) \<cdot> ?\<sigma>)" unfolding \<tau>[symmetric] ..
+    also have "... = map_vars_term T t \<cdot> \<mu> \<cdot> ?\<sigma>" unfolding apply_subst_map_vars_term 
+        subst_subst by (rule term_subst_eq, simp add: subst_compose_def)
+    finally have "t \<cdot> \<tau> = map_vars_term T t \<cdot> \<mu> \<cdot> ?\<sigma>" .
+  } note idt = this
+  {
+    fix x 
+    assume "x \<in> S"
+    then have "\<sigma> x = ?\<sigma> x" by simp
+    also have "... = (\<mu> \<circ>\<^sub>s ?\<sigma>) x" using \<sigma> by simp
+    also have "... = \<mu> x \<cdot> ?\<sigma>" unfolding subst_compose_def ..
+    finally have "\<sigma> x = \<mu> x \<cdot> ?\<sigma>" .
+  } note \<sigma> = this
+  show ?thesis 
+    by (rule exI[of _ \<mu>], rule exI[of _ ?\<sigma>], insert \<mu> ids idt \<sigma>, auto)
+qed
+
 
 end
