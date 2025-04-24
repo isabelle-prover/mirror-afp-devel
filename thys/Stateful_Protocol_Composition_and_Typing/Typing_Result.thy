@@ -2185,7 +2185,7 @@ proof -
         by auto
       have "M \<union> ik\<^sub>e\<^sub>s\<^sub>t (D'@D'') \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I> \<turnstile>\<^sub>c t \<cdot> \<I>"
         using ideduct_synth_subst[OF intruder_synth.AxiomC[OF AxiomC.hyps(1)]] by metis
-      moreover have "T \<noteq> []" using decomp_ik[OF \<open>Ana t = (K,T)\<close>] \<open>t\<^sub>i \<in> ik\<^sub>s\<^sub>t (decomp t)\<close> by auto
+      moreover have "T \<noteq> []" using decomp_ik[OF \<open>Ana t = (K,T)\<close>] \<open>t\<^sub>i \<in> ik\<^sub>s\<^sub>t (decomp t)\<close> by force
       ultimately have "D'@D''@[Decomp (Fun f X)] \<in> decomps\<^sub>e\<^sub>s\<^sub>t M N \<I>"
         using AxiomC decomps\<^sub>e\<^sub>s\<^sub>t.Decomp[OF *(1) _ _ _ _ **] subset_subterms_Union t_in_subterms
         by (simp add: subset_eq)
