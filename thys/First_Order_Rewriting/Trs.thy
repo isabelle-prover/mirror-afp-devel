@@ -2,9 +2,8 @@ section \<open>Term Rewrite Systems\<close>
 
 theory Trs
   imports
-    Relation_Closure
+    "Abstract-Rewriting.Relation_Closure" 
     First_Order_Terms.Term_More
-    "Abstract-Rewriting.Relative_Rewriting"
 begin
 
 text \<open>

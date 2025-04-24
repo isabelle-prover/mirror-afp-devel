@@ -3,9 +3,9 @@ section\<open>Implementation of First Order Rewriting\<close>
 theory Trs_Impl
   imports
     Trs
-    First_Order_Rewriting.Term_Impl
+    First_Order_Terms.Term_Impl
     First_Order_Terms.Matching
-    First_Order_Rewriting.Abstract_Rewriting_Impl
+    "Abstract-Rewriting.Abstract_Rewriting_Impl"
     Option_Util
     "Transitive-Closure.RBT_Map_Set_Extension"
 begin

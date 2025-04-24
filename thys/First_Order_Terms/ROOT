@@ -24,6 +24,7 @@ session First_Order_Terms = "Abstract-Rewriting" +
   theories 
     Position
     Term_More
+    Term_Impl
   document_files
     "root.tex"
     "root.bib"

@@ -1,19 +1,16 @@
-section\<open>Extensions for Existing AFP Entries\<close>
-
-subsection\<open>First Order Terms\<close> 
+section\<open>Executable Implementations for Term-Related Functions\<close> 
 
 theory Term_Impl
   imports
-    First_Order_Terms.Term_More
+    Term_More
     Certification_Monads.Check_Monad
     Deriving.Compare_Order_Instances
     Show.Shows_Literal
-    FOR_Preliminaries
 begin
 
 derive compare_order "term"
 
-subsubsection\<open>Positions\<close>
+subsection\<open>Positions\<close>
 fun poss_list :: "('f, 'v) term \<Rightarrow> pos list"
   where
     "poss_list (Var x) = [[]]" |
@@ -231,7 +228,7 @@ lemma poss_code[code_unfold]:
   "p \<in> poss t = in_poss p t" by (induct rule: in_poss.induct) auto
 end
 
-subsubsection\<open>List of Distinct Variables\<close>
+subsection\<open>List of Distinct Variables\<close>
 text\<open>We introduce a duplicate free version of @{const vars_term_list} that preserves order of 
 appearance of variables. This is used for the theory on proof terms.\<close>
   (*Looks complicated because of the way remdups is defined.*)
@@ -245,7 +242,7 @@ lemma vars_term_list_vars_distinct:
   shows "\<exists>j < length (vars_distinct t). (vars_term_list t)!i = (vars_distinct t)!j"
   by (metis assms in_set_idx nth_mem o_apply set_remdups set_rev)
 
-subsubsection \<open>Useful abstractions\<close>
+subsection \<open>Useful abstractions\<close>
 
 text \<open>Given that we perform the same operations on terms in order to get
 a list of the variables and a list of the functions, we define functions
@@ -265,7 +262,7 @@ lemma contains_var_term_sound[simp]:
 lemma in_vars_term_code[code_unfold]: "x \<in> vars_term t = contains_var_term x t" by simp
 end
 
-subsubsection\<open>Linear Terms\<close>
+subsection\<open>Linear Terms\<close>
 
 lemma distinct_vars_linear_term:
   assumes "distinct (vars_term_list t)"
@@ -364,7 +361,7 @@ lemma check_linear_term [simp]:
   "isOK (check_linear_term s) = linear_term s"
   by (simp add: check_linear_term_def)
 
-subsubsection\<open>Subterms\<close>
+subsection\<open>Subterms\<close>
 fun supteq_list :: "('f, 'v) term \<Rightarrow> ('f, 'v) term list"
   where
     "supteq_list (Var x) = [Var x]" |
@@ -483,7 +480,7 @@ lemma isOK_check_supteq [simp]:
   "isOK (check_supteq s t) \<longleftrightarrow> s \<unrhd> t"
   by (auto simp: check_supteq_def)
 
-subsubsection \<open>Additional Functions on Terms\<close>
+subsection \<open>Additional Functions on Terms\<close>
 
 fun with_arity :: "('f, 'v) term \<Rightarrow> ('f \<times> nat, 'v) term" where
   "with_arity (Var x) = Var x"
@@ -680,7 +677,7 @@ fun check_funas_term :: "'f :: showl sig \<Rightarrow> ('f,'v :: showl)term \<Ri
 lemma check_funas_term[simp]: "isOK(check_funas_term F t) = (funas_term t \<subseteq> F)" 
   by (induct t, auto)
 
-subsubsection\<open>Substitutions\<close>
+subsection\<open>Substitutions\<close>
 
 definition mk_subst_domain :: "('f, 'v) substL \<Rightarrow> ('v \<times> ('f, 'v) term) list" where
   "mk_subst_domain \<sigma> \<equiv>
