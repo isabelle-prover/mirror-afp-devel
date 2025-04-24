@@ -1,9 +1,9 @@
-subsubsection\<open>Unification of linear and variable disjoint terms\<close>
+section \<open>Unification of linear and variable disjoint terms\<close>
 
 theory Unification_More
   imports
-    First_Order_Terms.Unification
-    First_Order_Rewriting.Term_Impl
+    Unification
+    Term_Impl
 begin
 
 
