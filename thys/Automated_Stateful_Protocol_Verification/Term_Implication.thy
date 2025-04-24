@@ -58,10 +58,13 @@ lemma timpl_apply_inv:
     and "\<And>i. i < length T \<Longrightarrow> S ! i \<in> set \<langle>a --\<guillemotright> b\<rangle>\<langle>T ! i\<rangle>"
     and "f \<noteq> h \<Longrightarrow> f = Abs a \<and> h = Abs b"
 using assms term_variants_pred_iff_in_term_variants[of "(\<lambda>_. [])(Abs a := [Abs b])"]
-unfolding timpl_apply_term_def
-by (metis (full_types) term_variants_pred_inv(1),
-    metis (full_types) term_variants_pred_inv(2),
-    fastforce dest: term_variants_pred_inv(3))
+unfolding timpl_apply_term_def 
+  apply (metis (full_types) term_variants_pred_inv(1))
+  apply (metis assms term_variants_pred_iff_in_term_variants term_variants_pred_inv(2)
+    timpl_apply_term_def)
+  by (metis assms empty_iff fun_upd_apply insert_iff list.set(1) list.simps(15)
+      term_variants_pred_iff_in_term_variants term_variants_pred_inv(3)
+      timpl_apply_term_def)
 
 lemma timpl_apply_inv':
   assumes "s \<in> set \<langle>a --\<guillemotright> b\<rangle>\<langle>Fun f T\<rangle>"
@@ -486,7 +489,7 @@ proof
     case (TI u a b v) thus ?case 
       using term_variants_pred_iff_in_term_variants[of "(\<lambda>_. [])(Abs a := [Abs b])"]
             lfp_fixpoint[OF 0]
-      unfolding timpl_apply_term_def f_def by fastforce
+      unfolding timpl_apply_term_def f_def by force
   qed (use s lfp_fixpoint[OF 0] f_def in blast)
   thus "?N \<subseteq> lfp f" unfolding timpl_closure_set_def by blast
 qed

@@ -3059,7 +3059,7 @@ proof
       show ?thesis using 0(2)[OF ts] 0(3) unfolding a b f_def by simp
     qed
   qed simp
-  thus "(\<exists>ts. ?att ts \<and> ?A A ts) \<Longrightarrow> (\<exists>ts. ?att ts \<and> ?B A ts)" using 0(1) by fast
+  thus "(\<exists>ts. ?att ts \<and> ?A A ts) \<Longrightarrow> (\<exists>ts. ?att ts \<and> ?B A ts)" using 0(1) by metis
 
   have "\<exists>ts'. ts = f ts' \<and> ?A A ts'" when B: "?B A ts" and ts: "?att ts" for ts using B
   proof (induction A)
@@ -3101,7 +3101,7 @@ proof
       thus ?thesis unfolding a b by auto
     qed
   qed simp
-  thus "(\<exists>ts. ?att ts \<and> ?B A ts) \<Longrightarrow> (\<exists>ts. ?att ts \<and> ?A A ts)" using 0 by fast
+  thus "(\<exists>ts. ?att ts \<and> ?B A ts) \<Longrightarrow> (\<exists>ts. ?att ts \<and> ?A A ts)" using 0 by metis
 qed
 
 private lemma add_occurs_msgs_soundness_aux1:
