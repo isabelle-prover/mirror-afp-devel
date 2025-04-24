@@ -7,7 +7,9 @@ session "Abstract-Rewriting" = "HOL-Library" +
   theories
     Seq
     Abstract_Rewriting
+    Abstract_Rewriting_Impl
     Relative_Rewriting
+    Relation_Closure
     SN_Orders
     SN_Order_Carrier
   document_files

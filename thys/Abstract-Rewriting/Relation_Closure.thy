@@ -1,7 +1,7 @@
-subsubsection \<open>Closure-Operations on Relations\<close>
+section \<open>Closure-Operations on Relations\<close>
 
 theory Relation_Closure
-  imports "Abstract-Rewriting.Relative_Rewriting"
+  imports Relative_Rewriting
 begin
 
 locale rel_closure =

@@ -1,4 +1,4 @@
-subsection\<open>Abstract Rewriting\<close>
+section\<open>Implementation of Abstract Rewriting: Computation of Normal Forms\<close>
 
 theory Abstract_Rewriting_Impl
   imports 
@@ -138,13 +138,13 @@ proof -
 qed
 
 lemma trancl_image_code[code_unfold]: "R^+ `` A = compute_trancl A R" unfolding compute_trancl_def by auto
-lemma compute_rtrancl[code_unfold]: "R^* `` A = A \<union> compute_trancl A R"
+lemma compute_rtrancl[code_unfold]: "R^* `` A = (let A' = A in A' \<union> compute_trancl A' R)"
 proof -
   have id: "R^* = (Id \<union> R^+)" by regexp
   show ?thesis unfolding id compute_trancl_def by auto
 qed
 lemma trancl_image_code'[code_unfold]: "(a,b) \<in> R^+ \<longleftrightarrow> b \<in> compute_trancl {a} R" unfolding compute_trancl_def by auto
-lemma rtrancl_image_code[code_unfold]: "(a,b) \<in> R^* \<longleftrightarrow> b = a \<or> b \<in> compute_trancl {a} R"
+lemma rtrancl_image_code[code_unfold]: "(a,b) \<in> R^* \<longleftrightarrow> (let b' = b; a' = a in b' = a' \<or> b' \<in> compute_trancl {a'} R)"
   using compute_rtrancl[of R "{a}"] by auto
 
 end
