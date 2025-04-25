@@ -40712,7 +40712,7 @@ proof -
   {
     assume "QCongA a \<and> (\<exists> A B C. (a A B C \<and> \<not> Bet A B C))"
     have "QCongAnFlat a"
-      by (metis QCongAnFlat_def \<open>QCongA a \<and> (\<exists>A B C. a A B C \<and> \<not> A \<midarrow> B \<midarrow> C )\<close> ang_conga
+      by (metis QCongAnFlat_def \<open>QCongA a \<and> (\<exists>A B C. a A B C \<and> \<not> (A \<midarrow> B \<midarrow> C ))\<close> ang_conga
           bet_conga__bet)
   }
   thus ?thesis
@@ -41320,7 +41320,6 @@ lemma obtuse_not_acute:
   shows "\<not> Acute A B C" 
   using acute__not_obtuse assms by blast
 
-(* pour compatibilite *)
 lemma acute_not_obtuse: 
   assumes "Acute A B C" 
   shows "\<not> Obtuse A B C" 
@@ -42748,7 +42747,6 @@ proof -
     using Projp_def assms by auto
 qed
 
-
 lemma l13_10_aux1:
   assumes "Col PO A B" and
     "Col PO P Q" and
@@ -43239,109 +43237,6 @@ proof -
   qed
 qed
 
-lemma per13_preserves_bet_inv: 
-  assumes "Bet A' B C'" and
-    "B \<noteq> A'" and 
-    "B \<noteq> C'" and
-    "Col A B C" and 
-    "Per B A' A" and
-    "Per B C' C" 
-  shows "Bet A B C" 
-proof -
-  have "Col A' B C'" 
-    by (simp add: assms(1) bet_col)
-  {
-    assume "A = A'"
-    hence "Col B C' C" 
-      by (metis \<open>Col A' B C'\<close> assms(2) assms(4) col_transitivity_2)
-    hence "Bet A B C" 
-      using \<open>A = A'\<close> assms(1) assms(3) assms(6) l8_9 by blast
-  }
-  moreover 
-  {
-    assume "A \<noteq> A'"
-    {
-      assume "C = C'"
-      hence "Col B A' A" 
-        using \<open>Col A' B C'\<close> assms(3) assms(4) l6_16_1 not_col_permutation_2 by blast
-      hence False 
-        using \<open>A \<noteq> A'\<close> assms(2) assms(5) l8_9 by blast
-    }
-    hence "C \<noteq> C'" 
-      by blast
-    hence "\<not> Col C' C B" 
-      using Col_cases assms(3) assms(6) l8_9 by blast
-    hence "C C' OS B A'" 
-      using assms(1) assms(3) bet_out_1 
-        invert_one_side out_one_side by presburger
-    have "B A' Perp A' A" 
-      using \<open>A \<noteq> A'\<close> assms(2) assms(5) per_perp by auto
-    have "B C' Perp C' C" 
-      using \<open>C \<noteq> C'\<close> assms(3) assms(6) per_perp by auto
-    have "A A' Par C C'" 
-    proof (rule l12_9 [where ?C1.0="B" and ?C2.0="A'"])
-      show "Coplanar B A' A C" 
-        using Col_cases assms(4) ncop__ncols by blast
-      show "Coplanar B A' A C'" 
-        using Col_cases \<open>Col A' B C'\<close> ncop__ncols by blast
-      show "Coplanar B A' A' C" 
-        using ncop_distincts by blast
-      show "Coplanar B A' A' C'" 
-        using ncop_distincts by blast
-      show "A A' Perp B A'" 
-        using Perp_perm \<open>B A' Perp A' A\<close> by blast
-      show "C C' Perp B A'" 
-        using Perp_cases \<open>B C' Perp C' C\<close> \<open>Col A' B C'\<close> assms(2) 
-          col_permutation_1 perp_col1 by blast
-    qed
-    {
-      assume "A A' ParStrict C C'"
-      hence "C C' ParStrict A A'" 
-        by (simp add: par_strict_symmetry)
-      have "A A' OS C C'" 
-        by (simp add: \<open>C C' ParStrict A A'\<close> pars__os3412)
-      have "C C' OS A A'" 
-        using \<open>A A' ParStrict C C'\<close> pars__os3412 by blast
-      have "\<not> Col A' A B" 
-        using Col_cases \<open>A \<noteq> A'\<close> assms(2) assms(5) l8_9 by blast
-      hence "A' A OS B C'" 
-        by (simp add: assms(1) assms(2) bet_out out_one_side)
-      have "A' A OS B C" 
-        using Par_strict_cases \<open>A A' ParStrict C C'\<close> \<open>A' A OS B C'\<close> 
-          l12_6 one_side_transitivity by blast
-      hence "A Out B C" 
-        using assms(4) col_one_side_out invert_one_side by blast
-      have "C C' OS B A" 
-        using \<open>C C' OS A A'\<close> \<open>C C' OS B A'\<close> one_side_symmetry one_side_transitivity by blast
-      hence "C Out B A" 
-        using Col_perm assms(4) col_one_side_out by blast
-      have "Bet A C B \<longrightarrow> False" 
-        using \<open>C Out B A\<close> l6_6 not_bet_and_out by blast
-      moreover have "Bet C A B \<longrightarrow> False" 
-        using Bet_cases \<open>A Out B C\<close> not_bet_and_out by blast
-      ultimately have "Bet A B C" 
-        using assms(4) third_point by blast
-    }
-    moreover {
-      assume "A \<noteq> A'" and "C \<noteq> C'" and "Col A C C'" and "Col A' C C'"
-      have "A' C' Perp A A'"
-      proof (rule perp_col [where ?B = "B"], simp_all add: \<open>Col A' B C'\<close>)
-        show "A' \<noteq> C'" 
-          using assms(1) assms(3) between_identity by blast
-        show "A' B Perp A A'"  
-          by (simp add: \<open>B A' Perp A' A\<close> perp_comm)
-      qed
-      hence "Bet A B C" 
-        using assms(1) assms(2) assms(3) assms(4) assms(5) assms(6) 
-          per13_preserves_bet_inv by blast
-    }
-    ultimately have "Bet A B C" 
-      using Par_def \<open>A A' Par C C'\<close> by force
-  }
-  ultimately show ?thesis
-    by blast
-qed
-
 lemma l13_10_aux3:
   assumes "\<not> Col PO A A'" and
     "B \<noteq> PO" and
@@ -43801,8 +43696,7 @@ proof -
   then obtain L L' where "Col B C' L" and "Col C B' L'" and 
     "Col PO L L'" and "L PerpAt PO L B C'" and "L' PerpAt PO L' C B'"
     by blast
-  have "\<exists> P Q. Col C A' P \<and> Col A C' Q \<and> Col PO P Q \<and>
-P PerpAt PO P C A' \<and> Q PerpAt PO Q A C'" 
+  have "\<exists> P Q. Col C A' P \<and> Col A C' Q \<and> Col PO P Q \<and> P PerpAt PO P C A' \<and> Q PerpAt PO Q A C'" 
   proof (rule perp2_perp_in)
     show "PO Perp2 C A' A C'" 
       by (simp add: assms(11))
@@ -43868,10 +43762,9 @@ P PerpAt PO P C A' \<and> Q PerpAt PO Q A C'"
       have "PO L Perp L B" 
         by (meson False \<open>L PerpAt PO L B C'\<close> l8_15_2 perp_in_col 
             perp_in_col_perp_in perp_right_comm)
-      moreover have "PO L' Perp L' C" 
-        by (metis \<open>Col C B' L'\<close> \<open>Col PO L L'\<close> \<open>L' PerpAt PO L' C B'\<close> assms(5)
-            calculation col_transitivity_2 not_col_distincts perp_col1 
-            perp_in_perp perp_not_col2 perp_right_comm)
+      moreover have "PO L' Perp L' C"
+        by (metis Col_cases \<open>Col PO L L'\<close> \<open>L' PerpAt PO L' C B'\<close> \<open>PO \<noteq> L'\<close> assms(5) calculation
+            col_transitivity_2 per_perp perp_in_per_1 perp_not_col2) 
       ultimately show ?thesis 
         using l13_10_aux1 
         using \<open>Col PO L L'\<close> \<open>QCong lb\<close> \<open>QCong lc\<close> \<open>QCong ll'\<close> \<open>QCong ll\<close> 
