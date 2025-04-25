@@ -3,14 +3,19 @@ chapter AFP
 session IsaGeoCoq = HOL +
   options [timeout = 600]
   theories
+
+(* context Tarski_neutral_dimension_less *)
     Tarski_Neutral
     Tarski_Neutral_Continuity 
+    Tarski_Neutral_Archimedes  
+    Tarski_Postulate_Parallels
+
+(* context Tarski_neutral_2D *)
     Tarski_Neutral_2D
     Tarski_Neutral_Continuity_2D
-    Tarski_Neutral_Archimedes
-  
-    Tarski_Postulate_Parallels
-   
+(* context Tarski_neutral_3D *)
+    Tarski_Neutral_3D
+
   document_files
     "root.bib"
     "root.tex"

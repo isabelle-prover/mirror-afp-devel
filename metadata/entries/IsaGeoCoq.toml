@@ -315,7 +315,11 @@ Main/Meta_theory/Parallel_postulates/szmielew.v
 
 """
 
+2025-04-25 = """
+Tarski_Neutral.thy: transform 'moura' tactic to other tactic
 
+(revision a53e41f40732) <br>
+"""
 [extra]
 
 [related]
