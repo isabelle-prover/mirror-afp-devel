@@ -44280,6 +44280,47 @@ proof -
     using Perp2_def by blast
 qed
 
+lemma (in Tarski_neutral_dimensionless) Pj_exists: 
+  fixes A B C
+  shows "\<exists> D. A B Pj C D"
+  using Pj_def by blast 
+
+lemma (in Tarski_neutral_dimensionless (*Tarski_Euclidean_2D*)) project_trivial:
+  assumes "A \<noteq> B"
+    and "X \<noteq> Y"
+    and "Col A B P"
+    and "\<not> A B Par X Y"
+  shows "P P Proj A B X Y"
+  by (simp add: Proj_def assms(1) assms(2) assms(3) assms(4)) 
+
+lemma (in Tarski_neutral_dimensionless (*Tarski_Euclidean_2D*)) pj_col_project:
+  assumes "A \<noteq> B"
+    and "X \<noteq> Y"
+    and "Col P' A B"
+    and "\<not> A B Par X Y"
+    and "X Y Pj P P'"
+  shows "P P' Proj A B X Y"
+  by (metis Pj_def assms(1) assms(2) assms(3) assms(4) assms(5) not_col_permutation_2 
+      par_col_project par_symmetry project_trivial) 
+
+lemma (in Tarski_neutral_dimensionless (*Tarski_Euclidean_2D*)) pj_trivial:
+  shows "A B Pj C C"
+  by (simp add: Pj_def) 
+
+(** Lemma 14.37 *)
+lemma (in  Tarski_neutral_dimensionless) O_not_positive:
+  shows "\<not> Ps PO E PO"
+  using Ps_def out_distinct by blast 
+
+(** Lemma 14.40 states that we have an ordered field. *)
+
+lemma (in Tarski_neutral_dimensionless) col_pos_or_neg:
+  assumes "PO \<noteq> E"
+    and "PO \<noteq> X"
+    and "Col PO E X"
+  shows "Ps PO E X \<or> Ng PO E X"
+  by (metis NCol_cases Ng_def Ps_def assms(1,2,3) or_bet_out) 
+
 end
 end
 

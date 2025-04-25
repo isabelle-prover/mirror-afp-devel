@@ -3525,7 +3525,9 @@ lemma sum_exists:
   shows "\<exists> E F. A B C D SumV E F" 
   by (metis SumV_def vector_construction vector_construction_uniqueness)
 
-lemma sum_uniqueness:
+lemma sum_uniqueness_pappus: 
+(* ROLAND Collision Tarski_Pappus et Chap14 sum_uniqueness
+  sum_uniqueness ---> sum_uniqueness_pappus *)
   assumes "A B C D SumV E F" and
     "A B C D SumV E' F'"
   shows "E F EqV E' F'" 
@@ -4688,6 +4690,873 @@ lemma vector_same_dir_cong:
     "C \<noteq> D"
   shows "\<exists> X Y. A B SameDir X Y \<and> Cong X Y C D" 
   by (metis assms(1) assms(2) bet_same_dir2 cong_diff_3 segment_construction)
+  (* Gabriel Braun March 2013 *)
+
+lemma project_par: 
+  assumes "P P' Proj A B X Y" and
+    "Q Q' Proj A B X Y" and
+    "P Q Par X Y"
+  shows "P' = Q'" 
+proof -
+  {
+    assume "P P' Par X Y"
+    hence "Col P P P' \<and> Col Q P P'" 
+      using parallel_uniqueness assms(3) not_par_one_not_par par_id_5 by blast
+    hence "Col Q P P'" 
+      by simp
+    {
+      assume "Q Q' Par X Y"
+      have "Col P Q Q' \<and> Col Q Q Q'" 
+        using parallel_uniqueness 
+        by (meson \<open>Col Q P P'\<close> \<open>P P' Par X Y\<close> \<open>Q Q' Par X Y\<close> col_trivial_1 par_symmetry)
+      hence "Col P Q Q'" 
+        by simp
+      have ?thesis 
+        by (metis Proj_def \<open>Col P Q Q'\<close> \<open>Col Q P P'\<close> \<open>P P' Par X Y\<close> assms(1) 
+            assms(2) assms(3) col_permutation_4 l6_21 par_distincts project_id)
+    }
+    moreover have "Q = Q' \<longrightarrow> ?thesis" 
+      using l6_21 by (metis NCol_perm Proj_def \<open>Col Q P P'\<close> 
+          \<open>P P' Par X Y\<close> assms(1) assms(2) par_distincts par_id_5 
+          par_reflexivity project_not_col)
+    ultimately have ?thesis 
+      using Proj_def assms(2) by force
+  }
+  moreover 
+  {
+    assume "P = P'"
+    have "A \<noteq> B" 
+      using Proj_def assms(2) by force
+    have "X \<noteq> Y" 
+      using assms(3) par_distincts by blast
+    have "\<not> A B Par X Y" 
+      using Proj_def assms(2) by presburger
+    have "Col A B Q'" 
+      using Proj_def assms(2) by force
+    {
+      assume "Q Q' Par X Y" 
+      hence "Q \<noteq> Q'" 
+        using par_distinct by presburger
+      have "Col P Q Q' \<and> Col Q Q Q'" 
+        using parallel_uniqueness 
+        by (metis \<open>Q Q' Par X Y\<close> assms(3) not_par_one_not_par par_id_5)
+      hence "Col P Q Q'" 
+        by simp
+      have "P' = Q'" 
+      proof (rule l6_21 [where ?A = "A" and ?B = "B" and ?C = "Q" and ?D = "P"])
+        show "\<not> Col A B Q" 
+          using \<open>Q \<noteq> Q'\<close> assms(2) project_id by blast
+        show "Q \<noteq> P" 
+          using assms(3) par_neq1 by blast
+        show "Col A B P'" 
+          using Proj_def assms(1) by force
+        show "Col A B Q'" 
+          by (simp add: \<open>Col A B Q'\<close>)
+        show "Col Q P P'" 
+          using \<open>P = P'\<close> not_col_distincts by blast
+        show "Col Q P Q'" 
+          using \<open>Col P Q Q'\<close> not_col_permutation_4 by blast
+      qed
+    }
+    moreover 
+    {
+      assume "Q = Q'"
+      have "A = P \<longrightarrow> A B Par X Y" 
+        by (metis \<open>A \<noteq> B\<close> \<open>Col A B Q'\<close> \<open>Q = Q'\<close> assms(3) col3 
+            col_trivial_2 col_trivial_3 par_col_par_2)
+      moreover {
+        assume "A \<noteq> P"
+        have "A B Par X Y" 
+        proof (rule par_col_par_2 [where ?B = "Q"])
+          show "A \<noteq> B" 
+            by (simp add: \<open>A \<noteq> B\<close>)
+          show "Col A Q B" 
+            using \<open>Col A B Q'\<close> \<open>Q = Q'\<close> not_col_permutation_5 by blast
+          have "A P Par X Y" 
+            using \<open>A \<noteq> B\<close> \<open>Col A B Q'\<close> \<open>P = P'\<close> \<open>Q = Q'\<close> \<open>\<not> A B Par X Y\<close> assms(1) 
+              assms(3) par_col2_par_bis par_symmetry project_not_id by blast
+          thus "A Q Par X Y" 
+            by (metis Proj_def \<open>P = P'\<close> assms(1) par_col_par par_distinct 
+                par_reflexivity postulate_of_transitivity_of_parallelism_def 
+                postulate_of_transitivity_of_parallelism_thm)
+        qed
+      }
+      ultimately have "A B Par X Y" 
+        by blast
+      hence False 
+        by (simp add: \<open>\<not> A B Par X Y\<close>)
+    }
+    ultimately have "P' = Q'" 
+      using Proj_def assms(2) by auto
+  }
+  ultimately show ?thesis
+    using Proj_def assms(1) by force
+qed
+
+lemma ker_col: 
+  assumes "P P' Proj A B X Y" and
+    "Q P' Proj A B X Y" 
+  shows "Col P Q P'" 
+  by (metis Par_perm Proj_def assms(1) assms(2) not_col_distincts not_par_one_not_par par_id_2)
+
+lemma ker_par: 
+  assumes "P \<noteq> Q" and
+    "P P' Proj A B X Y" and
+    "Q P' Proj A B X Y"
+  shows "P Q Par X Y"
+proof -
+  have "Col P Q P'" 
+    using assms(2) assms(3) ker_col by blast
+  {
+    assume "P P' Par X Y" 
+    hence ?thesis 
+      by (metis NCol_cases assms(1) assms(2) assms(3) ker_col par_col_par_2)
+  }
+  moreover have "P = P' \<longrightarrow> ?thesis" 
+    by (metis Proj_def assms(1) assms(3) par_left_comm)
+  ultimately show ?thesis
+    using Proj_def assms(2) by force
+qed
+
+lemma project_uniqueness: 
+  assumes "P P' Proj A B X Y" and
+    "P Q' Proj A B X Y"
+  shows "P' = Q'" 
+  by (metis Proj_def assms(1) assms(2) colx not_par_one_not_par par_id_2 project_id)
+
+lemma project_col_eq:
+  assumes "P \<noteq> P'" and
+    "Col P Q P'" and
+    "P P' Proj A B X Y" and
+    "Q Q' Proj A B X Y"
+  shows "P' = Q'" 
+  by (metis Proj_def assms(1) assms(2) assms(3) assms(4) not_par_not_col 
+      par_not_par project_par project_uniqueness)
+
+lemma project_preserves_bet:
+  assumes "Bet P Q R" and
+    "P P' Proj A B X Y" and
+    "Q Q' Proj A B X Y" and
+    "R R' Proj A B X Y" 
+  shows "Bet P' Q' R'" 
+proof -
+  have "Col P' Q' R'" 
+    by (metis Proj_def assms(2) assms(3) assms(4) col3)
+  have "P = Q \<longrightarrow> ?thesis" 
+    using assms(2) assms(3) not_bet_distincts project_uniqueness by blast
+  moreover 
+  {
+    assume "P \<noteq> Q"
+    have "R = Q \<longrightarrow> ?thesis " 
+      using assms(3) assms(4) not_bet_distincts project_uniqueness by blast
+    moreover 
+    {
+      assume "R \<noteq> Q"
+      have "P' = Q' \<longrightarrow> ?thesis" 
+        by (simp add: between_trivial2)
+      moreover 
+      {
+        assume "P' \<noteq> Q'"
+        have "R' = Q' \<longrightarrow> ?thesis" 
+          by (simp add: between_trivial)
+        moreover 
+        {
+          assume "R' \<noteq> Q'"
+          {
+            assume "P P' Par X Y"
+            {
+              assume "Q Q' Par  X Y"
+              hence "P P' Par Q Q'" 
+                using \<open>P P' Par X Y\<close> not_par_one_not_par by blast
+              hence "Q Q' ParStrict P P'" 
+                by (metis Par_cases \<open>P P' Par X Y\<close> \<open>P \<noteq> Q\<close> \<open>P' \<noteq> Q'\<close> 
+                    all_one_side_par_strict assms(2) assms(3) not_strict_par 
+                    par_col_par_2 par_neq1 par_not_col_strict project_par)
+              hence "Q Q' OS P P'" 
+                by (simp add: l12_6)
+              {
+                assume "R R' Par X Y"
+                hence "R R' Par Q Q'" 
+                  using \<open>Q Q' Par X Y\<close> not_par_one_not_par by blast
+                hence "Q Q' ParStrict R R'" 
+                  by (metis Par_cases \<open>Col P' Q' R'\<close> \<open>Q Q' ParStrict P P'\<close> \<open>R' \<noteq> Q'\<close> 
+                      col_trivial_2 l6_16_1 par_not_col_strict par_strict_not_col_4)
+                hence "Q Q' OS R R'" 
+                  by (simp add: l12_6)
+                hence "Q Q' TS P R" 
+                  using \<open>Q Q' ParStrict P P'\<close> assms(1) bet__ts os_distincts
+                    par_strict_not_col_1 by force
+                hence "Q Q' TS P' R'" 
+                  using \<open>Q Q' OS P P'\<close> \<open>Q Q' OS R R'\<close> l9_2 l9_8_2 by blast
+                then obtain QQ where "Col QQ Q Q'" and "Bet P' QQ R'" 
+                  using TS_def by fastforce
+                hence "QQ = Q'" 
+                  by (meson \<open>Col P' Q' R'\<close> \<open>Q Q' TS P' R'\<close> bet_col 
+                      col_permutation_5 colx not_col_permutation_4 ts__ncol)
+                hence ?thesis 
+                  using \<open>Bet P' QQ R'\<close> by blast
+              }
+              moreover 
+              {
+                assume "R = R'"
+                have "Q Q' TS P' R" 
+                  by (metis \<open>Q Q' OS P P'\<close> \<open>Q Q' ParStrict P P'\<close> \<open>R \<noteq> Q\<close> 
+                      assms(1) bet__ts l9_8_2 par_strict_not_col_1)
+                then obtain QQ where "Col QQ Q Q'" and "Bet P' QQ R" 
+                  using TS_def by blast
+                hence "Col P' QQ R" 
+                  by (simp add: Col_def)
+                have "QQ = Q'" 
+                proof (rule l6_21 [where ?A= "Q" and ?B="Q'" and ?C="P'" and ?D="R"])
+                  show "\<not> Col Q Q' P'" 
+                    using \<open>Q Q' ParStrict P P'\<close> par_strict_not_col_4 by auto
+                  show "P' \<noteq> R" 
+                    using \<open>Q Q' TS P' R\<close> ts_distincts by blast
+                  show "Col Q Q' QQ" 
+                    using \<open>Col QQ Q Q'\<close> not_col_permutation_2 by blast
+                  show "Col Q Q' Q'" 
+                    using not_col_distincts by blast
+                  show "Col P' R QQ" 
+                    using \<open>Col P' QQ R\<close> not_col_permutation_5 by blast
+                  show "Col P' R Q'" 
+                    by (simp add: \<open>Col P' Q' R'\<close> \<open>R = R'\<close> col_permutation_5)
+                qed
+                hence ?thesis 
+                  using \<open>Bet P' QQ R\<close> \<open>R = R'\<close> by auto
+              }
+              ultimately have ?thesis 
+                using Proj_def assms(4) by force
+            }
+            moreover 
+            {
+              assume "Q = Q'"
+              {
+                assume "R R' Par X Y"
+                then obtain Qx Qy where "Qx \<noteq> Qy" and "X Y Par Qx Qy" and "Col Q Qx Qy" 
+                  using \<open>P P' Par X Y\<close> par_neq2 parallel_existence by blast
+                hence "Qx Qy Par P P'" 
+                  using Par_perm \<open>P P' Par X Y\<close> par_trans by blast
+                hence "Qx Qy ParStrict P P'" 
+                  by (metis NCol_perm Par_perm Par_strict_cases \<open>Col Q Qx Qy\<close>
+                      \<open>P P' Par X Y\<close> \<open>P \<noteq> Q\<close> \<open>P' \<noteq> Q'\<close> assms(2) assms(3) col_trivial_3 
+                      par_col2_par par_not_col_strict project_par)
+                hence "Qx Qy OS P P'" 
+                  using l12_6 by auto
+                have "Qx Qy Par R R'" 
+                  using \<open>P P' Par X Y\<close> \<open>Qx Qy Par P P'\<close> \<open>R R' Par X Y\<close> 
+                    not_par_one_not_par by blast
+                hence "Qx Qy ParStrict R R'" 
+                  by (metis Par_def \<open>Col Q Qx Qy\<close> \<open>R R' Par X Y\<close> \<open>R \<noteq> Q\<close> \<open>R' \<noteq> Q'\<close> 
+                      \<open>X Y Par Qx Qy\<close> assms(3) assms(4) parallel_uniqueness 
+                      postulate_of_transitivity_of_parallelism_def 
+                      postulate_of_transitivity_of_parallelism_thm project_par) (* 2.0 s *)
+                hence "Qx Qy OS R R'" 
+                  using l12_6 by force
+                hence "Qx Qy TS P R" 
+                  using OS_def TS_def \<open>Col Q Qx Qy\<close> \<open>Qx Qy OS P P'\<close> assms(1) by auto
+                hence "Qx Qy TS P' R'" 
+                  using \<open>Qx Qy OS P P'\<close> \<open>Qx Qy OS R R'\<close> l9_2 l9_8_2 by blast
+                then obtain QQ where "Col QQ Qx Qy" and "Bet P' QQ R'" 
+                  using TS_def by blast
+                have "QQ = Q" 
+                proof (rule l6_21 [where ?A="Qx" and ?B="Qy" and ?C="P'" and ?D="R'"])
+                  show "\<not> Col Qx Qy P'" 
+                    using \<open>Qx Qy OS P P'\<close> col124__nos by blast
+                  show "P' \<noteq> R'" 
+                    using \<open>Qx Qy TS P' R'\<close> not_two_sides_id by force
+                  show "Col Qx Qy QQ" 
+                    using Col_cases \<open>Col QQ Qx Qy\<close> by blast
+                  show "Col Qx Qy Q" 
+                    using \<open>Col Q Qx Qy\<close> not_col_permutation_2 by blast
+                  show "Col P' R' QQ" 
+                    using \<open>Bet P' QQ R'\<close> bet_col not_col_permutation_5 by blast
+                  show "Col P' R' Q" 
+                    by (simp add: \<open>Col P' Q' R'\<close> \<open>Q = Q'\<close> col_permutation_5)
+                qed
+                hence ?thesis 
+                  using \<open>Bet P' QQ R'\<close> \<open>Q = Q'\<close> by auto
+              }
+              moreover 
+              have "\<not> Col A B P" 
+                using \<open>P P' Par X Y\<close> assms(2) par_neq1 project_not_col by auto
+              {
+                assume "R = R'"
+                hence "Col A B P" 
+                  by (metis Proj_def \<open>Q = Q'\<close> \<open>R \<noteq> Q\<close> assms(1) assms(3) assms(4) 
+                      bet_col bet_col1 l6_21)
+                hence False 
+                  using \<open>\<not> Col A B P\<close> by blast
+              }
+              ultimately have ?thesis 
+                using Proj_def assms(4) by force
+            }
+            ultimately have ?thesis
+              using Proj_def assms(3) by force
+          }
+          moreover 
+          {
+            assume "P = P'"
+            {
+              assume "Q Q' Par X Y"
+              {
+                assume "R R' Par X Y"
+                hence "Q Q' Par R R'" 
+                  using \<open>Q Q' Par X Y\<close> not_par_one_not_par by blast
+                hence "Q Q' ParStrict R R'" 
+                  by (metis Par_def \<open>R R' Par X Y\<close> \<open>R \<noteq> Q\<close> \<open>R' \<noteq> Q'\<close> assms(3) 
+                      assms(4) ker_col postulate_of_transitivity_of_parallelism_def 
+                      postulate_of_transitivity_of_parallelism_thm project_par)
+                hence "Q Q' OS R R'" 
+                  using l12_6 by blast
+                hence "Q Q' TS P R'" 
+                  by (metis \<open>P \<noteq> Q\<close> assms(1) bet__ts between_symmetry l9_2 l9_8_2 
+                      one_side_not_col123)
+                then obtain QQ where "Col QQ Q Q'" and "Bet P QQ R'" 
+                  using TS_def by blast
+                have "QQ = Q'" 
+                proof (rule l6_21 [where ?A="Q" and ?B="Q'" and ?C="P" and ?D="R'"])
+                  show "\<not> Col Q Q' P" 
+                    using TS_def \<open>Q Q' TS P R'\<close> col_permutation_2 by blast
+                  show "P \<noteq> R'" 
+                    using \<open>Q Q' TS P R'\<close> ts_distincts by blast
+                  show "Col Q Q' QQ" 
+                    using Col_cases \<open>Col QQ Q Q'\<close> by blast
+                  show "Col Q Q' Q'" 
+                    using not_col_distincts by blast
+                  show "Col P R' QQ" 
+                    using Bet_cases Col_def \<open>Bet P QQ R'\<close> by blast
+                  show "Col P R' Q'" 
+                    using Col_cases \<open>Col P' Q' R'\<close> \<open>P = P'\<close> by auto
+                qed
+                hence ?thesis 
+                  using \<open>Bet P QQ R'\<close> \<open>P = P'\<close> by blast
+              }
+              moreover have "R = R' \<longrightarrow> ?thesis" 
+                by (metis \<open>Col P' Q' R'\<close> \<open>P = P'\<close> \<open>R' \<noteq> Q'\<close> assms(1) assms(3) assms(4) 
+                    not_col_permutation_2 or_bet_out out_bet_out_2 out_col project_col_eq)
+              ultimately have ?thesis 
+                using Proj_def assms(4) by force
+            }
+            moreover have "Q = Q' \<longrightarrow> ?thesis" 
+              by (metis Proj_def \<open>P = P'\<close> \<open>P' \<noteq> Q'\<close> assms(1) assms(2) assms(3) 
+                  assms(4) bet_col colx project_not_col)
+            ultimately have ?thesis 
+              using Proj_def assms(3) by force
+          }
+          ultimately have ?thesis 
+            using Proj_def assms(2) by force
+        }
+        ultimately have ?thesis 
+          by blast
+      }
+      ultimately have ?thesis 
+        by blast
+    }
+    ultimately have ?thesis 
+      by blast
+  }
+  ultimately show ?thesis
+    by blast
+qed
+
+lemma triangle_par:
+  assumes "\<not> Col A B C" and
+    "A B Par A' B'" and
+    "B C Par B' C'" and 
+    "A C Par A' C'" 
+  shows "A B C CongA A' B' C'" 
+proof -
+  obtain M where "M Midpoint B B'" 
+    using MidR_uniq_aux by blast
+  obtain A'' where "Bet A' M A''" and "Cong M A'' A' M"
+    using segment_construction by blast
+  obtain C'' where "Bet C' M C''" and "Cong M C'' C' M" 
+    using segment_construction by blast
+  have "M Midpoint A' A''" 
+    using \<open>Bet A' M A''\<close> \<open>Cong M A'' A' M\<close> midpoint_def not_cong_3412 by blast
+  have "M Midpoint C' C''" 
+    using \<open>Bet C' M C''\<close> \<open>Cong M C'' C' M\<close> midpoint_def not_cong_3412 by blast
+  have "A' \<noteq> B'" 
+    using assms(2) par_distinct by blast
+  have "C' \<noteq> B'" 
+    using assms(3) par_distinct by blast
+  have "B' C' Par B C''" 
+    using \<open>C' \<noteq> B'\<close> \<open>M Midpoint B B'\<close> \<open>M Midpoint C' C''\<close> mid_par_cong2 
+      par_comm by presburger
+  hence "Col B B C \<and> Col C'' B C" 
+    using assms(3) not_col_distincts not_par_one_not_par par_id_1 par_symmetry by blast
+  hence "Col C'' B C" 
+    by blast
+  have "B' A' Par B A''" 
+    using \<open>A' \<noteq> B'\<close> \<open>M Midpoint A' A''\<close> \<open>M Midpoint B B'\<close> mid_par_cong2
+      par_comm by presburger
+  hence "Col A'' B A" 
+    by (meson assms(2) par_comm par_id_5 par_not_par)
+  have "A' B' C' CongA A'' B C''" 
+    by (meson \<open>A' \<noteq> B'\<close> \<open>C' \<noteq> B'\<close> \<open>M Midpoint A' A''\<close> \<open>M Midpoint B B'\<close> 
+        \<open>M Midpoint C' C''\<close> l7_2 symmetry_preserves_conga)
+  have "A B C CongA A'' B C''"
+  proof -
+    have "B \<noteq> A''" 
+      using \<open>B' A' Par B A''\<close> par_distinct by auto
+    have "B \<noteq> C''" 
+      using \<open>B' C' Par B C''\<close> par_distinct by auto
+    have "A \<noteq> B" 
+      using \<open>Col B B C \<and> Col C'' B C\<close> assms(1) by blast
+    have "C \<noteq> B" 
+      using assms(3) par_distinct by auto
+    have "A C Par A'' C''" 
+      using \<open>M Midpoint A' A''\<close> \<open>M Midpoint C' C''\<close> assms(4) l12_17 
+        par_neq2 par_not_par by blast
+    {
+      assume "Bet C'' B C"
+      have "A C ParStrict A'' C''" 
+        by (metis Col_perm \<open>A C Par A'' C''\<close> \<open>Bet C'' B C\<close> \<open>Col C'' B C\<close> assms(1) 
+            between_identity col3 col_trivial_2 par_not_col_strict)
+      have "Bet A'' B A \<longrightarrow> ?thesis" 
+        by (metis Bet_cases \<open>A \<noteq> B\<close> \<open>B \<noteq> A''\<close> \<open>B \<noteq> C''\<close> \<open>Bet C'' B C\<close> \<open>C \<noteq> B\<close> l11_14)
+      moreover {
+        assume "Bet B A A'' \<or> Bet A A'' B"
+        have "A = A'' \<longrightarrow> False" 
+          using \<open>A C ParStrict A'' C''\<close> not_par_strict_id by blast
+        moreover {
+          assume "A \<noteq> A''"
+          {
+            assume "Bet B A A''"
+            have "A C TS A'' B" 
+              by (metis Col_cases \<open>Bet B A A''\<close> assms(1) bet__ts calculation l9_2)
+            moreover have "A C OS B C''" 
+              by (metis \<open>Bet C'' B C\<close> \<open>C \<noteq> B\<close> assms(1) bet_out_1 invert_one_side 
+                  not_col_permutation_2 out_one_side)
+            ultimately
+            have False 
+              by (meson \<open>A C ParStrict A'' C''\<close> l12_6 l9_9 one_side_symmetry 
+                  one_side_transitivity)
+          }
+          moreover 
+          {
+            assume "Bet A A'' B"
+            have "A'' C'' TS A B" 
+              using \<open>A C ParStrict A'' C''\<close> \<open>B \<noteq> A''\<close> \<open>Bet A A'' B\<close> 
+                bet__ts par_strict_not_col_3 by force
+            moreover have "A'' C'' OS B C" 
+              by (meson Col_cases TS_def \<open>B \<noteq> C''\<close> \<open>Bet C'' B C\<close> bet_out 
+                  calculation invert_one_side out_one_side)
+            ultimately have False 
+              using \<open>A C ParStrict A'' C''\<close> l9_9 one_side_symmetry 
+                one_side_transitivity pars__os3412 by blast
+          }
+          ultimately have False 
+            using \<open>Bet B A A'' \<or> Bet A A'' B\<close> by fastforce
+        }
+        ultimately have False 
+          by blast
+      }
+      ultimately have ?thesis 
+        using Col_def \<open>Col A'' B A\<close> by blast
+    }
+    moreover {
+      assume "Bet B C C''"
+      {
+        assume "Bet A'' B A"
+        have "A C ParStrict A'' C''" 
+          by (metis Par_def \<open>A C Par A'' C''\<close> \<open>B \<noteq> C''\<close> \<open>Bet A'' B A\<close> 
+              \<open>Col A'' B A\<close> \<open>Col B B C \<and> Col C'' B C\<close> assms(1) bet_neq21__neq 
+              l6_21 not_col_permutation_2)
+        have "C = C'' \<longrightarrow> ?thesis" 
+          using Par_strict_cases \<open>A C ParStrict A'' C''\<close> not_par_strict_id by blast
+        moreover 
+        { 
+          assume "C \<noteq> C''"
+          have "A C TS C'' B" 
+            by (meson \<open>A C ParStrict A'' C''\<close> \<open>Bet B C C''\<close> \<open>C \<noteq> B\<close> bet__ts 
+                between_symmetry invert_two_sides par_strict_comm par_strict_not_col_1)
+          have "A C OS B A''" 
+            by (metis \<open>A \<noteq> B\<close> \<open>Bet A'' B A\<close> assms(1) bet_out_1 col_permutation_5 out_one_side)
+          have "A C TS A'' C''" 
+            using \<open>A C OS B A''\<close> \<open>A C ParStrict A'' C''\<close> \<open>A C TS C'' B\<close> l12_6 
+              l9_9 one_side_symmetry one_side_transitivity by blast
+          hence False 
+            by (simp add: \<open>A C ParStrict A'' C''\<close> l12_6 l9_9_bis)
+        }
+        ultimately have ?thesis 
+          by blast  
+      }
+      moreover have "Bet B A A'' \<longrightarrow> ?thesis" 
+        using out2__conga \<open>Bet C'' B C \<Longrightarrow> A B C CongA A'' B C''\<close> \<open>Col A'' B A\<close> 
+          \<open>Col C'' B C\<close> calculation l6_4_2 by blast
+      moreover have "Bet A A'' B \<longrightarrow> ?thesis" 
+        using out2__conga Out_def \<open>B \<noteq> A''\<close> \<open>Bet B C C''\<close> \<open>C \<noteq> B\<close> bet_out_1 by metis
+      ultimately have ?thesis 
+        using Col_def \<open>Col A'' B A\<close> by blast
+    }
+    moreover {
+      assume "Bet C C'' B"
+      {
+        assume "Bet A'' B A"
+        have "A C ParStrict A'' C''" 
+          by (metis Par_def \<open>A C Par A'' C''\<close> \<open>B \<noteq> C''\<close> \<open>Bet A'' B A\<close> \<open>Col A'' B A\<close> 
+              \<open>Col B B C \<and> Col C'' B C\<close> assms(1) bet_neq21__neq col_permutation_2 l6_21)
+        have "C = C'' \<longrightarrow> ?thesis" 
+          using between_trivial calculation(2) by force
+        moreover {
+          assume "C \<noteq> C''"
+          have "A'' C'' TS C B" 
+            by (metis Col_cases \<open>A C ParStrict A'' C''\<close> \<open>B \<noteq> C''\<close> \<open>Bet C C'' B\<close> 
+                bet__ts invert_two_sides par_strict_not_col_2)
+          moreover have "A'' C'' OS B A" 
+            using \<open>A C ParStrict A'' C''\<close> \<open>B \<noteq> A''\<close> \<open>Bet A'' B A\<close> 
+              bet_out out_one_side par_strict_not_col_3 by presburger
+          ultimately have False 
+            using \<open>A C ParStrict A'' C''\<close> l9_2 l9_8_2 l9_9 pars__os3412 by blast
+        }
+        ultimately have ?thesis 
+          by blast
+      }
+      moreover have "Bet B A A'' \<longrightarrow> ?thesis" 
+        using \<open>Bet C'' B C \<Longrightarrow> A B C CongA A'' B C''\<close> \<open>Col A'' B A\<close> \<open>Col C'' B C\<close>
+          calculation or_bet_out out2__conga by blast
+      moreover have "Bet A A'' B \<longrightarrow> ?thesis" 
+        using \<open>B \<noteq> A''\<close> \<open>B \<noteq> C''\<close> \<open>Bet C C'' B\<close> bet_out_1 out2__conga by presburger
+      ultimately have ?thesis 
+        using Col_def \<open>Col A'' B A\<close> by blast
+    }
+    ultimately show ?thesis
+      using Col_def \<open>Col C'' B C\<close> by blast
+  qed
+  thus ?thesis 
+    using \<open>A' B' C' CongA A'' B C''\<close> conga_sym_equiv not_conga by blast
+qed
+
+lemma par3_conga3 :
+  assumes "\<not> Col A B C" and
+    "A B Par A' B'" and
+    "B C Par B' C'" and
+    "A C Par A' C'" 
+  shows "A B C CongA3 A' B' C'" 
+proof -
+  have "A B C CongA A' B' C'" 
+    by (simp add: assms(1) assms(2) assms(3) assms(4) triangle_par)
+  moreover have "B C A CongA B' C' A'" 
+    by (simp add: assms(1) assms(2) assms(3) assms(4) not_col_permutation_1 
+        par_comm triangle_par)
+  moreover have "C A B CongA C' A' B'" 
+    by (metis Col_cases Par_cases assms(1) assms(2) assms(3) assms(4) triangle_par)
+  ultimately show ?thesis 
+    by (simp add: CongA3_def)
+qed
+
+lemma project_par_eqv:
+  assumes "P P' Proj A B X Y" and
+    "Q Q' Proj A B X Y" and
+    "P Q Par A B" 
+  shows "P Q EqV P' Q'" 
+proof -
+  {
+    assume "P Q ParStrict A B"
+    {
+      assume "Q Q' Par X Y"
+      hence "P P' Par Q Q'" 
+        by (metis Proj_def \<open>P Q ParStrict A B\<close> assms(1) not_par_one_not_par 
+            par_strict_not_col_3)
+      have "P' Q' Par A B" 
+        by (metis Col_cases Par_def Proj_def \<open>P Q ParStrict A B\<close> assms(1) assms(2) 
+            ker_par not_col_distincts par_not_par par_strict_not_col_1 par_symmetry)
+      have "P P' ParStrict Q P' \<longrightarrow> Parallelogram P Q Q' P'" 
+        using Par_strict_cases not_par_strict_id by blast
+      hence "Parallelogram P Q Q' P'" 
+        by (metis Col_cases Par_cases Par_def \<open>P P' Par Q Q'\<close> \<open>P' Q' Par A B\<close> assms(1)
+            assms(2) assms(3) par_2_plg par_strict_distinct 
+            postulate_of_transitivity_of_parallelism_def 
+            postulate_of_transitivity_of_parallelism_thm project_col_eq)
+    }
+    hence "Parallelogram P Q Q' P'" 
+      by (metis Col_cases Proj_def \<open>P Q ParStrict A B\<close> assms(2) par_strict_not_col_2)
+  }
+  hence "Parallelogram P Q Q' P'" 
+    by (metis Col_cases Par_def assms(1) assms(2) assms(3) plg_trivial project_id)
+  thus ?thesis
+    using EqV_def by blast
+qed
+
+lemma eqv_project_eq_eq:
+  assumes "P Q EqV R S" and
+    "P P' Proj A B X Y" and
+    "Q Q' Proj A B X Y" and
+    "R P' Proj A B X Y" and
+    "S S' Proj A B X Y"
+  shows "Q' = S'" 
+proof (cases "P = Q")
+  case True
+  thus ?thesis 
+    by (metis assms(1) assms(2) assms(3) assms(4) assms(5) null_vector project_uniqueness)
+next
+  case False
+  hence "P \<noteq> Q" 
+    by simp
+  have "R \<noteq> S" 
+    using False assms(1) eqv_par par_neq2 by blast
+  have "P R EqV Q S" 
+    by (simp add: assms(1) eqv_permut)
+  have "P = R \<longrightarrow> ?thesis" 
+    using assms(1) assms(3) assms(5) project_uniqueness vector_uniqueness by blast
+  moreover {
+    assume "P \<noteq> R"
+    have "Q \<noteq> S" 
+      using \<open>P R EqV Q S\<close> \<open>P \<noteq> R\<close> eqv_par par_neq2 by blast
+    have "P R Par Q S" 
+      using \<open>P R EqV Q S\<close> \<open>P \<noteq> R\<close> eqv_par by blast
+    moreover have "P R Par X Y" 
+      using \<open>P \<noteq> R\<close> assms(2) assms(4) ker_par by blast
+    ultimately have ?thesis 
+      using project_par by (meson assms(3) assms(5) par_symmetry par_trans)
+  }
+  ultimately show ?thesis 
+    by blast
+qed
+
+lemma eqv_eq_project:
+  assumes "P Q EqV R S" and
+    "P P' Proj A B X Y" and
+    "Q Q' Proj A B X Y" and
+    "R P' Proj A B X Y"
+  shows "S Q' Proj A B X Y" 
+proof (cases "S = Q'") 
+  case True
+  thus ?thesis
+    using Proj_def assms(3) by auto
+next
+  case False
+  hence "S \<noteq> Q'" 
+    by simp
+  {
+    assume "P \<noteq> R"
+    hence "P R Par Q S" 
+      by (simp add: assms(1) eqv_par eqv_permut)
+    have "Col P R P'" 
+      using assms(2) assms(4) ker_col by force
+    {
+      assume "Q Q' Par X Y" 
+      have "P R Par X Y" 
+        using \<open>P \<noteq> R\<close> assms(2) assms(4) ker_par by auto
+      {
+        assume "Q Q' Par X Y"
+        have "Col S Q Q'" 
+          by (metis Par_cases \<open>P R Par Q S\<close> \<open>P R Par X Y\<close> 
+              \<open>Q Q' Par X Y\<close> par_id_1 par_not_par)
+        have "Q' Q Par X Y" 
+          using Par_perm \<open>Q Q' Par X Y\<close> by blast
+        hence "S Q' Par X Y" 
+          by (metis Col_cases False \<open>Col S Q Q'\<close> col_par par_neq1 par_trans)
+      }
+      hence "S Q' Par X Y" 
+        using \<open>Q Q' Par X Y\<close> by auto
+    }
+    hence "S Q' Par X Y" 
+      by (metis Proj_def \<open>P R Par Q S\<close> \<open>P \<noteq> R\<close> assms(2) assms(3) assms(4) 
+          ker_par par_left_comm par_not_par par_symmetry)
+    hence ?thesis 
+      using Proj_def assms(3) by force
+  }
+  thus ?thesis
+    using assms(1) assms(3) vector_uniqueness by blast
+qed
+
+lemma eqv_cong: 
+  assumes "A B EqV C D"
+  shows "Cong A B C D" 
+proof -
+  have "Parallelogram A B C D \<longrightarrow> ?thesis" 
+    using plg_cong by auto
+  thus ?thesis 
+    using EqV_def assms cong_trivial_identity not_cong_1243 plg_cong_1 by blast
+qed
+
+lemma project_preserves_eqv:
+  assumes "P Q EqV R S" and
+    "P P' Proj A B X Y" and
+    "Q Q' Proj A B X Y" and
+    "R R' Proj A B X Y" and
+    "S S' Proj A B X Y"
+  shows "P' Q' EqV R' S'" 
+proof (cases "P = Q")
+  case True
+  thus ?thesis 
+    by (metis assms(1) assms(2) assms(3) assms(4) assms(5) 
+        eqv_trivial null_vector project_uniqueness)
+next
+  case False
+  hence "P \<noteq> Q" 
+    by simp
+  have "R \<noteq> S" 
+    using False assms(1) eqv_par par_neq2 by blast
+  {
+    assume "P Q Par A B"
+    have "P Q EqV P' Q'"
+      using project_par_eqv [where ?A="A" and ?B="B" and ?X="X" and ?Y="Y"]
+        assms(2) assms(3) \<open>P Q Par A B\<close> by blast
+    have "R S EqV R' S'" 
+      by (meson False \<open>P Q Par A B\<close> assms(1) assms(4) assms(5) eqv_par 
+          par_not_par par_symmetry project_par_eqv)
+    hence ?thesis 
+      by (meson \<open>P Q EqV P' Q'\<close> assms(1) eqv_sym eqv_trans)
+  }
+  moreover 
+  {
+    assume "\<not> P Q Par A B" 
+    hence "P Q Par X Y \<longrightarrow> ?thesis" 
+      by (metis EqV_def False assms(1) assms(2) assms(3) assms(4) assms(5) 
+          eqv_par par_symmetry par_trans project_par)
+    moreover
+    {
+      assume "\<not> P Q Par X Y"
+      hence "P' \<noteq> Q'" 
+        using False assms(2) assms(3) ker_par by blast
+      have "\<not> R S Par X Y" 
+        by (metis False \<open>\<not> P Q Par X Y\<close> assms(1) eqv_par par_trans)
+      have "R' \<noteq> S'" 
+        using \<open>R \<noteq> S\<close> \<open>\<not> R S Par X Y\<close> assms(4) assms(5) ker_par by force
+      obtain Q'' where "P Q EqV P' Q''" 
+        using vector_construction by blast
+      obtain S'' where "R S EqV R' S''" 
+        using vector_construction by blast
+      hence "P' Q'' EqV R' S''" 
+        by (meson \<open>P Q EqV P' Q''\<close> assms(1) eqv_sym eqv_trans)
+      {
+        assume "Q' = Q''" 
+        have "P' \<noteq> Q'" 
+          by (simp add: \<open>P' \<noteq> Q'\<close>)
+        have "P' Q' Par A B" 
+          by (metis Col_cases Par_def Proj_def \<open>P' \<noteq> Q'\<close> assms(2) assms(3))
+        hence "P Q Par A B" 
+          using False \<open>P Q EqV P' Q''\<close> \<open>Q' = Q''\<close> 
+            eqv_par postulate_of_transitivity_of_parallelism_def 
+            postulate_of_transitivity_of_parallelism_thm by blast
+        hence False 
+          by (simp add: \<open>\<not> P Q Par A B\<close>)
+      }
+      hence "Q' \<noteq> Q''" 
+        by blast
+      {
+        assume "S' = S''" 
+        have "P Q Par R S" 
+          by (simp add: False assms(1) eqv_par)
+        have "P Q Par P' Q''" 
+          by (simp add: False \<open>P Q EqV P' Q''\<close> eqv_par)
+        have "R S Par R' S'" 
+          by (simp add: \<open>R S EqV R' S''\<close> \<open>R \<noteq> S\<close> \<open>S' = S''\<close> eqv_par)
+        have "P' Q'' Par R' S'" 
+          using \<open>P Q Par P' Q''\<close> \<open>P' Q'' EqV R' S''\<close> \<open>S' = S''\<close> eqv_par 
+            par_neq2 by presburger
+        have "R' S' Par A B" 
+          by (metis Proj_def \<open>R' \<noteq> S'\<close> assms(4) assms(5) par_col2_par_bis par_reflexivity)
+        hence "P Q Par A B" 
+          using \<open>P Q Par R S\<close> \<open>R S Par R' S'\<close> par_not_par by blast
+        hence False 
+          by (simp add: \<open>\<not> P Q Par A B\<close>)
+      }
+      hence "S' \<noteq> S''" 
+        by blast
+      have "P P' EqV Q Q''" 
+        by (simp add: \<open>P Q EqV P' Q''\<close> eqv_permut)
+      have "R R' EqV S S''" 
+        by (simp add: \<open>R S EqV R' S''\<close> eqv_permut)
+      have "P' R' EqV Q'' S''" 
+        by (simp add: \<open>P' Q'' EqV R' S''\<close> eqv_permut)
+      have "Q'' Q' Proj A B X Y" 
+        using \<open>P Q EqV P' Q''\<close> assms(2) assms(3) eqv_eq_project project_idem by blast
+      hence "Q'' Q' Par X Y" 
+        using \<open>Q' \<noteq> Q''\<close> project_par_dir by auto
+      have "S'' S' Proj A B X Y" 
+        using \<open>R S EqV R' S''\<close> assms(4) assms(5) eqv_eq_project project_idem by blast
+      hence "S'' S' Par X Y" 
+        using \<open>S' \<noteq> S''\<close> project_par_dir by auto
+      have "Q'' Q' Par S'' S'" 
+        using \<open>Q'' Q' Par X Y\<close> \<open>S'' S' Par X Y\<close> not_par_one_not_par by blast
+      have "\<not> Col A B Q''" 
+        using \<open>Q' \<noteq> Q''\<close> \<open>Q'' Q' Proj A B X Y\<close> project_not_col by auto
+      have "\<not> Col P' Q'' Q'" 
+        by (metis Proj_def \<open>P' \<noteq> Q'\<close> \<open>\<not> Col A B Q''\<close> assms(2) 
+            assms(3) col_permutation_2 colx)
+      have "Cong P' Q'' R' S''" 
+        using \<open>P' Q'' EqV R' S''\<close> eqv_cong by blast
+      moreover have "P' Q'' Q' CongA3 R' S'' S'"
+        by (metis Par_def Proj_def \<open>P' Q'' EqV R' S''\<close> \<open>Q'' Q' Par S'' S'\<close>
+            \<open>R' \<noteq> S'\<close> \<open>\<not> Col P' Q'' Q'\<close> assms(2) assms(3) assms(4) assms(5) 
+            col3 eqv_par not_col_distincts par3_conga3)
+      ultimately have "P' Q'' Q' Cong3 R' S'' S'" 
+        using cong_conga3_cong3 \<open>\<not> Col P' Q'' Q'\<close> by blast
+      {
+        assume "Q' = S'" 
+        hence "P' = R'" 
+          using assms(1) assms(2) assms(3) assms(4) assms(5) eqv_comm 
+            eqv_project_eq_eq by blast
+        hence "Q'' = S''" 
+          using \<open>P' R' EqV Q'' S''\<close> null_vector by blast
+        hence "Parallelogram Q'' Q' S' S''" 
+          using \<open>Q' = S'\<close> \<open>Q' \<noteq> Q''\<close> plg_trivial by presburger
+      }
+      moreover 
+      {
+        assume "Q' \<noteq> S'" 
+        have "P' = R' \<longrightarrow> Parallelogram Q'' Q' S' S''" 
+          using assms(1) assms(2) assms(3) assms(4) assms(5) calculation 
+            eqv_project_eq_eq by blast
+        moreover 
+        {
+          assume "P' \<noteq> R'" 
+          have "Q'' \<noteq> S' \<or> Q' \<noteq> S''" 
+            using Proj_def \<open>\<not> Col A B Q''\<close> assms(5) by force
+          moreover have "\<exists> M .M Midpoint Q'' S' \<and> M Midpoint Q' S''" 
+          proof (rule par_cong_mid_os)
+            show "Q'' Q' ParStrict S'' S'" 
+              by (metis \<open>Q'' Q' Par S'' S'\<close> Par_def \<open>Q' \<noteq> S'\<close> \<open>Q'' Q' Proj A B X Y\<close> 
+                  \<open>S'' S' Proj A B X Y\<close> col2__eq project_col_eq)
+            show "Cong Q'' Q' S'' S'" 
+              using Cong3_def \<open>P' Q'' Q' Cong3 R' S'' S'\<close> by auto
+            {
+              assume "Parallelogram P' Q'' S'' R'"
+              hence "ParallelogramStrict R' P' Q'' S''" 
+                by (metis Plg_perm Proj_def \<open>P' \<noteq> R'\<close> \<open>\<not> Col A B Q''\<close> assms(2) 
+                    assms(4) colx ncol123_plg__plgs)
+              have "Q'' S'' ParStrict Q' S'" 
+              proof (rule par_strict_col2_par_strict [where ?C ="R'" and ?D="P'"])
+                show "Q' \<noteq> S'" 
+                  by (simp add: \<open>Q' \<noteq> S'\<close>)
+                show  "Q'' S'' ParStrict R' P'" 
+                  using \<open>ParallelogramStrict R' P' Q'' S''\<close> par_strict_symmetry plgs_pars_1 by blast
+                show "Col R' P' Q'"       
+                  by (metis Proj_def assms(2) assms(3) assms(4) col3)
+                show "Col R' P' S'"
+                  by (metis Proj_def assms(2) assms(4) assms(5) col3)
+              qed
+              hence "Q'' S'' OS Q' S'" 
+                using l12_6 by blast
+            }
+            thus "Q'' S'' OS Q' S'"
+              using EqV_def \<open>P' Q'' EqV R' S''\<close> \<open>\<not> Col P' Q'' Q'\<close> not_col_distincts by blast
+          qed
+          ultimately have "Plg Q'' Q' S' S''" 
+            by (simp add: Plg_def)
+          hence "Parallelogram Q'' Q' S' S''" 
+            by (simp add: plg_to_parallelogram)
+        }
+        ultimately have "Parallelogram Q'' Q' S' S''" 
+          by blast
+      }
+      ultimately have "Parallelogram Q'' Q' S' S''" 
+        by blast
+      hence "Q'' Q' EqV S'' S'" 
+        by (simp add: EqV_def)
+      hence ?thesis 
+        using \<open>P' Q'' EqV R' S''\<close> eqv_sum by blast
+    }
+    ultimately have ?thesis 
+      by blast
+  }
+  ultimately show ?thesis 
+    by blast
+qed
 
 lemma cop_par__perp2: 
   assumes "Coplanar A B C P" and
@@ -6741,6 +7610,278 @@ next
     qed
   qed
 qed
+
+lemma sum_to_sump: 
+  assumes "Sum PO E E' A B C"
+  shows "Sump PO E E' A B C" 
+proof -
+  have "Ar2 PO E E' A B C" 
+    using Sum_def assms by blast 
+  obtain A' C' where "E E' Pj A  A'" and "Col PO E' A'" and 
+    "PO E Pj A' C'" and "PO E' Pj B  C'" and "E' E Pj C' C"
+    using Sum_def assms by blast 
+  have "A A' Proj PO E' E E'"
+    by (metis Ar2_def Pj_def Proj_def \<open>Ar2 PO E E' A B C\<close> \<open>Col PO E' A'\<close> \<open>E E' Pj A A'\<close> 
+        not_col_distincts par_comm par_id_2 par_symmetry) 
+  moreover 
+  have "PO \<noteq> E"
+    using Ar2_def \<open>Ar2 PO E E' A B C\<close> col_trivial_1 by force 
+  then obtain P' where "PO E Par A' P'"     
+    using parallel_existence1 by blast
+  moreover have "B C' Proj A' P' PO E'"
+    by (smt (verit) Ar2_def Par_perm Pj_def Proj_def \<open>Ar2 PO E E' A B C\<close> \<open>PO E Pj A' C'\<close> 
+        \<open>PO E' Pj B C'\<close> calculation(1) calculation(2) par_col2_par_bis par_id par_id_1 par_trans) 
+  moreover have "E \<noteq> E'"
+    using Proj_def calculation(1) by presburger 
+  hence "C' C Proj PO E E E'"
+    by (metis Ar2_def Par_cases Pj_def Proj_def \<open>Ar2 PO E E' A B C\<close> \<open>E' E Pj C' C\<close> 
+        \<open>PO \<noteq> E\<close> not_col_permutation_5 par_id_2) 
+  ultimately show ?thesis
+    using Ar2_def Sum_def Sump_def assms by auto 
+qed
+
+lemma sump_to_sum:
+  assumes "Sump PO E E' A B C"
+  shows "Sum PO E E' A B C" 
+proof -
+  have "Col PO E A "
+    using Sump_def assms by blast 
+  have "Col PO E B" 
+    using Sump_def assms by blast 
+  obtain A' C' P' where "A A' Proj PO E' E E'" and "PO E Par A' P'" and
+    "B C' Proj A' P' PO E'" and "C' C Proj PO E E E'"     
+    using Sump_def assms by blast 
+  have "Ar2 PO E E' A B C"
+    by (metis Ar2_def Proj_def \<open>B C' Proj A' P' PO E'\<close> \<open>C' C Proj PO E E E'\<close> \<open>Col PO E A\<close> 
+        \<open>Col PO E B\<close> \<open>PO E Par A' P'\<close> par_col_par par_symmetry) 
+  moreover have "E E' Pj A A'"
+    using Pj_def \<open>A A' Proj PO E' E E'\<close> par_symmetry project_par_dir by blast 
+  moreover have "Col PO E' A'"
+    using Proj_def \<open>A A' Proj PO E' E E'\<close> by presburger 
+  moreover have "PO E Pj A' C'"
+    by (metis Pj_def Proj_def \<open>B C' Proj A' P' PO E'\<close> \<open>PO E Par A' P'\<close> par_col_par) 
+  moreover have "PO E' Pj B C'"
+    using Pj_def \<open>B C' Proj A' P' PO E'\<close> par_symmetry project_par_dir by blast 
+  moreover have "E' E Pj C' C"
+    using Par_perm Pj_def \<open>C' C Proj PO E E E'\<close> project_par_dir by blast 
+  ultimately show ?thesis
+    using Sum_def by blast
+qed
+
+lemma project_col_project: 
+  assumes "A \<noteq> C"
+    and "Col A B C"
+    and "P P' Proj A B X Y"
+  shows "P P' Proj A C X Y"
+  by (metis (full_types) Proj_def assms(1) assms(2) assms(3) col3 col_trivial_3 
+      not_par_not_col par_not_par) 
+
+lemma (in Tarski_Euclidean) pj_uniqueness:
+  assumes "\<not> Col PO E E'"
+    and "Col PO E A"
+    and "Col PO E' A'"
+    and "Col PO E' A''"
+    and "E E' Pj A A'"
+    and "E E' Pj A A''"
+  shows "A' = A''" 
+proof (cases)
+  assume "A = PO"
+  thus ?thesis
+    by (metis NCol_cases Par_cases Par_def Pj_def assms(1) assms(3) assms(4) 
+        assms(5) assms(6) par_strict_not_col_4) 
+next
+  assume "A \<noteq> PO"
+  thus ?thesis
+    by (smt (verit) Par_cases Pj_def assms(1) assms(3) assms(4) assms(5) assms(6) 
+        col_trivial_3 par_col2_par_bis par_id_2 par_not_par) 
+qed
+
+lemma (in Tarski_Euclidean) pj_right_comm: 
+  assumes "A B Pj C D"
+  shows "A B Pj D C"
+  using Par_cases Pj_def assms by auto
+
+lemma (in Tarski_Euclidean) pj_left_comm: 
+  assumes "A B Pj C D" 
+  shows "B A Pj C D"
+  using Par_cases Pj_def assms by auto 
+
+lemma (in Tarski_Euclidean) pj_comm: 
+  assumes "A B Pj C D"
+  shows "B A Pj D C"
+  using assms pj_left_comm pj_right_comm by blast 
+
+lemma (in Tarski_Euclidean(*_2D*)) grid_not_par_1:
+  assumes grid_ok: "\<not> Col PO E E'"
+  shows "\<not> PO E Par E E'"
+  using grid_ok par_id_1 par_left_comm by blast
+
+lemma (in Tarski_Euclidean(*_2D*)) grid_not_par_2:
+  assumes grid_ok: "\<not> Col PO E E'"
+  shows "\<not> PO E Par PO E'"
+  using grid_ok par_id by blast
+
+lemma (in Tarski_Euclidean(*_2D*))grid_not_par_3:
+  assumes grid_ok: "\<not> Col PO E E'"
+  shows "\<not> PO E' Par E E'"
+  using grid_ok par_comm par_id_2 by blast
+
+lemma (in Tarski_Euclidean(*_2D*)) grid_not_par_4:
+  assumes grid_ok: "\<not> Col PO E E'"
+  shows "PO \<noteq> E"
+  using col_trivial_1 grid_ok by blast 
+
+lemma (in Tarski_Euclidean(*_2D*)) grid_not_par_5:
+  assumes grid_ok: "\<not> Col PO E E'"
+  shows "PO \<noteq> E'"
+  using grid_ok not_col_distincts by blast
+
+lemma (in Tarski_Euclidean(*_2D*)) grid_not_par_6:
+  assumes grid_ok: "\<not> Col PO E E'"
+  shows "E \<noteq> E'"
+  using grid_ok not_col_distincts by presburger 
+
+lemma (in Tarski_Euclidean(*_2D*)) grid_not_par:
+  assumes grid_ok: "\<not> Col PO E E'"
+  shows "\<not> PO E Par E E' \<and> \<not> PO E Par PO E' \<and> 
+\<not> PO E' Par E E' \<and> PO \<noteq> E \<and> PO \<noteq> E' \<and> E \<noteq> E'"
+  using grid_ok grid_not_par_1 grid_not_par_2 grid_not_par_3 grid_not_par_4 
+    grid_not_par_5 grid_not_par_6 by blast 
+
+lemma (in Tarski_Euclidean(*_2D*)) proj_id:
+  assumes grid_ok: "\<not> Col PO E E'"
+    and "A A' Proj PO E' E E'"
+    and "Col PO E A"
+    and "Col PO E A'"
+  shows "A = PO" 
+proof -
+  have "A A' Par E E' \<or> A = A'"
+    using Proj_def assms(2) by presburger 
+  moreover {
+    assume "A A' Par E E'"
+    hence False
+      using grid_ok assms(3) assms(4) grid_not_par_1 grid_not_par_4 
+        par_col2_par_bis par_symmetry by blast 
+  }
+  moreover {
+    assume "A = A'"
+    hence ?thesis
+      by (metis NCol_cases Proj_def assms(2) assms(3) grid_ok l6_16_1) 
+  }
+  ultimately show ?thesis
+    by blast
+qed
+
+lemma (in Tarski_Euclidean(*_2D*)) sum_uniqueness:
+  assumes grid_ok: "\<not> Col PO E E'"
+    and "Sum PO E E' A B C1"
+    and "Sum PO E E' A B C2"
+  shows "C1 = C2" 
+proof -
+  have "Sump PO E E' A B C1"
+    using assms(2) sum_to_sump by blast 
+  then obtain A' C' P' where "A A' Proj PO E' E E'" and "PO E Par A' P'" and
+    "B C' Proj A' P' PO E'" and "C' C1 Proj PO E E E'" 
+    using Sump_def by blast
+  have "Sump PO E E' A B C2" 
+    using assms(3) sum_to_sump by blast 
+  then obtain A'' C'' P'' where "A A'' Proj PO E' E E'" and "PO E Par A'' P''" and
+    "B C'' Proj A'' P'' PO E'" and "C'' C2 Proj PO E E E'" 
+    using Sump_def by blast
+  have "A' = A''"
+    using \<open>A A' Proj PO E' E E'\<close> \<open>A A'' Proj PO E' E E'\<close> project_uniqueness by auto 
+  hence "Col A' P' P''"
+    using Col_cases \<open>PO E Par A' P'\<close> \<open>PO E Par A'' P''\<close> col_trivial_1 
+      parallel_uniqueness by blast 
+  thus ?thesis
+    by (metis par_distincts \<open>A' = A''\<close> \<open>B C' Proj A' P' PO E'\<close> 
+        \<open>B C'' Proj A'' P'' PO E'\<close> \<open>C' C1 Proj PO E E E'\<close> \<open>C'' C2 Proj PO E E E'\<close> 
+        \<open>PO E Par A'' P''\<close> project_col_project project_uniqueness) 
+qed
+
+lemma (in Tarski_Euclidean(*_2D*)) opp0:
+  assumes grid_ok: "\<not> Col PO E E'"
+  shows "Opp PO E E' PO PO"
+  using Ar2_def Opp_def Pj_def Sum_def col_trivial_3 grid_ok by auto 
+
+lemma (in Tarski_neutral_dimensionless (*Tarski_Euclidean_2D*)) pj_trivial:
+  shows "A B Pj C C"
+  by (simp add: Pj_def) 
+
+lemma (in Tarski_Euclidean(*_2D*)) sum_O_O:
+  assumes grid_ok: "\<not> Col PO E E'"
+  shows "Sum PO E E' PO PO PO"
+  using Opp_def opp0 grid_ok by blast 
+
+lemma (in Tarski_Euclidean(*_2D*)) sum_par_strict_a:
+  assumes grid_ok: "\<not> Col PO E E'"
+    and "Ar2 PO E E' A B C"
+    and "A \<noteq> PO"
+    and "E E' Pj A A'"
+    (*    and "Col PO E' A'"
+    and "PO E Pj A' C'"
+    and "PO E' Pj B C'"
+    and "E' E Pj C' C"*)
+  shows "A' \<noteq> PO"
+  by (metis Ar2_def Pj_def grid_ok assms(2) assms(3) assms(4) col_trivial_3 
+      grid_not_par_1 grid_not_par_4 par_col2_par_bis par_symmetry) 
+
+lemma (in Tarski_Euclidean(*_2D*)) sum_par_strict_b:
+  assumes grid_ok: "\<not> Col PO E E'"
+    and "Ar2 PO E E' A B C"
+    and "A \<noteq> PO"
+    and "E E' Pj A A'"
+    and "Col PO E' A'"
+    and "PO E Pj A' C'"
+    and "PO E' Pj B C'"
+    and "E' E Pj C' C"
+  shows "(PO E ParStrict A' C' \<or> B = PO)" 
+proof -
+  have "Sum PO E E' A B C"
+    using Sum_def assms(2) assms(4) assms(5) assms(6) assms(7) assms(8) by blast 
+  have "A' \<noteq> PO"
+    using grid_ok assms(2) assms(3) assms(4) sum_par_strict_a by blast 
+  show ?thesis 
+  proof (cases)
+    assume "B = PO"
+    thus ?thesis 
+      by blast
+  next
+    assume" B \<noteq> PO"
+    have "PO E ParStrict A' C'" 
+    proof -
+      have "PO E Par A' C' \<or> A' = C'"
+        using Pj_def assms(6) by blast 
+      moreover {
+        assume "PO E Par A' C'"
+        hence ?thesis
+          by (metis Col_def Par_def \<open>A' \<noteq> PO\<close> assms(5) grid_ok l6_16_1) 
+      }
+      moreover {
+        assume "A' = C'"
+        hence ?thesis
+          by (metis Ar2_def Pj_def \<open>B \<noteq> PO\<close> assms(2) assms(5) assms(7) 
+              l6_16_1 not_col_distincts not_col_permutation_4 not_strict_par) 
+      }
+      ultimately show ?thesis
+        by blast
+    qed
+    thus ?thesis 
+      by blast
+  qed
+qed
+
+lemma (in Tarski_Euclidean(*_2D*)) sum_par_strict:
+  assumes grid_ok: "\<not> Col PO E E'"
+    and "Ar2 PO E E' A B C"
+    and "A \<noteq> PO"
+    and "E E' Pj A A'"
+    and "Col PO E' A'"
+    and "PO E Pj A' C'"
+    and "PO E' Pj B C'"
+    and "E' E Pj C' C"
+  shows "A' \<noteq> PO \<and> (PO E ParStrict A' C' \<or> B = PO)"
+  using assms sum_par_strict_a sum_par_strict_b by blast 
 
 end
 end
