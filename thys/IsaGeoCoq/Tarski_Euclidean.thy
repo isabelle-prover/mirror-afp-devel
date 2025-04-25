@@ -3298,5 +3298,1704 @@ proof -
     using assms(1) between_symmetry between_trivial by blast
 qed
 
+  (* Gabriel Braun February 2013 *)
+
+lemma eqv_refl:
+  shows "A B EqV A B" 
+  using EqV_def plg_trivial by blast
+
+lemma eqv_sym: 
+  assumes "A B EqV C D"
+  shows "C D EqV A B" 
+  using EqV_def Plg_perm assms by blast
+
+lemma eqv_trans: 
+  assumes "A B EqV C D" and
+    "C D EqV E F"
+  shows "A B EqV E F"
+proof -
+  {
+    assume "Parallelogram A B D C"
+    hence "Parallelogram C D F E \<longrightarrow> ?thesis" 
+      using EqV_def plg_comm2 plg_pseudo_trans by blast
+    moreover have "C = D \<and> F = E \<longrightarrow> ?thesis" 
+      by (metis assms(1) calculation plg_trivial1)
+    ultimately have ?thesis 
+      using EqV_def assms(2) by blast
+  }
+  moreover have "A = B \<and> C = D \<longrightarrow> ?thesis" 
+    using assms(2) calculation plg_trivial1 by force
+  ultimately show ?thesis 
+    using EqV_def assms(1) by force
+qed
+
+lemma eqv_comm: 
+  assumes "A B EqV C D"
+  shows "B A EqV D C" 
+  by (metis EqV_def assms eqv_sym plg_sym)
+
+lemma vector_construction: 
+  shows "\<exists> D. A B EqV C D" 
+  by (metis EqV_def eqv_comm plg_existence)
+
+lemma vector_construction_uniqueness:
+  assumes "A B EqV C D" and
+    "A B EqV C D'" 
+  shows "D = D'" 
+proof -
+  {
+    assume "Parallelogram A B D C"
+    hence "Parallelogram A B D' C \<longrightarrow> ?thesis" 
+      by (meson plg_comm2 plg_uniqueness)
+    moreover have "A = B \<and> C = D' \<longrightarrow> ?thesis" 
+      using \<open>Parallelogram A B D C\<close> cong_reverse_identity plg_cong by blast
+    ultimately have ?thesis 
+      using EqV_def assms(2) by force
+  }
+  moreover have "A = B \<and> C = D \<longrightarrow> ?thesis" 
+    by (metis EqV_def assms(2) cong_reverse_identity plg_cong)
+  ultimately show ?thesis 
+    using EqV_def assms(1) by force
+qed
+
+lemma null_vector: 
+  assumes "A A EqV B C"
+  shows "B = C" 
+  using EqV_def assms vector_construction_uniqueness by blast
+
+lemma vector_uniqueness: 
+  assumes "A B EqV A C"
+  shows "B = C" 
+  using assms eqv_refl vector_construction_uniqueness by blast
+
+lemma eqv_trivial: 
+  shows "A A EqV B B" 
+  by (simp add: EqV_def)
+
+lemma eqv_permut:
+  assumes "A B EqV C D" 
+  shows "A C EqV B D" 
+  using EqV_def assms eqv_refl eqv_sym plg_permut by presburger
+
+lemma eqv_par:
+  assumes "A \<noteq> B" and
+    "A B EqV C D"
+  shows "A B Par C D" 
+  by (metis EqV_def Par_cases assms(1) assms(2) eqv_comm par_reflexivity plg_par)
+
+lemma eqv_opp_null:
+  assumes "A B EqV B A"
+  shows "A = B" 
+  by (meson EqV_def assms plg_not_comm plg_trivial)
+
+lemma eqv_sum:
+  assumes "A B EqV A' B'" and
+    "B C EqV B' C'"
+  shows "A C EqV A' C'" 
+  by (meson assms(1) assms(2) eqv_permut eqv_trans)
+
+lemma null_sum:
+  shows "A B B A SumV C C" 
+  using EqV_def SumV_def eqv_permut null_vector by blast
+
+lemma chasles:
+  shows "A B B C SumV A C" 
+  using SumV_def eqv_permut eqv_refl null_vector by blast
+
+lemma eqv_mid :
+  assumes "A B EqV B C"
+  shows "B Midpoint A C" 
+  using EqV_def assms l7_3_2 plg_comm2 plg_mid_2 by blast
+
+lemma mid_eqv:
+  assumes "A Midpoint B C"
+  shows "B A EqV A C" 
+  by (metis EqV_def assms midpoint_distinct_1 plg_existence plg_mid_2)
+
+lemma sum_sym:
+  assumes "A B C D SumV E F"
+  shows "C D A B SumV E F"
+proof -
+  {
+    fix D'0
+    assume "A B EqV D D'0"
+    obtain D' where "C D EqV B D'" 
+      using vector_construction by blast
+    have "A D' EqV E F" 
+      using SumV_def \<open>C D EqV B D'\<close> assms by blast
+    have "C B EqV D D'" 
+      by (simp add: \<open>C D EqV B D'\<close> eqv_permut)
+    have "A D EqV B D'0" 
+      by (simp add: \<open>A B EqV D D'0\<close> eqv_permut)
+    have "C D'0 EqV E F"
+    proof (cases "A = D'0")
+      case True
+      have "A Midpoint B D" 
+        using True \<open>A B EqV D D'0\<close> eqv_comm eqv_mid by blast
+      have "Parallelogram C D D' B \<longrightarrow> ?thesis" 
+        using Plg_perm True \<open>A D' EqV E F\<close> \<open>A Midpoint B D\<close> eqv_trans mid_eqv plg_mid_2 by blast
+      moreover have "C = D \<and> B = D' \<longrightarrow> ?thesis" 
+        using \<open>A B EqV D D'0\<close> \<open>A D' EqV E F\<close> eqv_sym eqv_trans by blast
+      ultimately show ?thesis 
+        using EqV_def \<open>C D EqV B D'\<close> by blast
+    next
+      case False
+      have "Parallelogram C D D' B \<longrightarrow> ?thesis" 
+      proof -
+        {
+          assume "Parallelogram A B D'0 D"
+          obtain M0 where "M0 Midpoint C D'" and "M0 Midpoint D B" 
+            by (metis EqV_def MidR_uniq_aux \<open>C D EqV B D'\<close> plg_mid_2)
+          obtain M1 where "M1 Midpoint A D'0" and "M1 Midpoint B D" 
+            using \<open>Parallelogram A B D'0 D\<close> plg_mid by blast
+          have "M1 = M0" 
+            using \<open>M0 Midpoint D B\<close> \<open>M1 Midpoint B D\<close> l7_17_bis by auto
+          have "A \<noteq> D'0 \<or> D' \<noteq> C" 
+            by (simp add: False)
+          hence "Parallelogram A D' D'0 C"
+            using mid_plg [where ?M = "M0"] \<open>M0 Midpoint C D'\<close> \<open>M1 = M0\<close> \<open>M1 Midpoint A D'0\<close> l7_2 by presburger
+          hence "?thesis" 
+            by (meson EqV_def \<open>A D' EqV E F\<close> eqv_sym eqv_trans)
+        }
+        moreover have "A \<noteq> B \<and> D'0 \<noteq> B \<longrightarrow> ?thesis" 
+          using EqV_def \<open>A B EqV D D'0\<close> calculation by blast
+        ultimately show ?thesis 
+          using EqV_def False \<open>A B EqV D D'0\<close> plg_trivial1 by blast
+      qed
+      moreover have "C = D \<and> B = D' \<longrightarrow> ?thesis" 
+        using \<open>A B EqV D D'0\<close> \<open>A D' EqV E F\<close> eqv_sym eqv_trans by blast
+      ultimately show ?thesis 
+        using EqV_def \<open>C D EqV B D'\<close> by blast
+    qed
+  }
+  thus ?thesis using SumV_def 
+    by auto
+qed
+
+lemma opposite_sum:
+  assumes "A B C D SumV E F"
+  shows "B A D C SumV F E" 
+proof -
+  {
+    fix D0
+    assume "D C EqV A D0"
+    obtain D' where "C D EqV B D'" 
+      using vector_construction by blast
+    hence "A D' EqV E F" 
+      using SumV_def assms by blast
+    have "D' B EqV A D0" 
+      using \<open>C D EqV B D'\<close> \<open>D C EqV A D0\<close> eqv_comm eqv_sym eqv_trans by blast
+    hence "B D0 EqV F E" 
+      by (meson \<open>A D' EqV E F\<close> eqv_comm eqv_permut eqv_trans)
+  }
+  thus ?thesis 
+    using SumV_def by blast
+qed
+
+lemma null_sum_eq:
+  assumes "A B B C SumV D D"
+  shows "A = C" 
+proof -
+  obtain D' where "B C EqV B D'" 
+    using vector_construction by blast
+  hence "A D' EqV D D" 
+    using SumV_def assms by blast
+  have "A = D'" 
+    using \<open>A D' EqV D D\<close> eqv_sym null_vector by blast
+  thus ?thesis 
+    using \<open>B C EqV B D'\<close> vector_uniqueness by blast
+qed
+
+lemma is_to_ise:
+  assumes "A B C D SumV E F"
+  shows "A B C D SumVExists E F" 
+  by (meson SumVExists_def SumV_def assms eqv_sym vector_construction)
+
+lemma ise_to_is:
+  assumes "A B C D SumVExists E F"
+  shows "A B C D SumV E F" 
+proof -
+  obtain D' where "B D' EqV C D" 
+    using SumVExists_def assms by blast
+  thus ?thesis 
+    by (metis SumVExists_def SumV_def assms eqv_sym vector_construction_uniqueness)
+qed
+
+lemma sum_exists:
+  shows "\<exists> E F. A B C D SumV E F" 
+  by (metis SumV_def vector_construction vector_construction_uniqueness)
+
+lemma sum_uniqueness:
+  assumes "A B C D SumV E F" and
+    "A B C D SumV E' F'"
+  shows "E F EqV E' F'" 
+  by (metis SumV_def assms(1) assms(2) eqv_sym eqv_trans vector_construction)
+
+lemma same_dir_refl: 
+  shows "A B SameDir A B" 
+proof (cases "A = B")
+  case True
+  thus ?thesis 
+    using SameDir_def by force
+next
+  case False
+  thus ?thesis 
+    using SameDir_def by (metis eqv_refl out_trivial)
+qed
+
+lemma same_dir_ts:
+  assumes "A B SameDir C D"
+  shows "\<exists> M. Bet A M D \<and> Bet B M C" 
+proof -
+  have "(A = B \<and> C = D) \<longrightarrow> ?thesis" 
+    using between_trivial by blast
+  moreover {
+    assume "\<exists> D'. C Out D D' \<and> A B EqV C D'"
+    then obtain D' where "C Out D D'" and "A B EqV C D'" 
+      by blast
+    moreover {
+      assume "Parallelogram A B D' C"
+      obtain M where "M Midpoint A D'" and "M Midpoint B C" 
+        using \<open>Parallelogram A B D' C\<close> plg_mid by blast
+      {
+        assume "ParallelogramStrict A B D' C"
+        have "B C TS A D'" 
+          by (simp add: \<open>ParallelogramStrict A B D' C\<close> plgs_two_sides)
+        have "A D' TS B C" 
+          by (simp add: \<open>ParallelogramStrict A B D' C\<close> plgs_two_sides)
+        have "B \<noteq> C" 
+          using \<open>A D' TS B C\<close> ts_distincts by presburger
+        have "\<not> Col B C D'" 
+          using \<open>ParallelogramStrict A B D' C\<close> col_permutation_5 plgs_not_col by blast
+        have "B C OS D' D" 
+          using \<open>\<not> Col B C D'\<close> calculation(1) l6_6 not_col_distincts out_one_side_1 by blast
+        have "B C TS A D" 
+          using \<open>B C OS D' D\<close> \<open>B C TS A D'\<close> l9_2 l9_8_2 by blast
+        have "\<not> Col A B C" 
+          using TS_def \<open>B C TS A D'\<close> by blast
+        have "A B ParStrict D' C" 
+          by (simp add: \<open>ParallelogramStrict A B D' C\<close> plgs_par_strict)
+        have "A C ParStrict B D'" 
+          using \<open>ParallelogramStrict A B D' C\<close> plgs_par_strict by blast
+        have "A \<noteq> B" 
+          using \<open>\<not> Col A B C\<close> not_col_distincts by blast
+        have "C D Par A B" 
+          by (metis Out_cases \<open>B C TS A D\<close> \<open>\<exists>D'. C Out D D' \<and> A B EqV C D'\<close> 
+              eqv_par out_col par_col_par par_symmetry ts_distincts)
+        have "A B ParStrict C D" 
+          using Col_cases Par_def Par_strict_cases \<open>C D Par A B\<close> \<open>\<not> Col A B C\<close> by blast
+        obtain T where "Col T B C" and "Bet A T D" 
+          using TS_def \<open>B C TS A D\<close> by blast
+        hence "Col A B T \<longrightarrow> ?thesis"  
+          by (metis \<open>\<not> Col A B C\<close> between_trivial2 col_trivial_2 colx)
+        moreover 
+        {
+          assume "\<not> Col A B T"
+          have "Col C D T \<longrightarrow> ?thesis" 
+            by (metis TS_def \<open>A B ParStrict C D\<close> \<open>B C TS A D\<close> \<open>Bet A T D\<close> 
+                \<open>Col T B C\<close> bet_col1 between_trivial l6_16_1 par_strict_not_col_3)
+          moreover 
+          {
+            assume "\<not> Col C D T"
+            have "Bet T B C \<longrightarrow> ?thesis" 
+              using Par_strict_cases \<open>A B ParStrict C D\<close> \<open>Bet A T D\<close> 
+                \<open>Col T B C\<close> \<open>\<not> Col A B C\<close> \<open>\<not> Col A B T\<close> between_trivial 
+                between_trivial2 impossible_case_4_2 not_col_permutation_2 by blast
+            moreover 
+            {
+              assume "Bet B C T"
+              have "C D OS T A" 
+                by (metis \<open>Bet A T D\<close> \<open>\<not> Col C D T\<close> bet_out_1 not_col_distincts out_one_side_1)
+              have "C D OS T B"  
+                using \<open>A B ParStrict C D\<close> \<open>C D OS T A\<close> one_side_transitivity 
+                  pars__os3412 by blast
+              moreover have "C D TS T B" 
+                using \<open>B \<noteq> C\<close> \<open>Bet B C T\<close> \<open>\<not> Col C D T\<close> bet__ts 
+                  between_symmetry by presburger
+              ultimately have False 
+                using l9_9_bis by auto
+              hence ?thesis 
+                by blast
+            }
+            moreover have "Bet C T B \<longrightarrow> ?thesis" 
+              using \<open>Bet A T D\<close> between_symmetry by blast
+            ultimately have ?thesis 
+              using Col_def \<open>Col T B C\<close> by blast
+          }
+          ultimately have ?thesis 
+            by blast
+        }
+        ultimately have ?thesis 
+          by blast
+      }
+      moreover 
+      {
+        assume "ParallelogramFlat A B D' C"
+        hence "Bet C D' A \<and> Bet D' A B \<or> Bet C A D' \<and> Bet A D' B \<or> 
+                Bet A C B \<and> Bet C B D' \<or> Bet A B C \<and> Bet B C D'" 
+          by (simp add: plgf_bet)
+        have "A = D' \<longrightarrow> ?thesis" 
+          by (metis Midpoint_def 
+              \<open>\<And>thesis. (\<And>M. \<lbrakk>M Midpoint A D'; M Midpoint B C\<rbrakk> \<Longrightarrow> thesis) \<Longrightarrow> thesis\<close> 
+              between_identity not_bet_distincts)
+        moreover 
+        {
+          assume "A \<noteq> D'"
+          {
+            assume "B = C"
+            have "A = D' \<or> B Midpoint A D'" 
+              using \<open>A B EqV C D'\<close> \<open>B = C\<close> eqv_mid by auto
+            moreover have "A = D' \<longrightarrow> ?thesis" 
+              using \<open>A \<noteq> D'\<close> by blast
+            moreover 
+            {
+              assume "B Midpoint A D'"
+              have "Bet B D D' \<longrightarrow> Bet A B D" 
+                using \<open>B Midpoint A D'\<close> between_inner_transitivity midpoint_bet by blast
+              moreover have "Bet B D' D \<longrightarrow> Bet A B D" 
+                by (metis \<open>B Midpoint A D'\<close> midpoint_bet midpoint_not_midpoint 
+                    outer_transitivity_between)
+              ultimately have "Bet A B D" 
+                using Out_def \<open>B = C\<close> \<open>C Out D D'\<close> by blast
+              hence ?thesis 
+                using not_bet_distincts by blast  
+            }
+            ultimately have ?thesis 
+              by blast
+          }
+          moreover 
+          {
+            assume "B \<noteq> C"
+            have "Bet C D' A \<and> Bet D' A B \<longrightarrow> ?thesis" 
+              by (metis Bet_cases \<open>A \<noteq> D'\<close> between_trivial2 outer_transitivity_between2)
+            moreover have "Bet C A D' \<and> Bet A D' B \<longrightarrow> ?thesis" 
+              by (meson Bet_cases \<open>A \<noteq> D'\<close> between_trivial2 outer_transitivity_between)
+            moreover  
+            {
+              assume "Bet A C B" and "Bet C B D'"
+              have "Bet A C D" 
+                by (metis \<open>A B EqV C D'\<close> \<open>B \<noteq> C\<close> \<open>Bet A C B\<close> \<open>Bet C B D'\<close> 
+                    \<open>\<exists>D'. C Out D D' \<and> A B EqV C D'\<close> bet_out bet_out_out_bet l6_6 
+                    not_bet_distincts vector_construction_uniqueness)
+              moreover have "Bet B C C" 
+                by (simp add: between_trivial)
+              ultimately have ?thesis 
+                by blast
+            }
+            moreover have "Bet A B C \<and> Bet B C D' \<longrightarrow> ?thesis" 
+              by (meson Out_cases \<open>B \<noteq> C\<close> \<open>C Out D D'\<close> bet_out_1 bet_out_out_bet l5_3)
+            ultimately have ?thesis 
+              using \<open>Bet C D' A \<and> Bet D' A B \<or> Bet C A D' \<and> 
+                       Bet A D' B \<or> Bet A C B \<and> Bet C B D' \<or> Bet A B C \<and> Bet B C D'\<close> 
+              by fastforce
+          }
+          ultimately have ?thesis 
+            by blast
+        }
+        ultimately have ?thesis 
+          by blast
+      }
+      ultimately have ?thesis 
+        using Parallelogram_def \<open>Parallelogram A B D' C\<close> by blast
+    }
+    moreover have "(A = B \<and> C = D') \<longrightarrow> ?thesis" 
+      using calculation(1) out_diff2 by blast
+    ultimately have ?thesis 
+      using EqV_def by blast
+  }
+  ultimately show ?thesis 
+    using SameDir_def assms by presburger
+qed
+
+lemma one_side_col_out:
+  assumes "Col A X Y" and
+    "A B OS X Y" 
+  shows "A Out X Y" 
+  using assms(1) assms(2) col_one_side_out by force
+
+lemma par_ts_same_dir:
+  assumes "A B ParStrict C D" and
+    "\<exists> M. Bet A M D \<and> Bet B M C"
+  shows "A B SameDir C D" 
+proof -
+  obtain M where "Bet A M D" and "Bet B M C" 
+    using assms(2) by force
+  obtain D' where "A B EqV C D'" 
+    using vector_construction by blast
+  have "A \<noteq> B" 
+    using assms(1) par_strict_neq1 by blast
+  have "C \<noteq> D" 
+    using assms(1) par_strict_distinct by blast
+  have "A \<noteq> M" 
+    using NCol_perm \<open>Bet B M C\<close> assms(1) bet_col par_strict_not_col_1 by blast
+  have "B = D' \<longrightarrow> C Out D D'" 
+    by (metis Col_def EqV_def Plg_perm \<open>A B EqV C D'\<close> assms(1) 
+        not_bet_distincts par_strict_not_col_3 plg_not_comm)
+  moreover 
+  {
+    assume "B \<noteq> D'"
+    {
+      assume "Parallelogram A B D' C"
+      have "A B Par D' C" 
+        using \<open>A \<noteq> B\<close> \<open>B \<noteq> D'\<close> \<open>Parallelogram A B D' C\<close> plg_par by auto
+      have "Col C D D'" 
+        by (metis Par_strict_cases \<open>Parallelogram A B D' C\<close> assms(1) 
+            col_permutation_4 ncol124_plg__pars1234 par_id_1 
+            par_strict_not_col_1 par_strict_trans)
+      {
+        assume "ParallelogramStrict A B D' C"
+        have "A D' TS B C" 
+          by (simp add: \<open>ParallelogramStrict A B D' C\<close> plgs_two_sides)
+        have "B C TS A D'" 
+          by (simp add: \<open>ParallelogramStrict A B D' C\<close> plgs_two_sides)
+        have "B C TS A D" 
+          by (metis NCol_perm Par_strict_cases assms(1) assms(2) bet_col 
+              l9_18_R2 par_strict_not_col_2)
+        have "B C OS D D'" 
+        proof (rule l9_8_1 [where ?C = "A"])
+          show "B C TS D A" 
+            using \<open>B C TS A D\<close> l9_2 by blast
+          show "B C TS D' A" 
+            by (simp add: \<open>B C TS A D'\<close> l9_2)
+        qed
+        hence "C Out D D'" 
+          using one_side_col_out [where ?B = "B"] \<open>B C OS D D'\<close> calculation 
+            invert_one_side \<open>Col C D D'\<close> by blast
+      }
+      moreover have "ParallelogramFlat A B D' C \<longrightarrow> C Out D D'" 
+        using ParallelogramFlat_def assms(1) par_strict_not_col_1 by force
+      ultimately have "C Out D D'" 
+        using Parallelogram_def \<open>Parallelogram A B D' C\<close> by blast
+    }
+    moreover have "(A = B \<and> C = D') \<longrightarrow> C Out D D'" 
+      by (simp add: \<open>A \<noteq> B\<close>)
+    ultimately have "C Out D D'" 
+      using EqV_def \<open>A B EqV C D'\<close> by presburger
+  }
+  ultimately have "C Out D D'" 
+    by blast
+  hence "\<exists> D'. C Out D D' \<and> A B EqV C D'" 
+    using \<open>A B EqV C D'\<close> by blast
+  thus ?thesis 
+    by (simp add: SameDir_def)
+qed
+
+lemma same_dir_out: 
+  assumes "A B SameDir A C"
+  shows "A Out B C \<or> (A = B \<and> A = C)"  
+proof -
+  have "A = B \<and> A = C \<or> (\<exists> D'. A Out C D' \<and> A B EqV A D')" 
+    using SameDir_def assms by presburger
+  moreover
+  have "(\<exists> D'. A Out C D' \<and> A B EqV A D') \<longrightarrow> ?thesis" 
+    using l6_6 vector_uniqueness by blast
+  ultimately show ?thesis
+    by blast
+qed
+
+lemma same_dir_out1: 
+  assumes "A B SameDir B C"
+  shows "A Out B C \<or> (A = B \<and> A = C)"  
+proof -
+  have "A = B \<and> B = C \<or> (\<exists> D'. B Out C D' \<and> A B EqV B D')" 
+    using SameDir_def assms by presburger
+  moreover have "(\<exists> D'. B Out C D' \<and> A B EqV B D') \<longrightarrow> ?thesis" 
+    by (metis assms bet_neq23__neq bet_out_1 between_symmetry same_dir_out same_dir_ts)
+  ultimately show ?thesis 
+    by blast
+qed
+
+lemma same_dir_null:
+  assumes "A A SameDir B C"
+  shows "B = C"  
+proof -
+  have "A = A \<and> B = C \<or> (\<exists> D'. B Out C D' \<and> A A EqV B D')" 
+    using SameDir_def assms by presburger
+  moreover have "(\<exists> D'. B Out C D' \<and> A A EqV B D') \<longrightarrow> ?thesis" 
+    using null_vector out_distinct by blast
+  ultimately show ?thesis 
+    by blast
+qed
+
+lemma plgs_out_plgs:
+  assumes "ParallelogramStrict A B C D" and
+    "A Out B B'" and
+    "D Out C C'" and
+    "Cong A B' D C'" 
+  shows "ParallelogramStrict A B' C' D" 
+proof -
+  have "A D OS C B" 
+    using assms(1) plgs_comm2 plgs_one_side plgs_permut by blast
+  have "C B OS A D" 
+    using assms(1) plgs_comm2 plgs_one_side plgs_permut by blast
+  have "A \<noteq> B'"       
+    using assms(2) out_distinct by blast
+  have "D \<noteq> C'" 
+    using assms(3) out_distinct by blast
+  have "A B ParStrict C D" 
+    by (simp add: assms(1) plgs_pars_1)
+  have "A B' Par D C'"
+  proof (rule par_col_par_2 [where ?B ="B"])
+    show "A \<noteq> B'"       
+      by (simp add: \<open>A \<noteq> B'\<close>)
+    show "Col A B B'" 
+      by (simp add: assms(2) out_col)
+    show "A B Par D C'"
+      by (metis Col_def Out_def \<open>A B ParStrict C D\<close> assms(3) 
+          not_col_distincts par_col2_par par_strict_par)
+  qed
+  moreover have "A B ParStrict D C' \<longrightarrow> A B' ParStrict D C'" 
+    by (metis Col_cases Par_def calculation par_strict_not_col_3)
+  ultimately have "A B' ParStrict D C'" 
+    using Par_strict_perm \<open>A B ParStrict C D\<close> \<open>D \<noteq> C'\<close> assms(3) 
+      out_col par_strict_col_par_strict by blast
+  have "A D OS B B'" 
+    using \<open>A D OS C B\<close> assms(2) one_side_symmetry one_side_transitivity 
+      out_out_one_side by blast
+  have "A D OS C C'" 
+    using \<open>A D OS C B\<close> assms(3) col123__nos invert_one_side out_one_side by blast
+  have "A D OS B' C'" 
+    by (meson \<open>A D OS B B'\<close> \<open>A D OS C B\<close> \<open>A D OS C C'\<close> 
+        one_side_symmetry one_side_transitivity)
+  then obtain M where "M Midpoint A C'" and "M Midpoint B' D" 
+    using par_cong_mid_os \<open>A B' ParStrict D C'\<close> assms(4) by blast
+  thus ?thesis using mid_plgs 
+    using Par_strict_cases \<open>A B' ParStrict D C'\<close> par_strict_not_col_1 by blast
+qed
+
+lemma plgs_plgs_bet:
+  assumes "ParallelogramStrict A B C D" and
+    "Bet A B B'" and
+    "ParallelogramStrict A B' C' D"
+  shows "Bet D C C'" 
+proof -
+  have "A B ParStrict C D \<and> A D ParStrict B C" 
+    by (simp add: assms(1) plgs_par_strict)
+  hence "A B Par C D" 
+    by (simp add: par_strict_par)
+  moreover have "A B Par C' D" 
+    using par_col_par_2 [where ?B = "B'"] 
+    by (metis Col_def assms(1) assms(2) assms(3) between_symmetry 
+        par_strict_par plgs_comm2 plgs_not_comm_1 plgs_pars_1)
+  ultimately have "Col C' C D \<and> Col D C D"
+    using parallel_uniqueness [where ?A1.0 ="A" and ?A2.0="B"  and ?P="D"]
+    by (metis col_trivial_3)
+  hence "Col C' C D"
+    by simp
+  moreover have "Bet C' C D \<longrightarrow> ?thesis" 
+    using between_symmetry by blast
+  moreover
+  {
+    assume "Bet C D C'"
+    have "B C OS D A" 
+      by (simp add: assms(1) plgs_one_side plgs_permut)
+    have "D A OS B C" 
+      by (simp add: assms(1) plgs_one_side plgs_permut)
+    have "B' C' OS D A" 
+      by (simp add: assms(3) plgs_one_side plgs_permut)
+    have "D A OS B' C'" 
+      by (simp add: assms(3) plgs_one_side plgs_permut)
+    have "D A OS B' B"
+    proof (rule out_one_side_1 [where ?X = "A"])
+      show "\<not> Col D A B'" 
+        using \<open>D A OS B' C'\<close> col123__nos by blast
+      show "Col D A A" 
+        by (simp add: col_trivial_2)
+      show "A Out B' B" 
+        by (metis \<open>A B Par C' D\<close> assms(2) bet_out l6_6 par_neq1)
+    qed
+    hence "D A OS B C'" 
+      using \<open>D A OS B' C'\<close> one_side_symmetry one_side_transitivity by blast
+    hence "D A OS C C'" 
+      using \<open>D A OS B C\<close> one_side_symmetry one_side_transitivity by blast
+    moreover have "D A TS C C'" 
+      using \<open>Bet C D C'\<close> \<open>D A OS C C'\<close> l9_17 os_distincts by blast
+    ultimately have False 
+      by (simp add: l9_9_bis)
+  } 
+  moreover 
+  {
+    assume "Bet D C' C"
+    have "ParallelogramStrict B C D A" 
+      by (simp add: assms(1) plgs_permut)
+    have "ParallelogramStrict D A B' C'" 
+      by (simp add: assms(3) plgs_permut)
+    have "C = C' \<longrightarrow> ?thesis" 
+      using \<open>Bet D C' C\<close> by blast
+    moreover 
+    {
+      assume "C \<noteq> C'"
+      have "Parallelogram B C C' B'" 
+        using \<open>ParallelogramStrict B C D A\<close> \<open>ParallelogramStrict D A B' C'\<close> 
+          plgs_pseudo_trans by auto
+      hence "ParallelogramStrict B C C' B'" 
+        by (metis NCol_perm \<open>C \<noteq> C'\<close> \<open>Col C' C D \<and> Col D C D\<close> assms(3) 
+            colx ncol234_plg__plgs not_col_distincts plgs_not_col)
+      have "B C OS C' B'" 
+        by (simp add: \<open>ParallelogramStrict B C C' B'\<close> plgs_one_side)
+      have "C' B' OS B C" 
+        by (simp add: \<open>ParallelogramStrict B C C' B'\<close> plgs_one_side)
+      have "B C OS D A" 
+        using \<open>ParallelogramStrict B C D A\<close> plgs_one_side by blast
+      have "D A OS B C" 
+        using \<open>ParallelogramStrict B C D A\<close> plgs_one_side by blast
+      have "B C TS A B'" 
+        by (metis \<open>A B ParStrict C D \<and> A D ParStrict B C\<close> \<open>B C OS C' B'\<close> assms(2) 
+            bet__ts os_distincts par_strict_not_col_3)
+      moreover have "B C OS C' D" 
+        by (metis \<open>B C OS C' B'\<close> \<open>Bet D C' C\<close> bet_out_1 col123__nos invert_one_side 
+            os_distincts out_one_side)
+      have "B C OS A B'" 
+        by (meson \<open>B C OS C' B'\<close> \<open>B C OS C' D\<close> \<open>B C OS D A\<close> one_side_symmetry 
+            one_side_transitivity)
+      ultimately have ?thesis 
+        by (simp add: l9_9)
+    }
+    ultimately have ?thesis 
+      by blast
+  }
+  ultimately show ?thesis
+    using Col_def by blast
+qed
+
+lemma plgf_plgf_bet:
+  assumes "ParallelogramFlat A B C D" and
+    "Bet A B B'" and
+    "ParallelogramFlat A B' C' D"
+  shows "Bet D C C'" 
+proof (cases "A = B") 
+  case True
+  thus ?thesis 
+    using assms(1) cong_reverse_identity not_bet_distincts plgf_cong by blast
+next
+  case False
+  hence "A \<noteq> B" 
+    by blast
+  obtain P where "\<not> Col A B P" 
+    using False not_col_exists by blast
+  obtain Q where "Parallelogram A B P Q" 
+    using False plg_existence by blast
+  have "ParallelogramStrict A B P Q" 
+    using \<open>Parallelogram A B P Q\<close> \<open>\<not> Col A B P\<close> not_col_distincts 
+      parallel_2_plg plg_par by blast
+  have "ParallelogramStrict C D Q P" 
+  proof (rule plgf_plgs_trans [where ?C = "A" and ?D = "B"])
+    show "C \<noteq> D" 
+      using False assms(1) plgf_not_comm1 by blast
+    show "ParallelogramFlat C D A B" 
+      by (simp add: assms(1) plgf_sym)
+    show "ParallelogramStrict A B P Q" 
+      by (simp add: \<open>ParallelogramStrict A B P Q\<close>)
+  qed
+  have "A \<noteq> B'" 
+    using False assms(2) between_identity by blast
+  obtain P' where "A B' EqV Q P'" 
+    using vector_construction by blast
+  {
+    assume "Parallelogram A B' P' Q"
+    have "B \<noteq> P" 
+      using \<open>\<not> Col A B P\<close> col_trivial_2 by blast
+    have "B' \<noteq> P'" 
+      by (metis \<open>Parallelogram A B' P' Q\<close> \<open>ParallelogramStrict A B P Q\<close>
+          cong_identity_inv plg_cong plgs_diff)
+    have "A B' Par P Q" 
+      by (meson False \<open>A \<noteq> B'\<close> \<open>B \<noteq> P\<close> \<open>Parallelogram A B P Q\<close> assms(2) 
+          bet_col par_col_par_2 plg_par)
+    have "Col P' P Q \<and> Col Q P Q" 
+      using parallel_uniqueness by (metis Par_cases \<open>A B' EqV Q P'\<close> 
+          \<open>A B' Par P Q\<close> \<open>A \<noteq> B'\<close> eqv_par par_id_4 par_trans)
+    hence "Col P' P Q" 
+      by simp
+    have "ParallelogramStrict A B' P' Q" 
+      by (meson \<open>A \<noteq> B'\<close> \<open>Parallelogram A B' P' Q\<close> \<open>ParallelogramStrict A B P Q\<close> 
+          assms(2) bet_col col_trivial_3 colx ncol124_plg__plgs 
+          parallelogram_strict_not_col_4)
+    have "ParallelogramStrict D C' P' Q"
+      using plgf_plgs_trans [where ?C ="B'" and ?D="A"] 
+      by (metis \<open>A \<noteq> B'\<close> \<open>ParallelogramStrict A B' P' Q\<close> assms(3) 
+          plgf_not_comm1 plgf_plgs_trans plgf_sym plgs_comm2)
+    have "Bet Q P P'" 
+      using plgs_plgs_bet \<open>ParallelogramStrict A B P Q\<close> 
+        \<open>ParallelogramStrict A B' P' Q\<close> assms(2) by blast
+    have ?thesis 
+      using plgs_plgs_bet [where ?A="Q" and ?B="P" and ?B'="P'"] \<open>Bet Q P P'\<close> 
+        \<open>ParallelogramStrict C D Q P\<close> \<open>ParallelogramStrict D C' P' Q\<close> 
+        plgs_comm2 plgs_sym by blast
+  }
+  thus ?thesis 
+    using EqV_def \<open>A B' EqV Q P'\<close> \<open>A \<noteq> B'\<close> by blast
+qed
+
+lemma plg_plg_bet:
+  assumes "Parallelogram A B C D" and
+    "Bet A B B'" and
+    "Parallelogram A B' C' D"
+  shows "Bet D C C'" 
+proof (cases "A = B")
+  case True
+  thus ?thesis 
+    using assms(1) cong_reverse_identity not_bet_distincts plg_cong by blast
+next
+  case False
+  hence "A \<noteq> B"
+    by blast
+  show ?thesis 
+  proof (cases "B = C")
+    case True
+    thus ?thesis 
+      by (metis assms(1) assms(2) assms(3) cong_diff cong_reverse_identity plg_cong)
+  next
+    case False
+    hence "B \<noteq> C"
+      by blast
+    have "A \<noteq> B'" 
+      using \<open>A \<noteq> B\<close> assms(2) between_identity by blast
+    have "B' \<noteq> C'" 
+      by (metis False Plg_perm assms(1) assms(3) plg_not_comm)
+    have "A B Par C D \<and> A D Par B C" 
+      by (simp add: False \<open>A \<noteq> B\<close> assms(1) plg_par)
+    have "A B' Par C' D \<and> A D Par B' C'" 
+      by (simp add: \<open>A \<noteq> B'\<close> \<open>B' \<noteq> C'\<close> assms(3) plg_par_1 plg_par_2)
+    have "A B Par C' D" 
+      using Bet_cases Col_def \<open>A B' Par C' D \<and> A D Par B' C'\<close> \<open>A \<noteq> B\<close> 
+        assms(2) par_col_par_2 by blast
+    have "Col C' C D \<and> Col D C D" 
+      using \<open>A B Par C D \<and> A D Par B C\<close> \<open>A B Par C' D\<close> col_trivial_3 
+        parallel_uniqueness by blast
+    {
+      assume "ParallelogramStrict A B C D" and "ParallelogramFlat A B' C' D"
+      hence False 
+        by (metis Col_cases ParallelogramFlat_def \<open>A B' Par C' D \<and> A D Par B' C'\<close> 
+            \<open>Col C' C D \<and> Col D C D\<close> colx par_distincts 
+            parallelogram_strict_not_col_3 plgf_sym)
+    }
+    moreover 
+    {
+      assume "ParallelogramStrict A B C D" and "ParallelogramStrict A B' C' D"
+      hence ?thesis 
+        using plgs_plgs_bet [where ?A = "A" and ?B = "B" and ?B'= "B'"] assms(2) by blast
+    }
+    moreover 
+    have "ParallelogramFlat A B C D \<and> ParallelogramFlat A B' C' D \<longrightarrow> ?thesis"
+      using plgf_plgf_bet assms(2) by blast
+    moreover 
+    {
+      assume "ParallelogramFlat A B C D" and "ParallelogramStrict A B' C' D"
+      hence False 
+        by (metis Col_cases ParallelogramFlat_def \<open>A B Par C D \<and> A D Par B C\<close> 
+            \<open>Col C' C D \<and> Col D C D\<close> colx par_distincts 
+            parallelogram_strict_not_col_3 plgf_sym)
+    }
+    ultimately show ?thesis 
+      using Parallelogram_def assms(1) assms(3) by presburger
+  qed
+qed
+
+lemma plgf_out_plgf:
+  assumes "ParallelogramFlat A B C D" and
+    "A Out B B'" and
+    "D Out C C'" and
+    "Cong A B' D C'"
+  shows "ParallelogramFlat A B' C' D" 
+proof -
+  have "A \<noteq> B" 
+    using assms(2) out_distinct by blast
+  have "A \<noteq> B'" 
+    using assms(2) out_diff2 by blast
+  have "D \<noteq> C" 
+    using assms(3) out_distinct by blast
+  have "D \<noteq> C'" 
+    using assms(3) out_distinct by blast
+  obtain P where "\<not> Col A B P" 
+    using \<open>A \<noteq> B\<close> not_col_exists by fastforce
+  obtain Q where "Parallelogram A B P Q" 
+    using \<open>A \<noteq> B\<close> plg_existence by blast
+  have "ParallelogramStrict A B P Q" 
+    using ParallelogramFlat_def Parallelogram_def \<open>Parallelogram A B P Q\<close> 
+      \<open>\<not> Col A B P\<close> by presburger
+  have "ParallelogramStrict C D Q P" 
+    by (metis \<open>D \<noteq> C\<close> \<open>ParallelogramStrict A B P Q\<close> assms(1) plgf_plgs_trans plgf_sym)
+  obtain P' where " A B' EqV Q P'" 
+    using vector_construction by blast
+  have "B \<noteq> P" 
+    using \<open>\<not> Col A B P\<close> not_col_distincts by auto
+  have "B' \<noteq> P'" 
+    by (metis EqV_def \<open>A B' EqV Q P'\<close> \<open>ParallelogramStrict A B P Q\<close> 
+        eqv_permut plg_not_comm_R1 plgs_diff)
+  have "A B Par P Q \<and> A Q Par B P" 
+    using plg_par \<open>A \<noteq> B\<close> \<open>B \<noteq> P\<close> \<open>Parallelogram A B P Q\<close> by blast
+  moreover have "A B' Par P' Q \<and> A Q Par B' P'" 
+    using plg_par EqV_def \<open>A B' EqV Q P'\<close> \<open>A \<noteq> B'\<close> \<open>B' \<noteq> P'\<close> by auto
+  ultimately have "Col Q P P'" 
+    by (meson assms(2) col_par_par_col col_permutation_4 out_col par_left_comm par_right_comm)
+  {
+    assume "ParallelogramFlat A B' P' Q"
+    hence "Col A B' P' \<and> Col A B' Q \<and> Cong A B' P' Q \<and> Cong A Q P' B' \<and> (A \<noteq> P' \<or> B' \<noteq> Q)" 
+      using ParallelogramFlat_def by force
+    hence False 
+      by (metis \<open>ParallelogramStrict A B P Q\<close> assms(2) col_trivial_3 
+          colx l6_3_1 out_col plgs_not_col)
+  }
+  hence "ParallelogramStrict A B' P' Q" 
+    using EqV_def Parallelogram_def \<open>A B' EqV Q P'\<close> \<open>A \<noteq> B'\<close> by blast
+  hence "A B' Par P Q" 
+    using \<open>A B Par P Q \<and> A Q Par B P\<close> \<open>A \<noteq> B'\<close> assms(2) out_col par_col_par_2 by blast
+  have "P \<noteq> Q" 
+    using \<open>A B' Par P Q\<close> par_distincts by auto
+  have "P' \<noteq> Q" 
+    using \<open>A B' Par P' Q \<and> A Q Par B' P'\<close> par_distincts by auto
+  have "ParallelogramStrict D C' P' Q" 
+  proof(rule plgs_out_plgs [where ?B="C" and ?C="P"])
+    show "ParallelogramStrict D C P Q"         
+      using \<open>ParallelogramStrict C D Q P\<close> plgs_comm2 by blast
+    show "D Out C C'"         
+      using assms(3) by auto
+    show "Q Out P P'"         
+      using EqV_def Out_def \<open>A B' EqV Q P'\<close> \<open>P \<noteq> Q\<close> \<open>P' \<noteq> Q\<close> 
+        \<open>Parallelogram A B P Q\<close> assms(2) plg_plg_bet by auto
+    show "Cong D C' Q P'" 
+      using \<open>ParallelogramStrict A B' P' Q\<close> assms(4) cong_inner_transitivity 
+        cong_right_commutativity plgs_cong_1 by blast
+  qed
+  have "Parallelogram A B' C' D" 
+    by (meson \<open>ParallelogramStrict A B' P' Q\<close> \<open>ParallelogramStrict D C' P' Q\<close> 
+        plgs_permut plgs_pseudo_trans)
+  thus ?thesis 
+    by (metis Col_cases ParallelogramFlat_def \<open>A \<noteq> B\<close> \<open>D \<noteq> C\<close> assms(1) assms(2) 
+        assms(3) col_trivial_3 colx out_col plg_col_plgf)
+qed
+
+lemma plg_out_plg: 
+  assumes "Parallelogram A B C D" and
+    "A Out B B'" and
+    "D Out C C'" and
+    "Cong A B' D C'"
+  shows "Parallelogram A B' C' D" 
+proof -
+  have "ParallelogramStrict A B C D \<longrightarrow> ?thesis"     
+    using Parallelogram_strict_Parallelogram assms(2) assms(3) assms(4) 
+      plgs_out_plgs by blast
+  moreover have "ParallelogramFlat A B C D \<longrightarrow> ?thesis"     
+    using Parallelogram_def assms(2) assms(3) assms(4) plgf_out_plgf by blast
+  ultimately show ?thesis
+    using Parallelogram_def assms(1) by blast
+qed
+
+lemma same_dir_sym:
+  assumes "A B SameDir C D"
+  shows "C D SameDir A B" 
+proof (cases "A = B")
+  case True
+  thus ?thesis 
+    using SameDir_def assms same_dir_null by presburger
+next
+  case False
+  have "(A = B \<and> C = D) \<longrightarrow> ?thesis" 
+    using False by auto
+  moreover 
+  {
+    assume "\<exists> D'. C Out D D' \<and> A B EqV C D'"
+    then obtain D' where "C Out D D'" and "A B EqV C D'" 
+      by blast
+    obtain B' where "C D EqV A B'" 
+      using vector_construction by blast
+    have "Parallelogram A B D' C \<or> (A = B \<and> C = D')" 
+      using EqV_def \<open>A B EqV C D'\<close> by force
+    hence "Parallelogram A B D' C" 
+      by (simp add: False)
+    have "Parallelogram C D B' A \<or> (C = D \<and> A = B')" 
+      using EqV_def \<open>C D EqV A B'\<close> by auto
+    hence "Parallelogram C D B' A" 
+      using Out_def \<open>C Out D D'\<close> by blast
+    {
+      assume "Parallelogram A B D' C" and "Parallelogram C D B' A"
+      have "B \<noteq> A" 
+        using False by auto
+      moreover have "B' \<noteq> A" 
+        by (metis \<open>C Out D D'\<close> \<open>Parallelogram C D B' A\<close> out_diff1 plg_not_comm_R1)
+      moreover have "Bet A B B' \<or> Bet A B' B" 
+      proof -
+        have "Bet C D D' \<longrightarrow> ?thesis" 
+          using EqV_def False \<open>A B EqV C D'\<close> \<open>Parallelogram C D B' A\<close>
+            eqv_sym plg_plg_bet by blast
+        moreover have "Bet C D' D \<longrightarrow> ?thesis" 
+          using Plg_perm \<open>Parallelogram A B D' C\<close> \<open>Parallelogram C D B' A\<close> 
+            plg_plg_bet by blast
+        ultimately show ?thesis
+          using Out_def \<open>C Out D D'\<close> by blast
+      qed
+      ultimately have "A Out B B'" 
+        by (simp add: Out_def)
+    }
+    hence "A Out B B'" 
+      using \<open>Parallelogram A B D' C\<close> \<open>Parallelogram C D B' A\<close> by blast
+    moreover have "C D EqV A B'" 
+      by (simp add: \<open>C D EqV A B'\<close>)
+    ultimately have "\<exists> D'0. A Out B D'0 \<and> C D EqV A D'0" 
+      by blast
+    hence ?thesis 
+      by (simp add: SameDir_def)
+  }
+  ultimately show ?thesis 
+    using SameDir_def assms by force
+qed
+
+lemma same_dir_trans: 
+  assumes "A B SameDir C D" and
+    "C D SameDir E F"
+  shows "A B SameDir E F" 
+proof -
+  have "(A = B \<and> C = D) \<or> (\<exists> D'. C Out D D' \<and> A B EqV C D')" 
+    using SameDir_def assms(1) by presburger
+  moreover have "(A = B \<and> C = D) \<longrightarrow> ?thesis" 
+    using SameDir_def assms(2) same_dir_null by blast
+  moreover 
+  {
+    assume "\<exists> D'. C Out D D' \<and> A B EqV C D'"
+    then obtain D' where "C Out D D'" and "A B EqV C D'" 
+      by blast
+    have "(C = D \<and> E = F) \<or> (\<exists> D'. E Out F D' \<and> C D EqV E D')" 
+      using SameDir_def assms(2) by auto
+    moreover have "(C = D \<and> E = F) \<longrightarrow> ?thesis" 
+      using Out_def \<open>C Out D D'\<close> by force
+    moreover 
+    {
+      assume "\<exists> D'. E Out F D' \<and> C D EqV E D'"
+      then obtain F' where "E Out F F'" and "C D EqV E F'"
+        by blast
+      have "A = B \<longrightarrow> (\<exists> D'0. E Out F D'0 \<and> A B EqV E D'0)"           
+        by (metis Out_def \<open>A B EqV C D'\<close> \<open>C Out D D'\<close> null_vector)
+      moreover 
+      {
+        assume "A \<noteq> B"
+        obtain F'' where "A B EqV E F''" 
+          using vector_construction by blast
+        have "C \<noteq> D" 
+          using Out_def \<open>C Out D D'\<close> by blast
+        have "C \<noteq> D'" 
+          using \<open>C Out D D'\<close> out_distinct by blast
+        have "E \<noteq> F" 
+          using \<open>E Out F F'\<close> l6_3_1 by blast
+        have "E \<noteq> F'" 
+          using \<open>E Out F F'\<close> out_diff2 by blast
+        have "Parallelogram A B D' C \<or> (A = B \<and> C = D')" 
+          using EqV_def \<open>A B EqV C D'\<close> by blast
+        hence "Parallelogram A B D' C" 
+          using \<open>A \<noteq> B\<close> by blast 
+        have "Parallelogram C D F' E \<or> (C = D \<and> E = F')" 
+          using EqV_def \<open>C D EqV E F'\<close> by auto
+        hence "Parallelogram C D F' E" 
+          using \<open>C \<noteq> D\<close> by blast
+        have "Parallelogram A B F'' E \<or> (A = B \<and> E = F'')" 
+          using EqV_def \<open>A B EqV E F''\<close> by presburger
+        hence "Parallelogram A B F'' E" 
+          using \<open>A \<noteq> B\<close> by blast
+        have "Bet C D D' \<or> Bet C D' D" 
+          using Out_def \<open>C Out D D'\<close> by presburger
+        have "Bet E F F' \<or> Bet E F' F" 
+          using Out_def \<open>E Out F F'\<close> by force
+        have "Parallelogram C D' F'' E" 
+          using Plg_perm \<open>C \<noteq> D'\<close> \<open>Parallelogram A B D' C\<close> \<open>Parallelogram A B F'' E\<close> 
+            plg_pseudo_trans by blast
+        have "E Out F F''" 
+        proof -
+          have "Parallelogram A B D' C \<or> (A = B \<and> C = D')" 
+            by (simp add: \<open>Parallelogram A B D' C \<or> A = B \<and> C = D'\<close>)
+          moreover have "Parallelogram C D F' E \<or> (C = D \<and> E = F')" 
+            using \<open>Parallelogram C D F' E\<close> by blast
+          moreover have "Parallelogram A B F'' E \<or> (A = B \<and> E = F'')" 
+            using \<open>Parallelogram A B F'' E \<or> A = B \<and> E = F''\<close> by blast
+          moreover have "(A = B \<and> C = D') \<longrightarrow> ?thesis" 
+            by (simp add: \<open>A \<noteq> B\<close>)
+          moreover have "Parallelogram A B D' C \<and> Parallelogram C D F' E \<and> 
+                           Parallelogram A B F'' E"
+            using \<open>Parallelogram A B D' C\<close> \<open>Parallelogram A B F'' E\<close> 
+              \<open>Parallelogram C D F' E\<close> by auto
+          moreover
+          {
+            assume "Parallelogram A B D' C" and
+              "Parallelogram C D F' E" and 
+              "Parallelogram A B F'' E"
+            have "Bet C D D' \<or> Bet C D' D" 
+              by (simp add: \<open>Bet C D D' \<or> Bet C D' D\<close>)
+            moreover have "Bet E F F' \<or> Bet E F' F" 
+              using \<open>Bet E F F' \<or> Bet E F' F\<close> by auto
+            moreover 
+            {
+              assume "Bet C D D'" and "Bet E F F'"
+              have "F \<noteq> E" 
+                using \<open>E \<noteq> F\<close> by blast
+              moreover have "F'' \<noteq> E" 
+                using \<open>A \<noteq> B\<close> \<open>Parallelogram A B F'' E\<close> plg_not_comm_R1 by blast
+              moreover have "Bet E F' F''"
+              proof (rule plg_plg_bet [where ?A="C" and ?B="D" and ?B'="D'"])
+                show "Parallelogram C D F' E" 
+                  by (simp add: \<open>Parallelogram C D F' E\<close>)
+                show "Bet C D D'" 
+                  by (simp add: \<open>Bet C D D'\<close>)
+                show "Parallelogram C D' F'' E" 
+                  by (simp add: \<open>Parallelogram C D' F'' E\<close>)
+              qed
+              have "Bet E F F''" 
+                using between_exchange4 [where ?C = "F'"] \<open>Bet E F F'\<close> \<open>Bet E F' F''\<close> by blast
+              hence "Bet E F F'' \<or> Bet E F'' F" 
+                by blast
+              ultimately have ?thesis
+                by (simp add: Out_def)
+            }
+            moreover {
+              assume "Bet C D D'" and "Bet E F' F"
+              have "F \<noteq> E" 
+                using \<open>E \<noteq> F\<close> by blast
+              moreover have "F'' \<noteq> E" 
+                using \<open>A \<noteq> B\<close> \<open>Parallelogram A B F'' E\<close> plg_not_comm_R1 by blast
+              moreover
+              have "Bet E F' F''" 
+                using plg_plg_bet [where ?A="C" and ?B="D" and ?B'="D'"]
+                  \<open>Parallelogram C D F' E\<close> \<open>Bet C D D'\<close> \<open>Parallelogram C D' F'' E\<close> by blast
+              have "Bet E F F'' \<or> Bet E F'' F" 
+                using l5_1 [where ?B = "F'"] \<open>E \<noteq> F'\<close> \<open>Bet E F' F\<close> \<open>Bet E F' F''\<close> by blast
+              ultimately have ?thesis
+                using Out_def by blast
+            }
+            moreover 
+            {
+              assume "Bet C D' D" and "Bet E F F'" 
+              have "F \<noteq> E" 
+                using \<open>E \<noteq> F\<close> by blast
+              moreover have "F'' \<noteq> E" 
+                using \<open>A \<noteq> B\<close> \<open>Parallelogram A B F'' E\<close> plg_not_comm_R1 by blast
+              moreover have "Bet E F F'' \<or> Bet E F'' F" 
+              proof (rule l5_3 [where ?D = "F'"])
+                show "Bet E F F'" 
+                  by (simp add: \<open>Bet E F F'\<close>)
+                show "Bet E F'' F'" 
+                  using plg_plg_bet [where ?A="C" and ?B="D'" and ?B'="D"]
+                    \<open>Parallelogram C D' F'' E\<close> \<open>Bet C D' D\<close> \<open>Parallelogram C D F' E\<close> by blast
+              qed
+              ultimately have ?thesis 
+                by (simp add: Out_def)
+            }
+            moreover {
+              assume "Bet C D' D" and "Bet E F' F"
+              have "F \<noteq> E" 
+                using \<open>E \<noteq> F\<close> by blast
+              moreover have "F'' \<noteq> E" 
+                using \<open>A \<noteq> B\<close> \<open>Parallelogram A B F'' E\<close> plg_not_comm_R1 by blast
+              moreover have "Bet E F F'' \<or> Bet E F'' F" 
+              proof -
+                have "Bet E F'' F'" 
+                  using plg_plg_bet [where ?A="C" and ?B="D'" and ?B'="D"] 
+                    \<open>Bet C D' D\<close> \<open>Parallelogram C D F' E\<close> \<open>Parallelogram C D' F'' E\<close> by blast
+                thus ?thesis 
+                  using \<open>Bet E F' F\<close> between_exchange4 by blast
+              qed
+              ultimately have ?thesis 
+                by (simp add: Out_def)
+            }
+            ultimately have ?thesis 
+              by blast
+          }
+          ultimately show ?thesis 
+            by blast
+        qed
+        hence "\<exists> D'0. E Out F D'0 \<and> A B EqV E D'0"  
+          using \<open>A B EqV E F''\<close> by blast
+      }
+      ultimately have "\<exists> D'0. E Out F D'0 \<and> A B EqV E D'0"  
+        by blast
+    }
+    hence ?thesis 
+      using SameDir_def calculation(1) calculation(2) by presburger
+  }
+  thus ?thesis 
+    using calculation(1) calculation(2) by blast
+qed
+
+lemma same_dir_comm:
+  assumes "A B SameDir C D" 
+  shows "B A SameDir D C" 
+proof -
+  have "A = B \<and> C = D \<longrightarrow> ?thesis" 
+    using assms by force
+  moreover {
+    assume "\<exists> D'. C Out D D' \<and> A B EqV C D'"
+    then obtain D' where "C Out D D'" and "A B EqV C D'" 
+      by blast
+    hence H0: "Bet C D D' \<or> Bet C D' D" 
+      using Out_def by simp
+    have "A \<noteq> B" 
+      using \<open>\<exists>D'. C Out D D' \<and> A B EqV C D'\<close> l6_3_1 null_vector by blast
+    obtain C' where "B A EqV D C'" 
+      using vector_construction by blast
+    have "D Out C C'" 
+    proof -
+      have "C \<noteq> D" 
+        using \<open>C Out D D'\<close> l6_3_1 by blast
+      moreover have "C' \<noteq> D" 
+        using \<open>A \<noteq> B\<close> \<open>B A EqV D C'\<close> eqv_sym null_vector by blast
+      moreover 
+      have "Bet D C C' \<or> Bet D C' C"
+      proof -
+        {
+          assume "Parallelogram A B D' C"
+          hence "Parallelogram C D' D C' \<or> (C = D' \<and> B = A \<and> C' = D \<and> C = C')" 
+            by (metis EqV_def Plg_perm \<open>A \<noteq> B\<close> \<open>B A EqV D C'\<close> plg_pseudo_trans)
+          moreover 
+          {
+            assume "Parallelogram C D' D C'"
+            have "ParallelogramFlat C D' D C'" 
+              by (meson Col_def Out_def \<open>C Out D D'\<close> \<open>Parallelogram C D' D C'\<close>
+                  between_symmetry plg_col_plgf)
+            hence H1: "Col C D' D \<and> Col C D' C' \<and> Cong C D' D C' \<and> 
+                       Cong C C' D D' \<and> (C \<noteq> D \<or> D' \<noteq> C')"
+              using ParallelogramFlat_def by simp
+            have "Col D' C C'" 
+              using H1 col_permutation_4 by blast
+            have "Cong D' C D C'" 
+              using H1 not_cong_2134 by blast
+            have "Cong D' D C C'" 
+              using H1 not_cong_3421 by blast
+            hence "Bet D' D C \<longrightarrow> ?thesis"
+              using col_cong2_bet1 [where ?A = "D'"] \<open>Col D' C C'\<close> \<open>Cong D' C D C'\<close> by blast
+            moreover {
+              assume "Bet C D' D"
+              {
+                assume "Parallelogram A B D' C"
+                {
+                  assume "Parallelogram B A C' D"
+                  have "C = C' \<longrightarrow> ?thesis " 
+                    using between_trivial by presburger
+                  moreover {
+                    assume "C \<noteq> C'"
+                    have "Parallelogram C D' D C' \<or> (C = D' \<and> B = A \<and> C' = D \<and> C = C')" 
+                      using \<open>Parallelogram C D' D C'\<close> by blast
+                    moreover {
+                      assume "Parallelogram C D' D C'"
+                      have "ParallelogramFlat C D' D C'" 
+                        by (simp add: \<open>ParallelogramFlat C D' D C'\<close>)
+                      moreover have "ParallelogramStrict C D' D C' \<longrightarrow> ?thesis" 
+                        using H1 col_not_plgs by blast
+                      moreover have "ParallelogramFlat C D' D C' \<longrightarrow> Bet D C' C" 
+                        by (metis \<open>Bet C D' D\<close> \<open>Cong D' C D C'\<close> \<open>Cong D' D C C'\<close> 
+                            \<open>Parallelogram C D' D C'\<close> bet_cong_eq between_symmetry 
+                            calculation(2) ncol134_plg__plgs third_point)
+                      ultimately have ?thesis
+                        by blast
+                    }
+                    moreover have "(C = D' \<and> B = A \<and> C' = D \<and> C = C') \<longrightarrow> ?thesis" 
+                      using \<open>A \<noteq> B\<close> by auto
+                    ultimately have ?thesis 
+                      by blast
+                  }
+                  ultimately have ?thesis
+                    by blast
+                }
+                moreover have "B = A \<and> D = C' \<longrightarrow> ?thesis" 
+                  using \<open>A \<noteq> B\<close> by blast
+                ultimately have ?thesis 
+                  using EqV_def \<open>B A EqV D C'\<close> by presburger
+              }
+              moreover have "A = B \<and> C = D' \<longrightarrow> ?thesis" 
+                using \<open>A \<noteq> B\<close> by blast
+              ultimately have ?thesis 
+                using \<open>Parallelogram A B D' C\<close> by blast
+            }
+            ultimately have ?thesis 
+              using Bet_cases H0 by blast
+          }
+          moreover have  "(C = D' \<and> B = A \<and> C' = D \<and> C = C') \<longrightarrow> ?thesis" 
+            using \<open>A \<noteq> B\<close> by auto
+          ultimately have ?thesis 
+            by blast
+        }
+        moreover have "A = B \<and> C = D' \<longrightarrow> ?thesis"         
+          using \<open>A \<noteq> B\<close> by auto
+        ultimately show ?thesis
+          using EqV_def \<open>A B EqV C D'\<close> by force
+      qed
+      hence "Bet D C C' \<or> Bet D C' C" 
+        by blast
+      ultimately show ?thesis 
+        by (simp add: Out_def)
+    qed
+    hence "\<exists> D'0. D Out C D'0 \<and> B A EqV D D'0" 
+      using \<open>B A EqV D C'\<close> by blast
+  }
+  hence "(\<exists> D'. C Out D D' \<and> A B EqV C D') \<longrightarrow> ?thesis" 
+    by (simp add: SameDir_def)
+  ultimately show ?thesis
+    using SameDir_def assms by auto
+qed
+
+lemma bet_same_dir1:
+  assumes "A \<noteq> B" and
+    (*"B \<noteq> C" and*)
+    "Bet A B C"
+  shows "A B SameDir A C" 
+  by (metis Out_def SameDir_def assms(1) assms(2) bet_neq21__neq eqv_refl)
+
+lemma bet_same_dir2: 
+  assumes "A \<noteq> B" and
+    "B \<noteq> C" and
+    "Bet A B C"
+  shows "A B SameDir B C" 
+  by (metis Bet_cases assms(1) assms(2) assms(3) bet_same_dir1 same_dir_comm 
+      same_dir_sym same_dir_trans)
+
+lemma plg_opp_dir:
+  assumes "Parallelogram A B C D"
+  shows "A B SameDir D C" 
+  by (metis EqV_def SameDir_def assms between_equality not_bet_distincts 
+      not_col_distincts not_out_bet plg_not_comm)
+
+lemma same_dir_dec:
+  shows "A B SameDir C D \<or> \<not> A B SameDir C D" 
+  by blast
+
+lemma same_or_opp_dir: 
+  assumes "A B Par C D"
+  shows "A B SameDir C D \<or> A B OppDir C D" 
+proof (cases "A B SameDir C D")
+  case True
+  thus ?thesis
+    by blast
+next
+  case False
+  hence "\<not> A B SameDir C D" 
+    by blast
+  obtain C' where "A B EqV D C'" 
+    using vector_construction by fastforce
+  have "D Out C C'" 
+  proof (cases "B = C'")
+    case True
+    hence "B = C'" 
+      by blast
+    have "Parallelogram A B B D \<longrightarrow> ?thesis" 
+    proof -
+      {
+        assume "ParallelogramStrict A B B D"
+        hence "Col B D B" 
+          by (simp add: col_trivial_3)
+        hence False 
+          using \<open>ParallelogramStrict A B B D\<close> plgs_diff by blast
+      }
+      hence "ParallelogramStrict A B B D \<longrightarrow> ?thesis" 
+        by blast
+      moreover 
+      {
+        assume "ParallelogramFlat A B B D"
+        hence "D = A \<and> B \<noteq> D" 
+          using plgf_permut plgf_trivial_neq by blast
+        hence ?thesis 
+          by (metis False True \<open>\<And>thesis. (\<And>C'. A B EqV D C' \<Longrightarrow> thesis) \<Longrightarrow> thesis\<close> 
+              assms bet_same_dir2 eqv_par not_col_distincts not_out_bet par_distincts 
+              parallel_uniqueness same_dir_sym vector_uniqueness)
+      }
+      ultimately show ?thesis
+        using Parallelogram_def by blast
+    qed
+    moreover have "A = B \<and> D = B \<longrightarrow> ?thesis"
+      using assms par_neq1 by blast
+    ultimately show ?thesis 
+      using EqV_def True \<open>A B EqV D C'\<close> by blast
+  next
+    case False
+    {
+      assume "Parallelogram A B C' D"
+      have "Col C' C D \<and> Col D C D" 
+        by (metis Par_cases \<open>A B EqV D C'\<close> assms eqv_par par_id_4 par_neq1 
+            par_not_par parallel_uniqueness)
+      hence "Col C' C D" 
+        by blast
+      have "C \<noteq> D" 
+        using assms par_distinct by auto
+      moreover have "C' \<noteq> D" 
+        using \<open>Parallelogram A B C' D\<close> assms par_neq1 plg_not_comm_R1 by blast
+      moreover have "Bet D C C' \<or> Bet D C' C" 
+      proof -
+        have "Bet C' C D \<longrightarrow> ?thesis" 
+          using between_symmetry by blast
+        moreover 
+        {
+          assume "Bet C D C'"
+          have "A B SameDir D C'" 
+            by (simp add: \<open>Parallelogram A B C' D\<close> plg_opp_dir)
+          moreover have "C D SameDir D C'" 
+            using \<open>Bet C D C'\<close> \<open>C \<noteq> D\<close> \<open>C' \<noteq> D\<close> bet_same_dir2 by force
+          ultimately have "A B SameDir C D" 
+            by (meson same_dir_sym same_dir_trans)
+          hence False 
+            using \<open>\<not> A B SameDir C D\<close> by blast
+        }
+        ultimately show ?thesis 
+          using Col_def \<open>Col C' C D\<close> by blast
+      qed
+      ultimately have ?thesis 
+        by (simp add: Out_def)
+    }
+    moreover have "A = B \<and> D = C' \<longrightarrow> ?thesis" 
+      using assms par_distinct by blast
+    ultimately show ?thesis 
+      using EqV_def \<open>A B EqV D C'\<close> by blast
+  qed
+  hence "\<exists> D'. D Out C D' \<and> A B EqV D D'" 
+    using \<open>A B EqV D C'\<close> by blast
+  hence "A B SameDir D C" 
+    by (simp add: SameDir_def)
+  hence "A B OppDir C D" 
+    by (simp add: OppDir_def)
+  thus ?thesis 
+    by blast
+qed
+
+lemma same_dir_id:
+  assumes "A B SameDir B A"
+  shows "A = B" 
+  using assms bet_neq32__neq same_dir_ts by blast
+
+lemma opp_dir_id: 
+  assumes "A B OppDir A B"
+  shows "A = B" 
+  using OppDir_def assms same_dir_id by blast
+
+lemma same_dir_to_null:
+  assumes "A B SameDir C D" and
+    "A B SameDir D C"
+  shows "A = B \<and> C = D" 
+  by (meson assms(1) assms(2) same_dir_comm same_dir_id same_dir_sym same_dir_trans)
+
+lemma opp_dir_to_null: 
+  assumes "A B OppDir C D" and
+    "A B OppDir D C"
+  shows "A = B \<and> C = D" 
+  using OppDir_def assms(1) assms(2) same_dir_to_null by auto
+
+lemma same_not_opp_dir: 
+  assumes "A \<noteq> B" and
+    "A B SameDir C D"
+  shows "\<not> A B OppDir C D" 
+  using OppDir_def assms(1) assms(2) same_dir_to_null by blast
+
+lemma opp_not_same_dir: 
+  assumes "A \<noteq> B" and
+    "A B OppDir C D" 
+  shows "\<not> A B SameDir C D" 
+  using assms(1) assms(2) same_not_opp_dir by force
+
+lemma vector_same_dir_cong: 
+  assumes "A \<noteq> B" and
+    "C \<noteq> D"
+  shows "\<exists> X Y. A B SameDir X Y \<and> Cong X Y C D" 
+  by (metis assms(1) assms(2) bet_same_dir2 cong_diff_3 segment_construction)
+
+lemma cop_par__perp2: 
+  assumes "Coplanar A B C P" and
+    "A B Par C D"
+  shows "P Perp2 A B C D" 
+proof -
+  obtain Q where "A B Perp Q P" and "Coplanar A B C Q" 
+    using assms(2) ex_perp_cop par_neq1 by blast
+  have "Col P P Q" 
+    by (simp add: col_trivial_1)
+  moreover have "P Q Perp A B" 
+    using Perp_perm \<open>A B Perp Q P\<close> by blast
+  moreover 
+  have "C D Perp P Q" 
+  proof (rule cop_par_perp__perp [where ?A = "A" and ?B = "B"])
+    show "A B Par C D" 
+      by (simp add: assms(2))
+    show "A B Perp P Q"  
+      by (simp add: \<open>A B Perp Q P\<close> perp_right_comm)
+    {
+      assume "C D ParStrict A B"
+      have "Coplanar C D P Q" 
+      proof (rule coplanar_pseudo_trans [where ?P = "A" and ?Q = "B" and ?R = "C"])
+        show "\<not> Col A B C" 
+          using \<open>C D ParStrict A B\<close> par_strict_not_col_3 by blast
+        show "Coplanar A B C C" 
+          using ncop_distincts by blast
+        show "Coplanar A B C D" 
+          using assms(2) par_cong_cop by blast
+        show "Coplanar A B C P" 
+          by (simp add: assms(1))
+        show "Coplanar A B C Q" 
+          by (simp add: \<open>Coplanar A B C Q\<close>)
+      qed
+    }
+    moreover 
+    {
+      assume "C \<noteq> D \<and> A \<noteq> B \<and> Col C A B \<and> Col D A B"
+      have "Coplanar P Q C D" 
+      proof (rule col2_cop__cop [where ?C = "A" and ?D = "B"])
+        show "Coplanar P Q A B" 
+          using \<open>P Q Perp A B\<close> perp__coplanar by blast
+        show "A \<noteq> B" 
+          using \<open>C \<noteq> D \<and> A \<noteq> B \<and> Col C A B \<and> Col D A B\<close> by force
+        show "Col A B C" 
+          using Col_cases \<open>C \<noteq> D \<and> A \<noteq> B \<and> Col C A B \<and> Col D A B\<close> by blast
+        show "Col A B D" 
+          using Col_cases \<open>C \<noteq> D \<and> A \<noteq> B \<and> Col C A B \<and> Col D A B\<close> by blast
+      qed
+      hence "Coplanar C D P Q" 
+        using coplanar_perm_16 by blast
+    }
+    ultimately show "Coplanar C D P Q"  
+      using Par_cases Par_def assms(2) by blast
+  qed
+  hence "P Q Perp C D" 
+    using Perp_cases by blast
+  ultimately show ?thesis 
+    using Perp2_def by blast
+qed
+
+lemma l13_11:
+  assumes "\<not> Col PO A A'" and
+    "B \<noteq> PO" and 
+    "C \<noteq> PO" and
+    "Col PO A B" and
+    "Col PO B C" and
+    "B' \<noteq> PO" and 
+    "C' \<noteq> PO" and
+    "Col PO A' B'" and
+    "Col PO B' C'" and
+    "B C' Par C B'" and
+    "C A' Par A C'"
+  shows "A B' Par B A'" 
+proof -
+  have "Coplanar B C' C PO" 
+    using Col_cases assms(5) ncop__ncols by blast
+  have "Coplanar C A' PO A" 
+  proof (rule col_cop__cop [where ?D = "B"])
+    show "Coplanar C A' PO B" 
+      using Col_cases assms(5) ncop__ncols by blast
+    show "PO \<noteq> B" 
+      using assms(2) by blast
+    show "Col PO B A" 
+      using Col_cases assms(4) by blast
+  qed
+  hence "Coplanar C A' A PO" 
+    using coplanar_perm_1 by blast
+  have "PO Perp2 B C' C B'" 
+    by (simp add: \<open>Coplanar B C' C PO\<close> assms(10) cop_par__perp2)
+  have "PO Perp2 C A' A C'"
+    by (simp add: \<open>Coplanar C A' A PO\<close> assms(11) cop_par__perp2)
+  have "PO Perp2 A B' B A'" 
+    using \<open>PO Perp2 B C' C B'\<close> \<open>PO Perp2 C A' A C'\<close> assms(1) assms(2) assms(3) 
+      assms(4) assms(5) assms(6) assms(7) assms(8) assms(9) l13_10 by blast
+  then obtain X Y where "Col PO X Y" and "X Y Perp A B'" and "X Y Perp B A'" 
+    using Perp2_def by blast
+  have "Coplanar A X PO A'" 
+  proof (rule col_cop__cop [where ?D="B'"])
+    have "Coplanar A B' X PO"
+    proof (rule col_cop__cop [where ?D = "Y"])
+      show "Coplanar A B' X Y" 
+        using \<open>X Y Perp A B'\<close> coplanar_perm_16 perp__coplanar by blast
+      show "X \<noteq> Y" 
+        using \<open>X Y Perp B A'\<close> perp_distinct by blast
+      show "Col X Y PO" 
+        using Col_cases \<open>Col PO X Y\<close> by blast
+    qed
+    thus "Coplanar A X PO B'" 
+      using coplanar_perm_3 by blast
+    show "PO \<noteq> B'" 
+      using assms(6) by blast
+    show "Col PO B' A'" 
+      using assms(8) not_col_permutation_5 by blast
+  qed
+  hence "Coplanar PO A A' X" 
+    using coplanar_perm_13 by blast
+  have "Coplanar A Y PO A'" 
+  proof (rule col_cop__cop [where ?D = "B'"])
+    have "Coplanar A B' Y PO" 
+    proof (rule col_cop__cop [where ?D = "X"])
+      show "Coplanar A B' Y X" 
+        using \<open>X Y Perp A B'\<close> coplanar_perm_17 perp__coplanar by blast
+      show "Y \<noteq> X" 
+        using \<open>X Y Perp A B'\<close> perp_not_eq_1 by blast
+      show "Col Y X PO" 
+        using \<open>Col PO X Y\<close> not_col_permutation_3 by blast
+    qed
+    thus "Coplanar A Y PO B'" 
+      using coplanar_perm_3 by blast
+    show "PO \<noteq> B'" 
+      using assms(6) by blast
+    show "Col PO B' A'" 
+      using assms(8) not_col_permutation_5 by blast
+  qed
+  hence "Coplanar PO A A' Y" 
+    using coplanar_perm_13 by blast
+  show ?thesis
+  proof (rule l12_9 [where ?C1.0="X" and ?C2.0="Y"])
+    show "Coplanar X Y A B" 
+      using Coplanar_def \<open>Col PO X Y\<close> assms(4) col_permutation_1 by blast
+    show "Coplanar X Y A A'"
+      by (meson \<open>Coplanar PO A A' X\<close> \<open>Coplanar PO A A' Y\<close> assms(1) 
+          coplanar_pseudo_trans ncop_distincts)
+    show "Coplanar X Y B' B"
+    proof (rule coplanar_pseudo_trans [where ?P = "PO" and ?Q = "A" and ?R = "A'"],
+        simp_all add: assms(1) \<open>Coplanar PO A A' X\<close> \<open>Coplanar PO A A' Y\<close>)
+      show "Coplanar PO A A' B'" 
+        using assms(8) ncop__ncols by auto
+      show "Coplanar PO A A' B" 
+        using assms(4) ncop__ncols by blast
+    qed
+    show "Coplanar X Y B' A'" 
+    proof (rule coplanar_pseudo_trans [where ?P = "PO" and ?Q ="A" and ?R = "A'"],
+        simp_all add: assms(1)\<open>Coplanar PO A A' X\<close>\<open>Coplanar PO A A' Y\<close>)
+      show "Coplanar PO A A' B'" 
+        using assms(8) ncop__ncols by blast
+      show "Coplanar PO A A' A'"
+        using ncop_distincts by blast
+    qed
+    show "A B' Perp X Y" 
+      using Perp_perm \<open>X Y Perp A B'\<close> by blast
+    show "B A' Perp X Y" 
+      using Perp_perm \<open>X Y Perp B A'\<close> by blast
+  qed
+qed
+
+lemma l13_14:
+  assumes "PO A ParStrict O' A'" and
+    "Col PO A B" and
+    "Col PO B C" and
+    "Col PO A C" and
+    "Col O' A' B'" and
+    "Col O' B' C'" and
+    "Col O' A' C'" and
+    "A C' Par A' C" and
+    "B C' Par B' C" 
+  shows "A B' Par A' B" 
+proof -
+  have "PO \<noteq> A" 
+    using assms(1) par_strict_distinct by blast
+  have "O' \<noteq> A'" 
+    using assms(1) par_strict_neq2 by auto
+  have "\<not> Col PO A A'" 
+    using assms(1) par_strict_not_col_4 by presburger
+  {
+    assume "A = C"
+    have "A C' ParStrict A' A \<longrightarrow> ?thesis" 
+      using Par_strict_cases not_par_strict_id by blast
+    hence ?thesis 
+      by (metis Par_def Par_perm Par_strict_perm \<open>A = C\<close> assms(1) assms(7) 
+          assms(8) assms(9) col_trivial_2 colx par_strict_not_col_3)
+  }
+  moreover 
+  {
+    assume "A \<noteq> C"
+    hence "A' \<noteq> C'" 
+      using Par_cases \<open>\<not> Col PO A A'\<close> assms(4) assms(8) col2__eq par_id by blast
+    have "A C ParStrict A' C'" 
+      by (meson \<open>A \<noteq> C\<close> \<open>A' \<noteq> C'\<close> assms(1) assms(4) assms(7) col_trivial_2 
+          par_strict_col4__par_strict)
+    have "Plg A C A' C'" 
+      by (metis Col_cases Par_cases \<open>A C ParStrict A' C'\<close> assms(8) l12_19 
+          not_cong_4321 par_id_5 par_par_cong_cong_parallelogram par_strict_not_col_3 
+          par_strict_par parallelogram_to_plg)
+    {
+      assume "B = C"
+      hence "A C' Par A' B" 
+        using assms(8) by force
+      have "B' = C'" 
+      proof -
+        have "\<not> Col B C' A'" 
+          using \<open>A C ParStrict A' C'\<close> \<open>B = C\<close> col_permutation_5 par_strict_not_col_2 by blast
+        moreover have "A' \<noteq> C'" 
+          by (simp add: \<open>A' \<noteq> C'\<close>)
+        moreover have "Col B C' B'" 
+          using \<open>B = C\<close> assms(9) par_id par_right_comm by blast
+        moreover have "Col B C' C'" 
+          by (meson not_col_distincts)
+        moreover have "Col A' C' B'" 
+          using \<open>O' \<noteq> A'\<close> assms(5) assms(7) col_transitivity_2 by blast
+        moreover have "Col A' C' C'" 
+          by (simp add: col_trivial_2)
+        ultimately show ?thesis 
+          using l6_21 by blast
+      qed
+      hence "A B' Par A' B"  
+        using \<open>A C' Par A' B\<close> by blast
+      hence ?thesis 
+        by simp
+    }
+    moreover 
+    {
+      assume "B \<noteq> C"
+      {
+        assume "B' = C'" 
+        have "B B' ParStrict B' C \<longrightarrow> False" 
+          using Par_strict_cases not_par_strict_id by blast
+        moreover 
+        {
+          assume "B \<noteq> B'" and "B' \<noteq> C" and "Col B B' C" and "Col B' B' C"
+          have "B = C" 
+          proof -
+            have "\<not> Col A C B'" 
+              using \<open>A C ParStrict A' C'\<close> \<open>B' = C'\<close> par_strict_not_col_4 by auto
+            moreover have "B' \<noteq> B" 
+              using \<open>B \<noteq> B'\<close> by blast
+            moreover have "Col A C B" 
+              using \<open>PO \<noteq> A\<close> assms(2) assms(4) col_transitivity_2 by blast
+            moreover have "Col A C C" 
+              using not_col_distincts by blast
+            moreover have "Col B' B B" 
+              using not_col_distincts by auto
+            moreover have "Col B' B C" 
+              using \<open>Col B B' C\<close> not_col_permutation_4 by blast
+            ultimately show ?thesis 
+              using l6_21 by blast
+          qed
+          hence False 
+            by (simp add: \<open>B \<noteq> C\<close>)
+        }
+        ultimately have False 
+          using Par_def \<open>B' = C'\<close> assms(9) by force
+      }
+      hence "B' \<noteq> C'" 
+        by blast
+      hence "B C ParStrict B' C'" 
+        using \<open>B \<noteq> C\<close> assms(1) assms(2) assms(4) assms(5) assms(7) 
+          par_strict_col4__par_strict by blast
+      have "Plg B C B' C'"
+        using pars_par_plg \<open>B C ParStrict B' C'\<close> assms(9) par_right_comm by blast
+      have "Parallelogram A C A' C'" 
+        by (simp add: \<open>Plg A C A' C'\<close> parallelogram_equiv_plg)
+      have "Parallelogram B C B' C'" 
+        by (simp add: \<open>Plg B C B' C'\<close> parallelogram_equiv_plg)
+      obtain M where "M Midpoint A A'" and "M Midpoint C C'" 
+        using Plg_def \<open>Plg A C A' C'\<close> by blast
+      obtain N where "N Midpoint B B'" and "N Midpoint C C'" 
+        using Plg_def \<open>Plg B C B' C'\<close> by blast
+      hence "M = N" 
+        using \<open>M Midpoint C C'\<close> l7_17 by auto
+      have "Parallelogram A B A' B'" 
+        using mid_plg by (metis \<open>A C ParStrict A' C'\<close> \<open>M = N\<close> \<open>M Midpoint A A'\<close> 
+            \<open>N Midpoint B B'\<close> not_par_strict_id)
+      have "A B' Par B A'"
+      proof (cases "A = B")
+        case True
+        hence "A' = B'" 
+          using symmetric_point_uniqueness \<open>M = N\<close> \<open>M Midpoint A A'\<close> 
+            \<open>N Midpoint B B'\<close> by blast
+        thus ?thesis 
+          by (metis True \<open>\<not> Col PO A A'\<close> assms(2) par_reflexivity)
+      next
+        case False
+        hence "B \<noteq> A'" 
+          using \<open>\<not> Col PO A A'\<close> assms(2) by auto
+        thus ?thesis using plg_par 
+          by (simp add: False \<open>Parallelogram A B A' B'\<close>)
+      qed
+      hence ?thesis 
+        using par_right_comm by presburger
+    }
+    ultimately have ?thesis 
+      by blast
+  }
+  ultimately show ?thesis 
+    by blast
+qed  
+
 end
 end

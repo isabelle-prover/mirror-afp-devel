@@ -22,8 +22,10 @@ session IsaGeoCoq = HOL +
 
 (* context Tarski_Euclidean *)
     Tarski_Euclidean
-    Tarski_Euclidean_2D
-    Tarski_Euclidean_2D_Continuous
+
+(* context Tarski_Euclidean_2D *)
+   Tarski_Euclidean_2D
+   Tarski_Euclidean_2D_Continuous
 
 (* Exercices *)
 
