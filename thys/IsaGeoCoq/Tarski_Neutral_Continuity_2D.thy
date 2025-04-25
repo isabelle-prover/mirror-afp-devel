@@ -32,6 +32,12 @@ context Tarski_neutral_2D
 
 begin
 
+section "Tarski Neutral Continuity 2D"
+
+subsection "Definitions"
+
+subsection "Propositions"
+
 (** The center of a circle belongs to the perpendicular bisector of each chord *)
 
 lemma mid_onc2_perp__col:

@@ -89,11 +89,11 @@ Bet b q c
 
 and   lower_dim:  "\<not> Bet TPA TPB TPC \<and> \<not> Bet TPB TPC TPA \<and> \<not> Bet TPC TPA TPB"
 
-subsection "Definitions"
-
 context Tarski_neutral_dimensionless
 
 begin
+
+subsection "Definitions"
 
 definition OFSC ::
   "['p,'p,'p,'p,'p,'p,'p,'p] \<Rightarrow> bool"
@@ -1092,6 +1092,34 @@ definition LtPs ::
     "LtPs X E E' A B 
 \<equiv>
 \<exists> D. Ps X E D \<and> Sum X E E' A D B" 
+
+definition IsOrthocenter ::
+  "['p,'p,'p,'p] \<Rightarrow> bool"
+  ("_ IsOrthocenter _ _ _" [99,99,99,99] 50)
+  where
+    "H IsOrthocenter A B C \<equiv> \<not> Col A B C \<and> 
+                              A H Perp B C \<and> 
+                              B H Perp A C \<and> 
+                              C H Perp A B"
+
+definition IsCircumcenter ::
+  "['p,'p,'p,'p] \<Rightarrow> bool"
+  ("_ IsCircumcenter _ _ _" [99,99,99,99] 50)
+  where
+    "G IsCircumcenter A B C \<equiv>
+Cong A G B G \<and> 
+Cong B G C G \<and> 
+Coplanar G A B C"
+
+definition IsGravityCenter ::
+  "['p,'p,'p,'p] \<Rightarrow> bool"
+  ("_ IsGravityCenter _ _ _" [99,99,99,99] 50)
+  where
+    "G IsGravityCenter A B C \<equiv> \<not> Col A B C \<and> 
+                               (\<exists> I J. I Midpoint B C \<and> 
+                                       J Midpoint A C \<and> 
+                                       Col G A I \<and> 
+                                       Col G B J)"
 
 subsection "Propositions"
 
