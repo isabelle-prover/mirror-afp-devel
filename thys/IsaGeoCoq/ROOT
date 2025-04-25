@@ -6,9 +6,11 @@ session IsaGeoCoq = HOL +
 
 (* context Tarski_neutral_dimension_less *)
     Tarski_Neutral
-    Tarski_Neutral_Continuity 
     Tarski_Neutral_Archimedes  
-    Tarski_Postulate_Parallels
+    Tarski_Postulate_Parallels 
+
+    Tarski_Neutral_Continuity 
+    Tarski_Neutral_Archimedes_Continuity
 
 (* context Tarski_neutral_2D *)
     Tarski_Neutral_2D
