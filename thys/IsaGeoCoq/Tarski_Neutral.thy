@@ -12810,7 +12810,7 @@ proof -
     {
       assume W1: "\<not> Col D E F"
       obtain Q where W2: "D E F CongA A B Q \<and> A B OS Q C"
-        using W1 ZZ angle_construction_1 by moura
+        using W1 ZZ angle_construction_1 by blast
       obtain DD where W3: "E Out D DD \<and> Cong E DD B A"
         using P3 Z1 segment_construction_3 by force
       obtain FF where W4: "E Out F FF \<and> Cong E FF B Q"
@@ -14208,19 +14208,8 @@ lemma in_angle_trans2:
   assumes "C InAngle A B D" and
     "D InAngle A B E"
   shows "D InAngle C B E"
-proof -
-  obtain pp :: "'p \<Rightarrow> 'p \<Rightarrow> 'p" where
-    f1: "\<forall>p pa. Bet p pa (pp p pa) \<and> pa \<noteq> (pp p pa)"
-    using point_construction_different by moura
-  hence f2: "\<forall>p. C InAngle D B (pp p B) \<or> \<not> D InAngle p B A"
-    by (metis assms(1) in_angle_reverse in_angle_trans l11_24)
-  have f3: "D InAngle E B A"
-    using assms(2) l11_24 by blast
-  hence "E \<noteq> B"
-    by (simp add: inangle_distincts)
-  thus ?thesis
-    using f3 f2 f1 by (meson Bet_perm in_angle_reverse l11_24)
-qed
+  by (smt (verit, ccfv_threshold) Bet_cases assms(1,2) in_angle_reverse in_angle_trans
+      inangle_distincts l11_24 point_construction_different)
 
 lemma l11_36_aux1:
   assumes "A \<noteq> B" and
@@ -17692,21 +17681,8 @@ proof -
     have "B E C LtA B D C"
     proof -
       have U1: "E Out D B"
-      proof -
-        obtain pp :: "'p \<Rightarrow> 'p \<Rightarrow> 'p" where
-          f1: "\<forall>p pa. p \<noteq> (pp p pa) \<and> pa \<noteq> (pp p pa) \<and> Col p pa (pp p pa)"
-          using diff_col_ex by moura
-        hence "\<forall>p pa pb. Col pb pa p \<or> \<not> Col pb pa (pp p pa)"
-          by (meson l6_16_1)
-        hence f2: "\<forall>p pa. Col pa p pa"
-          using f1 by metis
-        have f3: "(E = B \<or> D = E) \<or> Col D E B"
-          using f1 by (metis Col_def P2 col_out2_col l6_16_1 out_trivial)
-        have "\<forall>p. (A = E \<or> Col p A C) \<or> \<not> Col p A E"
-          using Col_def P2 l6_16_1 by blast
-        thus ?thesis
-          using f3 f2 by (metis Col_def assms(3) not_out_bet one_side_chara one_side_symmetry)
-      qed
+        by (metis Bet_cases P2 P8 assms(3) bet_out_1 col123__nos not_bet_out one_side_chara
+            one_side_reflexivity out_col)
       have U2: "D \<noteq> E"
         using P2 P4 bet_col not_col_permutation_5 by blast
       have U3: "\<not> Col D E C"
@@ -23492,7 +23468,7 @@ proof -
   {
     assume "Bet G H I"
     obtain A' B' C' where "A B C A B C SumA A' B' C'"
-      using acute_distincts assms(1) ex_suma by moura
+      using acute_distincts assms(1) ex_suma by metis 
     have "G H I LeA A' B' C'"
     proof -
       have "A B C LeA A B C"
@@ -28229,7 +28205,7 @@ proof -
   obtain C where "\<not> Col A B C"
     using assms not_col_exists by presburger
   obtain D where "Parallelogram A B C D"
-    using assms plg_existence by moura
+    using assms plg_existence by blast
   {
     assume "ParallelogramFlat A B C D"
     have "False"
@@ -40600,28 +40576,8 @@ proof -
   {
     assume "QCongA a \<and> (\<exists> A B C. (a A B C \<and> \<not> Bet A B C))"
     have "QCongAnFlat a"
-    proof -
-      obtain pp :: 'p and ppa :: 'p and ppb :: 'p where
-        f1: "QCongA a \<and> a pp ppa ppb \<and> \<not> Bet pp ppa ppb"
-        using \<open>QCongA a \<and> (\<exists>A B C. a A B C \<and> \<not> Bet A B C)\<close> by moura
-      hence f2: "\<forall>p pa pb. pp ppa ppb CongA pb pa p \<or> \<not> a pb pa p"
-        by (metis (no_types) Ang_def not_cong_is_ang1)
-      hence f3: "\<forall>p pa pb. (Col pp ppa ppb \<or> \<not> a pb pa p) \<or> \<not> Bet pb pa p"
-        by (metis (no_types) Col_def ncol_conga_ncol)
-      have f4: "\<forall>p pa pb. (\<not> Bet ppa ppb pp \<or> \<not> Bet pb pa p) \<or> \<not> a pb pa p"
-        using f2 f1 by (metis Col_def l11_21_a not_bet_and_out not_out_bet)
-      have f5: "\<forall>p pa pb. (\<not> Bet ppb pp ppa \<or> \<not> Bet pb pa p) \<or> \<not> a pb pa p"
-        using f2 f1 by (metis Col_def l11_21_a not_bet_and_out not_out_bet)
-      { assume "Bet ppa ppb pp"
-        hence ?thesis
-          using f4 f1 QCongAnFlat_def by blast }
-      moreover
-      { assume "Bet ppb pp ppa"
-        hence ?thesis
-          using f5 f1 QCongAnFlat_def by blast }
-      ultimately show ?thesis
-        using f3 f1 Col_def QCongAnFlat_def by blast
-    qed
+      by (metis QCongAnFlat_def \<open>QCongA a \<and> (\<exists>A B C. a A B C \<and> \<not> A \<midarrow> B \<midarrow> C )\<close> ang_conga
+          bet_conga__bet)
   }
   thus ?thesis
     using \<open>QCongAnFlat a \<Longrightarrow> QCongA a \<and> (\<exists>A B C. a A B C \<and> \<not> Bet A B C)\<close> 
