@@ -1,4 +1,4 @@
-(* IsaGeoCoq - Tarski_Postulate_Parallels
+(* IsaGeoCoq - Tarski_Neutral_Continuity.thy
 
 Port part of GeoCoq 3.4.0 (https://geocoq.github.io/GeoCoq/) in Isabelle/Hol 
 

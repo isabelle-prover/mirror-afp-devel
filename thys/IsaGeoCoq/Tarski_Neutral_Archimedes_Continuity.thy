@@ -1,22 +1,8 @@
-(* IsageoCoq2_R1
+(* IsaGeoCoq - Tarski_Neutral_Archimedes_Continuity.thy
 
-Tarski_Continuity.thy
-TODO
-[ ] Completeness: tout revoir : f entre 2 espaces différents
-[ ] all def
-[ ] all prop
-[ ] move Require Export GeoCoq.Tarski_dev.Ch12_parallel.
-[ ] move part circle with Tarski2D
+Port part of GeoCoq 3.4.0 (https://geocoq.github.io/GeoCoq/) in Isabelle/Hol 
 
-Version 2.3.0 IsaGeoCoq2_R1, Port part of GeoCoq 3.4.0
-Copyright (C) 2021-2025 Roland Coghetto roland.coghetto ( a t ) cafr-msa2p.be
-License: LGPL
-
-History
-Version 1.0.0: IsaGeoCoq
-Port part of GeoCoq 3.4.0 (https://geocoq.github.io/GeoCoq/) in Isabelle/Hol (Isabelle2021)
-
-Copyright (C) 2021  Roland Coghetto roland_coghetto (at) hotmail.com
+Copyright (C) 2021-2025  Roland Coghetto roland.coghetto (at) cafr-msa2p.be
 
 License: LGPL
 
