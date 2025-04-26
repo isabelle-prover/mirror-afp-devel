@@ -7676,7 +7676,7 @@ lemma project_col_project:
   by (metis (full_types) Proj_def assms(1) assms(2) assms(3) col3 col_trivial_3 
       not_par_not_col par_not_par) 
 
-lemma (in Tarski_Euclidean) pj_uniqueness:
+lemma pj_uniqueness:
   assumes "\<not> Col PO E E'"
     and "Col PO E A"
     and "Col PO E' A'"
@@ -7696,59 +7696,59 @@ next
         col_trivial_3 par_col2_par_bis par_id_2 par_not_par) 
 qed
 
-lemma (in Tarski_Euclidean) pj_right_comm: 
+lemma pj_right_comm: 
   assumes "A B Pj C D"
   shows "A B Pj D C"
   using Par_cases Pj_def assms by auto
 
-lemma (in Tarski_Euclidean) pj_left_comm: 
+lemma pj_left_comm: 
   assumes "A B Pj C D" 
   shows "B A Pj C D"
   using Par_cases Pj_def assms by auto 
 
-lemma (in Tarski_Euclidean) pj_comm: 
+lemma pj_comm: 
   assumes "A B Pj C D"
   shows "B A Pj D C"
   using assms pj_left_comm pj_right_comm by blast 
 
-lemma (in Tarski_Euclidean(*_2D*)) grid_not_par_1:
+lemma grid_not_par_1:
   assumes grid_ok: "\<not> Col PO E E'"
   shows "\<not> PO E Par E E'"
   using grid_ok par_id_1 par_left_comm by blast
 
-lemma (in Tarski_Euclidean(*_2D*)) grid_not_par_2:
+lemma grid_not_par_2:
   assumes grid_ok: "\<not> Col PO E E'"
   shows "\<not> PO E Par PO E'"
   using grid_ok par_id by blast
 
-lemma (in Tarski_Euclidean(*_2D*))grid_not_par_3:
+lemma grid_not_par_3:
   assumes grid_ok: "\<not> Col PO E E'"
   shows "\<not> PO E' Par E E'"
   using grid_ok par_comm par_id_2 by blast
 
-lemma (in Tarski_Euclidean(*_2D*)) grid_not_par_4:
+lemma grid_not_par_4:
   assumes grid_ok: "\<not> Col PO E E'"
   shows "PO \<noteq> E"
   using col_trivial_1 grid_ok by blast 
 
-lemma (in Tarski_Euclidean(*_2D*)) grid_not_par_5:
+lemma grid_not_par_5:
   assumes grid_ok: "\<not> Col PO E E'"
   shows "PO \<noteq> E'"
   using grid_ok not_col_distincts by blast
 
-lemma (in Tarski_Euclidean(*_2D*)) grid_not_par_6:
+lemma grid_not_par_6:
   assumes grid_ok: "\<not> Col PO E E'"
   shows "E \<noteq> E'"
   using grid_ok not_col_distincts by presburger 
 
-lemma (in Tarski_Euclidean(*_2D*)) grid_not_par:
+lemma grid_not_par:
   assumes grid_ok: "\<not> Col PO E E'"
   shows "\<not> PO E Par E E' \<and> \<not> PO E Par PO E' \<and> 
 \<not> PO E' Par E E' \<and> PO \<noteq> E \<and> PO \<noteq> E' \<and> E \<noteq> E'"
   using grid_ok grid_not_par_1 grid_not_par_2 grid_not_par_3 grid_not_par_4 
     grid_not_par_5 grid_not_par_6 by blast 
 
-lemma (in Tarski_Euclidean(*_2D*)) proj_id:
+lemma proj_id:
   assumes grid_ok: "\<not> Col PO E E'"
     and "A A' Proj PO E' E E'"
     and "Col PO E A"
@@ -7772,7 +7772,7 @@ proof -
     by blast
 qed
 
-lemma (in Tarski_Euclidean(*_2D*)) sum_uniqueness:
+lemma sum_uniqueness:
   assumes grid_ok: "\<not> Col PO E E'"
     and "Sum PO E E' A B C1"
     and "Sum PO E E' A B C2"
@@ -7799,21 +7799,17 @@ proof -
         \<open>PO E Par A'' P''\<close> project_col_project project_uniqueness) 
 qed
 
-lemma (in Tarski_Euclidean(*_2D*)) opp0:
+lemma opp0:
   assumes grid_ok: "\<not> Col PO E E'"
   shows "Opp PO E E' PO PO"
   using Ar2_def Opp_def Pj_def Sum_def col_trivial_3 grid_ok by auto 
 
-lemma (in Tarski_neutral_dimensionless (*Tarski_Euclidean_2D*)) pj_trivial:
-  shows "A B Pj C C"
-  by (simp add: Pj_def) 
-
-lemma (in Tarski_Euclidean(*_2D*)) sum_O_O:
+lemma sum_O_O:
   assumes grid_ok: "\<not> Col PO E E'"
   shows "Sum PO E E' PO PO PO"
   using Opp_def opp0 grid_ok by blast 
 
-lemma (in Tarski_Euclidean(*_2D*)) sum_par_strict_a:
+lemma sum_par_strict_a:
   assumes grid_ok: "\<not> Col PO E E'"
     and "Ar2 PO E E' A B C"
     and "A \<noteq> PO"
@@ -7826,7 +7822,7 @@ lemma (in Tarski_Euclidean(*_2D*)) sum_par_strict_a:
   by (metis Ar2_def Pj_def grid_ok assms(2) assms(3) assms(4) col_trivial_3 
       grid_not_par_1 grid_not_par_4 par_col2_par_bis par_symmetry) 
 
-lemma (in Tarski_Euclidean(*_2D*)) sum_par_strict_b:
+lemma sum_par_strict_b:
   assumes grid_ok: "\<not> Col PO E E'"
     and "Ar2 PO E E' A B C"
     and "A \<noteq> PO"
@@ -7871,7 +7867,7 @@ proof -
   qed
 qed
 
-lemma (in Tarski_Euclidean(*_2D*)) sum_par_strict:
+lemma sum_par_strict:
   assumes grid_ok: "\<not> Col PO E E'"
     and "Ar2 PO E E' A B C"
     and "A \<noteq> PO"

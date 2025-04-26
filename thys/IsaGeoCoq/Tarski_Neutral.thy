@@ -44280,12 +44280,12 @@ proof -
     using Perp2_def by blast
 qed
 
-lemma (in Tarski_neutral_dimensionless) Pj_exists: 
+lemma Pj_exists: 
   fixes A B C
   shows "\<exists> D. A B Pj C D"
   using Pj_def by blast 
 
-lemma (in Tarski_neutral_dimensionless (*Tarski_Euclidean_2D*)) project_trivial:
+lemma project_trivial:
   assumes "A \<noteq> B"
     and "X \<noteq> Y"
     and "Col A B P"
@@ -44293,7 +44293,7 @@ lemma (in Tarski_neutral_dimensionless (*Tarski_Euclidean_2D*)) project_trivial:
   shows "P P Proj A B X Y"
   by (simp add: Proj_def assms(1) assms(2) assms(3) assms(4)) 
 
-lemma (in Tarski_neutral_dimensionless (*Tarski_Euclidean_2D*)) pj_col_project:
+lemma pj_col_project:
   assumes "A \<noteq> B"
     and "X \<noteq> Y"
     and "Col P' A B"
@@ -44303,23 +44303,70 @@ lemma (in Tarski_neutral_dimensionless (*Tarski_Euclidean_2D*)) pj_col_project:
   by (metis Pj_def assms(1) assms(2) assms(3) assms(4) assms(5) not_col_permutation_2 
       par_col_project par_symmetry project_trivial) 
 
-lemma (in Tarski_neutral_dimensionless (*Tarski_Euclidean_2D*)) pj_trivial:
+lemma pj_trivial:
   shows "A B Pj C C"
   by (simp add: Pj_def) 
 
 (** Lemma 14.37 *)
-lemma (in  Tarski_neutral_dimensionless) O_not_positive:
+lemma O_not_positive:
   shows "\<not> Ps PO E PO"
   using Ps_def out_distinct by blast 
 
 (** Lemma 14.40 states that we have an ordered field. *)
 
-lemma (in Tarski_neutral_dimensionless) col_pos_or_neg:
+lemma col_pos_or_neg:
   assumes "PO \<noteq> E"
     and "PO \<noteq> X"
     and "Col PO E X"
   shows "Ps PO E X \<or> Ng PO E X"
   by (metis NCol_cases Ng_def Ps_def assms(1,2,3) or_bet_out) 
+
+lemma length_cong:
+  assumes "Length PO E E' A B AB"
+  shows "Cong A B PO AB"
+  using Cong_cases Length_def assms by auto 
+
+lemma triangular_equality_equiv_a :
+  assumes "\<forall> PO E A. PO \<noteq> E \<longrightarrow> (\<forall> E' B C AB BC AC. Bet A B C \<and> Length PO E E' A B AB \<and> 
+                                                     Length PO E E' B C BC \<and> 
+                                                     Length PO E E' A C AC 
+                                                     \<longrightarrow> Sum PO E E' AB BC AC)"
+  shows "\<forall> PO E E' A B C AB BC AC. PO \<noteq> E \<and> Bet A B C \<and> Length PO E E' A B AB \<and> 
+                                   Length PO E E' B C BC \<and> Length PO E E' A C AC 
+                                   \<longrightarrow> Sum PO E E' AB BC AC"
+  using assms by force
+
+lemma triangular_equality_equiv_b :
+  assumes "\<forall> PO E E' A B C AB BC AC. PO \<noteq> E \<and> Bet A B C \<and> Length PO E E' A B AB \<and> 
+                                     Length PO E E' B C BC \<and> Length PO E E' A C AC 
+                                     \<longrightarrow> Sum PO E E' AB BC AC"
+  shows "\<forall> PO E A. PO \<noteq> E \<longrightarrow> (\<forall> E' B C AB BC AC. Bet A B C \<and> Length PO E E' A B AB \<and> 
+                                                   Length PO E E' B C BC \<and> Length PO E E' A C AC 
+                                                   \<longrightarrow> Sum PO E E' AB BC AC)"
+  by (simp add: assms)
+
+lemma triangular_equality_equiv :
+  shows "(\<forall> PO E A. PO \<noteq> E \<longrightarrow> (\<forall> E' B C AB BC AC. Bet A B C \<and> Length PO E E' A B AB \<and> 
+                                                    Length PO E E' B C BC \<and> Length PO E E' A C AC 
+                                                    \<longrightarrow> Sum PO E E' AB BC AC)) 
+         \<longleftrightarrow> 
+        (\<forall> PO E E' A B C AB BC AC. PO \<noteq> E \<and> Bet A B C \<and> Length PO E E' A B AB \<and> 
+                                   Length PO E E' B C BC \<and> Length PO E E' A C AC 
+                                   \<longrightarrow> Sum PO E E' AB BC AC)"
+  by blast
+
+lemma sign_dec:
+  assumes "Col PO E A"
+    and "PO \<noteq> E"
+  shows "A = PO \<or> Ps PO E A \<or> Ng PO E A"
+  by (metis assms(1,2) col_pos_or_neg) 
+
+lemma not_neg_pos:
+  assumes "E \<noteq> PO"
+    and "Col PO E A"
+    and "\<not> Ng PO E A"
+  shows "Ps PO E A \<or> A = PO"
+  using assms(1,2,3) sign_dec by blast 
 
 end
 end

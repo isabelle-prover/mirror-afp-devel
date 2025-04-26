@@ -5919,5 +5919,2735 @@ lemma diff_2_le_le:
   by (metis Ar2_def Diff_def assms(1,2,3) compatibility_of_sum_with_order diff_ar2
       opp_uniqueness) 
 
+  (** Lemma 15.2 *)
+  (** Cong corresponds to length equality.*)
+  (** Le corresponds to length inequality.*)
+
+lemma length_pos:
+  assumes "Length PO E E' A B L"
+  shows "LeP PO E E' PO L"
+  using Length_def assms by force 
+
+lemma length_id_1:
+  assumes "Length PO E E' A B PO"
+  shows "A = B"
+  by (meson Length_def assms cong_reverse_identity) 
+
+lemma length_id_2:
+  assumes "PO \<noteq> E"
+  shows "Length PO E E' A A PO"
+  by (meson Length_def assms cong_trivial_identity leP_refl
+      not_col_distincts) 
+
+lemma length_id:
+  shows "Length PO E E' A B PO \<longleftrightarrow> (A = B \<and> PO \<noteq> E)"
+  by (metis Length_def length_id_1 length_id_2) 
+
+lemma length_eq_cong_1:
+  assumes "Length PO E E' A B AB"
+    and "Length PO E E' C D AB"
+  shows "Cong A B C D"
+  by (meson Length_def assms(1,2) cong_inner_transitivity) 
+
+lemma length_eq_cong_2:
+  assumes "Length PO E E' A B AB"
+    and "Cong A B C D"
+  shows "Length PO E E' C D AB"
+  by (metis Length_def assms(1,2) cong_transitivity) 
+
+lemma ltP_pos:
+  assumes "LtP PO E E' PO A"
+  shows "Ps PO E A"
+  using Ar2_def assms diff_A_O ltP_ar2 lt_diff_ps by presburger 
+
+lemma bet_leP:
+  assumes "Bet PO AB CD"
+    and "LeP PO E E' PO AB"
+    and "LeP PO E E' PO CD"
+  shows "LeP PO E E' AB CD"
+  using LeP_def assms(1,2,3) bet_lt12_le23 by blast 
+
+lemma leP_bet:
+  assumes "LeP PO E E' AB CD" 
+    and "LeP PO E E' PO AB"
+    and "LeP PO E E' PO CD"
+  shows "Bet PO AB CD"
+proof -
+  {
+    assume "LtP PO E E' AB CD"
+    then obtain X where "Diff PO E E' CD AB X" and "Ps PO E X"
+      using LtP_def by auto 
+    hence "PO Out AB X \<or> AB = PO"
+      by (metis LeP_def Ps_def assms(2) l6_6 l6_7 ltP_pos) 
+    moreover have "PO Out AB X \<Longrightarrow> Bet PO AB CD"
+      using \<open>Diff PO E E' CD AB X\<close> diff_sum l14_36_a by blast 
+    moreover have "AB = PO \<Longrightarrow> Bet PO AB CD"
+      by (simp add: between_trivial2) 
+    ultimately have "Bet PO AB CD" 
+      by blast
+  }
+  moreover have "AB = CD \<Longrightarrow> Bet PO AB CD"
+    by (simp add: between_trivial) 
+  ultimately show ?thesis
+    using LeP_def assms(1) by blast
+qed
+
+lemma length_Ar2:
+  assumes "Length PO E E' A B AB"
+  shows "(Col PO E AB \<and> \<not> Col PO E E') \<or> AB = PO" 
+proof -
+  have "LtP PO E E' PO AB \<or> PO = AB"
+    using LeP_def assms length_pos by auto 
+  moreover have "LtP PO E E' PO AB \<Longrightarrow> (Col PO E AB \<and> \<not> Col PO E E')"
+    using Ar2_def ltP_ar2 by presburger 
+  ultimately show ?thesis by blast
+qed
+
+lemma length_leP_le_1:
+  assumes "Length PO E E' A B AB"
+    and "Length PO E E' C D CD"
+    and "LeP PO E E' AB CD"
+  shows "A B Le C D" 
+proof -
+  have "Bet PO AB CD"
+    using assms(1,2,3) leP_bet length_pos by blast
+  obtain M' where "Bet D C M'" and "Cong C M' A B"
+    using segment_construction by blast 
+  then obtain M where "C Midpoint M' M"
+    using symmetric_point_construction by auto 
+  hence "Cong A B C M"
+    using Cong_cases Midpoint_def \<open>Cong C M' A B\<close> cong_inner_transitivity by blast 
+  show ?thesis 
+  proof (rule le_transitivity [of _ _ C M])
+    show "A B Le C M"
+      by (simp add: \<open>Cong A B C M\<close> cong__le) 
+    have "PO AB Le PO CD"
+      by (simp add: \<open>PO \<midarrow> AB \<midarrow> CD\<close> bet__le1213) 
+    thus "C M Le C D"
+      by (meson Length_def \<open>Cong A B C M\<close> assms(1,2) cong_transitivity l5_6) 
+  qed
+qed
+
+lemma length_leP_le_2:
+  assumes "Length PO E E' A B AB"
+    and "Length PO E E' C D CD"
+    and "A B Le C D"
+  shows "LeP PO E E' AB CD" 
+proof -
+  have "Col PO E AB \<and> \<not> Col PO E E' \<or> AB = PO"
+    using assms(1) length_Ar2 by auto 
+  have "Col PO E CD \<and> \<not> Col PO E E' \<or> CD = PO"
+    using assms(2) length_Ar2 by auto 
+  have "Bet PO AB CD"
+  proof (cases "PO = CD")
+    {
+      assume "PO = CD"
+      hence "C = D"
+        using assms(2) length_id_1 by blast 
+      obtain X where "Bet C X C" and "Cong A B C X"
+        using Le_def \<open>C = D\<close> assms(3) by blast 
+      hence "C = X"
+        by (simp add: between_identity) 
+      hence "A = B"
+        using \<open>Cong A B C X\<close> cong_diff by blast
+      hence "PO = AB"
+        by (metis Length_def assms(1) cong_identity) 
+      thus "PO \<midarrow> AB \<midarrow> CD"
+        using between_trivial2 by auto 
+    }
+    {
+      assume "PO \<noteq> CD"
+      have "PO AB Le PO CD"
+        by (meson Length_def assms(1,2,3) cong_symmetry l5_6) 
+      then obtain M where "Bet PO M CD" and "Cong PO AB PO M"
+        using Le_def by blast 
+      {
+        assume "Col PO E AB" and "\<not> Col PO E E'" and "Col PO E CD" and "\<not> Col PO E E'"
+        obtain P where "Bet C P D" and "Cong A B C P"
+          using Le_def assms(3) by blast
+        {
+          assume "LtP PO E E' PO AB"
+
+          {
+            assume "LtP PO E E' PO CD"
+            obtain X where "Diff PO E E' AB PO X" and "Ps PO E X"
+              using LtP_def \<open>LtP PO E E' PO AB\<close> by blast 
+            obtain Y where "Diff PO E E' CD PO Y" and "Ps PO E Y"
+              using LtP_def \<open>LtP PO E E' PO CD\<close> by blast 
+            have "ParallelogramFlat PO PO AB X"
+              by (metis O_not_positive ParallelogramFlat_def \<open>Col PO E AB\<close>
+                  \<open>Diff PO E E' AB PO X\<close> \<open>Ps PO E X\<close> \<open>\<not> Col PO E E'\<close> col_trivial_1
+                  cong_pseudo_reflexivity cong_trivial_identity diff_A_O
+                  diff_uniqueness) 
+            have "ParallelogramFlat PO PO CD Y"
+              using \<open>Diff PO E E' CD PO Y\<close> \<open>PO \<noteq> CD\<close> diff_to_plg by auto 
+            have "PO \<noteq> AB \<or> PO \<noteq> X"
+              using O_not_positive \<open>Ps PO E X\<close> by blast 
+            have "PO \<noteq> CD \<or> PO \<noteq> Y"
+              by (simp add: \<open>PO \<noteq> CD\<close>) 
+            have "Col AB PO M" 
+            proof -
+              have "PO Out AB CD"
+                by (metis Bet_cases[of CD M PO] Bet_cases[of _ PO AB]
+                    Bet_cases[of _ PO CD] Out_cases[of PO E CD] Ps_def[of PO E CD]
+                    Ps_def[of PO E AB] \<open>Cong PO AB PO M\<close> \<open>PO \<midarrow> M \<midarrow> CD\<close>
+                    \<open>ParallelogramFlat PO PO AB X\<close> \<open>ParallelogramFlat PO PO CD Y\<close>
+                    \<open>Ps PO E X\<close> \<open>Ps PO E Y\<close> bet_out_1[of AB PO CD]
+                    bet_out__bet[of E PO _ CD] bet_out__bet[of AB PO _ E]
+                    between_cong_3[of _ PO AB M]
+                    between_inner_transitivity[of _ PO CD M]
+                    plgf_trivial_neq[of PO CD Y] plgf_trivial_neq[of PO AB X]
+                    point_construction_different[of AB PO]) 
+              thus ?thesis
+                using Col_def \<open>Cong PO AB PO M\<close> \<open>PO AB Le PO CD\<close> \<open>PO \<midarrow> M \<midarrow> CD\<close> between_cong
+                  l5_3 l6_13_1 by blast 
+            qed
+            hence "AB = M \<or> PO Midpoint AB M" 
+              using l7_20 \<open>Cong PO AB PO M\<close> by simp
+            hence "PO \<midarrow> AB \<midarrow> CD"
+              by (metis Bet_cases Cong_cases Midpoint_def Out_cases Ps_def \<open>PO \<midarrow> M \<midarrow> CD\<close>
+                  \<open>ParallelogramFlat PO PO AB X\<close> \<open>ParallelogramFlat PO PO CD Y\<close> \<open>Ps PO E X\<close>
+                  \<open>Ps PO E Y\<close> bet_cong_eq bet_out__bet between_equality_2
+                  plgf_trivial_neq) 
+          }
+          moreover have "PO = CD \<Longrightarrow> (PO \<midarrow> AB \<midarrow> CD)"
+            by (simp add: \<open>PO \<noteq> CD\<close>)
+          ultimately have "PO \<midarrow> AB \<midarrow> CD"
+            using LeP_def assms(2) length_pos by blast 
+        }
+        moreover have "PO = AB \<Longrightarrow> (PO \<midarrow> AB \<midarrow> CD)"
+          using between_trivial2 by auto 
+        ultimately have "PO \<midarrow> AB \<midarrow> CD"
+          using LeP_def assms(1) length_pos by blast 
+      }
+      moreover have "Col PO E AB \<and> \<not> Col PO E E' \<and> CD = PO \<Longrightarrow> (PO \<midarrow> AB \<midarrow> CD)"
+        using \<open>PO \<noteq> CD\<close> by blast 
+      moreover have "AB = PO \<and> Col PO E CD \<and> \<not> Col PO E E' \<Longrightarrow> (PO \<midarrow> AB \<midarrow> CD)"
+        using between_trivial2 by blast 
+      moreover have "AB = PO \<and> CD = PO \<Longrightarrow> (PO \<midarrow> AB \<midarrow> CD)"
+        using \<open>PO \<noteq> CD\<close> by blast 
+      ultimately show "PO \<midarrow> AB \<midarrow> CD"
+        using \<open>Col PO E AB \<and> \<not> Col PO E E' \<or> AB = PO\<close>
+          \<open>Col PO E CD \<and> \<not> Col PO E E' \<or> CD = PO\<close> by presburger 
+    }
+  qed
+  thus ?thesis
+    using assms(1,2) bet_leP length_pos by force 
+qed
+
+lemma l15_3:
+  assumes "Sum PO E E' A B C"
+  shows "Cong PO B A C"
+  by (metis Ar2_def assms cong_reflexivity sum_ar2 sum_cong2 sum_iff_cong_b) 
+
+(** Lemma 15.4. *)
+(** Triangular equality. *)
+lemma length_uniqueness:
+  assumes "Length PO E E' A B AB"
+    and "Length PO E E' A B AB'"
+  shows "AB = AB'"
+  by (meson assms(1,2) leP_asym leP_refl length_leP_le_1 length_leP_le_2) 
+
+lemma length_Ps:
+  assumes "AB \<noteq> PO"
+    and "Length PO E E' A B AB"
+  shows "Ps PO E AB"
+  using LeP_def assms(1,2) length_pos ltP_pos by blast 
+
+lemma length_not_col_null:
+  assumes "Col PO E E'"
+    and "Length PO E E' A B AB"
+  shows "AB = PO"
+  using assms(1,2) length_Ar2 by blast 
+
+lemma not_triangular_equality1:
+  assumes "PO \<noteq> E" 
+  shows "\<not> (\<forall> E' B C AB BC AC. Bet A B C \<and> Length PO E E' A B AB \<and> Length PO E E' B C BC \<and> 
+                               Length PO E E' A C AC \<longrightarrow> Sum PO E E' AB BC AC)"
+  by (metis Ar2_def Sum_def assms between_trivial length_id) 
+
+lemma triangular_equality:
+  assumes "PO \<noteq> E" 
+    and "Bet A B C"
+    and "IsLength PO E E' A B AB"
+    and "IsLength PO E E' B C BC"
+    and "IsLength PO E E' A C AC"
+  shows "Sumg PO E E' AB BC AC" 
+proof -
+  have "Length PO E E' A B AB \<or> PO = E \<and> PO = AB"
+    using IsLength_def assms(3) by auto 
+  moreover 
+  {
+    assume "Length PO E E' A B AB"
+    have "Length PO E E' B C BC \<or> PO = E \<and> PO = BC"
+      using IsLength_def assms(4) by presburger 
+    moreover {
+      assume "Length PO E E' B C BC"
+      have "Length PO E E' A C AC \<or> PO = E \<and> PO = AC"
+        using IsLength_def assms(5) by auto 
+      moreover {
+        assume "Length PO E E' A C AC"
+        have "LtP PO E E' PO AB \<or> PO = AB"
+          using LeP_def Length_def \<open>Length PO E E' A B AB\<close> by presburger 
+        moreover 
+        {
+          assume "LtP PO E E' PO AB"
+          have "LtP PO E E' PO BC \<or> PO = BC"
+            using LeP_def Length_def \<open>Length PO E E' B C BC\<close> by presburger 
+          moreover {
+            assume "LtP PO E E' PO BC"
+            have "LtP PO E E' PO AC \<or> PO = AC"
+              using LeP_def Length_def \<open>Length PO E E' A C AC\<close> by presburger 
+            moreover 
+            {
+              assume "LtP PO E E' PO AC"
+              obtain X where "Diff PO E E' AB PO X" and "Ps PO E X"
+                using LtP_def \<open>LtP PO E E' PO AB\<close> by blast 
+              obtain Y where "Diff PO E E' BC PO Y" and "Ps PO E Y"
+                using LtP_def \<open>LtP PO E E' PO BC\<close> by blast 
+              obtain Z where "Diff PO E E' AC PO Z" and "Ps PO E Z"
+                using LtP_def \<open>LtP PO E E' PO AC\<close> by blast 
+              have "AB = X"
+                by (meson Ar2_def \<open>Diff PO E E' AB PO X\<close> \<open>LtP PO E E' PO AB\<close> diff_A_O
+                    diff_uniqueness ltP_ar2)
+              have "BC = Y"
+                by (meson Ar2_def \<open>Diff PO E E' BC PO Y\<close> \<open>LtP PO E E' PO BC\<close> diff_A_O
+                    diff_uniqueness ltP_ar2)
+              have "AC = Z"
+                by (meson Ar2_def \<open>Diff PO E E' AC PO Z\<close> \<open>LtP PO E E' PO AC\<close> diff_A_O
+                    diff_uniqueness ltP_ar2) 
+              obtain AC' where "Sum PO E E' AB BC AC'"
+                by (metis Ar2_def Ps_def \<open>BC = Y\<close> \<open>LtP PO E E' PO AB\<close> \<open>Ps PO E Y\<close>
+                    col_permutation_2 col_permutation_3 ltP_ar2 out_col sum_exists)
+              have "Bet PO AB AC'"
+                by (metis Out_cases Ps_def \<open>AB = X\<close> \<open>BC = Y\<close> \<open>Ps PO E X\<close> \<open>Ps PO E Y\<close>
+                    \<open>Sum PO E E' AB BC AC'\<close> l14_36_a l6_7)
+              have "Cong PO BC AB AC'"
+                using \<open>Sum PO E E' AB BC AC'\<close> l15_3 by auto
+              have "Cong PO AC' A C"
+                by (smt (verit, ccfv_threshold) Cong_cases \<open>Cong PO BC AB AC'\<close>
+                    \<open>Length PO E E' A B AB\<close> \<open>Length PO E E' B C BC\<close> \<open>PO \<midarrow> AB \<midarrow> AC'\<close> assms(2)
+                    cong_transitivity l2_11_b length_cong) 
+              have "Ps PO E AC'"
+                using \<open>AB = X\<close> \<open>BC = Y\<close> \<open>Ps PO E X\<close> \<open>Ps PO E Y\<close> \<open>Sum PO E E' AB BC AC'\<close>
+                  sum_pos_pos by blast
+              hence "AC = AC'"
+                by (smt (verit, ccfv_SIG) Cong_cases Out_def Ps_def \<open>Cong PO AC' A C\<close>
+                    \<open>Length PO E E' A C AC\<close> \<open>LtP PO E E' PO AC\<close> between_cong
+                    cong_inner_transitivity l6_7 length_cong ltP_pos) 
+              hence "Sumg PO E E' AB BC AC"
+                by (simp add: Sumg_def \<open>Sum PO E E' AB BC AC'\<close>) 
+            }
+            moreover have "PO = AC \<Longrightarrow> Sumg PO E E' AB BC AC"
+              by (metis O_not_positive \<open>Length PO E E' A B AB \<or> PO = E \<and> PO = AB\<close>
+                  \<open>Length PO E E' A C AC\<close> \<open>LtP PO E E' PO AB\<close> assms(2) between_identity
+                  cong_reverse_identity length_cong length_id_1 ltP_pos) 
+            ultimately have "Sumg PO E E' AB BC AC" 
+              by blast
+          }
+          moreover have "PO = BC \<Longrightarrow> Sumg PO E E' AB BC AC"
+            by (metis Ar2_def Sumg_def \<open>Length PO E E' A B AB\<close> \<open>Length PO E E' A C AC\<close>
+                \<open>Length PO E E' B C BC\<close> \<open>LtP PO E E' PO AB\<close> length_id length_uniqueness
+                ltP_ar2 sum_A_O) 
+          ultimately have "Sumg PO E E' AB BC AC" 
+            by blast
+        }
+        moreover have "PO = AB \<Longrightarrow> Sumg PO E E' AB BC AC"
+          by (metis Ar2_def Length_def Sumg_def \<open>Length PO E E' A B AB\<close>
+              \<open>Length PO E E' A C AC\<close> \<open>Length PO E E' B C BC\<close> length_id
+              length_not_col_null length_uniqueness sum_O_B)
+        ultimately have "Sumg PO E E' AB BC AC" 
+          by blast
+      }
+      moreover have "PO = E \<and> PO = AC \<Longrightarrow> Sumg PO E E' AB BC AC"
+        using assms(1) by blast 
+      ultimately have "Sumg PO E E' AB BC AC" 
+        by blast
+    }
+    moreover have "PO = E \<and> PO = BC \<Longrightarrow> Sumg PO E E' AB BC AC"
+      by (simp add: assms(1)) 
+    ultimately have "Sumg PO E E' AB BC AC" 
+      by blast
+  }
+  moreover have " PO = E \<and> PO = AB \<Longrightarrow> Sumg PO E E' AB BC AC"
+    using assms(1) by auto 
+  ultimately show "Sumg PO E E' AB BC AC" 
+    by blast
+qed
+
+lemma length_O:
+  assumes "PO \<noteq> E"
+  shows "Length PO E E' PO PO PO"
+  by (simp add: assms length_id)
+
+lemma triangular_equality_bis:
+  assumes "A \<noteq> B \<or> A \<noteq> C \<or> B \<noteq> C"
+    and "PO \<noteq> E"
+    and "Bet A B C"
+    and "Length PO E E' A B AB"
+    and "Length PO E E' B C BC"
+    and "Length PO E E' A C AC"
+  shows "Sum PO E E' AB BC AC" 
+proof -
+  have "LtP PO E E' PO AB \<or> PO = AB"
+    using LeP_def Length_def assms(4) by presburger 
+  moreover have "LtP PO E E' PO BC \<or> PO = BC"
+    using LeP_def Length_def assms(5) by presburger 
+  moreover have "LtP PO E E' PO AC \<or> PO = AC"
+    using LeP_def Length_def assms(6) by presburger 
+  moreover {
+    assume "LtP PO E E' PO AB" and "LtP PO E E' PO BC" and "LtP PO E E' PO AC"
+    obtain X where "Diff PO E E' AB PO X" and "Ps PO E X"
+      using LtP_def \<open>LtP PO E E' PO AB\<close> by blast 
+    obtain Y where "Diff PO E E' BC PO Y" and "Ps PO E Y"
+      using LtP_def \<open>LtP PO E E' PO BC\<close> by blast 
+    obtain Z where "Diff PO E E' AC PO Z" and "Ps PO E Z"
+      using LtP_def \<open>LtP PO E E' PO AC\<close> by blast 
+    have "AB = X"
+      by (meson Ar2_def \<open>Diff PO E E' AB PO X\<close> \<open>LtP PO E E' PO AB\<close> diff_A_O
+          diff_stable ltP_ar2)
+    have "BC = Y"
+      by (meson Ar2_def \<open>Diff PO E E' BC PO Y\<close> \<open>LtP PO E E' PO BC\<close> diff_A_O
+          diff_stable ltP_ar2) 
+    have "AC = Z"
+      by (meson Ar2_def \<open>Diff PO E E' AC PO Z\<close> \<open>LtP PO E E' PO AC\<close> diff_A_O
+          diff_stable ltP_ar2) 
+    obtain AC' where "Sum PO E E' AB BC AC'"
+      by (metis Ar2_def Ps_def \<open>BC = Y\<close> \<open>LtP PO E E' PO AB\<close> \<open>Ps PO E Y\<close>
+          col_permutation_5 ltP_ar2 out_col sum_exists) 
+    hence "Bet PO AB AC'"
+      by (metis Ps_def \<open>AB = X\<close> \<open>BC = Y\<close> \<open>Ps PO E X\<close> \<open>Ps PO E Y\<close> l14_36_a l6_6
+          l6_7) 
+    have "Cong PO BC AB AC'"
+      using \<open>Sum PO E E' AB BC AC'\<close> l15_3 by auto
+    have "Cong PO AC' A C"
+      by (smt (verit, ccfv_threshold) Cong_cases \<open>Cong PO BC AB AC'\<close>
+          \<open>PO \<midarrow> AB \<midarrow> AC'\<close> assms(3,4,5) cong_transitivity l2_11_b
+          length_cong)
+    have "Ps PO E AC'"
+      using \<open>AB = X\<close> \<open>BC = Y\<close> \<open>Ps PO E X\<close> \<open>Ps PO E Y\<close> \<open>Sum PO E E' AB BC AC'\<close>
+        sum_pos_pos by blast
+    have "AC = AC'"
+      by (smt (verit, ccfv_threshold) Col_cases Cong_cases Out_cases Out_def
+          Ps_def \<open>AC = Z\<close> \<open>Cong PO AC' A C\<close> \<open>Ps PO E AC'\<close> \<open>Ps PO E Z\<close> assms(6)
+          bet_cong_eq bet_out__bet col_permutation_2 col_transitivity_2
+          cong_inner_transitivity l6_4_2 length_cong not_bet_and_out
+          out_col)
+    hence "Sum PO E E' AB BC AC"
+      by (simp add: \<open>Sum PO E E' AB BC AC'\<close>) 
+  }
+  moreover have "LtP PO E E' PO AB \<and> LtP PO E E' PO BC \<and> PO = AC \<Longrightarrow> Sum PO E E' AB BC AC"
+    using assms(1,3,6) between_equality between_trivial length_id by force 
+  moreover have "LtP PO E E' PO AB \<and> PO = BC \<and> LtP PO E E' PO AC \<Longrightarrow> Sum PO E E' AB BC AC"
+    by (metis assms(4,5,6) calculation(4) length_Ar2 length_id_1 length_uniqueness sum_A_O) 
+  moreover have "PO = AB \<and> LtP PO E E' PO BC \<and> LtP PO E E' PO AC \<Longrightarrow> Sum PO E E' AB BC AC"
+    by (metis Ar2_def assms(4,5,6) length_id_1 length_uniqueness ltP_ar2
+        sum_O_B)
+  moreover have "PO = AB \<and> PO = BC \<and> LtP PO E E' PO AC \<Longrightarrow> Sum PO E E' AB BC AC"
+    by (metis Ps_def assms(4,5,6) between_trivial2 cong_reverse_identity
+        length_cong length_id_1 ltP_pos not_bet_and_out) 
+  moreover have "PO = AB \<and> LtP PO E E' PO BC \<and> PO = AC \<Longrightarrow> Sum PO E E' AB BC AC"
+    by (metis Ps_def assms(4,5,6) between_trivial2 cong_reverse_identity
+        length_cong length_id_1 ltP_pos not_bet_and_out) 
+  moreover have "LtP PO E E' PO AB \<and> PO = BC \<and> PO = AC \<Longrightarrow> Sum PO E E' AB BC AC"
+    using assms(1,3,6) between_equality between_trivial length_id_1
+    by blast 
+  moreover have "PO = AB \<and> PO = BC \<and> PO = AC \<Longrightarrow> Sum PO E E' AB BC AC"
+    using assms(1,4,6) length_id_1 by blast 
+  ultimately show ?thesis 
+    by blast
+qed
+
+(** Lemma 15.5. *)
+(** Known as Thales theorem or intercept theorem. *)
+lemma length_out:
+  assumes "A \<noteq> B"
+    and "C \<noteq> D"
+    and "Length PO E E' A B AB"
+    and "Length PO E E' C D CD"
+  shows "PO Out AB CD"
+  by (metis (full_types) Length_def Ps_def assms(1,2,3,4) bet_out__bet
+      cong_reverse_identity l6_3_2 length_Ps
+      point_construction_different) 
+
+lemma image_preserves_bet1:
+  assumes "Bet A B C"
+    and "A A' Reflect X Y"
+    and "B B' Reflect X Y"
+    and "C C' Reflect X Y"
+  shows "Bet A' B' C'"
+  using assms(1,2,3,4) image_gen_preserves_bet by blast 
+
+lemma image_preserves_col:
+  assumes "Col A B C"
+    and "A A' Reflect X Y"
+    and "B B' Reflect X Y"
+    and "C C' Reflect X Y"
+  shows "Col A' B' C'"
+  using Col_def assms(1,2,3,4) image_gen_preserves_bet by presburger 
+
+lemma image_preserves_out:
+  assumes "A Out B C"
+    and "A A' Reflect X Y"
+    and "B B' Reflect X Y"
+    and "C C' Reflect X Y"
+  shows "A' Out B' C'" 
+proof -
+  have "B' \<noteq> A'"
+    using assms(1,2,3) l10_2_uniqueness out_distinct by blast 
+  moreover have "C' \<noteq> A'"
+    using assms(1,2,4) l10_2_uniqueness out_diff2 by blast 
+  moreover have "Bet A' B' C' \<or> Bet A' C' B'"
+    by (meson Out_def assms(1,2,3,4) image_preserves_bet1) 
+  ultimately show ?thesis
+    using Out_def by blast 
+qed
+
+lemma project_preserves_out:
+  assumes "A Out B C"
+    and "\<not> A B Par X Y"
+    and "A A' Proj P Q X Y"
+    and "B B' Proj P Q X Y"
+    and "C C' Proj P Q X Y"
+  shows "A' Out B' C'" 
+proof -
+  have "B' \<noteq> A'"
+    by (metis assms(1,2,3,4) ker_par out_distinct) 
+  moreover have "C' \<noteq> A'"
+    by (metis Out_def assms(1,2,3,5) ker_par not_par_not_col out_col
+        par_trans) 
+  moreover have "Bet A' B' C' \<or> Bet A' C' B'"
+    by (meson Out_def assms(1,3,4,5) project_preserves_bet)
+  ultimately show ?thesis
+    using Out_def by blast 
+qed
+
+lemma conga_bet_conga:
+  assumes "A B C CongA D E F"
+    and "A' \<noteq> B"
+    and "C' \<noteq> B"
+    and "D' \<noteq> E"
+    and "F' \<noteq> E"
+    and "Bet A B A'"
+    and "Bet C B C'"
+    and "Bet D E D'"
+    and "Bet F E F'"
+  shows "A' B C' CongA D' E F'"
+  by (meson assms(1,2,3,4,5,6,7,8,9) conga_comm l11_13) 
+
+lemma thales:
+  assumes "PO \<noteq> E"
+    and "Col P A B"
+    and "Col P C D"
+    and "\<not> Col P A C"
+    and "A C Pj B D" 
+    and "Length PO E E' P A A1"
+    and "Length PO E E' P B B1"
+    and "Length PO E E' P C C1"
+    and "Length PO E E' P D D1"
+    and "Prodg PO E E' A1 D1 AD"
+  shows "Prodg PO E E' C1 B1 AD"
+proof (cases "Col PO E E'")
+  show "Col PO E E' \<Longrightarrow> Prodg PO E E' C1 B1 AD"
+    using Ar2_def Prod_def Prodg_def assms(10) by presburger 
+  {
+    assume "\<not> Col PO E E'"
+    have "Prod PO E E' A1 D1 AD \<or> (\<not> Ar2 PO E E' A1 D1 D1 \<and> AD = PO)"
+      using Prodg_def assms(10) by blast 
+    moreover 
+    {
+      assume "Prod PO E E' A1 D1 AD"
+      have "Prodg PO E E' C1 B1 AD"
+      proof (cases "P = B")
+        show "P = B \<Longrightarrow> Prodg PO E E' C1 B1 AD"
+          by (metis (mono_tags, lifting) Length_def Prodg_def
+              \<open>Prod PO E E' A1 D1 AD\<close> \<open>\<not> Col PO E E'\<close>
+              assms(3,4,5,7,8,9) length_id_2 length_uniqueness
+              not_col_distincts pj_trivial pj_uniqueness prod_0_r
+              prod_O_l_eq prod_sym) 
+        {
+          assume "P \<noteq> B"
+          show "Prodg PO E E' C1 B1 AD" 
+          proof (cases "A = B")
+            {
+              assume "A = B"
+              have "A C ParStrict A D \<Longrightarrow> Prodg PO E E' C1 B1 AD"
+                by (simp add: not_par_strict_id) 
+              hence "A C Par A D \<Longrightarrow> Prodg PO E E' C1 B1 AD"
+                by (metis Col_def Prodg_def \<open>A = B\<close>
+                    \<open>Prod PO E E' A1 D1 AD\<close> assms(3,4,6,7,8,9) col2__eq
+                    length_uniqueness par_id prod_sym) 
+              thus "Prodg PO E E' C1 B1 AD"
+                using NCol_perm Pj_def \<open>A = B\<close> assms(3,4,5) by blast 
+            }
+            {
+              assume "A \<noteq> B"
+              have "\<not> Col PO A1 E'"
+                by (metis assms(4,6) col_permutation_5 col_trivial_3 colx length_Ar2
+                    length_id_1) 
+              then obtain C1' where "P A C Cong3 PO A1 C1'" and "PO A1 OS E' C1'"
+                using assms(4,6) l10_16 length_cong by meson
+              have "P A C CongA PO A1 C1'"
+                by (metis \<open>P A C Cong3 PO A1 C1'\<close> assms(4) col_trivial_1 col_trivial_2
+                    cong3_conga) 
+              have "\<not> Col PO C1 C1'"
+                by (metis \<open>PO A1 OS E' C1'\<close> assms(1,4,6,8) col_transitivity_1 col_trivial_3
+                    length_Ar2 length_id_1 one_side_not_col124)
+              obtain M where "M Midpoint C1 C1'"
+                using MidR_uniq_aux by blast
+              obtain D1' where "D1' D1 Reflect PO M"
+                using l10_2_existence by fastforce
+              moreover {
+                assume "PO \<noteq> M" and "D1' D1 ReflectL PO M"
+                then obtain N where "N Midpoint D1 D1'" and "Col PO M N"
+                  using ReflectL_def by blast 
+                have "PO Out C1 D1" 
+                proof (rule length_out [of P C P D _ E E'])
+                  show "P \<noteq> C"
+                    using assms(4) not_col_distincts by blast 
+                  {
+                    assume "P = D"
+                    have "PO = AD"
+                      using \<open>P = D\<close> \<open>Prod PO E E' A1 D1 AD\<close> assms(9)
+                        cong_reverse_identity length_cong prod_O_r_eq
+                      by blast 
+                    have "A C Par B P \<Longrightarrow> False"
+                      by (metis assms(2,4) not_col_distincts par_col2_par_bis par_id_5) 
+                    hence False
+                      using Pj_def \<open>P = D\<close> \<open>P \<noteq> B\<close> assms(5) by blast 
+                  }
+                  thus "P \<noteq> D" 
+                    by blast
+                  show "Length PO E E' P C C1"
+                    by (simp add: assms(8)) 
+                  show "Length PO E E' P D D1"
+                    by (simp add: assms(9)) 
+                qed
+                have "PO Out A1 C1"
+                  by (metis assms(4,6,8) col_trivial_1 col_trivial_3 length_out) 
+                have "M \<noteq> C1"
+                  using \<open>M Midpoint C1 C1'\<close> \<open>\<not> Col PO C1 C1'\<close> col_trivial_2 is_midpoint_id 
+                  by blast 
+                have "Per PO M C1" 
+                proof -
+                  have "Cong PO C1 PO C1'"
+                    by (meson Cong3_def \<open>P A C Cong3 PO A1 C1'\<close> assms(8) 
+                        cong_inner_transitivity length_cong) 
+                  thus ?thesis
+                    using Per_def \<open>M Midpoint C1 C1'\<close> by blast 
+                qed
+                have "M PO Perp C1 M \<or> M M Perp C1 M"
+                  using Perp_cases \<open>M \<noteq> C1\<close> \<open>PO \<noteq> M\<close> \<open>Per PO M C1\<close>
+                    col_per_perp col_trivial_3 by blast 
+                have "PO Out C1' D1'" 
+                proof (rule image_preserves_out [of PO C1 D1 _ PO M], 
+                    insert \<open>PO Out C1 D1\<close> image_triv)
+                  show "C1 C1' Reflect PO M"
+                    by (meson Cong3_def \<open>M Midpoint C1 C1'\<close>
+                        \<open>P A C Cong3 PO A1 C1'\<close> assms(8) cong_inner_transitivity
+                        cong_midpoint__image l7_2 length_cong) 
+                  show "D1 D1' Reflect PO M"
+                    by (simp add: calculation l10_4) 
+                qed
+                have "PO N Perp D1 N" 
+                proof (rule perp_col [of _ _ M], insert \<open>Col PO M N\<close>)
+                  show "PO \<noteq> N"
+                    by (metis Out_def \<open>N Midpoint D1 D1'\<close> \<open>PO Out C1 D1\<close>
+                        \<open>PO Out C1' D1'\<close> \<open>\<not> Col PO C1 C1'\<close> col_transitivity_1
+                        not_col_sym_not_col out_col) 
+                  show "PO M Perp D1 N" 
+                  proof -
+                    have  "D1 \<noteq> N"
+                      using \<open>N Midpoint D1 D1'\<close> \<open>PO Out C1 D1\<close> \<open>PO Out C1' D1'\<close>
+                        \<open>\<not> Col PO C1 C1'\<close> is_midpoint_id l6_6 l6_7 out_col
+                      by blast 
+                    moreover have "D1 D1' Perp PO M"
+                      by (metis Perp_perm ReflectL_def \<open>D1' D1 ReflectL PO M\<close>
+                          \<open>N Midpoint D1 D1'\<close> calculation l7_3) 
+                    moreover have "Col D1 D1' N"
+                      using \<open>N Midpoint D1 D1'\<close> bet_col1 between_trivial midpoint_bet by blast 
+                    ultimately show ?thesis
+                      by (metis Perp_cases perp_col) 
+                  qed
+                qed
+                have "Cong PO D1 PO D1'"
+                  using calculation image_triv l10_10 by blast 
+                have "C1 C1' Par D1 D1'" 
+                proof -
+                  have "PO M Perp D1 D1' \<or> D1 = D1'"
+                    using ReflectL_def \<open>D1' D1 ReflectL PO M\<close> by blast 
+                  moreover {
+                    assume "PO M Perp D1 D1'"
+                    have "C1 C1' Par D1 D1'"
+                    proof -
+                      {
+                        assume "M PO Perp C1 M"
+                        have "C1 C1' Par D1 D1'" 
+                        proof (rule l12_9_2D [of _ _ PO M])
+                          show "C1 C1' Perp PO M"
+                            by (metis \<open>M Midpoint C1 C1'\<close> \<open>M \<noteq> C1\<close> \<open>PO \<noteq> M\<close>
+                                \<open>Per PO M C1\<close> bet_cong_eq between_trivial2 col_per_perp
+                                midpoint_bet midpoint_col midpoint_cong
+                                not_cong_3412) 
+                          show "D1 D1' Perp PO M"
+                            using Perp_cases \<open>PO M Perp D1 D1'\<close> by blast 
+                        qed
+                      }
+                      moreover have "M M Perp C1 M \<Longrightarrow> C1 C1' Par D1 D1'"
+                        using perp_distinct by blast
+                      ultimately show ?thesis
+                        using \<open>M PO Perp C1 M \<or> M M Perp C1 M\<close> by blast 
+                    qed
+                  }
+                  moreover have "D1 = D1' \<Longrightarrow> C1 C1' Par D1 D1'"
+                    using \<open>PO Out C1 D1\<close> \<open>PO Out C1' D1'\<close> \<open>\<not> Col PO C1 C1'\<close> l6_6
+                      l6_7 out_col by blast 
+                  ultimately show ?thesis 
+                    by blast
+                qed
+                hence "C1 C1' Pj D1 D1'"
+                  by (simp add: Pj_def) 
+                have "P C A Cong3 PO C1' A1"
+                  by (simp add: \<open>P A C Cong3 PO A1 C1'\<close> cong_3_swap_2)
+                have "P C A CongA PO C1' A1"
+                  using \<open>P C A Cong3 PO C1' A1\<close> assms(4) cong3_conga
+                    not_col_distincts by auto
+                have "Cong P A PO A1 \<and> (P \<noteq> A \<longrightarrow> C P A CongA C1' PO A1 \<and> C A P CongA C1' A1 PO)" 
+                  using l11_49 Cong3_def \<open>P C A Cong3 PO C1' A1\<close>
+                    \<open>P C A CongA PO C1' A1\<close> cong_3_swap by blast 
+                moreover have "P \<noteq> A"
+                  using assms(4) col_trivial_1 by blast
+                ultimately have "C P A CongA C1' PO A1 \<and> C A P CongA C1' A1 PO" 
+                  by blast
+                have "C A P CongA D B P" 
+                proof -
+                  {
+                    assume "Bet C P D"
+                    have "Bet A P B" 
+                    proof (rule project_preserves_bet [of C P D _ A P A C], insert \<open>C \<midarrow> P \<midarrow> D\<close>)
+                      show "C A Proj A P A C"
+                        by (metis Par_def assms(4) grid_not_par par_col_project) 
+                      show "P P Proj A P A C"
+                        by (metis \<open>P \<noteq> A\<close> assms(4) col_trivial_2 par_id_1 project_trivial) 
+                      show "D B Proj A P A C"
+                        by (metis NCol_perm assms(2,4,5) grid_not_par 
+                            pj_col_project pj_right_comm) 
+                    qed
+                    have "A B TS C D" 
+                    proof -
+                      have "\<not> Col C A B"
+                        using \<open>A \<noteq> B\<close> assms(2,4) col2__eq by blast 
+                      moreover have "\<not> Col D A B"
+                        by (metis \<open>P \<noteq> B\<close> assms(2,3,4,5) calculation col_permutation_2 
+                            colx sum_ar2 sum_exists sum_par_strict_a) 
+                      moreover have "\<exists> T. Col T A B \<and> Bet C T D" 
+                      proof -
+                        have "Col P A B"
+                          using assms(2) by auto 
+                        moreover have "Bet C P D"
+                          by (simp add: \<open>C \<midarrow> P \<midarrow> D\<close>) 
+                        ultimately show ?thesis 
+                          by fast
+                      qed
+                      ultimately show ?thesis
+                        using TS_def by blast 
+                    qed
+                    hence "C A B CongA D B A \<longleftrightarrow> A C Par B D" 
+                      using l12_21 by simp
+                    have "A C Par B D \<Longrightarrow> C A P CongA D B P"
+                      by (metis NCol_perm Par_cases TS_def \<open>A B TS C D\<close> \<open>P \<noteq> A\<close> \<open>P \<noteq> B\<close>
+                          assms(2,3,4) not_par_not_col triangle_par) 
+                    moreover have "B = D \<Longrightarrow> C A P CongA D B P"
+                      using TS_def \<open>A B TS C D\<close> not_col_distincts by blast 
+                    ultimately have "C A P CongA D B P"
+                      using Pj_def assms(5) by blast 
+                  }
+                  moreover have "\<not> Bet C P D \<Longrightarrow> C A P CongA D B P"
+                    by (metis Pj_def \<open>P \<noteq> B\<close> assms(2,3,4,5) between_trivial col_transitivity_2
+                        conga_comm not_col_distincts not_par_not_col triangle_par) 
+                  ultimately show ?thesis 
+                    by blast
+                qed
+
+                have "A \<noteq> C"
+                  using assms(4) col_trivial_2 by auto
+                have "\<not> P A Par C A"
+                  by (simp add: assms(4) grid_not_par_3 not_col_permutation_5)
+                have "C P A CongA D P B"
+                  by (metis Pj_def \<open>C A P CongA D B P\<close> assms(2,3,4,5) ncol_conga_ncol 
+                      not_col_distincts not_col_permutation_2 not_col_permutation_3 
+                      not_par_not_col par_comm triangle_par) 
+                have "C1 \<noteq> C1'"
+                  using \<open>\<not> Col PO C1 C1'\<close> col_trivial_2 by auto 
+                have "PO \<noteq> C1'"
+                  using \<open>\<not> Col PO C1 C1'\<close> col_trivial_3 by auto
+                have "\<not> PO C1' Par C1 C1'"
+                  by (simp add: \<open>\<not> Col PO C1 C1'\<close> grid_not_par_3) 
+                have "\<not> PO C1 Par C1 C1'"
+                  by (simp add: \<open>\<not> Col PO C1 C1'\<close> grid_not_par_1) 
+                have "C1' PO A1 CongA D1' PO B1"
+                proof (rule out2__conga)
+                  show "PO Out D1' C1'"
+                    using Out_cases \<open>PO Out C1' D1'\<close> by auto 
+                  show "PO Out B1 A1"
+                    using \<open>P \<noteq> A\<close> \<open>P \<noteq> B\<close> assms(6,7) length_out by auto 
+                qed
+                have "D1' PO B1 CongA D P B"
+                  using \<open>C P A CongA D P B\<close> \<open>C1' PO A1 CongA D1' PO B1\<close>
+                    \<open>Cong P A PO A1 \<and> (P \<noteq> A \<longrightarrow> C P A CongA C1' PO A1 \<and> C A P CongA C1' A1 PO)\<close>
+                    \<open>P \<noteq> A\<close> conga_sym conga_trans by blast
+                have "D1' \<noteq> B1 \<Longrightarrow> PO D1' B1 CongA P D B \<and> PO B1 D1' CongA P B D"
+                  by (meson \<open>Cong PO D1 PO D1'\<close> \<open>D1' PO B1 CongA D P B\<close> assms(7,9) 
+                      cong_transitivity l11_49 length_cong not_cong_3412) 
+                moreover have "D1' \<noteq> B1"
+                  by (metis Col_def \<open>C1' PO A1 CongA D1' PO B1\<close> \<open>PO A1 OS E' C1'\<close> col124__nos
+                      grid_not_par_5 ncol_conga_ncol) 
+                ultimately have "PO D1' B1 CongA P D B \<and> PO B1 D1' CongA P B D"
+                  by simp
+                have "C1' A1 PO CongA D1' B1 PO \<longleftrightarrow> A1 C1' Par B1 D1'" 
+                proof (rule l12_22)
+                  show "PO Out A1 B1"
+                    using \<open>P \<noteq> A\<close> \<open>P \<noteq> B\<close> assms(6,7) length_out by auto 
+                  show "PO A1 OS C1' D1'"
+                    using \<open>PO A1 OS E' C1'\<close> \<open>PO Out C1' D1'\<close> col124__nos out_one_side by blast 
+                qed
+                moreover have "C1' A1 PO CongA D1' B1 PO" 
+                proof (rule conga_trans [of _ _ _ D B P])
+                  show "C1' A1 PO CongA D B P"
+                    using \<open>C A P CongA D B P\<close> \<open>C P A CongA C1' PO A1 \<and> C A P CongA C1' A1 PO\<close> 
+                      not_conga not_conga_sym by blast 
+                  show "D B P CongA D1' B1 PO"
+                    by (simp add: \<open>PO D1' B1 CongA P D B \<and> PO B1 D1' CongA P B D\<close> conga_comm
+                        conga_sym) 
+                qed
+                ultimately have "A1 C1' Par B1 D1'" 
+                  by blast
+                have "Prod PO C1 C1' A1 D1 B1" 
+                proof (unfold Prod_def, intro strip conjI, unfold Ar2_def, intro strip conjI)
+                  show "\<not> Col PO C1 C1'"
+                    by (simp add: \<open>\<not> Col PO C1 C1'\<close>) 
+                  show "Col PO C1 A1"
+                    by (simp add: \<open>PO Out A1 C1\<close> l6_6 out_col) 
+                  show "Col PO C1 D1"
+                    by (simp add: \<open>PO Out C1 D1\<close> out_col) 
+                  show "Col PO C1 B1"
+                    by (metis \<open>Col PO C1 A1\<close> \<open>\<not> Col PO A1 E'\<close> assms(6,7) col_trivial_3 
+                        l6_16_1 length_Ar2 not_col_permutation_3 not_col_permutation_4) 
+                  show "\<exists>B'. C1 C1' Pj D1 B' \<and> Col PO C1' B' \<and> C1' A1 Pj B' B1"
+                    by (meson Pj_def \<open>A1 C1' Par B1 D1'\<close> \<open>C1 C1' Pj D1 D1'\<close> \<open>PO Out C1' D1'\<close>
+                        out_col par_comm) 
+                qed
+                have "\<exists> Y. Prod PO E C1' A1 D1 Y \<and> Prod PO E C1' C1 B1 Y"
+                proof (rule prod_x_axis_unit_change [of _ C1], insert assms(1))
+                  show "Ar2p4 PO C1 C1' A1 D1 C1 B1"
+                    by (metis Ar2_def Ar2p4_def Prod_def \<open>Prod PO C1 C1' A1 D1 B1\<close>
+                        not_col_distincts) 
+                  show "Col PO C1 E"
+                    using Col_cases Col_def assms(8) between_trivial length_Ar2
+                    by blast 
+                  show "E \<noteq> PO"
+                    using assms(1) by auto 
+                  show "\<exists>X. Prod PO C1 C1' A1 D1 X \<and> Prod PO C1 C1' C1 B1 X" 
+                    using Ar2p4_def \<open>Ar2p4 PO C1 C1' A1 D1 C1 B1\<close> \<open>Prod PO C1 C1' A1 D1 B1\<close>
+                      prod_1_l by blast 
+                qed
+                hence "Prodg PO E E' C1 B1 AD"
+                  by (metis Prodg_def \<open>Prod PO E E' A1 D1 AD\<close> \<open>\<not> Col PO E E'\<close>
+                      prod_uniqueness prod_y_axis_change) 
+              }
+              moreover have "PO = M \<and> PO Midpoint D1 D1' \<Longrightarrow> Prodg PO E E' C1 B1 AD"
+                using \<open>M Midpoint C1 C1'\<close> \<open>\<not> Col PO C1 C1'\<close> midpoint_col by auto 
+              ultimately show "Prodg PO E E' C1 B1 AD"
+                using Reflect_def by auto 
+            }
+          qed
+        }
+      qed
+    }
+    moreover have "\<not> Ar2 PO E E' A1 D1 D1 \<and> AD = PO \<Longrightarrow> Prodg PO E E' C1 B1 AD"
+      by (meson Ar2_def Length_def \<open>\<not> Col PO E E'\<close> assms(6,9)) 
+    ultimately show "Prodg PO E E' C1 B1 AD"
+      by blast 
+  }
+qed
+
+lemma length_existence:
+  assumes "\<not> Col PO E E'"
+  shows "\<exists> AB. Length PO E E' A B AB" 
+proof -
+  have "E \<noteq> PO"
+    using assms col_trivial_1 by auto 
+  obtain AB where "Bet PO E AB \<or> Bet PO AB E" and "Cong PO AB A B"
+    using \<open>E \<noteq> PO\<close> segment_construction_2 by blast
+  hence "AB = PO \<or> PO Out E AB" 
+    by (simp add: Out_def \<open>E \<noteq> PO\<close>)
+  moreover have "AB = PO \<Longrightarrow> ?thesis"
+    using \<open>Cong PO AB A B\<close> \<open>E \<noteq> PO\<close> cong_diff_3 length_id by blast 
+  moreover {
+    assume "PO Out E AB"
+    hence "Col PO E AB"
+      by (simp add: out_col) 
+    moreover have "LeP PO E E' PO AB"
+      using \<open>Bet PO E AB \<or> Bet PO AB E\<close> assms ps_le by blast 
+    ultimately have ?thesis
+      using Length_def \<open>Cong PO AB A B\<close> \<open>E \<noteq> PO\<close> by auto 
+  }
+  ultimately show ?thesis 
+    by blast
+qed
+
+(** Known as Euklid *)
+lemma l15_7:
+  assumes "PO \<noteq> E"
+    and "Per A C B"
+    and "H PerpAt C H A B"
+    and "Length PO E E' A B AB"
+    and "Length PO E E' A C AC"
+    and "Length PO E E' A H AH"
+  shows "Prod PO E E' AC AC AC2 \<longleftrightarrow> Prod PO E E' AB AH AC2" 
+proof (cases "AB = PO")
+  {
+    assume "AB = PO"
+    hence "A = B"
+      using assms(4) length_id by auto 
+    hence "C \<noteq> H \<and> A \<noteq> A" 
+      using perp_in_distinct assms(3) by auto 
+    thus "Prod PO E E' AC AC AC2 \<longleftrightarrow> Prod PO E E' AB AH AC2" 
+      by simp
+  }
+  {
+    assume "AB \<noteq> PO"
+    have "LtP PO E E' PO AB \<Longrightarrow> \<not> Col PO E E' \<and> Col PO E AB"
+      using Ar2_def ltP_ar2 by blast 
+    moreover have "PO = AB \<Longrightarrow> \<not> Col PO E E' \<and> Col PO E AB"
+      using \<open>AB \<noteq> PO\<close> by auto 
+    ultimately have "\<not> Col PO E E' \<and> Col PO E AB" 
+      using assms(4) length_Ar2 by blast 
+    show "Prod PO E E' AC AC AC2 \<longleftrightarrow> Prod PO E E' AB AH AC2" 
+    proof (cases "H = A")
+      show "H = A \<Longrightarrow> (Prod PO E E' AC AC AC2) = (Prod PO E E' AB AH AC2)"
+        using assms(2,3) l11_47 by blast 
+      {
+        assume "H \<noteq> A"
+        hence "C \<noteq> A"
+          using assms(3) l8_8 perp_in_per_1 by blast 
+        obtain C' where "Bet A H C' \<or> Bet A C' H" and "Cong A C' A C"
+          using \<open>H \<noteq> A\<close> segment_construction_2 by blast
+        have "A Out H C'"
+          by (metis Out_def \<open>(A \<midarrow> H \<midarrow> C') \<or> (A \<midarrow> C' \<midarrow> H)\<close> \<open>C \<noteq> A\<close> \<open>Cong A C' A C\<close> \<open>H \<noteq> A\<close>
+              cong_reverse_identity) 
+        obtain H' where "Bet A C H' \<or> Bet A H' C" and "Cong A H' A H"
+          using \<open>C \<noteq> A\<close> segment_construction_2 by blast 
+        have "H \<noteq> C"
+          using assms(3) perp_in_distinct by blast 
+        moreover have "Cong H C H' C' \<and> (H \<noteq> C \<longrightarrow> A H C CongA A H' C' \<and> A C H CongA A C' H')" 
+        proof (rule l11_49)
+          show "H A C CongA H' A C'"
+            by (metis Out_cases \<open>A Out H C'\<close> \<open>(A \<midarrow> C \<midarrow> H') \<or> (A \<midarrow> H' \<midarrow> C)\<close> \<open>C \<noteq> A\<close> 
+                \<open>Cong A H' A H\<close> \<open>H \<noteq> A\<close> bet_out
+                between_cong between_trivial2 conga_left_comm out2__conga) 
+          show "Cong A H A H'"
+            using \<open>Cong A H' A H\<close> not_cong_3412 by blast 
+          show "Cong A C A C'"
+            by (simp add: \<open>Cong A C' A C\<close> cong_symmetry) 
+        qed
+        ultimately have "A H C CongA A H' C' \<and> A C H CongA A C' H'"  
+          by blast
+        have "A H Perp H C"
+          by (metis Per_cases \<open>H \<noteq> A\<close> \<open>H \<noteq> C\<close> assms(3) per_perp perp_in_per_1) 
+        hence "H PerpAt A H H C"
+          using l8_14_2_1b_bis not_col_distincts by blast 
+        hence "Per A H C"
+          by (simp add: perp_in_per) 
+        have "Per A H' C'"
+          using \<open>A H C CongA A H' C' \<and> A C H CongA A C' H'\<close> \<open>Per A H C\<close> l11_17 by blast 
+        have "C B Par H' C'" 
+        proof (rule l12_9_2D [of _ _ A C])
+          show "C B Perp A C"
+            by (metis Perp_cases \<open>C \<noteq> A\<close> \<open>H \<noteq> C\<close> assms(2,3) per_perp perp_in_id) 
+          show "H' C' Perp A C"
+            by (metis Col_def Per_perm Perp_cases \<open>A H C CongA A H' C' \<and> A C H CongA A C' H'\<close> 
+                \<open>A H Perp H C\<close> \<open>(A \<midarrow> C \<midarrow> H') \<or> (A \<midarrow> H' \<midarrow> C)\<close> \<open>Per A H' C'\<close> 
+                bet_conga__bet between_symmetry between_trivial col_per_perp
+                not_conga_sym perp_not_col2) 
+        qed
+        obtain AH' where "Length PO E E' A H' AH'"
+          using \<open>\<not> Col PO E E' \<and> Col PO E AB\<close> length_existence by presburger
+        obtain AC' where "Length PO E E' A C' AC'"
+          using \<open>\<not> Col PO E E' \<and> Col PO E AB\<close> length_existence by blast
+        obtain P where "Prod PO E E' AC' AC P"
+          by (metis \<open>Length PO E E' A C' AC'\<close> \<open>\<not> Col PO E E' \<and> Col PO E AB\<close> assms(5) 
+              col_trivial_3 length_Ar2 prod_exists)
+        have "C H Perp A B"
+          using assms(3) perp_in_perp by auto
+        have "Prodg PO E E' AH' AB P" 
+        proof (rule thales [of _ _ A C' B H' C _ AC' _ _ AC])
+          show "PO \<noteq> E"
+            using assms(1) by blast 
+          show "Col A C' B"
+            by (metis Col_def Perp_cases Perp_in_cases \<open>A Out H C'\<close> \<open>C H Perp A B\<close> assms(2,3)
+                col_out2_col out_bet__out out_trivial perp_in_col perp_not_col2
+                perp_per_bet) 
+          show "Col A H' C"
+            using Col_def \<open>(A \<midarrow> C \<midarrow> H') \<or> (A \<midarrow> H' \<midarrow> C)\<close> between_symmetry by blast 
+          show "\<not> Col A C' H'"
+            by (metis \<open>A H C CongA A H' C' \<and> A C H CongA A C' H'\<close> \<open>Per A H' C'\<close> conga_diff45
+                conga_diff56 l8_9 not_col_permutation_1 not_col_permutation_3) 
+          show "C' H' Pj B C"
+            using Par_cases Pj_def \<open>C B Par H' C'\<close> by blast 
+          show "Length PO E E' A C' AC'"
+            using \<open>Length PO E E' A C' AC'\<close> by auto 
+          show "Length PO E E' A B AB"
+            by (simp add: assms(4)) 
+          show "Length PO E E' A H' AH'"
+            by (simp add: \<open>Length PO E E' A H' AH'\<close>) 
+          show "Length PO E E' A C AC"
+            by (simp add: assms(5)) 
+          show "Prodg PO E E' AC' AC P"
+            by (simp add: Prodg_def \<open>Prod PO E E' AC' AC P\<close>) 
+        qed
+        hence "Prod PO E E' AH' AB P"
+          by (metis Ar2_def Prodg_def \<open>Length PO E E' A H' AH'\<close> 
+              \<open>\<not> Col PO E E' \<and> Col PO E AB\<close> col_trivial_3 length_Ar2) 
+        have "Length PO E E' A H' AH"
+          using \<open>Cong A H' A H\<close> assms(6) length_eq_cong_2 not_cong_3412 by blast
+        have "Length PO E E' A C' AC"
+          using Cong_cases \<open>Cong A C' A C\<close> assms(5) length_eq_cong_2 by blast
+        hence "(Prod PO E E' AC AC AC2) \<longrightarrow> (Prod PO E E' AB AH AC2)"
+          by (metis \<open>Length PO E E' A C' AC'\<close> \<open>Length PO E E' A H' AH'\<close> 
+              \<open>Length PO E E' A H' AH\<close> \<open>Prod PO E E' AC' AC P\<close>
+              \<open>Prod PO E E' AH' AB P\<close> \<open>\<not> Col PO E E' \<and> Col PO E AB\<close> length_uniqueness
+              prod_sym prod_uniqueness) 
+        moreover have "(Prod PO E E' AB AH AC2) \<longrightarrow> (Prod PO E E' AC AC AC2)"
+          by (metis \<open>Length PO E E' A C' AC'\<close> \<open>Length PO E E' A C' AC\<close>
+              \<open>Length PO E E' A H' AH'\<close> \<open>Length PO E E' A H' AH\<close> \<open>Prod PO E E' AC' AC P\<close>
+              \<open>Prod PO E E' AH' AB P\<close> \<open>\<not> Col PO E E' \<and> Col PO E AB\<close> length_uniqueness
+              prod_sym prod_uniqueness) 
+        ultimately show "(Prod PO E E' AC AC AC2) = (Prod PO E E' AB AH AC2)" 
+          by blast
+      }
+    qed
+  }
+qed
+
+lemma l15_7_1:
+  assumes "PO \<noteq> E"
+    and "Per A C B"
+    and "H PerpAt C H A B"
+    and "Length PO E E' A B AB"
+    and "Length PO E E' A C AC"
+    and "Length PO E E' A H AH"
+    and "Prod PO E E' AC AC AC2"
+  shows "Prod PO E E' AB AH AC2" 
+  using l15_7 [of PO E A C B H E' AB AC AH AC2] assms(1,2,3,4,5,6,7) by blast
+
+lemma l15_7_2:
+  assumes "PO \<noteq> E"
+    and "Per A C B"
+    and "H PerpAt C H A B"
+    and "Length PO E E' A B AB"
+    and "Length PO E E' A C AC"
+    and "Length PO E E' A H AH"
+    and "Prod PO E E' AB AH AC2"
+  shows "Prod PO E E' AC AC AC2" 
+  using l15_7 [of PO E A C B H E' AB AC AH AC2] assms(1,2,3,4,5,6,7) by blast
+
+lemma length_sym:
+  assumes "Length PO E E' A B AB"
+  shows "Length PO E E' B A AB"
+  using assms cong_pseudo_reflexivity length_eq_cong_2 by blast 
+
+lemma pythagoras:
+  assumes "PO \<noteq> E"
+    and "Per A C B"
+    and "Length PO E E' A B AB"
+    and "Length PO E E' A C AC"
+    and "Length PO E E' B C BC"
+    and "Prod PO E E' AC AC AC2"
+    and "Prod PO E E' BC BC BC2"
+    and "Prod PO E E' AB AB AB2"
+  shows "Sum PO E E' AC2 BC2 AB2"
+proof (cases "Col A C B")
+  {
+    assume "Col A C B"
+    moreover have "A = C \<longrightarrow> Sum PO E E' AC2 BC2 AB2"
+      by (metis Ar2_def Prod_def assms(3,4,5,6,7,8) cong_reverse_identity length_cong
+          length_sym length_uniqueness prod_O_r_eq prod_uniqueness sum_O_B) 
+    moreover have "B = C \<longrightarrow> Sum PO E E' AC2 BC2 AB2"
+      by (metis Ar2_def Prod_def assms(1,3,4,5,6,7,8) length_id length_uniqueness
+          prod_O_r_eq prod_uniqueness sum_A_O) 
+    ultimately show "Sum PO E E' AC2 BC2 AB2"
+      using assms(2) per_not_col by force 
+  }
+  {
+    assume "\<not> Col A C B"
+    then obtain P where "Col A B P" and "A B Perp C P"
+      using col_permutation_5 l8_18_existence by blast 
+    hence "P PerpAt A B C P"
+      by (simp add: l8_15_1) 
+    obtain AP where "Length PO E E' A P AP"
+      by (metis \<open>\<not> Col A C B\<close> assms(3,5) col_trivial_1 length_existence length_id_1
+          length_not_col_null) 
+    obtain BP where "Length PO E E' B P BP"
+      by (metis \<open>Length PO E E' A P AP\<close> assms(3) length_Ar2
+          length_existence length_id_1)
+    have "Sum PO E E' AP BP AB" 
+      using triangular_equality_bis [of PO E E']
+      by (metis Perp_in_cases \<open>Length PO E E' A P AP\<close>
+          \<open>Length PO E E' B P BP\<close> \<open>P PerpAt A B C P\<close> \<open>\<not> Col A C B\<close>
+          assms(1,2,3) grid_not_par length_sym perp_per_bet
+          triangular_equality_bis)
+    moreover have "Prod PO E E' AB AP AC2"
+      using Perp_in_cases \<open>Length PO E E' A P AP\<close> \<open>P PerpAt A B C P\<close>
+        assms(1,2,3,4,6) l15_7 by blast
+    moreover have "Prod PO E E' AB BP BC2"
+      by (meson Per_cases Perp_in_cases \<open>Length PO E E' B P BP\<close>
+          \<open>P PerpAt A B C P\<close> assms(1,2,3,5,7) l15_7 length_sym)
+    ultimately show "Sum PO E E' AC2 BC2 AB2"
+      using assms(8) distr_l by blast 
+  }
+qed
+
+lemma is_length_exists:
+  assumes "\<not> Col PO E E'"
+  shows "\<exists> XY. IsLength PO E E' X Y XY" 
+proof(cases "X = Y")
+  {
+    assume "X = Y"
+    hence "IsLength PO E E' X Y PO"
+      by (simp add: IsLength_def length_id) 
+    thus "\<exists> XY. IsLength PO E E' X Y XY"
+      by auto 
+  }
+  show "X \<noteq> Y \<Longrightarrow> \<exists>XY. IsLength PO E E' X Y XY" 
+    using length_existence IsLength_def assms by blast
+qed
+
+(********************************************************)
+
+lemma lt_to_ltp:
+  assumes "Length PO E E' A B L"
+    and "Length PO E E' C D M" 
+    and "A B Lt C D"
+  shows "LtP PO E E' L M"
+  by (metis LeP_def Lt_def assms(1,2,3) length_eq_cong_1 length_leP_le_2) 
+
+lemma ltp_to_lep:
+  assumes "LtP PO E E' L M"
+  shows "LeP PO E E' L M"
+  by (simp add: LeP_def assms) 
+
+lemma ltp_to_lt:
+  assumes "Length PO E E' A B L"
+    and "Length PO E E' C D M" 
+    and "LtP PO E E' L M"
+  shows "A B Lt C D" 
+proof -
+  have "LeP PO E E' L M"
+    by (simp add: LeP_def assms(3)) 
+  have "A B Le C D"
+    using \<open>LeP PO E E' L M\<close> assms(1,2) length_leP_le_1 by auto 
+  moreover {
+    assume "Cong A B C D" 
+    hence "Length PO E E' C D L"
+      using assms(1) length_eq_cong_2 by blast 
+    hence "L = M" 
+      using length_uniqueness [of PO E E' C D L M] assms(2) by auto
+    hence False
+      using assms(3) ltP_neq by auto 
+  }
+  ultimately show ?thesis
+    using Lt_def by auto 
+qed
+
+lemma prod_col:
+  assumes "Ar2 PO E E' A B A"
+    and "Prod PO E E' A B AB"
+  shows "Col PO E AB"
+  using Ar2_def Prod_def assms(2) by auto 
+
+lemma square_increase_strict:
+  assumes "Ar2 PO E E' A B A"
+    and "Ps PO E A"
+    and "Ps PO E B" 
+    and "LtP PO E E' A B" 
+    and "Prod PO E E' A A A2"
+    and "Prod PO E E' B B B2" 
+  shows "LtP PO E E' A2 B2" 
+proof -
+  obtain BmA where "Diff PO E E' B A BmA"
+    using LtP_def assms(4) by blast
+  obtain BpA where "Sum PO E E' B A BpA"
+    by (meson \<open>Diff PO E E' B A BmA\<close> diff_ar2 sum3_def sum3_exists)
+  obtain B2mA2 where "Diff PO E E' B2 A2 B2mA2"
+    by (metis Ar2_def assms(1,5,6) diff_exists prod_col)
+  obtain F where "Prod PO E E' BpA BmA F"
+    by (metis Ar2_def Ps_def \<open>Diff PO E E' B A BmA\<close> \<open>Sum PO E E' B A BpA\<close>
+        assms(1,2,3,4) col_permutation_5 lt_diff_ps out_col prod_exists
+        sum_pos_pos)
+  thus ?thesis
+    by (metis LtP_def \<open>Diff PO E E' B A BmA\<close> \<open>Diff PO E E' B2 A2 B2mA2\<close>
+        \<open>Sum PO E E' B A BpA\<close> assms(2,3,4,5,6) diff_of_squares lt_diff_ps prod_pos_pos
+        sum_pos_pos) 
+qed
+
+lemma square_increase:
+  assumes "Ar2 PO E E' A B A"
+    and "Ps PO E A"
+    and "Ps PO E B" 
+    and "LeP PO E E' A B" 
+    and "Prod PO E E' A A A2"
+    and "Prod PO E E' B B B2" 
+  shows "LeP PO E E' A2 B2"
+  by (metis Ar2_def LeP_def assms(1,2,3,4,5,6) prod_uniqueness
+      square_increase_strict) 
+
+lemma signeq__prod_pos:
+  assumes "SignEq PO E A B"
+    and "Prod PO E E' A B C"
+  shows "Ps PO E C" 
+proof -
+  have "Ps PO E A \<and> Ps PO E B \<Longrightarrow> Ps PO E C"
+    using assms(2) prod_pos_pos by blast 
+  moreover {
+    assume "Ng PO E A" and "Ng PO E B"
+    obtain B' where "B B' Proj PO E' E E'"
+      using Prodp_def assms(2) prod_to_prodp by blast 
+    have "Bet B' PO E'"
+    proof -
+      have "Bet B PO E"
+        using Ng_def \<open>Ng PO E B\<close> by auto 
+      moreover have "PO PO Proj PO E' E E'"
+        by (metis Proj_def \<open>B B' Proj PO E' E E'\<close> not_col_distincts) 
+      moreover have "E E' Proj PO E' E E'"
+        by (metis Proj_def calculation(2) not_col_distincts par_reflexivity) 
+      ultimately show ?thesis
+        using \<open>B B' Proj PO E' E E'\<close> project_preserves_bet by blast 
+    qed
+    moreover have "Bet A PO C"
+    proof (rule project_preserves_bet [of E' PO B' _ PO E A E'])
+      show "E' \<midarrow> PO \<midarrow> B'"
+        using Bet_cases calculation by blast 
+      show "E' A Proj PO E A E'" 
+      proof -
+        have "PO \<noteq> E"
+          using Ng_def \<open>Ng PO E A\<close> by force 
+        moreover have "A \<noteq> E'"
+          using Ar2_def Prod_def assms(2) by auto 
+        moreover have "\<not> PO E Par A E'"
+          by (metis Ar2_def Prod_def assms(2) col_trivial_3 not_strict_par2) 
+        moreover have "E' A Par A E' \<or> E' = A"
+          using Par_cases par_reflexivity by blast 
+        ultimately show ?thesis
+          using Col_def Ng_def \<open>Ng PO E A\<close> par_col_project by force 
+      qed
+      show "PO PO Proj PO E A E'"
+        by (metis NCol_perm Proj_def \<open>E' A Proj PO E A E'\<close> col_trivial_1) 
+      show "B' C Proj PO E A E'"
+        using Prodp_def \<open>B B' Proj PO E' E E'\<close> assms(2) prod_to_prodp project_uniqueness
+        by blast 
+    qed
+    ultimately have "PO Out C E"
+      using Ng_def Out_def \<open>Ng PO E A\<close> \<open>Ng PO E B\<close> assms(2) l5_2 prod_null
+      by fastforce 
+    hence "Ps PO E C"
+      by (simp add: Ps_def) 
+  }
+  ultimately show ?thesis
+    using SignEq_def assms(1) by blast 
+qed
+
+lemma pos_neg__prod_neg:
+  assumes "Ps PO E A" 
+    and "Ng PO E B"
+    and "Prod PO E E' A B C"
+  shows "Ng PO E C" 
+proof -
+  obtain B' where "B B' Proj PO E' E E'" and "B' C Proj PO E A E'"
+    using Prodp_def assms(3) prod_to_prodp by blast
+  show ?thesis 
+  proof (unfold Ng_def, intro conjI)
+    show "C \<noteq> PO"
+      by (metis Ng_def O_not_positive assms(1,2,3) prod_null) 
+    show "E \<noteq> PO"
+      using Ng_def assms(2) by auto 
+    show "Bet C PO E" 
+    proof -
+      have "Bet A PO C"
+      proof (rule project_preserves_bet [of E' PO B' _ PO E A E'])
+        have "Bet B' PO E'"
+        proof (rule project_preserves_bet [of B PO E _ PO E' E E'])
+          show "B \<midarrow> PO \<midarrow> E"
+            using Ng_def assms(2) by auto 
+          show "B B' Proj PO E' E E'"
+            by (simp add: \<open>B B' Proj PO E' E E'\<close>) 
+          show "PO PO Proj PO E' E E'"
+            using Proj_def \<open>B B' Proj PO E' E E'\<close> col_trivial_3 by presburger 
+          show "E E' Proj PO E' E E'"
+            by (metis NCol_perm Proj_def \<open>PO PO Proj PO E' E E'\<close> col_trivial_3
+                par_reflexivity) 
+        qed
+        thus "E' \<midarrow> PO \<midarrow> B'"
+          using Bet_perm by blast 
+        show "E' A Proj PO E A E'"
+          by (metis Par_cases Prodp_def Proj_def assms(3) par_reflexivity
+              prod_to_prodp) 
+        show "PO PO Proj PO E A E'"
+          by (metis NCol_perm Proj_def \<open>E' A Proj PO E A E'\<close> col_trivial_1) 
+        show "B' C Proj PO E A E'"
+          by (simp add: \<open>B' C Proj PO E A E'\<close>) 
+      qed
+      thus ?thesis
+        using Bet_cases Ps_def assms(1) bet_out__bet by blast 
+    qed
+  qed
+qed
+
+lemma not_signEq_prod_neg:
+  assumes "A \<noteq> PO"
+    and "B \<noteq> PO"
+    and "\<not> SignEq PO E A B"
+    and "Prod PO E E' A B C"
+  shows "Ng PO E C"
+  by (metis Ar2_def Prod_def SignEq_def assms(1,2,3,4) col_pos_or_neg
+      pos_neg__prod_neg prod_1_r prod_O_r_eq prod_sym) 
+
+lemma prod_pos__signeq:
+  assumes "A \<noteq> PO"
+    and "B \<noteq> PO"
+    and "Prod PO E E' A B C"
+    and "Ps PO E C"
+  shows "SignEq PO E A B"
+  using assms(1,2,3,4) neg_not_pos not_signEq_prod_neg by blast 
+
+lemma prod_ng___not_signeq:
+  assumes (* "A \<noteq> PO"
+and "B \<noteq> PO"
+and*) "Prod PO E E' A B C"
+    and "Ng PO E C"
+  shows "\<not> SignEq PO E A B"
+  using assms(1,2) neg_not_pos signeq__prod_pos by blast 
+
+lemma ltp__diff_pos:
+  assumes "LtP PO E E' A B"
+    and "Diff PO E E' B A D"
+  shows "Ps PO E D"
+  using assms(1,2) lt_diff_ps by auto
+
+lemma diff_pos__ltp: 
+  assumes "Diff PO E E' B A D"
+    and "Ps PO E D"
+  shows "LtP PO E E' A B"
+  using LtP_def assms(1,2) by blast 
+
+lemma square_increase_rev:
+  assumes "Ps PO E A"
+    and "Ps PO E B"
+    and "LtP PO E E' A2 B2" 
+    and "Prod PO E E' A A A2"
+    and "Prod PO E E' B B B2" 
+  shows "LtP PO E E' A B"
+  by (metis Ar2_def LeP_def Prod_def assms(1,2,3,4,5) col_2_le_or_ge leP_asym
+      ltP_neq square_increase) 
+
+lemma ltp__ltps: 
+  assumes "LtP PO E E' A B"
+  shows "LtPs PO E E' A B"
+  using LtP_def LtPs_def assms diff_sum by blast 
+
+lemma ltps__ltp: 
+  assumes "LtPs PO E E' A B"
+  shows "LtP PO E E' A B"
+  using LtPs_def assms ltP_sum_pos by blast 
+
+lemma ltp__lep_neq:
+  assumes "LtP PO E E' A B"
+  shows "LeP PO E E' A B \<and> A \<noteq> B"
+  using assms ltP_neq ltp_to_lep by auto 
+
+lemma lep_neq__ltp:
+  assumes "LeP PO E E' A B"
+    and "A \<noteq> B"
+  shows "LtP PO E E' A B"
+  using LeP_def assms(1,2) by force 
+
+lemma sum_preserves_ltp:
+  assumes "LtP PO E E' A B"
+    and "Sum PO E E' A C AC"
+    and "Sum PO E E' B C BC"
+  shows "LtP PO E E' AC BC"
+  by (metis Ar2_def assms(1,2,3) compatibility_of_sum_with_order lep_neq__ltp
+      ltP_ar2 ltP_neq ltp_to_lep sum_uniquenessA) 
+
+lemma sum_preserves_lep: 
+  assumes "LeP PO E E' A B"
+    and "Sum PO E E' A C AC"
+    and "Sum PO E E' B C BC"
+  shows "LeP PO E E' AC BC"
+  using assms(1,2,3) compatibility_of_sum_with_order by blast 
+
+lemma sum_preserves_ltp_rev:
+  assumes "Sum PO E E' A C AC"
+    and "Sum PO E E' B C BC"
+    and "LtP PO E E' AC BC" 
+  shows "LtP PO E E' A B"
+  by (metis Ar2_def assms(1,2,3) col_2_le_or_ge leP_asym lep_neq__ltp ltP_neq
+      ltp_to_lep sum_ar2 sum_preserves_lep) 
+
+lemma sum_preserves_lep_rev:
+  assumes "Sum PO E E' A C AC"
+    and "Sum PO E E' B C BC"
+    and "LeP PO E E' AC BC"
+  shows "LeP PO E E' A B"
+  by (metis Ar2_def Sum_def assms(1,2,3) col_2_le_or_ge
+      compatibility_of_sum_with_order leP_asym sum_uniquenessA)
+
+lemma cong2_lea__le:
+  assumes "Cong A B D E"
+    and "Cong A C D F"
+    and "F D E LeA C A B"
+  shows "E F Le B C" 
+proof -
+  have "F D E LtA C A B \<or> F D E CongA C A B"
+    using LtA_def assms(3) by auto 
+  moreover have "F D E LtA C A B  \<Longrightarrow> E F Le B C"
+    using Lt_def assms(1,2) t18_18 by blast 
+  moreover have "F D E CongA C A B \<Longrightarrow> E F Le B C"
+    by (meson assms(1,2) cong2_conga_cong cong_4321 cong__le cong_symmetry) 
+  ultimately show ?thesis 
+    by blast
+qed
+
+lemma lea_out_lea:
+  assumes "B Out A A'"
+    and "B Out C C'"
+    and "E Out D D'"
+    and "E Out F F'"
+    and "A B C LeA D E F"
+  shows "A' B C' LeA D' E F'"
+  using assms(1,2,3,4,5) lea_out4__lea by blast 
+
+lemma lta_out_lta: 
+  assumes "B Out A A'"
+    and "B Out C C'"
+    and "E Out D D'"
+    and "E Out F F'"
+    and "A B C LtA D E F"
+  shows "A' B C' LtA D' E F'"
+  by (smt (verit) Out_def assms(1,2,3,4,5) lea_out_lea lta__nlea
+      nlta__lea)
+
+lemma pythagoras_obtuse:
+  assumes "PO \<noteq> E"
+    and "Obtuse A C B"
+    and "Length PO E E' A B AB"
+    and "Length PO E E' A C AC"
+    and "Length PO E E' B C BC"
+    and "Prod PO E E' AC AC AC2"
+    and "Prod PO E E' BC BC BC2"
+    and "Prod PO E E' AB AB AB2"
+    and "Sum PO E E' AC2 BC2 S2"
+  shows "LtP PO E E' S2 AB2" 
+proof -
+  obtain A' B' C' where "Per A' B' C'" and "A' B' C' LtA A C B"
+    using Obtuse_def assms(2) by blast 
+  obtain AA where "B' Out AA A'" and "Cong B' AA C A"
+    by (metis \<open>A' B' C' LtA A C B\<close> l6_11_existence lta_distincts) 
+  obtain CC where "B' Out CC C'" and "Cong B' CC C B"
+    by (metis \<open>A' B' C' LtA A C B\<close> l6_11_existence lta_distincts) 
+  have "AA CC Lt A B" 
+  proof (rule t18_18 [of C A B' AA B CC])
+    show "Cong C A B' AA"
+      using Cong_perm \<open>Cong B' AA C A\<close> by blast 
+    show "Cong C B B' CC"
+      using \<open>Cong B' CC C B\<close> not_cong_3412 by blast 
+    show "CC B' AA LtA B C A"
+      by (smt (verit, best) Out_cases \<open>A' B' C' LtA A C B\<close> \<open>B' Out AA A'\<close> \<open>B' Out CC C'\<close> 
+          lta_comm lta_distincts lta_out_lta out_trivial) 
+  qed
+  obtain S1 where "Length PO E E' AA CC S1"
+    by (metis \<open>A' B' C' LtA A C B\<close> assms(3) cong_identity length_Ar2 length_cong 
+        length_existence lta_distincts)
+  then obtain SS where "Prod PO E E' S1 S1 SS" 
+    using prod_exists [of PO E E' S1 S1] assms(4,6) col_trivial_3 length_Ar2 by blast 
+  have "B' \<noteq> C'"
+    using Out_def \<open>B' Out CC C'\<close> by force 
+  hence "Per A' B' CC" 
+    using per_col [of B' C' A' CC] \<open>B' Out CC C'\<close> \<open>Per A' B' C'\<close> col_permutation_5 
+      out_col by blast
+  have "B' \<noteq> A'"
+    using Out_def \<open>B' Out AA A'\<close> by blast 
+  hence "Per CC B' AA" 
+    using per_col [of B' A' CC AA] Out_cases \<open>B' Out AA A'\<close> \<open>Per A' B' CC\<close> l8_2 out_col by blast 
+  have "Sum PO E E' AC2 BC2 SS" 
+    using pythagoras [of _ _ AA B' CC _ S1 AC BC] by (meson Per_cases \<open>Cong B' AA C A\<close> 
+        \<open>Cong B' CC C B\<close> \<open>Length PO E E' AA CC S1\<close> \<open>Per CC B' AA\<close>
+        \<open>Prod PO E E' S1 S1 SS\<close> assms(1,4,5,6,7) cong_4321 length_eq_cong_2)
+  have "S2 = SS"
+    using \<open>Sum PO E E' AC2 BC2 SS\<close> assms(9) sum_stable by blast
+  moreover have "LtP PO E E' S1 AB"
+    using lt_to_ltp [of PO E E' AA CC S1 A B AB]
+    using \<open>AA CC Lt A B\<close> \<open>Length PO E E' AA CC S1\<close> assms(3) by blast
+  moreover have "Ps PO E S1"
+    by (metis \<open>A' B' C' LtA A C B\<close> \<open>Length PO E E' AA CC S1\<close> \<open>Prod PO E E' S1 S1 SS\<close> 
+        assms(4,5,6,7,9) calculation(1) length_id_1 length_pos lep_neq__ltp ltP_pos 
+        lta_distincts prod_O_l_eq square_pos sum_pos_pos) 
+  ultimately show ?thesis 
+    using square_increase_strict [of PO E E' S1 AB S2 AB2]
+    by (metis SignEq_def \<open>Prod PO E E' S1 S1 SS\<close> assms(3,8)
+        length_pos lep_neq__ltp ltP_ar2 ltP_neg ltP_pos pos_neg__prod_neg prod_ng___not_signeq) 
+qed
+
+lemma pythagoras_obtuse_or_per:
+  assumes "PO \<noteq> E"
+    and "Obtuse A C B \<or> Per A C B"
+    and "Length PO E E' A B AB"
+    and "Length PO E E' A C AC"
+    and "Length PO E E' B C BC"
+    and "Prod PO E E' AC AC AC2"
+    and "Prod PO E E' BC BC BC2"
+    and "Prod PO E E' AB AB AB2"
+    and "Sum PO E E' AC2 BC2 S2"
+  shows "LeP PO E E' S2 AB2" 
+proof -
+  have "Obtuse A C B \<Longrightarrow> LeP PO E E' S2 AB2"
+    using assms(1,3,4,5,6,7,8,9) ltp_to_lep pythagoras_obtuse by blast
+  moreover have  "Per A C B \<Longrightarrow> LeP PO E E' S2 AB2"
+    by (meson assms(1,3,4,5,6,7,8,9) leP_refl pythagoras sum_preserves_lep) 
+  ultimately show ?thesis
+    using assms(2) by blast
+qed
+
+lemma pythagoras_acute:
+  assumes "PO \<noteq> E"
+    and "Acute A C B"
+    and "Length PO E E' A B AB"
+    and "Length PO E E' A C AC"
+    and "Length PO E E' B C BC"
+    and "Prod PO E E' AC AC AC2"
+    and "Prod PO E E' BC BC BC2"
+    and "Prod PO E E' AB AB AB2"
+    and "Sum PO E E' AC2 BC2 S2"
+  shows "LtP PO E E' AB2 S2"
+proof (cases "A = B")
+  show "A = B \<Longrightarrow> LtP PO E E' AB2 S2"
+    by (smt (verit, ccfv_SIG) LtPs_def acute_distincts assms(1,2,3,4,5,6,7,8,9) between_trivial2
+        distr_r length_Ar2 length_id_1 ltps__ltp prod_0_r prod_sym square_pos sum_A_null 
+        sum_assoc_2 sum_pos_pos triangular_equality_bis) 
+  {
+    assume "A \<noteq> B"
+    obtain A' B' C' where "Per A' B' C'" and "A C B LtA A' B' C'"
+      using Acute_def assms(2) by blast 
+    have "A' \<noteq> B'" 
+      using \<open>A C B LtA A' B' C'\<close> lta_distincts by blast
+    then obtain AA where "B' Out AA A'" and "Cong B' AA C A"
+      by (metis assms(2) between_trivial2 flat_not_acute l6_11_existence) 
+    have "C' \<noteq> B'"
+      using \<open>A C B LtA A' B' C'\<close> lta_distincts by blast 
+    then obtain CC where "B' Out CC C'" and "Cong B' CC C B"
+      by (metis Out_def \<open>C' \<noteq> B'\<close> acute_col__out assms(2) l6_11_existence not_col_distincts) 
+    obtain S1 where "Length PO E E' AA CC S1"
+      using Ar2_def assms(9) length_existence sum_ar2 by presburger
+    obtain SS where "Prod PO E E' S1 S1 SS"
+      using Ar2_def Length_def Prod_def \<open>Length PO E E' AA CC S1\<close> assms(7) prod_exists
+      by presburger
+    have "Per A' B' CC" 
+    proof (rule per_col [of B' C' A' CC ], insert \<open>Per A' B' C'\<close>)
+      show "B' \<noteq> C'"
+        using \<open>C' \<noteq> B'\<close> by auto 
+      show "Col B' C' CC"
+        using Col_cases \<open>B' Out CC C'\<close> out_col by blast 
+    qed
+    have "Per CC B' AA"
+      using per_col [of _ A'] by (metis NCol_perm \<open>A' \<noteq> B'\<close> \<open>B' Out AA A'\<close> 
+          \<open>Per A' B' CC\<close> l8_2 out_col)
+    hence "A B Lt AA CC" 
+      using t18_18 [of B' AA C A CC B] by (metis Out_def \<open>B' Out AA A'\<close> \<open>B' Out CC C'\<close> 
+          \<open>Cong B' AA C A\<close> \<open>Cong B' CC C B\<close>  acute_per__lta acute_sym assms(2))
+    hence "LtP PO E E' AB S1" 
+      using lt_to_ltp [of PO E E' A B AB AA CC S1] \<open>Length PO E E' AA CC S1\<close> assms(3) by linarith 
+    show "LtP PO E E' AB2 S2"
+    proof (rule square_increase_strict [of PO E E' AB S1 AB2 S2], insert 
+        \<open>LtP PO E E' AB S1\<close> assms(8))
+      show "Ar2 PO E E' AB S1 AB"
+        by (simp add: \<open>LtP PO E E' AB S1\<close> ltP_ar2) 
+      show "Ps PO E AB"
+        by (metis \<open>A \<noteq> B\<close> assms(3) between_trivial2 length_out length_pos lep_neq__ltp ltP_pos
+            not_bet_and_out) 
+      show "Ps PO E S1"
+        by (metis \<open>A B Lt AA CC\<close> \<open>Length PO E E' AA CC S1\<close> length_Ps length_id lt_diff)
+      have "S2 = SS" 
+      proof (rule sum_uniqueness [of PO E E' AC2 BC2 S2 SS], insert assms(9))
+        show "\<not> Col PO E E'"
+          using Ar2_def \<open>Ar2 PO E E' AB S1 AB\<close> by blast 
+        show "Sum PO E E' AC2 BC2 SS" 
+          using pythagoras [of _ _ AA B' CC _ S1 AC BC]
+          by (meson Per_cases \<open>Cong B' AA C A\<close> \<open>Cong B' CC C B\<close> 
+              \<open>Length PO E E' AA CC S1\<close> \<open>Per CC B' AA\<close>
+              \<open>Prod PO E E' S1 S1 SS\<close> assms(1,4,5,6,7) cong_4321 length_eq_cong_2) 
+      qed
+      thus "Prod PO E E' S1 S1 S2"
+        by (simp add: \<open>Prod PO E E' S1 S1 SS\<close>) 
+    qed
+  }
+qed
+
+lemma pyth_context:
+  assumes "\<not> Col PO E E'"
+  shows "\<exists> AB BC AC AB2 BC2 AC2 SS. Col PO E AB \<and> Col PO E BC \<and> Col PO E AC \<and> 
+                                    Col PO E AB2 \<and> Col PO E BC2 \<and> Col PO E AC2 \<and>  
+                                    Length PO E E' A B AB \<and> Length PO E E' B C BC \<and> 
+                                    Length PO E E' A C AC \<and> Prod PO E E' AB AB AB2 \<and> 
+                                    Prod PO E E' BC BC BC2 \<and> Prod PO E E' AC AC AC2 \<and> 
+                                    Sum PO E E' AB2 BC2 SS" 
+proof -
+  obtain AB where "Length PO E E' A B AB"
+    using assms length_existence by blast 
+  obtain BC where "Length PO E E' B C BC" 
+    using assms length_existence by blast 
+  obtain AC where "Length PO E E' A C AC" 
+    using assms length_existence by blast 
+  have "Col PO E AB"
+    using Length_def \<open>Length PO E E' A B AB\<close> by auto 
+  then obtain AB2 where "Prod PO E E' AB AB AB2"
+    using assms prod_exists by blast 
+  hence "Col PO E AB2"
+    by (metis Ar2_def \<open>Col PO E AB\<close> assms prod_col) 
+  have "Col PO E BC" 
+    using Length_def \<open>Length PO E E' B C BC\<close> by auto 
+  then obtain BC2 where "Prod PO E E' BC BC BC2" 
+    using assms prod_exists by blast 
+  hence "Col PO E BC2"
+    by (metis Ar2_def \<open>Col PO E BC\<close> assms prod_col) 
+  have "Col PO E AC" 
+    using Length_def \<open>Length PO E E' A C AC\<close> by auto 
+  then obtain AC2 where "Prod PO E E' AC AC AC2"
+    using assms prod_exists by blast 
+  hence "Col PO E AC2"
+    by (metis Ar2_def \<open>Col PO E AC\<close> assms prod_col)
+  obtain SS where "Sum PO E E' AB2 BC2 SS"
+    using \<open>Col PO E AB2\<close> \<open>Col PO E BC2\<close> assms sum_exists by blast 
+  thus ?thesis
+    by (metis \<open>Col PO E AB2\<close> \<open>Col PO E AB\<close> \<open>Col PO E AC2\<close> \<open>Col PO E AC\<close> 
+        \<open>Col PO E BC2\<close> \<open>Col PO E BC\<close> \<open>Length PO E E' A B AB\<close> \<open>Length PO E E' A C AC\<close> 
+        \<open>Length PO E E' B C BC\<close> \<open>Prod PO E E' AB AB AB2\<close>
+        \<open>Prod PO E E' AC AC AC2\<close> \<open>Prod PO E E' BC BC BC2\<close>)  
+qed
+
+lemma length_pos_or_null:
+  assumes "Length PO E E' A B AB"
+  shows "Ps PO E AB \<or> A = B"
+  by (metis assms cong_identity length_Ps length_cong) 
+
+lemma sum_pos_null: 
+  assumes "\<not> Ng PO E A"
+    and "\<not> Ng PO E B"
+    and "Sum PO E E' A B PO"
+  shows "A = PO \<and> B = PO"
+  by (metis Ar2_def O_not_positive assms(1,2,3) col_pos_or_neg col_trivial_1 sum_A_null 
+      sum_B_null sum_ar2 sum_pos_pos)
+
+lemma length_not_neg:
+  assumes "Length PO E E' A B AB"
+  shows "\<not> Ng PO E AB"
+  by (metis Ng_def assms cong_reverse_identity length_cong length_pos_or_null neg_not_pos) 
+
+lemma signEq_refl:
+  assumes "PO \<noteq> E"
+    and "Col PO E A"
+  shows "A = PO \<or> SignEq PO E A A"
+  by (metis SignEq_def assms(1,2) col_pos_or_neg) 
+
+lemma square_not_neg:
+  assumes "Prod PO E E' A A A2"
+  shows "\<not> Ng PO E A2"
+  by (metis Ng_def assms pos_not_neg prod_O_r_eq square_pos) 
+
+lemma root_uniqueness:
+  assumes "\<not> Ng PO E A"
+    and "\<not> Ng PO E B"
+    and "Prod PO E E' A A C"
+    and "Prod PO E E' B B C"
+  shows "A = B"
+  by (metis Ar2_def Prod_def assms(1,2,3,4) col_pos_or_neg eq_squares_eq_or_opp 
+      opp_pos_neg prod_1_r prod_O_r_eq) 
+
+lemma inter_tangent_circle:
+  assumes "P \<noteq> Q"
+    and "Cong P PO Q PO"
+    and "Col P PO Q"
+    and "P M Le P PO"
+    and "Q M Le Q PO"
+  shows "M = PO" 
+proof -
+  have "P = Q \<or> PO Midpoint P Q"
+    using assms(2,3) cong_commutativity l7_20_bis by blast
+  moreover 
+  { 
+    assume "PO Midpoint P Q"
+    obtain A where "Bet PO A P" and "Cong P M PO A"
+      using Le_def assms(4) le_right_comm by blast 
+    obtain B where "Bet PO B Q" and "Cong Q M PO B"
+      using Le_cases Le_def assms(5) by blast 
+    have "P Q Le A B" 
+      using triangle_inequality_2 [of A PO B P M Q] by (meson Bet_cases \<open>Cong P M PO A\<close> 
+          \<open>Cong Q M PO B\<close> \<open>PO Midpoint P Q\<close> \<open>PO \<midarrow> A \<midarrow> P\<close> \<open>PO \<midarrow> B \<midarrow> Q\<close>
+          between_exchange3 midpoint_bet not_cong_4312 not_cong_4321)
+    have "A B Le P Q"
+      by (meson \<open>PO Midpoint P Q\<close> \<open>PO \<midarrow> A \<midarrow> P\<close> \<open>PO \<midarrow> B \<midarrow> Q\<close> bet2_le2__le2356_R1 
+          between_exchange2 between_inner_transitivity between_symmetry 
+          between_trivial2 l5_12_a midpoint_bet) 
+    have "Cong A B P Q"
+      by (simp add: \<open>A B Le P Q\<close> \<open>P Q Le A B\<close> le_anti_symmetry) 
+    hence "M = PO"
+      by (smt (verit) Bet_cases Col_def Cong_cases Midpoint_def \<open>Cong P M PO A\<close> \<open>Cong Q M PO B\<close>
+          \<open>PO Midpoint P Q\<close> \<open>PO \<midarrow> A \<midarrow> P\<close> \<open>PO \<midarrow> B \<midarrow> Q\<close> assms(1) bet_cong_eq between_exchange3
+          between_exchange4 l4_18) 
+  }
+  ultimately show ?thesis 
+    using assms(1) by blast
+qed
+
+lemma inter_circle_per:
+  assumes "Cong P A Q A"
+    and "P M Le P A" 
+    and "Q M Le Q A"
+    and "A T Projp P Q"
+    and "Per P T M"
+  shows "T M Le T A" 
+proof (cases "P = T")
+  have " \<not> (Bet TPA TPB TPC \<or> Bet TPB TPC TPA \<or> Bet TPC TPA TPB)"
+    by (simp add: lower_dim)
+  let ?O = "TPA" and ?E = "TPB" and ?E' = "TPC"
+  have "\<not> Col ?O ?E ?E'"
+    by (simp add: Col_def \<open>\<not> ((TPA \<midarrow> TPB \<midarrow> TPC) \<or> (TPB \<midarrow> TPC \<midarrow> TPA) \<or> (TPC \<midarrow> TPA \<midarrow> TPB))\<close>)
+  show "P = T \<Longrightarrow> T M Le T A"
+    using assms(2) by auto 
+  {
+    assume "P \<noteq> T"
+    have "Col P Q T \<and> P Q Perp A T \<or> Col P Q A \<and> A = T"
+      using Projp_def assms(4) by presburger 
+    moreover {
+      assume "Col P Q T" and "P Q Perp A T"
+      have "Per P T A"
+        using Per_perm \<open>Col P Q T\<close> \<open>P Q Perp A T\<close> col_trivial_3 l8_16_1 by blast 
+      obtain PT TA AP PT2 TA2 AP2 SS where "Col ?O ?E PT" and "Col ?O ?E TA" and 
+        "Col ?O ?E AP" and "Col ?O ?E PT2" and "Col ?O ?E TA2" and "Col ?O ?E AP2" and 
+        "Length ?O ?E ?E' P T PT" and "Length ?O ?E ?E' T A TA" and 
+        "Length ?O ?E ?E' P A AP" and "Prod ?O ?E ?E' PT PT PT2" and 
+        "Prod ?O ?E ?E' TA TA TA2" and "Prod ?O ?E ?E' AP AP AP2" and 
+        "Sum ?O ?E ?E' PT2 TA2 SS" 
+        using pyth_context [of ?O ?E ?E'] \<open>\<not> Col ?O ?E ?E'\<close> by metis
+      have "Sum ?O ?E ?E' PT2 TA2 AP2" 
+        using pythagoras [of ?O ?E P T A ?E' AP PT TA PT2 TA2 AP2] 
+          \<open>Length TPA TPB TPC P A AP\<close> \<open>Length TPA TPB TPC P T PT\<close> 
+          \<open>Length TPA TPB TPC T A TA\<close> \<open>Per P T A\<close> \<open>Prod TPA TPB TPC AP AP AP2\<close> 
+          \<open>Prod TPA TPB TPC PT PT PT2\<close> \<open>Prod TPA TPB TPC TA TA TA2\<close>
+          between_trivial2 length_sym lower_dim by blast 
+      hence "SS = AP2"
+        using \<open>Sum TPA TPB TPC PT2 TA2 SS\<close> sum_stable by blast 
+      obtain PT' TM PM PT2' TM2 PM2 SS' where "Col ?O ?E PT'" and "Col ?O ?E TM" and 
+        "Col ?O ?E PM" and "Col ?O ?E PT2'" and "Col ?O ?E TM2" and "Col ?O ?E PM2" and 
+        "Length ?O ?E ?E' P T PT'" and "Length ?O ?E ?E' T M TM" and 
+        "Length ?O ?E ?E' P M PM" and "Prod ?O ?E ?E' PT' PT' PT2'" and 
+        "Prod ?O ?E ?E' TM TM TM2" and "Prod ?O ?E ?E' PM PM PM2" and 
+        "Sum ?O ?E ?E' PT2' TM2 SS'" 
+        using pyth_context [of ?O ?E ?E'] \<open>\<not> Col ?O ?E ?E'\<close> by metis
+      hence "PT = PT'"
+        using \<open>Length TPA TPB TPC P T PT\<close> length_uniqueness by blast
+      hence "PT2 = PT2'"
+        using \<open>Prod TPA TPB TPC PT PT PT2\<close> \<open>Prod TPA TPB TPC PT' PT' PT2'\<close> \<open>\<not> Col TPA TPB TPC\<close>
+          prod_uniqueness by blast
+      have "Sum ?O ?E ?E' PT2 TM2 PM2" 
+        using pythagoras [of ?O ?E P T M ?E' PM PT TM PT2 TM2 PM2] 
+          \<open>Length TPA TPB TPC P M PM\<close> \<open>Length TPA TPB TPC P T PT\<close>
+          \<open>Length TPA TPB TPC T M TM\<close> \<open>Prod TPA TPB TPC PM PM PM2\<close>
+          \<open>Prod TPA TPB TPC PT PT PT2\<close> \<open>Prod TPA TPB TPC TM TM TM2\<close> assms(5) between_trivial
+          length_sym lower_dim by blast
+      have "SS' = PM2"
+        using \<open>PT2 = PT2'\<close> \<open>Sum TPA TPB TPC PT2 TM2 PM2\<close> \<open>Sum TPA TPB TPC PT2' TM2 SS'\<close>
+          \<open>\<not> Col TPA TPB TPC\<close> sum_uniqueness by blast
+      have "T M Le T A" 
+      proof (cases "T = M")
+        show "T = M \<Longrightarrow> T M Le T A"
+          by (simp add: le_trivial) 
+        show "T \<noteq> M \<Longrightarrow> T M Le T A"
+          by (meson \<open>Per P T A\<close> assms(2,5) cong_lt_per2__lt cong_reflexivity lt__nle
+              nlt__le) 
+      qed
+    }
+    moreover have "Col P Q A \<and> A = T \<Longrightarrow> T M Le T A"
+      by (metis Col_cases Projp_def assms(1,2,3,4) inter_tangent_circle
+          le_reflexivity)
+    ultimately show "T M Le T A" 
+      by blast
+  }
+qed
+
+lemma inter_circle_obtuse:
+  assumes "Cong P A Q A "
+    and "P M Le P A"
+    and "Q M Le Q A"
+    and "A T Projp P Q"
+    and "Obtuse P T M \<or> Per P T M"
+  shows "T M Le T A" 
+proof (cases "P = T")
+  have " \<not> (Bet TPA TPB TPC \<or> Bet TPB TPC TPA \<or> Bet TPC TPA TPB)"
+    by (simp add: lower_dim)
+  let ?O = "TPA" and ?E = "TPB" and ?E' = "TPC"
+  have "\<not> Col ?O ?E ?E'"
+    by (simp add: Col_def \<open>\<not> ((TPA \<midarrow> TPB \<midarrow> TPC) \<or> (TPB \<midarrow> TPC \<midarrow> TPA) \<or> (TPC \<midarrow> TPA \<midarrow> TPB))\<close>)
+  show "P = T \<Longrightarrow> T M Le T A"
+    using assms(2) by auto 
+  {
+    assume "P \<noteq> T"
+    have "?O \<noteq> ?E"
+      using \<open>\<not> ((TPA \<midarrow> TPB \<midarrow> TPC) \<or> (TPB \<midarrow> TPC \<midarrow> TPA) \<or> (TPC \<midarrow> TPA \<midarrow> TPB))\<close>
+        not_bet_distincts by blast 
+    have "Per P T A"
+      by (metis Per_cases Projp_def assms(4) l8_16_1 l8_5 not_col_distincts) 
+    obtain PT TA AP PT2 TA2 AP2 SS where "Col ?O ?E PT" and "Col ?O ?E TA" and 
+      "Col ?O ?E AP" and "Col ?O ?E PT2" and "Col ?O ?E TA2" and "Col ?O ?E AP2" and 
+      "Length ?O ?E ?E' P T PT" and "Length ?O ?E ?E' T A TA" and 
+      "Length ?O ?E ?E' P A AP" and "Prod ?O ?E ?E' PT PT PT2" and 
+      "Prod ?O ?E ?E' TA TA TA2" and "Prod ?O ?E ?E' AP AP AP2" and 
+      "Sum ?O ?E ?E' PT2 TA2 SS" 
+      using pyth_context [of ?O ?E ?E'] \<open>\<not> Col ?O ?E ?E'\<close> by metis
+    have "Sum ?O ?E ?E' PT2 TA2 AP2" 
+      using pythagoras [of ?O ?E P T A ?E' AP PT TA PT2 TA2 AP2] 
+        \<open>Length TPA TPB TPC P A AP\<close> \<open>Length TPA TPB TPC P T PT\<close> 
+        \<open>Length TPA TPB TPC T A TA\<close> \<open>Per P T A\<close>
+        \<open>Prod TPA TPB TPC AP AP AP2\<close> \<open>Prod TPA TPB TPC PT PT PT2\<close> \<open>Prod TPA TPB TPC TA TA TA2\<close>
+        between_trivial2 length_sym lower_dim by blast 
+    hence "SS = AP2"
+      using \<open>Sum TPA TPB TPC PT2 TA2 SS\<close> sum_stable by blast 
+    obtain PT' TM PM PT2' TM2 PM2 SS' where "Col ?O ?E PT'" and "Col ?O ?E TM" and 
+      "Col ?O ?E PM" and "Col ?O ?E PT2'" and "Col ?O ?E TM2" and "Col ?O ?E PM2" and 
+      "Length ?O ?E ?E' P T PT'" and "Length ?O ?E ?E' T M TM" and 
+      "Length ?O ?E ?E' P M PM" and "Prod ?O ?E ?E' PT' PT' PT2'" and 
+      "Prod ?O ?E ?E' TM TM TM2" and "Prod ?O ?E ?E' PM PM PM2" and 
+      "Sum ?O ?E ?E' PT2' TM2 SS'" 
+      using pyth_context [of ?O ?E ?E'] \<open>\<not> Col ?O ?E ?E'\<close> by metis
+    hence "PT = PT'"
+      using \<open>Length TPA TPB TPC P T PT\<close> length_uniqueness by blast
+    hence "PT2 = PT2'"
+      using \<open>Prod TPA TPB TPC PT PT PT2\<close> \<open>Prod TPA TPB TPC PT' PT' PT2'\<close> \<open>\<not> Col TPA TPB TPC\<close>
+        prod_uniqueness by blast
+    have "LeP ?O ?E ?E' SS' PM2"
+      using pythagoras_obtuse_or_per [of ?O ?E P T M ?E' PM PT TM PT2 TM2 PM2 SS'] 
+      by (simp add: \<open>Length TPA TPB TPC P M PM\<close> \<open>Length TPA TPB TPC P T PT'\<close>
+          \<open>Length TPA TPB TPC T M TM\<close> \<open>PT = PT'\<close> \<open>PT2 = PT2'\<close> \<open>Prod TPA TPB TPC PM PM PM2\<close>
+          \<open>Prod TPA TPB TPC PT' PT' PT2'\<close> \<open>Prod TPA TPB TPC TM TM TM2\<close>
+          \<open>Sum TPA TPB TPC PT2' TM2 SS'\<close> \<open>TPA \<noteq> TPB\<close> assms(5) length_sym) 
+    show "T M Le T A" 
+    proof (cases "T = M")
+      show "T = M \<Longrightarrow> T M Le T A"
+        by (simp add: le_trivial) 
+      {
+        assume "T \<noteq> M"
+        show "T M Le T A" 
+        proof (cases "P = M")
+          show "P = M \<Longrightarrow> T M Le T A"
+            using \<open>T \<noteq> M\<close> assms(5) l8_8 obtuse_distincts by blast
+          {
+            assume "P \<noteq> M"
+            have "LeP ?O ?E ?E' PM AP" 
+              using length_leP_le_2 [of ?O ?E ?E' P M PM P A AP] 
+              by (simp add: \<open>Length TPA TPB TPC P A AP\<close> \<open>Length TPA TPB TPC P M PM\<close>
+                  assms(2)) 
+            have "Ar2 ?O ?E ?E' PM AP PM"
+              by (simp add: Ar2_def \<open>Col TPA TPB AP\<close> \<open>Col TPA TPB PM\<close>
+                  \<open>\<not> Col TPA TPB TPC\<close>) 
+            moreover have "Ps ?O ?E PM" 
+            proof -
+              have "P = M \<Longrightarrow> Ps ?O ?E PM"
+                by (simp add: \<open>P \<noteq> M\<close>) 
+              thus ?thesis
+                by (meson \<open>Length TPA TPB TPC P M PM\<close> length_pos_or_null) 
+            qed
+            moreover 
+            have "P = A \<Longrightarrow> Ps ?O ?E AP"
+              using \<open>P \<noteq> T\<close> \<open>Per P T A\<close> l8_8 by blast
+            hence "Ps ?O ?E AP"
+              using \<open>Length TPA TPB TPC P A AP\<close> length_pos_or_null by blast 
+            ultimately have "LeP ?O ?E ?E' PM2 AP2" 
+              using square_increase [of ?O ?E ?E' PM AP PM PM2] \<open>LeP TPA TPB TPC PM AP\<close> 
+                \<open>Prod TPA TPB TPC AP AP AP2\<close>
+                \<open>Prod TPA TPB TPC PM PM PM2\<close> square_increase by blast 
+            have "LeP ?O ?E ?E' SS' AP2"
+              using \<open>LeP TPA TPB TPC PM2 AP2\<close> \<open>LeP TPA TPB TPC SS' PM2\<close> leP_trans by blast
+            have "LeP ?O ?E ?E' TM2 TA2"
+              by (metis \<open>Col TPA TPB TA2\<close> \<open>Col TPA TPB TM2\<close> \<open>LeP TPA TPB TPC SS' AP2\<close> 
+                  \<open>PT2 = PT2'\<close> \<open>SS = AP2\<close> \<open>Sum TPA TPB TPC PT2 TA2 SS\<close> 
+                  \<open>Sum TPA TPB TPC PT2' TM2 SS'\<close>
+                  \<open>\<not> Col TPA TPB TPC\<close> col_2_le_or_ge leP_asym sum_comm sum_preserves_lep
+                  sum_uniquenessB)
+            have "T = M \<Longrightarrow> Ps ?O ?E TM"
+              using \<open>T \<noteq> M\<close> by blast 
+            hence "Ps ?O ?E TM"
+              using \<open>Length TPA TPB TPC T M TM\<close> length_pos_or_null by blast 
+            have "Ps ?O ?E TA"
+              by (metis NCol_perm Ng_def Out_def Ps_def \<open>Col TPA TPB TA\<close> 
+                  \<open>LeP TPA TPB TPC TM2 TA2\<close>
+                  \<open>Length TPA TPB TPC T A TA\<close> \<open>Prod TPA TPB TPC TA TA TA2\<close>
+                  \<open>Prod TPA TPB TPC TM TM TM2\<close> \<open>Ps TPA TPB TM\<close> \<open>\<not> Col TPA TPB TPC\<close> leP_asym
+                  length_not_neg or_bet_out prod_O_l_eq prod_pos_pos ps_le)
+            have "LeP ?O ?E ?E' TM TA"
+              by (metis LeP_def \<open>LeP TPA TPB TPC TM2 TA2\<close> \<open>Prod TPA TPB TPC TA TA TA2\<close>
+                  \<open>Prod TPA TPB TPC TM TM TM2\<close> \<open>Ps TPA TPB TA\<close> \<open>Ps TPA TPB TM\<close> pos_not_neg
+                  root_uniqueness square_increase_rev)
+            have "A T Projp P Q"
+              by (simp add: assms(4)) 
+            hence "(Col P Q T \<and> P Q Perp A T) \<or> (Col P Q A \<and> A = T)"
+              using Projp_def by auto
+            moreover {
+              assume "Col P Q T" and "P Q Perp A T"
+              have "T M Le T A" 
+                using length_leP_le_1 [of ?O ?E ?E' _ _ TM _ _ TA]
+                using \<open>LeP TPA TPB TPC TM TA\<close> \<open>Length TPA TPB TPC T A TA\<close>
+                  \<open>Length TPA TPB TPC T M TM\<close> by blast    
+            }
+            moreover {
+              assume "Col P Q A" and "A = T"
+              have "T M Le T A" 
+              proof -
+                have "(Col P A Q \<and> P M Le P A \<and> Q M Le Q A) \<longrightarrow> M = A"
+                  by (metis Projp_def assms(1,4) inter_tangent_circle) 
+                hence "M = A"
+                  using Col_cases \<open>Col P Q A\<close> assms(2,3) by blast  
+                thus ?thesis
+                  using \<open>A = T\<close> \<open>T \<noteq> M\<close> by auto 
+              qed
+            }
+            ultimately show "T M Le T A"
+              by blast
+          }
+        qed
+      }
+    qed
+  }
+qed
+
+lemma circle_projp_between:
+  assumes "Cong P A Q A"
+    and "A T Projp P Q"
+  shows "Bet P T Q" 
+proof (cases "P = T")
+  show "P = T \<Longrightarrow> (P \<midarrow> T \<midarrow> Q)"
+    using not_bet_distincts by blast 
+  {
+    assume "P \<noteq> T"
+    have "Col P Q T \<and> P Q Perp A T \<or> Col P Q A \<and> A = T"
+      using Projp_def assms(2) by auto 
+    moreover {
+      assume "Col P Q T" and "P Q Perp A T"
+      hence "Per A T P"
+        using col_trivial_3 l8_16_1 by blast
+      obtain T' where "T' Midpoint P Q"
+        using midpoint_existence by blast
+      hence "Per A T' P"
+        using Per_def assms(1) cong_commutativity by blast
+      have "T' = T \<or> \<not> Col T P Q"
+        by (metis Projp_def \<open>P \<noteq> T\<close> \<open>Per A T P\<close> \<open>Per A T' P\<close> \<open>T' Midpoint P Q\<close> assms(2)
+            col_per2_cases midpoint_col midpoint_distinct_1) 
+      moreover have "T' = T \<Longrightarrow> Bet P T Q"
+        using \<open>T' Midpoint P Q\<close> midpoint_bet by blast 
+      moreover have "\<not> Col T P Q \<Longrightarrow> Bet P T Q"
+        using Col_cases \<open>Col P Q T\<close> by auto 
+      ultimately have "Bet P T Q"  
+        by blast
+    }
+    moreover have "Col P Q A \<and> A = T \<Longrightarrow> Bet P T Q"
+      by (metis NCol_perm Projp_def assms(1,2) bet_cong_eq between_trivial col_bet2_cong1
+          col_trivial_2 cong_identity third_point) 
+    ultimately show "P \<midarrow> T \<midarrow> Q" 
+      by blast
+  }
+qed
+
+lemma inter_circle:
+  assumes "Cong P A Q A"
+    and "P M Le P A"
+    and "Q M Le Q A"
+    and "A T Projp P Q"
+  shows "T M Le T A" 
+proof (cases "T = M")
+  have "Bet P T Q"
+    using assms(1,4) circle_projp_between by auto
+  show "T = M \<Longrightarrow> T M Le T A"
+    using le_trivial by blast 
+  {
+    assume "T \<noteq> M"
+    show "T M Le T A" 
+    proof (cases "P = T")
+      show "P = T \<Longrightarrow> T M Le T A"
+        using assms(2) by blast 
+      {
+        assume "P \<noteq> T"
+        hence "Acute P T M \<or> Per P T M \<or> Obtuse P T M"
+          using \<open>T \<noteq> M\<close> angle_partition by auto 
+        show "T M Le T A"
+        proof (cases "Q = T")
+          show "Q = T \<Longrightarrow> T M Le T A"
+            using assms(3) by auto 
+          {
+            assume "Q \<noteq> T"
+            {
+              assume "Acute P T M"
+              have "Obtuse Q T M"
+                using \<open>Acute P T M\<close> \<open>P \<midarrow> T \<midarrow> Q\<close> \<open>Q \<noteq> T\<close> acute_bet__obtuse by blast
+              moreover have "A T Projp Q P"
+                by (metis Col_cases Perp_cases Projp_def assms(4)) 
+              ultimately have "T M Le T A"
+                using Cong_cases assms(1,2,3) inter_circle_obtuse by blast 
+            }
+            moreover have "Per P T M \<Longrightarrow> T M Le T A"
+              using assms(1,2,3,4) inter_circle_per by blast 
+            moreover have "Obtuse P T M \<Longrightarrow> T M Le T A"
+              using assms(1,2,3,4) inter_circle_obtuse by blast 
+            ultimately show "T M Le T A"
+              using \<open>Acute P T M \<or> Per P T M \<or> Obtuse P T M\<close> by blast 
+          }
+        qed
+      }
+    qed
+  }
+qed
+
+lemma projp_lt:
+  assumes "Cong P A Q A"
+    and "A T Projp P Q"
+  shows "T A Lt P A" 
+proof -
+  have "Col P Q T \<and> P Q Perp A T \<or> Col P Q A \<and> A = T"
+    using Projp_def assms(2) by auto 
+  moreover {
+    assume "Col P Q T" and "P Q Perp A T"
+    have ?thesis
+    proof (cases "P = T")
+      show "P = T \<Longrightarrow> T A Lt P A"
+        by (metis Perp_cases \<open>P Q Perp A T\<close> assms(1) cong__nlt l11_46 l8_16_1
+            not_col_distincts) 
+      show "P \<noteq> T \<Longrightarrow> T A Lt P A"
+        by (metis Lt_cases \<open>Col P Q T\<close> \<open>P Q Perp A T\<close> col_trivial_3 l8_16_1 per_lt) 
+    qed
+  } 
+  moreover have "Col P Q A \<and> A = T \<Longrightarrow> ?thesis"
+    by (metis Projp_def assms(1,2) cong_reverse_identity lt1123) 
+  ultimately show ?thesis 
+    by blast
+qed
+
+lemma Ps_Col:
+  assumes "Ps PO E A"
+  shows "Col PO E A"
+  using Col_cases Ps_def assms out_col by blast 
+
+lemma PythRel_exists:
+  assumes "\<not> Col PO E  E'"
+  shows "\<forall> A B. Col PO E A \<and> Col PO E B \<longrightarrow> (\<exists> C. PythRel PO E E' A B C)" 
+proof -
+  {
+    fix A B
+    assume "Col PO E A" and "Col PO E B"
+    have "\<exists> C. PythRel PO E E' A B C" 
+    proof (cases "B = PO")
+      show "B = PO \<Longrightarrow> \<exists> C. PythRel PO E E' A B C"
+        using Ar2_def PythRel_def \<open>Col PO E A\<close> assms col_trivial_3 by auto 
+      {
+        assume "B \<noteq> PO"
+        obtain X where "PO X Perp E PO"
+          using Perp_cases assms l8_21_aux by blast 
+        obtain B' where "Bet PO X B' \<or> Bet PO B' X" and "Cong PO B' PO B"
+          by (metis \<open>PO X Perp E PO\<close> perp_distinct segment_construction_2)
+        obtain C where "Bet PO E C \<or> Bet PO C E" and "Cong PO C A B'"
+          by (metis segment_construction segment_construction_2)
+        have "Col PO E C"
+          using Bet_cases Col_def \<open>(PO \<midarrow> E \<midarrow> C) \<or> (PO \<midarrow> C \<midarrow> E)\<close> by blast
+        moreover have "PO B' Perp PO B \<and> Cong PO B' PO B \<and> Cong PO C A B'"
+          by (metis Col_cases Col_def \<open>B \<noteq> PO\<close> \<open>Col PO E B\<close> \<open>Cong PO B' PO B\<close> \<open>Cong PO C A B'\<close>
+              \<open>PO X Perp E PO\<close> \<open>(PO \<midarrow> X \<midarrow> B') \<or> (PO \<midarrow> B' \<midarrow> X)\<close> col_trivial_2 
+              cong_reverse_identity perp_col0)
+        hence "PO = B \<and> (A = C \<or> Opp PO E E' A C) \<or> 
+                 (\<exists> B'0. PO B'0 Perp PO B \<and> Cong PO B'0 PO B \<and> Cong PO C A B'0)" 
+          by blast
+        ultimately have "PythRel PO E E' A B C"
+          by (simp add: assms \<open>Col PO E A\<close> \<open>Col PO E B\<close> Ar2_def PythRel_def) 
+        thus "\<exists> C. PythRel PO E E' A B C" 
+          by fast
+      }
+    qed
+  }
+  thus ?thesis
+    by blast
+qed
+
+lemma opp_same_square:
+  assumes "Opp PO E E' A B"
+    and "Prod PO E E' A A A2"
+  shows "Prod PO E E' B B A2" 
+proof -
+  obtain ME where "Opp PO E E' E ME"
+    using Ar2_def Prod_def assms(2) col_trivial_2 opp_exists by presburger
+  hence "Prod PO E E' A ME B"
+    using assms(1) opp_prod by blast
+  moreover have "Prod PO E E' B ME A"
+    by (meson Ar2_def Prod_def \<open>Opp PO E E' E ME\<close> assms(1) opp_comm opp_prod)
+  hence "Prod PO E E' ME B A"
+    by (simp add: prod_sym)
+  ultimately show ?thesis
+    using assms(2) prod_assoc by blast 
+qed
+
+(**********)
+
+lemma PythOK:
+  assumes "PythRel PO E E' A B C"
+    and "Prod PO E E' A A A2"
+    and "Prod PO E E' B B B2"
+    and "Prod PO E E' C C C2"
+  shows "Sum PO E E' A2 B2 C2" 
+proof -
+  have "PO \<noteq> E"
+    using Ar2_def PythRel_def assms(1) col_trivial_1 by force 
+  have "PO = B \<and> 
+        (A = C \<or> Opp PO E E' A C) \<or> (\<exists> B'. PO B' Perp PO B \<and> Cong PO B' PO B \<and> Cong PO C A B')"
+    using PythRel_def assms(1) by auto 
+  moreover { 
+    assume "PO = B" and "A = C \<or> Opp PO E E' A C"
+    hence "PO = B2"
+      using assms(3) prod_O_l_eq by blast 
+    have "A = C \<Longrightarrow> A2 = C2"
+      by (metis Ar2_def Prod_def assms(2,4) prod_uniqueness) 
+    moreover have "Opp PO E E' A C \<Longrightarrow> A2 = C2"
+      by (meson Ar2_def PythRel_def assms(1,2,4) opp_same_square prod_uniqueness) 
+    ultimately have "A2 = C2"
+      using \<open>A = C \<or> Opp PO E E' A C\<close> by blast 
+    hence "Col PO E A2"
+      by (metis Col_def Ps_Col assms(4) between_trivial prod_O_r_eq
+          square_pos) 
+    hence "Sum PO E E' A2 B2 C2"
+      using Ar2_def PythRel_def \<open>A2 = C2\<close> \<open>PO = B2\<close> assms(1) sum_A_O by auto 
+  }
+  moreover {
+    assume "\<exists> B'. PO B' Perp PO B \<and> Cong PO B' PO B \<and> Cong PO C A B'"
+    then obtain B' where "PO B' Perp PO B" and "Cong PO B' PO B" and "Cong PO C A B'"
+      by blast
+    have "Per A PO B'" 
+    proof -
+      have "PO \<noteq> B"
+        using \<open>PO B' Perp PO B\<close> perp_distinct by blast 
+      moreover have "Per B' PO B"
+        by (simp add: \<open>PO B' Perp PO B\<close> perp_per_2) 
+      moreover have "Col PO B A"
+        using Ar2_def PythRel_def \<open>PO \<noteq> E\<close> assms(1) col_transitivity_1 by presburger 
+      ultimately show ?thesis
+        using Per_cases per_col by blast 
+    qed
+    have "Sum PO E E' A2 B2 C2"
+    proof (cases "A = PO")
+      {
+        assume "A = PO"
+        hence "Cong PO B PO C"
+          using \<open>\<exists>B'. PO B' Perp PO B \<and> Cong PO B' PO B \<and> Cong PO C A B'\<close>
+            cong_inner_transitivity cong_symmetry by blast 
+        have "B = C \<or> PO Midpoint B C" 
+          using l7_20 [of B PO C] Ar2_def PythRel_def \<open>Cong PO B PO C\<close> \<open>PO \<noteq> E\<close> 
+            assms(1) col_permutation_4 col_transitivity_1 by presburger 
+        moreover {
+          assume "B = C"
+          have "B2 = C2" 
+            using prod_uniqueness [of PO E E' B B B2 C2] Ar2_def PythRel_def \<open>B = C\<close> 
+              assms(1,3,4) by presburger
+          have "A2 = PO" 
+            using prod_uniqueness [of PO E E' PO PO A2 PO] \<open>A = PO\<close> assms(2) prod_O_l_eq by blast 
+          have "Col PO E B2"
+            by (metis Ps_Col assms(3) grid_not_par_5 prod_O_r_eq square_pos) 
+          hence "Sum PO E E' A2 B2 C2"
+            using Ar2_def PythRel_def \<open>A2 = PO\<close> \<open>B2 = C2\<close> assms(1) sum_O_B by auto 
+        }
+        moreover {
+          assume "PO Midpoint B C"
+          have "A2 = PO" 
+            using prod_uniqueness [of PO E E' PO PO A2 PO] \<open>A = PO\<close> assms(2) prod_O_l_eq by blast 
+          have "Ar2 PO E E' PO B C"
+            using PythRel_def \<open>A = PO\<close> assms(1) by blast
+          hence "Opp PO E E' B C"
+            by (simp add: \<open>PO Midpoint B C\<close> midpoint_opp) 
+          have "C2 = B2" 
+            using prod_uniqueness [of PO E E' C C C2 B2] Ar2_def \<open>Ar2 PO E E' PO B C\<close> 
+              \<open>Opp PO E E' B C\<close> assms(3,4) opp_same_square
+            by presburger
+          have "Col PO E B2"
+            by (metis Col_def Ps_Col \<open>C2 = B2\<close> assms(4) between_trivial2 prod_O_r_eq
+                square_pos) 
+          hence "Sum PO E E' A2 B2 C2"
+            using Ar2_def \<open>A2 = PO\<close> \<open>Ar2 PO E E' PO B C\<close> \<open>C2 = B2\<close> sum_O_B by presburger 
+        }
+        ultimately show "Sum PO E E' A2 B2 C2" 
+          by blast
+      }
+      {
+        assume "A \<noteq> PO"
+        show "Sum PO E E' A2 B2 C2" 
+        proof (cases "PO Out A E")
+          {
+            assume "PO Out A E"
+            show "Sum PO E E' A2 B2 C2" 
+            proof (cases "PO Out B E")
+              {
+                assume "PO Out B E"
+                show "Sum PO E E' A2 B2 C2" 
+                proof (cases "PO Out C E")
+                  {
+                    assume "PO Out C E"
+                    show "Sum PO E E' A2 B2 C2" 
+                    proof (rule pythagoras [of _ _ A PO B' _ C A B], insert \<open>PO \<noteq> E\<close> 
+                        \<open>Per A PO B'\<close>assms(2,3,4))
+                      have "LeP PO E E' PO C"
+                      proof -
+                        have "Diff PO E E' C PO C"
+                          using Ar2_def Prod_def assms(4) diff_A_O by presburger 
+                        moreover have "Ps PO E C"
+                          by (simp add: Ps_def \<open>PO Out C E\<close>) 
+                        ultimately show ?thesis
+                          by (simp add: diff_pos__ltp ltp_to_lep) 
+                      qed
+                      thus "Length PO E E' A B' C"
+                        by (meson Length_def NCol_cases \<open>Cong PO C A B'\<close> \<open>PO Out C E\<close> \<open>PO \<noteq> E\<close>
+                            out_col) 
+                      show "Length PO E E' A PO A"
+                        by (metis Ar2_def Cong_cases Length_def Out_def PythRel_def 
+                            \<open>PO Out A E\<close> assms(1)
+                            cong_reflexivity ps_le) 
+                      show "Length PO E E' B' PO B"
+                        by (metis Length_def Out_def \<open>Cong PO B' PO B\<close> \<open>Length PO E E' A B' C\<close> 
+                            \<open>PO Out B E\<close> \<open>PO Out C E\<close> cong_3421 length_Ar2 out_col ps_le) 
+                    qed
+                  }
+                  {
+                    assume "\<not> PO Out C E"
+                    obtain OC where "Opp PO E E' C OC"
+                      by (meson Ar2_def Diff_def Prod_def assms(4) diff_null) 
+                    have "Ng PO E C"
+                      by (metis Col_def Ps_def SignEq_def \<open>A \<noteq> PO\<close> \<open>Cong PO C A B'\<close> \<open>Per A PO B'\<close>
+                          \<open>\<not> PO Out C E\<close> assms(4) between_trivial2 cong_reverse_identity 
+                          not_signEq_prod_neg per_not_col square_not_neg)
+                    hence "Ps PO E OC"
+                      using \<open>Opp PO E E' C OC\<close> opp_neg_pos by auto
+                    show "Sum PO E E' A2 B2 C2" 
+                    proof (rule pythagoras [of _ _ A PO B' _ OC A B], insert \<open>PO \<noteq> E\<close> 
+                        \<open>Per A PO B'\<close> assms(2,3))
+                      show "Length PO E E' A B' OC" 
+                      proof -
+                        have "Col PO E OC"
+                          by (simp add: Ps_Col \<open>Ps PO E OC\<close>) 
+                        moreover have "LeP PO E E' PO OC"
+                          by (metis Ar2_def Prod_def Ps_def \<open>Ps PO E OC\<close> assms(2) 
+                              calculation not_bet_and_out ps_le third_point) 
+                        moreover have "Cong PO OC A B'" 
+                        proof -
+                          have "PO Midpoint C OC" 
+                            using opp_midpoint \<open>Opp PO E E' C OC\<close> by auto 
+                          thus ?thesis
+                            using Cong_cases Midpoint_def \<open>Cong PO C A B'\<close> cong_inner_transitivity
+                            by blast 
+                        qed
+                        ultimately show ?thesis
+                          by (simp add: Length_def \<open>PO \<noteq> E\<close>) 
+                      qed
+                      show "Length PO E E' A PO A"
+                        using Ar2_def Length_def Out_def Prod_def \<open>PO Out A E\<close> assms(2)
+                          cong_pseudo_reflexivity ps_le by force 
+                      show "Length PO E E' B' PO B"
+                        by (metis Ar2_def Length_def Out_def Prod_def \<open>Cong PO B' PO B\<close> 
+                            \<open>PO Out B E\<close> assms(3) cong_3421 ps_le) 
+                      show "Prod PO E E' OC OC C2"
+                        using \<open>Opp PO E E' C OC\<close> assms(4) opp_same_square by auto 
+                    qed
+                  }
+                qed
+              }
+              {
+                assume "\<not> PO Out B E"
+                obtain OB where "Opp PO E E' B OB"
+                  using Ar2_def Prod_def assms(3) opp_exists by presburger 
+                    (*319*)
+                have "Ng PO E B"
+                  by (metis Ps_def SignEq_def
+                      \<open>\<exists>B'. PO B' Perp PO B \<and> Cong PO B' PO B \<and> Cong PO C A B'\<close> 
+                      \<open>\<not> PO Out B E\<close> assms(3) not_col_distincts not_signEq_prod_neg 
+                      perp_not_col2 square_not_neg)
+                hence "Ps PO E OB"
+                  using \<open>Opp PO E E' B OB\<close> opp_neg_pos by auto 
+                {
+                  assume "PO Out C E"
+                  have "Sum PO E E' A2 B2 C2" 
+                  proof (rule pythagoras [of _ _ A PO B' _ C A OB], insert \<open>PO \<noteq> E\<close> 
+                      \<open>Per A PO B'\<close> assms(2,4))
+                    have "LeP PO E E' PO C" 
+                    proof -
+                      have "PO Out OB E"
+                        using Ps_def \<open>Ps PO E OB\<close> by auto 
+                      have "LtP PO E E' PO C" 
+                      proof -
+                        have "Diff PO E E' C PO C"
+                          using Ar2_def Prod_def assms(4) diff_A_O by presburger 
+                        moreover have "Ps PO E C"
+                          by (simp add: Ps_def \<open>PO Out C E\<close>) 
+                        ultimately show ?thesis
+                          using diff_pos__ltp by blast 
+                      qed
+                      thus ?thesis
+                        using ltp_to_lep by auto 
+                    qed
+                    thus "Length PO E E' A B' C"
+                      by (metis Length_def Ps_Col \<open>Cong PO C A B'\<close> \<open>PO \<noteq> E\<close> length_O lep_neq__ltp
+                          ltP_pos) 
+                    show "Length PO E E' A PO A"
+                      by (metis Ar2_def Cong_cases Length_def Out_def PythRel_def 
+                          \<open>PO Out A E\<close> assms(1) cong_reflexivity ps_le) 
+                    show "Length PO E E' B' PO OB" 
+                    proof -
+                      have "LeP PO E E' PO OB"
+                        using Ar2_def Out_def Ps_def PythRel_def \<open>Ps PO E OB\<close> 
+                          assms(1) ps_le by force 
+                      moreover have "PO Midpoint B OB" 
+                        using opp_midpoint \<open>Opp PO E E' B OB\<close> by auto 
+                      hence "Cong PO OB B' PO" 
+                        by (meson Midpoint_def \<open>Cong PO B' PO B\<close> cong_4312 cong_inner_transitivity) 
+                      moreover have "Prod PO E E' OB OB B2"
+                        using \<open>Opp PO E E' B OB\<close> assms(3) opp_same_square by blast 
+                      ultimately show ?thesis
+                        by (simp add: Length_def Ps_Col \<open>PO \<noteq> E\<close> \<open>Ps PO E OB\<close>) 
+                    qed
+                    show "Prod PO E E' OB OB B2"
+                      using \<open>Opp PO E E' B OB\<close> assms(3) opp_same_square by blast 
+                  qed
+                }
+                moreover {
+                  assume "\<not> PO Out C E"
+                  obtain OC where "Opp PO E E' C OC"
+                    using Ar2_def Prod_def assms(4) opp_exists by presburger 
+                  have "Ng PO E C"
+                    by (metis Ps_def SignEq_def \<open>A \<noteq> PO\<close> \<open>Cong PO C A B'\<close> \<open>Per A PO B'\<close> 
+                        \<open>\<not> PO Out C E\<close> assms(4) cong_reverse_identity l8_20_1_R1 l8_7 
+                        not_signEq_prod_neg square_not_neg) 
+                  hence "Ps PO E OC"
+                    using \<open>Opp PO E E' C OC\<close> opp_neg_pos by auto
+                  obtain OB where "Opp PO E E' B OB"
+                    using \<open>Opp PO E E' B OB\<close> by auto
+                  have "Ps PO E OB"
+                    using \<open>Ng PO E B\<close> \<open>Opp PO E E' B OB\<close> opp_neg_pos by auto
+                  have "Sum PO E E' A2 B2 C2"
+                  proof (rule pythagoras [of _ _ A PO B' _ OC A OB], insert \<open>PO \<noteq> E\<close> 
+                      \<open>Per A PO B'\<close> assms(2))
+                    show "Length PO E E' A B' OC" 
+                    proof -
+                      have "Col PO E OC"
+                        by (simp add: Ps_Col \<open>Ps PO E OC\<close>) 
+                      moreover have "LeP PO E E' PO OC"
+                        by (meson Ar2_def Ps_def PythRel_def \<open>Ps PO E OC\<close> assms(1) calculation
+                            not_bet_and_out ps_le third_point) 
+                      moreover have "PO Midpoint C OC" 
+                        using opp_midpoint  \<open>Opp PO E E' C OC\<close> by auto 
+                      hence "Cong PO OC A B'"
+                        using Cong_cases Midpoint_def \<open>Cong PO C A B'\<close> cong_inner_transitivity
+                        by blast 
+                      ultimately show ?thesis
+                        by (simp add: Length_def \<open>PO \<noteq> E\<close>) 
+                    qed
+                    show "Length PO E E' A PO A"
+                      using Ar2_def Length_def Out_def Prod_def \<open>PO Out A E\<close> assms(2)
+                        cong_pseudo_reflexivity ps_le by auto 
+                    show "Length PO E E' B' PO OB" 
+                    proof -
+                      have "LeP PO E E' PO OB"
+                        using Ar2_def Out_def Prod_def Ps_def \<open>Ps PO E OB\<close> assms(2) ps_le by force 
+                      moreover have "PO Midpoint B OB"
+                        using opp_midpoint \<open>Opp PO E E' B OB\<close> by blast 
+                      hence "Cong PO OB B' PO"
+                        by (meson Midpoint_def \<open>Cong PO B' PO B\<close> cong_4312 cong_inner_transitivity) 
+                      ultimately show ?thesis
+                        by (simp add: Length_def Ps_Col \<open>PO \<noteq> E\<close> \<open>Ps PO E OB\<close>) 
+                    qed
+                    show "Prod PO E E' OB OB B2"
+                      using \<open>Opp PO E E' B OB\<close> assms(3) opp_same_square by blast 
+                    show "Prod PO E E' OC OC C2"
+                      using \<open>Opp PO E E' C OC\<close> assms(4) opp_same_square by auto 
+                  qed
+                }
+                ultimately show "Sum PO E E' A2 B2 C2" 
+                  by blast
+              }
+            qed
+          }
+          {
+            assume "\<not> PO Out A E"
+            show "Sum PO E E' A2 B2 C2" 
+            proof (cases "PO Out B E")
+              {
+                assume "PO Out B E"
+                show "Sum PO E E' A2 B2 C2" 
+                proof (cases "PO Out C E")
+                  {
+                    assume "PO Out C E"
+                    obtain OA where "Opp PO E E' A OA"
+                      by (meson Ar2_def Diff_def Prod_def assms(2) diff_null)
+                    have "Ng PO E A"
+                      by (metis Ps_def SignEq_def \<open>A \<noteq> PO\<close> \<open>\<not> PO Out A E\<close> assms(2) 
+                          not_signEq_prod_neg square_not_neg) 
+                    show "Sum PO E E' A2 B2 C2" 
+                    proof (rule pythagoras [of _ _ A PO B' _ C OA B], insert \<open>PO \<noteq> E\<close> 
+                        \<open>Per A PO B'\<close> assms(3,4))
+                      show "Length PO E E' A B' C"
+                        using Ar2_def Length_def Out_def Prod_def \<open>Cong PO C A B'\<close> 
+                          \<open>PO Out C E\<close> assms(4) ps_le by force 
+                      show "Length PO E E' A PO OA" 
+                      proof -
+                        have "Col PO E OA"
+                          using Ps_Col \<open>Ng PO E A\<close> \<open>Opp PO E E' A OA\<close> opp_neg_pos by blast 
+                        moreover have "LtP PO E E' PO OA"
+                          by (metis Ar2_def Out_def Ps_def \<open>Ng PO E A\<close> \<open>Opp PO E E' A OA\<close> 
+                              diff_O_A diff_ar2 lep_neq__ltp opp_neg_pos ps_le) 
+                        ultimately show ?thesis
+                          by (meson Length_def Opp_def \<open>Opp PO E E' A OA\<close> \<open>PO \<noteq> E\<close> l15_3
+                              ltp_to_lep not_cong_4321) 
+                      qed
+                      show "Length PO E E' B' PO B"
+                        by (metis Ar2_def Length_def Out_def Prod_def \<open>Cong PO B' PO B\<close> 
+                            \<open>PO Out B E\<close> assms(3) cong_3421 ps_le) 
+                      show "Prod PO E E' OA OA A2"
+                        using \<open>Opp PO E E' A OA\<close> assms(2) opp_same_square by force 
+                    qed
+                  }
+                  {
+                    assume "\<not> PO Out C E"
+                    obtain OC where "Opp PO E E' C OC"
+                      by (meson Diff_def Prod_def assms(4) sum_diff sum3_def sum3_exists)
+                    have "Ng PO E C"
+                      by (metis Ps_def SignEq_def \<open>A \<noteq> PO\<close> \<open>Cong PO C A B'\<close> \<open>Per A PO B'\<close> 
+                          \<open>\<not> PO Out C E\<close> assms(4) cong_reverse_identity not_col_distincts 
+                          not_signEq_prod_neg per_not_col square_not_neg) 
+                    hence "Ps PO E OC"
+                      using \<open>Opp PO E E' C OC\<close> opp_neg_pos by auto
+                    obtain OA where "Opp PO E E' A OA"
+                      by (meson Diff_def Prod_def assms(2) sum_diff sum3_def sum3_exists) 
+                    have "Ng PO E A"
+                      by (metis Ps_def SignEq_def \<open>A \<noteq> PO\<close> \<open>\<not> PO Out A E\<close> assms(2) 
+                          not_signEq_prod_neg square_not_neg) 
+                    show "Sum PO E E' A2 B2 C2" 
+                    proof (rule pythagoras [of _ _ A PO B' _ OC OA B], insert \<open>PO \<noteq> E\<close> 
+                        \<open>Per A PO B'\<close> assms(3))
+                      show "Length PO E E' A B' OC" 
+                      proof (unfold Length_def, intro strip conjI, insert \<open>PO \<noteq> E\<close>)
+                        show "Col PO E OC"
+                          by (simp add: Ps_Col \<open>Ps PO E OC\<close>) 
+                        show "LeP PO E E' PO OC"
+                          by (metis Ar2_def Prod_def Ps_def \<open>Col PO E OC\<close> \<open>Ps PO E OC\<close> 
+                              assms(2) not_bet_and_out ps_le third_point) 
+                        have "PO Midpoint C OC"
+                          using opp_midpoint \<open>Opp PO E E' C OC\<close> by blast 
+                        thus "Cong PO OC A B'"
+                          using Cong_cases Midpoint_def \<open>Cong PO C A B'\<close> cong_inner_transitivity
+                          by blast 
+                      qed
+                      show "Length PO E E' A PO OA" 
+                      proof -
+                        have "LeP PO E E' PO OA"
+                          by (meson Ar2_def Out_def Prod_def Ps_def \<open>Ng PO E A\<close> 
+                              \<open>Opp PO E E' A OA\<close> assms(2) opp_neg_pos ps_le) 
+                        moreover have "Cong PO OA A PO"
+                          using Cong_cases Opp_def \<open>Opp PO E E' A OA\<close> l15_3 by blast 
+                        ultimately show ?thesis
+                          by (metis Length_def Ps_Col \<open>A \<noteq> PO\<close> \<open>Ng PO E A\<close> \<open>Opp PO E E' A OA\<close> 
+                              \<open>PO \<noteq> E\<close> neg_not_pos pos_null_neg) 
+                      qed
+                      show "Length PO E E' B' PO B"
+                        by (metis Ar2_def Length_def Out_def Prod_def \<open>Cong PO B' PO B\<close> 
+                            \<open>PO Out B E\<close> assms(3) cong_3421 ps_le) 
+                      show "Prod PO E E' OA OA A2"
+                        using \<open>Opp PO E E' A OA\<close> assms(2) opp_same_square by auto 
+                      show "Prod PO E E' OC OC C2"
+                        using \<open>Opp PO E E' C OC\<close> assms(4) opp_same_square by auto 
+                    qed
+                  }
+                qed
+              }
+              {
+                assume "\<not> PO Out B E"
+                show "Sum PO E E' A2 B2 C2" 
+                proof (cases "PO Out C E")
+                  {
+                    assume "PO Out C E"
+                    obtain OB where "Opp PO E E' B OB"
+                      by (metis Diff_def Prod_def assms(3) sum_diff sum3_def sum3_exists) 
+                    have "Ng PO E B"
+                      by (metis Ps_def SignEq_def \<open>PO B' Perp PO B\<close> \<open>\<not> PO Out B E\<close> assms(3)
+                          not_signEq_prod_neg perp_not_eq_2 square_not_neg)
+                    hence "Ps PO E OB"
+                      using \<open>Opp PO E E' B OB\<close> opp_neg_pos by blast 
+                    obtain OA where "Opp PO E E' A OA"
+                      by (meson Diff_def Prod_def assms(2) sum_diff sum3_def sum3_exists) 
+                    have "Ng PO E A"
+                      by (metis Ps_def SignEq_def \<open>A \<noteq> PO\<close> \<open>\<not> PO Out A E\<close> assms(2) 
+                          not_signEq_prod_neg square_not_neg) 
+                    show "Sum PO E E' A2 B2 C2" 
+                    proof (rule pythagoras [of _ _ A PO B' _ C OA OB], insert \<open>PO \<noteq> E\<close> 
+                        \<open>Per A PO B'\<close> assms(4))
+                      have "LtP PO E E' PO C"
+                        by (metis Ar2_def Out_def PythRel_def \<open>PO Out C E\<close> assms(1) lep_neq__ltp
+                            ps_le) 
+                      thus "Length PO E E' A B' C"
+                        by (simp add: Length_def Ps_Col \<open>Cong PO C A B'\<close> \<open>PO \<noteq> E\<close> 
+                            ltP_pos ltp_to_lep) 
+                      show "Length PO E E' A PO OA"
+                      proof -
+                        have "LtP PO E E' PO OA"
+                          by (metis Ar2_def Out_def Ps_def \<open>LtP PO E E' PO C\<close> \<open>Ng PO E A\<close> 
+                              \<open>Opp PO E E' A OA\<close> lep_neq__ltp ltP_ar2 opp_neg_pos ps_le) 
+                        moreover have "Cong PO OA A PO"
+                          using Cong_cases Opp_def \<open>Opp PO E E' A OA\<close> l15_3 by blast 
+                        ultimately show ?thesis
+                          by (simp add: Length_def Ps_Col \<open>PO \<noteq> E\<close> ltP_pos ltp_to_lep) 
+                      qed
+                      show "Length PO E E' B' PO OB" 
+                      proof -
+                        have "LtP PO E E' PO OB"
+                          by (metis Ar2_def Out_def Prod_def Ps_def \<open>Ps PO E OB\<close> assms(4)
+                              lep_neq__ltp ps_le) 
+                        moreover have "Cong PO OB B' PO"
+                          by (metis Cong_cases Midpoint_def \<open>Cong PO B' PO B\<close> \<open>Opp PO E E' B OB\<close>
+                              cong_inner_transitivity opp_midpoint) 
+                        ultimately show ?thesis
+                          by (simp add: Length_def Ps_Col \<open>PO \<noteq> E\<close> \<open>Ps PO E OB\<close> ltp_to_lep) 
+                      qed
+                      show "Prod PO E E' OA OA A2"
+                        using \<open>Opp PO E E' A OA\<close> assms(2) opp_same_square by blast 
+                      show "Prod PO E E' OB OB B2"
+                        using \<open>Opp PO E E' B OB\<close> assms(3) opp_same_square by auto 
+                    qed
+                  }
+                  {
+                    assume "\<not> PO Out C E"
+                    obtain OC where "Opp PO E E' C OC"
+                      by (meson Diff_def Prod_def assms(4) sum_diff sum3_def sum3_exists)
+                    have "Ng PO E C"
+                      by (metis Ar2_def Ng_def Out_def PythRel_def \<open>A \<noteq> PO\<close> \<open>Cong PO C A B'\<close> 
+                          \<open>Per A PO B'\<close> \<open>\<not> PO Out C E\<close> assms(1) cong_reverse_identity 
+                          not_col_distincts per_not_col third_point)
+                    hence "Ps PO E OC"
+                      using \<open>Opp PO E E' C OC\<close> opp_neg_pos by auto 
+                    obtain OA where "Opp PO E E' A OA"
+                      by (meson Diff_def Prod_def assms(2) sum_diff sum3_def sum3_exists) 
+                    have "Ng PO E A"
+                      by (metis Ps_def SignEq_def \<open>A \<noteq> PO\<close> \<open>\<not> PO Out A E\<close> assms(2) 
+                          not_signEq_prod_neg square_not_neg) 
+                    obtain OB where "Opp PO E E' B OB"
+                      by (meson Ar2_def Diff_def Prod_def assms(3) diff_null) 
+                    have "Ng PO E B"
+                      by (metis Ps_def SignEq_def \<open>PO B' Perp PO B\<close> \<open>\<not> PO Out B E\<close> assms(3)
+                          not_col_distincts not_signEq_prod_neg perp_not_col2 square_not_neg)
+                    hence "Ps PO E OB"
+                      using \<open>Opp PO E E' B OB\<close> opp_neg_pos by auto 
+                    show "Sum PO E E' A2 B2 C2" 
+                    proof (rule pythagoras [of _ _ A PO B' _ OC OA OB], insert \<open>PO \<noteq> E\<close> 
+                        \<open>Per A PO B'\<close>)
+                      show "Length PO E E' A B' OC" 
+                      proof -
+                        have "Col PO E OC"
+                          by (simp add: Ps_Col \<open>Ps PO E OC\<close>) 
+                        moreover have "LeP PO E E' PO OC"
+                          by (metis Ar2_def Ps_def PythRel_def \<open>Ps PO E OC\<close> assms(1) calculation
+                              not_bet_and_out ps_le third_point) 
+                        moreover have "Cong PO OC A B'"
+                          by (metis Cong_cases Opp_def \<open>Cong PO C A B'\<close> \<open>Opp PO E E' C OC\<close> 
+                              cong_transitivity l15_3) 
+                        ultimately show ?thesis
+                          by (simp add: Length_def \<open>PO \<noteq> E\<close>) 
+                      qed
+                      show "Length PO E E' A PO OA" 
+                      proof -
+                        have "LtP PO E E' PO OA"
+                          by (metis Ar2_def Out_def Prod_def Ps_def \<open>Ng PO E A\<close> 
+                              \<open>Opp PO E E' A OA\<close> assms(2) lep_neq__ltp 
+                              opp_neg_pos ps_le) 
+                        moreover have "Cong PO OA A PO"
+                          using Cong_cases Opp_def \<open>Opp PO E E' A OA\<close> l15_3 by blast 
+                        ultimately show ?thesis
+                          by (simp add: Length_def Ps_Col \<open>PO \<noteq> E\<close> ltP_pos ltp_to_lep) 
+                      qed
+                      show "Length PO E E' B' PO OB" 
+                      proof -
+                        have "LtP PO E E' PO OB"
+                          by (metis Ar2_def Out_def Ps_def \<open>Opp PO E E' B OB\<close> \<open>Ps PO E OB\<close>
+                              diff_O_A diff_ar2 lep_neq__ltp ps_le) 
+                        moreover have "Cong PO OB B' PO"
+                          by (metis Cong_cases Midpoint_def \<open>Cong PO B' PO B\<close> \<open>Opp PO E E' B OB\<close>
+                              cong_inner_transitivity opp_midpoint) 
+                        ultimately show ?thesis
+                          by (simp add: Length_def Ps_Col \<open>PO \<noteq> E\<close> \<open>Ps PO E OB\<close> ltp_to_lep) 
+                      qed
+                      show "Prod PO E E' OA OA A2"
+                        using \<open>Opp PO E E' A OA\<close> assms(2) opp_same_square by auto 
+                      show "Prod PO E E' OB OB B2"
+                        using \<open>Opp PO E E' B OB\<close> assms(3) opp_same_square by blast 
+                      show "Prod PO E E' OC OC C2"
+                        using \<open>Opp PO E E' C OC\<close> assms(4) opp_same_square by auto 
+                    qed
+                  }
+                qed
+              }
+            qed
+          }
+        qed
+      }
+    qed
+  }
+  ultimately show ?thesis 
+    by blast
+qed
+
+lemma PythRel_uniqueness:
+  assumes "PythRel PO E E' A B C1"
+    and "PythRel PO E E' A B C2"
+    and "(Ps PO E C1 \<and> Ps PO E C2) \<or> C1 = PO"
+  shows "C1 = C2" 
+proof -
+  have "\<not> Col PO E E'"
+    using Ar2_def PythRel_def assms(1) by presburger 
+  have "Col PO E A"
+    using Ar2_def PythRel_def assms(1) by presburger 
+  have "Col PO E B"
+    using Ar2_def PythRel_def assms(1) by presburger 
+  have "Col PO E C1"
+    using Ps_Col assms(3) col_trivial_3 by blast 
+  have "Col PO E C2"
+    using Ar2_def PythRel_def assms(2) by presburger
+  have "PO = B \<and> 
+        (A = C1 \<or> Opp PO E E' A C1) \<or> (\<exists> B'. PO B' Perp PO B \<and> Cong PO B' PO B \<and> Cong PO C1 A B')"
+    using PythRel_def assms(1) by auto 
+  moreover 
+  have "PO = B \<and> 
+        (A = C2 \<or> Opp PO E E' A C2) \<or> (\<exists> B'. PO B' Perp PO B \<and> Cong PO B' PO B \<and> Cong PO C2 A B')"
+    using PythRel_def assms(2) by presburger
+  moreover
+  {
+    assume "PO = B" and  "A = C1 \<or> Opp PO E E' A C1" and "A = C2 \<or> Opp PO E E' A C2"
+    moreover have "A = C1 \<and> A = C2 \<Longrightarrow> C1 = C2"
+      by auto 
+    moreover have "A = C1 \<and> Opp PO E E' A C2 \<Longrightarrow> C1 = C2"
+      using \<open>\<not> Col PO E E'\<close> assms(3) neg_not_pos opp0_uniqueness pos_opp_neg by blast 
+    moreover have "Opp PO E E' A C1 \<and> A = C2 \<Longrightarrow> C1 = C2"
+      by (metis \<open>\<not> Col PO E E'\<close> assms(3) not_pos_and_neg opp0_uniqueness opp_comm opp_pos_neg) 
+    moreover have "Opp PO E E' A C1 \<and> Opp PO E E' A C2 \<Longrightarrow> C1 = C2"
+      using \<open>\<not> Col PO E E'\<close> opp_uniqueness by blast 
+    ultimately have "C1 = C2" 
+      by argo
+  }
+  moreover {
+    assume "PO = B" and "A = C1 \<or> Opp PO E E' A C1" and 
+      "\<exists> B'. PO B' Perp PO B \<and> Cong PO B' PO B \<and> Cong PO C2 A B'"
+    moreover {
+      assume "A = C1" and "\<exists> B'. PO B' Perp PO B \<and> Cong PO B' PO B \<and> Cong PO C2 A B'"
+      then obtain B' where "PO B' Perp PO B" and "Cong PO B' PO B" and "Cong PO C2 A B'"
+        by blast 
+      hence "C1 = C2"
+        using calculation(1) perp_distinct by blast
+    }
+    moreover {
+      assume "Opp PO E E' A C1" and "\<exists> B'. PO B' Perp PO B \<and> Cong PO B' PO B \<and> Cong PO C2 A B'" 
+      then obtain B' where "PO B' Perp PO B" and "Cong PO B' PO B" and "Cong PO C2 A B'"
+        by blast 
+      hence "C1 = C2"
+        using calculation(1) perp_distinct by blast 
+    }
+    ultimately have "C1 = C2"
+      by argo
+  }
+  moreover {
+    assume "\<exists> B'. PO B' Perp PO B \<and> Cong PO B' PO B \<and> Cong PO C1 A B'" and "PO = B" and 
+      "A = C2 \<or> Opp PO E E' A C2"
+    then obtain B' where "PO B' Perp PO B" and "Cong PO B' PO B" and "Cong PO C1 A B'"
+      by blast 
+    hence "C1 = C2"
+      using \<open>PO = B\<close> perp_not_eq_2 by blast 
+  }
+  moreover {
+    assume "\<exists> B'. PO B' Perp PO B \<and> Cong PO B' PO B \<and> Cong PO C1 A B'" and 
+      "\<exists> B'. PO B' Perp PO B \<and> Cong PO B' PO B \<and> Cong PO C2 A B'"
+    then obtain B1 where "PO B1 Perp PO B" and "Cong PO B1 PO B" and "Cong PO C1 A B1"
+      by blast 
+    obtain B2 where "PO B2 Perp PO B" and "Cong PO B2 PO B" and "Cong PO C2 A B2"
+      using \<open>\<exists>B'. PO B' Perp PO B \<and> Cong PO B' PO B \<and> Cong PO C2 A B'\<close> by blast
+    have "Cong PO B1 PO B2"
+      by (meson \<open>Cong PO B1 PO B\<close> \<open>Cong PO B2 PO B\<close> cong_4312 cong_inner_transitivity) 
+    have "Col PO B1 B2"
+      using \<open>PO B1 Perp PO B\<close> \<open>PO B2 Perp PO B\<close> perp2__col by auto 
+    hence "B1 = B2 \<or> PO Midpoint B1 B2"
+      using \<open>Cong PO B1 PO B2\<close> col_permutation_4 l7_20_bis by blast
+    moreover {
+      assume "B1 = B2"
+      hence "Cong PO C2 PO C1"
+        using Cong_cases \<open>Cong PO C1 A B1\<close> \<open>Cong PO C2 A B2\<close> cong_inner_transitivity by blast 
+      have "C1 = C2 \<or> PO Midpoint C1 C2"
+        by (metis Mid_perm \<open>Col PO E C1\<close> \<open>Col PO E C2\<close> \<open>Cong PO C2 PO C1\<close> \<open>\<not> Col PO E E'\<close> 
+            bet_col between_trivial col_transitivity_1 l7_20 not_col_permutation_4)
+      moreover {
+        assume "PO Midpoint C1 C2"
+        hence " Ps PO E C1 \<and> Ps PO E C2 \<Longrightarrow> C1 = C2"
+          by (meson Bet_cases Midpoint_def Ps_def bet_out__bet not_bet_and_out) 
+        moreover have "C1 = PO \<Longrightarrow> C1 = C2"
+          using \<open>Cong PO C2 PO C1\<close> cong_diff by blast 
+        ultimately have "C1 = C2"
+          using assms(3) by blast 
+      }
+      ultimately have "C1 = C2" 
+        by argo
+    }
+    moreover {
+      assume "PO Midpoint B1 B2"
+      have "C1 = C2" 
+      proof (cases "A = PO") 
+        {
+          assume "A = PO"
+          hence "Cong PO C1 PO C2"
+            by (metis Cong_cases \<open>Cong PO B1 PO B2\<close> \<open>Cong PO C1 A B1\<close> \<open>Cong PO C2 A B2\<close> 
+                cong_inner_transitivity)
+          thus "C1 = C2"
+            by (metis Bet_cases Ps_def assms(3) bet_out__bet between_cong_3 between_trivial l6_6
+                point_construction_different) 
+        }
+        {
+          assume "A \<noteq> PO"
+          hence "PO A Perp B1 PO" 
+            using perp_col [of PO A B B1 PO] by (metis Perp_cases \<open>Col PO E A\<close> \<open>Col PO E B\<close>
+                \<open>PO B1 Perp PO B\<close> \<open>\<not> Col PO E E'\<close> col_transitivity_1
+                grid_not_par_4) 
+          hence "Per A PO B1"
+            using perp_per_1 by auto
+          then obtain B2' where "PO Midpoint B1 B2'" and "Cong A B1 A B2'"
+            using Per_def by blast 
+          hence "B2 = B2'"
+            using \<open>PO Midpoint B1 B2\<close> symmetric_point_uniqueness by blast 
+          hence "Cong PO C1 PO C2"
+            by (metis \<open>Cong A B1 A B2'\<close> \<open>Cong PO C1 A B1\<close> \<open>Cong PO C2 A B2\<close>
+                cong_transitivity not_cong_3412) 
+          have "PO Midpoint C1 C2 \<Longrightarrow> C1 = C2"
+            by (metis Ps_def \<open>Cong PO C1 PO C2\<close> assms(3) bet_cong_eq bet_out__bet between_trivial
+                l6_6 midpoint_bet not_bet_and_out) 
+          thus "C1 = C2"
+            by (metis Col_def \<open>Col PO E C1\<close> \<open>Col PO E C2\<close> \<open>Cong PO C1 PO C2\<close> \<open>\<not> Col PO E E'\<close>
+                between_trivial col_transitivity_1 l7_20) 
+        }
+      qed
+    }
+    ultimately have "C1 = C2" 
+      by argo
+  }
+  ultimately show ?thesis 
+    by argo
+qed
+
 end
 end
