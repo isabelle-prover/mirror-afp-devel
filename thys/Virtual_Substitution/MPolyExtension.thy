@@ -173,7 +173,7 @@ fun get_if_const :: "real mpoly \<Rightarrow> real option" where
 term "coeff p 0"
 
 
-lemma insertionNegative : "insertion f p = - insertion f (-p)" try
+lemma insertionNegative : "insertion f p = - insertion f (-p)"
   by (metis add.right_inverse eq_neg_iff_add_eq_0 insertion_add insertion_zero)
 
 

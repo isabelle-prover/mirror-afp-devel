@@ -322,14 +322,14 @@ proof(cases p')
         apply (smt mult_imp_less_div_pos neg_less_divide_eq zero_le_mult_iff)
         using assms(4) mult.commute nonzero_mult_div_cancel_left
         apply smt
-        unfolding degderiv apply auto
-        unfolding isolate_variable_sparse_mult apply auto
-        unfolding insertion_mult defer
+        unfolding degderiv  isolate_variable_sparse_mult apply auto
+        unfolding insertion_mult
+        apply (simp add: b'_insertion' insertion_into_1)
         apply (smt assms(4) diff_divide_eq_iff divide_less_0_iff mult_less_0_iff)
-        defer
+        apply (metis assms(4) diff_gt_0_iff_gt less_divide_eq less_iff_diff_less_0 linorder_cases
+            mult_neg_pos mult_pos_neg)
         using assms(4) apply blast
-        unfolding b'_insertion' insertion_into_1 apply auto
-        by (smt assms(4) less_divide_eq mult_pos_neg2 no_zero_divisors zero_less_mult_pos)
+        unfolding b'_insertion' insertion_into_1 by auto
     next
       case False
       then have degreetwo : "MPoly_Type.degree p var = 2" using degnot0
@@ -347,10 +347,11 @@ proof(cases p')
                 isolate_variable_sparse p var (Suc (Suc 0)) * Var var * Const 2)
                var  = 1"
         apply(rule degree_less_sum'[where n ="0"])
-        apply (simp add: degree_isovarspar mult_one_right) defer
+        apply (simp add: degree_isovarspar mult_one_right)
+        apply (metis ExecutiblePolyProps.degree_one a add_0 add_cancel_right_right b degree_const
+            degree_isovarspar degree_mult mult_eq_0_iff)
         apply simp
-        using degree_mult[OF a b, of var]
-        by (metis (no_types, opaque_lifting) ExecutiblePolyProps.degree_one add.left_neutral b degree_const degree_isovarspar degree_mult mult.commute mult_zero_class.mult_zero_right)
+        done
       have simp : "(convertDerivative var p) = Or (fm.Atom (Less p))
      (And (fm.Atom (Eq p))
        (Or (fm.Atom (Less (derivative var p)))
