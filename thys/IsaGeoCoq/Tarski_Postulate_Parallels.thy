@@ -151,10 +151,10 @@ definition bachmann_s_lotschnittaxiom ::
     "bachmann_s_lotschnittaxiom \<equiv> 
 
      \<forall> P Q R P1 R1.
-     P \<noteq> Q \<and> Q \<noteq> R \<and> Per P Q R \<and> Per Q P P1 \<and> Per Q R R1 \<and> 
+     (P \<noteq> Q \<and> Q \<noteq> R \<and> Per P Q R \<and> Per Q P P1 \<and> Per Q R R1 \<and> 
      Coplanar P Q R P1 \<and> Coplanar P Q R R1
 \<longrightarrow> 
-     (\<exists> S. Col P P1 S \<and> Col R R1 S)"
+     (\<exists> S. Col P P1 S \<and> Col R R1 S))"
 
 definition legendre_s_parallel_postulate ::
   "bool"
@@ -175,10 +175,10 @@ definition weak_inverse_projection_postulate ::
     "weak_inverse_projection_postulate \<equiv> 
 
     \<forall> A B C D E F P Q.
-    Acute A B C \<and> Per D E F \<and> A B C A B C SumA D E F \<and> 
-    B Out A P \<and> P \<noteq> Q \<and> Per B P Q \<and> Coplanar A B C Q
+    ((Acute A B C \<and> Per D E F \<and> A B C A B C SumA D E F \<and> 
+    B Out A P \<and> P \<noteq> Q \<and> Per B P Q \<and> Coplanar A B C Q)
 \<longrightarrow>
-    (\<exists> Y. B Out C Y \<and> Col P Q Y)"
+    (\<exists> Y. B Out C Y \<and> Col P Q Y))"
 
 definition weak_triangle_circumscription_principle ::
   "bool"
@@ -187,11 +187,11 @@ definition weak_triangle_circumscription_principle ::
     "weak_triangle_circumscription_principle \<equiv> 
 
      \<forall> A B C A1 A2 B1 B2.
-     \<not> Col A B C \<and> Per A C B \<and> A1 A2 PerpBisect B C \<and> 
+     (\<not> Col A B C \<and> Per A C B \<and> A1 A2 PerpBisect B C \<and> 
      B1 B2 PerpBisect A C \<and> Coplanar A B C A1 \<and> Coplanar A B C A2 \<and> 
      Coplanar A B C B1 \<and> Coplanar A B C B2
 \<longrightarrow>
-     (\<exists> I. Col A1 A2 I \<and> Col B1 B2 I)"
+     (\<exists> I. Col A1 A2 I \<and> Col B1 B2 I))"
 
 definition weak_tarski_s_parallel_postulate ::
   "bool"
@@ -200,9 +200,9 @@ definition weak_tarski_s_parallel_postulate ::
     "weak_tarski_s_parallel_postulate \<equiv> 
 
      \<forall> A B C T.
-     Per A B C \<and> T InAngle A B C 
+     (Per A B C \<and> T InAngle A B C 
 \<longrightarrow>
-     (\<exists> X Y. B Out A X \<and> B Out C Y \<and> Bet X T Y)"
+     (\<exists> X Y. B Out A X \<and> B Out C Y \<and> Bet X T Y))"
 
 definition existential_playfair_s_postulate ::
   "bool"

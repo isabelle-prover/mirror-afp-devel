@@ -44368,6 +44368,14 @@ lemma not_neg_pos:
   shows "Ps PO E A \<or> A = PO"
   using assms(1,2,3) sign_dec by blast 
 
+lemma Tarski_Pre_Non_Euclidean_aux_pre:
+  assumes "\<exists> A B C D T. \<not> ((Bet A D T \<and> Bet B D C \<and> A \<noteq> D) 
+                         \<longrightarrow>
+                      (\<exists> X Y. Bet A B X \<and> Bet A C Y \<and> Bet X T Y))" 
+  shows "\<exists> A0 B0 C0 D0 T0. (Bet A0 D0 T0 \<and> Bet B0 D0 C0 \<and> A0 \<noteq> D0 \<and>
+                           (\<forall> X Y. ((Bet A0 B0 X \<and> Bet A0 C0 Y) \<longrightarrow> \<not> Bet X T0 Y)))" 
+  using assms by blast
+
 end
 end
 
