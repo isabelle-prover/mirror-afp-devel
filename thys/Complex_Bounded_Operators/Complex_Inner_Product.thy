@@ -206,7 +206,7 @@ proof-
       moreover have \<open>norm (x n - x m) < e/(2*M)\<close>
         using \<open>N \<le> m\<close> \<open>N \<le> n\<close> \<open>N1 \<le> N\<close> N1_def by auto
       ultimately have \<open>norm ((x n \<bullet>\<^sub>C y n) - (x m \<bullet>\<^sub>C y n)) < (e/(2*M)) * M\<close>
-        by (smt linordered_semiring_strict_class.mult_strict_mono norm_ge_zero)
+        by (smt mult_strict_mono norm_ge_zero)
       moreover have \<open> (e/(2*M)) * M = e/2\<close>
         using \<open>M > 0\<close> by simp
       ultimately have  \<open>norm ((x n \<bullet>\<^sub>C y n) - (x m \<bullet>\<^sub>C y n)) < e/2\<close>
@@ -224,7 +224,7 @@ proof-
       moreover have \<open>norm (y n - y m) < e/(2*M)\<close>
         using \<open>N \<le> m\<close> \<open>N \<le> n\<close> \<open>N2 \<le> N\<close> N2_def by auto
       ultimately have \<open>norm ((x m \<bullet>\<^sub>C y n) - (x m \<bullet>\<^sub>C y m)) < M * (e/(2*M))\<close>
-        by (smt linordered_semiring_strict_class.mult_strict_mono norm_ge_zero)
+        by (smt mult_strict_mono norm_ge_zero)
       moreover have \<open>M * (e/(2*M)) = e/2\<close>
         using \<open>M > 0\<close> by simp
       ultimately have  \<open>norm ((x m \<bullet>\<^sub>C y n) - (x m \<bullet>\<^sub>C y m)) < e/2\<close>
@@ -253,7 +253,7 @@ next
     by auto
   show \<open>n \<le> norm \<psi>\<close>
     unfolding n\<phi>
-    by (simp add: complex_inner_class.Cauchy_Schwarz_ineq2 divide_le_eq ordered_field_class.sign_simps(33))
+    by (simp add: Cauchy_Schwarz_ineq2 mult.commute divide_le_eq)
 qed
 
 lemma cinner_sup_onorm:
@@ -275,12 +275,13 @@ next
     by force
 next
   fix b
-  assume \<open>b \<in> range (\<lambda>(\<psi>, \<phi>). cmod (cinner \<psi> (A \<phi>)) / (norm \<psi> * norm \<phi>))\<close>
-  then obtain \<psi> \<phi> where b: \<open>b = cmod (cinner \<psi> (A \<phi>)) / (norm \<psi> * norm \<phi>)\<close>
+  assume \<open>b \<in> range (\<lambda>(\<psi>, \<phi>).  cmod (\<psi> \<bullet>\<^sub>C A \<phi>) / (norm \<psi> * norm \<phi>))\<close>
+  then obtain \<psi> \<phi> where b: \<open>b =  cmod (\<psi> \<bullet>\<^sub>C A \<phi>) / (norm \<psi> * norm \<phi>)\<close>
     by auto
-  then have \<open>b \<le> norm (A \<phi>) / norm \<phi>\<close>
-    apply auto
-    by (smt (verit, ccfv_threshold) complex_inner_class.Cauchy_Schwarz_ineq2 division_ring_divide_zero linordered_field_class.divide_right_mono mult_cancel_left1 nonzero_mult_divide_mult_cancel_left2 norm_imp_pos_and_ge ordered_field_class.sign_simps(33) zero_le_divide_iff)
+  then have \<open>b \<le> norm (A \<phi>) / norm \<phi>\<close> 
+    using Cauchy_Schwarz_ineq2[of \<psi> "A \<phi>"]
+    apply (simp add: divide_simps split: if_split_asm)
+    by (metis mult_le_cancel_left_pos mult.left_commute zero_less_norm_iff)
   then show \<open>\<exists>a\<in>range (\<lambda>x. norm (A x) / norm x). b \<le> a\<close>
     by auto
 qed
@@ -2637,8 +2638,7 @@ proof (rule cinner_extensionality)
   then have \<open>(\<lambda>i. x i \<bullet>\<^sub>C g - x i \<bullet>\<^sub>C h) \<longlonglongrightarrow> 0\<close> for i
     by simp
   moreover have \<open>(\<lambda>i. x i \<bullet>\<^sub>C g - x i \<bullet>\<^sub>C h) \<longlonglongrightarrow> y \<bullet>\<^sub>C g - y \<bullet>\<^sub>C h\<close>
-    apply (rule_tac continuous_imp_tendsto[unfolded o_def, OF _ \<open>x \<longlonglongrightarrow> y\<close>])
-    by simp
+    by (simp add: \<open>x \<longlonglongrightarrow> y\<close> tendsto_cinner tendsto_diff)
   ultimately have \<open>y \<bullet>\<^sub>C g - y \<bullet>\<^sub>C h = 0\<close>
     using LIMSEQ_unique by blast
   then show \<open>y \<bullet>\<^sub>C g = y \<bullet>\<^sub>C h\<close>

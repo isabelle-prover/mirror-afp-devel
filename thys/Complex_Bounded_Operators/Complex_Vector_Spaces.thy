@@ -946,7 +946,7 @@ lemma (in bounded_sesquilinear) bounded_antilinear_left: "bounded_antilinear (\<
 lemma (in bounded_sesquilinear) bounded_clinear_right: "bounded_clinear (\<lambda>b. prod a b)"
   apply standard
     apply (auto simp add: scaleC_right add_right)
-  by (metis ab_semigroup_mult_class.mult_ac(1) ordered_field_class.sign_simps(34) real.pos_bounded)
+  by (metis bounded mult.assoc mult.left_commute)
 
 lemma (in bounded_sesquilinear) comp1:
   assumes \<open>bounded_clinear g\<close>

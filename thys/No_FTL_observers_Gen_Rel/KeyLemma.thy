@@ -251,7 +251,7 @@ proof -
       }
       hence aneg: "a < 0" using qc4 by force
       hence "4*a*c < 0" using cpos 
-        by (simp add: local.mult_pos_neg local.mult_pos_neg2)
+        by (simp add: local.mult_pos_neg mult_neg_pos)
       hence "d > sqr b" using d
         by (metis add_commute local.add_less_same_cancel2 local.diff_add_cancel)
       hence "d > 0" 

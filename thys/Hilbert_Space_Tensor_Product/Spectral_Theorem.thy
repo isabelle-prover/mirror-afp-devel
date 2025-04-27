@@ -405,7 +405,7 @@ next
         by (simp add: Cauchy_def dist_norm)
     qed
     with \<open>\<alpha> \<ge> 0\<close> show \<open>\<alpha> = 0\<close>
-      by (smt (verit) linordered_semiring_strict_class.mult_pos_pos real_sqrt_le_0_iff)
+      using less_eq_real_def by fastforce
   qed
   with E_lim show ?thesis
     by (auto intro!: tendsto_norm_zero_cancel simp: E_def)
@@ -417,8 +417,7 @@ lemma spectral_dec_op_tendsto:
   shows \<open>spectral_dec_op a \<longlonglongrightarrow> 0\<close>
   apply (rule tendsto_norm_zero_cancel)
   using spectral_dec_val_tendsto_0[OF assms]
-  apply (simp add: norm_spectral_dec_op assms)
-  using tendsto_norm_zero by blast 
+  by (simp add: assms norm_spectral_dec_op tendsto_norm_zero)
 
 lemma spectral_dec_op_spectral_dec_proj:
   \<open>spectral_dec_op a n = a - (\<Sum>i<n. spectral_dec_val a i *\<^sub>C spectral_dec_proj a i)\<close>

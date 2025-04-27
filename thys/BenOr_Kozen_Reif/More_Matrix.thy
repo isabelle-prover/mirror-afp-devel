@@ -69,7 +69,9 @@ lemma kronecker_assoc:
   unfolding kronecker_product_def Let_def
   apply (case_tac "dim_row B * dim_row C > 0 & dim_col B * dim_col C > 0")
    apply (auto simp add: mat_eq_iff less_mult_imp_div_less)
-  by (smt (verit, best) div_less_iff_less_mult div_mult2_eq kronecker_inverse_index linordered_semiring_strict_class.mult_pos_pos mod_less_divisor mod_mult2_eq mult.assoc mult.commute mult_div_mod_eq)
+  using Rings.ordered_semiring_strict_class.mult_pos_pos
+  by (smt (verit, best) div_less_iff_less_mult div_mult2_eq kronecker_inverse_index
+      mod_less_divisor mod_mult2_eq mult.assoc mult.commute mult_div_mod_eq)
 
 lemma sum_sum_mod_div:
   "(\<Sum>ia = 0::nat..<x. \<Sum>ja = 0..<y. f ia ja) =
@@ -1541,8 +1543,8 @@ proof clarsimp
       then obtain j where jth: "j < (length ?pp) \<and> fst (pivot_positions A ! j) = (Suc i)"
         by blast
       have "j > i"
-        using sorted_hyp apply (auto)
-        by (metis Suc_lessD \<open>fst (pivot_positions A ! i) = i\<close> jth less_not_refl linorder_neqE_nat n_not_Suc_n suc_i_lt)
+        using sorted_hyp
+        by (metis Suc_lessD fst_i_is jth n_not_Suc_n nat_neq_iff suc_i_lt)
       have "j > (Suc i) \<Longrightarrow> False"
       proof -
         assume j_gt: "j > (Suc i)"
