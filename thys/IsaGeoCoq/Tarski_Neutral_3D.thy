@@ -47,6 +47,26 @@ locale Tarski_neutral_3D = Tarski_neutral_dimensionless +
    Cong A P A R \<and> Cong B P B R \<and> Cong C P C R \<longrightarrow>
    (Bet A B C \<or> Bet B C A \<or> Bet C A B)"
 
+context Tarski_neutral_3D
+
+begin
+
 subsection "Propositions"
 
+lemma not_coplanar_S1_S2_S3_S4:
+  shows "\<not> Coplanar TS1 TS2 TS3 TS4" 
+proof -
+  {
+    assume "Coplanar TS1 TS2 TS3 TS4"
+    then obtain X where "(Col TS1 TS2 X \<and> Col TS3 TS4 X) \<or>
+            (Col TS1 TS3 X \<and> Col TS2 TS4 X) \<or>
+            (Col TS1 TS4 X \<and> Col TS2 TS3 X)" 
+      using Coplanar_def by auto
+    hence False using lower_dim_3 Col_def by blast
+  }
+  thus ?thesis 
+    by blast
+qed
+
+end
 end
