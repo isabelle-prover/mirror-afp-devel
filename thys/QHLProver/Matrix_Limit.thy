@@ -442,7 +442,7 @@ proof (rule ccontr)
 
       let ?s = "r / (2 * ?u)"
       have sgz: "?s > 0" using ug rl
-        by (smt (verit) divide_pos_pos dual_order.strict_iff_order linordered_semiring_strict_class.mult_pos_pos zero_less_norm_iff r)
+        by (smt (verit) divide_pos_pos dual_order.strict_iff_order mult_pos_pos zero_less_norm_iff r)
       from limijm have sij: "\<exists>no. \<forall>n\<ge>no. cmod (X n $$ (i, j) - A $$ (i, j)) < ?s" if i: "i < m" and j: "j < m" for i j
       proof -
         obtain N where Ns: "\<forall>n\<ge>N. cmod (X n $$ (i, j) - A $$ (i, j)) < ?s" using sgz limijm i j by blast

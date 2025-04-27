@@ -272,7 +272,7 @@ lemma power_pos:
 
 lemma power_neg:
   assumes a0: "a < 0" shows "odd n \<Longrightarrow> a ^ n < 0" and "even n \<Longrightarrow> a ^ n > 0"
-  by (atomize(full), induct n, insert a0, auto simp add: mult_pos_neg2 mult_neg_neg)
+  by (induction n, insert a0, auto simp add: mult_neg_pos mult_neg_neg)
 
 lemma power_ge_0_iff:
   assumes a: "is_real a"

@@ -241,7 +241,7 @@ proof -
   next
     case False
     then show ?thesis  using assms(2,6)
-      by (intro add_nonneg_pos \<mu>_ge_0 linordered_semiring_strict_class.mult_pos_pos) auto
+      by (simp add: \<mu>_ge_0 add_strict_increasing2)
   qed
 
   have 3: "0 < \<mu> + \<Lambda>" using \<mu>_ge_0 assms(2) by simp

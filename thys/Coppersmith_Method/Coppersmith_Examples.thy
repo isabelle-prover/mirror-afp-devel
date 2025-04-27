@@ -137,7 +137,7 @@ proof -
   then have "real 6^30 < (real 4059 powr (7/30))^30"
     using simplify_power by fastforce
   then have "real 6 < real 4059 powr (7/30)"
-    by (smt (verit) of_nat_0_less_iff powr_gt_zero powr_less_mono2 powr_realpow semiring_norm(118))
+    by (smt (verit) of_nat_0_less_iff powr_gt_zero powr_less_mono2 powr_realpow zero_less_numeral)
   then have root_bound: "real X < root_bound M (degree p) 0.10"
     unfolding M_def X_def root_bound_def using d_eq_3 unfolding d_def
     by auto

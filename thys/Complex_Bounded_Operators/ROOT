@@ -4,7 +4,7 @@ session Complex_Bounded_Operators = "Complex_Bounded_Operators_Dependencies" +
   options [timeout = 3600]
   directories
     extra
-  theories
+  theories           
     Cblinfun_Code_Examples
   document_files
     root.tex
