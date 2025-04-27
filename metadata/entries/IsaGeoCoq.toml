@@ -50,7 +50,6 @@ CREATE: Tarski_Neutral.thy
 ==========================
 
 locale Tarski_neutral_dimensionless
-locale Tarski_2D
 
 context Tarski_neutral_dimensionless
 
@@ -319,6 +318,142 @@ Main/Meta_theory/Parallel_postulates/szmielew.v
 Tarski_Neutral.thy: transform 'moura' tactic to other tactic
 
 (revision a53e41f40732) <br>
+"""
+
+2025-04-27 = """
+New Definitions (with arity left,right): Tarski_Neutral.thy
+-----------------------------------------------------------
+WARNING: Signature Lcos(0,3) "(['p,'p] => bool) => ['p,'p] => bool) => (['p, 'p, 'p] => bool) => bool", etc.
+
+IsOrthoCenter(1,3) IsCircumCenter(1,3) IsGravityCenter(1,3)
+Lcos(0,3) EqLcos(0,4) Lcos2(0,3) EqLcos2(0,6)
+Lcos3(0,5) EqLcos3(0,8) EqV(2,2) SumV(4,2) SumVExists(4,2)
+SameDir(2,2) OppDir(2,2) CongA3(3,3) Projp(2,2)
+
+CREATE: Tarski_Neutral_3D.thy
+=============================
+
+locale Tarski_3D
+
+CREATE: Tarski_Neutral_Archimedes_Continuity.thy
+================================================
+
+New Definitions (with arity left,right): Tarski_Neutral_Archimedes_Coninuity.thy
+--------------------------------------------------------------------------------
+WARNING: Signature: AlphaTmp(0,2) but "'p => 'p => 'p =>bool", etc.
+WARNING: Space: GeoCoq: Tm and Tm2 <---> IsaGeoCoq Tm2 = Tm.
+	 
+AlphaTmp(0,2) BetaTmp(0,2) NestedBis(0,2) CantorVariant(0,0)
+inj(0,1) pres_bet(0,1) extension(0,1) inj_line(0,3)
+pres_bet_line(0,3) pres_cong_line(0,3) line_extension(0,3)
+line_completeness(0,0)
+
+Porting Files (context Tarski_neutral_dimensionless)
+-------------
+Main/Meta_theory/Continuity/dedekind_archimedes.v
+Main/Meta_theory/Continuity/cantor_variant.v
+Main/Meta_theory/Continuity/completeness.v[only Tm = Tn and archimedes_aux line_completeness_aux ?]
+Main/Meta_theory/Continuity/elementary_continuity_props.v
+
+CREATE: Tarski_Neutral_Continuity.thy
+================================================
+New Definitions (with arity left,right): Tarski_Neutral_Continuity.thy
+----------------------------------------------------------------------
+WARNING: GeoCoq: Concyclic in Axioms/Definitions.v        (rename in IsaGeCoq Concyclic)
+         GeoCoq: Concyclic in Main/Highschool/concyclic.v (rename in IsaGeoCoq Concyclic2)
+	 IsaGeoCoq: Concyclic === Concyclic2
+	 
+OnCircle(1,2) InCircle(1,2) OutCircle(1,2) InCircleS(1,2)
+OutCircleS(1,2) Diam(0,4) EqC(0,4) InterCCAt(0,6) InterCC(0,4)
+TangentCC(0,4) Tangent(0,4) TangentAt(0,5) Concyclic(0,4)
+ConcyclicGen(0,4) Concyclic2(0,4)
+segment_circle(0,0) one_point_line_circle(0,0)
+two_point_line_circle(0,0) circle_circle(0,0) circle_circle_bis(0,0)
+circle_circle_axiom(0,0) circle_circle_two(0,0) euclid_s_prop_1_22(0,0)
+Nested(0,2) CantorAxiom(0,0) DedekindAxiom(0,0) DedekindVariant(0,0)
+Alpha'Fun(0,2) Beta'Fun(0,2) Eq(1,1) FOF(0,1)
+FirstOrderDedekind(0,0) AlphaFun(0,6) BetaFun(0,6)
+DedekindLemFun(0,0)
+
+Porting Files (context Tarski_neutral_dimensionless)
+-------------
+Main/Annexes/circles.v
+Main/Annexes/tangency.v
+Main/Meta_theory/Continuity/first_order.v [only dedeking__fod]
+Main/Meta_theory/Continuity/first_order_dedekind_circle_circle.v
+Main/Meta_theory/Continuity/dedekind_cantor.v
+
+CREATE: Tarski_Neutral_Continuity_2D.thy
+========================================
+Porting Files (context Tarski_neutral_2D)
+-------------
+Main/Annexes/circles.v[mid_onc2_perp__col -> onc4_cong2__eq]
+Main/Annexes/tangency.v[onc2_oreq]
+
+CREATE: Highschool_Neutral.thy
+==============================
+Porting Files (context Tarski_neutral_dimensionless)
+----------------------------------------------------
+Main/Highschool/bisector.v
+Main/Annexes/midpoint_theorems.v
+
+CREATE: Highschool_Euclidean.thy
+================================
+WARNING: In GeoCoq: midpoint_thales_reci (split in IsaGeoCoq midpoint_thales_reci1 midpoint_thalesreci2)
+WARNING: In GeoCoq: lemma varignon' (rename in IsaGeoCoq varignon_bis)
+WARNING: In GeoCoq Main/Highschool/concyclic.v : Lemma concyclic_aux (In IsaGeoCoq Concyclic2)
+                   Main/Annexes/circles.v :      Lemma concyclic_aux
+		   
+Porting Files (context Tarski_Euclidean)
+----------------------------------------
+Main/Annexes/midpoint_theorems.v
+Main/Highschool/midpoint_thales.v
+Main/Highschool/exercises.v
+Main/Highschool/varignon.v
+Main/Highschool/circumcenter.v
+Main/Highschool/orthocenter.v
+Main/Highschool/gravityCenter.v
+Main/Highschool/concyclic.v
+Main/Highschool/Euler_line.v
+Main/Highschool/sesamath_exercises.v
+
+CREATE: Highschool_Euclidean_2D.thy
+===================================
+(context Tarski_Euclidean)
+New in IsaGeoCoq: NewEx1
+
+
+Port Pappus 
+===========
+(in Tarski_Neutral.thy and Tarski_Euclidean.thy and Tarski_Euclidean_2D.thy)
+
+Main/Tarski_dev/Ch13_4_cos.v
+Main/Annexes/vectors.v
+Main/Annexes/project.v
+Main/Tarski_dev/Ch13_4_cos.v
+Main/Tarski_dev/Ch13_5_Pappus_Pascal.v
+
+Port Desarges-Hessenberg
+========================
+(in Tarski_Euclidean.thy)
+Main/Tarski_dev/Ch13_6_Desargues_Hessenberg.v
+
+Port Chap 14
+============
+(in Tarski_Neutral.thy and Tarski_Euclidean.thy and Tarski_Euclidean_2D.thy)
+
+Main/Tarski_dev/Ch14_sum.v
+Main/Tarski_dev/Ch14_prod.v
+Main/Tarski_dev/Ch14_order.v
+
+Port Chap 15
+============
+(in Tarski_Neutral.thy and Tarski_Euclidean_2D.thy)
+
+Main/Tarski_dev/Ch15_lengths.v
+Main/Tarski_dev/Ch15_pyth_rel.v
+
+(revision fc251121ffff) <br>
 """
 [extra]
 

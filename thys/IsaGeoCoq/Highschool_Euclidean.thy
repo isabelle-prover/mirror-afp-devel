@@ -2010,7 +2010,7 @@ proof -
         is_circumcenter_perm_1 is_circumcenter_uniqueness per_distinct_1)
 qed
 
-lemma IsOrthocenter_coplanar: 
+lemma is_orthocenter_coplanar: 
   assumes "H IsOrthocenter A B C"
   shows "Coplanar H A B C" 
 proof -
