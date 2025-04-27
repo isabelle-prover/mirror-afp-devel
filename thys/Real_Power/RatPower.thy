@@ -476,10 +476,9 @@ lemma powrat_less_mono:
       next
         assume "\<not> (a = 0 \<or> c = 0)" 
         then have ac00: "a < 0" "c < 0" using ac0 by auto
-        then have "1 / x ^ nat (- (a * d)) < 
-                    1 / x ^ nat (- (c * b))" 
+        then have "1 / x ^ nat (- (a * d)) < 1 / x ^ nat (- (c * b))" 
           using ac00 r_assms s_assms assms 
-          by (simp add: divide_inverse mult_pos_neg2) 
+          by (simp add: divide_inverse mult_neg_pos) 
         then have "(1 / x ^ nat (- a)) ^ nat d < 
                     (1 / x ^ nat (- c)) ^ nat b" 
           using s_assms r_assms  ac00

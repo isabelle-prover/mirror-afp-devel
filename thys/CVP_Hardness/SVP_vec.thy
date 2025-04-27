@@ -143,7 +143,7 @@ case (1 z)
       have "k\<ge>1" using assms by auto
       have "real_of_int (\<Sum>x = 0..<dim_vec a. \<bar>a $ x\<bar>) \<in> \<int>" by auto
       moreover have "- 1 / real_of_int (k * (k + 1)) \<notin> \<int>" using \<open>k\<ge>1\<close> 
-      by (smt (verit, del_insts) "1" linordered_semiring_strict_class.mult_pos_pos 
+      by (smt (verit, del_insts) "1" mult_pos_pos 
         mult_minus_right of_int_hom.hom_0 pos_zmult_eq_1_iff)
       ultimately show False using eq by auto
     qed
@@ -551,14 +551,6 @@ qed
 text \<open>The SVP is NP-hard in $\ell_\infty$.\<close>
 lemma "is_reduction reduce_svp_bhle bhle gap_svp"
 unfolding is_reduction_def
-proof (safe, goal_cases)
-  case (1 as s)
-  then show ?case using well_defined_reduction_svp by auto
-next
-  case (2 as s)
-  then show ?case using NP_hardness_reduction_svp by auto
-qed
-
-
+  using NP_hardness_reduction_svp well_defined_reduction_svp by fastforce
 
 end

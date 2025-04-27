@@ -4768,13 +4768,12 @@ proof -
   then have [simp]: \<open>f *\<^sub>V y = cinner x y\<close> for y
     by (simp add: bounded_clinear_CBlinfun_apply bounded_clinear_cinner_right)
   then have [simp]: \<open>norm f = norm x\<close>
-    apply (auto intro!: norm_cblinfun_eqI[where x=x] simp: power2_norm_eq_cinner[symmetric])
-     apply (smt (verit, best) norm_eq_sqrt_cinner norm_ge_zero power2_norm_eq_cinner real_div_sqrt)
-    using Cauchy_Schwarz_ineq2 by blast
+    apply (auto intro!: Cauchy_Schwarz_ineq2 norm_cblinfun_eqI[where x=x] simp: power2_norm_eq_cinner[symmetric])
+    by (simp add: norm_mult power2_eq_square)
   show ?thesis
     apply (auto intro!: norm_cblinfun_eqI[where x=f])
      apply (metis norm_eq_sqrt_cinner norm_imp_pos_and_ge real_div_sqrt)
-    by (metis norm_cblinfun ordered_field_class.sign_simps(33))
+    by (metis mult.commute norm_cblinfun)
 qed
 
 lemma norm_bidual_embedding[simp]: \<open>norm (bidual_embedding :: 'a::{complex_inner, not_singleton} \<Rightarrow>\<^sub>C\<^sub>L _) = 1\<close>

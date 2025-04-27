@@ -615,13 +615,13 @@ proof -
             by (metis T_def cblinfun.real.diff_right cblinfun_apply_cblinfun_compose
                       dist_norm norm_cblinfun)
           also from Al\<gamma> P_leq_B have \<open>\<dots> < B * \<gamma>\<close>
-            by (smt (verit, ccfv_SIG) \<open>B \<noteq> 0\<close> linordered_semiring_strict_class.mult_le_less_imp_less linordered_semiring_strict_class.mult_strict_mono' mem_ball norm_ge_zero zero_le_dist)
+            by (metis \<open>0 < B\<close> dist_Alh dist_commute mult_le_less_imp_less mult_strict_mono norm_zero
+                zero_le_dist zero_less_norm_iff)
           also have \<open>\<dots> \<le> B * (\<delta> / B)\<close>
             by (smt (verit, best) \<gamma>_def \<open>0 < B\<close> mult_left_mono)
           also have \<open>\<dots> \<le> \<delta>\<close>
             by (simp add: \<open>B \<noteq> 0\<close>)
-          finally show ?thesis
-            by -
+          finally show ?thesis .
         qed
         ultimately show ?thesis
           by (smt (verit) dist_commute dist_triangle2)
@@ -1233,7 +1233,7 @@ proof -
       by fast
     define d :: real where \<open>d = cmod e * sqrt 2\<close>
     from \<open>e \<noteq> 0\<close> have \<open>d > 0\<close>
-      by (auto intro!: Rings.linordered_semiring_strict_class.mult_pos_pos simp: d_def)
+      by (auto intro!: mult_pos_pos simp: d_def)
     have aux: \<open>\<exists>n\<ge>N. P n\<close> if \<open>P (Suc N)\<close> for P N
       using Suc_n_not_le_n nat_le_linear that by blast
     have \<open>dist (f (r n)) (f (r (Suc n))) = d\<close> for n

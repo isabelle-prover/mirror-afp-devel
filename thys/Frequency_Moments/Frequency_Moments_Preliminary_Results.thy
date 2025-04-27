@@ -304,9 +304,9 @@ lemma truncate_mantissa_bound:
 proof -
   define q where "q = \<lfloor>x * 2 powr (real r - real_of_int (\<lfloor>log 2 \<bar>x\<bar>\<rfloor>))\<rfloor>"
 
-  have "abs q \<le> 2 ^ (r + 1)" if a:"x > 0"
+  have "\<bar>q\<bar> \<le> 2 ^ (r + 1)" if a:"x > 0"
   proof -
-    have "abs q = q"
+    have "\<bar>q\<bar> = q"
       using a by (intro abs_of_nonneg, simp add:q_def)
     also have "... \<le> x * 2 powr (real r - real_of_int \<lfloor>log 2 \<bar>x\<bar>\<rfloor>)"
       unfolding q_def using of_int_floor_le by blast
@@ -318,31 +318,30 @@ proof -
       using a by (intro powr_mono, linarith+)
     also have "... = 2 ^ (r+1)"
       by (subst powr_realpow[symmetric], simp_all add:add.commute)
-    finally show "abs q \<le> 2 ^ (r+1)"
+    finally show "\<bar>q\<bar> \<le> 2 ^ (r+1)"
       by (metis of_int_le_iff of_int_numeral of_int_power)
   qed
 
-  moreover have "abs q \<le> (2 ^ (r + 1))" if a: "x < 0"
+  moreover have "\<bar>q\<bar> \<le> (2 ^ (r + 1))" if a: "x < 0"
   proof -
     have "-(2 ^ (r+1) + 1) = -(2 powr (real r + 1)+1)"
-      by (subst powr_realpow[symmetric], simp_all add: add.commute)
+      by (simp add: powr_add powr_realpow)
     also have  "... < -(2 powr (log 2 (- x) + (r - \<lfloor>log 2 \<bar>x\<bar>\<rfloor>)) + 1)"
       using a by (simp, linarith)
     also have "... = x * 2 powr (r - \<lfloor>log 2 \<bar>x\<bar>\<rfloor>) - 1"
       using a by (simp add:powr_add)
     also have "... \<le> q"
       by (simp add:q_def)
-    also have "... = - abs q"
-      using a
-      by (subst abs_of_neg, simp_all add: mult_pos_neg2 q_def)
-    finally have "-(2 ^ (r+1)+1) < - abs q" using of_int_less_iff by fastforce
-    hence "-(2 ^ (r+1)) \<le> - abs q" by linarith
-    thus "abs q \<le> 2^(r+1)" by linarith
+    also have "... = - \<bar>q\<bar>"
+      using a by (simp add: q_def mult_less_0_iff abs_if)
+    finally have "-(2 ^ (r+1)+1) < - \<bar>q\<bar>" using of_int_less_iff by fastforce
+    hence "-(2 ^ (r+1)) \<le> - \<bar>q\<bar>" by linarith
+    thus "\<bar>q\<bar> \<le> 2^(r+1)" by linarith
   qed
 
-  moreover have "x = 0 \<Longrightarrow> abs q \<le> 2^(r+1)"
+  moreover have "x = 0 \<Longrightarrow> \<bar>q\<bar> \<le> 2^(r+1)"
     by (simp add:q_def)
-  ultimately have "abs q \<le> 2^(r+1)"
+  ultimately have "\<bar>q\<bar> \<le> 2^(r+1)"
     by fastforce
   thus ?thesis using q_def by blast
 qed
