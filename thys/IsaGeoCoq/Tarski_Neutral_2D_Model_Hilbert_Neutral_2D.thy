@@ -1,4 +1,4 @@
-(* IsageoCoq - Hilbert_Neutral_2D.thy
+(* IsageoCoq - Tarski_Neutral_2D_Model_Hilbert_Neutral_2D.thy
 Port part of GeoCoq 3.4.0 (https://geocoq.github.io/GeoCoq/)
 
 Version 2.0.0 IsaGeoCoq
@@ -26,37 +26,19 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 *)
 
-theory Hilbert_Neutral_2D
+theory Tarski_Neutral_2D_Model_Hilbert_Neutral_2D
 
-imports Hilbert_Neutral
+imports 
+  Tarski_Neutral_2D
+  Hilbert_Neutral_2D
 
 begin
 
-section "Hilbert - Geometry - Neutral 2D"
-
-subsection "Axioms: Hilbert neutral 2D"
-
-locale Hilbert_neutral_2D = Hilbert_neutral_dimensionless IncidL IncidP EqL EqP IsL IsP BetH CongH CongaH
-  for
-    IncidL :: "'p \<Rightarrow> 'b \<Rightarrow> bool" and
-    IncidP :: "'p \<Rightarrow> 'c \<Rightarrow> bool" and
-    EqL ::"'b \<Rightarrow> 'b \<Rightarrow> bool" and
-    EqP ::"'c \<Rightarrow> 'c \<Rightarrow> bool" and
-    IsL ::"'b \<Rightarrow> bool" and
-    IsP ::"'c \<Rightarrow> bool" and
-    BetH ::"'p\<Rightarrow>'p\<Rightarrow>'p\<Rightarrow>bool" and
-    CongH::"'p\<Rightarrow>'p\<Rightarrow>'p\<Rightarrow>'p\<Rightarrow>bool" and
-    CongaH::"'p\<Rightarrow>'p\<Rightarrow>'p\<Rightarrow>'p\<Rightarrow>'p\<Rightarrow>'p\<Rightarrow>bool" +
-  assumes pasch_2D :
-    "IsL l \<and>  \<not> ColH A B C \<and> \<not> IncidL C l \<and> cut l A B \<longrightarrow> (cut l A C \<or> cut l B C)"
+section "Tarski Neutral 2D - Hilbert Neutral 2D Model"
 
 context Hilbert_neutral_2D
 
 begin
-
-subsection "Definitions"
-
-subsection "Propositions"
 
 lemma plane_separation_2D:
   assumes "\<not> ColH A X Y" and
@@ -1069,6 +1051,65 @@ proof -
   }
   ultimately show ?thesis 
     by blast
+qed
+
+interpretation H2D_to_T2D : Tarski_neutral_2D
+  where Bet = Bet and
+    Cong = Cong and
+    TPA = PP and
+    TPB = PQ  and
+    TPC = PR
+proof 
+  show "\<forall>a b. Cong a b b a" 
+    by (simp add: cong_permT)
+  show "\<forall>a b p q r s. Cong a b p q \<and> Cong a b r s \<longrightarrow> Cong p q r s" 
+    using cong_inner_transitivity by blast
+  show "\<forall>a b c. Cong a b c c \<longrightarrow> a = b" 
+    by (simp add: cong_identity)
+  show "\<forall>a b c q. \<exists>x. Bet q a x \<and> Cong a x b c" 
+    by (simp add: segment_construction)
+  show "\<forall>a b c d a' b' c' d'. a \<noteq> b \<and> Bet a b c \<and> Bet a' b' c' \<and>
+          Cong a b a' b' \<and> Cong b c b' c' \<and> Cong a d a' d' \<and> Cong b d b' d' \<longrightarrow>
+          Cong c d c' d'" 
+    using five_segment by blast
+  show "\<forall>a b. Bet a b a \<longrightarrow> a = b" 
+    by (simp add: bet_identity)
+  show "\<forall>a b c p q. Bet a p c \<and> Bet b q c \<longrightarrow> (\<exists>x. Bet p x b \<and> Bet q x a)" 
+  proof -
+    {
+      fix a b c p q
+      assume "Bet a p c" and "Bet b q c" and
+        "Bet a b c \<or> Bet b c a \<or> Bet c a b" 
+      hence "\<exists>x. Bet p x b \<and> Bet q x a" 
+        using Bet_def bet_comm bet_trans by metis
+    }
+    moreover
+    {
+      fix a b c p q
+      assume "Bet a p c" and "Bet b q c" and
+        "\<not> (Bet a b c \<or> Bet b c a \<or> Bet c a b)" and
+        "a = p \<or> p = c \<or> b = q \<or> q = c" 
+      hence "\<exists>x. Bet p x b \<and> Bet q x a" 
+        by (metis Hilbert_neutral_dimensionless_pre.Bet_def bet_comm)
+    }
+    moreover
+    {
+      fix a b c p q
+      assume "Bet a p c" and "Bet b q c" and
+        "\<not> (Bet a b c \<or> Bet b c a \<or> Bet c a b)" and
+        "a \<noteq> p" and "p \<noteq> c" and "b \<noteq> q" and "q \<noteq> c" 
+      hence "\<exists>x. Bet p x b \<and> Bet q x a" 
+        using pasch_general_case by blast
+    }
+    ultimately show ?thesis
+      by blast
+  qed
+  show "\<not> Bet PP PQ PR \<and> \<not> Bet PQ PR PP \<and> \<not> Bet PR PP PQ" 
+    using lower_dim_l by blast
+  show "\<forall>a b c p q.
+       p \<noteq> q \<and> Cong a p a q \<and> Cong b p b q \<and> Cong c p c q \<longrightarrow>
+       Bet a b c \<or> Bet b c a \<or> Bet c a b" 
+    by (metis Bet_def upper_dim)
 qed
 
 end

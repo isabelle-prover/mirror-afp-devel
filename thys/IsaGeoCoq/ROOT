@@ -65,30 +65,23 @@ theories
 
 (*** Models ***)
   (** Models Gupta/Tarski **)
-    (* context Gupta_neutral_dimensionless *)
        Tarski_Neutral_Model_Gupta_Neutral
-    (* context Gupta_neutral_2D *)
        Tarski_Neutral_2D_Model_Gupta_Neutral_2D
-    (* context Gupta_Euclidean *)
        Tarski_Euclidean_Model_Gupta_Euclidean
   (** Models Tarski/Gupta **)
-    (* context Tarski_neutral_dimensionless *)
        Gupta_Neutral_Model_Tarski_Neutral
-    (* context Tarski_neutral_2D *)
        Gupta_Neutral_2D_Model_Tarski_Neutral_2D
-    (* context Tarski_Euclidean *)
        Gupta_Euclidean_Model_Tarski_Euclidean
   (** Models Hilbert/Tarski **)
-    (* context Tarski_neutral_dimensionless *)
        Hilbert_Neutral_Model_Tarski_Neutral
-    (* context Tarski_neutral_2D *)
        Hilbert_Neutral_2D_Model_Tarski_Neutral_2D
-    (* context Tarski_neutral_3D *)
        Hilbert_Neutral_3D_Model_Tarski_Neutral_3D
-    (* context Tarski_Euclidean *)
        Hilbert_Euclidean_Model_Tarski_Euclidean
   (** Models Tarski/Hilbert **)
-    (* context Hilbert_neutral_dimensionless *)
+       Tarski_Neutral_Model_Hilbert_Neutral
+       Tarski_Neutral_2D_Model_Hilbert_Neutral_2D
+       Tarski_Neutral_3D_Model_Hilbert_Neutral_3D
+       Tarski_Euclidean_Model_Hilbert_Euclidean
 
 document_files
   "root.bib"

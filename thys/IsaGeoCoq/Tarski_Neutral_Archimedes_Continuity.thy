@@ -871,7 +871,7 @@ qed
 
 (*lemma line_completeness__completeness_for_planes:
   assumes "line_completeness" 
-  shows "completeness_for_planes" sorry
+  shows "completeness_for_planes" 
 *)
 
   (**    All these properties are known to be equivalent in an arbitrary Hilbert plane (Tarski_2D)
