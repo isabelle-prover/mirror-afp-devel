@@ -1082,7 +1082,7 @@ ML \<open>
     )
 
     fun msg_allgoals msg ctxt _ st = 
-      msg ^ "\n" ^ Goal_Display.string_of_goal ctxt st
+      Goal_Display.print_goal ctxt msg st
 
   end
 \<close>

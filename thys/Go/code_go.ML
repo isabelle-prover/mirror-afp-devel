@@ -47,8 +47,7 @@ val print_go_string =
   in quote o translate_string char end;
 
 
-fun block_enclose (prt1, prt2) prts = (* Pretty.block_enclose (prt1, prt2) prts*)
-  Pretty.chunks [Pretty.block (Pretty.fbreaks ((Pretty.unbreakable prt1) :: prts)), Pretty.unbreakable prt2];
+val block_enclose = Pretty.block_enclose o apply2 Pretty.unbreakable;
 
 fun print_go_numeral num = "Bigint.MkInt(\"" ^ signed_string_of_int num ^ "\")";
 
