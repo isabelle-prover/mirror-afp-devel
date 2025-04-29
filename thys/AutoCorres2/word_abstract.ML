@@ -702,7 +702,7 @@ let
             fn st => 
             (if Config.get ctxt ML_Options.exception_trace then
               warning ("Could not solve subgoal: " ^
-                (Goal_Display.string_of_goal ctxt st))
+                (Goal_Display.print_goal ctxt "" st))
             else (); no_tac st))]
 
     (* Solve the goal. *)
