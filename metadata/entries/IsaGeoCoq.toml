@@ -455,6 +455,65 @@ Main/Tarski_dev/Ch15_pyth_rel.v
 
 (revision fc251121ffff) <br>
 """
+
+2025-04-27 = """
+WARNING: IsaGeoCoq: in Hilbert_Euclidean.thy, context Tarski_Euclidean and propositions
+
+CREATE 
+======
+Gupta_Neutral.thy, Gupta_Neutral_2D.thy, Gupta_Euclidean.thy, Hilbert_Neutral.thy,
+Hilbert_Neutral_2D.thy, Hilbert_Neutral_3D.thy, Hilbert_Euclidean.thy,
+
+Tarski_Neutral_Model_Gupta_Neutral.thy Tarski_Neutral_2D_Model_Gupta_Neutral_2D.thy
+Tarski_Euclidean_Model_Gupta_Euclidean.thy  Gupta_Neutral_Model_Tarski_Neutral.thy
+Gupta_Neutral_2D_Model_Tarski_Neutral_2D.thy Gupta_Euclidean_Model_Tarski_Euclidean.thy
+Hilbert_Neutral_Model_Tarski_Neutral.thy Hilbert_Neutral_2D_Model_Tarski_Neutral_2D.thy
+Hilbert_Neutral_3D_Model_Tarski_Neutral_3D.thy Hilbert_Euclidean_Model_Tarski_Euclidean.thy
+Tarski_Neutral_Model_Hilbert_Neutral.thy Tarski_Neutral_2D_Model_Hilbert_Neutral_2D.thy
+Tarski_Neutral_3D_Model_Hilbert_Neutral_3D.thy Tarski_Euclidean_Model_Hilbert_Euclidean.thy
+
+Port
+----
+Main/Meta_theory/Models/gupta_inspired_to_tarski.v
+Main/Meta_theory/Models/tarski_to_gupta_inspired.v
+Main/Meta_theory/Models/hilbert_to_tarski.v
+Main/Meta_theory/Models/tarski_to_hilbert.v
+
+New Definitions (with arity left,right): Gupta_Neutral.thy
+----------------------------------------------------------
+locale Gupta_neutral_dimensionless
+
+Context: Gupta_neutral_dimensionless:
+ColG(0,3)
+
+New Definitions (with arity left,right): Gupta_Neutral_2D.thy
+-------------------------------------------------------------
+locale Gupta_neutral_2D
+
+New Definitions (with arity left,right): Hilbert_Neutral.thy
+------------------------------------------------------------
+locale Hilbert_neutral_dimensionless_pre
+locale Hilbert_neutral_dimensionless
+
+Context: Hilbert_neutral_dimensionless_pre
+ColH(0,3) IncidLP(0,2) cut(0,3) outH(0,3) disjoint(0,4) same_side(0,3)
+same_side'(0,4) Para(0,2) Bet(0,3) Cong(0,4) ParaP(0,4) is_line(0,3)
+cut'(0,4) Midpoint(1,2)
+
+New Definitions (with arity left,right): Hilbert_Neutral_2D.thy
+------------------------------------------------------------
+locale Hilbert_neutral_2D
+
+New Definitions (with arity left,right): Hilbert_Neutral_3D.thy
+------------------------------------------------------------
+locale Hilbert_neutral_3D
+
+New Definitions (with arity left,right): Hilbert_Euclidean.thy
+------------------------------------------------------------
+locale Hilbert_Euclidean
+
+(revision cb5fca5d4c92) <br>
+"""
 [extra]
 
 [related]

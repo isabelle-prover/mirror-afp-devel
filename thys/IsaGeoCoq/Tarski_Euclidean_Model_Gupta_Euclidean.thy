@@ -39,6 +39,8 @@ context Gupta_Euclidean
 
 begin
 
+subsection "Interpretation Tarski Gupta"
+
 lemma euclidT:
   assumes "BetG A D T" and
     "BetG B D C" and 

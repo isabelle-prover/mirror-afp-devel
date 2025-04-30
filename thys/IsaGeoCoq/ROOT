@@ -60,6 +60,7 @@ theories
       Hilbert_Neutral
       Hilbert_Neutral_2D
       Hilbert_Neutral_3D
+
   (** Hilbert Euclidean **)
       Hilbert_Euclidean
 

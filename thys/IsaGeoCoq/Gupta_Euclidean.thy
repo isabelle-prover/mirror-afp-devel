@@ -46,4 +46,8 @@ locale Gupta_Euclidean = Gupta_neutral_dimensionless GPA GPB GPC BetG CongG
    \<not> (BetG A B C \<or> BetG B C A \<or> BetG C A B) \<longrightarrow>
    (\<exists> x y. BetG A B x \<and> BetG A C y \<and> BetG x T y)"
 
+subsection "Definitions"
+
+subsection "Propositions"
+
 end
