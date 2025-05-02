@@ -317,7 +317,7 @@ proof -
   proof -
     have "\<bar>2*zs$(i-1)-1\<bar>\<ge>1" if "i\<in>{1..<n+1}" for i using that by presburger
     then have "(\<Sum>i=1..<n+1. \<bar>2*zs$(i-1)-1\<bar>^p) \<ge> (\<Sum>i=1..<n+1. 1^p)"
-      by (smt (verit, ccfv_SIG) linordered_semidom_class.power_mono sum_mono)
+      by (intro power_mono sum_mono) auto
     then show ?thesis unfolding hide_sum_def by auto
   qed
   ultimately have zs_part: "hide_sum = n" 
@@ -370,13 +370,7 @@ text \<open>CVP is NP-hard in $p$-norm.\<close>
 
 lemma "is_reduction reduce_cvp_subset_sum_p subset_sum gap_cvp"
 unfolding is_reduction_def
-proof (safe, goal_cases)
-  case (1 as s)
-  then show ?case using well_defined_reduction by auto
-next
-  case (2 as s)
-  then show ?case using NP_hardness_reduction by auto
-qed
+  by (metis NP_hardness_reduction surj_pair well_defined_reduction)
 
 end
 

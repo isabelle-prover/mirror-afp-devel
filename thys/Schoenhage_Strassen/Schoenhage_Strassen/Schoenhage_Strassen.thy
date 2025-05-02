@@ -19,37 +19,32 @@ begin
 
 lemma aux_ineq_1: "n > 1 \<Longrightarrow> 2 ^ (2 * n - 1) > n + 1 + 2 ^ n"
 proof -
-  have 1: "\<And>k. 2 ^ (2 * (k + 2) - 1) > (k + 2) + 1 + 2 ^ (k + 2)"
-    subgoal for k
-      by (induction k) simp_all
-    done
+  have 1: "2 ^ (2 * (k + 2) - 1) > (k + 2) + 1 + 2 ^ (k + 2)" for k
+    by (induction k) simp_all
   assume \<open>n > 1\<close>
   then obtain k where "n = k + 2"
     by (metis Suc_eq_plus1_left add_2_eq_Suc' less_natE)
   then show ?thesis using 1 by blast
 qed
+
 lemma aux_ineq_2: "n > 2 \<Longrightarrow> 2 ^ (2 * n - 2) > n + 2 ^ n"
 proof -
-  have 1: "\<And>k. 2 ^ (2 * (k + 3) - 2) \<ge> (k + 3) + 2 ^ (k + 3) + 1"
-    subgoal for k
-    proof (induction k)
-      case (Suc k)
-      have "2 ^ (Suc k + 3) \<ge> Suc k + 3" by simp
-      then have "4 * k + 16 + 2 ^ (Suc k + 3) \<ge> (Suc k + 3) + 1"
-        by simp
-      then have "(Suc k + 3) + 2 ^ (Suc k + 3) + 1 \<le> 4 * k + 16 + 2 * 2 ^ (Suc k + 3)"
-        by simp
-      also have "... = 4 * k + 4 * 4 + 2 * 2 ^ (Suc (k + 3))" by simp
-      also have "... = 4 * k + 4 * 4 + 2 * 2 * 2 ^ (k + 3)"
-        apply (intro arg_cong2[where f = "(+)"] refl)
-        using power_Suc mult.assoc by metis
-      also have "... = 4 * (k + 3 + 2 ^ (k + 3) + 1)" by simp
-      also have "... \<le> 4 * 2 ^ (2 * (k + 3) - 2)" using Suc.IH by simp
-      also have "... = 2 ^ ((2 * (k + 3)) - 2 + 2)" by (simp add: power_add) 
-      also have "... = 2 ^ (2 * (Suc k + 3) - 2)" by simp
-      finally show ?case .
-    qed simp
-    done
+  have 1: "2 ^ (2 * (k + 3) - 2) \<ge> (k + 3) + 2 ^ (k + 3) + 1" for k
+  proof (induction k)
+    case (Suc k)
+    have "2 ^ (Suc k + 3) \<ge> Suc k + 3" by simp
+    then have "4 * k + 16 + 2 ^ (Suc k + 3) \<ge> (Suc k + 3) + 1"
+      by simp
+    then have "(Suc k + 3) + 2 ^ (Suc k + 3) + 1 \<le> 4 * k + 16 + 2 * 2 ^ (Suc k + 3)"
+      by simp
+    also have "... = 4 * k + 4 * 4 + 2 * 2 ^ (Suc (k + 3))" by simp
+    also have "... = 4 * k + 4 * 4 + 2 * 2 * 2 ^ (k + 3)"
+      by (metis mult.assoc power_Suc)
+    also have "... \<le> 4 * 2 ^ (2 * (k + 3) - 2)" using Suc.IH by simp
+    also have "... = 2 ^ ((2 * (k + 3)) - 2 + 2)" by (simp add: power_add) 
+    also have "... = 2 ^ (2 * (Suc k + 3) - 2)" by simp
+    finally show ?case .
+  qed simp
   assume "n > 2"
   then have "n \<ge> 3" by simp
   then obtain k where "n = k + 3"
@@ -59,10 +54,8 @@ proof -
 qed
 lemma aux_ineq_3: "n > 1 \<Longrightarrow> 2 ^ n \<ge> n + 2"
 proof -
-  have 1: "\<And>k. 2 ^ (k + 2) \<ge> (k + 2) + 2"
-    subgoal for k
-      by (induction k) simp_all
-    done
+  have 1: "2 ^ (k + 2) \<ge> (k + 2) + 2" for k
+    by (induction k) simp_all
   assume \<open>n > 1\<close>
   then obtain k where "n = k + 2"
     by (metis Suc_eq_plus1_left add_2_eq_Suc' less_natE)
@@ -70,10 +63,13 @@ proof -
 qed
 
 lemma (in residues) nat_embedding_eq: "ring.nat_embedding R x = int x mod m"
-  apply (induction x)
-  subgoal by (simp add: zero_cong)
-  subgoal for x by (simp add: res_add_eq one_cong mod_add_eq add.commute)
-  done
+proof (induction x)
+  case 0
+  then show ?case by (simp add: zero_cong)
+next
+  case (Suc x)
+  then show ?case by (simp add: res_add_eq one_cong mod_add_eq add.commute)
+qed
 
 lemma (in residues) carrier_mod_eq: "x \<in> carrier R \<Longrightarrow> x mod m = x"
   unfolding res_carrier_eq by simp
@@ -230,26 +226,22 @@ text "Lemmas in $\\mathbb{Z}_{F_m}$ resp. $\\mathbb{Z}_{F_n}$."
 
 sublocale Fnr : int_lsbf_fermat n
   rewrites "Fnr.Fn \<equiv> Fn"
-  subgoal unfolding int_lsbf_fermat.Fn_def Fn_def .
-  done
+  unfolding int_lsbf_fermat.Fn_def Fn_def .
 
 sublocale Fnr_M : multiplicative_subgroup Fn "Units Fn" "units_of Fn"
   by (rule Fnr.units_subgroup)
 
 sublocale Fmr : int_lsbf_fermat m
   rewrites "Fmr.Fn \<equiv> Fm"
-  subgoal unfolding int_lsbf_fermat.Fn_def Fm_def .
-  done
+  unfolding int_lsbf_fermat.Fn_def Fm_def .
 
 sublocale Fmr_M : multiplicative_subgroup Fm "Units Fm" "units_of Fm"
   by (rule Fmr.units_subgroup)
 
 lemma two_pow_oe_n_primitive_root_Fm:
   "Fmr.primitive_root (2 ^ oe_n) (2 [^]\<^bsub>Fm\<^esub> (2::nat) ^ (n - 1))"
-  apply (intro Fmr.two_powers_primitive_root)
-  subgoal using m1 by argo
-  subgoal using n_lt_m by simp
-  done
+  using Fmr.two_powers_primitive_root m0 m1 by force
+
 lemma two_pow_oe_n_root_of_unity_Fm:
   "Fmr.root_of_unity (2 ^ oe_n) (2 [^]\<^bsub>Fm\<^esub> (2::nat) ^ (n - 1))"
   using two_pow_oe_n_primitive_root_Fm by simp
@@ -329,6 +321,7 @@ lemma length_num_blocks[simp]: "length num_blocks = 2 ^ oe_n"
   apply (unfold num_blocks_def)
   apply (intro conjunct1[OF subdivide_correct])
   using two_pow_m1_as_prod by simp_all
+
 lemma length_nth_num_blocks[simp]:
   fixes i :: nat
   assumes "i < 2 ^ oe_n"
@@ -338,6 +331,7 @@ lemma length_nth_num_blocks[simp]:
   subgoal using length_num two_pow_m1_as_prod by argo
   subgoal using assms length_num_blocks unfolding num_blocks_def[symmetric] by simp
   done
+
 lemma num_blocks_bound[simp]:
   fixes i :: nat
   assumes "i < 2 ^ oe_n"
@@ -481,10 +475,8 @@ definition solve_special_residue_problem where
 
 lemma two_pow_n_geq_n_plus_2: "n \<ge> 2 \<Longrightarrow> 2 ^ n \<ge> n + 2"
 proof -
-  have aux: "\<And>k. 2 ^ (k + 2) \<ge> k + 4"
-    subgoal for k
-      by (induction k) simp_all
-    done
+  have aux: "2 ^ (k + 2) \<ge> k + 4" for k
+    by (induction k) simp_all
   assume "n \<ge> 2"
   then obtain k where "n = k + 2" by (metis le_add_diff_inverse2)
   then show ?thesis using aux[of k] by presburger
@@ -585,7 +577,7 @@ proof (intro conjI)
         apply (intro Znr.length_subtract_mod \<open>length \<eta> \<le> n + 2\<close>)
         using Znr.length_reduce by simp
       have "Nat_LSBF.to_nat \<delta> \<le> 2 ^ (n + 2) - 1"
-        using to_nat_length_upper_bound[of \<delta>] power_increasing[OF \<open>length \<delta> \<le> n + 2\<close>, of 2]
+        using to_nat_length_upper_bound[of \<delta>] power_increasing[OF \<open>length \<delta> \<le> n + 2\<close>, of "2::nat"]
         using diff_le_mono by fastforce
       then have "int (Nat_LSBF.to_nat \<delta>) \<le> (2::int) ^ (n + 2) - 1"
         using nat_int_comparison(3)[of "Nat_LSBF.to_nat \<delta>" "2 ^ (n + 2) - 1"]
@@ -1032,19 +1024,17 @@ lemma length_\<xi>': "length \<xi>' = 2 ^ (oe_n - 1)"
 lemma length_\<xi>: "length \<xi> = 2 ^ (oe_n - 1)"
   unfolding \<xi>_def by (simp add: length_\<xi>')
 
-lemma \<gamma>_nth: "\<And>i j. i < 4 \<Longrightarrow> j < 2 ^ (oe_n - 1) \<Longrightarrow> \<gamma> ! i ! j = (subdivide pad_length uv) ! (i * 2 ^ (oe_n - 1) + j)"
-  subgoal for i j
-    unfolding \<gamma>_def \<gamma>s_def
-    apply (intro nth_nth_subdivide[where k = 4])
-    subgoal by simp
-    subgoal
-      apply (intro conjunct1[OF subdivide_correct])
-      subgoal unfolding pad_length_def by simp
-      subgoal using length_uv two_pow_Suc_oe_n_as_prod uv_length_def
-        by simp
-      done
-    .
-  done
+lemma \<gamma>_nth: "i < 4 \<Longrightarrow> j < 2 ^ (oe_n - 1) \<Longrightarrow> \<gamma> ! i ! j = (subdivide pad_length uv) ! (i * 2 ^ (oe_n - 1) + j)" for i j
+  unfolding \<gamma>_def \<gamma>s_def
+  apply (intro nth_nth_subdivide[where k = 4])
+  subgoal by simp
+  subgoal
+    apply (intro conjunct1[OF subdivide_correct])
+    subgoal unfolding pad_length_def by simp
+    subgoal using length_uv two_pow_Suc_oe_n_as_prod uv_length_def
+      by simp
+    done
+  .
 lemma \<gamma>_nth': "\<And>j. j < 2 ^ (oe_n + 1) \<Longrightarrow> \<gamma> ! (j div 2 ^ (oe_n - 1)) ! (j mod 2 ^ (oe_n - 1)) = subdivide pad_length uv ! j"
   using index_decomp \<gamma>_nth by algebra
 lemma sc\<gamma>: "length \<gamma> = 4" "\<And>i. i < 4 \<Longrightarrow> length (\<gamma> ! i) = 2 ^ (oe_n - 1)"
@@ -1058,10 +1048,10 @@ proof -
   qed
 lemmas length_\<gamma> = sc\<gamma>(1)
 lemmas length_\<gamma>_i = sc\<gamma>(2)
-lemma length_\<gamma>_nth: "\<And>i j. i < 4 \<Longrightarrow> j < 2 ^ (oe_n - 1) \<Longrightarrow> length (\<gamma> ! i ! j) = pad_length"
-  subgoal for i j
-    using scuv \<gamma>_nth index_comp[of i j] by fastforce
-  done
+
+lemma length_\<gamma>_nth: "i < 4 \<Longrightarrow> j < 2 ^ (oe_n - 1) \<Longrightarrow> length (\<gamma> ! i ! j) = pad_length"
+  using scuv \<gamma>_nth index_comp[of i j] by fastforce
+
 lemma length_\<eta>: "length \<eta> = 2 ^ (oe_n - 1)" unfolding \<eta>_def
   using length_\<gamma>_i by (simp add: map4_as_map)
     lemma length_z: "length z = 2 ^ (oe_n - 1)"
