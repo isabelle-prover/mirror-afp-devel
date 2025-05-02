@@ -73,8 +73,8 @@ proof -
   proof (cases "card Y = 0")
     case False
     then have "(\<Sum>x\<in>Y. real (card (Neighbours Red x \<inter> X)))\<^sup>2
-        \<le> (\<Sum>y\<in>Y. (real (card (Neighbours Red y \<inter> X)))\<^sup>2) * card Y"
-      using \<open>finite Y\<close> assms by (intro sum_squared_le_sum_of_squares) auto
+            \<le> (\<Sum>y\<in>Y. (real (card (Neighbours Red y \<inter> X)))\<^sup>2) * card Y"
+      using \<open>finite Y\<close> by (intro sum_squared_le_sum_of_squares) auto
     then show ?thesis 
       using assms False by (simp add: divide_simps power2_eq_square sum_nonneg)
   qed (auto simp: sum_nonneg)
