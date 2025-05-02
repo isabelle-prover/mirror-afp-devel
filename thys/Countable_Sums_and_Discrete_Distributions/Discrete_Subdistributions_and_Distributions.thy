@@ -199,7 +199,7 @@ lemma isum_ind[simp]: "\<And>a A. a \<in> A \<Longrightarrow> isum (ind a) A = 1
 
 lemma ind_Subdis[simp, intro!]: "ind a \<in> Subdis A" 
   unfolding Subdis_def
-  by (metis (lifting) isum_ind(1,2) le_numeral_extra(4) linordered_nonzero_semiring_class.zero_le_one mem_Collect_eq positive_ind sbounded_ind)
+  by (metis (lifting) isum_ind le_numeral_extra(4) zero_le_one mem_Collect_eq positive_ind sbounded_ind)
 
 lemma Dis_ind[simp, intro!]: "a \<in> A \<Longrightarrow> ind a \<in> Dis A" 
   unfolding Dis_def by simp

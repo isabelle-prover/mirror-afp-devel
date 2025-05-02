@@ -3037,7 +3037,7 @@ next
        using vts1_is 
        by simp
    } moreover {assume *: "length vts1 > 1"
-     then obtain b c vts1' where "vts1 = b # c # vts1'"
+     then obtain b c vts1' where vts1': "vts1 = b # c # vts1'"
        by (metis One_nat_def length_0_conv length_Cons less_numeral_extra(4) not_one_less_zero remdups_adj.cases)
      then have h1: "make_polygonal_path ((a # vts1) @ vts2) = (linepath a b) +++ (make_polygonal_path (vts1 @ vts2))"
        using make_polygonal_path.simps(4) 
@@ -3045,18 +3045,17 @@ next
      have ind_h: "path_image (make_polygonal_path (vts1 @ vts2)) =
     path_image (make_polygonal_path vts1 +++
     linepath (vts1 ! (length vts1 - 1)) (vts2 ! 0) +++ make_polygonal_path vts2)"
-       using Cons *
-       by linarith
+       using Cons * by linarith
      then have "path_image (make_polygonal_path ((a # vts1) @ vts2)) = path_image ((linepath a b)) \<union> path_image((make_polygonal_path vts1 +++
     linepath (vts1 ! (length vts1 - 1)) (vts2 ! 0) +++ make_polygonal_path vts2))"
-       using h1 
-       by (metis (mono_tags, lifting) "*" Nil_is_append_conv \<open>vts1 = b # c # vts1'\<close> append_Cons length_greater_0_conv linordered_nonzero_semiring_class.zero_le_one nth_Cons_0 order_le_less_trans path_image_join pathfinish_linepath polygon_pathstart)
+       by (metis h1 make_polygonal_path_gives_path path_image_join path_join_path_ends)
      then have "path_image (make_polygonal_path ((a # vts1) @ vts2)) = (path_image (linepath a b) \<union> path_image (make_polygonal_path vts1)) \<union>
     path_image((linepath (vts1 ! (length vts1 - 1)) (vts2 ! 0) +++ make_polygonal_path vts2))"
-       by (metis (no_types, lifting) "*" Un_assoc length_greater_0_conv order_le_less_trans path_image_join pathstart_join pathstart_linepath polygon_pathfinish zero_less_one_class.zero_le_one)
+       by (metis (no_types, opaque_lifting) "*" Un_assoc not_one_less_zero linepath_0' list.size(3) 
+           path_image_join pathstart_def pathstart_join polygon_pathfinish)
    then have image_helper: "path_image (make_polygonal_path ((a # vts1) @ vts2)) = (path_image (make_polygonal_path (a # vts1))) \<union>
     path_image((linepath (vts1 ! (length vts1 - 1)) (vts2 ! 0) +++ make_polygonal_path vts2))"
-     by (metis (no_types, lifting) "*" \<open>vts1 = b # c # vts1'\<close> length_greater_0_conv make_polygonal_path.simps(4) nth_Cons_0 order_le_less_trans path_image_join pathfinish_linepath polygon_pathstart zero_less_one_class.zero_le_one)
+     by (metis neq_Nil_conv nth_Cons' path_image_cons_union vts1')
    have "vts1 ! (length vts1 - 1) = (a # vts1) ! (length (a # vts1) - 1)"
      using Cons.prems 
      by (simp add: Suc_le_eq)

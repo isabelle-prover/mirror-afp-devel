@@ -1343,7 +1343,7 @@ proof -
   have "?P = \<P>(f in a_times_x. f 1 \<ge> 1 \<bar> f 1 \<ge> 0)"
     by(simp add: query_Bayes[OF a_times_x_qbsP] a_times_x'_def)
   also have "... = \<P>(f in a_times_x. f 1 \<ge> 1) / \<P>(f in a_times_x. f 1 \<ge> 0)"
-    by(auto simp add: cond_prob_def) (meson dual_order.trans linordered_nonzero_semiring_class.zero_le_one)
+    unfolding cond_prob_def by (smt (verit, ccfv_SIG) Collect_cong)
   also have "... = 1 / 2"
   proof -
     have [simp]: "{-2<..<2::real} \<inter> Collect ((\<le>) 1) = {1..<2}" "{-2<..<2::real} \<inter> Collect ((\<le>) 0) = {0..<2}"

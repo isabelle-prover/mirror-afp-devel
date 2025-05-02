@@ -115,7 +115,7 @@ lemma release_or_distribute:
 lemma different_next_operators:
   shows "\<not>(G\<^sub>m [1,1] \<phi> \<equiv>\<^sub>m F\<^sub>m [1,1] \<phi>)"
   unfolding semantic_equiv_def semantics_mltl.simps
-  by (metis le_numeral_extra(4) linordered_nonzero_semiring_class.zero_le_one list.size(3) not_one_less_zero)
+  by (metis le_numeral_extra(4) zero_le_one list.size(3) not_one_less_zero)
 
 subsection \<open>Duality Properties\<close>
 

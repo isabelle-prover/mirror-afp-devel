@@ -1348,8 +1348,8 @@ lemma local_holder_X_mod_process: "local_holder_on \<gamma> {0..} (\<lambda>t. X
 
 theorem continuous_modification:
   "\<exists>X'. modification X X' \<and> (\<forall>\<omega>. local_holder_on \<gamma> {0..} (\<lambda>t. X' t \<omega>))"
-  apply (rule exI[where x=X_mod_process])
-  using local_holder_X_mod_process modification_X_mod_process by auto
+  using local_holder_X_mod_process modification_X_mod_process by blast
+
 end
 
 theorem Kolmogorov_Chentsov:

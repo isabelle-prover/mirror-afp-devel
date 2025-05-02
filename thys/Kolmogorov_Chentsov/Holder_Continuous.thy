@@ -313,7 +313,7 @@ proof -
           using "*"(1) ge_one_powr_ge_zero by auto
         then show "dist (\<phi> s) (\<phi> r) \<le> l * (dist s r / \<rho>) powr \<gamma>"
           using l
-          by (metis dist_self linordered_nonzero_semiring_class.zero_le_one mult.right_neutral mult_mono sr(1) sr(2))
+          by (metis dist_self dual_order.strict_trans1 leI less_le_not_le mult_less_cancel_left2 sr)
       qed
       also have "... \<le> C_bar * dist s r powr \<gamma>"
       proof -

@@ -758,7 +758,8 @@ proof -
     assume asm: "\<not> bounded h"
     obtain C where C: "\<bar>g (h z)\<bar> \<le> C" "C \<ge> 0" for z using bounded by fastforce
     obtain N where N: "g z \<ge> C + 1" if "z \<ge> N" for z using C pos_g unfolding pos_def by fastforce
-    obtain N' where N': "g z \<le> - (C + 1)" if "z \<le> N'" for z using C pos_g unfolding pos_dual_def[OF slope_g] by (meson add_increasing2 linordered_nonzero_semiring_class.zero_le_one)
+    obtain N' where N': "g z \<le> - (C + 1)" if "z \<le> N'" for z 
+      using C pos_g unfolding pos_dual_def[OF slope_g] by (meson add_increasing2 zero_le_one)
     obtain z where "\<bar>h z\<bar> > max \<bar>N\<bar> \<bar>N'\<bar>" using asm unfolding bounded_alt_def by (meson leI)
     hence "h z \<in> {..N'} \<union> {N..}" by fastforce
     hence "g (h z) \<in> {..- (C + 1)} \<union> {C + 1..}" using N N' by blast

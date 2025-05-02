@@ -53,7 +53,8 @@ proof transfer
   proof (cases "u = 0\<^sub>h \<or> v = 0\<^sub>h")
     case True
     then show ?thesis
-      by (metis dual_order.refl inf_notin_unit_disc linordered_nonzero_semiring_class.zero_le_one mult_cancel_left1 mult_zero_class.mult_zero_right of_complex_to_complex of_complex_zero of_real_0 poincare_between_nonstrict(1) poincare_between_sandwich to_complex_zero_zero uv(1) zero_in_unit_disc)
+      by (metis le_numeral_extra(1,3) mult.commute mult_zero_class.mult_zero_left of_real_0 poincare_between_nonstrict(1)
+          poincare_between_sandwich to_complex_zero_zero unit_disc_to_complex_inj uv)
   next
     case False
     then have z: "u \<noteq> 0\<^sub>h" "v \<noteq> 0\<^sub>h"

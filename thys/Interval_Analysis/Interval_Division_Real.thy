@@ -156,12 +156,12 @@ next
        using assms a0 RightOf upper_leq_lower_div 
        apply (simp add: max_def, safe)
        subgoal 
-         using frac_le le_numeral_extra(4) less_numeral_extra(3) linordered_nonzero_semiring_class.zero_le_one 
+         using frac_le le_numeral_extra(4) less_numeral_extra(3) zero_le_one 
            mult_mono' not_real_square_gt_zero order_less_imp_le by metis 
        apply argo+
        apply (simp add: frac_le)
        subgoal 
-         using frac_le linordered_nonzero_semiring_class.zero_le_one mult_mono' mult_pos_pos 
+         using frac_le zero_le_one mult_mono' mult_pos_pos 
            order.refl order_less_imp_le by meson
        by argo+
     moreover have \<open>(abs_interval((interval_of 1) / Y) *  abs_interval((interval_of 1) / Y)) * interval_of(width Y) = Interval(1 /upper Y * 1 /upper Y, 1 /lower Y * 1 /lower Y) * Interval(upper Y - lower Y, upper Y - lower Y)\<close> 

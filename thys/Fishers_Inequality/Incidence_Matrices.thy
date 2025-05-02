@@ -25,9 +25,7 @@ lemma finite_inc_vec_elems: "finite (set\<^sub>v (inc_vec_of Vs bl))"
   using finite_subset inc_vec_one_zero_elems by blast
 
 lemma inc_vec_elems_max_two: "card (set\<^sub>v (inc_vec_of Vs bl)) \<le> 2"
-  using card_mono inc_vec_one_zero_elems finite.insertI card_0_eq card_2_iff
-  by (smt (verit)  insert_absorb2 linorder_le_cases linordered_nonzero_semiring_class.zero_le_one 
-      obtain_subset_with_card_n one_add_one subset_singletonD trans_le_add1) 
+  by (metis card_mono inc_vec_one_zero_elems finite.insertI card_2_iff finite.emptyI one_neq_zero)
 
 lemma inc_vec_dim: "dim_vec (inc_vec_of Vs bl) = length Vs"
   by (simp add: inc_vec_of_def)

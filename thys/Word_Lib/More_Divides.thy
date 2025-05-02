@@ -47,7 +47,7 @@ qed
 
 lemma one_mod_exp_eq_one [simp]:
   "1 mod (2 * 2 ^ n) = (1::int)"
-  using power_gt1 [of 2 n] by (auto intro: mod_pos_pos_trivial)
+  by (simp add: power_gt1_lemma)
 
 lemma int_mod_lem: "0 < n \<Longrightarrow> 0 \<le> b \<and> b < n \<longleftrightarrow> b mod n = b"
   for b n :: int

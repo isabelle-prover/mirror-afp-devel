@@ -217,18 +217,16 @@ lemma collinear_sin_neq_0:
 
 lemma collinear_sin_neq_pi:
   \<open>\<not>collinear a2 b2 c2 \<Longrightarrow> sin (angle_c a2 c2 b2) \<noteq> pi\<close>
-  unfolding collinear_def angle_c_def 
-  by (metis add_cancel_right_left dual_order.antisym dual_order.trans le_add_same_cancel1 
-linordered_nonzero_semiring_class.zero_le_one one_add_one one_neq_zero pi_ge_two sin_le_one)
+  unfolding collinear_def angle_c_def
+  by (metis add_cancel_right_left order.antisym order.trans le_add_same_cancel1 zero_le_one 
+      one_add_one one_neq_zero pi_ge_two sin_le_one)
 
 
 lemma collinear_iff:
   assumes \<open>a\<noteq>b \<and> b\<noteq>c \<and> c\<noteq>a\<close> 
-  shows \<open>collinear a b c \<longleftrightarrow> (angle_c a b c = pi \<or> angle_c a b c = 0)\<close>
-  apply(rule iffI)
-  using assms unfolding collinear_def using collinear_angle collinear_def apply(fastforce) 
-  by (metis collinear_def collinear_sin_neq_0 collinear_sym1 sin_pi sin_zero)
-
+  shows \<open>collinear a b c \<longleftrightarrow> (angle_c a b c = pi \<or> angle_c a b c = 0)\<close> 
+  using assms collinear_angle collinear_sin_neq_0 collinear_sym1 sin_minus_pi sin_pi_minus
+  by fastforce
 
 
 definition \<open>innerprod a b \<equiv> cnj a * b\<close>
