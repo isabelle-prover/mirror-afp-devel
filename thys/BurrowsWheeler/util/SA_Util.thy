@@ -98,7 +98,7 @@ proof -
       by presburger
   }
   ultimately show ?thesis
-    using sorted_select assms(2) by force
+    by (simp add: \<open>xs = sort s\<close> sorted_select)
 qed
 
 lemma select_nth_suffix_start2:
