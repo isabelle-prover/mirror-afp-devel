@@ -591,6 +591,8 @@ proof -
     by simp
 qed
 
+declare v_check_exec_simps [code] s_check_exec_simps [code]
+
 lemma v_check_exec_Once_code[code]: "v_check_exec \<sigma> vs (Formula.Once I \<phi>) vp = (case vp of
   VOnce i li vps \<Rightarrow>
     (case right I of \<infinity> \<Rightarrow> li = 0 | enat b \<Rightarrow> ((li = 0 \<or> b < \<delta> \<sigma> i (li - 1)) \<and> \<delta> \<sigma> i li \<le> b)) 

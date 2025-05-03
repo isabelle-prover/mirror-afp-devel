@@ -1253,8 +1253,8 @@ and v_check_exec :: "('n, 'd) envset \<Rightarrow> ('n, 'd) formula \<Rightarrow
   | ( _ , _) \<Rightarrow> False)"
 
 declare s_check_exec.simps[simp del] v_check_exec.simps[simp del]
-simps_of_case s_check_exec_simps[simp, code]: s_check_exec.simps[unfolded prod.case] (splits: formula.split sproof.split)
-simps_of_case v_check_exec_simps[simp, code]: v_check_exec.simps[unfolded prod.case] (splits: formula.split vproof.split)
+simps_of_case s_check_exec_simps[simp]: s_check_exec.simps[unfolded prod.case] (splits: formula.split sproof.split)
+simps_of_case v_check_exec_simps[simp]: v_check_exec.simps[unfolded prod.case] (splits: formula.split vproof.split)
 
 lemma check_fv_cong:
   assumes "\<forall>x \<in> fv \<phi>. v x = v' x"
