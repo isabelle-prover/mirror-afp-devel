@@ -12,33 +12,14 @@ text \<open>
   sort constraint @{class equal}.
 \<close>
 
-definition insert' :: "'a \<Rightarrow> 'a set \<Rightarrow> 'a set"
-where "insert' = Set.insert"
+declare [[code drop: insert union]]
 
-definition union' :: "'a set \<Rightarrow> 'a set \<Rightarrow> 'a set"
-where "union' A B = sup A B"
+lemma insert_code [code]:
+  \<open>insert x (set xs) = set (x # xs)\<close>
+  by simp
 
-declare
-  insert'_def [symmetric, code_unfold]
-  union'_def [symmetric, code_unfold]
-
-lemma insert'_code:
-  "insert' x (set xs) = set (x # xs)"
-  by (rule set_eqI) (simp add: insert'_def)
-
-lemma union'_code:
-  "union' (set xs) (set ys) = set (xs @ ys)"
-  by (rule set_eqI) (simp add: union'_def fun_eq_iff)
-
-declare
-  insert'_code [code]
-  union'_code [code]
-
-text \<open>Merge name spaces to avoid cyclic module dependencies\<close>
-
-code_identifier
-  code_module Set_without_equal \<rightharpoonup>
-    (SML) Set and (Haskell) Set and (OCaml) Set
+lemma union_code [code]:
+  \<open>set xs \<union> set ys = set (xs @ ys)\<close>
+  by simp
 
 end
-
