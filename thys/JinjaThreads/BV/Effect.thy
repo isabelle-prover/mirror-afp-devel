@@ -534,9 +534,6 @@ lemma app_append [simp]:
 
 subsection \<open>Code generator setup\<close>
 
-declare list_all2_Nil [code]
-declare list_all2_Cons [code]
-
 lemma eff\<^sub>i_BinOpInstr_code:
   "eff\<^sub>i (BinOpInstr bop, P, (T2#T1#ST,LT)) = (Predicate.the (WTrt_binop_i_i_i_i_o P T1 bop T2) # ST, LT)"
 by(simp add: the_WTrt_binop_code)
