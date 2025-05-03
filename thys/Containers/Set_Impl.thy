@@ -295,8 +295,6 @@ declare [[code drop:
   Set.filter
   image
   Set.subset_eq
-  Ball
-  Bex
   Set.union
   minus_set_inst.minus_set
   Set.inter
@@ -305,26 +303,26 @@ declare [[code drop:
   the_elem
   Pow
   sum
-  Gcd
-  Lcm
   Product_Type.product
   Id_on
   Image
   trancl
   relcomp
   wf_code
-  Min
+  \<open>Inf :: _ \<Rightarrow> 'a set\<close>
+  \<open>Sup :: _ \<Rightarrow> 'a set\<close>
+  \<open>Inf :: _ \<Rightarrow> 'a Predicate.pred\<close>
+  \<open>Sup :: _ \<Rightarrow> 'a Predicate.pred\<close>
   Inf_fin
-  Max
   Sup_fin
-  "Inf :: 'a set set \<Rightarrow> 'a set"
-  "Sup :: 'a set set \<Rightarrow> 'a set"
+  Min
+  Max
+  Bex
+  Ball
   sorted_list_of_set
   List.map_project
-  Sup_pred_inst.Sup_pred
   finite
   card
-  Inf_pred_inst.Inf_pred
   pred_of_set
   Wellfounded.acc
   Bleast
