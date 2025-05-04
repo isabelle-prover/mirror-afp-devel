@@ -8,7 +8,6 @@ session Modular_arithmetic_LLL_and_HNF_algorithms = Smith_Normal_Form +
     Jordan_Normal_Form
     Hermite
   theories
-    Matrix_Change_Row
     Signed_Modulo
     Storjohann_Mod_Operation
     Storjohann

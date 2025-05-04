@@ -19,7 +19,6 @@ theory HNF_Mod_Det_Algorithm
     Smith_Normal_Form.SNF_Algorithm_Euclidean_Domain
     Smith_Normal_Form.SNF_Missing_Lemmas
     Uniqueness_Hermite_JNF
-    Matrix_Change_Row
 begin
 
 subsubsection \<open>Echelon form algorithm\<close>
