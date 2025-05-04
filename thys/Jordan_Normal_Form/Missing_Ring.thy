@@ -13,95 +13,14 @@ theory Missing_Ring
   "HOL-Algebra.Ring"
 begin
 
-context ordered_cancel_semiring
-begin
-
-subclass ordered_cancel_ab_semigroup_add ..
-
-end
-
-text \<open>partially ordered variant\<close>
-class ordered_semiring_strict = semiring + comm_monoid_add + ordered_cancel_ab_semigroup_add +
-  assumes mult_strict_left_mono: "a < b \<Longrightarrow> 0 < c \<Longrightarrow> c * a < c * b"
-  assumes mult_strict_right_mono: "a < b \<Longrightarrow> 0 < c \<Longrightarrow> a * c < b * c"
-begin
-
-subclass semiring_0_cancel ..
-
-subclass ordered_semiring
-proof
-  fix a b c :: 'a
-  assume A: "a \<le> b" "0 \<le> c"
-  from A show "c * a \<le> c * b"
-    unfolding le_less
-    using mult_strict_left_mono by (cases "c = 0") auto
-  from A show "a * c \<le> b * c"
-    unfolding le_less
-    using mult_strict_right_mono by (cases "c = 0") auto
-qed
-
-lemma mult_pos_pos[simp]: "0 < a \<Longrightarrow> 0 < b \<Longrightarrow> 0 < a * b"
-using mult_strict_left_mono [of 0 b a] by simp
-
-lemma mult_pos_neg: "0 < a \<Longrightarrow> b < 0 \<Longrightarrow> a * b < 0"
-using mult_strict_left_mono [of b 0 a] by simp
-
-lemma mult_neg_pos: "a < 0 \<Longrightarrow> 0 < b \<Longrightarrow> a * b < 0"
-using mult_strict_right_mono [of a 0 b] by simp
-
-text \<open>Legacy - use \<open>mult_neg_pos\<close>\<close>
-lemma mult_pos_neg2: "0 < a \<Longrightarrow> b < 0 \<Longrightarrow> b * a < 0" 
-by (drule mult_strict_right_mono [of b 0], auto)
-
-text\<open>Strict monotonicity in both arguments\<close>
-lemma mult_strict_mono:
-  assumes "a < b" and "c < d" and "0 < b" and "0 \<le> c"
-  shows "a * c < b * d"
-  using assms apply (cases "c=0")
-  apply (simp)
-  apply (erule mult_strict_right_mono [THEN less_trans])
-  apply (force simp add: le_less)
-  apply (erule mult_strict_left_mono, assumption)
-  done
-
-text\<open>This weaker variant has more natural premises\<close>
-lemma mult_strict_mono':
-  assumes "a < b" and "c < d" and "0 \<le> a" and "0 \<le> c"
-  shows "a * c < b * d"
-by (rule mult_strict_mono) (insert assms, auto)
-
-lemma mult_less_le_imp_less:
-  assumes "a < b" and "c \<le> d" and "0 \<le> a" and "0 < c"
-  shows "a * c < b * d"
-  using assms apply (subgoal_tac "a * c < b * c")
-  apply (erule less_le_trans)
-  apply (erule mult_left_mono)
-  apply simp
-  apply (erule mult_strict_right_mono)
-  apply assumption
-  done
-
-lemma mult_le_less_imp_less:
-  assumes "a \<le> b" and "c < d" and "0 < a" and "0 \<le> c"
-  shows "a * c < b * d"
-  using assms apply (subgoal_tac "a * c \<le> b * c")
-  apply (erule le_less_trans)
-  apply (erule mult_strict_left_mono)
-  apply simp
-  apply (erule mult_right_mono)
-  apply simp
-  done
-
-end
-
 class ordered_idom = idom + ordered_semiring_strict +
   assumes zero_less_one [simp]: "0 < 1" begin
 
-subclass semiring_1 ..
-subclass comm_ring_1 ..
 subclass ordered_ring ..
-subclass ordered_comm_semiring by(unfold_locales, fact mult_left_mono)
-subclass ordered_ab_semigroup_add ..
+subclass ordered_comm_semiring 
+  by(unfold_locales, fact mult_left_mono)
+subclass ordered_semiring_1
+  by unfold_locales auto
 
 lemma of_nat_ge_0[simp]: "of_nat x \<ge> 0"
 proof (induct x)
@@ -192,10 +111,6 @@ begin
 sublocale csemiring ..
 end
 
-lemma (in comm_monoid) finprod_one': 
-  "(\<And> a. a \<in> A \<Longrightarrow> f a = \<one>) \<Longrightarrow> finprod G f A = \<one>"
-  by (induct A rule: infinite_finite_induct, auto)
-
 lemma (in comm_monoid) finprod_split: 
   "finite A \<Longrightarrow> f ` A \<subseteq> carrier G \<Longrightarrow> a \<in> A \<Longrightarrow> finprod G f A = f a \<otimes> finprod G f (A - {a})"
   by (rule trans[OF trans[OF _ finprod_Un_disjoint[of "{a}" "A - {a}" f]]], auto,
@@ -256,7 +171,7 @@ lemma (in comm_monoid) finprod_finprod_swap:
 
 
 
-lemmas (in semiring) finsum_zero' = add.finprod_one' 
+lemmas (in semiring) finsum_zero' = add.finprod_one_eqI 
 lemmas (in semiring) finsum_split = add.finprod_split 
 lemmas (in semiring) finsum_finsum_swap = add.finprod_finprod_swap
 

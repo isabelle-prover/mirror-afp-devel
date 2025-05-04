@@ -30,7 +30,8 @@ lemma(in ring_hom) hom_signof[simp]: "hom (signof p) = signof p"
   by (simp add: hom_uminus sign_def)
 
 lemma(in comm_ring_hom) hom_det[simp]: "det (map_mat hom A) = hom (det A)"
-  unfolding det_def by (auto simp: hom_distribs)
+  unfolding det_def
+  by (auto simp: hom_distribs)
 
 lemma det_def': "A \<in> carrier_mat n n \<Longrightarrow> 
   det A = (\<Sum> p \<in> {p. p permutes {0 ..< n}}. 
@@ -64,13 +65,12 @@ proof -
       by (blast intro: subset_inj_on)
     let ?f = "\<lambda>i. transpose_mat A $$ (i, ?inv p i)"
     note pU_U = permutes_image[OF pU]
-    note [simp] = permutes_less[OF pU]
     have "prod ?f ?U = prod ?f (p ` ?U)"
       using pU_U by simp
     also have "\<dots> = prod (?f \<circ> p) ?U"
       by (rule prod.reindex[OF pi])
     also have "\<dots> = prod (\<lambda>i. A $$ (i, p i)) ?U"
-      by (rule prod.cong, insert A, auto)
+      using A by (intro prod.cong) (auto simp: \<open>inj p\<close> pU)
     finally have "signof (?inv p) * prod ?f ?U =
       signof p * prod (\<lambda>i. A $$ (i, p i)) ?U"
       unfolding sth by simp
@@ -98,7 +98,7 @@ proof -
   proof (rule sum.cong[OF refl],unfold mem_Collect_eq)
       fix p assume p: "p permutes ?N"
       have [simp]: "?prod p = ?prod' p"
-        using permutes_prod[OF p, of "\<lambda>x y. A $$ (x,y)"] by auto
+        using p prod.permutes_inv[OF p, of "\<lambda>x y. A $$ (x,y)"] by auto
       have [simp]: "signof p = signof (?i p)"
         apply(rule signof_inv[symmetric]) using p by auto
       show "?f p = ?f' p" by auto

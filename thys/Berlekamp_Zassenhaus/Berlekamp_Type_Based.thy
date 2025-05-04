@@ -2922,9 +2922,12 @@ proof -
               finally have hj': "?h dvd ?g j'" by auto
               from divides_degree[OF this] deg u0 have degj': "degree (?g j') > 0" by auto
               hence j'1: "?g j' \<noteq> 1" by auto
-              with j' have mem': "?g j' \<in> set (udivs u)" unfolding udivs_def by auto
-              from degj' j' have j'S: "int j' \<in> ?S" by auto
-              from i j have jS: "int j \<in> ?S" by auto
+              with j' have mem': "?g j' \<in> set (udivs u)" unfolding udivs_def
+                by auto
+              from degj' j' have j'S: "int j' \<in> ?S" 
+                by auto
+              from i j have jS: "int j \<in> ?S"
+                by auto
               from inj_on_contraD[OF inj neq j'S jS]
               have neq: "w \<noteq> ?g j'" using w j by auto
               have cop: "\<not> coprime w (?g j')" using hj' hw deg

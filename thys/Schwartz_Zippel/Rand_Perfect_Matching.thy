@@ -218,13 +218,10 @@ lemma sum_monomial_eq:
       monomial (1::nat) (i * V + g i))"
   shows "f = g"
 proof -
-  have injf: "inj_on (\<lambda>i. i * V + f i) {0..<V}"
-    by (intro inj_onI, unfold atLeastLessThan_iff)
-       (metis add_diff_cancel_right' assms(1) div_mult_self_is_m le_less_trans pair_enc_eq permutes_less(1))
-    
-  have injg:"inj_on (\<lambda>i. i * V + g i) {0..<V}"
-    by (intro inj_onI, unfold atLeastLessThan_iff)
-       (metis add_diff_cancel_right' assms(2) div_mult_self_is_m le_less_trans pair_enc_eq permutes_less(1))
+  have injf: "inj_on (\<lambda>i. i * V + f i) {0..<V}" and injg:"inj_on (\<lambda>i. i * V + g i) {0..<V}"
+    unfolding inj_on_def
+    using assms
+    by (metis permutes_nat_less pair_enc_eq atLeastLessThan_iff permutes_def)+
     
   have "MPoly_Type.monom (sum (\<lambda>i. monomial  (1::nat) (i * V + f i)) {0..<V}) 1 =
         MPoly_Type.monom (sum (\<lambda>i. monomial  (1::nat)(i * V + g i)) {0..<V}) 1"
@@ -238,30 +235,22 @@ proof -
              prod Var ((\<lambda>i. i * V + g i) ` {0..<V})"
     by (simp add: prod.reindex[OF injf] prod.reindex[OF injg])
 
-  then have *: "((\<lambda>i. i * V + f i) ` {0..<V}) =
-    ((\<lambda>i. i * V + g i) ` {0..<V})"
+  then have *: "((\<lambda>i. i * V + f i) ` {0..<V}) = ((\<lambda>i. i * V + g i) ` {0..<V})"
     by (intro prod_Var_eq) auto
-  have "\<And>i. f i = g i"
-  proof -
-    fix i
-    have " i < V \<or> i \<ge> V" by auto
-    moreover {
-      assume iV:"i < V"
+  have "f i = g i" for i
+  proof (cases "i < V")
+    case True
       then have fiV:"f i < V"
-        using iV assms(1) permutes_less(1) by blast
+        by (simp add: assms(1))
       have "(i * V + f i) \<in> ((\<lambda>i. i * V + g i) ` {0..<V})"
-        using iV * by force
-      then have "f i = g i"
-        apply (safe)
-        apply (unfold atLeastLessThan_iff)
-        by (metis add_diff_cancel_right' assms(2) basic_trans_rules(21) div_mult_self_is_m fiV pair_enc_eq permutes_less(1))
-    }
-    moreover {
-      assume "i \<ge> V"
-      have "f i = g i" using assms(1-2)
-        by (metis atLeastLessThan_iff calculation(2) permutes_others)
-    }
-    ultimately show "f i = g i" by auto
+        using True * by force
+      with div_mult_self_is_m fiV pair_enc_eq permutes_nat_less show ?thesis
+        unfolding image_iff
+        by (metis add_diff_cancel_right' assms(2) atLeastLessThan_iff le_less_trans)
+  next
+    case False
+    with assms show ?thesis
+      by (metis atLeastLessThan_iff permutes_def) 
   qed
   thus ?thesis by auto
 qed
@@ -330,7 +319,7 @@ proof -
     by simp
   then have iV: "\<And>i. i < V \<Longrightarrow>  (i, p i) \<in> E"
     unfolding adj_mat_def
-    by (smt (verit, del_insts) index_mat(1) p(1) permutes_less(1) prod.simps(2))
+    by (smt (verit, best) index_mat(1) p(1) permutes_nat_less split_conv)
 
   define match where "match = (\<lambda>i. (i,p i)) ` {0..<V}"
   have 1:"card match = V" unfolding match_def
@@ -471,9 +460,8 @@ proof -
   have *: "total_degree (?f p) \<le> V" if p: "p permutes {0..<V}" for p
   proof -
     have inj: "inj_on (\<lambda>i. i * V + p i) {0..<V}"
-        apply (intro inj_onI)
-        apply (unfold atLeastLessThan_iff)
-        using p by (metis pair_enc_eq permutes_less(1) permutes_less(4))
+      unfolding atLeastLessThan_iff inj_on_def
+      by (metis permutes_nat_less pair_enc_eq atLeastLessThan_iff p permutes_def)
     have "total_degree (?f p) =
           total_degree 
             (MPoly_Type.monom (sum (monomial (Suc 0)) ((\<lambda>i. i * V + p i)`{0..<V}))
@@ -630,8 +618,7 @@ proof -
     prob_space.prob
     (Pi_pmf {0..<V\<^sup>2} 0 (\<lambda>i. pmf_of_set {0..<int n}))
     {f. insertion f (det (adj_mat V E)) = 0}"
-    unfolding measure_map_pmf vimage_def
-    det_int_adj_mat
+    unfolding measure_map_pmf vimage_def det_int_adj_mat
     by auto
   moreover have "... \<le> real V / card{0..<int n}"
     by (intro schwartz_zippel[OF _ _ _  total_degree_det_adj_mat d vars_det_adj_mat])

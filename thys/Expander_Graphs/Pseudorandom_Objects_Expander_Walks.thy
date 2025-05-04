@@ -9,7 +9,6 @@ begin
 unbundle intro_cong_syntax
 hide_const (open) Quantum.T
 hide_fact (open) SN_Orders.of_nat_mono
-hide_fact Missing_Ring.mult_pos_pos
 
 definition expander_pro ::
   "nat \<Rightarrow> real \<Rightarrow> ('a,'b) pseudorandom_object_scheme \<Rightarrow> (nat \<Rightarrow> 'a) pseudorandom_object"
