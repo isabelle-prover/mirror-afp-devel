@@ -38,24 +38,6 @@ lemma [code abstract]: "vec_nth (list_of_list_to_matrix xs) = (%i. list_to_vec (
 
 subsection\<open>Examples\<close>
 
-text\<open>The following three lemmas are presented in both this file and in the 
-\<open>Examples_Gauss_Jordan_IArrays\<close> one. They allow a more convenient printing of rational and
-real numbers after evaluation. They have already been added to the repository version of Isabelle, 
-so after Isabelle2014 they should be removed from here.\<close>
-
-lemma [code_post]:
-  "int_of_integer (- 1) = - 1"
- by simp
-
-lemma [code_abbrev]:
- "(of_rat (- 1) :: real) = - 1"
-  by simp
-
-lemma [code_post]:
- "(of_rat (- (1 / numeral k)) :: real) = - 1 / numeral k"
- "(of_rat (- (numeral k / numeral l)) :: real) = - numeral k / numeral l"
- by (simp_all add: of_rat_divide of_rat_minus)
-
 subsubsection\<open>Ranks and dimensions\<close>
 text\<open>Examples on computing ranks, dimensions of row space, null space and col space and the Gauss Jordan algorithm\<close>
 
