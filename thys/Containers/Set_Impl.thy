@@ -303,6 +303,7 @@ declare [[code drop:
   the_elem
   Pow
   sum
+  prod
   Product_Type.product
   Id_on
   Image
@@ -1360,6 +1361,14 @@ by(unfold_locales)(simp add: fun_eq_iff add.left_commute)
 lemma sum_code [code]:
   "sum f A = (if finite A then set_fold_cfc (sum_cfc f) 0 A else 0)"
   by transfer(simp add: sum.eq_fold)
+
+lift_definition prod_cfc :: "('a \<Rightarrow> 'b :: comm_monoid_mult) \<Rightarrow> ('a, 'b) comp_fun_commute"
+  is "\<lambda>f :: 'a \<Rightarrow> 'b. times \<circ> f"
+  by standard (simp add: fun_eq_iff mult.left_commute)
+
+lemma prod_code [code]:
+  "prod f A = (if finite A then set_fold_cfc (prod_cfc f) 1 A else 1)"
+  by transfer (simp add: prod.eq_fold)
 
 lemma product_code [code]:
   fixes dxs :: "'a :: ceq set_dlist"
