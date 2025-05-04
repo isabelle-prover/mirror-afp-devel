@@ -46,12 +46,6 @@ hide_fact Missing_Ring.zero_less_one
 instance real :: ordered_semiring_strict by (intro_classes, auto)
 instance real :: linordered_idom..
 
-(*This is a generalisation of thm less_1_mult*) 
-lemma less_1_mult': 
-  fixes a::"'a::linordered_semidom"
-  shows "1 < a \<Longrightarrow> 1 \<le> b \<Longrightarrow> 1 < a * b"
-  by (metis le_less less_1_mult mult.right_neutral)
-
 lemma upt_minus_eq_append: "i\<le>j \<Longrightarrow> i\<le>j-k \<Longrightarrow> [i..<j] = [i..<j-k] @ [j-k..<j]"
 proof (induct k)
   case (Suc k)
@@ -72,13 +66,6 @@ lemma id_imp_bij_betw:
 lemma range_subsetI:
   assumes "\<And>x. f x = g (h x)" shows "range f \<subseteq> range g"
   using assms by auto
-
-lemma Gcd_uminus: 
-  fixes A::"int set"
-  assumes "finite A"
-  shows "Gcd A = Gcd (uminus ` A)"
-  using assms
-  by (induct A, auto)
 
 lemma aux_abs_int: fixes c :: int
   assumes "c \<noteq> 0" 
@@ -106,10 +93,11 @@ qed
 (* an intro version of sum_list_0 *)
 lemma sum_list_zero:
   assumes "set xs \<subseteq> {0}" shows "sum_list xs = 0"
-  using assms by (induct xs, auto)
+  by (meson assms singletonD subset_eq sum_list_neutral)
 
 (* About @{const max} *)
-lemma max_idem [simp]: shows "max a a = a" by (simp add: max_def)
+lemma max_idem [simp]: "max a a = a" 
+  by (simp add: max_def)
 
 lemma hom_max:
   assumes "a \<le> b \<longleftrightarrow> f a \<le> f b"
@@ -327,11 +315,6 @@ lemma poly_of_vec_add:
   shows "poly_of_vec (a + b) = poly_of_vec a + poly_of_vec b"
   using assms
   by (auto simp add: poly_eq_iff coeff_poly_of_vec)
-
-(*TODO: replace the one in Resultant.thy*)
-lemma degree_poly_of_vec_less:
-  assumes "0 < dim_vec v" and "dim_vec v \<le> n" shows "degree (poly_of_vec v) < n"
-  using degree_poly_of_vec_less assms by (auto dest: less_le_trans)
 
 lemma (in vec_module) poly_of_vec_finsum:
   assumes "f \<in> X \<rightarrow> carrier_vec n"

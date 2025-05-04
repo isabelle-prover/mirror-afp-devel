@@ -457,14 +457,10 @@ proof -
     by (metis (no_types, lifting) combine_common_factor mult_smult_left smult_add_right)
   define q where q: "q = (q' + smult k q'')"
   define r where r: "r = r''"
-  have degree_q: "q = 0 \<or> degree (q' + smult k q'') < n - d"
-  proof (cases "q = 0",auto, rule degree_div_mod_smult[OF _ _ _ g1])
-    show "degree (poly_of_vec g) < n" by (rule degree_poly_of_vec_less, auto simp add: dim_g)
-    show "degree r'' < d" using deg_r'' unfolding d_def .
-    assume "q\<noteq>0" thus "q' + smult k q'' \<noteq> 0" unfolding q .
-    show "k \<noteq> 0" by fact
-    show "degree u = d" using d_def by auto
-  qed
+  have "degree (poly_of_vec g) < n"
+    using degree_poly_of_vec_less dim_g n by blast
+  then have degree_q: "q = 0 \<or> degree (q' + smult k q'') < n - d"
+    using assms deg_r'' degree_div_mod_smult g1 q by blast
   have g2: "(vec_of_poly_n (q*u) n) + (vec_of_poly_n (smult k r) n) = g" 
   proof -
     have "g = vec_of_poly_n (poly_of_vec g) n"
@@ -677,10 +673,14 @@ proof -
     from in_span_listE[OF fv[unfolded lattice_is_span]] 
     obtain c where fv: "fv = lincomb_list c ?L" by auto    
     from lincomb_to_dvd_modulo[OF _ fv[symmetric]] deg_u f
-    have dvd: "poly_mod.dvdm M u f" by auto
-    have "set ?L \<subseteq> carrier_vec n" unfolding factorization_lattice_def using deg_u by auto
-    hence "fv \<in> carrier_vec n" unfolding fv by (metis lincomb_list_carrier)
-    hence "degree f < n" unfolding f using degree_poly_of_vec_less[of fv n] using n by auto
+    have dvd: "poly_mod.dvdm M u f" 
+      by auto
+    have "set ?L \<subseteq> carrier_vec n" 
+      unfolding factorization_lattice_def using deg_u by auto
+    hence "fv \<in> carrier_vec n" 
+      unfolding fv by (metis lincomb_list_carrier)
+    hence "degree f < n" unfolding f
+      using degree_poly_of_vec_less [of fv] n by auto
     with dvd show "degree f < n \<and> poly_mod.dvdm M u f" by auto
   }
 qed
@@ -1308,15 +1308,11 @@ lift_definition one_lattice_LLL_factorization :: int_poly_factorization_algorith
 lift_definition many_lattice_LLL_factorization :: int_poly_factorization_algorithm
   is LLL_many_factorization using LLL_many_factorization by auto
 
-lemma LLL_factorization_primitive: assumes "LLL_factorization f = fs"
-  "square_free f" 
-  "0 < degree f" 
-  "primitive f" 
+lemma LLL_factorization_primitive: 
+  assumes "LLL_factorization f = fs" "square_free f"  "0 < degree f"  "primitive f" 
 shows "f = prod_list fs \<and> (\<forall>fi\<in>set fs. irreducible fi \<and> 0 < degree fi \<and> primitive fi)" 
-  using assms(1)
-  by (intro int_poly_factorization_algorithm_irreducible[of one_lattice_LLL_factorization, 
-      OF _ assms(2-)], transfer, auto)
+  using assms
+  by (metis LLL_factorization irreducible\<^sub>d_def irreducible_primitive_connect
+    less_numeral_extra(3) primitive_prod_list)
  
-thm factorize_int_poly[of one_lattice_LLL_factorization]
-thm factorize_int_poly[of many_lattice_LLL_factorization]
 end
