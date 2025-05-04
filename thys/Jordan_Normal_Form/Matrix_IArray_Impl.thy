@@ -225,8 +225,6 @@ proof -
   qed
 qed  
 
-declare prod.set_conv_list[code del, code_unfold]
-
 derive (eq) ceq mat vec
 derive (no) ccompare mat vec
 derive (dlist) set_impl mat vec
