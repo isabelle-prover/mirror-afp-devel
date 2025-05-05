@@ -74,6 +74,22 @@
   "year": "2025"
  },
  {
+  "abstract": "Sophie Germain's theorem states that if $p$ is a prime number such that $2 p + 1$ is also prime (with $p$ then called a Sophie Germain prime), a weak version of Fermat’s Last Theorem (FLT) holds for the exponent $p$. That is, there exist no nontrivial integer solutions $x, y, z \\in \\mathbb{Z}$ to the equation $$x ^ p + y ^ p = z ^ p$$ such that $p$ divides neither $x$, $y$ nor $z$. After some preliminary results, mainly on sufficient criteria for FLT, we propose a formalization of the classical version of Sophie Germain's theorem as well as a variant involving the concept of auxiliary primes that generalizes Sophie Germain primes.",
+  "authors": [
+   "Benoît Ballenghien"
+  ],
+  "link": "/entries/Sophie_Germain.html",
+  "shortname": "Sophie_Germain",
+  "title": "Sophie Germain’s Theorem",
+  "topic_links": [
+   "/topics/mathematics/number-theory/"
+  ],
+  "topics": [
+   "Mathematics/Number theory"
+  ],
+  "year": "2025"
+ },
+ {
   "abstract": " Continuous-time stochastic processes often carry the condition of having almost-surely continuous paths. If some process \\(X\\) satisfies certain bounds on its expectation, then the Kolmogorov-Chentsov theorem lets us construct a modification of \\(X\\), i.e. a process \\(X'\\) such that \\(\\forall t. X_t = X'_t\\) almost surely, that has Hölder continuous paths. In this work, we mechanise the Kolmogorov-Chentsov theorem. To get there, we develop a theory of stochastic processes, together with Hölder continuity, convergence in measure, and arbitrary intervals of dyadic rationals. With this, we pave the way towards a construction of Brownian motion. The work is based on the exposition in Achim Klenke's probability theory text. ",
   "authors": [
    "Christian Pardillo-Laursen",

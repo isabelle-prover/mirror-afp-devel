@@ -1,0 +1,30 @@
+title = "Sophie Germain’s Theorem"
+date = 2025-04-09
+topics = [
+  "Mathematics/Number theory",
+]
+abstract = """
+Sophie Germain's theorem states that if $p$ is a prime number such that $2 p + 1$ is also prime (with $p$ then called a Sophie Germain prime), a weak version of Fermat’s Last Theorem (FLT) holds for the exponent $p$. That is, there exist no nontrivial integer solutions $x, y, z \\in \\mathbb{Z}$ to the equation
+$$x ^ p + y ^ p = z ^ p$$
+such that $p$ divides neither $x$, $y$ nor $z$.
+After some preliminary results, mainly on sufficient criteria for FLT, we propose a formalization of the classical version of Sophie Germain's theorem as well as a variant involving the concept of auxiliary primes that generalizes Sophie Germain primes."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.ballenghien]
+email = "ballenghien_email"
+
+[contributors]
+
+[notify]
+ballenghien = "ballenghien_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []
