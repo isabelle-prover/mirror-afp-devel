@@ -3,7 +3,11 @@
 section \<open>Sample Computations with the F4 Algorithm\<close>
 
 theory F4_Examples
-  imports F4 Algorithm_Schema_Impl Jordan_Normal_Form.Gauss_Jordan_IArray_Impl Code_Target_Rat
+  imports
+    F4
+    Algorithm_Schema_Impl
+    Jordan_Normal_Form.Gauss_Jordan_IArray_Impl
+    Code_Target_Rat
 begin
 
 text \<open>We only consider scalar polynomials here, but vector-polynomials could be handled, too.\<close>
@@ -49,7 +53,8 @@ next
     have "map_of (filter (\<lambda>y. fst y \<noteq> fst x \<and> fst y \<notin> set vs) xs) =
           map_of (filter (\<lambda>y. fst y \<noteq> fst x) (filter (\<lambda>y. fst y \<notin> set vs) xs))"
       by (simp only: filter_filter conj_commute)
-    also have "... = map_of (filter (\<lambda>y. fst y \<notin> set vs) xs) |` {y. y \<noteq> fst x}" by (rule map_of_filter)
+    also have "... = map_of (filter (\<lambda>y. fst y \<notin> set vs) xs) |` {y. y \<noteq> fst x}"
+      by (rule map_of_filter)
     finally show "map_of (filter (\<lambda>y. fst y \<noteq> fst x \<and> fst y \<notin> set vs) xs) k =
                   map_of (filter (\<lambda>y. fst y \<notin> set vs) xs) k"
       by (simp add: restrict_map_def \<open>k \<noteq> fst x\<close>)
@@ -73,16 +78,6 @@ lemma (in ordered_term) compute_Macaulay_list [code]:
   by (simp add: Macaulay_list_def Macaulay_mat_def Let_def)
 
 declare conversep_iff [code]
-
-derive (eq) ceq poly_mapping
-derive (no) ccompare poly_mapping
-derive (dlist) set_impl poly_mapping
-derive (no) cenum poly_mapping
-
-derive (eq) ceq rat
-derive (no) ccompare rat
-derive (dlist) set_impl rat
-derive (no) cenum rat
 
 global_interpretation punit': gd_powerprod "ord_pp_punit cmp_term" "ord_pp_strict_punit cmp_term"
   rewrites "punit.adds_term = (adds)"

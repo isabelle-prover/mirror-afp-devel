@@ -10,6 +10,7 @@ session "Jordan_Normal_Form" = "HOL-Algebra" +
     Missing_Ring
   theories
     Matrix_Impl
+    Matrix_Carrier_Impl
     Strassen_Algorithm_Code
     Matrix_Complexity
     Jordan_Normal_Form_Existence

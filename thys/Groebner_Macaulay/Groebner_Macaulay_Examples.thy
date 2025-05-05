@@ -113,16 +113,6 @@ lemma (in ordered_term) compute_Macaulay_list [code]:
 
 declare conversep_iff [code]
 
-derive (eq) ceq poly_mapping
-derive (no) ccompare poly_mapping
-derive (dlist) set_impl poly_mapping
-derive (no) cenum poly_mapping
-
-derive (eq) ceq rat
-derive (no) ccompare rat
-derive (dlist) set_impl rat
-derive (no) cenum rat
-
 subsubsection \<open>Connection between @{typ "('x \<Rightarrow>\<^sub>0 'a) \<Rightarrow>\<^sub>0 'b"} and @{typ "('x, 'a) pp \<Rightarrow>\<^sub>0 'b"}\<close>
 
 (* Move into "Polynomials.PP_Type"? *)

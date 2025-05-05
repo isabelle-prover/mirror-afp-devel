@@ -11,16 +11,12 @@ text \<open>In this theory we implement matrices as arrays of arrays.
   matrix addition, multiplication, etc.~should all have their 
   standard complexity. 
 
-  There might be room for optimizations. 
-
-  To implement the infinite carrier set, we use A.\ Lochbihler's container framework
-  \<^cite>\<open>"Containers-AFP"\<close>.\<close>
+  There might be room for optimizations.\<close>
 
 theory Matrix_IArray_Impl
 imports
   Matrix
   "HOL-Library.IArray"
-  Containers.Set_Impl
 begin
 
 typedef 'a vec_impl = "{(n,v :: 'a iarray). IArray.length v = n}" by auto
@@ -276,15 +272,6 @@ proof -
       qed
     qed
   qed
-qed  
-
-derive (eq) ceq mat vec
-derive (no) ccompare mat vec
-derive (dlist) set_impl mat vec
-derive (no) cenum mat vec
-
-lemma carrier_mat_code[code]: "carrier_mat nr nc = Collect_set (\<lambda> A. dim_row A = nr \<and> dim_col A = nc)" by auto
-lemma carrier_vec_code[code]: "carrier_vec n = Collect_set (\<lambda> v. dim_vec v = n)" 
-  unfolding carrier_vec_def by auto
+qed
 
 end

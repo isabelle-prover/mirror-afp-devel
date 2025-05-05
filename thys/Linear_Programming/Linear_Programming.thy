@@ -1,8 +1,8 @@
 theory Linear_Programming
   imports
-    "HOL-Library.Code_Target_Int"
     "LP_Preliminaries"
     Farkas.Simplex_for_Reals 
+    (*"HOL-Library.Code_Target_Int"*)
 begin
 
 
@@ -370,7 +370,7 @@ lemma optimize_sat:
     max_lp_in_sat_primal[OF optimize_sound[of A b c x, OF assms]] by blast
 
 
-derive (eq) ceq rat
+(*derive (eq) ceq rat
 derive (linorder) compare rat
 derive (compare) ccompare rat
 derive (rbt) set_impl rat
@@ -379,7 +379,7 @@ derive (eq) ceq atom QDelta
 derive (linorder) compare_order QDelta
 derive compare_order atom
 derive ccompare atom QDelta
-derive (rbt) set_impl atom QDelta
+derive (rbt) set_impl atom QDelta*)
 
 
 (*export_code maximize mat_of_cols_list mat_of_rows_list mat_of_cols vec_of_list quotient_of Inr Inl Some None list_of_vec nat

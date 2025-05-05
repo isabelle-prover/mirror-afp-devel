@@ -35,31 +35,31 @@ end
 
 code_printing
   type_constructor rat \<rightharpoonup>
-    (SML) "Rat.rat" |
+    (Eval) "Rat.rat" |
   constant "plus :: rat \<Rightarrow> _ \<Rightarrow> _" \<rightharpoonup>
-    (SML) "Rat.add" |
+    (Eval) "Rat.add" |
   constant "minus :: rat \<Rightarrow> _ \<Rightarrow> _" \<rightharpoonup>
-    (SML) "Rat.add ((_)) (Rat.neg ((_)))" |
+    (Eval) "Rat.add ((_)) (Rat.neg ((_)))" |
   constant "times :: rat \<Rightarrow> _ \<Rightarrow> _" \<rightharpoonup>
-    (SML) "Rat.mult" |
+    (Eval) "Rat.mult" |
   constant "inverse :: rat \<Rightarrow> _" \<rightharpoonup>
-    (SML) "Rat.inv" |
+    (Eval) "Rat.inv" |
   constant "divide :: rat \<Rightarrow> _ \<Rightarrow> _" \<rightharpoonup>
-    (SML) "Rat.mult ((_)) (Rat.inv ((_)))" |
+    (Eval) "Rat.mult ((_)) (Rat.inv ((_)))" |
   constant "rat_of_integer :: integer \<Rightarrow> rat" \<rightharpoonup>
-    (SML) "Rat.of'_int" |
+    (Eval) "Rat.of'_int" |
   constant "abs :: rat \<Rightarrow> _" \<rightharpoonup>
-    (SML) "Rat.abs" |
+    (Eval) "Rat.abs" |
   constant "0 :: rat" \<rightharpoonup>
-    (SML) "!(Rat.make (0, 1))" |
+    (Eval) "!(Rat.make (0, 1))" |
   constant "1 :: rat" \<rightharpoonup>
-    (SML) "!(Rat.make (1, 1))" |
+    (Eval) "!(Rat.make (1, 1))" |
   constant "uminus :: rat \<Rightarrow> rat" \<rightharpoonup>
-    (SML) "Rat.neg" |
+    (Eval) "Rat.neg" |
   constant "HOL.equal :: rat \<Rightarrow> _" \<rightharpoonup>
-    (SML) "!((_ : Rat.rat) = _)" |
+    (Eval) "!((_ : Rat.rat) = _)" |
   constant "quotient_of'" \<rightharpoonup>
-    (SML) "Rat.dest"
+    (Eval) "Rat.dest"
 
 (* For testing only. *)
 (*
