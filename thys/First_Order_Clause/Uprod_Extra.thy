@@ -112,8 +112,18 @@ global_interpretation uprod_functor: natural_functor_conversion where
 
 lemma uprod_mem_image_iff_prod_mem [simp]:
   assumes "sym I"
-  shows "(Upair t t') \<in> (\<lambda>(t\<^sub>1, t\<^sub>2). Upair t\<^sub>1 t\<^sub>2) ` I \<longleftrightarrow> (t, t') \<in> I"
-  using \<open>sym I\<close>[THEN symD] 
+  shows "Upair t t' \<in> upair ` I \<longleftrightarrow> (t, t') \<in> I"
+  using assms[THEN symD]
   by auto
+
+lemma rep_uprod_UpairI: "P (a, b) \<Longrightarrow> P (b, a) \<Longrightarrow> P (rep_uprod (Upair a b))"
+  using Quotient3_uprod  eq_upair_simps 
+  unfolding Upair.abs_eq Quotient3_def
+  by (smt (verit, ccfv_threshold) split_pairs2)
+
+lemma rep_uprod_UpairE: "P (rep_uprod (Upair a b)) \<Longrightarrow> P (a, b) \<or> P (b, a)"
+  using Quotient3_uprod eq_upair_simps 
+  unfolding Upair.abs_eq Quotient3_def
+  by (smt (verit, ccfv_threshold) split_pairs2)  
 
 end

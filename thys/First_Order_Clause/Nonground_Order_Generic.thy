@@ -10,8 +10,8 @@ section \<open>Nonground Order\<close>
 
 locale nonground_order_lifting =
   grounding_lifting +
-  order: total_grounded_multiset_extension +
-  order: ground_subst_stable_total_multiset_extension +
+  order: ground_total_multiset_extension +
+  order: ground_subst_stable_multiset_extension +
   order: subst_update_stable_multiset_extension
 
 locale nonground_term_based_order_lifting =
@@ -105,8 +105,7 @@ proof-
     note literals_grounding = literals_in_C[THEN clause.to_set_is_ground_subst[OF _ grounding]]
 
     have "l \<cdot>l \<gamma> \<prec>\<^sub>l l' \<cdot>l \<gamma>"
-      (* TODO NOW ! *)
-      using clause.order.sub.ground_subst_stability[OF literals_grounding l_less_l'].
+      using clause.order.sub.ground_subst_stability[OF literals_grounding l_less_l'] .
 
     then have False
      using

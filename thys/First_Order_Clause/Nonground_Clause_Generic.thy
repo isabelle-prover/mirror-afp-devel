@@ -21,14 +21,14 @@ sublocale multiset_grounding_lifting where
 
 end
 
-locale nonground_clause_generic = 
-  literal: term_based_lifting where 
-  sub_vars = atom_vars and sub_subst = atom_subst and sub_to_ground = atom_to_ground and 
-  sub_from_ground = atom_from_ground and map = map_literal and to_set = set_literal and 
-  to_ground_map = map_literal and from_ground_map = map_literal and ground_map = map_literal and 
+locale nonground_clause_generic =
+  literal: term_based_lifting where
+  sub_vars = atom_vars and sub_subst = atom_subst and sub_to_ground = atom_to_ground and
+  sub_from_ground = atom_from_ground and map = map_literal and to_set = set_literal and
+  to_ground_map = map_literal and from_ground_map = map_literal and ground_map = map_literal and
   to_set_ground = set_literal
 for
-  atom_from_ground :: "'g \<Rightarrow> 'a" and 
+  atom_from_ground :: "'g \<Rightarrow> 'a" and
   atom_to_ground :: "'a \<Rightarrow> 'g" and
   atom_subst :: "'a \<Rightarrow> ('f, 'v) subst \<Rightarrow> 'a" and
   atom_vars :: "'a \<Rightarrow> 'v set"
@@ -111,6 +111,20 @@ lemma clause_from_ground_remove1_mset [simp]:
   "clause.from_ground (remove1_mset l\<^sub>G C\<^sub>G) =
     remove1_mset (literal.from_ground l\<^sub>G) (clause.from_ground C\<^sub>G)"
   unfolding clause.from_ground_def image_mset_remove1_mset[OF literal.inj_from_ground]..
+
+end
+
+locale groundable_nonground_clause = 
+  nonground_clause_generic where atom_subst = atom_subst
+for 
+  atom_subst :: "'a \<Rightarrow> ('f, 'v) subst \<Rightarrow> 'a"  and
+  is_ground_instance :: "'env \<Rightarrow> 'a clause \<Rightarrow> ('f, 'v) subst \<Rightarrow> bool" +
+assumes is_ground_instance_is_ground:
+  "\<And>\<Gamma> C \<gamma>. is_ground_instance \<Gamma> C \<gamma> \<Longrightarrow> clause.is_ground (C \<cdot> \<gamma>)"
+begin
+
+definition ground_instances where
+  "ground_instances \<Gamma> C = { clause.to_ground (C \<cdot> \<gamma>) | \<gamma>. is_ground_instance \<Gamma> C \<gamma> }"
 
 end
 

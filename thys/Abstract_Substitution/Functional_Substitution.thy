@@ -55,8 +55,14 @@ lemma subst_inv:
   using assms
   by (metis subst_comp_subst subst_id_subst)
 
+(* TODO: Move *)
 definition rename where
   "is_renaming \<rho> \<Longrightarrow> rename \<rho> x \<equiv> SOME x'. \<rho> x = id_subst x'"
+
+lemma is_unifier_two: "is_unifier \<upsilon> {expr, expr'} \<Longrightarrow> expr \<cdot> \<upsilon> = expr' \<cdot> \<upsilon>"
+  unfolding is_unifier_def
+  using insertCI 
+  by fastforce
 
 end
 
@@ -240,6 +246,10 @@ assumes
   ground_subst_iff_base_ground_subst [simp]: "\<And>\<gamma>. is_ground_subst \<gamma> \<longleftrightarrow> base.is_ground_subst \<gamma>" and
   vars_subst: "\<And>expr \<rho>.  vars (expr \<cdot> \<rho>) = \<Union> (base_vars ` \<rho> ` vars expr)"
 begin
+
+lemma vars_id_subst_update: "vars (expr \<cdot> id_subst(x := b)) \<subseteq> vars expr \<union> base_vars b"
+  unfolding fun_upd_def vars_subst
+  by (auto simp: base.vars_id_subst)
 
 lemma is_grounding_iff_vars_grounded:
   "is_ground (expr \<cdot> \<gamma>) \<longleftrightarrow> (\<forall>var \<in> vars expr. base.is_ground (\<gamma> var))"

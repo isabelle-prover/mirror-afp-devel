@@ -4,10 +4,6 @@ theory Typed_Functional_Substitution_Lifting
     Abstract_Substitution.Functional_Substitution_Lifting
 begin
 
-(* TODO: *)
-lemma ext_equiv: "(\<And>x. f x \<equiv> g x) \<Longrightarrow> f \<equiv> g"
-  by presburger
-
 locale typed_functional_substitution_lifting =
   sub: typed_functional_substitution where
     vars = sub_vars and subst = sub_subst and welltyped = sub_welltyped and base_vars = base_vars +
@@ -27,8 +23,8 @@ sublocale typed_functional_substitution where
 
 end
 
-(*TODO: Name type_grounding_lifting *)
-locale typed_grounding_functional_substitution_lifting =
+(* TODO: Needed? 
+locale typed_grounding_lifting =
   typed_functional_substitution_lifting +
   grounding_lifting
 begin
@@ -38,25 +34,24 @@ sublocale typed_grounding_functional_substitution where
   from_ground = from_ground
   by unfold_locales
 
-end
+end*)
 
-(* TODO: This lifting is very primitve \<rightarrow> just rely on a base *)
-locale inhabited_typed_functional_substitution_lifting =
+locale witnessed_typed_functional_substitution_lifting =
   typed_functional_substitution_lifting +
-  sub: inhabited_typed_functional_substitution where
+  sub: witnessed_typed_functional_substitution where
   vars = sub_vars and subst = sub_subst and welltyped = sub_welltyped
 begin
 
-sublocale inhabited_typed_functional_substitution where
+sublocale witnessed_typed_functional_substitution where
   vars = vars and subst = subst and welltyped = welltyped
-  by unfold_locales (simp add: sub.types_inhabited)
+  by unfold_locales (simp add: sub.types_witnessed)
 
 end
 
 locale typed_subst_stability_lifting =
   typed_functional_substitution_lifting +
   sub: typed_subst_stability where
-    welltyped = sub_welltyped and vars = sub_vars and subst = sub_subst
+  welltyped = sub_welltyped and vars = sub_vars and subst = sub_subst
 begin
 
 sublocale typed_subst_stability where welltyped = welltyped and subst = subst and vars = vars
@@ -77,10 +72,10 @@ end
 
 locale typed_renaming_lifting =
   typed_functional_substitution_lifting where
-    base_welltyped = "base_welltyped :: ('v \<Rightarrow> 'ty) \<Rightarrow> 'base \<Rightarrow> 'ty \<Rightarrow> bool" +
+  base_welltyped = "base_welltyped :: ('v \<Rightarrow> 'ty) \<Rightarrow> 'base \<Rightarrow> 'ty \<Rightarrow> bool" +
   renaming_variables_lifting +
   sub: based_typed_renaming where
-    subst = sub_subst and vars = sub_vars and welltyped = sub_welltyped
+  subst = sub_subst and vars = sub_vars and welltyped = sub_welltyped
 begin
 
 sublocale based_typed_renaming where

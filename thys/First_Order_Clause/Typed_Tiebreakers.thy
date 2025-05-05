@@ -5,10 +5,10 @@ begin
 context tiebreakers
 begin
 
-abbreviation typed_tiebreakers :: "'g clause \<Rightarrow> 'a clause \<times> '\<V> \<Rightarrow> 'a clause \<times> '\<V> \<Rightarrow> bool" where
-  "typed_tiebreakers C\<^sub>G C\<^sub>1 C\<^sub>2 \<equiv> tiebreakers C\<^sub>G (fst C\<^sub>1) (fst C\<^sub>2)"
+abbreviation typed_tiebreakers :: "'g clause \<Rightarrow> '\<V> \<times> 'a clause  \<Rightarrow> '\<V> \<times> 'a clause \<Rightarrow> bool" where
+  "typed_tiebreakers C\<^sub>G C\<^sub>1 C\<^sub>2 \<equiv> tiebreakers C\<^sub>G (snd C\<^sub>1) (snd C\<^sub>2)"
 
-sublocale typed: wellfounded_strict_order "typed_tiebreakers C\<^sub>G"
+sublocale typed_tiebreakers: wellfounded_strict_order "typed_tiebreakers C\<^sub>G"
 proof unfold_locales
 
   show "wfp (typed_tiebreakers C\<^sub>G)"

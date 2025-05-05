@@ -64,7 +64,7 @@ sublocale grounding_def where
 lemma infinite_terms [intro]: "infinite (UNIV :: ('f, 'v) term set)"
 proof-
   have "infinite (UNIV :: ('f, 'v) term list set)"
-    using infinite_UNIV_listI.
+    using infinite_UNIV_listI .
 
   then have "\<And>f :: 'f. infinite ((Fun f) ` (UNIV :: ('f, 'v) term list set))"
     by (meson finite_imageD injI term.inject(2))

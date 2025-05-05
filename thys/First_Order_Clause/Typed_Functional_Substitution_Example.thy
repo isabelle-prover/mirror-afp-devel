@@ -24,7 +24,7 @@ proof unfold_locales
   qed
 qed
 
-global_interpretation functional_substitution_typing where
+global_interpretation base_typed_functional_substitution where
   welltyped = "welltyped \<F>" and
   subst = subst_apply_term and id_subst = Var and comp_subst = subst_compose and
   vars = "vars_term :: ('f, 'v) term \<Rightarrow> 'v set"
@@ -42,7 +42,8 @@ global_interpretation "term": typed_term_subst_properties where
   for \<F> :: "'f \<Rightarrow> 'ty list \<times> 'ty"
 proof (unfold_locales)
   fix \<V> :: "('v, 'ty) var_types" and t :: "('f, 'v) term" and \<sigma> \<tau>
-  assume is_welltyped_on: "\<forall>x \<in> vars_term t. welltyped \<F> \<V> (\<sigma> x) (\<V> x)"
+  assume is_welltyped_on: 
+    "\<forall>x \<in> vars_term t. welltyped \<F> \<V> (Var x) (\<V> x) \<longrightarrow> welltyped \<F> \<V> (\<sigma> x) (\<V> x)"
 
   show "welltyped \<F> \<V> (t \<cdot> \<sigma>) \<tau> \<longleftrightarrow> welltyped \<F> \<V> t \<tau>"
   proof(rule iffI)
@@ -91,12 +92,12 @@ thm
   term.right_unique
   term.welltyped_subst_stability
 
-  is_welltyped_subst_update
-  is_welltyped_on_subset
-  is_welltyped_id_subst
+  type_preserving_on_subst_update
+  type_preserving_on_subset
+  type_preserving_on_id_subst
 
 term term.is_welltyped
-term is_welltyped_on
-term is_welltyped
+term type_preserving_on
+term type_preserving
 
 end

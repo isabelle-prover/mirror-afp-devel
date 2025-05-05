@@ -55,8 +55,7 @@ sublocale strict_order_restriction "(\<prec>\<^sub>m)" from_ground
 
 end
 
-(* TODO: Name \<rightarrow> restriction is just total_on *)
-locale total_grounded_multiset_extension =
+locale ground_total_multiset_extension =
   grounded_multiset_extension +
   sub: total_strict_order_restriction where lift = "sub_from_ground"
 begin
@@ -96,7 +95,7 @@ for
 
 subsection \<open>Ground substitution stability\<close>
 
-locale ground_subst_stable_total_multiset_extension =
+locale ground_subst_stable_multiset_extension =
   grounded_multiset_extension +
   sub: ground_subst_stable_grounded_order where
   less = less and subst = sub_subst and vars = sub_vars and from_ground = sub_from_ground and

@@ -5,12 +5,14 @@ theory Ground_Term_Typing
     Ground_Context
 begin
 
-type_synonym ('f, 'ty) fun_types = "'f \<Rightarrow> nat \<Rightarrow> 'ty list \<times> 'ty"
+type_synonym ('f, 'ty) fun_types = "'f \<Rightarrow> nat \<Rightarrow> ('ty list \<times> 'ty) option"
 
-inductive welltyped for \<F> where 
-  GFun: "\<F> f (length ts) = (\<tau>s, \<tau>) \<Longrightarrow> list_all2 (welltyped \<F>) ts \<tau>s \<Longrightarrow> welltyped \<F> (GFun f ts) \<tau>"
+inductive welltyped for \<F> ::"('f, 'ty) fun_types" where 
+  GFun: "welltyped \<F> (GFun f ts) \<tau>" if 
+  "\<F> f (length ts) = Some (\<tau>s, \<tau>)"
+  "list_all2 (welltyped \<F>) ts \<tau>s"
 
-notation welltyped (\<open>_ \<turnstile> _ : _\<close> [1000, 0] 50)
+notation welltyped (\<open>_ \<turnstile> _ : _\<close> [1000, 0, 50] 50)
 
 global_interpretation "term": term_typing where
   welltyped = "welltyped \<F>" and Fun = GFun
@@ -25,19 +27,18 @@ proof unfold_locales
       by (auto elim!: welltyped.cases)
   qed
 
-  fix t t' c \<tau> \<tau>'
+  fix t t' c \<tau>
   assume  
-    t_type: "\<F> \<turnstile> t : \<tau>'" and
-    t'_type: "\<F> \<turnstile> t' : \<tau>'" and
-    c_type: "\<F> \<turnstile> c\<langle>t\<rangle>\<^sub>G : \<tau>"
+    subterm: "\<forall>\<tau>'. \<F> \<turnstile> t : \<tau>' \<longleftrightarrow> \<F> \<turnstile> t' : \<tau>'" and
+    welltyped: "\<F> \<turnstile> c\<langle>t\<rangle>\<^sub>G : \<tau>"
 
-  from c_type show "\<F> \<turnstile> c\<langle>t'\<rangle>\<^sub>G : \<tau>"
+  from welltyped show "\<F> \<turnstile> c\<langle>t'\<rangle>\<^sub>G : \<tau>"
   proof (induction c arbitrary: \<tau>)
     case Hole
-    thus ?case
-      using t_type t'_type
-      using right_unique_welltyped[THEN right_uniqueD]
-      by fastforce
+
+    then show ?case
+      using subterm right_unique_welltyped[THEN right_uniqueD]
+      by simp
   next
     case (More f ss1 c ss2)
 
@@ -52,7 +53,7 @@ proof unfold_locales
       show ?thesis
       proof (rule welltyped.GFun)
 
-        show "\<F> f (length (ss1 @ c\<langle>t'\<rangle>\<^sub>G # ss2)) = (\<tau>s, \<tau>)"
+        show "\<F> f (length (ss1 @ c\<langle>t'\<rangle>\<^sub>G # ss2)) = Some (\<tau>s, \<tau>)"
           using GFun(1)
           by simp
       next
@@ -66,12 +67,6 @@ proof unfold_locales
     thus ?case
       by simp
   qed
-next
-  fix f ts \<tau>
-  assume "\<F> \<turnstile> GFun f ts : \<tau>"
-
-  then show "\<forall>t\<in>set ts. \<exists>\<tau>'. \<F> \<turnstile> t : \<tau>'"
-    by (metis gterm.inject in_set_conv_nth list_all2_conv_all_nth welltyped.simps)
 qed
 
 end

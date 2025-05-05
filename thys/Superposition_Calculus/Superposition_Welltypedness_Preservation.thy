@@ -6,259 +6,233 @@ context superposition_calculus
 begin
 
 lemma eq_resolution_preserves_typing:
-  assumes "eq_resolution (D, \<V>) (C, \<V>)"
-  shows "clause.is_welltyped \<V> D \<longleftrightarrow> clause.is_welltyped \<V> C"
+  assumes "eq_resolution (\<V>, D) (\<V>, C)"
+  shows "clause.is_welltyped \<V> D \<longrightarrow> clause.is_welltyped \<V> C"
   using assms
-  by (cases "(D, \<V>)" "(C, \<V>)" rule: eq_resolution.cases) auto
+  by (cases "(\<V>, D)" "(\<V>, C)" rule: eq_resolution.cases) auto
 
 lemma eq_factoring_preserves_typing:
-  assumes "eq_factoring (D, \<V>) (C, \<V>)"
-  shows "clause.is_welltyped \<V> D \<longleftrightarrow> clause.is_welltyped \<V> C"
+  assumes 
+    eq_factoring: "eq_factoring (\<V>, D) (\<V>, C)" and
+    D_is_welltyed: "clause.is_welltyped \<V> D"
+  shows "clause.is_welltyped \<V> C"
   using assms
-  by (cases "(D, \<V>)" "(C, \<V>)" rule: eq_factoring.cases) force
+proof (cases "(\<V>, D)" "(\<V>, C)" rule: eq_factoring.cases)
+  case (eq_factoringI l\<^sub>1 \<mu> t\<^sub>1 t\<^sub>1' t\<^sub>2 l\<^sub>2 D' t\<^sub>2')
 
-lemma superposition_preserves_typing_C:
+  have "type_preserving_on (term.vars t\<^sub>1 \<union> term.vars t\<^sub>2) \<V> \<mu>"
+    using eq_factoringI(4)
+    unfolding eq_factoringI
+    by auto
+
+  then have "\<forall>\<tau>. \<V> \<turnstile> t\<^sub>1 : \<tau> \<longleftrightarrow> \<V> \<turnstile> t\<^sub>2 : \<tau>"
+    using eq_factoringI(5) term.imgu_same_type
+    unfolding eq_factoringI
+    by metis
+
+  with eq_factoringI D_is_welltyed show ?thesis
+    by auto
+qed
+
+lemma superposition_preserves_typing:
   assumes
-    superposition: "superposition (D, \<V>\<^sub>2) (E, \<V>\<^sub>1) (C, \<V>\<^sub>3)" and
+    superposition: "superposition (\<V>\<^sub>2, D) (\<V>\<^sub>1, E) (\<V>\<^sub>3, C)" and
     D_is_welltyped: "clause.is_welltyped \<V>\<^sub>2 D" and
     E_is_welltyped: "clause.is_welltyped \<V>\<^sub>1 E"
   shows "clause.is_welltyped \<V>\<^sub>3 C"
   using superposition
-proof (cases "(D, \<V>\<^sub>2)" "(E, \<V>\<^sub>1)" "(C, \<V>\<^sub>3)" rule: superposition.cases)
-  case (superpositionI \<P> \<rho>\<^sub>1 \<rho>\<^sub>2 t\<^sub>1 t\<^sub>2 \<mu> c\<^sub>1 t\<^sub>1' t\<^sub>2' l\<^sub>1 l\<^sub>2 E' D')
+proof (cases "(\<V>\<^sub>2, D)" "(\<V>\<^sub>1, E)" "(\<V>\<^sub>3, C)" rule: superposition.cases)
+  case (superpositionI \<P> \<rho>\<^sub>1 \<rho>\<^sub>2 t\<^sub>1 \<mu> t\<^sub>2 c\<^sub>1 t\<^sub>1' t\<^sub>2' l\<^sub>1 l\<^sub>2 E' D')
 
-  then have welltyped_\<mu>:
-    "is_welltyped_on (clause.vars (E \<cdot> \<rho>\<^sub>1) \<union> clause.vars (D \<cdot> \<rho>\<^sub>2)) \<V>\<^sub>3 \<mu>"
-    by meson
+  note [simp] = \<P>_simps[OF superpositionI(1)]
 
   have "clause.is_welltyped \<V>\<^sub>3 (E \<cdot> \<rho>\<^sub>1)"
-    using E_is_welltyped clause.welltyped_renaming[OF superpositionI(4, 18)]
+    using E_is_welltyped clause.welltyped_renaming[OF superpositionI(4, 19)]
     by blast
 
-  then have E\<mu>_is_welltyped: "clause.is_welltyped \<V>\<^sub>3 (E \<cdot> \<rho>\<^sub>1 \<odot> \<mu>)"
-    using welltyped_\<mu>
+  then have "clause.is_welltyped \<V>\<^sub>3 (E \<cdot> \<rho>\<^sub>1 \<odot> \<mu>)"
+    using superpositionI(8)
     by simp
 
-  have "clause.is_welltyped \<V>\<^sub>3 (D \<cdot> \<rho>\<^sub>2)"
-    using D_is_welltyped clause.welltyped_renaming[OF superpositionI(5, 19)]
+  moreover have "clause.is_welltyped \<V>\<^sub>3 (D \<cdot> \<rho>\<^sub>2)"
+    using D_is_welltyped clause.welltyped_renaming[OF superpositionI(5, 20)]
     by blast
 
-  then have D\<mu>_is_welltyped: "clause.is_welltyped \<V>\<^sub>3 (D \<cdot> \<rho>\<^sub>2 \<odot> \<mu>)"
-    using welltyped_\<mu>
+  then have "clause.is_welltyped \<V>\<^sub>3 (D \<cdot> \<rho>\<^sub>2 \<odot> \<mu>)"
+    using superpositionI(8, 9)
     by simp
 
-  have imgu: "t\<^sub>1 \<cdot>t \<rho>\<^sub>1 \<odot> \<mu> = t\<^sub>2 \<cdot>t \<rho>\<^sub>2 \<odot> \<mu>"
-    using superpositionI(8) term.is_imgu_unifies_pair
+  moreover have "t\<^sub>1 \<cdot>t \<rho>\<^sub>1 \<odot> \<mu> = t\<^sub>2 \<cdot>t \<rho>\<^sub>2 \<odot> \<mu>"
+    using superpositionI(9) term.is_imgu_unifies_pair
     by auto
-
-  from literal_cases[OF superpositionI(1)] E\<mu>_is_welltyped D\<mu>_is_welltyped imgu
-  show ?thesis
+ 
+  ultimately show ?thesis
     unfolding superpositionI
-    by cases auto
+    by auto
 qed
 
-lemma superposition_preserves_typing_D:
-  assumes
-    superposition: "superposition (D, \<V>\<^sub>2) (E, \<V>\<^sub>1) (C, \<V>\<^sub>3)" and
-    C_is_welltyped: "clause.is_welltyped \<V>\<^sub>3 C"
-  shows "clause.is_welltyped \<V>\<^sub>2 D"
-  using superposition
-proof (cases "(D, \<V>\<^sub>2)" "(E, \<V>\<^sub>1)" "(C, \<V>\<^sub>3)" rule: superposition.cases)
-  case (superpositionI \<P> \<rho>\<^sub>1 \<rho>\<^sub>2 t\<^sub>1 t\<^sub>2 \<mu> c\<^sub>1 t\<^sub>1' t\<^sub>2' l\<^sub>1 l\<^sub>2 E' D')
+lemma eq_resolution_type_preserving_literals:
+  assumes eq_resolution: "eq_resolution (\<V>, D) (\<V>, C)"
+  shows "type_preserving_literals \<V> D \<longleftrightarrow> type_preserving_literals \<V> C"
+  using eq_resolution
+proof (cases "(\<V>, D)" "(\<V>, C)" rule: eq_resolution.cases)
+  case (eq_resolutionI \<mu> t t' l D')
 
-  have \<mu>_is_welltyped:
-    "is_welltyped_on (clause.vars (E \<cdot> \<rho>\<^sub>1) \<union> clause.vars (D \<cdot> \<rho>\<^sub>2)) \<V>\<^sub>3 \<mu>"
-    using superpositionI(8)
-    by blast
+  have "type_preserving_literals \<V> D' \<longleftrightarrow> type_preserving_literals \<V> (D' \<cdot> \<mu>)"
+    using eq_resolutionI(1)
+    unfolding eq_resolutionI
+    by auto
 
-  show ?thesis
-  proof-
+  moreover have "type_preserving_on (term.vars t \<union> term.vars t') \<V> \<mu>"
+    using eq_resolutionI(1)
+    unfolding eq_resolutionI
+    by auto
 
-    have "clause.is_welltyped \<V>\<^sub>2 D'"
-    proof-
-      have "clause.is_welltyped \<V>\<^sub>3 (D' \<cdot> \<rho>\<^sub>2)"
-        using C_is_welltyped \<mu>_is_welltyped
-        unfolding superpositionI
-        by auto
+  then have "\<forall>\<tau>. \<V> \<turnstile> t : \<tau> \<longleftrightarrow> \<V> \<turnstile> t' : \<tau>"
+    using eq_resolutionI(2) term.imgu_same_type
+    unfolding eq_resolutionI
+    by metis
 
-      moreover have "\<forall>x\<in>clause.vars D'. \<V>\<^sub>2 x = \<V>\<^sub>3 (clause.rename \<rho>\<^sub>2 x)"
-        using superpositionI(19)
-        unfolding superpositionI
-        by simp
+  ultimately show ?thesis
+    unfolding eq_resolutionI
+    by auto
+qed 
 
-      ultimately show ?thesis
-        using clause.welltyped_renaming[OF superpositionI(5)]
-        unfolding superpositionI
-        by blast
-    qed
+lemma eq_factoring_type_preserving_literals:
+  assumes eq_factoring: "eq_factoring (\<V>, D) (\<V>, C)"
+  shows "type_preserving_literals \<V> D \<longleftrightarrow> type_preserving_literals \<V> C"
+  using eq_factoring
+proof (cases "(\<V>, D)" "(\<V>, C)" rule: eq_factoring.cases)
+  case (eq_factoringI l\<^sub>1 \<mu> t\<^sub>1 t\<^sub>1' t\<^sub>2 l\<^sub>2 D' t\<^sub>2')
 
-    moreover have "literal.is_welltyped \<V>\<^sub>2 l\<^sub>2"
-    proof-
+  have "type_preserving_literals \<V> D' \<longleftrightarrow> type_preserving_literals \<V> (D' \<cdot> \<mu>)"
+    using eq_factoringI(4)
+    unfolding eq_factoringI
+    by auto
 
-      have \<V>\<^sub>2_\<V>\<^sub>3: "\<forall>x \<in> literal.vars l\<^sub>2. \<V>\<^sub>2 x = \<V>\<^sub>3 (clause.rename \<rho>\<^sub>2 x)"
-        using superpositionI(19)
-        unfolding superpositionI
-        by auto
+  moreover have "type_preserving_on (term.vars t\<^sub>1 \<union> term.vars t\<^sub>2) \<V> \<mu>"
+    using eq_factoringI(4)
+    unfolding eq_factoringI
+    by auto
 
-      have "literal.is_welltyped \<V>\<^sub>3 (l\<^sub>2 \<cdot>l \<rho>\<^sub>2)"
-      proof-
-        obtain \<tau> where \<tau>: "welltyped \<V>\<^sub>3 (t\<^sub>2 \<cdot>t \<rho>\<^sub>2) \<tau>"
+  then have "\<forall>\<tau>. \<V> \<turnstile> t\<^sub>1 : \<tau> \<longleftrightarrow> \<V> \<turnstile> t\<^sub>2 : \<tau>"
+    using eq_factoringI(5) term.imgu_same_type
+    unfolding eq_factoringI
+    by metis
+
+  ultimately show ?thesis
+    using eq_factoringI(4)
+    unfolding eq_factoringI
+    by auto
+qed
+
+lemma superposition_type_preserving_literals:
+  assumes superposition: "superposition (\<V>\<^sub>2, D) (\<V>\<^sub>1, E) (\<V>\<^sub>3, C)"
+  shows 
+    "type_preserving_literals \<V>\<^sub>2 D \<and> type_preserving_literals \<V>\<^sub>1 E \<longleftrightarrow>
+     type_preserving_literals \<V>\<^sub>3 C"
+  using assms
+proof (cases "(\<V>\<^sub>2, D)" "(\<V>\<^sub>1, E)" "(\<V>\<^sub>3, C)" rule: superposition.cases)
+  case (superpositionI \<P> \<rho>\<^sub>1 \<rho>\<^sub>2 t\<^sub>1 \<mu> t\<^sub>2 c\<^sub>1 t\<^sub>1' t\<^sub>2' l\<^sub>1 l\<^sub>2 E' D')
+
+  note [simp] = \<P>_simps[OF superpositionI(1)]
+
+  have "type_preserving_literals \<V>\<^sub>3 (E' \<cdot> \<rho>\<^sub>1 \<cdot> \<mu>) \<longleftrightarrow> type_preserving_literals \<V>\<^sub>1 E'"
+    using 
+      type_preserving_literals_renaming[OF superpositionI(4)] 
+      superpositionI(8, 19)
+    unfolding superpositionI
+    by auto
+
+  moreover have "type_preserving_literals \<V>\<^sub>3 (D' \<cdot> \<rho>\<^sub>2 \<cdot> \<mu>) \<longleftrightarrow> type_preserving_literals \<V>\<^sub>2 D'"
+    using 
+      type_preserving_literals_renaming[OF superpositionI(5)] 
+      superpositionI(8, 20)
+    unfolding superpositionI
+    by auto
+
+  moreover have 
+    "type_preserving_literal \<V>\<^sub>3 (\<P> (Upair (c\<^sub>1 \<cdot>t\<^sub>c \<rho>\<^sub>1)\<langle>t\<^sub>2' \<cdot>t \<rho>\<^sub>2\<rangle> (t\<^sub>1' \<cdot>t \<rho>\<^sub>1)) \<cdot>l \<mu>) \<longleftrightarrow> 
+      type_preserving_literal \<V>\<^sub>2 (t\<^sub>2 \<approx> t\<^sub>2') \<and> type_preserving_literal \<V>\<^sub>1 (\<P> (Upair c\<^sub>1\<langle>t\<^sub>1\<rangle> t\<^sub>1'))"
+  proof -
+
+    have "\<And>\<tau>. \<V>\<^sub>3 \<turnstile> (c\<^sub>1 \<cdot>t\<^sub>c \<rho>\<^sub>1 \<cdot>t\<^sub>c \<mu>)\<langle>t\<^sub>1 \<cdot>t \<rho>\<^sub>1 \<cdot>t \<mu>\<rangle> : \<tau> \<longleftrightarrow> \<V>\<^sub>1 \<turnstile> c\<^sub>1\<langle>t\<^sub>1\<rangle> : \<tau>"
+    proof -
+
+      have "\<And>\<tau>. \<V>\<^sub>3 \<turnstile> (c\<^sub>1 \<cdot>t\<^sub>c \<rho>\<^sub>1)\<langle>t\<^sub>1 \<cdot>t \<rho>\<^sub>1\<rangle> \<cdot>t \<mu>: \<tau> \<longleftrightarrow> \<V>\<^sub>3 \<turnstile> (c\<^sub>1 \<cdot>t\<^sub>c \<rho>\<^sub>1)\<langle>t\<^sub>1 \<cdot>t \<rho>\<^sub>1\<rangle> : \<tau>"
+      proof (rule term.welltyped_subst_stability)
+
+        show "type_preserving_on (term.vars (c\<^sub>1 \<cdot>t\<^sub>c \<rho>\<^sub>1)\<langle>t\<^sub>1 \<cdot>t \<rho>\<^sub>1\<rangle>) \<V>\<^sub>3 \<mu>"
           using superpositionI(8)
-          by force
-
-        moreover obtain \<tau>' where \<tau>': "welltyped \<V>\<^sub>3 (t\<^sub>2' \<cdot>t \<rho>\<^sub>2) \<tau>'"
-        proof-
-          have \<mu>_is_welltyped: "is_welltyped_on (term.vars ((c\<^sub>1 \<cdot>t\<^sub>c \<rho>\<^sub>1)\<langle>t\<^sub>2' \<cdot>t \<rho>\<^sub>2\<rangle>)) \<V>\<^sub>3 \<mu>"
-            using \<mu>_is_welltyped superpositionI(1)
-            unfolding superpositionI
-            by auto
-
-          have "term.is_welltyped \<V>\<^sub>3 ((c\<^sub>1 \<cdot>t\<^sub>c \<rho>\<^sub>1)\<langle>t\<^sub>2' \<cdot>t \<rho>\<^sub>2\<rangle> \<cdot>t \<mu>)"
-            using C_is_welltyped superpositionI(1)
-            unfolding superpositionI
-            by auto
-
-          then show ?thesis
-            unfolding term.welltyped_subst_stability[OF \<mu>_is_welltyped]
-            using that term.welltyped_subterm
-            by meson
-        qed
-
-        moreover have "\<tau> = \<tau>'"
-        proof-
-          have "welltyped \<V>\<^sub>2 t\<^sub>2 \<tau>" "welltyped \<V>\<^sub>2 t\<^sub>2' \<tau>'"
-            using
-              \<tau> \<tau>'
-              superpositionI(19)
-              term.welltyped_renaming[OF superpositionI(5)]
-            unfolding superpositionI
-            by(auto simp: Set.ball_Un)
-
-          then show ?thesis
-            using superpositionI(22)
-            by simp
-        qed
-
-        ultimately show ?thesis
           unfolding superpositionI
           by auto
       qed
 
-      then show ?thesis
-        using literal.welltyped_renaming[OF superpositionI(5) \<V>\<^sub>2_\<V>\<^sub>3]
-        unfolding superpositionI
+      moreover have "\<And>\<tau>. \<V>\<^sub>3 \<turnstile> c\<^sub>1\<langle>t\<^sub>1\<rangle> \<cdot>t \<rho>\<^sub>1: \<tau> \<longleftrightarrow> \<V>\<^sub>1 \<turnstile> c\<^sub>1\<langle>t\<^sub>1\<rangle> : \<tau>"
+      proof (rule term.welltyped_renaming[OF superpositionI(4)])
+
+        show "\<forall>x\<in>term.vars c\<^sub>1\<langle>t\<^sub>1\<rangle>. \<V>\<^sub>1 x = \<V>\<^sub>3 (clause.rename \<rho>\<^sub>1 x)"
+          using superpositionI(19)
+          unfolding superpositionI
+          by simp
+      qed
+
+      ultimately show "\<And>\<tau>. \<V>\<^sub>3 \<turnstile> (c\<^sub>1 \<cdot>t\<^sub>c \<rho>\<^sub>1 \<cdot>t\<^sub>c \<mu>)\<langle>t\<^sub>1 \<cdot>t \<rho>\<^sub>1 \<cdot>t \<mu>\<rangle> : \<tau> \<longleftrightarrow> \<V>\<^sub>1 \<turnstile> c\<^sub>1\<langle>t\<^sub>1\<rangle> : \<tau>"
         by simp
     qed
 
-    ultimately show ?thesis
-      unfolding superpositionI
-      by simp
-  qed
-qed
+    moreover have "\<forall>\<tau>. \<V>\<^sub>3 \<turnstile> t\<^sub>1 \<cdot>t \<rho>\<^sub>1 \<cdot>t \<mu> : \<tau> \<longleftrightarrow> \<V>\<^sub>3 \<turnstile> t\<^sub>2' \<cdot>t \<rho>\<^sub>2 \<cdot>t \<mu> : \<tau>"
+    proof -
 
-lemma superposition_preserves_typing_E:
-  assumes
-    superposition: "superposition (D, \<V>\<^sub>2) (E, \<V>\<^sub>1) (C, \<V>\<^sub>3)" and
-    C_is_welltyped: "clause.is_welltyped \<V>\<^sub>3 C"
-  shows "clause.is_welltyped \<V>\<^sub>1 E"
-  using superposition
-proof (cases "(D, \<V>\<^sub>2)" "(E, \<V>\<^sub>1)" "(C, \<V>\<^sub>3)" rule: superposition.cases)
-  case (superpositionI \<P> \<rho>\<^sub>1 \<rho>\<^sub>2 t\<^sub>1 t\<^sub>2 \<mu> c\<^sub>1 t\<^sub>1' t\<^sub>2' l\<^sub>1 l\<^sub>2 E' D')
+      have "\<forall>\<tau>. \<V>\<^sub>3 \<turnstile> t\<^sub>1 \<cdot>t \<rho>\<^sub>1 : \<tau> \<longleftrightarrow> \<V>\<^sub>3 \<turnstile> t\<^sub>2 \<cdot>t \<rho>\<^sub>2 : \<tau>" 
+      proof (rule term.imgu_same_type[OF _ superpositionI(9)])
 
-  have [simp]: "\<And>a \<sigma>. \<P> a \<cdot>l \<sigma> = \<P> (a \<cdot>a \<sigma>)"
-    using superpositionI(1)
-    by auto
+        show "type_preserving_on (term.vars (t\<^sub>1 \<cdot>t \<rho>\<^sub>1) \<union> term.vars (t\<^sub>2 \<cdot>t \<rho>\<^sub>2)) \<V>\<^sub>3 \<mu>"
+          using superpositionI(8)
+          unfolding superpositionI
+          by auto
+      qed
 
-  have [simp]: "\<And>\<V> a. literal.is_welltyped \<V> (\<P> a) \<longleftrightarrow> atom.is_welltyped \<V> a"
-    using superpositionI(1)
-    by (auto simp: literal_is_welltyped_iff_atm_of)
-
-  have [simp]: "\<And>a. literal.vars (\<P> a) = atom.vars a"
-    using superpositionI(1)
-    by auto
-
-  have \<mu>_is_welltyped:
-    "is_welltyped_on (clause.vars (E \<cdot> \<rho>\<^sub>1) \<union> clause.vars (D \<cdot> \<rho>\<^sub>2)) \<V>\<^sub>3 \<mu>"
-    using superpositionI(8)
-    by blast
-
-  show ?thesis
-  proof-
-    have "clause.is_welltyped \<V>\<^sub>1 E'"
-    proof-
-      have "clause.is_welltyped \<V>\<^sub>3 (E' \<cdot> \<rho>\<^sub>1)"
-        using C_is_welltyped \<mu>_is_welltyped
+      then have "\<forall>\<tau>. \<V>\<^sub>3 \<turnstile> t\<^sub>1 \<cdot>t \<rho>\<^sub>1 \<cdot>t \<mu> : \<tau> \<longleftrightarrow> \<V>\<^sub>3 \<turnstile> t\<^sub>2 \<cdot>t \<rho>\<^sub>2 \<cdot>t \<mu> : \<tau>"
+        using superpositionI(8)
         unfolding superpositionI
         by auto
 
-      moreover have "\<forall>x\<in>clause.vars E'. \<V>\<^sub>1 x = \<V>\<^sub>3 (clause.rename \<rho>\<^sub>1 x)"
-        using superpositionI(18)
+      moreover have "type_preserving_literal \<V>\<^sub>3 (t\<^sub>2 \<approx> t\<^sub>2' \<cdot>l \<rho>\<^sub>2 \<cdot>l \<mu>)"
+        using
+          type_preserving_literal_renaming[OF superpositionI(5), of "t\<^sub>2 \<approx> t\<^sub>2'" \<V>\<^sub>2] 
+          superpositionI(8, 20)
         unfolding superpositionI
-        by simp
+        by (simp add: superpositionI(23))
 
       ultimately show ?thesis
-        using clause.welltyped_renaming[OF superpositionI(4)]
-        unfolding superpositionI
-        by blast
-    qed
-
-    moreover have "literal.is_welltyped \<V>\<^sub>1 l\<^sub>1"
-    proof-
-
-      have \<V>\<^sub>1_\<V>\<^sub>3: "\<forall>x \<in> literal.vars l\<^sub>1. \<V>\<^sub>1 x = \<V>\<^sub>3 (clause.rename \<rho>\<^sub>1 x)"
-        using superpositionI(18)
-        unfolding superpositionI
         by auto
-
-      have "literal.is_welltyped \<V>\<^sub>3 (\<P> (Upair (c\<^sub>1 \<cdot>t\<^sub>c \<rho>\<^sub>1)\<langle>t\<^sub>1 \<cdot>t \<rho>\<^sub>1\<rangle> (t\<^sub>1' \<cdot>t \<rho>\<^sub>1)))"
-      proof-
-
-        have \<mu>_is_welltyped:
-          "is_welltyped_on
-            (clause.vars (add_mset (\<P> (Upair (c\<^sub>1 \<cdot>t\<^sub>c \<rho>\<^sub>1)\<langle>t\<^sub>2' \<cdot>t \<rho>\<^sub>2\<rangle> (t\<^sub>1' \<cdot>t \<rho>\<^sub>1))) (E' \<cdot> \<rho>\<^sub>1 + D' \<cdot> \<rho>\<^sub>2)))
-             \<V>\<^sub>3 \<mu>"
-          using \<mu>_is_welltyped
-          unfolding superpositionI
-          by auto
-
-        have "atom.is_welltyped \<V>\<^sub>3 (Upair (t\<^sub>2' \<cdot>t \<rho>\<^sub>2) (t\<^sub>1 \<cdot>t \<rho>\<^sub>1))"
-          using
-            superpositionI(8)
-            superposition_preserves_typing_D[OF superposition C_is_welltyped]
-            clause.welltyped_renaming[OF superpositionI(5) superpositionI(19)]
-          unfolding superpositionI
-          by auto
-
-        moreover have "literal.is_welltyped \<V>\<^sub>3 (\<P> (Upair (c\<^sub>1 \<cdot>t\<^sub>c \<rho>\<^sub>1)\<langle>t\<^sub>2' \<cdot>t \<rho>\<^sub>2\<rangle> (t\<^sub>1' \<cdot>t \<rho>\<^sub>1)))"
-          using C_is_welltyped
-          unfolding superpositionI clause.welltyped_subst_stability[OF \<mu>_is_welltyped]
-          by simp
-
-        ultimately show ?thesis
-          by auto
-      qed
-
-      then show ?thesis
-        using literal.welltyped_renaming[OF superpositionI(4) \<V>\<^sub>1_\<V>\<^sub>3]
-        unfolding superpositionI
-        by force
     qed
 
-    ultimately show ?thesis
+    ultimately have "\<And>\<tau>. \<V>\<^sub>3 \<turnstile> (c\<^sub>1 \<cdot>t\<^sub>c \<rho>\<^sub>1 \<cdot>t\<^sub>c \<mu>)\<langle>t\<^sub>2' \<cdot>t \<rho>\<^sub>2 \<cdot>t \<mu>\<rangle> : \<tau> \<longleftrightarrow> \<V>\<^sub>1 \<turnstile> c\<^sub>1\<langle>t\<^sub>1\<rangle> : \<tau>"
+      using term.welltyped_context_compatible
+      by meson
+
+    moreover have "\<And>\<tau>. \<V>\<^sub>3 \<turnstile> t\<^sub>1' \<cdot>t \<rho>\<^sub>1 \<cdot>t \<mu> : \<tau> \<longleftrightarrow> \<V>\<^sub>1 \<turnstile> t\<^sub>1' : \<tau>"
+      using superpositionI(8, 19) term.welltyped_renaming[OF superpositionI(4)]
       unfolding superpositionI
       by simp
-  qed
-qed
 
-lemma superposition_preserves_typing:
-  assumes "superposition (D, \<V>\<^sub>2) (E, \<V>\<^sub>1) (C, \<V>\<^sub>3)"
-  shows "clause.is_welltyped \<V>\<^sub>2 D \<and> clause.is_welltyped \<V>\<^sub>1 E \<longleftrightarrow> clause.is_welltyped \<V>\<^sub>3 C"
-  using
-    superposition_preserves_typing_C
-    superposition_preserves_typing_D
-    superposition_preserves_typing_E
-    assms
-  by fast
+    ultimately have 
+      "type_preserving_literal \<V>\<^sub>3 (\<P> (Upair (c\<^sub>1 \<cdot>t\<^sub>c \<rho>\<^sub>1)\<langle>t\<^sub>2' \<cdot>t \<rho>\<^sub>2\<rangle> (t\<^sub>1' \<cdot>t \<rho>\<^sub>1)) \<cdot>l \<mu>) \<longleftrightarrow>
+       type_preserving_literal \<V>\<^sub>1 (\<P> (Upair c\<^sub>1\<langle>t\<^sub>1\<rangle> t\<^sub>1'))"
+      using superpositionI(8)
+      by auto
+
+    then show ?thesis
+      using superpositionI(23)
+      by auto
+  qed
+
+  ultimately show ?thesis
+    unfolding superpositionI
+    by auto
+qed
 
 end
 

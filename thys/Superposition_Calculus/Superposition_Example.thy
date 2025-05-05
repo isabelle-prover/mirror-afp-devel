@@ -1,18 +1,10 @@
 theory Superposition_Example
   imports
     Superposition
+    First_Order_Clause.Monomorphic_Typing
     IsaFoR_Term_Copy
     VeriComp.Well_founded
 begin
-
-lemma asymp_bot [iff]: "asymp \<bottom>"
-  by (simp add: asymp_on_def)
-
-lemma transp_bot [iff]: "transp \<bottom>"
-  by (simp add: transp_def)
-
-lemma wfp_bot [iff]: "wfp \<bottom>"
-  by (simp add: wfp_def)
 
 sublocale nonground_term_with_context \<subseteq>
   nonground_term_order "less_kbo :: ('f :: weighted,'v) term \<Rightarrow> ('f,'v) term \<Rightarrow> bool"
@@ -78,13 +70,16 @@ abbreviation trivial_select :: "'a clause \<Rightarrow> 'a clause" where
   "trivial_select _ \<equiv> {#}"
 
 abbreviation unit_typing where
-  "unit_typing _ _ \<equiv> ([], ())"
+  "unit_typing _ _ \<equiv> Some ([], ())"
+
+sublocale witnessed_monomorphic_term_typing where \<F> = unit_typing
+  by unfold_locales auto
                                            
 sublocale
   superposition_calculus where
     select = "trivial_select :: (('f , 'v :: infinite) atom) select" and
     less\<^sub>t = less_kbo and
-    \<F> = unit_typing and
+    welltyped = welltyped and
     tiebreakers = trivial_tiebreakers
   by unfold_locales auto
 
@@ -183,12 +178,12 @@ end
 
 datatype type = A | B
 
-abbreviation types :: "nat \<Rightarrow> nat \<Rightarrow> type list \<times> type" where
+abbreviation types :: "nat \<Rightarrow> nat \<Rightarrow> (type list \<times> type) option" where
   "types f n \<equiv>
     let type = if even f then A else B
-    in (replicate n type, type)"
+    in Some (replicate n type, type)"
 
-lemma types_inhabited: "\<exists>f. types f 0 = ([], \<tau>)"
+lemma types_witnessed: "\<exists>f. types f 0 = Some ([], \<tau>)"
 proof (cases \<tau>)
   case A
   show ?thesis
@@ -210,17 +205,19 @@ sublocale nonground_term_with_context .
 sublocale nonground_order less_kbo
   by unfold_locales
 
-sublocale
-  superposition_calculus
-    "select_max :: (nat, nat) atom select"
-    less_kbo
-    types
-    trivial_tiebreakers
+sublocale witnessed_monomorphic_term_typing where \<F> = types
 proof unfold_locales
   fix \<tau>
-  show "\<exists>f. types f 0 = ([], \<tau>)"
-    using types_inhabited .
-qed simp_all
+  show "\<exists>f. types f 0 = Some ([], \<tau>)"
+    using types_witnessed .
+qed
+
+sublocale superposition_calculus where
+    select = "select_max :: (nat, nat) atom select" and
+    less\<^sub>t = less_kbo and
+    welltyped = welltyped and
+    tiebreakers = trivial_tiebreakers
+  by unfold_locales simp
 
 end
 

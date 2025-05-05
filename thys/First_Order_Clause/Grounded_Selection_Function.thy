@@ -1,53 +1,54 @@
 theory Grounded_Selection_Function
   imports
     Nonground_Selection_Function
-    Nonground_Typing_Generic
     HOL_Extra
 begin
 
-context nonground_typing_generic
+context groundable_nonground_clause
 begin
 
 abbreviation select_subst_stability_on_clause where
-  "select_subst_stability_on_clause select select\<^sub>G C\<^sub>G C \<V> \<gamma> \<equiv>
+  "select_subst_stability_on_clause select select\<^sub>G C\<^sub>G \<Gamma> C \<gamma> \<equiv>
     C \<cdot> \<gamma> = clause.from_ground C\<^sub>G \<and>
     select\<^sub>G C\<^sub>G = clause.to_ground ((select C) \<cdot> \<gamma>) \<and>
-    clause.is_welltyped_ground_instance C \<V> \<gamma>"
+    is_ground_instance \<Gamma> C \<gamma>"
+
+abbreviation uncurried_ground_instances where
+  "uncurried_ground_instances C \<equiv> ground_instances (fst C) (snd C)"
 
 abbreviation select_subst_stability_on where
   "select_subst_stability_on select select\<^sub>G N \<equiv>
-    \<forall>C\<^sub>G \<in> \<Union> (clause.welltyped_ground_instances ` N). \<exists>(C, \<V>) \<in> N. \<exists>\<gamma>.
-    select_subst_stability_on_clause select select\<^sub>G C\<^sub>G C \<V> \<gamma>"
+    \<forall>C\<^sub>G \<in> \<Union> (uncurried_ground_instances ` N). \<exists>(e, C) \<in> N. \<exists>\<gamma>.
+      select_subst_stability_on_clause select select\<^sub>G C\<^sub>G e C \<gamma>"
 
 lemma obtain_subst_stable_on_select_grounding:
   fixes select :: "'a select"
   obtains select\<^sub>G where
     "select_subst_stability_on select select\<^sub>G N"
     "is_select_grounding select select\<^sub>G"
-proof-
-  let ?N\<^sub>G = "\<Union>(clause.welltyped_ground_instances ` N)"
+proof -
+  let ?N\<^sub>G = "\<Union>(uncurried_ground_instances ` N)"
 
   {
-    fix C \<V> \<gamma>
+    fix \<Gamma> C \<gamma>
     assume
-      "(C, \<V>) \<in> N"
-      "clause.is_welltyped_ground_instance C \<V> \<gamma>"
+      "(\<Gamma>, C) \<in> N"
+      "is_ground_instance \<Gamma> C \<gamma>"
 
     then have
-      "\<exists>\<gamma>'. \<exists>(C', \<V>')\<in>N. \<exists>select\<^sub>G.
-        select_subst_stability_on_clause select select\<^sub>G (clause.to_ground (C \<cdot> \<gamma>)) C' \<V>' \<gamma>'"
-      by(intro exI[of _ \<gamma>], intro bexI[of _ "(C, \<V>)"]) auto
+      "\<exists>\<gamma>'. \<exists>(\<Gamma>', C')\<in>N. \<exists>select\<^sub>G.
+         select_subst_stability_on_clause select select\<^sub>G (clause.to_ground (C \<cdot> \<gamma>)) \<Gamma>' C' \<gamma>'"
+      using is_ground_instance_is_ground
+      by (intro exI[of _ \<gamma>], intro bexI[of _ "(\<Gamma>, C)"]) auto
   }
 
   then have
-     "\<forall>C\<^sub>G \<in> ?N\<^sub>G. \<exists>\<gamma>. \<exists>(C, \<V>) \<in> N. \<exists>select\<^sub>G.
-         select_subst_stability_on_clause select select\<^sub>G C\<^sub>G C \<V> \<gamma>"
-    unfolding clause.welltyped_ground_instances_def
+    "\<forall>C\<^sub>G \<in> ?N\<^sub>G. \<exists>\<gamma>. \<exists>(\<Gamma>, C) \<in> N. \<exists>select\<^sub>G. select_subst_stability_on_clause select select\<^sub>G C\<^sub>G \<Gamma> C \<gamma>"
+    unfolding ground_instances_def
     by force
 
   then have select\<^sub>G_exists_for_premises:
-     "\<forall>C\<^sub>G \<in> ?N\<^sub>G. \<exists>select\<^sub>G \<gamma>. \<exists>(C, \<V>) \<in> N.
-         select_subst_stability_on_clause select select\<^sub>G C\<^sub>G C \<V> \<gamma>"
+     "\<forall>C\<^sub>G \<in> ?N\<^sub>G. \<exists>select\<^sub>G \<gamma>. \<exists>(\<Gamma>, C) \<in> N. select_subst_stability_on_clause select select\<^sub>G C\<^sub>G \<Gamma> C \<gamma>"
     by blast
 
   obtain select\<^sub>G_on_groundings where
@@ -66,8 +67,7 @@ proof-
   have grounding: "is_select_grounding select select\<^sub>G"
     using select\<^sub>G_on_groundings
     unfolding is_select_grounding_def select\<^sub>G_def prod.case_eq_if
-    by (metis (no_types, lifting) clause.from_ground_inverse clause.ground_is_ground
-        clause.subst_id_subst)
+    by (metis (lifting) clause.from_ground_inverse clause.ground_is_ground clause.subst_id_subst)
 
   show ?thesis
     using that[OF _ grounding] select\<^sub>G_on_groundings
@@ -79,10 +79,9 @@ end
 
 locale grounded_selection_function =
   nonground_selection_function where select = select and atom_subst = atom_subst +
-  nonground_typing_generic where \<F> = \<F> and atom_subst = atom_subst
+  groundable_nonground_clause where atom_subst = atom_subst
   for               
     select :: "'a select" and
-    \<F> :: "('f, 'ty) fun_types" and
     atom_subst :: "'a \<Rightarrow> ('f, 'v) subst \<Rightarrow> 'a" +
 fixes select\<^sub>G
 assumes select\<^sub>G: "is_select_grounding select select\<^sub>G"

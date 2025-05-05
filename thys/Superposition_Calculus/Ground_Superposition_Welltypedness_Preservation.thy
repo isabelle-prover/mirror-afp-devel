@@ -9,7 +9,7 @@ context ground_superposition_calculus
 begin
 
 sublocale clause_typing where
-  term_welltyped = "welltyped \<F>"
+  term_welltyped = "welltyped \<F>"   
   by unfold_locales
 
 lemma ground_superposition_preserves_typing:
@@ -19,7 +19,7 @@ lemma ground_superposition_preserves_typing:
     "clause.is_welltyped TYPE('ty) \<F> E"
   shows "clause.is_welltyped TYPE('ty) \<F> C"
   using assms
-  by (cases rule: superposition.cases) (auto 4 3)
+  by (cases rule: superposition.cases) (auto 4 4)
 
 lemma ground_eq_resolution_preserves_typing:
   assumes "eq_resolution D C" "clause.is_welltyped TYPE('ty) \<F> D"

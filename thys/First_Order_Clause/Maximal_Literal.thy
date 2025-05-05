@@ -35,7 +35,6 @@ lemma strictly_maximal_in_clause:
   unfolding is_strictly_maximal_def
   by(rule conjunct1)
 
-(* TODO: Names *)
 lemma is_maximal_not_empty [intro]: "is_maximal l C \<Longrightarrow> C \<noteq> {#}"
   using maximal_in_clause
   by fastforce

@@ -9,14 +9,14 @@ theory Grounded_Superposition
 begin
 
 locale grounded_superposition_calculus =
-  superposition_calculus where select = select and \<F> = \<F> +
+  superposition_calculus where select = select and welltyped = welltyped +
   grounded_selection_function where
-  select = select and \<F> = \<F> and atom_subst = "(\<cdot>a)" and atom_vars = atom.vars and
-  atom_to_ground = atom.to_ground and atom_from_ground = atom.from_ground and
-  atom_welltyped = atom.welltyped
+  select = select and atom_subst = "(\<cdot>a)" and atom_vars = atom.vars and 
+  atom_to_ground = atom.to_ground and atom_from_ground = atom.from_ground and 
+  is_ground_instance = is_ground_instance 
   for
     select :: "('f, 'v :: infinite) atom select" and
-    \<F> :: "('f, 'ty) fun_types"
+    welltyped :: "('v, 'ty) var_types \<Rightarrow> ('f, 'v) term \<Rightarrow> 'ty \<Rightarrow> bool"
 begin
 
 sublocale ground: ground_superposition_calculus where
@@ -31,27 +31,27 @@ rewrites
 
 abbreviation is_inference_ground_instance_one_premise where
   "is_inference_ground_instance_one_premise D C \<iota>\<^sub>G \<gamma> \<equiv>
-     case (D, C) of ((D, \<V>'), (C, \<V>)) \<Rightarrow>
+     case (D, C) of ((\<V>', D), (\<V>, C)) \<Rightarrow>
       inference.is_ground (Infer [D] C \<cdot>\<iota> \<gamma>) \<and>
       \<iota>\<^sub>G = inference.to_ground (Infer [D] C \<cdot>\<iota> \<gamma>) \<and>
-      clause.is_welltyped \<V> D \<and>
-      is_welltyped_on (clause.vars C) \<V> \<gamma> \<and>
-      clause.is_welltyped \<V> C \<and>
+      type_preserving_on (clause.vars C) \<V> \<gamma> \<and>
+      type_preserving_literals \<V> D \<and>
+      type_preserving_literals \<V> C \<and>
       \<V> = \<V>' \<and>
       infinite_variables_per_type \<V>"
 
 abbreviation is_inference_ground_instance_two_premises where
   "is_inference_ground_instance_two_premises D E C \<iota>\<^sub>G \<gamma> \<rho>\<^sub>1 \<rho>\<^sub>2 \<equiv>
-    case (D, E, C) of ((D, \<V>\<^sub>2), (E, \<V>\<^sub>1), (C, \<V>\<^sub>3)) \<Rightarrow>
+    case (D, E, C) of ((\<V>\<^sub>2, D), (\<V>\<^sub>1, E), (\<V>\<^sub>3, C)) \<Rightarrow>
       term_subst.is_renaming \<rho>\<^sub>1 \<and>
       term_subst.is_renaming \<rho>\<^sub>2 \<and>
       clause.vars (E \<cdot> \<rho>\<^sub>1) \<inter> clause.vars (D \<cdot> \<rho>\<^sub>2) = {} \<and>
       inference.is_ground (Infer [D \<cdot> \<rho>\<^sub>2, E \<cdot> \<rho>\<^sub>1] C \<cdot>\<iota> \<gamma>) \<and>
       \<iota>\<^sub>G = inference.to_ground (Infer [D \<cdot> \<rho>\<^sub>2, E \<cdot> \<rho>\<^sub>1] C \<cdot>\<iota> \<gamma>) \<and>
-      clause.is_welltyped \<V>\<^sub>1 E \<and>
-      clause.is_welltyped \<V>\<^sub>2 D \<and>
-      is_welltyped_on (clause.vars C) \<V>\<^sub>3 \<gamma> \<and>
-      clause.is_welltyped \<V>\<^sub>3 C \<and>
+      type_preserving_on (clause.vars C) \<V>\<^sub>3 \<gamma> \<and>
+      type_preserving_literals \<V>\<^sub>1 E \<and>
+      type_preserving_literals \<V>\<^sub>2 D \<and>
+      type_preserving_literals \<V>\<^sub>3 C \<and>
       infinite_variables_per_type \<V>\<^sub>1 \<and>
       infinite_variables_per_type \<V>\<^sub>2 \<and>
       infinite_variables_per_type \<V>\<^sub>3"
@@ -86,9 +86,9 @@ lemma is_inference_ground_instance_two_premises:
   unfolding inference_ground_instances_def
   by auto
 
-lemma ground_inference\<^sub>_concl_in_welltyped_ground_instances:
+lemma ground_inference\<^sub>_concl_in_ground_instances:
   assumes "\<iota>\<^sub>G \<in> inference_ground_instances \<iota>"
-  shows "concl_of \<iota>\<^sub>G \<in> clause.welltyped_ground_instances (concl_of \<iota>)"
+  shows "concl_of \<iota>\<^sub>G \<in> uncurried_ground_instances (concl_of \<iota>)"
 proof -
   obtain "premises" C \<V> where
     \<iota>: "\<iota> = Infer premises (C, \<V>)"
@@ -97,23 +97,23 @@ proof -
 
   show ?thesis
     using assms
-    unfolding \<iota> inference_ground_instances_def clause.welltyped_ground_instances_def
+    unfolding \<iota> inference_ground_instances_def ground_instances_def
     by (cases "premises" rule: list_4_cases) auto
 qed
 
-lemma ground_inference_red_in_welltyped_ground_instances_of_concl:
+lemma ground_inference_red_in_ground_instances_of_concl:
   assumes "\<iota>\<^sub>G \<in> inference_ground_instances \<iota>"
-  shows "\<iota>\<^sub>G \<in> ground.Red_I (clause.welltyped_ground_instances (concl_of \<iota>))"
+  shows "\<iota>\<^sub>G \<in> ground.Red_I (uncurried_ground_instances (concl_of \<iota>))"
 proof -
   from assms have "\<iota>\<^sub>G \<in> ground.G_Inf"
     unfolding inference_ground_instances_def
     by blast
 
-  moreover have "concl_of \<iota>\<^sub>G \<in> clause.welltyped_ground_instances (concl_of \<iota>)"
-    using assms ground_inference\<^sub>_concl_in_welltyped_ground_instances
+  moreover have "concl_of \<iota>\<^sub>G \<in> uncurried_ground_instances (concl_of \<iota>)"
+    using assms ground_inference\<^sub>_concl_in_ground_instances
     by auto
 
-  ultimately show "\<iota>\<^sub>G \<in> ground.Red_I (clause.welltyped_ground_instances (concl_of \<iota>))"
+  ultimately show "\<iota>\<^sub>G \<in> ground.Red_I (uncurried_ground_instances (concl_of \<iota>))"
     using ground.Red_I_of_Inf_to_N
     by blast
 qed
@@ -127,10 +127,10 @@ sublocale lifting:
     ground.G_Inf
     ground.GRed_I
     ground.GRed_F
-    clause.welltyped_ground_instances
+    uncurried_ground_instances
     "Some \<circ> inference_ground_instances"
-    tiebreakers.typed_tiebreakers
-proof (unfold_locales; (intro impI tiebreakers.typed.wfp tiebreakers.typed.transp)?)
+    typed_tiebreakers
+proof (unfold_locales; (intro impI typed_tiebreakers.wfp typed_tiebreakers.transp)?)
 
   show "\<bottom>\<^sub>F \<noteq> {}"
     using obtain_infinite_variables_per_type_on''[of "{}"]
@@ -139,37 +139,38 @@ next
   fix bottom
   assume "bottom \<in> \<bottom>\<^sub>F"
 
-  then show "clause.welltyped_ground_instances bottom \<noteq> {}"
-    unfolding clause.welltyped_ground_instances_def
+  then show "uncurried_ground_instances bottom \<noteq> {}"
+    unfolding ground_instances_def
     by fastforce
 next
   fix bottom
   assume "bottom \<in> \<bottom>\<^sub>F"
 
-  then show "clause.welltyped_ground_instances bottom \<subseteq> ground.G_Bot"
-    unfolding clause.welltyped_ground_instances_def
+  then show "uncurried_ground_instances bottom \<subseteq> ground.G_Bot"
+    unfolding ground_instances_def
     by auto
 next
   fix C :: "('f, 'v, 'ty) typed_clause"
 
-  assume "clause.welltyped_ground_instances C \<inter> ground.G_Bot \<noteq> {}"
+  assume "ground_instances (fst C) (snd C) \<inter> ground.G_Bot \<noteq> {}"
 
-  moreover then have "fst C = {#}"
-    unfolding clause.welltyped_ground_instances_def
+  moreover then have "snd C = {#}"
+    unfolding ground_instances_def
     by simp
 
-  then have "C = ({#}, snd C)"
+  then have "C = (fst C, {#})"
     by (metis split_pairs)
 
   ultimately show "C \<in> \<bottom>\<^sub>F"
-    unfolding clause.welltyped_ground_instances_def
+    unfolding ground_instances_def
     by blast
 next
   fix \<iota> :: "('f, 'v, 'ty) typed_clause inference"
 
-  show "the ((Some \<circ> inference_ground_instances) \<iota>) \<subseteq>
-          ground.GRed_I (clause.welltyped_ground_instances (concl_of \<iota>))"
-    using ground_inference_red_in_welltyped_ground_instances_of_concl
+  show
+    "the ((Some \<circ> inference_ground_instances) \<iota>) \<subseteq> 
+      ground.GRed_I (uncurried_ground_instances (concl_of \<iota>))"
+    using ground_inference_red_in_ground_instances_of_concl
     by auto
 qed
 
@@ -188,9 +189,10 @@ sublocale
     "ground_superposition_calculus.GRed_I (\<prec>\<^sub>t\<^sub>G)"
     "\<lambda>_. ground_superposition_calculus.GRed_F (\<prec>\<^sub>t\<^sub>G)"
     "\<bottom>\<^sub>F"
-    "\<lambda>_. clause.welltyped_ground_instances"
-    "\<lambda>select\<^sub>G. Some \<circ> (grounded_superposition_calculus.inference_ground_instances (\<prec>\<^sub>t) select\<^sub>G \<F>)"
-    tiebreakers.typed_tiebreakers
+    "\<lambda>_. uncurried_ground_instances"
+    "\<lambda>select\<^sub>G. Some \<circ>
+      (grounded_superposition_calculus.inference_ground_instances (\<prec>\<^sub>t) select\<^sub>G welltyped)"
+    typed_tiebreakers
 proof (unfold_locales; (intro ballI)?)
   show "select\<^sub>G\<^sub>s \<noteq> {}"
     using select\<^sub>G_simple
@@ -205,7 +207,7 @@ next
     by unfold_locales (simp add: select\<^sub>G\<^sub>s_def)
 
   show "consequence_relation ground.G_Bot ground.G_entails"
-    using ground.consequence_relation_axioms.
+    using ground.consequence_relation_axioms .
 
   show "tiebreaker_lifting
           \<bottom>\<^sub>F
@@ -215,9 +217,9 @@ next
           ground.G_Inf
           ground.GRed_I
           ground.GRed_F
-          clause.welltyped_ground_instances
+          uncurried_ground_instances
           (Some \<circ> inference_ground_instances)
-          tiebreakers.typed_tiebreakers"
+          typed_tiebreakers"
     by unfold_locales
 qed
 

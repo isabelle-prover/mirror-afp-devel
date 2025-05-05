@@ -15,6 +15,7 @@ session First_Order_Clause = Abstract_Substitution +
   theories
     Ground_Term_Typing
     Grounded_Selection_Function
+    Monomorphic_Typing
     Nonground_Entailment
     Nonground_Inference
     Nonground_Order
