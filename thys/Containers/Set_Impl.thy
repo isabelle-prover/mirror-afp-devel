@@ -310,6 +310,8 @@ declare [[code drop:
   trancl
   relcomp
   wf_code
+  \<open>Inf :: _ \<Rightarrow> 'a \<Rightarrow> 'b::Inf\<close>
+  \<open>Sup :: _ \<Rightarrow> 'a \<Rightarrow> 'b::Sup\<close>
   \<open>Inf :: _ \<Rightarrow> 'a set\<close>
   \<open>Sup :: _ \<Rightarrow> 'a set\<close>
   \<open>Inf :: _ \<Rightarrow> 'a Predicate.pred\<close>
@@ -318,6 +320,12 @@ declare [[code drop:
   Sup_fin
   Min
   Max
+  \<open>Gcd :: _ \<Rightarrow> nat\<close>
+  \<open>Lcm :: _ \<Rightarrow> nat\<close>
+  \<open>Gcd :: _ \<Rightarrow> int\<close>
+  \<open>Lcm :: _ \<Rightarrow> int\<close>
+  Gcd_fin
+  Lcm_fin
   Bex
   Ball
   sorted_list_of_set
@@ -393,8 +401,6 @@ using comp_fun_commute_apply[of f] by (simp add: comp_fun_commute_def')
 
 lift_definition set_fold_cfc :: "('a, 'b) comp_fun_commute \<Rightarrow> 'b \<Rightarrow> 'a set \<Rightarrow> 'b" is "Finite_Set.fold" .
 
-declare [[code drop: set_fold_cfc]]
-
 lemma set_fold_cfc_code [code]:
   fixes xs :: "'a :: ceq list" 
   and dxs :: "'a :: ceq set_dlist"
@@ -442,8 +448,6 @@ lemma comp_fun_idem_apply' [simp]:
 using comp_fun_idem_apply[of f] by (simp add: comp_fun_idem_def')
 
 lift_definition set_fold_cfi :: "('a, 'b) comp_fun_idem \<Rightarrow> 'b \<Rightarrow> 'a set \<Rightarrow> 'b" is "Finite_Set.fold" .
-
-declare [[code drop: set_fold_cfi]]
 
 lemma set_fold_cfi_code [code]:
   fixes xs :: "'a list" 
