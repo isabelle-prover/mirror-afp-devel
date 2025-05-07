@@ -314,7 +314,7 @@ structure Nano_Json_Parser_Isar = struct
     fun make_const_def (binding, trm) lthy = let
             val lthy' =  snd ( Local_Theory.begin_nested lthy )
             val arg = ((binding, NoSyn), 
-                       ((Thm.def_binding binding,@{attributes [code]}), trm)) 
+                       ((Thm.def_binding binding,@{attributes [code equation]}), trm)) 
             val ((_, (_ , thm)), lthy'') = Local_Theory.define arg lthy'
         in
             (thm, Local_Theory.end_nested lthy'')

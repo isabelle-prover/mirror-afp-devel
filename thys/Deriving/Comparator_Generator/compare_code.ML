@@ -49,7 +49,7 @@ fun change_compare_code const inst_names lthy =
       (@{make_string} (map TVar types ~~ map snd types, const', code_eqs))) 
       else ()
     val lthy = Local_Theory.note (
-      (Binding.name (Long_Name.base_name cname ^ "_compare_code"), @{attributes [code]}), new_code_eqs) lthy 
+      (Binding.name (Long_Name.base_name cname ^ "_compare_code"), @{attributes [code equation]}), new_code_eqs) lthy 
       |> snd    
   in
     lthy

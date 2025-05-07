@@ -598,7 +598,7 @@ subsection \<open>ML-Level Declarations\<close>
   
           val lthy = (snd o Local_Theory.begin_nested) lthy 
           val ((dt,(_,thm)),lthy) = Local_Theory.define 
-            ((name,Mixfix.NoSyn),((Thm.def_binding name,@{attributes [code]}@attribs),t)) lthy;
+            ((name,Mixfix.NoSyn),((Thm.def_binding name,@{attributes [code equation]}@attribs),t)) lthy;
           val (lthy, lthy_old) = `Local_Theory.end_nested lthy
           val phi = Proof_Context.export_morphism lthy_old lthy
           val thm = Morphism.thm phi thm

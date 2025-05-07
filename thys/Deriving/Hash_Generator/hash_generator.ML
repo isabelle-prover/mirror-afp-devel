@@ -299,7 +299,7 @@ fun generate_hashs_from_bnf_fp tyco lthy =
         val name = "hash_code_" ^ Long_Name.base_name tyco
       in
         lthy
-        |> Local_Theory.note ((Binding.name (name ^ "_simps"), @{attributes [simp, code]}), simp_thms)
+        |> Local_Theory.note ((Binding.name (name ^ "_simps"), @{attributes [simp, code equation]}), simp_thms)
         |> snd
         |> (fn lthy => (thms, lthy))
       end
@@ -382,7 +382,7 @@ fun hashable_instance tname thy =
         in
           Generator_Aux.define_overloaded_generic
            ((Binding.name ("hashcode_" ^ basename ^ "_def"),
-            @{attributes [code]}),
+            @{attributes [code equation]}),
             hash_def) ctxt
           ||> define_overloaded ("def_hashmap_size_" ^ basename ^ "_def", hashs_def)
         end)

@@ -170,7 +170,7 @@ fun eval_term lthy t =
 fun eval_define_declare (name, t) print lthy = 
   let 
     val t' = eval_term lthy t
-    val arg = ((Binding.name name, NoSyn), ((Binding.name (name ^ "_def"),@{attributes [code]}), t'))
+    val arg = ((Binding.name name, NoSyn), ((Binding.name (name ^ "_def"),@{attributes [code equation]}), t'))
     val lthy' =  snd ( Local_Theory.begin_nested lthy )
     val (_, lthy'') = Local_Theory.define arg lthy'
   in
@@ -180,7 +180,7 @@ fun eval_define_declare (name, t) print lthy =
 fun eval_define_declare_nbe (name, t) print lthy = 
   let 
     val t' = Nbe.dynamic_value lthy t
-    val arg = ((Binding.name name, NoSyn), ((Binding.name (name ^ "_def"),@{attributes [code]}), t'))
+    val arg = ((Binding.name name, NoSyn), ((Binding.name (name ^ "_def"),@{attributes [code equation]}), t'))
     val lthy' =  snd ( Local_Theory.begin_nested lthy )
     val (_, lthy'') = Local_Theory.define arg lthy'
   in
@@ -193,7 +193,7 @@ structure ml_isar_wrapper = struct
   fun define_constant_definition' (constname, trm) print lthy = 
     let
       val lthy' =  snd ( Local_Theory.begin_nested lthy )
-      val arg = ((Binding.name constname, NoSyn), ((Binding.name (constname^"_def"),@{attributes [code]}), trm))
+      val arg = ((Binding.name constname, NoSyn), ((Binding.name (constname^"_def"),@{attributes [code equation]}), trm))
       val ((_, (_ , thm)), lthy'') = Local_Theory.define arg lthy'
     in
       (thm, Local_Theory.end_nested lthy'')
@@ -2650,7 +2650,7 @@ val _ = Outer_Syntax.local_theory' @{command_keyword "print_fixpoint"}
     fun chunk_name n = name ^ chunk_suffix ^ Int.toString n
 
     fun arg name t =
-      ((Binding.name name, NoSyn), ((Binding.name (name ^ "_def"),@{attributes [code]}), t))
+      ((Binding.name name, NoSyn), ((Binding.name (name ^ "_def"),@{attributes [code equation]}), t))
 
     fun def_trm (name,trm) lthy = snd (Local_Theory.define (arg name trm) lthy)
 

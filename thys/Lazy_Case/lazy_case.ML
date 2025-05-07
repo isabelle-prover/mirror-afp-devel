@@ -163,7 +163,7 @@ fun lazify {T, casex, ctrs, case_thms, case_cong, ...} lthy =
         val upd = Data.map (Symtab.update_new (typ_name, ()))
       in
         lthy'
-        |> Local_Theory.note ((Binding.empty, @{attributes [code]}), def_thms) |> snd
+        |> Local_Theory.note ((Binding.empty, @{attributes [code equation]}), def_thms) |> snd
         |> Local_Theory.note ((Binding.empty, @{attributes [code_unfold]}), [unfold_thm]) |> snd
         |> Local_Theory.note ((Binding.empty, @{attributes [fundef_cong]}), [cong_thm]) |> snd
         |> Local_Theory.declaration {syntax = false, pervasive = true, pos = \<^here>} (K upd)

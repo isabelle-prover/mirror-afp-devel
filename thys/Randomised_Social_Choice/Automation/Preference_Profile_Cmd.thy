@@ -244,7 +244,7 @@ fun preference_profile_aux agents alts (binding, args) lthy =
     val alt_setT = HOLogic.mk_setT altT
     fun define t = 
       Local_Theory.define ((binding, NoSyn), 
-        ((Binding.suffix_name "_def" binding, @{attributes [code]}), t)) lthy
+        ((Binding.suffix_name "_def" binding, @{attributes [code equation]}), t)) lthy
     val ty = HOLogic.mk_prodT (agentT, HOLogic.listT (HOLogic.mk_setT altT))
     val args' = 
       args |> map (fn x => x ||> map (HOLogic.mk_set altT) ||> HOLogic.mk_list alt_setT)

@@ -203,7 +203,7 @@ fun extract_recursion_eqs exs basename orig_def_thm lthy = let
     warning "Unresolved premises in code theorems"
 
   val (_,lthy) = Local_Theory.note 
-    ((mk_qualified basename "code",@{attributes [code]}),new_def_thm::code_thms)
+    ((mk_qualified basename "code",@{attributes [code equation]}),new_def_thm::code_thms)
      lthy;
 
 in

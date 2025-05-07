@@ -342,7 +342,7 @@ fun generate_comparators_from_bnf_fp tyco lthy =
         val name = "comparator_" ^ Long_Name.base_name tyco
       in
         lthy
-        |> Local_Theory.note ((Binding.name (name ^ "_simps"), @{attributes [simp, code]}), simp_thms)
+        |> Local_Theory.note ((Binding.name (name ^ "_simps"), @{attributes [simp, code equation]}), simp_thms)
         |> snd
         |> (fn lthy => (thms, lthy))
       end
