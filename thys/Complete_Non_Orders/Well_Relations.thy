@@ -720,7 +720,8 @@ thm order.nonempty_imp_ex_extreme
 
 subsection \<open>omega-Chains\<close>
 
-definition "omega_chain A r \<equiv> \<exists>f :: nat \<Rightarrow> 'a. monotone (\<le>) r f \<and> range f = A"
+definition omega_chain :: "'a set \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> bool" where
+"omega_chain A r \<equiv> \<exists>f :: nat \<Rightarrow> 'a. monotone (\<le>) r f \<and> range f = A"
 
 lemma omega_chainI:
   fixes f :: "nat \<Rightarrow> 'a"
