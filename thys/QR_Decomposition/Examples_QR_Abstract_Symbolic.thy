@@ -8,8 +8,9 @@ section\<open>Examples of execution using symbolic computation\<close>
 
 theory Examples_QR_Abstract_Symbolic
 imports
- QR_Decomposition
- Real_Impl.Real_Unique_Impl
+  QR_Decomposition
+  Real_Impl.Real_Unique_Impl
+  "Gauss_Jordan.Examples_Gauss_Jordan_Abstract"
 begin
 
 subsection\<open>Execution of the QR decomposition using symbolic computation\<close>

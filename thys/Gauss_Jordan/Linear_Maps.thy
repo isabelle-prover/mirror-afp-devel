@@ -8,9 +8,11 @@
 section\<open>Linear Maps\<close>
 
 theory Linear_Maps
-imports
+  imports
     Gauss_Jordan
 begin
+
+hide_const (open) Real_Vector_Spaces.linear
 
 lemma "((\<lambda>(x, y). (x::real , - y::real)) has_derivative (\<lambda>h. (fst h, - snd h))) (at x)"
   apply (rule has_derivative_eq_rhs)

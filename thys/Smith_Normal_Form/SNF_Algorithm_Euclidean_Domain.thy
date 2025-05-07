@@ -8,7 +8,6 @@ section \<open>Executable Smith normal form algorithm over Euclidean domains\<cl
 theory SNF_Algorithm_Euclidean_Domain
   imports
     Diagonal_To_Smith
-    Echelon_Form.Examples_Echelon_Form_Abstract
 
     Elementary_Divisor_Rings 
     Diagonal_To_Smith_JNF

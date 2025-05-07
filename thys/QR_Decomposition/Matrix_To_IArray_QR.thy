@@ -8,8 +8,8 @@ section\<open>Matrices as nested IArrays\<close>
 
 theory Matrix_To_IArray_QR
 imports 
-  Rank_Nullity_Theorem.Mod_Type
   Gauss_Jordan.Elementary_Operations
+  Rank_Nullity_Theorem.Mod_Type
   IArray_Addenda_QR
 begin
 
@@ -417,6 +417,5 @@ lemma matrix_to_iarray_column_add[code_unfold]:
   unfolding nrows_eq_card_rows ncols_eq_card_columns 
   unfolding  matrix_to_iarray_def o_def vec_to_iarray_def
   by (auto simp add: to_nat_from_nat_id to_nat_less_card[of i] to_nat_less_card[of j])
-
 
 end

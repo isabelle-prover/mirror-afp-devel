@@ -7,9 +7,10 @@
 section\<open>Code generation for vectors and matrices\<close>
 
 theory Code_Matrix
-imports 
-  Rank_Nullity_Theorem.Miscellaneous
-  Code_Set
+  imports
+    "HOL-Analysis.Finite_Cartesian_Product"
+    "HOL-Analysis.Cartesian_Space"
+    Code_Set
 begin
 
 text\<open>In this file the code generator is set up properly to allow the execution of matrices 

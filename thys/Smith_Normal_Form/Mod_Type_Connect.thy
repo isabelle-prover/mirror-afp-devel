@@ -8,9 +8,9 @@ based on the @{text "mod_type"} class\<close>
 
 theory Mod_Type_Connect
   imports 
-          Perron_Frobenius.HMA_Connect
-          Rank_Nullity_Theorem.Mod_Type
-          Gauss_Jordan.Elementary_Operations
+    Perron_Frobenius.HMA_Connect
+    Rank_Nullity_Theorem.Mod_Type
+    Gauss_Jordan.Elementary_Operations
 begin
 
 text \<open>Some lemmas on @{text "Mod_Type.to_nat"} and @{text "Mod_Type.from_nat"} are added to have 
@@ -336,7 +336,7 @@ proof -
       have "sign p = sign ?q \<and> p permutes ?zn"
       using p fin proof (induction rule: permutes_induct)
         case id
-        show ?case by (auto simp: sign_id[unfolded id_def] permutes_id[unfolded id_def])
+        show ?case by (auto simp: permutes_id[unfolded id_def])
       next
         case (swap a b p)
         then have \<open>permutation p\<close>

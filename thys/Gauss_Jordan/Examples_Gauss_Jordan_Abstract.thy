@@ -7,7 +7,7 @@
 section\<open>Examples of computations over abstract matrices\<close>
 
 theory Examples_Gauss_Jordan_Abstract
-imports 
+imports
   Determinants2
   Inverse
   System_Of_Equations

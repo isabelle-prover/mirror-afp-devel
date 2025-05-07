@@ -7,8 +7,8 @@
 section "Code set"
 
 theory Code_Set
-imports
-  "HOL-Library.Code_Cardinality"
+  imports
+    "HOL-Library.Code_Cardinality"
 begin
 
 lemma [code]:

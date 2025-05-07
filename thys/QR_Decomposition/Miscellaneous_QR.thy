@@ -8,16 +8,15 @@ section\<open>Miscellaneous file for the QR algorithm\<close>
 
 theory Miscellaneous_QR
 imports
- Gauss_Jordan.Examples_Gauss_Jordan_Abstract
+  "Gauss_Jordan.Determinants2"
+  "Gauss_Jordan.Inverse"
 begin
 
-
-text\<open>These two lemmas maybe should be in the file \<open>Code_Matrix.thy\<close> of the Gauss-Jordan
+text\<open>These lemmas maybe should be in the file \<open>Code_Matrix.thy\<close> of the Gauss-Jordan
   development.\<close>
 
-lemma [code abstract]: "vec_nth (a - b) =  (%i. a$i - b$i)" by (metis vector_minus_component)
-lemma [code abstract]: "vec_nth (c *\<^sub>R x) = (\<lambda>i. c *\<^sub>R (x$i))" by auto
-
+lemma [code abstract]:
+  "vec_nth (c *\<^sub>R x) = (\<lambda>i. c *\<^sub>R (x$i))" by auto
 
 text\<open>This lemma maybe should be in the file \<open>Mod_Type.thy\<close> of the Gauss-Jordan
   development.\<close>
@@ -292,15 +291,15 @@ lemma invertible_transpose_mult:
   shows "invertible (transpose A ** A)" 
 proof -
   have null_eq: "null_space A = null_space (transpose A ** A)" 
-  proof (auto)
+  proof safe
     fix x assume x: "x \<in> null_space A"
     show "x \<in> null_space (transpose A ** A)" using x unfolding null_space_def
       by (metis (lifting, full_types) matrix_vector_mul_assoc matrix_vector_mult_0_right mem_Collect_eq)
   next
-    fix x assume x: "x \<in> null_space (transpose A ** A)"
-    show "x \<in> null_space A" 
-      by (metis is_solution_def matrix_vector_mul_assoc mem_Collect_eq 
-        norm_equivalence null_space_eq_solution_set solution_set_def x)
+    fix x
+    assume "x \<in> null_space (transpose A ** A)"
+    then show "x \<in> null_space A" 
+      using norm_equivalence by (auto simp add: null_space_def matrix_vector_mul_assoc)
   qed
   have "rank A = vec.dim (UNIV::(real^'cols::{mod_type}) set) - vec.dim (null_space A)"  
     using rank_nullity_theorem_matrices[of A]
