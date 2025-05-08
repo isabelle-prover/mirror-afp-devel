@@ -9,7 +9,7 @@ begin
 type_synonym 'a lang = "'a list set"
 
 definition conc :: "'a lang \<Rightarrow> 'a lang \<Rightarrow> 'a lang" (infixr \<open>@@\<close> 75) where
-"A @@ B = {xs@ys | xs ys. xs:A & ys:B}"
+"A @@ B = {zs. \<exists>xs \<in> A. \<exists>ys \<in> B. zs = xs @ ys}"
 
 text \<open>checks the code preprocessor for set comprehensions\<close>
 export_code conc checking SML
