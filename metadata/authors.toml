@@ -288,6 +288,7 @@ ballarin_homepage = "http://www21.in.tum.de/~ballarin/"
 
 [ballenghien]
 name = "Benoît Ballenghien"
+orcid = "0009-0000-4941-187X"
 
 [ballenghien.emails]
 
@@ -5556,6 +5557,7 @@ parsert_homepage = "http://www.parsert.com/"
 
 [paulson]
 name = "Lawrence C. Paulson"
+orcid = "0000-0003-0288-4279"
 
 [paulson.emails]
 
@@ -5799,6 +5801,7 @@ name = "Cornelia Pusch"
 
 [puyobro]
 name = "Benjamin Puyobro"
+orcid = "0009-0006-0294-9043"
 
 [puyobro.emails]
 
