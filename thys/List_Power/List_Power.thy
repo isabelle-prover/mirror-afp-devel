@@ -105,6 +105,17 @@ proof-
   thus ?thesis by (metis Suc_pred append_eq_append_conv assms(1,2) pow_list.simps(2))
 qed
 
+lemma pow_list_eq_appends_iff:
+  "n \<ge> m \<Longrightarrow> x^^n @ y = x^^m @ z \<longleftrightarrow> z = x^^(n-m) @ y"
+  using pow_list_add[of m "n-m" x] by auto
+
+lemmas pow_list_eq_appends_iff2 = pow_list_eq_appends_iff[THEN eq_iff_swap]
+
+lemma pow_list_eq_single_appends_eqD:
+  "\<lbrakk> x\<noteq>y; [x]^^n @ [y]^^m = [x]^^k @ [y]^^l \<rbrakk> \<Longrightarrow> n = k \<and> m = l"
+using append_eq_append_conv_if_disj[of "[x]^^n" "[x]^^k" "[y]^^m" "[y]^^l"]
+by (auto simp: disjoint_iff pow_list_single)
+
 lemma map_pow_list[simp]: "map f (xs ^^ k) = (map f xs) ^^ k"
   by (induction k) simp_all
 
