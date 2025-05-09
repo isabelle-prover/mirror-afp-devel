@@ -111,8 +111,8 @@ lemma pow_list_eq_appends_iff:
 
 lemmas pow_list_eq_appends_iff2 = pow_list_eq_appends_iff[THEN eq_iff_swap]
 
-lemma pow_list_eq_single_appends_eqD:
-  "\<lbrakk> x\<noteq>y; [x]^^n @ [y]^^m = [x]^^k @ [y]^^l \<rbrakk> \<Longrightarrow> n = k \<and> m = l"
+lemma pow_list_eq_single_appends_iff[simp]:
+  "x\<noteq>y \<Longrightarrow> [x]^^n @ [y]^^m = [x]^^k @ [y]^^l \<longleftrightarrow> n = k \<and> m = l"
 using append_eq_append_conv_if_disj[of "[x]^^n" "[x]^^k" "[y]^^m" "[y]^^l"]
 by (auto simp: disjoint_iff pow_list_single)
 
