@@ -65,32 +65,26 @@ declare split_paired_all[simp]
 (******************************************************)
 
 lemma fin_atom: "(fin (atom a) q) = (q = [False])"
-by(simp add:atom_def)
+  by(simp add:atom_def)
 
 lemma start_atom: "start (atom a) = [True]"
-by(simp add:atom_def)
+  by(simp add:atom_def)
 
 lemma in_step_atom_Some[simp]:
- "(p,q) : step (atom a) b = (p=[True] \<and> q=[False] \<and> b=a)"
-by (simp add: atom_def step_def)
+  "(p,q) : step (atom a) b = (p=[True] \<and> q=[False] \<and> b=a)"
+  by (simp add: atom_def step_def)
 
 lemma False_False_in_steps_atom:
- "([False],[False]) : steps (atom a) w = (w = [])"
-apply (induct "w")
- apply simp
-apply (simp add: relcomp_unfold)
-done
+  "([False],[False]) : steps (atom a) w = (w = [])"
+  by (induct "w") (auto simp add: relcomp_unfold)
 
 lemma start_fin_in_steps_atom:
- "(start (atom a), [False]) : steps (atom a) w = (w = [a])"
-apply (induct "w")
- apply (simp add: start_atom)
-apply (simp add: False_False_in_steps_atom relcomp_unfold start_atom)
-done
+  "(start (atom a), [False]) : steps (atom a) w = (w = [a])"
+  by (induct "w") (auto simp: False_False_in_steps_atom relcomp_unfold start_atom)
 
 lemma accepts_atom:
- "accepts (atom a) w = (w = [a])"
-by (simp add: accepts_conv_steps start_fin_in_steps_atom fin_atom)
+  "accepts (atom a) w = (w = [a])"
+  by (simp add: accepts_conv_steps start_fin_in_steps_atom fin_atom)
 
 (******************************************************)
 (*                      or                            *)
@@ -99,77 +93,56 @@ by (simp add: accepts_conv_steps start_fin_in_steps_atom fin_atom)
 (***** lift True/False over fin *****)
 
 lemma fin_or_True[iff]:
- "\<And>L R. fin (or L R) (True#p) = fin L p"
-by(simp add:or_def)
+  "\<And>L R. fin (or L R) (True#p) = fin L p"
+  by(simp add:or_def)
 
 lemma fin_or_False[iff]:
- "\<And>L R. fin (or L R) (False#p) = fin R p"
-by(simp add:or_def)
+  "\<And>L R. fin (or L R) (False#p) = fin R p"
+  by(simp add:or_def)
 
 (***** lift True/False over step *****)
 
 lemma True_in_step_or[iff]:
-"\<And>L R. (True#p,q) : step (or L R) a = (\<exists>r. q = True#r \<and> (p,r) \<in> step L a)"
-apply (simp add:or_def step_def)
-apply blast
-done
+  "\<And>L R. (True#p,q) : step (or L R) a = (\<exists>r. q = True#r \<and> (p,r) \<in> step L a)"
+  by (force simp add:or_def step_def)
 
 lemma False_in_step_or[iff]:
-"\<And>L R. (False#p,q) : step (or L R) a = (\<exists>r. q = False#r \<and> (p,r) \<in> step R a)"
-apply (simp add:or_def step_def)
-apply blast
-done
+  "\<And>L R. (False#p,q) : step (or L R) a = (\<exists>r. q = False#r \<and> (p,r) \<in> step R a)"
+  by (force simp add:or_def step_def)
 
 
 (***** lift True/False over steps *****)
 
 lemma lift_True_over_steps_or[iff]:
- "\<And>p. (True#p,q)\<in>steps (or L R) w = (\<exists>r. q = True # r \<and> (p,r) \<in> steps L w)"
-apply (induct "w")
- apply force
-apply force
-done
+  "\<And>p. (True#p,q)\<in>steps (or L R) w = (\<exists>r. q = True # r \<and> (p,r) \<in> steps L w)"
+  by (induct "w") force+
 
 lemma lift_False_over_steps_or[iff]:
- "\<And>p. (False#p,q)\<in>steps (or L R) w = (\<exists>r. q = False#r \<and> (p,r)\<in>steps R w)"
-apply (induct "w")
- apply force
-apply force
-done
+  "\<And>p. (False#p,q)\<in>steps (or L R) w = (\<exists>r. q = False#r \<and> (p,r)\<in>steps R w)"
+  by (induct "w") force+
 
 (** From the start  **)
 
 lemma start_step_or[iff]:
- "\<And>L R. (start(or L R),q) : step(or L R) a = 
+  "\<And>L R. (start(or L R),q) : step(or L R) a = 
          (\<exists>p. (q = True#p \<and> (start L,p) : step L a) | 
                (q = False#p \<and> (start R,p) : step R a))"
-apply (simp add:or_def step_def)
-apply blast
-done
+  by (force simp add:or_def step_def)
 
 lemma steps_or:
- "(start(or L R), q) : steps (or L R) w = 
+  "(start(or L R), q) : steps (or L R) w = 
   ( (w = [] \<and> q = start(or L R)) | 
     (w \<noteq> [] \<and> (\<exists>p.  q = True  # p \<and> (start L,p) : steps L w | 
                       q = False # p \<and> (start R,p) : steps R w)))"
-apply (case_tac "w")
- apply (simp)
- apply blast
-apply (simp)
-apply blast
-done
+  by (cases w; fastforce)
 
 lemma fin_start_or[iff]:
- "\<And>L R. fin (or L R) (start(or L R)) = (fin L (start L) | fin R (start R))"
-by (simp add:or_def)
+  "\<And>L R. fin (or L R) (start(or L R)) = (fin L (start L) | fin R (start R))"
+  by (simp add:or_def)
 
 lemma accepts_or[iff]:
- "accepts (or L R) w = (accepts L w | accepts R w)"
-apply (simp add: accepts_conv_steps steps_or)
-(* get rid of case_tac: *)
-apply (case_tac "w = []")
- apply auto
-done
+  "accepts (or L R) w = (accepts L w | accepts R w)"
+  by (cases w; fastforce simp add: accepts_conv_steps steps_or)
 
 (******************************************************)
 (*                      conc                        *)
@@ -178,265 +151,215 @@ done
 (** True/False in fin **)
 
 lemma fin_conc_True[iff]:
- "\<And>L R. fin (conc L R) (True#p) = (fin L p \<and> fin R (start R))"
-by(simp add:conc_def)
+  "\<And>L R. fin (conc L R) (True#p) = (fin L p \<and> fin R (start R))"
+  by(simp add:conc_def)
 
 lemma fin_conc_False[iff]:
- "\<And>L R. fin (conc L R) (False#p) = fin R p"
-by(simp add:conc_def)
+  "\<And>L R. fin (conc L R) (False#p) = fin R p"
+  by(simp add:conc_def)
 
 
 (** True/False in step **)
 
 lemma True_step_conc[iff]:
- "\<And>L R. (True#p,q) : step (conc L R) a = 
+  "\<And>L R. (True#p,q) : step (conc L R) a = 
         ((\<exists>r. q=True#r \<and> (p,r): step L a) | 
          (fin L p \<and> (\<exists>r. q=False#r \<and> (start R,r) : step R a)))"
-apply (simp add:conc_def step_def)
-apply blast
-done
+  by (force simp add:conc_def step_def)
 
 lemma False_step_conc[iff]:
- "\<And>L R. (False#p,q) : step (conc L R) a = 
+  "\<And>L R. (False#p,q) : step (conc L R) a = 
        (\<exists>r. q = False#r \<and> (p,r) : step R a)"
-apply (simp add:conc_def step_def)
-apply blast
-done
+  by (force simp add:conc_def step_def)
 
 (** False in steps **)
 
 lemma False_steps_conc[iff]:
- "\<And>p. (False#p,q): steps (conc L R) w = (\<exists>r. q=False#r \<and> (p,r): steps R w)"
-apply (induct "w")
- apply fastforce
-apply force
-done
+  "\<And>p. (False#p,q): steps (conc L R) w = (\<exists>r. q=False#r \<and> (p,r): steps R w)"
+  by (induct "w"; force)
 
 (** True in steps **)
 
 lemma True_True_steps_concI:
- "\<And>L R p. (p,q) : steps L w \<Longrightarrow> (True#p,True#q) : steps (conc L R) w"
-apply (induct "w")
- apply simp
-apply simp
-apply fast
-done
+  "\<And>L R p. (p,q) : steps L w \<Longrightarrow> (True#p,True#q) : steps (conc L R) w"
+  by (induct "w"; force)
 
 lemma True_False_step_conc[iff]:
- "\<And>L R. (True#p,False#q) : step (conc L R) a = 
+  "\<And>L R. (True#p,False#q) : step (conc L R) a = 
          (fin L p \<and> (start R,q) : step R a)"
-by simp
+  by simp
 
 lemma True_steps_concD[rule_format]:
- "\<forall>p. (True#p,q) : steps (conc L R) w \<longrightarrow> 
+  "\<forall>p. (True#p,q) : steps (conc L R) w \<longrightarrow> 
      ((\<exists>r. (p,r) : steps L w \<and> q = True#r)  \<or> 
   (\<exists>u a v. w = u@a#v \<and> 
             (\<exists>r. (p,r) : steps L u \<and> fin L r \<and> 
             (\<exists>s. (start R,s) : step R a \<and> 
             (\<exists>t. (s,t) : steps R v \<and> q = False#t)))))"
-apply (induct "w")
- apply simp
-apply simp
-apply (clarify del:disjCI)
-apply (erule disjE)
- apply (clarify del:disjCI)
- apply (erule allE, erule impE, assumption)
- apply (erule disjE)
+  apply (induct "w")
+   apply simp
+  apply simp
+  apply (clarify del:disjCI)
+  apply (erule disjE)
+   apply (clarify del:disjCI)
+   apply (erule allE, erule impE, assumption)
+   apply (erule disjE)
+    apply blast
+   apply (rule disjI2)
+   apply (clarify)
+   apply simp
+   apply (rule_tac x = "a#u" in exI)
+   apply simp
+   apply blast
+  apply (rule disjI2)
+  apply (clarify)
+  apply simp
+  apply (rule_tac x = "[]" in exI)
+  apply simp
   apply blast
- apply (rule disjI2)
- apply (clarify)
- apply simp
- apply (rule_tac x = "a#u" in exI)
- apply simp
- apply blast
-apply (rule disjI2)
-apply (clarify)
-apply simp
-apply (rule_tac x = "[]" in exI)
-apply simp
-apply blast
-done
+  done
 
 lemma True_steps_conc:
- "(True#p,q) : steps (conc L R) w = 
+  "(True#p,q) : steps (conc L R) w = 
  ((\<exists>r. (p,r) : steps L w \<and> q = True#r)  \<or>
   (\<exists>u a v. w = u@a#v \<and>
             (\<exists>r. (p,r) : steps L u \<and> fin L r \<and> 
             (\<exists>s. (start R,s) : step R a \<and> 
             (\<exists>t. (s,t) : steps R v \<and> q = False#t)))))"
-by(force dest!: True_steps_concD intro!: True_True_steps_concI)
+  by(force dest!: True_steps_concD intro!: True_True_steps_concI)
 
 (** starting from the start **)
 
 lemma start_conc:
   "\<And>L R. start(conc L R) = True#start L"
-by (simp add:conc_def)
+  by (simp add:conc_def)
 
 lemma final_conc:
- "\<And>L R. fin(conc L R) p = ((fin R (start R) \<and> (\<exists>s. p = True#s \<and> fin L s)) \<or>
+  "\<And>L R. fin(conc L R) p = ((fin R (start R) \<and> (\<exists>s. p = True#s \<and> fin L s)) \<or>
                            (\<exists>s. p = False#s \<and> fin R s))"
-apply (simp add:conc_def split: list.split)
-apply blast
-done
+  by (force simp add:conc_def split: list.split)
 
 lemma accepts_conc:
- "accepts (conc L R) w = (\<exists>u v. w = u@v \<and> accepts L u \<and> accepts R v)"
-apply (simp add: accepts_conv_steps True_steps_conc final_conc start_conc)
-apply (rule iffI)
- apply (clarify)
- apply (erule disjE)
-  apply (clarify)
-  apply (erule disjE)
-   apply (rule_tac x = "w" in exI)
-   apply simp
-   apply blast
-  apply blast
- apply (erule disjE)
-  apply blast
- apply (clarify)
- apply (rule_tac x = "u" in exI)
- apply simp
- apply blast
-apply (clarify)
-apply (case_tac "v")
- apply simp
- apply blast
-apply simp
-apply blast
-done
+  "accepts (conc L R) w = (\<exists>u v. w = u@v \<and> accepts L u \<and> accepts R v)"
+  apply (simp add: accepts_conv_steps True_steps_conc final_conc start_conc)
+  apply (rule iffI)
+   apply (clarify)
+   apply (erule disjE; force)
+   apply (clarify)
+  apply (case_tac "v"; fastforce)
+  done
 
 (******************************************************)
 (*                     epsilon                        *)
 (******************************************************)
 
 lemma step_epsilon[simp]: "step epsilon a = {}"
-by(simp add:epsilon_def step_def)
+  by(simp add:epsilon_def step_def)
 
 lemma steps_epsilon: "((p,q) : steps epsilon w) = (w=[] \<and> p=q)"
-by (induct "w") auto
+  by (induct "w") auto
 
 lemma accepts_epsilon[iff]: "accepts epsilon w = (w = [])"
-apply (simp add: steps_epsilon accepts_conv_steps)
-apply (simp add: epsilon_def)
-done
+  unfolding steps_epsilon accepts_conv_steps
+  by (auto simp add: epsilon_def)
 
 (******************************************************)
 (*                       plus                         *)
 (******************************************************)
 
 lemma start_plus[simp]: "\<And>A. start (plus A) = start A"
-by(simp add:plus_def)
+  by(simp add:plus_def)
 
 lemma fin_plus[iff]: "\<And>A. fin (plus A) = fin A"
-by(simp add:plus_def)
+  by(simp add:plus_def)
 
 lemma step_plusI:
   "\<And>A. (p,q) : step A a \<Longrightarrow> (p,q) : step (plus A) a"
-by(simp add:plus_def step_def)
+  by(simp add:plus_def step_def)
 
 lemma steps_plusI: "\<And>p. (p,q) : steps A w \<Longrightarrow> (p,q) \<in> steps (plus A) w"
-apply (induct "w")
- apply simp
-apply simp
-apply (blast intro: step_plusI)
-done
+  by (induct w; force intro: step_plusI)
 
 lemma step_plus_conv[iff]:
- "\<And>A. (p,r): step (plus A) a = 
-       ( (p,r): step A a | fin A p \<and> (start A,r) : step A a )"
-by(simp add:plus_def step_def)
+  "\<And>A. ((p, r) \<in> step (RegExp2NA.plus A) a) \<longleftrightarrow> ((p, r) \<in> step A a \<or> fin A p \<and> (start A, r) \<in> step A a)"
+  by(simp add:plus_def step_def)
 
 lemma fin_steps_plusI:
- "[| (start A,q) : steps A u; u \<noteq> []; fin A p |] 
- ==> (p,q) : steps (plus A) u"
-apply (case_tac "u")
- apply blast
-apply simp
-apply (blast intro: steps_plusI)
-done
+  "\<lbrakk>(start A, q) \<in> steps A u; u \<noteq> []; fin A p\<rbrakk> \<Longrightarrow> (p, q) \<in> steps (RegExp2NA.plus A) u"
+  by (cases "u"; force intro: steps_plusI)
 
 (* reverse list induction! Complicates matters for conc? *)
 lemma start_steps_plusD[rule_format]:
- "\<forall>r. (start A,r) \<in> steps (plus A) w \<longrightarrow>
+  "\<forall>r. (start A,r) \<in> steps (plus A) w \<longrightarrow>
      (\<exists>us v. w = concat us @ v \<and> 
               (\<forall>u\<in>set us. accepts A u) \<and> 
               (start A,r) \<in> steps A v)"
-apply (induct w rule: rev_induct)
- apply simp
- apply (rule_tac x = "[]" in exI)
- apply simp
-apply simp
-apply (clarify)
-apply (erule allE, erule impE, assumption)
-apply (clarify)
-apply (erule disjE)
- apply (rule_tac x = "us" in exI)
- apply (simp)
- apply blast
-apply (rule_tac x = "us@[v]" in exI)
-apply (simp add: accepts_conv_steps)
-apply blast
-done
+  apply (induct w rule: rev_induct)
+   apply simp
+   apply (rule_tac x = "[]" in exI)
+   apply simp
+  apply simp
+  apply (clarify)
+  apply (erule allE, erule impE, assumption)
+  apply (clarify)
+  apply (erule disjE)
+   apply (rule_tac x = "us" in exI)
+   apply (simp)
+   apply blast
+  apply (rule_tac x = "us@[v]" in exI)
+  apply (simp add: accepts_conv_steps)
+  apply blast
+  done
 
 lemma steps_star_cycle[rule_format]:
- "us \<noteq> [] \<longrightarrow> (\<forall>u \<in> set us. accepts A u) \<longrightarrow> accepts (plus A) (concat us)"
-apply (simp add: accepts_conv_steps)
-apply (induct us rule: rev_induct)
- apply simp
-apply (rename_tac u us)
-apply simp
-apply (clarify)
-apply (case_tac "us = []")
- apply (simp)
- apply (blast intro: steps_plusI fin_steps_plusI)
-apply (clarify)
-apply (case_tac "u = []")
- apply (simp)
- apply (blast intro: steps_plusI fin_steps_plusI)
-apply (blast intro: steps_plusI fin_steps_plusI)
-done
+  "us \<noteq> [] \<longrightarrow> (\<forall>u \<in> set us. accepts A u) \<longrightarrow> accepts (plus A) (concat us)"
+  apply (simp add: accepts_conv_steps)
+  apply (induct us rule: rev_induct)
+   apply simp
+  apply (rename_tac u us)
+  apply simp
+  apply (clarify)
+  apply (case_tac "us = []")
+   apply (simp)
+   apply (blast intro: steps_plusI fin_steps_plusI)
+  by (metis (no_types, opaque_lifting) fin_steps_plusI pair_in_Id_conv relcomp.relcompI steps.simps(1))
 
 lemma accepts_plus[iff]:
- "accepts (plus A) w = 
- (\<exists>us. us \<noteq> [] \<and> w = concat us \<and> (\<forall>u \<in> set us. accepts A u))"
-apply (rule iffI)
- apply (simp add: accepts_conv_steps)
- apply (clarify)
- apply (drule start_steps_plusD)
- apply (clarify)
- apply (rule_tac x = "us@[v]" in exI)
- apply (simp add: accepts_conv_steps)
- apply blast
-apply (blast intro: steps_star_cycle)
-done
+  "accepts (plus A) w = (\<exists>us. us \<noteq> [] \<and> w = concat us \<and> (\<forall>u \<in> set us. accepts A u))"
+  apply (rule iffI)
+   apply (simp add: accepts_conv_steps)
+   apply (clarify)
+   apply (drule start_steps_plusD)
+   apply (clarify)
+   apply (rule_tac x = "us@[v]" in exI)
+   apply (simp add: accepts_conv_steps)
+   apply blast
+  apply (blast intro: steps_star_cycle)
+  done
 
 (******************************************************)
 (*                       star                         *)
 (******************************************************)
 
 lemma accepts_star:
- "accepts (star A) w = (\<exists>us. (\<forall>u \<in> set us. accepts A u) \<and> w = concat us)"
-apply(unfold star_def)
-apply (rule iffI)
- apply (clarify)
- apply (erule disjE)
-  apply (rule_tac x = "[]" in exI)
-  apply simp
- apply blast
-apply force
-done
+  "accepts (star A) w = (\<exists>us. (\<forall>u \<in> set us. accepts A u) \<and> w = concat us)" (is "_ = ?rhs")
+  unfolding star_def
+  by (metis accepts_epsilon accepts_or accepts_plus concat.simps(1) empty_iff list.set(1))
 
 (***** Correctness of r2n *****)
 
 lemma accepts_rexp2na:
- "\<And>w. accepts (rexp2na r) w = (w : lang r)"
-apply (induct "r")
-     apply (simp add: accepts_conv_steps)
-    apply simp
-   apply (simp add: accepts_atom)
-  apply (simp)
- apply (simp add: accepts_conc Regular_Set.conc_def)
-apply (simp add: accepts_star in_star_iff_concat subset_iff Ball_def)
-done
+  "\<And>w. accepts (rexp2na r) w = (w \<in> lang r)"
+proof (induction r)
+  case Zero
+  then show ?case
+    by (simp add: accepts_conv_steps)
+next
+  case (Times r1 r2)
+  then show ?case by (force simp add: accepts_conc Regular_Set.conc_def)
+next
+  case (Star r)
+  then show ?case by (simp add: accepts_star in_star_iff_concat subset_iff Ball_def)
+qed (auto simp: accepts_atom)
 
 end
