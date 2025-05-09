@@ -155,43 +155,48 @@ by arith
 lemma regset_spec:
  "\<And>i j xs. xs \<in> regset d i j k =
         ((\<forall>n\<in>set(butlast(trace d i xs)). n < k) \<and> deltas d xs i = j)"
-proof (induct k)
-  case 0
-  then show ?case by (auto split: list.split)
-next
-  case (Suc k)
-  then show ?case
-    apply (simp add: conc_def Bex_def)
-    apply (rule iffI)
-     apply (erule disjE)
-      apply simp
-     apply (erule exE conjE)+
-     apply simp
-     apply (subgoal_tac "(\<forall>m\<in>set(butlast(trace d k xb)). m < Suc k) \<and> deltas d xb k = k")
-      apply (simp add: set_trace_conv butlast_append ball_Un)
-     apply (erule star_induct)
-      apply (simp)
-     apply (simp add: set_trace_conv butlast_append ball_Un)
-    apply (case_tac "k : set(butlast(trace d i xs))")
-     prefer 2 apply (rule disjI1)
-     apply (blast intro:lem)
-    apply (rule disjI2)
-    apply (drule in_set_butlastD[THEN decompose])
-    apply (clarify)
-    apply (rule_tac x = "pref" in exI)
-    apply simp
-    apply (rule conjI)
-    apply (meson in_set_butlast_appendI less_Suc_eq)
-    apply (rule_tac x = "concat mids" in exI)
-    apply (simp)
-    apply (rule conjI)
-     apply (rule concat_in_star)
-     apply (clarsimp simp: subset_iff)
-     apply (rule lem)
-      prefer 2 apply simp
-     apply (simp add: in_set_butlast_concatI)
-    by (meson in_set_butlast_appendI less_SucE)
-qed
+apply (induct k)
+ apply(simp split: list.split)
+ apply(fastforce)
+apply (simp add: conc_def)
+apply (rule iffI)
+ apply (erule disjE)
+  apply simp
+ apply (erule exE conjE)+
+ apply simp
+ apply (subgoal_tac
+      "(\<forall>m\<in>set(butlast(trace d k xsb)). m < Suc k) \<and> deltas d xsb k = k")
+  apply (simp add: set_trace_conv butlast_append ball_Un)
+ apply (erule star_induct)
+  apply (simp)
+ apply (simp add: set_trace_conv butlast_append ball_Un)
+apply (case_tac "k : set(butlast(trace d i xs))")
+ prefer 2 apply (rule disjI1)
+ apply (blast intro:lem)
+apply (rule disjI2)
+apply (drule in_set_butlastD[THEN decompose])
+apply (clarify)
+apply (rule_tac x = "pref" in exI)
+apply simp
+apply (rule conjI)
+ apply (rule ballI)
+ apply (rule lem)
+  prefer 2 apply simp
+ apply (drule bspec) prefer 2 apply assumption
+ apply simp
+apply (rule_tac x = "concat mids" in exI)
+apply (simp)
+apply (rule conjI)
+ apply (rule concat_in_star)
+ apply (clarsimp simp: subset_iff)
+ apply (rule lem)
+  prefer 2 apply simp
+ apply (drule bspec) prefer 2 apply assumption
+ apply (simp add: image_eqI in_set_butlast_concatI)
+apply (rule ballI)
+apply (rule lem)
+ apply auto
+done
 
 lemma trace_below:
  "bounded d k \<Longrightarrow> \<forall>i. i < k \<longrightarrow> (\<forall>n\<in>set(trace d i xs). n < k)"
