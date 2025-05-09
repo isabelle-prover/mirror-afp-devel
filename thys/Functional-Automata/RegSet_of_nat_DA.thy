@@ -155,79 +155,61 @@ by arith
 lemma regset_spec:
  "\<And>i j xs. xs \<in> regset d i j k =
         ((\<forall>n\<in>set(butlast(trace d i xs)). n < k) \<and> deltas d xs i = j)"
-apply (induct k)
- apply(simp split: list.split)
- apply(fastforce)
-apply (simp add: conc_def)
-apply (rule iffI)
- apply (erule disjE)
-  apply simp
- apply (erule exE conjE)+
- apply simp
- apply (subgoal_tac
-      "(\<forall>m\<in>set(butlast(trace d k xsb)). m < Suc k) \<and> deltas d xsb k = k")
-  apply (simp add: set_trace_conv butlast_append ball_Un)
- apply (erule star_induct)
-  apply (simp)
- apply (simp add: set_trace_conv butlast_append ball_Un)
-apply (case_tac "k : set(butlast(trace d i xs))")
- prefer 2 apply (rule disjI1)
- apply (blast intro:lem)
-apply (rule disjI2)
-apply (drule in_set_butlastD[THEN decompose])
-apply (clarify)
-apply (rule_tac x = "pref" in exI)
-apply simp
-apply (rule conjI)
- apply (rule ballI)
- apply (rule lem)
-  prefer 2 apply simp
- apply (drule bspec) prefer 2 apply assumption
- apply simp
-apply (rule_tac x = "concat mids" in exI)
-apply (simp)
-apply (rule conjI)
- apply (rule concat_in_star)
- apply (clarsimp simp: subset_iff)
- apply (rule lem)
-  prefer 2 apply simp
- apply (drule bspec) prefer 2 apply assumption
- apply (simp add: image_eqI in_set_butlast_concatI)
-apply (rule ballI)
-apply (rule lem)
- apply auto
-done
+proof (induct k)
+  case 0
+  then show ?case by (auto split: list.split)
+next
+  case (Suc k)
+  then show ?case
+    apply (simp add: conc_def Bex_def)
+    apply (rule iffI)
+     apply (erule disjE)
+      apply simp
+     apply (erule exE conjE)+
+     apply simp
+     apply (subgoal_tac "(\<forall>m\<in>set(butlast(trace d k xb)). m < Suc k) \<and> deltas d xb k = k")
+      apply (simp add: set_trace_conv butlast_append ball_Un)
+     apply (erule star_induct)
+      apply (simp)
+     apply (simp add: set_trace_conv butlast_append ball_Un)
+    apply (case_tac "k : set(butlast(trace d i xs))")
+     prefer 2 apply (rule disjI1)
+     apply (blast intro:lem)
+    apply (rule disjI2)
+    apply (drule in_set_butlastD[THEN decompose])
+    apply (clarify)
+    apply (rule_tac x = "pref" in exI)
+    apply simp
+    apply (rule conjI)
+    apply (meson in_set_butlast_appendI less_Suc_eq)
+    apply (rule_tac x = "concat mids" in exI)
+    apply (simp)
+    apply (rule conjI)
+     apply (rule concat_in_star)
+     apply (clarsimp simp: subset_iff)
+     apply (rule lem)
+      prefer 2 apply simp
+     apply (simp add: in_set_butlast_concatI)
+    by (meson in_set_butlast_appendI less_SucE)
+qed
 
 lemma trace_below:
  "bounded d k \<Longrightarrow> \<forall>i. i < k \<longrightarrow> (\<forall>n\<in>set(trace d i xs). n < k)"
-apply (unfold bounded_def)
-apply (induct "xs")
- apply simp
-apply (simp (no_asm))
-apply (blast)
-done
+  unfolding bounded_def
+  by (induct "xs") force+
 
 lemma regset_below:
- "[| bounded d k; i < k; j < k |] ==>
-  regset d i j k = {xs. deltas d xs i = j}"
-apply (rule set_eqI)
-apply (simp add: regset_spec)
-apply (blast dest: trace_below in_set_butlastD)
-done
+ "\<lbrakk>bounded d k; i < k; j < k\<rbrakk> \<Longrightarrow> regset d i j k = {xs. deltas d xs i = j}"
+  by (force simp add: regset_spec dest: trace_below in_set_butlastD)
 
 lemma deltas_below:
  "\<And>i. bounded d k \<Longrightarrow> i < k \<Longrightarrow> deltas d w i < k"
-apply (unfold bounded_def)
-apply (induct "w")
- apply simp_all
-done
+  unfolding bounded_def
+  by (induct w) force+
 
 lemma regset_DA_equiv:
- "[| bounded (next A) k; start A < k; j < k |] ==>
-  w : regset_of_DA A k = accepts A w"
-apply(unfold regset_of_DA_def)
-apply (simp cong: conj_cong
-            add: regset_below deltas_below accepts_def delta_def)
-done
+ "\<lbrakk>bounded (next A) k; start A < k; j < k\<rbrakk> \<Longrightarrow> (w \<in> regset_of_DA A k) = accepts A w"
+  unfolding regset_of_DA_def
+  by (simp cong: conj_cong add: regset_below deltas_below accepts_def delta_def)
 
 end

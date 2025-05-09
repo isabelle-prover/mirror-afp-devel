@@ -629,13 +629,18 @@ done
 
 lemma accepts_rexp2nae:
  "\<And>w. accepts (rexp2nae r) w = (w : lang r)"
-apply (induct "r")
-     apply (simp add: accepts_def)
-    apply simp
-   apply (simp add: accepts_atom)
-  apply (simp add: accepts_or)
- apply (simp add: accepts_conc Regular_Set.conc_def)
-apply (simp add: accepts_star in_star_iff_concat subset_iff Ball_def)
-done
+proof (induct "r")
+  case Zero
+  then show ?case
+    by (simp add: accepts_def)
+next
+  case (Times r1 r2)
+  then show ?case
+    by (metis accepts_conc concE concI lang.simps(5) rexp2nae.simps(5))
+next
+  case (Star r)
+  then show ?case
+    by (simp add: accepts_star in_star_iff_concat subset_iff Ball_def)
+qed (auto simp add: accepts_atom accepts_or)
 
 end
