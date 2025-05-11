@@ -72,6 +72,12 @@ lemma length_pow_list:  "length(xs ^^ k) = k * length xs"
 lemma pow_list_set: "set (w ^^ Suc k) = set w"
   by (induction k)(simp_all)
 
+lemma pow_list_set_if: "set (w ^^ k) = (if k=0 then {} else set w)"
+  using pow_list_set[of _ w] by (auto dest: gr0_implies_Suc)
+
+lemma in_pow_list_set[simp]: "x \<in> set (ys ^^ m) \<longleftrightarrow> x \<in> set ys \<and> m \<noteq> 0"
+  by (simp add: pow_list_set_if)
+
 lemma pow_list_slide: "xs @ (ys @ xs) ^^ n  @ ys = (xs @ ys)^^(Suc n)"
   by (induction n) simp+
 
@@ -106,14 +112,14 @@ proof-
 qed
 
 lemma pow_list_eq_appends_iff:
-  "n \<ge> m \<Longrightarrow> x^^n @ y = x^^m @ z \<longleftrightarrow> z = x^^(n-m) @ y"
-  using pow_list_add[of m "n-m" x] by auto
+  "n \<ge> m \<Longrightarrow> xs^^n @ ys = xs^^m @ zs \<longleftrightarrow> zs = xs^^(n-m) @ ys"
+using pow_list_add[of m "n-m" xs] by auto
 
 lemmas pow_list_eq_appends_iff2 = pow_list_eq_appends_iff[THEN eq_iff_swap]
 
 lemma pow_list_eq_single_appends_iff[simp]:
-  "x\<noteq>y \<Longrightarrow> [x]^^n @ [y]^^m = [x]^^k @ [y]^^l \<longleftrightarrow> n = k \<and> m = l"
-using append_eq_append_conv_if_disj[of "[x]^^n" "[x]^^k" "[y]^^m" "[y]^^l"]
+  "\<lbrakk> x \<notin> set ys; x \<notin> set zs \<rbrakk> \<Longrightarrow> [x]^^m @ ys = [x]^^n @ zs \<longleftrightarrow> m = n \<and> ys = zs"
+using append_eq_append_conv_if_disj[of "[x]^^m" "[x]^^n" "ys" "zs"]
 by (auto simp: disjoint_iff pow_list_single)
 
 lemma map_pow_list[simp]: "map f (xs ^^ k) = (map f xs) ^^ k"
