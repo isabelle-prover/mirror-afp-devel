@@ -324,10 +324,7 @@ next
   proof(rule fix_ind[where 
         P="\<lambda>a. 0 < n \<longrightarrow> (\<forall>x. length x = Suc n \<longrightarrow> a (butlast x, x ! n) \<sqsubseteq>\<^sub>F\<^sub>D FORKs\<^sub>n\<^sub>o\<^sub>r\<^sub>m (Suc n) x)", 
         rule_format], simp_all, goal_cases)
-    case base:1
-    then show ?case by (simp add: cont_fun monofunI) 
-  next
-    case step:(2 X fs)
+    case (1 X fs)
     then show ?case
       apply (unfold FORKs\<^sub>n\<^sub>o\<^sub>r\<^sub>m_def, subst fix_eq, simp add:forks_transitions_def 
           Un_commute lessThan_Suc nth_butlast)
@@ -659,10 +656,7 @@ next
     apply (subst PHILs\<^sub>n\<^sub>o\<^sub>r\<^sub>m_def, auto simp add:indep dnorm_inter RPHIL\<^sub>n\<^sub>o\<^sub>r\<^sub>m_def)
   proof(rule fix_ind[where 
         P="\<lambda>a. \<forall>x. length x = Suc n \<longrightarrow> a (butlast x, x ! n) \<sqsubseteq>\<^sub>F\<^sub>D PHILs\<^sub>n\<^sub>o\<^sub>r\<^sub>m (Suc n) x", rule_format], 
-      simp_all, goal_cases base step)
-    case base
-    then show ?case by (simp add: cont_fun monofunI) 
-  next
+      simp_all, goal_cases step)
     case (step X ps)
     hence tra:"(Tr\<^sub>P (Suc n) ps) =(Tr\<^sub>P n (butlast ps) \<union> Tr\<^sub>r\<^sub>p n (ps ! n))" 
       by (auto simp add:n_pos phils_transitions_def nth_butlast 
