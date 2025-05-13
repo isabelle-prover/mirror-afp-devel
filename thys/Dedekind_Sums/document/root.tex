@@ -1,0 +1,53 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8x]{inputenc}
+\usepackage[LGR,T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+\usepackage{amsfonts, amsmath, amssymb}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+\usepackage[shortcuts]{extdash}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{rm}
+
+
+\begin{document}
+
+\title{Dedekind Sums}
+\author{Manuel Eberl, Anthony Bordg, Lawrence C.\ Paulson, Wenda Li}
+\maketitle
+
+\begin{abstract}
+For integers $h$, $k$, the Dedekind sum is defined as
+\[s(h,k) = \sum_{r=1}^{k-1} \frac{r}{k} \left(\left\{\frac{hr}{k}\right\} - \frac{1}{2}\right) \]
+where $\{x\} = x - \lfloor x\rfloor$ denotes the fractional part of $x$.
+
+These sums occur in various contexts in analytic number theory, e.g.\ in the functional
+equation of the Dedekind $\eta$ function or in the study of modular forms.
+
+We give the definition of $s(h,k)$ and prove its basic properties, including the reciprocity law
+\[s(h,k) + s(k,h) = \frac{1}{12hk} + \frac{h}{12k} + \frac{k}{12h} - \frac{1}{4} \]
+and various congruence results.
+
+Our formalisation follows Chapter~3 of Apostol's
+\emph{Modular Functions and Dirichlet Series in Number Theory}~\cite{apostol} and contains
+all facts related to Dedekind sums from it (without the exercises).
+\end{abstract}
+
+\tableofcontents
+
+\newpage
+\parindent 0pt\parskip 0.5ex
+
+\input{session}
+
+\raggedright
+\nocite{apostol}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+

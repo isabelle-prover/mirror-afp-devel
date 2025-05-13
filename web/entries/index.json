@@ -1,5 +1,24 @@
 [
  {
+  "abstract": "For integers $h$, $k$, the Dedekind sum is defined as \\[s(h,k) = \\sum_{r=1}^{k-1} \\frac{r}{k} \\left(\\left\\{\\frac{hr}{k}\\right\\} - \\frac{1}{2}\\right) \\] where $\\{x\\} = x - \\lfloor x\\rfloor$ denotes the fractional part of $x$.\nThese sums occur in various contexts in analytic number theory, e.g. in the functional equation of the Dedekind $\\eta$ function or in the study of modular forms.\nWe give the definition of $s(h,k)$ and prove its basic properties, including the reciprocity law \\[s(h,k) + s(k,h) = \\frac{1}{12hk} + \\frac{h}{12k} + \\frac{k}{12h} - \\frac{1}{4} \\] and various congruence results.\nOur formalisation follows Chapter 3 of Apostol's Modular Functions and Dirichlet Series in Number Theory and contains all facts related to Dedekind sums from it (without the exercises).\n",
+  "authors": [
+   "Manuel Eberl",
+   "Anthony Bordg",
+   "Lawrence C. Paulson",
+   "Wenda Li"
+  ],
+  "link": "/entries/Dedekind_Sums.html",
+  "shortname": "Dedekind_Sums",
+  "title": "Dedekind Sums",
+  "topic_links": [
+   "/topics/mathematics/number-theory/"
+  ],
+  "topics": [
+   "Mathematics/Number theory"
+  ],
+  "year": "2025"
+ },
+ {
   "abstract": "The partition function $p(n)$ gives the number of ways to write a non-negative integer $n$ as a sum of positive integers, without taking order into account.\nThis entry uses the Jacobi Triple Product (already available in the AFP) to give a short proof of the Pentagonal Number Theorem, which is the statement that the generating function $F(X) = \\sum_{n\\geq 0} p(n) X^n$ of the partition function satisfies: \\[F(X)^{-1} = \\sum_{k\\in\\mathbb{Z}} (-1)^k X^{k(3k-1)/2} = 1 - x - x^2 + x^5 + x^7 - x^{12} - x^{15} + \\ldots\\] The numbers $g_k = \\frac{1}{2}k(3k-1)$ appearing in the exponents are the generalised pentagonal numbers.\nAs further corollaries of this, an upper bound for $p(n)$ and the recurrence relation \\[p(n) = \\sum_{\\substack{k\\in\\mathbb{Z}\\setminus\\{0\\} \\\\ g_k \\leq n}} (-1)^{k+1} p(n-g_k)\\] are proved. The latter also yields an algorithm to compute the numbers $p(0), \\ldots, p(n)$ simultaneously in time roughly $n^{2 + o(1)}$. This algorithm is implemented and proved correct at the end of this entry using the Imperative-HOL Refinement Framework.\n",
   "authors": [
    "Manuel Eberl"

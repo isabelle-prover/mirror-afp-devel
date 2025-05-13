@@ -1,0 +1,12 @@
+chapter AFP
+
+session Dedekind_Sums (AFP) = "HOL-Number_Theory" +
+  options [timeout = 600]
+  sessions
+    "HOL-Library"
+    Bernoulli
+  theories
+    Dedekind_Sums
+  document_files
+    "root.tex"
+    "root.bib"
