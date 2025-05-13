@@ -1,0 +1,56 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8x]{inputenc}
+\usepackage[LGR,T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+\usepackage{amsfonts, amsmath, amssymb}
+\usepackage[english]{babel}
+\newcommand{\oeiscite}[1]{\cite[\href{https://oeis.org/#1}{#1}]{oeis}}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+\usepackage[shortcuts]{extdash}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{rm}
+
+
+\begin{document}
+
+\title{The Partition Function and the Pentagonal Number Theorem}
+\author{Manuel Eberl}
+\maketitle
+
+\begin{abstract}
+The partition function $p(n)$~\oeiscite{A000041} gives the number of ways to write a non-negative
+integer $n$ as a sum of positive integers, without taking order into account.
+
+This entry uses the Jacobi Triple Product (already available in the AFP) to give a short proof of 
+the \emph{Pentagonal Number Theorem}, which is the statement that the generating function 
+$F(X) = \sum_{n\geq 0} p(n) X^n$ of the partition function satisfies:
+\[F(X)^{-1} = \sum_{k\in\mathbb{Z}} (-1)^k X^{k(3k-1)/2} = 1 - x - x^2 + x^5 + x^7 - x^{12} - x^{15} + \ldots\]
+The numbers $g_k = \frac{1}{2}k(3k-1)$ appearing in the exponents are the
+\emph{generalised pentagonal numbers}~\oeiscite{A001318}.
+
+As further corollaries of this, an upper bound for $p(n)$ and the recurrence relation
+\[p(n) = \sum_{\substack{k\in\mathbb{Z}\setminus\{0\} \\ g_k \leq n}} (-1)^{k+1} p(n-g_k)\]
+are proved. The latter also yields an algorithm to compute the numbers
+$p(0), \ldots, p(n)$ simultaneously in time roughly $n^{2 + o(1)}$. This algorithm is
+implemented and proved correct at the end of this entry using the Imperative-HOL Refinement Framework.
+\end{abstract}
+\newpage
+
+\tableofcontents
+
+\newpage
+\parindent 0pt\parskip 0.5ex
+
+\input{session}
+
+\raggedright
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+

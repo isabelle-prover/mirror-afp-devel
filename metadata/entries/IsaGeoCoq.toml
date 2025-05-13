@@ -456,7 +456,7 @@ Main/Tarski_dev/Ch15_pyth_rel.v
 (revision fc251121ffff) <br>
 """
 
-2025-04-27 = """
+2025-04-28 = """
 WARNING: IsaGeoCoq: in Hilbert_Euclidean.thy, context Tarski_Euclidean and propositions
 
 CREATE 

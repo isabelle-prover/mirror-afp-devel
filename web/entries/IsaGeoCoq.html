@@ -98,7 +98,7 @@
   <h1 ><span class='first'>T</span>arski's <span class='first'>P</span>arallel <span class='first'>P</span>ostulate implies the 5th <span class='first'>P</span>ostulate of <span class='first'>E</span>uclid, the <span class='first'>P</span>ostulate of <span class='first'>P</span>layfair and the original <span class='first'>P</span>arallel <span class='first'>P</span>ostulate of <span class='first'>E</span>uclid
   </h1>
   <div>
-      <p><a href="../authors/coghetto/">Roland Coghetto</a> <a class="obfuscated" data="eyJ1c2VyIjpbInJvbGFuZF9jb2doZXR0byJdLCJob3N0IjpbImhvdG1haWwiLCJjb20iXX0=">📧</a>
+      <p><a href="../authors/coghetto/">Roland Coghetto</a> <a class="obfuscated" data="eyJ1c2VyIjpbInJvbGFuZCIsImNvZ2hldHRvIl0sImhvc3QiOlsiY2Fmci1tc2EycCIsImJlIl19">📧</a>
       </p>
       <p class="date">January 31, 2021</p>
   </div>
@@ -136,6 +136,475 @@ Boutry, Charly Gries, Julien Narboux and Pascal Schreck.
     <div>
         <a href="https://isa-afp.org/LICENSE.LGPL">GNU Lesser General Public License (LGPL)</a>
     </div>
+      <h3>History</h3>
+      <dl>
+          <dt>April 28, 2025</dt>
+          <dd>WARNING: IsaGeoCoq: in Hilbert_Euclidean.thy, context Tarski_Euclidean and propositions
+
+CREATE 
+======
+Gupta_Neutral.thy, Gupta_Neutral_2D.thy, Gupta_Euclidean.thy, Hilbert_Neutral.thy,
+Hilbert_Neutral_2D.thy, Hilbert_Neutral_3D.thy, Hilbert_Euclidean.thy,
+
+Tarski_Neutral_Model_Gupta_Neutral.thy Tarski_Neutral_2D_Model_Gupta_Neutral_2D.thy
+Tarski_Euclidean_Model_Gupta_Euclidean.thy  Gupta_Neutral_Model_Tarski_Neutral.thy
+Gupta_Neutral_2D_Model_Tarski_Neutral_2D.thy Gupta_Euclidean_Model_Tarski_Euclidean.thy
+Hilbert_Neutral_Model_Tarski_Neutral.thy Hilbert_Neutral_2D_Model_Tarski_Neutral_2D.thy
+Hilbert_Neutral_3D_Model_Tarski_Neutral_3D.thy Hilbert_Euclidean_Model_Tarski_Euclidean.thy
+Tarski_Neutral_Model_Hilbert_Neutral.thy Tarski_Neutral_2D_Model_Hilbert_Neutral_2D.thy
+Tarski_Neutral_3D_Model_Hilbert_Neutral_3D.thy Tarski_Euclidean_Model_Hilbert_Euclidean.thy
+
+Port
+----
+Main/Meta_theory/Models/gupta_inspired_to_tarski.v
+Main/Meta_theory/Models/tarski_to_gupta_inspired.v
+Main/Meta_theory/Models/hilbert_to_tarski.v
+Main/Meta_theory/Models/tarski_to_hilbert.v
+
+New Definitions (with arity left,right): Gupta_Neutral.thy
+----------------------------------------------------------
+locale Gupta_neutral_dimensionless
+
+Context: Gupta_neutral_dimensionless:
+ColG(0,3)
+
+New Definitions (with arity left,right): Gupta_Neutral_2D.thy
+-------------------------------------------------------------
+locale Gupta_neutral_2D
+
+New Definitions (with arity left,right): Hilbert_Neutral.thy
+------------------------------------------------------------
+locale Hilbert_neutral_dimensionless_pre
+locale Hilbert_neutral_dimensionless
+
+Context: Hilbert_neutral_dimensionless_pre
+ColH(0,3) IncidLP(0,2) cut(0,3) outH(0,3) disjoint(0,4) same_side(0,3)
+same_side'(0,4) Para(0,2) Bet(0,3) Cong(0,4) ParaP(0,4) is_line(0,3)
+cut'(0,4) Midpoint(1,2)
+
+New Definitions (with arity left,right): Hilbert_Neutral_2D.thy
+------------------------------------------------------------
+locale Hilbert_neutral_2D
+
+New Definitions (with arity left,right): Hilbert_Neutral_3D.thy
+------------------------------------------------------------
+locale Hilbert_neutral_3D
+
+New Definitions (with arity left,right): Hilbert_Euclidean.thy
+------------------------------------------------------------
+locale Hilbert_Euclidean
+
+(revision cb5fca5d4c92) <br>
+</dd>
+          <dt>April 27, 2025</dt>
+          <dd>New Definitions (with arity left,right): Tarski_Neutral.thy
+-----------------------------------------------------------
+WARNING: Signature Lcos(0,3) "(['p,'p] => bool) => ['p,'p] => bool) => (['p, 'p, 'p] => bool) => bool", etc.
+
+IsOrthoCenter(1,3) IsCircumCenter(1,3) IsGravityCenter(1,3)
+Lcos(0,3) EqLcos(0,4) Lcos2(0,3) EqLcos2(0,6)
+Lcos3(0,5) EqLcos3(0,8) EqV(2,2) SumV(4,2) SumVExists(4,2)
+SameDir(2,2) OppDir(2,2) CongA3(3,3) Projp(2,2)
+
+CREATE: Tarski_Neutral_3D.thy
+=============================
+
+locale Tarski_3D
+
+CREATE: Tarski_Neutral_Archimedes_Continuity.thy
+================================================
+
+New Definitions (with arity left,right): Tarski_Neutral_Archimedes_Coninuity.thy
+--------------------------------------------------------------------------------
+WARNING: Signature: AlphaTmp(0,2) but "'p => 'p => 'p =>bool", etc.
+WARNING: Space: GeoCoq: Tm and Tm2 <---> IsaGeoCoq Tm2 = Tm.
+
+AlphaTmp(0,2) BetaTmp(0,2) NestedBis(0,2) CantorVariant(0,0)
+inj(0,1) pres_bet(0,1) extension(0,1) inj_line(0,3)
+pres_bet_line(0,3) pres_cong_line(0,3) line_extension(0,3)
+line_completeness(0,0)
+
+Porting Files (context Tarski_neutral_dimensionless)
+-------------
+Main/Meta_theory/Continuity/dedekind_archimedes.v
+Main/Meta_theory/Continuity/cantor_variant.v
+Main/Meta_theory/Continuity/completeness.v[only Tm = Tn and archimedes_aux line_completeness_aux ?]
+Main/Meta_theory/Continuity/elementary_continuity_props.v
+
+CREATE: Tarski_Neutral_Continuity.thy
+================================================
+New Definitions (with arity left,right): Tarski_Neutral_Continuity.thy
+----------------------------------------------------------------------
+WARNING: GeoCoq: Concyclic in Axioms/Definitions.v        (rename in IsaGeCoq Concyclic)
+         GeoCoq: Concyclic in Main/Highschool/concyclic.v (rename in IsaGeoCoq Concyclic2)
+	 IsaGeoCoq: Concyclic === Concyclic2
+
+OnCircle(1,2) InCircle(1,2) OutCircle(1,2) InCircleS(1,2)
+OutCircleS(1,2) Diam(0,4) EqC(0,4) InterCCAt(0,6) InterCC(0,4)
+TangentCC(0,4) Tangent(0,4) TangentAt(0,5) Concyclic(0,4)
+ConcyclicGen(0,4) Concyclic2(0,4)
+segment_circle(0,0) one_point_line_circle(0,0)
+two_point_line_circle(0,0) circle_circle(0,0) circle_circle_bis(0,0)
+circle_circle_axiom(0,0) circle_circle_two(0,0) euclid_s_prop_1_22(0,0)
+Nested(0,2) CantorAxiom(0,0) DedekindAxiom(0,0) DedekindVariant(0,0)
+Alpha'Fun(0,2) Beta'Fun(0,2) Eq(1,1) FOF(0,1)
+FirstOrderDedekind(0,0) AlphaFun(0,6) BetaFun(0,6)
+DedekindLemFun(0,0)
+
+Porting Files (context Tarski_neutral_dimensionless)
+-------------
+Main/Annexes/circles.v
+Main/Annexes/tangency.v
+Main/Meta_theory/Continuity/first_order.v [only dedeking__fod]
+Main/Meta_theory/Continuity/first_order_dedekind_circle_circle.v
+Main/Meta_theory/Continuity/dedekind_cantor.v
+
+CREATE: Tarski_Neutral_Continuity_2D.thy
+========================================
+Porting Files (context Tarski_neutral_2D)
+-------------
+Main/Annexes/circles.v[mid_onc2_perp__col -> onc4_cong2__eq]
+Main/Annexes/tangency.v[onc2_oreq]
+
+CREATE: Highschool_Neutral.thy
+==============================
+Porting Files (context Tarski_neutral_dimensionless)
+----------------------------------------------------
+Main/Highschool/bisector.v
+Main/Annexes/midpoint_theorems.v
+
+CREATE: Highschool_Euclidean.thy
+================================
+WARNING: In GeoCoq: midpoint_thales_reci (split in IsaGeoCoq midpoint_thales_reci1 midpoint_thalesreci2)
+WARNING: In GeoCoq: lemma varignon' (rename in IsaGeoCoq varignon_bis)
+WARNING: In GeoCoq Main/Highschool/concyclic.v : Lemma concyclic_aux (In IsaGeoCoq Concyclic2)
+                   Main/Annexes/circles.v :      Lemma concyclic_aux
+
+Porting Files (context Tarski_Euclidean)
+----------------------------------------
+Main/Annexes/midpoint_theorems.v
+Main/Highschool/midpoint_thales.v
+Main/Highschool/exercises.v
+Main/Highschool/varignon.v
+Main/Highschool/circumcenter.v
+Main/Highschool/orthocenter.v
+Main/Highschool/gravityCenter.v
+Main/Highschool/concyclic.v
+Main/Highschool/Euler_line.v
+Main/Highschool/sesamath_exercises.v
+
+CREATE: Highschool_Euclidean_2D.thy
+===================================
+(context Tarski_Euclidean)
+New in IsaGeoCoq: NewEx1
+
+
+Port Pappus 
+===========
+(in Tarski_Neutral.thy and Tarski_Euclidean.thy and Tarski_Euclidean_2D.thy)
+
+Main/Tarski_dev/Ch13_4_cos.v
+Main/Annexes/vectors.v
+Main/Annexes/project.v
+Main/Tarski_dev/Ch13_4_cos.v
+Main/Tarski_dev/Ch13_5_Pappus_Pascal.v
+
+Port Desarges-Hessenberg
+========================
+(in Tarski_Euclidean.thy)
+Main/Tarski_dev/Ch13_6_Desargues_Hessenberg.v
+
+Port Chap 14
+============
+(in Tarski_Neutral.thy and Tarski_Euclidean.thy and Tarski_Euclidean_2D.thy)
+
+Main/Tarski_dev/Ch14_sum.v
+Main/Tarski_dev/Ch14_prod.v
+Main/Tarski_dev/Ch14_order.v
+
+Port Chap 15
+============
+(in Tarski_Neutral.thy and Tarski_Euclidean_2D.thy)
+
+Main/Tarski_dev/Ch15_lengths.v
+Main/Tarski_dev/Ch15_pyth_rel.v
+
+(revision fc251121ffff) <br>
+</dd>
+          <dt>April 25, 2025</dt>
+          <dd>Tarski_Neutral.thy: transform 'moura' tactic to other tactic
+
+(revision a53e41f40732) <br>
+</dd>
+          <dt>April 21, 2025</dt>
+          <dd>Tarski_Neutral_Archimedes.thy
+--------------------------------
+add section 'Equivalence Greenberg - Aristotle'
+add lemma aristotle__greenberg
+add lemma greenberg_aristotle
+   (Note GeoCoq: This proof is inspired by
+                 The elementary Archimedean axiom in absolute geometry, 
+                 by Victor Pambuccian *) 
+add theorem equiv_aristotle___greenberg
+
+New Definitions (with arity left,right): Tarski_Neutral_Parallels.thy
+---------------------------------------------------------------------
+
+decidability_of_intersection[decidability_of_intersection](0,0)
+alternate_interior_angles_postulate[AlternateInteriorAnglesPostulate](0,0)
+consecutive_interior_angles_postulate[ConsecutiveInteriorAnglesPostulate](0,0)
+alternative_playfair_s_postulate[AlternativePlayfairSPostulate](0,0)
+proclus_postulate[ProclusPostulate](0,0) triangle_postulate[TrianglePostulate](0,0)
+bachmann_s_lotschnittaxiom[BachmannsLotschnittaxiom](0,0)
+legendre_s_parallel_postulate[LegendresParallelPostulate](0,0)
+weak_inverse_projection_postulate[WeakInverseProjectionPostulate](0,0)
+weak_triangle_circumscription_principle[WeakTriangleCircumscriptionPrinciple](0,0)
+weak_tarski_s_parallel_postulate[WeakTarskiParallelPostulate](0,0)
+existential_playfair_s_postulate[ExistentialPlayfairPostulate](0,0)
+postulate_of_right_saccheri_quadrilaterals[PostulateRightSaccheriQuadrilaterals](0,0)
+postulate_of_existence_of_a_right_saccheri_quadrilateral[PostulateExistenceRightSaccheriQuadrilateral](0,0)
+postulate_of_existence_of_a_triangle_whose_angles_sum_to_two_rights[PostulateExistenceTriangleAnglesSumTwoRights](0,0)
+inverse_projection_postulate[inverse_projection_postulate](0,0)
+alternative_proclus_postulate[AlternativeProclusPostulate](0,0)
+strong_parallel_postulate[StrongParallelPostulate](0,0)
+triangle_circumscription_principle[TriangleCircumscriptionPrinciple](0,0)
+thales_converse_postulate[ThalesConversePostulate](0,0)
+existential_thales_postulate[ExistentialThalesPostulate](0,0)
+thales_postulate[ThalesPostulate](0,0)
+posidonius_postulate[PosidoniusPostulate](0,0)
+postulate_of_right_lambert_quadrilaterals[PostulateOfRightLambertQuadrilaterals](0,0)
+postulate_of_existence_of_a_right_lambert_quadrilateral[PostulateExistenceRightLambertQuadrilateral](0,0)
+postulate_of_existence_of_similar_triangles[PostulateOfExistenceOfSimilarTriangles](0,0)
+midpoint_converse_postulate[MidpointConversePostulate](0,0)
+postulate_of_transitivity_of_parallelism[PostulateOfTransitivityOfParallelism](0,0)
+perpendicular_transversal_postulate[PerpendicularTransversalPostulate](0,0)
+postulate_of_parallelism_of_perpendicular_transversals[PostulateOfParallelismOfPerpendicularTransversals](0,0)
+universal_posidonius_postulate[UniversalPosidoniusPostulate](0,0)
+alternative_strong_parallel_postulate[AlternativeStrongParallelPostulate](0,0)
+
+Redefinitions
+=============
+Postulate01:tarski_s_parallel_postulate
+Postulate17:euclid_5
+Postulate20:euclid_s_parallel_postulate
+Postulate02:playfair_s_postulate
+Postulate07:alternate_interior_angles_postulate
+Postulate08:consecutive_interior_angles_postulate
+Postulate12:alternative_playfair_s_postulate
+Postulate13:proclus_postulate
+Postulate03:triangle_postulate
+Postulate04:bachmann_s_lotschnittaxiom
+Postulate34:legendre_s_parallel_postulate
+Postulate31:weak_inverse_projection_postulate
+Postulate33:weak_triangle_circumscription_principle
+Postulate32:weak_tarski_s_parallel_postulate
+postulate35:existential_playfair_s_postulate
+Postulate27:postulate_of_right_saccheri_quadrilaterals
+Postulate28:postulate_of_existence_of_a_right_saccheri_quadrilateral
+Postulate21:postulate_of_existence_of_a_triangle_whose_angles_sum_to_two_rights
+Postulate16:inverse_projection_postulate
+Postulate14:alternative_proclus_postulate
+Postulate18:strong_parallel_postulate
+Postulate15:triangle_circumscription_principle
+Postulate25:thales_converse_postulate
+Postulate26:existential_thales_postulate
+Postulate24:thales_postulate
+Postulate22:posidonius_postulate
+Postulate29:postulate_of_right_lambert_quadrilaterals
+Postulate30:postulate_of_existence_of_a_right_lambert_quadrilateral
+Postulate23:postulate_of_existence_of_similar_triangles
+Postulate06:midpoint_converse_postulate
+Postulate05:postulate_of_transitivity_of_parallelism
+Postulate09:perpendicular_transversal_postulate
+Postulate10:postulate_of_parallelism_of_perpendicular_transversals
+Postulate11:universal_posidonius_postulate
+Postulate19:alternative_strong_parallel_postulate
+
+Porting Files (context Tarski_neutral_dimensionless)
+-------------
+Main/Meta_theory/Parallel_postulates/tarski_s_euclid_remove_degenerated_cases.v
+Main/Meta_theory/Parallel_postulates/alternate_interior_angles_consecutive_interior_angles.v
+Main/Meta_theory/Parallel_postulates/alternate_interior_angles_playfair_bis.v
+Main/Meta_theory/Parallel_postulates/alternate_interior_angles_proclus.v
+Main/Meta_theory/Parallel_postulates/alternate_interior_angles_triangle.v
+Main/Meta_theory/Parallel_postulates/bachmann_s_lotschnittaxiom_variant.v
+Main/Meta_theory/Parallel_postulates/bachmann_s_lotschnittaxiom_legendre_s_parallel_postulate.v
+Main/Meta_theory/Parallel_postulates/bachmann_s_lotschnittaxiom_weak_inverse_projection_postulate.v
+Main/Meta_theory/Parallel_postulates/bachmann_s_lotschnittaxiom_weak_triangle_circumscription_principle.v
+Main/Meta_theory/Parallel_postulates/consecutive_interior_angles_alternate_interior_angles.v
+Main/Meta_theory/Parallel_postulates/existential_playfair_rah.v
+Main/Meta_theory/Parallel_postulates/existential_saccheri_rah.v
+Main/Meta_theory/Parallel_postulates/existential_triangle_rah.v
+Main/Meta_theory/Parallel_postulates/inverse_projection_postulate_proclus_bis.v
+Main/Meta_theory/Parallel_postulates/SPP_ID.v
+Main/Meta_theory/Parallel_postulates/TCP_tarski.v
+Main/Meta_theory/Parallel_postulates/thales_converse_postulate_thales_existence.v
+Main/Meta_theory/Parallel_postulates/thales_converse_postulate_weak_triangle_circumscription_principle.v
+Main/Meta_theory/Parallel_postulates/thales_existence_rah.v
+Main/Meta_theory/Parallel_postulates/thales_postulate_thales_converse_postulate.v
+Main/Meta_theory/Parallel_postulates/triangle_existential_triangle.v
+Main/Meta_theory/Parallel_postulates/triangle_playfair_bis.v
+Main/Meta_theory/Parallel_postulates/rah_existential_saccheri.v
+Main/Meta_theory/Parallel_postulates/rah_posidonius_postulate.v
+Main/Meta_theory/Parallel_postulates/rah_rectangle_principle.v
+Main/Meta_theory/Parallel_postulates/rah_similar.v
+Main/Meta_theory/Parallel_postulates/rah_thales_postulate.v
+Main/Meta_theory/Parallel_postulates/rah_triangle.v
+Main/Meta_theory/Parallel_postulates/rectangle_principle_rectangle_existence.v
+Main/Meta_theory/Parallel_postulates/similar_rah.v
+Main/Meta_theory/Parallel_postulates/SPP_tarski.v
+Main/Meta_theory/Parallel_postulates/midpoint_playfair.v
+Main/Meta_theory/Parallel_postulates/playfair_par_trans.v
+Main/Meta_theory/Parallel_postulates/par_trans_playfair.v
+Main/Meta_theory/Parallel_postulates/par_perp_perp_par_perp_2_par.v
+Main/Meta_theory/Parallel_postulates/par_perp_2_par_par_perp_perp.v
+Main/Meta_theory/Parallel_postulates/par_perp_perp_playfair.v
+Main/Meta_theory/Parallel_postulates/playfair_universal_posidonius_postulate.v
+Main/Meta_theory/Parallel_postulates/weak_inverse_projection_postulate_bachmann_s_lotschnittaxiom.v
+Main/Meta_theory/Parallel_postulates/weak_triangle_circumscription_principle_bachmann_s_lotschnittaxiom.v
+Main/Meta_theory/Parallel_postulates/universal_posidonius_postulate_par_perp_perp.v
+Main/Meta_theory/Parallel_postulates/playfair_alternate_interior_angles.v
+Main/Meta_theory/Parallel_postulates/playfair_bis_playfair.v
+Main/Meta_theory/Parallel_postulates/playfair_midpoint.v
+Main/Meta_theory/Parallel_postulates/par_perp_perp_TCP.v
+Main/Meta_theory/Parallel_postulates/original_euclid_original_spp.v
+Main/Meta_theory/Parallel_postulates/original_spp_inverse_projection_postulate.v
+Main/Meta_theory/Parallel_postulates/proclus_bis_proclus.v
+Main/Meta_theory/Parallel_postulates/proclus_SPP.v
+Main/Meta_theory/Parallel_postulates/rectangle_existence_rah.v
+Main/Meta_theory/Parallel_postulates/posidonius_postulate_rah.v
+Main/Meta_theory/Parallel_postulates/playfair_existential_playfair.v
+Main/Meta_theory/Parallel_postulates/proclus_aristotle.v
+Main/Meta_theory/Continuity/aristotle.v
+Main/Meta_theory/Parallel_postulates/parallel_postulates.v
+Main/Meta_theory/Parallel_postulates/legendre.v
+Main/Meta_theory/Parallel_postulates/szmielew.v
+
+(revision 8bcb3f040eba) <br>
+
+</dd>
+          <dt>April 19, 2025</dt>
+          <dd>New Definitions (with arity left,right): Tarski_Neutral.thy
+-----------------------------------------------------------
+WARNING: Ar2p4(0,7): GeoCoq Ar2_4 O E E' A B C D :: IsaGeoCoq Ar2p4 PO E E' A B C D 
+
+EqLTarski(1,1) EqA(1,1)
+hypothesis_of_right_saccheri_quadrilaterals[HypothesisRightSaccheriQuadrilaterals](0,0)
+hypothesis_of_acute_saccheri_quadrilaterals[HypothesisAcuteSaccheriQuadrilaterals](0,0)
+hypothesis_of_obtuse_saccheri_quadrilaterals[HypothesisObtuseSaccheriQuadrilaterals](0,0)
+Defect(0,6) Ar1(0,5) Ar2(0,6) Pj(2,2) Sum(0,6) Proj(2,4) Sump(0,6)
+Prod(0,6) Prodp(0,6) Opp(0,5) Diff(0,6) sum3(0,7) Sum4(0,8) sum22(0,8) Ar2p4(0,7) 
+Ps(0,3) Ng(0,3) LtP(0,5) LeP(0,5) Length(0,6) IsLength(0,6) Sumg(0,6) Prodg(0,6)
+PythRel(0,6) SinEq(0,4) LtPs(0,5)
+
+Porting Files (context Tarski_neutral_dimensionless)
+-------------
+  theories/Main/Meta_theory/Dimension_axioms/upper_dim_3.v
+  theories/Main/Annexes/quadrilaterals.v
+  theories/Main/Annexes/saccheri.v
+  theories/Main/Annexes/defect.v
+  theories/Main/Highschool/triangles.v
+
+Add some postulate-definition to Tarski_postulate_Paralles.thy, (forgot 2025-04-18)
+
+New Definitions (with arity left,right): Tarski_Neutral_Archimedes.thy
+----------------------------------------------------------------------
+WARNING: GeoCoq: Grad A B C :: IsaGeoCoq: Grad A B C <--> GradI A B C
+         Grad 'GeoCoq' === GradI 'IsaGeoCoq'
+
+greenberg_s_axiom[GreenBergsAxiom](0,0)
+aristotle_s_axiom[AristotleAxiom](0,0)
+Axiom1(0,0) PreGrad(0,4) (fun)Sym(0,3) (fun)Gradn(0,3) Grad(0,3)
+(inductive)GradI(0,3) Reach(0,4)
+archimedes_axiom[ArchimedesAxiom](0,0)
+(inductive)GradA(0,6) (inductive)GradAExp(0,6)
+Grad2(0,6) (fun)SymR(0,2) (fun)GradExpn(0,3) GradExp(0,3)
+GradExp2(0,6) (fun)MidR(0,2) (fun)GradExpInvn(0,3)
+GradExpInv(0,3)
+
+Porting Files (context Tarski_neutral_dimensionless)
+-------------
+  theories/Axioms/continuity_axioms.v
+  theories/Main/Meta_theory/Continuity/grad.v
+  theories/Main/Meta_theory/Continuity/archimedes.v
+  theories/Main/Meta_theory/Continuity/angle_archimedes.v
+
+(revision d8b69e02f8b3) <br>
+
+</dd>
+          <dt>April 18, 2025</dt>
+          <dd>Split Tarski_Neutral.thy into 3 files:
+  Tarski_Neutral.thy
+  Tarski_Neutral_2D.thy
+  Tarski_Postulate_Parallels.thy
+Modify ROOT
+Move locale Tarski_neutral_2D and 2D-lemma to Tarski_Neutral_2D.thy
+Move 2D-lemma to Tarski_Neutral_2D.thy
+Move postulate-lemma to Tarski_postulate_Parallels.thy
+
+(revision 90b76ef4bc10) <br>
+</dd>
+          <dt>January 31, 2021</dt>
+          <dd>Initial Version
+INITIAL:
+
+CREATE: Tarski_Neutral.thy
+==========================
+
+locale Tarski_neutral_dimensionless
+
+context Tarski_neutral_dimensionless
+
+Definitions (with arity left,right)
+-----------------------------------
+WARNING: Perp2(1,4): GeoCoq Perp2 A B C D E :: IsaGeoCoq E Perp2 A B C D
+
+OFSC(4,4) Cong3(3,3) Col(0,3) Bet4(0,4) BetS(0,3) FSC(4,4) IFSC(4,4)
+Le(2,2) Lt(2,2) Ge(2,2) Gt(2,2) Out(1,2) Midpoint(1,2) Per(0,3) PerpAt(1,4)
+Perp(2,2) Coplanar(0,4) TS(2,2) ReflectL(2,2) Reflect(2,2) InAngle(1,3)
+ParStrict(2,2) Par(2,2) Plg(0,4) ParallelogramStrict(0,4)
+ParallelogramFlat(0,4) Parallelogram(0,4) Rhombus(0,4) Rectangle(0,4)
+Square(0,4) Lambert(0,4) OS(0,4) TSP(3,2) OSP(3,2) Saccheri(0,4)
+ReflectLAt(1,4) ReflectAt(1,4) upper_dim_axiom[UpperDimAxiom](0,0)
+all_coplanar_axiom[AllCoplanarAxiom](0,0) CongA(3,3) LeA(3,3) LtA(3,3)
+GtA(3,3) Acute(0,3) Obtuse(0,3) OrthAt(1,4) Orth(3,3) SuppA(3,3) SumA(6,3)
+TriSumA(3,3) SAMS(0,6) Inter(1,4) Perp2(1,4) QCong(0,1) TarskiLen(0,3)
+QCongNull(0,1) QCongA(0,1) Ang(3,1) QCongAAcute(0,1) AngAcute(3,1)
+QCongANullAcute(0,1) QCongAnNull(0,1) QCongAnFlat(0,1) IsNullAngaP(0,1)
+QCongANull(0,1) AngFlat(0,1)
+tarski_s_parallel_postulate[TarskiParallelPostulate](0,0)
+euclid_5[Euclid5](0,0)
+euclid_s_parallel_postulate[EuclidSParallelPostulate](0,0)
+playfair_s_postulate[PlayFairSPostulate](0,0)
+
+Porting Files
+-------------
+
+theories/Main/Tarski_dev/Ch02_cong.v
+theories/Main/Tarski_dev/Ch03_bet.v
+theories/Main/Tarski_dev/Ch04_col.v
+theories/Main/Tarski_dev/Ch04_cong_bet.v
+theories/Main/Tarski_dev/Ch05_bet_le.v
+theories/Main/Tarski_dev/Ch06_out_lines.v
+theories/Main/Tarski_dev/Ch07_midpoint.v
+theories/Main/Tarski_dev/Ch08_orthogonality.v
+theories/Main/Tarski_dev/Ch09_plane.v
+theories/Main/Tarski_dev/Ch10_line_reflexivity.v
+theories/Main/Tarski_dev/Ch10_line_reflexivity_2.v
+theories/Main/Tarski_dev/Ch11_angles.v
+theories/Main/Annexes/suma.v
+theories/Main/Tarski_dev/Ch12_parallel.v
+theories/Main/Tarski_dev/Ch12_parallel_inter_dec.v
+theories/Main/Tarski_dev/Ch13_1.v
+theories/Main/Tarski_dev/Ch13_2_length.v
+theories/Main/Tarski_dev/Ch13_3_angles.v
+theories/Main/Meta_theory/Parallel_postulates/euclid_5_original_euclid.v
+theories/Main/Meta_theory/Parallel_postulates/tarski_euclid.v
+theories/Main/Meta_theory/Parallel_postulates/tarski_playfair.v
+
+(revision f5710bbb2d80) <br>
+</dd>
+      </dl>
       <h3>Topics</h3>
       <ul>
           <li><a href="../topics/mathematics/geometry/">Mathematics/Geometry</a></li>
@@ -143,6 +612,46 @@ Boutry, Charly Gries, Julien Narboux and Pascal Schreck.
       <h3>Session IsaGeoCoq</h3>
       <ul>
           <li><a href="../sessions/isageocoq/#Tarski_Neutral">Tarski_Neutral</a></li>
+          <li><a href="../sessions/isageocoq/#Tarski_Neutral_Archimedes">Tarski_Neutral_Archimedes</a></li>
+          <li><a href="../sessions/isageocoq/#Tarski_Postulate_Parallels">Tarski_Postulate_Parallels</a></li>
+          <li><a href="../sessions/isageocoq/#Tarski_Neutral_Continuity">Tarski_Neutral_Continuity</a></li>
+          <li><a href="../sessions/isageocoq/#Tarski_Neutral_Continuous">Tarski_Neutral_Continuous</a></li>
+          <li><a href="../sessions/isageocoq/#Tarski_Neutral_Archimedes_Continuity">Tarski_Neutral_Archimedes_Continuity</a></li>
+          <li><a href="../sessions/isageocoq/#Hilbert_Neutral">Hilbert_Neutral</a></li>
+          <li><a href="../sessions/isageocoq/#Tarski_Neutral_Hilbert">Tarski_Neutral_Hilbert</a></li>
+          <li><a href="../sessions/isageocoq/#Tarski_Neutral_2D">Tarski_Neutral_2D</a></li>
+          <li><a href="../sessions/isageocoq/#Tarski_Neutral_Continuity_2D">Tarski_Neutral_Continuity_2D</a></li>
+          <li><a href="../sessions/isageocoq/#Tarski_Neutral_3D">Tarski_Neutral_3D</a></li>
+          <li><a href="../sessions/isageocoq/#Tarski_Neutral_3D_Hilbert">Tarski_Neutral_3D_Hilbert</a></li>
+          <li><a href="../sessions/isageocoq/#Tarski_Euclidean">Tarski_Euclidean</a></li>
+          <li><a href="../sessions/isageocoq/#Tarski_Euclidean_2D">Tarski_Euclidean_2D</a></li>
+          <li><a href="../sessions/isageocoq/#Tarski_Euclidean_2D_Continuous">Tarski_Euclidean_2D_Continuous</a></li>
+          <li><a href="../sessions/isageocoq/#Highschool_Neutral">Highschool_Neutral</a></li>
+          <li><a href="../sessions/isageocoq/#Highschool_Euclidean">Highschool_Euclidean</a></li>
+          <li><a href="../sessions/isageocoq/#Highschool_Euclidean_2D">Highschool_Euclidean_2D</a></li>
+          <li><a href="../sessions/isageocoq/#Tarski_Non_Euclidean">Tarski_Non_Euclidean</a></li>
+          <li><a href="../sessions/isageocoq/#Tarski_Non_Euclidean_Aristotle">Tarski_Non_Euclidean_Aristotle</a></li>
+          <li><a href="../sessions/isageocoq/#Tarski_Non_Euclidean_Archimedean">Tarski_Non_Euclidean_Archimedean</a></li>
+          <li><a href="../sessions/isageocoq/#Gupta_Neutral">Gupta_Neutral</a></li>
+          <li><a href="../sessions/isageocoq/#Gupta_Neutral_2D">Gupta_Neutral_2D</a></li>
+          <li><a href="../sessions/isageocoq/#Gupta_Euclidean">Gupta_Euclidean</a></li>
+          <li><a href="../sessions/isageocoq/#Hilbert_Neutral_2D">Hilbert_Neutral_2D</a></li>
+          <li><a href="../sessions/isageocoq/#Hilbert_Neutral_3D">Hilbert_Neutral_3D</a></li>
+          <li><a href="../sessions/isageocoq/#Hilbert_Euclidean">Hilbert_Euclidean</a></li>
+          <li><a href="../sessions/isageocoq/#Tarski_Neutral_Model_Gupta_Neutral">Tarski_Neutral_Model_Gupta_Neutral</a></li>
+          <li><a href="../sessions/isageocoq/#Tarski_Neutral_2D_Model_Gupta_Neutral_2D">Tarski_Neutral_2D_Model_Gupta_Neutral_2D</a></li>
+          <li><a href="../sessions/isageocoq/#Tarski_Euclidean_Model_Gupta_Euclidean">Tarski_Euclidean_Model_Gupta_Euclidean</a></li>
+          <li><a href="../sessions/isageocoq/#Gupta_Neutral_Model_Tarski_Neutral">Gupta_Neutral_Model_Tarski_Neutral</a></li>
+          <li><a href="../sessions/isageocoq/#Gupta_Neutral_2D_Model_Tarski_Neutral_2D">Gupta_Neutral_2D_Model_Tarski_Neutral_2D</a></li>
+          <li><a href="../sessions/isageocoq/#Gupta_Euclidean_Model_Tarski_Euclidean">Gupta_Euclidean_Model_Tarski_Euclidean</a></li>
+          <li><a href="../sessions/isageocoq/#Hilbert_Neutral_Model_Tarski_Neutral">Hilbert_Neutral_Model_Tarski_Neutral</a></li>
+          <li><a href="../sessions/isageocoq/#Hilbert_Neutral_2D_Model_Tarski_Neutral_2D">Hilbert_Neutral_2D_Model_Tarski_Neutral_2D</a></li>
+          <li><a href="../sessions/isageocoq/#Hilbert_Neutral_3D_Model_Tarski_Neutral_3D">Hilbert_Neutral_3D_Model_Tarski_Neutral_3D</a></li>
+          <li><a href="../sessions/isageocoq/#Hilbert_Euclidean_Model_Tarski_Euclidean">Hilbert_Euclidean_Model_Tarski_Euclidean</a></li>
+          <li><a href="../sessions/isageocoq/#Tarski_Neutral_Model_Hilbert_Neutral">Tarski_Neutral_Model_Hilbert_Neutral</a></li>
+          <li><a href="../sessions/isageocoq/#Tarski_Neutral_2D_Model_Hilbert_Neutral_2D">Tarski_Neutral_2D_Model_Hilbert_Neutral_2D</a></li>
+          <li><a href="../sessions/isageocoq/#Tarski_Neutral_3D_Model_Hilbert_Neutral_3D">Tarski_Neutral_3D_Model_Hilbert_Neutral_3D</a></li>
+          <li><a href="../sessions/isageocoq/#Tarski_Euclidean_Model_Hilbert_Euclidean">Tarski_Euclidean_Model_Hilbert_Euclidean</a></li>
       </ul>
 
     <div class="flex-wrap">

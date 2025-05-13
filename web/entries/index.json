@@ -1,5 +1,21 @@
 [
  {
+  "abstract": "The partition function $p(n)$ gives the number of ways to write a non-negative integer $n$ as a sum of positive integers, without taking order into account.\nThis entry uses the Jacobi Triple Product (already available in the AFP) to give a short proof of the Pentagonal Number Theorem, which is the statement that the generating function $F(X) = \\sum_{n\\geq 0} p(n) X^n$ of the partition function satisfies: \\[F(X)^{-1} = \\sum_{k\\in\\mathbb{Z}} (-1)^k X^{k(3k-1)/2} = 1 - x - x^2 + x^5 + x^7 - x^{12} - x^{15} + \\ldots\\] The numbers $g_k = \\frac{1}{2}k(3k-1)$ appearing in the exponents are the generalised pentagonal numbers.\nAs further corollaries of this, an upper bound for $p(n)$ and the recurrence relation \\[p(n) = \\sum_{\\substack{k\\in\\mathbb{Z}\\setminus\\{0\\} \\\\ g_k \\leq n}} (-1)^{k+1} p(n-g_k)\\] are proved. The latter also yields an algorithm to compute the numbers $p(0), \\ldots, p(n)$ simultaneously in time roughly $n^{2 + o(1)}$. This algorithm is implemented and proved correct at the end of this entry using the Imperative-HOL Refinement Framework.\n",
+  "authors": [
+   "Manuel Eberl"
+  ],
+  "link": "/entries/Pentagonal_Number_Theorem.html",
+  "shortname": "Pentagonal_Number_Theorem",
+  "title": "The Partition Function and the Pentagonal Number Theorem",
+  "topic_links": [
+   "/topics/mathematics/number-theory/"
+  ],
+  "topics": [
+   "Mathematics/Number theory"
+  ],
+  "year": "2025"
+ },
+ {
   "abstract": "This entry, derived from the Isabelle Formalization of Rewriting (IsaFoR), provides a formalized foundation for first-order term rewriting. This serves as the basis for the certifier CeTA, which is generated from IsaFoR and verifies termination, confluence, and complexity proofs for term rewrite systems (TRSs). This formalization covers fundamental results for term rewriting, as presented in the foundational textbooks by Baader and Nipkow and TeReSe. These include: Various types of rewrite steps, such as root, ground, parallel, and multi-steps. Special cases of TRSs, such as linear and left-linear TRSs. A definition of critical pairs and key results, including the critical pair lemma. Orthogonality, notably that weak orthogonality implies confluence. Executable versions of relevant definitions, such as parallel and multi-step rewriting. ",
   "authors": [
    "René Thiemann",
@@ -473,7 +489,7 @@
   "year": "2024"
  },
  {
-  "abstract": "This entry defines the Ramanujan theta function\n\\[f(a,b) = \\sum_{n=-\\infty}^\\infty a^{\\frac{n(n+1)}{2}} b^{\\frac{n(n-1)}{2}}\\] and derives from it the more commonly known Jacobi theta function on the unit disc \\[\\vartheta_{00}(w,q) = \\sum_{n=-\\infty}^\\infty w^{2n} q^{n^2},\\ \\] its version in the complex plane \\[\\vartheta_{00}(z;\\tau) = \\sum_{n=-\\infty}^\\infty \\exp(i\\pi (2nz + n^2\\tau))\\] as well as its half-period variants $\\vartheta_{01}$, $\\vartheta_{10}$, and $\\vartheta_{11}$.\nThe most notable single result in this work is the proof of Jacobi's triple product \\[\\prod_{n=1}^\\infty (1-q^{2m})(1+q^{2m-1}w^2)(1+q^{2m-1}w^{-2}) = \\sum_{k=-\\infty}^\\infty q^{k^2}w^{2k}\\] and its corollary, Euler's famous pentagonal number theorem: \\[\\prod_{n=1}^\\infty (1-q^n) = \\sum_{k=-\\infty}^\\infty (-1)^k q^{k(3k-1)/2}\\]\n",
+  "abstract": "This entry defines the Ramanujan theta function\n\\[f(a,b) = \\sum_{n=-\\infty}^\\infty a^{\\frac{n(n+1)}{2}} b^{\\frac{n(n-1)}{2}}\\] and derives from it the more commonly known Jacobi theta function on the unit disc \\[\\vartheta_{00}(w,q) = \\sum_{n=-\\infty}^\\infty w^{2n} q^{n^2},\\ \\] its version in the complex plane \\[\\vartheta_{00}(z;\\tau) = \\sum_{n=-\\infty}^\\infty \\exp(i\\pi (2nz + n^2\\tau))\\] as well as its half-period variants $\\vartheta_{01}$, $\\vartheta_{10}$, and $\\vartheta_{11}$.\nNotable results formalised include the fact that $\\vartheta_{00}$ is a solution to the one-dimensional heat equation $\\frac{\\partial^2}{\\partial z^2} f(z,t) = 4i\\pi \\frac{\\partial}{\\partial t} f(z,t)$, and Jacobi's triple product \\[\\prod_{n=1}^\\infty (1-q^{2m})(1+q^{2m-1}w^2)(1+q^{2m-1}w^{-2}) = \\sum_{k=-\\infty}^\\infty q^{k^2}w^{2k}\\] as well as its corollary, Euler's famous pentagonal number theorem: \\[\\prod_{n=1}^\\infty (1-q^n) = \\sum_{k=-\\infty}^\\infty (-1)^k q^{k(3k-1)/2}\\]\n",
   "authors": [
    "Manuel Eberl"
   ],
@@ -1987,7 +2003,7 @@
   "year": "2023"
  },
  {
-  "abstract": "This entry provides a formalisation of Lambert series, i.e. series of the form $L(a_n, q) = \\sum_{n=1}^\\infty a_n q^n / (1-q^n)$ where $a_n$ is a sequence of real or complex numbers.\nProofs for all the basic properties are provided, such as:\nthe precise region in which $L(a_n, q)$ converges the functional equation $L(a_n, \\frac{1}{q}) = -(\\sum_{n=1}^\\infty a_n) - L(a_n, q)$ the power series expansion of $L(a_n, q)$ at $q = 0$ the connection $L(a_n, q) = \\sum_{k=1}^\\infty f(q^k)$ for $f(z) = \\sum_{n=1}^\\infty a_n z^n$ that links a Lambert series to its ``corresponding'' power series connections to various number-theoretic functions, e.g. the divisor $\\sigma$ function via $\\sum_{n=1}^\\infty \\sigma_{\\alpha}(n) q^n = L(n^\\alpha, q)$ The formalisation mainly follows the chapter on Lambert series in Konrad Knopp's classic textbook Theory and Application of Infinite Series and includes all results presented therein.\n",
+  "abstract": "This entry provides a formalisation of Lambert series, i.e. series of the form $L(a_n, q) = \\sum_{n=1}^\\infty a_n q^n / (1-q^n)$ where $a_n$ is a sequence of real or complex numbers.\nProofs for all the basic properties are provided, such as:\nthe precise region in which $L(a_n, q)$ converges the functional equation $L(a_n, \\frac{1}{q}) = -(\\sum_{n=1}^\\infty a_n) - L(a_n, q)$ the power series expansion of $L(a_n, q)$ at $q = 0$ the connection $L(a_n, q) = \\sum_{k=1}^\\infty f(q^k)$ for $f(z) = \\sum_{n=1}^\\infty a_n z^n$ that links a Lambert series to its \u0026ldquo;corresponding\u0026rdquo; power series connections to various number-theoretic functions, e.g. the divisor $\\sigma$ function via $\\sum_{n=1}^\\infty \\sigma_{\\alpha}(n) q^n = L(n^\\alpha, q)$ The formalisation mainly follows the chapter on Lambert series in Konrad Knopp's classic textbook Theory and Application of Infinite Series and includes all results presented therein.\n",
   "authors": [
    "Manuel Eberl"
   ],

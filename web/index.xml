@@ -4,6 +4,13 @@
     <title>Archive of Formal Proofs</title>
     <link>https://isa-afp.org/</link>
     <description>Formal developments in the AFP</description><item>
+  <title>The Partition Function and the Pentagonal Number Theorem</title>
+  <link>https://isa-afp.org/entries/Pentagonal_Number_Theorem.html</link>
+  <pubDate>Wed, 23 Apr 2025 00:00:00 +0000</pubDate>
+  <description>The Partition Function and the Pentagonal Number Theorem in the AFP</description>
+    <category>Mathematics/Number theory</category>
+</item>
+<item>
   <title>Proof Terms for Term Rewriting</title>
   <link>https://isa-afp.org/entries/Proof_Terms_Term_Rewriting.html</link>
   <pubDate>Sun, 13 Apr 2025 00:00:00 +0000</pubDate>

@@ -3,10 +3,13 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://isa-afp.org/entries/index.json</loc>
-    <lastmod>2025-04-13T00:00:00+00:00</lastmod>
+    <lastmod>2025-04-23T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/</loc>
-    <lastmod>2025-04-13T00:00:00+00:00</lastmod>
+    <lastmod>2025-04-23T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Pentagonal_Number_Theorem.html</loc>
+    <lastmod>2025-04-23T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/entries/First_Order_Rewriting.html</loc>
     <lastmod>2025-04-13T00:00:00+00:00</lastmod>
@@ -4931,6 +4934,8 @@
     <loc>https://isa-afp.org/authors/terraf/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/pell/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/sessions/pentagonal_number_theorem/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/perfect_fields/</loc>
   </url><url>

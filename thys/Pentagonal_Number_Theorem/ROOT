@@ -1,0 +1,16 @@
+chapter AFP
+
+session Pentagonal_Number_Theorem (AFP) = Theta_Functions +
+  options [timeout = 900]
+  sessions
+    "HOL-Library"
+    Card_Number_Partitions
+    Refine_Monadic
+    Refine_Imperative_HOL
+  theories
+    Pentagonal_Number_Theorem
+    Partition_Number_Imperative
+    Partition_Number_Imperative_Test
+  document_files
+    "root.tex"
+    "root.bib"
