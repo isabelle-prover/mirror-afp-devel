@@ -5,7 +5,7 @@
 section "From regular expressions to nondeterministic automata with epsilon"
 
 theory RegExp2NAe
-imports "Regular-Sets.Regular_Exp" NAe
+imports "Regular-Sets.Regular_Exp" NAe  "HOL-ex.Sketch_and_Explore" 
 begin
 
 type_synonym 'a bitsNAe = "('a,bool list)nae"
@@ -69,13 +69,12 @@ declare split_paired_all[simp]
 lemma step_epsilon[simp]: "step epsilon a = {}"
 by(simp add:epsilon_def step_def)
 
-lemma steps_epsilon: "((p,q) : steps epsilon w) = (w=[] \<and> p=q)"
+lemma steps_epsilon: "((p,q) \<in> steps epsilon w) = (w=[] \<and> p=q)"
 by (induct "w") auto
 
 lemma accepts_epsilon[simp]: "accepts epsilon w = (w = [])"
-apply (simp add: steps_epsilon accepts_def)
-apply (simp add: epsilon_def)
-done
+by (metis (mono_tags, lifting) NAe.accepts_def epsilon_def fin_def prod.sel
+      start_def steps_epsilon)
 
 (******************************************************)
 (*                       atom                         *)
@@ -98,18 +97,20 @@ lemma in_step_atom_Some[simp]:
 by (simp add:atom_def step_def)
 
 lemma False_False_in_steps_atom:
-  "([False],[False]) : steps (atom a) w = (w = [])"
-apply (induct "w")
- apply (simp)
-apply (simp add: relcomp_unfold)
-done
+  "([False],[False]) \<in> steps (atom a) w = (w = [])"
+  by (induct "w") (auto simp add: relcomp_unfold)
 
 lemma start_fin_in_steps_atom:
-  "(start (atom a), [False]) : steps (atom a) w = (w = [a])"
-apply (induct "w")
- apply (simp add: start_atom rtrancl_empty)
-apply (simp add: False_False_in_steps_atom relcomp_unfold start_atom)
-done
+  "(start (atom a), [False]) \<in> steps (atom a) w = (w = [a])"
+proof (induct "w")
+  case Nil
+  then show ?case  
+    by (simp add: start_atom rtrancl_empty)
+next
+  case (Cons a w)
+  then show ?case 
+    by (simp add: False_False_in_steps_atom relcomp_unfold start_atom)
+qed
 
 lemma accepts_atom: "accepts (atom a) w = (w = [a])"
 by (simp add: accepts_def start_fin_in_steps_atom fin_atom)
@@ -132,102 +133,67 @@ by(simp add:or_def)
 (***** lift True/False over step *****)
 
 lemma True_in_step_or[iff]:
-"\<And>L R. (True#p,q) : step (or L R) a = (\<exists>r. q = True#r \<and> (p,r) : step L a)"
-apply (simp add:or_def step_def)
-apply blast
-done
+  "\<And>L R. (True#p,q) : step (or L R) a = (\<exists>r. q = True#r \<and> (p,r) : step L a)"
+by (auto simp add:or_def step_def)
 
 lemma False_in_step_or[iff]:
-"\<And>L R. (False#p,q) : step (or L R) a = (\<exists>r. q = False#r \<and> (p,r) : step R a)"
-apply (simp add:or_def step_def)
-apply blast
-done
+  "\<And>L R. (False#p,q) : step (or L R) a = (\<exists>r. q = False#r \<and> (p,r) : step R a)"
+by (auto simp add:or_def step_def)
 
 
 (***** lift True/False over epsclosure *****)
 
 lemma lemma1a:
- "(tp,tq) : (eps(or L R))\<^sup>* \<Longrightarrow> 
- (\<And>p. tp = True#p \<Longrightarrow> \<exists>q. (p,q) : (eps L)\<^sup>* \<and> tq = True#q)"
-apply (induct rule:rtrancl_induct)
- apply (blast)
-apply (clarify)
-apply (simp)
-apply (blast intro: rtrancl_into_rtrancl)
-done
+ "(tp,tq) \<in> (eps(or L R))\<^sup>* \<Longrightarrow> 
+ (\<And>p. tp = True#p \<Longrightarrow> \<exists>q. (p,q) \<in> (eps L)\<^sup>* \<and> tq = True#q)"
+by (induct rule:rtrancl_induct; blast intro: rtrancl_into_rtrancl)
 
 lemma lemma1b:
- "(tp,tq) : (eps(or L R))\<^sup>* \<Longrightarrow> 
- (\<And>p. tp = False#p \<Longrightarrow> \<exists>q. (p,q) : (eps R)\<^sup>* \<and> tq = False#q)"
-apply (induct rule:rtrancl_induct)
- apply (blast)
-apply (clarify)
-apply (simp)
-apply (blast intro: rtrancl_into_rtrancl)
-done
+ "(tp,tq) \<in> (eps(or L R))\<^sup>* \<Longrightarrow> 
+ (\<And>p. tp = False#p \<Longrightarrow> \<exists>q. (p,q) \<in> (eps R)\<^sup>* \<and> tq = False#q)"
+by (induct rule:rtrancl_induct; blast intro: rtrancl_into_rtrancl)
 
 lemma lemma2a:
- "(p,q) : (eps L)\<^sup>*  \<Longrightarrow> (True#p, True#q) : (eps(or L R))\<^sup>*"
-apply (induct rule: rtrancl_induct)
- apply (blast)
-apply (blast intro: rtrancl_into_rtrancl)
-done
+ "(p,q) \<in> (eps L)\<^sup>*  \<Longrightarrow> (True#p, True#q) \<in> (eps(or L R))\<^sup>*"
+by (induct rule:rtrancl_induct; blast intro: rtrancl_into_rtrancl)
 
 lemma lemma2b:
- "(p,q) : (eps R)\<^sup>*  \<Longrightarrow> (False#p, False#q) : (eps(or L R))\<^sup>*"
-apply (induct rule: rtrancl_induct)
- apply (blast)
-apply (blast intro: rtrancl_into_rtrancl)
-done
+ "(p,q) \<in> (eps R)\<^sup>*  \<Longrightarrow> (False#p, False#q) \<in> (eps(or L R))\<^sup>*"
+by (induct rule:rtrancl_induct; blast intro: rtrancl_into_rtrancl)
 
 lemma True_epsclosure_or[iff]:
- "(True#p,q) : (eps(or L R))\<^sup>* = (\<exists>r. q = True#r \<and> (p,r) : (eps L)\<^sup>*)"
+ "(True#p,q) \<in> (eps(or L R))\<^sup>* = (\<exists>r. q = True#r \<and> (p,r) \<in> (eps L)\<^sup>*)"
 by (blast dest: lemma1a lemma2a)
 
 lemma False_epsclosure_or[iff]:
- "(False#p,q) : (eps(or L R))\<^sup>* = (\<exists>r. q = False#r \<and> (p,r) : (eps R)\<^sup>*)"
+ "(False#p,q) \<in> (eps(or L R))\<^sup>* = (\<exists>r. q = False#r \<and> (p,r) \<in> (eps R)\<^sup>*)"
 by (blast dest: lemma1b lemma2b)
 
 (***** lift True/False over steps *****)
 
 lemma lift_True_over_steps_or[iff]:
- "\<And>p. (True#p,q):steps (or L R) w = (\<exists>r. q = True # r \<and> (p,r):steps L w)"
-apply (induct "w")
- apply auto
-apply force
-done
+  "\<And>p. (True#p,q):steps (or L R) w = (\<exists>r. q = True # r \<and> (p,r):steps L w)"
+by (induct "w"; force)
 
 lemma lift_False_over_steps_or[iff]:
- "\<And>p. (False#p,q):steps (or L R) w = (\<exists>r. q = False#r \<and> (p,r):steps R w)"
-apply (induct "w")
- apply auto
-apply (force)
-done
+  "\<And>p. (False#p,q):steps (or L R) w = (\<exists>r. q = False#r \<and> (p,r):steps R w)"
+by (induct "w"; force)
 
 (***** Epsilon closure of start state *****)
 
 lemma unfold_rtrancl2:
- "R\<^sup>* = Id \<union> (R O R\<^sup>*)"
-apply (rule set_eqI)
-apply (simp)
-apply (rule iffI)
- apply (erule rtrancl_induct)
-  apply (blast)
- apply (blast intro: rtrancl_into_rtrancl)
-apply (blast intro: converse_rtrancl_into_rtrancl)
-done
+  "R\<^sup>* = Id \<union> (R O R\<^sup>*)"
+by (metis r_comp_rtrancl_eq rtrancl_unfold)
 
 lemma in_unfold_rtrancl2:
- "(p,q) : R\<^sup>* = (q = p | (\<exists>r. (p,r) : R \<and> (r,q) : R\<^sup>*))"
-apply (rule unfold_rtrancl2[THEN equalityE])
-apply (blast)
-done
+ "(p,q) \<in> R\<^sup>* = (q = p \<or> (\<exists>r. (p,r) \<in> R \<and> (r,q) \<in> R\<^sup>*))"
+  by (metis converse_rtranclE converse_rtrancl_into_rtrancl rtrancl.simps)
 
 lemmas [iff] = in_unfold_rtrancl2[where ?p = "start(or L R)"] for L R
 
 lemma start_eps_or[iff]:
- "\<And>L R. (start(or L R),q) : eps(or L R) = 
-       (q = True#start L | q = False#start R)"
+ "\<And>L R. (start(or L R),q) \<in> eps(or L R) = 
+       (q = True#start L \<or> q = False#start R)"
 by (simp add:or_def step_def)
 
 lemma not_start_step_or_Some[iff]:
@@ -235,26 +201,20 @@ lemma not_start_step_or_Some[iff]:
 by (simp add:or_def step_def)
 
 lemma steps_or:
- "(start(or L R), q) : steps (or L R) w = 
- ( (w = [] \<and> q = start(or L R)) | 
-   (\<exists>p.  q = True  # p \<and> (start L,p) : steps L w | 
-         q = False # p \<and> (start R,p) : steps R w) )"
-apply (case_tac "w")
- apply (simp)
- apply (blast)
-apply (simp)
-apply (blast)
-done
+ "((start (RegExp2NAe.or L R), q)
+     \<in> NAe.steps (RegExp2NAe.or L R) w) \<longleftrightarrow>
+    (w = [] \<and> q = start (RegExp2NAe.or L R) \<or>
+     (\<exists>p. q = True # p \<and> (start L, p) \<in> NAe.steps L w \<or>
+          q = False # p \<and> (start R, p) \<in> NAe.steps R w))"
+  by (cases "w"; simp; blast) 
 
 lemma start_or_not_final[iff]:
  "\<And>L R. \<not> fin (or L R) (start(or L R))"
 by (simp add:or_def)
 
 lemma accepts_or:
- "accepts (or L R) w = (accepts L w | accepts R w)"
-apply (simp add:accepts_def steps_or)
- apply auto
-done
+  "accepts (or L R) w = (accepts L w | accepts R w)"
+by (auto simp add:accepts_def steps_or)
 
 
 (******************************************************)
@@ -287,86 +247,52 @@ by (simp add:conc_def step_def) (blast)
 (** False in epsclosure **)
 
 lemma lemma1b':
- "(tp,tq) : (eps(conc L R))\<^sup>* \<Longrightarrow> 
-  (\<And>p. tp = False#p \<Longrightarrow> \<exists>q. (p,q) : (eps R)\<^sup>* \<and> tq = False#q)"
-apply (induct rule: rtrancl_induct)
- apply (blast)
-apply (blast intro: rtrancl_into_rtrancl)
-done
+ "(tp,tq) \<in> (eps(conc L R))\<^sup>* \<Longrightarrow> 
+  (\<And>p. tp = False#p \<Longrightarrow> \<exists>q. (p,q) \<in> (eps R)\<^sup>* \<and> tq = False#q)"
+by (induct rule:rtrancl_induct; blast intro: rtrancl_into_rtrancl)
 
 lemma lemma2b':
- "(p,q) : (eps R)\<^sup>* \<Longrightarrow> (False#p, False#q) : (eps(conc L R))\<^sup>*"
-apply (induct rule: rtrancl_induct)
- apply (blast)
-apply (blast intro: rtrancl_into_rtrancl)
-done
+  "(p,q) \<in> (eps R)\<^sup>* \<Longrightarrow> (False#p, False#q) \<in> (eps(conc L R))\<^sup>*"
+by (induct rule:rtrancl_induct; blast intro: rtrancl_into_rtrancl)
 
 lemma False_epsclosure_conc[iff]:
- "((False # p, q) : (eps (conc L R))\<^sup>*) = 
- (\<exists>r. q = False # r \<and> (p, r) : (eps R)\<^sup>*)"
-apply (rule iffI)
- apply (blast dest: lemma1b')
-apply (blast dest: lemma2b')
-done
+  "((False # p, q) \<in> (eps (conc L R))\<^sup>*) = (\<exists>r. q = False # r \<and> (p, r) \<in> (eps R)\<^sup>*)"
+by (meson lemma1b' lemma2b')
 
 (** False in steps **)
 
 lemma False_steps_conc[iff]:
- "\<And>p. (False#p,q): steps (conc L R) w = (\<exists>r. q=False#r \<and> (p,r): steps R w)"
-apply (induct "w")
- apply (simp)
-apply (simp)
-apply (fast)  (*MUCH faster than blast*)
-done
+  "\<And>p. (False#p,q)\<in> steps (conc L R) w = (\<exists>r. q=False#r \<and> (p,r)\<in> steps R w)"
+by (induct "w"; force)
 
 (** True in epsclosure **)
 
 lemma True_True_eps_concI:
- "(p,q): (eps L)\<^sup>* \<Longrightarrow> (True#p,True#q) : (eps(conc L R))\<^sup>*"
-apply (induct rule: rtrancl_induct)
- apply (blast)
-apply (blast intro: rtrancl_into_rtrancl)
-done
+ "(p,q) \<in> (eps L)\<^sup>* \<Longrightarrow> (True#p,True#q) \<in> (eps(conc L R))\<^sup>*"
+by (induct rule:rtrancl_induct; blast intro: rtrancl_into_rtrancl)
 
 lemma True_True_steps_concI:
- "\<And>p. (p,q) : steps L w \<Longrightarrow> (True#p,True#q) : steps (conc L R) w"
-apply (induct "w")
- apply (simp add: True_True_eps_concI)
-apply (simp)
-apply (blast intro: True_True_eps_concI)
-done
-
-lemma lemma1a':
- "(tp,tq) : (eps(conc L R))\<^sup>* \<Longrightarrow> 
- (\<And>p. tp = True#p \<Longrightarrow> 
-  (\<exists>q. tq = True#q \<and> (p,q) : (eps L)\<^sup>*) | 
-  (\<exists>q r. tq = False#q \<and> (p,r):(eps L)\<^sup>* \<and> fin L r \<and> (start R,q) : (eps R)\<^sup>*))"
-apply (induct rule: rtrancl_induct)
- apply (blast)
-apply (blast intro: rtrancl_into_rtrancl)
-done
-
-lemma lemma2a':
- "(p, q) : (eps L)\<^sup>* \<Longrightarrow> (True#p, True#q) : (eps(conc L R))\<^sup>*"
-apply (induct rule: rtrancl_induct)
- apply (blast)
-apply (blast intro: rtrancl_into_rtrancl)
-done
+  "\<And>p. (p,q) \<in> steps L w \<Longrightarrow> (True#p,True#q) \<in> steps (conc L R) w"
+proof (induct "w")
+  case Nil
+  then show ?case 
+    by (simp add: True_True_eps_concI)
+next
+  case (Cons a w)
+  then show ?case
+    by (auto intro: True_True_eps_concI)
+qed
 
 lemma lem:
  "\<And>L R. (p,q) : step R None \<Longrightarrow> (False#p, False#q) : step (conc L R) None"
 by(simp add: conc_def step_def)
 
 lemma lemma2b'':
- "(p,q) : (eps R)\<^sup>* \<Longrightarrow> (False#p, False#q) : (eps(conc L R))\<^sup>*"
-apply (induct rule: rtrancl_induct)
- apply (blast)
-apply (drule lem)
-apply (blast intro: rtrancl_into_rtrancl)
-done
+ "(p,q) \<in> (eps R)\<^sup>* \<Longrightarrow> (False#p, False#q) \<in> (eps(conc L R))\<^sup>*"
+  by blast
 
 lemma True_False_eps_concI:
- "\<And>L R. fin L p \<Longrightarrow> (True#p, False#start R) : eps(conc L R)"
+ "\<And>L R. fin L p \<Longrightarrow> (True#p, False#start R) \<in> eps(conc L R)"
 by(simp add: conc_def step_def)
 
 lemma True_epsclosure_conc[iff]:
@@ -374,56 +300,76 @@ lemma True_epsclosure_conc[iff]:
  ((\<exists>r. (p,r) \<in> (eps L)\<^sup>* \<and> q = True#r) \<or>
   (\<exists>r. (p,r) \<in> (eps L)\<^sup>* \<and> fin L r \<and>
         (\<exists>s. (start R, s) \<in> (eps R)\<^sup>* \<and> q = False#s)))"
-apply (rule iffI)
- apply (blast dest: lemma1a')
-apply (erule disjE)
- apply (blast intro: lemma2a')
-apply (clarify)
-apply (rule rtrancl_trans)
-apply (erule lemma2a')
-apply (rule converse_rtrancl_into_rtrancl)
-apply (erule True_False_eps_concI)
-apply (erule lemma2b'')
-done
+  (is "?lhs = ?rhs")
+proof
+  show "?lhs \<Longrightarrow> ?rhs"
+    by (induct rule:rtrancl_induct; blast intro: rtrancl_into_rtrancl)
+  assume ?rhs
+  then show ?lhs
+  proof (elim disjE exE conjE)
+    fix r
+    assume "(p, r) \<in> (eps L)\<^sup>*" "q = True # r"
+    then show "(True # p, q) \<in> (eps (RegExp2NAe.conc L R))\<^sup>*"
+      by (simp add: True_True_eps_concI)
+  next
+    fix r s
+    assume "(p, r) \<in> (eps L)\<^sup>*" "fin L r" "(start R, s) \<in> (eps R)\<^sup>*" "q = False # s"
+    then have "(True # r, False # s) \<in> (eps (RegExp2NAe.conc L R))\<^sup>*"
+      by (meson False_epsclosure_conc True_step_conc in_unfold_rtrancl2)
+    then show "(True # p, q) \<in> (eps (RegExp2NAe.conc L R))\<^sup>*"
+      by (metis True_True_eps_concI \<open>(p, r) \<in> (eps L)\<^sup>*\<close> \<open>q = False # s\<close> rtrancl_trans)
+  qed
+qed
 
 (** True in steps **)
 
-lemma True_steps_concD[rule_format]:
- "\<forall>p. (True#p,q) : steps (conc L R) w \<longrightarrow> 
-     ((\<exists>r. (p,r) : steps L w \<and> q = True#r)  \<or>
+lemma True_steps_concD:
+ "(True#p,q) \<in> steps (conc L R) w \<Longrightarrow>
+     ((\<exists>r. (p,r) \<in> steps L w \<and> q = True#r)  \<or>
       (\<exists>u v. w = u@v \<and> (\<exists>r. (p,r) \<in> steps L u \<and> fin L r \<and>
               (\<exists>s. (start R,s) \<in> steps R v \<and> q = False#s))))"
-apply (induct "w")
- apply (simp)
-apply (simp)
-apply (clarify del: disjCI)
- apply (erule disjE)
- apply (clarify del: disjCI)
- apply (erule disjE)
-  apply (clarify del: disjCI)
-  apply (erule allE, erule impE, assumption)
-  apply (erule disjE)
-   apply (blast)
-  apply (rule disjI2)
-  apply (clarify)
-  apply (simp)
-  apply (rule_tac x = "a#u" in exI)
-  apply (simp)
-  apply (blast)
- apply (blast)
-apply (rule disjI2)
-apply (clarify)
-apply (simp)
-apply (rule_tac x = "[]" in exI)
-apply (simp)
-apply (blast)
-done
+proof (induction w arbitrary: p)
+  case Nil
+  then show ?case by auto
+next
+  case (Cons a w)
+  obtain u v r
+    where \<section>: "(u,v) \<in> step (RegExp2NAe.conc L R) (Some a)"
+      "(v, q) \<in> NAe.steps (RegExp2NAe.conc L R) w"
+      "(p, r) \<in> (eps L)\<^sup>*"
+      and "u = True # r \<or> fin L r \<and> (\<exists>s. (start R, s) \<in> (eps R)\<^sup>* \<and> u = False # s)"
+    using Cons.prems
+    by simp blast
+  then consider "u = True # r" | s where "fin L r" "(start R, s) \<in> (eps R)\<^sup>* \<and> u = False # s"
+    by blast
+  then show ?case
+  proof cases
+    case 1
+    with \<section> obtain r' where r': "(True#r',q) \<in> steps (conc L R) w"
+           and \<dagger>: "(r, r') \<in> step L (Some a)" "v = True # r'"
+      by blast
+    from Cons.IH [OF r'] show ?thesis
+    proof (elim exE disjE conjE)
+      fix u' v' r'' s'
+      assume \<ddagger>: "w = u' @ v'" "(start R, s') \<in> NAe.steps R v'" "q = False # s'"
+        and "fin L r''" "(r', r'') \<in> NAe.steps L u'"
+      then have "\<exists>r. (p, r) \<in> (eps L)\<^sup>* O step L (Some a) O NAe.steps L u' \<and> fin L r"
+        using \<dagger> \<section> by blast 
+      with \<ddagger> show ?thesis
+        by (metis NAe.steps.simps(2) append_Cons) 
+    qed (use 1 \<section> Cons in auto)
+  next
+    case 2
+    with \<section> show ?thesis
+      by fastforce
+  qed
+qed
 
 lemma True_steps_conc:
  "(True#p,q) \<in> steps (conc L R) w = 
  ((\<exists>r. (p,r) \<in> steps L w \<and> q = True#r)  | 
-  (\<exists>u v. w = u@v \<and> (\<exists>r. (p,r) : steps L u \<and> fin L r \<and> 
-          (\<exists>s. (start R,s) : steps R v \<and> q = False#s))))"
+  (\<exists>u v. w = u@v \<and> (\<exists>r. (p,r) \<in> steps L u \<and> fin L r \<and> 
+          (\<exists>s. (start R,s) \<in> steps R v \<and> q = False#s))))"
 by (blast dest: True_steps_concD
     intro: True_True_steps_concI in_steps_epsclosure)
 
@@ -439,9 +385,7 @@ by (simp add:conc_def split: list.split)
 
 lemma accepts_conc:
  "accepts (conc L R) w = (\<exists>u v. w = u@v \<and> accepts L u \<and> accepts R v)"
-apply (simp add: accepts_def True_steps_conc final_conc start_conc)
-apply (blast)
-done
+by (fastforce simp add: accepts_def True_steps_conc final_conc start_conc)
 
 (******************************************************)
 (*                       star                         *)
@@ -457,48 +401,39 @@ lemma True_True_step_starI:
 by (simp add:star_def step_def)
 
 lemma True_True_eps_starI:
-  "(p,r) : (eps A)\<^sup>* \<Longrightarrow> (True#p, True#r) : (eps(star A))\<^sup>*"
-apply (induct rule: rtrancl_induct)
- apply (blast)
-apply (blast intro: True_True_step_starI rtrancl_into_rtrancl)
-done
+  "(p,r) \<in> (eps A)\<^sup>* \<Longrightarrow> (True#p, True#r) \<in> (eps(star A))\<^sup>*"
+proof (induct rule: rtrancl_induct)
+  case base
+  then show ?case by blast
+next
+  case (step y z)
+  then show ?case by (blast intro: True_True_step_starI rtrancl_into_rtrancl)
+qed
 
 lemma True_start_eps_starI:
- "\<And>A. fin A p \<Longrightarrow> (True#p,True#start A) : eps(star A)"
+ "\<And>A. fin A p \<Longrightarrow> (True#p,True#start A) \<in> eps(star A)"
 by (simp add:star_def step_def)
-
-lemma lem':
- "(tp,s) : (eps(star A))\<^sup>* \<Longrightarrow> (\<forall>p. tp = True#p \<longrightarrow>
- (\<exists>r. ((p,r) \<in> (eps A)\<^sup>* \<or>
-        (\<exists>q. (p,q) \<in> (eps A)\<^sup>* \<and> fin A q \<and> (start A,r) : (eps A)\<^sup>*)) \<and> 
-       s = True#r))"
-apply (induct rule: rtrancl_induct)
- apply (simp)
-apply (clarify)
-apply (simp)
-apply (blast intro: rtrancl_into_rtrancl)
-done
 
 lemma True_eps_star[iff]:
  "((True#p,s) \<in> (eps(star A))\<^sup>*) = 
  (\<exists>r. ((p,r) \<in> (eps A)\<^sup>* \<or>
-        (\<exists>q. (p,q) : (eps A)\<^sup>* \<and> fin A q \<and> (start A,r) : (eps A)\<^sup>*)) \<and>
+        (\<exists>q. (p,q) \<in> (eps A)\<^sup>* \<and> fin A q \<and> (start A,r) \<in> (eps A)\<^sup>*)) \<and>
        s = True#r)"
-apply (rule iffI)
- apply (drule lem')
- apply (blast)
-(* Why can't blast do the rest? *)
-apply (clarify)
-apply (erule disjE)
-apply (erule True_True_eps_starI)
-apply (clarify)
-apply (rule rtrancl_trans)
-apply (erule True_True_eps_starI)
-apply (rule rtrancl_trans)
-apply (rule r_into_rtrancl)
-apply (erule True_start_eps_starI)
-apply (erule True_True_eps_starI)
-done
+  (is "?lhs = ?rhs")
+proof
+  show "?lhs \<Longrightarrow> ?rhs"
+  proof (induct rule: rtrancl_induct)
+    case base
+    then show ?case
+      by blast
+  next
+    case (step y z)
+    then show ?case
+      by (meson True_in_eps_star rtrancl.rtrancl_into_rtrancl rtrancl.rtrancl_refl)
+  qed
+  show "?rhs \<Longrightarrow> ?lhs"
+  by (metis (no_types, opaque_lifting) rtrancl_trans  True_start_eps_starI True_True_eps_starI converse_rtrancl_into_rtrancl)
+qed
 
 (** True in step Some **)
 
@@ -511,62 +446,77 @@ by (simp add:star_def step_def) (blast)
 (** True in steps **)
 
 (* reverse list induction! Complicates matters for conc? *)
-lemma True_start_steps_starD[rule_format]:
- "\<forall>rr. (True#start A,rr) \<in> steps (star A) w \<longrightarrow>
- (\<exists>us v. w = concat us @ v \<and>
+lemma True_start_steps_starD:
+  "(True#start A,rr) \<in> steps (star A) w \<Longrightarrow>
+     (\<exists>us v. w = concat us @ v \<and>
              (\<forall>u\<in>set us. accepts A u) \<and>
              (\<exists>r. (start A,r) \<in> steps A v \<and> rr = True#r))"
-apply (induct w rule: rev_induct)
- apply (simp)
- apply (clarify)
- apply (rule_tac x = "[]" in exI)
- apply (erule disjE)
-  apply (simp)
- apply (clarify)
- apply (simp)
-apply (simp add: O_assoc[symmetric] epsclosure_steps)
-apply (clarify)
-apply (erule allE, erule impE, assumption)
-apply (clarify)
-apply (erule disjE)
- apply (rule_tac x = "us" in exI)
- apply (rule_tac x = "v@[x]" in exI)
- apply (simp add: O_assoc[symmetric] epsclosure_steps)
- apply (blast)
-apply (clarify)
-apply (rule_tac x = "us@[v@[x]]" in exI)
-apply (rule_tac x = "[]" in exI)
-apply (simp add: accepts_def)
-apply (blast)
-done
+proof (induction w arbitrary: rr rule: rev_induct)
+  case Nil
+  then show ?case
+    using split_list_cycles by fastforce
+next
+  case (snoc x xs)
+  then obtain u v 
+    where \<section>: "(v, rr) \<in> (eps (RegExp2NAe.star A))\<^sup>*"
+        "(True # start A, u) \<in> NAe.steps (RegExp2NAe.star A) xs"
+        "(u, v) \<in> step (RegExp2NAe.star A) (Some x)"
+    by (auto simp: O_assoc[symmetric] epsclosure_steps)
+  then obtain uss vs r 
+    where  "xs = concat uss @ vs" "(\<forall>a\<in>set uss. NAe.accepts A a)" 
+           "(start A, r) \<in> NAe.steps A vs"  "u = True # r"
+    using snoc.IH by meson
+  with \<section> show ?case
+    apply (clarify; elim disjE exE)
+     apply (rule_tac x = "uss" in exI)
+     apply (rule_tac x = "vs@[x]" in exI)
+     apply (fastforce simp add: O_assoc[symmetric] epsclosure_steps)
+    apply (rule_tac x = "uss@[vs@[x]]" in exI)
+    apply (rule_tac x = "[]" in exI)
+    apply (fastforce simp add: accepts_def)
+    done
+qed
 
 lemma True_True_steps_starI:
-  "\<And>p. (p,q) : steps A w \<Longrightarrow> (True#p,True#q) : steps (star A) w"
-apply (induct "w")
- apply (simp)
-apply (simp)
-apply (blast intro: True_True_eps_starI True_True_step_starI)
-done
+  "\<And>p. (p,q) \<in> steps A w \<Longrightarrow> (True#p,True#q) \<in> steps (star A) w"
+by (induct "w") (auto intro: True_True_eps_starI True_True_step_starI)
 
 lemma steps_star_cycle:
  "(\<forall>u \<in> set us. accepts A u) \<Longrightarrow>
  (True#start A,True#start A) \<in> steps (star A) (concat us)"
-apply (induct "us")
- apply (simp add:accepts_def)
-apply (simp add:accepts_def)
-by(blast intro: True_True_steps_starI True_start_eps_starI in_epsclosure_steps)
+proof (induct "us")
+  case Nil
+  then show ?case
+    by simp
+next
+  case (Cons a us)
+  then have "(True # start A, True # start A) \<in> NAe.steps (RegExp2NAe.star A) (concat us)"
+    by auto
+  moreover
+  obtain q where "(start A, q) \<in> NAe.steps A a" "fin A q"
+    by (meson Cons.prems NAe.accepts_def list.set_intros(1))
+  ultimately 
+    have "(True # start A, True # start A)
+              \<in> NAe.steps (RegExp2NAe.star A) a O NAe.steps (RegExp2NAe.star A) (concat us)"
+    by (meson True_True_steps_starI True_start_eps_starI in_epsclosure_steps r_into_rtrancl
+        relcomp.relcompI)
+  then show ?case
+    by (auto simp: accepts_def)
+qed
 
 (* Better stated directly with start(star A)? Loop in star A back to start(star A)?*)
 lemma True_start_steps_star:
- "(True#start A,rr) : steps (star A) w = 
+ "(True#start A,rr) \<in> steps (star A) w = 
  (\<exists>us v. w = concat us @ v \<and>
              (\<forall>u\<in>set us. accepts A u) \<and>
              (\<exists>r. (start A,r) \<in> steps A v \<and> rr = True#r))"
-apply (rule iffI)
- apply (erule True_start_steps_starD)
-apply (clarify)
-apply (blast intro: steps_star_cycle True_True_steps_starI)
-done
+  (is "?lhs = ?rhs")
+proof
+  show "?lhs \<Longrightarrow> ?rhs"
+    by (simp add: True_start_steps_starD)
+  show "?rhs \<Longrightarrow> ?lhs"
+    by (blast intro: steps_star_cycle True_True_steps_starI)
+qed
 
 (** the start state **)
 
@@ -578,19 +528,26 @@ lemmas epsclosure_start_step_star =
   in_unfold_rtrancl2[where ?p = "start (star A)"] for A
 
 lemma start_steps_star:
- "(start(star A),r) : steps (star A) w = 
- ((w=[] \<and> r= start(star A)) | (True#start A,r) : steps (star A) w)"
-apply (rule iffI)
- apply (case_tac "w")
-  apply (simp add: epsclosure_start_step_star)
- apply (simp)
- apply (clarify)
- apply (simp add: epsclosure_start_step_star)
- apply (blast)
-apply (erule disjE)
- apply (simp)
-apply (blast intro: in_steps_epsclosure)
-done
+  "(start(star A),r) \<in> steps (star A) w \<longleftrightarrow>
+   ((w=[] \<and> r = start(star A)) | (True#start A,r) \<in> steps (star A) w)"
+  (is "?lhs = ?rhs")
+proof
+  assume L: ?lhs
+  show ?rhs
+  proof (cases w)
+    case Nil
+    with L show ?thesis 
+      by (simp add: epsclosure_start_step_star)
+  next
+    case (Cons u us)
+    with L show ?thesis
+      by (clarsimp simp add: epsclosure_start_step_star) blast
+  qed
+next 
+  have ?lhs if "(True # start A, r) \<in> NAe.steps (RegExp2NAe.star A) w"
+    by (meson in_steps_epsclosure r_into_rtrancl start_step_star that)
+  then show "?rhs \<Longrightarrow> ?lhs" by auto
+qed
 
 lemma fin_star_True[iff]: "\<And>A. fin (star A) (True#p) = fin A p"
 by (simp add:star_def)
@@ -600,29 +557,49 @@ by (simp add:star_def)
 
 (* too complex! Simpler if loop back to start(star A)? *)
 lemma accepts_star:
- "accepts (star A) w = 
- (\<exists>us. (\<forall>u \<in> set(us). accepts A u) \<and> (w = concat us))"
-apply(unfold accepts_def)
-apply (simp add: start_steps_star True_start_steps_star)
-apply (rule iffI)
- apply (clarify)
- apply (erule disjE)
-  apply (clarify)
-  apply (simp)
-  apply (rule_tac x = "[]" in exI)
-  apply (simp)
- apply (clarify)
- apply (rule_tac x = "us@[v]" in exI)
- apply (simp add: accepts_def)
- apply (blast)
-apply (clarify)
-apply (rule_tac xs = "us" in rev_exhaust)
- apply (simp)
- apply (blast)
-apply (clarify)
-apply (simp add: accepts_def)
-apply (blast)
-done
+ "accepts (star A) w \<longleftrightarrow> (\<exists>us. (\<forall>u \<in> set(us). accepts A u) \<and> (w = concat us))"
+  (is "?lhs = ?rhs")
+proof
+  assume ?lhs
+  then obtain q where "(start (RegExp2NAe.star A), q) \<in> NAe.steps (RegExp2NAe.star A) w"
+                 and qfin: "fin (RegExp2NAe.star A) q"
+    by (auto simp: accepts_def)
+  then consider "w = []" "q = start (RegExp2NAe.star A)" | "(True # start A, q) \<in> NAe.steps (RegExp2NAe.star A) w"
+    by (auto simp add: start_steps_star)
+  then show ?rhs
+  proof cases
+    case 1
+    then show ?thesis
+      using split_list_first by fastforce
+  next
+    case 2
+    with qfin obtain us v r where \<section>: "w = concat us @ v" 
+           "\<forall>u\<in>set us. NAe.accepts A u" "(start A, r) \<in> NAe.steps A v" "fin A r"
+      using True_start_steps_starD qfin by blast
+    have "concat us @ v = concat (us @ [v])"
+      by auto
+    with 2 \<section>
+     show ?thesis
+       by (metis NAe.accepts_def rotate1.simps(2) set_ConsD set_rotate1)
+  qed
+next
+  assume ?rhs
+  then obtain us where us: "\<forall>u\<in>set us. \<exists>q. (start A, q) \<in> NAe.steps A u \<and> fin A q"
+           "w = concat us"
+    using NAe.accepts_def by blast
+  show ?lhs
+  proof (cases us rule: rev_exhaust)
+    case Nil
+    with us show ?thesis
+      by (force simp: NAe.accepts_def)
+  next
+    case (snoc ys y)
+    with us show ?thesis
+      apply simp
+      by (metis NAe.accepts_def NAe.steps_append True_start_steps_star fin_star_True
+          start_steps_star)
+  qed
+qed
 
 
 (***** Correctness of r2n *****)

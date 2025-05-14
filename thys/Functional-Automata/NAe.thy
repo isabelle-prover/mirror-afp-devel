@@ -33,31 +33,23 @@ lemma steps_epsclosure[simp]: "(eps A)\<^sup>* O steps A w = steps A w"
 by (cases w) (simp_all add: O_assoc[symmetric])
 
 lemma in_steps_epsclosure:
-  "[| (p,q) : (eps A)\<^sup>*; (q,r) : steps A w |] ==> (p,r) : steps A w"
-apply(rule steps_epsclosure[THEN equalityE])
-apply blast
-done
+  "[| (p,q) : (eps A)\<^sup>*; (q,r) : steps A w |] ==> (p,r) \<in> steps A w"
+  by (metis relcomp.relcompI steps_epsclosure)
 
 lemma epsclosure_steps: "steps A w O (eps A)\<^sup>* = steps A w"
-apply(induct w)
- apply simp
-apply(simp add:O_assoc)
-done
+  by (induct w) (simp_all add:O_assoc)
 
 lemma in_epsclosure_steps:
-  "[| (p,q) : steps A w; (q,r) : (eps A)\<^sup>* |] ==> (p,r) : steps A w"
-apply(rule epsclosure_steps[THEN equalityE])
-apply blast
-done
+  "\<lbrakk>(p, q) \<in> NAe.steps A w; (q, r) \<in> (eps A)\<^sup>*\<rbrakk> \<Longrightarrow> (p, r) \<in> NAe.steps A w"
+  by (metis epsclosure_steps relcomp.relcompI)
 
 lemma steps_append[simp]:  "steps A (v@w) = steps A v  O  steps A w"
 by(induct v)(simp_all add:O_assoc[symmetric])
 
 lemma in_steps_append[iff]:
-  "(p,r) : steps A (v@w) = ((p,r) : (steps A v O steps A w))"
-apply(rule steps_append[THEN equalityE])
-apply blast
-done
+  "((p, r) \<in> NAe.steps A (v @ w)) = ((p, r) \<in> NAe.steps A v O NAe.steps A w)"
+  by auto
+
 
 (* Equivalence of steps and delta
 * Use "(\<exists>x \<in> f ` A. P x) = (\<exists>a\<in>A. P(f x))" ?? *
