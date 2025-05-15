@@ -35,7 +35,7 @@ proof (cases "0 \<le> t")
   thus ?thesis using assms by (auto intro: zeta_div_bound')
 next
   case False with assms(2) have Ht: "t \<le> - 13 / 22" by auto
-  moreover have 1: "Complex \<sigma> (- t) = cnj (Complex \<sigma> t)" by (auto simp add: legacy_Complex_simps)
+  moreover have 1: "Complex \<sigma> (- t) = cnj (Complex \<sigma> t)" by (auto simp add: Complex_simps)
   ultimately have "\<parallel>zeta (cnj z) / zeta (Complex \<sigma> (- t))\<parallel> \<le> exp (12 * ln (14 + 4 * (- t)))"
     using assms(1) assms(3)
     by (intro zeta_div_bound', auto simp add: dist_complex_def)
@@ -78,7 +78,7 @@ proof -
       case 3 show ?case by (intro holomorphic_zeta notin_ball)
       case 6 show ?case
         using r_nonneg unfolding s_def
-        by (auto simp add: dist_complex_def legacy_Complex_simps)
+        by (auto simp add: dist_complex_def Complex_simps)
       fix z assume Hz: "z \<in> ball (s \<sigma> t) (8 / 7 * r t)"
       show "zeta z \<noteq> 0"
       proof (rule ccontr)
@@ -90,7 +90,7 @@ proof -
             using Hz h(4) by (auto simp add: dist_complex_def)
           hence "\<bar>t - Im z\<bar> < 1"
             using abs_Im_le_cmod [of "s \<sigma> t - z"]
-            unfolding s_def by (auto simp add: legacy_Complex_simps)
+            unfolding s_def by (auto simp add: Complex_simps)
           hence "\<bar>Im z\<bar> < \<bar>t\<bar> + 1" by auto
           thus ?thesis unfolding r_def
             by (intro divide_left_mono mult_pos_pos)
@@ -363,7 +363,7 @@ proof -
   hence "\<forall>\<^sub>F x in at_top. \<alpha> \<le> f x" unfolding f_def using C\<^sub>4_gt_zero by real_asymp
   moreover have f_lt_1: "\<forall>\<^sub>F x in at_top. f x < 1" unfolding f_def using C\<^sub>4_gt_zero by real_asymp
   ultimately have "\<forall>\<^sub>F x in at_top. \<forall>t. \<bar>t\<bar> \<le> C\<^sub>3 \<longrightarrow> g x t \<in> K' - {1}"
-    unfolding g_def K'_def by eventually_elim (auto simp add: in_cbox_complex_iff legacy_Complex_simps)
+    unfolding g_def K'_def by eventually_elim (auto simp add: in_cbox_complex_iff Complex_simps)
   moreover have "\<parallel>logderiv zeta (g x t)\<parallel> \<le> M + 1 / (1 - f x)"
     when h: "g x t \<in> K' - {1}" "f x < 1" for x t
   proof -
@@ -592,7 +592,7 @@ proof -
     "1 \<notin> path_image (P\<^sub>1 x) \<and> 1 \<notin> path_image (P\<^sub>2 x) \<and>
      1 \<notin> path_image (P\<^sub>3 x) \<and> 1 \<notin> path_image (P\<^sub>4 x)"
     unfolding P\<^sub>1_def P\<^sub>2_def P\<^sub>3_def P\<^sub>4_def P\<^sub>t_def z\<^sub>1_def z\<^sub>2_def z\<^sub>3_def z\<^sub>4_def using assms
-    by (auto simp add: closed_segment_def legacy_Complex_simps field_simps)
+    by (auto simp add: closed_segment_def Complex_simps field_simps)
   ultimately show ?thesis unfolding path_in_rect'_def rect'_def by blast
 qed
 
@@ -831,7 +831,7 @@ proof -
         using h(2) by (intro mult_left_mono) auto
       thus "Re s \<le> b x" "Im s = t"
         using that h(2) unfolding closed_segment_def
-        by (auto simp add: legacy_Complex_simps field_simps)
+        by (auto simp add: Complex_simps field_simps)
     qed
     hence "C\<^sub>3 \<le> \<bar>Im s\<bar>" using h(1) Ht by auto
     ultimately have "s \<in> logderiv_zeta_region" using Hs h(3) by auto
@@ -863,7 +863,7 @@ proof -
     by (intro contour_integral_bound_linepath)
        (use C\<^sub>2_gt_zero h(1) in auto)
   also have "\<dots> = C\<^sub>2 * exp 1 * x / T x * (ln (T x + 3))\<^sup>2 * (b x - a x)"
-    using h(2) by (simp add: legacy_Complex_simps)
+    using h(2) by (simp add: Complex_simps)
   finally show ?thesis .
 qed
 
@@ -899,7 +899,7 @@ qed
 lemma Re_path_P\<^sub>2:
   "\<And>z. z \<in> path_image (P\<^sub>2 x) \<Longrightarrow> Re z = b x"
   unfolding P\<^sub>2_def z\<^sub>2_def z\<^sub>3_def
-  by (auto simp add: closed_segment_def legacy_Complex_simps field_simps)
+  by (auto simp add: closed_segment_def Complex_simps field_simps)
 
 lemma estimation_P\<^sub>2:
   "(\<lambda>x. \<parallel>1 / (2 * pi * \<i>) * contour_integral (P\<^sub>2 x) (f x) + x\<parallel>) \<in> Rc"

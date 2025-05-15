@@ -114,9 +114,9 @@ proof -
   proof -
     let ?n = "n :: complex"
     have "1 / n nat_powr (Complex \<sigma> t) = n nat_powr (Complex (-\<sigma>) (-t))"
-      by (fold powr_minus_divide, auto simp add: legacy_Complex_simps)
+      by (fold powr_minus_divide, auto simp add: Complex_simps)
     also have "\<dots> = exp (Complex (-\<sigma> * ln n) (-t * ln n))"
-      unfolding powr_def by (auto simp add: field_simps legacy_Complex_simps, use * in linarith)
+      unfolding powr_def by (auto simp add: field_simps Complex_simps, use * in linarith)
     finally have "Re (1 / n nat_powr (Complex \<sigma> t)) = Re \<dots>" by auto
     also have "\<dots> = n nat_powr (-\<sigma>) * cos (t * ln n)"
       by (unfold powr_def, subst Re_exp, use * in auto)
@@ -528,7 +528,7 @@ end
 
 context zeta_bound_param_2 begin
 declare dist_complex_def [simp] norm_minus_commute [simp]
-declare legacy_Complex_simps [simp]
+declare Complex_simps [simp]
 
 lemma cball_lm:
   assumes "z \<in> cball s r"

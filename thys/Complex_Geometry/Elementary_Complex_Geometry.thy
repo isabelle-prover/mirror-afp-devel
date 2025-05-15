@@ -22,7 +22,7 @@ lemma collinear_ex_real:
   shows "collinear z1 z2 z3 \<longleftrightarrow>
          (\<exists> k::real. z1 = z2 \<or> z3 - z1 = complex_of_real k * (z2 - z1))"
   unfolding collinear_def
-  by (metis Im_complex_of_real add_diff_cancel_right' complex_eq diff_zero legacy_Complex_simps(15) nonzero_mult_div_cancel_right right_minus_eq times_divide_eq_left zero_complex.code)
+  by (metis Im_complex_of_real add_diff_cancel_right' complex_eq diff_zero Complex_simps(15) nonzero_mult_div_cancel_right right_minus_eq times_divide_eq_left zero_complex.code)
 
 text \<open>Collinearity characterization using determinants\<close>
 lemma collinear_det:

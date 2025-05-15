@@ -424,9 +424,9 @@ proof -
     unfolding path_def by (subst has_contour_integral_linepath [symmetric]) (intro Hf)
   moreover have "path t = Complex c (g *\<^sub>R t + d)" for t
     unfolding path_def linepath_def g_def
-    by (auto simp add: field_simps legacy_Complex_simps)
+    by (auto simp add: field_simps Complex_simps)
   moreover have "b - a = g * \<i>"
-    unfolding g_def by (auto simp add: legacy_Complex_simps)
+    unfolding g_def by (auto simp add: Complex_simps)
   ultimately have
     "((\<lambda>t. f (Complex c (g *\<^sub>R t + d)) * (g * \<i>)) has_integral g * x /\<^sub>R g ^ DIM(real))
      (cbox ((d - d) /\<^sub>R g) ((e - d) /\<^sub>R g))"

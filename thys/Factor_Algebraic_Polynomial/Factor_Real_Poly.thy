@@ -217,7 +217,7 @@ proof -
         obtain xx where xx: "xx = cnj x" by auto
         have xi: "xi = ?rp ([:-x,1:] * [:-xx,1:])" unfolding xx xi_def by auto
         have cpxi: "?cp xi = [:-x,1:] * [:-xx,1:]" unfolding xi_def
-          by (cases x, auto simp: xx legacy_Complex_simps)
+          by (cases x, auto simp: xx Complex_simps)
         obtain yis where yis: "yis = delete_cnj xx i xis" by auto
         from delete_cnj_0[OF 0] have 0: "0 \<notin> snd ` set yis" unfolding yis .
         from False have fact: "?fact ((x,i) # xis) = ((xi,i) # ?fact yis)"
@@ -258,7 +258,7 @@ proof -
         have mon: "monic (\<Prod>(x, i)\<leftarrow>(x, i) # xis. [:- x, 1:] ^ i)"
           by (rule monic_prod_list, auto intro: monic_power)
         from monic_imp_nonzero[OF this] have xixis: "?xi * ?xis \<noteq> 0" unfolding id by auto
-        from False have xxx: "xx \<noteq> x" unfolding xx by (cases x, auto simp: legacy_Complex_simps Reals_def)
+        from False have xxx: "xx \<noteq> x" unfolding xx by (cases x, auto simp: Complex_simps Reals_def)
         from prems[unfolded id] have prems: "set (coeffs (?xi * ?xis)) \<subseteq> \<real>" .
         from id have "[:- x, 1:] ^ i dvd ?xi * ?xis" by auto
         from xixis this[unfolded order_divides] 

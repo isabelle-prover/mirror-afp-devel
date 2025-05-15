@@ -311,7 +311,7 @@ proof (safe)
         using * ** \<open>za \<noteq> 1\<close>
         apply (simp_all add: field_simps)
         unfolding complex_of_real_def imaginary_unit.ctr
-        by (simp_all add: legacy_Complex_simps)
+        by (simp_all add: Complex_simps)
       thus ?thesis
           using * ** *** \<open>za \<noteq> 1\<close> \<open>zb \<noteq> 1\<close>
           by simp
