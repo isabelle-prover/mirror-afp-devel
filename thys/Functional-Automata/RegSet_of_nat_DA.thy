@@ -14,7 +14,7 @@ regexp as d i j 0 = (if i=j then Union (Star Empty) (atoms d i j as)
 section "From deterministic automata to regular sets"
 
 theory RegSet_of_nat_DA
-imports "Regular-Sets.Regular_Set" DA  "HOL-ex.Sketch_and_Explore" 
+imports "Regular-Sets.Regular_Set" DA
 begin
 
 type_synonym 'a nat_next = "'a \<Rightarrow> nat \<Rightarrow> nat"
@@ -62,42 +62,45 @@ lemma in_set_butlast_concatI:
 (* The main lemma:
    how to decompose a trace into a prefix, a list of loops and a suffix.
 *)
-lemma decompose[rule_format]:
- "\<forall>i. k \<in> set(trace d i xs) \<longrightarrow> (\<exists>pref mids suf.
-  xs = pref @ concat mids @ suf \<and>
-  deltas d pref i = k \<and> (\<forall>n\<in>set(butlast(trace d i pref)). n \<noteq> k) \<and>
-  (\<forall>mid\<in>set mids. (deltas d mid k = k) \<and>
-                  (\<forall>n\<in>set(butlast(trace d k mid)). n \<noteq> k)) \<and>
-  (\<forall>n\<in>set(butlast(trace d k suf)). n \<noteq> k))"
-apply (induct "xs")
- apply (simp)
-apply (rename_tac a as)
-apply (intro strip)
-apply (case_tac "d a i = k")
- apply (rule_tac x = "[a]" in exI)
- apply simp
- apply (case_tac "k \<in> set(trace d (d a i) as)")
-  apply (erule allE)
-  apply (erule impE)
-   apply (assumption)
-  apply (erule exE)+
-  apply (rule_tac x = "pref#mids" in exI)
-  apply (rule_tac x = "suf" in exI)
-  apply simp
- apply (rule_tac x = "[]" in exI)
- apply (rule_tac x = "as" in exI)
- apply simp
- apply (blast dest: in_set_butlastD)
-apply simp
-apply (erule allE)
-apply (erule impE)
- apply (assumption)
-apply (erule exE)+
-apply (rule_tac x = "a#pref" in exI)
-apply (rule_tac x = "mids" in exI)
-apply (rule_tac x = "suf" in exI)
-apply simp
-done
+lemma decompose:
+  "k \<in> set(trace d i xs) \<Longrightarrow> 
+    \<exists>pref mids suf.
+      xs = pref @ concat mids @ suf \<and>
+      deltas d pref i = k \<and> (\<forall>n\<in>set(butlast(trace d i pref)). n \<noteq> k) \<and>
+      (\<forall>mid\<in>set mids. (deltas d mid k = k) \<and>
+                      (\<forall>n\<in>set(butlast(trace d k mid)). n \<noteq> k)) \<and>
+      (\<forall>n\<in>set(butlast(trace d k suf)). n \<noteq> k)"
+proof (induction "xs" arbitrary: i)
+  case Nil
+  then show ?case
+    by simp
+next
+  case (Cons a as)
+  then consider "d a i = k" | "k \<in> set (trace d (d a i) as)" "d a i \<noteq> k"
+    by auto
+  then
+  show ?case 
+  proof cases
+    case 1
+    then show ?thesis
+      apply (intro exI [where x = "[a]"], simp)
+      apply (cases "k \<in> set(trace d (d a i) as)")
+      using Cons.IH append.assoc concat.simps(2) set_ConsD apply metis
+      by (metis Nil_is_append_conv append_Nil concat.simps(1) in_set_butlastD
+          in_set_conv_decomp list.distinct(1))
+  next
+    case 2
+    with Cons.IH [OF 2(1)] show ?thesis
+      apply clarify
+      subgoal for pref mids suf
+        apply (rule exI [where x = "a#pref"])
+        apply (rule exI [where x = mids])
+        apply (rule exI [where x = suf])
+        apply auto
+        done
+      done
+  qed
+qed
 
 lemma length_trace[simp]: "\<And>i. length(trace d i xs) = length xs"
 by (induct "xs") simp_all
