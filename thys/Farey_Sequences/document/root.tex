@@ -1,0 +1,53 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+\usepackage{amsmath,amssymb}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+%%Euro-style date: 20 September 1955
+\def\today{\number\day\space\ifcase\month\or
+January\or February\or March\or April\or May\or June\or
+July\or August\or September\or October\or November\or December\fi
+\space\number\year}
+
+\begin{document}
+
+\title{Farey Sequences and Ford Circles}
+\author{Lawrence C. Paulson}
+\maketitle
+
+\begin{abstract}
+
+The sequence $F_n$ of \emph{Farey fractions} of order~$n$ 
+has the form 
+$$\frac{0}{1}, \frac{1}{n}, \frac{1}{n-1}, \ldots, \frac{n-1}{n}, \frac{1}{1}$$
+where the fractions appear in numerical order and have denominators at most $n$.
+The transformation from $F_n$ to $F_{n+1}$ can be effected by combining adjacent elements of 
+the sequence~$F_n$, using an operation called the \emph{mediant}.
+Adjacent (reduced) fractions $(a/b) < (c/d)$ satisfy the \emph{unimodular}
+relation $bc - ad = 1$ and their mediant is $\frac{a+c}{b+d}$.
+A \emph{Ford circle} is specified by a rational number, and interesting consequences follow
+in the case of Ford circles obtained from some Farey sequence~$F_n$.
+The formalised material is drawn from Apostol's \emph{Modular Functions and Dirichlet Series in Number Theory}
+\cite{apostol-modular-functions}.
+
+\end{abstract}
+
+\newpage
+
+% include generated text of all theories
+\input{session}
+
+\paragraph*{Acknowledgements}
+Manual Eberl set up the initial Farey development.
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}

@@ -1,5 +1,21 @@
 [
  {
+  "abstract": "The sequence $F_n$ of Farey fractions of order $n$ has the form $$\\frac{0}{1}, \\frac{1}{n}, \\frac{1}{n-1}, \\ldots, \\frac{n-1}{n}, \\frac{1}{1}$$ where the fractions appear in numerical order and have denominators at most $n$. The transformation from $F_n$ to $F_{n+1}$ can be effected by combining adjacent elements of the sequence~$F_n$, using an operation called the mediant. Adjacent (reduced) fractions $(a/b) \u003c (c/d)$ satisfy the unimodular relation $bc - ad = 1$ and their mediant is $\\frac{a+c}{b+d}$. A Ford circle is specified by a rational number, and interesting consequences follow in the case of Ford circles obtained from some Farey sequence~$F_n$. The formalised material is drawn from Apostol's Modular Functions and Dirichlet Series in Number Theory.",
+  "authors": [
+   "Lawrence C. Paulson"
+  ],
+  "link": "/entries/Farey_Sequences.html",
+  "shortname": "Farey_Sequences",
+  "title": "Farey Sequences and Ford Circles",
+  "topic_links": [
+   "/topics/mathematics/number-theory/"
+  ],
+  "topics": [
+   "Mathematics/Number theory"
+  ],
+  "year": "2025"
+ },
+ {
   "abstract": "This entry, derived from the Isabelle Formalization of Rewriting (IsaFoR), provides a formalized foundation for first-order term rewriting. This serves as the basis for the certifier CeTA, which is generated from IsaFoR and verifies termination, confluence, and complexity proofs for term rewrite systems (TRSs). This formalization covers fundamental results for term rewriting, as presented in the foundational textbooks by Baader and Nipkow and TeReSe. These include: Various types of rewrite steps, such as root, ground, parallel, and multi-steps. Special cases of TRSs, such as linear and left-linear TRSs. A definition of critical pairs and key results, including the critical pair lemma. Orthogonality, notably that weak orthogonality implies confluence. Executable versions of relevant definitions, such as parallel and multi-step rewriting. ",
   "authors": [
    "René Thiemann",

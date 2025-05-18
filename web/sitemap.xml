@@ -3,10 +3,13 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://isa-afp.org/entries/index.json</loc>
-    <lastmod>2025-04-13T00:00:00+00:00</lastmod>
+    <lastmod>2025-05-15T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/</loc>
-    <lastmod>2025-04-13T00:00:00+00:00</lastmod>
+    <lastmod>2025-05-15T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Farey_Sequences.html</loc>
+    <lastmod>2025-05-15T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/entries/First_Order_Rewriting.html</loc>
     <lastmod>2025-04-13T00:00:00+00:00</lastmod>
@@ -3615,6 +3618,8 @@
     <loc>https://isa-afp.org/authors/ausaf/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/falling_factorial_sum/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/sessions/farey_sequences/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/farkas/</loc>
   </url><url>
