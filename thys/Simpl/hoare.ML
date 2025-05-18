@@ -1719,9 +1719,9 @@ fun in_assertion_simp_tac ctxt state_kind thms i =
      val state_simps = Named_Theorems.get ctxt @{named_theorems "state_simp"}
  in
    EVERY [simp_tac
-            (put_simpset HOL_basic_ss ctxt addsimps ([mem_Collect_eq,@{thm Set.Un_iff},@{thm Set.Int_iff},
-                                     @{thm Set.empty_subsetI}, @{thm Set.empty_iff}, UNIV_I,
-                                     @{thm Hoare.Collect_False}]@state_simps@thms@K_convs@vcg_simps)
+            (put_simpset HOL_basic_ss ctxt addsimps (@{thms mem_Collect_eq Set.Un_iff Set.Int_iff
+                                     Set.empty_subsetI Set.empty_iff UNIV_I
+                                     Hoare.Collect_False} @ state_simps @ thms @ K_convs @ vcg_simps)
                           addsimprocs (state_simprocs ctxt state_kind)
                           |> fold Simplifier.add_cong K_congs)  i
            THEN_MAYBE
@@ -1786,7 +1786,7 @@ fun set2pred_tac ctxt i thm =
 (*****************************************************************************)
 
 fun MaxSimpTac ctxt tac i =
-  TRY (FIRST[resolve_tac ctxt [subset_refl] i,
+  TRY (FIRST[resolve_tac ctxt @{thms subset_refl} i,
       (set2pred_tac ctxt i THEN_MAYBE tac i) ORELSE tac i,
       trace_tac ctxt "final_tac failed"
       ]);
@@ -1794,7 +1794,7 @@ fun MaxSimpTac ctxt tac i =
 fun BasicSimpTac ctxt state_kind set2pred thms tac i =
  EVERY [(trace_tac ctxt "BasicSimpTac -- START --"),
          assertion_simp_tac ctxt state_kind thms i
-         THEN_MAYBE (if set2pred then MaxSimpTac ctxt tac i else TRY (resolve_tac ctxt [subset_refl] i)),
+         THEN_MAYBE (if set2pred then MaxSimpTac ctxt tac i else TRY (resolve_tac ctxt @{thms subset_refl} i)),
         (trace_tac ctxt "BasicSimpTac -- STOP --")];
 (*
  EVERY [(trace_tac ctxt "BasicSimpTac -- START --"),
@@ -1826,7 +1826,7 @@ fun post_conforms_tac ctxt state_kind i =
            THEN_ALL_NEW
           (fn i => (REPEAT (resolve_tac ctxt [allI,impI] i))
                     THEN (full_simp_tac (put_simpset HOL_basic_ss ctxt addsimps
-                             [mem_Collect_eq,@{thm Set.singleton_iff},@{thm Set.empty_iff},UNIV_I]
+                             @{thms mem_Collect_eq Set.singleton_iff Set.empty_iff UNIV_I}
                              addsimprocs (state_simprocs ctxt state_kind)) i))) i];
 
 
@@ -1881,11 +1881,10 @@ local
 
 val conseq1_ss_base =
   simpset_of (put_simpset HOL_basic_ss @{context}
-    addsimps ([mem_Collect_eq,@{thm Set.singleton_iff},@{thm Set.Int_iff},
-              @{thm Set.empty_iff},UNIV_I,
-              @{thm HOL.conj_assoc}, @{thm disj_assoc}] @ @{thms Hoare.all_imp_eq_triv}
-              @K_convs @ @{thms simp_thms} @ @{thms ex_simps} @ @{thms all_simps})
-    delsimps [@{thm Hoare.all_imp_to_ex}]
+    addsimps (@{thms mem_Collect_eq Set.singleton_iff Set.Int_iff
+              Set.empty_iff UNIV_I HOL.conj_assoc disj_assoc Hoare.all_imp_eq_triv}
+              @ K_convs @ @{thms simp_thms} @ @{thms ex_simps} @ @{thms all_simps})
+    delsimps @{thms Hoare.all_imp_to_ex}
     |> fold Simplifier.add_cong K_congs)
 
 val conseq2_ss_base =
@@ -1962,7 +1961,7 @@ fun gen_context_thms ctxt mode params G T F =
           (fn {context = ctxt', ...} =>
             EVERY[trace_tac ctxt' "extracting specifications from hoare context",
                   resolve_tac ctxt' [asmUN'] 1,
-                  DEPTH_SOLVE_1 (resolve_tac ctxt' [subset_refl,refl] 1 ORELSE
+                  DEPTH_SOLVE_1 (resolve_tac ctxt' @{thms subset_refl refl} 1 ORELSE
                     ((resolve_tac ctxt' [@{thm Hoare.subset_unI1}] 1 APPEND resolve_tac ctxt' [@{thm Hoare.subset_unI2}] 1)
                      ORELSE
                      (resolve_tac ctxt' [@{thm Hoare.subset_singleton_insert1}] 1
@@ -2058,7 +2057,7 @@ fun gen_call_tac cont_tac mode cmode state_kind state_space ctxt asms spec_sfx
          in
            EVERY [resolve_tac ctxt' [augment_rule] i,
                   resolve_tac ctxt' [spec'] (i+1),
-                  TRY (resolve_tac ctxt' [subset_refl, @{thm Set.empty_subsetI}, @{thm Set.Un_upper1}, @{thm Set.Un_upper2}] i)]
+                  TRY (resolve_tac ctxt' @{thms subset_refl Set.empty_subsetI Set.Un_upper1 Set.Un_upper2} i)]
          end;
 
     fun check_spec name P thm =
@@ -2088,7 +2087,7 @@ fun gen_call_tac cont_tac mode cmode state_kind state_space ctxt asms spec_sfx
       | solve_spec ctxt' _ asmUN_rule _ mode Static _ _ i =(* try to infer spec out of context *)
          EVERY[trace_tac ctxt' "inferring specification from hoare context1",
                resolve_tac ctxt' [asmUN_rule] i,
-               DEPTH_SOLVE_1 (resolve_tac ctxt' [subset_refl,refl] i ORELSE
+               DEPTH_SOLVE_1 (resolve_tac ctxt' @{thms subset_refl refl} i ORELSE
                 ((resolve_tac ctxt' [@{thm Hoare.subset_unI1}] i APPEND resolve_tac ctxt' [@{thm Hoare.subset_unI2}] i)
                  ORELSE
                  (resolve_tac ctxt' [@{thm Hoare.subset_singleton_insert1}] i
@@ -2351,7 +2350,7 @@ fun gen_call_tac cont_tac mode cmode state_kind state_space ctxt asms spec_sfx
                   solve_modifies_tac (cnt - 7),
                   basic_tac ctxt' spec (cnt - 8),
                   if cmode = Parameter
-                  then EVERY [resolve_tac ctxt' [subset_refl] (cnt - 8),
+                  then EVERY [resolve_tac ctxt' @{thms subset_refl} (cnt - 8),
                               simp_tac (put_simpset HOL_basic_ss ctxt'
                                 addsimps (@{thm Hoare.CollectInt_iff} :: @{thms simp_thms})) 1]
                   else all_tac]
@@ -2439,12 +2438,12 @@ fun call_tac cont_tac mode state_kind state_space ctxt asms spec_sfx t =
   handle TERM _ => K no_tac;
 
 fun solve_in_Faults_tac ctxt i =
-    resolve_tac ctxt [UNIV_I, @{thm in_insert_hd}] i
+    resolve_tac ctxt @{thms UNIV_I in_insert_hd} i
     ORELSE
     SELECT_GOAL (SOLVE (simp_tac (put_simpset (simpset_of @{theory_context Set}) ctxt) 1)) i;
 
 local
-fun triv_simp ctxt = merge_assertion_simp_tac ctxt [mem_Collect_eq] THEN'
+fun triv_simp ctxt = merge_assertion_simp_tac ctxt @{thms mem_Collect_eq} THEN'
          simp_tac (put_simpset HOL_basic_ss ctxt addsimps @{thms simp_thms}
            |> fold Simplifier.add_cong [@{thm conj_cong}, @{thm imp_cong}]);
     (* a guarded while produces stupid things, since the guards are
@@ -2782,7 +2781,7 @@ fun HoareTac annotate_inv exspecs
                     then EVERY [trace_tac ctxt ("pre_cond / solve_modfies: " ^ @{make_string} (pre_cond, solve_modifies)),
                                 TRY (BasicSimpTac ctxt state_kind true (Named_Theorems.get ctxt @{named_theorems "state_simp"}) tac i),
                                 trace_tac ctxt ("after BasicSimpTac " ^ string_of_int i)]
-                    else (resolve_tac ctxt [subset_refl] i))))
+                    else (resolve_tac ctxt @{thms subset_refl} i))))
          end;
  in ((K (EVERY [REPEAT (resolve_tac ctxt [allI] 1), HoareRuleTac tac true ctxt 1]))
      THEN_ALL_NEW (prems_tac ctxt)) 1 st
@@ -2805,11 +2804,11 @@ fun HoareStepTac strip_guards mode state_kind state_space spec_sfx ctxt tac st =
        |> the_default [];
 
      fun result_tac ctxt' i = TRY (EVERY [resolve_tac ctxt' [Basic mode] i,
-         resolve_tac ctxt' [subset_refl] i]);
+         resolve_tac ctxt' @{thms subset_refl} i]);
      fun call (t,i) = call_tac result_tac mode state_kind state_space ctxt asms spec_sfx t i
 
      fun final_simp_tac i =
-          EVERY [full_simp_tac (put_simpset HOL_basic_ss ctxt addsimps [mem_Collect_eq]) i,
+          EVERY [full_simp_tac (put_simpset HOL_basic_ss ctxt addsimps @{thms mem_Collect_eq}) i,
                  REPEAT (eresolve_tac ctxt [conjE] i),
                  TRY (hyp_subst_tac_thin true ctxt i),
                  BasicSimpTac ctxt state_kind true [] tac i]
@@ -2818,7 +2817,7 @@ fun HoareStepTac strip_guards mode state_kind state_space spec_sfx ctxt tac st =
  in st |> CHANGED (
     (REPEAT (resolve_tac ctxt [allI] 1)
      THEN
-     FIRST ([resolve_tac ctxt [subset_refl] 1,
+     FIRST ([resolve_tac ctxt @{thms subset_refl} 1,
            EVERY[resolve_tac ctxt [Skip mode] 1,TRY (BasicSimpTac ctxt state_kind false [] tac 1)],
            EVERY[resolve_tac ctxt [BasicCond mode] 1,trace_tac ctxt "BasicCond",
                  TRY (BasicSimpTac ctxt state_kind false [] tac 1)],
