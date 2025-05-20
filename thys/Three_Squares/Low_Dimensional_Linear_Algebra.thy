@@ -1,5 +1,5 @@
 (*  Title:      Three_Squares/Low_Dimensional_Linear_Algebra.thy
-    Author:     Anton Danilkin
+    Author:     Anna Danilkin
 *)
 
 section \<open>Vectors and matrices, determinants and
