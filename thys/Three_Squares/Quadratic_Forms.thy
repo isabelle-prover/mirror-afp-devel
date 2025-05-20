@@ -1,5 +1,5 @@
 (*  Title:      Three_Squares/Quadratic_Forms.thy
-    Author:     Anton Danilkin
+    Author:     Anna Danilkin
 *)
 
 section \<open>Properties of quadratic forms and their equivalences\<close>

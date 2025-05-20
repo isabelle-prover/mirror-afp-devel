@@ -1,5 +1,5 @@
 (*  Title:      Three_Squares/Residues_Properties.thy
-    Author:     Anton Danilkin
+    Author:     Anna Danilkin
 *)
 
 section \<open>Properties of residues, congruences,

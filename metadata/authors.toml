@@ -1520,13 +1520,13 @@ host = [
 [dalvit.homepages]
 
 [danilkin]
-name = "Anton Danilkin"
+name = "Anna Danilkin"
 
 [danilkin.emails]
 
 [danilkin.emails.danilkin_email]
 user = [
-  "anton",
+  "anna",
   "danilkin",
 ]
 host = [

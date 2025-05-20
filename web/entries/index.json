@@ -2793,7 +2793,7 @@
  {
   "abstract": "We formalize the Legendre's three squares theorem and its consequences, in particular the following results: A natural number can be represented as the sum of three squares of natural numbers if and only if it is not of the form $4^a (8 k + 7)$, where $a$ and $k$ are natural numbers. If $n$ is a natural number such that $n \\equiv 3 \\pmod{8}$, then $n$ can be be represented as the sum of three squares of odd natural numbers. Consequences include the following: An integer $n$ can be written as $n = x^2 + y^2 + z^2 + z$, where $x$, $y$, $z$ are integers, if and only if $n \\geq 0$. The Legendre's four squares theorem: any natural number can be represented as the sum of four squares of natural numbers. ",
   "authors": [
-   "Anton Danilkin",
+   "Anna Danilkin",
    "Loïc Chevalier"
   ],
   "link": "/entries/Three_Squares.html",

@@ -1,5 +1,5 @@
 (*  Title:      Three_Squares/Three_Squares.thy
-    Author:     Anton Danilkin
+    Author:     Anna Danilkin
     Author:     Loïc Chevalier
 *)
 
