@@ -28,7 +28,7 @@ fun simproc _ ctxt ct =
       else
         (* in principle this should *always* change something, but we better wrap it in
            changed_conv to at least throw an error instead of loop *)
-        SOME (changed_conv (Raw_Simplifier.rewrite ctxt false unfold_thms) ct)
+        SOME (changed_conv (Raw_Simplifier.rewrite_wrt ctxt false unfold_thms) ct)
     end
   else
     NONE

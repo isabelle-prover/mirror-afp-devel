@@ -179,7 +179,7 @@ ML \<open>
 
       val thm' = Drule.rearrange_prems perm thm
         |> Conv.fconv_rule 
-             (Raw_Simplifier.rewrite ctxt true @{thms meta_same_imp_rule});
+             (Raw_Simplifier.rewrite_wrt ctxt true @{thms meta_same_imp_rule});
     in thm' end;
 
     fun dest_def_eq (Const (@{const_name Pure.eq},_)$l$r) = (l,r)

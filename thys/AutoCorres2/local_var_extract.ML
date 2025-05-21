@@ -2075,9 +2075,9 @@ fun get_l2corres_thm ctxt skips prog_info l1_infos fn_ptr_infos l1_call_info L2_
   fun corres_prog_conv conv = Conv.fconv_rule (Utils.remove_meta_conv (fn ctxt =>
      Utils.nth_arg_conv 5 (conv ctxt)) ctxt)
   val new_thm = new_thm |> corres_prog_conv (fn ctxt =>
-    Raw_Simplifier.rewrite ctxt false @{thms L2_remove_scaffolding_1}
+    Raw_Simplifier.rewrite_wrt ctxt false @{thms L2_remove_scaffolding_1}
     then_conv
-    Raw_Simplifier.rewrite ctxt false @{thms L2_remove_scaffolding_2})
+    Raw_Simplifier.rewrite_wrt ctxt false @{thms L2_remove_scaffolding_2})
 
 
   (* Cleanup. *)
