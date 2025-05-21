@@ -36,7 +36,7 @@ structure Record_Intf: RECORD_INTF = struct
     type T = simpset;
     val empty = HOL_basic_ss (*addsimprocs 
       [Record.simproc, Record.upd_simproc]*);
-    val merge = Raw_Simplifier.merge_ss;
+    val merge = Simplifier.merge_ss;
   );
 
   structure CppSS = Oc_Simpset (

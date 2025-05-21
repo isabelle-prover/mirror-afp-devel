@@ -612,7 +612,7 @@ let
      * Our simp rules don't seem to be enough for L2Opt,
      * so we cannot change the program before that. *)
     val thm = if not heap_abs_syntax then thm else
-                Raw_Simplifier.rewrite_rule lthy'' (#heap_syntax_rewrs HL_setup) thm
+                Simplifier.rewrite_rule lthy'' (#heap_syntax_rewrs HL_setup) thm
     val f_body = dest_L2Tcorres_term_abs (HOLogic.dest_Trueprop (Thm.concl_of thm));
     (* Get actual recursive callees *)
     val rec_callees = AutoCorresUtil.get_rec_callees callee_terms f_body;

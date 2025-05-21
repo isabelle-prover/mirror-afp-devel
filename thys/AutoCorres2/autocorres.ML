@@ -664,7 +664,7 @@ fun finalise prog_info skips keep_going existing_ts (cliques, thy) =
               handle Option => raise SimplConv.FunctionNotFound name
           in Thm.transfer' lthy thm end;
     
-        fun simplified ctxt thms = Simplifier.simplify ((Raw_Simplifier.clear_simpset ctxt) addsimps thms)
+        fun simplified ctxt thms = Simplifier.simplify ((Simplifier.clear_simpset ctxt) addsimps thms)
         val l1_thm = get_corres_thm fn_name l1_info
         val l2_thm = get_corres_thm fn_name l2_info |> CLocals.folded_with [filename, fn_name] lthy
                      (* If in-out lifting was disabled, we use a placeholder *)

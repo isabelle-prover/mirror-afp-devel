@@ -294,7 +294,7 @@ fun field_lookup_to_field_ti thm = @{thm field_lookup_field_ti [THEN eq_reflecti
 
 fun augment_field_lookup ctxt thm = [field_lookup_to_field_ti thm, thm]
 
-fun simplified ctxt thms = Simplifier.simplify ((Raw_Simplifier.clear_simpset ctxt) addsimps thms)
+fun simplified ctxt thms = Simplifier.simplify ((Simplifier.clear_simpset ctxt) addsimps thms)
 
 fun fold_typ_uinfo_t ctxt thm = simplified ctxt @{thms fold_typ_uinfo_t} thm
 

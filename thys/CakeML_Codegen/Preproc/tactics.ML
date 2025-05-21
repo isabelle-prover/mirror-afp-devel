@@ -80,7 +80,7 @@ val beta_reduce_tac = Subgoal.FOCUS_PREMS (fn {context = ctxt, prems, ...} =>
     val replace_bound_eqs =
       gather_wellformed prems
       |> map (fn thm => safe_mk_meta_eq (@{thm wellformed_replace_bound_eq} OF [thm]))
-    val conv = Raw_Simplifier.rewrite_wrt ctxt false (replace_bound_eqs @ replace_bound_simps)
+    val conv = Simplifier.rewrite_wrt ctxt false (replace_bound_eqs @ replace_bound_simps)
   in
     HEADGOAL (CHANGED o CONVERSION conv)
   end)

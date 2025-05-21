@@ -84,7 +84,7 @@ ML \<open>
     structure Data = Theory_Data (
       type T = simpset
       val empty = empty_ss
-      val merge = Raw_Simplifier.merge_ss
+      val merge = Simplifier.merge_ss
     );
 
     val get = Data.get

@@ -349,7 +349,7 @@ fun mcont_id ctxt (ccpo : ccpo_data) =
 fun SOLVED tac = SOLVED' (K tac) 1
 
 val inductive_atomize = @{thms induct_atomize};
-fun atomize_term thy = Raw_Simplifier.rewrite_term thy inductive_atomize [];
+fun atomize_term thy = Simplifier.rewrite_term thy inductive_atomize [];
 
 (* mutual_ccpo_fixed_point
 

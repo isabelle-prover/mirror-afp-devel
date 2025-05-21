@@ -51,7 +51,7 @@ structure RefineG_Transfer = struct
   (
     type T = simpset
     val empty = HOL_basic_ss
-    val merge = Raw_Simplifier.merge_ss
+    val merge = Simplifier.merge_ss
   )
 
   fun post_simps_op f a context = let

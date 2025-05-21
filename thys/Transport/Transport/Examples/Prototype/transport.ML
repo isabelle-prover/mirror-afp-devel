@@ -131,7 +131,7 @@ fun transport_relator_rewrite ctxt thm =
     val ctxt = (clear_simpset ctxt) addsimps transport_relator_rewrites
   in
     Local_Defs.fold ctxt transport_defs thm
-    |> Raw_Simplifier.rewrite_thm (false, false, false) per_simp_prover ctxt
+    |> Simplifier.rewrite_thm (false, false, false) per_simp_prover ctxt
   end
 fun transport_relator_rewrite_tac ctxt =
   EqSubst.eqsubst_tac ctxt [0] (Transport_Relator_Rewrites.get ctxt)

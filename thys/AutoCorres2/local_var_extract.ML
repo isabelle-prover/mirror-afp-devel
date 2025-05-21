@@ -186,7 +186,7 @@ fun extract_pair_of_globals pat ctxt prog_info term =
      *   {(s, t). f s t} \<union> {(s, t). g s t} ...
      * We blithely rewrite them here.
      *)
-    val term = Raw_Simplifier.rewrite_term (Proof_Context.theory_of ctxt)
+    val term = Simplifier.rewrite_term (Proof_Context.theory_of ctxt)
         (map safe_mk_meta_eq @{thms Collect_prod_inter Collect_prod_union}) [] term
 
     (* Apply a dummy old and new state variable to the term. *)
@@ -198,7 +198,7 @@ fun extract_pair_of_globals pat ctxt prog_info term =
 
     (* Pull apart the "split" at the beginning of the term, then apply
      * to our dummy variables *)
-    val t = Raw_Simplifier.rewrite_term (Proof_Context.theory_of ctxt)
+    val t = Simplifier.rewrite_term (Proof_Context.theory_of ctxt)
         (map mk_meta_eq @{thms split_def fst_conv snd_conv mem_Collect_eq}) [] t
 
     (*
@@ -2075,9 +2075,9 @@ fun get_l2corres_thm ctxt skips prog_info l1_infos fn_ptr_infos l1_call_info L2_
   fun corres_prog_conv conv = Conv.fconv_rule (Utils.remove_meta_conv (fn ctxt =>
      Utils.nth_arg_conv 5 (conv ctxt)) ctxt)
   val new_thm = new_thm |> corres_prog_conv (fn ctxt =>
-    Raw_Simplifier.rewrite_wrt ctxt false @{thms L2_remove_scaffolding_1}
+    Simplifier.rewrite_wrt ctxt false @{thms L2_remove_scaffolding_1}
     then_conv
-    Raw_Simplifier.rewrite_wrt ctxt false @{thms L2_remove_scaffolding_2})
+    Simplifier.rewrite_wrt ctxt false @{thms L2_remove_scaffolding_2})
 
 
   (* Cleanup. *)

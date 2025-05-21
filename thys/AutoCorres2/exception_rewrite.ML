@@ -345,7 +345,7 @@ let
   fun wrapper proc =
     fn ctxt => fn x =>
       proc x
-      |> Option.map (fn thm => Raw_Simplifier.mksimps ctxt thm |> hd)
+      |> Option.map (fn thm => Simplifier.mksimps ctxt thm |> hd)
   (* create fresh caches *)
   val always_progress = always_progress ()
   val throws_exception = throws_exception ctxt always_progress callee_thms

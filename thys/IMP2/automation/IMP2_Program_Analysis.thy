@@ -18,7 +18,7 @@ begin
     
         val unfold_conv = 
            map (Local_Defs.meta_rewrite_rule ctxt #> perhaps (try Drule.abs_def)) analysis_unfolds
-        |> Raw_Simplifier.rewrite_wrt ctxt true
+        |> Simplifier.rewrite_wrt ctxt true
     
     in
       unfold_conv #> SOME

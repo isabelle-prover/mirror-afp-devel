@@ -691,7 +691,7 @@ fun ptr_valid_instance_tac ctxt =
   in
     simp_tac (ctxt addsimps ptr_valid_def) 1 THEN
     EqSubst.eqsubst_tac ctxt [0] ptr_valid_u_recursion 1 THEN
-    asm_full_simp_tac (Raw_Simplifier.add_cong @{thm HOL.conj_cong} ctxt) 1 THEN
+    asm_full_simp_tac (Simplifier.add_cong @{thm HOL.conj_cong} ctxt) 1 THEN
     simp_tac (ctxt addsimps (fold_ptr_valid @
        @{thms fold_root_ptr_valid_u fold_field_lvalue Bex_intvl_conv Bex_union_conv})) 1 THEN
     REPEAT (EqSubst.eqsubst_tac ctxt [0] @{thms fold_exists_ptr} 1)
@@ -2118,7 +2118,7 @@ let
 
               val rewrite_thms = map (fn thm => @{thm symmetric} OF [thm])
                                      (getter_thms @ eta_setter_thms)
-              val aux_thms = map (Raw_Simplifier.rewrite_rule lthy rewrite_thms) aux_thms
+              val aux_thms = map (Simplifier.rewrite_rule lthy rewrite_thms) aux_thms
               val _ = tracing ("thms: " ^ string_of_thms lthy thms) 
               val _ = tracing ("rewrite_thms: " ^ string_of_thms lthy rewrite_thms) 
               val _ = tracing ("aux_thms: " ^ string_of_thms lthy aux_thms) 

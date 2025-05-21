@@ -1586,7 +1586,7 @@ fun dest_equal_upto_heap_on phi = Match_Cterm.switch [
   ]
 
 fun norm_results ctxt = \<comment> \<open>cf. @{ML Goal.norm_result}\<close>
-  map (Drule.flexflex_unique (SOME ctxt) #> Raw_Simplifier.norm_hhf_protect ctxt #> Thm.strip_shyps) 
+  map (Drule.flexflex_unique (SOME ctxt) #> Simplifier.norm_hhf_protect ctxt #> Thm.strip_shyps) 
   #> Drule.zero_var_indexes_list (* consistent renaming on all theorems *)
 
 fun cconcl_of ct =

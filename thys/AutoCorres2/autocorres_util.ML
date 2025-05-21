@@ -224,7 +224,7 @@ fun dyn_call_split_simp_sidecondition_tac check simps intros ctxt = SUBGOAL (fn 
       val _ = Utils.verbose_msg 4 ctxt (fn _ => "dyn_call_split_simp_sidecondition_tac: fun_ptr_simps:" ^ string_of_thms ctxt fun_ptr_simps)
   
       val ctxt = ctxt addsimps (fun_ptr_simps @ simps) delsimps @{thms map_of_default.simps}
-                 |> Config.get ctxt Utils.verbose >= 100 ? Config.map (Raw_Simplifier.simp_trace) (K true)
+                 |> Config.get ctxt Utils.verbose >= 100 ? Config.map (Simplifier.simp_trace) (K true)
 
       val bound_rules = @{thms 
            signed_bounds_to_nat_boundsF signed_bounds_one_to_nat

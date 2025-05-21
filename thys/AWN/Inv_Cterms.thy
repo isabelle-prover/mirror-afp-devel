@@ -54,7 +54,7 @@ named_theorems cterms_final "elimination rules to try on each vc after simplific
 ML \<open>
 fun simp_only thms ctxt =
   asm_full_simp_tac
-     (ctxt |> Raw_Simplifier.clear_simpset |> fold Simplifier.add_simp thms)
+     (ctxt |> Simplifier.clear_simpset |> fold Simplifier.add_simp thms)
 
 (* shallow_simp is useful for mopping up assumptions before really trying to simplify.
    Perhaps surprisingly, this saves minutes in some of the proofs that use a lot of

@@ -131,8 +131,8 @@ ML \<open>
     (* Unfold with simpset 
     fun unfold_ss ss = let
       val simple_prover =
-        SINGLE o (fn ss => ALLGOALS (resolve_tac (Raw_Simplifier.prems_of ss)));
-    in Raw_Simplifier.rewrite_thm (true,false,false) simple_prover ss end;
+        SINGLE o (fn ss => ALLGOALS (resolve_tac (Simplifier.prems_of ss)));
+    in Simplifier.rewrite_thm (true,false,false) simple_prover ss end;
     *)
 
     local
@@ -179,7 +179,7 @@ ML \<open>
 
       val thm' = Drule.rearrange_prems perm thm
         |> Conv.fconv_rule 
-             (Raw_Simplifier.rewrite_wrt ctxt true @{thms meta_same_imp_rule});
+             (Simplifier.rewrite_wrt ctxt true @{thms meta_same_imp_rule});
     in thm' end;
 
     fun dest_def_eq (Const (@{const_name Pure.eq},_)$l$r) = (l,r)

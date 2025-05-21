@@ -330,7 +330,7 @@ fun analyze_sum ctxt f x t =
 fun extract_coeff ctxt t =
   let 
     val thy = Proof_Context.theory_of ctxt
-    val t' = Raw_Simplifier.rewrite_term thy 
+    val t' = Simplifier.rewrite_term thy 
                  @{thms akra_bazzi_termination_simps[THEN eq_reflection]} [] t
     fun aux thm =
       let 

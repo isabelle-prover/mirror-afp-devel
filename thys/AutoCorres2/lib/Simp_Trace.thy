@@ -14,7 +14,7 @@ text \<open>
 
 ATTENTION: to activate these methods use the following line:
 
-  \<open>setup \<open>Raw_Simplifier.set_trace_ops Simp_Trace.trace_ops\<close>\<close>
+  \<open>setup \<open>Simplifier.set_trace_ops Simp_Trace.trace_ops\<close>\<close>
 
 Provide a tactic wrapper to activate simplifier tracing and produce a statistic how many
 conditional rules were tried for how long. Also provides a shorthand for simp trace activation by
@@ -223,7 +223,7 @@ fun check_trace_data ctxt =
     end
   | NONE => NONE
 
-val trace_ops : Raw_Simplifier.trace_ops = {
+val trace_ops : Simplifier.trace_ops = {
   trace_invoke = fn _ => fn ctxt =>
     (case check_trace_data ctxt of SOME var => increase_depth var ctxt
       | NONE => ctxt),
@@ -241,8 +241,8 @@ fun wrapper n do_trace tac ctxt st =
   let
     val ctxt' = ctxt
       |> activate n do_trace
-      |> Config.put Raw_Simplifier.simp_trace do_trace
-      |> Config.put Raw_Simplifier.simp_trace_depth_limit 4
+      |> Config.put Simplifier.simp_trace do_trace
+      |> Config.put Simplifier.simp_trace_depth_limit 4
     val res = Exn.capture (fn () => (tac ctxt' st |> Seq.pull)) ()
     val _ = print (Synchronized.value (the (trace_data ctxt')))
   in

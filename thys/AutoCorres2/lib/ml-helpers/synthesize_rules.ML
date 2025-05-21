@@ -826,7 +826,7 @@ val eq_rule = raw_rule_eq o apply2 Thm.full_prop_of
 
 fun norm_rule ctxt thm =
   let
-    val rule = thm |> Raw_Simplifier.norm_hhf ctxt |> Variable.gen_all ctxt (*|> Thm.strip_shyps |> Drule.zero_var_indexes;*)
+    val rule = thm |> Simplifier.norm_hhf ctxt |> Variable.gen_all ctxt (*|> Thm.strip_shyps |> Drule.zero_var_indexes;*)
   in
     Thm.flexflex_rule (SOME ctxt) rule |> Seq.hd
   end

@@ -80,7 +80,7 @@ fun gen_add_record_simpset map_ss simps congs thy =
        Proof_Context.init_global thy
        |> put_simpset ss
        |> (fn ctxt => ctxt addsimps simps)
-       |> fold Raw_Simplifier.add_cong congs
+       |> fold Simplifier.add_cong congs
        |> simpset_of)
 
 datatype no_congs_simp_option = Add | No_Add | Add_Symmetric 
