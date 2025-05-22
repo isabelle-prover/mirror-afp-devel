@@ -539,7 +539,7 @@
   "year": "2024"
  },
  {
-  "abstract": " This entry defines the sum-of-squares function $r_k(n)$, which counts the number of ways to write a natural number $n$ as a sum of $k$ squares of integers. Signs and permutations of these integers are taken into account, such that e.g. $1^2+2^2$, $2^2+1^2$, and $(-1)^2+2^2$ are all different decompositions of $5$. Using this, I then formalise the main result: Jacobi's two-square theorem, which states that for $n \u003e 0$ we have \\[r_2(n) = 4(d_1(3) - d_3(n))\\ ,\\] where $d_i(n)$ denotes the number of divisors $m$ of $n$ such that $m = i\\ (\\text{mod}\\ 4)$. Corollaries include the identities $r_2(2n) = r_2(n)$ and $r_2(p^2n) = r_2(n)$ if $p = 3\\ (\\text{mod}\\ 4)$ and the well-known theorem that $r_2(n) = 0$ iff $n$ has a prime factor $p$ of odd multiplicity with $p = 3\\ (\\text{mod}\\ 4)$. ",
+  "abstract": " This entry defines the sum-of-squares function $r_k(n)$, which counts the number of ways to write a natural number $n$ as a sum of $k$ squares of integers. Signs and permutations of these integers are taken into account, such that e.g. $1^2+2^2$, $2^2+1^2$, and $(-1)^2+2^2$ are all different decompositions of $5$. Using this, I then formalise the main result: Jacobi's two-square theorem, which states that for $n \u003e 0$ we have \\[r_2(n) = 4(d_1(n) - d_3(n))\\ ,\\] where $d_i(n)$ denotes the number of divisors $m$ of $n$ such that $m = i\\ (\\text{mod}\\ 4)$. Corollaries include the identities $r_2(2n) = r_2(n)$ and $r_2(p^2n) = r_2(n)$ if $p = 3\\ (\\text{mod}\\ 4)$ and the well-known theorem that $r_2(n) = 0$ iff $n$ has a prime factor $p$ of odd multiplicity with $p = 3\\ (\\text{mod}\\ 4)$. ",
   "authors": [
    "Manuel Eberl"
   ],
