@@ -1,5 +1,23 @@
 [
  {
+  "abstract": "Munta is a verified model checker for timed automata. It has been described in detail in a PhD thesis [3] and conference publications [4, 2]. This entry supersedes earlier versions of Munta hosted on GitHub.",
+  "authors": [
+   "Simon Wimmer"
+  ],
+  "link": "/entries/Munta_Model_Checker.html",
+  "shortname": "Munta_Model_Checker",
+  "title": "Munta: A Verified Model Checker for Timed Automata",
+  "topic_links": [
+   "/topics/computer-science/automata-and-formal-languages/",
+   "/topics/tools/"
+  ],
+  "topics": [
+   "Computer science/Automata and formal languages",
+   "Tools"
+  ],
+  "year": "2025"
+ },
+ {
   "abstract": "The sequence $F_n$ of Farey fractions of order $n$ has the form $$\\frac{0}{1}, \\frac{1}{n}, \\frac{1}{n-1}, \\ldots, \\frac{n-1}{n}, \\frac{1}{1}$$ where the fractions appear in numerical order and have denominators at most $n$. The transformation from $F_n$ to $F_{n+1}$ can be effected by combining adjacent elements of the sequence~$F_n$, using an operation called the mediant. Adjacent (reduced) fractions $(a/b) \u003c (c/d)$ satisfy the unimodular relation $bc - ad = 1$ and their mediant is $\\frac{a+c}{b+d}$. A Ford circle is specified by a rational number, and interesting consequences follow in the case of Ford circles obtained from some Farey sequence~$F_n$. The formalised material is drawn from Apostol's Modular Functions and Dirichlet Series in Number Theory.",
   "authors": [
    "Lawrence C. Paulson"

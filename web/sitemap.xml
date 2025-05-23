@@ -3,10 +3,13 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://isa-afp.org/entries/index.json</loc>
-    <lastmod>2025-05-15T00:00:00+00:00</lastmod>
+    <lastmod>2025-05-22T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/</loc>
-    <lastmod>2025-05-15T00:00:00+00:00</lastmod>
+    <lastmod>2025-05-22T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Munta_Model_Checker.html</loc>
+    <lastmod>2025-05-22T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/entries/Farey_Sequences.html</loc>
     <lastmod>2025-05-15T00:00:00+00:00</lastmod>
@@ -4782,6 +4785,10 @@
     <loc>https://isa-afp.org/sessions/multiset_ordering_npc/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/multitape_to_singletape_tm/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/sessions/munta_base/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/sessions/munta_model_checker/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/myhill-nerode/</loc>
   </url><url>
