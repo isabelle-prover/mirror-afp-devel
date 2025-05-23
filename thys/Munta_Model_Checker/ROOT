@@ -1,0 +1,71 @@
+chapter AFP
+
+session Munta_Base in TA_Impl = Timed_Automata +
+  options [timeout = 600]
+  sessions
+    Show
+    Worklist_Algorithms
+    Transition_Systems_and_Automata
+    LTL_Master_Theorem
+    Certification_Monads
+    Gabow_SCC
+    AutoCorres2
+    FinFun
+  directories
+    "../library"
+  theories [document = false]
+    Refine_Imperative_HOL.IICF
+    "HOL-Library.IArray"
+  theories
+    "../library/TA_Syntax_Bundles"
+    "../library/ML_Util"
+    "../library/More_Methods"
+    "../library/Abstract_Term"
+    "../library/Reordering_Quantifiers"
+    "../library/Bijective_Embedding"
+    "../library/Tracing"
+    "../library/Printing"
+    "../library/Trace_Timing"
+    "../library/Error_List_Monad"
+    "../library/Temporal_Logics"
+    "../library/Subsumption_Graphs"
+
+    Normalized_Zone_Semantics_Impl_Refine
+    Normalized_Zone_Semantics_Impl_Extra
+
+    Certification_Monads.Error_Syntax
+    Gabow_SCC.Gabow_SCC_Code
+    AutoCorres2.Subgoals
+    FinFun.FinFun
+
+session Munta_Model_Checker = Munta_Base +
+  options [timeout = 1800]
+  sessions
+    "HOL-Library"
+    Show
+  directories
+    Uppaal_Networks
+    Simple_Networks
+    Deadlock
+    Model_Checking
+    Parsing
+    Networks
+    Munta_MLton
+  theories [document=false]
+    "Simple_Networks/Munta_Tagging"
+    "Parsing/JSON_Parsing"
+  theories
+    "Networks/Networks"
+    "Networks/State_Networks"
+    "Uppaal_Networks/UPPAAL_Model_Checking"
+    "Simple_Networks/Simple_Network_Language_Model_Checking"
+    "Deadlock/Deadlock_Impl"
+    "Deadlock/Deadlock_Checking"
+    "Model_Checking/Simple_Network_Language_Export_Code"
+  theories [condition = ISABELLE_MLTON]
+    "Munta_MLton/Munta_Compile_MLton"
+  document_files
+    "root.tex"
+    "root.bib"
+  export_files (in ".") [1]
+    "Munta_Model_Checker.Munta_Compile_MLton:*"
