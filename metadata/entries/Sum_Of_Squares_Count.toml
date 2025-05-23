@@ -12,7 +12,7 @@ are all different decompositions of $5$.
 </p>
 <p>
 Using this, I then formalise the main result: Jacobi's two-square theorem, which states that for $n > 0$
-we have \\[r_2(n) = 4(d_1(3) - d_3(n))\\ ,\\] where $d_i(n)$ denotes the number of divisors $m$ of $n$
+we have \\[r_2(n) = 4(d_1(n) - d_3(n))\\ ,\\] where $d_i(n)$ denotes the number of divisors $m$ of $n$
 such that $m = i\\ (\\text{mod}\\ 4)$.
 </p>
 <p>
