@@ -12,6 +12,14 @@
     <category>Tools</category>
 </item>
 <item>
+  <title>Shallow Expressions</title>
+  <link>https://isa-afp.org/entries/Shallow_Expressions.html</link>
+  <pubDate>Fri, 16 May 2025 00:00:00 +0000</pubDate>
+  <description>Shallow Expressions in the AFP</description>
+    <category>Computer science/Semantics and reasoning</category>
+    <category>Computer science/Programming languages/Logics</category>
+</item>
+<item>
   <title>Farey Sequences and Ford Circles</title>
   <link>https://isa-afp.org/entries/Farey_Sequences.html</link>
   <pubDate>Thu, 15 May 2025 00:00:00 +0000</pubDate>

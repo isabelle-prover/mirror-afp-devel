@@ -4,6 +4,14 @@
     <title>Computer science/Semantics and reasoning</title>
     <link>https://isa-afp.org/topics/computer-science/semantics-and-reasoning/</link>
     <description>AFP entries in Semantics and reasoning</description><item>
+  <title>Shallow Expressions</title>
+  <link>https://isa-afp.org/entries/Shallow_Expressions.html</link>
+  <pubDate>Fri, 16 May 2025 00:00:00 +0000</pubDate>
+  <description>Shallow Expressions in the AFP</description>
+    <category>Computer science/Semantics and reasoning</category>
+    <category>Computer science/Programming languages/Logics</category>
+</item>
+<item>
   <title>Differential Privacy</title>
   <link>https://isa-afp.org/entries/Differential_Privacy.html</link>
   <pubDate>Tue, 07 Jan 2025 00:00:00 +0000</pubDate>

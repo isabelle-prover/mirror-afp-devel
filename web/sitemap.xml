@@ -11,6 +11,9 @@
     <loc>https://isa-afp.org/entries/Munta_Model_Checker.html</loc>
     <lastmod>2025-05-22T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>https://isa-afp.org/entries/Shallow_Expressions.html</loc>
+    <lastmod>2025-05-16T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>https://isa-afp.org/entries/Farey_Sequences.html</loc>
     <lastmod>2025-05-15T00:00:00+00:00</lastmod>
   </url><url>
@@ -5384,6 +5387,8 @@
     <loc>https://isa-afp.org/sessions/shadow_dom/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/shadow_sc_dom/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/sessions/shallow_expressions/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/ying/</loc>
   </url><url>

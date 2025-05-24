@@ -18,6 +18,24 @@
   "year": "2025"
  },
  {
+  "abstract": "Most verification techniques use expressions, for example when assigning to variables or forming assertions over the state. Deep embeddings provide such expressions using a datatype, which allows queries over the syntax, such as calculating the free variables, and performing substitutions. Shallow embeddings, in contrast, model expressions as query functions over the state type, and are more amenable to automating verification tasks. The goal of this library is provide an intuitive implementation of shallow expressions, which nevertheless provides many of the benefits of a deep embedding. We harness the Optics library to provide an algebraic semantics for state variables, and use syntax translations to provide an intuitive lifted expression syntax. Furthermore, we provide a variety of meta-logic-style queries on expressions, such as dependencies on a state variable, and substitution of a variable for an expression. We also provide proof methods, based on the simplifier, to automate the associated proof tasks.",
+  "authors": [
+   "Simon Foster"
+  ],
+  "link": "/entries/Shallow_Expressions.html",
+  "shortname": "Shallow_Expressions",
+  "title": "Shallow Expressions",
+  "topic_links": [
+   "/topics/computer-science/semantics-and-reasoning/",
+   "/topics/computer-science/programming-languages/logics/"
+  ],
+  "topics": [
+   "Computer science/Semantics and reasoning",
+   "Computer science/Programming languages/Logics"
+  ],
+  "year": "2025"
+ },
+ {
   "abstract": "The sequence $F_n$ of Farey fractions of order $n$ has the form $$\\frac{0}{1}, \\frac{1}{n}, \\frac{1}{n-1}, \\ldots, \\frac{n-1}{n}, \\frac{1}{1}$$ where the fractions appear in numerical order and have denominators at most $n$. The transformation from $F_n$ to $F_{n+1}$ can be effected by combining adjacent elements of the sequence~$F_n$, using an operation called the mediant. Adjacent (reduced) fractions $(a/b) \u003c (c/d)$ satisfy the unimodular relation $bc - ad = 1$ and their mediant is $\\frac{a+c}{b+d}$. A Ford circle is specified by a rational number, and interesting consequences follow in the case of Ford circles obtained from some Farey sequence~$F_n$. The formalised material is drawn from Apostol's Modular Functions and Dirichlet Series in Number Theory.",
   "authors": [
    "Lawrence C. Paulson"
