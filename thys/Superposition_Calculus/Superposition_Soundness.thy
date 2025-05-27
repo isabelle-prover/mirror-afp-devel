@@ -21,7 +21,7 @@ proof (cases D C rule: eq_resolution.cases)
   case (eq_resolutionI D \<V> \<mu> t t' l D' C)
 
   {
-    fix I :: "'f ground_term rel" and \<gamma> :: "('f, 'v) subst"
+    fix I :: "'f ground_term rel" and \<gamma> :: "'v \<Rightarrow> 't"
 
     let ?I = "upair ` I"
 
@@ -34,7 +34,7 @@ proof (cases D C rule: eq_resolution.cases)
       \<V>: "infinite_variables_per_type \<V>"
 
     obtain \<gamma>' where
-      \<gamma>'_is_ground_subst: "term_subst.is_ground_subst \<gamma>'" and
+      \<gamma>'_is_ground_subst: "term.is_ground_subst \<gamma>'" and
       type_preserving_\<gamma>': "type_preserving \<V> \<gamma>'" and
       \<gamma>'_\<gamma>: "\<forall>x \<in> clause.vars C. \<gamma> x = \<gamma>' x"
       using clause.type_preserving_ground_subst_extension[OF C_is_ground type_preserving_\<gamma>] .
@@ -60,8 +60,10 @@ proof (cases D C rule: eq_resolution.cases)
     next
 
       show "type_preserving_on (clause.vars D) \<V> (\<mu> \<odot> \<gamma>')"
-        using type_preserving_\<gamma>' type_preserving_\<mu>
-        by (simp add: subst_compose_def)
+        using 
+          type_preserving_\<gamma>' type_preserving_\<mu> \<gamma>'_is_ground_subst
+          term.type_preserving_ground_compose_ground_subst
+        by presburger
     next
 
       show "type_preserving_literals \<V> D" 
@@ -90,7 +92,7 @@ proof (cases D C rule: eq_resolution.cases)
       moreover have "atm_of l\<^sub>G \<in> ?I"
       proof -
         have "?t\<^sub>G = ?t\<^sub>G'"
-          using eq_resolutionI(4) term_subst.is_imgu_unifies_pair
+          using eq_resolutionI(4) term.is_imgu_unifies_pair
           by metis
 
         then show ?thesis
@@ -130,7 +132,7 @@ proof (cases D C rule: eq_factoring.cases)
   case (eq_factoringI D l\<^sub>1 \<mu> t\<^sub>1 t\<^sub>1' \<V> t\<^sub>2 l\<^sub>2 D' t\<^sub>2' C)
 
   {
-    fix I :: "'f ground_term rel" and \<gamma> :: "('f, 'v) subst"
+    fix I :: "'f ground_term rel" and \<gamma> :: "'v \<Rightarrow> 't"
 
     let ?I = "upair ` I"
 
@@ -144,7 +146,7 @@ proof (cases D C rule: eq_factoring.cases)
       \<V>: "infinite_variables_per_type \<V>"
 
     obtain \<gamma>' where
-      \<gamma>'_is_ground_subst: "term_subst.is_ground_subst \<gamma>'" and
+      \<gamma>'_is_ground_subst: "term.is_ground_subst \<gamma>'" and
       type_preserving_\<gamma>': "type_preserving \<V> \<gamma>'" and
       \<gamma>'_\<gamma>: "\<forall>x \<in> clause.vars C. \<gamma> x = \<gamma>' x"
       using clause.type_preserving_ground_subst_extension[OF C_is_ground type_preserving_\<gamma>].
@@ -172,10 +174,12 @@ proof (cases D C rule: eq_factoring.cases)
         using \<gamma>'_is_ground_subst clause.is_ground_subst_is_ground
         by auto
     next
-
+     
       show "type_preserving_on (clause.vars D) \<V> (\<mu> \<odot> \<gamma>')"
-        using type_preserving_\<mu> type_preserving_\<gamma>'
-        by (simp add: subst_compose_def)
+        using 
+          type_preserving_\<mu> type_preserving_\<gamma>' \<gamma>'_is_ground_subst
+          term.type_preserving_ground_compose_ground_subst
+        by presburger
     next
 
       show "type_preserving_literals \<V> D"
@@ -193,7 +197,7 @@ proof (cases D C rule: eq_factoring.cases)
       by (auto simp: true_cls_def)
 
     have [simp]: "?t\<^sub>G\<^sub>2 = ?t\<^sub>G\<^sub>1"
-      using eq_factoringI(7) term_subst.is_imgu_unifies_pair
+      using eq_factoringI(7) term.is_imgu_unifies_pair
       by metis
 
     have [simp]: "?l\<^sub>G\<^sub>1 = ?t\<^sub>G\<^sub>1 \<approx> ?t\<^sub>G\<^sub>1'"
@@ -214,11 +218,11 @@ proof (cases D C rule: eq_factoring.cases)
 
       then have "?I \<TTurnstile>l ?t\<^sub>G\<^sub>1 \<approx> ?t\<^sub>G\<^sub>1' \<or> ?I \<TTurnstile>l ?t\<^sub>G\<^sub>1 \<approx> ?t\<^sub>G\<^sub>2'"
         using I_models_l\<^sub>G sym_I
-        by(auto elim: symE)
+        by (auto elim: symE)
 
       then have "?I \<TTurnstile>l ?t\<^sub>G\<^sub>1 \<approx> ?t\<^sub>G\<^sub>2' \<or> ?I \<TTurnstile>l ?t\<^sub>G\<^sub>1' !\<approx> ?t\<^sub>G\<^sub>2'"
         using sym_I trans_I
-        by(auto dest: transD)
+        by( auto dest: transD)
 
       then show ?thesis
         using clause.subst_eq[OF \<gamma>'_\<gamma>[rule_format]] sym_I
@@ -258,7 +262,7 @@ proof (cases D E C rule: superposition.cases)
   case (superpositionI \<P> \<V>\<^sub>1 \<V>\<^sub>2 \<rho>\<^sub>1 \<rho>\<^sub>2 E D t\<^sub>1 \<V>\<^sub>3 \<mu> t\<^sub>2 c\<^sub>1 t\<^sub>1' t\<^sub>2' l\<^sub>1 l\<^sub>2 E' D' C)
 
   {
-    fix I :: "'f gterm rel" and \<gamma> :: "'v \<Rightarrow> ('f, 'v) Term.term"
+    fix I :: "'f gterm rel" and \<gamma> :: "'v \<Rightarrow> 't"
 
     let ?I = "(\<lambda>(x, y). Upair x y) ` I"
 
@@ -274,7 +278,7 @@ proof (cases D E C rule: superposition.cases)
       type_preserving_\<gamma>: "type_preserving_on (clause.vars C) \<V>\<^sub>3 \<gamma>"
 
     obtain \<gamma>' where
-      \<gamma>'_is_ground_subst: "term_subst.is_ground_subst \<gamma>'" and
+      \<gamma>'_is_ground_subst: "term.is_ground_subst \<gamma>'" and
       type_preserving_\<gamma>': "type_preserving \<V>\<^sub>3 \<gamma>'" and
       \<gamma>'_\<gamma>: "\<forall>x \<in> clause.vars C. \<gamma> x = \<gamma>' x"
       using clause.type_preserving_ground_subst_extension[OF C_is_ground type_preserving_\<gamma>] .
@@ -301,16 +305,18 @@ proof (cases D E C rule: superposition.cases)
     note [simp] = \<P>_simps[OF superpositionI(4)]
 
     have \<mu>_\<gamma>'_is_ground_subst:
-      "term_subst.is_ground_subst (\<mu> \<odot> \<gamma>')"
+      "term.is_ground_subst (\<mu> \<odot> \<gamma>')"
       using term.is_ground_subst_comp_right[OF \<gamma>'_is_ground_subst].
 
     note type_preserving_\<mu> = superpositionI(11)
      
     have type_preserving_\<mu>_\<gamma>:
       "type_preserving_on (clause.vars (E \<cdot> \<rho>\<^sub>1) \<union> clause.vars (D \<cdot> \<rho>\<^sub>2)) \<V>\<^sub>3 (\<mu> \<odot> \<gamma>')"
-      using type_preserving_\<gamma>' type_preserving_\<mu>
-      by (simp add: term.comp_subst_iff)
-    
+      using 
+        type_preserving_\<gamma>' type_preserving_\<mu>  \<gamma>'_is_ground_subst
+        term.type_preserving_ground_compose_ground_subst
+      by presburger
+
     note type_preserving_\<rho>_\<mu>_\<gamma> = term.renaming_ground_subst[OF _ \<mu>_\<gamma>'_is_ground_subst]
 
     have "?E\<^sub>G \<in> ground_instances \<V>\<^sub>1 E"
@@ -330,8 +336,8 @@ proof (cases D E C rule: superposition.cases)
       show "type_preserving_on (clause.vars E) \<V>\<^sub>1 (\<rho>\<^sub>1 \<odot> \<mu> \<odot> \<gamma>')"
         using
           type_preserving_\<mu>_\<gamma>
-          type_preserving_\<rho>_\<mu>_\<gamma>[OF superpositionI(7, 24) _ superpositionI(22)] 
-        by (simp add: subst_compose_assoc clause.vars_subst)
+          type_preserving_\<rho>_\<mu>_\<gamma>[OF superpositionI(7, 24) _ superpositionI(22)]
+        by (simp add: clause.vars_subst term.assoc)
     next
 
       show "type_preserving_literals \<V>\<^sub>1 E"
@@ -363,7 +369,7 @@ proof (cases D E C rule: superposition.cases)
         using
           type_preserving_\<mu>_\<gamma>
           type_preserving_\<rho>_\<mu>_\<gamma>[OF superpositionI(8, 25) _ superpositionI(23)]
-        by (simp add: subst_compose_assoc clause.vars_subst)
+        by (simp add: term.assoc clause.vars_subst)
     next
 
       show "type_preserving_literals \<V>\<^sub>2 D"
@@ -387,7 +393,7 @@ proof (cases D E C rule: superposition.cases)
     next
       case False
 
-      interpret clause_entailment I
+      interpret clause_entailment where I = I
         by unfold_locales (rule trans_I sym_I compatible_with_ground_context_I)+
 
       note unfolds =
@@ -405,14 +411,14 @@ proof (cases D E C rule: superposition.cases)
         show ?thesis
           using False symmetric_upair_context_congruence
           unfolding Pos unfolds
-          by blast
+          by (auto simp: sym term.is_imgu_unifies_pair[OF superpositionI(12)])
       next
         case Neg: 2
 
         show ?thesis
           using False symmetric_upair_context_congruence
           unfolding Neg unfolds
-          by blast
+          by (auto simp: sym term.is_imgu_unifies_pair[OF superpositionI(12)])
       qed
 
       then have "?I \<TTurnstile> ?E\<^sub>G' \<or> ?I \<TTurnstile> ?D\<^sub>G'"

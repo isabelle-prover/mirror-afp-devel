@@ -16,7 +16,7 @@ locale ground_superposition_calculus =
 for
   less\<^sub>t :: "'f gterm \<Rightarrow> 'f gterm \<Rightarrow> bool" and
   select :: "'f gatom clause \<Rightarrow> 'f gatom clause"
-begin
+begin            
 
 subsection \<open>Ground Rules\<close>
 

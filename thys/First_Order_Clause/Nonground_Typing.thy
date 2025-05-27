@@ -3,7 +3,7 @@ theory Nonground_Typing
     Nonground_Typing_Generic
     Clause_Typing
     Nonground_Clause
-begin           
+begin
 
 type_synonym ('f, 'v, 'ty) typed_clause = "('f, 'v) atom clause \<times> ('v, 'ty) var_types"
 

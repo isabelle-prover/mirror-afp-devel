@@ -9,7 +9,7 @@ context ground_superposition_calculus
 begin
 
 sublocale clause_typing where
-  term_welltyped = "welltyped \<F>"   
+  term_welltyped = "welltyped \<F>"  
   by unfold_locales
 
 lemma ground_superposition_preserves_typing:

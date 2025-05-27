@@ -110,8 +110,8 @@ sublocale literal.order: total_wellfounded_multiset_extension where
   by unfold_locales (simp add: inj_literal_to_mset)
 
 sublocale clause.order: total_wellfounded_multiset_extension where
-  less = "(\<prec>\<^sub>l)"  and to_mset = "\<lambda>x. x"
-  by unfold_locales simp
+  less = "(\<prec>\<^sub>l)" and to_mset = "\<lambda>x. x"
+  by unfold_locales auto
 
 end
 

@@ -82,7 +82,7 @@ locale grounded_selection_function =
   groundable_nonground_clause where atom_subst = atom_subst
   for               
     select :: "'a select" and
-    atom_subst :: "'a \<Rightarrow> ('f, 'v) subst \<Rightarrow> 'a" +
+    atom_subst :: "'a \<Rightarrow> ('v \<Rightarrow> 't) \<Rightarrow> 'a" +
 fixes select\<^sub>G
 assumes select\<^sub>G: "is_select_grounding select select\<^sub>G"
 begin

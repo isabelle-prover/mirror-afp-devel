@@ -10,7 +10,7 @@ proof unfold_locales
   fix \<iota>
   assume \<iota>: "\<iota> \<in> inferences"
 
-  define \<iota>\<^sub>\<tau> :: "('f, 'v, unit) typed_clause inference" where 
+  define \<iota>\<^sub>\<tau> :: "('t, 'v, unit) typed_clause inference" where 
     "\<iota>\<^sub>\<tau> \<equiv> empty_typed_inference \<iota>"
 
   have "typed.entails_\<G> (set (prems_of \<iota>\<^sub>\<tau>)) {concl_of \<iota>\<^sub>\<tau>}"

@@ -3,7 +3,7 @@ theory Typing
 begin
 
 locale typing =
-  fixes welltyped :: "'expr \<Rightarrow> 'ty \<Rightarrow> bool" (*  TODO: (\<open>_ : _\<close>) *)
+  fixes welltyped :: "'expr \<Rightarrow> 'ty \<Rightarrow> bool" (* TODO: Notation *)
   assumes right_unique: "right_unique welltyped"
 begin
 

@@ -232,8 +232,14 @@ locale base_functional_substitution = functional_substitution
   assumes
     vars_subst_vars: "\<And>expr \<rho>. vars (expr \<cdot> \<rho>) = \<Union> (vars ` \<rho> ` vars expr)" and
     base_ground_exists: "\<exists>expr. is_ground expr" and
-    vars_id_subst: "\<And>x. vars (id_subst x) = {x}" and
+    vars_id_subst [simp]: "\<And>x. vars (id_subst x) = {x}" and
     comp_subst_iff: "\<And>\<sigma> \<sigma>' x. (\<sigma> \<odot> \<sigma>') x = \<sigma> x \<cdot> \<sigma>'"
+begin
+
+lemma id_subst_subst [simp]: "id_subst x \<cdot> \<sigma> = \<sigma> x"
+  by (metis comp_subst_iff left_neutral)
+
+end
 
 locale based_functional_substitution =
   base: base_functional_substitution where subst = base_subst and vars = base_vars +
@@ -327,5 +333,9 @@ end
 
 hide_fact base_functional_substitution.base_ground_exists
 hide_fact base_functional_substitution.vars_subst_vars
+
+locale exists_imgu = base_functional_substitution +
+  assumes
+    exists_imgu: "\<And>\<upsilon> expr expr'. expr \<cdot> \<upsilon> = expr' \<cdot> \<upsilon> \<Longrightarrow> \<exists>\<mu>. \<upsilon> = \<mu> \<odot> \<upsilon> \<and> is_imgu \<mu> {{expr, expr'}}"
 
 end

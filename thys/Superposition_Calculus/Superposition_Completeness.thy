@@ -16,9 +16,9 @@ subsection \<open>Liftings\<close>
 
 lemma eq_resolution_lifting:
   fixes
-    D\<^sub>G C\<^sub>G :: "'f ground_atom clause" and
-    D C :: "('f, 'v) atom clause" and
-    \<gamma> :: "('f, 'v) subst"
+    D\<^sub>G C\<^sub>G :: "'f ground_clause" and
+    D C :: "'t clause" and
+    \<gamma> :: "'v \<Rightarrow> 't"
   defines
     [simp]: "D\<^sub>G \<equiv> clause.to_ground (D \<cdot> \<gamma>)" and
     [simp]: "C\<^sub>G \<equiv> clause.to_ground (C \<cdot> \<gamma>)"
@@ -185,11 +185,11 @@ proof (cases D\<^sub>G C\<^sub>G rule: ground.eq_resolution.cases)
     proof-
       have "term.is_idem \<mu>"
         using imgu
-        unfolding term_subst.is_imgu_iff_is_idem_and_is_mgu
+        unfolding term.is_imgu_iff_is_idem_and_is_mgu
         by blast
 
       then have \<mu>_\<gamma>: "\<mu> \<odot> \<gamma> = \<gamma>"
-        unfolding \<gamma> term_subst.is_idem_def subst_compose_assoc[symmetric]
+        unfolding \<gamma> term.is_idem_def term.assoc[symmetric]
         by argo
 
       have "D \<cdot> \<gamma> = add_mset (l \<cdot>l \<gamma>) (C \<cdot> \<gamma>)"
@@ -221,14 +221,17 @@ proof (cases D\<^sub>G C\<^sub>G rule: ground.eq_resolution.cases)
 
       show "is_inference_ground_instance_one_premise (\<V>, D) (\<V>, C' \<cdot> \<mu>) (Infer [D\<^sub>G] C\<^sub>G) \<gamma>"
       proof(unfold split, intro conjI; (rule type_preserving_literals refl \<V>)?)
+
         show "inference.is_ground (Infer [D] (C' \<cdot> \<mu>) \<cdot>\<iota> \<gamma>)"
           using D_grounding C_grounding C'_\<mu>_\<gamma>
           by auto
       next
+
         show "Infer [D\<^sub>G] C\<^sub>G = inference.to_ground (Infer [D] (C' \<cdot> \<mu>) \<cdot>\<iota> \<gamma>)"
           using C'_\<mu>_\<gamma>
           by simp
       next
+
         have "clause.vars (C' \<cdot> \<mu>) \<subseteq> clause.vars D"
           using clause.variables_in_base_imgu imgu
           unfolding D l
@@ -238,6 +241,7 @@ proof (cases D\<^sub>G C\<^sub>G rule: ground.eq_resolution.cases)
           using type_preserving_\<gamma>
           by blast
       next
+
         show "type_preserving_literals \<V> (C' \<cdot> \<mu>)"
           using type_preserving_literals
           unfolding eq_resolution_type_preserving_literals[OF eq_resolution] .
@@ -253,9 +257,9 @@ qed
 
 lemma eq_factoring_lifting:
   fixes
-    D\<^sub>G C\<^sub>G :: "'f ground_atom clause" and
-    D C :: "('f, 'v) atom clause" and
-    \<gamma> :: "('f, 'v) subst"
+    D\<^sub>G C\<^sub>G :: "'f ground_clause" and
+    D C :: "'t clause" and
+    \<gamma> :: "'v \<Rightarrow> 't"
   defines
     [simp]: "D\<^sub>G \<equiv> clause.to_ground (D \<cdot> \<gamma>)" and
     [simp]: "C\<^sub>G \<equiv> clause.to_ground (C \<cdot> \<gamma>)"
@@ -402,11 +406,11 @@ proof(cases D\<^sub>G C\<^sub>G rule: ground.eq_factoring.cases)
     proof -
       have "term.is_idem \<mu>"
         using imgu
-        unfolding term_subst.is_imgu_iff_is_idem_and_is_mgu
+        unfolding term.is_imgu_iff_is_idem_and_is_mgu
         by blast
 
       then have \<mu>_\<gamma>: "\<mu> \<odot> \<gamma> = \<gamma>"
-        unfolding \<gamma> term_subst.is_idem_def subst_compose_assoc[symmetric]
+        unfolding \<gamma> term.is_idem_def term.assoc[symmetric]
         by argo
 
       have "C \<cdot> \<gamma> = clause.from_ground (add_mset (t\<^sub>G\<^sub>2 !\<approx> t\<^sub>G\<^sub>3) (add_mset (t\<^sub>G\<^sub>1 \<approx> t\<^sub>G\<^sub>3) D\<^sub>G'))"
@@ -469,9 +473,9 @@ qed
 
 lemma superposition_lifting:
   fixes
-    E\<^sub>G D\<^sub>G C\<^sub>G :: "'f ground_atom clause" and
-    E D C :: "('f, 'v) atom clause" and
-    \<gamma> \<rho>\<^sub>1 \<rho>\<^sub>2 :: "('f, 'v) subst" and
+    E\<^sub>G D\<^sub>G C\<^sub>G :: "'f ground_clause" and
+    E D C :: "'t clause" and
+    \<gamma> \<rho>\<^sub>1 \<rho>\<^sub>2 :: "'v \<Rightarrow> 't" and
     \<V>\<^sub>1 \<V>\<^sub>2 :: "('v, 'ty) var_types"
   defines
     [simp]: "E\<^sub>G \<equiv> clause.to_ground (E \<cdot> \<rho>\<^sub>1 \<odot> \<gamma>)" and
@@ -481,8 +485,8 @@ lemma superposition_lifting:
     [simp]: "\<iota>\<^sub>G \<equiv> Infer [D\<^sub>G, E\<^sub>G] C\<^sub>G"
   assumes
     ground_superposition: "ground.superposition D\<^sub>G E\<^sub>G C\<^sub>G" and
-    \<rho>\<^sub>1: "term_subst.is_renaming \<rho>\<^sub>1" and
-    \<rho>\<^sub>2: "term_subst.is_renaming \<rho>\<^sub>2" and
+    \<rho>\<^sub>1: "term.is_renaming \<rho>\<^sub>1" and
+    \<rho>\<^sub>2: "term.is_renaming \<rho>\<^sub>2" and
     rename_apart: "clause.vars (E \<cdot> \<rho>\<^sub>1) \<inter> clause.vars (D \<cdot> \<rho>\<^sub>2) = {}" and
     E_grounding: "clause.is_ground (E \<cdot> \<rho>\<^sub>1 \<odot> \<gamma>)" and
     D_grounding: "clause.is_ground (D \<cdot> \<rho>\<^sub>2 \<odot> \<gamma>)" and
@@ -652,7 +656,7 @@ proof (cases D\<^sub>G E\<^sub>G C\<^sub>G rule: ground.superposition.cases)
     t\<^sub>1'_\<gamma>: "t\<^sub>1' \<cdot>t \<rho>\<^sub>1 \<odot> \<gamma> = term.from_ground t\<^sub>G\<^sub>2" and
     t\<^sub>1_\<gamma>: "t\<^sub>1 \<cdot>t \<rho>\<^sub>1 \<odot> \<gamma> = term.from_ground t\<^sub>G\<^sub>1" and
     c\<^sub>1_\<gamma>: "c\<^sub>1 \<cdot>t\<^sub>c \<rho>\<^sub>1 \<odot> \<gamma> = context.from_ground c\<^sub>G" and
-    t\<^sub>1_is_Fun: "is_Fun t\<^sub>1"
+    t\<^sub>1_is_Fun: "\<not>term.is_Var t\<^sub>1"
   proof-
 
     obtain c\<^sub>1_t\<^sub>1 t\<^sub>1' where
@@ -667,115 +671,29 @@ proof (cases D\<^sub>G E\<^sub>G C\<^sub>G rule: ground.superposition.cases)
         c\<^sub>1_t\<^sub>1 = c\<^sub>1\<langle>t\<^sub>1\<rangle> \<and>
         t\<^sub>1 \<cdot>t \<rho>\<^sub>1 \<odot> \<gamma> = term.from_ground t\<^sub>G\<^sub>1 \<and>
         c\<^sub>1 \<cdot>t\<^sub>c \<rho>\<^sub>1 \<odot> \<gamma> = context.from_ground c\<^sub>G \<and>
-        is_Fun t\<^sub>1"
+        \<not>term.is_Var t\<^sub>1"
 
     have "\<not> ?inference_into_Fun \<Longrightarrow> ground.redundant_infer N\<^sub>G \<iota>\<^sub>G"
-    proof-
+    proof -
       assume "\<not> ?inference_into_Fun"
 
-      with c\<^sub>1_t\<^sub>1_\<gamma>
-      obtain t\<^sub>1 c\<^sub>1 c\<^sub>G' where
+      moreover have "term.is_ground (c\<^sub>1_t\<^sub>1 \<cdot>t \<rho>\<^sub>1 \<odot> \<gamma>)"
+        using c\<^sub>1_t\<^sub>1_\<gamma>
+        by auto     
+
+      ultimately obtain t\<^sub>1 c\<^sub>1 c\<^sub>G' where
         c\<^sub>1_t\<^sub>1: "c\<^sub>1_t\<^sub>1 = c\<^sub>1\<langle>t\<^sub>1\<rangle>" and
-        t\<^sub>1_is_Var: "is_Var t\<^sub>1" and
-        c\<^sub>G: "c\<^sub>G = context.to_ground (c\<^sub>1 \<cdot>t\<^sub>c \<rho>\<^sub>1 \<odot> \<gamma>) \<circ>\<^sub>c c\<^sub>G'"
-      proof(induction c\<^sub>1_t\<^sub>1 arbitrary: c\<^sub>G thesis)
-        case (Var x)
+        t\<^sub>1_is_Var: "term.is_Var t\<^sub>1" and
+        c\<^sub>G: "context.from_ground c\<^sub>G = (c\<^sub>1 \<cdot>t\<^sub>c \<rho>\<^sub>1 \<odot> \<gamma>) \<circ>\<^sub>c c\<^sub>G'"
+        using context.subst_into_Var[OF c\<^sub>1_t\<^sub>1_\<gamma>]
+        by metis
 
-        show ?case
-        proof(rule Var.prems)
-          show "Var x = \<box>\<langle>Var x\<rangle>"
-            by simp
-
-          show "is_Var (Var x)"
-            by simp
-
-          show "c\<^sub>G = context.to_ground (\<box> \<cdot>t\<^sub>c \<rho>\<^sub>1 \<odot> \<gamma>) \<circ>\<^sub>c c\<^sub>G"
-            by (simp add: context.to_ground_def)
-        qed
-      next
-        case (Fun f ts)
-
-        have "c\<^sub>G \<noteq> \<box>"
-          using Fun.prems(2,3)
-          unfolding context.from_ground_def
-          by (metis actxt.simps(8) intp_actxt.simps(1) is_FunI)
-
-        then obtain ts\<^sub>G\<^sub>1 c\<^sub>G' ts\<^sub>G\<^sub>2 where
-          c\<^sub>G: "c\<^sub>G = More f ts\<^sub>G\<^sub>1 c\<^sub>G' ts\<^sub>G\<^sub>2"
-          using Fun.prems
-          by (cases c\<^sub>G) (auto simp: context.from_ground_def)
-
-        have
-          "map (\<lambda>t. t \<cdot>t \<rho>\<^sub>1 \<odot> \<gamma>) ts =
-            map term.from_ground ts\<^sub>G\<^sub>1 @ (context.from_ground c\<^sub>G')\<langle>term.from_ground t\<^sub>G\<^sub>1\<rangle> #
-            map term.from_ground ts\<^sub>G\<^sub>2"
-          using Fun(3)
-          unfolding c\<^sub>G context.from_ground_def
-          by simp
-
-        moreover then obtain ts\<^sub>1 t ts\<^sub>2 where
-          ts: "ts = ts\<^sub>1 @ t # ts\<^sub>2" and
-          ts\<^sub>1_\<gamma>: "map (\<lambda>term. term \<cdot>t \<rho>\<^sub>1 \<odot> \<gamma>) ts\<^sub>1 = map term.from_ground ts\<^sub>G\<^sub>1" and
-          ts\<^sub>2_\<gamma>: "map (\<lambda>term. term \<cdot>t \<rho>\<^sub>1 \<odot> \<gamma>) ts\<^sub>2 = map term.from_ground ts\<^sub>G\<^sub>2"
-          by (smt append_eq_map_conv map_eq_Cons_D)
-
-        ultimately have t_\<gamma>: "t \<cdot>t \<rho>\<^sub>1 \<odot> \<gamma> = (context.from_ground c\<^sub>G')\<langle>term.from_ground t\<^sub>G\<^sub>1\<rangle>"
-          by simp
-
-        obtain t\<^sub>1 c\<^sub>1 c\<^sub>G'' where
-          "t = c\<^sub>1\<langle>t\<^sub>1\<rangle>" and
-          "is_Var t\<^sub>1" and
-          "c\<^sub>G' = context.to_ground (c\<^sub>1 \<cdot>t\<^sub>c \<rho>\<^sub>1 \<odot> \<gamma>) \<circ>\<^sub>c c\<^sub>G''"
-        proof-
-          have "t \<in> set ts"
-            by (simp add: ts)
-
-          moreover have
-            "\<nexists>c\<^sub>1 t\<^sub>1. t = c\<^sub>1\<langle>t\<^sub>1\<rangle> \<and>
-                t\<^sub>1 \<cdot>t \<rho>\<^sub>1 \<odot> \<gamma> = term.from_ground t\<^sub>G\<^sub>1 \<and>
-                c\<^sub>1 \<cdot>t\<^sub>c \<rho>\<^sub>1 \<odot> \<gamma> = context.from_ground c\<^sub>G' \<and>
-                is_Fun t\<^sub>1"
-          proof(rule notI, elim exE conjE)
-            fix c\<^sub>1 t\<^sub>1
-            assume
-              "t = c\<^sub>1\<langle>t\<^sub>1\<rangle>"
-              "t\<^sub>1 \<cdot>t \<rho>\<^sub>1 \<odot> \<gamma> = term.from_ground t\<^sub>G\<^sub>1"
-              "c\<^sub>1 \<cdot>t\<^sub>c \<rho>\<^sub>1 \<odot> \<gamma> = context.from_ground c\<^sub>G'"
-              "is_Fun t\<^sub>1"
-
-            moreover then have
-              "Fun f ts = (More f ts\<^sub>1 c\<^sub>1 ts\<^sub>2)\<langle>t\<^sub>1\<rangle>"
-              "(More f ts\<^sub>1 c\<^sub>1 ts\<^sub>2) \<cdot>t\<^sub>c \<rho>\<^sub>1 \<odot> \<gamma> = context.from_ground c\<^sub>G"
-              unfolding context.from_ground_def c\<^sub>G ts
-              using ts\<^sub>1_\<gamma> ts\<^sub>2_\<gamma>
-              by auto
-
-            ultimately show False
-              using Fun.prems(3)
-              by blast
-          qed
-
-          ultimately show ?thesis
-            using Fun(1) t_\<gamma> that
-            by blast
-        qed
-
-        moreover then have
-          "Fun f ts = (More f ts\<^sub>1 c\<^sub>1 ts\<^sub>2)\<langle>t\<^sub>1\<rangle>"
-          "c\<^sub>G = context.to_ground (More f ts\<^sub>1 c\<^sub>1 ts\<^sub>2 \<cdot>t\<^sub>c \<rho>\<^sub>1 \<odot> \<gamma>) \<circ>\<^sub>c c\<^sub>G''"
-          using ts\<^sub>1_\<gamma> ts\<^sub>2_\<gamma>
-          unfolding context.to_ground_def c\<^sub>G ts
-          by auto
-
-        ultimately show ?case
-          using Fun.prems(1)
-          by blast
-      qed
+      then have c\<^sub>G'_is_ground [simp]: "context.is_ground c\<^sub>G'"
+        by (metis context.composed_context_is_ground context.ground_is_ground)
 
       obtain x where t\<^sub>1_\<rho>\<^sub>1: "t\<^sub>1 \<cdot>t \<rho>\<^sub>1 = Var x"
         using t\<^sub>1_is_Var term.id_subst_rename[OF \<rho>\<^sub>1]
-        unfolding is_Var_def
-        by auto
+        by (metis term.comp_subst_iff term.left_neutral)
 
       have \<iota>\<^sub>G_parts:
         "set (side_prems_of \<iota>\<^sub>G) = {D\<^sub>G}"
@@ -786,21 +704,21 @@ proof (cases D\<^sub>G E\<^sub>G C\<^sub>G rule: ground.superposition.cases)
       show ?thesis
       proof(rule ground.redundant_infer_singleton, unfold \<iota>\<^sub>G_parts, intro bexI conjI)
 
-        let ?t\<^sub>G = "(context.from_ground c\<^sub>G')\<langle>term.from_ground t\<^sub>G\<^sub>3\<rangle>"
+        let ?t\<^sub>G = "c\<^sub>G'\<langle>term.from_ground t\<^sub>G\<^sub>3\<rangle>"
 
         define \<gamma>' where
           "\<gamma>' \<equiv> \<gamma>(x := ?t\<^sub>G)"
 
         let ?E\<^sub>G' = "clause.to_ground (E \<cdot> \<rho>\<^sub>1 \<odot> \<gamma>')"
 
-        have t\<^sub>1_\<gamma>: "t\<^sub>1 \<cdot>t \<rho>\<^sub>1 \<odot> \<gamma> = (context.from_ground c\<^sub>G')\<langle>term.from_ground t\<^sub>G\<^sub>1\<rangle>"
+        have t\<^sub>1_\<gamma>: "t\<^sub>1 \<cdot>t \<rho>\<^sub>1 \<odot> \<gamma> = c\<^sub>G'\<langle>term.from_ground t\<^sub>G\<^sub>1\<rangle>"
         proof -
 
           have "context.is_ground (c\<^sub>1 \<cdot>t\<^sub>c \<rho>\<^sub>1 \<odot> \<gamma>)"
             using c\<^sub>1_t\<^sub>1_\<gamma>
             unfolding c\<^sub>1_t\<^sub>1 context.safe_unfolds
-            by (metis context.ground_is_ground context.term_with_context_is_ground
-                term.ground_is_ground)
+            by (metis context.apply_context_is_ground context.apply_context_subst 
+                context.safe_unfolds(2) term.ground_is_ground)
 
           then show ?thesis
             using c\<^sub>1_t\<^sub>1_\<gamma>
@@ -808,11 +726,11 @@ proof (cases D\<^sub>G E\<^sub>G C\<^sub>G rule: ground.superposition.cases)
             by auto
         qed
 
-        have t\<^sub>1_\<gamma>': "t\<^sub>1 \<cdot>t \<rho>\<^sub>1 \<odot> \<gamma>' = (context.from_ground c\<^sub>G')\<langle>term.from_ground t\<^sub>G\<^sub>3\<rangle>"
+        have t\<^sub>1_\<gamma>': "t\<^sub>1 \<cdot>t \<rho>\<^sub>1 \<odot> \<gamma>' = c\<^sub>G'\<langle>term.from_ground t\<^sub>G\<^sub>3\<rangle>"
           unfolding \<gamma>'_def
           using t\<^sub>1_\<rho>\<^sub>1
-          by simp
-
+          by auto         
+ 
         show "?E\<^sub>G' \<in> N\<^sub>G"
         proof -
 
@@ -823,9 +741,8 @@ proof (cases D\<^sub>G E\<^sub>G C\<^sub>G rule: ground.superposition.cases)
 
             show "clause.is_ground (E \<cdot> \<rho>\<^sub>1 \<odot> \<gamma>')"
               unfolding \<gamma>'_def
-              using E_grounding
-              by simp
-
+              using E_grounding 
+              by force
           next
 
             show "type_preserving_on (clause.vars E) \<V>\<^sub>1 (\<rho>\<^sub>1 \<odot> \<gamma>')"
@@ -837,33 +754,49 @@ proof (cases D\<^sub>G E\<^sub>G C\<^sub>G rule: ground.superposition.cases)
                     \<rho>\<^sub>1 type_preserving_\<rho>\<^sub>1 type_preserving_\<rho>\<^sub>1_\<gamma>] .
 
               then show "type_preserving_on (\<Union> (term.vars ` \<rho>\<^sub>1 ` clause.vars E)) \<V>\<^sub>1 \<gamma>'"
-              proof (unfold \<gamma>'_def, rule type_preserving_on_subst_update', intro impI)
+              proof (unfold \<gamma>'_def, rule type_preserving_on_subst_update, intro impI)
 
-                assume x_in_E_\<rho>\<^sub>1: "x \<in> \<Union> (term.vars ` \<rho>\<^sub>1 ` clause.vars E)" and welltyped_x:"\<V>\<^sub>1 \<turnstile> Var x : \<V>\<^sub>1 x"
+                assume
+                  x_in_E_\<rho>\<^sub>1: "x \<in> \<Union> (term.vars ` \<rho>\<^sub>1 ` clause.vars E)" and 
+                  welltyped_x: "\<V>\<^sub>1 \<turnstile> Var x : \<V>\<^sub>1 x"
+
+                then obtain \<tau> where welltyped_t\<^sub>G\<^sub>1: "\<V>\<^sub>1 \<turnstile> term.from_ground t\<^sub>G\<^sub>1 : \<tau>"
+                  using welltyped_x 
+                  by (metis \<gamma>_type_preserving t\<^sub>1_\<gamma> t\<^sub>1_\<rho>\<^sub>1 
+                      term.comp_subst.left.monoid_action_compatibility
+                      term.comp_subst_iff term.left_neutral term.welltyped_subterm)
                 
                 show "\<V>\<^sub>1 \<turnstile> ?t\<^sub>G : \<V>\<^sub>1 x"
-                proof (rule term.welltyped_context_compatible)
+                proof (rule term.welltyped_context_compatible[OF welltyped_t\<^sub>G\<^sub>1])
 
-                  show "\<V>\<^sub>1 \<turnstile> (context.from_ground c\<^sub>G')\<langle>term.from_ground t\<^sub>G\<^sub>1\<rangle> : \<V>\<^sub>1 x"
-                    using welltyped_x t\<^sub>1_\<rho>\<^sub>1 \<gamma>_type_preserving x_in_E_\<rho>\<^sub>1
-                    unfolding t\<^sub>1_\<gamma>[symmetric]
+                  have "\<V>\<^sub>2 \<turnstile> term.from_ground t\<^sub>G\<^sub>1 : \<tau>"
+                    using welltyped_t\<^sub>G\<^sub>1 term.ground_is_ground term.is_ground_replace_\<V>
+                    by blast
+
+                  then have "\<V>\<^sub>2 \<turnstile> t\<^sub>2 : \<tau>"
+                    using term.welltyped_subst_stability'[OF type_preserving_\<rho>\<^sub>2_\<gamma>]
+                    unfolding D l\<^sub>2 t\<^sub>2_\<gamma>[symmetric]
                     by auto
+
+                   then have "\<V>\<^sub>2 \<turnstile> t\<^sub>2' : \<tau>"
+                    using type_preserving_literals_D
+                    unfolding D l\<^sub>2
+                    by auto
+
+                  then have "\<V>\<^sub>2 \<turnstile> term.from_ground t\<^sub>G\<^sub>3 : \<tau>"
+                    using term.welltyped_subst_stability'[OF type_preserving_\<rho>\<^sub>2_\<gamma>]
+                    unfolding D l\<^sub>2 t\<^sub>2'_\<gamma>[symmetric]
+                    by auto
+                    
+                  then show "\<V>\<^sub>1 \<turnstile> term.from_ground t\<^sub>G\<^sub>3 : \<tau>"
+                    using term.ground_is_ground term.is_ground_replace_\<V>
+                    by blast
                 next
 
-                  have \<rho>\<^sub>2_\<gamma>: 
-                    "type_preserving_on (term.vars t\<^sub>2) \<V>\<^sub>2 (\<rho>\<^sub>2 \<odot> \<gamma>)" 
-                    "type_preserving_on (term.vars t\<^sub>2') \<V>\<^sub>2 (\<rho>\<^sub>2 \<odot> \<gamma>)"
-                    using type_preserving_\<rho>\<^sub>2_\<gamma>
-                    unfolding D l\<^sub>2
-                    by simp_all
-
-                  have "\<forall>\<tau>. \<V>\<^sub>2 \<turnstile> term.from_ground t\<^sub>G\<^sub>1 : \<tau> \<longleftrightarrow> \<V>\<^sub>2 \<turnstile> term.from_ground t\<^sub>G\<^sub>3 : \<tau>"
-                    using type_preserving_literals_D \<rho>\<^sub>2_\<gamma>[THEN term.welltyped_subst_stability]
-                    unfolding D l\<^sub>2 t\<^sub>2_\<gamma>[symmetric] t\<^sub>2'_\<gamma>[symmetric]
-                    by auto
-
-                  then show "\<forall>\<tau>. \<V>\<^sub>1 \<turnstile> term.from_ground t\<^sub>G\<^sub>1 : \<tau> \<longleftrightarrow> \<V>\<^sub>1 \<turnstile> term.from_ground t\<^sub>G\<^sub>3 : \<tau>"
-                    by (meson term.ground_is_ground term.is_ground_replace_\<V>)
+                  show "\<V>\<^sub>1 \<turnstile> c\<^sub>G'\<langle>term.from_ground t\<^sub>G\<^sub>1\<rangle> : \<V>\<^sub>1 x"
+                    using welltyped_x t\<^sub>1_\<rho>\<^sub>1 \<gamma>_type_preserving x_in_E_\<rho>\<^sub>1
+                    unfolding t\<^sub>1_\<gamma>[symmetric]
+                    by (metis t\<^sub>1_is_Var term.comp_subst_iff term.left_neutral)
                 qed
               qed
             qed
@@ -885,11 +818,11 @@ proof (cases D\<^sub>G E\<^sub>G C\<^sub>G rule: ground.superposition.cases)
             compatible_with_gctxt_I: "compatible_with_gctxt I" and
             premise: "?I \<TTurnstile>s {?E\<^sub>G', D\<^sub>G}"
 
-           then interpret clause_entailment I
-             by unfold_locales
+          then interpret clause_entailment where I = I
+            by unfold_locales
 
           have \<gamma>_x_is_ground: "term.is_ground (\<gamma> x)"
-            using t\<^sub>1_\<gamma> t\<^sub>1_\<rho>\<^sub>1
+            using t\<^sub>1_\<gamma> t\<^sub>1_\<rho>\<^sub>1 c\<^sub>G'_is_ground
             by auto
 
           show "?I \<TTurnstile>s {C\<^sub>G}"
@@ -907,7 +840,7 @@ proof (cases D\<^sub>G E\<^sub>G C\<^sub>G rule: ground.superposition.cases)
               unfolding ground_superpositionI
               by auto
 
-            have "?I \<TTurnstile>l c\<^sub>G'\<langle>t\<^sub>G\<^sub>1\<rangle>\<^sub>G \<approx> c\<^sub>G'\<langle>t\<^sub>G\<^sub>3\<rangle>\<^sub>G"
+            have "?I \<TTurnstile>l (context.to_ground c\<^sub>G')\<langle>t\<^sub>G\<^sub>1\<rangle>\<^sub>G \<approx> (context.to_ground c\<^sub>G')\<langle>t\<^sub>G\<^sub>3\<rangle>\<^sub>G"
               using upair_compatible_with_gctxtI[OF t\<^sub>G\<^sub>1_t\<^sub>G\<^sub>3]
               by auto
 
@@ -915,20 +848,18 @@ proof (cases D\<^sub>G E\<^sub>G C\<^sub>G rule: ground.superposition.cases)
               unfolding t\<^sub>1_\<gamma> t\<^sub>1_\<gamma>'
               by simp
 
-            then have "(term.to_ground (\<gamma> x), c\<^sub>G'\<langle>t\<^sub>G\<^sub>3\<rangle>\<^sub>G) \<in> I"
+            then have "(term.to_ground (\<gamma> x), (context.to_ground c\<^sub>G')\<langle>t\<^sub>G\<^sub>3\<rangle>\<^sub>G) \<in> I"
               unfolding \<gamma>'_def
               using t\<^sub>1_\<rho>\<^sub>1
               by (auto simp: sym)
-
+ 
             moreover have "?I \<TTurnstile> ?E\<^sub>G'"
               using premise
               by simp
 
             ultimately have "?I \<TTurnstile> E\<^sub>G"
               unfolding \<gamma>'_def
-              using
-                clause.symmetric_congruence[of _ \<gamma>, OF _ \<gamma>_x_is_ground]
-                E_grounding
+              using clause.symmetric_congruence[of _ \<gamma>, OF _ \<gamma>_x_is_ground] E_grounding
               by simp
 
             then have "?I \<TTurnstile> add_mset (\<P>\<^sub>G (Upair c\<^sub>G\<langle>t\<^sub>G\<^sub>3\<rangle>\<^sub>G t\<^sub>G\<^sub>2)) E\<^sub>G'"
@@ -947,11 +878,11 @@ proof (cases D\<^sub>G E\<^sub>G C\<^sub>G rule: ground.superposition.cases)
 
           have "\<gamma> x = t\<^sub>1 \<cdot>t \<rho>\<^sub>1 \<odot> \<gamma>"
             using t\<^sub>1_\<rho>\<^sub>1
-            by simp
+            by (metis t\<^sub>1_is_Var term.comp_subst_iff term.left_neutral)
 
           then have t\<^sub>G_smaller: "?t\<^sub>G \<prec>\<^sub>t \<gamma> x"
             using ground_superpositionI(8)
-            unfolding t\<^sub>1_\<gamma> term.order.less\<^sub>G_def
+            unfolding t\<^sub>1_\<gamma> term.order.less\<^sub>G_def 
             by simp
 
           have "add_mset (l\<^sub>1 \<cdot>l \<rho>\<^sub>1 \<odot> \<gamma>') (E' \<cdot> \<rho>\<^sub>1 \<odot> \<gamma>') \<prec>\<^sub>c add_mset (l\<^sub>1 \<cdot>l \<rho>\<^sub>1 \<odot> \<gamma>) (E' \<cdot> \<rho>\<^sub>1 \<odot> \<gamma>)"
@@ -1216,13 +1147,13 @@ proof (cases D\<^sub>G E\<^sub>G C\<^sub>G rule: ground.superposition.cases)
     show C'_\<gamma>: "C' \<cdot> \<gamma> = C \<cdot> \<gamma>"
     proof-
 
-      have "term_subst.is_idem \<mu>"
+      have "term.is_idem \<mu>"
         using imgu term.is_imgu_iff_is_idem_and_is_mgu
         by blast
 
       then have \<mu>_\<gamma>: "\<mu> \<odot> \<gamma> = \<gamma>"
-        unfolding \<gamma> term_subst.is_idem_def
-        by (metis subst_compose_assoc)
+        unfolding \<gamma> term.is_idem_def
+        by (metis term.assoc)
 
       have "C \<cdot> \<gamma> =
               add_mset
@@ -1501,9 +1432,9 @@ proof-
     select_from_D: "clause.from_ground (select\<^sub>G D\<^sub>G) = select D \<cdot> \<gamma>\<^sub>2"
     by (simp_all add: select_ground_subst)
 
-  obtain \<rho>\<^sub>1 \<rho>\<^sub>2 \<gamma> :: "('f, 'v) subst" where
-    \<rho>\<^sub>1: "term_subst.is_renaming \<rho>\<^sub>1" and
-    \<rho>\<^sub>2: "term_subst.is_renaming \<rho>\<^sub>2" and
+  obtain \<rho>\<^sub>1 \<rho>\<^sub>2 \<gamma> :: "'v \<Rightarrow> 't" where
+    \<rho>\<^sub>1: "term.is_renaming \<rho>\<^sub>1" and
+    \<rho>\<^sub>2: "term.is_renaming \<rho>\<^sub>2" and
     rename_apart: "clause.vars (E \<cdot> \<rho>\<^sub>1) \<inter> clause.vars (D \<cdot> \<rho>\<^sub>2) = {}" and
     type_preserving_\<rho>\<^sub>1: "type_preserving_on (clause.vars E) \<V>\<^sub>1 \<rho>\<^sub>1" and
     type_preserving_\<rho>\<^sub>2: "type_preserving_on (clause.vars D) \<V>\<^sub>2 \<rho>\<^sub>2" and
@@ -1545,7 +1476,7 @@ proof-
 
     moreover have "select E \<cdot> \<gamma>\<^sub>1 = select E \<cdot> \<rho>\<^sub>1 \<cdot> \<gamma>"
       using clause.subst_eq \<gamma>\<^sub>1_\<gamma> select_vars_subset
-      by (metis (no_types, lifting) clause.comp_subst.left.monoid_action_compatibility in_mono)
+      by (smt (verit, best) clause.comp_subst.left.monoid_action_compatibility subsetD)
 
     ultimately show ?thesis
       using select_from_E
@@ -1562,7 +1493,7 @@ proof-
 
     moreover have "select D \<cdot> \<gamma>\<^sub>2 = select D \<cdot> \<rho>\<^sub>2 \<cdot> \<gamma>"
       using clause.subst_eq \<gamma>\<^sub>2_\<gamma> select_vars_subset[of D]
-      by (metis (no_types, lifting) clause.comp_subst.left.monoid_action_compatibility in_mono)
+      by (smt (verit, best) clause.comp_subst.left.monoid_action_compatibility subsetD)
 
     ultimately show ?thesis
       using select_from_D

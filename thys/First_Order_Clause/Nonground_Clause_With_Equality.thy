@@ -1,6 +1,7 @@
 theory Nonground_Clause_With_Equality
   imports
     Ground_Clause
+    Nonground_Term
     Nonground_Clause_Generic
     Uprod_Literal_Functor
 begin
@@ -8,9 +9,12 @@ begin
 section \<open>Nonground Clauses with Equality\<close>
 
 type_synonym 'f ground_atom = "'f gatom"
-type_synonym ('f, 'v) atom = "('f, 'v) term uprod"
+type_synonym 't atom = "'t uprod"
+type_synonym 'f ground_clause = "'f ground_atom clause"
+type_synonym 't clause = "'t atom clause"
 
-locale nonground_clause = nonground_term_with_context
+
+locale nonground_clause = "term": nonground_term
 begin
 
 subsection \<open>Nonground Atoms\<close>
@@ -115,7 +119,7 @@ proof unfold_locales
     to_set_ground = uprod_literal_to_set
     by unfold_locales
 
-  fix l :: "('f, 'v) atom literal" and \<sigma>
+  fix l and \<sigma>
 
   show "subst l \<sigma> = l \<cdot>l \<sigma>"
     unfolding subst_def literal.subst_def atom.subst_def
@@ -125,13 +129,13 @@ proof unfold_locales
     unfolding atom.vars_def vars_def literal.vars_def
     by(cases l) simp_all
 
-  fix l\<^sub>G:: "'f ground_atom literal"
+  fix l\<^sub>G 
   show "from_ground l\<^sub>G = literal.from_ground l\<^sub>G"
     unfolding from_ground_def literal.from_ground_def atom.from_ground_def..
 
-  fix l :: "('f, 'v) atom literal"
+  fix l
   show "to_ground l = literal.to_ground l"
-    unfolding to_ground_def literal.to_ground_def atom.to_ground_def..
+    unfolding to_ground_def literal.to_ground_def atom.to_ground_def ..
 qed
 
 subsection \<open>Nonground Clauses\<close>

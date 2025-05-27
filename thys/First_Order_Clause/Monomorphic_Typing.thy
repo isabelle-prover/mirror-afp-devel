@@ -2,14 +2,13 @@ theory Monomorphic_Typing
   imports
     Nonground_Term_Typing
     Ground_Term_Typing
+    IsaFoR_Nonground_Term
 begin
 
 no_notation Ground_Term_Typing.welltyped (\<open>_ \<turnstile> _ : _\<close> [1000, 0, 50] 50)
 notation Ground_Term_Typing.welltyped (\<open>_ \<turnstile> _ :\<^sub>G _\<close> [1000, 0, 50] 50)
 
-(* TODO: Names ! *)
 locale monomorphic_term_typing =
-  "term": nonground_term +
   fixes \<F> :: "('f, 'ty) fun_types"
 begin
 
@@ -35,19 +34,20 @@ proof unfold_locales
   qed
 qed
 
-sublocale "term": term_typing where welltyped = "welltyped \<V>" and Fun = Fun for \<V>
+sublocale "term": term_typing where 
+  welltyped = "welltyped \<V>" and apply_context = ctxt_apply_term for \<V>
 proof unfold_locales
-  fix t t' c \<tau>
+  fix t t' c \<tau> \<tau>'
 
   assume
-    welltyped: "\<forall>\<tau>'. \<V> \<turnstile> t : \<tau>' \<longleftrightarrow> \<V> \<turnstile> t' : \<tau>'" and
-    c_type: "\<V> \<turnstile> c\<langle>t\<rangle> : \<tau>"
+    welltyped_t_t': "\<V> \<turnstile> t : \<tau>'" "\<V> \<turnstile> t' : \<tau>'" and
+    welltyped_c_t: "\<V> \<turnstile> c\<langle>t\<rangle> : \<tau>"
 
-  from c_type show "\<V> \<turnstile> c\<langle>t'\<rangle> : \<tau>"
+  from welltyped_c_t show "\<V> \<turnstile> c\<langle>t'\<rangle> : \<tau>"
   proof (induction c arbitrary: \<tau>)
     case Hole
     then show ?case
-      using welltyped
+      using welltyped_t_t'
       by auto
   next
     case (More f ss1 c ss2)
@@ -76,6 +76,13 @@ proof unfold_locales
     thus ?case
       by simp
   qed
+next
+  fix c t \<tau>
+  assume "\<V> \<turnstile> c\<langle>t\<rangle> : \<tau>" 
+  then show "\<exists>\<tau>'. \<V> \<turnstile> t : \<tau>'"
+    by
+      (induction c arbitrary: \<tau>)
+      (auto simp: welltyped.simps list_all2_Cons1 list_all2_append1)
 qed
 
 sublocale "term": base_typing_properties where
@@ -83,25 +90,25 @@ sublocale "term": base_typing_properties where
   vars = term.vars and welltyped = welltyped and to_ground = term.to_ground and
   from_ground = term.from_ground
 proof(unfold_locales; (intro welltyped.Var refl)?)
-  fix \<tau> and \<V> and t :: "('f, 'v) term" and \<sigma>
+  fix t :: "('f, 'v) term" and \<V> \<sigma> \<tau>
+  assume type_preserving_\<sigma>: " \<forall>x\<in>term.vars t. \<V> \<turnstile> Var x : \<V> x \<longrightarrow> \<V> \<turnstile> \<sigma> x : \<V> x"
 
-  assume is_welltyped_on: "\<forall>x\<in>term.vars t. \<V> \<turnstile> Var x : \<V> x \<longrightarrow> \<V> \<turnstile> \<sigma> x : \<V> x"
-
-  show "\<V> \<turnstile> t \<cdot>t \<sigma> : \<tau> \<longleftrightarrow> \<V> \<turnstile> t : \<tau>"
+  show "\<V> \<turnstile> t \<cdot>t \<sigma> : \<tau> \<longleftrightarrow> \<V> \<turnstile> t : \<tau>"  
   proof (rule iffI)
 
     assume "\<V> \<turnstile> t : \<tau>"
 
     then show "\<V> \<turnstile> t \<cdot>t \<sigma> : \<tau>"
-      using is_welltyped_on
-      by (induction rule: welltyped.induct)
-         (auto simp: list.rel_mono_strong list_all2_map1 welltyped.simps)
+      using type_preserving_\<sigma>
+      by 
+        (induction rule: welltyped.induct)
+        (auto simp: list.rel_mono_strong list_all2_map1 welltyped.simps)
   next
 
     assume "\<V> \<turnstile> t \<cdot>t \<sigma> : \<tau>"
 
     then show "\<V> \<turnstile> t : \<tau>"
-      using is_welltyped_on
+      using type_preserving_\<sigma>
     proof (induction "t \<cdot>t \<sigma>" \<tau> arbitrary: t rule: welltyped.induct)
       case (Var x \<tau>)
 
@@ -131,6 +138,7 @@ proof(unfold_locales; (intro welltyped.Var refl)?)
         by (cases t) (simp_all add: list.rel_mono_strong list_all2_map1 welltyped.simps)
     qed
   qed
+
 next
   fix t :: "('f, 'v) term" and \<V> \<V>' \<tau>
 
@@ -177,7 +185,7 @@ next
 
       then have \<F>: "\<F> f (length ts) = Some (\<tau>s, \<tau>)"
         by simp
-       
+
       show ?case
       proof(rule welltyped.Fun[OF \<F>])
 
@@ -219,11 +227,218 @@ next
     by (simp add: Var)
 qed
 
+(* TODO: Try to put in other file *)
+lemma unify_subterms:
+  assumes "term.type_preserving_unifier \<V> \<upsilon> (Fun f ts) (Fun f ts')"
+  shows "list_all2 (term.type_preserving_unifier \<V> \<upsilon>) ts ts'"
+  using assms
+  unfolding list_all2_iff
+  by (auto elim: in_set_zipE intro: map_eq_imp_length_eq)
+
+lemma type_preserving_subst:
+  assumes "\<V> \<turnstile> Var x : \<tau>" "\<V> \<turnstile> t : \<tau>"
+  shows "term.type_preserving \<V> (subst x t)"
+  using assms
+  unfolding subst_def
+  by auto
+
+lemma type_preserving_unifier_subst:
+  assumes "\<forall>(s, s') \<in> set ((Var x, t) # es). term.type_preserving_unifier \<V> \<upsilon> s s'"
+  shows "\<forall>(s, s') \<in> set es. term.type_preserving_unifier \<V> \<upsilon> (s \<cdot>t subst x t) (s' \<cdot>t subst x t)"
+proof (intro ballI2)
+  fix s s'
+  assume s_s': "(s, s') \<in> set es"
+
+  then have "term.type_preserving_on (term.vars (s \<cdot>t subst x t) \<union> term.vars (s' \<cdot>t subst x t)) \<V> \<upsilon>"
+    using assms term.vars_id_subst_update
+    unfolding subst_def
+    by (smt (verit, del_insts) UnCI UnE case_prodD list.set_intros(1,2) subset_iff)
+
+  then show "term.type_preserving_unifier \<V> \<upsilon> (s \<cdot>t subst x t) (s' \<cdot>t subst x t)"
+    using assms s_s'
+    by auto
+qed
+
+lemma type_preserving_unifier_subst_list:
+  assumes "\<forall>(s, s') \<in> set ((Var x, t) # es). term.type_preserving_unifier \<V> \<upsilon> s s'"
+  shows "\<forall>(s, s') \<in> set (subst_list (subst x t) es). term.type_preserving_unifier \<V> \<upsilon> s s'"
+  using type_preserving_unifier_subst[OF assms]
+  unfolding subst_list_def
+  by (smt (verit, best) case_prod_conv image_iff list.set_map prod.collapse)
+
+lemma unify_subterms_zip_option:
+  assumes
+    type_preserving_unifier: "term.type_preserving_unifier \<V> \<upsilon> (Fun f ts) (Fun f ts')" and
+    zip_option: "zip_option ts ts' = Some es"
+  shows
+    "\<forall>(t, t') \<in> set es. term.type_preserving_unifier \<V> \<upsilon> t t'"
+  using unify_subterms[OF type_preserving_unifier] zip_option
+  unfolding zip_option_zip_conv list_all2_iff
+  by argo
+
+lemma type_preserving_unifier_decompose_Fun:
+  assumes
+    type_preserving_unifier: "term.type_preserving_unifier \<V> \<upsilon> (Fun f ts) (Fun g ss)" and
+    decompose: "decompose (Fun f ts) (Fun g ss) = Some es"
+  shows "\<forall>(t, t') \<in> set es. term.type_preserving_unifier \<V> \<upsilon> t t'"
+  using type_preserving_unifier decompose_Some[OF decompose]
+  by (metis (mono_tags, lifting) list_all2_iff unify_subterms)
+
+lemma type_preserving_unifier_decompose:
+  assumes
+    type_preserving_unifier: "term.type_preserving_unifier \<V> \<upsilon> f g" and
+    decompose: "decompose f g = Some es"
+  shows "\<forall>(t, t') \<in> set es. term.type_preserving_unifier \<V> \<upsilon> t t'"
+proof -
+
+  obtain f' fs gs where Fun: "f = Fun f' fs" "g = Fun f' gs"
+    using decompose
+    unfolding decompose_def
+    by (auto split: term.splits if_splits)
+
+  show ?thesis
+    using type_preserving_unifier_decompose_Fun[OF assms[unfolded Fun]] .
+qed
+
+lemma type_preserving_unify:
+  assumes
+    "unify es bs = Some unifier"
+    "\<forall>(t, t') \<in> set es. term.type_preserving_unifier \<V> \<upsilon> t t'"
+    "term.type_preserving \<V> (subst_of bs)"
+  shows "term.type_preserving \<V> (subst_of unifier)"
+  using assms
+proof(induction es bs rule: unify.induct)
+  case 1
+
+  then show ?case
+    by simp
+next
+  case (2 f ss g ts es bs)
+
+  obtain es' where es': "decompose (Fun f ss) (Fun g ts) = Some es'"
+    using 2(2)
+    by (simp split: option.splits)
+
+  show ?case
+  proof (rule "2.IH"[OF es' _ _ "2.prems"(3)])
+
+    show "unify (es' @ es) bs = Some unifier"
+      using es' "2.prems"(1)
+      by auto
+  next
+
+    have 
+      "\<forall>(t, t')\<in>set es'. term.type_preserving_unifier \<V> \<upsilon> t t'" 
+      "\<forall>(t, t')\<in>set es. term.type_preserving_unifier \<V> \<upsilon> t t'"
+      using type_preserving_unifier_decompose[OF _ es'] "2.prems"(2) 
+      by auto
+    
+    then show "\<forall>(t, t')\<in>set (es' @ es). term.type_preserving_unifier \<V> \<upsilon> t t'"
+      by auto
+  qed
+next
+  case (3 x t es bs)
+
+  show ?case
+  proof(cases "t = Var x")
+    case True
+
+    then show ?thesis
+      using 3
+      by simp
+  next
+    case False
+
+    then show ?thesis
+    proof (rule 3(2))
+
+      show "x \<notin> term.vars t"
+        using "3.prems"(1) False
+        by auto
+    next
+
+      show "unify (subst_list (subst x t) es) ((x, t) # bs) = Some unifier"
+        using False 3(3)
+        by (auto split: if_splits)
+    next
+
+      show "\<forall>(s, s') \<in> set (subst_list (subst x t) es). term.type_preserving_unifier \<V> \<upsilon> s s'"
+        using type_preserving_unifier_subst_list[OF 3(4)] .
+    next
+
+      have "term.type_preserving \<V> (subst x t)"
+        using 3(4) type_preserving_subst term.type_preserving_unifier
+        by (smt (verit, del_insts) fun_upd_other list.set_intros(1) prod.case subst_def)  
+
+      then show "term.type_preserving \<V> (subst_of ((x, t) # bs))"
+        using 3(5)
+        by  (simp add: subst_compose_def)
+    qed
+  qed
+next
+  case (4 f ts x es bs)
+
+  let ?t = "Fun f ts"
+
+  show ?case
+  proof (rule 4(1))
+
+    show "x \<notin> term.vars ?t"
+      using "4.prems"
+      by fastforce
+  next
+
+    show "unify (subst_list (subst x ?t) es) ((x, ?t) # bs) = Some unifier"
+      using "4.prems"(1)
+      by (auto split: if_splits)
+  next
+
+    show "\<forall>(s, s') \<in> set (subst_list (subst x ?t) es). term.type_preserving_unifier \<V> \<upsilon> s s'"
+    proof (rule type_preserving_unifier_subst_list)
+      show "\<forall>(s, s')\<in>set ((Var x, ?t) # es). term.type_preserving_unifier \<V> \<upsilon> s s'"
+        using "4.prems"(2)
+        by auto
+    qed
+  next
+    have "term.type_preserving \<V> (subst x ?t)"
+      using 4(3) type_preserving_subst term.type_preserving_unifier
+      by (smt (verit, del_insts) fun_upd_other list.set_intros(1) prod.case subst_def)  
+
+    then show "term.type_preserving \<V> (subst_of ((x, ?t) # bs))"
+      using 4(4)
+      by (simp add: subst_compose_def)
+  qed
+qed
+
+lemma type_preserving_unify_single:
+  assumes
+    unify: "unify [(t, t')] [] = Some unifier" and
+    unifier: "term.type_preserving_unifier \<V> \<upsilon> t t'"
+  shows "term.type_preserving \<V> (subst_of unifier)"
+  using type_preserving_unify[OF unify] unifier
+  by simp
+
+lemma type_preserving_the_mgu:
+  assumes
+    the_mgu: "the_mgu t t' = \<mu>" and
+    unifier: "term.type_preserving_unifier \<V> \<upsilon> t t'"
+  shows "term.type_preserving \<V> \<mu>"
+  using the_mgu type_preserving_unify_single[OF _ unifier]
+  unfolding the_mgu_def mgu_def
+  by (metis (mono_tags, lifting) option.exhaust option.simps(4,5))
+
+sublocale type_preserving_imgu where 
+  id_subst = "Var :: 'v \<Rightarrow> ('f, 'v) term" and comp_subst = "(\<odot>)" and subst = "(\<cdot>t)" and
+  vars = term.vars and welltyped = welltyped
+  by unfold_locales
+     (metis (full_types) the_mgu the_mgu_term_subst_is_imgu
+      type_preserving_the_mgu)
+
 end
 
 locale witnessed_monomorphic_term_typing =
   monomorphic_term_typing where \<F> = \<F> for \<F> :: "('f, 'ty) fun_types" +
-  assumes types_witnessed: "\<And>\<tau>. \<exists>f. \<F> f 0 = Some ([], \<tau>)"
+assumes types_witnessed: "\<And>\<tau>. \<exists>f. \<F> f 0 = Some ([], \<tau>)"
 begin
 
 sublocale "term": base_witnessed_typing_properties where

@@ -6,13 +6,14 @@ theory Ground_Term_Order
     Transitive_Closure_Extra
 begin
 
-locale context_compatible_ground_order = context_compatible_order where Fun = GFun
+locale context_compatible_ground_order =
+  context_compatible_order where apply_context = ctxt_apply_gterm
 
 locale subterm_property =
   strict_order where less = less\<^sub>t
   for less\<^sub>t :: "'f gterm \<Rightarrow> 'f gterm \<Rightarrow> bool" +
   assumes
-    subterm_property [simp]: "\<And>t c. c \<noteq> \<box> \<Longrightarrow> less\<^sub>t t c\<langle>t\<rangle>\<^sub>G"
+    subterm_property [simp]: "\<And>t c. c \<noteq> \<box>\<^sub>G \<Longrightarrow> less\<^sub>t t c\<langle>t\<rangle>\<^sub>G"
 begin
 
 interpretation term_order_notation.
@@ -31,8 +32,7 @@ locale ground_term_order =
   for less\<^sub>t :: "'f gterm \<Rightarrow> 'f gterm \<Rightarrow> bool"
 begin
 
-interpretation term_order_notation.
-
+interpretation term_order_notation .
 
 end
 

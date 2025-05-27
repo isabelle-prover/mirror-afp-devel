@@ -5,11 +5,11 @@ session Superposition_Calculus = Saturation_Framework_Extensions +
     First_Order_Clause
     Saturation_Framework
     Saturation_Framework_Extensions
-    VeriComp
   theories
     Ground_Superposition_Completeness
     Ground_Superposition_Soundness
     Ground_Superposition_Welltypedness_Preservation
+    Monomorphic_Superposition
     Superposition_Completeness
     Superposition_Soundness
     Superposition_Welltypedness_Preservation

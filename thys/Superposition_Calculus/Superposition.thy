@@ -4,31 +4,32 @@ theory Superposition
     First_Order_Clause.Nonground_Selection_Function
     First_Order_Clause.Nonground_Typing_With_Equality
     First_Order_Clause.Typed_Tiebreakers
-    First_Order_Clause.Type_Preserving_IMGU
-
+                          
     Ground_Superposition
 begin
 
 section \<open>Nonground Layer\<close>
 
 locale superposition_calculus =
-  witnessed_nonground_typing welltyped +
-  nonground_order less\<^sub>t +
+  witnessed_nonground_typing where
+  welltyped = welltyped and 
+  to_ground_context_map = "to_ground_context_map :: ('t \<Rightarrow> 'f gterm) \<Rightarrow> 'c \<Rightarrow> 'f ground_context" +
+  nonground_order where less\<^sub>t = less\<^sub>t +
   nonground_selection_function where
   select = select and atom_subst = "(\<cdot>a)" and atom_vars = atom.vars and
   atom_to_ground = atom.to_ground and atom_from_ground = atom.from_ground +
-  tiebreakers tiebreakers +
+  tiebreakers where tiebreakers = tiebreakers +
   ground_critical_pair_theorem "TYPE('f)"
   for
-    select :: "('f, 'v :: infinite) atom select" and
-    less\<^sub>t :: "('f, 'v) term \<Rightarrow> ('f, 'v) term \<Rightarrow> bool" and
-    tiebreakers :: "('f ground_atom, ('f, 'v) atom) tiebreakers" and
-    welltyped :: "('v, 'ty) var_types \<Rightarrow> ('f, 'v) term \<Rightarrow> 'ty \<Rightarrow> bool"
+    select :: "'t atom select" and
+    less\<^sub>t :: "'t \<Rightarrow> 't \<Rightarrow> bool" and
+    tiebreakers :: "('f ground_atom, 't atom) tiebreakers" and
+    welltyped :: "('v :: infinite, 'ty) var_types \<Rightarrow> 't \<Rightarrow> 'ty \<Rightarrow> bool"
 begin
 
 interpretation term_order_notation.
 
-inductive eq_resolution :: "('f, 'v, 'ty) typed_clause \<Rightarrow> ('f, 'v, 'ty) typed_clause \<Rightarrow> bool" where
+inductive eq_resolution :: "('t, 'v, 'ty) typed_clause \<Rightarrow> ('t, 'v, 'ty) typed_clause \<Rightarrow> bool" where
   eq_resolutionI:
   "D = add_mset l D' \<Longrightarrow>
    l = t !\<approx> t' \<Longrightarrow>
@@ -36,11 +37,11 @@ inductive eq_resolution :: "('f, 'v, 'ty) typed_clause \<Rightarrow> ('f, 'v, 't
    eq_resolution (\<V>, D) (\<V>, C)" 
 if 
   "type_preserving_on (clause.vars D) \<V> \<mu>" 
-  "term_subst.is_imgu \<mu> {{t, t'}}"
+  "term.is_imgu \<mu> {{t, t'}}"
   "select D = {#} \<Longrightarrow> is_maximal (l \<cdot>l \<mu>) (D \<cdot> \<mu>)"
   "select D \<noteq> {#} \<Longrightarrow> is_maximal (l \<cdot>l \<mu>) (select D \<cdot> \<mu>)"
 
-inductive eq_factoring :: "('f, 'v, 'ty) typed_clause \<Rightarrow> ('f, 'v, 'ty) typed_clause \<Rightarrow> bool" where
+inductive eq_factoring :: "('t, 'v, 'ty) typed_clause \<Rightarrow> ('t, 'v, 'ty) typed_clause \<Rightarrow> bool" where
   eq_factoringI:
   "D = add_mset l\<^sub>1 (add_mset l\<^sub>2 D') \<Longrightarrow>
    l\<^sub>1 = t\<^sub>1 \<approx> t\<^sub>1' \<Longrightarrow>
@@ -52,10 +53,10 @@ if
   "is_maximal (l\<^sub>1 \<cdot>l \<mu>) (D \<cdot> \<mu>)"
   "\<not> (t\<^sub>1 \<cdot>t \<mu> \<preceq>\<^sub>t t\<^sub>1' \<cdot>t \<mu>)"
   "type_preserving_on (clause.vars D) \<V> \<mu>" 
-  "term_subst.is_imgu \<mu> {{t\<^sub>1, t\<^sub>2}}"
+  "term.is_imgu \<mu> {{t\<^sub>1, t\<^sub>2}}"
 
 inductive superposition ::
-  "('f, 'v, 'ty) typed_clause \<Rightarrow> ('f, 'v, 'ty) typed_clause \<Rightarrow> ('f, 'v, 'ty) typed_clause \<Rightarrow> bool" where
+  "('t, 'v, 'ty) typed_clause \<Rightarrow> ('t, 'v, 'ty) typed_clause \<Rightarrow> ('t, 'v, 'ty) typed_clause \<Rightarrow> bool" where
   superpositionI:
   "E = add_mset l\<^sub>1 E' \<Longrightarrow>
    D = add_mset l\<^sub>2 D' \<Longrightarrow>
@@ -67,12 +68,12 @@ if
   "\<P> \<in> {Pos, Neg}"
   "infinite_variables_per_type \<V>\<^sub>1"
   "infinite_variables_per_type \<V>\<^sub>2"
-  "term_subst.is_renaming \<rho>\<^sub>1"
-  "term_subst.is_renaming \<rho>\<^sub>2"
+  "term.is_renaming \<rho>\<^sub>1"
+  "term.is_renaming \<rho>\<^sub>2"
   "clause.vars (E \<cdot> \<rho>\<^sub>1) \<inter> clause.vars (D \<cdot> \<rho>\<^sub>2) = {}"
-  "\<not> is_Var t\<^sub>1"
+  "\<not> term.is_Var t\<^sub>1"
   "type_preserving_on (clause.vars (E \<cdot> \<rho>\<^sub>1) \<union> clause.vars (D \<cdot> \<rho>\<^sub>2)) \<V>\<^sub>3 \<mu>" 
-  "term_subst.is_imgu \<mu> {{t\<^sub>1 \<cdot>t \<rho>\<^sub>1, t\<^sub>2 \<cdot>t \<rho>\<^sub>2}}"
+  "term.is_imgu \<mu> {{t\<^sub>1 \<cdot>t \<rho>\<^sub>1, t\<^sub>2 \<cdot>t \<rho>\<^sub>2}}"
   "\<not> (E \<cdot> \<rho>\<^sub>1 \<odot> \<mu> \<preceq>\<^sub>c D \<cdot> \<rho>\<^sub>2 \<odot> \<mu>)"
   "\<not> (c\<^sub>1\<langle>t\<^sub>1\<rangle> \<cdot>t \<rho>\<^sub>1 \<odot> \<mu> \<preceq>\<^sub>t t\<^sub>1' \<cdot>t \<rho>\<^sub>1 \<odot> \<mu>)"
   "\<not> (t\<^sub>2 \<cdot>t \<rho>\<^sub>2 \<odot> \<mu> \<preceq>\<^sub>t t\<^sub>2' \<cdot>t \<rho>\<^sub>2 \<odot> \<mu>)"
@@ -97,31 +98,31 @@ abbreviation eq_resolution_inferences where
 abbreviation superposition_inferences where
   "superposition_inferences \<equiv> { Infer [D, E] C | D E C. superposition D E C }"
 
-definition inferences :: "('f, 'v, 'ty) typed_clause inference set" where
+definition inferences :: "('t, 'v, 'ty) typed_clause inference set" where
   "inferences \<equiv> superposition_inferences \<union> eq_resolution_inferences \<union> eq_factoring_inferences"
 
-abbreviation bottom\<^sub>F :: "('f, 'v, 'ty) typed_clause set" ("\<bottom>\<^sub>F") where
+abbreviation bottom\<^sub>F :: "('t, 'v, 'ty) typed_clause set" ("\<bottom>\<^sub>F") where
   "bottom\<^sub>F \<equiv> {(\<V>, {#}) | \<V>. infinite_variables_per_type \<V> }"
 
 subsubsection \<open>Alternative Specification of the Superposition Rule\<close>
 
 inductive superposition' ::
-  "('f, 'v, 'ty) typed_clause \<Rightarrow> ('f, 'v, 'ty) typed_clause \<Rightarrow> ('f, 'v, 'ty) typed_clause \<Rightarrow> bool"
+  "('t, 'v, 'ty) typed_clause \<Rightarrow> ('t, 'v, 'ty) typed_clause \<Rightarrow> ('t, 'v, 'ty) typed_clause \<Rightarrow> bool"
 where
   superposition'I:
    "infinite_variables_per_type \<V>\<^sub>1 \<Longrightarrow>
     infinite_variables_per_type \<V>\<^sub>2 \<Longrightarrow>
-    term_subst.is_renaming \<rho>\<^sub>1 \<Longrightarrow>
-    term_subst.is_renaming \<rho>\<^sub>2 \<Longrightarrow>
+    term.is_renaming \<rho>\<^sub>1 \<Longrightarrow>
+    term.is_renaming \<rho>\<^sub>2 \<Longrightarrow>
     clause.vars (E \<cdot> \<rho>\<^sub>1) \<inter> clause.vars (D \<cdot> \<rho>\<^sub>2) = {} \<Longrightarrow>
     E = add_mset l\<^sub>1 E' \<Longrightarrow>
     D = add_mset l\<^sub>2 D' \<Longrightarrow>
     \<P> \<in> {Pos, Neg} \<Longrightarrow>
     l\<^sub>1 = \<P> (Upair c\<^sub>1\<langle>t\<^sub>1\<rangle> t\<^sub>1') \<Longrightarrow>
     l\<^sub>2 = t\<^sub>2 \<approx> t\<^sub>2' \<Longrightarrow>
-    \<not> is_Var t\<^sub>1 \<Longrightarrow>
+    \<not> term.is_Var t\<^sub>1 \<Longrightarrow>
     type_preserving_on (clause.vars (E \<cdot> \<rho>\<^sub>1) \<union> clause.vars (D \<cdot> \<rho>\<^sub>2)) \<V>\<^sub>3 \<mu> \<Longrightarrow>
-    term_subst.is_imgu \<mu> {{t\<^sub>1 \<cdot>t \<rho>\<^sub>1, t\<^sub>2 \<cdot>t \<rho>\<^sub>2}} \<Longrightarrow>
+    term.is_imgu \<mu> {{t\<^sub>1 \<cdot>t \<rho>\<^sub>1, t\<^sub>2 \<cdot>t \<rho>\<^sub>2}} \<Longrightarrow>
     \<forall>x \<in> clause.vars E. \<V>\<^sub>1 x = \<V>\<^sub>3 (term.rename \<rho>\<^sub>1 x) \<Longrightarrow>
     \<forall>x \<in> clause.vars D. \<V>\<^sub>2 x = \<V>\<^sub>3 (term.rename \<rho>\<^sub>2 x) \<Longrightarrow>
     type_preserving_on (clause.vars E) \<V>\<^sub>1 \<rho>\<^sub>1 \<Longrightarrow>
@@ -179,21 +180,21 @@ next
 qed
 
 inductive pos_superposition ::
-  "('f, 'v, 'ty) typed_clause \<Rightarrow> ('f, 'v, 'ty) typed_clause \<Rightarrow> ('f, 'v, 'ty) typed_clause \<Rightarrow> bool"
+  "('t, 'v, 'ty) typed_clause \<Rightarrow> ('t, 'v, 'ty) typed_clause \<Rightarrow> ('t, 'v, 'ty) typed_clause \<Rightarrow> bool"
 where
   pos_superpositionI:
    "infinite_variables_per_type \<V>\<^sub>1 \<Longrightarrow>
     infinite_variables_per_type \<V>\<^sub>2 \<Longrightarrow>
-    term_subst.is_renaming \<rho>\<^sub>1 \<Longrightarrow>
-    term_subst.is_renaming \<rho>\<^sub>2 \<Longrightarrow>
+    term.is_renaming \<rho>\<^sub>1 \<Longrightarrow>
+    term.is_renaming \<rho>\<^sub>2 \<Longrightarrow>
     clause.vars (E \<cdot> \<rho>\<^sub>1) \<inter> clause.vars (D \<cdot> \<rho>\<^sub>2) = {} \<Longrightarrow>
     E = add_mset l\<^sub>1 E' \<Longrightarrow>
     D = add_mset l\<^sub>2 D' \<Longrightarrow>
     l\<^sub>1 = c\<^sub>1\<langle>t\<^sub>1\<rangle> \<approx> t\<^sub>1' \<Longrightarrow>
     l\<^sub>2 = t\<^sub>2 \<approx> t\<^sub>2' \<Longrightarrow>
-    \<not> is_Var t\<^sub>1 \<Longrightarrow>
+    \<not> term.is_Var t\<^sub>1 \<Longrightarrow>
     type_preserving_on (clause.vars (E \<cdot> \<rho>\<^sub>1) \<union> clause.vars (D \<cdot> \<rho>\<^sub>2)) \<V>\<^sub>3 \<mu> \<Longrightarrow>
-    term_subst.is_imgu \<mu> {{t\<^sub>1 \<cdot>t \<rho>\<^sub>1, t\<^sub>2 \<cdot>t \<rho>\<^sub>2}} \<Longrightarrow>
+    term.is_imgu \<mu> {{t\<^sub>1 \<cdot>t \<rho>\<^sub>1, t\<^sub>2 \<cdot>t \<rho>\<^sub>2}} \<Longrightarrow>
     \<forall>x \<in> clause.vars E. \<V>\<^sub>1 x = \<V>\<^sub>3 (term.rename \<rho>\<^sub>1 x) \<Longrightarrow>
     \<forall>x \<in> clause.vars D. \<V>\<^sub>2 x = \<V>\<^sub>3 (term.rename \<rho>\<^sub>2 x) \<Longrightarrow>
     type_preserving_on (clause.vars E) \<V>\<^sub>1 \<rho>\<^sub>1 \<Longrightarrow>
@@ -221,21 +222,21 @@ proof (cases rule: pos_superposition.cases)
 qed
 
 inductive neg_superposition ::
-  "('f, 'v, 'ty) typed_clause \<Rightarrow> ('f, 'v, 'ty) typed_clause \<Rightarrow> ('f, 'v, 'ty) typed_clause \<Rightarrow> bool"
+  "('t, 'v, 'ty) typed_clause \<Rightarrow> ('t, 'v, 'ty) typed_clause \<Rightarrow> ('t, 'v, 'ty) typed_clause \<Rightarrow> bool"
 where
   neg_superpositionI:
    "infinite_variables_per_type \<V>\<^sub>1 \<Longrightarrow>
     infinite_variables_per_type \<V>\<^sub>2 \<Longrightarrow>
-    term_subst.is_renaming \<rho>\<^sub>1 \<Longrightarrow>
-    term_subst.is_renaming \<rho>\<^sub>2 \<Longrightarrow>
+    term.is_renaming \<rho>\<^sub>1 \<Longrightarrow>
+    term.is_renaming \<rho>\<^sub>2 \<Longrightarrow>
     clause.vars (E \<cdot> \<rho>\<^sub>1) \<inter> clause.vars (D \<cdot> \<rho>\<^sub>2) = {} \<Longrightarrow>
     E = add_mset l\<^sub>1 E' \<Longrightarrow>
     D = add_mset l\<^sub>2 D' \<Longrightarrow>
     l\<^sub>1 = c\<^sub>1\<langle>t\<^sub>1\<rangle> !\<approx> t\<^sub>1' \<Longrightarrow>
     l\<^sub>2 = t\<^sub>2 \<approx> t\<^sub>2' \<Longrightarrow>
-    \<not> is_Var t\<^sub>1 \<Longrightarrow>
+    \<not> term.is_Var t\<^sub>1 \<Longrightarrow>
     type_preserving_on (clause.vars (E \<cdot> \<rho>\<^sub>1) \<union> clause.vars (D \<cdot> \<rho>\<^sub>2)) \<V>\<^sub>3 \<mu> \<Longrightarrow>
-    term_subst.is_imgu \<mu> {{t\<^sub>1 \<cdot>t \<rho>\<^sub>1, t\<^sub>2 \<cdot>t \<rho>\<^sub>2}} \<Longrightarrow>
+    term.is_imgu \<mu> {{t\<^sub>1 \<cdot>t \<rho>\<^sub>1, t\<^sub>2 \<cdot>t \<rho>\<^sub>2}} \<Longrightarrow>
     \<forall>x \<in> clause.vars E. \<V>\<^sub>1 x = \<V>\<^sub>3 (term.rename \<rho>\<^sub>1 x) \<Longrightarrow>
     \<forall>x \<in> clause.vars D. \<V>\<^sub>2 x = \<V>\<^sub>3 (term.rename \<rho>\<^sub>2 x) \<Longrightarrow>
     type_preserving_on (clause.vars E) \<V>\<^sub>1 \<rho>\<^sub>1 \<Longrightarrow>

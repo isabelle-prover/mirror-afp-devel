@@ -33,7 +33,7 @@ locale nonground_typing_generic =
   to_set_ground = set_literal and welltyped = welltyped +
   nonground_clause_generic
 for
-  welltyped :: "('v, 'ty) var_types \<Rightarrow> ('f,'v) term \<Rightarrow> 'ty \<Rightarrow> bool" and
+  welltyped :: "('v, 'ty) var_types \<Rightarrow> 't \<Rightarrow> 'ty \<Rightarrow> bool" and
   atom_welltyped :: "('v, 'ty) var_types \<Rightarrow> 'a \<Rightarrow> 'ty' \<Rightarrow> bool"
 begin
 

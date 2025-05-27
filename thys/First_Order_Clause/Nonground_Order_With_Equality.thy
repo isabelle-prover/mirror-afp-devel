@@ -17,10 +17,12 @@ sublocale restricted_term_order_lifting where
   by unfold_locales
 
 sublocale literal: nonground_term_based_order_lifting where
-  less = less\<^sub>t and sub_subst = "(\<cdot>t)" and sub_vars = term.vars and sub_to_ground = term.to_ground and
-  sub_from_ground = term.from_ground and map = map_uprod_literal and to_set = uprod_literal_to_set and
+  less = less\<^sub>t and sub_subst = "(\<cdot>t)" and sub_vars = term.vars and
+  sub_to_ground = term.to_ground and sub_from_ground = term.from_ground and
+  map = map_uprod_literal and to_set = uprod_literal_to_set and
   to_ground_map = map_uprod_literal and from_ground_map = map_uprod_literal and
-  ground_map = map_uprod_literal and to_set_ground = uprod_literal_to_set and to_mset = literal_to_mset
+  ground_map = map_uprod_literal and to_set_ground = uprod_literal_to_set and
+  to_mset = literal_to_mset
 rewrites
   "\<And>l \<sigma>. functional_substitution_lifting.subst (\<cdot>t) map_uprod_literal l \<sigma> = literal.subst l \<sigma>" and
   "\<And>l. functional_substitution_lifting.vars term.vars uprod_literal_to_set l = literal.vars l" and

@@ -1,18 +1,31 @@
 theory Term_Typing
-  imports Typing Context_Extra
+  imports
+    Context_Notation
+    Typing
 begin
 
+(* TODO: Notation for welltyped *)
 locale context_compatible_typing =
-  fixes Fun welltyped
+  apply_context_notation +
+  fixes welltyped
   assumes
    welltyped_context_compatible [intro]:
-    "\<And>t t' c \<tau>.
-      \<forall>\<tau>'. welltyped t \<tau>' \<longleftrightarrow> welltyped t' \<tau>' \<Longrightarrow>
-      welltyped (Fun\<langle>c; t\<rangle>) \<tau> \<Longrightarrow>
-      welltyped (Fun\<langle>c; t'\<rangle>) \<tau>"
+    "\<And>t t' c \<tau> \<tau>'.
+      welltyped t \<tau>' \<Longrightarrow>
+      welltyped t' \<tau>' \<Longrightarrow>
+      welltyped c\<langle>t\<rangle> \<tau> \<Longrightarrow>
+      welltyped c\<langle>t'\<rangle> \<tau>"
+
+locale subterm_typing =
+  apply_context_notation +
+  fixes welltyped
+  assumes
+   welltyped_subterm [intro]:
+    "welltyped c\<langle>t\<rangle> \<tau> \<Longrightarrow> \<exists>\<tau>'. welltyped t \<tau>'"
 
 locale term_typing =
   base_typing +
-  context_compatible_typing where welltyped = welltyped
+  context_compatible_typing +
+  subterm_typing
 
 end

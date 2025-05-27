@@ -23,19 +23,6 @@ sublocale typed_functional_substitution where
 
 end
 
-(* TODO: Needed? 
-locale typed_grounding_lifting =
-  typed_functional_substitution_lifting +
-  grounding_lifting
-begin
-
-sublocale typed_grounding_functional_substitution where
-  vars = vars and subst = subst and welltyped = welltyped and to_ground = to_ground and
-  from_ground = from_ground
-  by unfold_locales
-
-end*)
-
 locale witnessed_typed_functional_substitution_lifting =
   typed_functional_substitution_lifting +
   sub: witnessed_typed_functional_substitution where
@@ -55,7 +42,15 @@ locale typed_subst_stability_lifting =
 begin
 
 sublocale typed_subst_stability where welltyped = welltyped and subst = subst and vars = vars
-  by unfold_locales (auto simp add: vars_def to_set_image is_welltyped_def)
+proof unfold_locales
+  fix \<V> \<sigma> expr
+  assume type_preserving_\<sigma>: "sub.base.type_preserving_on (vars expr) \<V> \<sigma>"
+  
+  show "is_welltyped \<V> (expr \<cdot> \<sigma>) \<longleftrightarrow> is_welltyped \<V> expr"
+    using type_preserving_\<sigma> sub.welltyped_subst_stability
+    unfolding vars_def is_welltyped_def subst_def
+    by auto
+qed
 
 end
 

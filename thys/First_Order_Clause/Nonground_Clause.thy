@@ -1,6 +1,7 @@
 theory Nonground_Clause
-  imports 
-    Nonground_Clause_Generic 
+  imports
+    Nonground_Term
+    Nonground_Clause_Generic
     Literal_Functor
 begin
 
@@ -9,7 +10,7 @@ section \<open>Nonground Clauses\<close>
 type_synonym 'f ground_atom = "'f gterm"
 type_synonym ('f, 'v) atom = "('f, 'v) term"
 
-locale nonground_clause = nonground_term_with_context
+locale nonground_clause = "term": nonground_term
 begin
 
 subsection \<open>Nonground Literals\<close>

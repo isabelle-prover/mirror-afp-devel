@@ -12,9 +12,13 @@ session First_Order_Clause = Abstract_Substitution +
     "Regular-Sets"
     Regular_Tree_Relations
     Saturation_Framework_Extensions
+    VeriComp
   theories
     Ground_Term_Typing
     Grounded_Selection_Function
+    IsaFoR_KBO
+    IsaFoR_Nonground_Clause
+    IsaFoR_Nonground_Clause_With_Equality
     Monomorphic_Typing
     Nonground_Entailment
     Nonground_Inference

@@ -31,14 +31,7 @@ abbreviation type_preserving_on :: "'v set \<Rightarrow> ('v, 'ty) var_types \<R
 abbreviation type_preserving where
   "type_preserving \<equiv> type_preserving_on UNIV"
 
-(* TODO: Remove *)
-lemma type_preserving_on_subst_update:
-  assumes "\<V> \<turnstile> id_subst var : \<tau>" "\<V> \<turnstile> update : \<tau>" "type_preserving_on X \<V> \<sigma>"
-  shows "type_preserving_on X \<V> (\<sigma>(var := update))"
-  using assms
-  by auto
-
-lemma type_preserving_on_subst_update': 
+lemma type_preserving_on_subst_update: 
   assumes "type_preserving_on X \<V> \<sigma>" "x \<in> X \<longrightarrow> \<V> \<turnstile> id_subst x : \<V> x \<longrightarrow> \<V> \<turnstile> update : \<V> x"
   shows "type_preserving_on X \<V> (\<sigma>(x := update))"
   using assms
@@ -53,7 +46,9 @@ lemma type_preserving_on_subset:
 lemma type_preserving_on_id_subst [intro]: "type_preserving_on X \<V> id_subst"
   by auto
 
-
+abbreviation type_preserving_unifier where
+  "type_preserving_unifier \<V> \<upsilon> expr expr' \<equiv>
+    type_preserving_on (vars expr \<union> vars expr') \<V> \<upsilon> \<and> expr \<cdot> \<upsilon> = expr' \<cdot> \<upsilon>"
 
 end
 
@@ -73,14 +68,6 @@ sublocale typing "welltyped \<V>"
   using typed_functional_substitution_axioms
   unfolding typed_functional_substitution_axioms_def typed_functional_substitution_def
   by metis
-
-(* TOOD NOW *)
-(* TODO: Quite specific definition 
-abbreviation is_welltyped_ground_instance where
-  "is_welltyped_ground_instance expr \<V> \<gamma> \<equiv>
-    is_ground (expr \<cdot> \<gamma>) \<and>
-    base.type_preserving_on (vars expr) \<V> \<gamma> \<and>
-    infinite_variables_per_type \<V>" *)
 
 end
 
@@ -165,37 +152,27 @@ sublocale base_typed_functional_substitution \<subseteq> typed_functional_substi
 
 locale typed_grounding_functional_substitution =
   typed_functional_substitution + grounding
-begin
-
-(*definition welltyped_ground_instances where
-  "welltyped_ground_instances typed_expr =
-    { to_ground (fst typed_expr \<cdot> \<gamma>) | \<gamma>.
-      is_welltyped_ground_instance (fst typed_expr) (snd typed_expr) \<gamma> }"
-
-lemma typed_ground_instances_ground_instances':
-  "welltyped_ground_instances (expr, \<V>) \<subseteq> ground_instances' expr"
-  unfolding welltyped_ground_instances_def ground_instances'_def
-  by auto*)
-
-end
 
 locale typed_subst_stability = typed_functional_substitution +
-assumes
-  welltyped_subst_stability [simp]: "\<And>\<V> expr \<sigma> \<tau>.
-    base.type_preserving_on (vars expr) \<V> \<sigma> \<Longrightarrow> welltyped \<V> (expr \<cdot> \<sigma>) \<tau> \<longleftrightarrow> welltyped \<V> expr \<tau>"
+  assumes
+    welltyped_subst_stability [simp]: "\<And>\<V> expr \<sigma> \<tau>.
+      base.type_preserving_on (vars expr) \<V> \<sigma> \<Longrightarrow> welltyped \<V> (expr \<cdot> \<sigma>) \<tau> \<longleftrightarrow> welltyped \<V> expr \<tau>"
 begin
 
-lemma welltyped_subst_stability_UNIV [simp]:
-  "base.type_preserving \<V> \<sigma> \<Longrightarrow> welltyped \<V> (expr \<cdot> \<sigma>) \<tau> \<longleftrightarrow> welltyped \<V> expr \<tau>"
-  by simp
+(* TODO: Name *)
+lemma welltyped_subst_stability' [simp]:
+  assumes "base.type_preserving_on X \<V> \<sigma>" "vars expr \<subseteq> X"
+  shows "welltyped \<V> (expr \<cdot> \<sigma>) \<tau> \<longleftrightarrow> welltyped \<V> expr \<tau>"
+  using assms
+  by (simp add: subset_iff)
 
 lemma type_preserving_unifier:
   assumes 
     unifier: "expr \<cdot> \<upsilon> = expr' \<cdot> \<upsilon>" and
-    type_preserving:"base.type_preserving_on (vars expr \<union> vars expr') \<V> \<upsilon>"
-  shows "\<forall>\<tau>. welltyped \<V> expr \<tau> \<longleftrightarrow> welltyped \<V> expr' \<tau>"
+    type_preserving: "base.type_preserving_on (vars expr \<union> vars expr') \<V> \<upsilon>"
+  shows "\<And>\<tau>. welltyped \<V> expr \<tau> \<longleftrightarrow> welltyped \<V> expr' \<tau>"
   using assms
-  by (metis Un_iff welltyped_subst_stability)
+  by (metis UnCI welltyped_subst_stability)
 
 lemma unifier_same_type:
   assumes "base.type_preserving_on (vars expr \<union> vars expr') \<V> \<mu>" "is_unifier \<mu> {expr, expr'}"
@@ -218,21 +195,40 @@ locale base_typed_subst_stability =
   typed_subst_stability where base_subst = subst and base_vars = vars and base_welltyped = welltyped
 begin
 
+lemma type_preserving_ground_compose_ground_subst:
+  assumes "is_ground_subst \<gamma>'" "type_preserving_on UNIV \<V> \<gamma>'" "type_preserving_on X \<V> \<mu>"
+  shows "type_preserving_on X \<V> (\<mu> \<odot> \<gamma>')"
+  using assms
+  by (smt (verit) UNIV_I all_subst_ident_if_ground comp_subst_iff type_preserving_unifier
+      is_ground_subst_is_ground)
+
 lemma type_preserving_on_subst_compose [intro]:
   assumes
-    "type_preserving_on X \<V> \<sigma>"
-    "type_preserving_on (\<Union>(vars ` \<sigma> ` X)) \<V> \<sigma>'"
+    \<sigma>_type_preserving: "type_preserving_on X \<V> \<sigma>" and 
+    \<sigma>'_type_preserving: "type_preserving_on (\<Union>(vars ` \<sigma> ` X)) \<V> \<sigma>'"
   shows "type_preserving_on X \<V> (\<sigma> \<odot> \<sigma>')"
-  using assms
-  unfolding comp_subst_iff
-  by auto
+proof (intro ballI impI)
+  fix x
+  assume 
+    x_in_X: "x \<in> X" and
+    welltyped_x: "\<V> \<turnstile> id_subst x : \<V> x"
+
+  then have "\<V> \<turnstile> \<sigma> x : \<V> x"
+    using assms
+    by blast
+
+  then show "\<V> \<turnstile> (\<sigma> \<odot> \<sigma>') x : \<V> x"
+    unfolding comp_subst_iff
+    using \<sigma>'_type_preserving x_in_X
+    by fastforce
+qed
 
 lemma type_preserving_subst_compose [intro]:
   assumes
-    "type_preserving \<V> \<sigma>"
-    "type_preserving \<V> \<sigma>'"
+    \<sigma>_type_preserving: "type_preserving \<V> \<sigma>" and
+    \<sigma>'_type_preserving: "type_preserving \<V> \<sigma>'"
   shows "type_preserving \<V> (\<sigma> \<odot> \<sigma>')"
-  using type_preserving_on_subst_compose[OF assms(1)] assms(2)
+  using type_preserving_on_subst_compose[OF \<sigma>_type_preserving] \<sigma>'_type_preserving
   by simp 
 
 end
@@ -418,7 +414,7 @@ lemma (in renaming_variables) obtain_merged_\<V>:
     "infinite_variables_per_type_on X \<V>\<^sub>3"
     "\<forall>x\<in>vars expr. \<V>\<^sub>1 x = \<V>\<^sub>3 (rename \<rho>\<^sub>1 x)"
     "\<forall>x\<in>vars expr'. \<V>\<^sub>2 x = \<V>\<^sub>3 (rename \<rho>\<^sub>2 x)"
-proof-
+proof -
 
   have finite: "finite (vars (expr \<cdot> \<rho>\<^sub>1))" "finite (vars (expr' \<cdot> \<rho>\<^sub>2))"
     using finite_vars
@@ -705,5 +701,30 @@ end
 sublocale base_typed_renaming \<subseteq>
   based_typed_renaming where base_vars = vars and base_subst = subst and base_welltyped = welltyped
   by unfold_locales
+
+locale type_preserving_imgu = base_typed_functional_substitution +
+  assumes
+    exists_type_preserving_imgu: 
+    "\<And>\<V> \<upsilon> expr expr'. type_preserving_unifier \<V> \<upsilon> expr expr' \<Longrightarrow>
+      \<exists>\<mu>. \<upsilon> = \<mu> \<odot> \<upsilon> \<and> type_preserving \<V> \<mu> \<and> is_imgu \<mu> {{expr, expr'}}"
+begin
+
+lemma obtain_type_preserving_imgu:
+  fixes \<upsilon> 
+  assumes "type_preserving_unifier \<V> \<upsilon> expr expr'"
+  obtains \<mu>
+  where "\<upsilon> = \<mu> \<odot> \<upsilon>" "type_preserving \<V> \<mu>" "is_imgu \<mu> {{expr, expr'}}"
+  using exists_type_preserving_imgu[OF assms] UNIV_I
+  by metis
+
+lemma obtain_type_preserving_on_imgu:
+  fixes \<upsilon> 
+  assumes "type_preserving_unifier \<V> \<upsilon> expr expr'"
+  obtains \<mu>
+  where "\<upsilon> = \<mu> \<odot> \<upsilon>" "type_preserving_on X \<V> \<mu>" "is_imgu \<mu> {{expr, expr'}}"
+  using exists_type_preserving_imgu[OF assms] UNIV_I
+  by metis
+
+end
 
 end

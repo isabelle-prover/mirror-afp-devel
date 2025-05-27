@@ -28,15 +28,8 @@ proof (intro allI impI)
   fix t t' ctxt
   assume "(t, t') \<in> I\<^sup>\<leftrightarrow>"
   thus "(ctxt\<langle>t\<rangle>\<^sub>G, ctxt\<langle>t'\<rangle>\<^sub>G) \<in> I\<^sup>\<leftrightarrow>"
-  proof (induction ctxt arbitrary: t t')
-    case Hole
-    thus ?case by simp
-  next
-    case (More f ts1 ctxt ts2)
-    thus ?case
-      using assms[unfolded compatible_with_gctxt_def, rule_format]
-      by blast
-  qed
+    using assms compatible_with_gctxtD 
+    by auto
 qed
 
 lemma compatible_with_gctxt_rtrancl:
@@ -152,7 +145,7 @@ lemma predicate_holds_of_mem_rewrite_inside_gctxt:
     preservation: "\<And>t1 t2 ctxt \<sigma>. (t1, t2) \<in> R \<Longrightarrow> P t1 t2 \<Longrightarrow> P ctxt\<langle>t1\<rangle>\<^sub>G ctxt\<langle>t2\<rangle>\<^sub>G"
   shows "P t1 t2"
 proof -
-  from rule_in obtain t1' t2' ctxt \<sigma> where
+  from rule_in obtain t1' t2' ctxt where
     "(t1', t2') \<in> R" and
     "t1 = ctxt\<langle>t1'\<rangle>\<^sub>G" and
     "t2 = ctxt\<langle>t2'\<rangle>\<^sub>G"
@@ -177,7 +170,7 @@ proof (rule Set.subsetI)
     unfolding rewrite_inside_gctxt_def
     unfolding mem_Collect_eq
   proof (intro exI conjI)
-    show "e = (\<box>\<langle>s\<rangle>\<^sub>G, \<box>\<langle>t\<rangle>\<^sub>G)"
+    show "e = (\<box>\<^sub>G\<langle>s\<rangle>\<^sub>G, \<box>\<^sub>G\<langle>t\<rangle>\<^sub>G)"
       unfolding e_def
       by simp
   next

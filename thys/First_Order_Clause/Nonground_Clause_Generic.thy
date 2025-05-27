@@ -1,13 +1,15 @@
 theory Nonground_Clause_Generic
   imports
     Nonground_Term
-    Nonground_Context
     Multiset_Extra
     Multiset_Grounding_Lifting
     Saturation_Framework_Extensions.Clausal_Calculus
 begin
 
 section \<open>Nonground Clauses and Substitutions\<close>
+
+
+subsection \<open>Setup for lifting from terms\<close>
 
 locale term_based_multiset_lifting =
   term_based_lifting where
@@ -16,7 +18,7 @@ locale term_based_multiset_lifting =
 begin
 
 sublocale multiset_grounding_lifting where
-  id_subst = Var and comp_subst = "(\<odot>)"
+  id_subst = Var and comp_subst = comp_subst
   by unfold_locales
 
 end
@@ -30,7 +32,7 @@ locale nonground_clause_generic =
 for
   atom_from_ground :: "'g \<Rightarrow> 'a" and
   atom_to_ground :: "'a \<Rightarrow> 'g" and
-  atom_subst :: "'a \<Rightarrow> ('f, 'v) subst \<Rightarrow> 'a" and
+  atom_subst :: "'a \<Rightarrow> ('v \<Rightarrow> 't) \<Rightarrow> 'a" and
   atom_vars :: "'a \<Rightarrow> 'v set"
 begin
 
@@ -117,8 +119,8 @@ end
 locale groundable_nonground_clause = 
   nonground_clause_generic where atom_subst = atom_subst
 for 
-  atom_subst :: "'a \<Rightarrow> ('f, 'v) subst \<Rightarrow> 'a"  and
-  is_ground_instance :: "'env \<Rightarrow> 'a clause \<Rightarrow> ('f, 'v) subst \<Rightarrow> bool" +
+  atom_subst :: "'a \<Rightarrow> ('v \<Rightarrow> 't) \<Rightarrow> 'a"  and
+  is_ground_instance :: "'env \<Rightarrow> 'a clause \<Rightarrow> ('v \<Rightarrow> 't) \<Rightarrow> bool" +
 assumes is_ground_instance_is_ground:
   "\<And>\<Gamma> C \<gamma>. is_ground_instance \<Gamma> C \<gamma> \<Longrightarrow> clause.is_ground (C \<cdot> \<gamma>)"
 begin

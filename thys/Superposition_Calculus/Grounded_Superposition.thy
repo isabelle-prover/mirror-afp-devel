@@ -9,14 +9,16 @@ theory Grounded_Superposition
 begin
 
 locale grounded_superposition_calculus =
-  superposition_calculus where select = select and welltyped = welltyped +
+  superposition_calculus where select = select and welltyped = welltyped and 
+  from_ground_context_map = from_ground_context_map +
   grounded_selection_function where
   select = select and atom_subst = "(\<cdot>a)" and atom_vars = atom.vars and 
   atom_to_ground = atom.to_ground and atom_from_ground = atom.from_ground and 
   is_ground_instance = is_ground_instance 
   for
-    select :: "('f, 'v :: infinite) atom select" and
-    welltyped :: "('v, 'ty) var_types \<Rightarrow> ('f, 'v) term \<Rightarrow> 'ty \<Rightarrow> bool"
+    select :: "'t atom select" and
+    welltyped :: "('v :: infinite, 'ty) var_types \<Rightarrow> 't \<Rightarrow> 'ty \<Rightarrow> bool" and
+    from_ground_context_map :: "('f gterm \<Rightarrow> 't) \<Rightarrow> 'f ground_context \<Rightarrow> 'c"
 begin
 
 sublocale ground: ground_superposition_calculus where
@@ -28,6 +30,7 @@ rewrites
   "\<And>l\<^sub>G C\<^sub>G. ground.is_strictly_maximal l\<^sub>G C\<^sub>G \<longleftrightarrow> ground_is_strictly_maximal l\<^sub>G C\<^sub>G"
   unfolding is_maximal_rewrite[symmetric] is_strictly_maximal_rewrite[symmetric]
   by unfold_locales simp_all
+
 
 abbreviation is_inference_ground_instance_one_premise where
   "is_inference_ground_instance_one_premise D C \<iota>\<^sub>G \<gamma> \<equiv>
@@ -43,8 +46,8 @@ abbreviation is_inference_ground_instance_one_premise where
 abbreviation is_inference_ground_instance_two_premises where
   "is_inference_ground_instance_two_premises D E C \<iota>\<^sub>G \<gamma> \<rho>\<^sub>1 \<rho>\<^sub>2 \<equiv>
     case (D, E, C) of ((\<V>\<^sub>2, D), (\<V>\<^sub>1, E), (\<V>\<^sub>3, C)) \<Rightarrow>
-      term_subst.is_renaming \<rho>\<^sub>1 \<and>
-      term_subst.is_renaming \<rho>\<^sub>2 \<and>
+      term.is_renaming \<rho>\<^sub>1 \<and>
+      term.is_renaming \<rho>\<^sub>2 \<and>
       clause.vars (E \<cdot> \<rho>\<^sub>1) \<inter> clause.vars (D \<cdot> \<rho>\<^sub>2) = {} \<and>
       inference.is_ground (Infer [D \<cdot> \<rho>\<^sub>2, E \<cdot> \<rho>\<^sub>1] C \<cdot>\<iota> \<gamma>) \<and>
       \<iota>\<^sub>G = inference.to_ground (Infer [D \<cdot> \<rho>\<^sub>2, E \<cdot> \<rho>\<^sub>1] C \<cdot>\<iota> \<gamma>) \<and>
@@ -150,7 +153,7 @@ next
     unfolding ground_instances_def
     by auto
 next
-  fix C :: "('f, 'v, 'ty) typed_clause"
+  fix C :: "('t, 'v, 'ty) typed_clause"
 
   assume "ground_instances (fst C) (snd C) \<inter> ground.G_Bot \<noteq> {}"
 
@@ -165,7 +168,7 @@ next
     unfolding ground_instances_def
     by blast
 next
-  fix \<iota> :: "('f, 'v, 'ty) typed_clause inference"
+  fix \<iota> :: "('t, 'v, 'ty) typed_clause inference"
 
   show
     "the ((Some \<circ> inference_ground_instances) \<iota>) \<subseteq> 
@@ -179,6 +182,11 @@ end
 context superposition_calculus
 begin
 
+abbreviation grounded_inference_ground_instances where
+  "grounded_inference_ground_instances select\<^sub>G \<equiv>
+    grounded_superposition_calculus.inference_ground_instances
+      (\<odot>) Var (\<cdot>t) term.vars term.to_ground term.from_ground (\<prec>\<^sub>t) select\<^sub>G welltyped"
+
 sublocale
   lifting_intersection
     inferences
@@ -190,8 +198,7 @@ sublocale
     "\<lambda>_. ground_superposition_calculus.GRed_F (\<prec>\<^sub>t\<^sub>G)"
     "\<bottom>\<^sub>F"
     "\<lambda>_. uncurried_ground_instances"
-    "\<lambda>select\<^sub>G. Some \<circ>
-      (grounded_superposition_calculus.inference_ground_instances (\<prec>\<^sub>t) select\<^sub>G welltyped)"
+    "\<lambda>select\<^sub>G. Some \<circ> grounded_inference_ground_instances select\<^sub>G"
     typed_tiebreakers
 proof (unfold_locales; (intro ballI)?)
   show "select\<^sub>G\<^sub>s \<noteq> {}"

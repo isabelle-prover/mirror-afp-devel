@@ -1,10 +1,10 @@
 theory Context_Compatible_Order
   imports
-    Ground_Context
+    Context_Notation
     Restricted_Order
 begin
 
-locale restriction_restricted =  
+locale restriction_restricted =
   fixes restriction context_restriction restricted restricted_context
   assumes
     restricted:
@@ -13,21 +13,22 @@ locale restriction_restricted =
 
 locale restricted_context_compatibility =
   restriction_restricted +
-  fixes R Fun
+  apply_context_notation +
+  fixes R :: "'t \<Rightarrow> 't \<Rightarrow> bool"
   assumes
     context_compatible [simp]:
-      "\<And>c t\<^sub>1 t\<^sub>2.
+      "\<And>(c :: 'c)  t\<^sub>1 t\<^sub>2.
         restricted t\<^sub>1 \<Longrightarrow>
         restricted t\<^sub>2 \<Longrightarrow>
         restricted_context c \<Longrightarrow>
-        R (Fun\<langle>c;t\<^sub>1\<rangle>) (Fun\<langle>c;t\<^sub>2\<rangle>) \<longleftrightarrow> R t\<^sub>1 t\<^sub>2"
+        R c\<langle>t\<^sub>1\<rangle> c\<langle>t\<^sub>2\<rangle> \<longleftrightarrow> R t\<^sub>1 t\<^sub>2"
 
 locale context_compatibility = restricted_context_compatibility where
   restriction = UNIV and context_restriction = UNIV and restricted = "\<lambda>_. True" and
   restricted_context = "\<lambda>_. True"
 begin
 
-lemma context_compatibility [simp]: "R (Fun\<langle>c;t\<^sub>1\<rangle>) (Fun\<langle>c;t\<^sub>2\<rangle>) \<longleftrightarrow> R t\<^sub>1 t\<^sub>2"
+lemma context_compatibility [simp]: "R c\<langle>t\<^sub>1\<rangle> c\<langle>t\<^sub>2\<rangle> = R t\<^sub>1 t\<^sub>2"
   by simp
 
 end
@@ -35,14 +36,9 @@ end
 locale context_compatible_restricted_order =
   restricted_total_strict_order +
   restriction_restricted +
-  fixes Fun
+  apply_context_notation +
   assumes less_context_compatible:
-    "\<And>c t\<^sub>1 t\<^sub>2.
-      restricted t\<^sub>1 \<Longrightarrow>
-      restricted t\<^sub>2 \<Longrightarrow>
-      restricted_context c \<Longrightarrow>
-      t\<^sub>1 \<prec> t\<^sub>2 \<Longrightarrow>
-      Fun\<langle>c;t\<^sub>1\<rangle> \<prec> Fun\<langle>c;t\<^sub>2\<rangle>"
+    "\<And>c t\<^sub>1 t\<^sub>2. restricted t\<^sub>1 \<Longrightarrow> restricted t\<^sub>2 \<Longrightarrow> restricted_context c \<Longrightarrow> t\<^sub>1 \<prec> t\<^sub>2 \<Longrightarrow> c\<langle>t\<^sub>1\<rangle> \<prec> c\<langle>t\<^sub>2\<rangle>"
 begin
 
 sublocale restricted_context_compatibility where R = "(\<prec>)"
@@ -59,9 +55,9 @@ lemma context_less_term_lesseq:
     "restricted t'"
     "restricted_context c"
     "restricted_context c'"
-    "\<And>t. restricted t \<Longrightarrow> Fun\<langle>c;t\<rangle> \<prec> Fun\<langle>c';t\<rangle>"
+    "\<And>t. restricted t \<Longrightarrow>  c\<langle>t\<rangle> \<prec> c'\<langle>t\<rangle>"
     "t \<preceq> t'"
-  shows "Fun\<langle>c;t\<rangle> \<prec> Fun\<langle>c';t'\<rangle>"
+  shows "c\<langle>t\<rangle> \<prec> c'\<langle>t'\<rangle>"
   using assms context_compatible dual_order.strict_trans
   by blast
 
@@ -71,9 +67,9 @@ lemma context_lesseq_term_less:
     "restricted t'"
     "restricted_context c"
     "restricted_context c'"
-    "\<And>t. restricted t \<Longrightarrow> Fun\<langle>c;t\<rangle> \<preceq> Fun\<langle>c';t\<rangle>"
+    "\<And>t. restricted t \<Longrightarrow> c\<langle>t\<rangle> \<preceq> c'\<langle>t\<rangle>"
     "t \<prec> t'"
-  shows "Fun\<langle>c;t\<rangle> \<prec> Fun\<langle>c';t'\<rangle>"
+  shows "c\<langle>t\<rangle> \<prec> c'\<langle>t'\<rangle>"
   using assms context_compatible dual_order.strict_trans1
   by meson
 
@@ -81,8 +77,8 @@ end
 
 locale context_compatible_order =
   total_strict_order +
-  fixes Fun
-  assumes less_context_compatible: "t\<^sub>1 \<prec> t\<^sub>2 \<Longrightarrow> Fun\<langle>c;t\<^sub>1\<rangle> \<prec> Fun\<langle>c;t\<^sub>2\<rangle>"
+  apply_context_notation +
+  assumes less_context_compatible: "t\<^sub>1 \<prec> t\<^sub>2 \<Longrightarrow> c\<langle>t\<^sub>1\<rangle> \<prec> c\<langle>t\<^sub>2\<rangle>"
 begin
 
 sublocale restricted: context_compatible_restricted_order where
@@ -91,25 +87,25 @@ sublocale restricted: context_compatible_restricted_order where
   using less_context_compatible
   by unfold_locales simp_all
 
-sublocale context_compatibility "(\<prec>)"
+sublocale context_compatibility where R = "(\<prec>)"
   by unfold_locales
 
-sublocale less_eq: context_compatibility "(\<preceq>)"
+sublocale less_eq: context_compatibility where R = "(\<preceq>)"
   by unfold_locales
 
 lemma context_less_term_lesseq:
   assumes
-   "\<And>t. Fun\<langle>c;t\<rangle> \<prec> Fun\<langle>c';t\<rangle>"
+   "\<And>t. c\<langle>t\<rangle> \<prec> c'\<langle>t\<rangle>"
     "t \<preceq> t'"
-  shows "Fun\<langle>c;t\<rangle> \<prec> Fun\<langle>c';t'\<rangle>"
+  shows "c\<langle>t\<rangle> \<prec> c'\<langle>t'\<rangle>"
   using assms restricted.context_less_term_lesseq
   by blast
 
 lemma context_lesseq_term_less:
   assumes
-    "\<And>t. Fun\<langle>c;t\<rangle> \<preceq> Fun\<langle>c';t\<rangle>"
+    "\<And>t. c\<langle>t\<rangle> \<preceq> c'\<langle>t\<rangle>"
     "t \<prec> t'"
-  shows "Fun\<langle>c;t\<rangle> \<prec> Fun\<langle>c';t'\<rangle>"
+  shows "c\<langle>t\<rangle> \<prec> c'\<langle>t'\<rangle>"
   using assms restricted.context_lesseq_term_less
   by blast
 

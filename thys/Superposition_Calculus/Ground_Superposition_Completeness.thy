@@ -109,7 +109,7 @@ lemma (in ground_superposition_calculus) epsilon_eq_empty_or_singleton:
   "epsilon N C = {} \<or> (\<exists>s t. epsilon N C = {(s, t)})"
 proof -
   have "\<exists>\<^sub>\<le>\<^sub>1 (x, y). \<exists>C'.
-    C = add_mset (Pos (Upair x y)) C' \<and> is_strictly_maximal (Pos (Upair x y)) C \<and> y \<prec>\<^sub>t x"
+    C = add_mset (x \<approx> y) C' \<and> is_strictly_maximal (x \<approx> y) C \<and> y \<prec>\<^sub>t x"
     by (rule Uniq_prodI)
        (metis (mono_tags, lifting) Upair_inject
         add_mset_remove_trivial insert_noteq_member
@@ -120,8 +120,8 @@ proof -
 
   hence Uniq_epsilon: "\<exists>\<^sub>\<le>\<^sub>1 (x, y). \<exists>C'.
     C \<in> N \<and>
-    C = add_mset (Pos (Upair x y)) C' \<and> select C = {#} \<and>
-    is_strictly_maximal (Pos (Upair x y)) C \<and> y \<prec>\<^sub>t x \<and>
+    C = add_mset (x \<approx> y) C' \<and> select C = {#} \<and>
+    is_strictly_maximal  (x \<approx> y) C \<and> y \<prec>\<^sub>t x \<and>
     (let R\<^sub>C = \<Union>D \<in> {D \<in> N. D \<prec>\<^sub>c C}. epsilon {E \<in> N. E \<preceq>\<^sub>c D} D in
       \<not> upair ` (rewrite_inside_gctxt R\<^sub>C)\<^sup>\<down> \<TTurnstile> C \<and>
       \<not> upair ` (rewrite_inside_gctxt (insert (x, y) R\<^sub>C))\<^sup>\<down> \<TTurnstile> C' \<and>
@@ -147,7 +147,8 @@ definition (in ground_superposition_calculus) rewrite_sys where
 definition (in ground_superposition_calculus) rewrite_sys' where
   "rewrite_sys' N \<equiv> (\<Union>C \<in> N. epsilon N C)"
 
-lemma (in ground_superposition_calculus) rewrite_sys_alt: "rewrite_sys' {D \<in> N. D \<prec>\<^sub>c C} = rewrite_sys N C"
+lemma (in ground_superposition_calculus) rewrite_sys_alt:
+  "rewrite_sys' {D \<in> N. D \<prec>\<^sub>c C} = rewrite_sys N C"
   unfolding rewrite_sys'_def rewrite_sys_def
 proof (rule SUP_cong)
   show "{D \<in> N. D \<prec>\<^sub>c C} = {D \<in> N. D \<prec>\<^sub>c C}" ..
@@ -291,11 +292,11 @@ proof -
       using one_step_implies_multp[of "{#s, t#}" "{#u, v#}" _ "{#}"]
       by simp
 
-    hence "Pos (Upair u v) \<prec>\<^sub>l Pos (Upair s t)"
+    hence "u \<approx> v \<prec>\<^sub>l s \<approx> t"
       by (simp add: less\<^sub>l_def)
 
-    moreover hence "\<forall>L \<in># D'. L \<prec>\<^sub>l Pos (Upair s t)"
-      using \<open>\<forall>L \<in># D'. L \<prec>\<^sub>l Pos (Upair u v)\<close>
+    moreover hence "\<forall>L \<in># D'. L \<prec>\<^sub>l s \<approx> t"
+      using \<open>\<forall>L \<in># D'. L \<prec>\<^sub>l u \<approx> v\<close>
       by fastforce
 
     ultimately show "D \<prec>\<^sub>c C"
@@ -429,7 +430,7 @@ proof (rule ccontr)
     using rule2_in' epsilon_eq_empty_or_singleton by fastforce
 
   show False
-  proof (cases "ctxt = \<box>")
+  proof (cases "ctxt = \<box>\<^sub>G")
     case True
     hence "\<not> (ctxt\<langle>l\<rangle>\<^sub>G \<prec>\<^sub>t l)" and "\<not> (l \<prec>\<^sub>t ctxt\<langle>l\<rangle>\<^sub>G)"
       by (simp_all add: irreflpD)
@@ -448,7 +449,7 @@ proof (rule ccontr)
 
     moreover have "r1 \<noteq> r2"
       using \<open>ctxt\<langle>r2\<rangle>\<^sub>G \<noteq> r1\<close>
-      unfolding \<open>ctxt = \<box>\<close>
+      unfolding \<open>ctxt = \<box>\<^sub>G\<close>
       by simp
 
     ultimately show ?thesis

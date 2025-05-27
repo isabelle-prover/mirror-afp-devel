@@ -5,7 +5,7 @@ theory Nonground_Typing_With_Equality
     Nonground_Clause_With_Equality
 begin
 
-type_synonym ('f, 'v, 'ty) typed_clause = "('v, 'ty) var_types \<times> ('f, 'v) atom clause "
+type_synonym ('t, 'v, 'ty) typed_clause = "('v, 'ty) var_types \<times> 't clause"
 
 locale nonground_typing =
   nonground_clause +
@@ -79,12 +79,35 @@ lemma type_preserving_literals_empty [intro]: "type_preserving_literals \<V>' {#
   unfolding type_preserving_literals_def
   by simp
 
+lemma \<P>_simps:
+  assumes "\<P> \<in> {Pos, Neg}"
+  shows 
+    "\<And>a \<sigma>. \<P> a \<cdot>l \<sigma> = \<P> (a \<cdot>a \<sigma>)"
+    "\<And>\<V> a. literal.is_welltyped \<V> (\<P> a) \<longleftrightarrow> atom.is_welltyped \<V> a"
+    "\<And>a. literal.vars (\<P> a) = atom.vars a"
+    "\<And>a. atm_of (\<P> a) = a"
+    "\<And>\<V> a. type_preserving_literal \<V> (\<P> a) \<longleftrightarrow> type_preserving_atom \<V> a"
+  using assms
+  by (auto simp: literal_is_welltyped_iff_atm_of)
+
 (* TODO: Lifting? *)
 lemma type_preserving_atom_subst [simp]:
   assumes "type_preserving_on (atom.vars a) \<V> \<sigma>"
   shows "type_preserving_atom \<V> (a \<cdot>a \<sigma>) \<longleftrightarrow> type_preserving_atom \<V> a"
   using assms
-  by (cases a) simp
+proof (cases a)
+  case (Upair t t')
+
+  have type_preserving_\<sigma>: "type_preserving_on (term.vars t \<union> term.vars t') \<V> \<sigma>"
+    using assms
+    unfolding Upair
+    by auto
+    
+  then show ?thesis
+    unfolding Upair
+    using term.welltyped_subst_stability
+    by auto
+qed
 
 lemma type_preserving_literal_subst [simp]:
   assumes "type_preserving_on (literal.vars l) \<V> \<sigma>"
@@ -125,17 +148,7 @@ lemma type_preserving_literals_renaming [simp]:
   using assms 
   by (induction C) (auto simp: Set.ball_Un)
 
-(* TODO: Move *)
-lemma \<P>_simps:
-  assumes "\<P> \<in> {Pos, Neg}"
-  shows 
-    "\<And>a \<sigma>. \<P> a \<cdot>l \<sigma> = \<P> (a \<cdot>a \<sigma>)"
-    "\<And>\<V> a. literal.is_welltyped \<V> (\<P> a) \<longleftrightarrow> atom.is_welltyped \<V> a"
-    "\<And>a. literal.vars (\<P> a) = atom.vars a"
-    "\<And>a. atm_of (\<P> a) = a"
-    "\<And>\<V> a. type_preserving_literal \<V> (\<P> a) \<longleftrightarrow> type_preserving_atom \<V> a"
-  using assms
-  by (auto simp: literal_is_welltyped_iff_atm_of)
+
 
 end
 

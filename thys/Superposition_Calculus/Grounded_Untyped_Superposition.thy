@@ -5,21 +5,15 @@ begin
 context untyped_superposition_calculus
 begin
 
-sublocale typed: superposition_calculus where welltyped = "\<lambda>_ _ (). True"
-proof unfold_locales
-  show "right_unique (\<lambda>_ (). True)"
-    unfolding right_unique_def
-    by auto
-next
-  fix \<tau>
-  show "\<exists>b. term.vars b = {} \<and> (case \<tau> of () \<Rightarrow> True)"
-    by (auto simp: term.ground_exists split: unit.splits)
-qed (auto split: unit.splits)
+sublocale typed: superposition_calculus where
+  welltyped = "\<lambda>_ _ (). True"
+  by unfold_locales
+     (auto intro: term.ground_exists simp: term.exists_imgu right_unique_def split: unit.splits)
 
 declare
   typed.term.welltyped_renaming [simp del]
   typed.term.welltyped_subst_stability [simp del]
-  typed.term.welltyped_subst_stability_UNIV [simp del]
+  typed.term.welltyped_subst_stability' [simp del]
 
 lemma all_infinite_variables_per_type [intro]: 
   fixes \<V> :: "'v \<Rightarrow> unit"
@@ -102,7 +96,7 @@ next
   qed
 qed
 
-abbreviation bottom\<^sub>F :: "('f, 'v) atom clause set" where
+abbreviation bottom\<^sub>F :: "'t clause set" where
   "bottom\<^sub>F \<equiv> {{#}}"
 
 abbreviation eq_factoring_inferences where
@@ -114,7 +108,7 @@ abbreviation eq_resolution_inferences where
 abbreviation superposition_inferences where
   "superposition_inferences \<equiv> { Infer [D, E] C | D E C. superposition D E C }"
 
-definition inferences :: "('f, 'v) atom clause inference set" where
+definition inferences :: "'t clause inference set" where
   "inferences \<equiv> superposition_inferences \<union> eq_resolution_inferences \<union> eq_factoring_inferences"
 
 abbreviation empty_typed :: "'C \<Rightarrow> (('v \<Rightarrow> unit) \<times> 'C)" where
@@ -189,7 +183,7 @@ lemma typed_inferences [simp]: "typed.inferences = empty_typed_inference ` infer
   by auto
 
 (* TODO: tiebreaker ? *)
-sublocale standard_lifting where 
+sublocale standard_lifting where
   Bot_F = bottom\<^sub>F and
   Inf_F = inferences and
   Bot_G  = typed.bottom\<^sub>F and

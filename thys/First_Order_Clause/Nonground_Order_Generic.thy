@@ -22,8 +22,10 @@ locale nonground_term_based_order_lifting =
 for less\<^sub>t
 
 locale nonground_order_generic =
-  "term": nonground_term +
-
+  nonground_term_with_context where
+  Var = "Var :: 'v \<Rightarrow> 't" and term_to_ground = "term_to_ground :: 't \<Rightarrow> 'f gterm" and
+  apply_context = "apply_context :: 'c \<Rightarrow> 't \<Rightarrow> 't" +
+ 
   nonground_clause_generic where
   atom_subst = atom_subst and atom_from_ground = atom_from_ground +
 
@@ -41,8 +43,8 @@ locale nonground_order_generic =
 
   ground: atom_to_mset where pos_to_mset = ground_pos_to_mset and neg_to_mset = ground_neg_to_mset
 for 
-  pos_to_mset :: "'a \<Rightarrow> ('f, 'v) term multiset" and 
-  atom_subst :: "'a \<Rightarrow> ('f, 'v) subst \<Rightarrow> 'a" and
+  pos_to_mset :: "'a \<Rightarrow> 't multiset" and 
+  atom_subst :: "'a \<Rightarrow> ('v \<Rightarrow> 't) \<Rightarrow> 'a" and
   atom_from_ground :: "'a\<^sub>G \<Rightarrow> 'a" and
   ground_pos_to_mset ground_neg_to_mset :: "'a\<^sub>G \<Rightarrow> 'f gterm multiset" +
 assumes
@@ -269,7 +271,8 @@ rewrites
   less\<^sub>c\<^sub>G_rewrite [simp]: "multiset_extension.multiset_extension (\<prec>\<^sub>l\<^sub>G) (\<lambda>x. x) = (\<prec>\<^sub>c\<^sub>G)" and
   is_maximal_rewrite [simp]: "\<And>l\<^sub>G C\<^sub>G. ground.is_maximal l\<^sub>G C\<^sub>G \<longleftrightarrow> ground_is_maximal l\<^sub>G C\<^sub>G" and
   is_strictly_maximal_rewrite [simp]:
-  "\<And>l\<^sub>G C\<^sub>G. ground.is_strictly_maximal l\<^sub>G C\<^sub>G \<longleftrightarrow> ground_is_strictly_maximal l\<^sub>G C\<^sub>G"
+  "\<And>l\<^sub>G C\<^sub>G. ground.is_strictly_maximal l\<^sub>G C\<^sub>G \<longleftrightarrow> ground_is_strictly_maximal l\<^sub>G C\<^sub>G" and
+  "ground.literal_order_restriction = UNIV"
 proof (unfold_locales; (rule ground.inj_pos_to_mset ground.inj_neg_to_mset ground.pos_neg_neq)?)
 
   interpret ground: ground_order_generic where
@@ -323,6 +326,9 @@ proof (unfold_locales; (rule ground.inj_pos_to_mset ground.inj_neg_to_mset groun
       reflclp_iff
     by (metis (lifting) clause.ground_sub_in_ground clause.sub_in_ground_is_ground 
         clause_from_ground_remove1_mset literal.obtain_grounding)
+
+  show "{b. set_mset (ground.literal_to_mset b) \<subseteq> UNIV} = UNIV"
+    by auto
 next
 
   interpret multiset_extension "(\<prec>\<^sub>l\<^sub>G)" "\<lambda>x. x"
