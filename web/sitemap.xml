@@ -11,6 +11,9 @@
     <loc>https://isa-afp.org/entries/Munta_Model_Checker.html</loc>
     <lastmod>2025-05-22T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>https://isa-afp.org/entries/Context_Free_Grammar.html</loc>
+    <lastmod>2025-05-21T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>https://isa-afp.org/entries/Shallow_Expressions.html</loc>
     <lastmod>2025-05-16T00:00:00+00:00</lastmod>
   </url><url>
@@ -2887,6 +2890,8 @@
   </url><url>
     <loc>https://isa-afp.org/sessions/attack_trees/</loc>
   </url><url>
+    <loc>https://isa-afp.org/authors/stimpfle/</loc>
+  </url><url>
     <loc>https://isa-afp.org/authors/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/auto2_hol/</loc>
@@ -3020,6 +3025,8 @@
     <loc>https://isa-afp.org/sessions/broadcast_psi/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/langenstein/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/authors/philipp/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/paleo/</loc>
   </url><url>
@@ -3308,6 +3315,8 @@
     <loc>https://isa-afp.org/sessions/containers/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/containers-benchmarks/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/sessions/context_free_grammar/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/continued_fractions/</loc>
   </url><url>
@@ -3613,6 +3622,8 @@
   </url><url>
     <loc>https://isa-afp.org/authors/immler/</loc>
   </url><url>
+    <loc>https://isa-afp.org/authors/lehr/</loc>
+  </url><url>
     <loc>https://isa-afp.org/authors/mitterwallner/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/factor_algebraic_polynomial/</loc>
@@ -3634,6 +3645,8 @@
     <loc>https://isa-afp.org/sessions/featherweightjava/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/brandt/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/authors/krayer/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/fermat3_4/</loc>
   </url><url>
@@ -4275,6 +4288,8 @@
   </url><url>
     <loc>https://isa-afp.org/authors/liu/</loc>
   </url><url>
+    <loc>https://isa-afp.org/authors/taskin/</loc>
+  </url><url>
     <loc>https://isa-afp.org/sessions/kad/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/engelhardt/</loc>
@@ -4560,6 +4575,8 @@
     <loc>https://isa-afp.org/authors/wassell/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/markov_models/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/authors/gschossmann/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/olm/</loc>
   </url><url>

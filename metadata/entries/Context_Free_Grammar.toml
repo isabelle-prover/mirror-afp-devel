@@ -1,0 +1,49 @@
+title = "Context-Free Grammars and Languages"
+date = 2025-05-21
+topics = [
+  "Computer science/Automata and formal languages",
+]
+abstract = """
+This is a basic library of definitions and results about context-free grammars and languages.
+It includes context-free grammars and languages, parse trees, Chomsky normal form,
+pumping lemmas and the relationship of right-linear grammars to finite automata."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.nipkow]
+email = "nipkow_email"
+
+[authors.gschossmann]
+email = "gschossmann_email"
+
+[authors.krayer]
+email = "krayer_email"
+
+[authors.lehr]
+email = "lehr_email"
+
+[authors.philipp]
+email = "philipp_email"
+
+[authors.stimpfle]
+
+[authors.taskin]
+email = "taskin_email"
+
+[authors.yamada]
+email = "yamada_email"
+
+[contributors]
+
+[notify]
+nipkow = "nipkow_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

@@ -18,6 +18,29 @@
   "year": "2025"
  },
  {
+  "abstract": "This is a basic library of definitions and results about context-free grammars and languages. It includes context-free grammars and languages, parse trees, Chomsky normal form, pumping lemmas and the relationship of right-linear grammars to finite automata.",
+  "authors": [
+   "Tobias Nipkow",
+   "Markus Gschoßmann",
+   "Felix Krayer",
+   "Fabian Lehr",
+   "Bruno Philipp",
+   "August Martin Stimpfle",
+   "Kaan Taskin",
+   "Akihisa Yamada"
+  ],
+  "link": "/entries/Context_Free_Grammar.html",
+  "shortname": "Context_Free_Grammar",
+  "title": "Context-Free Grammars and Languages",
+  "topic_links": [
+   "/topics/computer-science/automata-and-formal-languages/"
+  ],
+  "topics": [
+   "Computer science/Automata and formal languages"
+  ],
+  "year": "2025"
+ },
+ {
   "abstract": "Most verification techniques use expressions, for example when assigning to variables or forming assertions over the state. Deep embeddings provide such expressions using a datatype, which allows queries over the syntax, such as calculating the free variables, and performing substitutions. Shallow embeddings, in contrast, model expressions as query functions over the state type, and are more amenable to automating verification tasks. The goal of this library is provide an intuitive implementation of shallow expressions, which nevertheless provides many of the benefits of a deep embedding. We harness the Optics library to provide an algebraic semantics for state variables, and use syntax translations to provide an intuitive lifted expression syntax. Furthermore, we provide a variety of meta-logic-style queries on expressions, such as dependencies on a state variable, and substitution of a variable for an expression. We also provide proof methods, based on the simplifier, to automate the associated proof tasks.",
   "authors": [
    "Simon Foster"

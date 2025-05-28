@@ -12,6 +12,13 @@
     <category>Tools</category>
 </item>
 <item>
+  <title>Context-Free Grammars and Languages</title>
+  <link>https://isa-afp.org/entries/Context_Free_Grammar.html</link>
+  <pubDate>Wed, 21 May 2025 00:00:00 +0000</pubDate>
+  <description>Context-Free Grammars and Languages in the AFP</description>
+    <category>Computer science/Automata and formal languages</category>
+</item>
+<item>
   <title>Language Partitioning for Mission-time Linear Temporal Logic</title>
   <link>https://isa-afp.org/entries/Mission_Time_LTL_Language_Partition.html</link>
   <pubDate>Mon, 03 Mar 2025 00:00:00 +0000</pubDate>

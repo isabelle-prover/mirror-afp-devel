@@ -2529,6 +2529,24 @@ host = [
 [grov.homepages]
 grov_homepage = "http://homepages.inf.ed.ac.uk/ggrov"
 
+[gschossmann]
+name = "Markus Gschoßmann"
+orcid = "0009-0005-5058-5806"
+
+[gschossmann.emails]
+
+[gschossmann.emails.gschossmann_email]
+user = [
+  "markus",
+  "gschossmann",
+]
+host = [
+  "tum",
+  "de",
+]
+
+[gschossmann.homepages]
+
 [guerraoui]
 name = "Rachid Guerraoui"
 
@@ -3789,6 +3807,23 @@ host = [
 [krauss.homepages]
 krauss_homepage = "http://www.in.tum.de/~krauss"
 
+[krayer]
+name = "Felix Krayer"
+
+[krayer.emails]
+
+[krayer.emails.krayer_email]
+user = [
+  "felix",
+  "krayer",
+]
+host = [
+  "tum",
+  "de",
+]
+
+[krayer.homepages]
+
 [kreuzer]
 name = "Katharina Kreuzer"
 
@@ -4062,6 +4097,23 @@ host = [
 ]
 
 [leek.homepages]
+
+[lehr]
+name = "Fabian Lehr"
+
+[lehr.emails]
+
+[lehr.emails.lehr_email]
+user = [
+  "fabian",
+  "lehr",
+]
+host = [
+  "tum",
+  "de",
+]
+
+[lehr.homepages]
 
 [leustean]
 name = "Laurentiu Leustean"
@@ -5617,6 +5669,22 @@ name = "Danijela Petrovic"
 [petrovic.homepages]
 petrovic_homepage = "http://www.matf.bg.ac.rs/~danijela"
 
+[philipp]
+name = "Bruno Philipp"
+
+[philipp.emails]
+
+[philipp.emails.philipp_email]
+user = [
+  "ge95fek",
+]
+host = [
+  "mytum",
+  "de",
+]
+
+[philipp.homepages]
+
 [pierzchalski]
 name = "Edward Pierzchalski"
 
@@ -7141,6 +7209,13 @@ host = [
 [stevens.homepages]
 stevens_homepage = "https://www21.in.tum.de/team/stevensl"
 
+[stimpfle]
+name = "August Martin Stimpfle"
+
+[stimpfle.emails]
+
+[stimpfle.homepages]
+
 [stock]
 name = "Benedikt Stock"
 
@@ -7475,6 +7550,22 @@ host = [
 ]
 
 [tasch.homepages]
+
+[taskin]
+name = "Kaan Taskin"
+
+[taskin.emails]
+
+[taskin.emails.taskin_email]
+user = [
+  "kaantaskin2022",
+]
+host = [
+  "gmail",
+  "com",
+]
+
+[taskin.homepages]
 
 [taylor]
 name = "Ramsay G. Taylor"
