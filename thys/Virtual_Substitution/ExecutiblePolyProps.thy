@@ -851,13 +851,12 @@ lemma get_if_const_insertion :
   assumes "get_if_const (p::real mpoly) = Some r"
   shows "insertion f p = r"
 proof-
-  have "Set.is_empty (vars p)"
-    apply(cases "Set.is_empty (vars p)")
-     apply(simp) using assms by(simp)
-  then have "(MPoly_Type.coeff p 0) = r"
-    using assms by simp
-  then show ?thesis
-    by (metis Set.is_empty_def \<open>Set.is_empty (vars p)\<close> empty_iff insertion_irrelevant_vars insertion_trivial)
+  have \<open>vars p = {}\<close>
+    using assms by (simp split: if_splits)
+  moreover have \<open>r = MPoly_Type.coeff p 0\<close>
+    using assms \<open>vars p = {}\<close> by simp
+  ultimately show ?thesis
+    by (auto simp flip: insertion_trivial intro: insertion_irrelevant_vars)
 qed
 
 subsubsection "Yet more Degree Lemmas"

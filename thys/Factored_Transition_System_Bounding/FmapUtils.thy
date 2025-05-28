@@ -17,8 +17,8 @@ lemma IN_FDOM_DRESTRICT_DIFF:
   fixes vs v f
   assumes "\<not>(v \<in> vs)" "fmdom' f \<subseteq> fdom" "v \<in> fmdom' f"
   shows "v \<in> fmdom' (fmrestrict_set (fdom - vs) f)"
-  using assms
-  by (metis DiffI Int_def Int_iff Set.filter_def fmdom'_filter fmfilter_alt_defs(4) inf.order_iff)
+  using assms fmdom'_filter
+  by (auto simp add: fmfilter_alt_defs(4))
 
 lemma disj_dom_drest_fupdate_eq: "
   disjnt (fmdom' x) vs \<Longrightarrow> (fmrestrict_set vs s = fmrestrict_set vs (x ++ s))

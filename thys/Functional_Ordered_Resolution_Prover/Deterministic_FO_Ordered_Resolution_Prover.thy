@@ -49,8 +49,7 @@ proof -
     note ih = this(1) and f = this(2)
     show ?case
       unfolding f remdups_gen.simps ih[OF f, unfolded f] mset.simps
-      by (metis finite_set list.simps(15) mset_set.insert_remove removeAll_filter_not_eq
-          remove_code(1) remove_def)
+      by (auto simp add: mset_set.insert_remove)
   qed simp
   then show ?thesis
     by simp

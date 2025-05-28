@@ -610,9 +610,10 @@ proof (induct n arbitrary: s h C)
           h' = FractionalHeap.normalize (get_fh H') \<and> Some H' = Some h'' \<oplus> Some hj' \<oplus> Some hf \<and> safe n (Some \<Gamma>) C' (s', h'') S"
       using Suc.prems(1) safeSomeE(3) by blast
     then have "safe n (Some \<Gamma>) C' (s', h'') (Set.filter (bounded \<circ> snd) S)"
-      using Suc(1)[of C' s' h''] apply simp
-      by (metis (no_types, opaque_lifting) \<open>\<lbrakk>safe n \<Delta> C' (s', h'') S; bounded h''\<rbrakk> \<Longrightarrow> safe n \<Delta> C' (s', h'') (Set.filter (bounded \<circ> snd) S)\<close> \<open>full_ownership (get_fh H') \<and> semi_consistent \<Gamma> v0 H' \<and> sat_inv s' hj' \<Gamma> \<and> h' = FractionalHeap.normalize (get_fh H') \<and> Some H' = Some h'' \<oplus> Some hj' \<oplus> Some hf \<and> safe n (Some \<Gamma>) C' (s', h'') S\<close> asm0(1) bounded_smaller full_ownership_then_bounded larger3 plus_comm)
-
+      using Suc(1) [of C' s' h''] asm0(1) by (auto split: if_splits)
+        (metis (lifting)
+          \<open>full_ownership (get_fh H') \<and> semi_consistent \<Gamma> v0 H' \<and> sat_inv s' hj' \<Gamma> \<and> h' = FractionalHeap.normalize (get_fh H') \<and> Some H' = Some h'' \<oplus> Some hj' \<oplus> Some hf \<and> safe n (Some \<Gamma>) C' (s', h'') S\<close>
+          bounded_smaller_sum full_ownership_then_bounded get_fh.simps plus.simps(3))
     then show "\<exists>h'' H' hj'.
           full_ownership (get_fh H') \<and>
           semi_consistent \<Gamma> v0 H' \<and>

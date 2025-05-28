@@ -699,10 +699,7 @@ fun can_merge_by_intersection :: "'a ts \<Rightarrow> 'a ts \<Rightarrow> bool" 
 
 lemma can_merge_by_intersection_code[code] : 
   "can_merge_by_intersection x1 x2 = ts.bex x1 (\<lambda> \<alpha> . ts.memb \<alpha> x2)"
-  unfolding can_merge_by_intersection.simps
-  unfolding ts.memb_correct[OF ts.invar]
-  unfolding ts.bex_correct[OF ts.invar]
-  by (meson notin_fset) 
+  by (auto simp add: ts.memb_correct[OF ts.invar] ts.bex_correct[OF ts.invar])
 
 
 lemma can_merge_by_intersection_validity :

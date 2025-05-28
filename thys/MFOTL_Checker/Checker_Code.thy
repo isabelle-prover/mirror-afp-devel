@@ -159,7 +159,7 @@ lemma Inf_Min:
   assumes "P j"
   shows "Inf (Collect P) = Min (Set.filter P {..j})"
   using Min_in[where ?A="Set.filter P {..j}"] assms
-  by (auto simp: Set.filter_def intro: cInf_lower intro!: antisym[OF _ Min_le])
+  by (auto simp: intro: cInf_lower intro!: antisym[OF _ Min_le])
     (metis Inf_nat_def1 empty_iff mem_Collect_eq)
 
 lemma progress_Eventually_code: "progress \<sigma> (Formula.Eventually I \<phi>) j =
@@ -820,7 +820,7 @@ lemma coset_subset_set_code[code]:
 lemma is_empty_coset[code]: "Set.is_empty (List.coset (xs :: _ :: universe list)) =
   (case universe of None \<Rightarrow> False
   | Some zs \<Rightarrow> \<forall>z \<in> set zs. z \<in> set xs)"
-  using coset_subset_set_code[of xs] by (auto simp: Set.is_empty_def split: option.splits dest: infinite finite)
+  using coset_subset_set_code[of xs] by (auto simp: split: option.splits dest: infinite finite)
 
 subsection \<open>Exported functions\<close>
 
@@ -862,7 +862,7 @@ lift_definition abs_part :: "(event_data set \<times> 'a) list \<Rightarrow> (ev
   by (auto simp: partition_on_def disjoint_def)
 
 lemma rm_code[code_unfold]: "rm S = Set.filter (\<lambda>(i,j). i < j) S"
-  unfolding Set.filter_def by auto
+  by auto
 
 export_code interval enat nat_of_integer integer_of_nat
   STT SSkip VSkip Formula.TT Regex.Skip Inl EInt Formula.Var Leaf set part_hd sum_nat sub_nat subsvals

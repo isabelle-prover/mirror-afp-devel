@@ -96,7 +96,7 @@ lemma possible_steps_0:
 
 lemma first_step_select:
   "(s', t) |\<in>| possible_steps drinks 0 r aa b \<Longrightarrow> s' = 1 \<and> t = select"
-  apply (simp add: possible_steps_def fimage_def ffilter_def Abs_fset_inverse Set.filter_def drinks_def)
+  apply (simp add: possible_steps_def fimage_def ffilter_def Abs_fset_inverse drinks_def)
   apply safe
   by (simp_all add: transitions)
 
@@ -263,14 +263,14 @@ lemma drinks_no_possible_steps_1:
 
 lemma possible_steps_0_not_select: "a \<noteq> STR ''select'' \<Longrightarrow>
        possible_steps drinks 0 <> a b = {||}"
-  apply (simp add: possible_steps_def ffilter_def fset_both_sides Abs_fset_inverse Set.filter_def drinks_def)
+  apply (simp add: possible_steps_def ffilter_def fset_both_sides Abs_fset_inverse drinks_def)
   apply safe
   by (simp_all add: select_def)
 
 lemma possible_steps_select_wrong_arity: "a = STR ''select'' \<Longrightarrow>
        length b \<noteq> 1 \<Longrightarrow>
        possible_steps drinks 0 <> a b = {||}"
-  apply (simp add: possible_steps_def ffilter_def fset_both_sides Abs_fset_inverse Set.filter_def drinks_def)
+  apply (simp add: possible_steps_def ffilter_def fset_both_sides Abs_fset_inverse drinks_def)
   apply safe
   by (simp_all add: select_def)
 

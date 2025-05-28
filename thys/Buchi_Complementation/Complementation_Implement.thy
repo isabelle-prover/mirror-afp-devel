@@ -12,7 +12,7 @@ begin
   type_synonym 'state items = "'state \<rightharpoonup> item"
 
   type_synonym state = "(nat \<times> item) list"
-  abbreviation "item_rel \<equiv> nat_rel \<times>\<^sub>r bool_rel"
+  abbreviation "item_rel \<equiv> nat_rel \<times>\<^sub>r bool_rel"          
   abbreviation "state_rel \<equiv> \<langle>nat_rel, item_rel\<rangle> list_map_rel"
 
   abbreviation "pred A a q \<equiv> {p. q \<in> transition A a p}"
@@ -839,7 +839,7 @@ begin
       by (auto simp: list_set_rel_def in_br_conv)
 
     schematic_goal items_7: "(?f :: ?'a, items_5 A) \<in> ?R"
-      unfolding items_5_def Let_def Set.filter_def by autoref
+      unfolding items_5_def Let_def Set.filter_eq by autoref
 
   end
 

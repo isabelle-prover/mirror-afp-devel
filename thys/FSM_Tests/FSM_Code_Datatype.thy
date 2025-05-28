@@ -470,7 +470,7 @@ proof (cases "Mapping.lookup h' (q,x)")
     by auto
   moreover have "?A q x y = None"
     unfolding h_obs_impl.simps Let_def None
-    by (simp add: Set.filter_def) 
+    by (simp add:) 
   ultimately show ?thesis 
     by presburger
 next
@@ -937,7 +937,7 @@ proof -
   moreover have "(\<forall> q x y . h_obs_impl  (h_wpi M) q x y = (h_obs_lookup  (h_obs_wpi M) q x y))"
     unfolding h_obs_impl.simps Let_def
     unfolding calculation M
-    by (simp add: Mapping.empty_def Mapping.lookup.abs_eq Set.filter_def) 
+    by (simp add: Mapping.empty_def Mapping.lookup.abs_eq) 
   ultimately have "well_formed_fsm_with_precomputations M"
     unfolding M by auto
   then show ?thesis 
@@ -1414,7 +1414,7 @@ proof -
     have h_obs_prop: "\<And> q x y . h_obs_impl  (h_wpi ?M) q x y = h_obs_lookup  (h_obs_wpi ?M) q x y"
       unfolding h_obs_impl.simps Let_def
       unfolding * *** Mapping.lookup_empty
-      by (simp add: Set.filter_def) 
+      by (simp add:) 
 
     show ?thesis
       using base_props transition_prop h_prop h_obs_prop

@@ -440,7 +440,8 @@ lemma distinct_filter2:
   show ?case proof(cases "f x")
     case True
     with Cons(2) have "\<forall>j<length xs. f (xs ! j) \<longrightarrow> x \<noteq> xs ! j" by fastforce 
-    then have "x \<notin> set (filter f xs)" by (metis filter_set in_set_conv_nth member_filter)
+    then have "x \<notin> set (filter f xs)"
+      using in_set_idx [of x xs] by auto
     then show ?thesis unfolding filter.simps using True IH by simp
   next
     case False

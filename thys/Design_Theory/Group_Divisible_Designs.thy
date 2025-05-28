@@ -251,7 +251,7 @@ lemma uniform_groups_group_size_singleton: "is_singleton (group_sizes)"
   using uniform_groups_group_sizes by auto
 
 lemma set_filter_eq_P_forall:"\<forall> x \<in> X . P x \<Longrightarrow> Set.filter P X = X"
-  by (simp add: Collect_conj_eq Int_absorb2 Set.filter_def subsetI)
+  by (simp add: Collect_conj_eq Int_absorb2 subsetI)
 
 lemma uniform_groups_groups_of_size_m: "groups_of_size \<m> = card \<G>"
 proof(simp add: groups_of_size_def)

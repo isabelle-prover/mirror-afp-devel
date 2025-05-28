@@ -1476,7 +1476,7 @@ proof -
       ))
       = (fmdom' (snd a) \<inter> (prob_dom PROB - vs'))
     "
-      by (simp add: Int_def Set.filter_def fmfilter_alt_defs(4))
+      by (simp add: Int_def fmfilter_alt_defs(4))
     also have "\<dots> \<subseteq> fmdom' (snd a)"
       by simp
     finally have "fmdom' (snd (
@@ -2284,8 +2284,7 @@ lemma agree_DRESTRICT_2:
 \<comment> \<open>NOTE added lemma.\<close>
 lemma snapshot_eq_filter:
   shows "snapshot PROB s = Set.filter (\<lambda>a. agree (fst a) s \<and> agree (snd a) s) PROB"
-  unfolding snapshot_def Set.filter_def
-  by presburger
+  by (simp add: snapshot_def)
 
 \<comment> \<open>NOTE moved up.\<close>
 corollary snapshot_subset:

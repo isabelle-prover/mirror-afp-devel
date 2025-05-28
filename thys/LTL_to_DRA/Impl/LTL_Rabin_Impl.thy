@@ -166,7 +166,7 @@ proof -
     using semi_mojmir assms by force
   show ?thesis
     unfolding max_rank_of_def max_rank_of\<^sub>C_def Q\<^sub>L_reach[OF \<MM>.finite_reach] semi_mojmir_def.max_rank_def
-    by (simp add: Set.filter_def set_diff_eq assms)
+    by (simp add: set_diff_eq assms)
 qed
 
 lemma reachable_transitions\<^sub>C_eq:
@@ -324,7 +324,7 @@ proof
       apply (intro accept\<^sub>G\<^sub>R_LTS_I)
       apply (insert acc_pair_LTS; auto simp add: assms[symmetric] mappings\<^sub>C_def)
       apply (insert 1 2; unfold  \<open>dom \<pi> = Mapping.keys \<pi>'\<close>; unfold \<open>\<pi> = Mapping.lookup \<pi>'\<close>)
-      by (auto simp add: assms[symmetric] Set.filter_def image_def mappings\<^sub>C_def)
+      by (auto simp add: assms[symmetric] image_def mappings\<^sub>C_def)
   }
   
   moreover 
@@ -349,7 +349,7 @@ proof
       = ((Collect (M_fin\<^sub>C \<phi> \<pi>) \<union> {t. \<exists>\<chi>\<in>Mapping.keys \<pi>. Acc_fin\<^sub>C \<Sigma> \<pi> \<chi> t}) \<inter> reach\<^sub>t \<Sigma> (delta\<^sub>C \<Sigma>) (initial\<^sub>C \<phi>), {y. \<exists>x\<in>{Collect (Acc_inf\<^sub>C \<pi> \<chi>) |\<chi>. \<chi> \<in> Mapping.keys \<pi>}. y = x \<inter> reach\<^sub>t \<Sigma> (delta\<^sub>C \<Sigma>) (initial\<^sub>C \<phi>)})" 
       by auto
     hence "accepting_pair\<^sub>G\<^sub>R (delta \<Sigma>) (initial \<phi>) (M_fin \<pi>' \<union> \<Union>{Acc_fin \<Sigma> \<pi>' \<chi> | \<chi>. \<chi> \<in> dom \<pi>'}, {Acc_inf \<pi>' \<chi> | \<chi>. \<chi> \<in> dom \<pi>'}) w"
-      unfolding X[OF 1] using 4 unfolding Y Set.filter_def unfolding \<open>dom \<pi>' = Mapping.keys \<pi>\<close> \<open>Mapping.Mapping \<pi>' = \<pi>\<close> image_def by simp    
+      unfolding X[OF 1] using 4 unfolding Y unfolding \<open>dom \<pi>' = Mapping.keys \<pi>\<close> \<open>Mapping.Mapping \<pi>' = \<pi>\<close> image_def by simp    
     ultimately
     show ?lhs  
       unfolding ltl_to_generalized_rabin.simps

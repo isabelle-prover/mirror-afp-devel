@@ -1474,7 +1474,7 @@ next
   unfolding mC_ZOC_wt_def proof(intro conjI ballI impI)
     fix J assume "J \<in> F ` P - {F I0}" and le_1: "sum (wt d t) (F I0) < 1 \<and> sum (wt c s) (inv_into P F (F I0)) < 1"
     then obtain I where I: "I \<in> P - {I0}" and J: "J = F I"
-      by (metis image_iff member_remove remove_def)
+      by auto
     have 2: "inv_into P F J = I" unfolding J using 0 I by simp
     have 3: "inv_into P F (F I0) = I0" using 0 by simp
     show
@@ -1489,7 +1489,7 @@ next
     fix i j J
     assume "J \<in> F ` P - {F I0}" and j: "j \<in> J" and i: "i \<in> inv_into P F J"
     then obtain I where J: "J = F I" and I: "I \<in> P - {I0}"
-      by (metis image_iff member_remove remove_def)
+      by auto
     hence "i \<in> I" using assms i unfolding mC_ZOC_def by auto
     hence "eff c s i \<approx> eff d t j \<and> (cont c s i, cont d t j) \<in> theta"
     using assms I j unfolding mC_ZOC_def mC_ZOC_eff_cont_def J by auto

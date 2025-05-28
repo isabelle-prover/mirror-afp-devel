@@ -62,7 +62,7 @@ proof -
     by force
   show ?thesis
     unfolding h_obs_simps Let_def *
-    by (simp add: Set.filter_def) 
+    by (simp add:) 
 qed
 
 

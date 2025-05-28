@@ -675,8 +675,7 @@ proof (rule ccpo.admissibleI[rule_format])
         by (auto simp add: C'_def)
       from chain_prop [OF X0] obtain w where w: "(w, v) \<in> X0" and Q: "Q w" by blast
       from w X have "w \<in> X"
-        apply clarsimp
-        by (metis (mono_tags, lifting) case_prodI fst_conv image_iff member_filter)
+        by (simp add: image_iff)
       with Q 
       have "\<exists>w\<in>X. Q w" ..
     } note result_chain_prop = this
@@ -1091,8 +1090,7 @@ proof -
         by (simp add: chain_imageI image_mono)
       from nonempty_C' have nonempty_result_chain: "((\<lambda>X. snd ` X) ` C') \<noteq> {}" by auto
       from chain_prop have result_chain_prop: "(\<And>X. X \<in> (`) snd ` C' \<Longrightarrow> \<exists>w\<in>X. Q h v w) "
-        using C'_def
-        by auto (metis (mono_tags, lifting) case_prodI member_filter snd_conv)
+        by (auto simp add: C'_def)
       from ccpo.admissibleD [OF admiss [of "h" v] result_chain nonempty_result_chain result_chain_prop]
       obtain w where
         w: "w \<in>  \<Inter> ((\<lambda>X. snd ` X) ` C')" and Q: "Q h v w"

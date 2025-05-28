@@ -1356,9 +1356,9 @@ proof
         unfolding list_ex_iff by (cases "(a,b) \<in> set TI") auto
       show ?case
       proof (cases "(a,b) \<in> set TI")
-        case True thus ?thesis
-          by (metis (mono_tags, lifting) in_trancl.simps "1.prems"(2) list_ex_iff case_prodI
-                member_remove prod.inject remove_code(1))
+        case True
+        with "1.prems"(2) show ?thesis
+          by (auto simp add: in_trancl.simps [of _ a d] in_trancl.simps [of _ b d] list_ex_iff intro: bexI [of _ \<open>(a, b)\<close>])
       next
         case F: False
         then obtain e where e: "(a,e) \<in> set TI" "in_trancl (removeAll (a,e) TI) e b"

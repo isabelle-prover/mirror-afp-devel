@@ -212,7 +212,7 @@ begin
   lemma phiDefs_code [code]:
   "phiDefs g n = snd ` Set.filter (\<lambda>(n',v). n' = n) (Mapping.keys (phis g))"
     unfolding phiDefs_def
-    by transfer (auto 4 3 intro: rev_image_eqI simp: Set.filter_def)
+    by transfer (auto 4 3 intro: rev_image_eqI)
 
   lemmas phiUses_code [code] = phiUses_def [folded Union_of_alt_def]
   declare allUses_def [code]
@@ -343,7 +343,7 @@ begin
 
   lemma trivial_phis:
     "trivial_phis g = {(n,v). Mapping.lookup (phis g) (n,v) \<noteq> None \<and> trivial g v}"
-  unfolding trivial_phis_def Set.filter_def
+  unfolding trivial_phis_def
   apply (auto simp add: phi_def keys_dom_lookup)
    apply (subst trivial_code)
     apply (auto simp: image_def trivial_in_allVars phis_phi)

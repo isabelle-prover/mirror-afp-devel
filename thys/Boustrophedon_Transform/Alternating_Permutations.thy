@@ -102,7 +102,7 @@ lemma finite_alternating_permutations_of_set [intro]: "finite (alternating_permu
 
 lemma alternating_permutations_of_set_code [code]:
   "alternating_permutations_of_set R A = Set.filter (alternating_list R) (permutations_of_set A)"
-  by (simp add: alternating_permutations_of_set_def Set.filter_def)
+  by (simp add: alternating_permutations_of_set_def)
 
 abbreviation rev_alternating_permutations_of_set :: "('a \<times> 'a) set \<Rightarrow> 'a set \<Rightarrow> 'a list set" where
   "rev_alternating_permutations_of_set R A \<equiv> alternating_permutations_of_set (converse R) A"

@@ -384,19 +384,21 @@ proof
     then have "agree_on (fv bsyn) \<sigma> (snd x)"
       using assms(1) wr_charact by blast
     then show "x \<in> Set.filter bsem (sem C S)"
-      by (metis \<open>(fst x, \<sigma>) \<in> Set.filter bsem S\<close> \<open>\<langle>C, \<sigma>\<rangle> \<rightarrow> snd x\<close> assms(2) assms(3) free_vars_syn_sem fst_conv member_filter prod.collapse single_step_then_in_sem snd_conv)
+      using \<open>(fst x, \<sigma>) \<in> Set.filter bsem S\<close> \<open>\<langle>C, \<sigma>\<rangle> \<rightarrow> snd x\<close> assms(2) assms(3)
+      free_vars_syn_sem [of bsyn bsem]
+      by (cases x) (auto intro: single_step_then_in_sem)
   qed
   show "?B \<subseteq> ?A"
   proof
     fix x assume asm0: "x \<in> ?B"
     then obtain \<sigma> where "bsem x" "(fst x, \<sigma>) \<in> S" "single_sem C \<sigma> (snd x)"
-      by (metis in_sem member_filter)
+      by (auto simp add: in_sem)
     then have "agree_on (fv bsyn) \<sigma> (snd x)"
       using assms(1) wr_charact by blast
     then have "bsem (fst x, \<sigma>)"
       using \<open>bsem x\<close> agree_on_sym assms(2) assms(3) free_vars_syn_sem by fastforce
     then show "x \<in> ?A"
-      by (metis \<open>(fst x, \<sigma>) \<in> S\<close> \<open>\<langle>C, \<sigma>\<rangle> \<rightarrow> snd x\<close> in_sem member_filter)
+      using \<open>(fst x, \<sigma>) \<in> S\<close> \<open>\<langle>C, \<sigma>\<rangle> \<rightarrow> snd x\<close> by (auto simp add: in_sem)
   qed
 qed
 
@@ -829,17 +831,20 @@ proof (rule total_hyper_triple_altI)
     have "conj (P n) (e_recorded_in_t e t) ?S"
       by (metis \<open>\<And>n. P n (iterate_sem n (Assume b ;; C) S)\<close> assms(5) conj_def e_recorded_in_t_if_assigned not_fv_hyper_assign_exp)
     then have "conj (Q n) (e_recorded_in_t e t) (sem (Assume b) ?S)"
-      
-      by (metis (mono_tags, lifting) assms(1) assume_sem conj_def e_recorded_in_t_def hyper_hoare_tripleE member_filter)
+      using assms(1)
+      by (metis (mono_tags, lifting) IntE conj_def e_recorded_in_t_def hyper_hoare_tripleE
+          sem_assume_setify) 
     then have "conj (P (Suc n)) (e_smaller_than_t e t lt) (sem C (sem (Assume b) ?S))"
       using assms(2) hyper_hoare_tripleE total_hyper_triple_def by blast
     moreover have "?\<phi> \<in> (sem (Assume b) ?S)"
-      by (metis asm1 assign_exp_to_lvar_set_def assume_sem comp_apply image_eqI member_filter same_outside_set_lvar_assign_exp)
+      using asm1
+      by (simp add: assign_exp_to_lvar_set_def assume_sem same_outside_set_lvar_assign_exp [of \<phi> e t])
     then obtain \<sigma>' where "(fst ?\<phi>, \<sigma>') \<in> sem C (sem (Assume b) ?S) \<and> \<langle>C, snd ?\<phi>\<rangle> \<rightarrow> \<sigma>'"
       using total_hyper_tripleE assms(2)[of n]
       using \<open>Logic.conj (Q n) (e_recorded_in_t e t) (sem (Assume b) (assign_exp_to_lvar_set e t (iterate_sem n (Assume b ;; C) S)))\<close> by blast
     then have "lt (e (snd (fst ?\<phi>, \<sigma>'))) (fst (fst ?\<phi>, \<sigma>') t)"
-      by (metis calculation conj_def e_smaller_than_t_def)
+      using calculation
+      by (auto simp add: conj_def e_smaller_than_t_def)
     ultimately show "\<exists>\<sigma>'. \<langle>C, snd \<phi>\<rangle> \<rightarrow> \<sigma>' \<and> (\<not> b \<sigma>' \<or> lt (e \<sigma>') (e (snd \<phi>)))"
       by (metis \<open>(fst (assign_exp_to_lvar e t \<phi>), \<sigma>') \<in> sem C (sem (Assume b) (assign_exp_to_lvar_set e t (iterate_sem n (Assume b ;; C) S))) \<and> \<langle>C, snd (assign_exp_to_lvar e t \<phi>)\<rangle> \<rightarrow> \<sigma>'\<close> assign_exp_to_lvar_def fst_conv fun_upd_same snd_conv)
   qed
@@ -1051,13 +1056,14 @@ proof (rule total_hyper_triple_altI)
       using assms(7) calculation conj_def not_fv_hyperE[of u "P n"] same
       by metis
     then have "conj (Q n) (e_recorded_in_t e t) (sem (Assume b) ?SS)"
-      using assms(1) assume_sem[of b] conj_def e_recorded_in_t_def[of e t] hyper_hoare_tripleE[of "P n" "Assume b" "Q n"
-          "update_lvar_set u (\<lambda>\<phi>'. if \<phi>' = assign_exp_to_lvar e t \<phi> then tr else fa) (assign_exp_to_lvar_set e t (iterate_sem n (Assume b ;; C) S))"] member_filter[of _ "b \<circ> snd"]
-      by metis
+      using assms(1) assume_sem[of b] e_recorded_in_t_def[of e t] hyper_hoare_tripleE[of "P n" "Assume b" "Q n"
+        "update_lvar_set u (\<lambda>\<phi>'. if \<phi>' = assign_exp_to_lvar e t \<phi> then tr else fa) (assign_exp_to_lvar_set e t (iterate_sem n (Assume b ;; C) S))"]
+      by (simp add: conj_def sem_assume_setify)
     then have "conj (P (Suc n)) (e_smaller_than_t_weaker e t u lt) (sem C (sem (Assume b) ?SS))"
       using assms(2) hyper_hoare_tripleE total_hyper_triple_def by blast
     moreover have "?\<phi> \<in> (sem (Assume b) ?S)"
-      by (metis asm1 assign_exp_to_lvar_set_def assume_sem comp_apply image_eqI member_filter same_outside_set_lvar_assign_exp)
+      using asm1 same_outside_set_lvar_assign_exp [of \<phi> e t]
+      by (auto simp add: assign_exp_to_lvar_set_def assume_sem)
     moreover have "?\<phi>' \<in> (sem (Assume b) ?SS)"
       unfolding SS_def
     proof (rule in_semI)
@@ -1084,7 +1090,7 @@ proof (rule total_hyper_triple_altI)
       obtain \<phi>0 where "\<phi>0 \<in> sem (Assume b) ?SS" "fst \<phi>0 = fst \<phi>'" "single_sem C (snd \<phi>0) (snd \<phi>')"
         by (metis (no_types, lifting) \<open>\<phi>' \<in> sem C (sem (Assume b) (update_lvar_set u (\<lambda>\<phi>'. if \<phi>' = assign_exp_to_lvar e t \<phi> then tr else fa) (assign_exp_to_lvar_set e t (iterate_sem n (Assume b ;; C) S))))\<close> fst_conv in_sem snd_conv)
       then have "\<phi>0 \<in> ?SS"
-        by (metis (no_types, lifting) assume_sem member_filter)
+        using assume_sem by auto
       then obtain \<phi>0' where 
         "\<phi>0' \<in> (assign_exp_to_lvar_set e t (iterate_sem n (Assume b ;; C) S))"
         "\<phi>0 = ((fst \<phi>0')(u := if \<phi>0' = assign_exp_to_lvar e t \<phi> then tr else fa), snd \<phi>0')"

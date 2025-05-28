@@ -132,7 +132,7 @@ proof -
           by (metis bot_fset.rep_eq fset_inject)
 
         have "(x,y) \<in> (image (\<lambda> t . (t_input t, t_output t)) (Set.filter (\<lambda>t . t_source t |\<in>| q) (fset A)))"
-          using \<open>fset q' \<noteq> {}\<close> unfolding * Set.filter_def by blast
+          using \<open>fset q' \<noteq> {}\<close> by (auto simp add: * image_iff) 
         moreover have "q' = t_target |`| ffilter (\<lambda>t. (t_input t, t_output t) = (x, y)) (ffilter (\<lambda>t. t_source t |\<in>| q) A)"
         proof -
           have "{t' . t' |\<in>| A \<and> t_source t' |\<in>| q \<and> t_input t' = x \<and> t_output t' = y} = ((Set.filter (\<lambda>t . (t_input t, t_output t) = (x,y)) (fset (ffilter (\<lambda>t . t_source t |\<in>| q) (A)))))"
@@ -148,8 +148,7 @@ proof -
         qed 
         ultimately show "t \<in> ?A"
           using \<open>q |\<in>| nexts\<close>
-          unfolding \<open>t = (q,x,y,q')\<close> 
-          by force
+          by (simp add: \<open>t = (q,x,y,q')\<close> image_iff)
       qed
       ultimately show ?thesis
         by (metis (no_types, lifting) Collect_cong Sup_set_def mem_Collect_eq) 

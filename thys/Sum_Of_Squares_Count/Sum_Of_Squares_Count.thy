@@ -1236,7 +1236,7 @@ lemma divisor_count_cong_1_mult_coprime:
 proof -
   have "{(j1 :: nat, j2). j1 < 4 \<and> j2 < 4 \<and> [j1 * j2 = 1] (mod 4)} =
           Set.filter (\<lambda>(j1,j2). (j1 * j2) mod 4 = 1) ({..<4} \<times> {..<4})"
-    by (auto simp: Set.filter_def cong_def)
+    by (auto simp: cong_def)
   also have "\<dots> = {(1,1), (3,3)}"
     by code_simp
   finally have *: "{(j1 :: nat, j2). j1 < 4 \<and> j2 < 4 \<and> [j1 * j2 = 1] (mod 4)} = {(1,1), (3,3)}" .
@@ -1251,7 +1251,7 @@ lemma divisor_count_cong_3_mult_coprime:
 proof -
   have "{(j1 :: nat, j2). j1 < 4 \<and> j2 < 4 \<and> [j1 * j2 = 3] (mod 4)} =
           Set.filter (\<lambda>(j1,j2). (j1 * j2) mod 4 = 3) ({..<4} \<times> {..<4})"
-    by (auto simp: Set.filter_def cong_def)
+    by (auto simp: cong_def)
   also have "\<dots> = {(1,3), (3,1)}"
     by code_simp
   finally have *: "{(j1 :: nat, j2). j1 < 4 \<and> j2 < 4 \<and> [j1 * j2 = 3] (mod 4)} = {(1,3), (3,1)}" .

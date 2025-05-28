@@ -738,15 +738,17 @@ lemma fair_DL_Liminf_passive_formulas_empty:
     init: "is_initial_DLf_state (lhd Sts)"
   shows "Liminf_llist (lmap (passive_formulas_of \<circ> passive_of) Sts) = {}"
 proof -
-  have lim_filt: "Liminf_llist (lmap (Set.filter is_passive_formula \<circ> elems \<circ> passive_of) Sts) = {}"
-    using fair_DL_Liminf_passive_empty Liminf_llist_subset
-    by (metis (no_types) empty_iff full init len llength_lmap llist.map_comp lnth_lmap member_filter
-        subsetI subset_antisym)
-
+  have \<open>Liminf_llist (lmap (elems \<circ> passive_of) Sts) = {}\<close>  (is \<open>?A = _\<close>)
+    using fair_DL_Liminf_passive_empty [of Sts] full init len by simp
+  moreover have \<open>Liminf_llist (lmap (Set.filter is_passive_formula \<circ> elems \<circ> passive_of) Sts) \<subseteq> ?A\<close>  (is \<open>?B \<subseteq> _\<close>)
+    by (rule Liminf_llist_subset) simp_all
+  ultimately have lim_filt: "Liminf_llist (lmap (Set.filter is_passive_formula \<circ> elems \<circ> passive_of) Sts) = {}"
+    by simp
+    
   let ?g = "Set.filter is_passive_formula \<circ> elems \<circ> passive_of"
 
   have "inj_on passive_formula (Set.filter is_passive_formula (UNIV :: 'f passive_elem set))"
-    unfolding inj_on_def by (metis member_filter passive_elem.collapse(2))
+    by (auto simp add: inj_on_def) (metis passive_elem.collapse(2))
   moreover have "Sup_llist (lmap ?g Sts) \<subseteq> Set.filter is_passive_formula UNIV"
     unfolding Sup_llist_def by auto
   ultimately have inj_pi: "inj_on passive_formula (Sup_llist (lmap ?g Sts))"
@@ -769,15 +771,17 @@ lemma fair_DL_Liminf_passive_inferences_empty:
     init: "is_initial_DLf_state (lhd Sts)"
   shows "Liminf_llist (lmap (passive_inferences_of \<circ> passive_of) Sts) = {}"
 proof -
-  have lim_filt: "Liminf_llist (lmap (Set.filter is_passive_inference \<circ> elems \<circ> passive_of) Sts) = {}"
-    using fair_DL_Liminf_passive_empty Liminf_llist_subset
-    by (metis (no_types) empty_iff full init len llength_lmap llist.map_comp lnth_lmap member_filter
-        subsetI subset_antisym)
+  have \<open>Liminf_llist (lmap (elems \<circ> passive_of) Sts) = {}\<close>  (is \<open>?A = _\<close>)
+    using fair_DL_Liminf_passive_empty [of Sts] full init len by simp
+  moreover have \<open>Liminf_llist (lmap (Set.filter is_passive_inference \<circ> elems \<circ> passive_of) Sts) \<subseteq> ?A\<close>  (is \<open>?B \<subseteq> _\<close>)
+    by (rule Liminf_llist_subset) simp_all
+  ultimately have lim_filt: "Liminf_llist (lmap (Set.filter is_passive_inference \<circ> elems \<circ> passive_of) Sts) = {}"
+    by simp
 
   let ?g = "Set.filter is_passive_inference \<circ> elems \<circ> passive_of"
 
   have "inj_on passive_inference (Set.filter is_passive_inference (UNIV :: 'f passive_elem set))"
-    unfolding inj_on_def by (metis member_filter passive_elem.collapse(1))
+    by (auto simp add: inj_on_def) (metis passive_elem.collapse(1))
   moreover have "Sup_llist (lmap ?g Sts) \<subseteq> Set.filter is_passive_inference UNIV"
     unfolding Sup_llist_def by auto
   ultimately have inj_pi: "inj_on passive_inference (Sup_llist (lmap ?g Sts))"

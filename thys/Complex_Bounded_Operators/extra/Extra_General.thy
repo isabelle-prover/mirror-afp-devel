@@ -720,10 +720,10 @@ proof (induction l)
 qed
 
 lemma filter_Un: "Set.filter f (x \<union> y) = Set.filter f x \<union> Set.filter f y"
-  unfolding Set.filter_def by auto  
+  by auto
 
 lemma Set_filter_unchanged: "Set.filter P X = X" if "\<And>x. x\<in>X \<Longrightarrow> P x" for P and X :: "'z set"
-  using that unfolding Set.filter_def by auto
+  using that by auto
 
 subsection \<open>Maps\<close>
 

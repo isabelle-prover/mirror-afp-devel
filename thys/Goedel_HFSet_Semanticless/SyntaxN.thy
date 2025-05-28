@@ -483,8 +483,8 @@ subsection\<open>The Deduction Theorem\<close>
 lemma deduction_Diff: assumes "H \<turnstile> B" shows "H - {C} \<turnstile> C IMP B"
 using assms
 proof (induct)
-  case (Hyp A H) thus ?case
-    by (metis Bool Imp_triv_I boolean_axioms.Ident hfthm.Hyp member_remove remove_def)
+  case (Hyp A H) then show ?case
+    by (auto intro: Bool boolean_axioms.Ident hfthm.Hyp Imp_triv_I)
 next
   case (Extra H) thus ?case
     by (metis Imp_triv_I hfthm.Extra)
@@ -517,7 +517,7 @@ next
     moreover have "H - {C} \<turnstile> A IMP C IMP B" using Exists
       by (metis Imp_Imp_commute)
     ultimately have "H - {C} \<turnstile> (Ex i A) IMP C IMP B" using Exists
-      by (metis fm.fresh(3) fm.fresh(4) hfthm.Exists member_remove remove_def)
+      using fm.fresh(3) fm.fresh(4) hfthm.Exists by auto
     thus ?thesis
       by (metis Imp_Imp_commute)
   next

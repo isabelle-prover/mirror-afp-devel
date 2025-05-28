@@ -215,10 +215,7 @@ begin
   lemma lhsv_approx: "lhsv \<pi>' c \<subseteq> lhsv\<pi> \<pi>' \<union> lhsv' c" 
     apply (induction c arbitrary: \<pi>')
               apply auto
-    apply (auto simp: lhsv\<pi>_def)
     done
-  
-              
 
   lemma modifies_lhsv:
     assumes "\<pi>: (c, s) \<Rightarrow> t"
@@ -229,9 +226,7 @@ begin
      subgoal by (auto simp: modifies_lhsv\<pi>) []
     subgoal using lhsv_approx by (auto simp: modifies_def)
     done
-    
-    
-      
+
   lemma wp_strengthen_modset: "wp \<pi> c Q s \<Longrightarrow> wp \<pi> c (\<lambda>s'. Q s' \<and> modifies (lhsv \<pi> c) s' s) s"
     unfolding wp_def 
     by (blast intro: modifies_lhsv)

@@ -209,9 +209,6 @@ lemma ccField_cc_restr: "ccField (G G|` S) \<subseteq> ccField G \<inter> S"
 lemma cc_restr_empty: "ccField G \<subseteq> - S \<Longrightarrow> G G|` S = \<bottom>"
   apply transfer
   apply (auto simp add: Field_def)
-  apply (drule DomainI)
-  apply (drule (1) subsetD)
-  apply simp
   done
 
 lemma cc_restr_empty_set[simp]: "cc_restr {} G = \<bottom>"
@@ -278,7 +275,7 @@ lemma ccProd_below_cc_restr:
   by transfer auto
 
 lemma cc_restr_eq_subset: "S \<subseteq> S' \<Longrightarrow> cc_restr S' G = cc_restr S' G2 \<Longrightarrow> cc_restr S G = cc_restr S G2"
-  by transfer' (auto simp add: Set.filter_def)
+  by transfer' (auto simp add:)
  
 definition ccSquare (\<open>_\<^sup>2\<close> [80] 80)
   where "S\<^sup>2 = ccProd S S"

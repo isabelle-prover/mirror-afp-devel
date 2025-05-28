@@ -275,7 +275,7 @@ proof-
       have "j \<in> {0..n - 1}-{i} \<Longrightarrow> list_of_vec (unit_vec n i) ! j = 0"
         for j
         using a3 atMost_atLeast0 atMost_iff diff_Suc_less index_unit_vec(1) le_less_trans
-          list_of_vec_index member_remove zero_le by fastforce
+          list_of_vec_index zero_le by fastforce
       hence "j \<in> {0..n - 1}-{i} \<Longrightarrow> list_of_vec (unit_vec n i) ! j *\<^sub>C basis ! j = 0"
         for j
         by auto

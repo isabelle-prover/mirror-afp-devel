@@ -2449,7 +2449,7 @@ using assms(1) proof(rule contrapos_pp)
             \<and> (get_label ((labeled_source A)|_q) \<noteq> None \<or> get_label ((labeled_source B)|_p) \<noteq> None)"
       by auto
     moreover from pq have "p \<in> poss (labeled_source A)" and "q \<in> poss (labeled_source B)"
-      by (meson fun_poss_imp_poss mem_Sigma_iff member_filter)+
+      by (auto intro: fun_poss_imp_poss)
     ultimately show "measure_ov A B \<noteq> 0"
       using labeled_sources_imp_measure_not_zero co_init
       by (metis labeled_source_to_term less_numeral_extra(3) poss_term_lab_to_term)
@@ -2552,8 +2552,7 @@ proof-
     using assms(2,4,6,8) b_well unfolding r' using label_decrease[of "take (length p - length r') p" "drop (length p- length r') p"]
     by (smt (verit, del_insts) Nat.add_diff_assoc add_diff_cancel_left' append.assoc append_take_drop_id assms(7) diff_diff_cancel diff_le_self fun_poss_imp_poss fun_poss_term_lab_to_term label_decrease labeled_source_to_term labelposs_subs_fun_poss_source le_add1 le_add_diff_inverse length_append length_take min.absorb2 r')
   ultimately show ?thesis using overlaps_pos_intro unfolding r'
-    by (smt (verit, ccfv_threshold) append.assoc case_prodI fst_conv less_eq_pos_simps(1) mem_Sigma_iff member_filter option.distinct(1) option.sel remove_prefix_append snd_conv)
+    by auto
 qed
-
 
 end

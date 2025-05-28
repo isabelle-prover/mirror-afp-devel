@@ -424,8 +424,7 @@ proof -
     from eval15[unfolded formula15_def Let_def eval_all_append eval_all_maps] i j gamm
     have "\<not> v (Epsilon ?i) \<Longrightarrow> cs ?i j" by (force split: if_splits)
     moreover have not: "\<not> v (Epsilon ?i)" using nmem i j i_of_j j_of_i
-      unfolding xs1_def property_def
-      by (metis atLeast0LessThan filter_set imageI lessThan_iff list.set_map member_filter set_upt)
+      by (auto simp add: xs1_def property_def image_iff) metis
     ultimately have "cs ?i j" by simp
     hence sy: "(s ?i,y) \<in> S" unfolding y using cs[of ?i j] by (auto split: if_splits) 
     from not i have "?i \<in> set xs2" unfolding xs2_def property_def by auto

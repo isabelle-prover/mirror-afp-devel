@@ -2121,6 +2121,7 @@ lemma create_document_unsafe: "\<not>(\<forall>(h
 h \<turnstile> create_document \<rightarrow>\<^sub>r new_document_ptr \<longrightarrow> h \<turnstile> create_document \<rightarrow>\<^sub>h h' \<longrightarrow>
 is_strongly_dom_component_safe {} {cast new_document_ptr} h h')"
 proof -
+  note Set.filter_eq [simp del] Set.remove_eq [simp del] Set.is_empty_iff [simp del]
   obtain h document_ptr where h: "Inr (document_ptr, h) = (Heap (fmempty)
       :: ('object_ptr::{equal,linorder}, 'node_ptr::{equal,linorder}, 'element_ptr::{equal,linorder},
 'character_data_ptr::{equal,linorder}, 'document_ptr::{equal,linorder}, 'shadow_root_ptr::{equal,linorder},
@@ -2136,7 +2137,7 @@ proof -
     h': "h \<turnstile> create_document \<rightarrow>\<^sub>r new_document_ptr" and
     h': "h \<turnstile> create_document \<rightarrow>\<^sub>h h'" and
     "\<not>(is_strongly_dom_component_safe {} {cast new_document_ptr} h h')"
-    by(code_simp, auto simp add: equal_eq List.member_def)+
+    by (code_simp, auto simp add: equal_eq List.member_def)+
   then show ?thesis
     by blast
 qed
@@ -2223,6 +2224,7 @@ lemma insert_before_unsafe: "\<not>(\<forall>(h
   ) h' ptr child. heap_is_wellformed h \<longrightarrow> type_wf h \<longrightarrow> known_ptrs h \<longrightarrow>
 h \<turnstile> insert_before ptr child None \<rightarrow>\<^sub>h h' \<longrightarrow> is_weakly_dom_component_safe {ptr, cast child} {} h h')"
 proof -
+  note Set.filter_eq [simp del] Set.remove_eq [simp del] Set.is_empty_iff [simp del]
   obtain h document_ptr e1 e2 where h: "Inr ((document_ptr, e1, e2), h) = (Heap (fmempty)
       :: ('object_ptr::{equal,linorder}, 'node_ptr::{equal,linorder}, 'element_ptr::{equal,linorder},
 'character_data_ptr::{equal,linorder}, 'document_ptr::{equal,linorder}, 'shadow_root_ptr::{equal,linorder},

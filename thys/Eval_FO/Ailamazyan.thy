@@ -2592,7 +2592,7 @@ lemma ad_agr_close_correct:
 definition "ad_agr_close_set AD X = (if Set.is_empty AD then X else \<Union>(ad_agr_close AD ` X))"
 
 lemma ad_agr_close_set_eq: "Ball X (fo_nmlzd AD') \<Longrightarrow> ad_agr_close_set AD X = \<Union>(ad_agr_close AD ` X)"
-  by (force simp: ad_agr_close_set_def Set.is_empty_def ad_agr_close_empty)
+  by (force simp: ad_agr_close_set_def ad_agr_close_empty)
 
 lemma Ball_fo_nmlzd: "Ball (fo_nmlz AD ` X) (fo_nmlzd AD)"
   by (auto simp: fo_nmlz_sound)
@@ -3591,7 +3591,7 @@ proof -
   show ad_close_alt: "ad_agr_close_set (AD - AD\<phi>) X\<phi> = fo_nmlz AD ` proj_vals S\<phi> (fv_fo_fmla_list \<phi>)"
     using ad_agr_close_correct[OF AD_sub(2) ad_agr_\<phi>] AD_sub(2)
     unfolding X\<phi>_def S\<phi>_def[symmetric] proj_fmla_def
-    by (auto simp: ad_agr_close_set_def Set.is_empty_def)
+    by (auto simp: ad_agr_close_set_def)
   have fv_\<phi>: "set (fv_fo_fmla_list \<phi>) \<subseteq> set (fv_fo_fmla_list \<psi>)"
     using fv_Un
     by (auto simp: fv_fo_fmla_list_set)
@@ -4490,7 +4490,7 @@ lemma ad_agr_close_set_length: "z \<in> ad_agr_close_set AD X \<Longrightarrow> 
 
 lemma ad_agr_close_set_sound: "z \<in> ad_agr_close_set (AD - AD') X \<Longrightarrow> (\<And>x. x \<in> X \<Longrightarrow> fo_nmlzd AD' x) \<Longrightarrow> AD' \<subseteq> AD \<Longrightarrow> fo_nmlzd AD z"
   using ad_agr_close_sound[where ?X=AD' and ?Y="AD - AD'"]
-  by (auto simp: ad_agr_close_set_def Set.is_empty_def split: if_splits) (metis Diff_partition Un_Diff_cancel)
+  by (auto simp: ad_agr_close_set_def split: if_splits) (metis Diff_partition Un_Diff_cancel)
 
 lemma ext_tuple_set_length: "z \<in> ext_tuple_set AD ns ns' X \<Longrightarrow> (\<And>x. x \<in> X \<Longrightarrow> length x = length ns) \<Longrightarrow> length z = length ns + length ns'"
   by (auto simp: ext_tuple_set_def ext_tuple_def fo_nmlz_length merge_length dest: nall_tuples_rec_length split: if_splits)

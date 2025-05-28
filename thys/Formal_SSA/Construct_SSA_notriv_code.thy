@@ -10,6 +10,12 @@ theory Construct_SSA_notriv_code imports
   While_Combinator_Exts
 begin
 
+declare Set.remove_eq [simp del]
+
+lemma in_remove_iff [simp]:
+  \<open>x \<in> Set.remove y A \<longleftrightarrow> x \<in> A \<and> x \<noteq> y\<close>
+  using Set.remove_eq [of y A] by simp
+
 abbreviation (input) "const x \<equiv> (\<lambda>_. x)"
 
 context CFG_SSA_Transformed_notriv_base begin
@@ -253,15 +259,19 @@ begin
     apply (subst mapping_eq_iff)
     by (auto simp: Mapping_lookup_map_values Mapping_lookup_map Option.bind_def map_option_case lookup_delete keys_dom_lookup
       dest: ssa.phis_disj [where n="fst next" and v="snd next", simplified] split: option.splits)
-
-    also from assms have "... = phis'_codem g next (substitution_code g next) nodes_of_phis"
-      unfolding phis'_codem_def mmap_def ssa.lookup_phiNodes_of [OF ssa.phis_finite] phi_equiv_mapping_def
-    apply (subst mapping_eq_iff)
-    apply (simp add: Mapping_lookup_map lookup_delete map_option_case)
-    by (erule_tac x="next" in ballE)
-    (force intro!: map_idI
-      simp: substNext_code_def keys_dom_lookup fun_upd_apply
-      split: option.splits if_splits)+
+    also from assms have "... = phis'_codem g next (substitution_code g next) nodes_of_phis" (is \<open>?lhs next = ?rhs next\<close>)
+      apply (simp only: phis'_codem_def mmap_def ssa.lookup_phiNodes_of [OF ssa.phis_finite] phi_equiv_mapping_def)
+      apply (subst mapping_eq_iff)
+      apply (simp add: Mapping_lookup_map lookup_delete map_option_case)
+      apply (erule_tac x="next" in ballE)
+      apply (auto intro!: map_idI
+        simp: substNext_code_def keys_dom_lookup fun_upd_apply
+        split: option.splits if_splits)
+             apply (metis domI option.sel)
+            apply (metis domI option.sel)
+           apply (metis domI option.sel)
+          apply (metis domI option.sel)
+      done
     finally show ?thesis ..
   qed
 
@@ -314,7 +324,7 @@ begin
   assumes "\<And>ns. Mapping.lookup nodes_of_phis (snd next) = Some ns \<Longrightarrow> finite ns"
   shows "Mapping.lookup (phis'_codem g next next' nodes_of_phis) next = None"
     using assms unfolding phis'_codem_def
-    by (auto simp: Set.remove_def lookup_delete split: option.splits)
+    by (auto simp: lookup_delete split: option.splits)
 
   lemma lookup_phis'_codem_other:
   assumes "g \<turnstile> nodes_of_phis \<approx>\<^sub>\<phi> (ssa.phiNodes_of g)"
@@ -341,8 +351,7 @@ begin
   lemma lookup_nodes_of_phis'_subst [simp]:
   "Mapping.lookup (nodes_of_phis' g next (substitution_code g next) nodes_of_phis) (substitution_code g next) =
     Some ((case_option {} (Set.remove next) (Mapping.lookup nodes_of_phis (substitution_code g next))) \<union> (case_option {} (Set.remove next) (Mapping.lookup nodes_of_phis (snd next))))"
-  unfolding nodes_of_phis'_def
-    by (clarsimp simp: Mapping_lookup_map_default Set.remove_def lookup_delete split: option.splits)
+    by (auto simp add: nodes_of_phis'_def lookup_delete lookup_map_default lookup_default_def split: option.split)
 
   lemma lookup_nodes_of_phis'_not_subst:
   "v \<noteq> substitution_code g next \<Longrightarrow>
@@ -933,7 +942,7 @@ begin
         \<and> uninst_code.phi_equiv_mapping (const p) g nodes_of_uses (uninst_code.ssa.useNodes_of (const u) g)
         \<and> uninst_code.phi_equiv_mapping (const p) g phis_of_nodes (uninst_code.ssa.phiNodes_of (const p) g)"
       for f
-      , simplified], simp_all add: split_def dom_uses_in_graph Set.is_empty_def)
+      , simplified], simp_all add: split_def dom_uses_in_graph)
     show "CFG_SSA_Transformed_notriv_linorder_code \<alpha>e \<alpha>n invar inEdges' Entry oldDefs oldUses defs uses phis var
      chooseNext_all"
       by unfold_locales
@@ -1172,3 +1181,4 @@ begin
 end
 
 end
+

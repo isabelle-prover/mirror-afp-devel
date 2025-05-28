@@ -362,8 +362,7 @@ lemma d_reachable_states_with_preambles_soundness :
   shows "is_preamble P M q"
     and "q \<in> states M"
   using assms(1) calculate_state_preamble_from_input_choices_soundness[of M q P]
-  unfolding d_reachable_states_with_preambles_def
-  using imageE by auto
+  by (auto simp add: d_reachable_states_with_preambles_def split: if_splits)
 
 
 subsection \<open>Calculating Repetition Sets\<close>

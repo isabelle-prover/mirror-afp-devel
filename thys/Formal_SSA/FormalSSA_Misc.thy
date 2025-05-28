@@ -247,9 +247,8 @@ apply (rule the_equality)
 by (metis Max_singleton Min_singleton Nitpick.Ex1_unfold The_Min the_equality)
 
 lemma set_sorted_list_of_set_remove [simp]:
-"set (sorted_list_of_set (Set.remove x A)) = Set.remove x (set (sorted_list_of_set A))"
-  unfolding Set.remove_def
-by (cases "finite A"; simp)
+  "set (sorted_list_of_set (Set.remove x A)) = Set.remove x (set (sorted_list_of_set A))"
+  by (cases \<open>finite A\<close>) (simp_all add:)
 
 lemma set_minus_one: "\<lbrakk>v \<noteq> v'; v' \<in> set vs\<rbrakk> \<Longrightarrow> set vs - {v'} \<subseteq> {v} \<longleftrightarrow> set vs = {v'} \<or> set vs = {v,v'}"
   by auto

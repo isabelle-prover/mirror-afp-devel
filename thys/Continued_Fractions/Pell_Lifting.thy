@@ -93,7 +93,7 @@ lemma square_squarefree_part_nat_code [code]:
           in  ((\<Prod>p\<in>set_mset ps. p ^ (count ps p div 2)),
                 \<Prod>(Set.filter (\<lambda>p. odd (count ps p)) (set_mset ps))))"
   by (cases "n = 0")
-     (auto simp: Let_def square_squarefree_part_nat_def squarefree_part_nat Set.filter_def 
+     (auto simp: Let_def square_squarefree_part_nat_def squarefree_part_nat 
                  count_prime_factorization square_part_nat intro!: prod.cong)
 
 lemma square_part_nat_code [code_unfold]:

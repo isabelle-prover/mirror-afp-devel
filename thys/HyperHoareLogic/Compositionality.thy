@@ -297,16 +297,16 @@ proof
   show "?A \<subseteq> ?B"
   proof
     fix \<omega>' assume "\<omega>' \<in> ?A"
-    then obtain \<omega> where "\<omega> \<in> S" "single_sem C (snd \<omega>) (snd \<omega>')" "fst \<omega> = fst \<omega>'" "f \<omega>'"
-      by (metis fst_conv in_sem member_filter snd_conv)
+    then obtain \<omega> where "\<omega> \<in> S" "single_sem C (snd \<omega>) (snd \<omega>')" "fst \<omega>' = fst \<omega>" "f \<omega>'"
+      by (auto simp add: in_sem)
     then show "\<omega>' \<in> ?B"
-      by (metis assms in_sem member_filter prod.collapse)
+      using assms [OF \<open>fst \<omega>' = fst \<omega>\<close>] by (auto simp add: in_sem intro: exI [of _ \<open>snd \<omega>\<close>])
   qed
   show "?B \<subseteq> ?A"
   proof
     fix x assume "x \<in> sem C (Set.filter f S)"
     then show "x \<in> Set.filter f (sem C S)"
-      by (metis assms fst_conv in_sem member_filter)
+      by simp (metis (mono_tags, lifting) assms fst_conv in_sem mem_Collect_eq)
   qed
 qed
 
@@ -375,22 +375,24 @@ proof (rule hyper_hoare_tripleI)
     proof
       fix \<phi>' assume "\<phi>' \<in> Set.filter (b \<circ> snd) (sem C S)"
       then obtain \<phi> where "\<phi> \<in> S" "fst \<phi> = fst \<phi>'" "single_sem C (snd \<phi>) (snd \<phi>')" "b (snd \<phi>')"
-        by (metis comp_apply fst_conv in_sem member_filter snd_conv)
+        by (auto simp add: in_sem)
       then have "b (snd \<phi>)"
         using single_sem_not_free_vars[of C b "snd \<phi>" "snd \<phi>'"] assms(2)
         by simp
       then show "\<phi>' \<in> ?A"
-        by (metis \<open>\<langle>C, snd \<phi>\<rangle> \<rightarrow> snd \<phi>'\<close> \<open>\<phi> \<in> S\<close> \<open>fst \<phi> = fst \<phi>'\<close> comp_apply in_sem member_filter prod.collapse)
+        using \<open>\<langle>C, snd \<phi>\<rangle> \<rightarrow> snd \<phi>'\<close> \<open>\<phi> \<in> S\<close> \<open>fst \<phi> = fst \<phi>'\<close> [symmetric]
+        by (auto simp add: in_sem intro: exI [of _ \<open>snd \<phi>\<close>])
     qed
     show "?A \<subseteq> ?B"
     proof
       fix \<phi>' assume "\<phi>' \<in> sem C (Set.filter (b \<circ> snd) S)"
       then obtain \<phi> where "\<phi> \<in> S" "fst \<phi> = fst \<phi>'" "single_sem C (snd \<phi>) (snd \<phi>')" "b (snd \<phi>)"
-        by (metis (mono_tags, lifting) comp_apply fst_conv in_sem member_filter snd_conv)
+        by (auto simp add: in_sem)
       then have "b (snd \<phi>')"
         using assms(2) single_sem_not_free_vars by blast
       then show "\<phi>' \<in> ?B"
-        by (metis \<open>\<langle>C, snd \<phi>\<rangle> \<rightarrow> snd \<phi>'\<close> \<open>\<phi> \<in> S\<close> \<open>fst \<phi> = fst \<phi>'\<close> comp_apply member_filter prod.collapse single_step_then_in_sem)
+        using \<open>\<langle>C, snd \<phi>\<rangle> \<rightarrow> snd \<phi>'\<close> \<open>\<phi> \<in> S\<close> \<open>fst \<phi> = fst \<phi>'\<close> [symmetric]
+        by (auto simp add: in_sem intro: exI [of _ \<open>snd \<phi>\<close>])
     qed
   qed
   ultimately show "(Q \<circ> Set.filter (b \<circ> snd)) (sem C S)"
@@ -754,16 +756,15 @@ proof (rule hyper_hoare_tripleI)
     using assms(3) hyper_hoare_tripleE by blast
   moreover have "?f1 (sem C (?S1 \<union> ?S2)) = sem C ?S1"
     using recover_after_sem[of "from_nat 1" "from_nat 2" ?S1 x ?S2] assms(8) rr1 rr2
-      member_filter[of _ "\<lambda>\<phi>. fst \<phi> x = from_nat 1"] member_filter[of _ "\<lambda>\<phi>. fst \<phi> x = from_nat 2"]
-    by metis
+    by simp blast
   then have "R1 (sem C ?S1)"
     by (metis (mono_tags) calculation combine_def)
   then have "R1 (sem C (sem C1 S))"
     by (metis assms(9) not_free_var_hyper_def sem_of_modify_lvar)
   moreover have "?f2 (sem C (?S1 \<union> ?S2)) = sem C ?S2"
-    using recover_after_sem[of "from_nat 2" "from_nat 1" ?S2 x ?S1] assms(8) rr1 rr2 sup_commute[of ]
-      member_filter[of _ "\<lambda>\<phi>. fst \<phi> x = from_nat 1" "?S1 \<union> ?S2"] member_filter[of _ "\<lambda>\<phi>. fst \<phi> x = from_nat 2" "?S1 \<union> ?S2"]
-    by metis
+    using recover_after_sem[of "from_nat 2" "from_nat 1" ?S2 x ?S1] assms(8) rr1 rr2
+    by (simp add: ac_simps) blast
+
   then have "R2 (sem C ?S2)"
     by (metis (mono_tags) calculation(1) combine_def)
   then have "R2 (sem C (sem C2 S))"

@@ -303,8 +303,8 @@ proof
   fix p assume "p \<in> top h"
   then obtain "c" where "c \<in> C" "p \<in> bot c" using assms unfolding is_hole_def by blast
   with \<open>p \<in> top h\<close> have "bot c \<subseteq> top h" using assms unfolding is_hole_def by blast
-  hence "c \<in> filter_on_hole h"
-    by (metis  \<open>c \<in> C\<close> filter_on_hole_def is_on_hole_def member_filter)
+  with \<open>c \<in> C\<close> have "c \<in> filter_on_hole h"
+    by (simp only: filter_on_hole_def flip: is_on_hole_def) simp
   with \<open>p \<in> bot c\<close> show "p \<in> \<Union>(image bot(filter_on_hole h))" by blast
 qed
 
@@ -534,8 +534,8 @@ proof -
   let ?c_2nd_min = "ARG_MIN width c . c \<in> (Set.remove cmin ?On_h)"
   have "bot cmin \<subset> top h" by(metis hole cmin_on_h strict_subset_if_on_hole)
   hence "Set.remove cmin ?On_h \<noteq> {}" using hole obtain_cube_if_in_hole by fastforce
-  moreover have "finite (Set.remove cmin ?On_h)" 
-    by (metis hole on_hole_finite remove_def finite_Diff)
+  moreover have "finite (Set.remove cmin ?On_h)"
+    using hole by (simp add: hole on_hole_finite)
   ultimately have "?c_2nd_min \<in> Set.remove cmin ?On_h" by(metis arg_min_exist)
   hence "?c_2nd_min \<in> ?On_h " and "width cmin < width ?c_2nd_min"
     by(simp, simp add: cmin_minimal_strict)

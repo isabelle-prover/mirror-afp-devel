@@ -200,7 +200,7 @@ proof -
   qed
   have a:\<open>(\<lambda>x \<sigma>. cvm_algo_abstract.step_1 x \<sigma> \<bind> cvm_algo_abstract.step_2 n f subsample) = step\<close>
     unfolding cvm_algo_abstract.step_1_def[OF abs]  cvm_algo_abstract.step_2_def[OF abs] step_n_def
-    by (intro ext) (simp add: bind_assoc_pmf Let_def bind_return_pmf Set.remove_def cong:if_cong)
+    by (intro ext) (simp add: bind_assoc_pmf Let_def bind_return_pmf cong:if_cong)
   have c:\<open>cvm_algo_abstract.initial_state = initial_state\<close>
     unfolding cvm_algo_abstract.initial_state_def[OF abs] initial_state_def by auto
   show \<open>cvm_algo_abstract.run_steps n f subsample = run_steps\<close>
@@ -237,7 +237,7 @@ proof -
       using 2(1) abs.state_\<chi>_finite[where \<rho>=\<open>FinalState xs\<close>] that by (simp add:AE_measure_pmf_iff)
     thus ?case
       using 2(2) unfolding abs.step_1_def abs.run_state_pmf.simps Let_def map_pmf_def[symmetric]
-      by (force simp:card_insert_if remove_def)
+      by (force simp: card_insert_if)
   next
     case (3 xs x)
     define p where \<open>p = abs.run_state_pmf (IntermState xs x)\<close>

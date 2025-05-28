@@ -25,7 +25,7 @@ begin
     (alphabet A) (f ` initial A)
     (\<Union> p \<in> nodes A. \<Union> a \<in> alphabet A. f ` {p} \<times> {a} \<times> f ` transition A a p)
     (f ` {p \<in> nodes A. accepting A p})"
-    unfolding nba_nbae_def nbae_image_def nbae.simps Set.filter_def by force
+    unfolding nba_nbae_def nbae_image_def nbae.simps by force
 
   section \<open>Exploration and Translation\<close>
 

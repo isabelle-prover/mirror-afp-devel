@@ -3560,8 +3560,9 @@ proof -
           using safe_2(1)[of "(s', h')" m] \<open>pair_sat (\<Sigma>1 \<sigma>) (\<Sigma>1 \<sigma>) R\<close> unfolding pair_sat_def
           by simp
         then show "safe m \<Delta> C2 (s', h') (\<Sigma> \<sigma>)"
-          using Sup_upper \<open>\<Sigma> \<equiv> \<lambda>\<sigma>. \<Union> (\<Sigma>2 ` \<Sigma>1 \<sigma>)\<close> \<open>pair_sat (\<Sigma>1 \<sigma>) (\<Sigma>1 \<sigma>) R\<close> image_iff  safe_larger_set asm0(2)
-          by (metis (no_types, lifting) \<open>m \<le> n \<and> (s', h') \<in> Set.filter (bounded \<circ> snd) (\<Sigma>1 \<sigma>)\<close> member_filter)
+          using \<open>pair_sat (\<Sigma>1 \<sigma>) (\<Sigma>1 \<sigma>) R\<close> asm0(2)
+          \<open>m \<le> n \<and> (s', h') \<in> Set.filter (bounded \<circ> snd) (\<Sigma>1 \<sigma>)\<close>
+          by (auto simp add: \<open>\<Sigma> \<equiv> \<lambda>\<sigma>. \<Union> (\<Sigma>2 ` \<Sigma>1 \<sigma>)\<close> intro: safe_larger_set)
       qed
       then show "safe n \<Delta> (Cseq C1 C2) \<sigma> (\<Sigma> \<sigma>)" by auto
     qed
@@ -4030,7 +4031,7 @@ proof (induct n arbitrary: s h)
         have "safe (Suc k) (None :: ('i, 'a, nat) cont) (Cif b (Cseq C (Cwhile b C)) Cskip) (s, h) ?S"
         proof (rule if_safe)
           have "\<not> bdenot b s \<Longrightarrow> (s, h) \<in> ?S"
-            by (metis CollectI Suc.prems(4) asm1(2) fst_eqD leads_to_loop_set_def member_filter trans_\<Sigma>_def)
+            using Suc.prems(4) asm1(2) by (simp add: trans_\<Sigma>_def leads_to_loop_set_def)
           then show "\<not> bdenot b s \<Longrightarrow> safe k (None :: ('i, 'a, nat) cont) Cskip (s, h) (trans_\<Sigma> b I \<Sigma> \<sigma>)"
             by (metis Pair_inject asm1(2) safe_skip)
           assume asm2: "bdenot b s"
@@ -4039,23 +4040,21 @@ proof (induct n arbitrary: s h)
           then have r: "safe (Suc n) (None :: ('i, 'a, nat) cont) C (s, h) (\<Sigma> (s, h))"
             using Suc.prems(1)
             by (metis Suc.prems(5) snd_eqD)
-
-
-
           show "safe k (None :: ('i, 'a, nat) cont) (Cseq C (Cwhile b C)) (s, h) (trans_\<Sigma> b I \<Sigma> \<sigma>)"
           proof (rule seq_safe)
             show "safe k (None :: ('i, 'a, nat) cont) C (s, h) (Set.filter (bounded \<circ> snd) (\<Sigma> (s, h)))"
               apply (rule restrict_safe_to_bounded)
               using Suc Suc_n_not_le_n nat_le_linear r safe_smaller apply metis
               by (simp add: Suc.prems(5))
-            fix m s' h' assume asm3: "m \<le> k \<and> (s', h')  \<in> Set.filter (bounded \<circ> snd) (\<Sigma> (s, h))"
+            fix m s' h' assume asm3: "m \<le> k \<and> (s', h') \<in> Set.filter (bounded \<circ> snd) (\<Sigma> (s, h))"
             have "safe n (None :: ('i, 'a, nat) cont) (Cwhile b C) (s', h') (trans_\<Sigma> b I \<Sigma> \<sigma>)"
             proof (rule Suc.hyps)
               show "leads_to_loop b I \<Sigma> \<sigma> (s', h')"
-                by (metis Suc.prems(4) asm2 asm3 fst_conv leads_to_loop.simps member_filter)
+                using Suc.prems(4) asm2 asm3 by auto
+                  (metis fst_conv leads_to_loop.intros(2))
               show "(s', h'), (s', h') \<Turnstile> I"
-                using \<open>(s, h), (s, h) \<Turnstile> And I (Bool b)\<close> asm3 assms(2) pair_satE
-                by (metis member_filter)
+                using \<open>(s, h), (s, h) \<Turnstile> And I (Bool b)\<close> asm3 pair_satE [OF assms(2) [OF \<open>(s, h), (s, h) \<Turnstile> And I (Bool b)\<close>]]
+                by auto
               show "\<And>\<sigma>. \<sigma>, \<sigma> \<Turnstile> And I (Bool b) \<Longrightarrow> bounded (snd \<sigma>) \<Longrightarrow> safe n (None :: ('i, 'a, nat) cont) C \<sigma> (\<Sigma> \<sigma>)"
                 by (meson Suc.prems(1) Suc_n_not_le_n nat_le_linear safe_smaller)
               show "bounded h'"
@@ -4105,7 +4104,7 @@ proof (induct n arbitrary: s h)
         have "safe (Suc k) (Some \<Gamma>) (Cif b (Cseq C (Cwhile b C)) Cskip) (s, h) ?S"
         proof (rule if_safe)
           have "\<not> bdenot b s \<Longrightarrow> (s, h) \<in> ?S"
-            by (metis CollectI Suc.prems(4) asm1(2) fst_eqD leads_to_loop_set_def member_filter trans_\<Sigma>_def)
+            using Suc.prems(4) asm1(2) by (simp add: leads_to_loop_set_def trans_\<Sigma>_def)
           then show "\<not> bdenot b s \<Longrightarrow> safe k (Some \<Gamma>) Cskip (s, h) (trans_\<Sigma> b I \<Sigma> \<sigma>)"
             by (metis Pair_inject asm1(2) safe_skip)
           assume asm2: "bdenot b s"
@@ -4197,8 +4196,7 @@ proof -
         assume asm1: "(s1', h1') \<in> trans_\<Sigma> b I \<Sigma> (s1, h1) \<and> (s2', h2') \<in> trans_\<Sigma> b I \<Sigma> (s2, h2)"
         then obtain "leads_to_loop b I \<Sigma> (s1, h1) (s1', h1')" "\<not> bdenot b s1'"
            "leads_to_loop b I \<Sigma> (s2, h2) (s2', h2')" "\<not> bdenot b s2'"
-          using trans_\<Sigma>_def leads_to_loop_set_def
-          by (metis fst_conv mem_Collect_eq member_filter)
+          by (simp add: trans_\<Sigma>_def leads_to_loop_set_def)
         then have "(s1', h1'), (s1', h1') \<Turnstile> I \<and> (s2', h2'), (s2', h2') \<Turnstile> I"
           by (meson \<open>\<And>\<sigma>' \<sigma>. \<sigma>, \<sigma>' \<Turnstile> And I (Bool b) \<Longrightarrow> pair_sat (\<Sigma> \<sigma>) (\<Sigma> \<sigma>') I\<close> always_sat_refl asm0 leads_to_sat_inv_unary sat_comm_aux)
         then show "(s1', h1'), (s2', h2') \<Turnstile> And I (Bool (Bnot b))"
@@ -4243,7 +4241,8 @@ proof (induct rule: leads_to_loop.induct)
 next
   case (2 b I \<Sigma> \<sigma> \<sigma>' \<sigma>'')
   then obtain n where "\<sigma>' \<in> iterate_sigma n b I \<Sigma> \<sigma>" by blast
-  then have "\<sigma>'' \<in> iterate_sigma (Suc n) b I \<Sigma> \<sigma>" using 2 by auto
+  then have "\<sigma>'' \<in> iterate_sigma (Suc n) b I \<Sigma> \<sigma>" using 2
+    by auto (metis split_pairs2) 
   then show ?case by blast
 qed
 
@@ -4254,7 +4253,8 @@ proof
   then have "\<not> bdenot b (fst x) \<and> leads_to_loop b I \<Sigma> \<sigma> x"
     by (simp add: leads_to_loop_set_def trans_\<Sigma>_def)
   then show "x \<in> Set.filter (\<lambda>\<sigma>. \<not> bdenot b (fst \<sigma>)) (\<Union>n. iterate_sigma n b I \<Sigma> \<sigma>)"
-    by (metis member_filter union_of_iterate_sigma_is_leads_to_loop_set)
+    using union_of_iterate_sigma_is_leads_to_loop_set [of b I \<Sigma> \<sigma> x]
+    by simp
 qed
 
 
@@ -4335,10 +4335,12 @@ proof -
   moreover have "pair_sat (iterate_sigma ?n b I \<Sigma> \<sigma>) (iterate_sigma ?n b I \<Sigma> \<sigma>) (And I (Low b))"
     using assms(1) assms(2) assms(3) iterate_sigma_low_all_sat_I_and_low by blast
   then have r: "\<And>x. x \<in> iterate_sigma ?n b I \<Sigma> \<sigma> \<Longrightarrow> \<not> bdenot b (fst x)"
-    by (metis \<open>\<sigma>' \<in> Set.filter (\<lambda>\<sigma>. \<not> bdenot b (fst \<sigma>)) (iterate_sigma (min n1 n2) b I \<Sigma> \<sigma>)\<close> all_same assms(1) assms(2) member_filter)
+    using \<open>\<sigma>' \<in> Set.filter (\<lambda>\<sigma>. \<not> bdenot b (fst \<sigma>)) (iterate_sigma (min n1 n2) b I \<Sigma> \<sigma>)\<close> assms(2)
+    by auto (metis assms(1) all_same fst_eqD)
   then have "iterate_sigma (Suc ?n) b I \<Sigma> \<sigma> = {}" by auto
-  then have "\<not> (n1 > ?n) \<and> \<not> (n2 > ?n)" using iterate_empty_later_empty[of "Suc ?n" b I \<Sigma> \<sigma>]
-      assms by (metis (no_types, lifting) Set.filter_def empty_Collect_eq empty_def le_simps(3) mem_Collect_eq)
+  then have "\<not> (n1 > ?n) \<and> \<not> (n2 > ?n)"
+    using iterate_empty_later_empty [of "Suc ?n" b I \<Sigma> \<sigma>] assms
+    by (simp only: Suc_le_eq) auto
   then show ?thesis by linarith
 qed
 
@@ -4384,7 +4386,8 @@ proof -
   proof (cases "k1 \<le> k2")
     case True
     then have "iterate_sigma k1 b I \<Sigma> \<sigma>2 \<noteq> {}"
-      by (metis (no_types, lifting) Collect_cong Set.filter_def \<open>Set.filter (\<lambda>\<sigma>. \<not> bdenot b (fst \<sigma>)) (iterate_sigma k2 b I \<Sigma> \<sigma>2) \<noteq> {}\<close> empty_def iterate_empty_later_empty mem_Collect_eq)
+      using \<open>Set.filter (\<lambda>\<sigma>. \<not> bdenot b (fst \<sigma>)) (iterate_sigma k2 b I \<Sigma> \<sigma>2) \<noteq> {}\<close>
+      using iterate_empty_later_empty [of k1 b I \<Sigma> \<sigma>2 k2] by auto
     then obtain \<sigma>1' \<sigma>2' where "\<sigma>1' \<in> Set.filter (\<lambda>\<sigma>. \<not> bdenot b (fst \<sigma>)) (iterate_sigma k1 b I \<Sigma> \<sigma>1) \<and> \<sigma>2' \<in> iterate_sigma k1 b I \<Sigma> \<sigma>2"
       using calculation by blast
     then have "\<not> bdenot b (fst \<sigma>1')"
@@ -4393,18 +4396,23 @@ proof -
       using assms(1) assms(2) assms(3) iterate_sigma_low_all_sat_I_and_low by blast
     then have r: "\<And>x1 x2. x1 \<in> iterate_sigma k1 b I \<Sigma> \<sigma>1 \<and> x2 \<in> iterate_sigma k1 b I \<Sigma> \<sigma>2 \<Longrightarrow> bdenot b (fst x1) \<longleftrightarrow> bdenot b (fst x2)"
       by (metis (no_types, opaque_lifting) eq_fst_iff hyper_sat.simps(3) hyper_sat.simps(5) pair_sat_def)
-    then have "\<not> bdenot b (fst \<sigma>2')"
-      by (metis \<open>\<sigma>1' \<in> Set.filter (\<lambda>\<sigma>. \<not> bdenot b (fst \<sigma>)) (iterate_sigma k1 b I \<Sigma> \<sigma>1) \<and> \<sigma>2' \<in> iterate_sigma k1 b I \<Sigma> \<sigma>2\<close> member_filter)
+    from r [of \<sigma>1'] have "\<not> bdenot b (fst \<sigma>2')"
+      using \<open>\<sigma>1' \<in> Set.filter (\<lambda>\<sigma>. \<not> bdenot b (fst \<sigma>)) (iterate_sigma k1 b I \<Sigma> \<sigma>1) \<and> \<sigma>2' \<in> iterate_sigma k1 b I \<Sigma> \<sigma>2\<close>
+      by simp
     then have "\<And>x1. x1 \<in> iterate_sigma k1 b I \<Sigma> \<sigma>1 \<Longrightarrow> \<not> bdenot b (fst x1)"
       using \<open>\<sigma>1' \<in> Set.filter (\<lambda>\<sigma>. \<not> bdenot b (fst \<sigma>)) (iterate_sigma k1 b I \<Sigma> \<sigma>1) \<and> \<sigma>2' \<in> iterate_sigma k1 b I \<Sigma> \<sigma>2\<close> r by blast
     then have "iterate_sigma (Suc k1) b I \<Sigma> \<sigma>1 = {}" by auto
     moreover have "\<And>x2. x2 \<in> iterate_sigma k1 b I \<Sigma> \<sigma>2 \<Longrightarrow> \<not> bdenot b (fst x2)"
-      by (metis \<open>\<sigma>1' \<in> Set.filter (\<lambda>\<sigma>. \<not> bdenot b (fst \<sigma>)) (iterate_sigma k1 b I \<Sigma> \<sigma>1) \<and> \<sigma>2' \<in> iterate_sigma k1 b I \<Sigma> \<sigma>2\<close> member_filter r)
+      using \<open>\<sigma>1' \<in> Set.filter (\<lambda>\<sigma>. \<not> bdenot b (fst \<sigma>)) (iterate_sigma k1 b I \<Sigma> \<sigma>1) \<and> \<sigma>2' \<in> iterate_sigma k1 b I \<Sigma> \<sigma>2\<close>
+      r [of \<sigma>1'] by auto
     then have "iterate_sigma (Suc k1) b I \<Sigma> \<sigma>2 = {}" by auto
     then have "k1 = k2"
-      using True \<open>Set.filter (\<lambda>\<sigma>. \<not> bdenot b (fst \<sigma>)) (iterate_sigma k2 b I \<Sigma> \<sigma>2) \<noteq> {}\<close> dual_order.antisym[of k1 k2]
-          ex_in_conv iterate_empty_later_empty[of _ b I \<Sigma> \<sigma>2] member_filter not_less_eq_eq
-      by metis
+      using True \<open>Set.filter (\<lambda>\<sigma>. \<not> bdenot b (fst \<sigma>)) (iterate_sigma k2 b I \<Sigma> \<sigma>2) \<noteq> {}\<close> order.antisym [of k1 k2]
+      apply (cases \<open>k2 \<le> k1\<close>)
+      apply (simp_all add: not_le)
+      using iterate_empty_later_empty [of _ b I \<Sigma> \<sigma>2]
+      apply (metis \<open>iterate_sigma (Suc k1) b I \<Sigma> \<sigma>2 = {}\<close> empty_iff less_eq_Suc_le) 
+      done
     moreover have "Set.filter (\<lambda>\<sigma>. \<not> bdenot b (fst \<sigma>)) (\<Union>n. iterate_sigma n b I \<Sigma> \<sigma>1) = Set.filter (\<lambda>\<sigma>. \<not> bdenot b (fst \<sigma>)) (iterate_sigma k1 b I \<Sigma> \<sigma>1)"
       using one_non_empty_union[of I b \<Sigma> \<sigma>1]
       using \<open>Set.filter (\<lambda>\<sigma>. \<not> bdenot b (fst \<sigma>)) (iterate_sigma k1 b I \<Sigma> \<sigma>1) \<noteq> {}\<close> always_sat_refl assms(1) assms(2) by blast
@@ -4416,13 +4424,18 @@ proof -
   next
     case False
     then have "iterate_sigma k2 b I \<Sigma> \<sigma>1 \<noteq> {}"
-      by (metis (no_types, lifting) Collect_cong Set.filter_def calculation empty_def iterate_empty_later_empty linorder_le_cases mem_Collect_eq)
+      apply (simp add: not_le)
+      apply (metis (no_types, lifting) Collect_empty_eq False Set.filter_eq calculation empty_iff
+          iterate_empty_later_empty nle_le)
+      done
     then obtain \<sigma>1' \<sigma>2' where "\<sigma>1' \<in> iterate_sigma k2 b I \<Sigma> \<sigma>1 \<and> \<sigma>2' \<in> not_set b (iterate_sigma k2 b I \<Sigma> \<sigma>2)"
       by (metis \<open>Set.filter (\<lambda>\<sigma>. \<not> bdenot b (fst \<sigma>)) (iterate_sigma k2 b I \<Sigma> \<sigma>2) \<noteq> {}\<close> ex_in_conv not_set_def)
     then have "\<not> bdenot b (fst \<sigma>2')"
       using not_set_def by fastforce
     then have "\<not> bdenot b (fst \<sigma>1')"
-      by (metis \<open>\<sigma>1' \<in> iterate_sigma k2 b I \<Sigma> \<sigma>1 \<and> \<sigma>2' \<in> not_set b (iterate_sigma k2 b I \<Sigma> \<sigma>2)\<close> all_same assms(1) assms(2) assms(3) member_filter not_set_def)
+      using \<open>\<sigma>1' \<in> iterate_sigma k2 b I \<Sigma> \<sigma>1 \<and> \<sigma>2' \<in> not_set b (iterate_sigma k2 b I \<Sigma> \<sigma>2)\<close> assms(1) assms(2) assms(3)
+      all_same [of I b \<Sigma> \<sigma>1 \<sigma>2 \<sigma>1' k2 \<sigma>2']
+      by (simp add: not_set_def)
     then have "\<And>x1. x1 \<in> iterate_sigma k2 b I \<Sigma> \<sigma>1 \<Longrightarrow> \<not> bdenot b (fst x1)"
       using \<open>\<sigma>1' \<in> iterate_sigma k2 b I \<Sigma> \<sigma>1 \<and> \<sigma>2' \<in> not_set b (iterate_sigma k2 b I \<Sigma> \<sigma>2)\<close> all_same always_sat_refl assms(1) assms(2) by blast
     then have "iterate_sigma (Suc k2) b I \<Sigma> \<sigma>1 = {}" by auto
@@ -4430,7 +4443,9 @@ proof -
       using \<open>\<not> bdenot b (fst \<sigma>1')\<close> \<open>\<sigma>1' \<in> iterate_sigma k2 b I \<Sigma> \<sigma>1 \<and> \<sigma>2' \<in> not_set b (iterate_sigma k2 b I \<Sigma> \<sigma>2)\<close> all_same assms(1) assms(2) assms(3) by blast
     then have "iterate_sigma (Suc k2) b I \<Sigma> \<sigma>2 = {}" by auto
     then show ?thesis
-      by (metis (no_types, lifting) Collect_empty_eq False Set.filter_def \<open>Set.filter (\<lambda>\<sigma>. \<not> bdenot b (fst \<sigma>)) (iterate_sigma k1 b I \<Sigma> \<sigma>1) \<noteq> {}\<close> calculation empty_iff iterate_empty_later_empty not_less_eq_eq)
+      using \<open>Set.filter (\<lambda>\<sigma>. \<not> bdenot b (fst \<sigma>)) (iterate_sigma k1 b I \<Sigma> \<sigma>1) \<noteq> {}\<close> False
+      by (auto simp add: not_le not_set_def)
+        (metis (no_types, lifting) Suc_le_eq calculation equals0D iterate_empty_later_empty)
   qed
 qed
 
@@ -4463,7 +4478,7 @@ proof -
         moreover have "pair_sat (iterate_sigma k b I \<Sigma> (s1, h1)) (iterate_sigma k b I \<Sigma> (s2, h2)) (And I (Low b))"
           using \<open>\<And>\<sigma>' \<sigma>. \<sigma>, \<sigma>' \<Turnstile> And I (Bool b) \<Longrightarrow> pair_sat (\<Sigma> \<sigma>) (\<Sigma> \<sigma>') (And I (Low b))\<close> asm0_bis iterate_sigma_low_all_sat_I_and_low by blast
         ultimately show "(s1', h1'), (s2', h2') \<Turnstile> And I (Bool (Bnot b))"
-          by (metis (no_types, lifting) asm1 bdenot.simps(3) fst_conv hyper_sat.simps(1) hyper_sat.simps(3) member_filter not_set_def pair_satE)
+          using asm1 by (auto simp add: not_set_def) (meson hyper_sat.simps(3) pair_sat_def)
       qed
     qed
 
@@ -4484,7 +4499,10 @@ proof -
         by (simp add: asm1(2))
     qed
     then show "safe n \<Delta> (Cwhile b C) (s, h) (not_set b (\<Union>n. iterate_sigma n b I \<Sigma> (s, h)))"
-      by (simp add: not_set_def safe_larger_set trans_included)
+      apply (rule safe_larger_set)
+      using trans_included [of b I \<Sigma> \<open>(s, h)\<close>] 
+      apply (auto simp add: not_set_def)
+      done
   qed
 qed
 

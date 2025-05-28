@@ -341,13 +341,16 @@ proof -
   have f1: "finite ?ks"
     by simp
   moreover have f2: "?ks \<noteq> {}"
-    using \<open>\<And> q . q \<in> states M \<Longrightarrow> ofsm_table M f k q = ofsm_table M f (Suc k) q\<close> unfolding Set.filter_def by blast
+    apply (clarsimp simp only: Set.filter_eq simp flip: ex_in_conv)
+    using \<open>\<And>q. q \<in> states M \<Longrightarrow> ofsm_table M f k q = ofsm_table M f (Suc k) q\<close>
+    apply blast
+    done
   ultimately obtain kMin where "kMin \<in> ?ks" and "\<And> k' . k' \<in> ?ks \<Longrightarrow> k' \<ge> kMin"
     using Min_elem[OF f1 f2] by (meson eq_Min_iff)
 
   have k1: "\<And> q . q \<in> states M \<Longrightarrow> ofsm_table M f (Suc kMin) q = ofsm_table M f kMin q"
     using \<open>kMin \<in> ?ks\<close>
-    by (metis (mono_tags, lifting) member_filter) 
+    by (metis (mono_tags, lifting) Set.filter_eq mem_Collect_eq) 
 
   have k2: "\<And> k' . (\<And> q . q \<in> states M \<Longrightarrow> ofsm_table M f k' q = ofsm_table M f (Suc k') q) \<Longrightarrow> k' \<ge> kMin" 
   proof -
@@ -358,9 +361,9 @@ proof -
     next
       case False
       then have "k' > k"
-        using \<open>\<And> q . q \<in> states M \<Longrightarrow> ofsm_table M f k' q = ofsm_table M f (Suc k') q\<close> 
-        unfolding member_filter atMost_iff
-        by (meson not_less) 
+        using \<open>\<And> q . q \<in> states M \<Longrightarrow> ofsm_table M f k' q = ofsm_table M f (Suc k') q\<close>
+        by (smt (verit, best) Set.filter_eq atMost_iff dual_order.refl mem_Collect_eq nat_less_le
+            nat_neq_iff) 
       moreover have "kMin \<le> k"
         using \<open>kMin \<in> ?ks\<close> by auto
       ultimately show ?thesis 
@@ -517,7 +520,7 @@ lemma h_obs_io :
   shows "x \<in> inputs M" and "y \<in> outputs M"
 proof -
   have "snd ` Set.filter (\<lambda> (y',q') . y' = y) (h M (q,x)) \<noteq> {}"
-    using assms unfolding h_obs_simps Let_def by auto
+    using assms by (auto simp add: Let_def card_1_singleton_iff split: if_splits)
   then show "x \<in> inputs M" and "y \<in> outputs M"
     unfolding h_simps
     using fsm_transition_input fsm_transition_output

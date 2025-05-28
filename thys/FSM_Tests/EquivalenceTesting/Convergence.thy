@@ -654,18 +654,15 @@ proof -
       fix \<alpha> \<beta> assume "\<alpha> \<in> A q1" and "\<beta> \<in> A q2"
 
       then have "converge M1 (f q1) \<alpha>" and "converge M1 (f q2) \<beta>"
-        unfolding A
-        by (meson member_filter)+
+        by (simp_all add: A)
       moreover have "\<not> converge M1 (f q1) (f q2)"  
         using non_initialized_state_cover_assignment_diverges[OF assms(1,3) f1 f2 \<open>q1 \<in> reachable_states M1\<close> \<open>q2 \<in> reachable_states M1\<close> \<open>q1 \<noteq> q2\<close>] .
       ultimately have "\<not> converge M1 \<alpha> \<beta>"
         unfolding converge.simps by blast
       moreover have "\<alpha>\<in>L M1 \<inter> SC"
-        using \<open>\<alpha> \<in> A q1\<close> unfolding A
-        by (meson member_filter)
+        using \<open>\<alpha> \<in> A q1\<close> by (simp add: A)
       moreover have "\<beta>\<in>L M1 \<inter> SC"
-        using \<open>\<beta> \<in> A q2\<close> unfolding A
-        by (meson member_filter)
+        using \<open>\<beta> \<in> A q2\<close> by (simp add: A)
       ultimately have "\<not> converge M2 \<alpha> \<beta>"
         using \<open>preserves_divergence M1 M2 SC\<close>
         unfolding preserves_divergence.simps 
@@ -1019,12 +1016,12 @@ proof -
                 by auto
             qed 
             have "(\<alpha>@[]) \<in> A (after_initial M1 (\<alpha>@[]))"
-              unfolding A 
               using convergence_minimal[OF assms(3,1) _ \<open>\<alpha>@[] \<in> L M1\<close>, of "f (after_initial M1 (\<alpha>@[]))"] 
               using f2[OF \<open>after_initial M1 (\<alpha>@[]) \<in> reachable_states M1\<close>]
-              using \<open>\<alpha> \<in> SC\<close>
-              unfolding Nil
-              by (metis (no_types, lifting) Int_iff \<open>\<alpha> \<in> L M1\<close> \<open>after M1 (FSM.initial M1) (\<alpha> @ []) \<in> reachable_states M1\<close> append_Nil2 assms(1) f1 member_filter observable_after_path observable_path_io_target singletonD)
+              using \<open>\<alpha> \<in> SC\<close> \<open>\<alpha> \<in> L M1\<close> \<open>after M1 (FSM.initial M1) (\<alpha> @ []) \<in> reachable_states M1\<close>
+              apply (auto simp add: A Nil)
+               apply (metis (lifting) ext after_path assms(1) f1 observable_path_io_target singletonD)+
+              done
             then have "after M2 (FSM.initial M2) (\<alpha> @ []) \<in> Q (after_initial M1 (\<alpha>@[]))"
               unfolding Q 
               using observable_io_targets[OF \<open>observable M2\<close> \<open>(\<alpha> @ []) \<in> L M2\<close>]
@@ -1293,11 +1290,13 @@ proof -
                 unfolding reachable_states_def
                 by (metis (mono_tags, lifting) mem_Collect_eq)
               have "(\<alpha>@[xy]) \<in> A (after_initial M1 (\<alpha>@[xy]))"
-                unfolding A
                 using convergence_minimal[OF assms(3,1) _ \<open>\<alpha>@[xy] \<in> L M1\<close>, of "f (after_initial M1 (\<alpha>@[xy]))"] 
                 using f2[OF \<open>after_initial M1 (\<alpha>@[xy]) \<in> reachable_states M1\<close>]
-                using \<open>\<alpha>@[xy] \<in> SC\<close>
-                by (metis (no_types, lifting) Int_iff \<open>\<alpha> @ [xy] \<in> L M1\<close> \<open>after M1 (FSM.initial M1) (\<alpha> @ [xy]) \<in> reachable_states M1\<close> assms(1) f1 member_filter observable_after_path observable_path_io_target singletonD) 
+                using \<open>\<alpha>@[xy] \<in> SC\<close> \<open>\<alpha> @ [xy] \<in> L M1\<close> \<open>after M1 (FSM.initial M1) (\<alpha> @ [xy]) \<in> reachable_states M1\<close> assms(1)
+                apply (auto simp add: A)
+                apply (metis (no_types, lifting) ext after_path assms(1) f1 observable_path_io_target
+                    singletonD)+ 
+                done
               then have "after M2 (FSM.initial M2) (\<alpha> @ [xy]) \<in> Q (after_initial M1 (\<alpha>@[xy]))"
                 unfolding Q 
                 using observable_io_targets[OF \<open>observable M2\<close> \<open>(\<alpha> @ [xy]) \<in> L M2\<close>]

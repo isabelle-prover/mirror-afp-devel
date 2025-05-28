@@ -63,7 +63,7 @@ lemma mpoly_coeff_code [code]: "coeff (MPoly p) = lookup p"
 
 lemma sym_mpoly_code [code]:
   "sym_mpoly (set xs) k = (\<Sum>X\<in>Set.filter (\<lambda>X. card X = k) (Pow (set xs)). monom (monom_of_set X) 1)"
-  by (simp add: sym_mpoly_altdef Set.filter_def)
+  by (simp add: sym_mpoly_altdef)
 
 lemma monom_of_set_code [code]:
   "monom_of_set (set xs) = Pm_fmap (fmap_of_list (map (\<lambda>x. (x, 1)) xs))"

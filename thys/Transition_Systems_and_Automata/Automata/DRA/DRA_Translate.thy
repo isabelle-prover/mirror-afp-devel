@@ -24,7 +24,7 @@ begin
     (alphabet A) (f (initial A))
     (\<Union> p \<in> nodes A. \<Union> a \<in> alphabet A. f ` {p} \<times> {a} \<times> f ` {transition A a p})
     (map (\<lambda> (P, Q). (f ` {p \<in> nodes A. P p}, f ` {p \<in> nodes A. Q p})) (condition A))"
-    unfolding dra_drae_def drae_image_def drae.simps Set.filter_def by force
+    unfolding dra_drae_def drae_image_def drae.simps by force
 
   section \<open>Exploration and Translation\<close>
 

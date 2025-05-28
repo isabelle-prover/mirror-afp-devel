@@ -61,7 +61,7 @@ fun merge_option :: "'a option \<times> 'a option \<Rightarrow> 'a option" where
 | "merge_option (Some a, Some b) = Some a"
 (* Last case shouldn't happen but useful for proof *)
 
-fun merge :: "'a tuple \<Rightarrow> 'a tuple \<Rightarrow> 'a tuple" where
+definition merge :: "'a tuple \<Rightarrow> 'a tuple \<Rightarrow> 'a tuple" where
   "merge t1 t2 = map merge_option (zip t1 t2)"
 
 function (sequential) genericJoin :: "vertices \<Rightarrow> 'a query \<Rightarrow> 'a query \<Rightarrow> 'a table" where
@@ -81,7 +81,9 @@ by pat_completeness auto
 termination
   by (relation "measure (\<lambda>(V, Q_pos, Q_neg). card V)") (auto simp add: getIJProperties)
 
-fun wrapperGenericJoin :: "'a query \<Rightarrow> 'a query \<Rightarrow> 'a table" where
+declare genericJoin.simps [simp del]
+
+definition wrapperGenericJoin :: "'a query \<Rightarrow> 'a query \<Rightarrow> 'a table" where
   "wrapperGenericJoin Q_pos Q_neg =
     (if ((\<exists>(A, X)\<in>Q_pos. Set.is_empty X) \<or> (\<exists>(A, X)\<in>Q_neg. Set.is_empty A \<and> \<not> Set.is_empty X)) then
       {}
@@ -98,20 +100,20 @@ end
 
 subsection \<open>An instantation\<close>
 
-fun score :: "'a query \<Rightarrow> nat \<Rightarrow> nat" where
+definition score :: "'a query \<Rightarrow> nat \<Rightarrow> nat" where
   "score Q i = (let relevant = Set.image (\<lambda>(_, x). card x) (Set.filter (\<lambda>(sign, _). i \<in> sign) Q) in
     let l = sorted_list_of_set relevant in
     foldl (+) 0 l
 )"
 
-fun arg_max_list :: "('a \<Rightarrow> nat) \<Rightarrow> 'a list \<Rightarrow> 'a" where
+definition arg_max_list :: "('a \<Rightarrow> nat) \<Rightarrow> 'a list \<Rightarrow> 'a" where
   "arg_max_list f l = (let m = Max (set (map f l)) in arg_min_list (\<lambda>x. m - f x) l)"
 
 lemma arg_max_list_element:
   assumes "length l \<ge> 1" shows "arg_max_list f l \<in> set l"
-  by (metis One_nat_def arg_max_list.simps arg_min_list_in assms le_imp_less_Suc less_irrefl list.size(3))
+  by (metis One_nat_def arg_max_list_def arg_min_list_in assms le_imp_less_Suc less_irrefl list.size(3))
 
-fun max_getIJ :: "'a query \<Rightarrow> 'a query \<Rightarrow> vertices \<Rightarrow> vertices \<times> vertices" where
+definition max_getIJ :: "'a query \<Rightarrow> 'a query \<Rightarrow> vertices \<Rightarrow> vertices \<times> vertices" where
   "max_getIJ Q_pos Q_neg V = (
   let l = sorted_list_of_set V in
   if Set.is_empty Q_neg then
@@ -138,9 +140,9 @@ proof -
     then have "x \<in> V" by (simp add: \<open>finite V\<close> l_def)
     moreover have "(I, J) = ({x}, V - {x})" 
     proof -
-      have "(I, J) =  (let l = sorted_list_of_set V in
-    let x = arg_max_list (score Q_pos) l in
-    ({x}, V - {x}))" by (simp add: True assms(2))
+      from True have "(I, J) =  (let l = sorted_list_of_set V in
+        let x = arg_max_list (score Q_pos) l in
+        ({x}, V - {x}))" by (simp add: assms(2) max_getIJ_def)
       then show ?thesis by (metis l_def x_def)
     qed
     then show ?thesis using Pair_inject \<open>finite V\<close> assms(1) calculation by auto
@@ -151,8 +153,9 @@ proof -
     then have "x \<in> V" by (simp add: \<open>finite V\<close> l_def)
     moreover have "(I, J) = (V - {x}, {x})"
     proof -
-      have "(I, J) = (let l = sorted_list_of_set V in
-  let x = arg_max_list (score Q_neg) l in (V - {x}, {x}))" by (simp add: False assms(2))
+      from False have "(I, J) = (let l = sorted_list_of_set V in
+        let x = arg_max_list (score Q_neg) l
+        in (V - {x}, {x}))" by (simp add: assms(2) max_getIJ_def)
       then show ?thesis by (metis l_def x_def)
     qed
     then show ?thesis using Pair_inject \<open>finite V\<close> assms(1) calculation by auto

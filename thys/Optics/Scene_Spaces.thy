@@ -170,7 +170,9 @@ next
     with Cons(2-3) have 1: "set ys \<subseteq> set xs"
       by auto
     have 2: "x ##\<^sub>S \<Squnion>\<^sub>S (filter (\<lambda>x. x \<notin> set ys) xs)"
-      by (metis (no_types, lifting) Cons.prems(1) filter_is_subset filter_set list.simps(15) member_filter pairwise_compat_foldr pairwise_insert pairwise_subset scene_compat_refl)
+      by (smt (verit, ccfv_threshold) Cons.prems(1) filter_is_subset list.set_intros(1)
+          pairwise_compat_foldr pairwise_def scene_compat_refl set_subset_Cons
+          subset_code(1))
     have 3: "x ##\<^sub>S \<Squnion>\<^sub>S ys"
       by (meson Cons.prems(1) Cons.prems(2) list.set_intros(1) pairwise_compat_foldr pairwise_subset scene_compats_members subset_code(1))
     from Cons(1)[of ys] Cons(2-3) have 4: "\<Squnion>\<^sub>S (filter (\<lambda>x. x \<notin> set ys) xs) ##\<^sub>S \<Squnion>\<^sub>S ys"

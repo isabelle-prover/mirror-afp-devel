@@ -16,7 +16,7 @@ lift_definition fSigma :: "'a fset \<Rightarrow> ('a \<Rightarrow> 'b fset) \<Ri
 
 lift_definition is_fempty :: "'a fset \<Rightarrow> bool" is Set.is_empty .
 lift_definition fremove :: "'a \<Rightarrow> 'a fset \<Rightarrow> 'a fset" is Set.remove
-  by (simp add: remove_def)
+  by simp
 
 lift_definition finj_on :: "('a \<Rightarrow> 'b) \<Rightarrow> 'a fset \<Rightarrow> bool" is inj_on .
 lift_definition the_finv_into  :: "'a fset \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> 'b \<Rightarrow> 'a" is the_inv_into .

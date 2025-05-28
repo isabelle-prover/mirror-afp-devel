@@ -799,11 +799,16 @@ next
     apply(simp add: insertion_sub insertion_const)
     using Atom(5) unfolding L1_def
     by (metis list_update_id) 
-  then have "insertion (nth_default 0 (L2 @ L1)) (liftPoly 0 z a) = Av"
+  then have Av: "Av = insertion (nth_default 0 (L2 @ L1)) (liftPoly 0 z a)"
     using lift_minus by blast
-  then have a1 : "\<forall>x. insertion (nth_default 0 (L[var + z := x])) (liftPoly 0 z a) = Av"
-    unfolding L_def
-    by (metis (no_types, lifting) Atom.prems(5) L1_def add.right_neutral add_diff_cancel_right' append_eq_append_conv append_eq_append_conv2 length_append lengthl2 lift_insertion list.size(3) list_update_append not_add_less2) 
+  have a1 : "\<forall>x. insertion (nth_default 0 (L[var + z := x])) (liftPoly 0 z a) = Av"
+    using Atom.prems(5) drop_update_swap [of z \<open>var + z\<close> L, symmetric]
+    apply (auto simp add: Av nth_default_drop simp flip: L_def)
+    apply (smt (verit, ccfv_threshold) Atom.prems(5) Av L1_def L_def add.commute
+        add_less_same_cancel1 append_eq_append_conv2 append_same_eq bot_nat_0.extremum_strict
+        cancel_comm_monoid_add_class.diff_cancel diff_zero drop0 drop_append length_drop lengthl2
+        lift_insertion list_update_append same_append_eq)
+    done
   have "eval (Atom(Eq (b-Const Bv))) ([] @ L1) = eval (liftFm 0 z (Atom(Eq (b- Const Bv)))) ([] @ L2 @ L1)"
     by (metis eval_liftFm_helper lengthl2 list.size(3))
   then have "(insertion (nth_default 0 (L2 @ L1)) (liftPoly 0 z (b - Const Bv)) = 0)"

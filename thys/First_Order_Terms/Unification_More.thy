@@ -26,7 +26,8 @@ lemma left_substs_imp_props:
   shows "\<exists>p. p \<in> poss s \<and> s|_p = Var x \<and> p \<in> poss t \<and> t|_p = u"
 proof-
   from assms obtain p where 1:"(x, p) \<in> set (zip (vars_term_list s)(var_poss_list s))" and 2:"p \<in> poss t" "t|_p = u"
-    unfolding left_substs_def Let_def using Pair_inject case_prodE filter_set in_set_idx length_map map_nth_eq_conv member_filter nth_mem old.prod.case by auto 
+    unfolding left_substs_def Let_def using Pair_inject case_prodE filter_set in_set_idx length_map
+      map_nth_eq_conv nth_mem old.prod.case by auto 
   from 1 have p:"p \<in> poss s"
     by (metis set_zip_rightD var_poss_imp_poss var_poss_list_sound) 
   from 1 obtain i where "i < length (zip (vars_term_list s)(var_poss_list s))" and "(vars_term_list s)!i = x" and "(var_poss_list s)!i = p"
@@ -56,7 +57,8 @@ lemma right_substs_imp_props:
   shows "\<exists>q. q \<in> fun_poss s \<and> s|_q = u \<and> q \<in> poss t \<and> t|_q = Var x"
 proof-
   from assms obtain q where 1:"(x, q) \<in> set (zip (vars_term_list t)(var_poss_list t))" and 2:"q \<in> fun_poss s" "s|_q = u"
-    unfolding right_substs_def Let_def using Pair_inject case_prodE filter_set in_set_idx length_map map_nth_eq_conv member_filter nth_mem old.prod.case by auto 
+    unfolding right_substs_def Let_def using Pair_inject case_prodE filter_set in_set_idx length_map
+      map_nth_eq_conv nth_mem old.prod.case by auto 
   from 1 have q:"q \<in> poss t"
     by (metis set_zip_rightD var_poss_imp_poss var_poss_list_sound)
   from 1 obtain i where "i < length (zip (vars_term_list t)(var_poss_list t))" and "(vars_term_list t)!i = x" and "(var_poss_list t)!i = q"

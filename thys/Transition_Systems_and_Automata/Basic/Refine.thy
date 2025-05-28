@@ -158,7 +158,7 @@ begin
   (* TODO: Lifting_Set.filter_transfer is too weak *)
   lemma set_filter_param[param]:
     "(Set.filter, Set.filter) \<in> (A \<rightarrow> bool_rel) \<rightarrow> \<langle>A\<rangle> set_rel \<rightarrow> \<langle>A\<rangle> set_rel"
-    unfolding Set.filter_def fun_rel_def set_rel_def by blast
+    by (simp add: fun_rel_def set_rel_def split: prod.split) blast
   lemma is_singleton_param[param]:
     assumes "bijective A"
     shows "(is_singleton, is_singleton) \<in> \<langle>A\<rangle> set_rel \<rightarrow> bool_rel"

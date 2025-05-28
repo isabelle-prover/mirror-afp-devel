@@ -22,7 +22,7 @@ definition typ_info_unit[simp]:
             (\<lparr>field_access = (\<lambda>v bs. [0]), field_update = (\<lambda>bs v. ()), field_sz = 1\<rparr>)) 
           ''unit'' 
            :: unit xtyp_info"
-instance by intro_classes (simp add: typ_name_itself_unit_def)
+instance by intro_classes simp
 end
 
 lemma typ_name_unit[simp]: 

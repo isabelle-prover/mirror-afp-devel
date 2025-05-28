@@ -19,10 +19,10 @@ lemma fset_both_sides: "(Abs_fset s = f) = (fset (Abs_fset s) = fset f)"
   by (simp add: fset_inject)
 
 lemma Abs_ffilter: "(ffilter f s = s') = ({e \<in> (fset s). f e} = (fset s'))"
-  by (simp add: ffilter_def fset_both_sides Abs_fset_inverse Set.filter_def)
+  by (simp add: ffilter_def fset_both_sides Abs_fset_inverse set_eq_iff)
 
 lemma size_ffilter_card: "size (ffilter f s) = card ({e \<in> (fset s). f e})"
-  by (simp add: ffilter_def fset_both_sides Abs_fset_inverse Set.filter_def)
+  by (auto simp add: ffilter_def fset_both_sides Abs_fset_inverse)
 
 lemma ffilter_empty [simp]: "ffilter f {||} = {||}"
   by auto

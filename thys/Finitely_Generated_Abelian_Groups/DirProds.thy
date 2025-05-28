@@ -123,7 +123,7 @@ proof (intro isoI homI)
   show "bij_betw (\<lambda>x. \<lambda>_\<in>{G}. x) (carrier (f G)) (carrier (DirProds f {G}))"
   proof (unfold bij_betw_def, rule)
     show "inj_on (\<lambda>x. (\<lambda>_\<in>{G}. x)) (carrier (f G))"
-      by (intro inj_onI, metis imageI image_constant image_restrict_eq member_remove remove_def)
+      by (rule inj_onI) (simp add: fun_eq_iff split: if_splits)
     show "(\<lambda>x. (\<lambda>_\<in>{G}. x)) ` carrier (f G) = carrier (DirProds f {G})"
       unfolding DirProds_def by fastforce
   qed

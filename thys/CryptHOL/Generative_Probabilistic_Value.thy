@@ -1911,7 +1911,7 @@ subsection \<open>Typing\<close>
 subsubsection \<open>Interface between gpvs and rpvs / callees\<close>
 
 lemma is_empty_parametric [transfer_rule]: "rel_fun (rel_set A) (=) Set.is_empty Set.is_empty" (* Move *)
-by(auto simp add: rel_fun_def Set.is_empty_def dest: rel_setD1 rel_setD2)
+by(auto simp add: rel_fun_def dest: rel_setD1 rel_setD2)
 
 typedef ('call, 'ret) \<I> = "UNIV :: ('call \<Rightarrow> 'ret set) set" ..
 
@@ -1921,7 +1921,7 @@ lemma outs_\<I>_tparametric:
   includes lifting_syntax 
   assumes [transfer_rule]: "bi_total A"
   shows "((A ===> rel_set B) ===> rel_set A) (\<lambda>resps. {out. resps out \<noteq> {}}) (\<lambda>resps. {out. resps out \<noteq> {}})"
-  by(fold Set.is_empty_def) transfer_prover
+  by (simp flip: Set.is_empty_iff) transfer_prover
 
 lift_definition outs_\<I> :: "('call, 'ret) \<I> \<Rightarrow> 'call set" is "\<lambda>resps. {out. resps out \<noteq> {}}" parametric outs_\<I>_tparametric .
 lift_definition responses_\<I> :: "('call, 'ret) \<I> \<Rightarrow> 'call \<Rightarrow> 'ret set" is "\<lambda>x. x" parametric id_transfer[unfolded id_def] .

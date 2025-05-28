@@ -451,8 +451,8 @@ next
     fix a assume \<open>a \<in> \<alpha>(P \ B)\<close>
     then obtain t where \<open>ev a \<in> set (trace_hide t (ev ` B))\<close> \<open>(t, ev ` B) \<in> \<F> P\<close>
       by (elim events_of_memE, unfold T_Hiding \<open>div_hide P B = {}\<close>, blast)
-    thus \<open>a \<in> \<alpha>(P) - B\<close> by (metis DiffI F_T events_of_memI
-          filter_set image_eqI member_filter)
+    thus \<open>a \<in> \<alpha>(P) - B\<close>
+      by (auto intro: events_of_memI F_T)
   next
     fix a assume \<open>a \<in> \<alpha>(P) - B\<close>
     then obtain t where \<open>ev a \<in> set t\<close> \<open>t \<in> \<T> P\<close> \<open>a \<notin> B\<close>

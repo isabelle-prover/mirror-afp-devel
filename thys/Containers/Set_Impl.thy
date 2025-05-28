@@ -272,7 +272,7 @@ subsection \<open>Delete code equation with set as constructor\<close>
 lemma is_empty_unfold [code_unfold]:
   "set_eq A {} = Set.is_empty A"
   "set_eq {} A = Set.is_empty A"
-by(auto simp add: Set.is_empty_def set_eq_def)
+  by (auto simp add: set_eq_def)
 
 definition is_UNIV :: "'a set \<Rightarrow> bool"
 where [code del]: "is_UNIV A \<longleftrightarrow> A = UNIV"
@@ -649,14 +649,14 @@ lemma is_empty_code [code]:
   "Set.is_empty (Complement A) \<longleftrightarrow> is_UNIV A" (is ?Complement)
 proof -
   show ?DList_set
-    by(clarsimp simp add: DList_set_def Set.is_empty_def DList_Set.member_empty_empty split: option.split)
+    by(clarsimp simp add: DList_set_def DList_Set.member_empty_empty split: option.split)
 
   show ?RBT_set
-    by(clarsimp simp add: RBT_set_def Set.is_empty_def RBT_Set2.member_empty_empty[symmetric] fun_eq_iff simp del: RBT_Set2.member_empty_empty split: option.split)
+    by(clarsimp simp add: RBT_set_def RBT_Set2.member_empty_empty[symmetric] fun_eq_iff simp del: RBT_Set2.member_empty_empty split: option.split)
 
   show ?Complement
-    by(auto simp add: is_UNIV_def Set.is_empty_def)
-qed(simp_all add: Set.is_empty_def List.null_def)
+    by(auto simp add: is_UNIV_def)
+qed(simp_all add: List.null_def)
 
 lemma Set_insert_code [code]:
   fixes dxs :: "'a :: ceq set_dlist" 
@@ -1294,7 +1294,7 @@ qed(auto simp add: set_eq_def)
 
 lemma Set_project_code [code]:
   "Set.filter P A = A \<inter> Collect_set P"
-by(auto simp add: Set.filter_def)
+  by (simp add: set_eq_iff)
 
 lemma Set_image_code [code]:
   fixes dxs :: "'a :: ceq set_dlist" 

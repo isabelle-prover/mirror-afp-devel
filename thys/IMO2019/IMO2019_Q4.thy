@@ -275,11 +275,11 @@ proof -
   have [simp]: "{0<..Suc 0} = {1}" by auto
   have "(n, k) \<in> Set.filter P A"
     using k_n pos T_ge_half_k k_gt_T n_less_7
-    by (auto simp: A_def T'_def T_def Set.filter_def P_def rhs_def)
+    by (auto simp: A_def T'_def T_def P_def rhs_def)
   also have "Set.filter P A = {(1, 1), (2, 3)}"
     by (simp add: P_def Set_filter_insert A_def atMost_nat_numeral atMost_Suc T'_def Sigma_insert 
-          greaterThanAtMost_nat_numeral atLeastAtMost_nat_numeral lessThan_nat_numeral fact_numeral
-             cong: if_weak_cong)
+          greaterThanAtMost_nat_numeral atLeastAtMost_nat_numeral lessThan_nat_numeral fact_numeral split_def
+          del: Set.filter_eq cong: if_weak_cong)
   finally show ?thesis .
 qed
 

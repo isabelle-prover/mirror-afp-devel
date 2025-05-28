@@ -349,8 +349,4 @@ next
   then show ?case using NP_hardness_reduction by auto
 qed
 
-
-
-
-
 end

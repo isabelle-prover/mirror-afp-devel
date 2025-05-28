@@ -1281,9 +1281,10 @@ proof (rule PRE_sequenceI)
   next
     case (Unique k uarg')
     then have "Unique k uarg' \<in> set (filter is_Unique s')"
-      by (metis \<open>0 \<le> i \<and> i < length s'\<close> is_Unique_def action.disc(2) filter_set member_filter nth_mem)
+      using \<open>0 \<le> i \<and> i < length s'\<close> action.disc(2)
+      by (auto simp add: is_Unique_def dest: nth_mem)
     then have "uarg' \<in> set (map get_u (filter (is_Unique_i k) s'))"
-      by (metis (no_types, lifting) action.sel(2) action.sel(3) filter_set image_eqI is_Unique_i_def list.set_map member_filter)
+      by (auto simp add: image_iff is_Unique_i_def)
     then obtain i where "i \<ge> 0 \<and> i < length (uargs' k) \<and> uarg' = (uargs' k) ! i"
       by (metis assms(2) gr_implies_not_zero in_set_conv_nth linorder_le_less_linear possible_sequence_def)
     then have "upre k ((uargs k) ! i) ((uargs' k) ! i)"

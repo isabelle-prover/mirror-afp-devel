@@ -334,6 +334,7 @@ next
     using that card_filter_mono unfolding p2_def
     by (auto intro!:card_filter_mono simp:step_2_m_def set_bind_spmf set_spmf_bind_pmf
         subsample_def Let_def if_distrib)
+      blast
 
   hence \<open>card (state_\<chi> \<sigma>) < n \<and> finite (state_\<chi> \<sigma>)\<close> if \<open>\<sigma> \<in> set_spmf p3\<close> for \<sigma>
     using that unfolding p3_def

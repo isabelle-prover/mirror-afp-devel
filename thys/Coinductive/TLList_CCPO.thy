@@ -9,7 +9,7 @@ theory TLList_CCPO imports TLList begin
 lemma Set_is_empty_parametric [transfer_rule]:
   includes lifting_syntax
   shows "(rel_set A ===> (=)) Set.is_empty Set.is_empty"
-by(auto simp add: rel_fun_def Set.is_empty_def dest: rel_setD1 rel_setD2)
+by(auto simp add: rel_fun_def dest: rel_setD1 rel_setD2)
 
 lemma monotone_comp: "\<lbrakk> monotone orda ordb g; monotone ordb ordc f \<rbrakk> \<Longrightarrow> monotone orda ordc (f \<circ> g)"
 by(rule monotoneI)(simp add: monotoneD)
@@ -37,7 +37,7 @@ unfolding monotone_def[abs_def] by transfer_prover
 lemma cont_parametric [transfer_rule]:
   assumes [transfer_rule]: "bi_total A" "bi_unique B"
   shows "((rel_set A ===> A) ===> (A ===> A ===> (=)) ===> (rel_set B ===> B) ===> (B ===> B ===> (=)) ===> (A ===> B) ===> (=)) cont cont"
-unfolding cont_def[abs_def] Set.is_empty_def[symmetric] by transfer_prover
+unfolding cont_def[abs_def] Set.is_empty_iff[symmetric] by transfer_prover
 
 lemma mcont_parametric [transfer_rule]:
   assumes [transfer_rule]: "bi_total A" "bi_unique B"
@@ -287,9 +287,8 @@ proof (transfer, goal_cases)
 qed
 
 lemma tSup_TCons: "A \<noteq> {} \<Longrightarrow> tSup (TCons x ` A) = TCons x (tSup A)"
-unfolding Set.is_empty_def[symmetric]
+unfolding Set.is_empty_iff [symmetric]
 apply transfer
-unfolding Set.is_empty_def
 apply(clarsimp simp add: image_image lSup_LCons[symmetric])
 apply(rule arg_cong[where f="flat_lub b"])
 apply(auto 4 3 intro: rev_image_eqI)

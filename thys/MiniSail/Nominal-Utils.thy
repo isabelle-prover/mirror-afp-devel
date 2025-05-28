@@ -192,8 +192,7 @@ lemma rtranclp_eqvt[eqvt]: "\<pi> \<bullet> rtranclp P v\<^sub>1 v\<^sub>2 = rtr
   unfolding rtranclp_def by perm_simp rule
 
 lemma Set_filter_eqvt[eqvt]: "\<pi> \<bullet> Set.filter P S = Set.filter (\<pi> \<bullet> P) (\<pi> \<bullet> S)"
-  unfolding Set.filter_def
-  by perm_simp rule
+  by simp
 
 lemma Sigma_eqvt'[eqvt]: "\<pi> \<bullet> Sigma = Sigma"
   apply (rule ext)

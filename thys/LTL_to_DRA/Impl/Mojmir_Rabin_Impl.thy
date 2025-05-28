@@ -589,7 +589,7 @@ lemma (in mojmir) max_rank_card:
   assumes "\<Sigma> = set \<Sigma>'"
   shows "max_rank = card (Set.filter (Not o semi_mojmir_def.sink (set \<Sigma>') \<delta> q\<^sub>0) (Q\<^sub>L \<Sigma>' \<delta> q\<^sub>0))"
   unfolding max_rank_def Q\<^sub>L_reach[OF finite_reach[unfolded \<open>\<Sigma> = set \<Sigma>'\<close>]] 
-  by (simp add: Set.filter_def set_diff_eq assms(1))
+  by (simp add: set_diff_eq assms(1))
  
 theorem (in mojmir_to_rabin) exec_correct:
   assumes "\<Sigma> = set \<Sigma>'"
@@ -608,7 +608,7 @@ proof -
     = {(({t. fail_filt \<Sigma> \<delta> q\<^sub>0 (\<lambda>x. x \<in> F) t} \<union> {t. merge_filt \<delta> q\<^sub>0 (\<lambda>x. x \<in> F) i t}) \<inter> reach\<^sub>t \<Sigma> (nxt \<Sigma> \<delta> q\<^sub>0) (init q\<^sub>0), 
         {t. succeed_filt \<delta> q\<^sub>0 (\<lambda>x. x \<in> F) i t}  \<inter> reach\<^sub>t \<Sigma> (nxt \<Sigma> \<delta> q\<^sub>0) (init q\<^sub>0)) | i. i < max_rank}"
     unfolding assms mojmir_to_rabin_exec.simps Let_def fst_conv snd_conv set_map \<delta>'_Def[unfolded assms] max_rank_card[OF assms, symmetric] 
-    unfolding assms[symmetric] Set.filter_def by auto
+    unfolding assms[symmetric] by auto
   
   have "?lhs \<longleftrightarrow> accept\<^sub>R (\<delta>\<^sub>\<R>, q\<^sub>\<R>, {(Acc\<^sub>\<R> i) | i. i < max_rank}) w"
     using mojmir_accept_iff_rabin_accept by blast

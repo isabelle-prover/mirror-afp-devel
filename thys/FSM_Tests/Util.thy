@@ -275,7 +275,7 @@ lemma filter_double :
   assumes "x \<in> set (filter P1 xs)"
   and     "P2 x"
 shows "x \<in> set (filter P2 (filter P1 xs))"
-  by (metis (no_types) assms(1) assms(2) filter_set member_filter)
+  using assms by simp
 
 lemma filter_list_set :
   assumes "x \<in> set xs"

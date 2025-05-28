@@ -52,7 +52,7 @@ proof -
   have "n \<in> I \<longleftrightarrow> poly.coeff (mpoly_to_poly x p) n \<noteq> 0" for n
   proof -
     have "I = (\<lambda>m. lookup m x) ` (keys (mapping_of p) \<inter> {m. \<forall>y\<in>keys m. y = x})"
-      by (auto simp: I_def Set.filter_def)
+      by (auto simp: I_def)
     also have "{m. \<forall>y\<in>keys m. y = x} = range (\<lambda>n. monomial n x)" (is "?lhs = ?rhs")
     proof (intro equalityI subsetI)
       fix m assume "m \<in> ?lhs"

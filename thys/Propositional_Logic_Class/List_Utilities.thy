@@ -11,6 +11,10 @@ text \<open> Throughout our work it will be necessary to reuse common lemmas
 
 section \<open> Multisets \<close>
 
+lemma mset_removeAll [simp]:
+  \<open>mset (removeAll x xs) = filter_mset ((\<noteq>) x) (mset xs)\<close>
+  by (induction xs) auto
+
 lemma length_sub_mset:
   assumes "mset \<Psi> \<subseteq># mset \<Gamma>"
       and "length \<Psi> >= length \<Gamma>"
@@ -702,14 +706,9 @@ next
                 mset_remove1
                 remove1.simps(2)
                 removeAll.simps(2))
-      hence "(removeAll \<phi> \<Phi>) \<ominus> (removeAll \<phi> (remove1 \<xi> \<Lambda>)) \<rightleftharpoons>
+      then have "(removeAll \<phi> \<Phi>) \<ominus> (removeAll \<phi> (remove1 \<xi> \<Lambda>)) \<rightleftharpoons>
                (removeAll \<phi> (\<xi> # \<Phi>)) \<ominus> (removeAll \<phi> \<Lambda>)"
-        by (metis
-              \<open>\<xi> \<in> set \<Lambda>\<close>
-              \<open>\<xi> \<noteq> \<phi>\<close>
-              list_subtract_cons_remove1_perm
-              member_remove removeAll.simps(2)
-              remove_code(1))
+        using \<open>\<xi> \<in> set \<Lambda>\<close> \<open>\<xi> \<noteq> \<phi>\<close> by (auto intro!: multiset_eqI)
       ultimately show ?thesis
         by presburger
     next

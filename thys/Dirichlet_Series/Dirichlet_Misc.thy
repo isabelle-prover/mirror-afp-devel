@@ -58,8 +58,11 @@ proof -
   from assms have *: "2 * card (Set.filter (even \<circ> card) (Pow A)) = 2 ^ card A"
   proof (induction A rule: finite_ne_induct)
     case (singleton x)
-    hence "Pow {x} = {{}, {x}}" by auto
-    thus ?case by (simp add: Set_filter_insert)
+    then have "Pow {x} = {{}, {x}}" by auto
+    moreover have \<open>{A. (A = {} \<or> A = {x}) \<and> even (card A)} = {{}}\<close>
+      by auto
+    ultimately show ?case
+      by simp
   next
     case (insert x A)
     note fin = finite_subset[OF _ \<open>finite A\<close>]
@@ -89,7 +92,7 @@ proof -
     finally show ?case .
   qed
   from * show A: "card {B. B \<subseteq> A \<and> even (card B)} = 2 ^ (card A - 1)"
-    by (cases "card A") (simp_all add: Set.filter_def)
+    by (cases "card A") (simp_all add:)
 
   have "Set.filter (odd \<circ> card) (Pow A) = Pow A - Set.filter (even \<circ> card) (Pow A)" by auto
   also have "2 * card \<dots> = 2 * 2 ^ card A - 2 * card (Set.filter (even \<circ> card) (Pow A))"
@@ -97,7 +100,7 @@ proof -
   also note *
   also have "2 * 2 ^ card A - 2 ^ card A = (2 ^ card A :: nat)" by simp
   finally show B: "card {B. B \<subseteq> A \<and> odd (card B)} = 2 ^ (card A - 1)"
-    by (cases "card A") (simp_all add: Set.filter_def)
+    by (cases "card A") (simp_all add:)
 
   from A and B show "card {B. B \<subseteq> A \<and> even (card B)} = card {B. B \<subseteq> A \<and> odd (card B)}" by simp
 qed

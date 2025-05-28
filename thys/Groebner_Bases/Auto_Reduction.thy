@@ -726,7 +726,7 @@ next
 qed
     
 lemma comp_red_basis_is_auto_reduced: "is_auto_reduced (set (comp_red_basis xs))"
-  unfolding is_auto_reduced_def remove_def
+  unfolding is_auto_reduced_def
 proof (intro ballI)
   fix x
   assume xin: "x \<in> set (comp_red_basis xs)"

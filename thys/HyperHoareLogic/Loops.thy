@@ -335,52 +335,19 @@ definition filter_exp where
 
 lemma filter_exp_union:
   "filter_exp b (S1 \<union> S2) = filter_exp b S1 \<union> filter_exp b S2" (is "?A = ?B")
-proof
-  show "?A \<subseteq> ?B"
-  proof
-    fix x assume "x \<in> ?A"
-    then show "x \<in> ?B"
-    proof (cases "x \<in> S1")
-      case True
-      then show ?thesis
-        by (metis UnI1 \<open>x \<in> filter_exp b (S1 \<union> S2)\<close> filter_exp_def member_filter)
-    next
-      case False
-      then show ?thesis
-        by (metis Un_iff \<open>x \<in> filter_exp b (S1 \<union> S2)\<close> filter_exp_def member_filter)
-    qed
-  qed
-  show "?B \<subseteq> ?A"
-    by (simp add: filter_exp_def subset_iff)
-qed
+  by (auto simp add: filter_exp_def)
 
 lemma filter_exp_union_general:
   "filter_exp b (\<Union>x. f x) = (\<Union>x. filter_exp b (f x))" (is "?A = ?B")
-proof
-  show "?A \<subseteq> ?B"
-  proof
-    fix y assume "y \<in> ?A"
-    then obtain x where "y \<in> f x"
-      by (metis UN_iff filter_exp_def member_filter)
-    then show "y \<in> ?B"
-      by (metis UN_iff \<open>y \<in> filter_exp b (\<Union> (range f))\<close> filter_exp_def member_filter)
-  qed
-  show "?B \<subseteq> ?A"
-    by (simp add: filter_exp_def subset_iff)
-qed
+  by (auto simp add: filter_exp_def)
 
 lemma filter_exp_contradict:
   "filter_exp b (filter_exp (lnot b) S) = {}"
-  by (metis (mono_tags, lifting) all_not_in_conv filter_exp_def lnot_def member_filter o_apply)
+  by (auto simp add: filter_exp_def lnot_def)
 
 lemma filter_exp_same:
   "filter_exp b (filter_exp b S) = filter_exp b S" (is "?A = ?B")
-proof
-  show "?A \<subseteq> ?B"
-    by (metis filter_exp_def member_filter subsetI)
-  show "?B \<subseteq> ?A"
-    by (metis filter_exp_def member_filter subrelI)
-qed
+  by (auto simp add: filter_exp_def)
 
 lemma if_then_sem:
   "sem (if_then b C) S = sem C (filter_exp b S) \<union> filter_exp (lnot b) S"
@@ -430,7 +397,7 @@ qed
 
 lemma filter_exp_union_itself:
   "filter_exp b S \<union> S = S"
-  by (metis Un_absorb1 filter_exp_def member_filter subsetI)
+  by (auto simp add: filter_exp_def)
 
 lemma iterate_sem_equiv:
   "iterate_sem m (if_then b C) S
@@ -440,8 +407,7 @@ proof (induct m)
   have "union_up_to_n (Assume b ;; C) S 0 = S"
     by auto
   then show "iterate_sem 0 (if_then b C) S = filter_exp (lnot b) (union_up_to_n (Assume b ;; C) S 0) \<union> iterate_sem 0 (Assume b ;; C) S"
-    using filter_exp_def
-    by (metis Un_commute iterate_sem.simps(1) member_filter subset_iff sup.order_iff)
+    by (auto simp add: filter_exp_def)
 next
   case (Suc m)
 
@@ -496,7 +462,7 @@ qed
 
 lemma iterate_sem_assume_increasing:
   "filter_exp (lnot b) (iterate_sem n (if_then b C) S) \<subseteq> filter_exp (lnot b) (iterate_sem (Suc n) (if_then b C) S)"
-  by (metis (no_types, lifting) UnCI filter_exp_def if_then_sem iterate_sem.simps(2) member_filter subsetI)
+  by (auto simp add: filter_exp_def lnot_def if_then_sem)
 
 lemma iterate_sem_assume_increasing_union_up_to:
   "filter_exp (lnot b) (iterate_sem n (if_then b C) S) = filter_exp (lnot b) (union_up_to_n (if_then b C) S n)"
@@ -752,7 +718,7 @@ proof (rule while_general)
   proof (rule hyper_hoare_tripleI)
     fix S assume "P n S"
     moreover have "sem (Assume (lnot b)) S \<subseteq> S"
-      by (metis assume_sem member_filter subsetI)
+      by (simp add: assume_sem)
     ultimately show "P n (sem (Assume (lnot b)) S)"
       by (meson assms(3) downwards_closed_def)
   qed
@@ -799,8 +765,8 @@ proof (rule hyper_hoare_tripleI)
     then have "lnot b (snd x)"
       by (metis calculation(1) holds_forall_def)
     then show "x \<in> filter_exp (lnot b) (union_up_to_n (Assume b;; C) S m)"
-      using \<open>x \<in> union_up_to_n (Assume b;; C) S m\<close> filter_exp_def
-      by force
+      using \<open>x \<in> union_up_to_n (Assume b;; C) S m\<close>
+      by (simp add: filter_exp_def)
   qed
   moreover have "filter_exp (lnot b) (\<Union>n. iterate_sem n (Assume b ;; C) S)
   = filter_exp (lnot b) (union_up_to_n (Assume b;; C) S m)"
@@ -871,8 +837,8 @@ lemma false_state_in_while_cond:
 proof -
   have "\<phi> \<in> (\<Union>n. iterate_sem n (if_then b C) S)"
     by (simp add: assms(1) assms(2) false_state_in_while_cond_aux)
-  then show ?thesis using sem_while_with_if[of b C S] filter_exp_def lnot_def
-    by (metis assms(2) comp_apply member_filter)
+  then show ?thesis using sem_while_with_if[of b C S] assms(2)
+    by (simp add: filter_exp_def lnot_def)
 qed
 
 theorem while_exists:
@@ -906,23 +872,24 @@ proof -
     proof
       fix x assume "x \<in> ?A"
       then obtain m where "x \<in> iterate_sem m (if_then b C) S" "\<not> b (snd x)"
-        using filter_exp_def lnot_def
-        by (metis (no_types, lifting) UN_iff comp_apply member_filter)
+        by (auto simp add: filter_exp_def lnot_def)
       then have "x \<in> iterate_sem (n + m) (if_then b C) S"
         using false_state_in_while_cond_aux[of x "iterate_sem m (if_then b C) S" b n C] iterate_sem_sum[of n "if_then b C" m S]
         by blast
       then have "x \<in> (\<Union>m. iterate_sem (n + m) (if_then b C) S)"
         by blast
       then show "x \<in> ?B"
-        by (metis \<open>x \<in> filter_exp (lnot b) (\<Union>m. iterate_sem m (if_then b C) S)\<close> filter_exp_def member_filter)
+        using \<open>x \<in> filter_exp (lnot b) (\<Union>m. iterate_sem m (if_then b C) S)\<close>
+        by (simp add: filter_exp_def)
     qed
     show "?B \<subseteq> ?A"
     proof
       fix x assume "x \<in> ?B"
       then obtain m where "x \<in> iterate_sem (n + m) (if_then b C) S" "\<not> b (snd x)"
-        by (metis (no_types, lifting) UN_iff comp_apply filter_exp_def lnot_def member_filter)
+        by (auto simp add: filter_exp_def lnot_def)
       then show "x \<in> ?A"
-        by (metis (no_types, lifting) UNIV_I UN_iff \<open>x \<in> filter_exp (lnot b) (\<Union>m. iterate_sem (n + m) (if_then b C) S)\<close> filter_exp_def member_filter)
+        using \<open>x \<in> filter_exp (lnot b) (\<Union>m. iterate_sem (n + m) (if_then b C) S)\<close>
+        by (auto simp add: filter_exp_def)
     qed
   qed
   then show ?thesis

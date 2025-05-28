@@ -195,8 +195,8 @@ proof (rule seq_rule)
             then have "fst \<omega>' i = two"
               using asm0(3) asm1 by blast
             then show ?thesis
-              using \<open>Set.filter (\<lambda>\<omega>. fst \<omega> i = one) S = {\<omega>}\<close> asm0(2) asm1 is_monotonic_def[of i y one two leq S] member_filter singleton_iff
-              by force
+              using \<open>Set.filter (\<lambda>\<omega>. fst \<omega> i = one) S = {\<omega>}\<close> asm0(2) asm1 is_monotonic_def[of i y one two leq S]
+              by auto
           qed
         qed
       qed
@@ -254,7 +254,7 @@ proof (rule seq_rule)
           show "\<Turnstile> {not_empty \<circ> Set.filter (?b \<circ> fst)} C2 { not_empty \<circ> Set.filter (?b \<circ> fst)}"
             using assms(2) rule_LFilter by auto
           show "entails (\<lambda>S. \<exists>\<phi>\<in>S. fst \<phi> h = fst \<phi>1 h) (not_empty \<circ> Set.filter ((\<lambda>\<phi>0. \<phi>0 h = fst \<phi>1 h) \<circ> fst))"
-            using CollectI Set.filter_def comp_apply empty_iff not_empty_def
+            using CollectI comp_apply empty_iff not_empty_def
               entailsI[of "(\<lambda>S. \<exists>\<phi>\<in>S. fst \<phi> h = fst \<phi>1 h)" "(not_empty \<circ> Set.filter ((\<lambda>\<phi>0. \<phi>0 h = fst \<phi>1 h) \<circ> fst))"]
             by fastforce
           show "entails (not_empty \<circ> Set.filter ((\<lambda>\<phi>0. \<phi>0 h = fst \<phi>1 h) \<circ> fst)) (\<lambda>S. \<exists>\<phi>\<in>S. fst \<phi> h = fst \<phi>1 h)"
@@ -429,7 +429,8 @@ proof (rule RuleSeq)
         then have "a \<in> Set.filter ((\<lambda>\<sigma>. 0 \<le> \<sigma> y \<and> \<sigma> y \<le> 100) \<circ> snd) S \<and> b \<in> Set.filter ((\<lambda>\<sigma>. 0 \<le> \<sigma> y \<and> \<sigma> y \<le> 100) \<circ> snd) S"
           by (simp add: \<open>a \<in> S\<close> \<open>b \<in> S\<close>)
         then show "?R1 (Set.filter ((\<lambda>\<sigma>. 0 \<le> \<sigma> y \<and> \<sigma> y \<le> 100) \<circ> snd) S)"
-          using \<open>snd a h < snd b h \<and> 0 \<le> snd a y \<and> snd a y \<le> 100 \<and> snd b y = 100\<close> by force
+          using \<open>snd a h < snd b h \<and> 0 \<le> snd a y \<and> snd a y \<le> 100 \<and> snd b y = 100\<close>
+          by (cases a; cases b) fastforce
       qed
     qed
   qed

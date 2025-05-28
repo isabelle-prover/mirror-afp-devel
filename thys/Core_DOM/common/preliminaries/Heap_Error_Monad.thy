@@ -602,10 +602,11 @@ proof -
   then show ?thesis
     apply(insert assms(1) assms(4))
     apply(drule filter_M_filter)
-     apply(auto)[1] 
-    by (metis * assms(2) assms(5) assms(6) distinct_filter 
-        distinct_length_2_or_more filter_empty_conv filter_set list.exhaust 
-        list.set_intros(1) list.set_intros(2) member_filter select_result_I2)
+     apply(auto)[1]
+    apply auto
+    using * assms(2) assms(5) assms(6)
+    apply (auto intro: filter_ex1)
+    done
 qed
 
 lemma filter_M_eq:

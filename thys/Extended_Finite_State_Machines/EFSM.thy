@@ -139,8 +139,7 @@ possible_steps e s r l i = {|(d, t)|}"
 
 lemma possible_steps_singleton: "(possible_steps e s r l i = {|(d, t)|}) =
     ({((origin, dest), t) \<in> fset e. origin = s \<and> Label t = l \<and> length i = Arity t \<and> apply_guards (Guards t) (join_ir i r)} = {((s, d), t)})"
-  apply (simp add: possible_steps_alt Abs_ffilter Set.filter_def)
-  by fast
+  by (simp add: possible_steps_alt Abs_ffilter split_def)
 
 lemma possible_steps_apply_guards:
   "possible_steps e s r l i = {|(s', t)|} \<Longrightarrow>
@@ -151,7 +150,7 @@ lemma possible_steps_apply_guards:
 lemma possible_steps_empty:
   "(possible_steps e s r l i = {||}) = (\<forall>((origin, dest), t) \<in> fset e. origin \<noteq> s \<or> Label t \<noteq> l \<or> \<not> can_take_transition t i r)"
   apply (simp add: can_take_transition_def can_take_def)
-  apply (simp add: possible_steps_def Abs_ffilter Set.filter_def)
+  apply (simp add: possible_steps_def Abs_ffilter split_def)
   by auto
 
 lemma singleton_dest:

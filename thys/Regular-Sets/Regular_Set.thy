@@ -321,7 +321,7 @@ lemma Derivs_alt_def [code]: "Derivs w L = fold Deriv w L"
 
 lemma Deriv_code [code]: 
   "Deriv x A = tl ` Set.filter (\<lambda>xs. case xs of x' # _ \<Rightarrow> x = x' | _ \<Rightarrow> False) A"
-  by (auto simp: Deriv_def Set.filter_def image_iff tl_def split: list.splits)
+  by (rule set_eqI) (auto simp add: tl_def Deriv_def split: list.splits)
 
 subsection \<open>Shuffle product\<close>
 

@@ -18,7 +18,7 @@ begin
     thus "fresh_in S \<notin> S" unfolding fresh_in_nat_def
     proof(cases)
       case 1
-        hence "S = {}" using Set.is_empty_def by metis
+        hence "S = {}" by simp
         hence "0 \<notin> S" by auto
         thus "(if Set.is_empty S then 0 else Max S + 1) \<notin> S" using 1 by auto
       next

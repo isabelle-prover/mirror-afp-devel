@@ -4365,7 +4365,7 @@ next
   case False
   have eq: "(\<exists>b\<in>set [b\<leftarrow>bs . fst b \<noteq> 0]. punit.const_lt_component (fst b) = Some ()) =
             (\<exists>b\<in>set bs. fst b \<noteq> 0 \<and> punit.const_lt_component (fst b) = Some ())"
-    by (metis (mono_tags, lifting) filter_set member_filter)
+    by auto (metis split_pairs2) 
   show ?thesis
     by (simp only: False punit.count_rem_components_def eq if_False
         remdups_map_component_of_term_punit count_const_lt_components_punit punit_component_of_term, simp)
