@@ -1,0 +1,416 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Mathematics/Number theory</title>
+    <link>https://isa-afp.org/topics/mathematics/number-theory/</link>
+    <description>AFP entries in Number theory</description><item>
+  <title>Complex Lattices, Elliptic Functions, and the Modular Group</title>
+  <link>https://isa-afp.org/entries/Elliptic_Functions.html</link>
+  <pubDate>Thu, 22 May 2025 00:00:00 +0000</pubDate>
+  <description>Complex Lattices, Elliptic Functions, and the Modular Group in the AFP</description>
+    <category>Mathematics/Number theory</category>
+</item>
+<item>
+  <title>The Partition Function and the Pentagonal Number Theorem</title>
+  <link>https://isa-afp.org/entries/Pentagonal_Number_Theorem.html</link>
+  <pubDate>Wed, 23 Apr 2025 00:00:00 +0000</pubDate>
+  <description>The Partition Function and the Pentagonal Number Theorem in the AFP</description>
+    <category>Mathematics/Number theory</category>
+</item>
+<item>
+  <title>Dedekind Sums</title>
+  <link>https://isa-afp.org/entries/Dedekind_Sums.html</link>
+  <pubDate>Wed, 23 Apr 2025 00:00:00 +0000</pubDate>
+  <description>Dedekind Sums in the AFP</description>
+    <category>Mathematics/Number theory</category>
+</item>
+<item>
+  <title>Theta Functions</title>
+  <link>https://isa-afp.org/entries/Theta_Functions.html</link>
+  <pubDate>Mon, 02 Dec 2024 00:00:00 +0000</pubDate>
+  <description>Theta Functions in the AFP</description>
+    <category>Mathematics/Number theory</category>
+</item>
+<item>
+  <title>The Rogers–Ramanujan Identities</title>
+  <link>https://isa-afp.org/entries/Rogers_Ramanujan.html</link>
+  <pubDate>Mon, 02 Dec 2024 00:00:00 +0000</pubDate>
+  <description>The Rogers–Ramanujan Identities in the AFP</description>
+    <category>Mathematics/Number theory</category>
+    <category>Mathematics/Combinatorics</category>
+</item>
+<item>
+  <title>Combinatorial q-Analogues</title>
+  <link>https://isa-afp.org/entries/Combinatorial_Q_Analogues.html</link>
+  <pubDate>Mon, 02 Dec 2024 00:00:00 +0000</pubDate>
+  <description>Combinatorial q-Analogues in the AFP</description>
+    <category>Mathematics/Number theory</category>
+</item>
+<item>
+  <title>The Sum-of-Squares Function and Jacobi&#39;s Two-Square Theorem</title>
+  <link>https://isa-afp.org/entries/Sum_Of_Squares_Count.html</link>
+  <pubDate>Tue, 26 Nov 2024 00:00:00 +0000</pubDate>
+  <description>The Sum-of-Squares Function and Jacobi&#39;s Two-Square Theorem in the AFP</description>
+    <category>Mathematics/Number theory</category>
+</item>
+<item>
+  <title>Wooley&#39;s Discrete Inequality</title>
+  <link>https://isa-afp.org/entries/Wooley_Elementary_Discrete_Inequality.html</link>
+  <pubDate>Wed, 02 Oct 2024 00:00:00 +0000</pubDate>
+  <description>Wooley&#39;s Discrete Inequality in the AFP</description>
+    <category>Mathematics/Number theory</category>
+</item>
+<item>
+  <title>Concrete bounds for Chebyshev’s prime counting functions</title>
+  <link>https://isa-afp.org/entries/Chebyshev_Prime_Bounds.html</link>
+  <pubDate>Fri, 13 Sep 2024 00:00:00 +0000</pubDate>
+  <description>Concrete bounds for Chebyshev’s prime counting functions in the AFP</description>
+    <category>Mathematics/Number theory</category>
+</item>
+<item>
+  <title>Prime Number Theorem with Remainder Term</title>
+  <link>https://isa-afp.org/entries/PNT_with_Remainder.html</link>
+  <pubDate>Sun, 05 May 2024 00:00:00 +0000</pubDate>
+  <description>Prime Number Theorem with Remainder Term in the AFP</description>
+    <category>Mathematics/Number theory</category>
+</item>
+<item>
+  <title>Kummer&#39;s congruence</title>
+  <link>https://isa-afp.org/entries/Kummer_Congruence.html</link>
+  <pubDate>Wed, 20 Mar 2024 00:00:00 +0000</pubDate>
+  <description>Kummer&#39;s congruence in the AFP</description>
+    <category>Mathematics/Number theory</category>
+</item>
+<item>
+  <title>Wieferich–Kempner Theorem</title>
+  <link>https://isa-afp.org/entries/Wieferich_Kempner.html</link>
+  <pubDate>Wed, 06 Mar 2024 00:00:00 +0000</pubDate>
+  <description>Wieferich–Kempner Theorem in the AFP</description>
+    <category>Mathematics/Number theory</category>
+</item>
+<item>
+  <title>Polygonal Number Theorem</title>
+  <link>https://isa-afp.org/entries/Polygonal_Number_Theorem.html</link>
+  <pubDate>Thu, 10 Aug 2023 00:00:00 +0000</pubDate>
+  <description>Polygonal Number Theorem in the AFP</description>
+    <category>Mathematics/Number theory</category>
+    <category>Mathematics/Combinatorics</category>
+</item>
+<item>
+  <title>Zeckendorf’s Theorem</title>
+  <link>https://isa-afp.org/entries/Zeckendorf.html</link>
+  <pubDate>Mon, 12 Jun 2023 00:00:00 +0000</pubDate>
+  <description>Zeckendorf’s Theorem in the AFP</description>
+    <category>Mathematics/Number theory</category>
+</item>
+<item>
+  <title>Three Squares Theorem</title>
+  <link>https://isa-afp.org/entries/Three_Squares.html</link>
+  <pubDate>Wed, 03 May 2023 00:00:00 +0000</pubDate>
+  <description>Three Squares Theorem in the AFP</description>
+    <category>Mathematics/Number theory</category>
+</item>
+<item>
+  <title>Positional Notation for Natural Numbers in an Arbitrary Base</title>
+  <link>https://isa-afp.org/entries/DigitsInBase.html</link>
+  <pubDate>Mon, 03 Apr 2023 00:00:00 +0000</pubDate>
+  <description>Positional Notation for Natural Numbers in an Arbitrary Base in the AFP</description>
+    <category>Mathematics/Number theory</category>
+</item>
+<item>
+  <title>p-adic Fields and p-adic Semialgebraic Sets</title>
+  <link>https://isa-afp.org/entries/Padic_Field.html</link>
+  <pubDate>Thu, 22 Sep 2022 00:00:00 +0000</pubDate>
+  <description>p-adic Fields and p-adic Semialgebraic Sets in the AFP</description>
+    <category>Mathematics/Number theory</category>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>From THE BOOK: Two Squares via Involutions</title>
+  <link>https://isa-afp.org/entries/Involutions2Squares.html</link>
+  <pubDate>Mon, 15 Aug 2022 00:00:00 +0000</pubDate>
+  <description>From THE BOOK: Two Squares via Involutions in the AFP</description>
+    <category>Mathematics/Number theory</category>
+</item>
+<item>
+  <title>Diophantine Equations and the DPRM Theorem</title>
+  <link>https://isa-afp.org/entries/DPRM_Theorem.html</link>
+  <pubDate>Mon, 06 Jun 2022 00:00:00 +0000</pubDate>
+  <description>Diophantine Equations and the DPRM Theorem in the AFP</description>
+    <category>Logic/Computability</category>
+    <category>Mathematics/Number theory</category>
+</item>
+<item>
+  <title>Digit Expansions</title>
+  <link>https://isa-afp.org/entries/Digit_Expansions.html</link>
+  <pubDate>Wed, 20 Apr 2022 00:00:00 +0000</pubDate>
+  <description>Digit Expansions in the AFP</description>
+    <category>Mathematics/Number theory</category>
+</item>
+<item>
+  <title>Irrational numbers from THE BOOK</title>
+  <link>https://isa-afp.org/entries/Irrationals_From_THEBOOK.html</link>
+  <pubDate>Sat, 08 Jan 2022 00:00:00 +0000</pubDate>
+  <description>Irrational numbers from THE BOOK in the AFP</description>
+    <category>Mathematics/Number theory</category>
+</item>
+<item>
+  <title>Lifting the Exponent</title>
+  <link>https://isa-afp.org/entries/Lifting_the_Exponent.html</link>
+  <pubDate>Tue, 27 Apr 2021 00:00:00 +0000</pubDate>
+  <description>Lifting the Exponent in the AFP</description>
+    <category>Mathematics/Number theory</category>
+</item>
+<item>
+  <title>Hensel&#39;s Lemma for the p-adic Integers</title>
+  <link>https://isa-afp.org/entries/Padic_Ints.html</link>
+  <pubDate>Tue, 23 Mar 2021 00:00:00 +0000</pubDate>
+  <description>Hensel&#39;s Lemma for the p-adic Integers in the AFP</description>
+    <category>Mathematics/Number theory</category>
+</item>
+<item>
+  <title>The Hermite–Lindemann–Weierstraß Transcendence Theorem</title>
+  <link>https://isa-afp.org/entries/Hermite_Lindemann.html</link>
+  <pubDate>Wed, 03 Mar 2021 00:00:00 +0000</pubDate>
+  <description>The Hermite–Lindemann–Weierstraß Transcendence Theorem in the AFP</description>
+    <category>Mathematics/Number theory</category>
+</item>
+<item>
+  <title>Amicable Numbers</title>
+  <link>https://isa-afp.org/entries/Amicable_Numbers.html</link>
+  <pubDate>Tue, 04 Aug 2020 00:00:00 +0000</pubDate>
+  <description>Amicable Numbers in the AFP</description>
+    <category>Mathematics/Number theory</category>
+</item>
+<item>
+  <title>Irrationality Criteria for Series by Erdős and Straus</title>
+  <link>https://isa-afp.org/entries/Irrational_Series_Erdos_Straus.html</link>
+  <pubDate>Tue, 12 May 2020 00:00:00 +0000</pubDate>
+  <description>Irrationality Criteria for Series by Erdős and Straus in the AFP</description>
+    <category>Mathematics/Number theory</category>
+    <category>Mathematics/Analysis</category>
+</item>
+<item>
+  <title>Gaussian Integers</title>
+  <link>https://isa-afp.org/entries/Gaussian_Integers.html</link>
+  <pubDate>Fri, 24 Apr 2020 00:00:00 +0000</pubDate>
+  <description>Gaussian Integers in the AFP</description>
+    <category>Mathematics/Number theory</category>
+</item>
+<item>
+  <title>Lucas&#39;s Theorem</title>
+  <link>https://isa-afp.org/entries/Lucas_Theorem.html</link>
+  <pubDate>Tue, 07 Apr 2020 00:00:00 +0000</pubDate>
+  <description>Lucas&#39;s Theorem in the AFP</description>
+    <category>Mathematics/Number theory</category>
+</item>
+<item>
+  <title>Furstenberg&#39;s topology and his proof of the infinitude of primes</title>
+  <link>https://isa-afp.org/entries/Furstenberg_Topology.html</link>
+  <pubDate>Sun, 22 Mar 2020 00:00:00 +0000</pubDate>
+  <description>Furstenberg&#39;s topology and his proof of the infinitude of primes in the AFP</description>
+    <category>Mathematics/Number theory</category>
+</item>
+<item>
+  <title>Arithmetic progressions and relative primes</title>
+  <link>https://isa-afp.org/entries/Arith_Prog_Rel_Primes.html</link>
+  <pubDate>Sat, 01 Feb 2020 00:00:00 +0000</pubDate>
+  <description>Arithmetic progressions and relative primes in the AFP</description>
+    <category>Mathematics/Number theory</category>
+</item>
+<item>
+  <title>Mersenne primes and the Lucas–Lehmer test</title>
+  <link>https://isa-afp.org/entries/Mersenne_Primes.html</link>
+  <pubDate>Fri, 17 Jan 2020 00:00:00 +0000</pubDate>
+  <description>Mersenne primes and the Lucas–Lehmer test in the AFP</description>
+    <category>Mathematics/Number theory</category>
+</item>
+<item>
+  <title>The Irrationality of ζ(3)</title>
+  <link>https://isa-afp.org/entries/Zeta_3_Irrational.html</link>
+  <pubDate>Fri, 27 Dec 2019 00:00:00 +0000</pubDate>
+  <description>The Irrationality of ζ(3) in the AFP</description>
+    <category>Mathematics/Number theory</category>
+</item>
+<item>
+  <title>Gauss Sums and the Pólya–Vinogradov Inequality</title>
+  <link>https://isa-afp.org/entries/Gauss_Sums.html</link>
+  <pubDate>Tue, 10 Dec 2019 00:00:00 +0000</pubDate>
+  <description>Gauss Sums and the Pólya–Vinogradov Inequality in the AFP</description>
+    <category>Mathematics/Number theory</category>
+</item>
+<item>
+  <title>The Transcendence of Certain Infinite Series</title>
+  <link>https://isa-afp.org/entries/Transcendence_Series_Hancl_Rucki.html</link>
+  <pubDate>Wed, 27 Mar 2019 00:00:00 +0000</pubDate>
+  <description>The Transcendence of Certain Infinite Series in the AFP</description>
+    <category>Mathematics/Analysis</category>
+    <category>Mathematics/Number theory</category>
+</item>
+<item>
+  <title>Elementary Facts About the Distribution of Primes</title>
+  <link>https://isa-afp.org/entries/Prime_Distribution_Elementary.html</link>
+  <pubDate>Thu, 21 Feb 2019 00:00:00 +0000</pubDate>
+  <description>Elementary Facts About the Distribution of Primes in the AFP</description>
+    <category>Mathematics/Number theory</category>
+</item>
+<item>
+  <title>Probabilistic Primality Testing</title>
+  <link>https://isa-afp.org/entries/Probabilistic_Prime_Tests.html</link>
+  <pubDate>Mon, 11 Feb 2019 00:00:00 +0000</pubDate>
+  <description>Probabilistic Primality Testing in the AFP</description>
+    <category>Computer science/Algorithms/Randomized</category>
+    <category>Mathematics/Number theory</category>
+</item>
+<item>
+  <title>The Transcendence of π</title>
+  <link>https://isa-afp.org/entries/Pi_Transcendental.html</link>
+  <pubDate>Fri, 28 Sep 2018 00:00:00 +0000</pubDate>
+  <description>The Transcendence of π in the AFP</description>
+    <category>Mathematics/Number theory</category>
+</item>
+<item>
+  <title>The Prime Number Theorem</title>
+  <link>https://isa-afp.org/entries/Prime_Number_Theorem.html</link>
+  <pubDate>Wed, 19 Sep 2018 00:00:00 +0000</pubDate>
+  <description>The Prime Number Theorem in the AFP</description>
+    <category>Mathematics/Number theory</category>
+</item>
+<item>
+  <title>Pell&#39;s Equation</title>
+  <link>https://isa-afp.org/entries/Pell.html</link>
+  <pubDate>Sat, 23 Jun 2018 00:00:00 +0000</pubDate>
+  <description>Pell&#39;s Equation in the AFP</description>
+    <category>Mathematics/Number theory</category>
+</item>
+<item>
+  <title>Irrational Rapidly Convergent Series</title>
+  <link>https://isa-afp.org/entries/Irrationality_J_Hancl.html</link>
+  <pubDate>Wed, 23 May 2018 00:00:00 +0000</pubDate>
+  <description>Irrational Rapidly Convergent Series in the AFP</description>
+    <category>Mathematics/Number theory</category>
+    <category>Mathematics/Analysis</category>
+</item>
+<item>
+  <title>Dirichlet L-Functions and Dirichlet&#39;s Theorem</title>
+  <link>https://isa-afp.org/entries/Dirichlet_L.html</link>
+  <pubDate>Thu, 21 Dec 2017 00:00:00 +0000</pubDate>
+  <description>Dirichlet L-Functions and Dirichlet&#39;s Theorem in the AFP</description>
+    <category>Mathematics/Number theory</category>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Homogeneous Linear Diophantine Equations</title>
+  <link>https://isa-afp.org/entries/Diophantine_Eqns_Lin_Hom.html</link>
+  <pubDate>Sat, 14 Oct 2017 00:00:00 +0000</pubDate>
+  <description>Homogeneous Linear Diophantine Equations in the AFP</description>
+    <category>Computer science/Algorithms/Mathematical</category>
+    <category>Mathematics/Number theory</category>
+    <category>Tools</category>
+</item>
+<item>
+  <title>The Hurwitz and Riemann ζ Functions</title>
+  <link>https://isa-afp.org/entries/Zeta_Function.html</link>
+  <pubDate>Thu, 12 Oct 2017 00:00:00 +0000</pubDate>
+  <description>The Hurwitz and Riemann ζ Functions in the AFP</description>
+    <category>Mathematics/Number theory</category>
+    <category>Mathematics/Analysis</category>
+</item>
+<item>
+  <title>Dirichlet Series</title>
+  <link>https://isa-afp.org/entries/Dirichlet_Series.html</link>
+  <pubDate>Thu, 12 Oct 2017 00:00:00 +0000</pubDate>
+  <description>Dirichlet Series in the AFP</description>
+    <category>Mathematics/Number theory</category>
+</item>
+<item>
+  <title>Minkowski&#39;s Theorem</title>
+  <link>https://isa-afp.org/entries/Minkowskis_Theorem.html</link>
+  <pubDate>Thu, 13 Jul 2017 00:00:00 +0000</pubDate>
+  <description>Minkowski&#39;s Theorem in the AFP</description>
+    <category>Mathematics/Geometry</category>
+    <category>Mathematics/Number theory</category>
+</item>
+<item>
+  <title>Bernoulli Numbers</title>
+  <link>https://isa-afp.org/entries/Bernoulli.html</link>
+  <pubDate>Tue, 24 Jan 2017 00:00:00 +0000</pubDate>
+  <description>Bernoulli Numbers in the AFP</description>
+    <category>Mathematics/Analysis</category>
+    <category>Mathematics/Number theory</category>
+</item>
+<item>
+  <title>Bertrand&#39;s postulate</title>
+  <link>https://isa-afp.org/entries/Bertrands_Postulate.html</link>
+  <pubDate>Tue, 17 Jan 2017 00:00:00 +0000</pubDate>
+  <description>Bertrand&#39;s postulate in the AFP</description>
+    <category>Mathematics/Number theory</category>
+</item>
+<item>
+  <title>The Transcendence of e</title>
+  <link>https://isa-afp.org/entries/E_Transcendental.html</link>
+  <pubDate>Thu, 12 Jan 2017 00:00:00 +0000</pubDate>
+  <description>The Transcendence of e in the AFP</description>
+    <category>Mathematics/Analysis</category>
+    <category>Mathematics/Number theory</category>
+</item>
+<item>
+  <title>The Divergence of the Prime Harmonic Series</title>
+  <link>https://isa-afp.org/entries/Prime_Harmonic_Series.html</link>
+  <pubDate>Mon, 28 Dec 2015 00:00:00 +0000</pubDate>
+  <description>The Divergence of the Prime Harmonic Series in the AFP</description>
+    <category>Mathematics/Number theory</category>
+</item>
+<item>
+  <title>Liouville numbers</title>
+  <link>https://isa-afp.org/entries/Liouville_Numbers.html</link>
+  <pubDate>Mon, 28 Dec 2015 00:00:00 +0000</pubDate>
+  <description>Liouville numbers in the AFP</description>
+    <category>Mathematics/Analysis</category>
+    <category>Mathematics/Number theory</category>
+</item>
+<item>
+  <title>The Stern-Brocot Tree</title>
+  <link>https://isa-afp.org/entries/Stern_Brocot.html</link>
+  <pubDate>Tue, 22 Dec 2015 00:00:00 +0000</pubDate>
+  <description>The Stern-Brocot Tree in the AFP</description>
+    <category>Mathematics/Number theory</category>
+</item>
+<item>
+  <title>Pratt&#39;s Primality Certificates</title>
+  <link>https://isa-afp.org/entries/Pratt_Certificate.html</link>
+  <pubDate>Mon, 22 Jul 2013 00:00:00 +0000</pubDate>
+  <description>Pratt&#39;s Primality Certificates in the AFP</description>
+    <category>Mathematics/Number theory</category>
+</item>
+<item>
+  <title>Lehmer&#39;s Theorem</title>
+  <link>https://isa-afp.org/entries/Lehmer.html</link>
+  <pubDate>Mon, 22 Jul 2013 00:00:00 +0000</pubDate>
+  <description>Lehmer&#39;s Theorem in the AFP</description>
+    <category>Mathematics/Number theory</category>
+</item>
+<item>
+  <title>Perfect Number Theorem</title>
+  <link>https://isa-afp.org/entries/Perfect-Number-Thm.html</link>
+  <pubDate>Sun, 22 Nov 2009 00:00:00 +0000</pubDate>
+  <description>Perfect Number Theorem in the AFP</description>
+    <category>Mathematics/Number theory</category>
+</item>
+<item>
+  <title>Sums of Two and Four Squares</title>
+  <link>https://isa-afp.org/entries/SumSquares.html</link>
+  <pubDate>Sun, 12 Aug 2007 00:00:00 +0000</pubDate>
+  <description>Sums of Two and Four Squares in the AFP</description>
+    <category>Mathematics/Number theory</category>
+</item>
+<item>
+  <title>Fermat&#39;s Last Theorem for Exponents 3 and 4 and the Parametrisation of Pythagorean Triples</title>
+  <link>https://isa-afp.org/entries/Fermat3_4.html</link>
+  <pubDate>Sun, 12 Aug 2007 00:00:00 +0000</pubDate>
+  <description>Fermat&#39;s Last Theorem for Exponents 3 and 4 and the Parametrisation of Pythagorean Triples in the AFP</description>
+    <category>Mathematics/Number theory</category>
+</item>
+
+  </channel>
+</rss>

@@ -1,0 +1,63 @@
+title = "Complex Lattices, Elliptic Functions, and the Modular Group"
+date = 2025-05-22
+topics = [
+  "Mathematics/Number theory",
+]
+abstract = """
+<p>
+This entry defines complex lattices, i.e. $\\Lambda(\\omega_1,\\omega_2) = \\mathbb{Z}\\omega_1 + \\mathbb{Z}\\omega_2$ where $\\omega_1/\\omega_2\\notin\\mathbb{R}$.
+Based on this, various other related topics are covered:</p>
+<ul>
+<li> the modular group $\\Gamma$ and its fundamental region
+<li> elliptic functions and their basic properties
+<li> the Weierstraß elliptic function $\\wp$ and the fact that every elliptic function
+can be written in terms of $\\wp$
+<li> the Eisenstein series $G_n$ (including the forbidden series $G_2$)
+<li> the ordinary differential equation satisfied by $\\wp$, the recurrence relation for $G_n$,
+ and the addition and duplication theorems for $\\wp$
+<li> the lattice invariants $g_2$, $g_3$, and Klein's $J$ invariant
+<li> the non-vanishing of the lattice discriminant $\\Delta$
+<li> $G_n$, $\\Delta$, $J$ as holomorphic functions in the upper half plane
+<li> the Fourier expansion of $G_n(z)$ for $z\\to i\\infty$
+<li> the functional equations of $G_n$, $\\Delta$, $J$, and $\\eta$ w.r.t. the modular group
+<li> Dedekind's $\\eta$ function
+<li> the inversion formulas for the Jacobi $\\theta$ functions
+</ul>
+<p>In particular, this entry contains most of Chapters 1 and 3 from Apostol's
+<a href=\"https://dx.doi.org/10.1007/978-1-4612-0999-7\"><em>Modular Functions and Dirichlet Series in Number Theory</em></a> and parts of Chapter 2.</p>
+
+<p>The purpose of this entry is to provide a foundation for further formalisation of
+modular functions and modular forms.</p>"""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.eberl]
+email = "eberl_email"
+
+[authors.bordg]
+email = "bordg_email"
+
+[authors.li]
+email = "li_email"
+
+[authors.paulson]
+email = "paulson_email"
+
+[contributors]
+
+[notify]
+eberl = "eberl_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = [
+  "10.1007/978-1-4612-0999-7",
+  "10.1007/978-1-4612-4752-4",
+  "10.4230/LIPIcs.ITP.2024.40",
+]
+pubs = []

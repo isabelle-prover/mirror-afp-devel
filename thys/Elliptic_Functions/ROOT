@@ -1,0 +1,33 @@
+chapter AFP
+
+session Elliptic_Functions (AFP) = Zeta_Function +
+  options [timeout = 1800]
+  sessions
+    "HOL-Number_Theory"
+    Algebraic_Numbers
+    Polynomial_Factorization
+    Lambert_Series
+    Cotangent_PFD_Formula
+    Polylog
+    Dedekind_Sums
+    Theta_Functions
+    Pentagonal_Number_Theorem
+  theories
+    Z_Plane_Q_Disc
+    Parallelogram_Paths
+    Modular_Group
+
+    Complex_Lattices
+    Modular_Fundamental_Region
+    Elliptic_Functions
+    Weierstrass_Elliptic
+    Eisenstein_Series
+    Weierstrass_Addition
+
+    Basic_Modular_Forms
+    Dedekind_Eta
+    Eisenstein_G2
+    Theta_Inversion
+  document_files
+    "root.tex"
+    "root.bib"

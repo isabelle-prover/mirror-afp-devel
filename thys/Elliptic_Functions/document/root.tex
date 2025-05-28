@@ -1,0 +1,68 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8x]{inputenc}
+\usepackage[LGR,T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+\usepackage{amsfonts, amsmath, amssymb}
+\usepackage[english]{babel}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+\usepackage[shortcuts]{extdash}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{rm}
+
+
+\begin{document}
+
+\title{Complex Lattices, Elliptic Functions, and the Modular Group}
+\author{Manuel Eberl, Anthony Bordg, Lawrence C.\ Paulson, Wenda Li}
+\maketitle
+
+\begin{abstract}
+This entry defines complex lattices, i.e.\ $\Lambda(\omega_1,\omega_2) = \mathbb{Z}\omega_1 + \mathbb{Z}\omega_2$ where $\omega_1/\omega_2\notin\mathbb{R}$.
+Based on this, various other related topics are covered:
+\begin{itemize}
+\item the modular group $\Gamma$ and its fundamental region
+\item elliptic functions and their basic properties
+\item the Weierstra\ss\ elliptic function $\wp$ and the fact that every elliptic function
+can be written in terms of $\wp$
+\item the Eisenstein series $G_n$ (including the forbidden series $G_2$)
+\item the ordinary differential equation satisfied by $\wp$, the recurrence relation for $G_n$,
+ and the addition and duplication theorems for $\wp$
+\item the lattice invariants $g_2$, $g_3$, and Klein's $J$ invariant
+\item the non-vanishing of the lattice discriminant $\Delta$
+\item $G_n$, $\Delta$, $J$ as holomorphic functions in the upper half plane
+\item the Fourier expansion of $G_n(z)$ for $z\to i\infty$
+\item the functional equations of $G_n$, $\Delta$, $J$, and $\eta$ w.r.t.\ the modular group
+\item Dedekind's $\eta$ function
+\item the inversion formulas for the Jacobi $\theta$ functions
+\end{itemize}
+In particular, this entry contains most of Chapters 1 and 3 from Apostol's
+\emph{Modular Functions and Dirichlet Series in Number Theory}~\cite{apostol} and parts of Chapter 2.
+
+The purpose of this entry is to provide a foundation for further formalisation of
+modular functions and modular forms.
+\end{abstract}
+
+\newpage
+
+\tableofcontents
+
+\newpage
+\parindent 0pt\parskip 0.5ex
+
+\section{Auxiliary material}
+
+\input{session}
+
+\raggedright
+\nocite{brent2020}
+\nocite{borwein1987}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+
