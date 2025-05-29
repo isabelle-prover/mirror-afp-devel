@@ -335,7 +335,7 @@ declare [[code drop:
   pred_of_set
   Wellfounded.acc
   Bleast
-  can_select
+  Set.can_select
   (* "set_eq :: 'a set \<Rightarrow> 'a set \<Rightarrow> bool" *)
   irrefl_on
   bacc
@@ -1731,32 +1731,32 @@ lemma can_select_code [code]:
   fixes xs :: "'a :: ceq list" 
   and dxs :: "'a :: ceq set_dlist" 
   and rbt :: "'b :: ccompare set_rbt" shows
-  "can_select P (Set_Monad xs) =
-  (case ID CEQ('a) of None \<Rightarrow> Code.abort (STR ''can_select Set_Monad: ceq = None'') (\<lambda>_. can_select P (Set_Monad xs))
+  "Set.can_select P (Set_Monad xs) =
+  (case ID CEQ('a) of None \<Rightarrow> Code.abort (STR ''Set.can_select Set_Monad: ceq = None'') (\<lambda>_. Set.can_select P (Set_Monad xs))
                  | Some eq \<Rightarrow> case filter P xs of Nil \<Rightarrow> False | x # xs \<Rightarrow> list_all (eq x) xs)"
   (is ?Set_Monad)
-  "can_select Q (DList_set dxs) =
-  (case ID CEQ('a) of None \<Rightarrow> Code.abort (STR ''can_select DList_set: ceq = None'') (\<lambda>_. can_select Q (DList_set dxs))
+  "Set.can_select Q (DList_set dxs) =
+  (case ID CEQ('a) of None \<Rightarrow> Code.abort (STR ''Set.can_select DList_set: ceq = None'') (\<lambda>_. Set.can_select Q (DList_set dxs))
                   | Some _ \<Rightarrow> DList_Set.length (DList_Set.filter Q dxs) = 1)"
   (is ?dlist)
-  "can_select R (RBT_set rbt) =
-  (case ID CCOMPARE('b) of None \<Rightarrow> Code.abort (STR ''can_select RBT_set: ccompare = None'') (\<lambda>_. can_select R (RBT_set rbt))
+  "Set.can_select R (RBT_set rbt) =
+  (case ID CCOMPARE('b) of None \<Rightarrow> Code.abort (STR ''Set.can_select RBT_set: ccompare = None'') (\<lambda>_. Set.can_select R (RBT_set rbt))
                  | Some _ \<Rightarrow> singleton_list_fusion (filter_generator R rbt_keys_generator) (RBT_Set2.init rbt))"
   (is ?rbt)
 proof -
   show ?Set_Monad
-    apply(auto split: option.split list.split dest!: ID_ceq[THEN equal.equal_eq] dest: filter_eq_ConsD simp add: can_select_def filter_empty_conv list_all_iff)
+    apply(auto split: option.split list.split dest!: ID_ceq[THEN equal.equal_eq] dest: filter_eq_ConsD simp add: filter_empty_conv list_all_iff)
     apply(drule filter_eq_ConsD, fastforce)
     apply(drule filter_eq_ConsD, clarsimp, blast)
     done
   
   show ?dlist
-    by(clarsimp simp add: can_select_def card_eq_length[symmetric] Set_member_code card_eq_Suc_0_ex1 simp del: card_eq_length split: option.split)
+    by(clarsimp simp add: card_eq_length[symmetric] Set_member_code card_eq_Suc_0_ex1 simp del: card_eq_length split: option.split)
   
   note [simp del] = distinct_keys
   show ?rbt
     using distinct_keys[of rbt]
-    apply(auto simp add: can_select_def singleton_list_fusion_def unfoldr_filter_generator unfoldr_rbt_keys_generator Set_member_code member_conv_keys filter_empty_conv empty_filter_conv split: option.split list.split dest: filter_eq_ConsD)
+    apply(auto simp add: singleton_list_fusion_def unfoldr_filter_generator unfoldr_rbt_keys_generator Set_member_code member_conv_keys filter_empty_conv empty_filter_conv split: option.split list.split dest: filter_eq_ConsD)
       apply(drule filter_eq_ConsD, fastforce)
      apply(drule filter_eq_ConsD, fastforce simp add: empty_filter_conv)
     apply(drule filter_eq_ConsD)
