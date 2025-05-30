@@ -410,9 +410,9 @@ proof -
     using W_def \<open>U \<subseteq> W\<close> by blast
   then have cardU_less_X: "card U < card X"
     by (meson \<open>X\<subseteq>V\<close> finV finite_subset psubset_card_mono)
-  with \<open>X\<subseteq>V\<close> have cardXU: "card (X-U) = card X - card U"
+  with \<open>X\<subseteq>V\<close> have cardXU: "card (X\<setminus>U) = card X - card U"
     by (meson \<open>U \<subset> X\<close> card_Diff_subset finV finite_subset psubset_imp_subset)
-  then have real_cardXU: "real (card (X-U)) = real (card X) - m"
+  then have real_cardXU: "real (card (X\<setminus>U)) = real (card X) - m"
     using \<open>card U = m\<close> cardU_less_X by linarith
   have [simp]: "m \<le> card X"
     using \<open>card U = m\<close> cardU_less_X nless_le by blast
@@ -429,57 +429,56 @@ proof -
   text \<open>First part of (10)\<close>
   have "card U * (\<mu> * card X - card U) = m * (\<mu> * (card X - card U)) - (1-\<mu>) * m\<^sup>2"
     using cardU_less_X by (simp add: \<open>card U = m\<close> algebra_simps numeral_2_eq_2)
-  also have "\<dots> \<le> real (card (Blue \<inter> all_edges_betw_un U (X-U)))"
+  also have "\<dots> \<le> real (card (Blue \<inter> all_edges_betw_un U (X\<setminus>U)))"
   proof -
-    have dfam: "disjoint_family_on (\<lambda>u. Blue \<inter> all_edges_betw_un {u} (X-U)) U"
+    have dfam: "disjoint_family_on (\<lambda>u. Blue \<inter> all_edges_betw_un {u} (X\<setminus>U)) U"
       by (auto simp: disjoint_family_on_def all_edges_betw_un_def)
-    have "\<mu> * (card X - card U) \<le> card (Blue \<inter> all_edges_betw_un {u} (X-U)) + (1-\<mu>) * m" 
+    have "\<mu> * (card X - card U) \<le> card (Blue \<inter> all_edges_betw_un {u} (X\<setminus>U)) + (1-\<mu>) * m" 
       if "u \<in> U" for u
     proof -
-      have NBU: "Neighbours Blue u \<inter> U = U - {u}"
+      have NBU: "Neighbours Blue u \<inter> U = U \<setminus> {u}"
         using \<open>clique U Blue\<close> Red_Blue_all singleton_not_edge that 
         by (force simp: Neighbours_def clique_def)
-      then have NBX_split: "(Neighbours Blue u \<inter> X) = (Neighbours Blue u \<inter> (X-U)) \<union> (U - {u})"
+      then have NBX_split: "(Neighbours Blue u \<inter> X) = (Neighbours Blue u \<inter> (X\<setminus>U)) \<union> (U \<setminus> {u})"
         using \<open>U \<subset> X\<close> by blast
-      moreover have "Neighbours Blue u \<inter> (X-U) \<inter> (U - {u}) = {}"
+      moreover have "Neighbours Blue u \<inter> (X\<setminus>U) \<inter> (U \<setminus> {u}) = {}"
         by blast
-      ultimately have "card(Neighbours Blue u \<inter> X) = card(Neighbours Blue u \<inter> (X-U)) + (m - Suc 0)"
+      ultimately have "card(Neighbours Blue u \<inter> X) = card(Neighbours Blue u \<inter> (X\<setminus>U)) + (m-1)"
         by (simp add: card_Un_disjoint finite_Neighbours \<open>finite U\<close> \<open>card U = m\<close> that)
-      then have "\<mu> * (card X) \<le> real (card (Neighbours Blue u \<inter> (X-U))) + real (m - Suc 0)"
+      then have "\<mu> * (card X) \<le> real (card (Neighbours Blue u \<inter> (X\<setminus>U))) + real (m - 1)"
         using W_def \<open>U \<subseteq> W\<close> bluish_def that by force
-      then have "\<mu> * (card X - card U) 
-                \<le> card (Neighbours Blue u \<inter> (X-U)) + real (m - Suc 0) - \<mu> *card U"
+      then have "\<mu> * (card X - card U) \<le> card (Neighbours Blue u \<inter> (X\<setminus>U)) + real (m-1) - \<mu> * card U"
         by (smt (verit) cardU_less_X nless_le of_nat_diff right_diff_distrib')
-      then have *: "\<mu> * (card X - card U) \<le> real (card (Neighbours Blue u \<inter> (X-U))) + (1-\<mu>)*m"
+      then have *: "\<mu> * (card X - card U) \<le> real (card (Neighbours Blue u \<inter> (X\<setminus>U))) + (1-\<mu>)*m"
         using assms by (simp add: \<open>card U = m\<close> left_diff_distrib)
       have "inj_on (\<lambda>x. {u,x}) (Neighbours Blue u \<inter> X)"
         by (simp add: doubleton_eq_iff inj_on_def)
-      moreover have "(\<lambda>x. {u,x}) ` (Neighbours Blue u \<inter> (X-U)) \<subseteq> Blue \<inter> all_edges_betw_un {u} (X-U)"
+      moreover have "(\<lambda>x. {u,x}) ` (Neighbours Blue u \<inter> (X\<setminus>U)) \<subseteq> Blue \<inter> all_edges_betw_un {u} (X\<setminus>U)"
         using Blue_E by (auto simp: Neighbours_def all_edges_betw_un_def)
-      ultimately have "card (Neighbours Blue u \<inter> (X-U)) \<le> card (Blue \<inter> all_edges_betw_un {u} (X-U))"
+      ultimately have "card (Neighbours Blue u \<inter> (X\<setminus>U)) \<le> card (Blue \<inter> all_edges_betw_un {u} (X\<setminus>U))"
         by (metis NBX_split card_inj_on_le finite_Blue finite_Int inj_on_Un)
       with * show ?thesis
         by auto
     qed
     then have "(card U) * (\<mu> * real (card X - card U))
-             \<le> (\<Sum>x\<in>U. card (Blue \<inter> all_edges_betw_un {x} (X-U)) + (1-\<mu>) * m)"
+             \<le> (\<Sum>x\<in>U. card (Blue \<inter> all_edges_betw_un {x} (X\<setminus>U)) + (1-\<mu>) * m)"
       by (meson sum_bounded_below)
     then have "m * (\<mu> * (card X - card U))
-             \<le> (\<Sum>x\<in>U. card (Blue \<inter> all_edges_betw_un {x} (X-U))) + (1-\<mu>) * m\<^sup>2"
+             \<le> (\<Sum>x\<in>U. card (Blue \<inter> all_edges_betw_un {x} (X\<setminus>U))) + (1-\<mu>) * m\<^sup>2"
       by (simp add: sum.distrib power2_eq_square \<open>card U = m\<close> mult_ac)
-    also have "\<dots> \<le> card (\<Union>u\<in>U. Blue \<inter> all_edges_betw_un {u} (X-U)) + (1-\<mu>) * m\<^sup>2"
+    also have "\<dots> \<le> card (\<Union>u\<in>U. Blue \<inter> all_edges_betw_un {u} (X\<setminus>U)) + (1-\<mu>) * m\<^sup>2"
       by (simp add: dfam card_UN_disjoint' \<open>finite U\<close> flip: UN_simps)
     finally have "m * (\<mu> * (card X - card U)) 
-                \<le> card (\<Union>u\<in>U. Blue \<inter> all_edges_betw_un {u} (X-U)) + (1-\<mu>) * m\<^sup>2" .
-    moreover have "(\<Union>u\<in>U. Blue \<inter> all_edges_betw_un {u} (X-U)) = (Blue \<inter> all_edges_betw_un U (X-U))"
+                \<le> card (\<Union>u\<in>U. Blue \<inter> all_edges_betw_un {u} (X\<setminus>U)) + (1-\<mu>) * m\<^sup>2" .
+    moreover have "(\<Union>u\<in>U. Blue \<inter> all_edges_betw_un {u} (X\<setminus>U)) = (Blue \<inter> all_edges_betw_un U (X\<setminus>U))"
       by (auto simp: all_edges_betw_un_def)
     ultimately show ?thesis
       by simp
   qed
-  also have "\<dots> \<le> edge_card Blue U (X-U)"
+  also have "\<dots> \<le> edge_card Blue U (X\<setminus>U)"
     by (simp add: edge_card_def)
-  finally have edge_card_XU: "edge_card Blue U (X-U) \<ge> card U * (\<mu> * card X - card U)" .
-  define \<sigma> where "\<sigma> \<equiv> blue_density U (X-U)"
+  finally have edge_card_XU: "edge_card Blue U (X\<setminus>U) \<ge> card U * (\<mu> * card X - card U)" .
+  define \<sigma> where "\<sigma> \<equiv> blue_density U (X\<setminus>U)"
   then have "\<sigma> \<ge> 0" by (simp add: gen_density_ge0)
   have "\<sigma> \<le> 1"
     by (simp add: \<sigma>_def gen_density_le1)
@@ -534,7 +533,7 @@ proof -
   then have "\<sigma> > 0"
     using \<open>0 < b\<close> \<open>0 \<le> \<sigma>\<close> less_eq_real_def by force
 
-  define \<Phi> where "\<Phi> \<equiv> \<Sum>v \<in> X-U. card (Neighbours Blue v \<inter> U) choose b"
+  define \<Phi> where "\<Phi> \<equiv> \<Sum>v \<in> X\<setminus>U. card (Neighbours Blue v \<inter> U) choose b"
   text \<open>now for the material between (10) and (11)\<close>
   have "\<sigma> * real m / 2 \<le> m"
     using \<open>\<sigma> \<le> 1\<close> \<open>m>0\<close> by auto
@@ -579,9 +578,9 @@ proof -
     by simp
   also have "\<dots> \<le> 2 * (\<sigma>^b) * exp(- (real b)\<^sup>2 / (\<sigma>*m)) * (card X - m)"
     by (intro mult_right_mono) (auto simp: \<open>0 \<le> \<sigma>\<close>)
-  finally have "\<mu>^b/2 * card X \<le> \<sigma>^b * exp(- of_nat (b\<^sup>2) / (\<sigma>*m)) * card (X-U)"
+  finally have "\<mu>^b/2 * card X \<le> \<sigma>^b * exp(- of_nat (b\<^sup>2) / (\<sigma>*m)) * card (X\<setminus>U)"
     by (simp add: \<open>card U = m\<close> cardXU real_cardXU)
-  also have "\<dots> \<le> 1/(m choose b) * ((\<sigma>*m) gchoose b) * card (X-U)"
+  also have "\<dots> \<le> 1/(m choose b) * ((\<sigma>*m) gchoose b) * card (X\<setminus>U)"
   proof (intro mult_right_mono)
     have "0 < real m gchoose b"
       by (metis \<open>b \<le> m\<close> binomial_gbinomial of_nat_0_less_iff zero_less_binomial_iff)
@@ -595,27 +594,27 @@ proof -
   also have "\<dots> \<le> 1/(m choose b) * \<Phi>"
     unfolding mult.assoc
   proof (intro mult_left_mono)
-    have eeq: "edge_card Blue U (X-U) = (\<Sum>i\<in>X-U. card (Neighbours Blue i \<inter> U))"
+    have eeq: "edge_card Blue U (X\<setminus>U) = (\<Sum>i\<in>X\<setminus>U. card (Neighbours Blue i \<inter> U))"
     proof (intro edge_card_eq_sum_Neighbours)
-      show "finite (X-U)"
+      show "finite (X\<setminus>U)"
         by (meson \<open>X\<subseteq>V\<close> finV finite_Diff finite_subset)
     qed (use disjnt_def Blue_E in auto)
-    have "(\<Sum>i\<in>X - U. card (Neighbours Blue i \<inter> U)) / (real (card X) - m) = blue_density U (X-U) * m"
+    have "(\<Sum>i\<in>X\<setminus>U. card (Neighbours Blue i \<inter> U)) / (real (card X) - m) = blue_density U (X\<setminus>U) * m"
       using \<open>m>0\<close> by (simp add: gen_density_def real_cardXU \<open>card U = m\<close> eeq divide_simps)
-    then have *: "(\<Sum>i\<in>X - U. real (card (Neighbours Blue i \<inter> U)) /\<^sub>R real (card (X-U))) = \<sigma> * m"
+    then have *: "(\<Sum>i\<in>X\<setminus>U. real (card (Neighbours Blue i \<inter> U)) /\<^sub>R real (card (X\<setminus>U))) = \<sigma> * m"
       by (simp add: \<sigma>_def divide_inverse_commute real_cardXU flip: sum_distrib_left)
-    have "mbinomial (\<Sum>i\<in>X - U. real (card (Neighbours Blue i \<inter> U)) /\<^sub>R (card (X-U))) b 
-         \<le> (\<Sum>i\<in>X - U. inverse (real (card (X-U))) * mbinomial (card (Neighbours Blue i \<inter> U)) b)"
+    have "mbinomial (\<Sum>i\<in>X\<setminus>U. real (card (Neighbours Blue i \<inter> U)) /\<^sub>R (card (X\<setminus>U))) b 
+         \<le> (\<Sum>i\<in>X\<setminus>U. inverse (real (card (X\<setminus>U))) * mbinomial (card (Neighbours Blue i \<inter> U)) b)"
     proof (rule convex_on_sum)
-      show "finite (X-U)"
+      show "finite (X\<setminus>U)"
         using cardU_less_X zero_less_diff by fastforce
       show "convex_on UNIV (\<lambda>a. mbinomial a b)"
         by (simp add: \<open>0 < b\<close> convex_mbinomial)
-      show "(\<Sum>i\<in>X - U. inverse (card (X-U))) = 1"
+      show "(\<Sum>i\<in>X\<setminus>U. inverse (card (X\<setminus>U))) = 1"
         using cardU_less_X cardXU by force
     qed (use \<open>U \<subset> X\<close> in auto)
     with ble 
-    show "(\<sigma>*m gchoose b) * card (X-U) \<le> \<Phi>"
+    show "(\<sigma>*m gchoose b) * card (X\<setminus>U) \<le> \<Phi>"
       unfolding * \<Phi>_def 
       by (simp add: cardU_less_X cardXU binomial_gbinomial divide_simps flip: sum_distrib_left sum_divide_distrib)
   qed auto
@@ -633,10 +632,10 @@ proof -
   have measure_eq: "measure M C = (if C \<subseteq> \<Omega> then card C / card \<Omega> else 0)" for C
     by (simp add: M_def fin\<Omega> measure_uniform_count_measure_if) 
 
-  define Int_NB where "Int_NB \<equiv> \<lambda>S. \<Inter>v\<in>S. Neighbours Blue v \<inter> (X-U)"
+  define Int_NB where "Int_NB \<equiv> \<lambda>S. \<Inter>v\<in>S. Neighbours Blue v \<inter> (X\<setminus>U)"
   have sum_card_NB: "(\<Sum>A\<in>\<Omega>. card (\<Inter>(Neighbours Blue ` A) \<inter> Y)) 
                      = (\<Sum>v\<in>Y. card (Neighbours Blue v \<inter> U) choose b)"
-    if "finite Y" "Y \<subseteq> X-U" for Y
+    if "finite Y" "Y \<subseteq> X\<setminus>U" for Y
     using that
   proof (induction Y)
     case (insert y Y)
@@ -650,10 +649,10 @@ proof -
           sum.subset_diff flip: insert.IH)
   qed auto
 
-  have "(\<Sum>x\<in>\<Omega>. card (if x = {} then UNIV else \<Inter> (Neighbours Blue ` x) \<inter> (X-U))) 
-        = (\<Sum>x\<in>\<Omega>. card (\<Inter> (Neighbours Blue ` x) \<inter> (X-U)))"
+  have "(\<Sum>x\<in>\<Omega>. card (if x = {} then UNIV else \<Inter> (Neighbours Blue ` x) \<inter> (X\<setminus>U))) 
+        = (\<Sum>x\<in>\<Omega>. card (\<Inter> (Neighbours Blue ` x) \<inter> (X\<setminus>U)))"
     unfolding \<Omega>_def nsets_def using \<open>0 < b\<close> by (force intro: sum.cong)
-  also have "\<dots> = (\<Sum>v\<in>X - U. card (Neighbours Blue v \<inter> U) choose b)"
+  also have "\<dots> = (\<Sum>v\<in>X\<setminus>U. card (Neighbours Blue v \<inter> U) choose b)"
     by (metis sum_card_NB \<open>X\<subseteq>V\<close> dual_order.refl finV finite_Diff rev_finite_subset)
   finally have "sum (card o Int_NB) \<Omega> = \<Phi>"
     by (simp add: \<Omega>_def \<Phi>_def Int_NB_def)
