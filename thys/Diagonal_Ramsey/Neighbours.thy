@@ -174,7 +174,7 @@ qed
 
 lemma edge_card_diff:
   assumes "Y\<subseteq>X" "disjnt X Z" "finite X" 
-  shows "edge_card C (X-Y) Z = edge_card C X Z - edge_card C Y Z"
+  shows "edge_card C (X\<setminus>Y) Z = edge_card C X Z - edge_card C Y Z"
 proof -
   have "(X\<setminus>Y) \<union> Y = X" "disjnt (X\<setminus>Y) Y"
     by (auto simp: Un_absorb2 assms disjnt_iff)
@@ -304,12 +304,12 @@ lemma gen_density_le1: "gen_density C X Y \<le> 1"
   by (smt (verit) card.infinite divide_le_eq_1 edge_card_le mult_eq_0_iff of_nat_le_0_iff of_nat_mono)
 
 lemma gen_density_le_1_minus: 
-  shows "gen_density C X Y \<le> 1 - gen_density (E-C) X Y"
+  shows "gen_density C X Y \<le> 1 - gen_density (E\<setminus>C) X Y"
 proof (cases "finite X \<and> finite Y")
   case True
-  have "C \<inter> all_edges_betw_un X Y \<union> (E - C) \<inter> all_edges_betw_un X Y = all_edges_betw_un X Y"
+  have "C \<inter> all_edges_betw_un X Y \<union> (E\<setminus>C) \<inter> all_edges_betw_un X Y = all_edges_betw_un X Y"
     by (auto simp: all_edges_betw_un_def)
-  with True have "(edge_card C X Y) + (edge_card (E - C) X Y) \<le> card (all_edges_betw_un X Y)"
+  with True have "(edge_card C X Y) + (edge_card (E\<setminus>C) X Y) \<le> card (all_edges_betw_un X Y)"
     unfolding edge_card_def
     by (metis Diff_Int_distrib2 Diff_disjoint card_Un_disjoint card_Un_le finite_Int finite_all_edges_betw_un)
   with True show ?thesis
@@ -318,16 +318,16 @@ proof (cases "finite X \<and> finite Y")
 qed (auto simp: gen_density_def)
 
 lemma gen_density_lt1: 
-  assumes "{x,y} \<in> E-C" "x \<in> X" "y \<in> Y" "C \<subseteq> E"
+  assumes "{x,y} \<in> E\<setminus>C" "x \<in> X" "y \<in> Y" "C \<subseteq> E"
   shows "gen_density C X Y < 1"
 proof (cases "finite X \<and> finite Y")
   case True
-  then have "0 < gen_density (E - C) X Y"
+  then have "0 < gen_density (E\<setminus>C) X Y"
     using assms gen_density_gt0 by auto
-  have "gen_density C X Y \<le> 1 - gen_density (E - C) X Y"
+  have "gen_density C X Y \<le> 1 - gen_density (E\<setminus>C) X Y"
     by (intro gen_density_le_1_minus)
   then show ?thesis
-    using \<open>0 < gen_density (E - C) X Y\<close> by linarith
+    using \<open>0 < gen_density (E\<setminus>C) X Y\<close> by linarith
 qed (auto simp: gen_density_def)
 
 lemma gen_density_le_iff:
@@ -341,7 +341,7 @@ from the remaining set" (page 17) \<close>
 lemma gen_density_below_avg_ge:
   assumes "disjnt X Z" "finite X" "Y\<subset>X" "finite Z" 
     and genY: "gen_density C Y Z \<le> gen_density C X Z"
-  shows "gen_density C (X-Y) Z \<ge> gen_density C X Z"
+  shows "gen_density C (X\<setminus>Y) Z \<ge> gen_density C X Z"
 proof -
   have "real (edge_card C Y Z) / card Y \<le> real (edge_card C X Z) / card X"
     using assms

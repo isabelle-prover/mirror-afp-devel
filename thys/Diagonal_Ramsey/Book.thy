@@ -251,7 +251,7 @@ definition Weight :: "['a set, 'a set, 'a, 'a] \<Rightarrow> real" where
                       - red_density X Y * card (Neighbours Red x \<inter> Y))"
 
 definition weight :: "'a set \<Rightarrow> 'a set \<Rightarrow> 'a \<Rightarrow> real" where
-  "weight \<equiv> \<lambda>X Y x. \<Sum>y \<in> X-{x}. Weight X Y x y"
+  "weight \<equiv> \<lambda>X Y x. \<Sum>y \<in> X\<setminus>{x}. Weight X Y x y"
 
 definition p0 :: "real"
   where "p0 \<equiv> red_density X0 Y0"
@@ -260,7 +260,7 @@ definition qfun :: "nat \<Rightarrow> real"
   where "qfun \<equiv> \<lambda>h. p0 + qfun_base k h"
 
 lemma qfun_eq: "qfun \<equiv> \<lambda>h. p0 + ((1 + \<epsilon>)^h - 1) / k"
-  by (simp add: qfun_def qfun_base_def eps_def eps_def)
+  by (simp add: qfun_def qfun_base_def eps_def)
 
 definition hgt :: "real \<Rightarrow> nat"
   where "hgt \<equiv> \<lambda>p. LEAST h. p \<le> qfun h \<and> h>0"
