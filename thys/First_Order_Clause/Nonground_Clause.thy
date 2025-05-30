@@ -7,9 +7,6 @@ begin
 
 section \<open>Nonground Clauses\<close>
 
-type_synonym 'f ground_atom = "'f gterm"
-type_synonym ('f, 'v) atom = "('f, 'v) term"
-
 locale nonground_clause = "term": nonground_term
 begin
 

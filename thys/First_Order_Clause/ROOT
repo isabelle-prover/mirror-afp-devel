@@ -19,6 +19,7 @@ session First_Order_Clause = Abstract_Substitution +
     IsaFoR_KBO
     IsaFoR_Nonground_Clause
     IsaFoR_Nonground_Clause_With_Equality
+    IsaFoR_Ground_Critical_Pairs
     Monomorphic_Typing
     Nonground_Entailment
     Nonground_Inference

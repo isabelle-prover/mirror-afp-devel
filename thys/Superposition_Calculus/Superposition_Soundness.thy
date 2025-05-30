@@ -21,7 +21,7 @@ proof (cases D C rule: eq_resolution.cases)
   case (eq_resolutionI D \<V> \<mu> t t' l D' C)
 
   {
-    fix I :: "'f ground_term rel" and \<gamma> :: "'v \<Rightarrow> 't"
+    fix I :: "'t\<^sub>G rel" and \<gamma> :: "'v \<Rightarrow> 't"
 
     let ?I = "upair ` I"
 
@@ -132,7 +132,7 @@ proof (cases D C rule: eq_factoring.cases)
   case (eq_factoringI D l\<^sub>1 \<mu> t\<^sub>1 t\<^sub>1' \<V> t\<^sub>2 l\<^sub>2 D' t\<^sub>2' C)
 
   {
-    fix I :: "'f ground_term rel" and \<gamma> :: "'v \<Rightarrow> 't"
+    fix I :: "'t\<^sub>G rel" and \<gamma> :: "'v \<Rightarrow> 't"
 
     let ?I = "upair ` I"
 
@@ -262,15 +262,14 @@ proof (cases D E C rule: superposition.cases)
   case (superpositionI \<P> \<V>\<^sub>1 \<V>\<^sub>2 \<rho>\<^sub>1 \<rho>\<^sub>2 E D t\<^sub>1 \<V>\<^sub>3 \<mu> t\<^sub>2 c\<^sub>1 t\<^sub>1' t\<^sub>2' l\<^sub>1 l\<^sub>2 E' D' C)
 
   {
-    fix I :: "'f gterm rel" and \<gamma> :: "'v \<Rightarrow> 't"
+    fix I :: "'t\<^sub>G rel" and \<gamma> :: "'v \<Rightarrow> 't"
 
     let ?I = "(\<lambda>(x, y). Upair x y) ` I"
 
     assume
-      refl_I: "refl I" and
       trans_I: "trans I" and
       sym_I: "sym I" and
-      compatible_with_ground_context_I: "compatible_with_gctxt I" and
+      compatible_with_ground_context_I: "compatible_with_context I" and
       E_entails_ground_instances: "\<forall>E\<^sub>G \<in> ground_instances \<V>\<^sub>1 E. ?I \<TTurnstile> E\<^sub>G" and
       D_entails_ground_instances: "\<forall>D\<^sub>G \<in> ground_instances \<V>\<^sub>2 D. ?I \<TTurnstile> D\<^sub>G" and
       C_is_ground: "clause.is_ground (C \<cdot> \<gamma>)" and

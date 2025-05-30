@@ -42,8 +42,7 @@ locale base_grounded_order =
 locale nonground_term_order =
   nonground_term_with_context where
   Var = "Var :: 'v \<Rightarrow> 't" and
-  from_ground_context_map =
-  "from_ground_context_map :: ('f gterm \<Rightarrow> 't) \<Rightarrow> 'f ground_context \<Rightarrow> 'c" +
+  from_ground_context_map = "from_ground_context_map :: ('t\<^sub>G \<Rightarrow> 't) \<Rightarrow> 'c\<^sub>G \<Rightarrow> 'c" +
   order: restricted_wellfounded_strict_order where
   less = less\<^sub>t and restriction = "range term.from_ground" +
   order: ground_subst_stability where R = less\<^sub>t and comp_subst = "(\<odot>)" and subst = "(\<cdot>t)" and
@@ -137,7 +136,9 @@ qed
 notation order.less\<^sub>G (infix "\<prec>\<^sub>t\<^sub>G" 50)
 notation order.less_eq\<^sub>G (infix "\<preceq>\<^sub>t\<^sub>G" 50)
 
-sublocale restriction: ground_term_order "(\<prec>\<^sub>t\<^sub>G)"
+sublocale restriction: ground_term_order where 
+  less\<^sub>t = "(\<prec>\<^sub>t\<^sub>G)" and compose_context = compose_ground_context and
+  apply_context = apply_ground_context and hole = ground_hole
 proof unfold_locales
   fix c t t'
   assume "t \<prec>\<^sub>t\<^sub>G t'"
@@ -149,7 +150,7 @@ proof unfold_locales
     unfolding order.less\<^sub>G_def
     by simp
 next
-  fix t :: "'f gterm" and c :: "'f ground_context"
+  fix t :: "'t\<^sub>G" and c :: "'c\<^sub>G"
   assume "c \<noteq> \<box>\<^sub>G"
 
   then show "t \<prec>\<^sub>t\<^sub>G c\<langle>t\<rangle>\<^sub>G"

@@ -86,30 +86,30 @@ next
 qed
 
 sublocale "term": base_typing_properties where
-  id_subst = "Var :: 'v \<Rightarrow> ('f, 'v) term" and comp_subst = "(\<odot>)" and subst = "(\<cdot>t)" and
+  id_subst = "Var :: 'v \<Rightarrow> ('f, 'v) term" and comp_subst = "(\<circ>\<^sub>s)" and subst = "(\<cdot>)" and
   vars = term.vars and welltyped = welltyped and to_ground = term.to_ground and
   from_ground = term.from_ground
 proof(unfold_locales; (intro welltyped.Var refl)?)
   fix t :: "('f, 'v) term" and \<V> \<sigma> \<tau>
   assume type_preserving_\<sigma>: " \<forall>x\<in>term.vars t. \<V> \<turnstile> Var x : \<V> x \<longrightarrow> \<V> \<turnstile> \<sigma> x : \<V> x"
 
-  show "\<V> \<turnstile> t \<cdot>t \<sigma> : \<tau> \<longleftrightarrow> \<V> \<turnstile> t : \<tau>"  
+  show "\<V> \<turnstile> t \<cdot> \<sigma> : \<tau> \<longleftrightarrow> \<V> \<turnstile> t : \<tau>"  
   proof (rule iffI)
 
     assume "\<V> \<turnstile> t : \<tau>"
 
-    then show "\<V> \<turnstile> t \<cdot>t \<sigma> : \<tau>"
+    then show "\<V> \<turnstile> t \<cdot> \<sigma> : \<tau>"
       using type_preserving_\<sigma>
       by 
         (induction rule: welltyped.induct)
         (auto simp: list.rel_mono_strong list_all2_map1 welltyped.simps)
   next
 
-    assume "\<V> \<turnstile> t \<cdot>t \<sigma> : \<tau>"
+    assume "\<V> \<turnstile> t \<cdot> \<sigma> : \<tau>"
 
     then show "\<V> \<turnstile> t : \<tau>"
       using type_preserving_\<sigma>
-    proof (induction "t \<cdot>t \<sigma>" \<tau> arbitrary: t rule: welltyped.induct)
+    proof (induction "t \<cdot> \<sigma>" \<tau> arbitrary: t rule: welltyped.induct)
       case (Var x \<tau>)
 
       then obtain x' where t: "t = Var x'"
@@ -153,10 +153,10 @@ next
     renaming: "term_subst.is_renaming \<rho>" and
     \<V>: "\<forall>x\<in>term.vars t. \<V> x = \<V>' (term.rename \<rho> x)"
 
-  then show "\<V>' \<turnstile> t \<cdot>t \<rho> : \<tau> \<longleftrightarrow> \<V> \<turnstile> t : \<tau>"
+  then show "\<V>' \<turnstile> t \<cdot> \<rho> : \<tau> \<longleftrightarrow> \<V> \<turnstile> t : \<tau>"
   proof(intro iffI)
 
-    assume "\<V>' \<turnstile> t \<cdot>t \<rho> : \<tau>"
+    assume "\<V>' \<turnstile> t \<cdot> \<rho> : \<tau>"
 
     with \<V> show "\<V> \<turnstile> t : \<tau>"
     proof(induction t arbitrary: \<tau>)
@@ -174,12 +174,12 @@ next
     next
       case (Fun f ts)
 
-      then have "\<V>' \<turnstile> Fun f (map (\<lambda>s. s \<cdot>t \<rho>) ts) : \<tau>"
+      then have "\<V>' \<turnstile> Fun f (map (\<lambda>s. s \<cdot> \<rho>) ts) : \<tau>"
         by auto
 
       then obtain \<tau>s where \<tau>s:
-        "list_all2 (welltyped \<V>') (map (\<lambda>s. s \<cdot>t \<rho>) ts) \<tau>s" 
-        "\<F> f (length (map (\<lambda>s. s \<cdot>t \<rho>) ts)) = Some (\<tau>s, \<tau>)"
+        "list_all2 (welltyped \<V>') (map (\<lambda>s. s \<cdot> \<rho>) ts) \<tau>s" 
+        "\<F> f (length (map (\<lambda>s. s \<cdot> \<rho>) ts)) = Some (\<tau>s, \<tau>)"
         using welltyped.simps
         by blast
 
@@ -198,7 +198,7 @@ next
   next
     assume "\<V> \<turnstile> t : \<tau>"
 
-    then show "\<V>' \<turnstile> t \<cdot>t \<rho> : \<tau>"
+    then show "\<V>' \<turnstile> t \<cdot> \<rho> : \<tau>"
       using \<V>
     proof(induction rule: welltyped.induct)
       case (Var x \<tau>)
@@ -212,7 +212,7 @@ next
     next
       case (Fun f ts \<tau>s \<tau>)
 
-      have "list_all2 (welltyped \<V>') (map (\<lambda>s. s \<cdot>t \<rho>) ts) \<tau>s"
+      have "list_all2 (welltyped \<V>') (map (\<lambda>s. s \<cdot> \<rho>) ts) \<tau>s"
         using Fun
         by (auto simp: list.rel_mono_strong list_all2_map1)
 
@@ -244,17 +244,17 @@ lemma type_preserving_subst:
 
 lemma type_preserving_unifier_subst:
   assumes "\<forall>(s, s') \<in> set ((Var x, t) # es). term.type_preserving_unifier \<V> \<upsilon> s s'"
-  shows "\<forall>(s, s') \<in> set es. term.type_preserving_unifier \<V> \<upsilon> (s \<cdot>t subst x t) (s' \<cdot>t subst x t)"
+  shows "\<forall>(s, s') \<in> set es. term.type_preserving_unifier \<V> \<upsilon> (s \<cdot> subst x t) (s' \<cdot> subst x t)"
 proof (intro ballI2)
   fix s s'
   assume s_s': "(s, s') \<in> set es"
 
-  then have "term.type_preserving_on (term.vars (s \<cdot>t subst x t) \<union> term.vars (s' \<cdot>t subst x t)) \<V> \<upsilon>"
+  then have "term.type_preserving_on (term.vars (s \<cdot> subst x t) \<union> term.vars (s' \<cdot> subst x t)) \<V> \<upsilon>"
     using assms term.vars_id_subst_update
     unfolding subst_def
     by (smt (verit, del_insts) UnCI UnE case_prodD list.set_intros(1,2) subset_iff)
 
-  then show "term.type_preserving_unifier \<V> \<upsilon> (s \<cdot>t subst x t) (s' \<cdot>t subst x t)"
+  then show "term.type_preserving_unifier \<V> \<upsilon> (s \<cdot> subst x t) (s' \<cdot> subst x t)"
     using assms s_s'
     by auto
 qed
@@ -428,7 +428,7 @@ lemma type_preserving_the_mgu:
   by (metis (mono_tags, lifting) option.exhaust option.simps(4,5))
 
 sublocale type_preserving_imgu where 
-  id_subst = "Var :: 'v \<Rightarrow> ('f, 'v) term" and comp_subst = "(\<odot>)" and subst = "(\<cdot>t)" and
+  id_subst = "Var :: 'v \<Rightarrow> ('f, 'v) term" and comp_subst = "(\<circ>\<^sub>s)" and subst = "(\<cdot>)" and
   vars = term.vars and welltyped = welltyped
   by unfold_locales
      (metis (full_types) the_mgu the_mgu_term_subst_is_imgu
@@ -442,7 +442,7 @@ assumes types_witnessed: "\<And>\<tau>. \<exists>f. \<F> f 0 = Some ([], \<tau>)
 begin
 
 sublocale "term": base_witnessed_typing_properties where
-  id_subst = "Var :: 'v \<Rightarrow> ('f, 'v) term" and comp_subst = "(\<odot>)" and subst = "(\<cdot>t)" and
+  id_subst = "Var :: 'v \<Rightarrow> ('f, 'v) term" and comp_subst = "(\<circ>\<^sub>s)" and subst = "(\<cdot>)" and
   vars = term.vars and welltyped = welltyped and to_ground = term.to_ground and
   from_ground = term.from_ground
 proof unfold_locales

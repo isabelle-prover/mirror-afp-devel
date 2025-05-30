@@ -1,7 +1,6 @@
 theory Nonground_Context
   imports
     Generic_Context
-    Ground_Context
     Nonground_Term
 
     Abstract_Substitution.Functional_Substitution_Lifting
@@ -9,24 +8,42 @@ begin
 
 section \<open>Nonground Contexts and Substitutions\<close>
 
+locale ground_context = "context" where 
+    hole = ground_hole and apply_context = apply_ground_context and
+    compose_context = compose_ground_context 
+  for ground_hole apply_ground_context compose_ground_context
+begin
+
+notation compose_ground_context (infixl \<open>\<circ>\<^sub>c\<^sub>G\<close> 75)
+notation ground_hole (\<open>\<box>\<^sub>G\<close>)
+notation apply_ground_context (\<open>_\<langle>_\<rangle>\<^sub>G\<close> [1000, 0] 1000)
+
+end
+
 locale nonground_context =
   "term": nonground_term where term_vars = term_vars and term_to_ground = term_to_ground +
   term_based_lifting where
   sub_subst = "(\<cdot>t)" and sub_vars = term.vars and sub_to_ground = term.to_ground and
   sub_from_ground = term.from_ground and term_vars = term.vars and term_subst = "(\<cdot>t)" and
   term_to_ground = term.to_ground and term_from_ground = term.from_ground and
-  to_ground_map = to_ground_context_map and ground_map = map_args_actxt and 
+  to_ground_map = to_ground_context_map and ground_map = ground_context_map and 
   from_ground_map = from_ground_context_map and map = map_context and to_set = context_to_set and
-  to_set_ground = set2_actxt +
-  "context" where subst = subst
+  to_set_ground = ground_context_to_set +
+  "context" +
+  ground_context: ground_context where 
+  apply_ground_context = apply_ground_context
 for
   term_vars :: "'t \<Rightarrow> 'v set" and 
-  term_to_ground :: "'t \<Rightarrow> 'f gterm" and
+  term_to_ground :: "'t \<Rightarrow> 't\<^sub>G" and
   map_context :: "('t \<Rightarrow> 't) \<Rightarrow> 'c \<Rightarrow> 'c" and
-  to_ground_context_map :: "('t \<Rightarrow> 'f gterm) \<Rightarrow> 'c \<Rightarrow> 'f ground_context" and
-  from_ground_context_map :: "('f gterm \<Rightarrow> 't) \<Rightarrow> 'f ground_context \<Rightarrow> 'c" and
-  context_to_set +
-assumes 
+  to_ground_context_map :: "('t \<Rightarrow> 't\<^sub>G) \<Rightarrow> 'c \<Rightarrow> 'c\<^sub>G" and
+  from_ground_context_map :: "('t\<^sub>G \<Rightarrow> 't) \<Rightarrow> 'c\<^sub>G \<Rightarrow> 'c" and
+  ground_context_map :: "('t\<^sub>G \<Rightarrow> 't\<^sub>G) \<Rightarrow> 'c\<^sub>G \<Rightarrow> 'c\<^sub>G" and
+  context_to_set ground_context_to_set and
+  apply_ground_context :: "'c\<^sub>G \<Rightarrow> 't\<^sub>G \<Rightarrow> 't\<^sub>G" +
+assumes
+  hole_if_context_ident [simp]: "c\<langle>t\<rangle> = t \<Longrightarrow> c = \<box>" and
+  compose_hole [simp]: "c = c \<circ>\<^sub>c \<box>" and
   term_to_ground_context_to_ground [simp]:
   "\<And>c t. term.to_ground c\<langle>t\<rangle> = (to_ground c)\<langle>term.to_ground t\<rangle>\<^sub>G" and
   term_from_ground_context_from_ground [simp]:
@@ -34,7 +51,7 @@ assumes
   apply_context_is_ground [simp]: "\<And>c t. term.is_ground c\<langle>t\<rangle> \<longleftrightarrow> is_ground c \<and> term.is_ground t" and
   map_compose [simp]: "\<And>f c c'. map_context f (c \<circ>\<^sub>c c') = map_context f c \<circ>\<^sub>c map_context f c'" and
   from_ground_compose [simp]:
-    "\<And>c c'. from_ground (actxt_compose c c') = from_ground c \<circ>\<^sub>c from_ground c'" and
+    "\<And>c c'. from_ground (c \<circ>\<^sub>c\<^sub>G c') = from_ground c \<circ>\<^sub>c from_ground c'" and
   apply_context_vars [simp]: "\<And>c t. term.vars c\<langle>t\<rangle> = vars c \<union> term.vars t" and
   apply_context_subst [simp]: "\<And>c t \<sigma>. c\<langle>t\<rangle> \<cdot>t \<sigma> = (subst c \<sigma>)\<langle>t \<cdot>t \<sigma>\<rangle>" and
   context_Var: "\<And>x t. x \<in> term.vars t \<longleftrightarrow> (\<exists>c. t = c\<langle>Var x\<rangle>)" and
@@ -45,7 +62,6 @@ assumes
     (\<exists>c c\<^sub>G' x. t = c\<langle>Var x\<rangle> \<and> c\<^sub>G = (subst c \<gamma>) \<circ>\<^sub>c c\<^sub>G')"
 begin
 
-(* TODO: How to not have it multiple times?*)
 notation subst (infixl "\<cdot>t\<^sub>c" 67)
 
 lemma term_from_ground_context_to_ground:
@@ -61,21 +77,25 @@ lemmas safe_unfolds =
 lemma composed_context_is_ground [simp]: "is_ground (c \<circ>\<^sub>c c') \<longleftrightarrow> is_ground c \<and> is_ground c'"
   by (metis term.ground_exists apply_context_is_ground compose_context_iff)
 
+lemma ground_context_ident_iff_hole [simp]: "c\<langle>t\<rangle>\<^sub>G = t \<longleftrightarrow> c = \<box>\<^sub>G"
+  by (metis hole_if_context_ident from_ground_eq ground_context.apply_hole
+      term_from_ground_context_from_ground)
+
 lemma from_ground_hole [simp]: "from_ground c\<^sub>G = \<box> \<longleftrightarrow> c\<^sub>G = \<box>\<^sub>G"
-  by (metis apply_Hole apply_context_is_ground from_ground_inverse gctxt_ident_iff_eq_GHole 
+  by (metis apply_hole apply_context_is_ground from_ground_inverse ground_context_ident_iff_hole 
       term.ground_exists term_to_ground_context_to_ground to_ground_inverse)
 
-lemma hole_simps [simp]: "from_ground \<box>\<^sub>G = \<box>" "to_ground \<box> = \<box>\<^sub>G"
+lemma hole_simps [simp]: "from_ground  \<box>\<^sub>G = \<box>" "to_ground \<box> = \<box>\<^sub>G"
   using from_ground_inverse from_ground_hole
   by metis+
 
-lemma to_ground_compose [simp]: "to_ground (c \<circ>\<^sub>c c') = actxt_compose (to_ground c) (to_ground c')"
+lemma to_ground_compose [simp]: "to_ground (c \<circ>\<^sub>c c') = to_ground c \<circ>\<^sub>c\<^sub>G to_ground c'"
   using from_ground_compose
   unfolding to_ground_def
   by (metis conversion_map_comp from_ground_def from_ground_inverse map_compose)
 
-lemma Hole_subst [simp]: "\<box> \<cdot>t\<^sub>c \<sigma> = \<box>"
-  by (metis all_subst_ident_if_ground apply_Hole apply_context_is_ground term.ground_exists)
+lemma hole_subst [simp]: "\<box> \<cdot>t\<^sub>c \<sigma> = \<box>"
+  by (metis all_subst_ident_if_ground apply_hole apply_context_is_ground term.ground_exists)
 
 lemma subst_into_Var:
   assumes 
@@ -99,18 +119,17 @@ proof (cases "\<exists>c t'. t = c\<langle>t'\<rangle> \<and> t' \<cdot>t \<gamm
 
   show ?thesis
   proof (intro exI conjI)
+
     show "t = c\<langle>t'\<rangle>"
       using t .
   next
+
     show "t' = Var x"
       using t' .
   next
 
-    have "to_ground c\<^sub>G = actxt_compose (to_ground (c \<cdot>t\<^sub>c \<gamma>)) \<box>\<^sub>G"
+    show "c\<^sub>G = (c \<cdot>t\<^sub>c \<gamma>) \<circ>\<^sub>c \<box>"
       by (simp add: \<open>c \<cdot>t\<^sub>c \<gamma> = c\<^sub>G\<close>)
-
-    then show "c\<^sub>G = (c \<cdot>t\<^sub>c \<gamma>) \<circ>\<^sub>c \<box>"
-      by (metis \<open>c \<cdot>t\<^sub>c \<gamma> = c\<^sub>G\<close> \<open>vars c\<^sub>G = {}\<close> from_ground_compose hole_simps(1) to_ground_inverse)
   qed
 next
   case False

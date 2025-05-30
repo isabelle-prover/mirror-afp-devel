@@ -107,7 +107,7 @@ begin
 
 sublocale literal.order: total_wellfounded_multiset_extension where
   less = "(\<prec>\<^sub>t)" and to_mset = literal_to_mset
-  by unfold_locales (simp add: inj_literal_to_mset)
+  by unfold_locales (auto simp: inj_literal_to_mset)
 
 sublocale clause.order: total_wellfounded_multiset_extension where
   less = "(\<prec>\<^sub>l)" and to_mset = "\<lambda>x. x"

@@ -5,18 +5,20 @@ begin
 locale untyped_superposition_calculus =
   nonground_term_with_context where
   term_vars = "term_vars :: 't \<Rightarrow> 'v :: infinite set" and
-  term_to_ground = "term_to_ground :: 't \<Rightarrow> 'f gterm" +
+  term_to_ground = "term_to_ground :: 't \<Rightarrow> 't\<^sub>G" +
   nonground_order where less\<^sub>t = less\<^sub>t +
   nonground_selection_function where
   select = select and atom_subst = "(\<cdot>a)" and atom_vars = atom.vars and
   atom_to_ground = atom.to_ground and atom_from_ground = atom.from_ground +
   (* TODO? *)
   "term": exists_imgu where vars = term_vars and subst = "(\<cdot>t)" and id_subst = Var +
-  ground_critical_pair_theorem "TYPE('f)"
+  ground_critical_pairs where
+  compose_context = compose_ground_context and apply_context = apply_ground_context and
+  hole = ground_hole
   for
     select :: "'t atom select" and
     less\<^sub>t :: "'t \<Rightarrow> 't \<Rightarrow> bool" and
-    tiebreakers :: "('f ground_atom, 't atom) tiebreakers" +
+    tiebreakers :: "('t\<^sub>G ground_atom, 't atom) tiebreakers" +
   assumes
     wfp_tiebreakers[iff]: "\<And>C\<^sub>G. wfp (tiebreakers C\<^sub>G)" and
     transp_tiebreakers[iff]: "\<And>C\<^sub>G. transp (tiebreakers C\<^sub>G)"

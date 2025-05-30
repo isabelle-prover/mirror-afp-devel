@@ -21,7 +21,7 @@ locale subterm_typing =
   fixes welltyped
   assumes
    welltyped_subterm [intro]:
-    "welltyped c\<langle>t\<rangle> \<tau> \<Longrightarrow> \<exists>\<tau>'. welltyped t \<tau>'"
+    "\<And>c t \<tau>. welltyped c\<langle>t\<rangle> \<tau> \<Longrightarrow> \<exists>\<tau>'. welltyped t \<tau>'"
 
 locale term_typing =
   base_typing +

@@ -6,23 +6,26 @@ theory Grounded_Superposition
     First_Order_Clause.Grounded_Selection_Function
     First_Order_Clause.Nonground_Inference
     Saturation_Framework.Lifting_to_Non_Ground_Calculi
+
+    Polynomial_Factorization.Missing_List
 begin
 
 locale grounded_superposition_calculus =
-  superposition_calculus where select = select and welltyped = welltyped and 
+  superposition_calculus where select = select and welltyped = welltyped and
   from_ground_context_map = from_ground_context_map +
   grounded_selection_function where
-  select = select and atom_subst = "(\<cdot>a)" and atom_vars = atom.vars and 
-  atom_to_ground = atom.to_ground and atom_from_ground = atom.from_ground and 
-  is_ground_instance = is_ground_instance 
+  select = select and atom_subst = "(\<cdot>a)" and atom_vars = atom.vars and
+  atom_to_ground = atom.to_ground and atom_from_ground = atom.from_ground and
+  is_ground_instance = is_ground_instance
   for
     select :: "'t atom select" and
     welltyped :: "('v :: infinite, 'ty) var_types \<Rightarrow> 't \<Rightarrow> 'ty \<Rightarrow> bool" and
-    from_ground_context_map :: "('f gterm \<Rightarrow> 't) \<Rightarrow> 'f ground_context \<Rightarrow> 'c"
+    from_ground_context_map :: "('t\<^sub>G \<Rightarrow> 't) \<Rightarrow> 'c\<^sub>G \<Rightarrow> 'c"
 begin
 
 sublocale ground: ground_superposition_calculus where
-  less\<^sub>t = "(\<prec>\<^sub>t\<^sub>G)" and select = select\<^sub>G
+  less\<^sub>t = "(\<prec>\<^sub>t\<^sub>G)" and select = select\<^sub>G and compose_context = compose_ground_context and 
+  apply_context = apply_ground_context and hole = ground_hole
 rewrites
   "multiset_extension.multiset_extension (\<prec>\<^sub>t\<^sub>G) ground.literal_to_mset = (\<prec>\<^sub>l\<^sub>G)" and
   "multiset_extension.multiset_extension (\<prec>\<^sub>l\<^sub>G) (\<lambda>x. x) = (\<prec>\<^sub>c\<^sub>G)" and
@@ -30,7 +33,6 @@ rewrites
   "\<And>l\<^sub>G C\<^sub>G. ground.is_strictly_maximal l\<^sub>G C\<^sub>G \<longleftrightarrow> ground_is_strictly_maximal l\<^sub>G C\<^sub>G"
   unfolding is_maximal_rewrite[symmetric] is_strictly_maximal_rewrite[symmetric]
   by unfold_locales simp_all
-
 
 abbreviation is_inference_ground_instance_one_premise where
   "is_inference_ground_instance_one_premise D C \<iota>\<^sub>G \<gamma> \<equiv>
@@ -185,17 +187,18 @@ begin
 abbreviation grounded_inference_ground_instances where
   "grounded_inference_ground_instances select\<^sub>G \<equiv>
     grounded_superposition_calculus.inference_ground_instances
-      (\<odot>) Var (\<cdot>t) term.vars term.to_ground term.from_ground (\<prec>\<^sub>t) select\<^sub>G welltyped"
+      (\<odot>) Var (\<cdot>t) term.vars term.to_ground term.from_ground apply_ground_context (\<prec>\<^sub>t) select\<^sub>G
+       welltyped"
 
 sublocale
   lifting_intersection
     inferences
     "{{#}}"
     select\<^sub>G\<^sub>s
-    "ground_superposition_calculus.G_Inf (\<prec>\<^sub>t\<^sub>G)"
-    "\<lambda>_. ground_superposition_calculus.G_entails"
-    "ground_superposition_calculus.GRed_I (\<prec>\<^sub>t\<^sub>G)"
-    "\<lambda>_. ground_superposition_calculus.GRed_F (\<prec>\<^sub>t\<^sub>G)"
+    "ground_superposition_calculus.G_Inf apply_ground_context (\<prec>\<^sub>t\<^sub>G)"
+    "\<lambda>_. ground_superposition_calculus.G_entails apply_ground_context"
+    "ground_superposition_calculus.GRed_I apply_ground_context (\<prec>\<^sub>t\<^sub>G)"
+    "\<lambda>_. ground_superposition_calculus.GRed_F apply_ground_context (\<prec>\<^sub>t\<^sub>G)"
     "\<bottom>\<^sub>F"
     "\<lambda>_. uncurried_ground_instances"
     "\<lambda>select\<^sub>G. Some \<circ> grounded_inference_ground_instances select\<^sub>G"

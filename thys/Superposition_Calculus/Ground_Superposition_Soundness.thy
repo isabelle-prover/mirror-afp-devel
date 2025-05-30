@@ -14,18 +14,18 @@ proof (cases P1 P2 C rule: superposition.cases)
     unfolding G_entails_def true_clss_singleton
     unfolding true_clss_insert
   proof (intro allI impI, elim conjE)
-    fix I :: "'f gterm rel"
+    fix I :: "'t rel"
     let ?I' = "(\<lambda>(t\<^sub>1, t). Upair t\<^sub>1 t) ` I"
-    assume "refl I" and "trans I" and "sym I" and "compatible_with_gctxt I" and
+    assume "refl I" and "trans I" and "sym I" and "compatible_with_context I" and
       "?I' \<TTurnstile> P1" and "?I' \<TTurnstile> P2"
-    then obtain K1 K2 :: "'f gatom literal" where
+    then obtain K1 K2 where
       "K1 \<in># P1" and "?I' \<TTurnstile>l K1" and "K2 \<in># P2" and "?I' \<TTurnstile>l K2"
       by (auto simp: true_cls_def)
 
     show "?I' \<TTurnstile> C"
-    proof (cases "K2 = \<P> (Upair s\<langle>t\<rangle>\<^sub>G s')")
+    proof (cases "K2 = \<P> (Upair s\<langle>t\<rangle> s')")
       case K1_def: True
-      hence "?I' \<TTurnstile>l \<P> (Upair s\<langle>t\<rangle>\<^sub>G s')"
+      hence "?I' \<TTurnstile>l \<P> (Upair s\<langle>t\<rangle> s')"
         using \<open>?I' \<TTurnstile>l K2\<close> by simp
 
       show ?thesis
@@ -36,14 +36,14 @@ proof (cases P1 P2 C rule: superposition.cases)
 
         have ?thesis if "\<P> = Pos"
         proof -
-          from that have "(s\<langle>t\<rangle>\<^sub>G, s') \<in> I"
+          from that have "(s\<langle>t\<rangle>, s') \<in> I"
             using \<open>?I' \<TTurnstile>l K2\<close> K1_def true_lit_uprod_iff_true_lit_prod[OF \<open>sym I\<close>] by simp
-          hence "(s\<langle>t'\<rangle>\<^sub>G, s') \<in> I"
+          hence "(s\<langle>t'\<rangle>, s') \<in> I"
             using \<open>(t, t') \<in> I\<close>
-            using \<open>compatible_with_gctxt I\<close> \<open>refl I\<close> \<open>sym I\<close> \<open>trans I\<close>
-            by (metis compatible_with_gctxtD[of I t' t s] symE[of I t t']
-                transE[of I "s\<langle>t'\<rangle>\<^sub>G" "s\<langle>t\<rangle>\<^sub>G" s'])
-          hence "?I' \<TTurnstile>l Pos (Upair s\<langle>t'\<rangle>\<^sub>G s')"
+            using \<open>compatible_with_context I\<close> \<open>refl I\<close> \<open>sym I\<close> \<open>trans I\<close>
+            by (metis compatible_with_contextD[of I t' t s] symE[of I t t']
+                transE[of I "s\<langle>t'\<rangle>" "s\<langle>t\<rangle>" s'])
+          hence "?I' \<TTurnstile>l s\<langle>t'\<rangle> \<approx> s'"
             by blast
           thus ?thesis
             unfolding superpositionI that
@@ -52,13 +52,13 @@ proof (cases P1 P2 C rule: superposition.cases)
 
         moreover have ?thesis if "\<P> = Neg"
         proof -
-          from that have "(s\<langle>t\<rangle>\<^sub>G, s') \<notin> I"
+          from that have "(s\<langle>t\<rangle>, s') \<notin> I"
             using \<open>?I' \<TTurnstile>l K2\<close> K1_def true_lit_uprod_iff_true_lit_prod[OF \<open>sym I\<close>] by simp
-          hence "(s\<langle>t'\<rangle>\<^sub>G, s') \<notin> I"
+          hence "(s\<langle>t'\<rangle>, s') \<notin> I"
             using \<open>(t, t') \<in> I\<close>
-            using \<open>compatible_with_gctxt I\<close> \<open>trans I\<close>
-            by (metis compatible_with_gctxtD transD)
-          hence "?I' \<TTurnstile>l Neg (Upair s\<langle>t'\<rangle>\<^sub>G s')"
+            using \<open>compatible_with_context I\<close> \<open>trans I\<close>
+            by (metis compatible_with_contextD transD)
+          hence "?I' \<TTurnstile>l Neg (Upair s\<langle>t'\<rangle> s')"
             by (meson \<open>sym I\<close> true_lit_simps(2) true_lit_uprod_iff_true_lit_prod(2))
           thus ?thesis
             unfolding superpositionI that by simp
@@ -98,7 +98,7 @@ proof (cases P C rule: eq_resolution.cases)
   show ?thesis
     unfolding G_entails_def true_clss_singleton
   proof (intro allI impI)
-    fix I :: "'f gterm rel"
+    fix I :: "'t rel"
     assume "refl I" and "(\<lambda>(t\<^sub>1, t\<^sub>2). Upair t\<^sub>1 t\<^sub>2) ` I \<TTurnstile> P"
     then obtain K where "K \<in># P" and "(\<lambda>(t\<^sub>1, t\<^sub>2). Upair t\<^sub>1 t\<^sub>2) ` I \<TTurnstile>l K"
       by (auto simp: true_cls_def)
@@ -120,10 +120,10 @@ proof (cases P C rule: eq_factoring.cases)
   show ?thesis
     unfolding G_entails_def true_clss_singleton
   proof (intro allI impI)
-    fix I :: "'f gterm rel"
+    fix I :: "'t rel"
     let ?I' = "(\<lambda>(t\<^sub>1, t). Upair t\<^sub>1 t) ` I"
     assume "trans I" and "sym I" and "?I' \<TTurnstile> P"
-    then obtain K :: "'f gatom literal" where
+    then obtain K where
       "K \<in># P" and "?I' \<TTurnstile>l K"
       by (auto simp: true_cls_def)
 

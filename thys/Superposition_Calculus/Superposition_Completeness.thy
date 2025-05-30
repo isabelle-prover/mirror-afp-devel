@@ -16,7 +16,7 @@ subsection \<open>Liftings\<close>
 
 lemma eq_resolution_lifting:
   fixes
-    D\<^sub>G C\<^sub>G :: "'f ground_clause" and
+    D\<^sub>G C\<^sub>G :: "'t\<^sub>G ground_clause" and
     D C :: "'t clause" and
     \<gamma> :: "'v \<Rightarrow> 't"
   defines
@@ -257,7 +257,7 @@ qed
 
 lemma eq_factoring_lifting:
   fixes
-    D\<^sub>G C\<^sub>G :: "'f ground_clause" and
+    D\<^sub>G C\<^sub>G :: "'t\<^sub>G ground_clause" and
     D C :: "'t clause" and
     \<gamma> :: "'v \<Rightarrow> 't"
   defines
@@ -473,7 +473,7 @@ qed
 
 lemma superposition_lifting:
   fixes
-    E\<^sub>G D\<^sub>G C\<^sub>G :: "'f ground_clause" and
+    E\<^sub>G D\<^sub>G C\<^sub>G :: "'t\<^sub>G ground_clause" and
     E D C :: "'t clause" and
     \<gamma> \<rho>\<^sub>1 \<rho>\<^sub>2 :: "'v \<Rightarrow> 't" and
     \<V>\<^sub>1 \<V>\<^sub>2 :: "('v, 'ty) var_types"
@@ -808,14 +808,11 @@ proof (cases D\<^sub>G E\<^sub>G C\<^sub>G rule: ground.superposition.cases)
 
         show "ground.G_entails {?E\<^sub>G', D\<^sub>G} {C\<^sub>G}"
         proof(unfold ground.G_entails_def, intro allI impI)
-          fix I :: "'f gterm rel"
+          fix I :: "'t\<^sub>G rel"
           let ?I = "upair ` I"
 
           assume
-            refl_I: "refl I" and
-            trans_I: "trans I" and
-            sym_I: "sym I" and
-            compatible_with_gctxt_I: "compatible_with_gctxt I" and
+            "refl I" "trans I" "sym I" "compatible_with_context I" and
             premise: "?I \<TTurnstile>s {?E\<^sub>G', D\<^sub>G}"
 
           then interpret clause_entailment where I = I

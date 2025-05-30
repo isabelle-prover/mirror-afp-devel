@@ -1,10 +1,6 @@
 theory Nonground_Term
-  imports 
-    Abstract_Substitution.Functional_Substitution_Lifting
-    Ground_Term_Extra (* TODO: Also just specify ground term *)
+  imports Abstract_Substitution.Functional_Substitution_Lifting
 begin
-
-type_synonym 'f ground_term = "'f gterm"
 
 locale vars_def =
   fixes vars_def :: "'expr \<Rightarrow> 'var"
@@ -41,8 +37,8 @@ locale nonground_term =
 for 
   Var :: "'v \<Rightarrow> 't" and
   term_subst term_vars and
-  term_to_ground :: "'t \<Rightarrow> 'f ground_term" and
-  term_from_ground :: "'f ground_term \<Rightarrow> 't"
+  term_to_ground :: "'t \<Rightarrow> 't\<^sub>G" and
+  term_from_ground :: "'t\<^sub>G \<Rightarrow> 't"
 begin
 
 notation term_subst (infixl "\<cdot>t" 67)

@@ -10,11 +10,11 @@ notation apply_context (\<open>_\<langle>_\<rangle>\<close> [1000, 0] 1000)
 
 end
 
-locale Hole_notation = 
-  fixes Hole :: "'c"
+locale hole_notation = 
+  fixes hole :: "'c"
 begin
 
-notation Hole (\<open>\<box>\<close>)
+notation hole (\<open>\<box>\<close>)
 
 end
 
@@ -26,18 +26,9 @@ notation compose_context (infixl \<open>\<circ>\<^sub>c\<close> 75)
 
 end
 
-locale subst_context_notation =
-  fixes subst :: "'c \<Rightarrow> ('v \<Rightarrow> 't) \<Rightarrow> 'c"
-begin
-
-notation subst (infixl "\<cdot>t\<^sub>c" 67)
-
-end
-
 locale context_notation = 
   apply_context_notation + 
-  Hole_notation +
-  compose_context_notation +
-  subst_context_notation
+  hole_notation +
+  compose_context_notation
 
 end

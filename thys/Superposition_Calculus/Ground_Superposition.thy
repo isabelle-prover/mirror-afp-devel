@@ -1,45 +1,48 @@
 theory Ground_Superposition
   imports
-    Ground_Critical_Pairs
+    First_Order_Clause.Ground_Critical_Pairs
     First_Order_Clause.Selection_Function
     First_Order_Clause.Ground_Order_With_Equality
-    First_Order_Clause.Ground_Clause
+    First_Order_Clause.Uprod_Literal_Functor
 begin
 
 section \<open>Superposition Calculus\<close>
 
+type_synonym 't ground_clause = "'t uprod clause"
 
 locale ground_superposition_calculus =
-  ground_order where less\<^sub>t = less\<^sub>t +
+  "context" where apply_context = apply_context +
+  ground_order where less\<^sub>t = less\<^sub>t and apply_context = apply_context +
   selection_function select +
-  ground_critical_pair_theorem "TYPE('f)"
+  ground_critical_pairs where apply_context = apply_context
 for
-  less\<^sub>t :: "'f gterm \<Rightarrow> 'f gterm \<Rightarrow> bool" and
-  select :: "'f gatom clause \<Rightarrow> 'f gatom clause"
-begin            
+  apply_context :: "'c \<Rightarrow> 't \<Rightarrow> 't" and
+  less\<^sub>t :: "'t \<Rightarrow> 't \<Rightarrow> bool" and
+  select :: "'t ground_clause \<Rightarrow> 't ground_clause"
+begin
 
 subsection \<open>Ground Rules\<close>
 
 inductive superposition ::
-  "'f gatom clause \<Rightarrow> 'f gatom clause \<Rightarrow> 'f gatom clause \<Rightarrow> bool"
+  "'t ground_clause \<Rightarrow> 't ground_clause \<Rightarrow> 't ground_clause \<Rightarrow> bool"
 where
   superpositionI:
    "E = add_mset L\<^sub>E E' \<Longrightarrow>
     D = add_mset L\<^sub>D D' \<Longrightarrow>
     D \<prec>\<^sub>c E \<Longrightarrow>
     \<P> \<in> {Pos, Neg} \<Longrightarrow>
-    L\<^sub>E = \<P> (Upair \<kappa>\<langle>t\<rangle>\<^sub>G u) \<Longrightarrow>
+    L\<^sub>E = \<P> (Upair \<kappa>\<langle>t\<rangle> u) \<Longrightarrow>
     L\<^sub>D = t \<approx> t' \<Longrightarrow>
-    u \<prec>\<^sub>t \<kappa>\<langle>t\<rangle>\<^sub>G \<Longrightarrow>
+    u \<prec>\<^sub>t \<kappa>\<langle>t\<rangle> \<Longrightarrow>
     t' \<prec>\<^sub>t t \<Longrightarrow>
     (\<P> = Pos \<and> select E = {#} \<and> is_strictly_maximal L\<^sub>E E) \<or>
     (\<P> = Neg \<and> (select E = {#} \<and> is_maximal L\<^sub>E E \<or> is_maximal L\<^sub>E (select E))) \<Longrightarrow>
     select D = {#} \<Longrightarrow>
     is_strictly_maximal L\<^sub>D D \<Longrightarrow>
-    C = add_mset (\<P> (Upair \<kappa>\<langle>t'\<rangle>\<^sub>G u)) (E' + D') \<Longrightarrow>
+    C = add_mset (\<P> (Upair \<kappa>\<langle>t'\<rangle> u)) (E' + D') \<Longrightarrow>
     superposition D E C"
 
-inductive eq_resolution :: "'f gatom clause \<Rightarrow> 'f gatom clause \<Rightarrow> bool" where
+inductive eq_resolution :: "'t ground_clause \<Rightarrow> 't ground_clause \<Rightarrow> bool" where
   eq_resolutionI:
    "D = add_mset L D' \<Longrightarrow>
     L = t !\<approx> t \<Longrightarrow>
@@ -47,7 +50,7 @@ inductive eq_resolution :: "'f gatom clause \<Rightarrow> 'f gatom clause \<Righ
     C = D' \<Longrightarrow>
     eq_resolution D C"
 
-inductive eq_factoring :: "'f gatom clause \<Rightarrow> 'f gatom clause \<Rightarrow> bool" where
+inductive eq_factoring :: "'t ground_clause \<Rightarrow> 't ground_clause \<Rightarrow> bool" where
   eq_factoringI:
    "D = add_mset L\<^sub>1 (add_mset L\<^sub>2 D') \<Longrightarrow>
     L\<^sub>1 = t \<approx> t' \<Longrightarrow>
@@ -70,22 +73,22 @@ abbreviation superposition_inferences where
 subsubsection \<open>Alternative Specification of the Superposition Rule\<close>
 
 inductive superposition' ::
-  "'f gatom clause \<Rightarrow> 'f gatom clause \<Rightarrow> 'f gatom clause \<Rightarrow> bool"
+  "'t ground_clause \<Rightarrow> 't ground_clause \<Rightarrow> 't ground_clause \<Rightarrow> bool"
 where
   superposition'I: "
     P\<^sub>1 = add_mset L\<^sub>1 P\<^sub>1' \<Longrightarrow>
     P\<^sub>2 = add_mset L\<^sub>2 P\<^sub>2' \<Longrightarrow>
     P\<^sub>2 \<prec>\<^sub>c P\<^sub>1 \<Longrightarrow>
     \<P> \<in> {Pos, Neg} \<Longrightarrow>
-    L\<^sub>1 = \<P> (Upair s\<langle>t\<rangle>\<^sub>G s') \<Longrightarrow>
+    L\<^sub>1 = \<P> (Upair s\<langle>t\<rangle> s') \<Longrightarrow>
     L\<^sub>2 = t \<approx> t' \<Longrightarrow>
-    s' \<prec>\<^sub>t s\<langle>t\<rangle>\<^sub>G \<Longrightarrow>
+    s' \<prec>\<^sub>t s\<langle>t\<rangle> \<Longrightarrow>
     t' \<prec>\<^sub>t t \<Longrightarrow>
     (\<P> = Pos \<longrightarrow> select P\<^sub>1 = {#} \<and> is_strictly_maximal L\<^sub>1 P\<^sub>1) \<Longrightarrow>
     (\<P> = Neg \<longrightarrow> (select P\<^sub>1 = {#} \<and> is_maximal L\<^sub>1 P\<^sub>1 \<or> is_maximal L\<^sub>1 (select P\<^sub>1))) \<Longrightarrow>
     select P\<^sub>2 = {#} \<Longrightarrow>
     is_strictly_maximal L\<^sub>2 P\<^sub>2 \<Longrightarrow>
-    C = add_mset (\<P> (Upair s\<langle>t'\<rangle>\<^sub>G s')) (P\<^sub>1' + P\<^sub>2') \<Longrightarrow>
+    C = add_mset (\<P> (Upair s\<langle>t'\<rangle> s')) (P\<^sub>1' + P\<^sub>2') \<Longrightarrow>
     superposition' P\<^sub>2 P\<^sub>1 C"
 
 lemma "superposition' = superposition"
@@ -112,21 +115,21 @@ next
 qed
 
 inductive pos_superposition ::
-  "'f gatom clause \<Rightarrow> 'f gatom clause \<Rightarrow> 'f gatom clause \<Rightarrow> bool"
+  "'t ground_clause \<Rightarrow> 't ground_clause \<Rightarrow> 't ground_clause \<Rightarrow> bool"
 where
  pos_superpositionI: "
     P\<^sub>1 = add_mset L\<^sub>1 P\<^sub>1' \<Longrightarrow>
     P\<^sub>2 = add_mset L\<^sub>2 P\<^sub>2' \<Longrightarrow>
     P\<^sub>2 \<prec>\<^sub>c P\<^sub>1 \<Longrightarrow>
-    L\<^sub>1 = s\<langle>t\<rangle>\<^sub>G \<approx> s' \<Longrightarrow>
+    L\<^sub>1 = s\<langle>t\<rangle> \<approx> s' \<Longrightarrow>
     L\<^sub>2 = t \<approx> t' \<Longrightarrow>
-    s' \<prec>\<^sub>t s\<langle>t\<rangle>\<^sub>G \<Longrightarrow>
+    s' \<prec>\<^sub>t s\<langle>t\<rangle> \<Longrightarrow>
     t' \<prec>\<^sub>t t \<Longrightarrow>
     select P\<^sub>1 = {#} \<Longrightarrow>
     is_strictly_maximal L\<^sub>1 P\<^sub>1 \<Longrightarrow>
     select P\<^sub>2 = {#} \<Longrightarrow>
     is_strictly_maximal L\<^sub>2 P\<^sub>2 \<Longrightarrow>
-    C = add_mset (s\<langle>t'\<rangle>\<^sub>G \<approx> s') (P\<^sub>1' + P\<^sub>2') \<Longrightarrow>
+    C = add_mset (s\<langle>t'\<rangle> \<approx> s') (P\<^sub>1' + P\<^sub>2') \<Longrightarrow>
     pos_superposition P\<^sub>2 P\<^sub>1 C"
 
 lemma superposition_if_pos_superposition:
@@ -141,20 +144,20 @@ proof (cases P\<^sub>2 P\<^sub>1 C rule: pos_superposition.cases)
 qed
 
 inductive neg_superposition ::
-  "'f gatom clause \<Rightarrow> 'f gatom clause \<Rightarrow> 'f gatom clause \<Rightarrow> bool"
+  "'t ground_clause \<Rightarrow> 't ground_clause \<Rightarrow> 't ground_clause \<Rightarrow> bool"
 where
  neg_superpositionI:
    "P\<^sub>1 = add_mset L\<^sub>1 P\<^sub>1' \<Longrightarrow>
     P\<^sub>2 = add_mset L\<^sub>2 P\<^sub>2' \<Longrightarrow>
     P\<^sub>2 \<prec>\<^sub>c P\<^sub>1 \<Longrightarrow>
-    L\<^sub>1 = s\<langle>t\<rangle>\<^sub>G !\<approx> s' \<Longrightarrow>
+    L\<^sub>1 = s\<langle>t\<rangle> !\<approx> s' \<Longrightarrow>
     L\<^sub>2 = t \<approx> t' \<Longrightarrow>
-    s' \<prec>\<^sub>t s\<langle>t\<rangle>\<^sub>G \<Longrightarrow>
+    s' \<prec>\<^sub>t s\<langle>t\<rangle> \<Longrightarrow>
     t' \<prec>\<^sub>t t \<Longrightarrow>
     select P\<^sub>1 = {#} \<and> is_maximal L\<^sub>1 P\<^sub>1 \<or> is_maximal L\<^sub>1 (select P\<^sub>1) \<Longrightarrow>
     select P\<^sub>2 = {#} \<Longrightarrow>
     is_strictly_maximal L\<^sub>2 P\<^sub>2 \<Longrightarrow>
-    C = add_mset (Neg (Upair s\<langle>t'\<rangle>\<^sub>G s')) (P\<^sub>1' + P\<^sub>2') \<Longrightarrow>
+    C = add_mset (Neg (Upair s\<langle>t'\<rangle> s')) (P\<^sub>1' + P\<^sub>2') \<Longrightarrow>
     neg_superposition P\<^sub>2 P\<^sub>1 C"
 
 lemma superposition_if_neg_superposition:
@@ -193,18 +196,22 @@ qed
 
 subsection \<open>Ground Layer\<close>
 
-definition G_Inf :: "'f gatom clause inference set" where
+definition G_Inf :: "'t ground_clause inference set" where
   "G_Inf =
     {Infer [P\<^sub>2, P\<^sub>1] C | P\<^sub>2 P\<^sub>1 C. superposition P\<^sub>2 P\<^sub>1 C} \<union>
     {Infer [P] C | P C. eq_resolution P C} \<union>
     {Infer [P] C | P C. eq_factoring P C}"
 
-abbreviation G_Bot :: "'f gatom clause set" where
+abbreviation G_Bot :: "'t ground_clause set" where
   "G_Bot \<equiv> {{#}}"
 
-definition G_entails :: "'f gatom clause set \<Rightarrow> 'f gatom clause set \<Rightarrow> bool" where
-  "G_entails N\<^sub>1 N\<^sub>2 \<longleftrightarrow> (\<forall>(I :: 'f gterm rel). refl I \<longrightarrow> trans I \<longrightarrow> sym I \<longrightarrow>
-    compatible_with_gctxt I \<longrightarrow> upair ` I \<TTurnstile>s N\<^sub>1 \<longrightarrow> upair ` I \<TTurnstile>s N\<^sub>2)"
+(* TODO: *)
+sublocale ground_term_rewrite_system 
+  by unfold_locales
+
+definition G_entails :: "'t ground_clause set \<Rightarrow> 't ground_clause set \<Rightarrow> bool" where
+  "G_entails N\<^sub>1 N\<^sub>2 \<longleftrightarrow> (\<forall>(I :: 't rel). refl I \<longrightarrow> trans I \<longrightarrow> sym I \<longrightarrow>
+    compatible_with_context I \<longrightarrow> upair ` I \<TTurnstile>s N\<^sub>1 \<longrightarrow> upair ` I \<TTurnstile>s N\<^sub>2)"
 
 lemma superposition_smaller_conclusion:
   assumes
@@ -214,28 +221,28 @@ lemma superposition_smaller_conclusion:
 proof (cases P1 P2 C rule: superposition.cases)
   case (superpositionI L\<^sub>1 P\<^sub>1' L\<^sub>2 P\<^sub>2' \<P> s t s' t')
 
-  have "P\<^sub>1' + add_mset (\<P> (Upair s\<langle>t'\<rangle>\<^sub>G s')) P\<^sub>2' \<prec>\<^sub>c P\<^sub>1' + {#\<P> (Upair s\<langle>t\<rangle>\<^sub>G s')#}"
+  have "P\<^sub>1' + add_mset (\<P> (Upair s\<langle>t'\<rangle> s')) P\<^sub>2' \<prec>\<^sub>c P\<^sub>1' + {#\<P> (Upair s\<langle>t\<rangle> s')#}"
     unfolding less\<^sub>c_def
   proof (intro one_step_implies_multp ballI)
-    fix K assume "K \<in># add_mset (\<P> (Upair s\<langle>t'\<rangle>\<^sub>G s')) P\<^sub>2'"
+    fix K assume "K \<in># add_mset (\<P> (Upair s\<langle>t'\<rangle> s')) P\<^sub>2'"
 
-    moreover have "\<P> (Upair s\<langle>t'\<rangle>\<^sub>G s') \<prec>\<^sub>l \<P> (Upair s\<langle>t\<rangle>\<^sub>G s')"
+    moreover have "\<P> (Upair s\<langle>t'\<rangle> s') \<prec>\<^sub>l \<P> (Upair s\<langle>t\<rangle> s')"
     proof -
-      have  "s\<langle>t'\<rangle>\<^sub>G \<prec>\<^sub>t s\<langle>t\<rangle>\<^sub>G"
+      have  "s\<langle>t'\<rangle> \<prec>\<^sub>t s\<langle>t\<rangle>"
         using \<open>t' \<prec>\<^sub>t t\<close>
         by simp
 
-      hence "multp (\<prec>\<^sub>t) {#s\<langle>t'\<rangle>\<^sub>G, s'#} {#s\<langle>t\<rangle>\<^sub>G, s'#}"
+      hence "multp (\<prec>\<^sub>t) {#s\<langle>t'\<rangle>, s'#} {#s\<langle>t\<rangle>, s'#}"
         by (simp add: add_mset_commute multp_cancel_add_mset)
 
       have ?thesis if "\<P> = Pos"
         unfolding that less\<^sub>l_def
-        using \<open>multp (\<prec>\<^sub>t) {#s\<langle>t'\<rangle>\<^sub>G, s'#} {#s\<langle>t\<rangle>\<^sub>G, s'#}\<close>
+        using \<open>multp (\<prec>\<^sub>t) {#s\<langle>t'\<rangle>, s'#} {#s\<langle>t\<rangle>, s'#}\<close>
         by simp
 
       moreover have ?thesis if "\<P> = Neg"
         unfolding that less\<^sub>l_def
-        using \<open>multp (\<prec>\<^sub>t) {#s\<langle>t'\<rangle>\<^sub>G, s'#} {#s\<langle>t\<rangle>\<^sub>G, s'#}\<close> multp_double_doubleI
+        using \<open>multp (\<prec>\<^sub>t) {#s\<langle>t'\<rangle>, s'#} {#s\<langle>t\<rangle>, s'#}\<close> multp_double_doubleI
         by force
 
       ultimately show ?thesis
@@ -243,7 +250,7 @@ proof (cases P1 P2 C rule: superposition.cases)
         by auto
     qed
 
-    moreover have "\<forall>K \<in># P\<^sub>2'. K \<prec>\<^sub>l \<P> (Upair s\<langle>t\<rangle>\<^sub>G s')"
+    moreover have "\<forall>K \<in># P\<^sub>2'. K \<prec>\<^sub>l \<P> (Upair s\<langle>t\<rangle> s')"
     proof -
       have "is_strictly_maximal L\<^sub>2 P1"
         using superpositionI
@@ -258,43 +265,44 @@ proof (cases P1 P2 C rule: superposition.cases)
       hence "\<forall>K \<in># P\<^sub>2'. K \<prec>\<^sub>l Pos (Upair t t')"
         by auto
 
-      have thesis_if_Neg: "Pos (Upair t t') \<prec>\<^sub>l \<P> (Upair s\<langle>t\<rangle>\<^sub>G s')"
+      have thesis_if_Neg: "Pos (Upair t t') \<prec>\<^sub>l \<P> (Upair s\<langle>t\<rangle> s')"
         if "\<P> = Neg"
       proof -
-        have "t \<preceq>\<^sub>t s\<langle>t\<rangle>\<^sub>G"
+        have "t \<preceq>\<^sub>t s\<langle>t\<rangle>"
           using term.order.less_eq_subterm_property .
 
-        hence "multp (\<prec>\<^sub>t) {#t, t'#} {#s\<langle>t\<rangle>\<^sub>G, s', s\<langle>t\<rangle>\<^sub>G, s'#}"
+        hence "multp (\<prec>\<^sub>t) {#t, t'#} {#s\<langle>t\<rangle>, s', s\<langle>t\<rangle>, s'#}"
           unfolding reflclp_iff
         proof (elim disjE)
-          assume "t \<prec>\<^sub>t s\<langle>t\<rangle>\<^sub>G"
+          assume "t \<prec>\<^sub>t s\<langle>t\<rangle>"
 
-          moreover hence "t' \<prec>\<^sub>t s\<langle>t\<rangle>\<^sub>G"
+          moreover hence "t' \<prec>\<^sub>t s\<langle>t\<rangle>"
             using superpositionI(8)
             by order
 
           ultimately show ?thesis
             by (auto intro: one_step_implies_multp[of _ _ _ "{#}", simplified])
         next
-          assume "t = s\<langle>t\<rangle>\<^sub>G"
+          assume "t = s\<langle>t\<rangle>"
           thus ?thesis
             using \<open>t' \<prec>\<^sub>t t\<close>
             by simp
         qed
-        thus "Pos (Upair t t') \<prec>\<^sub>l \<P> (Upair s\<langle>t\<rangle>\<^sub>G s')"
+        thus "Pos (Upair t t') \<prec>\<^sub>l \<P> (Upair s\<langle>t\<rangle> s')"
           using \<open>\<P> = Neg\<close>
           by (simp add: less\<^sub>l_def)
       qed
 
-      have thesis_if_Pos: "Pos (Upair t t') \<preceq>\<^sub>l \<P> (Upair s\<langle>t\<rangle>\<^sub>G s')"
+      have thesis_if_Pos: "Pos (Upair t t') \<preceq>\<^sub>l \<P> (Upair s\<langle>t\<rangle> s')"
         if "\<P> = Pos" and "is_maximal L\<^sub>1 P2"
-      proof (cases "s")
-        case Hole
-        show ?thesis
+      proof (cases "s = \<box>")
+        case Hole: True
+
+        show ?thesis 
         proof (cases "t' \<preceq>\<^sub>t s'")
           case True
 
-          hence "(multp (\<prec>\<^sub>t))\<^sup>=\<^sup>= {#t, t'#} {#s\<langle>t\<rangle>\<^sub>G, s'#}"
+          hence "(multp (\<prec>\<^sub>t))\<^sup>=\<^sup>= {#t, t'#} {#s\<langle>t\<rangle>, s'#}"
             unfolding Hole
             by (simp add: multp_cancel_add_mset)
 
@@ -306,14 +314,14 @@ proof (cases P1 P2 C rule: superposition.cases)
           hence "s' \<prec>\<^sub>t t'"
             by order
 
-          hence "multp (\<prec>\<^sub>t) {#s\<langle>t\<rangle>\<^sub>G, s'#} {#t, t'#}"
+          hence "multp (\<prec>\<^sub>t) {#s\<langle>t\<rangle>, s'#} {#t, t'#}"
             by (simp add: Hole multp_cancel_add_mset)
 
-          hence "\<P> (Upair s\<langle>t\<rangle>\<^sub>G s') \<prec>\<^sub>l Pos (Upair t t')"
+          hence "\<P> (Upair s\<langle>t\<rangle> s') \<prec>\<^sub>l Pos (Upair t t')"
             using \<open>\<P> = Pos\<close>
             by (simp add: less\<^sub>l_def)
 
-          moreover have "\<forall>K \<in># P\<^sub>1'. K \<preceq>\<^sub>l \<P> (Upair s\<langle>t\<rangle>\<^sub>G s')"
+          moreover have "\<forall>K \<in># P\<^sub>1'. K \<preceq>\<^sub>l \<P> (Upair s\<langle>t\<rangle> s')"
             using that
             unfolding superpositionI is_maximal_def
             by auto
@@ -323,7 +331,7 @@ proof (cases P1 P2 C rule: superposition.cases)
 
           hence "P2 \<prec>\<^sub>c P1"
             using
-              \<open>\<P> (Upair s\<langle>t\<rangle>\<^sub>G s') \<prec>\<^sub>l Pos (Upair t t')\<close>
+              \<open>\<P> (Upair s\<langle>t\<rangle> s') \<prec>\<^sub>l Pos (Upair t t')\<close>
               one_step_implies_multp[of P1 P2 "(\<prec>\<^sub>l)" "{#}", simplified]
               literal.order.multp_if_maximal_less_that_maximal
               superpositionI
@@ -337,20 +345,21 @@ proof (cases P1 P2 C rule: superposition.cases)
           thus ?thesis ..
         qed
       next
-        case (More f ts1 ctxt ts2)
-        hence "t \<prec>\<^sub>t s\<langle>t\<rangle>\<^sub>G"
+        case False
+
+        hence "t \<prec>\<^sub>t s\<langle>t\<rangle>"
           using term.order.subterm_property[of s t]
           by simp
 
-        moreover hence "t' \<prec>\<^sub>t s\<langle>t\<rangle>\<^sub>G"
+        moreover hence "t' \<prec>\<^sub>t s\<langle>t\<rangle>"
           using \<open>t' \<prec>\<^sub>t t\<close>
           by order
 
-        ultimately have "multp (\<prec>\<^sub>t) {#t, t'#} {#s\<langle>t\<rangle>\<^sub>G, s'#}"
-          using one_step_implies_multp[of "{#s\<langle>t\<rangle>\<^sub>G, s'#}" "{#t, t'#}" "(\<prec>\<^sub>t)" "{#}"]
+        ultimately have "multp (\<prec>\<^sub>t) {#t, t'#} {#s\<langle>t\<rangle>, s'#}"
+          using one_step_implies_multp[of "{#s\<langle>t\<rangle>, s'#}" "{#t, t'#}" "(\<prec>\<^sub>t)" "{#}"]
           by simp
 
-        hence "Pos (Upair t t') \<prec>\<^sub>l \<P> (Upair s\<langle>t\<rangle>\<^sub>G s')"
+        hence "Pos (Upair t t') \<prec>\<^sub>l \<P> (Upair s\<langle>t\<rangle> s')"
           using \<open>\<P> = Pos\<close>
           by (simp add: less\<^sub>l_def)
 
@@ -369,7 +378,7 @@ proof (cases P1 P2 C rule: superposition.cases)
           using \<open>\<forall>K\<in>#P\<^sub>2'. K \<prec>\<^sub>l t \<approx> t'\<close> \<open>K \<in># P\<^sub>2'\<close>
           by metis
 
-        also have "t \<approx> t' \<preceq>\<^sub>l \<P> (Upair s\<langle>t\<rangle>\<^sub>G s')"
+        also have "t \<approx> t' \<preceq>\<^sub>l \<P> (Upair s\<langle>t\<rangle> s')"
         proof (rule thesis_if_Pos[OF \<open>\<P> = Pos\<close>])
 
           have "is_strictly_maximal L\<^sub>1 P2"
@@ -380,7 +389,7 @@ proof (cases P1 P2 C rule: superposition.cases)
             by blast
         qed
 
-        finally show "K \<prec>\<^sub>l \<P> (Upair s\<langle>t\<rangle>\<^sub>G s')" .
+        finally show "K \<prec>\<^sub>l \<P> (Upair s\<langle>t\<rangle> s')" .
       next
         fix K assume "\<P> = Neg" "K \<in># P\<^sub>2'"
 
@@ -388,22 +397,23 @@ proof (cases P1 P2 C rule: superposition.cases)
           using \<open>\<forall>K\<in>#P\<^sub>2'. K \<prec>\<^sub>l t \<approx> t'\<close> \<open>K \<in># P\<^sub>2'\<close>
           by metis
 
-        also have "t \<approx> t' \<prec>\<^sub>l \<P> (Upair s\<langle>t\<rangle>\<^sub>G s')"
+        also have "t \<approx> t' \<prec>\<^sub>l \<P> (Upair s\<langle>t\<rangle> s')"
           using thesis_if_Neg[OF \<open>\<P> = Neg\<close>] .
 
-        finally show "K \<prec>\<^sub>l \<P> (Upair s\<langle>t\<rangle>\<^sub>G s')" .
+        finally show "K \<prec>\<^sub>l \<P> (Upair s\<langle>t\<rangle> s')" .
       qed
     qed
 
-    ultimately show "\<exists>j \<in># {#\<P> (Upair s\<langle>t\<rangle>\<^sub>G s')#}. K \<prec>\<^sub>l j"
+    ultimately show "\<exists>j \<in># {#\<P> (Upair s\<langle>t\<rangle> s')#}. K \<prec>\<^sub>l j"
       by auto
   qed simp
 
-  moreover have "C = add_mset (\<P> (Upair s\<langle>t'\<rangle>\<^sub>G s')) (P\<^sub>1' + P\<^sub>2')"
+  moreover have "C = add_mset (\<P> (Upair s\<langle>t'\<rangle> s')) (P\<^sub>1' + P\<^sub>2')"
     unfolding superpositionI ..
 
-  moreover have "P2 = P\<^sub>1' + {#\<P> (Upair s\<langle>t\<rangle>\<^sub>G s')#}"
-    unfolding superpositionI by simp
+  moreover have "P2 = P\<^sub>1' + {#\<P> (Upair s\<langle>t\<rangle> s')#}"
+    unfolding superpositionI 
+    by simp
 
   ultimately show ?thesis
     by simp
@@ -484,8 +494,8 @@ next
   show "G_entails N1 N2"
     unfolding G_entails_def
   proof (intro allI impI)
-    fix I :: "'f gterm rel"
-    assume "refl I" and "trans I" and "sym I" and "compatible_with_gctxt I" and
+    fix I :: "'t rel"
+    assume "refl I" and "trans I" and "sym I" and "compatible_with_context I" and
       "(\<lambda>(x, y). Upair x y) ` I \<TTurnstile>s N1"
 
     hence "\<forall>C \<in> N2. (\<lambda>(x, y). Upair x y) ` I \<TTurnstile>s {C}"
@@ -500,6 +510,7 @@ next
     using G_entails_def
     by simp
 qed
+
 
 subsection \<open>Redundancy Criterion\<close>
 

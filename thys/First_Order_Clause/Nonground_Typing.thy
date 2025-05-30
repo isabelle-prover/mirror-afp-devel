@@ -5,7 +5,7 @@ theory Nonground_Typing
     Nonground_Clause
 begin
 
-type_synonym ('f, 'v, 'ty) typed_clause = "('f, 'v) atom clause \<times> ('v, 'ty) var_types"
+type_synonym ('t, 'v, 'ty) typed_clause = "('v, 'ty) var_types \<times> 't clause"
 
 locale nonground_typing =
   nonground_clause +
@@ -35,8 +35,9 @@ end
 
 locale witnessed_nonground_typing =
   nonground_typing +
-  base_witnessed_typing_properties where subst = "(\<cdot>t)" and id_subst = Var and comp_subst = "(\<odot>)" and
-  vars = term.vars and to_ground = term.to_ground and from_ground = term.from_ground
+  base_witnessed_typing_properties where subst = "(\<cdot>t)" and id_subst = Var and
+  comp_subst = "(\<odot>)" and vars = term.vars and to_ground = term.to_ground and
+  from_ground = term.from_ground
 begin
 
 sublocale witnessed_nonground_typing_generic where

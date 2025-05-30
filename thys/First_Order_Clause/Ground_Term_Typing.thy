@@ -1,8 +1,7 @@
 theory Ground_Term_Typing
   imports
     Term_Typing
-    Ground_Term_Extra
-    Ground_Context
+    IsaFoR_Ground_Context
 begin
 
 type_synonym ('f, 'ty) fun_types = "'f \<Rightarrow> nat \<Rightarrow> ('ty list \<times> 'ty) option"
@@ -15,7 +14,7 @@ inductive welltyped for \<F> ::"('f, 'ty) fun_types" where
 notation welltyped (\<open>_ \<turnstile> _ : _\<close> [1000, 0, 50] 50)
 
 global_interpretation "term": term_typing where
-  welltyped = "welltyped \<F>" and apply_context = ctxt_apply_gterm
+  welltyped = "welltyped \<F>" and apply_context = apply_ground_context 
 proof unfold_locales
 
   show right_unique_welltyped: "right_unique (welltyped \<F>)"

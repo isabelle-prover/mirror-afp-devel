@@ -8,7 +8,8 @@ session Superposition_Calculus = Saturation_Framework_Extensions +
   theories
     Ground_Superposition_Completeness
     Ground_Superposition_Soundness
-    Ground_Superposition_Welltypedness_Preservation
+    Ground_Superposition_Example
+    Typed_Ground_Superposition
     Monomorphic_Superposition
     Superposition_Completeness
     Superposition_Soundness

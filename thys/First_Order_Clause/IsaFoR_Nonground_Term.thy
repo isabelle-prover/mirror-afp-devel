@@ -1,27 +1,21 @@
 theory IsaFoR_Nonground_Term
-  imports 
+  imports
+    "Regular_Tree_Relations.Ground_Terms"
     Nonground_Term
     Abstract_Substitution.Substitution_First_Order_Term
 begin
 
-(* TODO: When all terms are made generic, use standard notation again *)
-no_notation subst_compose (infixl "\<circ>\<^sub>s" 75)
-notation subst_compose (infixl "\<odot>" 75)
-
-no_notation subst_apply_term (infixl "\<cdot>" 67)
-notation subst_apply_term (infixl "\<cdot>t" 67)
-
 text \<open>Prefer @{thm [source] term_subst.subst_id_subst} to @{thm [source] subst_apply_term_empty}.\<close>
 declare subst_apply_term_empty[no_atp]
 
-global_interpretation "term" : base_functional_substitution where
-  comp_subst = "(\<odot>)" and id_subst = Var and subst = "(\<cdot>t)" and vars = vars_term
+global_interpretation "term": base_functional_substitution where
+  comp_subst = "(\<circ>\<^sub>s)" and id_subst = Var and subst = "(\<cdot>)" and vars = vars_term
 proof unfold_locales
   fix t :: "('f, 'v) term"  and \<sigma> \<tau> :: "('f, 'v) subst"
 
   assume "\<And>x. x \<in> vars_term t \<Longrightarrow> \<sigma> x = \<tau> x"
 
-  then show "t \<cdot>t \<sigma> = t \<cdot>t \<tau>"
+  then show "t \<cdot> \<sigma> = t \<cdot> \<tau>"
     by (rule term_subst_eq)
 next
 
@@ -36,17 +30,17 @@ next
 next
   fix \<sigma> \<sigma>' :: "('f, 'v) subst" and x
 
-  show "(\<sigma> \<odot> \<sigma>') x = \<sigma> x \<cdot>t \<sigma>'"
+  show "(\<sigma> \<circ>\<^sub>s \<sigma>') x = \<sigma> x \<cdot> \<sigma>'"
     unfolding subst_compose_def ..
 next
   fix t :: "('f, 'v) term" and \<rho> :: "('f, 'v) subst"
 
-  show "vars_term (t \<cdot>t \<rho>) = \<Union> (vars_term ` \<rho> ` vars_term t)"
+  show "vars_term (t \<cdot> \<rho>) = \<Union> (vars_term ` \<rho> ` vars_term t)"
     using vars_term_subst .
 qed
 
 global_interpretation "term" : nonground_term where
-  comp_subst = "(\<odot>)" and Var = Var and term_subst = "(\<cdot>t)" and term_vars = vars_term and
+  comp_subst = "(\<circ>\<^sub>s)" and Var = Var and term_subst = "(\<cdot>)" and term_vars = vars_term and
   term_to_ground = gterm_of_term and term_from_ground = term_of_gterm
 proof unfold_locales
   fix t :: "('f, 'v) term"
@@ -56,14 +50,14 @@ proof unfold_locales
 next
   fix t :: "('f, 'v) term"
 
-  show "(vars_term t = {}) \<longleftrightarrow> (\<forall>\<sigma>. t \<cdot>t \<sigma> = t)"
+  show "(vars_term t = {}) \<longleftrightarrow> (\<forall>\<sigma>. t \<cdot> \<sigma> = t)"
     using is_ground_trm_iff_ident_forall_subst .
 next
   fix t :: "('f, 'v) term" and ts :: "('f, 'v) term set"
 
   assume "finite ts" "vars_term t \<noteq> {}"
 
-  then show "\<exists>\<sigma>. t \<cdot>t \<sigma> \<noteq> t \<and> t \<cdot>t \<sigma> \<notin> ts"
+  then show "\<exists>\<sigma>. t \<cdot> \<sigma> \<noteq> t \<and> t \<cdot> \<sigma> \<notin> ts"
   proof(induction t arbitrary: ts)
     case (Var x)
 
@@ -72,12 +66,12 @@ next
 
     define \<sigma> :: "('f, 'v) subst" where "\<And>x. \<sigma> x = t'"
 
-    have "Var x \<cdot>t \<sigma> \<noteq> Var x"
+    have "Var x \<cdot> \<sigma> \<noteq> Var x"
       using t'
       unfolding \<sigma>_def
       by auto
 
-    moreover have "Var x \<cdot>t \<sigma> \<notin> ts"
+    moreover have "Var x \<cdot> \<sigma> \<notin> ts"
       using t'
       unfolding \<sigma>_def
       by simp
@@ -93,15 +87,15 @@ next
       by fastforce
 
     then obtain \<sigma> where
-      \<sigma>: "a \<cdot>t \<sigma> \<noteq> a" and
-      a_\<sigma>_not_in_args: "a \<cdot>t \<sigma> \<notin> \<Union> (set `  term.args ` ts)"
+      \<sigma>: "a \<cdot> \<sigma> \<noteq> a" and
+      a_\<sigma>_not_in_args: "a \<cdot> \<sigma> \<notin> \<Union> (set `  term.args ` ts)"
       by (metis Fun.IH Fun.prems(1) List.finite_set finite_UN finite_imageI)
 
-    then have "Fun f args \<cdot>t \<sigma> \<noteq> Fun f args"
+    then have "Fun f args \<cdot> \<sigma> \<noteq> Fun f args"
       by (metis a subsetI term.set_intros(4) term_subst.comp_subst.left.action_neutral
           vars_term_subset_subst_eq)
 
-    moreover have "Fun f args \<cdot>t \<sigma> \<notin> ts"
+    moreover have "Fun f args \<cdot> \<sigma> \<notin> ts"
       using a a_\<sigma>_not_in_args
       by auto
 
@@ -127,7 +121,7 @@ next
   then show "{t :: ('f, 'v) term. is_ground_trm t} = range term_of_gterm"
     by fastforce
 next
-  fix t\<^sub>G :: "('f) ground_term"
+  fix t\<^sub>G :: "'f gterm"
 
   show "gterm_of_term (term_of_gterm t\<^sub>G) = t\<^sub>G"
     by simp
@@ -140,7 +134,7 @@ next
 next
    fix \<rho> :: "('f, 'v) subst" and t
   assume \<rho>: "term_subst.is_renaming \<rho>"
-  show "vars_term (t \<cdot>t \<rho>) = term.rename \<rho> ` vars_term t"
+  show "vars_term (t \<cdot> \<rho>) = term.rename \<rho> ` vars_term t"
   proof(induction t)
     case (Var x)
     have "\<rho> x = Var (term.rename \<rho> x)"
@@ -163,7 +157,7 @@ next
     "\<forall>unification\<in>unifications. finite unification"
     "finite unifications"
 
-  show "vars_term (t \<cdot>t \<mu>) \<subseteq> vars_term t \<union> \<Union> (vars_term ` \<Union> unifications)"
+  show "vars_term (t \<cdot> \<mu>) \<subseteq> vars_term t \<union> \<Union> (vars_term ` \<Union> unifications)"
     using range_vars_subset_if_is_imgu[OF imgu] vars_term_subst_apply_term_subset
     by fastforce
 qed

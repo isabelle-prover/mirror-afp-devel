@@ -2,7 +2,7 @@ theory Nonground_Entailment
   imports
     Nonground_Context
     Nonground_Clause_With_Equality
-    Term_Rewrite_System
+    Ground_Term_Rewrite_System
     Entailment_Lifting
     Fold_Extra
 begin
@@ -25,19 +25,25 @@ end
 
 locale clause_entailment =
   nonground_clause where 
-  term_vars = "term_vars :: 't \<Rightarrow> 'v set" and term_to_ground = "term_to_ground :: 't \<Rightarrow> 'f gterm" +
+  term_vars = "term_vars :: 't \<Rightarrow> 'v set" and term_to_ground = "term_to_ground :: 't \<Rightarrow> 't\<^sub>G" +
+
   nonground_term_with_context +
-  fixes I :: "('f gterm \<times> 'f gterm) set"
+
+  ground_term_rewrite_system where
+  apply_context = apply_ground_context and compose_context = compose_ground_context and
+  hole = ground_hole +
+
+  fixes I :: "'t\<^sub>G rel"
   assumes
     trans: "trans I" and
     sym: "sym I" and
-    compatible_with_gctxt: "compatible_with_gctxt I"
+    compatible_with_ground_context: "compatible_with_context I"
 begin
 
 lemma symmetric_context_congruence:
   assumes "(t, t') \<in> I"
   shows "(c\<langle>t\<rangle>\<^sub>G, t'') \<in> I \<longleftrightarrow> (c\<langle>t'\<rangle>\<^sub>G, t'') \<in> I"
-  by (meson assms compatible_with_gctxt compatible_with_gctxtD sym trans symD transE)
+  by (meson assms compatible_with_ground_context compatible_with_contextD sym trans symD transE)
 
 lemma symmetric_upair_context_congruence:
   assumes "Upair t t' \<in> upair ` I"
@@ -47,8 +53,8 @@ lemma symmetric_upair_context_congruence:
 
 lemma upair_compatible_with_gctxtI [intro]:
   "Upair t t' \<in> upair ` I \<Longrightarrow> Upair c\<langle>t\<rangle>\<^sub>G c\<langle>t'\<rangle>\<^sub>G \<in> upair ` I"
-  using compatible_with_gctxt
-  unfolding compatible_with_gctxt_def
+  using compatible_with_ground_context
+  unfolding compatible_with_context_def
   by (simp add: sym)
 
 sublocale "term": symmetric_base_entailment where vars = "term.vars :: 't \<Rightarrow> 'v set" and
@@ -75,7 +81,7 @@ proof unfold_locales
 
     then have "t \<cdot>t \<gamma>(x := update) = t \<cdot>t \<gamma>"
       using term.subst_reduntant_upd
-      by (simp add: eval_with_fresh_var)
+      by presburger
 
     with 0 show ?case
       by argo

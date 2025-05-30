@@ -23,7 +23,7 @@ for less\<^sub>t
 
 locale nonground_order_generic =
   nonground_term_with_context where
-  Var = "Var :: 'v \<Rightarrow> 't" and term_to_ground = "term_to_ground :: 't \<Rightarrow> 'f gterm" and
+  Var = "Var :: 'v \<Rightarrow> 't" and term_to_ground = "term_to_ground :: 't \<Rightarrow> 't\<^sub>G" and
   apply_context = "apply_context :: 'c \<Rightarrow> 't \<Rightarrow> 't" +
  
   nonground_clause_generic where
@@ -46,7 +46,7 @@ for
   pos_to_mset :: "'a \<Rightarrow> 't multiset" and 
   atom_subst :: "'a \<Rightarrow> ('v \<Rightarrow> 't) \<Rightarrow> 'a" and
   atom_from_ground :: "'a\<^sub>G \<Rightarrow> 'a" and
-  ground_pos_to_mset ground_neg_to_mset :: "'a\<^sub>G \<Rightarrow> 'f gterm multiset" +
+  ground_pos_to_mset ground_neg_to_mset :: "'a\<^sub>G \<Rightarrow> 't\<^sub>G multiset" +
 assumes
   ground_pos_to_mset:
   "\<And>a. image_mset term.from_ground (ground_pos_to_mset a) = pos_to_mset (atom_from_ground a)" and
@@ -264,7 +264,9 @@ abbreviation ground_is_strictly_maximal where
      is_strictly_maximal (literal.from_ground l\<^sub>G) (clause.from_ground C\<^sub>G)"
 
 sublocale ground: ground_order_generic where
-  less\<^sub>t = "(\<prec>\<^sub>t\<^sub>G)" and pos_to_mset = ground_pos_to_mset and neg_to_mset = ground_neg_to_mset
+  less\<^sub>t = "(\<prec>\<^sub>t\<^sub>G)" and pos_to_mset = ground_pos_to_mset and neg_to_mset = ground_neg_to_mset and
+  compose_context = compose_ground_context and apply_context = apply_ground_context and
+  hole = ground_hole
 rewrites
   less\<^sub>l\<^sub>G_rewrite [simp]:
   "multiset_extension.multiset_extension (\<prec>\<^sub>t\<^sub>G) ground.literal_to_mset = (\<prec>\<^sub>l\<^sub>G)" and
@@ -276,7 +278,9 @@ rewrites
 proof (unfold_locales; (rule ground.inj_pos_to_mset ground.inj_neg_to_mset ground.pos_neg_neq)?)
 
   interpret ground: ground_order_generic where
-    less\<^sub>t = "(\<prec>\<^sub>t\<^sub>G)" and pos_to_mset = ground_pos_to_mset and neg_to_mset = ground_neg_to_mset
+    less\<^sub>t = "(\<prec>\<^sub>t\<^sub>G)" and pos_to_mset = ground_pos_to_mset and neg_to_mset = ground_neg_to_mset and
+    compose_context = compose_ground_context and apply_context = apply_ground_context and
+    hole = ground_hole
     using ground.inj_pos_to_mset ground.inj_neg_to_mset ground.pos_neg_neq
     by unfold_locales auto
 
