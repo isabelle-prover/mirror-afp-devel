@@ -39,5 +39,4 @@ text\<open>A port always belongs to a protocol! We must not lose this informatio
  You should never use @{typ raw_ports} directly\<close>
 datatype ipt_l4_ports = L4Ports primitive_protocol raw_ports
 
-
 end

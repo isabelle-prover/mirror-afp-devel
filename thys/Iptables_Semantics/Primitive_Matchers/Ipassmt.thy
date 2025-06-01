@@ -63,7 +63,7 @@ subsection\<open>Sanity checking for an @{typ "'i ipassignment"}.\<close>
   definition ipassmt_sanity_complete :: "(iface \<times> ('i::len word \<times> nat) list) list \<Rightarrow> bool" where
     "ipassmt_sanity_complete ipassmt \<equiv> distinct (map fst ipassmt) \<and> (\<Union>(ipcidr_union_set ` set ` (ran (map_of ipassmt)))) = UNIV"
 
-    lemma[code_unfold]: "ipassmt_sanity_complete ipassmt \<longleftrightarrow> distinct (map fst ipassmt) \<and> (let range = map snd ipassmt in 
+    lemma[code]: "ipassmt_sanity_complete ipassmt \<longleftrightarrow> distinct (map fst ipassmt) \<and> (let range = map snd ipassmt in 
         wordinterval_eq (wordinterval_Union (map (l2wi \<circ> (map ipcidr_to_interval)) range)) wordinterval_UNIV
         )"
      apply(cases "distinct (map fst ipassmt)")

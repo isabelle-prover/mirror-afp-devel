@@ -5,6 +5,29 @@ imports Main
   Word_Lib.Word_Lemmas
 begin
 
+definition word_range :: \<open>'a::len word \<Rightarrow> 'a word \<Rightarrow> 'a word list\<close>
+  where \<open>word_range v w = sorted_list_of_set {v..w}\<close>
+
+lemma word_range_code [code]:
+  \<open>word_range v w = (if v = w then [v] else if v < w then v # word_range (v + 1) w else [])\<close>
+proof (cases \<open>v < w\<close>)
+  case True
+  then have \<open>{v..w} = insert v {v + 1..w}\<close>
+    by (auto simp add: eq_neg_iff_add_eq_0 less_is_non_zero_p1 word_Suc_le)
+  moreover have \<open>v \<notin> {v + 1..w}\<close>
+    using True by (auto simp add: plus_1_less)
+  ultimately show ?thesis
+    using True by (auto simp add: word_range_def plus_1_less intro!: insort_is_Cons)
+next
+  case False
+  then show ?thesis
+    by (simp add: word_range_def)
+qed
+
+lemma word_interval_eq_set_word_range [code_unfold]:
+  \<open>{v..w} = set (word_range v w)\<close>
+  by (simp add: word_range_def)
+
 
 text\<open>Enumerate a range of machine words.\<close>
 

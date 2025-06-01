@@ -382,7 +382,7 @@ subsection\<open>Clever Operations on IP Addresses in CIDR Notation\<close>
 
 subsection\<open>Code Equations\<close>
   text\<open>Executable definition using word intervals\<close>
-  lemma ipcidr_conjunct_word[code_unfold]:
+  lemma ipcidr_conjunct_word[code]:
   "ipcidr_conjunct ips1 ips2 = (
      if
       wordinterval_empty (wordinterval_intersection
@@ -402,7 +402,7 @@ subsection\<open>Code Equations\<close>
              split: if_split_asm)
   done
 
-  (*with the code_unfold lemma before, this works!*)
+  (*with the code lemma before, this works!*)
   lemma "ipcidr_conjunct (0::32 word,0) (8,1) = Some (8, 1)" by eval
   export_code ipcidr_conjunct checking SML
 

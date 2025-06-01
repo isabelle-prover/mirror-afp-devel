@@ -554,10 +554,10 @@ lemma param_concat[param]: "(concat, concat) \<in>
     \<langle>\<langle>R\<rangle>list_rel\<rangle>list_rel \<rightarrow> \<langle>R\<rangle>list_rel"
 unfolding concat_def[abs_def] by parametricity
 
-lemma param_all_interval_nat[param]: 
-  "(List.all_interval_nat, List.all_interval_nat) 
+lemma param_all_range[param]:
+  "(List.all_range, List.all_range) 
   \<in> (nat_rel \<rightarrow> bool_rel) \<rightarrow> nat_rel \<rightarrow> nat_rel \<rightarrow> bool_rel"
-  unfolding List.all_interval_nat_def[abs_def]
+  unfolding List.all_range_iff [abs_def]
   apply parametricity
   apply simp
   done
@@ -569,7 +569,5 @@ lemma param_dropWhile[param]:
 lemma param_takeWhile[param]: 
   "(takeWhile, takeWhile) \<in> (a \<rightarrow> bool_rel) \<rightarrow> \<langle>a\<rangle>list_rel \<rightarrow> \<langle>a\<rangle>list_rel"
   unfolding takeWhile_def by parametricity
-
-
 
 end

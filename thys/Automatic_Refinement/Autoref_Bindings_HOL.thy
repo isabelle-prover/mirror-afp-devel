@@ -601,13 +601,13 @@ context begin interpretation autoref_syn .
 
   declare param_rev[autoref_rules]
 
-  declare param_all_interval_nat[autoref_rules]
+  declare param_all_range[autoref_rules]
   lemma [autoref_op_pat]: 
-    "(\<forall>i<u. P i) \<equiv> OP List.all_interval_nat P 0 u"
-    "(\<forall>i\<le>u. P i) \<equiv> OP List.all_interval_nat P 0 (Suc u)"
-    "(\<forall>i<u. l\<le>i \<longrightarrow> P i) \<equiv> OP List.all_interval_nat P l u"
-    "(\<forall>i\<le>u. l\<le>i \<longrightarrow> P i) \<equiv> OP List.all_interval_nat P l (Suc u)"
-    by (auto intro!: eq_reflection simp: List.all_interval_nat_def)
+    "(\<forall>i<u. P i) \<equiv> OP List.all_range P 0 u"
+    "(\<forall>i\<le>u. P i) \<equiv> OP List.all_range P 0 (Suc u)"
+    "(\<forall>i<u. l\<le>i \<longrightarrow> P i) \<equiv> OP List.all_range P l u"
+    "(\<forall>i\<le>u. l\<le>i \<longrightarrow> P i) \<equiv> OP List.all_range P l (Suc u)"
+    by (auto intro!: eq_reflection simp: List.all_range_iff)
 
 
   lemmas [autoref_rules] = param_dropWhile param_takeWhile

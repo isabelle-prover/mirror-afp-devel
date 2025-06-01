@@ -243,7 +243,9 @@ fun remove_unknowns_generic :: "('a, 'packet) match_tac \<Rightarrow> action \<R
          MatchNot (MatchAnd (MatchNot (remove_unknowns_generic (\<beta>, \<alpha>) a (MatchNot m1))) (MatchNot (remove_unknowns_generic (\<beta>, \<alpha>) a (MatchNot m2)))))
        )"
 
-lemma[code_unfold]: "remove_unknowns_generic \<gamma> a (MatchNot (MatchAnd m1 m2)) = 
+declare remove_unknowns_generic.simps(1-6) [code]
+
+lemma[code]: "remove_unknowns_generic \<gamma> a (MatchNot (MatchAnd m1 m2)) = 
     (let m1' = remove_unknowns_generic \<gamma>  a (MatchNot m1); m2' = remove_unknowns_generic \<gamma>  a (MatchNot m2) in
     (if m1' = MatchAny \<or> m2' = MatchAny
      then MatchAny
