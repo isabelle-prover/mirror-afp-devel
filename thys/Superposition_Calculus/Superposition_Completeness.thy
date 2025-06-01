@@ -723,7 +723,8 @@ proof (cases D\<^sub>G E\<^sub>G C\<^sub>G rule: ground.superposition.cases)
           then show ?thesis
             using c\<^sub>1_t\<^sub>1_\<gamma>
             unfolding c\<^sub>1_t\<^sub>1 c\<^sub>1_t\<^sub>1_\<gamma> c\<^sub>G
-            by auto
+            by (auto simp: context.apply_context_eq)
+            
         qed
 
         have t\<^sub>1_\<gamma>': "t\<^sub>1 \<cdot>t \<rho>\<^sub>1 \<odot> \<gamma>' = c\<^sub>G'\<langle>term.from_ground t\<^sub>G\<^sub>3\<rangle>"
