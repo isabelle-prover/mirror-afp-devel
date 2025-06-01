@@ -58,7 +58,9 @@ if
   "term.is_imgu \<mu> {{t\<^sub>1, t\<^sub>2}}"
 
 inductive superposition ::
-  "('t, 'v, 'ty) typed_clause \<Rightarrow> ('t, 'v, 'ty) typed_clause \<Rightarrow> ('t, 'v, 'ty) typed_clause \<Rightarrow> bool" where
+  "('t, 'v, 'ty) typed_clause \<Rightarrow>
+   ('t, 'v, 'ty) typed_clause \<Rightarrow>
+   ('t, 'v, 'ty) typed_clause \<Rightarrow> bool" where
   superpositionI:
   "E = add_mset l\<^sub>1 E' \<Longrightarrow>
    D = add_mset l\<^sub>2 D' \<Longrightarrow>
@@ -109,8 +111,9 @@ abbreviation bottom\<^sub>F :: "('t, 'v, 'ty) typed_clause set" ("\<bottom>\<^su
 subsubsection \<open>Alternative Specification of the Superposition Rule\<close>
 
 inductive superposition' ::
-  "('t, 'v, 'ty) typed_clause \<Rightarrow> ('t, 'v, 'ty) typed_clause \<Rightarrow> ('t, 'v, 'ty) typed_clause \<Rightarrow> bool"
-where
+  "('t, 'v, 'ty) typed_clause \<Rightarrow> 
+   ('t, 'v, 'ty) typed_clause \<Rightarrow> 
+   ('t, 'v, 'ty) typed_clause \<Rightarrow> bool" where
   superposition'I:
    "infinite_variables_per_type \<V>\<^sub>1 \<Longrightarrow>
     infinite_variables_per_type \<V>\<^sub>2 \<Longrightarrow>

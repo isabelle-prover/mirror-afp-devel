@@ -75,14 +75,14 @@ proof -
   have "is_minimal_in_fset_wrt R (ffilter P X) x \<longleftrightarrow> is_minimal_in_set_wrt R ({y \<in> fset X. P y}) x"
     using is_minimal_in_fset_wrt_iff[OF tran asym]
     using is_minimal_in_set_wrt_iff[OF tran asym]
-    by (simp only: ffilter.rep_eq) auto
+    by (simp only: ffilter.rep_eq) (auto simp: Set.filter_def)
   also have "\<dots> \<longleftrightarrow> x |\<in>| X \<and> P x \<and> (\<forall>y\<in>fset X - {x}. P y \<longrightarrow> \<not> R y x)"
   proof (rule is_minimal_in_set_wrt_filter_iff)
     show "transp_on {y. y |\<in>| X \<and> P y} R"
-      using tran by (simp only: ffilter.rep_eq) auto
+      using tran by (simp only: ffilter.rep_eq) (auto simp: Set.filter_def)
   next
     show "asymp_on {y. y |\<in>| X \<and> P y} R"
-      using asym by (simp only: ffilter.rep_eq) auto
+      using asym by (simp only: ffilter.rep_eq) (auto simp: Set.filter_def)
   qed
   finally show ?thesis
     by simp

@@ -85,7 +85,7 @@ lemma from_ground_hole [simp]: "from_ground c\<^sub>G = \<box> \<longleftrightar
   by (metis apply_hole apply_context_is_ground from_ground_inverse ground_context_ident_iff_hole 
       term.ground_exists term_to_ground_context_to_ground to_ground_inverse)
 
-lemma hole_simps [simp]: "from_ground  \<box>\<^sub>G = \<box>" "to_ground \<box> = \<box>\<^sub>G"
+lemma hole_simps [simp]: "from_ground \<box>\<^sub>G = \<box>" "to_ground \<box> = \<box>\<^sub>G"
   using from_ground_inverse from_ground_hole
   by metis+
 

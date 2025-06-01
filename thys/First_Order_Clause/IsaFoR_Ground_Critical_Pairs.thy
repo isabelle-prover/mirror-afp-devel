@@ -151,7 +151,8 @@ proof -
       unfolding t upd_conv_take_nth_drop[OF i] 
       by simp
 
-    also have "... = gsubt_at (ts ! j) q2" using ij 
+    also have "... = gsubt_at (ts ! j) q2"
+      using ij 
       by simp
 
     finally show ?case unfolding t 
