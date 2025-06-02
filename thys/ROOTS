@@ -342,6 +342,7 @@ GyrovectorSpaces
 HOL-CSP
 HOL-CSPM
 HOL-CSP_OpSem
+HOL-CSP_RS
 HOLCF-Prelude
 HRB-Slicing
 Hahn_Jordan_Decomposition
@@ -711,6 +712,9 @@ ResiduatedTransitionSystem
 ResiduatedTransitionSystem2
 Residuated_Lattices
 Resolution_FOL
+Restriction_Spaces
+Restriction_Spaces-Examples
+Restriction_Spaces-Ultrametric
 Rewrite_Properties_Reduction
 Rewriting_Z
 Ribbon_Proofs

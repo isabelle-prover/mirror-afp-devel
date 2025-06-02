@@ -75,6 +75,95 @@
   "year": "2025"
  },
  {
+  "abstract": "We use the Restriction_Spaces library as a semantic foundation for the process algebra framework HOL-CSP, offering a complementary backend to the existing HOLCF infrastructure. The type of processes is instantiated as a restriction space, and we prove that it is complete in this setting. This enables the construction of fixed points for recursive process definitions without having to rely exclusively on a pointed complete partial order. Notably, some operators are constructive without being Scott-continuous, and vice versa, illustrating the genuine complementarity between the two approaches. We also show that key CSP operators are either constructive or non-destructive, and verify the admissibility of several predicates, thereby supporting automated reasoning over recursive specifications.",
+  "authors": [
+   "Benoît Ballenghien",
+   "Burkhart Wolff"
+  ],
+  "link": "/entries/HOL-CSP_RS.html",
+  "shortname": "HOL-CSP_RS",
+  "title": "CSP Semantics over Restriction Spaces",
+  "topic_links": [
+   "/topics/computer-science/semantics-and-reasoning/",
+   "/topics/computer-science/concurrency/process-calculi/"
+  ],
+  "topics": [
+   "Computer science/Semantics and reasoning",
+   "Computer science/Concurrency/Process calculi"
+  ],
+  "year": "2025"
+ },
+ {
+  "abstract": "In this session, a number of examples are provided to illustrate how the Restriction_Spaces library works. The simple cases are, of course, covered: trivial restriction, booleans, integers, option type, and so on. But we also explore more elaborate constructions, such as formal power series and a trace model of the CSP process algebra. Additionally, we provide a lightweight integration with HOLCF, equipping restriction spaces with the inherited partial order structure when needed.",
+  "authors": [
+   "Benoît Ballenghien",
+   "Benjamin Puyobro",
+   "Burkhart Wolff"
+  ],
+  "link": "/entries/Restriction_Spaces-Examples.html",
+  "shortname": "Restriction_Spaces-Examples",
+  "title": "Examples of Restriction Spaces",
+  "topic_links": [
+   "/topics/mathematics/analysis/",
+   "/topics/mathematics/topology/",
+   "/topics/mathematics/algebra/",
+   "/topics/computer-science/concurrency/process-calculi/"
+  ],
+  "topics": [
+   "Mathematics/Analysis",
+   "Mathematics/Topology",
+   "Mathematics/Algebra",
+   "Computer science/Concurrency/Process calculi"
+  ],
+  "year": "2025"
+ },
+ {
+  "abstract": "Fixed-point constructions are fundamental to defining recursive and co-recursive functions.   However, a general axiom $Y f = f (Y f)$ leads to inconsistency, and definitions   must therefore be based on theories guaranteeing existence under suitable conditions.   In Isabelle/HOL, these constructions are typically based on sets, well-founded orders   or domain-theoretic models such as for example HOLCF.   In this submission we introduce a formalization of restriction spaces i.e. spaces   equipped with a so-called restriction, denoted by $\\downarrow$,   satifying three properties:   \\begin{align*}     \u0026 x \\downarrow 0 = y \\downarrow 0\\\\     \u0026 x \\downarrow n \\downarrow m = x \\downarrow \\mathrm{min} \\ n \\ m\\\\     \u0026 x \\not = y \\Longrightarrow \\exists n. \\ x \\downarrow n \\not = y \\downarrow n   \\end{align*}   They turn out to be cartesian closed and admit natural notions of constructiveness and   completeness, enabling the definition of a fixed-point operator under verifiable side-conditions.   This is achieved in our entry, from topological definitions to induction principles.   Additionally, we configure the simplifier so that it can automatically solve both   constructiveness and admissibility subgoals, as long as users write higher-order rules   for their operators.   Since our implementation relies on axiomatic type classes, the resulting library   is a fully abstract, flexible and reusable framework.",
+  "authors": [
+   "Benoît Ballenghien",
+   "Benjamin Puyobro",
+   "Burkhart Wolff"
+  ],
+  "link": "/entries/Restriction_Spaces.html",
+  "shortname": "Restriction_Spaces",
+  "title": "Restriction Spaces: a Fixed-Point Theory",
+  "topic_links": [
+   "/topics/tools/",
+   "/topics/mathematics/analysis/",
+   "/topics/mathematics/topology/",
+   "/topics/computer-science/semantics-and-reasoning/"
+  ],
+  "topics": [
+   "Tools",
+   "Mathematics/Analysis",
+   "Mathematics/Topology",
+   "Computer science/Semantics and reasoning"
+  ],
+  "year": "2025"
+ },
+ {
+  "abstract": "In this entry, we explore the relationship   between restriction spaces and usual metric   structures by instantiating the former as ultrametric spaces.   This is classically captured by defining the distance as   $$\\mathrm{dist} \\ x \\ y = \\inf_{x \\downarrow n \\ = \\ y \\downarrow n} \\left(\\frac{1}{2}\\right)^ n$$   but we actually generalize this perspective by introducing a hierarchy of increasingly   refined type classes to systematically relate ultrametric and restriction-based notions.   This layered approach enables a precise comparison of structural and topological properties.   In the end, our main result establishes that completeness in the sense of restriction spaces   coincides with standard metric completeness, thus bridging the gap between   our framework and Banach's fixed-point theorem established in HOL-Analysis.",
+  "authors": [
+   "Benoît Ballenghien",
+   "Benjamin Puyobro",
+   "Burkhart Wolff"
+  ],
+  "link": "/entries/Restriction_Spaces-Ultrametric.html",
+  "shortname": "Restriction_Spaces-Ultrametric",
+  "title": "Ultrametric Structure for Restriction Spaces",
+  "topic_links": [
+   "/topics/mathematics/analysis/",
+   "/topics/mathematics/topology/",
+   "/topics/computer-science/semantics-and-reasoning/"
+  ],
+  "topics": [
+   "Mathematics/Analysis",
+   "Mathematics/Topology",
+   "Computer science/Semantics and reasoning"
+  ],
+  "year": "2025"
+ },
+ {
   "abstract": "This entry, derived from the Isabelle Formalization of Rewriting (IsaFoR), provides a formalized foundation for first-order term rewriting. This serves as the basis for the certifier CeTA, which is generated from IsaFoR and verifies termination, confluence, and complexity proofs for term rewrite systems (TRSs). This formalization covers fundamental results for term rewriting, as presented in the foundational textbooks by Baader and Nipkow and TeReSe. These include: Various types of rewrite steps, such as root, ground, parallel, and multi-steps. Special cases of TRSs, such as linear and left-linear TRSs. A definition of critical pairs and key results, including the critical pair lemma. Orthogonality, notably that weak orthogonality implies confluence. Executable versions of relevant definitions, such as parallel and multi-step rewriting. ",
   "authors": [
    "René Thiemann",

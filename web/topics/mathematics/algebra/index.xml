@@ -4,6 +4,16 @@
     <title>Mathematics/Algebra</title>
     <link>https://isa-afp.org/topics/mathematics/algebra/</link>
     <description>AFP entries in Algebra</description><item>
+  <title>Examples of Restriction Spaces</title>
+  <link>https://isa-afp.org/entries/Restriction_Spaces-Examples.html</link>
+  <pubDate>Wed, 07 May 2025 00:00:00 +0000</pubDate>
+  <description>Examples of Restriction Spaces in the AFP</description>
+    <category>Mathematics/Analysis</category>
+    <category>Mathematics/Topology</category>
+    <category>Mathematics/Algebra</category>
+    <category>Computer science/Concurrency/Process calculi</category>
+</item>
+<item>
   <title>A Generalization of the Cauchy–Davenport theorem</title>
   <link>https://isa-afp.org/entries/Generalized_Cauchy_Davenport.html</link>
   <pubDate>Sat, 23 Nov 2024 00:00:00 +0000</pubDate>

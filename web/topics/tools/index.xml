@@ -12,6 +12,16 @@
     <category>Tools</category>
 </item>
 <item>
+  <title>Restriction Spaces: a Fixed-Point Theory</title>
+  <link>https://isa-afp.org/entries/Restriction_Spaces.html</link>
+  <pubDate>Wed, 07 May 2025 00:00:00 +0000</pubDate>
+  <description>Restriction Spaces: a Fixed-Point Theory in the AFP</description>
+    <category>Tools</category>
+    <category>Mathematics/Analysis</category>
+    <category>Mathematics/Topology</category>
+    <category>Computer science/Semantics and reasoning</category>
+</item>
+<item>
   <title>Without Loss of Generality</title>
   <link>https://isa-afp.org/entries/Wlog.html</link>
   <pubDate>Fri, 30 Aug 2024 00:00:00 +0000</pubDate>

@@ -20,6 +20,18 @@
     <loc>https://isa-afp.org/entries/Farey_Sequences.html</loc>
     <lastmod>2025-05-15T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>https://isa-afp.org/entries/HOL-CSP_RS.html</loc>
+    <lastmod>2025-05-07T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Restriction_Spaces-Examples.html</loc>
+    <lastmod>2025-05-07T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Restriction_Spaces.html</loc>
+    <lastmod>2025-05-07T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Restriction_Spaces-Ultrametric.html</loc>
+    <lastmod>2025-05-07T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>https://isa-afp.org/entries/First_Order_Rewriting.html</loc>
     <lastmod>2025-04-13T00:00:00+00:00</lastmod>
   </url><url>
@@ -3966,6 +3978,8 @@
   </url><url>
     <loc>https://isa-afp.org/sessions/hol-csp_opsem/</loc>
   </url><url>
+    <loc>https://isa-afp.org/sessions/hol-csp_rs/</loc>
+  </url><url>
     <loc>https://isa-afp.org/sessions/hol-cspm/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/hol-data_structures/</loc>
@@ -5245,6 +5259,14 @@
     <loc>https://isa-afp.org/sessions/residuatedtransitionsystem2/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/resolution_fol/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/sessions/restriction_spaces/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/sessions/restriction_spaces-examples/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/sessions/restriction_spaces-holcf/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/sessions/restriction_spaces-ultrametric/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/rewrite_properties_reduction/</loc>
   </url><url>
