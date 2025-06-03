@@ -71,7 +71,7 @@ Everything happens in the release branch `afp/release`.
 10. finally, when you are happy with everything, `hg push` all changes
     to Heptapod. The publish script will refuse to publish if the
     changes aren't pushed.
-11. to publish the changes to the web, run
+11. to publish the changes to the web, run (with **all sessions** of the entry)
 
          ../admin/publish <sessions...>
 
