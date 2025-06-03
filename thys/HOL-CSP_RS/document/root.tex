@@ -1,0 +1,78 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+
+% further packages required for unusual symbols (see also
+% isabellesym.sty), use only when needed
+
+\usepackage{pifont}
+
+\usepackage{mathpartir}
+
+\usepackage{amssymb}
+  %for \<leadsto>, \<box>, \<diamond>, \<sqsupset>, \<mho>, \<Join>,
+  %\<lhd>, \<lesssim>, \<greatersim>, \<lessapprox>, \<greaterapprox>,
+  %\<triangleq>, \<yen>, \<lozenge>
+
+%\usepackage{eurosym}
+  %for \<euro>
+
+\usepackage[only,bigsqcap,bigparallel,fatsemi,interleave,sslash]{stmaryrd}
+  %for \<Sqinter>, \<Parallel>, \<Zsemi>, \<Parallel>, \<sslash>
+
+%\usepackage{eufrak}
+  %for \<AA> ... \<ZZ>, \<aa> ... \<zz> (also included in amssymb)
+
+%\usepackage{textcomp}
+  %for \<onequarter>, \<onehalf>, \<threequarters>, \<degree>, \<cent>,
+  %\<currency>
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+% for uniform font size
+%\renewcommand{\isastyle}{\isastyleminor}
+
+%\pagestyle{plain}
+
+
+\begin{document}
+
+\title{HOL-CSP\_RS: CSP Semantics over Restriction Spaces}
+\author{Benoît Ballenghien \and	Burkhart Wolff}
+\maketitle
+
+\abstract{
+We use the \verb'Restriction_Spaces' library as a semantic foundation for the process algebra framework \verb'HOL-CSP',
+offering a complementary backend to the existing \verb'HOLCF' infrastructure.
+The type of processes is instantiated as a restriction space, and we prove that it is complete in this setting.
+This enables the construction of fixed points for recursive process definitions without having to
+rely exclusively on a pointed complete partial order.
+Notably, some operators are constructive without being Scott-continuous, and vice versa,
+illustrating the genuine complementarity between the two approaches.
+We also show that key CSP operators are either constructive or non-destructive,
+and verify the admissibility of several predicates, thereby supporting automated reasoning over recursive specifications.
+}
+
+\tableofcontents
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+% generated text of all theories
+\input{session}
+
+% optional bibliography
+%\bibliographystyle{abbrv}
+%\bibliography{root}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
