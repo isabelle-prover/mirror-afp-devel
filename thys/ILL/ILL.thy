@@ -732,9 +732,9 @@ proof -
     then have "Y \<turnstile> c"
     proof (elim mset_eq_permutation)
       fix p
-      assume "p permutes {..<length Y}"
-      moreover have "finite {..<length Y}"
+      have "finite {..<length Y}"
         by simp
+      moreover assume *: "p permutes {..<length Y}"
       moreover assume "X \<turnstile> c" and "permute_list p Y = X"
       ultimately show "Y \<turnstile> c"
       proof (induct arbitrary: X rule: permutes_rev_induct)
