@@ -4,7 +4,6 @@ theory Ground_Term_Rewrite_System
     "Abstract-Rewriting.Abstract_Rewriting"
 begin
 
-(* TODO: Find way to not have this as locale! *)
 locale ground_term_rewrite_system = 
   "context" where apply_context = apply_context 
   for apply_context :: "'c \<Rightarrow> 't \<Rightarrow> 't"

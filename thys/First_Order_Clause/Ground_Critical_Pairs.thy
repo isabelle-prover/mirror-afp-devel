@@ -2,7 +2,6 @@ theory Ground_Critical_Pairs
   imports Ground_Term_Rewrite_System
 begin
 
-(* TODO: unify term names *)
 context ground_term_rewrite_system
 begin
 
