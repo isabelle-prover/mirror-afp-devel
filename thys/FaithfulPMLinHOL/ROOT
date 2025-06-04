@@ -1,0 +1,26 @@
+chapter AFP
+
+session "FaithfulPMLinHOL" = HOL +
+  options [timeout = 300] 
+     
+  theories
+	PMLinHOL_preliminaries
+	PMLinHOL_deep
+        PMLinHOL_shallow
+        PMLinHOL_shallow_minimal
+        PMLinHOL_faithfulness
+	PMLinHOL_deep_tests
+	PMLinHOL_deep_further_tests
+	PMLinHOL_deep_Loeb_tests
+	PMLinHOL_shallow
+	PMLinHOL_shallow_tests
+	PMLinHOL_shallow_further_tests
+	PMLinHOL_shallow_Loeb_tests
+	PMLinHOL_shallow_minimal_tests
+	PMLinHOL_shallow_minimal_further_tests
+	PMLinHOL_shallow_minimal_Loeb_tests
+	
+
+  document_files
+    "root.bib"
+    "root.tex"

@@ -263,6 +263,7 @@ FO_Theory_Rewriting
 FSM_Tests
 Factor_Algebraic_Polynomial
 Factored_Transition_System_Bounding
+FaithfulPMLinHOL
 Falling_Factorial_Sum
 Farey_Sequences
 Farkas
