@@ -1786,6 +1786,23 @@ host = [
 
 [doty.homepages]
 
+[duan]
+name = "Yiran Duan"
+
+[duan.emails]
+
+[duan.emails.duan_email]
+user = [
+  "yiran",
+  "duan",
+]
+host = [
+  "tum",
+  "de",
+]
+
+[duan.homepages]
+
 [dubut]
 name = "Jérémy Dubut"
 

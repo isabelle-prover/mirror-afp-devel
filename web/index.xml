@@ -71,6 +71,14 @@
     <category>Computer science/Concurrency/Process calculi</category>
 </item>
 <item>
+  <title>A Verified Reduction Algorithm from MLSSmf to MLSS</title>
+  <link>https://isa-afp.org/entries/MLSSmf_to_MLSS.html</link>
+  <pubDate>Mon, 05 May 2025 00:00:00 +0000</pubDate>
+  <description>A Verified Reduction Algorithm from MLSSmf to MLSS in the AFP</description>
+    <category>Logic/Set theory</category>
+    <category>Logic/General logic/Decidability of theories</category>
+</item>
+<item>
   <title>Proof Terms for Term Rewriting</title>
   <link>https://isa-afp.org/entries/Proof_Terms_Term_Rewriting.html</link>
   <pubDate>Sun, 13 Apr 2025 00:00:00 +0000</pubDate>

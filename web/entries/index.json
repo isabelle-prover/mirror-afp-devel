@@ -164,6 +164,25 @@
   "year": "2025"
  },
  {
+  "abstract": " Multi-level syllogistic with monotone functions (MLSSmf) is a sublanguage of set theory introduced by Cantone et al., involving set-to-set functions and their monotonicity, additivity, and multiplicativity. It is an extension of multi-level syllogistic with singleton (MLSS), which involves the predicates membership, set equality, set inclusion, and the operators union, intersection, set difference, and singleton. In this work we formalize the reduction algorithm from MLSSmf to MLSS and verify the correctness proof originally presented by Cantone et al.. Combined with the verified decision procedure for MLSS formalized by Stevens, this yields an executable and verified decision procedure for MLSSmf. ",
+  "authors": [
+   "Yiran Duan",
+   "Lukas Stevens"
+  ],
+  "link": "/entries/MLSSmf_to_MLSS.html",
+  "shortname": "MLSSmf_to_MLSS",
+  "title": "A Verified Reduction Algorithm from MLSSmf to MLSS",
+  "topic_links": [
+   "/topics/logic/set-theory/",
+   "/topics/logic/general-logic/decidability-of-theories/"
+  ],
+  "topics": [
+   "Logic/Set theory",
+   "Logic/General logic/Decidability of theories"
+  ],
+  "year": "2025"
+ },
+ {
   "abstract": "This entry, derived from the Isabelle Formalization of Rewriting (IsaFoR), provides a formalized foundation for first-order term rewriting. This serves as the basis for the certifier CeTA, which is generated from IsaFoR and verifies termination, confluence, and complexity proofs for term rewrite systems (TRSs). This formalization covers fundamental results for term rewriting, as presented in the foundational textbooks by Baader and Nipkow and TeReSe. These include: Various types of rewrite steps, such as root, ground, parallel, and multi-steps. Special cases of TRSs, such as linear and left-linear TRSs. A definition of critical pairs and key results, including the critical pair lemma. Orthogonality, notably that weak orthogonality implies confluence. Executable versions of relevant definitions, such as parallel and multi-step rewriting. ",
   "authors": [
    "René Thiemann",

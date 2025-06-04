@@ -32,6 +32,9 @@
     <loc>https://isa-afp.org/entries/Restriction_Spaces-Ultrametric.html</loc>
     <lastmod>2025-05-07T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>https://isa-afp.org/entries/MLSSmf_to_MLSS.html</loc>
+    <lastmod>2025-05-05T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>https://isa-afp.org/entries/First_Order_Rewriting.html</loc>
     <lastmod>2025-04-13T00:00:00+00:00</lastmod>
   </url><url>
@@ -4780,6 +4783,8 @@
   </url><url>
     <loc>https://isa-afp.org/sessions/mlss_decision_proc/</loc>
   </url><url>
+    <loc>https://isa-afp.org/sessions/mlssmf_to_mlss/</loc>
+  </url><url>
     <loc>https://isa-afp.org/authors/echenim/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/modal_logics_for_nts/</loc>
@@ -5894,6 +5899,8 @@
     <loc>https://isa-afp.org/authors/minamide/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/he/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/authors/duan/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/tan/</loc>
   </url><url>
