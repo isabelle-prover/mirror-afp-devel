@@ -115,7 +115,7 @@ begin
 text
 \<open>We define \<open>Prods_dfa\<close> that collects the production set from the deterministic finite automata \<open>M\<close>\<close>
 
-definition Prods_dfa :: "(hf, 'a) Prods" where
+definition Prods_dfa :: "('s, 'a) Prods" where
 "Prods_dfa =
   (\<Union>q \<in> dfa.states M. \<Union>x. {(q,[Tm x, Nt(dfa.nxt M q x)])}) \<union> (\<Union>q \<in> dfa.final M. {(q,[])})"
 
