@@ -19,14 +19,17 @@ definition right_invariant :: "('a list \<times> 'a list) set \<Rightarrow> bool
 
 subsection\<open>Basic Definitions\<close>
 
+text \<open>We try to make as much as possible polymorphic in the state space \<open>'s\<close>
+and independent of type \<^typ>\<open>hf\<close> to increase reusability.\<close>
+
 text\<open>First, the record for DFAs\<close>
-record 'a dfa = states :: "hf set"
-                init   :: "hf"
-                final  :: "hf set"
-                nxt    :: "hf \<Rightarrow> 'a \<Rightarrow> hf"
+record ('a,'s) dfa = states :: "'s set"
+                init   :: "'s"
+                final  :: "'s set"
+                nxt    :: "'s \<Rightarrow> 'a \<Rightarrow> 's"
 
 locale dfa =
-  fixes M :: "'a dfa"
+  fixes M :: "('a,'s) dfa"
   assumes init [simp]: "init M \<in> states M"
       and final:       "final M \<subseteq> states M"
       and nxt:         "\<And>q x. q \<in> states M \<Longrightarrow> nxt M q x \<in> states M"
@@ -37,7 +40,7 @@ lemma finite_final [simp]: "finite (final M)"
   using final finite_subset finite by blast
 
 text\<open>Transition function for a given starting state and word.\<close>
-primrec nextl :: "[hf, 'a list] \<Rightarrow> hf" where
+primrec nextl :: "['s, 'a list] \<Rightarrow> 's" where
     "nextl q []     = q"
   | "nextl q (x#xs) = nextl (nxt M q x) xs"
 
@@ -45,7 +48,7 @@ definition language :: "'a list set"  where
   "language \<equiv> {xs. nextl (init M) xs \<in> final M}"
 
 text\<open>The left language WRT a state q is the set of words that lead to q.\<close>
-definition left_lang :: "hf \<Rightarrow> 'a list set"  where
+definition left_lang :: "'s \<Rightarrow> 'a list set"  where
   "left_lang q \<equiv> {u. nextl (init M) u = q}"
 
 text\<open>Part of Prop 1 of
@@ -57,7 +60,7 @@ lemma left_lang_disjoint:
   unfolding left_lang_def by auto
 
 text\<open>The right language WRT a state q is the set of words that go from q to F.\<close>
-definition right_lang :: "hf \<Rightarrow> 'a list set"  where
+definition right_lang :: "'s \<Rightarrow> 'a list set"  where
   "right_lang q \<equiv> {u. nextl q u \<in> final M}"
 
 lemma language_eq_right_lang: "language = right_lang (init M)"
@@ -114,7 +117,7 @@ lemma index_eq_nextl_le_states: "card (UNIV // eq_nextl) \<le> card (states M)"
 
 subsection \<open>Minimisation via Accessibility\<close>
 
-definition accessible :: "hf set"  where
+definition accessible :: "'s set"  where
   "accessible \<equiv> {q. left_lang q \<noteq> {}}"
 
 lemma accessible_imp_states: "q \<in> accessible \<Longrightarrow> q \<in> states M"
@@ -126,7 +129,7 @@ lemma nxt_accessible: "q \<in> accessible \<Longrightarrow> nxt M q a \<in> acce
 lemma inj_on_left_lang: "inj_on left_lang accessible"
   by (auto simp: inj_on_def left_lang_def accessible_def)
 
-definition path_to :: "hf \<Rightarrow> 'a list"  where
+definition path_to :: "'s \<Rightarrow> 'a list"  where
   "path_to q \<equiv> SOME u. u \<in> left_lang q"
 
 lemma path_to_left_lang: "q \<in> accessible \<Longrightarrow> path_to q \<in> left_lang q"
@@ -137,7 +140,7 @@ lemma nextl_path_to: "q \<in> accessible \<Longrightarrow> nextl (dfa.init M) (p
   using path_to_left_lang  unfolding left_lang_def
   by auto
 
-definition Accessible_dfa :: "'a dfa" where
+definition Accessible_dfa :: "('a,'s) dfa" where
   "Accessible_dfa = \<lparr>dfa.states = accessible,
                      init  = init M,
                      final = final M \<inter> accessible,
@@ -229,7 +232,7 @@ definition minimal where
 subsection\<open>An Equivalence Relation on States\<close>
 
 text\<open>Collapsing map on states. Two states are equivalent if they yield identical outcomes\<close>
-definition eq_right_lang :: "(hf \<times> hf) set" where
+definition eq_right_lang :: "('s \<times> 's) set" where
   "eq_right_lang \<equiv> {(u,v). u \<in> states M \<and> v \<in> states M \<and> right_lang u = right_lang v}"
 
 lemma equiv_eq_right_lang: "equiv (states M) eq_right_lang"
@@ -238,7 +241,16 @@ lemma equiv_eq_right_lang: "equiv (states M) eq_right_lang"
 lemma eq_right_lang_finite_index: "finite (states M // eq_right_lang)"
   by (metis finite_imageI finite proj_image)
 
-definition Collapse_dfa :: "'a dfa" where
+end
+
+text \<open>Now we need to specialize to \<^typ>\<open>hf\<close> states.\<close>
+
+type_synonym 'a dfa_hf = "('a,hf) dfa"
+
+locale dfa_hf = dfa M for M :: "'a dfa_hf"
+begin
+
+definition Collapse_dfa :: "'a dfa_hf" where
   "Collapse_dfa = \<lparr>dfa.states = HF ` (states M // eq_right_lang),
                    init       = HF (eq_right_lang `` {init M}),
                    final      = {HF (eq_right_lang `` {q}) | q. q \<in> final M},
@@ -311,8 +323,8 @@ end
 
 subsection \<open>Isomorphisms Between DFAs\<close>
 
-locale dfa_isomorphism = M: dfa M + N: dfa N for M :: "'a dfa" and N :: "'a dfa" +
-  fixes h :: "hf \<Rightarrow> hf"
+locale dfa_isomorphism = M: dfa M + N: dfa N for M :: "('a,'sm) dfa" and N :: "('a,'sn) dfa" +
+  fixes h :: "'sm \<Rightarrow> 'sn"
   assumes h: "bij_betw h (states M) (states N)"
       and init  [simp]: "h (init M) = init N"
       and final [simp]: "h ` final M = final N"
@@ -363,7 +375,7 @@ end
 section\<open>The Myhill-Nerode theorem: three characterisations of a regular language\<close>
 
 definition regular :: "'a list set \<Rightarrow> bool" where
-  "regular L \<equiv> \<exists>M. dfa M \<and> dfa.language M = L"
+  "regular L \<equiv> \<exists>M :: 'a dfa_hf. dfa M \<and> dfa.language M = L"
 
 definition MyhillNerode :: "'a list set \<Rightarrow> ('a list * 'a list) set \<Rightarrow> bool" where
   "MyhillNerode L R \<equiv> equiv UNIV R \<and> right_invariant R \<and> finite (UNIV//R) \<and> (\<exists>A. L = R``A)"
@@ -451,7 +463,7 @@ begin
   lemma finix: "finite (UNIV//R)"
     using h bij_betw_finite finite_hfset by blast
 
-  definition DFA :: "'a dfa" where
+  definition DFA :: "'a dfa_hf" where
     "DFA = \<lparr>states = h ` (UNIV//R),
             init  = h (R `` {[]}),
             final = {h (R `` {u}) | u. u \<in> A},
@@ -506,7 +518,7 @@ end
 
 theorem MN_imp_dfa:
   assumes "MyhillNerode L R"
-  obtains M where "dfa M" "dfa.language M = L" "card (states M) = card (UNIV//R)"
+  obtains M where "dfa_hf M" "dfa.language M = L" "card (states M) = card (UNIV//R)"
 proof -
   from assms obtain A
     where eqR: "equiv UNIV R"
@@ -521,23 +533,22 @@ proof -
   interpret MN: MyhillNerode_dfa L R A "?n" h
     by (simp add: MyhillNerode_dfa_def eqR riR L h)
   show ?thesis
-    by (auto simp: MN.language intro: that MN.dfa MN.language MN.card_states)
+    using MN.card_states MN.dfa MN.language dfa_hf.intro that by blast
   qed
 
 corollary MN_imp_regular:
   assumes "MyhillNerode L R"  shows "regular L"
-  using MN_imp_dfa [OF assms] unfolding regular_def
-  by auto
+  unfolding regular_def by (metis dfa_hf_def MN_imp_dfa[OF assms])
 
 corollary eq_app_right_finite_index_imp_dfa:
   assumes "finite (UNIV // eq_app_right L)"
   obtains M where
-    "dfa M" "dfa.language M = L" "card (states M) = card (UNIV // eq_app_right L)"
+    "dfa_hf M" "dfa.language M = L" "card (states M) = card (UNIV // eq_app_right L)"
   using MN_eq_app_right MN_imp_dfa assms by blast
 
 text\<open>Step 3\<close>
 corollary L3_1: "finite (UNIV // eq_app_right L) \<Longrightarrow> regular L"
-  using eq_app_right_finite_index_imp_dfa regular_def by blast
+  unfolding regular_def by (metis eq_app_right_finite_index_imp_dfa dfa_hf_def)
 
 
 section\<open>Non-Deterministic Finite Automata\<close>
@@ -649,7 +660,7 @@ lemma nextl_UN: "nextl (\<Union>i\<in>I. f i) xs = (\<Union>i\<in>I. nextl (f i)
 
 subsection\<open>The Powerset Construction\<close>
 
-definition Power_dfa :: "'a dfa" where
+definition Power_dfa :: "'a dfa_hf" where
   "Power_dfa = \<lparr>dfa.states = {HF (epsclo q) | q. q \<in> Pow (states M)},
                      init  = HF (epsclo (init M)),
                      final = {HF (epsclo Q) | Q. Q \<subseteq> states M \<and> Q \<inter> final M \<noteq> {}},
@@ -754,8 +765,8 @@ subsection\<open>The Empty Language\<close>
 
 theorem regular_empty:  "regular {}"
 proof -
-  interpret D: dfa "\<lparr>dfa.states = {0}, init = 0, final = {}, nxt = \<lambda>q x. q\<rparr>"
-    by (auto simp: dfa_def)
+  interpret D: dfa_hf "\<lparr>dfa.states = {0}, init = 0, final = {}, nxt = \<lambda>q x. q\<rparr>"
+    by (auto simp: dfa_hf_def dfa_def)
   have "D.language = {}"
     by (simp add: D.language_def)
   then show ?thesis
@@ -803,8 +814,9 @@ subsection\<open>The Complement of a Language\<close>
 theorem regular_Compl:
   assumes S: "regular S" shows "regular (-S)"
 proof -
-  obtain MS  where M: "dfa MS" and lang: "dfa.language MS = S"
-    using S by (auto simp: regular_def)
+  obtain MS where M: "dfa_hf MS" and lang: "dfa.language MS = S"
+    using S by (auto simp: regular_def dfa_hf_def)
+  note M = dfa_hf.axioms[OF M]
   interpret ST: dfa "\<lparr>dfa.states= dfa.states MS,
                      init= dfa.init MS, final= dfa.states MS - dfa.final MS,
                      nxt= \<lambda>q x. dfa.nxt MS q x\<rparr>"
@@ -830,8 +842,9 @@ text\<open>By the familiar product construction\<close>
 theorem regular_Int:
   assumes S: "regular S" and T: "regular T" shows "regular (S \<inter> T)"
 proof -
-  obtain MS MT where M: "dfa MS" "dfa MT" and lang: "dfa.language MS = S" "dfa.language MT = T"
-    using S T by (auto simp: regular_def)
+  obtain MS MT where M: "dfa_hf MS" "dfa_hf MT" and lang: "dfa.language MS = S" "dfa.language MT = T"
+    using S T by (auto simp: regular_def dfa_hf_def)
+  note M = dfa_hf.axioms[OF M(1)] dfa_hf.axioms[OF M(2)]
   interpret ST: dfa "\<lparr>dfa.states = {\<langle>q1,q2\<rangle> | q1 q2. q1 \<in> dfa.states MS \<and> q2 \<in> dfa.states MT},
                      init       = \<langle>dfa.init MS, dfa.init MT\<rangle>,
                      final      = {\<langle>q1,q2\<rangle> | q1 q2. q1 \<in> dfa.final MS \<and> q2 \<in> dfa.final MT},
@@ -872,8 +885,9 @@ lemma Inlr_rtrancl [simp]: "((\<lambda>q. (Inl q, Inr a)) ` A)\<^sup>* = ((\<lam
 theorem regular_conc:
   assumes S: "regular S" and T: "regular T" shows "regular (S @@ T)"
 proof -
-  obtain MS MT where M: "dfa MS" "dfa MT" and lang: "dfa.language MS = S" "dfa.language MT = T"
-    using S T by (auto simp: regular_def)
+  obtain MS MT where M: "dfa_hf MS" "dfa_hf MT" and lang: "dfa.language MS = S" "dfa.language MT = T"
+    using S T by (auto simp: regular_def dfa_hf_def)
+  note M = dfa_hf.axioms[OF M(1)] dfa_hf.axioms[OF M(2)]
   note [simp] = dfa.init dfa.nxt dfa.nextl.simps dfa.nextl_snoc
   let ?ST = "\<lparr>nfa.states = Inl ` (dfa.states MS) \<union> Inr ` (dfa.states MT),
                   init  = {Inl (dfa.init MS)},
@@ -957,8 +971,9 @@ subsection\<open>The Kleene Star of a Language\<close>
 theorem regular_star:
   assumes S: "regular S" shows "regular (star S)"
 proof -
-  obtain MS where M: "dfa MS" and lang: "dfa.language MS = S"
-    using S by (auto simp: regular_def)
+  obtain MS where M: "dfa_hf MS" and lang: "dfa.language MS = S"
+    using S by (auto simp: regular_def dfa_hf_def)
+  note M = dfa_hf.axioms[OF M]
   note [simp] = dfa.init [OF M] dfa.nextl.simps [OF M] dfa.nextl_snoc [OF M]
   obtain q0 where q0: "q0 \<notin> dfa.states MS" using dfa.finite [OF M]
     by (metis hdomain_not_mem hfset_HF hmem_def)
@@ -967,7 +982,7 @@ proof -
   have [simp]: "\<And>q x. q \<in> dfa.states MS \<Longrightarrow> q0 \<noteq> dfa.nxt MS q x"
     using M dfa.nxt q0 by fastforce
   have [simp]: "\<And>q u. q \<in> dfa.states MS \<Longrightarrow> q0 \<noteq> dfa.nextl MS q u"
-    using M dfa.nextl_state q0 by blast
+    using M dfa.nextl_state q0 by metis
   let ?ST = "\<lparr>nfa.states = insert q0 (dfa.states MS),
                    init  = {q0},
                    final = {q0},
@@ -1053,7 +1068,7 @@ qed
 
 subsection\<open>The Reversal of a Regular Language\<close>
 
-definition Reverse_nfa :: "'a dfa \<Rightarrow> 'a nfa" where
+definition Reverse_nfa :: "'a dfa_hf \<Rightarrow> 'a nfa" where
   "Reverse_nfa MS = \<lparr>nfa.states = dfa.states MS,
                          init  = dfa.final MS,
                          final = {dfa.init MS},
@@ -1076,7 +1091,7 @@ lemma nxt_Reverse_nfa [simp]:
 lemma eps_Reverse_nfa [simp]: "eps (Reverse_nfa MS) = {}"
   by (simp add: Reverse_nfa_def)
 
-context dfa
+context dfa_hf
 begin
 
   lemma nfa_Reverse_nfa: "nfa (Reverse_nfa M)"
@@ -1130,9 +1145,9 @@ end
 corollary regular_Reverse:
   assumes S: "regular S" shows "regular (rev ` S)"
 proof -
-  obtain MS where MS: "dfa MS" "dfa.language MS = S"
-    using S by (auto simp: regular_def)
-  then interpret dfa "MS"
+  obtain MS where MS: "dfa_hf MS" "dfa.language MS = S"
+    using S by (auto simp: regular_def dfa_hf_def)
+  then interpret dfa_hf "MS"
     by simp
   show ?thesis
     using nfa_Reverse_nfa nfa_imp_regular language_Reverse_nfa MS
@@ -1148,7 +1163,7 @@ theorem regular_lang: "regular (lang r)"
 
 section\<open>Brzozowski's Minimization Algorithm\<close>
 
-context dfa
+context dfa_hf
   begin
 
 subsection\<open>More about the relation @{term eq_app_right}\<close>
@@ -1296,7 +1311,7 @@ subsection\<open>More about the relation @{term eq_app_right}\<close>
       done
   qed
 
-  abbreviation APR :: "'x dfa \<Rightarrow> 'x dfa" where
+  abbreviation APR :: "'x dfa_hf \<Rightarrow> 'x dfa_hf" where
     "APR X \<equiv> dfa.Accessible_dfa (nfa.Power_dfa (Reverse_nfa X))"
 
   theorem minimal_APR:
@@ -1313,23 +1328,23 @@ subsection\<open>More about the relation @{term eq_app_right}\<close>
         done
     qed
 
-  definition Brzozowski :: "'a dfa" where
+  definition Brzozowski :: "'a dfa_hf" where
     "Brzozowski \<equiv> APR (APR M)"
 
-  lemma dfa_Brzozowski: "dfa Brzozowski"
-    by (simp add: Brzozowski_def dfa.dfa_Accessible dfa.nfa_Reverse_nfa
-                  nfa.dfa_Power nfa_Reverse_nfa)
+  lemma dfa_Brzozowski: "dfa_hf Brzozowski"
+    by (simp add: Brzozowski_def dfa.dfa_Accessible dfa_hf.nfa_Reverse_nfa
+                  nfa.dfa_Power nfa_Reverse_nfa dfa_hf_def)
 
   theorem language_Brzozowski: "dfa.language Brzozowski = language"
     by (simp add: Brzozowski_def dfa.Accessible_language nfa.Power_language
-          dfa.dfa_Accessible dfa.nfa_Reverse_nfa nfa.dfa_Power nfa_Reverse_nfa
-          dfa.language_Reverse_nfa image_image)
+          dfa.dfa_Accessible dfa_hf.nfa_Reverse_nfa nfa.dfa_Power nfa_Reverse_nfa
+          dfa_hf.language_Reverse_nfa image_image dfa_hf_def)
 
   theorem minimal_Brzozowski: "dfa.minimal Brzozowski"
   unfolding Brzozowski_def
-  proof (rule dfa.minimal_APR)
-    show "dfa (APR M)"
-      by (simp add: dfa.dfa_Accessible nfa.dfa_Power nfa_Reverse_nfa)
+  proof (rule dfa_hf.minimal_APR)
+    show "dfa_hf (APR M)"
+      by (simp add: dfa.dfa_Accessible nfa.dfa_Power nfa_Reverse_nfa dfa_hf_def)
   next
     show "dfa.states (APR M) = dfa.accessible (APR M)"
       by (simp add: dfa.Accessible_accessible dfa.states_Accessible_dfa nfa.dfa_Power nfa_Reverse_nfa)
@@ -1338,14 +1353,13 @@ subsection\<open>More about the relation @{term eq_app_right}\<close>
   end
 
 lemma index_f_cong:
-     "\<lbrakk>dfa.language M = dfa.language N; dfa M; dfa N\<rbrakk> \<Longrightarrow> dfa.index_f M = dfa.index_f N"
-  by (simp add: dfa.index_f_def dfa.min_states_def)
+     "\<lbrakk>dfa.language M = dfa.language N; dfa M; dfa N\<rbrakk> \<Longrightarrow> dfa_hf.index_f M = dfa_hf.index_f N"
+  by (simp add: dfa_hf.index_f_def dfa_hf.min_states_def dfa_hf_def)
 
 theorem minimal_imp_isomorphic:
-     "\<lbrakk>dfa.language M = dfa.language N; dfa.minimal M; dfa.minimal N; dfa M; dfa N\<rbrakk>
+     "\<lbrakk>dfa.language M = dfa.language N; dfa.minimal M; dfa.minimal N; dfa_hf M; dfa_hf N\<rbrakk>
       \<Longrightarrow> \<exists>h. dfa_isomorphism M N h"
-  by (metis dfa_isomorphism.sym dfa_isomorphism.trans
-            dfa.minimal_imp_isomorphic_to_canonical index_f_cong)
+  by (metis dfa_hf.minimal_imp_isomorphic_to_canonical dfa_hf_def dfa_isomorphism.sym
+    dfa_isomorphism.trans index_f_cong)
 
 end
-
