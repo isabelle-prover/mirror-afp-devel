@@ -348,7 +348,7 @@ theorem Banach_fix_type : \<open>contraction f \<Longrightarrow> \<exists>!x. f 
 
 theorem Banach_fix:
   \<open>contraction_on f s \<Longrightarrow> \<exists>!x. x \<in> s \<and> f x = x\<close> if \<open>complete s\<close> \<open>s \<noteq> {}\<close> \<open>f ` s \<subseteq> s\<close>
-proof (elim contraction_onE, intro banach_fix[OF \<open>complete s\<close> \<open>s \<noteq> {}\<close> _ _ \<open>f ` s \<subseteq> s\<close>] ballI)
+proof (elim contraction_onE, intro Banach_fix[OF \<open>complete s\<close> \<open>s \<noteq> {}\<close> _ _ \<open>f ` s \<subseteq> s\<close>] ballI)
   show \<open>contraction_with_on f \<alpha> s \<Longrightarrow> 0 \<le> \<alpha>\<close> for \<alpha> by (fact contraction_with_onD1)
 next
   show \<open>contraction_with_on f \<alpha> s \<Longrightarrow> \<alpha> < 1\<close> for \<alpha> by (fact contraction_with_onD2)
