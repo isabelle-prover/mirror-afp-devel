@@ -3487,7 +3487,7 @@ lemmas rename_models_state_compatible =
     unfolded rename_a\<^sub>0_eq a\<^sub>0_def rename_n_ps_eq rename_a\<^sub>0'_eq a\<^sub>0'_def]
 
 lemmas models_state_compatible =
-  transp_equality[THEN transpD, OF urge_models_state_compatible rename_models_state_compatible]
+  transp_on_equality[THEN transpD, OF urge_models_state_compatible rename_models_state_compatible]
 
 lemmas models_state_compatible' = models_state_compatible[unfolded rename_N_eq_sem, folded N_eq_sem]
 
