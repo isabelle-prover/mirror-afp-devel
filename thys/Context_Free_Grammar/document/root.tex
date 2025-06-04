@@ -1,0 +1,39 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{amssymb}
+\usepackage{isabelle,isabellesym}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{literal}
+
+
+\begin{document}
+
+\title{Context-Free Grammars and Languages}
+\author{Tobias Nipkow, Markus Gscho{\ss}mann, Felix Krayer, Fabian Lehr, \\
+ Bruno Philipp, August Martin Stimpfle, Kaan Taskin, Akihisa Yamada}
+\maketitle
+
+\begin{abstract}
+This is a basic library of definitions and results about context-free grammars and languages.
+It includes context-free grammars and languages, parse trees, Chomsky normal form,
+pumping lemmas and the relationship of right-linear grammars to finite automata.
+\end{abstract}
+
+\tableofcontents
+
+\newpage
+
+%\section{Overview}
+
+% include generated text of all theories
+\input{session}
+
+\bibliographystyle{abbrvurl}
+\bibliography{root}
+
+\end{document}

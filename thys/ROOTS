@@ -160,6 +160,7 @@ Constructive_Cryptography
 Constructive_Cryptography_CM
 Constructor_Funs
 Containers
+Context_Free_Grammar
 Continued_Fractions
 Cook_Levin
 Coproduct_Measure
@@ -229,6 +230,7 @@ Earley_Parser
 Echelon_Form
 EdmondsKarp_Maxflow
 Edwards_Elliptic_Curves_Group
+Elementary_Ultrametric_Spaces
 Efficient-Mergesort
 Efficient_Weighted_Path_Order
 Elimination_Of_Repeated_Factors
@@ -264,6 +266,7 @@ FSM_Tests
 Factor_Algebraic_Polynomial
 Factored_Transition_System_Bounding
 Falling_Factorial_Sum
+Farey_Sequences
 Farkas
 FeatherweightJava
 Featherweight_OCL
@@ -341,6 +344,7 @@ GyrovectorSpaces
 HOL-CSP
 HOL-CSPM
 HOL-CSP_OpSem
+HOL-CSP_RS
 HOLCF-Prelude
 HRB-Slicing
 Hahn_Jordan_Decomposition
@@ -543,6 +547,7 @@ Multirelations_Heterogeneous
 Multiset_Ordering_NPC
 Multitape_To_Singletape_TM
 Myhill-Nerode
+Munta_Model_Checker
 Name_Carrying_Type_Inference
 Nano_JSON
 Nash_Williams
@@ -710,6 +715,9 @@ ResiduatedTransitionSystem
 ResiduatedTransitionSystem2
 Residuated_Lattices
 Resolution_FOL
+Restriction_Spaces
+Restriction_Spaces-Examples
+Restriction_Spaces-Ultrametric
 Rewrite_Properties_Reduction
 Rewriting_Z
 Ribbon_Proofs
@@ -752,6 +760,7 @@ SequentInvertibility
 Serializable
 Shadow_DOM
 Shadow_SC_DOM
+Shallow_Expressions
 Shivers-CFA
 Schoenhage_Strassen
 ShortestPath
@@ -771,6 +780,7 @@ Sliding_Window_Algorithm
 Smith_Normal_Form
 Smooth_Manifolds
 Solidity
+Sophie_Germain
 Sophomores_Dream
 Sort_Encodings
 Sorted_Terms

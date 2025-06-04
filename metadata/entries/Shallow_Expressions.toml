@@ -1,0 +1,30 @@
+title = "Shallow Expressions"
+date = 2025-05-16
+topics = [
+  "Computer science/Semantics and reasoning",
+  "Computer science/Programming languages/Logics",
+]
+abstract = "Most verification techniques use expressions, for example when assigning to variables or forming assertions over the state. Deep embeddings provide such expressions using a datatype, which allows queries over the syntax, such as calculating the free variables, and performing substitutions. Shallow embeddings, in contrast, model expressions as query functions over the state type, and are more amenable to automating verification tasks. The goal of this library is provide an intuitive implementation of shallow expressions, which nevertheless provides many of the benefits of a deep embedding. We harness the Optics library to provide an algebraic semantics for state variables, and use syntax translations to provide an intuitive lifted expression syntax. Furthermore, we provide a variety of meta-logic-style queries on expressions, such as dependencies on a state variable, and substitution of a variable for an expression. We also provide proof methods, based on the simplifier, to automate the associated proof tasks."
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.fosters]
+email = "fosters_email"
+
+[contributors]
+
+[notify]
+fosters = "fosters_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = [
+  "10.1007/s10817-024-09709-2",
+  "10.1016/j.scico.2020.102510",
+]
+pubs = []

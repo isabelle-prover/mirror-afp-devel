@@ -1,0 +1,74 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{isabelle,isabellesym}
+
+% further packages required for unusual symbols (see also
+% isabellesym.sty), use only when needed
+
+\usepackage{latexsym}
+\usepackage{amssymb}
+\usepackage{amsmath}
+  %for \<leadsto>, \<box>, \<diamond>, \<sqsupset>, \<mho>, \<Join>,
+  %\<lhd>, \<lesssim>, \<greatersim>, \<lessapprox>, \<greaterapprox>,
+  %\<triangleq>, \<yen>, \<lozenge>
+
+%\usepackage{eurosym}
+  %for \<euro>
+
+%\usepackage[only,bigsqcap,bigparallel,fatsemi,interleave,sslash]{stmaryrd}
+  %for \<Sqinter>, \<Parallel>, \<Zsemi>, \<Parallel>, \<sslash>
+
+%\usepackage{eufrak}
+  %for \<AA> ... \<ZZ>, \<aa> ... \<zz> (also included in amssymb)
+
+%\usepackage{textcomp}
+  %for \<onequarter>, \<onehalf>, \<threequarters>, \<degree>, \<cent>,
+  %\<currency>
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+% for uniform font size
+%\renewcommand{\isastyle}{\isastyleminor}
+
+
+\begin{document}
+
+\title{Providing restriction Spaces with an ultrametric Structure}
+\author{Benoît Ballenghien \and Benjamin Puyobro \and Burkhart Wolff}
+\maketitle
+
+\abstract{
+  We investigate the relationship between restriction spaces and classical metric
+  structures by instantiating the former as ultrametric spaces.
+  This is classically captured by defining the distance as
+  $$\mathrm{dist} \ x \ y = \inf_{x \downarrow n \ = \ y \downarrow n} \left(\frac{1}{2}\right)^ n$$
+  but we actually generalize this perspective by introducing a hierarchy of increasingly
+  refined type classes to systematically relate ultrametric and restriction-based notions.
+  This layered approach enables a precise comparison of structural and topological properties.
+  In the end, our main result establishes that completeness in the sense of restriction spaces
+  coincides with standard metric completeness, thus bridging the gap between
+  \verb'Restriction_Spaces' and Banach's fixed-point theorem established in \verb'HOL-Analysis'.  
+}
+
+\tableofcontents
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+% generated text of all theories
+\input{session}
+
+% optional bibliography
+%\bibliographystyle{abbrv}
+%\bibliography{root}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

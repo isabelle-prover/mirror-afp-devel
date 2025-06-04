@@ -4,6 +4,24 @@
     <title>Tools</title>
     <link>https://isa-afp.org/topics/tools/</link>
     <description>AFP entries in Tools</description><item>
+  <title>Munta: A Verified Model Checker for Timed Automata</title>
+  <link>https://isa-afp.org/entries/Munta_Model_Checker.html</link>
+  <pubDate>Thu, 22 May 2025 00:00:00 +0000</pubDate>
+  <description>Munta: A Verified Model Checker for Timed Automata in the AFP</description>
+    <category>Computer science/Automata and formal languages</category>
+    <category>Tools</category>
+</item>
+<item>
+  <title>Restriction Spaces: a Fixed-Point Theory</title>
+  <link>https://isa-afp.org/entries/Restriction_Spaces.html</link>
+  <pubDate>Wed, 07 May 2025 00:00:00 +0000</pubDate>
+  <description>Restriction Spaces: a Fixed-Point Theory in the AFP</description>
+    <category>Tools</category>
+    <category>Mathematics/Analysis</category>
+    <category>Mathematics/Topology</category>
+    <category>Computer science/Semantics and reasoning</category>
+</item>
+<item>
   <title>Without Loss of Generality</title>
   <link>https://isa-afp.org/entries/Wlog.html</link>
   <pubDate>Fri, 30 Aug 2024 00:00:00 +0000</pubDate>

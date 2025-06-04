@@ -4,6 +4,24 @@
     <title>Computer science/Concurrency/Process calculi</title>
     <link>https://isa-afp.org/topics/computer-science/concurrency/process-calculi/</link>
     <description>AFP entries in Process calculi</description><item>
+  <title>Examples of Restriction Spaces</title>
+  <link>https://isa-afp.org/entries/Restriction_Spaces-Examples.html</link>
+  <pubDate>Wed, 07 May 2025 00:00:00 +0000</pubDate>
+  <description>Examples of Restriction Spaces in the AFP</description>
+    <category>Mathematics/Analysis</category>
+    <category>Mathematics/Topology</category>
+    <category>Mathematics/Algebra</category>
+    <category>Computer science/Concurrency/Process calculi</category>
+</item>
+<item>
+  <title>CSP Semantics over Restriction Spaces</title>
+  <link>https://isa-afp.org/entries/HOL-CSP_RS.html</link>
+  <pubDate>Wed, 07 May 2025 00:00:00 +0000</pubDate>
+  <description>CSP Semantics over Restriction Spaces in the AFP</description>
+    <category>Computer science/Semantics and reasoning</category>
+    <category>Computer science/Concurrency/Process calculi</category>
+</item>
+<item>
   <title>Linear Resources and Process Compositions</title>
   <link>https://isa-afp.org/entries/ProcessComposition.html</link>
   <pubDate>Mon, 25 Nov 2024 00:00:00 +0000</pubDate>

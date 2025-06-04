@@ -4,6 +4,20 @@
     <title>Mathematics/Number theory</title>
     <link>https://isa-afp.org/topics/mathematics/number-theory/</link>
     <description>AFP entries in Number theory</description><item>
+  <title>Complex Lattices, Elliptic Functions, and the Modular Group</title>
+  <link>https://isa-afp.org/entries/Elliptic_Functions.html</link>
+  <pubDate>Thu, 22 May 2025 00:00:00 +0000</pubDate>
+  <description>Complex Lattices, Elliptic Functions, and the Modular Group in the AFP</description>
+    <category>Mathematics/Number theory</category>
+</item>
+<item>
+  <title>Farey Sequences and Ford Circles</title>
+  <link>https://isa-afp.org/entries/Farey_Sequences.html</link>
+  <pubDate>Thu, 15 May 2025 00:00:00 +0000</pubDate>
+  <description>Farey Sequences and Ford Circles in the AFP</description>
+    <category>Mathematics/Number theory</category>
+</item>
+<item>
   <title>The Partition Function and the Pentagonal Number Theorem</title>
   <link>https://isa-afp.org/entries/Pentagonal_Number_Theorem.html</link>
   <pubDate>Wed, 23 Apr 2025 00:00:00 +0000</pubDate>
@@ -15,6 +29,13 @@
   <link>https://isa-afp.org/entries/Dedekind_Sums.html</link>
   <pubDate>Wed, 23 Apr 2025 00:00:00 +0000</pubDate>
   <description>Dedekind Sums in the AFP</description>
+    <category>Mathematics/Number theory</category>
+</item>
+<item>
+  <title>Sophie Germain’s Theorem</title>
+  <link>https://isa-afp.org/entries/Sophie_Germain.html</link>
+  <pubDate>Wed, 09 Apr 2025 00:00:00 +0000</pubDate>
+  <description>Sophie Germain’s Theorem in the AFP</description>
     <category>Mathematics/Number theory</category>
 </item>
 <item>

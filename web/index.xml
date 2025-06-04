@@ -4,6 +4,80 @@
     <title>Archive of Formal Proofs</title>
     <link>https://isa-afp.org/</link>
     <description>Formal developments in the AFP</description><item>
+  <title>Munta: A Verified Model Checker for Timed Automata</title>
+  <link>https://isa-afp.org/entries/Munta_Model_Checker.html</link>
+  <pubDate>Thu, 22 May 2025 00:00:00 +0000</pubDate>
+  <description>Munta: A Verified Model Checker for Timed Automata in the AFP</description>
+    <category>Computer science/Automata and formal languages</category>
+    <category>Tools</category>
+</item>
+<item>
+  <title>Complex Lattices, Elliptic Functions, and the Modular Group</title>
+  <link>https://isa-afp.org/entries/Elliptic_Functions.html</link>
+  <pubDate>Thu, 22 May 2025 00:00:00 +0000</pubDate>
+  <description>Complex Lattices, Elliptic Functions, and the Modular Group in the AFP</description>
+    <category>Mathematics/Number theory</category>
+</item>
+<item>
+  <title>Context-Free Grammars and Languages</title>
+  <link>https://isa-afp.org/entries/Context_Free_Grammar.html</link>
+  <pubDate>Wed, 21 May 2025 00:00:00 +0000</pubDate>
+  <description>Context-Free Grammars and Languages in the AFP</description>
+    <category>Computer science/Automata and formal languages</category>
+</item>
+<item>
+  <title>Shallow Expressions</title>
+  <link>https://isa-afp.org/entries/Shallow_Expressions.html</link>
+  <pubDate>Fri, 16 May 2025 00:00:00 +0000</pubDate>
+  <description>Shallow Expressions in the AFP</description>
+    <category>Computer science/Semantics and reasoning</category>
+    <category>Computer science/Programming languages/Logics</category>
+</item>
+<item>
+  <title>Farey Sequences and Ford Circles</title>
+  <link>https://isa-afp.org/entries/Farey_Sequences.html</link>
+  <pubDate>Thu, 15 May 2025 00:00:00 +0000</pubDate>
+  <description>Farey Sequences and Ford Circles in the AFP</description>
+    <category>Mathematics/Number theory</category>
+</item>
+<item>
+  <title>Ultrametric Structure for Restriction Spaces</title>
+  <link>https://isa-afp.org/entries/Restriction_Spaces-Ultrametric.html</link>
+  <pubDate>Wed, 07 May 2025 00:00:00 +0000</pubDate>
+  <description>Ultrametric Structure for Restriction Spaces in the AFP</description>
+    <category>Mathematics/Analysis</category>
+    <category>Mathematics/Topology</category>
+    <category>Computer science/Semantics and reasoning</category>
+</item>
+<item>
+  <title>Examples of Restriction Spaces</title>
+  <link>https://isa-afp.org/entries/Restriction_Spaces-Examples.html</link>
+  <pubDate>Wed, 07 May 2025 00:00:00 +0000</pubDate>
+  <description>Examples of Restriction Spaces in the AFP</description>
+    <category>Mathematics/Analysis</category>
+    <category>Mathematics/Topology</category>
+    <category>Mathematics/Algebra</category>
+    <category>Computer science/Concurrency/Process calculi</category>
+</item>
+<item>
+  <title>Restriction Spaces: a Fixed-Point Theory</title>
+  <link>https://isa-afp.org/entries/Restriction_Spaces.html</link>
+  <pubDate>Wed, 07 May 2025 00:00:00 +0000</pubDate>
+  <description>Restriction Spaces: a Fixed-Point Theory in the AFP</description>
+    <category>Tools</category>
+    <category>Mathematics/Analysis</category>
+    <category>Mathematics/Topology</category>
+    <category>Computer science/Semantics and reasoning</category>
+</item>
+<item>
+  <title>CSP Semantics over Restriction Spaces</title>
+  <link>https://isa-afp.org/entries/HOL-CSP_RS.html</link>
+  <pubDate>Wed, 07 May 2025 00:00:00 +0000</pubDate>
+  <description>CSP Semantics over Restriction Spaces in the AFP</description>
+    <category>Computer science/Semantics and reasoning</category>
+    <category>Computer science/Concurrency/Process calculi</category>
+</item>
+<item>
   <title>The Partition Function and the Pentagonal Number Theorem</title>
   <link>https://isa-afp.org/entries/Pentagonal_Number_Theorem.html</link>
   <pubDate>Wed, 23 Apr 2025 00:00:00 +0000</pubDate>
@@ -37,6 +111,20 @@
   <pubDate>Sat, 12 Apr 2025 00:00:00 +0000</pubDate>
   <description>Completeness of Decreasing Diagrams for the Least Uncountable Cardinality in the AFP</description>
     <category>Logic/Rewriting</category>
+</item>
+<item>
+  <title>Definition and Elementary Properties of Ultrametric Spaces</title>
+  <link>https://isa-afp.org/entries/Elementary_Ultrametric_Spaces.html</link>
+  <pubDate>Thu, 10 Apr 2025 00:00:00 +0000</pubDate>
+  <description>Definition and Elementary Properties of Ultrametric Spaces in the AFP</description>
+    <category>Mathematics/Topology</category>
+</item>
+<item>
+  <title>Sophie Germain’s Theorem</title>
+  <link>https://isa-afp.org/entries/Sophie_Germain.html</link>
+  <pubDate>Wed, 09 Apr 2025 00:00:00 +0000</pubDate>
+  <description>Sophie Germain’s Theorem in the AFP</description>
+    <category>Mathematics/Number theory</category>
 </item>
 <item>
   <title>The Kolmogorov-Chentsov theorem</title>

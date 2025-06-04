@@ -1,0 +1,87 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+
+\usepackage{amsmath}
+
+
+% further packages required for unusual symbols (see also
+% isabellesym.sty), use only when needed
+
+\usepackage{amssymb}
+  %for \<leadsto>, \<box>, \<diamond>, \<sqsupset>, \<mho>, \<Join>,
+  %\<lhd>, \<lesssim>, \<greatersim>, \<lessapprox>, \<greaterapprox>,
+  %\<triangleq>, \<yen>, \<lozenge>
+
+%\usepackage{eurosym}
+  %for \<euro>
+
+%\usepackage[only,bigsqcap,bigparallel,fatsemi,interleave,sslash]{stmaryrd}
+  %for \<Sqinter>, \<Parallel>, \<Zsemi>, \<Parallel>, \<sslash>
+
+%\usepackage{eufrak}
+  %for \<AA> ... \<ZZ>, \<aa> ... \<zz> (also included in amssymb)
+
+%\usepackage{textcomp}
+  %for \<onequarter>, \<onehalf>, \<threequarters>, \<degree>, \<cent>,
+  %\<currency>
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+% for uniform font size
+%\renewcommand{\isastyle}{\isastyleminor}
+
+
+\begin{document}
+
+\title{Definition and Elementary Properties of Ultrametric Spaces}
+\author{
+Benoît Ballenghien\footnote{Université Paris-Saclay, CNRS, ENS Paris-Saclay, LMF\\\url{https://orcid.org/0009-0000-4941-187X}} \and
+Benjamin Puyobro\footnote{Université Paris-Saclay, IRT SystemX, CNRS, ENS Paris-Saclay, LMF\\\url{https://orcid.org/0009-0006-0294-9043}\\
+This work has been supported by the French government under the ``France 2030''
+program, as part of the SystemX Technological Research Institute within the CVH project.} \and
+Burkhart Wolff\footnote{Université Paris-Saclay, CNRS, ENS Paris-Saclay, LMF\\\url{https://orcid.org/0000-0002-9648-7663}}}
+
+\maketitle
+
+\abstract{
+An ultrametric space is a metric space in which the triangle inequality is strengthened
+by using the maximum instead of the sum. More formally, such a space is equipped with
+a real-valued application $dist$, called distance, verifying the four following conditions.
+\begin{align*}
+    & dist \ x \ y \ge 0\\
+    & dist \ x \ y = dist \ y \ x\\
+    & dist \ x \ y = 0 \longleftrightarrow x = y\\
+    & dist \ x \ z \le max \ (dist \ x \ y) \ (dist \ y \ z)
+\end{align*}
+In this entry, we present an elementary formalization of these spaces relying on axiomatic type classes.
+The connection with standard metric spaces is obtained through a subclass relationship,
+and fundamental properties of ultrametric spaces are formally established.
+}
+
+\newpage
+
+\tableofcontents
+
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+% generated text of all theories
+\input{session}
+
+% optional bibliography
+%\bibliographystyle{abbrv}
+%\bibliography{root}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

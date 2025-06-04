@@ -4,6 +4,35 @@
     <title>Mathematics/Analysis</title>
     <link>https://isa-afp.org/topics/mathematics/analysis/</link>
     <description>AFP entries in Analysis</description><item>
+  <title>Ultrametric Structure for Restriction Spaces</title>
+  <link>https://isa-afp.org/entries/Restriction_Spaces-Ultrametric.html</link>
+  <pubDate>Wed, 07 May 2025 00:00:00 +0000</pubDate>
+  <description>Ultrametric Structure for Restriction Spaces in the AFP</description>
+    <category>Mathematics/Analysis</category>
+    <category>Mathematics/Topology</category>
+    <category>Computer science/Semantics and reasoning</category>
+</item>
+<item>
+  <title>Examples of Restriction Spaces</title>
+  <link>https://isa-afp.org/entries/Restriction_Spaces-Examples.html</link>
+  <pubDate>Wed, 07 May 2025 00:00:00 +0000</pubDate>
+  <description>Examples of Restriction Spaces in the AFP</description>
+    <category>Mathematics/Analysis</category>
+    <category>Mathematics/Topology</category>
+    <category>Mathematics/Algebra</category>
+    <category>Computer science/Concurrency/Process calculi</category>
+</item>
+<item>
+  <title>Restriction Spaces: a Fixed-Point Theory</title>
+  <link>https://isa-afp.org/entries/Restriction_Spaces.html</link>
+  <pubDate>Wed, 07 May 2025 00:00:00 +0000</pubDate>
+  <description>Restriction Spaces: a Fixed-Point Theory in the AFP</description>
+    <category>Tools</category>
+    <category>Mathematics/Analysis</category>
+    <category>Mathematics/Topology</category>
+    <category>Computer science/Semantics and reasoning</category>
+</item>
+<item>
   <title>The Tensor Product on Hilbert Spaces</title>
   <link>https://isa-afp.org/entries/Hilbert_Space_Tensor_Product.html</link>
   <pubDate>Tue, 10 Sep 2024 00:00:00 +0000</pubDate>

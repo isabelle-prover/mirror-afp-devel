@@ -1,0 +1,22 @@
+chapter AFP
+
+session Context_Free_Grammar = Finite_Automata_HF +
+  options [timeout=300]
+  sessions
+    "HOL-Library"
+    List_Power
+  theories
+    Context_Free_Grammar
+    Parse_Tree
+    Context_Free_Language
+    Chomsky_Normal_Form
+    Pumping_Lemma_CFG
+    AnBnCn_not_CFL
+    CFL_Not_Intersection_Closed
+    Right_Linear
+    Right_Linear_Automata
+    Pumping_Lemma_Regular
+    AnBn_Not_Regular
+  document_files
+    "root.tex"
+    "root.bib"

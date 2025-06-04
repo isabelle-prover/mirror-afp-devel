@@ -306,7 +306,7 @@ proof -
       using W1 by (smt (verit) real_of_card sum_mono)
     finally show ?thesis .
   qed
-  have "weight X Y x \<le> real (card(X - {x})) * 1" for x
+  have "weight X Y x \<le> real (card(X \<setminus> {x})) * 1" for x
     unfolding weight_def by (meson DiffE abs_le_D1 sum_bounded_above W1)
   then have wgt_le_X1: "weight X Y x \<le> card X - 1" if "x \<in> X" for x
     using that card_Diff_singleton One_nat_def by (smt (verit, best)) 
@@ -315,13 +315,13 @@ proof -
     using not_many_bluish by (auto simp: m_of_def many_bluish_def XB_def)
   have "XB \<subseteq> X" "finite XB"
     using \<open>finite X\<close> by (auto simp: XB_def)
-  then have cv_non_XB: "\<And>y. y \<in> X - XB \<Longrightarrow> central_vertex X y"
+  then have cv_non_XB: "\<And>y. y \<in> X \<setminus> XB \<Longrightarrow> central_vertex X y"
     by (auto simp: central_vertex_def XB_def bluish_def)
   have "0 \<le> (\<Sum>y\<in>X. weight X Y y + Weight X Y y y)"
     by (fact ge0)
-  also have "\<dots> = (\<Sum>y\<in>XB. weight X Y y + Weight X Y y y) + (\<Sum>y\<in>X-XB. weight X Y y + Weight X Y y y)"
+  also have "\<dots> = (\<Sum>y\<in>XB. weight X Y y + Weight X Y y y) + (\<Sum>y\<in>X\<setminus>XB. weight X Y y + Weight X Y y y)"
     using sum.subset_diff [OF \<open>XB\<subseteq>X\<close>] by (smt (verit) X_def Xseq_subset_V finV finite_subset)
-  also have "\<dots> \<le> (\<Sum>y\<in>XB. weight X Y y + Weight X Y y y) + (\<Sum>y\<in>X-XB. weight X Y (cvx i) + 1)"
+  also have "\<dots> \<le> (\<Sum>y\<in>XB. weight X Y y + Weight X Y y y) + (\<Sum>y\<in>X\<setminus>XB. weight X Y (cvx i) + 1)"
     by (intro add_mono sum_mono w_maximal W1 order_refl cv_non_XB)
   also have "\<dots> = (\<Sum>y\<in>XB. weight X Y y + Weight X Y y y) + (card X - card XB) * (weight X Y (cvx i) + 1)"
     using \<open>XB\<subseteq>X\<close> \<open>finite XB\<close> by (simp add: card_Diff_subset)

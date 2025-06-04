@@ -1,0 +1,108 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+
+% further packages required for unusual symbols (see also
+% isabellesym.sty), use only when needed
+
+\usepackage{amssymb}
+  %for \<leadsto>, \<box>, \<diamond>, \<sqsupset>, \<mho>, \<Join>,
+  %\<lhd>, \<lesssim>, \<greatersim>, \<lessapprox>, \<greaterapprox>,
+  %\<triangleq>, \<yen>, \<lozenge>
+
+%\usepackage{eurosym}
+  %for \<euro>
+
+\usepackage{stmaryrd}
+  %for \<Sqinter>
+
+%\usepackage{eufrak}
+  %for \<AA> ... \<ZZ>, \<aa> ... \<zz> (also included in amssymb)
+
+\usepackage{textcomp}
+  %for \<onequarter>, \<onehalf>, \<threequarters>, \<degree>, \<cent>,
+  %\<currency>
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+% for uniform font size
+%\renewcommand{\isastyle}{\isastyleminor}
+
+
+\begin{document}
+
+\title{Shallow Expressions}
+\author{Simon Foster \\[.5ex] University of York, UK \\[2ex] \texttt{\small simon.foster@york.ac.uk}}
+\maketitle
+
+\begin{abstract}
+\noindent Most verification techniques use expressions, for example when assigning to variables or 
+forming assertions over the state. Deep embeddings provide such expressions using a datatype, which 
+allows queries over the syntax, such as calculating the free variables, and performing substitutions. 
+Shallow embeddings, in contrast, model expressions as query functions over the state type, and are 
+more amenable to automating verification tasks. The goal of this library is provide an intuitive 
+implementation of shallow expressions, which nevertheless provides many of the benefits of a deep 
+embedding. We harness the Optics library to provide an algebraic semantics for state variables,
+and use syntax translations to provide an intuitive lifted expression syntax. Furthermore, we
+provide a variety of meta-logic-style queries on expressions, such as dependencies
+on a state variable, and substitution of a variable for an expression. We also provide proof 
+methods, based on the simplifier, to automate the associated proof tasks.
+\end{abstract}
+
+\tableofcontents
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+\section{Introduction}
+
+This session provides a library for expressions in shallow embeddings, based on the Optics
+package~\cite{Optics-AFP}. It provides the following key features:
+
+\begin{enumerate}
+  \item Parse and print translations for converting between intuitive expression syntax,
+    and state functions using lenses to model variables. The translation uses the type
+    system to determine whether each free variable in an expression is (1) a lens (i.e. a state 
+    variable); (2) another expression; (3) a literal, and gives the correct interpretation for each.
+    The lifting mechanism is manifested through the bracket notation, $(\_)_e$, but can usually be hidden behind syntax.
+  \item Syntax for complex state variable constructions, using the lens operators~\cite{Optics-AFP}, such as simultaneous 
+    assignment, hierarchical state, and initial/final state variables.
+  \item The ``unrestriction'' predicate~\cite{Oliveira07,Foster2020-IsabelleUTP}, $x \mathop{\sharp} e$, 
+    which characterises whether an expression $e$ depends on a
+    particular variable $x$ or not, based on the lens laws. It can often be used as a replacement for 
+    syntactically checking for free variables in a deep embedding, as needed in several verification
+    techniques.
+  \item Semantic substitution of variables for expressions, $e[v/x]$, with support for evaluation from 
+    the simplifier. A notation is provided for expressing substitution objects as a sequence of simultaneous 
+    variable assignments, $[x_1 \leadsto e_1, x_2 \leadsto e_2, \cdots]$.
+  \item Collection lenses, $x[i]$, which can be used to model updating a component of a larger structure,
+    for example mutating an element of an array by its index.
+  \item Supporting transformations and constructors for expressions, such as state extension, 
+    state restriction, and quantifiers.
+\end{enumerate}
+
+The majority of these concepts have been adapted from Isabelle/UTP~\cite{Foster2020-IsabelleUTP}, but 
+have been generalised for use in other Isabelle-based verification tools. Several proof methods are 
+provided, such as for discharging unrestriction conditions (\texttt{unrest}) and evaluating substitutions (\texttt{subst\_eval}).
+
+The Shallow Expressions library has been applied in the IsaVODEs tool~\cite{Munive2024IsaVODES}, for 
+verifying hybrid systems, and Isabelle/ITrees~\cite{Foster2024ITrees}, for verification of process-algebraic languages. 
+
+% generated text of all theories
+\input{session}
+
+% optional bibliography
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

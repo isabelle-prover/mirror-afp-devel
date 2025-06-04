@@ -4,6 +4,14 @@
     <title>Simon Wimmer</title>
     <link>https://isa-afp.org/authors/wimmer/</link>
     <description>AFP entries of Simon Wimmer</description><item>
+  <title>Munta: A Verified Model Checker for Timed Automata</title>
+  <link>https://isa-afp.org/entries/Munta_Model_Checker.html</link>
+  <pubDate>Thu, 22 May 2025 00:00:00 +0000</pubDate>
+  <description>Munta: A Verified Model Checker for Timed Automata in the AFP</description>
+    <category>Computer science/Automata and formal languages</category>
+    <category>Tools</category>
+</item>
+<item>
   <title>Difference Bound Matrices</title>
   <link>https://isa-afp.org/entries/Difference_Bound_Matrices.html</link>
   <pubDate>Wed, 14 Aug 2024 00:00:00 +0000</pubDate>

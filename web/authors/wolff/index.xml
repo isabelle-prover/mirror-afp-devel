@@ -4,6 +4,50 @@
     <title>Burkhart Wolff</title>
     <link>https://isa-afp.org/authors/wolff/</link>
     <description>AFP entries of Burkhart Wolff</description><item>
+  <title>Ultrametric Structure for Restriction Spaces</title>
+  <link>https://isa-afp.org/entries/Restriction_Spaces-Ultrametric.html</link>
+  <pubDate>Wed, 07 May 2025 00:00:00 +0000</pubDate>
+  <description>Ultrametric Structure for Restriction Spaces in the AFP</description>
+    <category>Mathematics/Analysis</category>
+    <category>Mathematics/Topology</category>
+    <category>Computer science/Semantics and reasoning</category>
+</item>
+<item>
+  <title>Examples of Restriction Spaces</title>
+  <link>https://isa-afp.org/entries/Restriction_Spaces-Examples.html</link>
+  <pubDate>Wed, 07 May 2025 00:00:00 +0000</pubDate>
+  <description>Examples of Restriction Spaces in the AFP</description>
+    <category>Mathematics/Analysis</category>
+    <category>Mathematics/Topology</category>
+    <category>Mathematics/Algebra</category>
+    <category>Computer science/Concurrency/Process calculi</category>
+</item>
+<item>
+  <title>Restriction Spaces: a Fixed-Point Theory</title>
+  <link>https://isa-afp.org/entries/Restriction_Spaces.html</link>
+  <pubDate>Wed, 07 May 2025 00:00:00 +0000</pubDate>
+  <description>Restriction Spaces: a Fixed-Point Theory in the AFP</description>
+    <category>Tools</category>
+    <category>Mathematics/Analysis</category>
+    <category>Mathematics/Topology</category>
+    <category>Computer science/Semantics and reasoning</category>
+</item>
+<item>
+  <title>CSP Semantics over Restriction Spaces</title>
+  <link>https://isa-afp.org/entries/HOL-CSP_RS.html</link>
+  <pubDate>Wed, 07 May 2025 00:00:00 +0000</pubDate>
+  <description>CSP Semantics over Restriction Spaces in the AFP</description>
+    <category>Computer science/Semantics and reasoning</category>
+    <category>Computer science/Concurrency/Process calculi</category>
+</item>
+<item>
+  <title>Definition and Elementary Properties of Ultrametric Spaces</title>
+  <link>https://isa-afp.org/entries/Elementary_Ultrametric_Spaces.html</link>
+  <pubDate>Thu, 10 Apr 2025 00:00:00 +0000</pubDate>
+  <description>Definition and Elementary Properties of Ultrametric Spaces in the AFP</description>
+    <category>Mathematics/Topology</category>
+</item>
+<item>
   <title>A Proof of Hilbert Basis Theorem and            an Extension to Formal Power Series</title>
   <link>https://isa-afp.org/entries/Hilbert_Basis.html</link>
   <pubDate>Wed, 12 Feb 2025 00:00:00 +0000</pubDate>

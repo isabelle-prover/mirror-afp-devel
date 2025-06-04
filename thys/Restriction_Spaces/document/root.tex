@@ -1,0 +1,90 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{isabelle,isabellesym}
+
+% further packages required for unusual symbols (see also
+% isabellesym.sty), use only when needed
+
+\usepackage{pifont}
+
+\usepackage{mathpartir}
+
+\usepackage{amsmath}
+
+\usepackage{amssymb}
+  %for \<leadsto>, \<box>, \<diamond>, \<sqsupset>, \<mho>, \<Join>,
+  %\<lhd>, \<lesssim>, \<greatersim>, \<lessapprox>, \<greaterapprox>,
+  %\<triangleq>, \<yen>, \<lozenge>
+
+%\usepackage{eurosym}
+  %for \<euro>
+
+%\usepackage[only,bigsqcap,bigparallel,fatsemi,interleave,sslash]{stmaryrd}
+  %for \<Sqinter>, \<Parallel>, \<Zsemi>, \<Parallel>, \<sslash>
+
+%\usepackage{eufrak}
+  %for \<AA> ... \<ZZ>, \<aa> ... \<zz> (also included in amssymb)
+
+%\usepackage{textcomp}
+  %for \<onequarter>, \<onehalf>, \<threequarters>, \<degree>, \<cent>,
+  %\<currency>
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+% for uniform font size
+%\renewcommand{\isastyle}{\isastyleminor}
+
+
+\begin{document}
+
+\title{Restriction\_Spaces: a Fixed-Point Theory}
+\author{Benoît Ballenghien \and Benjamin Puyobro \and Burkhart Wolff}
+\maketitle
+
+\abstract{
+  Fixed-point constructions are fundamental to defining recursive and co-recursive functions.
+  However, a general axiom $Y f = f (Y f)$ leads to inconsistency, and definitions
+  must therefore be based on theories guaranteeing existence under suitable conditions.
+  In \verb'Isabelle/HOL', such constructions are typically based on sets, well-founded orders
+  or domain-theoretic models such as for example \verb'HOLCF'.
+  In this submission we introduce \verb'Restriction_Spaces', a formalization of spaces
+  equipped with a so-called restriction, denoted by $\downarrow$,
+  satifying three properties:
+  \begin{align*}
+    & x \downarrow 0 = y \downarrow 0\\
+    & x \downarrow n \downarrow m = x \downarrow \mathrm{min} \ n \ m\\
+    & x \not = y \Longrightarrow \exists n. \ x \downarrow n \not = y \downarrow n
+  \end{align*}
+  They turn out to be cartesian closed and admit natural notions of constructiveness and
+  completeness, enabling the definition of a fixed-point operator under verifiable side-conditions.
+  This is achieved in our entry, from topological definitions to induction principles.
+  Additionally, we configure the simplifier so that it can automatically solve both
+  constructiveness and admissibility subgoals, as long as users write higher-order rules
+  for their operators.
+  Since our implementation relies on axiomatic type classes, the resulting library
+  is a fully abstract, flexible and reusable framework.
+}
+
+
+\tableofcontents
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+% generated text of all theories
+\input{session}
+
+% optional bibliography
+%\bibliographystyle{abbrv}
+%\bibliography{root}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

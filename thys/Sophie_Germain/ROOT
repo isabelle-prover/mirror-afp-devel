@@ -1,0 +1,16 @@
+chapter AFP
+
+(* Author: Benoît Ballenghien, Université Paris-Saclay, CNRS, ENS Paris-Saclay, LMF *)
+
+session Sophie_Germain = Fermat3_4 +
+  options [timeout = 600]
+  sessions Wlog
+  theories
+    SG_Introduction
+    FLT_Sufficient_Conditions
+    SG_Preliminaries
+    SG_Theorem
+    SG_Generalization
+  document_files
+    "root.tex"
+    "root.bib"

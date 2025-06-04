@@ -1,5 +1,188 @@
 [
  {
+  "abstract": " This entry defines complex lattices, i.e. $\\Lambda(\\omega_1,\\omega_2) = \\mathbb{Z}\\omega_1 + \\mathbb{Z}\\omega_2$ where $\\omega_1/\\omega_2\\notin\\mathbb{R}$. Based on this, various other related topics are covered:\nthe modular group $\\Gamma$ and its fundamental region elliptic functions and their basic properties the Weierstraß elliptic function $\\wp$ and the fact that every elliptic function can be written in terms of $\\wp$ the Eisenstein series $G_n$ (including the forbidden series $G_2$) the ordinary differential equation satisfied by $\\wp$, the recurrence relation for $G_n$, and the addition and duplication theorems for $\\wp$ the lattice invariants $g_2$, $g_3$, and Klein's $J$ invariant the non-vanishing of the lattice discriminant $\\Delta$ $G_n$, $\\Delta$, $J$ as holomorphic functions in the upper half plane the Fourier expansion of $G_n(z)$ for $z\\to i\\infty$ the functional equations of $G_n$, $\\Delta$, $J$, and $\\eta$ w.r.t. the modular group Dedekind's $\\eta$ function the inversion formulas for the Jacobi $\\theta$ functions In particular, this entry contains most of Chapters 1 and 3 from Apostol's Modular Functions and Dirichlet Series in Number Theory and parts of Chapter 2.\nThe purpose of this entry is to provide a foundation for further formalisation of modular functions and modular forms.\n",
+  "authors": [
+   "Manuel Eberl",
+   "Anthony Bordg",
+   "Wenda Li",
+   "Lawrence C. Paulson"
+  ],
+  "link": "/entries/Elliptic_Functions.html",
+  "shortname": "Elliptic_Functions",
+  "title": "Complex Lattices, Elliptic Functions, and the Modular Group",
+  "topic_links": [
+   "/topics/mathematics/number-theory/"
+  ],
+  "topics": [
+   "Mathematics/Number theory"
+  ],
+  "year": "2025"
+ },
+ {
+  "abstract": "Munta is a verified model checker for timed automata. It has been described in detail in a PhD thesis [3] and conference publications [4, 2]. This entry supersedes earlier versions of Munta hosted on GitHub.",
+  "authors": [
+   "Simon Wimmer"
+  ],
+  "link": "/entries/Munta_Model_Checker.html",
+  "shortname": "Munta_Model_Checker",
+  "title": "Munta: A Verified Model Checker for Timed Automata",
+  "topic_links": [
+   "/topics/computer-science/automata-and-formal-languages/",
+   "/topics/tools/"
+  ],
+  "topics": [
+   "Computer science/Automata and formal languages",
+   "Tools"
+  ],
+  "year": "2025"
+ },
+ {
+  "abstract": "This is a basic library of definitions and results about context-free grammars and languages. It includes context-free grammars and languages, parse trees, Chomsky normal form, pumping lemmas and the relationship of right-linear grammars to finite automata.",
+  "authors": [
+   "Tobias Nipkow",
+   "Markus Gschoßmann",
+   "Felix Krayer",
+   "Fabian Lehr",
+   "Bruno Philipp",
+   "August Martin Stimpfle",
+   "Kaan Taskin",
+   "Akihisa Yamada"
+  ],
+  "link": "/entries/Context_Free_Grammar.html",
+  "shortname": "Context_Free_Grammar",
+  "title": "Context-Free Grammars and Languages",
+  "topic_links": [
+   "/topics/computer-science/automata-and-formal-languages/"
+  ],
+  "topics": [
+   "Computer science/Automata and formal languages"
+  ],
+  "year": "2025"
+ },
+ {
+  "abstract": "Most verification techniques use expressions, for example when assigning to variables or forming assertions over the state. Deep embeddings provide such expressions using a datatype, which allows queries over the syntax, such as calculating the free variables, and performing substitutions. Shallow embeddings, in contrast, model expressions as query functions over the state type, and are more amenable to automating verification tasks. The goal of this library is provide an intuitive implementation of shallow expressions, which nevertheless provides many of the benefits of a deep embedding. We harness the Optics library to provide an algebraic semantics for state variables, and use syntax translations to provide an intuitive lifted expression syntax. Furthermore, we provide a variety of meta-logic-style queries on expressions, such as dependencies on a state variable, and substitution of a variable for an expression. We also provide proof methods, based on the simplifier, to automate the associated proof tasks.",
+  "authors": [
+   "Simon Foster"
+  ],
+  "link": "/entries/Shallow_Expressions.html",
+  "shortname": "Shallow_Expressions",
+  "title": "Shallow Expressions",
+  "topic_links": [
+   "/topics/computer-science/semantics-and-reasoning/",
+   "/topics/computer-science/programming-languages/logics/"
+  ],
+  "topics": [
+   "Computer science/Semantics and reasoning",
+   "Computer science/Programming languages/Logics"
+  ],
+  "year": "2025"
+ },
+ {
+  "abstract": "The sequence $F_n$ of Farey fractions of order $n$ has the form $$\\frac{0}{1}, \\frac{1}{n}, \\frac{1}{n-1}, \\ldots, \\frac{n-1}{n}, \\frac{1}{1}$$ where the fractions appear in numerical order and have denominators at most $n$. The transformation from $F_n$ to $F_{n+1}$ can be effected by combining adjacent elements of the sequence~$F_n$, using an operation called the mediant. Adjacent (reduced) fractions $(a/b) \u003c (c/d)$ satisfy the unimodular relation $bc - ad = 1$ and their mediant is $\\frac{a+c}{b+d}$. A Ford circle is specified by a rational number, and interesting consequences follow in the case of Ford circles obtained from some Farey sequence~$F_n$. The formalised material is drawn from Apostol's Modular Functions and Dirichlet Series in Number Theory.",
+  "authors": [
+   "Lawrence C. Paulson"
+  ],
+  "link": "/entries/Farey_Sequences.html",
+  "shortname": "Farey_Sequences",
+  "title": "Farey Sequences and Ford Circles",
+  "topic_links": [
+   "/topics/mathematics/number-theory/"
+  ],
+  "topics": [
+   "Mathematics/Number theory"
+  ],
+  "year": "2025"
+ },
+ {
+  "abstract": "We use the Restriction_Spaces library as a semantic foundation for the process algebra framework HOL-CSP, offering a complementary backend to the existing HOLCF infrastructure. The type of processes is instantiated as a restriction space, and we prove that it is complete in this setting. This enables the construction of fixed points for recursive process definitions without having to rely exclusively on a pointed complete partial order. Notably, some operators are constructive without being Scott-continuous, and vice versa, illustrating the genuine complementarity between the two approaches. We also show that key CSP operators are either constructive or non-destructive, and verify the admissibility of several predicates, thereby supporting automated reasoning over recursive specifications.",
+  "authors": [
+   "Benoît Ballenghien",
+   "Burkhart Wolff"
+  ],
+  "link": "/entries/HOL-CSP_RS.html",
+  "shortname": "HOL-CSP_RS",
+  "title": "CSP Semantics over Restriction Spaces",
+  "topic_links": [
+   "/topics/computer-science/semantics-and-reasoning/",
+   "/topics/computer-science/concurrency/process-calculi/"
+  ],
+  "topics": [
+   "Computer science/Semantics and reasoning",
+   "Computer science/Concurrency/Process calculi"
+  ],
+  "year": "2025"
+ },
+ {
+  "abstract": "In this session, a number of examples are provided to illustrate how the Restriction_Spaces library works. The simple cases are, of course, covered: trivial restriction, booleans, integers, option type, and so on. But we also explore more elaborate constructions, such as formal power series and a trace model of the CSP process algebra. Additionally, we provide a lightweight integration with HOLCF, equipping restriction spaces with the inherited partial order structure when needed.",
+  "authors": [
+   "Benoît Ballenghien",
+   "Benjamin Puyobro",
+   "Burkhart Wolff"
+  ],
+  "link": "/entries/Restriction_Spaces-Examples.html",
+  "shortname": "Restriction_Spaces-Examples",
+  "title": "Examples of Restriction Spaces",
+  "topic_links": [
+   "/topics/mathematics/analysis/",
+   "/topics/mathematics/topology/",
+   "/topics/mathematics/algebra/",
+   "/topics/computer-science/concurrency/process-calculi/"
+  ],
+  "topics": [
+   "Mathematics/Analysis",
+   "Mathematics/Topology",
+   "Mathematics/Algebra",
+   "Computer science/Concurrency/Process calculi"
+  ],
+  "year": "2025"
+ },
+ {
+  "abstract": "Fixed-point constructions are fundamental to defining recursive and co-recursive functions.   However, a general axiom $Y f = f (Y f)$ leads to inconsistency, and definitions   must therefore be based on theories guaranteeing existence under suitable conditions.   In Isabelle/HOL, these constructions are typically based on sets, well-founded orders   or domain-theoretic models such as for example HOLCF.   In this submission we introduce a formalization of restriction spaces i.e. spaces   equipped with a so-called restriction, denoted by $\\downarrow$,   satifying three properties:   \\begin{align*}     \u0026 x \\downarrow 0 = y \\downarrow 0\\\\     \u0026 x \\downarrow n \\downarrow m = x \\downarrow \\mathrm{min} \\ n \\ m\\\\     \u0026 x \\not = y \\Longrightarrow \\exists n. \\ x \\downarrow n \\not = y \\downarrow n   \\end{align*}   They turn out to be cartesian closed and admit natural notions of constructiveness and   completeness, enabling the definition of a fixed-point operator under verifiable side-conditions.   This is achieved in our entry, from topological definitions to induction principles.   Additionally, we configure the simplifier so that it can automatically solve both   constructiveness and admissibility subgoals, as long as users write higher-order rules   for their operators.   Since our implementation relies on axiomatic type classes, the resulting library   is a fully abstract, flexible and reusable framework.",
+  "authors": [
+   "Benoît Ballenghien",
+   "Benjamin Puyobro",
+   "Burkhart Wolff"
+  ],
+  "link": "/entries/Restriction_Spaces.html",
+  "shortname": "Restriction_Spaces",
+  "title": "Restriction Spaces: a Fixed-Point Theory",
+  "topic_links": [
+   "/topics/tools/",
+   "/topics/mathematics/analysis/",
+   "/topics/mathematics/topology/",
+   "/topics/computer-science/semantics-and-reasoning/"
+  ],
+  "topics": [
+   "Tools",
+   "Mathematics/Analysis",
+   "Mathematics/Topology",
+   "Computer science/Semantics and reasoning"
+  ],
+  "year": "2025"
+ },
+ {
+  "abstract": "In this entry, we explore the relationship   between restriction spaces and usual metric   structures by instantiating the former as ultrametric spaces.   This is classically captured by defining the distance as   $$\\mathrm{dist} \\ x \\ y = \\inf_{x \\downarrow n \\ = \\ y \\downarrow n} \\left(\\frac{1}{2}\\right)^ n$$   but we actually generalize this perspective by introducing a hierarchy of increasingly   refined type classes to systematically relate ultrametric and restriction-based notions.   This layered approach enables a precise comparison of structural and topological properties.   In the end, our main result establishes that completeness in the sense of restriction spaces   coincides with standard metric completeness, thus bridging the gap between   our framework and Banach's fixed-point theorem established in HOL-Analysis.",
+  "authors": [
+   "Benoît Ballenghien",
+   "Benjamin Puyobro",
+   "Burkhart Wolff"
+  ],
+  "link": "/entries/Restriction_Spaces-Ultrametric.html",
+  "shortname": "Restriction_Spaces-Ultrametric",
+  "title": "Ultrametric Structure for Restriction Spaces",
+  "topic_links": [
+   "/topics/mathematics/analysis/",
+   "/topics/mathematics/topology/",
+   "/topics/computer-science/semantics-and-reasoning/"
+  ],
+  "topics": [
+   "Mathematics/Analysis",
+   "Mathematics/Topology",
+   "Computer science/Semantics and reasoning"
+  ],
+  "year": "2025"
+ },
+ {
   "abstract": "For integers $h$, $k$, the Dedekind sum is defined as \\[s(h,k) = \\sum_{r=1}^{k-1} \\frac{r}{k} \\left(\\left\\{\\frac{hr}{k}\\right\\} - \\frac{1}{2}\\right) \\] where $\\{x\\} = x - \\lfloor x\\rfloor$ denotes the fractional part of $x$.\nThese sums occur in various contexts in analytic number theory, e.g. in the functional equation of the Dedekind $\\eta$ function or in the study of modular forms.\nWe give the definition of $s(h,k)$ and prove its basic properties, including the reciprocity law \\[s(h,k) + s(k,h) = \\frac{1}{12hk} + \\frac{h}{12k} + \\frac{k}{12h} - \\frac{1}{4} \\] and various congruence results.\nOur formalisation follows Chapter 3 of Apostol's Modular Functions and Dirichlet Series in Number Theory and contains all facts related to Dedekind sums from it (without the exercises).\n",
   "authors": [
    "Manuel Eberl",
@@ -87,6 +270,40 @@
   ],
   "topics": [
    "Logic/Rewriting"
+  ],
+  "year": "2025"
+ },
+ {
+  "abstract": "An ultrametric space is a metric space in which the triangle inequality is strengthened by using the maximum instead of the sum. More formally, such a space is equipped with a real-valued application $dist$, called distance, verifying the four following conditions. \\begin{align*}     \u0026 dist \\ x \\ y \\ge 0\\\\     \u0026 dist \\ x \\ y = dist \\ y \\ x\\\\     \u0026 dist \\ x \\ y = 0 \\longleftrightarrow x = y\\\\     \u0026 dist \\ x \\ z \\le max \\ (dist \\ x \\ y) \\ (dist \\ y \\ z) \\end{align*} In this entry, we present an elementary formalization of these spaces relying on axiomatic type classes. The connection with standard metric spaces is obtained through a subclass relationship, and fundamental properties of ultrametric spaces are formally established.",
+  "authors": [
+   "Benoît Ballenghien",
+   "Benjamin Puyobro",
+   "Burkhart Wolff"
+  ],
+  "link": "/entries/Elementary_Ultrametric_Spaces.html",
+  "shortname": "Elementary_Ultrametric_Spaces",
+  "title": "Definition and Elementary Properties of Ultrametric Spaces",
+  "topic_links": [
+   "/topics/mathematics/topology/"
+  ],
+  "topics": [
+   "Mathematics/Topology"
+  ],
+  "year": "2025"
+ },
+ {
+  "abstract": "Sophie Germain's theorem states that if $p$ is a prime number such that $2 p + 1$ is also prime (with $p$ then called a Sophie Germain prime), a weak version of Fermat’s Last Theorem (FLT) holds for the exponent $p$. That is, there exist no nontrivial integer solutions $x, y, z \\in \\mathbb{Z}$ to the equation $$x ^ p + y ^ p = z ^ p$$ such that $p$ divides neither $x$, $y$ nor $z$. After some preliminary results, mainly on sufficient criteria for FLT, we propose a formalization of the classical version of Sophie Germain's theorem as well as a variant involving the concept of auxiliary primes that generalizes Sophie Germain primes.",
+  "authors": [
+   "Benoît Ballenghien"
+  ],
+  "link": "/entries/Sophie_Germain.html",
+  "shortname": "Sophie_Germain",
+  "title": "Sophie Germain’s Theorem",
+  "topic_links": [
+   "/topics/mathematics/number-theory/"
+  ],
+  "topics": [
+   "Mathematics/Number theory"
   ],
   "year": "2025"
  },
@@ -524,7 +741,7 @@
   "year": "2024"
  },
  {
-  "abstract": " This entry defines the sum-of-squares function $r_k(n)$, which counts the number of ways to write a natural number $n$ as a sum of $k$ squares of integers. Signs and permutations of these integers are taken into account, such that e.g. $1^2+2^2$, $2^2+1^2$, and $(-1)^2+2^2$ are all different decompositions of $5$. Using this, I then formalise the main result: Jacobi's two-square theorem, which states that for $n \u003e 0$ we have \\[r_2(n) = 4(d_1(3) - d_3(n))\\ ,\\] where $d_i(n)$ denotes the number of divisors $m$ of $n$ such that $m = i\\ (\\text{mod}\\ 4)$. Corollaries include the identities $r_2(2n) = r_2(n)$ and $r_2(p^2n) = r_2(n)$ if $p = 3\\ (\\text{mod}\\ 4)$ and the well-known theorem that $r_2(n) = 0$ iff $n$ has a prime factor $p$ of odd multiplicity with $p = 3\\ (\\text{mod}\\ 4)$. ",
+  "abstract": " This entry defines the sum-of-squares function $r_k(n)$, which counts the number of ways to write a natural number $n$ as a sum of $k$ squares of integers. Signs and permutations of these integers are taken into account, such that e.g. $1^2+2^2$, $2^2+1^2$, and $(-1)^2+2^2$ are all different decompositions of $5$. Using this, I then formalise the main result: Jacobi's two-square theorem, which states that for $n \u003e 0$ we have \\[r_2(n) = 4(d_1(n) - d_3(n))\\ ,\\] where $d_i(n)$ denotes the number of divisors $m$ of $n$ such that $m = i\\ (\\text{mod}\\ 4)$. Corollaries include the identities $r_2(2n) = r_2(n)$ and $r_2(p^2n) = r_2(n)$ if $p = 3\\ (\\text{mod}\\ 4)$ and the well-known theorem that $r_2(n) = 0$ iff $n$ has a prime factor $p$ of odd multiplicity with $p = 3\\ (\\text{mod}\\ 4)$. ",
   "authors": [
    "Manuel Eberl"
   ],
@@ -2778,7 +2995,7 @@
  {
   "abstract": "We formalize the Legendre's three squares theorem and its consequences, in particular the following results: A natural number can be represented as the sum of three squares of natural numbers if and only if it is not of the form $4^a (8 k + 7)$, where $a$ and $k$ are natural numbers. If $n$ is a natural number such that $n \\equiv 3 \\pmod{8}$, then $n$ can be be represented as the sum of three squares of odd natural numbers. Consequences include the following: An integer $n$ can be written as $n = x^2 + y^2 + z^2 + z$, where $x$, $y$, $z$ are integers, if and only if $n \\geq 0$. The Legendre's four squares theorem: any natural number can be represented as the sum of four squares of natural numbers. ",
   "authors": [
-   "Anton Danilkin",
+   "Anna Danilkin",
    "Loïc Chevalier"
   ],
   "link": "/entries/Three_Squares.html",

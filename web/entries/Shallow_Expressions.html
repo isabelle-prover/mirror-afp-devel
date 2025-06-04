@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Shallow Expressions - Archive of Formal Proofs</title>
+    <meta name="description" content="Shallow Expressions in the Archive of Formal Proofs" />
+    <meta property="og:description" content="Shallow Expressions in the Archive of Formal Proofs" />
+
+  <meta property="og:title" content="Shallow Expressions" />
+  <meta property="og:url" content="https://isa-afp.org/entries/Shallow_Expressions.html" />
+  <meta property="og:image" content="https://isa-afp.org/images/afp.png" />
+    <meta property="og:type" content="article" />
+  <link rel="stylesheet" type="text/css" href="../css/front.min.css">
+
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
+    
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [["$", "$"], ["\\(", "\\)"]]
+        },
+        processEscapes: true,
+        svg: {
+          fontCache: "global"
+        }
+      };
+    </script>
+    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
+    </script>
+    <script src="../js/entries.js"></script>
+
+  <script src="../js/obfuscate.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
+  <script src="../js/scroll-spy.js"></script>
+  <script src="../js/theory.js"></script>
+  <script src="../js/util.js"></script>
+    <script src="../js/header-search.js"></script>
+  <script src="../js/search-autocomplete.js"></script>
+</head>
+
+  <body class="mathjax_ignore">
+    <aside><div id="menu-toggle">
+  <input id="toggle" type="checkbox" />
+  <label for="toggle">
+    <span>menu</span>
+    <img src="../images/menu.svg" alt="Menu" />
+  </label>
+
+  <a href="../" class="logo-link">
+    <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
+  </a>
+
+  <nav id="menu">
+    <div>
+      <a href="../" class="logo-link">
+        <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
+      </a>
+      <ul>
+          <a href="../">
+            <li >Home</li>
+          </a>
+          <a href="../topics/">
+            <li >Topics</li>
+          </a>
+          <a href="../download/">
+            <li >Download</li>
+          </a>
+          <a href="../help/">
+            <li >Help</li>
+          </a>
+          <a href="../submission/">
+            <li >Submission</li>
+          </a>
+          <a href="../statistics/">
+            <li >Statistics</li>
+          </a>
+          <a href="../about/">
+            <li >About</li>
+          </a>
+      </ul>
+    </div>
+  </nav>
+</div>
+    </aside>
+
+    <div class="content entries"><header>
+    <form autocomplete="off" action="../search">
+      <div class="form-container">
+        <input id="search-input" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="button">
+          <img src="../images/search.svg" alt="Search" />
+        </button>
+        <datalist id="autocomplete">
+        </datalist>
+      </div>
+    </form>
+  <h1 ><span class='first'>S</span>hallow <span class='first'>E</span>xpressions
+  </h1>
+  <div>
+      <p><a href="../authors/fosters/">Simon Foster</a> <a class="obfuscated" data="eyJ1c2VyIjpbInNpbW9uIiwiZm9zdGVyIl0sImhvc3QiOlsieW9yayIsImFjIiwidWsiXX0=">📧</a>
+      </p>
+      <p class="date">May 16, 2025</p>
+  </div>
+</header>
+      <div>
+  <main>
+
+    <h3>Abstract</h3>
+    <div class="abstract mathjax_process">Most verification techniques use expressions, for example when assigning to variables or forming assertions over the state. Deep embeddings provide such expressions using a datatype, which allows queries over the syntax, such as calculating the free variables, and performing substitutions. Shallow embeddings, in contrast, model expressions as query functions over the state type, and are more amenable to automating verification tasks. The goal of this library is provide an intuitive implementation of shallow expressions, which nevertheless provides many of the benefits of a deep embedding. We harness the Optics library to provide an algebraic semantics for state variables, and use syntax translations to provide an intuitive lifted expression syntax. Furthermore, we provide a variety of meta-logic-style queries on expressions, such as dependencies on a state variable, and substitution of a variable for an expression. We also provide proof methods, based on the simplifier, to automate the associated proof tasks.</div>
+
+    <h3>License</h3>
+    <div>
+        <a href="https://isa-afp.org/LICENSE">BSD License</a>
+    </div>
+      <h3>Topics</h3>
+      <ul>
+          <li><a href="../topics/computer-science/semantics-and-reasoning/">Computer science/Semantics and reasoning</a></li>
+          <li><a href="../topics/computer-science/programming-languages/logics/">Computer science/Programming languages/Logics</a></li>
+      </ul>
+      <h3>Related publications</h3>
+      <ul>
+        <li>Huerta y Munive, J. J., Foster, S., Gleirscher, M., Struth, G., Pardillo Laursen, C., & Hickman, T. (2024). IsaVODEs: Interactive Verification of Cyber-Physical Systems at Scale. Journal of Automated Reasoning, 68(4). <a href="https://doi.org/10.1007/s10817-024-09709-2">https://doi.org/10.1007/s10817-024-09709-2</a>
+</li>
+        <li>Foster, S., Baxter, J., Cavalcanti, A., Woodcock, J., & Zeyda, F. (2020). Unifying semantic foundations for automated verification tools in Isabelle/UTP. Science of Computer Programming, 197, 102510. <a href="https://doi.org/10.1016/j.scico.2020.102510">https://doi.org/10.1016/j.scico.2020.102510</a>
+</li>
+      </ul>
+      <h3>Session Shallow_Expressions</h3>
+      <ul>
+          <li><a href="../sessions/shallow_expressions/#Variables">Variables</a></li>
+          <li><a href="../sessions/shallow_expressions/#Expressions">Expressions</a></li>
+          <li><a href="../sessions/shallow_expressions/#Unrestriction">Unrestriction</a></li>
+          <li><a href="../sessions/shallow_expressions/#Substitutions">Substitutions</a></li>
+          <li><a href="../sessions/shallow_expressions/#Extension">Extension</a></li>
+          <li><a href="../sessions/shallow_expressions/#Liberation">Liberation</a></li>
+          <li><a href="../sessions/shallow_expressions/#Quantifiers">Quantifiers</a></li>
+          <li><a href="../sessions/shallow_expressions/#Collections">Collections</a></li>
+          <li><a href="../sessions/shallow_expressions/#Named_Expressions">Named_Expressions</a></li>
+          <li><a href="../sessions/shallow_expressions/#Local_State">Local_State</a></li>
+          <li><a href="../sessions/shallow_expressions/#Shallow_Expressions">Shallow_Expressions</a></li>
+          <li><a href="../sessions/shallow_expressions/#Expressions_Tests">Expressions_Tests</a></li>
+          <li><a href="../sessions/shallow_expressions/#Shallow_Expressions_Examples">Shallow_Expressions_Examples</a></li>
+      </ul>
+
+    <div class="flex-wrap">
+        <div>
+          <h3>Depends on</h3>
+          <ul class="horizontal-list">
+              <li><a href="../entries/Optics.html">Optics</a></li>
+          </ul>
+        </div>
+    </div>
+  </main>
+
+  <nav class="links">
+    <a class="popup-button" href="#cite-popup">Cite</a>
+    <a class="popup-button" href="#download-popup">Download</a>
+    <h4>PDFs</h4>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Shallow_Expressions/outline.pdf">Proof outline</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Shallow_Expressions/document.pdf">Proof document</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Shallow_Expressions/session_graph.pdf">Dependencies</a>
+  </nav>
+
+  <div id="cite-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Cite</h2>
+      <a class="close" href="#">&times;</a>
+      <div>
+        <p style="display:none;" id="bibtex-filename">Shallow_Expressions-AFP</p>
+        <pre id="copy-text">@article{Shallow_Expressions-AFP,
+  author  = {Simon Foster},
+  title   = {Shallow Expressions},
+  journal = {Archive of Formal Proofs},
+  month   = {May},
+  year    = {2025},
+  note    = {\url{https://isa-afp.org/entries/Shallow_Expressions.html},
+             Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
+        <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
+      </div>
+    </div>
+  </div>
+
+  <div id="download-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Download</h2>
+      <a class="close" href="#">&times;</a>
+      <a href="https://www.isa-afp.org/release/afp-Shallow_Expressions-current.tar.gz" download>
+        Download latest</a>
+    </div>
+  </div>
+      </div>
+    </div>
+  </body>
+</html>
