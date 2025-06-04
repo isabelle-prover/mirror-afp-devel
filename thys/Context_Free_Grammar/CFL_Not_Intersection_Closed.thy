@@ -17,7 +17,6 @@ The proof below is much shorter.\<close>
 
 text "Some lemmas:"
 
-(* TODO: rm with next release because def of (@@) is now as below: *)
 lemma Lang_concat:
   "L1 @@ L2 = {word. \<exists>w1 \<in> L1. \<exists>w2 \<in> L2. word = w1 @ w2}"
   unfolding conc_def by blast

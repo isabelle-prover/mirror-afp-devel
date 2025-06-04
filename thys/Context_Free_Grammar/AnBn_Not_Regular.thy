@@ -8,24 +8,6 @@ theory AnBn_Not_Regular
 imports Pumping_Lemma_Regular
 begin
 
-(* TODO:rm after next release *)
-
-lemma pow_list_set_if: "set (w ^^ k) = (if k=0 then {} else set w)"
-  using pow_list_set[of _ w] by (auto dest: gr0_implies_Suc)
-lemma in_pow_list_set[simp]: "x \<in> set (ys ^^ m) \<longleftrightarrow> x \<in> set ys \<and> m \<noteq> 0"
-  by (simp add: pow_list_set_if)
-lemma pow_list_eq_appends_iff:
-  "n \<ge> m \<Longrightarrow> x^^n @ y = x^^m @ z \<longleftrightarrow> z = x^^(n-m) @ y"
-  using pow_list_add[of m "n-m" x] by auto
-lemma append_eq_append_conv_if_disj:
-  "(set xs \<union> set xs') \<inter> (set ys \<union> set ys') = {}
-  \<Longrightarrow>  xs @ ys = xs' @ ys' \<longleftrightarrow> xs = xs' \<and> ys = ys'"
-by (auto simp: all_conj_distrib disjoint_iff append_eq_append_conv2)
-lemma pow_list_eq_single_appends_iff[simp]:
-  "\<lbrakk> x \<notin> set ys; x \<notin> set zs \<rbrakk> \<Longrightarrow> [x]^^m @ ys = [x]^^n @ zs \<longleftrightarrow> m = n \<and> ys = zs"
-using append_eq_append_conv_if_disj[of "[x]^^m" "[x]^^n" "ys" "zs"]
-by (auto simp: disjoint_iff pow_list_single)
-
 text
 \<open>The following theorem proves that the language \<open>a^nb^n\<close> cannot be produced by a right linear production set, using the contrapositive form 
  of the pumping lemma\<close>
