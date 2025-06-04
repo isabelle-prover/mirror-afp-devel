@@ -1,7 +1,7 @@
 theory Subsumption_Graphs
   imports
     Timed_Automata.Graphs
-    Timed_Automata.More_List
+    Timed_Automata.More_List1
 begin
 
 section \<open>Subsumption Graphs\<close>
