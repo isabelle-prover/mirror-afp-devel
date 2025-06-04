@@ -277,9 +277,8 @@ proof -
   proof (cases "m = 1")
     case False
     with that show ?thesis
-      using assms
-      unfolding mod_div_equality_div_eq
-      by (smt (verit, ccfv_SIG) dvd_eq_mod_eq_0 int_mod_ge' mod_diff_eq pos_mod_bound pos_mod_sign)
+      using assms mod_diff_left_eq[of n m "1"] zmod_minus1[of m]
+      unfolding mod_div_equality_div_eq by simp
   qed auto
   moreover
   have "\<not> m dvd n \<Longrightarrow> (n - 1) div m * m = n div m * m"
