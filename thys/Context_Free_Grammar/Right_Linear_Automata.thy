@@ -13,7 +13,7 @@ begin
 
 subsection \<open>From Strongly Right-Linear Grammar to NFA\<close>
 
-definition nfa_rlin2 :: "('n,'t)Prods \<Rightarrow> ('n::finitary) \<Rightarrow> 't nfa" where
+definition nfa_rlin2 :: "('n,'t)Prods \<Rightarrow> ('n::finitary) \<Rightarrow> 't nfa_hf" where
 "nfa_rlin2 P S =
   \<lparr> states = hf_of  ` ({S} \<union> Nts P),
     init = {hf_of S},
@@ -26,7 +26,7 @@ context
   assumes "finite P"
 begin
 
-interpretation NFA_rlin2: nfa "nfa_rlin2 P S"
+interpretation NFA_rlin2: nfa_hf "nfa_rlin2 P S"
 unfolding nfa_rlin2_def proof (standard, goal_cases)
   case 1
   then show ?case by(simp)
