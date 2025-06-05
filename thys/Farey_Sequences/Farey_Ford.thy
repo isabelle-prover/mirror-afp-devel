@@ -1,82 +1,9 @@
 section \<open>Farey Sequences and Ford Circles\<close>
 
 theory Farey_Ford
-  imports  "HOL-Analysis.Analysis" "HOL-Number_Theory.Totient" "HOL-Library.Sublist"
+  imports "HOL-Analysis.Analysis" "HOL-Number_Theory.Totient" "HOL-Library.Sublist"
 
 begin
-
-subsection \<open>Library material\<close>
-
-(*added to distribution 2024-04-11*)
-lemma sum_squared_le_sum_of_squares:
-  fixes f :: "'a \<Rightarrow> real"
-  assumes "finite I"
-  shows "(\<Sum>i\<in>I. f i)\<^sup>2 \<le> (\<Sum>y\<in>I. (f y)\<^sup>2) * card I"
-proof (cases "finite I \<and> I \<noteq> {}")
-  case True
-  then have "(\<Sum>i\<in>I. f i / real (card I))\<^sup>2 \<le> (\<Sum>i\<in>I. (f i)\<^sup>2 / real (card I))"
-    using assms convex_on_sum [OF _ _ convex_power2, where a = "\<lambda>x. 1 / real(card I)" and S=I]
-    by simp
-  then show ?thesis
-    using assms  
-    by (simp add: divide_simps power2_eq_square split: if_split_asm flip: sum_divide_distrib)
-qed auto
-
-(*added to distribution 2024-04-11*)
-lemma sum_squared_le_sum_of_squares_2:
-  "(x+y)/2 \<le> sqrt ((x\<^sup>2 + y\<^sup>2) / 2)"
-proof -
-  have "(x + y)\<^sup>2 / 2^2 \<le> (x\<^sup>2 + y\<^sup>2) / 2"
-    using sum_squared_le_sum_of_squares [of UNIV "\<lambda>b. if b then x else y"]
-    by (simp add: UNIV_bool add.commute)
-  then show ?thesis
-    by (metis power_divide real_le_rsqrt)
-qed
-
-(*added to distribution 2024-04-10*)
-lemma sphere_scale:
-  assumes "a \<noteq> 0"
-  shows   "(\<lambda>x. a *\<^sub>R x) ` sphere c r = sphere (a *\<^sub>R c :: 'a :: real_normed_vector) (\<bar>a\<bar> * r)"
-proof -
-  have *: "(\<lambda>x. a *\<^sub>R x) ` sphere c r \<subseteq> sphere (a *\<^sub>R c) (\<bar>a\<bar> * r)" for a r and c :: 'a
-    by (metis (no_types, opaque_lifting) scaleR_right_diff_distrib dist_norm image_subsetI mem_sphere norm_scaleR)
-  have "sphere (a *\<^sub>R c) (\<bar>a\<bar> * r) = (\<lambda>x. a *\<^sub>R x) ` (\<lambda>x. inverse a *\<^sub>R x) ` sphere (a *\<^sub>R c) (\<bar>a\<bar> * r)"
-    unfolding image_image using assms by simp
-  also have "\<dots> \<subseteq> (\<lambda>x. a *\<^sub>R x) ` sphere (inverse a *\<^sub>R (a *\<^sub>R c)) (\<bar>inverse a\<bar> * (\<bar>a\<bar> * r))"
-    using "*" by blast
-  also have "\<dots> = (\<lambda>x. a *\<^sub>R x) ` sphere c r"
-    using assms by (simp add: algebra_simps)
-  finally have "sphere (a *\<^sub>R c) (\<bar>a\<bar> * r) \<subseteq> (\<lambda>x. a *\<^sub>R x) ` sphere c r" .
-  moreover have "(\<lambda>x. a *\<^sub>R x) ` sphere c r \<subseteq> sphere (a *\<^sub>R c) (\<bar>a\<bar> * r)"
-    using "*" by blast
-  ultimately show ?thesis by blast
-qed
-
-(*added to distribution 2024-04-10*)
-lemma sphere_cscale:
-  assumes "a \<noteq> 0"
-  shows   "(\<lambda>x. a * x) ` sphere c r = sphere (a * c :: complex) (cmod a * r)"
-proof -
-  have *: "(\<lambda>x. a * x) ` sphere c r \<subseteq> sphere (a * c) (cmod a * r)" for a r c
-    by (metis (no_types, lifting) dist_complex_def image_subsetI mem_sphere norm_mult
-    right_diff_distrib')
-  have "sphere (a * c) (cmod a * r) = (\<lambda>x. a * x) ` (\<lambda>x. inverse a * x) ` sphere (a * c) (cmod a * r)"
-    by (simp add: image_image inverse_eq_divide)
-  also have "\<dots> \<subseteq> (\<lambda>x. a * x) ` sphere (inverse a * (a * c)) (cmod (inverse a) * (cmod a * r))"
-    using "*" by blast
-  also have "\<dots> = (\<lambda>x. a * x) ` sphere c r"
-    using assms by (simp add: field_simps flip: norm_mult)
-  finally have "sphere (a * c) (cmod a * r) \<subseteq> (\<lambda>x. a * x) ` sphere c r" .
-  moreover have "(\<lambda>x. a * x) ` sphere c r \<subseteq> sphere (a * c) (cmod a * r)"
-    using "*" by blast
-  ultimately show ?thesis by blast
-qed
-
-(*added to distribution 2024-05-15*)
-lemma Complex_divide_complex_of_real: "Complex x y / of_real r = Complex (x/r) (y/r)"
-  by (metis complex_of_real_mult_Complex divide_inverse mult.commute of_real_inverse)
-lemma cmod_neg_real: "cmod (Complex (-x) y) = cmod (Complex x y)"
-  by (metis complex_cnj complex_minus complex_mod_cnj norm_minus_cancel)
 
 subsection \<open>Farey sequences\<close>
 
@@ -109,19 +36,6 @@ next
     by (metis list.set_intros(1) set_subset_Cons sorted_wrt.simps(2) sorted_wrt_append sublist_def
         set_mono_sublist sorted subset_iff)
 qed
-
-(* added to distribution 2025-03-20*)
-lemma quotient_of_rat_of_int [simp]: "quotient_of (rat_of_int i) = (i, 1)"
-  using Rat.of_int_def quotient_of_int by force
-
-(* added to distribution 2025-03-20*)
-lemma quotient_of_rat_of_nat [simp]: "quotient_of (rat_of_nat i) = (int i, 1)"
-  by (metis of_int_of_nat_eq quotient_of_rat_of_int)
-
-(* added to distribution 2025-03-20*)
-lemma int_div_le_self: 
-  \<open>x div k \<le> x\<close> if \<open>0 < x\<close>  for x k :: int
-  by (metis div_by_1 int_div_less_self less_le_not_le nle_le nonneg1_imp_zdiv_pos_iff order.trans that)
 
 (* not clear to do with these transp lemmas, are they of general use?*)
 lemma transp_add1_int:
@@ -161,31 +75,6 @@ lemma refl_transp_Suc:
       and "reflp R" "transp R"
     shows "R (f n) (f n')"
   by (metis assms dual_order.order_iff_strict reflpE transp_Suc)
-
-(* added to distribution 2025-03-20*)
-lemma sorted_subset_imp_subseq:
-  fixes xs :: "'a::order list"
-  assumes "set xs \<subseteq> set ys" "sorted_wrt (<) xs" "sorted_wrt (\<le>) ys"
-  shows "subseq xs ys"
-  using assms
-proof (induction xs arbitrary: ys)
-  case Nil
-  then show ?case
-    by auto
-next
-  case (Cons x xs)
-  then have "x \<in> set ys"
-    by auto
-  then obtain us vs where \<section>: "ys = us @ [x] @ vs"
-    by (metis append.left_neutral append_eq_Cons_conv split_list) 
-  moreover 
-  have "set xs \<subseteq> set vs"
-    using Cons.prems by (fastforce simp: \<section> sorted_wrt_append)
-  with Cons have "subseq xs vs"
-    by (metis \<section> sorted_wrt.simps(2) sorted_wrt_append)
-  ultimately show ?case
-    by auto
-qed
 
 lemma coprime_unimodular_int:
   fixes a b::int
