@@ -13,20 +13,20 @@ begin
 
 subsection \<open>From Strongly Right-Linear Grammar to NFA\<close>
 
-definition nfa_rlin2 :: "('n,'t)Prods \<Rightarrow> ('n::finitary) \<Rightarrow> 't nfa_hf" where
+definition nfa_rlin2 :: "('n,'t)Prods \<Rightarrow> 'n \<Rightarrow> ('t,'n) nfa" where
 "nfa_rlin2 P S =
-  \<lparr> states = hf_of  ` ({S} \<union> Nts P),
-    init = {hf_of S},
-    final = hf_of ` {A \<in> Nts P. (A,[]) \<in> P},
-    nxt = \<lambda>q a. hf_of ` nxt_rlin2 P (inv hf_of q) a,
+  \<lparr> states = {S} \<union> Nts P,
+    init = {S},
+    final = {A \<in> Nts P. (A,[]) \<in> P},
+    nxt = \<lambda>q a. nxt_rlin2 P q a,
     eps = Id \<rparr>"               
 
 context
-  fixes P :: "('n::finitary,'t)Prods"
+  fixes P :: "('n,'t)Prods"
   assumes "finite P"
 begin
 
-interpretation NFA_rlin2: nfa_hf "nfa_rlin2 P S"
+interpretation NFA_rlin2: nfa "nfa_rlin2 P S"
 unfolding nfa_rlin2_def proof (standard, goal_cases)
   case 1
   then show ?case by(simp)
@@ -42,20 +42,20 @@ next
 qed
 print_theorems
 
-lemma nfa_init_nfa_rlin2: "nfa.init (nfa_rlin2 P S) = hf_of ` {S}"
+lemma nfa_init_nfa_rlin2: "nfa.init (nfa_rlin2 P S) = {S}"
 by (simp add: nfa_rlin2_def)
 
-lemma nfa_final_nfa_rlin2: "nfa.final (nfa_rlin2 P S) = hf_of ` {A \<in> Nts P. (A,[]) \<in> P}"
+lemma nfa_final_nfa_rlin2: "nfa.final (nfa_rlin2 P S) = {A \<in> Nts P. (A,[]) \<in> P}"
 by (simp add: nfa_rlin2_def)
 
-lemma nfa_nxt_nfa_rlin2: "nfa.nxt (nfa_rlin2 P S) (hf_of A) a = hf_of ` nxt_rlin2 P A a"
-by (simp add: nfa_rlin2_def inj)
+lemma nfa_nxt_nfa_rlin2: "nfa.nxt (nfa_rlin2 P S) A a = nxt_rlin2 P A a"
+by (simp add: nfa_rlin2_def)
 
-lemma nfa_epsclo_nfa_rlin2: "M \<subseteq> {hf_of S} \<union> hf_of ` Nts P \<Longrightarrow> nfa.epsclo (nfa_rlin2 P S) M = M"
+lemma nfa_epsclo_nfa_rlin2: "M \<subseteq> {S} \<union> Nts P \<Longrightarrow> nfa.epsclo (nfa_rlin2 P S) M = M"
 unfolding NFA_rlin2.epsclo_def unfolding nfa_rlin2_def by(auto)
 
 lemma nfa_nextl_nfa_rlin2: "M \<subseteq> {S} \<union> Nts P
-  \<Longrightarrow> nfa.nextl (nfa_rlin2 P S) (hf_of ` M) xs = hf_of ` nxts_rlin2_set P M xs"
+  \<Longrightarrow> nfa.nextl (nfa_rlin2 P S) M xs = nxts_rlin2_set P M xs"
 proof(induction xs arbitrary: M)
   case Nil
   then show ?case
@@ -65,18 +65,15 @@ next
   let ?epsclo = "nfa.epsclo (nfa_rlin2 P S)"
   let ?nxt = "nfa.nxt (nfa_rlin2 P S)"
   let ?nxts = "nfa.nextl (nfa_rlin2 P S)"
-  have "?nxts (hf_of ` M) (a # xs) = ?nxts (\<Union>x\<in>?epsclo (hf_of ` M). ?nxt x a) xs"
+  have "?nxts M (a # xs) = ?nxts (\<Union>x\<in>?epsclo M. ?nxt x a) xs"
     by simp
-  also have "\<dots> = ?nxts (\<Union>x\<in>hf_of ` M. ?nxt x a) xs"
+  also have "\<dots> = ?nxts (\<Union>x\<in>M. ?nxt x a) xs"
     using Cons.prems by(subst nfa_epsclo_nfa_rlin2) auto
-  also have "\<dots> = ?nxts (\<Union>m\<in>M. ?nxt (hf_of m) a) xs" by simp
-  also have "\<dots> = ?nxts (\<Union>m\<in>M. hf_of ` nxt_rlin2 P m a) xs"
+  also have "\<dots> = ?nxts (\<Union>m\<in>M. nxt_rlin2 P m a) xs"
     by (simp add: nfa_nxt_nfa_rlin2)
-  also have "\<dots> = ?nxts (hf_of ` (\<Union>m\<in>M. nxt_rlin2 P m a)) xs"
-    by (metis image_UN)
-  also have "\<dots> = hf_of ` nxts_rlin2_set P (\<Union>m\<in>M. nxt_rlin2 P m a) xs"
+  also have "\<dots> = nxts_rlin2_set P (\<Union>m\<in>M. nxt_rlin2 P m a) xs"
     using Cons.prems by(subst Cons.IH)(auto simp add: nxt_rlin2_nts)
-  also have "\<dots> = hf_of ` nxts_rlin2_set P M (a # xs)"
+  also have "\<dots> = nxts_rlin2_set P M (a # xs)"
     by (simp add: nxt_rlin2_set_def nxts_rlin2_set_def)
   finally show ?case .
 qed
