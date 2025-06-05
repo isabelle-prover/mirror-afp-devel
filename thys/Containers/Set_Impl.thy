@@ -334,7 +334,6 @@ declare [[code drop:
   card
   pred_of_set
   Wellfounded.acc
-  Bleast
   Set.can_select
   (* "set_eq :: 'a set \<Rightarrow> 'a set \<Rightarrow> bool" *)
   irrefl_on
@@ -1715,17 +1714,6 @@ proof -
   show ?dlist ?rbt
     by(auto split: option.split simp add: RBT_set_def DList_set_def DList_Set.fold.rep_eq Collect_member map_project_conv_fold RBT_Set2.fold_conv_fold_keys member_conv_keys del: equalityI)
 qed(auto simp add: List.map_project_def List.map_filter_def intro: rev_image_eqI)
-
-lemma Bleast_code [code]:
-  "Bleast A P = 
-  (if finite A then case filter P (sorted_list_of_set A) of [] \<Rightarrow> abort_Bleast A P | x # xs \<Rightarrow> x 
-   else abort_Bleast A P)"
-proof(cases "finite A")
-  case True
-  hence *: "A = set (sorted_list_of_set A)" by(simp add: sorted_list_of_set)
-  show ?thesis using True
-    by(subst (1 3) *)(unfold Bleast_code, simp add: sorted_sort_id)
-qed(simp add: abort_Bleast_def Bleast_def)
 
 lemma can_select_code [code]:
   fixes xs :: "'a :: ceq list" 
