@@ -11,6 +11,10 @@ text\<open>Finite Automata, both deterministic and non-deterministic, for regula
   the powerset construction mapping NFAs to DFAs. Left and right languages; minimal DFAs.
   Brzozowski's minimization algorithm. Uniqueness up to isomorphism of minimal DFAs.\<close>
 
+text\<open>Initially this formalization was based on automata whose state type was always \<open>hf\<close>.
+In a revision, it was generalized: many of the constructions are now based on automata
+with a polymorphic state type \<open>'s\<close>.\<close>
+
 section\<open>Deterministic Finite Automata\<close>
 
 text\<open>Right invariance is the key property for equivalence relations on states of DFAs.\<close>
@@ -372,6 +376,70 @@ lemma trans: "dfa_isomorphism N N' h' \<Longrightarrow> dfa_isomorphism M N' (h'
 
 end
 
+text\<open>In order to transition between \<open>'s\<close> and \<open>hf\<close>, we use bijections:\<close>
+
+lemma inj_on_finite_hf:
+  \<open>finite S \<Longrightarrow> \<exists>f:: 's \<Rightarrow> hf.  inj_on f S\<close>
+by (meson comp_inj_on finite_imp_inj_to_nat_seg inj_ord_of)
+
+lemma bij_betw_finite_hf:
+  \<open>finite S \<Longrightarrow> \<exists>f:: 's \<Rightarrow> hf.  bij_betw f S (f ` S)\<close>
+by (meson inj_on_finite_hf inj_on_imp_bij_betw)
+
+text\<open>There is always an isomorphism between a \<^typ>\<open>('a,'s) dfa\<close> and a \<^typ>\<open>'a dfa_hf\<close>:\<close>
+
+context dfa
+begin
+
+definition bij_s_hf :: "'s \<Rightarrow> hf" where
+"bij_s_hf = (SOME f :: 's \<Rightarrow> hf. bij_betw f (dfa.states M) (f ` dfa.states M))"
+
+lemma bij_betw_bij_s_hf: "bij_betw bij_s_hf (dfa.states M) (bij_s_hf ` dfa.states M)"
+unfolding bij_s_hf_def using bij_betw_finite_hf[OF finite]
+by (metis (no_types, lifting) someI_ex)
+
+abbreviation bij_s_hf_M :: "'a dfa_hf" where
+"bij_s_hf_M \<equiv> \<lparr> dfa.states = bij_s_hf ` dfa.states M,
+         dfa.init  = bij_s_hf (dfa.init M),
+         dfa.final = bij_s_hf ` dfa.final M,
+         dfa.nxt   = (\<lambda>q x. bij_s_hf (dfa.nxt M (the_inv_into (dfa.states M) bij_s_hf q) x)) \<rparr>"
+
+lemma dfa_bij_s_hf_M: "dfa bij_s_hf_M"
+proof (unfold_locales, goal_cases)
+  case 1
+  then show ?case by simp
+next
+  case 2
+  then show ?case using final by auto
+next
+  case (3 q x)
+  then show ?case apply (simp add: bij_betw_def)
+    by (meson bij_betwE bij_betw_bij_s_hf bij_betw_the_inv_into nxt)
+next
+  case 4
+  then show ?case using finite by simp
+qed
+
+interpretation M_iso: dfa_isomorphism M bij_s_hf_M bij_s_hf
+proof(intro dfa_isomorphism.intro dfa_axioms dfa_bij_s_hf_M dfa_isomorphism_axioms.intro, goal_cases)
+  case 1
+  then show ?case using bij_betw_bij_s_hf by simp
+next
+  case 2
+  then show ?case by simp
+next
+  case 3
+  then show ?case by simp
+next
+  case (4 q x)
+  then show ?case
+    by (metis bij_betw_def bij_betw_bij_s_hf dfa.select_convs(4) the_inv_into_f_f)
+qed
+
+lemmas L_M_eq_L_bij_s_hf_M = M_iso.language
+
+end
+
 section\<open>The Myhill-Nerode theorem: three characterisations of a regular language\<close>
 
 definition regular :: "'a list set \<Rightarrow> bool" where
@@ -413,6 +481,11 @@ text\<open>Step 1 in the circle of implications: every regular language @{term L
   by some Myhill-Nerode relation, @{term R}\<close>
 context dfa
 begin
+
+  lemma regular_dfa: "regular language"
+  unfolding regular_def L_M_eq_L_bij_s_hf_M using dfa_bij_s_hf_M
+  by blast
+
   lemma MN_eq_nextl: "MyhillNerode language eq_nextl"
     unfolding MyhillNerode_def
     using language_eq_nextl
@@ -662,27 +735,29 @@ end
 
 subsection\<open>The Powerset Construction\<close>
 
-type_synonym 'a nfa_hf = "('a,hf) nfa"
+text \<open>First: The construction of a \<^typ>\<open>('a,'s set) dfa\<close> from an \<^typ>\<open>('a,'s) nfa\<close>.
+Is not used later on but provides an easy means of showing regularity of some language
+by constructing an NFA without having to use \<open>hf\<close>.\<close>
 
-locale nfa_hf = nfa M for M :: "'a nfa_hf"
+context nfa
 begin
 
-definition Power_dfa :: "'a dfa_hf" where
-  "Power_dfa = \<lparr>dfa.states = {HF (epsclo q) | q. q \<in> Pow (states M)},
-                     init  = HF (epsclo (init M)),
-                     final = {HF (epsclo Q) | Q. Q \<subseteq> states M \<and> Q \<inter> final M \<noteq> {}},
-                     nxt   = \<lambda>Q x. HF(\<Union>q \<in> epsclo (hfset Q). epsclo (nxt M q x))\<rparr>"
+definition Power_dfa :: "('a,'s set) dfa" where
+  "Power_dfa = \<lparr>dfa.states = {epsclo q | q. q \<in> Pow (states M)},
+                     init  = epsclo (init M),
+                     final = {epsclo Q | Q. Q \<subseteq> states M \<and> Q \<inter> final M \<noteq> {}},
+                     nxt   = \<lambda>Q x. \<Union>q \<in> epsclo Q. epsclo (nxt M q x)\<rparr>"
 
-lemma states_Power_dfa [simp]: "dfa.states Power_dfa = HF ` epsclo ` Pow (states M)"
+lemma states_Power_dfa [simp]: "dfa.states Power_dfa = epsclo ` Pow (states M)"
   by (auto simp add: Power_dfa_def)
 
-lemma init_Power_dfa [simp]: "dfa.init Power_dfa = HF (epsclo (nfa.init M))"
+lemma init_Power_dfa [simp]: "dfa.init Power_dfa = epsclo (nfa.init M)"
   by (simp add: Power_dfa_def)
 
-lemma final_Power_dfa [simp]: "dfa.final Power_dfa = {HF (epsclo Q) | Q. Q \<subseteq> states M \<and> Q \<inter> final M \<noteq> {}}"
+lemma final_Power_dfa [simp]: "dfa.final Power_dfa = {epsclo Q | Q. Q \<subseteq> states M \<and> Q \<inter> final M \<noteq> {}}"
   by (simp add: Power_dfa_def)
 
-lemma nxt_Power_dfa [simp]: "dfa.nxt Power_dfa = (\<lambda>Q x. HF(\<Union>q \<in> epsclo (hfset Q). epsclo (nxt M q x)))"
+lemma nxt_Power_dfa [simp]: "dfa.nxt Power_dfa = (\<lambda>Q x. \<Union>q \<in> epsclo Q. epsclo (nxt M q x))"
   by (simp add: Power_dfa_def)
 
 interpretation Power: dfa Power_dfa
@@ -696,8 +771,6 @@ next
   fix q a
   show "q \<in> dfa.states Power_dfa \<Longrightarrow> dfa.nxt Power_dfa q a \<in> dfa.states Power_dfa"
     apply (auto simp: nxt)
-    apply (subst inj_on_image_mem_iff [OF inj_on_HF])
-    apply (auto simp: rev_finite_subset [OF finite] nxt)
     apply (metis Pow_iff epsclo_UN epsclo_idem epsclo_subset image_eqI)
     done
 next
@@ -705,12 +778,90 @@ next
     by (force simp: finite)
 qed
 
-corollary dfa_Power: "dfa Power_dfa"
+text\<open>The Power DFA accepts the same language as the NFA.\<close>
+theorem Power_language [simp]: "Power.language = language"
+proof -
+  { fix u
+    have "(Power.nextl (dfa.init Power_dfa) u) = nextl (init M) u"
+    proof (induct u rule: List.rev_induct)
+      case Nil show ?case
+        using Power.nextl.simps
+        by (auto simp: hinsert_def)
+    next
+      case (snoc x u) then show ?case
+        by (simp add: init finite_nextl nextl_state [THEN subsetD])
+    qed
+    then have "u \<in> Power.language \<longleftrightarrow> u \<in> language"
+      apply (auto simp add: Power.language_def language_def disjoint_iff_not_equal)
+      apply (metis Int_iff epsclo_increasing subsetCE)
+      apply (metis epsclo_nextl nextl_state)
+      done
+  }
+  then show ?thesis
+    by blast
+qed
+
+text\<open>Every language accepted by a NFA is also accepted by a DFA.\<close>
+corollary imp_regular: "regular language"
+  by (metis Power.regular_dfa Power_language)
+
+end
+
+text\<open>As above, outside the locale\<close>
+corollary nfa_imp_regular:
+  assumes "nfa M" "nfa.language M = L"
+    shows "regular L"
+using assms nfa.imp_regular by blast
+
+
+type_synonym 'a nfa_hf = "('a,hf) nfa"
+
+text \<open>The construction of a \<^typ>\<open>'a dfa_hf\<close> from an \<^typ>\<open>'a nfa_hf\<close>.
+Very little can be reused from the generic \<open>'s\<close>-based construction above.\<close>
+
+locale nfa_hf = nfa M for M :: "'a nfa_hf"
+begin
+
+definition Power_dfa_hf :: "'a dfa_hf" where
+  "Power_dfa_hf = \<lparr>dfa.states = HF ` dfa.states Power_dfa,
+                     init  = HF (dfa.init Power_dfa),
+                     final = HF ` dfa.final Power_dfa,
+                     nxt   = \<lambda>Q. HF o dfa.nxt Power_dfa (hfset Q)\<rparr>"
+
+lemma states_Power_dfa [simp]: "dfa.states Power_dfa_hf = HF ` epsclo ` Pow (states M)"
+  by (auto simp add: Power_dfa_hf_def)
+
+lemma init_Power_dfa [simp]: "dfa.init Power_dfa_hf = HF (dfa.init Power_dfa)"
+  by (simp add: Power_dfa_hf_def)
+
+lemma final_Power_dfa [simp]: "dfa.final Power_dfa_hf = {HF (epsclo Q) | Q. Q \<subseteq> states M \<and> Q \<inter> final M \<noteq> {}}"
+  by (auto simp add: Power_dfa_hf_def)
+
+lemma nxt_Power_dfa [simp]: "dfa.nxt Power_dfa_hf = (\<lambda>Q x. HF(\<Union>q \<in> epsclo (hfset Q). epsclo (nxt M q x)))"
+  by (simp add: Power_dfa_hf_def o_def)
+
+interpretation Power: dfa Power_dfa_hf
+proof (unfold_locales, goal_cases)
+  case 1 thus ?case
+    by (simp add: init)
+next
+  case 2 thus ?case
+    by auto
+next
+  case (3 q a) thus ?case
+    unfolding dfa_def nxt_Power_dfa
+    by (metis Pow_iff epsclo_UN epsclo_idem epsclo_subset imageI states_Power_dfa)
+next
+  case 4 thus ?case
+    by (auto simp: finite)
+qed
+
+corollary dfa_Power: "dfa Power_dfa_hf"
   by unfold_locales
 
 lemma nextl_Power_dfa:
-     "qs \<in> dfa.states Power_dfa
-     \<Longrightarrow> dfa.nextl Power_dfa qs u = HF (\<Union>q \<in> hfset qs. nextl {q} u)"
+     "qs \<in> dfa.states Power_dfa_hf
+     \<Longrightarrow> dfa.nextl Power_dfa_hf qs u = HF (\<Union>q \<in> hfset qs. nextl {q} u)"
   apply (induct u rule: List.rev_induct)
   apply (auto simp: finite_nextl inj_on_HF [THEN inj_on_eq_iff])
   apply (metis Int_empty_left Int_insert_left_if1 epsclo_increasing epsclo_subset subsetD singletonI)
@@ -719,7 +870,7 @@ lemma nextl_Power_dfa:
 
 text\<open>Part of Prop 4 of Jean-Marc Champarnaud, A. Khorsi and T. Paranthoën (2002)\<close>
 lemma Power_right_lang:
-     "qs \<in> dfa.states Power_dfa \<Longrightarrow> Power.right_lang qs = (\<Union>q \<in> hfset qs. right_lang q)"
+     "qs \<in> dfa.states Power_dfa_hf \<Longrightarrow> Power.right_lang qs = (\<Union>q \<in> hfset qs. right_lang q)"
 using epsclo_increasing
 apply (auto simp: Power.right_lang_def right_lang_def nextl_Power_dfa
                   inj_on_HF [THEN inj_on_eq_iff] finite_nextl, blast)
@@ -734,7 +885,7 @@ text\<open>The Power DFA accepts the same language as the NFA.\<close>
 theorem Power_language [simp]: "Power.language = language"
 proof -
   { fix u
-    have "(Power.nextl (dfa.init Power_dfa) u) = HF (nextl (init M) u)"
+    have "(Power.nextl (dfa.init Power_dfa_hf) u) = HF (nextl (init M) u)"
     proof (induct u rule: List.rev_induct)
       case Nil show ?case
         using Power.nextl.simps
@@ -753,17 +904,7 @@ proof -
     by blast
 qed
 
-text\<open>Every language accepted by a NFA is also accepted by a DFA.\<close>
-corollary imp_regular: "regular language"
-  using Power_language dfa_Power regular_def by blast
-
 end
-
-text\<open>As above, outside the locale\<close>
-corollary nfa_imp_regular:
-  assumes "nfa_hf M" "nfa.language M = L"
-    shows "regular L"
-using assms nfa_hf.imp_regular by blast
 
 
 section\<open>Closure Properties for Regular Languages\<close>
@@ -1157,7 +1298,7 @@ proof -
   then interpret dfa_hf "MS"
     by simp
   show ?thesis
-    by (metis MS(2) language_Reverse_nfa nfa_Reverse_nfa nfa_hf.intro nfa_imp_regular)
+    by (metis MS(2) language_Reverse_nfa nfa_Reverse_nfa nfa_imp_regular)
 qed
 
 
@@ -1293,20 +1434,20 @@ subsection\<open>More about the relation @{term eq_app_right}\<close>
   qed
 
   lemma states_PR [simp]:
-       "dfa.states (nfa_hf.Power_dfa (Reverse_nfa M)) = HF ` Pow (dfa.states M)"
+       "dfa.states (nfa_hf.Power_dfa_hf (Reverse_nfa M)) = HF ` Pow (dfa.states M)"
     by (rule set_eqI)
        (auto simp: nfa_hf.states_Power_dfa nfa_Reverse_nfa  nfa_hf.intro Bex_def)
 
   lemma inj_on_right_lang_PR:
     assumes "dfa.states M = accessible"
-      shows "inj_on (dfa.right_lang (nfa_hf.Power_dfa (Reverse_nfa M)))
-                    (dfa.states (nfa_hf.Power_dfa (Reverse_nfa M)))"
+      shows "inj_on (dfa.right_lang (nfa_hf.Power_dfa_hf (Reverse_nfa M)))
+                    (dfa.states (nfa_hf.Power_dfa_hf (Reverse_nfa M)))"
   proof (rule inj_onI)
     fix q1 q2
-    assume *: "q1 \<in> dfa.states (nfa_hf.Power_dfa (Reverse_nfa M))"
-              "q2 \<in> dfa.states (nfa_hf.Power_dfa (Reverse_nfa M))"
-              "dfa.right_lang (nfa_hf.Power_dfa (Reverse_nfa M)) q1 =
-               dfa.right_lang (nfa_hf.Power_dfa (Reverse_nfa M)) q2"
+    assume *: "q1 \<in> dfa.states (nfa_hf.Power_dfa_hf (Reverse_nfa M))"
+              "q2 \<in> dfa.states (nfa_hf.Power_dfa_hf (Reverse_nfa M))"
+              "dfa.right_lang (nfa_hf.Power_dfa_hf (Reverse_nfa M)) q1 =
+               dfa.right_lang (nfa_hf.Power_dfa_hf (Reverse_nfa M)) q2"
     then have "hfset q1 \<subseteq> accessible \<and> hfset q2 \<subseteq> accessible"
       using assms rev_finite_subset [OF finite]
       by force
@@ -1318,14 +1459,14 @@ subsection\<open>More about the relation @{term eq_app_right}\<close>
   qed
 
   abbreviation APR :: "'x dfa_hf \<Rightarrow> 'x dfa_hf" where
-    "APR X \<equiv> dfa.Accessible_dfa (nfa_hf.Power_dfa (Reverse_nfa X))"
+    "APR X \<equiv> dfa.Accessible_dfa (nfa_hf.Power_dfa_hf (Reverse_nfa X))"
 
   theorem minimal_APR:
     assumes "dfa.states M = accessible"
       shows "dfa.minimal (APR M)"
     proof -
       have PR: "dfa (APR M)"
-               "dfa (nfa_hf.Power_dfa (Reverse_nfa M))"
+               "dfa (nfa_hf.Power_dfa_hf (Reverse_nfa M))"
         by (auto simp add: dfa.dfa_Accessible nfa_Reverse_nfa nfa_hf.dfa_Power nfa_hf.intro)
       then show ?thesis
         apply (simp add: dfa.minimal_def dfa.states_Accessible_dfa dfa.Accessible_accessible)
