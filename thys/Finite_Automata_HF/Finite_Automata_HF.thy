@@ -2,7 +2,7 @@ chapter \<open>Finite Automata using the Hereditarily Finite Sets\<close>
 
 theory Finite_Automata_HF imports
   HereditarilyFinite.Ordinal
-  "Regular-Sets.Regular_Exp"
+  "Regular-Sets.Regular_Exp"  
 begin
 
 text\<open>Finite Automata, both deterministic and non-deterministic, for regular languages.
@@ -405,36 +405,21 @@ abbreviation bij_s_hf_M :: "'a dfa_hf" where
          dfa.nxt   = (\<lambda>q x. bij_s_hf (dfa.nxt M (the_inv_into (dfa.states M) bij_s_hf q) x)) \<rparr>"
 
 lemma dfa_bij_s_hf_M: "dfa bij_s_hf_M"
-proof (unfold_locales, goal_cases)
-  case 1
-  then show ?case by simp
-next
-  case 2
-  then show ?case using final by auto
-next
-  case (3 q x)
-  then show ?case apply (simp add: bij_betw_def)
-    by (meson bij_betwE bij_betw_bij_s_hf bij_betw_the_inv_into nxt)
-next
-  case 4
-  then show ?case using finite by simp
-qed
+proof
+  fix q x
+  assume "q \<in> states bij_s_hf_M"
+  then show "nxt bij_s_hf_M q x \<in> states bij_s_hf_M"
+    by (metis bij_betw_apply bij_betw_bij_s_hf bij_betw_the_inv_into nxt
+        select_convs(1,4))
+qed (use finite final in auto)
 
 interpretation M_iso: dfa_isomorphism M bij_s_hf_M bij_s_hf
-proof(intro dfa_isomorphism.intro dfa_axioms dfa_bij_s_hf_M dfa_isomorphism_axioms.intro, goal_cases)
-  case 1
-  then show ?case using bij_betw_bij_s_hf by simp
-next
-  case 2
-  then show ?case by simp
-next
-  case 3
-  then show ?case by simp
-next
-  case (4 q x)
-  then show ?case
-    by (metis bij_betw_def bij_betw_bij_s_hf dfa.select_convs(4) the_inv_into_f_f)
-qed
+proof (intro dfa_isomorphism.intro dfa_axioms dfa_bij_s_hf_M dfa_isomorphism_axioms.intro)
+  fix q x
+  assume "q \<in> states M"
+  then show "bij_s_hf (nxt M q x) = nxt bij_s_hf_M (bij_s_hf q) x"
+    by (metis bij_betw_bij_s_hf bij_betw_def select_convs(4) the_inv_into_f_f)
+qed (use bij_betw_bij_s_hf in auto)
 
 lemmas L_M_eq_L_bij_s_hf_M = M_iso.language
 
@@ -841,20 +826,13 @@ lemma nxt_Power_dfa [simp]: "dfa.nxt Power_dfa_hf = (\<lambda>Q x. HF(\<Union>q 
   by (simp add: Power_dfa_hf_def o_def)
 
 interpretation Power: dfa Power_dfa_hf
-proof (unfold_locales, goal_cases)
-  case 1 thus ?case
-    by (simp add: init)
-next
-  case 2 thus ?case
-    by auto
-next
-  case (3 q a) thus ?case
+proof
+  fix q x
+  assume "q \<in> dfa.states Power_dfa_hf"
+  then show "dfa.nxt Power_dfa_hf q x \<in> dfa.states Power_dfa_hf"
     unfolding dfa_def nxt_Power_dfa
     by (metis Pow_iff epsclo_UN epsclo_idem epsclo_subset imageI states_Power_dfa)
-next
-  case 4 thus ?case
-    by (auto simp: finite)
-qed
+qed (use finite init in auto)
 
 corollary dfa_Power: "dfa Power_dfa_hf"
   by unfold_locales
@@ -862,24 +840,39 @@ corollary dfa_Power: "dfa Power_dfa_hf"
 lemma nextl_Power_dfa:
      "qs \<in> dfa.states Power_dfa_hf
      \<Longrightarrow> dfa.nextl Power_dfa_hf qs u = HF (\<Union>q \<in> hfset qs. nextl {q} u)"
-  apply (induct u rule: List.rev_induct)
-  apply (auto simp: finite_nextl inj_on_HF [THEN inj_on_eq_iff])
-  apply (metis Int_empty_left Int_insert_left_if1 epsclo_increasing epsclo_subset subsetD singletonI)
-  apply (metis contra_subsetD empty_subsetI epsclo_idem epsclo_mono insert_subset)
-  done
+proof (induct u rule: List.rev_induct)
+  case Nil
+  have "\<And>Q. qs = HF (epsclo Q) \<Longrightarrow> HF (epsclo Q) = HF (\<Union>x\<in>epsclo Q. epsclo {x})"
+    by (metis UN_singleton epsclo_UN epsclo_idem)
+  with Nil show ?case by auto
+next
+  case (snoc x xs)
+  then show ?case
+    by (auto simp: finite_nextl)
+qed
 
 text\<open>Part of Prop 4 of Jean-Marc Champarnaud, A. Khorsi and T. Paranthoën (2002)\<close>
 lemma Power_right_lang:
-     "qs \<in> dfa.states Power_dfa_hf \<Longrightarrow> Power.right_lang qs = (\<Union>q \<in> hfset qs. right_lang q)"
-using epsclo_increasing
-apply (auto simp: Power.right_lang_def right_lang_def nextl_Power_dfa
-                  inj_on_HF [THEN inj_on_eq_iff] finite_nextl, blast)
-apply (rename_tac Q u q1 q2)
-apply (drule_tac x="(\<Union>x\<in>epsclo Q. nextl {x} u)" in spec)
-apply auto
-using nextl_state apply blast
-done
+  assumes "qs \<in> dfa.states Power_dfa_hf"
+  shows "Power.right_lang qs = (\<Union>q \<in> hfset qs. right_lang q)"
 
+proof -
+  obtain Q where Q: "qs = HF (epsclo Q)" "Q \<subseteq> nfa.states M"
+    using assms by auto
+  have "\<exists>q\<in>hfset qs. l \<in> right_lang q" if "l \<in> Power.right_lang qs" for l 
+    using that Q epsclo_increasing 
+    unfolding Power.right_lang_def right_lang_def
+    by (fastforce simp: nextl_Power_dfa inj_on_HF [THEN inj_on_eq_iff] finite_nextl)
+  moreover have "u \<in> Power.right_lang qs"
+    if "q \<in> hfset qs" and "u \<in> right_lang q" for u q
+    using that Q
+    apply (simp add: Power.right_lang_def right_lang_def)
+    apply (rule_tac x="(\<Union>x\<in>epsclo Q. nextl {x} u)" in exI)
+    using nextl_state apply (auto simp: nextl_Power_dfa)
+    done
+  ultimately show ?thesis
+    by auto
+qed
 
 text\<open>The Power DFA accepts the same language as the NFA.\<close>
 theorem Power_language [simp]: "Power.language = language"
