@@ -176,8 +176,6 @@ context
   and xs: "\<forall>j\<in>set xs. j < min (CARD('nr::mod_type)) (CARD('nc::mod_type))"
 begin
 
-declare diagonal_step_PQ.simps[simp del]
-
 lemma HMA_diagonal_to_Smith_i_PQ_aux: "HMA_M3 (P,A,Q)  
   (P' :: 'a :: bezout_ring ^ 'nr :: mod_type ^ 'nr :: mod_type,
    A' :: 'a :: bezout_ring ^ 'nc :: mod_type ^ 'nr :: mod_type,

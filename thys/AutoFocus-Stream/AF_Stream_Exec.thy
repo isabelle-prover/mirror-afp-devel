@@ -2227,7 +2227,7 @@ lemma is_Pointwise_Output_Shrink_list_eq_is_Pointwise_Output_Shrink_all:
 apply (rule iffI)
  apply (rule ballI)
  apply (rule is_Pointwise_Output_Shrink_list_imp_is_Pointwise_Output_Shrink)
- apply (simp add: member_def)+
+ apply simp_all
 apply (induct fs, simp)
 apply simp
 done

@@ -247,8 +247,7 @@ assumes
 shows
   "lb ! i \<in> set (drop la lb)" 
 using assms
-by (metis Cons_nth_drop_Suc in_set_member member_rec(1) 
-       set_drop_subset_set_drop rev_subsetD)
+  by (metis Cons_nth_drop_Suc in_mono list.set_intros(1) set_drop_subset_set_drop) 
 
 lemma DropToShift:
 fixes

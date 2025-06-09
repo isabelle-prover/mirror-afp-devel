@@ -868,7 +868,7 @@ theorem matrix_equation_R:
   apply (subst mult_mat_vec_of_list)
     apply (auto simp add: mtx_row_length_R intro!: map_vec_vec_of_list_eq_intro)
   using matrix_equation_main_step_R[OF assms(1-3), unfolded construct_lhs_vector_R_def]
-  using all_list_constr_R_def in_set_member welldefined by fastforce
+  using all_list_constr_R_def welldefined by fastforce
 
 (* Prettifying some theorems*)
 
@@ -904,7 +904,7 @@ theorem matrix_equation_pretty:
   unfolding satisfy_equation_R_def[symmetric]
   using matrix_equation_R[of p signs qs subsets] assms 
   using consistent_signs_at_roots_eq unfolding all_list_constr_R_def list_constr_def apply (auto)
-  by (metis (no_types, lifting) Ball_set in_set_member)
+  by (metis (no_types, lifting) Ball_set)
 
 section "Base Case"
 definition satisfies_properties_R:: "real poly \<Rightarrow> real poly list \<Rightarrow> (nat list*nat list) list \<Rightarrow> rat list list \<Rightarrow> rat mat \<Rightarrow> bool"
@@ -948,7 +948,7 @@ proof -
   have h1: "set (characterize_consistent_signs_at_roots p [q]) \<subseteq> {[1], [0],[- 1]}"
     using base_case_sgas_R assms by auto
   have h2: "all_list_constr_R [([], []),([0], []),([], [0])] (Suc 0)" unfolding all_list_constr_R_def
-    by (simp add: list_constr_def member_def)
+    by (simp add: list_constr_def)
   then show ?thesis using matrix_equation_R[where p = "p", where qs = "[q]", where signs = "[[1],[0],[-1]] ", where subsets = "[([], []),([0], []),([], [0])]"]
       nonzero h1  h2 by auto
 qed
@@ -1039,7 +1039,7 @@ proof -
     unfolding subsets_smash_R_def smash_list_list_def apply (auto)
     by (simp add: comp_def) 
   then show ?thesis using smash_list_list_property_set[of subsets1 ?new_subsets] apply (auto)
-    using imageE in_set_member set_map smash_list_list_property_set
+    using imageE set_map smash_list_list_property_set
     by (smt (z3) prod.exhaust_sel)
 qed
 
@@ -1068,9 +1068,7 @@ proof -
     have h1: "list_constr elem1  (length qs1 + length qs2) " 
     proof - 
       have h1: "list_constr elem1  (length qs1)"  using e1 well_def_subsets1
-        unfolding all_list_constr_R_def
-        apply (auto) 
-        by (simp add: in_set_member) 
+        unfolding all_list_constr_R_def by auto
       then show ?thesis unfolding list_constr_def
         by (simp add: list.pred_mono_strong) 
     qed
@@ -1078,7 +1076,7 @@ proof -
     proof - 
       have h1: "list_constr elem2  (length qs2)"  using e2 well_def_subsets2 
         unfolding all_list_constr_R_def
-        by (simp add: in_set_member) 
+        by simp  
       then show ?thesis unfolding list_constr_def
         by (simp add: list_all_length)
     qed
@@ -1095,8 +1093,7 @@ proof -
     proof - 
       have h1: "list_constr elem1  (length qs1)"  using e1 well_def_subsets1
         unfolding all_list_constr_R_def
-        apply (auto) 
-        by (simp add: in_set_member) 
+        by auto
       then show ?thesis unfolding list_constr_def
         by (simp add: list.pred_mono_strong) 
     qed
@@ -1104,7 +1101,7 @@ proof -
     proof - 
       have h1: "list_constr elem2  (length qs2)"  using e2 well_def_subsets2 
         unfolding all_list_constr_R_def
-        by (simp add: in_set_member) 
+        by simp 
       then show ?thesis unfolding list_constr_def
         by (simp add: list_all_length)
     qed
@@ -1307,10 +1304,9 @@ proof -
     using matrix_construction_is_kronecker_product_R
       kronecker_invertible invertibleMtx1 invertibleMtx2
       welldefined_subsets1 welldefined_subsets2 unfolding all_list_constr_R_def list_constr_def
-    using Ball_set in_set_member well_def_signs_def welldefined_signs1 in_set_conv_nth list_all_length
+    using Ball_set well_def_signs_def welldefined_signs1 in_set_conv_nth list_all_length
     apply (auto)
-    
-    by (smt (z3) Ball_set kronecker_invertible member_def)
+    by (smt (z3) Ball_set kronecker_invertible)
   have h2a: "distinct (signs_smash signs1 signs2)" 
     using distinct_signs1 distinct_signs2 welldefined_signs1 welldefined_signs2 nontriv1 nontriv2 
       distinct_step by auto
@@ -1371,7 +1367,7 @@ lemma take_indices_lem_R:
   shows "\<exists>k<length arb_list.
             (take_indices arb_list index_list) ! n =  arb_list ! k"
   using lest well_def unfolding take_indices_def apply (auto)
-  by (metis member_def nth_mem)
+  by (metis nth_mem)
 
 lemma size_of_mat_R:
   fixes subsets :: "(nat list*nat list) list"
@@ -1512,17 +1508,17 @@ proof -
     proof clarsimp
       fix w
       assume card_asm: "card {x. poly p x = 0 \<and> consistent_sign_vec qs x = w} = 0"
-      assume mem_asm: "List.member (characterize_consistent_signs_at_roots p qs) w"
+      assume mem_asm: "w \<in> set (characterize_consistent_signs_at_roots p qs)"
       have h0: "\<nexists> x. poly p x = 0 \<and> consistent_sign_vec qs x = w" using h1 card_asm
         by (simp add: h1)
       have h1: "\<exists> x. poly p x = 0 \<and> consistent_sign_vec qs x = w" using mem_asm 
         unfolding characterize_consistent_signs_at_roots_def characterize_root_list_p_def
       proof -
         have "w \<in> Collect (List.member (remdups (map (consistent_sign_vec qs) (sorted_list_of_set {r. poly p r = 0}))))"
-          using characterize_consistent_signs_at_roots_def mem_asm characterize_root_list_p_def
-          by (smt (verit, ccfv_SIG) consistent_sign_vec_def h0 imageE in_set_member list.set_map map_cong mem_Collect_eq nonzero o_apply poly_roots_finite set_remdups set_sorted_list_of_set signs_at_def squash_def)
+          using mem_asm poly_roots_finite [of p] \<open>p \<noteq> 0\<close>
+          by (auto simp add: characterize_consistent_signs_at_roots_def characterize_root_list_p_def consistent_sign_vec_def squash_def signs_at_def image_iff)
         then have f1: "w \<in> set (map (consistent_sign_vec qs) (sorted_list_of_set {r. poly p r = 0}))"
-          by (metis (no_types) in_set_member mem_Collect_eq set_remdups)
+          by simp
         have "finite {r. poly p r = 0}"
           using nonzero poly_roots_finite by blast
         then show ?thesis
@@ -1532,7 +1528,7 @@ proof -
     qed
     then have h3: "\<forall> w. rat_of_nat (card {x. poly p x = 0 \<and> consistent_sign_vec qs x = w}) = 0 \<longrightarrow> 
         w \<notin> set (characterize_consistent_signs_at_roots p qs)"
-      by (simp add: in_set_member)
+      by simp
     show ?thesis using h0 h3
       by blast 
   qed
@@ -1590,18 +1586,18 @@ proof -
            (List.member (characterize_consistent_signs_at_roots p qs) w))"
       proof clarsimp 
         fix w
-        assume card_asm: " 0 < card {x. poly p x = 0 \<and> consistent_sign_vec qs x = w}"
+        assume card_asm: "0 < card {x. poly p x = 0 \<and> consistent_sign_vec qs x = w}"
         have h0: "\<exists>x. poly p x = 0 \<and> consistent_sign_vec qs x = w"
           using card_asm
           by (simp add: h1) 
-        then show "List.member (characterize_consistent_signs_at_roots p qs) w" 
+        then show "w \<in> set (characterize_consistent_signs_at_roots p qs)" 
           unfolding characterize_consistent_signs_at_roots_def
-          using in_set_member nonzero poly_roots_finite characterize_root_list_p_def
+          using nonzero poly_roots_finite characterize_root_list_p_def
           by (smt (verit) characterize_consistent_signs_at_roots_def in_set_R mem_Collect_eq)
       qed
       then have h3: "\<forall> w. rat_of_nat (card {x. poly p x = 0 \<and> consistent_sign_vec qs x = w}) \<noteq> 0 \<longrightarrow> 
             w \<in> set (characterize_consistent_signs_at_roots p qs)"
-        by (simp add: in_set_member)
+        by simp
       show ?thesis using h0 h3
         by (metis (no_types, lifting) \<open>solve_for_lhs_R p qs subsets (matrix_A_R signs subsets) = vec_of_list (map rat_of_nat (map (\<lambda>s. card {x. poly p x = 0 \<and> consistent_sign_vec qs x = s}) signs))\<close> dim_vec_of_list length_map nth_map vec_of_list_index)
     qed
@@ -1634,12 +1630,9 @@ theorem reduce_system_sign_conditions_R:
   assumes match: "satisfy_equation_R p qs subsets signs"
   assumes invertible_mat: "invertible_mat (matrix_A_R signs subsets)"
   shows "set (get_signs_R (reduce_system_R p (qs, ((matrix_A_R signs subsets), (subsets, signs))))) = set (characterize_consistent_signs_at_roots p qs)"
-  unfolding get_signs_R_def
-  using reduction_deletes_bad_sign_conds_R[of p qs signs subsets] apply (auto)
-  apply (simp add: all_info distinct_signs match nonzero reduction_signs_def welldefined_signs1)
-  using nonzero invertible_mat snd_conv
-  apply (metis reduction_signs_R_def)
-  by (metis all_info distinct_signs invertible_mat match nonzero reduction_signs_R_def snd_conv welldefined_signs1)
+  using reduction_deletes_bad_sign_conds_R [of p qs signs subsets] invertible_mat
+  by (simp_all add: all_info distinct_signs match nonzero get_signs_R_def reduction_signs_def welldefined_signs1 reduction_signs_R_def Let_def)
+  
 
 subsection "Showing matrix equation preserved when reducing"
 
@@ -1704,7 +1697,7 @@ proof -
     using reduce_system_sign_conditions_R assms unfolding get_signs_R_def by auto
   have welldefined_hyp: "all_list_constr_R (fst (snd (reduce_system_R p (qs, ((matrix_A_R signs subsets), (subsets, signs)))))) (length qs)"
     using welldefined_subsets rows_to_keep_lem
-    unfolding all_list_constr_R_def List.member_def list_constr_def list_all_def
+    unfolding all_list_constr_R_def list_constr_def list_all_def
     apply (auto simp add: Let_def take_indices_def take_cols_from_matrix_def)
     using nth_mem
     apply (smt (z3) mat_of_cols_carrier(2) rows_to_keep_lem)
@@ -1743,7 +1736,7 @@ col (take_cols_from_matrix (alt_matrix_A_R signs subsets) S) i)"
       have "dim_col (alt_matrix_A_R signs subsets) = length (signs)"
         by (simp add: alt_matrix_A_R_def) 
       have well_d: "S ! i < length (signs)" using well_def_h
-        using i_lt in_set_member by fastforce 
+        using i_lt by fastforce 
       have 
         map_eq: "(map ((!) (cols (alt_matrix_A_R signs subsets))) S) ! i  = nth (cols (alt_matrix_A_R signs subsets))  (S ! i)"
         using i_lt by auto
@@ -1761,10 +1754,9 @@ col (take_cols_from_matrix (alt_matrix_A_R signs subsets) S) i)"
           where vs = "(map ((!) (cols (alt_matrix_A_R signs subsets))) S)"]
       by blast 
     have h3: "col (take_cols_from_matrix (alt_matrix_A_R signs subsets) S) i = (col (alt_matrix_A_R signs subsets) (S !i))"
-      using h1 h2 apply (auto)
-      by (metis alt_matrix_char_R asm cols_nth dim_col_mat(1) in_set_member length_map mat_of_rows_list_def matrix_A_R_def nth_map nth_mem take_indices_def well_def_h)
+      using h1 h2 well_def_h asm by (auto simp add: take_indices_def mat_of_rows_list_def matrix_A_R_def alt_matrix_char_R)
     have "vec (length subsets) (\<lambda>j. z_R (subsets ! j) (signs ! (S ! i))) = (col (alt_matrix_A_R signs subsets) (S !i))"
-      by (metis asm in_set_member length_map nth_mem signs_are_cols_R take_indices_def well_def_h)
+      using asm well_def_h by (auto simp add: signs_are_cols_R take_indices_def)
     then have "vec (length subsets) (\<lambda>j. z_R (subsets ! j) (take_indices signs S ! i)) =
       col (take_cols_from_matrix (alt_matrix_A_R signs subsets) S) i "
       using h0 h3
@@ -1822,7 +1814,7 @@ row (take_rows_from_matrix (alt_matrix_A_R signs subsets) S) i)"
         using assms
         by auto 
       have well_d: "S ! i < length (subsets)" using well_def_h
-        using i_lt in_set_member by fastforce 
+        using i_lt by fastforce 
       have 
         map_eq: "(map ((!) (rows (alt_matrix_A_R signs subsets))) S) ! i  = nth (rows (alt_matrix_A_R signs subsets))  (S ! i)"
         using i_lt by auto
@@ -1836,7 +1828,7 @@ row (take_rows_from_matrix (alt_matrix_A_R signs subsets) S) i)"
       = (row  (alt_matrix_A_R signs subsets) (S ! i)) "
       using dim i_lt mat_of_rows_row[where i = "i", where n = "(dim_col (alt_matrix_A_R signs subsets))",
           where vs = "(map ((!) (rows (alt_matrix_A_R signs subsets))) S)"]
-      using alt_matrix_char_R in_set_member nth_mem well_def_h
+      using alt_matrix_char_R nth_mem well_def_h
       by fastforce
     have "row (alt_matrix_A_R signs (take_indices subsets S) ) i = (row  (alt_matrix_A_R signs subsets) (S ! i))"
       using subsets_are_rows_R
@@ -1844,7 +1836,7 @@ row (take_rows_from_matrix (alt_matrix_A_R signs subsets) S) i)"
       have f1: "i < length S"
         by (metis (no_types) asm length_map take_indices_def)
       then have "List.member S (S ! i)"
-        by (meson in_set_member nth_mem)
+        by simp
       then show ?thesis
         using f1 
         by (simp add: \<open>\<And>subsets signs. \<forall>i<length subsets. row (alt_matrix_A_R signs subsets) i = vec (length signs) (\<lambda>j. z_R (subsets ! i) (signs ! j))\<close> take_indices_def well_def_h)
@@ -1905,8 +1897,7 @@ proof -
     by simp 
   have h3a: "\<forall>x. List.member (find_nonzeros_from_input_vec ?lhs_vec) x \<longrightarrow>x < length (signs)" 
     using h30 size_of_lhs_R[of p qs signs]  
-    unfolding find_nonzeros_from_input_vec_def apply (auto)
-    using in_set_member by force
+    unfolding find_nonzeros_from_input_vec_def by auto
   have h3b_a: "\<forall>x. List.member (find_nonzeros_from_input_vec ?lhs_vec) x \<longrightarrow>x < length (subsets)" 
     using assms h30 size_of_lhs_R same_size_R unfolding find_nonzeros_from_input_vec_def apply (auto)
     by (simp add: find_nonzeros_from_input_vec_def h3a)
@@ -1928,9 +1919,9 @@ proof -
   have h3c: "\<forall>x. List.member (rows_to_keep (reduce_mat_cols ?A ?lhs_vec)) x \<longrightarrow> x < length (subsets)"
   proof clarsimp
     fix x
-    assume x_mem: "List.member (rows_to_keep
+    assume x_mem: "x \<in> set (rows_to_keep
             (take_cols_from_matrix (matrix_A_R signs subsets)
-              (find_nonzeros_from_input_vec (solve_for_lhs_R p qs subsets (matrix_A_R signs subsets))))) x"
+              (find_nonzeros_from_input_vec (solve_for_lhs_R p qs subsets (matrix_A_R signs subsets)))))"
     obtain nn :: "rat list list \<Rightarrow> nat list \<Rightarrow> nat" where
       "\<forall>x2 x3. (\<exists>v4. v4 \<in> set x3 \<and> \<not> v4 < length x2) = (nn x2 x3 \<in> set x3 \<and> \<not> nn x2 x3 < length x2)"
       by moura
@@ -1938,8 +1929,7 @@ proof -
       using nonzero
       using h3a reduce_system_matrix_signs_helper_R by auto 
     then have "matrix_A_R (take_indices signs (find_nonzeros_from_input_vec (solve_for_lhs_R p qs subsets (matrix_A_R signs subsets)))) subsets = take_cols_from_matrix (matrix_A_R signs subsets) (find_nonzeros_from_input_vec (solve_for_lhs_R p qs subsets (matrix_A_R signs subsets))) \<and> x \<in> set (map snd (pivot_positions (gauss_jordan_single (take_cols_from_matrix (matrix_A_R signs subsets) (find_nonzeros_from_input_vec (solve_for_lhs_R p qs subsets (matrix_A_R signs subsets))))\<^sup>T)))"
-      using f4
-      by (metis h3a in_set_member rows_to_keep_def x_mem)
+      using f4 x_mem h3a by (auto simp add: rows_to_keep_def)
     thus "x < length (subsets)" using x_mem unfolding rows_to_keep_def
       by (metis dim_row_matrix_A_R rows_to_keep_def rows_to_keep_lem)
   qed
@@ -2035,7 +2025,7 @@ proof -
                      (solve_for_lhs_R p qs subsets (matrix_A_R signs subsets)))"
     assume x_in: "x \<in> set (take_indices ?og_list ?ind_list)"
     show "x \<in> set (cols (matrix_A_R signs subsets))" 
-      using x_in unfolding take_indices_def using in_set_member apply (auto)
+      using x_in unfolding take_indices_def apply (auto)
       using in_set_conv_nth well_def by fastforce
   qed
   then show ?thesis
@@ -2223,8 +2213,10 @@ lemma reduction_doesnt_break_length_signs_R:
   assumes inv_mat: "invertible_mat (matrix_A_R signs subsets)"
   shows "\<forall>x \<in> set(reduction_signs_R p qs signs subsets (matrix_A_R signs subsets)). 
     length x = length qs"
-  unfolding reduction_signs_def using take_indices_lem
-  by (smt (verit) atLeastLessThan_iff construct_lhs_matches_solve_for_lhs_R filter_is_subset find_nonzeros_from_input_vec_def in_set_conv_nth in_set_member inv_mat length_init reduction_signs_R_def sat_eq set_upt size_of_lhs_R subset_code(1))
+  using assms
+  by (auto simp add: reduction_signs_def find_nonzeros_from_input_vec_def
+    reduction_signs_R_def size_of_lhs_R take_indices_def simp flip: construct_lhs_matches_solve_for_lhs_R)
+
 
 subsection "Distinct signs preserved when reducing"
 
@@ -2274,7 +2266,7 @@ lemma reduction_doesnt_break_subsets_R:
   unfolding all_list_constr_R_def 
 proof clarsimp
   fix a b
-  assume in_red_subsets: "List.member (reduction_subsets_R p qs signs subsets (matrix_A_R signs subsets)) (a, b) "
+  assume in_red_subsets: "(a, b) \<in> set (reduction_subsets_R p qs signs subsets (matrix_A_R signs subsets))"
   have solve_construct: "construct_lhs_vector_R p qs signs =
   solve_for_lhs_R p qs subsets (matrix_A_R signs subsets)"
     using construct_lhs_matches_solve_for_lhs_R assms
@@ -2294,26 +2286,30 @@ proof clarsimp
       by simp 
     have h3a: "\<forall>x. List.member (find_nonzeros_from_input_vec ?lhs_vec) x \<longrightarrow>x < length (signs)" 
       using h30 size_of_lhs_R unfolding find_nonzeros_from_input_vec_def 
-      using atLeastLessThan_iff filter_is_subset member_def set_upt subset_eq apply (auto)
-      by (smt (verit, best) atLeastLessThan_iff in_set_member mem_Collect_eq set_filter set_upt)
+      using atLeastLessThan_iff filter_is_subset set_upt subset_eq apply (auto)
+      by (smt (verit, best) atLeastLessThan_iff mem_Collect_eq set_filter set_upt)
     have h3c: "\<forall>x. List.member (rows_to_keep (reduce_mat_cols (matrix_A_R signs subsets) (solve_for_lhs_R p qs subsets (matrix_A_R signs subsets)))) x \<longrightarrow> x < length (subsets)"
     proof clarsimp
       fix x
-      assume x_mem: "List.member (rows_to_keep
+      assume x_mem: "x \<in> set (rows_to_keep
             (take_cols_from_matrix (matrix_A_R signs subsets)
-              (find_nonzeros_from_input_vec (solve_for_lhs_R p qs subsets (matrix_A_R signs subsets))))) x"
+              (find_nonzeros_from_input_vec (solve_for_lhs_R p qs subsets (matrix_A_R signs subsets)))))"
       show "x < length (subsets)" using x_mem unfolding rows_to_keep_def using pivot_positions
-        using  dim_row_matrix_A h3a in_set_member nonzero reduce_system_matrix_signs_helper_R rows_to_keep_def rows_to_keep_lem
-        apply (auto)
-        by (smt (verit, best) List.member_def dim_row_matrix_A_R rows_to_keep_def rows_to_keep_lem) 
-    qed
-    then show "y < length subsets" using in_set_member apply (auto)
-      using in_set_2 solve_construct by fastforce  
+        using dim_row_matrix_A h3a nonzero reduce_system_matrix_signs_helper_R rows_to_keep_def rows_to_keep_lem dim_row_matrix_A_R rows_to_keep_def rows_to_keep_lem
+        apply auto
+        apply (smt (verit) dim_row_matrix_A_R rows_to_keep_lem x_mem) 
+        done
+     qed
+    then show "y < length subsets"
+      using in_set_2 solve_construct by auto
   qed
   show "list_constr a (length qs) \<and> list_constr b (length qs)" using in_red_subsets  unfolding  reduction_subsets_def 
-    using take_indices_lem_R[of _ subsets]  rows_to_keep_hyp 
-    using all_list_constr_R_def in_set_conv_nth in_set_member length_init
-    by (metis fst_conv reduction_subsets_R_def snd_conv)
+    using take_indices_lem_R [of _ subsets] rows_to_keep_hyp 
+    using all_list_constr_R_def in_set_conv_nth length_init
+    apply (auto simp add: in_set_conv_nth)
+     apply (metis in_set_conv_nth reduction_subsets_R_def rows_to_keep_hyp)
+     apply (metis in_set_conv_nth reduction_subsets_R_def rows_to_keep_hyp)
+    done
 qed
 
 section "Overall Lemmas"
@@ -2366,13 +2362,14 @@ proof -
     using assms inductive_step_R[of p qs1 qs2 signs1 signs2 subsets1 subsets2]
     by (metis combining_to_smash_R fst_conv get_matrix_R_def kronecker_invertible satisfies_properties_R_def smash_systems_R_def snd_conv)
   have h6: "?matrix = matrix_A_R ?signs ?subsets" 
-    unfolding get_matrix_R_def combine_systems_R.simps smash_systems_R_def get_signs_R_def get_subsets_R_def
-    apply simp
-    apply (subst matrix_construction_is_kronecker_product_R[of subsets1 _ signs1 signs2 subsets2])
-   
-      apply (metis Ball_set all_list_constr_R_def in_set_member list_constr_def satisfies_properties_R_def satisfies_properties_sys1)
+    apply (auto simp add: get_matrix_R_def smash_systems_R_def get_signs_R_def get_subsets_R_def)
+    apply (subst matrix_construction_is_kronecker_product_R [of subsets1 _ signs1 signs2 subsets2])
+    apply (metis Ball_set List.member_iff all_list_constr_R_def list_constr_def
+        satisfies_properties_R_def satisfies_properties_sys1)
     using satisfies_properties_R_def satisfies_properties_sys1 well_def_signs_def apply blast
-    using satisfies_properties_R_def satisfies_properties_sys1 satisfies_properties_sys2 by auto
+    using satisfies_properties_R_def satisfies_properties_sys1 satisfies_properties_sys2
+    apply presburger
+    done
   have h7: "set (characterize_consistent_signs_at_roots p (qs1 @ qs2))
     \<subseteq> set (?signs)"
     using subset_step_R[of p qs1 signs1 qs2  signs2] assms
@@ -2441,14 +2438,12 @@ lemma  length_1_calculate_data_satisfies_properties_R:
   shows "satisfies_properties_R p qs (get_subsets_R (calculate_data_R p qs)) (get_signs_R (calculate_data_R p qs)) (get_matrix_R (calculate_data_R p qs))"
 proof - 
   have h1: "all_list_constr_R  [([], []),([0], []),([], [0])] (length qs)"
-    using len1 unfolding all_list_constr_R_def list_constr_def apply (auto)
-    apply (smt (verit, best) Ball_set in_set_member member_rec(1) member_rec(2) prod.inject)
-    by (smt (verit, ccfv_threshold) Ball_set in_set_member member_rec(1) member_rec(2) prod.inject)
+    using len1 unfolding all_list_constr_R_def list_constr_def by auto
   have h2: "well_def_signs (length qs) [[1],[-1]]"
-    unfolding well_def_signs_def using len1 in_set_member 
+    unfolding well_def_signs_def using len1
     by auto
   have h3: "distinct ([[1],[0],[-1]]::rat list list)" 
-    unfolding distinct_def using in_set_member by auto
+    by auto
   have h4: "satisfy_equation_R p qs [([], []),([0], []),([], [0])] [[1],[0],[-1]]"
     using assms base_case_satisfy_equation_alt_R[of qs p] by auto
   have h6: "(mat_of_rows_list 3 [[1,1,1], [0,1,0], [1,0,-1]]::rat mat) = (matrix_A_R ([[1],[0],[-1]]) ([([], []),([0], []),([], [0])]) :: rat mat)" 
@@ -2643,9 +2638,9 @@ proof -
     using nontriv1 nonzero nonzero satisfies_properties_R_def
     by auto 
   then have well_def_subsets1: "(\<And>l i. l \<in> set (get_subsets_R(calculate_data_R p qs1)) \<Longrightarrow> (i \<in> set (fst l) \<longrightarrow> i < (length qs1)) \<and> (i \<in> set (snd l) \<longrightarrow> i < (length qs1)))"
-    unfolding all_list_constr_R_def list_constr_def 
-    using in_set_member
-    by (metis in_set_conv_nth list_all_length) 
+    apply (simp add: all_list_constr_R_def list_constr_def)
+    apply (smt (verit, ccfv_threshold) Ball_set prod.collapse)
+    done
   have extra_matrix_same: "matrix_A_R (signs_smash (get_signs_R (calculate_data_R p qs1)) (get_signs_R (calculate_data_R p qs2)))
          (subsets_smash_R (length qs1) (get_subsets_R(calculate_data_R p qs1)) (get_subsets_R (calculate_data_R p qs2))) 
         = kronecker_product (get_matrix_R (calculate_data_R p qs1)) (get_matrix_R (calculate_data_R p qs2))"

@@ -413,35 +413,35 @@ subsection\<open>Execution with Invalid or Null as Argument\<close>
 
 lemma OclIsTypeOf\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y_OclAny_strict1[simp]:
      "(invalid::OclAny) .oclIsTypeOf(OclAny) = invalid"
-by(rule ext, simp add: null_fun_def null_option_def bot_option_def null_def invalid_def
+by(rule ext, simp add: null_fun_def null_option_def bot_option_def invalid_def
                        OclIsTypeOf\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y_OclAny)
 lemma OclIsTypeOf\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y_OclAny_strict2[simp]:
      "(null::OclAny) .oclIsTypeOf(OclAny) = true"
-by(rule ext, simp add: null_fun_def null_option_def bot_option_def null_def invalid_def
+by(rule ext, simp add: null_fun_def null_option_def bot_option_def invalid_def
                        OclIsTypeOf\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y_OclAny)
 lemma OclIsTypeOf\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y_Person_strict1[simp]:
      "(invalid::Person) .oclIsTypeOf(OclAny) = invalid"
-by(rule ext, simp add: null_fun_def null_option_def bot_option_def null_def invalid_def
+by(rule ext, simp add: null_fun_def null_option_def bot_option_def invalid_def
                        OclIsTypeOf\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y_Person)
 lemma OclIsTypeOf\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y_Person_strict2[simp]:
      "(null::Person) .oclIsTypeOf(OclAny) = true"
-by(rule ext, simp add: null_fun_def null_option_def bot_option_def null_def invalid_def
+by(rule ext, simp add: null_fun_def null_option_def bot_option_def invalid_def
                        OclIsTypeOf\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y_Person)
 lemma OclIsTypeOf\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n_OclAny_strict1[simp]:
      "(invalid::OclAny) .oclIsTypeOf(Person) = invalid"
-by(rule ext, simp add: null_fun_def null_option_def bot_option_def null_def invalid_def
+by(rule ext, simp add: null_fun_def null_option_def bot_option_def invalid_def
                        OclIsTypeOf\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n_OclAny)
 lemma OclIsTypeOf\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n_OclAny_strict2[simp]:
      "(null::OclAny) .oclIsTypeOf(Person) = true"
-by(rule ext, simp add: null_fun_def null_option_def bot_option_def null_def invalid_def
+by(rule ext, simp add: null_fun_def null_option_def bot_option_def invalid_def
                        OclIsTypeOf\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n_OclAny)
 lemma OclIsTypeOf\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n_Person_strict1[simp]:
      "(invalid::Person) .oclIsTypeOf(Person) = invalid"
-by(rule ext, simp add: null_fun_def null_option_def bot_option_def null_def invalid_def
+by(rule ext, simp add: null_fun_def null_option_def bot_option_def invalid_def
                        OclIsTypeOf\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n_Person)
 lemma OclIsTypeOf\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n_Person_strict2[simp]:
      "(null::Person) .oclIsTypeOf(Person) = true"
-by(rule ext, simp add: null_fun_def null_option_def bot_option_def null_def invalid_def
+by(rule ext, simp add: null_fun_def null_option_def bot_option_def invalid_def
                        OclIsTypeOf\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n_Person)
 
 subsection\<open>Up Down Casting\<close>
@@ -458,7 +458,7 @@ assumes isOclAny: "\<tau> \<Turnstile> (X::OclAny) .oclIsTypeOf(OclAny)"
 and     non_null: "\<tau> \<Turnstile> (\<delta> X)"
 shows             "\<tau> \<Turnstile> (X .oclAsType(Person)) \<triangleq> invalid"
 using isOclAny non_null
-apply(auto simp : bot_fun_def null_fun_def null_option_def bot_option_def null_def invalid_def
+apply(auto simp : bot_fun_def null_fun_def null_option_def bot_option_def invalid_def
                   OclAsType\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y_Person OclAsType\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n_OclAny foundation22 foundation16
            split: option.split type\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y.split type\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n.split)
 by(simp add: OclIsTypeOf\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y_OclAny  OclValid_def false_def true_def)
@@ -473,7 +473,7 @@ lemma up_down_cast :
 assumes isdef: "\<tau> \<Turnstile> (\<delta> X)"
 shows "\<tau> \<Turnstile> ((X::Person) .oclAsType(OclAny) .oclAsType(Person) \<triangleq> X)"
 using isdef
-by(auto simp : null_fun_def null_option_def bot_option_def null_def invalid_def
+by(auto simp : null_fun_def null_option_def bot_option_def invalid_def
                OclAsType\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y_Person OclAsType\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n_OclAny foundation22 foundation16
         split: option.split type\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n.split)
 
@@ -594,16 +594,16 @@ lemma OclIsKindOf\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y_Person_strict2
 by(rule ext, simp add: null_fun_def null_option_def bot_option_def
                        OclIsKindOf\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y_Person)
 lemma OclIsKindOf\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n_OclAny_strict1[simp]: "(invalid::OclAny) .oclIsKindOf(Person) = invalid"
-by(rule ext, simp add: null_fun_def null_option_def bot_option_def null_def invalid_def
+by(rule ext, simp add: null_fun_def null_option_def bot_option_def invalid_def
                        OclIsKindOf\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n_OclAny)
 lemma OclIsKindOf\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n_OclAny_strict2[simp]: "(null::OclAny) .oclIsKindOf(Person) = true"
-by(rule ext, simp add: null_fun_def null_option_def bot_option_def null_def invalid_def
+by(rule ext, simp add: null_fun_def null_option_def bot_option_def invalid_def
                        OclIsKindOf\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n_OclAny)
 lemma OclIsKindOf\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n_Person_strict1[simp]: "(invalid::Person) .oclIsKindOf(Person) = invalid"
-by(rule ext, simp add: null_fun_def null_option_def bot_option_def null_def invalid_def
+by(rule ext, simp add: null_fun_def null_option_def bot_option_def invalid_def
                        OclIsKindOf\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n_Person)
 lemma OclIsKindOf\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n_Person_strict2[simp]: "(null::Person) .oclIsKindOf(Person) = true"
-by(rule ext, simp add: null_fun_def null_option_def bot_option_def null_def invalid_def
+by(rule ext, simp add: null_fun_def null_option_def bot_option_def invalid_def
                        OclIsKindOf\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n_Person)
 
 subsection\<open>Up Down Casting\<close>
@@ -620,7 +620,7 @@ assumes isOclAny: "\<not> (\<tau> \<Turnstile> ((X::OclAny).oclIsKindOf(Person))
 and     non_null: "\<tau> \<Turnstile> (\<delta> X)"
 shows             "\<tau> \<Turnstile> ((X .oclAsType(Person)) \<triangleq> invalid)"
 using isOclAny non_null
-apply(auto simp : bot_fun_def null_fun_def null_option_def bot_option_def null_def invalid_def
+apply(auto simp : bot_fun_def null_fun_def null_option_def bot_option_def invalid_def
                   OclAsType\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y_Person OclAsType\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n_OclAny foundation22 foundation16
            split: option.split type\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y.split type\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n.split)
 by(simp add: OclIsKindOf\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n_OclAny  OclValid_def false_def true_def)
@@ -959,33 +959,33 @@ lemmas cp_dot\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n\<S>\<A>\<L>\<A>\<R
 subsection\<open>Execution with Invalid or Null as Argument\<close>
 
 lemma dot\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y\<A>\<N>\<Y>_nullstrict [simp]: "(null).any = invalid"
-by(rule ext, simp add: dot_accessor null_fun_def null_option_def bot_option_def null_def invalid_def)
+by(rule ext, simp add: dot_accessor null_fun_def null_option_def bot_option_def invalid_def)
 lemma dot\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y\<A>\<N>\<Y>_at_pre_nullstrict [simp] : "(null).any@pre = invalid"
-by(rule ext, simp add: dot_accessor null_fun_def null_option_def bot_option_def null_def invalid_def)
+by(rule ext, simp add: dot_accessor null_fun_def null_option_def bot_option_def invalid_def)
 lemma dot\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y\<A>\<N>\<Y>_strict [simp] : "(invalid).any = invalid"
-by(rule ext, simp add: dot_accessor null_fun_def null_option_def bot_option_def null_def invalid_def)
+by(rule ext, simp add: dot_accessor null_fun_def null_option_def bot_option_def invalid_def)
 lemma dot\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y\<A>\<N>\<Y>_at_pre_strict [simp] : "(invalid).any@pre = invalid"
-by(rule ext, simp add: dot_accessor null_fun_def null_option_def bot_option_def null_def invalid_def)
+by(rule ext, simp add: dot_accessor null_fun_def null_option_def bot_option_def invalid_def)
 
 
 lemma dot\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n\<B>\<O>\<S>\<S>_nullstrict [simp]: "(null).boss = invalid"
-by(rule ext, simp add: dot_accessor null_fun_def null_option_def bot_option_def null_def invalid_def)
+by(rule ext, simp add: dot_accessor null_fun_def null_option_def bot_option_def invalid_def)
 lemma dot\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n\<B>\<O>\<S>\<S>_at_pre_nullstrict [simp] : "(null).boss@pre = invalid"
-by(rule ext, simp add: dot_accessor null_fun_def null_option_def bot_option_def null_def invalid_def)
+by(rule ext, simp add: dot_accessor null_fun_def null_option_def bot_option_def invalid_def)
 lemma dot\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n\<B>\<O>\<S>\<S>_strict [simp] : "(invalid).boss = invalid"
-by(rule ext, simp add: dot_accessor null_fun_def null_option_def bot_option_def null_def invalid_def)
+by(rule ext, simp add: dot_accessor null_fun_def null_option_def bot_option_def invalid_def)
 lemma dot\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n\<B>\<O>\<S>\<S>_at_pre_strict [simp] : "(invalid).boss@pre = invalid"
-by(rule ext, simp add: dot_accessor null_fun_def null_option_def bot_option_def null_def invalid_def)
+by(rule ext, simp add: dot_accessor null_fun_def null_option_def bot_option_def invalid_def)
 
 
 lemma dot\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n\<S>\<A>\<L>\<A>\<R>\<Y>_nullstrict [simp]: "(null).salary = invalid"
-by(rule ext, simp add: dot_accessor null_fun_def null_option_def bot_option_def null_def invalid_def)
+by(rule ext, simp add: dot_accessor null_fun_def null_option_def bot_option_def invalid_def)
 lemma dot\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n\<S>\<A>\<L>\<A>\<R>\<Y>_at_pre_nullstrict [simp] : "(null).salary@pre = invalid"
-by(rule ext, simp add: dot_accessor null_fun_def null_option_def bot_option_def null_def invalid_def)
+by(rule ext, simp add: dot_accessor null_fun_def null_option_def bot_option_def invalid_def)
 lemma dot\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n\<S>\<A>\<L>\<A>\<R>\<Y>_strict [simp] : "(invalid).salary = invalid"
-by(rule ext, simp add: dot_accessor null_fun_def null_option_def bot_option_def null_def invalid_def)
+by(rule ext, simp add: dot_accessor null_fun_def null_option_def bot_option_def invalid_def)
 lemma dot\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n\<S>\<A>\<L>\<A>\<R>\<Y>_at_pre_strict [simp] : "(invalid).salary@pre = invalid"
-by(rule ext, simp add: dot_accessor null_fun_def null_option_def bot_option_def null_def invalid_def)
+by(rule ext, simp add: dot_accessor null_fun_def null_option_def bot_option_def invalid_def)
 
 subsection\<open>Representation in States\<close>
 

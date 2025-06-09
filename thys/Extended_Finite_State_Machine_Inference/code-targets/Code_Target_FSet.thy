@@ -44,7 +44,7 @@ lemma ffUnion_fold [code]:
   by (simp add: fold_union_ffUnion)
 
 lemma fmember [code]: "a |\<in>| (fset_of_list as) = List.member as a"
-  by (simp add: fset_of_list_elem member_def)
+  by (simp add: fset_of_list_elem)
 
 lemma fthe_elem [code]: "fthe_elem (fset_of_list [x]) = x"
   by simp

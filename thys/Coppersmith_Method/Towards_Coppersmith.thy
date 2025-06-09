@@ -126,8 +126,8 @@ lemma dim_vector_in_basis:
 proof -
   let ?vec = "(form_basis p M X d) ! i"
   have eo: "List.member (form_basis_helper p M X d) ?vec \<or> ?vec = vec_associated_to_int_poly p X"
-    using assms  
-    by (metis List.member_def add_Suc_right dim_form_basis_helper form_basis_def less_Suc_eq nat_1_add_1 nth_append nth_append_length nth_mem plus_1_eq_Suc) 
+    using assms dim_form_basis_helper [of p M X d]
+    by (simp add: form_basis_def nth_append)
   have len_helper: "length (form_basis_helper p M X d) = d + 1"
     using dim_form_basis form_basis_def by simp
   have h1: "\<And>x. List.member (form_basis_helper p M X d) x \<Longrightarrow> dim_vec x = degree p + 1"
@@ -135,8 +135,8 @@ proof -
     fix x 
     assume "List.member (form_basis_helper p M X d) x"
     then have "\<exists>k. x = g_i_vec M X k (degree p + 1)"
-      using ith_row_form_basis_helper
-      by (metis List.member_def dim_form_basis_helper in_set_conv_nth le_simps(2) semiring_norm(174)) 
+      using ith_row_form_basis_helper [of _ d p M X] dim_form_basis_helper [of p M X d]
+      by (auto simp add: in_set_conv_nth)
     then show "dim_vec x = degree p + 1"
       using assms unfolding g_i_vec_def by auto
   qed 

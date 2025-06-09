@@ -41,7 +41,7 @@ setup Locale_Code.open_block
 interpretation lsi_basic: StdBasicSet lsi_basic_ops
   apply unfold_locales
   unfolding lsi_basic_ops_def lsi_ins_def[abs_def]
-  apply (auto simp: List.member_def set_dlist_remove1' 
+  apply (auto simp: set_dlist_remove1' 
   distinct_remove1')
   done
 setup Locale_Code.close_block

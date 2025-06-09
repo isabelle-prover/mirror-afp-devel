@@ -1005,14 +1005,14 @@ proof -
       append_child (cast e1) (cast e2);
       return (document_ptr, e1, e2)
   })"
-    by(code_simp, auto simp add: equal_eq List.member_def)+
+    by(code_simp, auto simp add: equal_eq)+
   then obtain h' where
     "heap_is_wellformed h" and "type_wf h" and "known_ptrs h" and
     h': "h \<turnstile> remove_child (cast e1) (cast e2) \<rightarrow>\<^sub>h h'" and
     "\<not>(is_weakly_dom_component_safe {cast e1, cast e2} {} h h')"
     apply(code_simp)
     apply(clarify)
-    by(code_simp, auto simp add: equal_eq List.member_def)+
+    by(code_simp, auto simp add: equal_eq)+
   then show ?thesis
     by auto
 qed
@@ -1039,14 +1039,14 @@ proof -
       adopt_node document_ptr2 (cast e1);
       return (document_ptr, document_ptr2, e1)
   })"
-    by(code_simp, auto simp add: equal_eq List.member_def)+
+    by(code_simp, auto simp add: equal_eq)+
   then obtain h' where
     "heap_is_wellformed h" and "type_wf h" and "known_ptrs h" and
     h': "h \<turnstile> adopt_node document_ptr (cast e1) \<rightarrow>\<^sub>h h'" and
     "\<not>(is_weakly_dom_component_safe {cast document_ptr, cast e1} {} h h')"
     apply(code_simp)
     apply(clarify)
-    by(code_simp, auto simp add: equal_eq List.member_def)+
+    by(code_simp, auto simp add: equal_eq)+
   then show ?thesis
     by auto
 qed
@@ -2131,13 +2131,13 @@ proof -
       document_ptr \<leftarrow> create_document;
       return (document_ptr)
   })"
-    by(code_simp, auto simp add: equal_eq List.member_def)+
+    by(code_simp, auto simp add: equal_eq)+
   then obtain h' new_document_ptr where
     "heap_is_wellformed h" and "type_wf h" and "known_ptrs h" and
     h': "h \<turnstile> create_document \<rightarrow>\<^sub>r new_document_ptr" and
     h': "h \<turnstile> create_document \<rightarrow>\<^sub>h h'" and
     "\<not>(is_strongly_dom_component_safe {} {cast new_document_ptr} h h')"
-    by (code_simp, auto simp add: equal_eq List.member_def)+
+    by (code_simp, auto simp add: equal_eq)+
   then show ?thesis
     by blast
 qed
@@ -2236,12 +2236,12 @@ proof -
       e2 \<leftarrow> create_element document_ptr ''div'';
       return (document_ptr, e1, e2)
   })"
-    by(code_simp, auto simp add: equal_eq List.member_def)+
+    by(code_simp, auto simp add: equal_eq )+
   then obtain h' where
     "heap_is_wellformed h" and "type_wf h" and "known_ptrs h" and
     h': "h \<turnstile> insert_before (cast e1) (cast e2) None \<rightarrow>\<^sub>h h'" and
     "\<not>(is_weakly_dom_component_safe {cast e1, cast e2} {} h h')"
-    by(code_simp, auto simp add: equal_eq List.member_def)+
+    by(code_simp, auto simp add: equal_eq)+
   then show ?thesis
     by auto
 qed
@@ -2268,14 +2268,14 @@ proof -
       append_child (cast e1) (cast e2);
       return (document_ptr, e1, e2, e3)
   })"
-    by(code_simp, auto simp add: equal_eq List.member_def)+
+    by(code_simp, auto simp add: equal_eq)+
   then obtain h' where
     "heap_is_wellformed h" and "type_wf h" and "known_ptrs h" and
     h': "h \<turnstile> insert_before (cast e1) (cast e3) (Some (cast e2)) \<rightarrow>\<^sub>h h'" and
     "\<not>(is_weakly_dom_component_safe {cast e1, cast e3, cast e2} {} h h')"
     apply(code_simp)
     apply(clarify)
-    by(code_simp, auto simp add: equal_eq List.member_def)+
+    by(code_simp, auto simp add: equal_eq)+
   then show ?thesis
     by fast
 qed

@@ -28,7 +28,7 @@ lemma [code]:
 
 subsection \<open>Lists\<close>
 
-declare List.member_def[simp] list_all_iff[simp] list_ex_iff[simp]
+declare list_all_iff[simp] list_ex_iff[simp]
 
 
 subsubsection\<open>\<open>length\<close>\<close>

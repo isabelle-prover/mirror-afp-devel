@@ -265,7 +265,7 @@ proof (induction xss)
 next
   case (Cons xs xss)
   have "list_succ xs permutes (set xs)"
-    using Cons by (intro list_succ_permutes) (simp add: distincts_def in_set_member)
+    using Cons by (intro list_succ_permutes) (simp add: distincts_def)
   moreover
   have "lists_succ xss permutes (\<Union>ys \<in> set xss. set ys)"
     using Cons by (auto simp: Cons distincts_def)

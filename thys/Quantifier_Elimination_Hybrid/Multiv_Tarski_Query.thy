@@ -86,7 +86,7 @@ lemma spmods_multiv_lc_auxSome1:
   assumes lookup_some: "(lookup_assump_aux (Polynomial.lead_coeff p) acc) = Some 0"
   shows "(((Polynomial.lead_coeff p), 0) \<in> set acc  \<and> (assumps, sturm_seq) \<in> set (spmods_multiv (one_less_degree p) q acc))"
   using assms spmods_multiv.simps[of p q acc]
-  using in_set_member lookup_assum_aux_mem option.simps(5) by fastforce 
+  using lookup_assum_aux_mem option.simps(5) by fastforce 
 
 lemma spmods_multiv_lc_auxSome2:
   assumes inset: "(assumps, sturm_seq) \<in> set (spmods_multiv p q acc)"
@@ -94,7 +94,7 @@ lemma spmods_multiv_lc_auxSome2:
   assumes lookup_some: "(lookup_assump_aux (Polynomial.lead_coeff p) acc) = Some i \<and> i \<noteq> 0"
   shows "(\<exists>k \<noteq> 0. (((Polynomial.lead_coeff p), k) \<in> set acc  \<and> (assumps, sturm_seq) \<in> set (spmods_multiv_aux p q acc)))"
   using assms spmods_multiv.simps[of p q acc] lookup_assum_aux_mem
-  by (smt (verit, best) in_set_member option.simps(5)) (* may take a couple of seconds to load *) 
+  by (smt (verit, best) option.simps(5)) (* may take a couple of seconds to load *) 
 
 lemma spmods_multiv_lc_aux:
   assumes inset: "(assumps, sturm_seq) \<in> set (spmods_multiv p q acc)"
@@ -819,7 +819,7 @@ proof -
   qed
   then have help1: "\<And>ss_poly. ss_poly \<in> set sturm_seq \<Longrightarrow> 
       (\<exists>i. lookup_assump_aux (Polynomial.lead_coeff ss_poly) assumps_superset = Some i)"
-    using superset sign_rat_def good_val in_set_member inset_means_lookup_assump_some lookup_assum_aux_mem satisfies_evaluation_def subset_code(1)
+    using superset sign_rat_def good_val inset_means_lookup_assump_some lookup_assum_aux_mem satisfies_evaluation_def subset_code(1)
     by (smt (verit, ccfv_SIG))
   then have help2: "\<And>ss_poly. \<And> i. (ss_poly \<in> set sturm_seq \<and> lookup_assump_aux (Polynomial.lead_coeff ss_poly) assumps_superset = Some i) \<Longrightarrow> sign_rat i = sign_rat (eval_mpoly val (Polynomial.lead_coeff ss_poly))"
   proof - 
@@ -1115,7 +1115,7 @@ proof -
     by auto
   have in_spmods_multiv: "(assumps, ss) \<in> set ((let new_p = sum_list (map (\<lambda>x. x^2) (p # I1)) in
     spmods_multiv new_p ((pderiv new_p)*(prod_list I2))) acc)"
-    using tuple_prop in_set_member
+    using tuple_prop
     using as_is construct_NofI_R_spmods_def n_prop by auto
   let ?multiv_p = "sum_list (map power2 (p # I1))"
   let ?multiv_q = "(pderiv ?multiv_p * prod_list I2)"
@@ -1172,7 +1172,7 @@ proof -
       using val unfolding satisfies_evaluation_def
       by (metis of_int_hom.injectivity sign_rat_def)
     then have "\<exists>j. (case lookup_assump_aux (Polynomial.lead_coeff x) assumps of None \<Rightarrow> 1000 | Some i \<Rightarrow> i) = j \<and> sign_rat i = sign_rat j"
-      by (smt (verit, del_insts) i_prop in_set_member inset_means_lookup_assump_some lookup_assum_aux_mem option.case(2))
+      by (smt (verit, del_insts) i_prop inset_means_lookup_assump_some lookup_assum_aux_mem option.case(2))
     then show "sign_rat
           (case lookup_assump_aux (Polynomial.lead_coeff x) assumps of None \<Rightarrow> 1000 | Some i \<Rightarrow> i) =
          sign_rat (eval_mpoly val (Polynomial.lead_coeff x))"

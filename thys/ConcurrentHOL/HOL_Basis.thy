@@ -392,8 +392,6 @@ declare transp_le[intro!]
 
 (* List *)
 
-declare List.null_def[simp]
-
 lemma split_list_Ex:
   shows "(\<exists>xxs. P xxs) \<longleftrightarrow> (P [] \<or> (\<exists>x xs. P (x # xs)))"
 by (metis neq_Nil_conv)

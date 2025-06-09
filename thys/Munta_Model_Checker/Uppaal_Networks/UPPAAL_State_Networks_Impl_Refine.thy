@@ -1943,8 +1943,8 @@ begin
 
   lemma final_fun_final':
     "(final_fun, (\<lambda> (l, s). F l s)) \<in> inv_rel Id states'"
-    unfolding F_def final_fun_def inv_rel_def in_set_member[symmetric] list_ex_iff
-     by (force dest!: states'_states')
+    unfolding F_def final_fun_def inv_rel_def list_ex_iff
+    by (force dest!: states'_states')
 
   lemma final_fun_final[intro, simp]:
     "(final_fun, (\<lambda> (l, s). F l s)) \<in> inv_rel Id states"

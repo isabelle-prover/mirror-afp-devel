@@ -421,7 +421,7 @@ where [stream_fusion]: "null_cons g s = List.null (unstream g s)"
 
 lemma null_cons_code [code]:
   "null_cons g s = (case generator g s of Done \<Rightarrow> True | Skip s' \<Rightarrow> null_cons g s' | Yield _ _ \<Rightarrow> False)"
-by(cases "generator g s")(simp_all add: null_cons_def null_def)
+by(cases "generator g s")(simp_all add: null_cons_def)
 
 subsubsection \<open>@{const hd}\<close>
 
@@ -496,7 +496,7 @@ lemma list_all2_cons_code [code]:
      Done \<Rightarrow> null_cons h sh
    | Skip sg' \<Rightarrow> list_all2_cons sg' sh
    | Yield a sg' \<Rightarrow> list_all2_cons1 a sg' sh)"
-by(simp split: step.split add: list_all2_cons_def null_cons_def List.null_def list_all2_cons1_def)
+by(simp split: step.split add: list_all2_cons_def null_cons_def list_all2_cons1_def)
 
 lemma list_all2_cons1_code [code]:
   "list_all2_cons1 x sg' sh = 
@@ -504,7 +504,7 @@ lemma list_all2_cons1_code [code]:
      Done \<Rightarrow> False
    | Skip sh' \<Rightarrow> list_all2_cons1 x sg' sh'
    | Yield y sh' \<Rightarrow> P x y \<and> list_all2_cons sg' sh')"
-by(simp split: step.split add: list_all2_cons_def null_cons_def List.null_def list_all2_cons1_def)
+by(simp split: step.split add: list_all2_cons_def null_cons_def list_all2_cons1_def)
 
 end
 
@@ -546,7 +546,7 @@ lemma lexord_fusion_code:
         None \<Rightarrow> False
       | Some (y, s2') \<Rightarrow> x < y \<or> \<not> y < x \<and> lexord_fusion g1 g2 s1' s2'))"
 unfolding lexord_fusion_def
-by(cases "generator g1 s1" "force g2 s2" rule: step.exhaust[case_product option.exhaust])(auto simp add: null_cons_def null_def)
+by(cases "generator g1 s1" "force g2 s2" rule: step.exhaust[case_product option.exhaust])(auto simp add: null_cons_def)
 
 lemma lexord_eq_fusion_code:
   "lexord_eq_fusion g1 g2 s1 s2 \<longleftrightarrow>

@@ -28,7 +28,7 @@ next
   from Cons(2) have 1: "v \<notin> f ` set (remdups_wrt_rev f xs vs)" by (rule Cons(1))
   from Cons(2) have "v \<in> set (f x # vs)" by simp
   hence 2: "v \<notin> f ` set (remdups_wrt_rev f xs (f x # vs))" by (rule Cons(1))
-  from Cons(2) show ?case by (auto simp: Let_def 1 2 List.member_def)
+  from Cons(2) show ?case by (auto simp: Let_def 1 2)
 qed
 
 lemma distinct_remdups_wrt_rev: "distinct (map f (remdups_wrt_rev f xs vs))"
@@ -48,7 +48,7 @@ proof (induct xs arbitrary: vs)
 next
   case (Cons x xs)
   show ?case
-  proof (simp add: Let_def List.member_def Cons, intro impI)
+  proof (simp add: Let_def Cons, intro impI)
     assume "k \<noteq> fst x"
     have "map_of (filter (\<lambda>y. fst y \<noteq> fst x \<and> fst y \<notin> set vs) xs) =
           map_of (filter (\<lambda>y. fst y \<noteq> fst x) (filter (\<lambda>y. fst y \<notin> set vs) xs))"

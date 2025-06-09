@@ -1091,7 +1091,7 @@ proof -
     have nth_l: "l ! n < x" using l_prop by auto
     have np1th_l: "x < l ! (n+1)" using l_prop by auto
     have "\<exists>k. k < length l \<and> nth l k = x" using l_prop
-      by (meson in_set_member index_of_lookup(1) index_of_lookup(2))
+      using index_of_lookup by auto force
     then obtain k where k_prop: "k < length l \<and> nth l k = x" by auto
     have n_lt: "n < k"
       using nth_l sorted_hyp_var k_prop add_lessD1 assms(2) linorder_neqE_nat nat_SN.gt_trans
@@ -1125,12 +1125,12 @@ proof -
     have "((\<forall>q. (List.member qs q) \<longrightarrow> q \<noteq> 0) \<and> has_no_zeros (sign_vec qs x1)) \<Longrightarrow> \<not> List.member ?zer_list x1"
     proof (induct qs)
       case Nil
-      then show ?case  apply (auto)
-        by (simp add: member_rec(2)) 
+      then show ?case
+        by auto
     next
       case (Cons a qs)
       then show ?case 
-      proof clarsimp 
+      proof (clarsimp simp del: List.member_iff)
         assume imp: "((\<forall>q. List.member qs q \<longrightarrow> q \<noteq> 0) \<and>
      has_no_zeros (sign_vec qs x1) \<Longrightarrow>
      \<not> List.member (sorted_list_of_set {x. \<exists>q\<in>set qs. rpoly q x = 0})
@@ -1151,25 +1151,26 @@ proof -
           then show "has_no_zeros (sign_vec qs x1)" using hnz same_vec by auto
         qed
         then have nmem: "\<not> List.member (sorted_list_of_set {x. \<exists>q\<in>set qs. rpoly q x = 0}) x1"
-          using hnz nonz imp apply (auto)
-          by (simp add: member_rec(1))
+          using hnz nonz imp by auto
         have "\<forall>q \<in>set qs. q \<noteq> 0"
-          using nonz using in_set_member apply (auto) by fastforce 
+          using nonz by auto 
         then have "\<forall>q \<in>set qs. finite {x. rpoly q x = 0}"
           by (simp add: poly_roots_finite)
         then have fin_set: "finite {x. \<exists>q\<in>set qs. rpoly q x = 0}"
           by auto
         have not_in: "x1 \<notin> {x. \<exists>q\<in>set qs. rpoly q x = 0}" using fin_set nmem set_sorted_list_of_set
             all_squarefree
-          apply (auto)
-          by (simp add: List.member_def \<open>finite {x. \<exists>q\<in>set qs. rpoly q x = 0}\<close>)
+          by (simp add: \<open>finite {x. \<exists>q\<in>set qs. rpoly q x = 0}\<close>)
         have x1_in: "x1 \<in> {x. rpoly a x = 0 \<or> (\<exists>q\<in>set qs. rpoly q x = 0)}"
           using mem_list sorted_list_of_set 
         proof -
           have f1: "\<forall>r R. ((r::real) \<in> R \<or> \<not> List.member (sorted_list_of_set R) r) \<or> infinite R"
-            by (metis in_set_member set_sorted_list_of_set)
+            by auto
           have "finite {r. rpoly a (r::real) = 0}"
-            by (metis (full_types) List.finite_set member_rec(1) nonz real_roots_of_rat_poly(1))
+            apply (subst real_roots_of_rat_poly(1) [symmetric])
+            using nonz
+             apply simp_all
+            done
           then show ?thesis
             using f1 \<open>finite {x. \<exists>q\<in>set qs. rpoly q x = 0}\<close> mem_list by fastforce
         qed
@@ -1182,17 +1183,19 @@ proof -
     then have non_mem: "\<not> List.member ?zer_list x1"
       using all_squarefree unfolding rsquarefree_def hnz apply (auto)
       using hnz x1_prop
-      by (simp add: in_set_member) 
+      by simp 
     have "?zer_list \<noteq> [] \<Longrightarrow> ((x1 \<ge> (?zer_list ! 0)) \<and> (x1 \<le> (?zer_list ! (length ?zer_list - 1))))
 \<Longrightarrow> (\<exists> n < (length ?zer_list - 1). x1 > (?zer_list ! n) \<and> x1 < (?zer_list ! (n+1)))"
     proof - 
       assume nonempty: "?zer_list \<noteq> []"
       assume x1_asm: "(x1 \<ge> (?zer_list ! 0)) \<and> (x1 \<le> (?zer_list ! (length ?zer_list - 1)))"
       have nm1: "x1 \<noteq> ?zer_list ! 0" using non_mem
-        using \<open>sorted_list_of_set {x. \<exists>q\<in>set qs. rpoly q x = 0} \<noteq> []\<close> in_set_member
+        using \<open>sorted_list_of_set {x. \<exists>q\<in>set qs. rpoly q x = 0} \<noteq> []\<close> apply auto
         by (metis (no_types, lifting) in_set_conv_nth length_greater_0_conv)
-      have nm2: "x1 \<noteq> ?zer_list ! (length ?zer_list -1)" using non_mem
-        by (metis (no_types, lifting) One_nat_def \<open>sorted_list_of_set {x. \<exists>q\<in>set qs. rpoly q x = 0} \<noteq> []\<close> diff_Suc_less in_set_member length_greater_0_conv nth_mem) 
+      have nm2: "x1 \<noteq> ?zer_list ! (length ?zer_list -1)"
+        using non_mem \<open>sorted_list_of_set {x. \<exists>q\<in>set qs. rpoly q x = 0} \<noteq> []\<close>
+        by auto (metis (lifting) diff_Suc_less in_set_conv_nth length_greater_0_conv
+          sorted_list_of_set.length_sorted_key_list_of_set)
       then have x_asm_var: "x1 > (?zer_list ! 0) \<and> x1 < ?zer_list ! (length ?zer_list -1)"
         using x1_asm nm1 nm2 by auto
       have "(\<forall>n. (n < (length ?zer_list - 1) \<and>  x1 \<ge> (?zer_list ! n) \<longrightarrow> x1 \<ge> (?zer_list ! (n+1)))) \<Longrightarrow> False"
@@ -1230,8 +1233,9 @@ proof -
           by linarith 
       qed
       then show ?thesis
-        using x1_asm
-        by (smt (verit) One_nat_def Suc_pred nonempty in_set_member length_greater_0_conv less_SucI non_mem nth_mem) 
+        using x1_asm nonempty non_mem by auto
+          (metis (lifting) Suc_lessD add.right_neutral add_Suc_right length_sorted_list_of_set
+            less_diff_conv less_le not_less nth_mem) 
     qed
     then have h1: "(?zer_list \<noteq> [] \<and> (x1 \<ge> (?zer_list ! 0)) \<and> (x1 \<le> (?zer_list ! (length ?zer_list - 1))) \<Longrightarrow>
       (\<exists> n < (length ?zer_list - 1). x1 > (?zer_list ! n) \<and> x1 < (?zer_list ! (n+1))))"
@@ -1269,7 +1273,7 @@ proof -
   then have sorted_hyp_var2: "\<forall>q1 < length ?zer_list. ((?zer_list ! q1)::real) \<le> (?zer_list ! (length ?zer_list - 1))"
     by (smt (verit, ccfv_SIG) One_nat_def Suc_pred bot_nat_0.extremum less_Suc_eq_le less_le not_less)
   have nonz_q: "\<forall>q \<in>set qs. q \<noteq> 0"
-    using all_squarefree unfolding rsquarefree_def using in_set_member by auto 
+    using all_squarefree unfolding rsquarefree_def by auto 
   then have "\<forall>q \<in>set qs. finite {x. rpoly q x = 0}"
     by (simp add: poly_roots_finite)
   then have fin_set: "finite {x. \<exists>q\<in>set qs. rpoly q x = 0}"
@@ -1326,32 +1330,29 @@ proof -
       assume "rpoly q r = 0"
       then have "r \<in>  {x. \<exists>q\<in>set qs. rpoly q x = 0}" using q_in by auto
       then have "List.member (sorted_list_of_set {x. \<exists>q\<in>set qs. rpoly q x = 0}) r" 
-        using  in_set_member set_sorted_list_of_set fin_set by (smt (verit, best))
+        by (auto simp add: fin_set)
       then show "sorted_list_of_set {x. \<exists>q\<in>set qs. rpoly q x = 0} ! 0 \<le> r"
-        using sorted_hyp_var
-        by (metis (no_types, lifting) gr_implies_not0 in_set_conv_nth in_set_member not_less sorted_iff_nth_mono sorted_sorted_list_of_set) 
+        using sorted_hyp_var by auto
+          (metis (no_types, lifting) in_set_conv_nth less_le not_less not_less_zero
+            sorted_hyp_var) 
     qed
     have prod_zer: "\<forall>x. (\<exists>q\<in>set qs. rpoly q x = 0) \<longrightarrow> (poly (prod_list (cast_rat_list qs)) x) = 0"
       using prod_list_zero_iff[where xs = "(cast_rat_list qs)"]
       by (metis cast_rat_list_def image_eqI list.set_map poly_prod_list_zero_iff)
     have "?zer_list \<noteq>[] \<longrightarrow> List.member (sorted_list_of_set {x. \<exists>q\<in>set qs. rpoly q x = 0}) (?zer_list ! 0)" 
       using nth_Cons_0 apply (auto)
-      by (meson gr0I in_set_member length_0_conv nth_mem) 
+      by (meson gr0I length_0_conv nth_mem) 
     then have "?zer_list \<noteq>[] \<longrightarrow> (?zer_list ! 0)
    \<in> {x. \<exists>q\<in>set qs. rpoly q x = 0}"
-      using in_set_member[where x = "(sorted_list_of_set {x. \<exists>q\<in>set qs. rpoly q x = 0} ! 0)",
-          where xs = "sorted_list_of_set {x. \<exists>q\<in>set qs. rpoly q x = 0}"]
-          set_sorted_list_of_set fin_set
-      by blast 
+      by (auto simp add: fin_set)
     then have "?zer_list \<noteq>[] \<longrightarrow> (\<exists>q\<in>set qs. rpoly q (?zer_list ! 0) = 0)"
       by blast
     then have poly_zer: "?zer_list \<noteq>[] \<longrightarrow> (poly (prod_list (cast_rat_list qs)) (?zer_list ! 0)) = 0" 
       using prod_zer by auto
     have "\<forall>q. List.member (cast_rat_list qs) q \<longrightarrow>q \<noteq> 0" using nonz_q
-      unfolding cast_rat_list_def using in_set_member imageE image_set map_poly_zero of_rat_eq_0_iff
-      by (smt (verit, best))
+      by (auto simp add: cast_rat_list_def)
     then have "(prod_list (cast_rat_list qs)) \<noteq> 0"
-      using prod_list_zero_iff in_set_member by fastforce 
+      using prod_list_zero_iff by fastforce 
     then have crb_lt: "?zer_list \<noteq>[] \<longrightarrow> ?neg_crb < ?zer_list ! 0"
       using crb_lem_neg[where p = "(prod_list (cast_rat_list qs))", where x = "sorted_list_of_set {x. \<exists>q\<in>set qs. rpoly q x = 0} ! 0"] apply (auto) 
       using poly_zer
@@ -1375,9 +1376,9 @@ proof -
       then obtain q::"rat poly" where q_prop: "q \<in> set qs \<and> rpoly q r = 0" by auto
       then have "r \<in>  {x. \<exists>q\<in>set qs. rpoly q x = 0}" using q_in by auto
       then have "List.member (sorted_list_of_set {x. \<exists>q\<in>set qs. rpoly q x = 0}) r" 
-        using in_set_member set_sorted_list_of_set fin_set by (smt (verit))
+        by (auto simp add: fin_set)
       then have "\<exists>n < (length ?zer_list). r = ?zer_list ! n"
-        by (metis (no_types, lifting) in_set_conv_nth in_set_member)
+        by (auto simp add: in_set_conv_nth)
       then obtain n where n_prop: "n < length ?zer_list \<and> r = ?zer_list ! n"
         by auto
       then show "r \<le> (?zer_list ! (length ?zer_list - 1))"
@@ -1397,23 +1398,18 @@ proof -
     have "?zer_list \<noteq>[] \<longrightarrow> List.member (sorted_list_of_set {x. \<exists>q\<in>set qs. rpoly q x = 0})
      (?zer_list ! (length ?zer_list -1))" 
       using nth_Cons_0 apply (auto)
-      by (metis (no_types, lifting) diff_less in_set_conv_nth in_set_member length_greater_0_conv length_sorted_list_of_set zero_less_Suc) 
+      by (metis (no_types, lifting) diff_less in_set_conv_nth length_greater_0_conv length_sorted_list_of_set zero_less_Suc) 
     then have "?zer_list \<noteq>[] \<longrightarrow> (?zer_list ! (length ?zer_list -1))
    \<in> {x. \<exists>q\<in>set qs. rpoly q x = 0}"
-      using in_set_member[where x = "(sorted_list_of_set {x. \<exists>q\<in>set qs. rpoly q x = 0} ! (length ?zer_list -1))",
-          where xs = "sorted_list_of_set {x. \<exists>q\<in>set qs. rpoly q x = 0}"]
-          set_sorted_list_of_set fin_set
-      by blast 
+      by auto (simp add: fin_set) 
     then have "?zer_list \<noteq>[] \<longrightarrow> (\<exists>q\<in>set qs. rpoly q (?zer_list ! (length ?zer_list -1)) = 0)"
       by blast
     then have poly_zer: "?zer_list \<noteq>[] \<longrightarrow> (poly (prod_list (cast_rat_list qs)) (?zer_list ! (length ?zer_list -1))) = 0" 
       using prod_zer by auto
     have "\<forall>q. List.member (cast_rat_list qs) q \<longrightarrow>q \<noteq> 0" using nonz_q
-      unfolding cast_rat_list_def using in_set_member imageE image_set map_poly_zero of_rat_eq_0_iff
-      by (smt (verit)) 
+      by (auto simp add: cast_rat_list_def)
     then have "(prod_list (cast_rat_list qs)) \<noteq> 0"
-      using prod_list_zero_iff in_set_member apply (auto)
-      by fastforce 
+      using prod_list_zero_iff by auto
     then have crb_lt: "?zer_list \<noteq>[] \<longrightarrow> ?pos_crb > ?zer_list ! (length ?zer_list -1)"
       using crb_lem_pos[where p = "(prod_list (cast_rat_list qs))", where x = "sorted_list_of_set {x. \<exists>q\<in>set qs. rpoly q x = 0} ! (length ?zer_list -1)"] apply (auto) 
       using poly_zer
@@ -1436,9 +1432,11 @@ proof -
     then obtain n where n_prop: "n < (length ?zer_list - 1) \<and> x1 > (?zer_list ! n) \<and> x1 < (?zer_list ! (n+1))"
       by auto
     have "\<forall>q1 q2. (q1 \<noteq> q2 \<and> (List.member (cast_rat_list qs) q1) \<and> (List.member (cast_rat_list qs) q2))\<longrightarrow> coprime q1 q2"
-      using pairwise_rel_prime coprime_rat_poly_iff_coprimereal_poly
-      unfolding pairwise_coprime_list_def
-      by (smt (verit) cast_rat_list_def imageE image_set in_set_conv_nth in_set_member)
+      using pairwise_rel_prime
+      apply (auto simp add: pairwise_coprime_list_def cast_rat_list_def coprime_rat_poly_iff_coprimereal_poly in_set_conv_nth)
+      using coprime_rat_poly_real_poly
+      apply auto
+      done
     then have all_prop: "\<forall>x1. \<forall>x2. ((x1 < x2 \<and> (\<exists>q1 \<in> set (cast_rat_list(qs)). (poly q1 x1) = 0) \<and> (\<exists>q2\<in> set((cast_rat_list(qs))). (poly q2 x2) = 0)) \<longrightarrow> (\<exists>q. x1 < q \<and> q < x2 \<and> poly (coprime_r (cast_rat_list qs)) q = 0))"
       using coprime_r_roots_prop 
       by auto
@@ -1475,7 +1473,7 @@ proof -
         assume "(\<exists>r>x1. r \<le> w \<and> (\<exists>q\<in>set qs. rpoly q r = 0))"
         then obtain r where r_prop: "r > x1 \<and>r \<le> w \<and>(\<exists>q\<in>set qs. rpoly q r = 0)" by auto
         then have "List.member ?zer_list r \<and>x1 \<le> r \<and>x1 \<le> w "
-          by (smt (verit, best) fin_set in_set_member mem_Collect_eq set_sorted_list_of_set)
+          by simp (simp add: fin_set)
         then show ?thesis using nex r_prop
           by blast 
       qed
@@ -1493,7 +1491,8 @@ proof -
         assume "(\<exists>r<x1. w \<le> r\<and> (\<exists>q\<in>set qs. rpoly q r = 0))"
         then obtain r where r_prop: "r < x1 \<and> w \<le> r \<and>(\<exists>q\<in>set qs. rpoly q r = 0)" by auto
         then have "List.member ?zer_list r \<and> w \<le> r \<and> r \<le> x1 "
-          by (smt (verit, best) fin_set in_set_member mem_Collect_eq set_sorted_list_of_set) 
+          by simp (simp add: fin_set r_prop) 
+
         then show ?thesis using nex r_prop
           by blast 
       qed
@@ -1636,7 +1635,7 @@ proof -
       by (simp add: copr_nonz poly_roots_finite)
     then have copr_prop: "\<forall>p \<in> set(?new_l). poly p w \<noteq> 0"
       using w_prop coprime_r_coprime_prop apply (auto)
-      by (meson coprime_poly_0 in_set_member pairwise_cp) 
+      by (meson coprime_poly_0 pairwise_cp) 
     then have "consistent_sign_vec_copr ?new_l w = sign_vec fs w"
       unfolding sign_vec_def squash_def consistent_sign_vec_copr_def
         cast_rat_list_def by auto
@@ -1840,7 +1839,7 @@ proof -
 qed
 
 lemma mem_append: "List.member (l1@l2) m \<longleftrightarrow> (List.member l1 m \<or> List.member l2 m)"
-  by (simp add: List.member_def)
+  by simp
 
 lemma same_sign_cond_rationals_reals:
   fixes qs:: "rat poly list"
@@ -1852,8 +1851,7 @@ proof -
     using factorize_polys_coprime
     by (simp add: coprime_factorize) 
   have all_squarefree:"\<forall>q. (List.member (fst(factorize_polys qs)) q) \<longrightarrow> (rsquarefree q)"
-    using factorize_polys_square_free
-    by (metis in_set_member prod.collapse square_free_rsquarefree) 
+    by (auto intro!: square_free_rsquarefree factorize_polys_square_free simp add: prod_eq_iff)
   have allnonzero: "\<forall>q. (List.member ?ftrs q) \<longrightarrow> q \<noteq> 0"
     using all_squarefree apply (auto)
     using rsquarefree_def by blast 
@@ -1863,24 +1861,26 @@ proof -
     by (metis consistent_sign_vectors_consistent_sign_vectors_r eq_fst_iff) 
   have h2: "\<forall>csa. (csa \<in> (consistent_sign_vectors ?ftrs UNIV) \<and> has_no_zeros csa) \<longleftrightarrow> 
     List.member (find_consistent_signs_at_roots (coprime_r (cast_rat_list ?ftrs)) (cast_rat_list ?ftrs)) csa"
-    using lenh find_csas_lemma_nozeros pairwise_rel_prime allnonzero
-    by (metis in_set_member length_greater_0_conv prod.collapse)
+    using lenh allnonzero pairwise_rel_prime
+    apply (simp add: find_csas_lemma_nozeros)
+    apply (subst find_csas_lemma_nozeros)
+      apply (auto simp add: prod_eq_iff)
+    done
   have h3: "\<forall> csa. List.member (find_sgas (map (map_poly of_rat) ?ftrs)) csa \<longleftrightarrow> 
       ((List.member (find_sgas_aux (cast_rat_list ?ftrs)) csa) \<or>  (List.member (find_consistent_signs_at_roots (coprime_r (cast_rat_list ?ftrs)) (cast_rat_list ?ftrs)) csa))"
     unfolding find_sgas_def cast_rat_list_def using mem_append
     by metis 
   have h4: "\<forall> csa. List.member (find_sgas (map (map_poly of_rat) ?ftrs)) csa \<longleftrightarrow>
    ((csa \<in> (consistent_sign_vectors ?ftrs UNIV) \<and> has_no_zeros csa) \<or>  (csa \<in> (consistent_sign_vectors ?ftrs UNIV) \<and> \<not> (has_no_zeros csa)))"
-    using h1 h2 h3  apply (auto) apply (simp add: in_set_member) by (simp add: in_set_member)  
+    using h1 h2 h3 by auto  
   have h5: "\<forall>csa. (csa \<in> (consistent_sign_vectors ?ftrs UNIV) \<and> has_no_zeros csa) \<or>  (csa \<in> (consistent_sign_vectors ?ftrs UNIV) \<and> \<not> (has_no_zeros csa))
     \<longleftrightarrow> csa \<in> (consistent_sign_vectors ?ftrs UNIV)"
     by auto 
   then have "\<forall> csa. List.member (find_sgas (map (map_poly of_rat) ?ftrs)) csa \<longleftrightarrow> csa \<in> (consistent_sign_vectors ?ftrs UNIV)"
     using h4
     by blast 
-  then show ?thesis using in_set_member apply (auto)
-    apply (simp add: in_set_member)
-    by (simp add: in_set_member)
+  then show ?thesis
+    by auto
 qed
 
 lemma factorize_polys_undo_factorize_polys_set:

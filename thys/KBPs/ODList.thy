@@ -250,7 +250,7 @@ where
 
 lemma member_toSet[iff]:
   "member xs x \<longleftrightarrow>x \<in> toSet xs"
-  unfolding member_def toSet_def by (simp add: in_set_member)
+  by (simp add: member_def toSet_def)
 
 subsubsection\<open>Filter\<close>
 

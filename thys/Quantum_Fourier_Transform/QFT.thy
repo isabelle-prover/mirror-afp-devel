@@ -2303,11 +2303,11 @@ next
     show "kron f (a # xs) = kron g (a # xs)"
     proof -
       from 1 have "List.member (a # xs) a \<longrightarrow> f a = g a" by auto
-      moreover have "List.member (a # xs) a" by (simp add: List.member_rec(1))
+      moreover have "List.member (a # xs) a" by simp
       ultimately have 2:"f a = g a" by auto
       have "kron f (a#xs) = f a \<Otimes> kron f xs" by simp
       also have "\<dots> = g a \<Otimes> kron f xs" using 2 by simp
-      also have "\<dots> = g a \<Otimes> kron g xs" using HI 1 by (simp add: member_rec(1))
+      also have "\<dots> = g a \<Otimes> kron g xs" using HI 1 by simp
       also have "\<dots> = kron g (a#xs)" using kron.simps(2) by simp
       finally show ?thesis by this
     qed
@@ -2317,20 +2317,7 @@ qed
 
 lemma member_rev:
   shows "List.member (rev xs) x = List.member xs x"
-proof (induct xs)
-  show "List.member (rev []) x = List.member [] x" by simp
-next
-  case (Cons a xs)
-  assume HI:"List.member (rev xs) x = List.member xs x"
-  have "List.member (rev (a#xs)) x = List.member ((rev xs)@[a]) x" using rev_append by auto
-  also have "\<dots> = (x \<in> set ((rev xs) @ [a]))" using List.member_def by metis
-  also have "\<dots> = (x \<in> set (rev xs) \<union> set [a])" using set_append by metis
-  also have "\<dots> = (x \<in> set [a] \<or> x \<in> set (rev xs))" by blast
-  also have "\<dots> = (x = a \<or> List.member (rev xs) x)" using List.member_def by fastforce
-  also have "\<dots> = (x = a \<or> List.member xs x)" using HI by metis
-  also have "\<dots> = List.member (a#xs) x" using List.member_rec(1) by metis
-  finally show "List.member (rev (a#xs)) x = List.member (a#xs) x" by this
-qed
+  by simp
 
 
 lemma kron_j:
@@ -2346,9 +2333,9 @@ proof -
     show "List.member (map nat (rev [1..int n])) x \<longrightarrow> x < Suc n"
     proof
       assume "List.member (map nat (rev [1..int n])) x"
-      hence "List.member (rev (map nat [1..int n])) x" using rev_map by metis
-      hence "List.member (map nat [1..int n]) x" using member_rev by metis
-      hence "x \<in> set (map nat [1..int n])" using List.member_def by metis
+      hence "List.member (rev (map nat [1..int n])) x" by simp
+      hence "List.member (map nat [1..int n]) x" by simp
+      hence "x \<in> set (map nat [1..int n])" by simp
       hence "x \<in> {1..n}" by auto
       thus "x < Suc n" by auto
     qed

@@ -1209,9 +1209,8 @@ proof (safe)
     then show ?case
     proof (cases "ptr = child")
       case True
-      then show ?thesis
-        by (metis (no_types, lifting) assms(2) bind_returns_result_E get_ancestors_def
-            in_set_member member_rec(1) return_returns_result)
+      with assms show ?thesis
+        by (auto simp add: get_ancestors_def elim!: bind_returns_result_E)
     next
       case False
       obtain ptr_child where

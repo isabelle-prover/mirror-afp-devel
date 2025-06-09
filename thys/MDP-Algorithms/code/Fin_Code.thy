@@ -122,11 +122,11 @@ proof -
   also have \<open>\<dots> = (least_arg_max (\<lambda>a. MDP_r(s, a) + measure_pmf.expectation (MDP_K (s,a)) (V_Map.map_to_bfun v)) (List.member (map fst (a_inorder (s_lookup mdp s)))),
      MAX a\<in>set (map fst (a_inorder (s_lookup mdp s))). MDP_r(s, a) + measure_pmf.expectation (MDP_K (s,a)) (V_Map.map_to_bfun v))\<close>
     using assms a_inorderD(1) A_Map.keys_def  MDP_A_def
-    by (auto intro!: least_arg_max_cong simp: L_GS_code_correct' in_set_member[symmetric])
+    by (auto intro!: least_arg_max_cong simp: L_GS_code_correct')
   also have \<open>\<dots> = (least_arg_max (\<lambda>a. MDP_r(s, a) + measure_pmf.expectation (MDP_K (s,a)) (V_Map.map_to_bfun v)) (\<lambda>a. a \<in> MDP_A s),
      MAX a\<in>MDP_A s. MDP_r(s, a) + measure_pmf.expectation (MDP_K (s,a)) (V_Map.map_to_bfun v))\<close>
     using assms A_Map.entries_def A_Map.keys_def A_Map.entries_imp_keys
-    by (auto intro!: least_arg_max_cong' simp: MDP_A_def in_set_member[symmetric])
+    by (auto intro!: least_arg_max_cong' simp: MDP_A_def)
   finally show ?thesis.
 qed
 

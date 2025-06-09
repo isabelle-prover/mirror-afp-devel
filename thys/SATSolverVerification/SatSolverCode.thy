@@ -15,7 +15,7 @@ subsection\<open>Specification\<close>
 lemma [code_unfold]:
   fixes literal :: Literal and clause :: Clause
   shows "literal el clause = List.member clause literal"
-  by (auto simp add: member_def)
+  by simp_all
 
 datatype ExtendedBool = TRUE | FALSE | UNDEF
 

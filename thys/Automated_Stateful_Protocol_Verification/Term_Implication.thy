@@ -2245,8 +2245,9 @@ proof -
     show "?C t \<Longrightarrow> ?D t" using assms
     proof (induction t arbitrary: M TI TI' rule: intruder_synth_mod_timpls.induct)
       case (1 M TI' x)
-      hence "Var x \<in> timpl_closure_set (set M) (set TI)"
-        using timpl_closure.FP member_def unfolding timpl_closure_set_def by force
+      then have "Var x \<in> timpl_closure_set (set M) (set TI)"
+        using timpl_closure.FP [of \<open>Var x\<close> \<open>set TI\<close>]
+        by (auto simp add: timpl_closure_set_def)
       thus ?case by simp
     next
       case (2 M TI f T)
@@ -2270,7 +2271,7 @@ proof -
     proof (induction t rule: intruder_synth_induct)
       case (AxiomC t) thus ?case
         using timpl_closure_set_Var_in_iff[of _ "set M" "set TI"] *[OF assms, of "set M" t]
-        by (cases t rule: term.exhaust) (force simp add: member_def list_ex_iff)+
+        by (cases t rule: term.exhaust) (force simp add: list_ex_iff)+
     next
       case (ComposeC T f) thus ?case
         using list_all_iff[of "intruder_synth_mod_timpls M TI'" T]
@@ -2297,7 +2298,7 @@ proof -
     proof (induction t arbitrary: M TI rule: intruder_synth_mod_timpls'.induct)
       case (1 M TI x)
       hence "Var x \<in> timpl_closure_set (set M) (set TI)"
-        using timpl_closure.FP List.member_def[of M] unfolding timpl_closure_set_def by auto
+        using timpl_closure.FP unfolding timpl_closure_set_def by auto
       thus ?case by simp
     next
       case (2 M TI f T)
@@ -2321,7 +2322,7 @@ proof -
     proof (induction t rule: intruder_synth_induct)
       case (AxiomC t) thus ?case
         using AxiomC timpl_closure_set_Var_in_iff[of _ "set M" "set TI"] *[of "set M" TI t]
-              list_ex_iff[of _ M] List.member_def[of M]
+              list_ex_iff[of _ M]
         by (cases t rule: term.exhaust) force+
     next
       case (ComposeC T f) thus ?case

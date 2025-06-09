@@ -31,7 +31,7 @@ lemma dlist_remove'_correct:
   "y \<in> set (list_of_dlist (dlist_remove' x xs)) 
   \<longleftrightarrow> (if x = y then False else y \<in> set (list_of_dlist xs))"
   by(simp add: dlist_remove'_def 
-    Dlist.member_def List.member_def set_dlist_remove1')
+    Dlist.member_def set_dlist_remove1')
 
 definition dlist_iteratei :: "'a dlist \<Rightarrow> ('a, 'b) set_iterator"
   where "dlist_iteratei xs = foldli (list_of_dlist xs)"
@@ -40,7 +40,7 @@ lemma dlist_iteratei_correct:
   "set_iterator (dlist_iteratei xs) (set (list_of_dlist xs))"
 using distinct_list_of_dlist[of xs] 
       set_iterator_foldli_correct[of "list_of_dlist xs"]
-unfolding Dlist.member_def List.member_def dlist_iteratei_def
+unfolding Dlist.member_def dlist_iteratei_def
 by simp
 
 lemma dlist_member_empty: "(set (list_of_dlist Dlist.empty)) = {}"
@@ -51,6 +51,6 @@ lemma dlist_member_insert [simp]: "set (list_of_dlist (Dlist.insert x xs))
   by(simp add: Dlist.insert_def Dlist.member_def )
 
 lemma dlist_finite_member [simp, intro!]: "finite (set (list_of_dlist xs))"
-by(simp add: member_def )
+  by simp
 
 end

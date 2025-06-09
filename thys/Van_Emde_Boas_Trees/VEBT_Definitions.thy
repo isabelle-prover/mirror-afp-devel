@@ -28,11 +28,7 @@ definition low :: "nat \<Rightarrow> nat \<Rightarrow> nat" where
 subsection \<open>Some auxiliary lemmata\<close>
 
 lemma inthall[termination_simp]: "(\<And> x. x \<in> set xs \<Longrightarrow> P x) \<Longrightarrow> n < length xs \<Longrightarrow> P (xs ! n)"
-  apply(induction xs arbitrary: n)
-  apply auto
-  using less_Suc_eq_0_disj 
-  apply auto
-  done
+  by simp
 
 lemma intind: "i < n \<Longrightarrow> P x \<Longrightarrow> P (replicate n x ! i)"
   by (metis in_set_replicate inthall length_replicate)

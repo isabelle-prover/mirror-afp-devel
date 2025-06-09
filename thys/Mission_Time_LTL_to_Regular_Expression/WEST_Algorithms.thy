@@ -314,7 +314,7 @@ proof (induct "length L" arbitrary: L)
 next
   case (Suc x)
   then obtain h T where ht: "L = h#T"
-    by (metis enumerate_pairs.cases enumerate_pairs.simps(1) in_set_member member_rec(2))
+    by (cases L) simp_all
   then have eo: "pair \<in> set (map (Pair h) T) \<or> pair \<in> set (enumerate_pairs T)"
     using Suc by simp
   {assume *: "pair \<in> set (map (Pair h) T)"

@@ -319,7 +319,7 @@ lemma lookup_assump_aux_property:
 proof (induct l)
   case Nil
   then show ?case
-    by (simp add: member_rec(2)) 
+    by simp 
 next
   case (Cons a l)
   then show ?case
@@ -351,7 +351,7 @@ lemma inset_means_lookup_assump_some:
 proof (induct assumps)
   case Nil
   then show ?case
-    by (simp add: member_rec(2))
+    by simp
 next
   case (Cons a assumps)
   then show ?case
@@ -538,10 +538,10 @@ next
   case (Cons a x)
   have firsth: "lookup_assump_aux a ell = Some 0"
     using Cons.prems
-    by (simp add: member_rec(1)) 
+    by auto
   have "\<forall>elem. elem \<in> set x \<longrightarrow> lookup_assump_aux elem ell = Some 0 "
     using Cons.prems
-    by (simp add: member_rec(1)) 
+    by auto 
   then have bigh: "sign_of_first_nonzero_coefficient_aux ell x = 0"
     using Cons.hyps by auto
   then have "first_nonzero_coefficient_helper ell x = 0"
@@ -558,7 +558,7 @@ lemma sign_fnz_helper:
 proof - 
   have "sign_of_first_nonzero_coefficient_aux (map_mpoly_sign_data val (all_coeffs qs)) (rev (Polynomial.coeffs q)) = 0"
     using sign_fnz_aux_helper[of "(Polynomial.coeffs q)" "(map_mpoly_sign_data val (all_coeffs qs))"] assms
-    by (metis in_set_member set_rev sign_fnz_aux_helper) 
+    by (metis set_rev sign_fnz_aux_helper) 
   then show ?thesis using
       sign_of_first_nonzero_coefficient_aux by auto
 qed
@@ -599,7 +599,7 @@ proof -
     have "(coeff, 0) \<in> set (map_mpoly_sign_data val (all_coeffs qs))"
       unfolding map_mpoly_sign_data_def mpoly_sign_data_def 
       using h1 h2
-      by (simp add: list.set_map member_def) 
+      by (simp add: list.set_map) 
     then show "lookup_assump_aux coeff (map_mpoly_sign_data val (all_coeffs qs)) = Some 0"
       using lookup_assump_aux_property map_mpoly_sign_data_duplicates by presburger
   qed     
@@ -763,7 +763,7 @@ lemma in_list_lemma:
 proof (induct l arbitrary: n v)
   case Nil
   then show ?case
-    by (simp add: member_rec(2)) 
+    by auto 
 next
   case (Cons a l)
   then have "n - 1 = length l"
@@ -772,7 +772,7 @@ next
     using Cons.hyps
     by (metis diff_diff_left one_add_one) 
   have eo: "v \<in> set (a#l) \<Longrightarrow> v = a \<or> v \<in> set l"
-    by (simp add: member_rec(1))
+    by auto
   show ?case
   proof -
     have h1: "v = a \<Longrightarrow> \<exists>k\<le>n - Suc 0. v = (a # l) ! k"
@@ -1020,7 +1020,7 @@ proof -
   let ?biggest_var = "nth (variables_list qs) (n-1)"
   have "?biggest_var \<in> set (variables_list qs)"
     using assms
-    by (meson diff_less length_greater_0_conv member_def nth_mem zero_less_one)
+    by (meson diff_less length_greater_0_conv nth_mem zero_less_one)
   then have h1: "nth (variables_list qs) (n-1) \<in> variables qs"
     using variables_prop assms
     using variables_list_prop by blast 
@@ -1081,7 +1081,7 @@ proof -
       using val
       by blast 
     then show "False" using i2
-      by (meson lookup_assump_means_inset member_def) 
+      by (meson lookup_assump_means_inset) 
   qed
   then show ?thesis
     by blast 
@@ -1100,7 +1100,7 @@ proof -
   then have in_set: "(Polynomial.lead_coeff r, i1) \<in> set branch_assms"
     using subset by auto
   then show ?thesis
-    by (simp add: inset_means_lookup_assump_some member_def) 
+    by (simp add: inset_means_lookup_assump_some) 
 qed
 
 end

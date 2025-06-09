@@ -93,7 +93,7 @@ next
           using "1" "3" "8" \<open>mi \<noteq> ma \<and> x < 2 ^ deg\<close> deg_not_0 exp_split_high_low(1) exp_split_high_low(2) by blast
         let ?newnode = "vebt_delete (treeList ! ?h) ?l"
         have "treeList ! ?h \<in> set treeList " 
-          by (metis "2" hlbound in_set_member inthall)
+          using "2" hlbound by simp
         hence nnvalid: "invar_vebt ?newnode n" 
           by (simp add: "4.IH"(1))
         let ?newlist = "treeList[?h:= ?newnode]"
@@ -618,7 +618,7 @@ next
         have hlbound:"?h < 2^m \<and> ?l < 2^n"
           using "1" "2" "3" "8" \<open>high (summin * 2 ^ n + lx) n < length treeList\<close> \<open>summin * 2 ^ n + lx < 2 ^ deg\<close> deg_not_0 exp_split_high_low(2) by presburger
         hence nnvalid: "invar_vebt ?newnode n"
-          by (metis "4.IH"(1) \<open>high (summin * 2 ^ n + lx) n < length treeList\<close> inthall member_def)
+          using "4.IH"(1) \<open>high (summin * 2 ^ n + lx) n < length treeList\<close> by simp
         have allvalidinlist:"\<forall> t \<in> set ?newlist. invar_vebt t n"
         proof
           fix t 
@@ -1204,7 +1204,7 @@ next
           by (metis "1" "11" "3" One_nat_def \<open>mi \<noteq> ma \<and> x < 2 ^ deg\<close> deg_not_0 dual_order.strict_trans1 exp_split_high_low(1) exp_split_high_low(2) zero_less_Suc)
         let ?newnode = "vebt_delete (treeList ! ?h) ?l"
         have "treeList ! ?h \<in> set treeList " 
-          by (metis "2" hlbound in_set_member inthall)
+          using "2" hlbound by simp
         hence nnvalid: "invar_vebt ?newnode n" 
           by (simp add: "5.IH"(1))
         let ?newlist = "treeList[?h:= ?newnode]"
@@ -1717,7 +1717,7 @@ next
         have hlbound:"?h < 2^m \<and> ?l < 2^n" 
           using "2" \<open>high (summin * 2 ^ n + lx) n < length treeList\<close> \<open>vebt_member (treeList ! summin) lx\<close> \<open>invar_vebt (treeList ! summin) n\<close> low_inv member_bound by presburger
         hence nnvalid: "invar_vebt ?newnode n"
-          by (metis "5.IH"(1) \<open>high (summin * 2 ^ n + lx) n < length treeList\<close> inthall member_def)
+          using "5.IH"(1) \<open>high (summin * 2 ^ n + lx) n < length treeList\<close> by simp
         have allvalidinlist:"\<forall> t \<in> set ?newlist. invar_vebt t n"
         proof
           fix t 

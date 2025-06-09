@@ -647,7 +647,7 @@ qed
 
 lemma final_fun_final':
   "((\<lambda> (L, s). P L s), (\<lambda> (L, s). P L s)) \<in> inv_rel Id states'" for P
-  unfolding F_def final_fun_def inv_rel_def in_set_member[symmetric] list_ex_iff
+  unfolding F_def final_fun_def inv_rel_def list_ex_iff
   by (force dest!: states'_states')
 
 lemma final_fun_final[intro, simp]:

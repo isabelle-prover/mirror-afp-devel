@@ -66,10 +66,10 @@ lemma lsnd_empty_impl: "set_empty lsnd_\<alpha> lsnd_invar lsnd_empty"
 by (unfold_locales) (auto simp add: lsnd_defs)
 
 lemma lsnd_memb_impl: "set_memb lsnd_\<alpha> lsnd_invar lsnd_memb"
-by (unfold_locales)(auto simp add: lsnd_defs in_set_member)
+by (unfold_locales)(auto simp add: lsnd_defs)
 
 lemma lsnd_ins_impl: "set_ins lsnd_\<alpha> lsnd_invar lsnd_ins"
-by (unfold_locales) (auto simp add: lsnd_defs in_set_member)
+by (unfold_locales) (auto simp add: lsnd_defs)
 
 lemma lsnd_ins_dj_impl: "set_ins_dj lsnd_\<alpha> lsnd_invar lsnd_ins_dj"
 by (unfold_locales) (auto simp add: lsnd_defs)

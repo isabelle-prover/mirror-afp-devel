@@ -1380,7 +1380,7 @@ begin
 
   lemma final_fun_final[intro, simp]:
     "(final_fun, F) \<in> inv_rel Id Defs.states"
-  using state_set_n unfolding F_def final_fun_def inv_rel_def by (auto simp: in_set_member)
+  using state_set_n by (auto simp add: F_def final_fun_def inv_rel_def)
 
   lemma start_states[intro, simp]:
     "0 \<in> Defs.states"

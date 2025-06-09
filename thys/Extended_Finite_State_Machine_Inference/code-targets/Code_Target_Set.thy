@@ -26,19 +26,18 @@ declare subset_eq [code]
 (* Get rid of that one unnamed lemma *)
 lemma [code del]:
   "x \<in> List.coset xs \<longleftrightarrow> \<not> List.member xs x"
-  by (simp add: member_def)
+  by simp
 
-lemma sup_set_append[code]: "(set x) \<union> (set y) = set (x @ y)"
+lemma sup_set_append [code]: "(set x) \<union> (set y) = set (x @ y)"
   by simp
 
 declare product_concat_map [code]
 
 lemma [code]: "insert x (set s) = (if x \<in> set s then set s else set (x#s))"
-  apply (simp)
   by auto
 
 lemma [code]:
   "Code_Cardinality.subset' (set l1) (set l2) = ((list_all (\<lambda>x. List.member l2 x)) l1)"
-  by (meson in_set_member list.pred_set subset'_code(2))
+  by (auto simp add: list_all_iff)
 
 end

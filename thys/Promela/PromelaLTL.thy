@@ -36,11 +36,11 @@ where
 
 lemma ltlc_aps_list'_correct:
   "set (ltlc_aps_list' \<phi> l) = atoms_ltlc \<phi> \<union> set l"
-  by (induct \<phi> arbitrary: l) (auto simp add: in_set_member)
+  by (induct \<phi> arbitrary: l) auto
 
 lemma ltlc_aps_list'_distinct:
   "distinct l \<Longrightarrow> distinct (ltlc_aps_list' \<phi> l)"
-  by (induct \<phi> arbitrary: l) (auto simp add: in_set_member)
+  by (induct \<phi> arbitrary: l) auto
 
 definition ltlc_aps_list :: "'a ltlc \<Rightarrow> 'a list"
 where

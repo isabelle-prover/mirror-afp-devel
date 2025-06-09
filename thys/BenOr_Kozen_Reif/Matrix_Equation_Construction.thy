@@ -173,7 +173,7 @@ lemma csa_list_copr_rel:
 proof - 
   have "\<forall>q \<in> set(qs). \<forall> x \<in> set (characterize_root_list_p p).  poly q x \<noteq> 0"
     using pairwise_rel_prime
-    using coprime_poly_0 in_set_member nonzero poly_roots_finite characterize_root_list_p_def by fastforce 
+    using coprime_poly_0 nonzero poly_roots_finite characterize_root_list_p_def by fastforce 
   then have h: "\<forall>q \<in> set(qs). \<forall> x \<in> set (characterize_root_list_p p). squash (poly q x) = (if (poly q x > 0) then (1::rat) else (-1::rat))"
     by (simp add: squash_def)
   have "map (\<lambda>r. map (\<lambda>p. if 0 < poly p r then 1 else - 1) qs) (characterize_root_list_p p) = map (\<lambda>r. map (squash \<circ> (\<lambda>p. poly p r)) qs) (characterize_root_list_p p)"
@@ -380,7 +380,7 @@ lemma nonzero_product:
   fixes p:: "real poly"
   assumes nonzero: "p\<noteq>0"
   fixes qs:: "real poly list"
-  assumes pairwise_rel_prime_1: "\<forall>q. ((List.member qs q) \<longrightarrow> (coprime p q))"
+  assumes pairwise_rel_prime_1: "\<And>q. q \<in> set qs \<Longrightarrow> coprime p q"
   fixes I:: "nat list" 
   fixes x:: "real"
   assumes root_p: "x \<in> {x. poly p x = 0}"
@@ -388,8 +388,8 @@ lemma nonzero_product:
   shows "(poly (prod_list (retrieve_polys qs I)) x > 0) \<or> (poly (prod_list (retrieve_polys qs I)) x < 0)"
 proof -
   have "\<And>x. x \<in> set (retrieve_polys qs I) \<Longrightarrow> coprime p x"
-    unfolding retrieve_polys_def
-    by (smt in_set_conv_nth in_set_member length_map list_all_length list_constr_def nth_map pairwise_rel_prime_1 welldefined)
+    using welldefined
+    by (auto simp add: retrieve_polys_def list_constr_def list_all_iff intro: pairwise_rel_prime_1)
   then have coprimeh: "coprime p (prod_list (retrieve_polys qs I))"
     using prod_list_coprime_right by auto
   thus ?thesis using root_p
@@ -449,7 +449,7 @@ next
     have extra_hyp_a: "list_constr (a#I) (length qs) \<longrightarrow> (0 < poly (nth qs a) x = ((nth sign a) = 1))" using h3
       by simp 
     have extra_hyp_b: "list_constr (a#I) (length qs) \<longrightarrow>  (0 > poly (nth qs a) x = ((nth sign a) = -1))" 
-      using h3 apply (auto) using coprime_poly_0 h3help in_set_member nth_mem pairwise_rel_prime_1 root_p by fastforce 
+      using h3 apply (auto) using coprime_poly_0 h3help nth_mem pairwise_rel_prime_1 root_p by fastforce 
     have ind_hyp_1: "list_constr (a#I) (length qs) \<longrightarrow> (((0 < poly (nth qs a) x \<and> (z I sign = 1)) \<or> 
     (0 > poly (nth qs a) x \<and> (z I sign = -1)))
       = ((nth sign a)*(z I sign) = 1))" using extra_hyp_a extra_hyp_b
@@ -497,7 +497,7 @@ proof -
   have poly_hyp: "(poly (prod_list (retrieve_polys qs I)) x > 0) \<or> (poly (prod_list (retrieve_polys qs I)) x < 0)"
     using nonzero_product
     using pairwise_rel_prime_1 nonzero root_p
-    using welldefined by blast
+    using welldefined by auto
   have pos_hyp: "(poly (prod_list (retrieve_polys qs I)) x > 0) \<longleftrightarrow> (z I sign = 1)" using horiz_vector_helper_pos
     using pairwise_rel_prime_1 nonzero root_p sign_fix welldefined by blast
   show ?thesis using z_hyp poly_hyp pos_hyp apply (auto)
@@ -663,8 +663,10 @@ proof -
   let ?gt = "(set (map (consistent_sign_vec_copr qs)  (characterize_root_list_p p)) \<inter> {s. z I s = 1})"
   let ?lt = "  (set (map (consistent_sign_vec_copr qs)  (characterize_root_list_p p)) \<inter> {s. z I s = -1})"  
   have eq: "set (map (consistent_sign_vec_copr qs)  (characterize_root_list_p p)) = ?gt \<union> ?lt"
-    apply auto
-    by (metis characterize_root_list_p_def horiz_vector_helper_neg horiz_vector_helper_pos_ind nonzero nonzero_product pairwise_rel_prime_1 poly_roots_finite sorted_list_of_set(1) welldefined)
+    using welldefined poly_roots_finite [of p] nonzero
+    apply (auto simp add: characterize_root_list_p_def)
+    using in_set z_lemma apply fastforce
+    done
       (* First, drop the signs that are irrelevant *)
   from construct_lhs_vector_drop_consistent[OF assms(1-4)] have
     "vec_of_list (mtx_row signs I) \<bullet> construct_lhs_vector p qs signs =
@@ -809,7 +811,7 @@ theorem matrix_equation:
   apply (subst mult_mat_vec_of_list)
     apply (auto simp add: mtx_row_length intro!: map_vec_vec_of_list_eq_intro)
   using matrix_equation_main_step[OF assms(1-3) _ assms(4), unfolded construct_lhs_vector_def]
-  using all_list_constr_def in_set_member welldefined by fastforce
+  using all_list_constr_def welldefined by fastforce
 
 (* Prettifying some theorems*)
 definition roots:: "real poly \<Rightarrow> real set"
@@ -856,10 +858,9 @@ theorem matrix_equation_pretty:
   assumes "consistent_signs_at_roots p qs \<subseteq> set signs"
   assumes "\<And>l i. l \<in> set subsets \<Longrightarrow> i \<in> set l \<Longrightarrow> i < length qs"
   shows "M_mat signs subsets *\<^sub>v w_vec p qs signs = v_vec p qs subsets"
-  unfolding satisfy_equation_def[symmetric]
-  apply (rule matrix_equation[OF assms(1) assms(3)])
-  apply (metis assms(1) assms(2) assms(4) consistent_signs_at_roots_eq csa_list_copr_rel member_def)
-  apply (simp add: assms(2) in_set_member)
-  using Ball_set all_list_constr_def assms(5) list_constr_def member_def by fastforce
+  unfolding satisfy_equation_def [symmetric]
+  apply (rule matrix_equation [OF assms(1) assms(3)])
+  using \<open>p \<noteq> 0\<close> \<open>consistent_signs_at_roots p qs \<subseteq> set signs\<close>
+  by (auto simp add: assms(2) all_list_constr_def list_constr_def list_all_iff consistent_signs_at_roots_eq csa_list_copr_rel subset_iff intro: assms(5))
 
 end

@@ -752,7 +752,7 @@ lemma promela_to_sa_impl_refine:
   apply (auto simp: list_set_rel_def br_def ls.correct) []
 
   apply (auto simp: list_set_rel_def br_def) []
-  apply (auto simp: fun_set_rel_def br_def in_set_member promela_props_ltl_def) []
+  apply (auto simp: fun_set_rel_def br_def promela_props_ltl_def) []
   done
 
 definition "cava_promela cfg ast \<phi> \<equiv> 

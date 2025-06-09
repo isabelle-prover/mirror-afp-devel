@@ -1,8 +1,9 @@
 theory MLTL_Language_Partition_Proof
-
-imports MLTL_Language_Partition_Algorithm
-
+  imports MLTL_Language_Partition_Algorithm
 begin
+
+abbreviation (input) member :: \<open>'a list \<Rightarrow> 'a \<Rightarrow> bool\<close>
+  where \<open>member xs x \<equiv> x \<in> set xs\<close>
 
 section \<open> Properties of convert nnf ext \<close>
 
@@ -307,7 +308,7 @@ lemma composition_length_ub:
   fixes n::"nat" and L::"nat list"
   assumes "is_composition n L"
   shows "length L \<le> n"
-  using assms unfolding is_composition_def 
+  using assms unfolding is_composition_def
 proof (induct L arbitrary: n)
   case Nil
   then show ?case by simp
@@ -317,15 +318,14 @@ next
     by simp
   then have ls_L: "sum_list L = n - a"
     using Cons(2) by auto
-  then have Lprop: "(\<forall>i. List.member L i \<longrightarrow> 0 < i) \<and> sum_list L = n - a "
+  then have Lprop: "(\<forall>i. member L i \<longrightarrow> 0 < i) \<and> sum_list L = n - a "
     using Cons(2)
-    by (meson member_rec(1)) 
+    by simp 
   then have len_leq: "length L \<le> n - a"
-    using Cons(1)[OF Lprop]
-    by auto
+    using Cons(1) by auto
   have "a > 0"
     using Cons(2) 
-    by (meson member_rec(1))
+    by simp
   then show ?case using len_leq
     using Cons.prems listsum by auto
 qed
@@ -439,8 +439,8 @@ lemma interval_times_diff_ge:
 proof-
   have diff: "s!(i+1) - s!(i) = L!i"
     using assms interval_times_diff by blast
-  have gap: "L!i > 0" using assms(2) unfolding is_composition_def
-    by (meson i_index in_set_member nth_mem) 
+  have gap: "L!i > 0"
+    using assms(2) i_index by (simp add: is_composition_def)
   show ?thesis using diff gap by simp
 qed
 
@@ -482,8 +482,7 @@ lemma trivial_composition:
   assumes "n > 0"
   shows "is_composition n [n]"
 proof-
-  have pos: "(\<forall>i. List.member [n] i \<longrightarrow> 0 < i)"
-    unfolding List.member_def
+  have pos: "(\<forall>i. member [n] i \<longrightarrow> 0 < i)"
     by (simp add: assms) 
   have sum: " sum_list [n] = n"
     by simp
@@ -576,10 +575,10 @@ proof-
         let ?L' = "take (length L-1) L"
         let ?s' = "take (length L) s"
         let ?b' = "b - (List.last L)"
-        have pos_L: "(\<forall>i. List.member L i \<longrightarrow> 0 < i)" and 
+        have pos_L: "(\<forall>i. member L i \<longrightarrow> 0 < i)" and 
              sum_L: "sum_list L = b - a + 1"
           using Suc(4) unfolding is_composition_def by auto
-        have "List.member L (last L)" unfolding List.member_def
+        have "member L (last L)"
           by (metis Suc.prems(8) last_in_set length_0_conv not_one_le_zero)
         have sum_list_eq: "sum_list L = sum_list (take (length L-1) L) + last L"
           using length_L
@@ -612,8 +611,7 @@ proof-
           ultimately show ?case using Suc.prems by fastforce
         qed
         have pos_preL: "(\<And>x. x \<in> set (take (length L - 1) L) \<Longrightarrow> 0 < x)"
-          using pos_L
-          by (metis in_set_member in_set_takeD) 
+          using pos_L by (auto dest: in_set_takeD)
         have length_preL: "0 < length (take (length L - 1) L)"
           using length_L by auto
         have sum_preL_pos: "sum_list (take (length L-1) L) > 0"
@@ -634,8 +632,8 @@ proof-
         have c2: "a \<le> b - last L" 
           using Suc(3) b_lastL ba_lastL by auto
         have c3 :"is_composition (b - last L - a + 1) (take (length L - 1) L)"
-          using Suc.prems(2) unfolding is_composition_def
-          by (metis Suc_diff_1 Suc_eq_plus1 \<open>0 < sum_list (take (length L - 1) L)\<close> add_diff_cancel_right diff_right_commute in_set_member plus_1_eq_Suc pos_preL sum_list_eq) 
+          using Suc.prems(2) \<open>0 < sum_list (take (length L - 1) L)\<close> pos_preL
+          by (auto simp add: is_composition_def sum_list_eq)
         have c4: "take (length L) s = interval_times a (take (length L - 1) L)"
           unfolding Suc(5) using length_L take_interval_times
           by (metis Suc.prems(8) diff_add diff_le_self) 
@@ -901,29 +899,28 @@ qed
 
 subsection \<open>Forward Direction Proofs\<close>
 lemma pairs_member_fst_forward:
-  assumes "List.member (pairs A B) x"
-  shows "List.member A (fst x)" 
+  assumes "member (pairs A B) x"
+  shows "member A (fst x)" 
   using assms
 proof(induct A)
   case Nil
   then have "pairs [] B = []" unfolding pairs.simps by simp
-  then show ?case using member_rec(2) 
-    by (metis Nil)
+  with Nil show ?case by simp
 next
   case (Cons a A)
   {assume fst_x_is_a: "fst x = a"
     then have ?case 
-      using Cons member_rec(1) by metis
+      using Cons by simp
   } moreover {
     assume fst_x_not_a: "fst x \<noteq> a"
-    then have "\<not>(List.member (map (Pair a) B) x)"
-      using in_set_member by force
-    then have "List.member (pairs A B) x"
-      using Cons(2) unfolding pairs.simps List.member_def by auto
-    then have ih: "List.member A (fst x)"
+    then have "\<not>(member (map (Pair a) B) x)"
+      by auto
+    then have "member (pairs A B) x"
+      using Cons(2) unfolding pairs.simps by auto
+    then have ih: "member A (fst x)"
       using Cons.hyps by blast
-    then have "List.member (a # A) (fst x)"
-      unfolding List.member_def by simp
+    then have "member (a # A) (fst x)"
+      by simp
     then have ?case
       using ih by blast
   }
@@ -931,32 +928,32 @@ next
 qed
 
 lemma pairs_member_snd_forward:
-  assumes "List.member (pairs A B) x"
-  shows "List.member B (snd x)" 
+  assumes "member (pairs A B) x"
+  shows "member B (snd x)" 
   using assms
 proof(induct B)
   case Nil
   have "pairs A [] = []"
     using pairs_empty_list by blast
-  then show ?case
-    by (metis local.Nil member_rec(2)) 
+  with Nil show ?case
+    by simp 
 next
   case (Cons b B)
   have pairs_rec: "set (pairs A (b # B)) = set (map (\<lambda>x. (x, b)) A @ pairs A B)"
     using pairs_alt[of A b B] by blast
-  {assume snd_x_is_b: "snd x = b"
-    then have ?case 
-      using Cons member_rec(1) by metis 
+  { assume snd_x_is_b: "snd x = b"
+    with Cons have ?case 
+      by simp
   } moreover {
     assume snd_x_not_b: "snd x \<noteq> b"
-    then have "\<not>(List.member (map (\<lambda>x. (x, b)) A) x)"
-      using in_set_member pairs_rec by force
-    then have "List.member (pairs A B) x"
-      using Cons(2) unfolding pairs_rec List.member_def by simp
-    then have ih: "List.member B (snd x)"
+    then have "\<not>(member (map (\<lambda>x. (x, b)) A) x)"
+      using pairs_rec by force
+    then have "member (pairs A B) x"
+      using Cons(2) unfolding pairs_rec by simp
+    then have ih: "member B (snd x)"
       using Cons.hyps by blast
-    then have "List.member (b # B) (snd x)"
-      unfolding List.member_def by simp
+    then have "member (b # B) (snd x)"
+      by simp
     then have ?case
       using ih by blast
   }
@@ -964,71 +961,71 @@ next
 qed
 
 lemma pairs_member_forward:
-  assumes "List.member (pairs A B) x"
-  shows "List.member A (fst x) \<and> List.member B (snd x)" 
+  assumes "member (pairs A B) x"
+  shows "member A (fst x) \<and> member B (snd x)" 
   using assms pairs_member_fst_forward pairs_member_snd_forward by blast
   
 lemma And_mltl_list_member_forward: 
-  assumes "List.member (And_mltl_list D_x D_y) \<psi>"
+  assumes "member (And_mltl_list D_x D_y) \<psi>"
   shows "\<exists>\<psi>1 \<psi>2. \<psi> = And_mltl_ext \<psi>1 \<psi>2 
-  \<and> List.member D_x \<psi>1 \<and> List.member D_y \<psi>2"
+  \<and> member D_x \<psi>1 \<and> member D_y \<psi>2"
 proof-
   obtain x where "\<psi> = And_mltl_ext (fst x) (snd x) \<and> x \<in> set (pairs D_x D_y)"
-    using assms unfolding And_mltl_list.simps List.member_def by auto
+    using assms unfolding And_mltl_list.simps by auto
   then show ?thesis
-    using pairs_member_forward[of D_x D_y x]
-    by (simp add: in_set_member) 
+    using pairs_member_forward [of x D_x D_y]
+    by simp
 qed 
 
 
 subsection \<open>Converse Direction Proofs\<close>
 
 lemma pairs_member_converse:
-  assumes "List.member A (fst x)"
-  assumes "List.member B (snd x)" 
-  shows "List.member (pairs A B) x" 
+  assumes "member A (fst x)"
+  assumes "member B (snd x)" 
+  shows "member (pairs A B) x" 
   using assms
 proof(induct A)
   case Nil
-  then show ?case unfolding List.member_def by simp
+  then show ?case by simp
 next
   case (Cons a A)
   {assume *: "fst x = a"
     then have ?case using Cons
-      unfolding pairs.simps List.member_def by force
+      unfolding pairs.simps by force
   } moreover {
     assume *: "fst x \<in> set A"
-    then have "List.member (pairs A B) x"
-      using Cons.hyps Cons(3) unfolding List.member_def by simp
-    then have ?case unfolding pairs.simps List.member_def by simp
+    then have "member (pairs A B) x"
+      using Cons.hyps Cons(3) by simp
+    then have ?case unfolding pairs.simps by simp
   }
-  ultimately show ?case using Cons(2) unfolding List.member_def by force
+  ultimately show ?case using Cons(2) by force
 qed
 
 
 lemma And_mltl_list_member_converse: 
   assumes "\<exists>\<psi>1 \<psi>2. \<psi> = And_mltl_ext \<psi>1 \<psi>2 
-  \<and> List.member D_x \<psi>1 \<and> List.member D_y \<psi>2"
-  shows "List.member (And_mltl_list D_x D_y) \<psi>"
+  \<and> member D_x \<psi>1 \<and> member D_y \<psi>2"
+  shows "member (And_mltl_list D_x D_y) \<psi>"
 proof-
-  from assms obtain \<psi>1 \<psi>2 where "\<psi> = And_mltl_ext \<psi>1 \<psi>2 \<and> List.member D_x \<psi>1 \<and> List.member D_y \<psi>2" 
+  from assms obtain \<psi>1 \<psi>2 where "\<psi> = And_mltl_ext \<psi>1 \<psi>2 \<and> member D_x \<psi>1 \<and> member D_y \<psi>2" 
     by blast
   then show ?thesis using pairs_member_converse
-    unfolding And_mltl_list.simps List.member_def by force
+    unfolding And_mltl_list.simps by force
 qed
 
 
 subsection \<open>Biconditional Lemmas\<close>
 
 lemma pairs_member:
-  shows "(List.member A (fst x) \<and> List.member B (snd x)) \<longleftrightarrow> 
-         List.member (pairs A B) x"
+  shows "(member A (fst x) \<and> member B (snd x)) \<longleftrightarrow> 
+         member (pairs A B) x"
   using pairs_member_forward pairs_member_converse by blast
   
 lemma And_mltl_list_member: 
   shows "(\<exists>\<psi>1 \<psi>2. \<psi> = And_mltl_ext \<psi>1 \<psi>2 
-  \<and> List.member D_x \<psi>1 \<and> List.member D_y \<psi>2) \<longleftrightarrow>
-        List.member (And_mltl_list D_x D_y) \<psi>"
+  \<and> member D_x \<psi>1 \<and> member D_y \<psi>2) \<longleftrightarrow>
+        member (And_mltl_list D_x D_y) \<psi>"
   using And_mltl_list_member_forward And_mltl_list_member_converse by blast
 
 
@@ -1198,7 +1195,7 @@ lemma in_Global_mltl_decomp:
   assumes "length D_\<phi> > 1"
   assumes "\<psi> \<in> set (Global_mltl_decomp D_\<phi> a n L)"
   shows "\<exists>X. ((\<psi> = Ands_mltl_ext X \<and> 
-             (\<forall>x. List.member X x \<longrightarrow> 
+             (\<forall>x. member X x \<longrightarrow> 
              (\<exists>y \<in> set D_\<phi>. (\<exists>k. a \<le> k \<and> k \<le> (a+n) \<and> x = Global_mltl_ext k k [1] y)))) \<and>
              (length X = Suc n))"
   using assms
@@ -1209,8 +1206,8 @@ proof(induct n arbitrary: D_\<phi> \<psi> a)
     unfolding Global_mltl_decomp.simps Global_mltl_list.simps by auto
   then have "\<psi> = Ands_mltl_ext [Global_mltl_ext a a [1] x]" 
     using Ands_mltl_ext.simps(2)[of "[]" "Global_mltl_ext a a [1] x"] by auto
-  then show ?case
-    by (metis add.right_neutral length_Cons list.size(3) member_rec(1) member_rec(2) order_refl x_in) 
+  with x_in show ?case
+    by auto
 next
   case (Suc x)
   then have "\<psi> \<in> set (And_mltl_list (Global_mltl_decomp D_\<phi> a x L)
@@ -1219,10 +1216,10 @@ next
   then obtain first second where \<psi>_is: "\<psi> = And_mltl_ext first second" 
       and first_in: "first \<in> set (Global_mltl_decomp D_\<phi> a x L)" 
       and second_in: "second \<in> set (Global_mltl_list D_\<phi> (a + Suc x) (a + Suc x) [1])"
-    using And_mltl_list_member by (metis in_set_member) 
+    using And_mltl_list_member by (metis) 
   from Suc.hyps[OF Suc.prems(1) first_in] obtain X where 
       X1: "first = Ands_mltl_ext X" and 
-      X2: "(\<forall>xa. List.member X xa \<longrightarrow>
+      X2: "(\<forall>xa. member X xa \<longrightarrow>
             (\<exists>y\<in>set D_\<phi>. \<exists>k\<ge>a. k \<le> a + x \<and> xa = Global_mltl_ext k k [1] y))" and
       X3: "length X = (Suc x)"
     by blast
@@ -1232,13 +1229,12 @@ next
   have prop1: "\<psi> = Ands_mltl_ext (X@[second])" using \<psi>_is X1 
     unfolding Ands_mltl_ext.simps using X3 by auto
   have prop2: "(\<exists>y\<in>set D_\<phi>. \<exists>k\<ge>a. k \<le> a + Suc x \<and> xa = Global_mltl_ext k k [1] y)"
-    if prem: "List.member (X@[second]) xa" for xa
+    if prem: "member (X@[second]) xa" for xa
     using X2 second_is 
   proof-
-    have split: "(List.member X xa) \<or> xa = second"
-      using prem
-      by (metis in_set_member member_rec(1) rotate1.simps(2) set_rotate1) 
-    {assume in_X: "List.member X xa"
+    have split: "(member X xa) \<or> xa = second"
+      using prem by auto
+    {assume in_X: "member X xa"
       have ?thesis using X2 in_X by force
     } moreover {
       assume in_second: "xa = second"
@@ -1276,7 +1272,7 @@ next
                and H_in: "H \<in> set (Global_mltl_decomp D_\<phi> a n L)"
                and t_in: "t \<in> set (Global_mltl_list D_\<phi> (a + Suc n) (a + Suc n) [1])"
     using Suc(3) unfolding Global_mltl_decomp.simps 
-    using And_mltl_list_member unfolding List.member_def
+    using And_mltl_list_member
     by (metis add_diff_cancel_left' plus_1_eq_Suc) 
   obtain x where t_is: "t = Global_mltl_ext (a+Suc n) (a+Suc n) [1] x"
              and x_in: "x \<in> set D_\<phi>"
@@ -1372,7 +1368,7 @@ next
     using y_in t_is by simp
   show ?case unfolding \<psi>_is Global_mltl_decomp.simps
     using t_in H_in And_mltl_list_member[of \<psi> "(Global_mltl_decomp D_\<phi> a n) L" "(Global_mltl_list D_\<phi> (a + Suc n) (a + Suc n) [1])"] 
-    unfolding List.member_def \<psi>_is by auto
+    unfolding \<psi>_is by auto
 qed
 
 lemma case_split_helper: 
@@ -1418,7 +1414,7 @@ next
                and x_in: "x \<in> set (LP_mltl_aux (convert_nnf_ext \<alpha>) k)"
                and y_in: "y \<in> set (LP_mltl_aux (convert_nnf_ext \<beta>) k)"
       using Suc(3) unfolding And_mltl_ext LP_mltl_aux.simps
-      by (meson And_mltl_list_member in_set_member) 
+      by (meson And_mltl_list_member) 
     then show ?thesis unfolding \<psi>_is to_mltl.simps intervals_welldef.simps
       using Suc.hyps x_in y_in
       by (metis And_mltl_ext Suc.prems(1) Suc.prems(3) convert_nnf_ext_to_mltl_commute intervals_welldef.simps(5) nnf_intervals_welldef is_composition_MLTL.simps(1) is_composition_convert_nnf_ext to_mltl.simps(5)) 
@@ -1430,7 +1426,7 @@ next
       then obtain x y where \<psi>_is: "\<psi> = And_mltl_ext x y" 
                and x_in: "x \<in> set ?Dx" and y_in: "y \<in> set ?Dy"
         using Suc(3) LP_mltl_aux.simps
-        by (meson And_mltl_list_member in_set_member) 
+        by (meson And_mltl_list_member) 
     then have ?thesis unfolding Or_mltl_ext
       by (metis Or_mltl_ext Suc.hyps Suc.prems(1) Suc.prems(3) convert_nnf_ext_to_mltl_commute intervals_welldef.simps(5) intervals_welldef.simps(6) nnf_intervals_welldef is_composition_MLTL.simps(2) is_composition_convert_nnf_ext to_mltl.simps(5) to_mltl.simps(6))
     } moreover {
@@ -1451,8 +1447,8 @@ next
       assume *: "\<psi> \<in> set (And_mltl_list ?Dx [Not\<^sub>c \<beta>])"
       then obtain x where \<psi>_is: "\<psi> = And_mltl_ext x (Not\<^sub>c \<beta>)" 
                and x_in: "x \<in> set ?Dx"
-        using Suc(3) And_mltl_list_member[of \<psi> ?Dx "[Not\<^sub>c \<beta>]"]
-        by (metis in_set_member member_rec(1) member_rec(2)) 
+        using Suc(3)
+        by (auto simp flip: And_mltl_list_member [of \<psi> ?Dx "[Not\<^sub>c \<beta>]"] dest: pairs_member_forward)
       have lhs_welldef: "intervals_welldef (to_mltl \<beta>)"
         by (metis Or_mltl_ext Suc.prems(1) convert_nnf_ext_to_mltl_commute intervals_welldef.simps(6) nnf_intervals_welldef to_mltl.simps(6))
       have rhs_welldef: "intervals_welldef (to_mltl x)"
@@ -1573,7 +1569,7 @@ next
                   \<exists>k\<ge>a. k \<le> a + (b - a) \<and> x = Global_mltl_ext k k [1] y))"
         and length_X: "length X = Suc (b - a)"
         using in_Global_mltl_decomp[OF * \<psi>_in] 
-        unfolding List.member_def by blast
+        by blast
       have X_ih: "intervals_welldef (to_mltl x)"
         if x_in: "x \<in> set X" for x
       proof- 
@@ -1814,7 +1810,7 @@ next
                and x_in: "x \<in> set (LP_mltl_aux \<alpha> k)"
                and y_in: "y \<in> set (LP_mltl_aux \<beta> k)"
       using Suc unfolding And_mltl_ext LP_mltl_aux.simps
-      by (metis And_mltl_list_member convert_nnf_ext.simps(4) convert_nnf_ext_convert_nnf_ext in_set_member mltl_ext.inject(3)) 
+      by (metis And_mltl_list_member convert_nnf_ext.simps(4) convert_nnf_ext_convert_nnf_ext mltl_ext.inject(3)) 
     have \<alpha>_nnf: "\<exists>\<phi>_init. \<alpha> = convert_nnf_ext \<phi>_init"
       using Suc(2) unfolding And_mltl_ext
       by (metis convert_nnf_ext.simps(4) convert_nnf_ext_convert_nnf_ext mltl_ext.inject(3)) 
@@ -1855,7 +1851,7 @@ next
       then obtain x y where \<psi>_is: "\<psi> = And_mltl_ext x y" 
                and x_in: "x \<in> set ?Dx" and y_in: "y \<in> set ?Dy"
         using And_mltl_list_member[of \<psi> ?Dx ?Dy]
-        by (metis in_set_member) 
+        by (metis) 
       have x_ih: "wpd_mltl (to_mltl x) \<le> wpd_mltl (to_mltl \<alpha>)"
         using Suc.hyps[of \<alpha> x, OF \<alpha>_nnf \<alpha>_welldef x_in \<alpha>_composition] by blast
       have y_ih: "wpd_mltl (to_mltl y) \<le> wpd_mltl (to_mltl \<beta>)"
@@ -1878,8 +1874,7 @@ next
       assume *: "\<psi> \<in> set (And_mltl_list ?Dx [Not\<^sub>c \<beta>])"
       then obtain x where \<psi>_is: "\<psi> = And_mltl_ext x (Not\<^sub>c \<beta>)" 
                       and x_in: "x \<in> set ?Dx" 
-        using And_mltl_list_member[of \<psi> ?Dx "[Not\<^sub>c \<beta>]"]
-        by (metis in_set_member member_rec(1) member_rec(2))
+        by (auto simp flip:  And_mltl_list_member [of \<psi> ?Dx "[Not\<^sub>c \<beta>]"] dest: pairs_member_forward)
       have x_ih: "wpd_mltl (to_mltl x) \<le> wpd_mltl (to_mltl \<alpha>)"
         using Suc.hyps[of \<alpha> x, OF \<alpha>_nnf \<alpha>_welldef x_in \<alpha>_composition] by blast     
       have ?thesis
@@ -2001,7 +1996,7 @@ next
                                  X ! i = Global_mltl_ext (a + i) (a + i) [1] y"
                     and length_X: "length X = Suc (b - a)"
         using in_Global_mltl_decomp_exact_forward[OF * \<psi>_in] nnf a_leq_b
-        unfolding List.member_def by blast
+        by blast
       have X_ih: "wpd_mltl (to_mltl (X!i)) \<le> b+wpd_mltl (to_mltl \<alpha>)"
         if i_bound: "i < length X" for i
       proof- 
@@ -2690,7 +2685,7 @@ next
     have xab_in: "And_mltl_ext xa xb \<in> set D"
       unfolding Suc(5) And_mltl_ext LP_mltl_aux.simps 
       using xa_in xb_in And_mltl_list_member
-      by (metis \<alpha>_nnf \<beta>_nnf convert_nnf_ext_convert_nnf_ext in_set_member) 
+      by (metis \<alpha>_nnf \<beta>_nnf convert_nnf_ext_convert_nnf_ext) 
     have xab_semantics: "semantics_mltl_ext \<pi> (And_mltl_ext xa xb)"
       using xa_semantics xb_semantics unfolding semantics_mltl_ext_def 
       by simp
@@ -2725,8 +2720,7 @@ next
         using \<alpha>_ih by blast  
       let ?\<psi> = "And_mltl_ext xa (Not\<^sub>c \<beta>)"
       have xa\<beta>_in: "?\<psi> \<in> set (And_mltl_list ?D_\<alpha> [Not\<^sub>c \<beta>])"
-        using xa_in And_mltl_list_member unfolding List.member_def
-        by (metis list.set_intros(1)) 
+        using xa_in And_mltl_list_member by (metis list.set_intros(1)) 
       then have xa\<beta>_in: "?\<psi> \<in> set D"
         unfolding Suc(5) Or_mltl_ext LP_mltl_aux.simps 
         using list_concat_set_union
@@ -2745,8 +2739,7 @@ next
         using \<beta>_ih by blast  
       let ?\<psi> = "And_mltl_ext (Not\<^sub>c \<alpha>) xb"
       have \<alpha>xb_in: "?\<psi> \<in> set (And_mltl_list [Not\<^sub>c \<alpha>] ?D_\<beta>)"
-        using xa_in And_mltl_list_member unfolding List.member_def
-        by (metis list.set_intros(1)) 
+        using xa_in And_mltl_list_member by (metis list.set_intros(1)) 
       then have \<alpha>xb_in: "?\<psi> \<in> set (And_mltl_list ?D_\<alpha> ?D_\<beta> @ And_mltl_list [Not\<^sub>c \<alpha>] ?D_\<beta>)"
         using list_concat_set_union[of "And_mltl_list ?D_\<alpha> ?D_\<beta>" "And_mltl_list [Not\<^sub>c \<alpha>] ?D_\<beta>"]
         by blast
@@ -2773,7 +2766,6 @@ next
       have xab_in: "And_mltl_ext xa xb \<in> set D"
         unfolding Suc(5) Or_mltl_ext LP_mltl_aux.simps
         using xa_in xb_in And_mltl_list_member list_concat_set_union 
-        unfolding List.member_def
         by (metis UnCI \<alpha>_nnf \<beta>_nnf convert_nnf_ext_convert_nnf_ext) 
       have xab_semantics: "semantics_mltl_ext \<pi> (And_mltl_ext xa xb)"
         using xa_semantics xb_semantics unfolding semantics_mltl_ext_def 
@@ -3590,8 +3582,7 @@ next
                and x_in: "x \<in> set ?Da"
                and y_in: "y \<in> set ?Db"
       using \<psi>_in unfolding Suc(6) And_mltl_ext LP_mltl_aux.simps 
-      using And_mltl_list_member unfolding List.member_def
-      using \<alpha>_convert \<beta>_convert by metis
+      using And_mltl_list_member using \<alpha>_convert \<beta>_convert by metis
     have x_semantics: "semantics_mltl_ext \<pi> x" and
          y_semantics: "semantics_mltl_ext \<pi> y"
       using \<psi>_semantics unfolding semantics_mltl_ext_def \<psi>_is to_mltl.simps
@@ -3643,8 +3634,7 @@ next
                and x_in: "x \<in> set ?Da"
                and y_in: "y \<in> set ?Db"
         using \<psi>_in * unfolding Or_mltl_ext LP_mltl_aux.simps 
-        using And_mltl_list_member unfolding List.member_def
-        using \<alpha>_convert \<beta>_convert by metis
+        using And_mltl_list_member using \<alpha>_convert \<beta>_convert by metis
       have x_semantics: "semantics_mltl_ext \<pi> x" and
            y_semantics: "semantics_mltl_ext \<pi> y"
         using \<psi>_semantics unfolding semantics_mltl_ext_def \<psi>_is to_mltl.simps
@@ -3662,8 +3652,7 @@ next
       obtain y where \<psi>_is: "\<psi> = And_mltl_ext (Not\<^sub>c \<alpha>) y" 
                and y_in: "y \<in> set ?Db"
         using \<psi>_in * unfolding Or_mltl_ext LP_mltl_aux.simps 
-        using And_mltl_list_member unfolding List.member_def
-        using \<alpha>_convert \<beta>_convert by auto
+        using And_mltl_list_member using \<alpha>_convert \<beta>_convert by auto
       have x_semantics: "semantics_mltl_ext \<pi> (Not\<^sub>c \<alpha>)" and
            y_semantics: "semantics_mltl_ext \<pi> y"
         using \<psi>_semantics unfolding semantics_mltl_ext_def \<psi>_is to_mltl.simps
@@ -3678,8 +3667,7 @@ next
       obtain x where \<psi>_is: "\<psi> = And_mltl_ext x (Not\<^sub>c \<beta>)" 
                and x_in: "x \<in> set ?Da"
         using \<psi>_in * unfolding Or_mltl_ext LP_mltl_aux.simps 
-        using And_mltl_list_member unfolding List.member_def
-        using \<alpha>_convert \<beta>_convert
+        using And_mltl_list_member using \<alpha>_convert \<beta>_convert
         by (metis empty_iff empty_set set_ConsD)
       have x_semantics: "semantics_mltl_ext \<pi> x" and
            y_semantics: "semantics_mltl_ext \<pi> (Not\<^sub>c \<beta>)"
@@ -4513,11 +4501,11 @@ lemma LP_mltl_language_disjoint_aux_helper:
       obtain x1 y1 where \<psi>1_is: "\<psi>1 = And_mltl_ext x1 y1" 
                      and x1_in: "x1 \<in> set ?Dx" and y1_in: "y1 \<in> set ?Dy"
         using And_mltl_list_member Suc.prems
-        by (metis (no_types, lifting) And_mltl_ext LP_mltl_aux.simps(6) convert_nnf_ext.simps(4) convert_nnf_ext_convert_nnf_ext in_set_member mltl_ext.inject(3))
+        by (metis (no_types, lifting) And_mltl_ext LP_mltl_aux.simps(6) convert_nnf_ext.simps(4) convert_nnf_ext_convert_nnf_ext mltl_ext.inject(3))
       obtain x2 y2 where \<psi>2_is: "\<psi>2 = And_mltl_ext x2 y2" 
                      and x2_in: "x2 \<in> set ?Dx" and y2_in: "y2 \<in> set ?Dy"
         using And_mltl_list_member Suc.prems
-        by (metis (no_types, lifting) And_mltl_ext LP_mltl_aux.simps(6) convert_nnf_ext.simps(4) convert_nnf_ext_convert_nnf_ext in_set_member mltl_ext.inject(3))
+        by (metis (no_types, lifting) And_mltl_ext LP_mltl_aux.simps(6) convert_nnf_ext.simps(4) convert_nnf_ext_convert_nnf_ext mltl_ext.inject(3))
       have eo: "x1 \<noteq> x2 \<or> y1 \<noteq> y2"
         using Suc(7) \<psi>1_is \<psi>2_is by blast
       have \<alpha>iwd: "intervals_welldef (to_mltl \<alpha>)" and
@@ -4573,14 +4561,14 @@ lemma LP_mltl_language_disjoint_aux_helper:
               And_mltl_list ?Dx [Not\<^sub>c \<beta>])"
         using Suc(6) unfolding Or_mltl_ext LP_mltl_aux.simps 
         by metis
-      then have \<psi>1_eo: "List.member (And_mltl_list ?Dx ?Dy) \<psi>1 \<or>
-          List.member (And_mltl_list [Not\<^sub>c \<alpha>] ?Dy) \<psi>1 \<or>
-           List.member (And_mltl_list ?Dx [Not\<^sub>c \<beta>]) \<psi>1"
-        using Suc(7) by (simp add: member_def)
-      have \<psi>2_eo: "List.member (And_mltl_list ?Dx ?Dy) \<psi>2 \<or>
-          List.member (And_mltl_list [Not\<^sub>c \<alpha>] ?Dy) \<psi>2 \<or>
-           List.member (And_mltl_list ?Dx [Not\<^sub>c \<beta>]) \<psi>2"
-        using D_is Suc(7) by (simp add: member_def)
+      then have \<psi>1_eo: "member (And_mltl_list ?Dx ?Dy) \<psi>1 \<or>
+          member (And_mltl_list [Not\<^sub>c \<alpha>] ?Dy) \<psi>1 \<or>
+           member (And_mltl_list ?Dx [Not\<^sub>c \<beta>]) \<psi>1"
+        using Suc(7) by (simp add:)
+      have \<psi>2_eo: "member (And_mltl_list ?Dx ?Dy) \<psi>2 \<or>
+          member (And_mltl_list [Not\<^sub>c \<alpha>] ?Dy) \<psi>2 \<or>
+           member (And_mltl_list ?Dx [Not\<^sub>c \<beta>]) \<psi>2"
+        using D_is Suc(7) by (simp add:)
       (* prove some properties of \<alpha> *)
       have \<alpha>_iwd: "intervals_welldef (to_mltl \<alpha>)"
         using Suc(2) unfolding Or_mltl_ext by simp
@@ -4609,11 +4597,11 @@ lemma LP_mltl_language_disjoint_aux_helper:
         by (metis \<beta>_nnf convert_nnf_ext_convert_nnf_ext)
       (* Top-level case split on structure of \<psi>1 *)
       {
-        assume "List.member (And_mltl_list ?Dx ?Dy) \<psi>1 "
+        assume "member (And_mltl_list ?Dx ?Dy) \<psi>1 "
         then obtain x1 y1 where \<psi>1_is: "\<psi>1 = And_mltl_ext x1 y1" 
                      and x1y1: "(x1 \<in> set ?Dx \<and> y1 \<in> set ?Dy) "
           using And_mltl_list_member
-          by (metis in_set_member)
+          by (metis)
         have x1_semantics: "semantics_mltl_ext \<pi> x1" and 
              y1_semantics: "semantics_mltl_ext \<pi> y1"
           using Suc(8) unfolding semantics_mltl_ext_def \<psi>1_is by simp_all
@@ -4623,11 +4611,11 @@ lemma LP_mltl_language_disjoint_aux_helper:
           by (metis \<beta>_wpd \<beta>_is_comp \<beta>_iwd \<beta>_nnf allones_implies_is_composition_MLTL convert_nnf_ext_convert_nnf_ext x1y1 y1_semantics)
         (* Inner case split on \<psi>2*)
         {
-          assume "List.member (And_mltl_list ?Dx ?Dy) \<psi>2 "
+          assume "member (And_mltl_list ?Dx ?Dy) \<psi>2 "
           then obtain x2 y2 where \<psi>2_is: "\<psi>2 = And_mltl_ext x2 y2" 
                        and x2y2: "(x2 \<in> set ?Dx \<and> y2 \<in> set ?Dy) "
             using And_mltl_list_member
-            by (metis in_set_member)
+            by (metis)
           have x2_semantics: "semantics_mltl_ext \<pi> x2" and 
                y2_semantics: "semantics_mltl_ext \<pi> y2"
             using Suc(9) unfolding semantics_mltl_ext_def \<psi>2_is by simp_all
@@ -4642,11 +4630,10 @@ lemma LP_mltl_language_disjoint_aux_helper:
           have ?thesis
             using xs_neq ys_neq xs_ys_eo by blast
         } moreover {
-          assume " List.member (And_mltl_list [Not\<^sub>c \<alpha>] ?Dy) \<psi>2"
+          assume " member (And_mltl_list [Not\<^sub>c \<alpha>] ?Dy) \<psi>2"
           then obtain x2 y2 where \<psi>2_is: "\<psi>2 = And_mltl_ext x2 y2" 
                        and x2y2: "(x2 = Not\<^sub>c \<alpha> \<and> y2 \<in> set ?Dy)"
-            using And_mltl_list_member
-            by (metis member_def member_rec(1) member_rec(2))
+            by (auto simp add: And_mltl_list_member)
           have x2_is: "x2 = Not\<^sub>c \<alpha>"
             using x2y2 by auto
           have x2_semantics: "semantics_mltl_ext \<pi> x2" and 
@@ -4658,11 +4645,11 @@ lemma LP_mltl_language_disjoint_aux_helper:
             using \<alpha>_semantics x2_semantics unfolding x2_is semantics_mltl_ext_def
             by simp
         } moreover {
-          assume "List.member (And_mltl_list ?Dx [Not\<^sub>c \<beta>]) \<psi>2"
+          assume "member (And_mltl_list ?Dx [Not\<^sub>c \<beta>]) \<psi>2"
           then obtain x2 y2 where \<psi>2_is: "\<psi>2 = And_mltl_ext x2 y2" 
                        and x2y2: "(x2 \<in> set ?Dx \<and> y2 = Not\<^sub>c \<beta>)"
             using And_mltl_list_member
-            by (metis member_def member_rec(1) member_rec(2))
+            by auto (metis in_set_insert insert_Nil list.distinct(1) pairs_member set_ConsD split_pairs) 
           have y2_is: "y2 = Not\<^sub>c \<beta>"
             using x2y2 by auto
           have x2_semantics: "semantics_mltl_ext \<pi> x2" and 
@@ -4677,11 +4664,10 @@ lemma LP_mltl_language_disjoint_aux_helper:
         ultimately have ?thesis
           using \<psi>2_eo by argo
       } moreover {
-        assume " List.member (And_mltl_list [Not\<^sub>c \<alpha>] ?Dy) \<psi>1"
+        assume " member (And_mltl_list [Not\<^sub>c \<alpha>] ?Dy) \<psi>1"
         then obtain x1 y1 where \<psi>1_is: "\<psi>1 = And_mltl_ext x1 y1" 
                      and x1y1: "(x1 = Not\<^sub>c \<alpha> \<and> y1 \<in> set ?Dy)"
-          using And_mltl_list_member
-          by (metis member_def member_rec(1) member_rec(2))
+          by (auto simp add: And_mltl_list_member)
         have x1_semantics: "semantics_mltl_ext \<pi> x1" and 
              y1_semantics: "semantics_mltl_ext \<pi> y1"
           using Suc(8) unfolding semantics_mltl_ext_def \<psi>1_is by simp_all
@@ -4693,11 +4679,11 @@ lemma LP_mltl_language_disjoint_aux_helper:
           by (metis \<beta>_wpd \<beta>_is_comp \<beta>_iwd \<beta>_nnf allones_implies_is_composition_MLTL convert_nnf_ext_convert_nnf_ext x1y1 y1_semantics)
         (* Inner case split on \<psi>2*)
         {
-          assume "List.member (And_mltl_list ?Dx ?Dy) \<psi>2 "
+          assume "member (And_mltl_list ?Dx ?Dy) \<psi>2 "
           then obtain x2 y2 where \<psi>2_is: "\<psi>2 = And_mltl_ext x2 y2" 
                        and x2y2: "(x2 \<in> set ?Dx \<and> y2 \<in> set ?Dy) "
             using And_mltl_list_member
-            by (metis in_set_member)
+            by (metis)
           have x1_semantics: "semantics_mltl_ext \<pi> x2" 
             using Suc(9) unfolding \<psi>2_is semantics_mltl_ext_def to_mltl.simps by simp
           have "semantics_mltl_ext \<pi> \<alpha>"
@@ -4705,11 +4691,10 @@ lemma LP_mltl_language_disjoint_aux_helper:
             by (metis \<alpha>_wpd \<alpha>_is_comp \<alpha>_iwd \<alpha>_nnf allones_implies_is_composition_MLTL convert_nnf_ext_convert_nnf_ext x1_semantics x2y2)
           then have ?thesis using not_\<alpha>_semantics by blast
         } moreover {
-          assume " List.member (And_mltl_list [Not\<^sub>c \<alpha>] ?Dy) \<psi>2"
+          assume " member (And_mltl_list [Not\<^sub>c \<alpha>] ?Dy) \<psi>2"
           then obtain x2 y2 where \<psi>2_is: "\<psi>2 = And_mltl_ext x2 y2" 
                            and x2y2: "(x2 = Not\<^sub>c \<alpha> \<and> y2 \<in> set ?Dy)"
-            using And_mltl_list_member
-            by (metis member_def member_rec(1) member_rec(2))
+            by (auto simp add: And_mltl_list_member)
             (* Modify the first case *)
           have y2_semantics: "semantics_mltl_ext \<pi> y2" 
             using Suc(9) unfolding \<psi>2_is semantics_mltl_ext_def to_mltl.simps by simp
@@ -4719,11 +4704,10 @@ lemma LP_mltl_language_disjoint_aux_helper:
             using Suc(1)
             using \<beta>_wpd \<beta>_conv_same \<beta>_is_comp \<beta>_iwd \<beta>_nnf x1y1 x2y2 y1_semantics y2_semantics by blast 
         } moreover {
-          assume "List.member (And_mltl_list ?Dx [Not\<^sub>c \<beta>]) \<psi>2"
+          assume "member (And_mltl_list ?Dx [Not\<^sub>c \<beta>]) \<psi>2"
           then obtain x2 y2 where \<psi>2_is: "\<psi>2 = And_mltl_ext x2 y2" 
                        and x2y2: "(x2 \<in> set ?Dx \<and> y2 = Not\<^sub>c \<beta>)"
-            using And_mltl_list_member
-            by (metis member_def member_rec(1) member_rec(2))
+            by (auto simp add: And_mltl_list_member dest: pairs_member_forward)
           have x2_semantics: "semantics_mltl_ext \<pi> x2" 
             using Suc(9) unfolding \<psi>2_is semantics_mltl_ext_def to_mltl.simps by simp 
           have ?thesis
@@ -4732,11 +4716,10 @@ lemma LP_mltl_language_disjoint_aux_helper:
         ultimately have ?thesis
           using \<psi>2_eo by argo
       } moreover {
-        assume "List.member (And_mltl_list ?Dx [Not\<^sub>c \<beta>]) \<psi>1"
+        assume "member (And_mltl_list ?Dx [Not\<^sub>c \<beta>]) \<psi>1"
         then obtain x1 y1 where \<psi>1_is: "\<psi>1 = And_mltl_ext x1 y1" 
                    and x1y1: "(x1 \<in> set ?Dx \<and> y1 = Not\<^sub>c \<beta>)"
-          using And_mltl_list_member
-          by (metis member_def member_rec(1) member_rec(2)) 
+          by (auto simp add: And_mltl_list_member dest: pairs_member_forward)
         have x1_semantics: "semantics_mltl_ext \<pi> x1" and 
              y1_semantics: "semantics_mltl_ext \<pi> y1"
           using Suc(8) unfolding semantics_mltl_ext_def \<psi>1_is by simp_all
@@ -4748,11 +4731,11 @@ lemma LP_mltl_language_disjoint_aux_helper:
           by (metis \<alpha>_wpd \<alpha>_is_comp \<alpha>_iwd \<alpha>_nnf allones_implies_is_composition_MLTL convert_nnf_ext_convert_nnf_ext x1_semantics x1y1)
       (* Inner case split on \<psi>2*)
         {
-          assume "List.member (And_mltl_list ?Dx ?Dy) \<psi>2"
+          assume "member (And_mltl_list ?Dx ?Dy) \<psi>2"
           then obtain x2 y2 where \<psi>2_is: "\<psi>2 = And_mltl_ext x2 y2" 
                             and x2y2: "(x2 \<in> set ?Dx \<and> y2 \<in> set ?Dy) "
             using And_mltl_list_member
-            by (metis in_set_member)
+            by (metis)
           have "semantics_mltl_ext \<pi> y2"
             using Suc(9) unfolding \<psi>2_is semantics_mltl_ext_def to_mltl.simps by auto
           then have \<beta>_semantics: "semantics_mltl_ext \<pi> \<beta>"
@@ -4761,11 +4744,10 @@ lemma LP_mltl_language_disjoint_aux_helper:
           then have ?thesis
             by (simp add: not_\<beta>_semantics)
         } moreover {
-          assume " List.member (And_mltl_list [Not\<^sub>c \<alpha>] ?Dy) \<psi>2"
+          assume " member (And_mltl_list [Not\<^sub>c \<alpha>] ?Dy) \<psi>2"
           then obtain x2 y2 where \<psi>2_is: "\<psi>2 = And_mltl_ext x2 y2" 
                          and x2y2: "(x2 = Not\<^sub>c \<alpha> \<and> y2 \<in> set ?Dy)"
-            using And_mltl_list_member
-            by (metis member_def member_rec(1) member_rec(2))
+            by (auto simp add: And_mltl_list_member)
           have "semantics_mltl_ext \<pi> y2"
             using Suc(9) unfolding \<psi>2_is semantics_mltl_ext_def to_mltl.simps by auto
           then have \<beta>_semantics: "semantics_mltl_ext \<pi> \<beta>"
@@ -4774,11 +4756,10 @@ lemma LP_mltl_language_disjoint_aux_helper:
           then have ?thesis
             by (simp add: not_\<beta>_semantics)
         } moreover {
-          assume "List.member (And_mltl_list ?Dx [Not\<^sub>c \<beta>]) \<psi>2"
+          assume "member (And_mltl_list ?Dx [Not\<^sub>c \<beta>]) \<psi>2"
           then obtain x2 y2 where \<psi>2_is: "\<psi>2 = And_mltl_ext x2 y2" 
                          and x2y2: "(x2 \<in> set ?Dx \<and> y2 = Not\<^sub>c \<beta>)"
-              using And_mltl_list_member
-              by (metis member_def member_rec(1) member_rec(2))
+            by (auto simp add: And_mltl_list_member dest: pairs_member_forward)
           have "semantics_mltl_ext \<pi> x2"
             using Suc(9) unfolding \<psi>2_is semantics_mltl_ext_def to_mltl.simps by auto
           then have ?thesis
@@ -5045,18 +5026,14 @@ lemma LP_mltl_language_disjoint_aux_helper:
           using Ands_mltl_semantics[of X1 \<pi>] Suc(8) unfolding \<psi>1_is
           by (metis Suc_eq_plus1 i_bound le_add2 length_X1 nth_mem)
         then have y1_semantics: "semantics_mltl_ext (drop (a+i) \<pi>) y1"
-          unfolding X1i_is semantics_mltl_ext_def to_mltl.simps semantics_mltl.simps
-          using i_bound \<alpha>_wpd a_leq_b 
-          by (metis Nat.add_diff_assoc Nat.le_diff_conv2 add_leD1 wpd_geq_one diff_add_inverse diff_add_inverse2 less_eq_iff_succ_less not_add_less1 order_refl)
-          (*takes about 20 seconds to load*)
+          using i_bound \<alpha>_wpd a_leq_b wpd_geq_one [of \<open>to_mltl \<alpha>\<close>]
+          by (auto simp add: X1i_is semantics_mltl_ext_def less_Suc_eq_le le_diff_conv2 ac_simps)
         have "semantics_mltl_ext \<pi> (X2!i)"
           using Ands_mltl_semantics[of X2 \<pi>] Suc(9) unfolding \<psi>2_is
           by (metis Suc_eq_plus1 i_bound le_add2 length_X2 nth_mem)
         then have y2_semantics: "semantics_mltl_ext (drop (a+i) \<pi>) y2"
-          unfolding X2i_is semantics_mltl_ext_def to_mltl.simps semantics_mltl.simps
-          using i_bound \<alpha>_wpd a_leq_b
-          by (metis Nat.add_diff_assoc Nat.le_diff_conv2 add_leD1 wpd_geq_one diff_add_inverse diff_add_inverse2 less_eq_iff_succ_less not_add_less1 order_refl)
-          (*takes about 20 seconds to load*)
+          using i_bound \<alpha>_wpd a_leq_b wpd_geq_one [of \<open>to_mltl \<alpha>\<close>]
+          by (auto simp add: X2i_is semantics_mltl_ext_def less_Suc_eq_le le_diff_conv2 ac_simps)
         have wpd: "wpd_mltl (to_mltl \<alpha>) \<le> length (drop (a+i) \<pi>)"
           using \<alpha>_wpd i_bound a_leq_b by auto
         have ?thesis
@@ -5743,14 +5720,14 @@ proof(cases \<phi>)
             And_mltl_list ?Dx [Not\<^sub>c \<beta>])"
       using assms(5) unfolding Or_mltl_ext LP_mltl_aux.simps 
       by metis
-    then have \<psi>1_eo: "List.member (And_mltl_list ?Dx ?Dy) \<psi>1 \<or>
-        List.member (And_mltl_list [Not\<^sub>c \<alpha>] ?Dy) \<psi>1 \<or>
-         List.member (And_mltl_list ?Dx [Not\<^sub>c \<beta>]) \<psi>1"
-      using assms(6) by (simp add: member_def)
-    have \<psi>2_eo: "List.member (And_mltl_list ?Dx ?Dy) \<psi>2 \<or>
-        List.member (And_mltl_list [Not\<^sub>c \<alpha>] ?Dy) \<psi>2 \<or>
-         List.member (And_mltl_list ?Dx [Not\<^sub>c \<beta>]) \<psi>2"
-      using D_is assms(6) by (simp add: member_def)
+    then have \<psi>1_eo: "member (And_mltl_list ?Dx ?Dy) \<psi>1 \<or>
+        member (And_mltl_list [Not\<^sub>c \<alpha>] ?Dy) \<psi>1 \<or>
+         member (And_mltl_list ?Dx [Not\<^sub>c \<beta>]) \<psi>1"
+      using assms(6) by (simp add:)
+    have \<psi>2_eo: "member (And_mltl_list ?Dx ?Dy) \<psi>2 \<or>
+        member (And_mltl_list [Not\<^sub>c \<alpha>] ?Dy) \<psi>2 \<or>
+         member (And_mltl_list ?Dx [Not\<^sub>c \<beta>]) \<psi>2"
+      using D_is assms(6) by (simp add:)
     (* prove some properties of \<alpha> *)
     have \<alpha>_iwd: "intervals_welldef (to_mltl \<alpha>)"
       using assms(1) unfolding Or_mltl_ext by simp
@@ -5775,43 +5752,37 @@ proof(cases \<phi>)
       by simp
     have \<beta>_wpd: "wpd_mltl (to_mltl \<beta>) \<le> length \<pi>"
       using assms unfolding Or_mltl_ext by simp
-    have \<beta>_conv_same: "set (LP_mltl_aux (convert_nnf_ext \<beta>) k) = set (LP_mltl_aux \<beta> k)"
-      by (metis \<beta>_nnf convert_nnf_ext_convert_nnf_ext)
     (* Top-level case split on structure of \<psi>1 *)
     {
-      assume "List.member (And_mltl_list ?Dx ?Dy) \<psi>1 "
+      assume "member (And_mltl_list ?Dx ?Dy) \<psi>1 "
       then have \<psi>1_is: "\<psi>1 = And_mltl_ext \<alpha> \<beta>" 
-        unfolding List.member_def 
-        using \<alpha>_nnf \<beta>_nnf convert_nnf_ext_convert_nnf_ext
-        by (metis And_mltl_list_member \<open>List.member (And_mltl_list [convert_nnf_ext \<alpha>] [convert_nnf_ext \<beta>]) \<psi>1\<close> member_rec(1) member_rec(2))
+        using \<alpha>_nnf \<beta>_nnf \<open>member (And_mltl_list [convert_nnf_ext \<alpha>] [convert_nnf_ext \<beta>]) \<psi>1\<close>
+        by simp (smt (verit, ccfv_SIG) convert_nnf_ext_convert_nnf_ext)
       have x1_semantics: "semantics_mltl_ext \<pi> \<alpha>" and 
            y1_semantics: "semantics_mltl_ext \<pi> \<beta>"
         using assms(7) unfolding \<psi>1_is semantics_mltl_ext_def by simp_all
       {
-        assume "List.member (And_mltl_list ?Dx ?Dy) \<psi>2 "
+        assume "member (And_mltl_list ?Dx ?Dy) \<psi>2 "
         then have \<psi>2_is: "\<psi>2 = And_mltl_ext \<alpha> \<beta>" 
-          unfolding List.member_def 
-          using \<alpha>_nnf \<beta>_nnf convert_nnf_ext_convert_nnf_ext
-          by (metis And_mltl_list_member_forward \<open>List.member (And_mltl_list [convert_nnf_ext \<alpha>] [convert_nnf_ext \<beta>]) \<psi>2\<close> member_rec(1) member_rec(2))
+          using \<alpha>_nnf \<beta>_nnf convert_nnf_ext_convert_nnf_ext \<open>member (And_mltl_list [convert_nnf_ext \<alpha>] [convert_nnf_ext \<beta>]) \<psi>2\<close>
+          by simp (smt (verit, ccfv_SIG) convert_nnf_ext_convert_nnf_ext)
         then have ?thesis
           using \<psi>1_is assms by blast
       } moreover {
-        assume " List.member (And_mltl_list [Not\<^sub>c \<alpha>] ?Dy) \<psi>2"
+        assume " member (And_mltl_list [Not\<^sub>c \<alpha>] ?Dy) \<psi>2"
         then have \<psi>2_is: "\<psi>2 = And_mltl_ext (Not\<^sub>c \<alpha>) \<beta>" 
-          unfolding List.member_def 
-          using \<alpha>_nnf \<beta>_nnf convert_nnf_ext_convert_nnf_ext
-          by (metis And_mltl_list_member \<open>List.member (And_mltl_list [Not\<^sub>c \<alpha>] [convert_nnf_ext \<beta>]) \<psi>2\<close> member_rec(1) member_rec(2))
+          using \<alpha>_nnf \<beta>_nnf convert_nnf_ext_convert_nnf_ext \<open>member (And_mltl_list [Not\<^sub>c \<alpha>] [convert_nnf_ext \<beta>]) \<psi>2\<close>
+          by simp (smt (verit, ccfv_SIG) convert_nnf_ext_convert_nnf_ext)
         have x2_semantics: "semantics_mltl_ext \<pi> (Not\<^sub>c \<alpha>)" and 
              y2_semantics: "semantics_mltl_ext \<pi> \<beta>"
           using assms unfolding semantics_mltl_ext_def \<psi>2_is by simp_all
         then have ?thesis
           using x1_semantics unfolding semantics_mltl_ext_def by simp
       } moreover {
-        assume "List.member (And_mltl_list ?Dx [Not\<^sub>c \<beta>]) \<psi>2"
+        assume "member (And_mltl_list ?Dx [Not\<^sub>c \<beta>]) \<psi>2"
         then have \<psi>2_is: "\<psi>2 = And_mltl_ext \<alpha> (Not\<^sub>c \<beta>)" 
-          unfolding List.member_def 
-          using \<alpha>_nnf \<beta>_nnf convert_nnf_ext_convert_nnf_ext
-          by (metis And_mltl_list_member \<open>List.member (And_mltl_list [convert_nnf_ext \<alpha>] [Not\<^sub>c \<beta>]) \<psi>2\<close> member_rec(1) member_rec(2))
+          using \<alpha>_nnf \<beta>_nnf convert_nnf_ext_convert_nnf_ext \<open>member (And_mltl_list [convert_nnf_ext \<alpha>] [Not\<^sub>c \<beta>]) \<psi>2\<close>
+          by simp (smt (verit, ccfv_SIG) convert_nnf_ext_convert_nnf_ext)
         have x2_semantics: "semantics_mltl_ext \<pi> \<alpha>" and 
              y2_semantics: "semantics_mltl_ext \<pi> (Not\<^sub>c \<beta>)"
           using assms unfolding semantics_mltl_ext_def \<psi>2_is by simp_all
@@ -5821,40 +5792,36 @@ proof(cases \<phi>)
       ultimately have ?thesis
         using \<psi>2_eo by argo
     } moreover {
-      assume " List.member (And_mltl_list [Not\<^sub>c \<alpha>] ?Dy) \<psi>1"
+      assume " member (And_mltl_list [Not\<^sub>c \<alpha>] ?Dy) \<psi>1"
       then have \<psi>1_is: "\<psi>1 = And_mltl_ext (Not\<^sub>c \<alpha>) (\<beta>)" 
-        unfolding List.member_def 
-        using \<alpha>_nnf \<beta>_nnf convert_nnf_ext_convert_nnf_ext
-        by (metis And_mltl_list_member \<open>List.member (And_mltl_list [Not\<^sub>c \<alpha>] [convert_nnf_ext \<beta>]) \<psi>1\<close> member_rec(1) member_rec(2))
+        using \<alpha>_nnf \<beta>_nnf convert_nnf_ext_convert_nnf_ext \<open>member (And_mltl_list [Not\<^sub>c \<alpha>] [convert_nnf_ext \<beta>]) \<psi>1\<close>
+        by simp (smt (verit, ccfv_SIG) convert_nnf_ext_convert_nnf_ext)
       have x1_semantics: "semantics_mltl_ext \<pi> (Not\<^sub>c \<alpha>)" and 
            y1_semantics: "semantics_mltl_ext \<pi> (\<beta>)"
         using assms unfolding semantics_mltl_ext_def \<psi>1_is by simp_all
       (* Inner case split on \<psi>2*)
       {
-        assume "List.member (And_mltl_list ?Dx ?Dy) \<psi>2 "
+        assume "member (And_mltl_list ?Dx ?Dy) \<psi>2 "
         then have \<psi>2_is: "\<psi>2 = And_mltl_ext \<alpha> \<beta>" 
-          unfolding List.member_def 
-          using \<alpha>_nnf \<beta>_nnf convert_nnf_ext_convert_nnf_ext
-          by (metis And_mltl_list_member \<open>List.member (And_mltl_list [convert_nnf_ext \<alpha>] [convert_nnf_ext \<beta>]) \<psi>2\<close> member_rec(1) member_rec(2))
+          using \<alpha>_nnf \<beta>_nnf convert_nnf_ext_convert_nnf_ext \<open>member (And_mltl_list [convert_nnf_ext \<alpha>] [convert_nnf_ext \<beta>]) \<psi>2\<close>
+          by simp (smt (verit, ccfv_SIG) convert_nnf_ext_convert_nnf_ext)
         have ?thesis
           using assms(7,8) unfolding \<psi>1_is \<psi>2_is semantics_mltl_ext_def by auto
       } moreover {
-        assume " List.member (And_mltl_list [Not\<^sub>c \<alpha>] ?Dy) \<psi>2"
+        assume " member (And_mltl_list [Not\<^sub>c \<alpha>] ?Dy) \<psi>2"
         then have \<psi>2_is: "\<psi>2 = And_mltl_ext (Not\<^sub>c \<alpha>) \<beta>" 
-          unfolding List.member_def 
-          using \<alpha>_nnf \<beta>_nnf convert_nnf_ext_convert_nnf_ext
-          by (metis And_mltl_list_member \<open>List.member (And_mltl_list [Not\<^sub>c \<alpha>] [convert_nnf_ext \<beta>]) \<psi>2\<close> member_rec(1) member_rec(2))
+          using \<alpha>_nnf \<beta>_nnf convert_nnf_ext_convert_nnf_ext \<open>member (And_mltl_list [Not\<^sub>c \<alpha>] [convert_nnf_ext \<beta>]) \<psi>2\<close>
+          by simp (smt (verit, ccfv_SIG) convert_nnf_ext_convert_nnf_ext)
         have x2_semantics: "semantics_mltl_ext \<pi> (Not\<^sub>c \<alpha>)" and 
              y2_semantics: "semantics_mltl_ext \<pi> \<beta>"
           using assms unfolding semantics_mltl_ext_def \<psi>2_is by simp_all
         then have ?thesis
           using \<psi>1_is \<psi>2_is assms by blast
       } moreover {
-        assume "List.member (And_mltl_list ?Dx [Not\<^sub>c \<beta>]) \<psi>2"
+        assume "member (And_mltl_list ?Dx [Not\<^sub>c \<beta>]) \<psi>2"
         then have \<psi>2_is: "\<psi>2 = And_mltl_ext \<alpha> (Not\<^sub>c \<beta>)" 
-          unfolding List.member_def 
-          using \<alpha>_nnf \<beta>_nnf convert_nnf_ext_convert_nnf_ext
-          by (metis And_mltl_list_member \<open>List.member (And_mltl_list [convert_nnf_ext \<alpha>] [Not\<^sub>c \<beta>]) \<psi>2\<close> member_rec(1) member_rec(2))
+          using \<alpha>_nnf \<beta>_nnf convert_nnf_ext_convert_nnf_ext \<open>member (And_mltl_list [convert_nnf_ext \<alpha>] [Not\<^sub>c \<beta>]) \<psi>2\<close>
+          by simp (smt (verit, ccfv_SIG) convert_nnf_ext_convert_nnf_ext)
         have x2_semantics: "semantics_mltl_ext \<pi> \<alpha>" and 
              y2_semantics: "semantics_mltl_ext \<pi> (Not\<^sub>c \<beta>)"
           using assms unfolding semantics_mltl_ext_def \<psi>2_is by simp_all
@@ -5864,40 +5831,36 @@ proof(cases \<phi>)
       ultimately have ?thesis
         using \<psi>2_eo by argo
     } moreover {
-      assume "List.member (And_mltl_list ?Dx [Not\<^sub>c \<beta>]) \<psi>1"
+      assume "member (And_mltl_list ?Dx [Not\<^sub>c \<beta>]) \<psi>1"
       then have \<psi>1_is: "\<psi>1 = And_mltl_ext \<alpha> (Not\<^sub>c \<beta>)" 
-        unfolding List.member_def 
-        using \<alpha>_nnf \<beta>_nnf convert_nnf_ext_convert_nnf_ext
-        by (metis And_mltl_list_member \<open>List.member (And_mltl_list [convert_nnf_ext \<alpha>] [Not\<^sub>c \<beta>]) \<psi>1\<close> member_rec(1) member_rec(2))
+        using \<alpha>_nnf \<beta>_nnf convert_nnf_ext_convert_nnf_ext \<open>member (And_mltl_list [convert_nnf_ext \<alpha>] [Not\<^sub>c \<beta>]) \<psi>1\<close>
+        by simp (smt (verit, ccfv_SIG) convert_nnf_ext_convert_nnf_ext)
       have x1_semantics: "semantics_mltl_ext \<pi> \<alpha>" and 
            y1_semantics: "semantics_mltl_ext \<pi> (Not\<^sub>c \<beta>)"
         using assms unfolding semantics_mltl_ext_def \<psi>1_is by simp_all
     (* Inner case split on \<psi>2*)
       {
-        assume "List.member (And_mltl_list ?Dx ?Dy) \<psi>2 "
+        assume "member (And_mltl_list ?Dx ?Dy) \<psi>2 "
         then have \<psi>2_is: "\<psi>2 = And_mltl_ext \<alpha> \<beta>" 
-          unfolding List.member_def 
-          using \<alpha>_nnf \<beta>_nnf convert_nnf_ext_convert_nnf_ext
-          by (metis And_mltl_list_member_forward \<open>List.member (And_mltl_list [convert_nnf_ext \<alpha>] [convert_nnf_ext \<beta>]) \<psi>2\<close> member_rec(1) member_rec(2))
+          using \<alpha>_nnf \<beta>_nnf convert_nnf_ext_convert_nnf_ext \<open>member (And_mltl_list [convert_nnf_ext \<alpha>] [convert_nnf_ext \<beta>]) \<psi>2\<close>
+          by simp (smt (verit, ccfv_SIG) convert_nnf_ext_convert_nnf_ext)
         have ?thesis
           using assms(7,8) unfolding \<psi>1_is \<psi>2_is semantics_mltl_ext_def by auto
       } moreover {
-        assume " List.member (And_mltl_list [Not\<^sub>c \<alpha>] ?Dy) \<psi>2"
+        assume " member (And_mltl_list [Not\<^sub>c \<alpha>] ?Dy) \<psi>2"
         then have \<psi>2_is: "\<psi>2 = And_mltl_ext (Not\<^sub>c \<alpha>) \<beta>" 
-          unfolding List.member_def 
-          using \<alpha>_nnf \<beta>_nnf convert_nnf_ext_convert_nnf_ext
-          by (metis And_mltl_list_member \<open>List.member (And_mltl_list [Not\<^sub>c \<alpha>] [convert_nnf_ext \<beta>]) \<psi>2\<close> member_rec(1) member_rec(2))
+          using \<alpha>_nnf \<beta>_nnf convert_nnf_ext_convert_nnf_ext \<open>member (And_mltl_list [Not\<^sub>c \<alpha>] [convert_nnf_ext \<beta>]) \<psi>2\<close>
+          by simp (smt (verit, ccfv_SIG) convert_nnf_ext_convert_nnf_ext)
         have x2_semantics: "semantics_mltl_ext \<pi> (Not\<^sub>c \<alpha>)" and 
              y2_semantics: "semantics_mltl_ext \<pi> \<beta>"
           using assms unfolding semantics_mltl_ext_def \<psi>2_is by simp_all
         then have ?thesis
           using x1_semantics x2_semantics unfolding semantics_mltl_ext_def by auto
       } moreover {
-        assume "List.member (And_mltl_list ?Dx [Not\<^sub>c \<beta>]) \<psi>2"
+        assume "member (And_mltl_list ?Dx [Not\<^sub>c \<beta>]) \<psi>2"
         then have \<psi>2_is: "\<psi>2 = And_mltl_ext \<alpha> (Not\<^sub>c \<beta>)" 
-          unfolding List.member_def 
-          using \<alpha>_nnf \<beta>_nnf convert_nnf_ext_convert_nnf_ext
-          by (metis And_mltl_list_member \<open>List.member (And_mltl_list [convert_nnf_ext \<alpha>] [Not\<^sub>c \<beta>]) \<psi>2\<close> member_rec(1) member_rec(2))
+          using \<alpha>_nnf \<beta>_nnf convert_nnf_ext_convert_nnf_ext \<open>member (And_mltl_list [convert_nnf_ext \<alpha>] [Not\<^sub>c \<beta>]) \<psi>2\<close>
+          by simp (smt (verit, ccfv_SIG) convert_nnf_ext_convert_nnf_ext)
         have x2_semantics: "semantics_mltl_ext \<pi> \<alpha>" and 
              y2_semantics: "semantics_mltl_ext \<pi> (Not\<^sub>c \<beta>)"
           using assms unfolding semantics_mltl_ext_def \<psi>2_is by simp_all
@@ -6701,5 +6664,7 @@ proof-
     using \<psi>1'_welldef \<psi>2'_welldef
     by auto
 qed
+
+hide_const member
 
 end

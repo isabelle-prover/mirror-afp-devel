@@ -62,7 +62,7 @@ lemma list_member_conv_member [simp]:
 proof(intro ext)
   fix xs and x :: 'a
   show "equal_base.list_member (=) xs x = List.member xs x"
-    by(induct xs)(auto simp add: List.member_def)
+    by (induct xs) auto
 qed
 
 lemma list_distinct_conv_distinct [simp]:
@@ -70,13 +70,13 @@ lemma list_distinct_conv_distinct [simp]:
 proof
   fix xs :: "'a list"
   show "equal_base.list_distinct (=) xs = distinct xs"
-    by(induct xs)(auto simp add: List.member_def)
+    by (induct xs) auto
 qed
 
 lemma list_insert_conv_insert [simp]:
   "equal_base.list_insert (=) = List.insert"
 unfolding equal_base.list_insert_def[abs_def] List.insert_def[abs_def]
-by(simp add: List.member_def)
+by simp
 
 lemma list_remove1_conv_remove1 [simp]:
   "equal_base.list_remove1 (=) = List.remove1"
@@ -84,16 +84,16 @@ unfolding equal_base.list_remove1_def List.remove1_def ..
 
 lemma list_remdups_conv_remdups [simp]:
   "equal_base.list_remdups (=) = List.remdups"
-unfolding equal_base.list_remdups_def List.remdups_def list_member_conv_member List.member_def ..
+  by (simp add: equal_base.list_remdups_def remdups_def)
 
 context equal begin
 
 lemma member_insert [simp]: "list_member (list_insert x xs) y \<longleftrightarrow> equal x y \<or> list_member xs y"
-by(auto simp add: equal_eq List.member_def)
+by(auto simp add: equal_eq)
 
 lemma member_remove1 [simp]:
   "\<not> equal x y \<Longrightarrow> list_member (list_remove1 x xs) y = list_member xs y"
-by(simp add: equal_eq List.member_def)
+by(simp add: equal_eq)
 
 lemma distinct_remove1:
   "list_distinct xs \<Longrightarrow> list_distinct (list_remove1 x xs)"
@@ -101,7 +101,7 @@ by(simp add: equal_eq)
 
 lemma distinct_member_remove1 [simp]:
   "list_distinct xs \<Longrightarrow> list_member (list_remove1 x xs) = (list_member xs)(x := False)"
-by(auto simp add: equal_eq List.member_def[abs_def] fun_eq_iff)
+by(auto simp add: equal_eq fun_eq_iff)
 
 end
 
@@ -231,13 +231,13 @@ lemma member_empty [simp]: "member empty = (\<lambda>_. False)"
 by transfer (simp add: fun_eq_iff)
 
 lemma null_iff [simp]: "null xs \<longleftrightarrow> xs = empty"
-by transfer(simp add: List.null_def)
+by transfer simp
 
 lemma list_of_dlist_empty [simp]: "list_of_dlist DList_Set.empty = []"
 by(rule empty.rep_eq)
 
 lemma list_of_dlist_insert [simp]: "\<not> member dxs x \<Longrightarrow> list_of_dlist (insert x dxs) = x # list_of_dlist dxs"
-by(cases dxs)(auto simp add: DList_Set.insert_def DList_Set.member_def Abs_dlist_inverse Abs_dlist_inject equal_base.list_insert_def List.member_def intro: Abs_dlist_inverse)
+by(cases dxs)(auto simp add: DList_Set.insert_def DList_Set.member_def Abs_dlist_inverse Abs_dlist_inject equal_base.list_insert_def intro: Abs_dlist_inverse)
 
 lemma list_of_dlist_eq_Nil_iff [simp]: "list_of_dlist dxs = [] \<longleftrightarrow> dxs = empty"
 by(cases dxs)(auto simp add: Abs_dlist_inverse Abs_dlist_inject DList_Set.empty_def)
@@ -307,7 +307,7 @@ proof transfer
     case Nil show ?case by(rule NIL)
   next
     case (Cons x xs) thus ?case using Insert[of xs x] equal.equal_eq[OF equal_ceq] ID_ceq_neq_None
-      by(auto simp add: List.member_def simp del: not_None_eq)
+      by(auto simp add: simp del: not_None_eq)
   qed
 qed
 
@@ -345,41 +345,41 @@ using list_of_dlist[of dxs] equal.equal_eq[OF equal_ceq]
 by(simp add: ID_ceq_neq_None)
 
 lemma member_empty_empty: "(\<forall>x :: 'a. \<not> member dxs x) \<longleftrightarrow> dxs = empty"
-by(transfer)(simp add: equal.equal_eq[OF equal_ceq] List.member_def)
+by(transfer)(simp add: equal.equal_eq[OF equal_ceq])
 
 lemma Collect_member: "Collect (member (dxs :: 'a set_dlist)) = set (list_of_dlist dxs)"
-by(simp add: member_def equal.equal_eq[OF equal_ceq] List.member_def[abs_def])
+  by (auto simp add: member_def equal.equal_eq [OF equal_ceq])
 
 lemma member_insert: "member (insert (x :: 'a) xs) = (member xs)(x := True)"
-by(transfer)(simp add: fun_eq_iff List.member_def ID_ceq_neq_None equal.equal_eq[OF equal_ceq])
+by(transfer)(simp add: fun_eq_iff ID_ceq_neq_None equal.equal_eq[OF equal_ceq])
 
 lemma member_remove:
   "member (remove (x :: 'a) xs) = (member xs)(x := False)"
-by transfer (auto simp add: fun_eq_iff ID_ceq_neq_None equal.equal_eq[OF equal_ceq] List.member_def)
+by transfer (auto simp add: fun_eq_iff ID_ceq_neq_None equal.equal_eq[OF equal_ceq])
 
 lemma member_union: "member (union (xs1 :: 'a set_dlist) xs2) x \<longleftrightarrow> member xs1 x \<or> member xs2 x"
 unfolding union_def
-by(transfer)(simp add: equal.equal_eq[OF equal_ceq] List.member_def set_fold_insert)
+by(transfer)(simp add: equal.equal_eq[OF equal_ceq] set_fold_insert)
 
 lemma member_fold_insert: "member (List.fold insert xs dxs) (x :: 'a) \<longleftrightarrow> member dxs x \<or> x \<in> set xs"
-by transfer(auto simp add: ID_ceq_neq_None equal.equal_eq[OF equal_ceq] List.member_def set_fold_insert)
+by transfer(auto simp add: ID_ceq_neq_None equal.equal_eq[OF equal_ceq] set_fold_insert)
 
 lemma card_eq_length [simp]:
   "card (Collect (member (dxs :: 'a set_dlist))) = length dxs"
-by transfer(simp add: ID_ceq_neq_None equal.equal_eq[OF equal_ceq] List.member_def[abs_def] distinct_card)
+  by transfer (auto simp add: ID_ceq_neq_None equal.equal_eq [OF equal_ceq] distinct_card)
 
 lemma finite_member [simp]: 
   "finite (Collect (member (dxs :: 'a set_dlist)))"
-by transfer(simp add: ID_ceq_neq_None equal.equal_eq[OF equal_ceq] List.member_def[abs_def])
+  by transfer (auto simp add: ID_ceq_neq_None equal.equal_eq [OF equal_ceq])
 
 lemma member_filter [simp]: "member (filter P xs) = (\<lambda>x :: 'a. member xs x \<and> P x)"
-by transfer(simp add: ID_ceq_neq_None equal.equal_eq[OF equal_ceq] List.member_def[abs_def])
+  by transfer (auto simp add: ID_ceq_neq_None equal.equal_eq [OF equal_ceq])
 
 lemma dlist_all_conv_member: "dlist_all P dxs \<longleftrightarrow> (\<forall>x :: 'a. member dxs x \<longrightarrow> P x)"
-by transfer(auto simp add: ID_ceq_neq_None equal.equal_eq[OF equal_ceq] list_all_iff List.member_def)
+  by transfer (auto simp add: ID_ceq_neq_None equal.equal_eq [OF equal_ceq] list_all_iff)
 
 lemma dlist_ex_conv_member: "dlist_ex P dxs \<longleftrightarrow> (\<exists>x :: 'a. member dxs x \<and> P x)"
-by transfer(auto simp add: ID_ceq_neq_None equal.equal_eq[OF equal_ceq] list_ex_iff List.member_def)
+  by transfer (auto simp add: ID_ceq_neq_None equal.equal_eq [OF equal_ceq] list_ex_iff)
 
 lemma member_Id_on: "member (Id_on dxs) = (\<lambda>(x :: 'a, y). x = y \<and> member dxs x)"
 proof -
@@ -388,7 +388,7 @@ proof -
     by(auto simp add: ceq_prod_def list_all_eq_def ID_ceq_neq_None ID_Some fun_eq_iff split: option.split)
   thus ?thesis
     using equal.equal_eq[where ?'a='a, OF equal_ceq]
-    by transfer(auto simp add: ID_ceq_neq_None List.member_def[abs_def] ID_Some intro!: ext split: option.split_asm)
+    by transfer auto
 qed
 
 end
@@ -401,7 +401,7 @@ proof -
     by(auto intro: equal.equal_eq[OF ID_ceq])
   moreover with assms have "ceq' = ((=) :: ('a \<times> 'b) \<Rightarrow> ('a \<times> 'b) \<Rightarrow> bool)"
     by(auto simp add: ceq_prod_def list_all_eq_def ID_Some fun_eq_iff)
-  ultimately show ?thesis by(transfer)(auto simp add: List.member_def[abs_def])
+  ultimately show ?thesis by transfer (auto simp add: List.member_iff [abs_def])
 qed
 
 hide_const (open) empty insert remove null member length fold foldr union filter hd tl dlist_all product Id_on

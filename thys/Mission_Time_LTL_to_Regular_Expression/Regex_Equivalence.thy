@@ -104,10 +104,9 @@ proof (induct j)
 next
   case (Cons h t)
   then have elt: "enumerate_list t = [t]"
-    by (simp add: member_rec(1))
+    by simp
   then have "h = One \<or> h = Zero"
-    using Cons
-    by (meson WEST_bit.exhaust member_rec(1))
+    using Cons by (cases h) auto
   then show ?case using enumerate_list.simps(2-3) elt
     by fastforce
 qed
@@ -124,10 +123,10 @@ proof (induct h1)
 next
   case (Cons h t)
   then have ind: "enumerate_trace t = [t]"
-    by (meson member_rec(1))
+    by auto
   have "enumerate_list h = [h]"
     using enumerate_list_prop Cons
-    by (meson member_rec(1))
+    by auto
   then show ?case
     using Cons ind unfolding enumerate_trace.simps
     by auto
@@ -169,7 +168,7 @@ lemma enumerate_list_fixed:
   using assms
 proof (induct trace arbitrary: t)
   case Nil
-  then show ?case using member_rec(2) by force
+  then show ?case by simp
 next
   case (Cons h trace)
   obtain head_t tail_t where obt: "t = head_t#tail_t"
@@ -184,21 +183,20 @@ next
       using obt Cons.prems unfolding enumerate_list.simps by auto
     then have ?case
       using hyp obt
-      by (simp add: member_rec(1))
+      by simp
   } moreover {
     assume zero: "h = Zero"
     then have "head_t = Zero"
       using obt Cons.prems unfolding enumerate_list.simps by auto
     then have ?case
       using hyp obt
-      by (simp add: member_rec(1))
+      by simp
   } moreover {
     assume s: "h = S"
     then have "head_t = Zero \<or> head_t = One"
       using obt Cons.prems unfolding enumerate_list.simps by auto
     then have ?case
-      using hyp obt
-      by (metis calculation(1) calculation(2) member_rec(1) s)
+      using hyp obt s by auto
   }
   ultimately show ?case using WEST_bit.exhaust by blast
 qed
@@ -344,12 +342,12 @@ proof(induction T arbitrary: flat H)
     by simp
   then show ?case
     using Nil
-    by (simp add: member_rec(2))
+    by simp
 next
   case (Cons a T)
   have "\<exists>k. x1 = flat ! k \<and> k < length flat"
      using Cons(2)
-     by (metis in_set_conv_nth member_def)
+     by (auto simp add: in_set_conv_nth)
   then obtain k where k_is: "x1 = flat ! k \<and> k < length flat"
     by auto
   have len_flat: "length flat = (length (a#T)*length H)"
@@ -378,7 +376,7 @@ next
   then obtain x1_head x1_tail where "x1 = x1_head#x1_tail"
   and "List.member H x1_head" and "List.member (a#T) x1_tail"
     using ij_props
-    by (simp add: index_of_L_in_L k_is)
+    by (simp add: index_of_L_in_L k_is) (metis length_Cons nth_mem set_ConsD)
   then show ?case
     using Cons(3) by simp
 qed
@@ -396,12 +394,12 @@ proof(induction T arbitrary: flat n H)
   then have "flat = []"
     by simp
   then show ?case
-    using Nil by (simp add: member_rec(2))
+    using Nil by simp
 next
   case (Cons a T)
   have "\<exists>k. x1 = flat ! k \<and> k < length flat"
-     using Cons(2)
-     by (metis in_set_conv_nth member_def)
+    using Cons(2)
+    by (auto simp add: in_set_conv_nth)
   then obtain k where k_is: "x1 = flat ! k \<and> k < length flat"
     by auto
   have len_flat: "length flat = (length (a#T)*length H)"
@@ -430,7 +428,7 @@ next
   then obtain x1_head x1_tail where "x1 = x1_head#x1_tail"
   and "List.member H x1_head" and "List.member (a#T) x1_tail"
     using ij_props
-    by (simp add: index_of_L_in_L k_is)
+    by (simp add: index_of_L_in_L k_is) (metis length_Cons nth_mem set_ConsD)
   then show ?case
     using Cons(3) by simp
 qed
@@ -450,11 +448,11 @@ next
   {assume *: "a \<in> set h"
     then have ?case
       using Cons(2)[of h]
-      by (simp add: in_set_member member_rec(1))
+      by simp
   } moreover {assume *: "a \<in> set (flatten_list t)"
     have ind_h_setup: "(\<And>x1 x2. List.member t x1 \<Longrightarrow> List.member x1 x2 \<Longrightarrow>
         length x2 = length trace)"
-      using Cons(2) by (meson member_rec(1))
+      using Cons(2) by auto
     have " a \<in> set (flatten_list t) \<Longrightarrow> length a = length trace"
       using Cons(1) ind_h_setup
       by auto
@@ -489,9 +487,9 @@ next
 
   have all_w: "(\<And>w. List.member (enumerate_trace t) w \<Longrightarrow> length w = length t)"
     using Suc(1)[of t] Suc(2) trace_is
-    by (simp add: in_set_member)
+    by simp
   have a_mem: "List.member (enumerate_trace trace) a"
-    using Suc(3) in_set_member by fast
+    using Suc(3) by simp
   show ?case
     using flatten_list_len[OF _ enum_tr_is a_mem, of "length t"] all_w
     trace_is by simp
@@ -551,9 +549,8 @@ next
   let ?adv_state = "advance_state state"
   {assume in_state: "0 \<in> state"
     then have "a_head = One"
-      using Cons.prems(2) unfolding obt match_timestep_def
-      using enumerate_list_fixed
-      by (metis WEST_bit.exhaust Cons(2) length_pos_if_in_set list.set_intros(1) member_rec(1) nth_Cons_0 obt)
+      using Cons(2) Cons.prems(2) obt
+      by (cases \<open>a_head\<close>) (auto simp add: match_timestep_def dest: enumerate_list_fixed)
     then have h_head: "h_head = One \<or> h_head = S"
       using Cons.prems(1) unfolding obt
       using match_enumerate_state_aux_first_bit by blast
@@ -590,9 +587,8 @@ next
   } moreover {
     assume not_in: "0 \<notin> state"
     then have "a_head = Zero"
-      using Cons.prems(2) unfolding obt match_timestep_def
-      using enumerate_list_fixed
-      by (metis WEST_bit.exhaust Cons(2) length_pos_if_in_set list.set_intros(1) member_rec(1) nth_Cons_0 obt)
+      using Cons.prems obt
+      by (cases a_head) (auto simp add: match_timestep_def dest: enumerate_list_fixed)
     then have h_head: "h_head = Zero \<or> h_head = S"
       using Cons.prems(1) unfolding obt
       using match_enumerate_state_aux_first_bit by blast
@@ -900,8 +896,7 @@ proof -
     have mem: "List.member
      ?flat
      (a_head # a_tail)"
-      using assms unfolding enumerate_trace.simps
-      using in_set_member by metis
+      using assms by simp
     then obtain x1_head x1_tail where
       x1_props: "a_head # a_tail = x1_head # x1_tail \<and>
      List.member (enumerate_list h) x1_head \<and>
@@ -913,8 +908,7 @@ proof -
      using x1_props
      by auto
    then show ?thesis
-    using in_set_member
-    by fast
+    by simp
 qed
 
 
@@ -931,8 +925,7 @@ proof -
     have mem: "List.member
      ?flat
      (a_head # a_tail)"
-      using assms unfolding enumerate_trace.simps
-      using in_set_member by metis
+      using assms by simp
     then obtain x1_head x1_tail where
       x1_props: "a_head # a_tail = x1_head # x1_tail \<and>
      List.member (enumerate_list h) x1_head \<and>
@@ -944,8 +937,7 @@ proof -
      using x1_props
      by auto
    then show ?thesis
-    using in_set_member
-    by fast
+     by simp
 qed
 
 

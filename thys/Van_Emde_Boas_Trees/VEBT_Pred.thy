@@ -321,7 +321,7 @@ next
                              else Some (2^(deg div 2)) *\<^sub>o ?pr +\<^sub>o vebt_maxt (treeList ! the ?pr))" 
           using "1" by auto
         have " invar_vebt (treeList ! ?h) n"
-          by (metis "4"(1) True inthall member_def)
+          using "4"(1) True by simp
         hence 33:"\<nexists> u. vebt_member (treeList ! ?h) u \<and> u < ?l"
         proof(cases "?minlow = None")
           case True
@@ -447,7 +447,8 @@ next
             hence "z < 2^deg" 
               using \<open>vebt_member (Node (Some (mi, ma)) deg treeList summary) z \<and> z < x\<close> member_bound thisvalid by blast
             hence abc:"invar_vebt (treeList ! (high z (deg div 2))) n" 
-              by (metis "4.hyps"(1) "4.hyps"(2) "4.hyps"(5) "4.hyps"(6) \<open>deg div 2 = n\<close> \<open>z < 2 ^ deg\<close> \<open>length treeList = 2 ^ n\<close> deg_not_0 exp_split_high_low(1) in_set_member inthall)
+              using "4.hyps"(1) "4.hyps"(2) "4.hyps"(5) "4.hyps"(6) \<open>deg div 2 = n\<close> \<open>z < 2 ^ deg\<close>
+                \<open>length treeList = 2 ^ n\<close> deg_not_0 exp_split_high_low(1) by simp
             then show "z \<le> res"
             proof(cases "z = mi")
               case True
@@ -565,7 +566,8 @@ next
         case True
         then obtain minl where 00:"(Some minl = ?minlow) \<and> ?l > minl" by auto
         have 01:"invar_vebt ((treeList ! ?h)) n \<and> (treeList ! ?h) \<in> set treeList "
-          by (metis "5.hyps"(1) \<open>deg div 2 = n\<close> \<open>high x n < 2 ^ m \<and> low x n < 2 ^ n\<close> \<open>length treeList = 2 ^ m \<and> invar_vebt summary m\<close> inthall member_def)
+          using "5.hyps"(1) \<open>deg div 2 = n\<close> \<open>high x n < 2 ^ m \<and> low x n < 2 ^ n\<close> \<open>length treeList = 2 ^ m \<and> invar_vebt summary m\<close>
+          by simp
         have  02:"vebt_member ((treeList ! ?h)) minl" 
           using "00" "01" mint_member by auto
         hence 03: "\<exists> y. y < ?l \<and> vebt_member ((treeList ! ?h)) y"
@@ -651,7 +653,7 @@ next
                              else Some (2^(deg div 2)) *\<^sub>o ?pr +\<^sub>o vebt_maxt (treeList ! the ?pr))" 
           using "1" by auto
         have " invar_vebt (treeList ! ?h) n"
-          by (metis "5"(1) True inthall member_def)
+          using "5"(1) True by simp
         hence 33:"\<nexists> u. vebt_member (treeList ! ?h) u \<and> u < ?l"
         proof(cases "?minlow = None")
           case True

@@ -88,7 +88,7 @@ text \<open>This function checks that L is a composition of n.
 A composition of an integer n is a way of writing n 
 as the sum of a sequence of (strictly) positive integers\<close>
 definition is_composition :: "[nat, nat list] \<Rightarrow> bool" where
-  "is_composition n L = ((\<forall>i. List.member L i \<longrightarrow> i > 0) \<and> (sum_list L = n))"
+  "is_composition n L \<longleftrightarrow> (\<forall>i\<in>set L. i > 0) \<and> sum_list L = n"
 
 text \<open>Checks that every nat list in input of type mltl ext is a composition of its interval
 For example the formula F[2,7] has interval of length 7-2+1=6, and a valid

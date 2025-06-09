@@ -4120,15 +4120,13 @@ proof -
       assume mem:"List.member SG S"
       obtain \<Gamma>S \<Delta>S where Sdef:"S = (\<Gamma>S, \<Delta>S)" by (cases S, auto)
       from mem obtain di where di:"di < length SG \<and> SG ! di = S"
-      by (meson in_set_conv_nth in_set_member)
+        by (auto simp add: in_set_conv_nth)
       have SadmitS:"Sadmit \<sigma> (\<Gamma>S, \<Delta>S)"
         using Rdef Sdef di Radmit Radmit_def by auto
       have SsafeS:"Ssafe (\<Gamma>S, \<Delta>S)"
         using Rsafe unfolding Rsafe_def Rdef Cdef using Sdef mem di by auto
       have map_mem:"\<And>f L x. List.member L x \<Longrightarrow> List.member (map f L) (f x)"
-        subgoal for f L x 
-          by (induction L, auto simp add: member_rec)
-        done
+        by simp
       let ?S' = "(Ssubst (\<Gamma>S, \<Delta>S) \<sigma>)"
       have eq:"Ssubst S \<sigma> = (map (\<lambda>\<phi>. Fsubst \<phi> \<sigma>) \<Gamma>S, map (\<lambda>\<phi>. Fsubst \<phi> \<sigma>) \<Delta>S)" 
         using Sdef by auto

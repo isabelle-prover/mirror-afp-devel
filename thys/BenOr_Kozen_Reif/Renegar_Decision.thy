@@ -128,7 +128,7 @@ proof -
       have q_nonz: "q \<noteq> 0" using Cons.prems by auto
       have q_ins: "q \<in> set (a # qs) " using Cons.prems by auto
       then have "q = a \<or> q \<in> set qs" by auto
-      then have eo: " q = a \<or> List.member qs q" using in_set_member[of q qs]
+      then have eo: " q = a \<or> List.member qs q"
         by auto
       have degq: "degree q > 0" using Cons.prems by auto
       have h2: "(prod_list (a # qs)) = a* (prod_list qs)"
@@ -253,8 +253,8 @@ next
   have len_gt: "length l > 1 \<Longrightarrow> (\<exists>n. n < length (a#l) - 1 \<and> x > (a#l) ! n \<and> x < (a#l) !(n+1))"
   proof - 
     assume len_gt_one: "length l > 1"
-    have eo: "x \<noteq> l ! 0" using Cons.prems(3) apply (auto)
-      by (metis One_nat_def Suc_lessD in_set_member len_gt_one member_rec(1) nth_mem) 
+    have eo: "x \<noteq> l ! 0" using Cons.prems(3) apply auto
+      by (metis One_nat_def Suc_lessD len_gt_one nth_mem) 
     have c1: "x < l ! 0 \<Longrightarrow> (\<exists>n. n < length (a#l) - 1 \<and> x > (a#l) ! n \<and> x < (a#l) !(n+1)) "
     proof - 
       assume xlt: "x < l !0"
@@ -272,7 +272,7 @@ next
       have ssl: "sorted_wrt (<) l " using Cons.prems(2)
         using sorted_wrt.simps(2) by auto  
       have " \<not> List.member l x" using Cons.prems(3)
-        by (meson member_rec(1)) 
+        by simp 
       then have " \<exists>n<length l - 1. l ! n < x \<and> x < l ! (n + 1)"
         using asm xlt_1 len_gt_one ssl Cons.hyps 
         by auto
@@ -344,7 +344,7 @@ proof -
         have lis1: "length ?zer_list = 1 \<Longrightarrow> ?c"
           by auto
         have h1: "\<not>(\<exists>w. w < length ?zer_list \<and> y = ?zer_list ! w) \<Longrightarrow> \<not> (List.member ?zer_list y)"
-          by (metis (no_types, lifting) in_set_conv_nth in_set_member)
+          by (auto simp add: in_set_conv_nth)
         have h2: "(length ?zer_list > 0 \<and> \<not>(\<exists>w. w < length ?zer_list \<and> y = ?zer_list ! w) \<and> \<not> (y < ?zer_list ! 0)) \<Longrightarrow> y > ?zer_list ! 0"
           by auto
         have h3: "(length ?zer_list > 1 \<and> \<not>(\<exists>w. w < length ?zer_list \<and> y = ?zer_list ! w) \<and>  \<not> (y > ?zer_list ! (length ?zer_list - 1))) \<Longrightarrow>
@@ -445,7 +445,7 @@ proof -
               then have "y \<in> {x. \<exists>q\<in>set qs. q \<noteq> 0 \<and> poly q x = 0}" 
                 using q_in qnonz by auto
               then have "List.member ?zer_list y"
-                by (smt (verit, best) finset in_set_member mem_Collect_eq set_sorted_list_of_set) 
+                by (auto simp add: finset) 
               then have "y \<ge> ?zer_list ! 0" using strict_sorted_h
                 using \<open>\<not> (\<exists>q\<in>set qs. q \<noteq> 0 \<and> poly q y = 0)\<close> \<open>poly q y = 0\<close> q_in qnonz by blast
               then show "False" using ylt 
@@ -475,9 +475,11 @@ proof -
                 then have "x \<in> {x. \<exists>q\<in>set qs. q \<noteq> 0 \<and> poly q x = 0}" 
                   using q_in qnonz by auto
                 then have "List.member ?zer_list x"
-                  by (smt (verit, best) finset in_set_member mem_Collect_eq set_sorted_list_of_set) 
-                then have "x \<ge> ?zer_list ! 0" using strict_sorted_h
-                  by (metis (no_types, lifting) gr_implies_not0 in_set_conv_nth in_set_member not_less sorted_iff_nth_mono sorted_list_of_set(2))     
+                  by (auto simp add: finset) 
+                then have "x \<ge> ?zer_list ! 0"
+                  using strict_sorted_h by auto
+                    (metis (lifting) bot_nat_0.extremum in_set_conv_nth sorted_iff_nth_mono
+                      sorted_list_of_set.sorted_sorted_key_list_of_set)
                 then show "False" using xlt ylt
                   by auto
               qed
@@ -489,9 +491,12 @@ proof -
                 then have "x \<in> {x. \<exists>q\<in>set qs. q \<noteq> 0 \<and> poly q x = 0}" 
                   using q_in qnonz by auto
                 then have "List.member ?zer_list x"
-                  by (smt (verit, best) finset in_set_member mem_Collect_eq set_sorted_list_of_set) 
-                then have "x \<ge> ?zer_list ! 0" using strict_sorted_h
-                  by (metis (no_types, lifting) gr_implies_not0 in_set_conv_nth in_set_member not_less sorted_iff_nth_mono sorted_list_of_set(2))
+                  by (auto simp add: finset) 
+                then have "x \<ge> ?zer_list ! 0"
+                  using strict_sorted_h by (auto simp add: finset)
+                    (metis (lifting) \<open>\<forall>x\<in>{x. \<exists>q\<in>set qs. q \<noteq> 0 \<and> poly q x = 0}. poly (prod_list_var qs) x = 0\<close>
+                      \<open>x \<in> {x. \<exists>q\<in>set qs. q \<noteq> 0 \<and> poly q x = 0}\<close> crb_lem_neg linorder_not_le of_int_minus
+                      prod_list_var_nonzero xlt)
                 then show "False" using xlt ncrblt 
                   by auto
               qed
@@ -539,7 +544,8 @@ proof -
               then have "y \<in> {x. \<exists>q\<in>set qs. q \<noteq> 0 \<and> poly q x = 0}" 
                 using q_in qnonz by auto
               then have "List.member ?zer_list y"
-                by (smt (verit, best) finset in_set_member mem_Collect_eq set_sorted_list_of_set) 
+                by (auto simp add: finset)
+
               then have "y \<le> ?zer_list ! (length ?zer_list - 1)" using strict_sorted_h
                 using \<open>\<not> (\<exists>q\<in>set qs. q \<noteq> 0 \<and> poly q y = 0)\<close> \<open>poly q y = 0\<close> q_in qnonz by blast
               then show "False" using ygt 
@@ -569,9 +575,10 @@ proof -
                 then have "x \<in> {x. \<exists>q\<in>set qs. q \<noteq> 0 \<and> poly q x = 0}" 
                   using q_in qnonz by auto
                 then have "List.member ?zer_list x"
-                  by (smt (verit, best) finset in_set_member mem_Collect_eq set_sorted_list_of_set) 
-                then have "x \<le> ?zer_list ! (length ?zer_list - 1)" using strict_sorted_h
-                  by (metis (no_types, lifting) One_nat_def Suc_leI Suc_pred diff_Suc_less in_set_conv_nth in_set_member lengt not_less sorted_iff_nth_mono sorted_list_of_set(2))      
+                  by (auto simp add: finset) 
+                then have "x \<le> ?zer_list ! (length ?zer_list - 1)"
+                  using strict_sorted_h lengt
+                  by (auto simp add: in_set_conv_nth sorted_nth_mono)
                 then show "False" using xgt ygt
                   by auto
               qed
@@ -583,7 +590,7 @@ proof -
                 then have "x \<in> {x. \<exists>q\<in>set qs. q \<noteq> 0 \<and> poly q x = 0}" 
                   using q_in qnonz by auto
                 then have "List.member ?zer_list x"
-                  by (smt (verit, best) finset in_set_member mem_Collect_eq set_sorted_list_of_set) 
+                  by (auto simp add: finset)
                 then have "x \<le> ?zer_list ! (length ?zer_list - 1)" using strict_sorted_h
                   by (meson \<open>\<forall>x\<in>{x. \<exists>q\<in>set qs. q \<noteq> 0 \<and> poly q x = 0}. poly (prod_list_var qs) x = 0\<close> \<open>x \<in> {x. \<exists>q\<in>set qs. q \<noteq> 0 \<and> poly q x = 0}\<close> crb_lem_pos not_less prod_list_var_nonzero xgt)           
                 then show "False" using xgt crbgt 
@@ -652,7 +659,7 @@ proof -
                   using sorted_list_lemma[of y s k ?zer_list] k_prop strict_sorted_h s_prop y_prop
                   using less_diff_conv by blast
                 then have nox: "\<nexists>x. poly q x = 0 \<and> y \<le> x \<and> x \<le> s" using q_in qnonz
-                  by (metis (mono_tags, lifting) finset in_set_member mem_Collect_eq set_sorted_list_of_set) 
+                  by (auto simp add: finset)
                 then  have c1: "poly q s \<noteq> 0" using s_prop q_in qnonz
                   by (metis (mono_tags, lifting) \<open>y < s\<close> less_eq_real_def )
                 have c2: "poly q s > 0 \<Longrightarrow> poly q y > 0"
@@ -670,7 +677,7 @@ proof -
                   using sorted_list_lemma[of s y k ?zer_list] k_prop strict_sorted_h s_prop y_prop
                   using less_diff_conv by blast
                 then have nox: "\<nexists>x. poly q x = 0 \<and> s \<le> x \<and> x \<le> y" using q_in qnonz
-                  by (metis (mono_tags, lifting) finset in_set_member mem_Collect_eq set_sorted_list_of_set) 
+                  by (auto simp add: finset)
                 then  have c1: "poly q s \<noteq> 0" using s_prop q_in qnonz
                   by (metis (mono_tags, lifting) \<open>s < y\<close> less_eq_real_def )
                 have c2: "poly q s > 0 \<Longrightarrow> poly q y > 0"

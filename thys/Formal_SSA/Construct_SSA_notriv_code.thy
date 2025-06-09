@@ -10,7 +10,7 @@ theory Construct_SSA_notriv_code imports
   While_Combinator_Exts
 begin
 
-declare Set.remove_eq [simp del]
+declare Set.remove_eq [simp del] List.null_iff [simp del] List.member_iff [simp del]
 
 lemma in_remove_iff [simp]:
   \<open>x \<in> Set.remove y A \<longleftrightarrow> x \<in> A \<and> x \<noteq> y\<close>

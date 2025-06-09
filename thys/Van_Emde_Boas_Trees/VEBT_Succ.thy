@@ -269,7 +269,7 @@ next
                              else Some (2^(deg div 2)) *\<^sub>o ?sc +\<^sub>o vebt_mint (treeList ! the ?sc))" 
           using "1" by auto
         have " invar_vebt (treeList ! ?h) n"
-          by (metis "4"(1) True inthall member_def)
+          using "4"(1) True by simp
         hence 33:"\<nexists> u. vebt_member (treeList ! ?h) u \<and> u > ?l" 
         proof(cases "?maxlow = None")
           case True
@@ -318,7 +318,8 @@ next
             hence aa:"i = ma  \<Longrightarrow> both_member_options( treeList ! (high i (deg div 2))) (low i (deg div 2))" 
               using "4.hyps"(11) "4.hyps"(2) "4.hyps"(5) "4.hyps"(6) \<open>mi \<noteq> ma\<close> deg_not_0 exp_split_high_low(1) by auto
             hence abc:"invar_vebt (treeList ! (high i (deg div 2))) n" 
-              by (metis "4.hyps"(1) "4.hyps"(2) "4.hyps"(5) "4.hyps"(6) \<open>deg div 2 = n\<close> \<open>i < 2 ^ deg\<close> \<open>length treeList = 2 ^ n\<close> deg_not_0 exp_split_high_low(1) in_set_member inthall)
+              using "4.hyps"(1) "4.hyps"(2) "4.hyps"(5) "4.hyps"(6) \<open>deg div 2 = n\<close> \<open>i < 2 ^ deg\<close>
+                \<open>length treeList = 2 ^ n\<close> deg_not_0 exp_split_high_low(1) by simp
             hence  abd:"i = ma  \<Longrightarrow> vebt_member( treeList ! (high i (deg div 2))) (low i (deg div 2))" 
               using aa valid_member_both_member_options by blast
             hence abe:"vebt_member( treeList ! (high i (deg div 2))) (low i (deg div 2))" 
@@ -417,7 +418,7 @@ next
             hence aa:"z = ma  \<Longrightarrow> both_member_options( treeList ! (high z (deg div 2))) (low z (deg div 2))" 
               using "4.hyps"(11) "4.hyps"(2) "4.hyps"(5) "4.hyps"(6) \<open>mi \<noteq> ma\<close> deg_not_0 exp_split_high_low(1) by auto
             hence abc:"invar_vebt (treeList ! (high z (deg div 2))) n" 
-              by (metis "4.hyps"(1) "4.hyps"(2) "4.hyps"(5) "4.hyps"(6) \<open>deg div 2 = n\<close> \<open>z < 2 ^ deg\<close> \<open>length treeList = 2 ^ n\<close> deg_not_0 exp_split_high_low(1) in_set_member inthall)
+              using "4.hyps"(1) "4.hyps"(2) "4.hyps"(5) "4.hyps"(6) \<open>deg div 2 = n\<close> \<open>z < 2 ^ deg\<close> \<open>length treeList = 2 ^ n\<close> deg_not_0 exp_split_high_low(1) by simp
             hence  abd:"z = ma  \<Longrightarrow> vebt_member( treeList ! (high z (deg div 2))) (low z (deg div 2))" 
               using aa valid_member_both_member_options by blast
             hence abe:"vebt_member( treeList ! (high z (deg div 2))) (low z (deg div 2))" 
@@ -536,7 +537,7 @@ next
         case True
         then obtain maxl where 00:"Some maxl = ?maxlow \<and> ?l < maxl" by auto
         have 01:"invar_vebt ((treeList ! ?h)) n \<and> (treeList ! ?h) \<in> set treeList "
-          by (metis (full_types) "5.hyps"(1) "5.hyps"(4) \<open>deg div 2 = n\<close> \<open>high x n < 2 ^ m \<and> low x n < 2 ^ n\<close> inthall member_def)
+          using "5.hyps"(1) "5.hyps"(4) \<open>deg div 2 = n\<close> \<open>high x n < 2 ^ m \<and> low x n < 2 ^ n\<close> by simp
         have  02:"vebt_member ((treeList ! ?h)) maxl" 
           using "00" "01" maxt_member by auto
         hence 03: "\<exists> y. y > ?l \<and> vebt_member ((treeList ! ?h)) y"
@@ -620,7 +621,7 @@ next
                              else Some (2^(deg div 2)) *\<^sub>o ?sc +\<^sub>o vebt_mint (treeList ! the ?sc))" 
           using "1" by auto
         have " invar_vebt (treeList ! ?h) n"
-          by (metis "5"(1) True inthall member_def)
+          using "5"(1) True by simp
         hence 33:"\<nexists> u. vebt_member (treeList ! ?h) u \<and> u > ?l" 
         proof(cases "?maxlow = None")
           case True
@@ -669,7 +670,9 @@ next
             hence aa:"i = ma  \<Longrightarrow> both_member_options( treeList ! (high i (deg div 2))) (low i (deg div 2))"  
               using "5.hyps"(11) "5.hyps"(2) "5.hyps"(6) \<open>deg div 2 = n\<close> \<open>i \<noteq> mi\<close> \<open>invar_vebt (treeList ! high x (deg div 2)) n\<close> deg_not_0 exp_split_high_low(1) by auto
             hence abc:"invar_vebt (treeList ! (high i (deg div 2))) n"
-              by (metis "5.hyps"(1) "5.hyps"(4) "5.hyps"(5) "5.hyps"(6) \<open>deg div 2 = n\<close> \<open>i < 2 ^ deg\<close> \<open>invar_vebt (treeList ! high x (deg div 2)) n\<close> deg_not_0 exp_split_high_low(1) in_set_member inthall zero_less_Suc)
+              using "5.hyps"(1) "5.hyps"(4) "5.hyps"(5) "5.hyps"(6) 
+                \<open>deg div 2 = n\<close> \<open>i < 2 ^ deg\<close> \<open>invar_vebt (treeList ! high x (deg div 2)) n\<close>
+                exp_split_high_low(1) [of i n \<open>Suc n\<close>] deg_not_0 by auto
             hence  abd:"i = ma  \<Longrightarrow> vebt_member( treeList ! (high i (deg div 2))) (low i (deg div 2))" 
               using aa valid_member_both_member_options by blast
             hence abe:"vebt_member( treeList ! (high i (deg div 2))) (low i (deg div 2))" 
@@ -710,7 +713,8 @@ next
           hence "\<exists> miny. both_member_options (treeList ! sc) miny" 
             using "5.hyps"(7) \<open>both_member_options summary sc\<close> by blast
           hence fgh:"set_vebt' (treeList ! sc) \<noteq> {}" 
-            by (metis "5.hyps"(1) "5.hyps"(4) \<open>sc < 2 ^ m\<close> empty_Collect_eq inthall member_def set_vebt'_def valid_member_both_member_options)
+            using "5.hyps"(1) "5.hyps"(4) \<open>sc < 2 ^ m\<close> valid_member_both_member_options [of \<open>treeList ! sc\<close>]
+            by (auto simp add: set_vebt'_def) (metis in_set_conv_nth)
           hence "invar_vebt (treeList ! the ?sc) n" 
             by (simp add: "5.hyps"(1) "5.hyps"(4) \<open>sc < 2 ^ m\<close> \<open>vebt_succ summary (high x (deg div 2)) = Some sc\<close>)
           then obtain miny where "Some miny = vebt_mint (treeList ! sc)"

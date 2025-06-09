@@ -160,7 +160,7 @@ proof -
     moreover
     have "?P3 (?c s)"
     proof -
-      from b s obtain x where x: "x \<in> set A" by (cases A) (auto iff: null_def)
+      from b s obtain x where x: "x \<in> set A" by (cases A) auto
       with XZ equiv P b s x
       show ?thesis
       
@@ -232,11 +232,7 @@ proof -
   next
     fix s assume P: "?P s" and b: "\<not> (?b s)"
     from b have F: "fst s = []"
-      apply (cases s)
-      apply simp
-      apply (case_tac a)
-      apply (simp_all add: List.null_def)
-      done
+      by simp
     from equiv P F have S: "set ` set (snd s) = (set xs // ?r' (set xs))"
       apply (cases s)
       unfolding Image_def
@@ -255,7 +251,7 @@ proof -
       unfolding partition_aux_body_def
       apply clarsimp
       apply (case_tac a)
-       apply (simp add: List.null_def)
+       apply simp
       apply simp
       apply (case_tac "partition_split r aa list")
       apply (simp add: partition_split')

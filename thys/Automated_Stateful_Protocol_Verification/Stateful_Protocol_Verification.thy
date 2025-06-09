@@ -6099,7 +6099,7 @@ proof -
     using TI using assms(4) by blast
   thus ?thesis
     using assms(2,3,4) 0 1 in_trancl_closure_iff_in_trancl_fun[of _ _ TI]
-    unfolding transaction_check_post_def List.member_def Let_def by blast
+    by (simp add: transaction_check_post_def Let_def) blast
 qed
 
 lemma transaction_prop2:
@@ -6180,9 +6180,9 @@ proof -
       using A 2 x' x TI
       unfolding transaction_check_post_def fv_list\<^sub>s\<^sub>s\<^sub>t_is_fv\<^sub>s\<^sub>s\<^sub>t Let_def
                 in_trancl_closure_iff_in_trancl_fun[symmetric]
-                List.member_def
-      by blast+
-    thus ?thesis using timpl_closure_set_absc_subset_in[OF OCC(2)] by blast
+      by auto
+    thus ?thesis using timpl_closure_set_absc_subset_in[OF OCC(2)]
+      by blast
   qed (simp add: A x' x(1))
 
   show ?B by (metis 5 6)
@@ -8159,9 +8159,10 @@ proof (induction s "t \<cdot> \<theta>" arbitrary: t rule: timpls_transformable_
       hence "\<delta> x = \<Delta> i x" when x: "x \<in> fv (U ! i)" for x
         using x i some_equality[of "\<lambda>i. i < length T \<and> x \<in> fv (U ! i)" i]
         unfolding \<delta>_def by (metis (no_types, lifting))
-      thus ?thesis by (metis \<Delta> i term_subst_eq)
+      thus ?thesis using \<Delta> i term_subst_eq [of \<open>U ! i\<close> \<open>\<Delta> i\<close> \<open>\<delta>\<close>] by simp
     qed
-    hence "T = U \<cdot>\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<delta>" by (metis (no_types, lifting) T length_map nth_equalityI nth_map)
+    hence "T = U \<cdot>\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<delta>"
+      using T nth_equalityI [of \<open>T\<close> \<open>U \<cdot>\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<delta>\<close>] by simp
     hence "Fun f T = Fun f U \<cdot> \<delta>" by simp
     thus ?thesis using Fun f by fast
   qed
@@ -8815,7 +8816,7 @@ proof -
   note defs = FPT' wellformed_protocol''_def wellformed_fixpoint_def wellformed_fixpoint'_def
               wellformed_term_implication_graph_def Let_def
               wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s_code[symmetric] wf\<^sub>t\<^sub>r\<^sub>m_code[symmetric] 
-              member_def case_prod_unfold list_all_iff
+              case_prod_unfold list_all_iff
 
   let ?f = "\<lambda>T. transaction_fresh T = [] \<longrightarrow> transaction_updates T \<noteq> [] \<or> transaction_send T \<noteq> []"
 
@@ -8928,7 +8929,7 @@ proof -
   have 1: "\<forall>(a,b) \<in> set TI. \<forall>(c,d) \<in> set TI. b = c \<and> a \<noteq> d \<longrightarrow> (a,d) \<in> set TI"
     using wellformed_fixpoint
     unfolding wellformed_fixpoint_def wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s_code[symmetric] Let_def TI_def
-              list_all_iff member_def case_prod_unfold
+              list_all_iff case_prod_unfold
               wellformed_term_implication_graph_def
     by auto
 

@@ -204,7 +204,12 @@ definition
   "inc = (\<lambda>(n,fs). (Suc n, fs))"
 
 lemma deriv: "deriv y = insert (0,y) (inc ` (Union (deriv ` {w. \<not> is_axiom (s_of_ns y) \<and> w \<in> set (subs y)})))"
-    by (auto simp: inc_def deriv_deriv_child image_iff; metis case_prod_conv deriv.cases deriv_deriv_child)
+  apply (auto simp add: inc_def deriv_deriv_child image_iff split_def)
+     apply (metis deriv.cases deriv_deriv_child)
+    apply (metis deriv_deriv_child fst_conv old.nat.exhaust snd_conv)
+   apply (metis deriv.cases deriv_deriv_child)
+  apply (metis deriv.cases deriv_deriv_child fst_conv snd_conv)
+  done
 
 lemma deriv_is_axiom: "is_axiom (s_of_ns s) \<Longrightarrow> deriv s = {(0,s)}"
   using deriv by blast
@@ -997,16 +1002,33 @@ next
 qed
 
 definition prove' :: "nseq list \<Rightarrow> bool" where
-  "prove' s = (\<exists>m. ((\<lambda> x. concat (map subs x))^^m) s = [])"
+  "prove' s \<longleftrightarrow> (\<exists>m. ((concat \<circ> map subs) ^^ m) s = [])"
 
-lemma prove': "prove' l = (if l = [] then True else prove' ((\<lambda> x. concat (map subs x)) l))"
-  by (simp add: eq_Nil_null ex_iter prove'_def)
-    \<comment> \<open>this is the main claim for efficiency- we have a tail recursive implementation via this lemma\<close>
+lemma prove':
+  "prove' l \<longleftrightarrow> l = [] \<or> prove' (concat (map subs l))"
+proof (cases \<open>l = []\<close>)
+  case True
+  then show ?thesis
+    by (simp add: prove'_def exI [of _ 0])
+next
+  have *: \<open>((concat \<circ> map subs) ^^ m) (concat (map subs l)) = ((concat \<circ> map subs) ^^ Suc m) l\<close>
+    for m
+    by (simp only: funpow_Suc_right) simp
+  case False
+  then have \<open>prove' l \<longleftrightarrow> prove' (concat (map subs l))\<close>
+    apply (simp add: prove'_def)
+    apply (simp only: *)
+    apply (metis funpow_0 nat.collapse)
+    done
+  with False show ?thesis
+    by simp
+qed
 
-definition prove :: "nseq \<Rightarrow> bool" where "prove s = prove' ([s])"
+definition prove :: "nseq \<Rightarrow> bool"
+  where "prove s = prove' ([s])"
 
 lemma finite_deriv_prove: "finite (deriv s) = prove s"
-  by (simp add: finite_deriv prove_def prove'_def f_def)
+  by (simp add: finite_deriv prove_def prove'_def f_def comp_def)
 
 
 subsection "Computation"

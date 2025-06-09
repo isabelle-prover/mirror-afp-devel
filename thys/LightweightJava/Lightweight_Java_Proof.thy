@@ -256,7 +256,7 @@ by (induct y_cl_var_var'_v_list, auto)
 
 lemma wf_cld_from_lu:
   "\<lbrakk>wf_program P; find_cld P ctx fqn (Some (ctx', cld'))\<rbrakk> \<Longrightarrow> wf_class P cld'"
-apply(clarsimp) apply(drule find_to_mem) apply(erule wf_programE) by (simp add: member_def)
+apply(clarsimp) apply(drule find_to_mem) apply(erule wf_programE) by simp
 
 lemma meth_def_in_set[rule_format]:
   "find_meth_def_in_list meth_defs meth (Some meth_def) \<longrightarrow> meth_def \<in> set meth_defs"
@@ -282,7 +282,7 @@ lemma clds_in_path_exist:
   "find_path_f P ctx' fqn = Some path \<Longrightarrow> (\<forall>(ctx, cld) \<in> set path. cld \<in> set P)"
 apply(clarify)
 apply(drule all_in_path_found) apply(simp) apply(clarsimp)
-apply(drule find_to_mem) apply(simp add: member_def)
+apply(drule find_to_mem) apply simp
 done
 
 lemma wf_meth_defs_in_wf_class[rule_format]:

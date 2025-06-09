@@ -146,7 +146,7 @@ shows "list.set (prefixes_in_list xs prev yss res) = list.set res \<union> {prev
 proof (induction xs arbitrary: prev yss res)
   case Nil
   show ?case 
-    unfolding prefixes_in_list.simps List.member_def prefixes_set by auto
+    unfolding prefixes_in_list.simps prefixes_set by auto
 next
   case (Cons x xs)
 

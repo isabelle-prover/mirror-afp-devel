@@ -205,7 +205,7 @@ begin
          apply(rule ext, rename_tac "\<tau>") 
          apply(simp_all add: valid_def defined_def def_scheme''
                              true_def false_def invalid_def 
-                             null_def null_fun_def null_option_def bot_fun_def)
+                             null_fun_def null_option_def bot_fun_def)
          by (metis "1" OclValid_def def_scheme'' foundation16 true_def)
 
       lemma defined_args_valid: "(\<tau> \<Turnstile> \<delta> (f x y)) = ((\<tau> \<Turnstile> d\<^sub>x x) \<and> (\<tau> \<Turnstile> d\<^sub>y y))"

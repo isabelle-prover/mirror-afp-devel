@@ -18,11 +18,11 @@ begin
     unfolding glist_member_def
     by (parametricity)
 
-  lemma list_member_alt: "List.member = (\<lambda>l x. glist_member (=) x l)"
-  proof (intro ext)
+lemma list_member_alt: "List.member = (\<lambda>l x. glist_member (=) x l)"
+  proof (rule ext)+
     fix x l
     show "List.member l x = glist_member (=) x l"
-      by (induct l) (auto simp: List.member_rec)
+      by (induct l) simp_all
   qed
 
   thm List.insert_def

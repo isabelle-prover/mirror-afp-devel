@@ -19,7 +19,7 @@ lemma [code]:
   "is_target step \<tau>s pc' =
   list_ex (\<lambda>pc. pc' \<noteq> pc+1 \<and> List.member (map fst (step pc (\<tau>s!pc))) pc') [0..<size \<tau>s]"
 (*<*)
-  apply (simp add: list_ex_iff is_target_def member_def)
+  apply (simp add: list_ex_iff is_target_def)
   apply force
   done
 (*>*)

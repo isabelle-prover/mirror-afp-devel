@@ -257,7 +257,7 @@ proof -
       using Some by auto
     then have **: "\<And> x . x \<in> set (list_of_dlist xs) = (x \<in> (DList_set xs))" 
       using DList_Set.member.rep_eq[of xs]
-      using Set_member_code(2) ceq_class.ID_ceq in_set_member by fastforce 
+      using Set_member_code(2) ceq_class.ID_ceq by fastforce 
     
     have "Mapping.lookup (?f' xs) = (\<lambda> x . if (\<exists> z . (x,z) \<in> (DList_set xs)) then Some {z . (x,z) \<in> (DList_set xs)} else None)"
       using *[of "(list_of_dlist xs)"] 

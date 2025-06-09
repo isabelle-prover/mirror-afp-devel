@@ -114,8 +114,8 @@ proof-
  have "vec_mat_Tensor v (y#ys) = (vec_vec_Tensor v y)#(vec_mat_Tensor v ys)"  
        using vec_mat_Tensor_def assms by auto
  also have "(vec_vec_Tensor v y) = x" using assms by auto
- also have "length y = nr" using assms mat_def 
-       by (metis in_set_member member_rec(1) vec_def)
+ also have "length y = nr"
+   using assms by (simp add: mat_def vec_def)
  from this
    have "length (vec_vec_Tensor v y) = nr*k" 
        using assms vec_vec_Tensor_length  by auto
@@ -405,8 +405,7 @@ proof(cases M)
   then have 2:"x \<in> (set M) \<longrightarrow> (vec (length a) x)" 
          by auto
   with 1 have 3:"(vec (length a) b)"
-         using assms in_set_member mat_def member_rec(1) vec_def
-         by metis 
+         using assms by (simp add: mat_def vec_def)
   have 5: "(vec (length b) b)" 
          using vec_def by auto
   with 3 have "(length a) = (length b)" 
@@ -419,9 +418,7 @@ proof(cases M)
   with 4 have "x \<in> (set M) \<longrightarrow> (vec (row_length M) x)" 
          by auto
   then have "(\<forall>x. (x \<in> (set M) \<longrightarrow> (vec (row_length M) x)))" 
-         using Cons 5 6 assms in_set_member mat_def member_rec(1) 
-         vec_uniqueness
-         by metis
+    using Cons 5 6 assms by (auto simp add: mat_def dest: vec_uniqueness)
   then have "Ball (set M) (vec (row_length M))" 
          using Ball_def by auto
   then have "(mat (row_length M) (length M) M)" 
@@ -512,7 +509,7 @@ proof(induct M)
     moreover have " b \<in> (set M)" 
            using Cons by auto
     ultimately have "vec (length a) b"
-           using  hyp(2) in_set_member mat_def member_rec(1) vec_def  by (metis) 
+           using hyp(2) by (simp add: mat_def vec_def)
     then have "(length b) = (length a)" 
            using vec_def vec_uniqueness by auto
     then have 2:"row_length M = (length a)" 
@@ -686,8 +683,7 @@ proof(induct M1)
     moreover have " b \<in> (set M1)" 
                using Cons by auto
     ultimately have "vec (length a) b" 
-               using  Cons.prems in_set_member mat_def member_rec(1) vec_def
-               by metis
+               using Cons.prems by (simp add: vec_def mat_def)
     then have "(length b) = (length a)" 
                using vec_def vec_uniqueness by auto
     then have 2:"row_length M1 = (length a)" 

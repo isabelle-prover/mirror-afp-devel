@@ -608,9 +608,8 @@ sepref_definition full_quicksort_poly_impl
     quicksort_poly_def[symmetric]
     le_term_order_rel'[symmetric]
     term_order_rel'_def[symmetric]
-    List.null_def
+    List.null_iff
   by sepref
-
 
 lemmas sort_poly_spec_hnr =
   full_quicksort_poly_impl.refine[FCOMP full_quicksort_sort_poly_spec]
@@ -744,9 +743,8 @@ sepref_definition full_quicksort_vars_impl
     quicksort_vars_def[symmetric]
     le_var_order_rel[symmetric]
     term_order_rel'_def[symmetric]
-    List.null_def
-  by sepref
-
+    List.null_iff
+    by sepref
 
 lemmas sort_vars_spec_hnr =
   full_quicksort_vars_impl.refine[FCOMP full_quicksort_sort_vars_spec]

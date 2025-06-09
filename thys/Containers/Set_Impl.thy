@@ -427,7 +427,7 @@ proof -
   show ?DList_set                                 
     apply(auto split: option.splits simp add: DList_set_def)
     apply transfer                      
-    apply(auto dest: Collection_Eq.ID_ceq simp add: List.member_def[abs_def] fold_set_fold_remdups distinct_remdups_id)
+    apply(auto dest: Collection_Eq.ID_ceq simp add: List.member_iff [abs_def] fold_set_fold_remdups distinct_remdups_id)
     done
   show ?RBT_set
     apply(auto split: option.split simp add: RBT_set_conv_keys fold_conv_fold_keys)
@@ -470,7 +470,7 @@ proof -
   show ?DList_set
     apply(auto split: option.split simp add: DList_set_def)
     apply transfer
-    apply(auto dest: Collection_Eq.ID_ceq simp add: List.member_def[abs_def] comp_fun_idem_def' comp_fun_idem_on.fold_set_fold[OF _ subset_UNIV])
+    apply(auto dest: Collection_Eq.ID_ceq simp add: List.member_iff [abs_def] comp_fun_idem_def' comp_fun_idem_on.fold_set_fold[OF _ subset_UNIV])
     done
   show ?RBT_set
     apply(auto split: option.split simp add: RBT_set_conv_keys fold_conv_fold_keys)
@@ -655,7 +655,7 @@ proof -
 
   show ?Complement
     by(auto simp add: is_UNIV_def)
-qed(simp_all add: List.null_def)
+qed simp_all
 
 lemma Set_insert_code [code]:
   fixes dxs :: "'a :: ceq set_dlist" 
@@ -685,7 +685,7 @@ lemma Set_member_code [code]:
   "\<And>x. x \<in> Set_Monad xs \<longleftrightarrow>
   (case ID CEQ('a) of None \<Rightarrow> Code.abort (STR ''member Set_Monad: ceq = None'') (\<lambda>_. x \<in> Set_Monad xs)
                  | Some eq \<Rightarrow> equal_base.list_member eq xs x)"
-by(auto simp add: DList_set_def RBT_set_def List.member_def split: option.split dest!: Collection_Eq.ID_ceq)
+by(auto simp add: DList_set_def RBT_set_def split: option.split dest!: Collection_Eq.ID_ceq)
 
 lemma Set_remove_code [code]:
   fixes rbt :: "'a :: ccompare set_rbt"
@@ -774,7 +774,7 @@ proof -
     by(auto split: option.split simp add: RBT_set_def)
 
   show ?RBT_set_DList_set ?DList_set_RBT_set
-    by(auto split: option.split simp add: RBT_set_def DList_set_def DList_Set.fold_def DList_Set.member_def List.member_def dest: equal.equal_eq[OF ID_ceq])
+    by(auto split: option.split simp add: RBT_set_def DList_set_def DList_Set.fold_def DList_Set.member_def dest: equal.equal_eq[OF ID_ceq])
 
   show ?DList_set_Set_Monad ?Set_Monad_DList_set
     by(auto split: option.split simp add: DList_set_def DList_Set.member_fold_insert)
@@ -847,9 +847,9 @@ lemma Set_inter_code [code]:
                       | Some _ \<Rightarrow> RBT_set (RBT_Set2.inter_list rbt1 xs))" (is ?rbt_monad) 
 proof -
   show ?rbt_rbt ?rbt1 ?rbt2 ?rbt_dlist ?rbt_monad ?dlist_rbt ?monad_rbt
-    by(auto simp add: RBT_set_def DList_set_def DList_Set.member_def List.member_def dest: equal.equal_eq[OF ID_ceq] split: option.split)
+    by(auto simp add: RBT_set_def DList_set_def DList_Set.member_def dest: equal.equal_eq[OF ID_ceq] split: option.split)
   show ?dlist ?dlist1 ?dlist2 ?dlist_monad ?monad_dlist ?monad ?monad1 ?monad2 ?collect1 ?collect2 ?complement
-    by(auto simp add: DList_set_def List.member_def dest!: Collection_Eq.ID_ceq split: option.splits)
+    by(auto simp add: DList_set_def dest!: Collection_Eq.ID_ceq split: option.splits)
 qed
 
 lemma Set_bind_code [code]:
@@ -864,7 +864,7 @@ lemma Set_bind_code [code]:
                      | Some _ \<Rightarrow> RBT_Set2.fold (union \<circ> f'') rbt {})" (is ?RBT)
 proof -
   show ?Set_Monad by(simp add: set_bind_conv_fold)
-  show ?DList by(auto simp add: DList_set_def DList_Set.member_def List.member_def List.member_def[abs_def] set_bind_conv_fold DList_Set.fold_def split: option.split dest: equal.equal_eq[OF ID_ceq] ID_ceq)
+  show ?DList by(auto simp add: DList_set_def DList_Set.member_def List.member_iff [abs_def] set_bind_conv_fold DList_Set.fold_def split: option.split dest: equal.equal_eq[OF ID_ceq] ID_ceq)
   show ?RBT by(clarsimp split: option.split simp add: RBT_set_def RBT_Set2.fold_conv_fold_keys RBT_Set2.member_conv_keys set_bind_conv_fold)
 qed
 

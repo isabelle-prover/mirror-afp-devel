@@ -1295,7 +1295,7 @@ lemma F_is_False_iff:
   unfolding F_def by (cases final; simp; metis)
 
 lemma F_impl_False: "F_impl = (\<lambda>_. return False)" if "final = []"
-  using that unfolding F_impl_def unfolding final_fun_def List.member_def by auto
+  using that unfolding F_impl_def unfolding final_fun_def by auto
 
 definition deadlock_checker where
   "deadlock_checker \<equiv>

@@ -48,13 +48,13 @@ lemma max_geI: "finite A \<Longrightarrow> A \<noteq> {} \<Longrightarrow> (\<ex
 
 section \<open>Least argmax\<close>
 
-fun "least_arg_max_max_ne" where
+fun "least_arg_max_max_ne" :: \<open>('a \<Rightarrow> 'b::ord) \<Rightarrow> 'a list \<Rightarrow> 'a \<times> 'b\<close> where
   "least_arg_max_max_ne f (x#xs) = 
   (fold (\<lambda>y (am, m). let fy = f y in 
    if m < fy then (y, fy) else (am, m)) xs (x, f x))" |
   "least_arg_max_max_ne a [] = undefined"
 
-fun "least_arg_max_ne" where
+fun "least_arg_max_ne" :: \<open>('a \<Rightarrow> 'b::ord) \<Rightarrow> 'a list \<Rightarrow> 'a\<close> where
 "least_arg_max_ne f (x#xs) = fst (least_arg_max_max_ne f (x#xs))" |
 "least_arg_max_ne a [] = undefined"
 
@@ -86,7 +86,7 @@ lemma fold_max_eq_arg_max:
 proof (induction xs arbitrary: x)
   case Nil
   then show ?case
-    by (auto simp:  List.member_def least_arg_max_def least_arg_max_max_ne.simps is_arg_max_def intro!: Least_equality[symmetric])
+    by (auto simp:  least_arg_max_def least_arg_max_max_ne.simps is_arg_max_def intro!: Least_equality[symmetric])
 next
   case (Cons a xs)
   then show ?case
@@ -95,36 +95,40 @@ next
     have 1: "least_arg_max f (List.member (x#a#xs)) = x" 
       using True Cons
       unfolding least_arg_max_def 
-      by (fastforce intro!: Least_equality simp: in_set_member[symmetric])
+      by (fastforce intro!: Least_equality)
     have 2: "Max (f ` set (x#a#xs)) = f x"
       using True unfolding is_arg_max_def 
-      by (subst Max_eq_iff) (auto simp add: not_less in_set_member member_rec(1))
+      by (subst Max_eq_iff) (auto simp add: not_less)
     show ?thesis
       unfolding 1 2
       using True
-      by (induction xs) (auto simp: least_arg_max_max_ne.simps simp: is_arg_max_linorder member_rec)+
+      apply (induction xs)
+       apply (simp_all add: least_arg_max_max_ne.simps is_arg_max_linorder)
+       apply auto
+      done
   next
     case False
     have "is_arg_max f (List.member (x#a#xs)) = is_arg_max f (List.member (a#xs))"
-      using False by (fastforce simp: least_arg_max_max_ne.simps is_arg_max_linorder member_rec)
+      using False by (fastforce simp: least_arg_max_max_ne.simps is_arg_max_linorder)
     hence 1: "least_arg_max f (List.member (x#a#xs)) = least_arg_max f (List.member (a#xs))"
       using Cons False unfolding least_arg_max_def by auto
     have "f a \<le> f x \<Longrightarrow> is_arg_max f (List.member (x#xs)) = is_arg_max f (List.member xs)"
-      using False by (fastforce simp: is_arg_max_linorder member_rec)   
+      using False by (fastforce simp: is_arg_max_linorder)   
     hence 4: "f a \<le> f x \<Longrightarrow> least_arg_max f (List.member (x#xs)) = least_arg_max f (List.member xs)"
       using Cons False unfolding least_arg_max_def by auto
     have "f a \<le> f x \<Longrightarrow> is_arg_max f (List.member (a#xs)) = is_arg_max f (List.member xs)"
-      using False by (fastforce simp: is_arg_max_linorder  member_rec(1))
+      using False by (fastforce simp: is_arg_max_linorder)
     hence 3: "f a \<le> f x \<Longrightarrow> least_arg_max f (List.member (a#xs)) = least_arg_max f (List.member xs)"
       using Cons False unfolding least_arg_max_def by auto
     have 2: "Max (f`set (x#a#xs)) = Max (f`set (a#xs))"
       using False 
-      by (fastforce simp: nle_le in_set_member is_arg_max_linorder Max_ge_iff simp: member_rec intro!:  max_absorb2 )  
+      by (fastforce simp: nle_le is_arg_max_linorder Max_ge_iff intro!:  max_absorb2 )  
     have 5: "Max (f`set (a#xs)) = Max (f`set (xs)) \<and> Max (f`set (x#xs)) = Max (f`set (xs))" if "f a \<le> f x"
       using False that
-      by (cases "xs = []") (auto simp: nle_le is_arg_max_linorder in_set_member[symmetric] intro: order.trans intro!:max_absorb2)
+      by (cases "xs = []") (auto simp: nle_le is_arg_max_linorder intro: order.trans intro!:max_absorb2)
     show ?thesis
-      unfolding least_arg_max_max_ne_Cons 1 2 using Cons 5 3 4 by auto
+      unfolding least_arg_max_max_ne_Cons 1 2 using Cons 5 3 4
+      by (auto simp add: List.member_iff [abs_def])
     qed
   qed
 
@@ -1087,15 +1091,15 @@ proof -
   also have \<open>\<dots> = (least_arg_max (\<lambda>a. MDP.L\<^sub>a a (V_Map.map_to_bfun v) s) (List.member (map fst (a_inorder (s_lookup mdp s)))),
      MAX a\<in>set (map fst (a_inorder (s_lookup mdp s))). MDP.L\<^sub>a a (V_Map.map_to_bfun v) s)\<close>
     using assms a_inorderD(1) A_Map.keys_def  MDP_A_def 
-    by (auto intro!: least_arg_max_cong simp: L_GS_code_correct' in_set_member[symmetric])
+    by (auto intro!: least_arg_max_cong simp: L_GS_code_correct')
   also have \<open>\<dots> = (least_arg_max (\<lambda>a. MDP.L\<^sub>a a (V_Map.map_to_bfun v) s) (\<lambda>a. a \<in> MDP_A s),
      MAX a\<in>MDP_A s. MDP.L\<^sub>a a (V_Map.map_to_bfun v) s)\<close>
   proof -
-    have *: "a \<in> fst ` set (a_inorder (s_lookup mdp s))  \<longleftrightarrow> List.member (map fst ((a_inorder (s_lookup mdp s)))) a" for a
-      by (auto simp: List.member_def)
+    have *: "a \<in> fst ` set (a_inorder (s_lookup mdp s)) \<longleftrightarrow> List.member (map fst ((a_inorder (s_lookup mdp s)))) a" for a
+      by auto
     show ?thesis
-    using assms L\<^sub>a_code_correct  A_Map.keys_def 
-    by (auto intro!: least_arg_max_cong  simp: * MDP_A_def)
+      using assms L\<^sub>a_code_correct A_Map.keys_def
+    by (auto intro!: least_arg_max_cong simp: * MDP_A_def simp del: List.member_iff)
 qed
   finally show ?thesis.
 qed
