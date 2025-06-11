@@ -4,10 +4,7 @@
   and Lawrence C. Paulson, University of Cambridge
   Date: 24 December 2024.*)
 
-
-
 section\<open>Transitive Union-Closed Families\<close>
-
 
 text\<open> A family of sets is union-closed if the union of any two sets from the family is in the family. 
 The Union-Closed Conjecture is an open problem in combinatorics posed by Frankl in 1979. It
@@ -49,11 +46,17 @@ definition "Interior \<equiv> \<lambda>A. {x\<in>G. sumset {x} R \<subseteq> A}"
 
 definition "\<F> \<equiv> Neighbd ` Pow G" 
 
-text\<open>We show that the family @{term \<F>} as defined above and appears in the statement of the theorem 
-\cite{Aaronson_Ellis_Leader} is actually a finite, nonempty union-closed family indeed.\<close>
+text\<open>the family @{term \<F>} as defined above and appears in the statement of the theorem 
+\cite{Aaronson_Ellis_Leader} is finite, nonempty union-closed family .\<close>
 
 lemma card\<F>_gt0 [simp]: "card \<F> > 0" and finite\<F>: "finite \<F>"
   using \<F>_def finG by fastforce+
+
+text \<open>As a remark, we note that @{term \<F>} is nontrivial.\<close>
+lemma "\<F> \<noteq> {{}}"
+  unfolding \<F>_def image_def Neighbd_def set_eq_iff
+  apply simp
+  by (metis RG R_nonempty Pow_top disjoint_iff emptyE subset_eq sumset_is_empty_iff)
 
 lemma "union_closed \<F>"    
 proof-
@@ -259,8 +262,7 @@ have *: "(\<Sum>S\<in>\<F>.(card S)) = (\<Sum>x\<in>G. card {S\<in>\<F>. x\<in>S
       by simp
     finally have B: "(\<Sum>x\<in>G. real (card {S\<in>\<F>. x\<in>S})) < card \<F> * (card G / 2)" .
     have "(\<Sum>x\<in>G. card {S\<in>\<F>. x\<in>S} / card \<F>) / card G < 1/2"
-      using divide_strict_right_mono [OF B, of "card \<F> * card G"]
-      using cardG_gt0
+      using cardG_gt0 divide_strict_right_mono [OF B, of "card \<F> * card G"]
       by (simp add: divide_simps sum_divide_distrib)
     with ** show False
       by argo
