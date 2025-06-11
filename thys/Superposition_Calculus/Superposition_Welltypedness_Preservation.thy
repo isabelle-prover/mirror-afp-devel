@@ -22,7 +22,7 @@ lemma eq_factoring_preserves_typing:
 proof (cases "(\<V>, D)" "(\<V>, C)" rule: eq_factoring.cases)
   case (eq_factoringI l\<^sub>1 \<mu> t\<^sub>1 t\<^sub>1' t\<^sub>2 l\<^sub>2 D' t\<^sub>2')
 
-  moreover have x: "\<exists>\<tau>. \<V> \<turnstile> t\<^sub>1 : \<tau> \<and> \<V> \<turnstile> t\<^sub>2' : \<tau>"
+  moreover have t\<^sub>1_t\<^sub>2': "\<exists>\<tau>. \<V> \<turnstile> t\<^sub>1 : \<tau> \<and> \<V> \<turnstile> t\<^sub>2' : \<tau>"
   proof - 
 
     have "\<forall>\<tau>. \<V> \<turnstile> t\<^sub>1 : \<tau> \<longleftrightarrow> \<V> \<turnstile> t\<^sub>2 : \<tau>"
@@ -48,7 +48,7 @@ proof (cases "(\<V>, D)" "(\<V>, C)" rule: eq_factoring.cases)
   proof -
 
     have "\<exists>\<tau>. \<V> \<turnstile> t\<^sub>1' : \<tau> \<and> \<V> \<turnstile> t\<^sub>2' : \<tau>"
-      using x D_is_welltyped
+      using t\<^sub>1_t\<^sub>2' D_is_welltyped
       unfolding eq_factoringI
       by auto
 

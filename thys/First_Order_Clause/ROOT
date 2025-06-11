@@ -30,5 +30,6 @@ session First_Order_Clause = Abstract_Substitution +
     Typed_Functional_Substitution_Example
     Typed_Functional_Substitution_Lifting_Example
     Typed_Tiebreakers
+    Untyped_Calculus
   document_files
     "root.tex"

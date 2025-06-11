@@ -5,6 +5,39 @@ theory Nonground_Term_Order
     Grounded_Order 
 begin
 
+locale base_grounded_order =
+  order: grounded_restricted_total_strict_order +
+  order: grounded_restricted_wellfounded_strict_order +
+  order: ground_subst_stable_grounded_order +
+  grounding
+
+locale nonground_term_order =
+  "term": nonground_term where Var = Var +
+  order: restricted_wellfounded_total_strict_order where
+  less = less\<^sub>t and restriction = "range term.from_ground" +
+  order: ground_subst_stability where R = less\<^sub>t and comp_subst = "(\<odot>)" and subst = "(\<cdot>t)" and
+  vars = term.vars and id_subst = Var and to_ground = term.to_ground and
+  from_ground = "term.from_ground"
+for less\<^sub>t and Var :: "'v \<Rightarrow> 't"
+begin
+
+interpretation term_order_notation .
+
+sublocale base_grounded_order where
+  subst = "(\<cdot>t)" and vars = term.vars and id_subst = Var and comp_subst = "(\<odot>)" and
+  to_ground = term.to_ground and from_ground = "term.from_ground" and less = "(\<prec>\<^sub>t)"
+  by unfold_locales
+
+(* TODO: Find way to not have this twice *)
+notation order.less\<^sub>G (infix "\<prec>\<^sub>t\<^sub>G" 50)
+notation order.less_eq\<^sub>G (infix "\<preceq>\<^sub>t\<^sub>G" 50)
+
+sublocale restriction: ground_term_order where 
+  less\<^sub>t = "(\<prec>\<^sub>t\<^sub>G)"
+  by unfold_locales
+
+end
+
 locale ground_context_compatible_order =
   nonground_term_with_context +
   restricted_total_strict_order where restriction = "range term.from_ground" +
@@ -32,30 +65,18 @@ locale ground_subterm_property =
   assumes ground_subterm_property:
     "\<And>t\<^sub>G c\<^sub>G. term.is_ground t\<^sub>G \<Longrightarrow> context.is_ground c\<^sub>G \<Longrightarrow> c\<^sub>G \<noteq> \<box> \<Longrightarrow> R t\<^sub>G c\<^sub>G\<langle>t\<^sub>G\<rangle>"
 
-locale base_grounded_order =
-  order: base_subst_update_stable_grounded_order  +
-  order: grounded_restricted_total_strict_order +
-  order: grounded_restricted_wellfounded_strict_order +
-  order: ground_subst_stable_grounded_order +
-  grounding
-
-locale nonground_term_order =
+locale context_compatible_nonground_term_order =
   nonground_term_with_context where
   Var = "Var :: 'v \<Rightarrow> 't" and
   from_ground_context_map = "from_ground_context_map :: ('t\<^sub>G \<Rightarrow> 't) \<Rightarrow> 'c\<^sub>G \<Rightarrow> 'c" +
-  order: restricted_wellfounded_strict_order where
-  less = less\<^sub>t and restriction = "range term.from_ground" +
-  order: ground_subst_stability where R = less\<^sub>t and comp_subst = "(\<odot>)" and subst = "(\<cdot>t)" and
-  vars = term.vars and id_subst = Var and to_ground = term.to_ground and
-  from_ground = "term.from_ground" +
+  nonground_term_order +
   order: ground_context_compatible_order where less = less\<^sub>t +
   order: ground_subterm_property where R = less\<^sub>t
-for less\<^sub>t
 begin
 
 interpretation term_order_notation .
-              
-sublocale base_grounded_order where
+
+sublocale order: base_subst_update_stable_grounded_order where 
   subst = "(\<cdot>t)" and vars = term.vars and id_subst = Var and comp_subst = "(\<odot>)" and
   to_ground = term.to_ground and from_ground = "term.from_ground" and less = "(\<prec>\<^sub>t)"
 proof unfold_locales
@@ -132,11 +153,7 @@ proof unfold_locales
   qed
 qed
 
-(* TODO: Find way to not have this twice *)
-notation order.less\<^sub>G (infix "\<prec>\<^sub>t\<^sub>G" 50)
-notation order.less_eq\<^sub>G (infix "\<preceq>\<^sub>t\<^sub>G" 50)
-
-sublocale restriction: ground_term_order where 
+sublocale restriction: context_compatible_ground_term_order where 
   less\<^sub>t = "(\<prec>\<^sub>t\<^sub>G)" and compose_context = compose_ground_context and
   apply_context = apply_ground_context and hole = ground_hole
 proof unfold_locales

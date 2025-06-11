@@ -148,8 +148,6 @@ lemma type_preserving_literals_renaming [simp]:
   using assms 
   by (induction C) (auto simp: Set.ball_Un)
 
-
-
 end
 
 locale witnessed_nonground_typing =

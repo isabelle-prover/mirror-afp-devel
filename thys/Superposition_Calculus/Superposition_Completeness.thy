@@ -16,7 +16,7 @@ subsection \<open>Liftings\<close>
 
 lemma eq_resolution_lifting:
   fixes
-    D\<^sub>G C\<^sub>G :: "'t\<^sub>G ground_clause" and
+    D\<^sub>G C\<^sub>G :: "'t\<^sub>G clause" and
     D C :: "'t clause" and
     \<gamma> :: "'v \<Rightarrow> 't"
   defines
@@ -257,7 +257,7 @@ qed
 
 lemma eq_factoring_lifting:
   fixes
-    D\<^sub>G C\<^sub>G :: "'t\<^sub>G ground_clause" and
+    D\<^sub>G C\<^sub>G :: "'t\<^sub>G clause" and
     D C :: "'t clause" and
     \<gamma> :: "'v \<Rightarrow> 't"
   defines
@@ -473,7 +473,7 @@ qed
 
 lemma superposition_lifting:
   fixes
-    E\<^sub>G D\<^sub>G C\<^sub>G :: "'t\<^sub>G ground_clause" and
+    E\<^sub>G D\<^sub>G C\<^sub>G :: "'t\<^sub>G clause" and
     E D C :: "'t clause" and
     \<gamma> \<rho>\<^sub>1 \<rho>\<^sub>2 :: "'v \<Rightarrow> 't" and
     \<V>\<^sub>1 \<V>\<^sub>2 :: "('v, 'ty) var_types"

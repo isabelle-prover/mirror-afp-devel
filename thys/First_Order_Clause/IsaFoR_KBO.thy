@@ -125,7 +125,7 @@ end
 
 subsection\<open>Interpret non-ground order with KBO\<close>
 
-interpretation KBO: nonground_order where
+interpretation KBO: context_compatible_nonground_order where
   less\<^sub>t = "less_kbo :: ('f :: weighted,'v) term \<Rightarrow> ('f,'v) term \<Rightarrow> bool" and
   comp_subst = "(\<circ>\<^sub>s)" and Var = Var and term_subst = "(\<cdot>)" and term_vars = term.vars and
   compose_context = "(\<circ>\<^sub>c)" and term_from_ground = term.from_ground and

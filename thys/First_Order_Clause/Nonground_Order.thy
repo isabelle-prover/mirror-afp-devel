@@ -44,4 +44,25 @@ sublocale nonground_order_generic where
 
 end
 
+locale context_compatible_nonground_order =
+  nonground_order +
+  "term": context_compatible_nonground_term_order
+begin
+
+sublocale literal.order: subst_update_stable_multiset_extension where
+  less = less\<^sub>t and sub_subst = "(\<cdot>t)" and sub_vars = term.vars and
+  sub_to_ground = term.to_ground and sub_from_ground = term.from_ground and map = map_literal and
+  to_set = set_literal and to_ground_map = map_literal and from_ground_map = map_literal and 
+  ground_map = map_literal and to_set_ground = set_literal and to_mset = literal_to_mset and
+  base_less = less\<^sub>t and id_subst = Var and base_subst = "(\<cdot>t)" and base_vars = term.vars
+  by unfold_locales
+
+sublocale context_compatible_nonground_order_generic where
+  atom_subst = "(\<cdot>t)" and atom_vars = term.vars and atom_from_ground = term.from_ground and
+  atom_to_ground = term.to_ground and neg_to_mset = neg_to_mset and pos_to_mset = pos_to_mset and
+  ground_neg_to_mset = neg_to_mset and ground_pos_to_mset = pos_to_mset
+  by unfold_locales
+
+end
+
 end

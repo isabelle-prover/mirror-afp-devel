@@ -29,4 +29,8 @@ sublocale ground_order_generic where pos_to_mset = pos_to_mset and neg_to_mset =
 
 end
 
+locale context_compatible_ground_order =
+  ground_order +
+  term.order: context_compatible_ground_term_order
+
 end

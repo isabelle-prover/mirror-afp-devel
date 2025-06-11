@@ -6,6 +6,8 @@ theory Nonground_Typing_Generic
     Nonground_Clause_Generic
 begin
 
+type_synonym ('a, 'v, 'ty) typed_clause = "('v, 'ty) var_types \<times> 'a clause"
+
 locale nonground_typing_lifting =
   typed_subst_stability_lifting +
   replaceable_\<V>_lifting +

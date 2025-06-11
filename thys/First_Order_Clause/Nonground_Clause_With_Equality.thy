@@ -7,12 +7,6 @@ begin
 
 section \<open>Nonground Clauses with Equality\<close>
 
-type_synonym 't\<^sub>G ground_atom = "'t\<^sub>G uprod"
-type_synonym 't atom = "'t uprod"
-type_synonym 'f ground_clause = "'f ground_atom clause"
-type_synonym 't clause = "'t atom clause"
-
-
 locale nonground_clause = "term": nonground_term
 begin
 

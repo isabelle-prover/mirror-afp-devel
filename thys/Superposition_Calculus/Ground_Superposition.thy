@@ -8,24 +8,20 @@ begin
 
 section \<open>Superposition Calculus\<close>
 
-type_synonym 't ground_clause = "'t uprod clause"
-
 locale ground_superposition_calculus =
   "context" where apply_context = apply_context +
-  ground_order where less\<^sub>t = less\<^sub>t and apply_context = apply_context +
+  context_compatible_ground_order where less\<^sub>t = less\<^sub>t and apply_context = apply_context +
   selection_function select +
   ground_critical_pairs where apply_context = apply_context
 for
   apply_context :: "'c \<Rightarrow> 't \<Rightarrow> 't" and
   less\<^sub>t :: "'t \<Rightarrow> 't \<Rightarrow> bool" and
-  select :: "'t ground_clause \<Rightarrow> 't ground_clause"
+  select :: "'t clause \<Rightarrow> 't clause"
 begin
 
 subsection \<open>Ground Rules\<close>
 
-inductive superposition ::
-  "'t ground_clause \<Rightarrow> 't ground_clause \<Rightarrow> 't ground_clause \<Rightarrow> bool"
-where
+inductive superposition :: "'t clause \<Rightarrow> 't clause \<Rightarrow> 't clause \<Rightarrow> bool" where
   superpositionI:
    "E = add_mset L\<^sub>E E' \<Longrightarrow>
     D = add_mset L\<^sub>D D' \<Longrightarrow>
@@ -42,7 +38,7 @@ where
     C = add_mset (\<P> (Upair \<kappa>\<langle>t'\<rangle> u)) (E' + D') \<Longrightarrow>
     superposition D E C"
 
-inductive eq_resolution :: "'t ground_clause \<Rightarrow> 't ground_clause \<Rightarrow> bool" where
+inductive eq_resolution :: "'t clause \<Rightarrow> 't clause \<Rightarrow> bool" where
   eq_resolutionI:
    "D = add_mset L D' \<Longrightarrow>
     L = t !\<approx> t \<Longrightarrow>
@@ -50,7 +46,7 @@ inductive eq_resolution :: "'t ground_clause \<Rightarrow> 't ground_clause \<Ri
     C = D' \<Longrightarrow>
     eq_resolution D C"
 
-inductive eq_factoring :: "'t ground_clause \<Rightarrow> 't ground_clause \<Rightarrow> bool" where
+inductive eq_factoring :: "'t clause \<Rightarrow> 't clause \<Rightarrow> bool" where
   eq_factoringI:
    "D = add_mset L\<^sub>1 (add_mset L\<^sub>2 D') \<Longrightarrow>
     L\<^sub>1 = t \<approx> t' \<Longrightarrow>
@@ -72,11 +68,9 @@ abbreviation superposition_inferences where
 
 subsubsection \<open>Alternative Specification of the Superposition Rule\<close>
 
-inductive superposition' ::
-  "'t ground_clause \<Rightarrow> 't ground_clause \<Rightarrow> 't ground_clause \<Rightarrow> bool"
-where
-  superposition'I: "
-    P\<^sub>1 = add_mset L\<^sub>1 P\<^sub>1' \<Longrightarrow>
+inductive superposition' :: "'t clause \<Rightarrow> 't clause \<Rightarrow> 't clause \<Rightarrow> bool" where
+  superposition'I: 
+   "P\<^sub>1 = add_mset L\<^sub>1 P\<^sub>1' \<Longrightarrow>
     P\<^sub>2 = add_mset L\<^sub>2 P\<^sub>2' \<Longrightarrow>
     P\<^sub>2 \<prec>\<^sub>c P\<^sub>1 \<Longrightarrow>
     \<P> \<in> {Pos, Neg} \<Longrightarrow>
@@ -114,11 +108,9 @@ next
   qed
 qed
 
-inductive pos_superposition ::
-  "'t ground_clause \<Rightarrow> 't ground_clause \<Rightarrow> 't ground_clause \<Rightarrow> bool"
-where
- pos_superpositionI: "
-    P\<^sub>1 = add_mset L\<^sub>1 P\<^sub>1' \<Longrightarrow>
+inductive pos_superposition :: "'t clause \<Rightarrow> 't clause \<Rightarrow> 't clause \<Rightarrow> bool" where
+ pos_superpositionI: 
+   "P\<^sub>1 = add_mset L\<^sub>1 P\<^sub>1' \<Longrightarrow>
     P\<^sub>2 = add_mset L\<^sub>2 P\<^sub>2' \<Longrightarrow>
     P\<^sub>2 \<prec>\<^sub>c P\<^sub>1 \<Longrightarrow>
     L\<^sub>1 = s\<langle>t\<rangle> \<approx> s' \<Longrightarrow>
@@ -143,9 +135,7 @@ proof (cases P\<^sub>2 P\<^sub>1 C rule: pos_superposition.cases)
     by blast
 qed
 
-inductive neg_superposition ::
-  "'t ground_clause \<Rightarrow> 't ground_clause \<Rightarrow> 't ground_clause \<Rightarrow> bool"
-where
+inductive neg_superposition :: "'t clause \<Rightarrow> 't clause \<Rightarrow> 't clause \<Rightarrow> bool" where
  neg_superpositionI:
    "P\<^sub>1 = add_mset L\<^sub>1 P\<^sub>1' \<Longrightarrow>
     P\<^sub>2 = add_mset L\<^sub>2 P\<^sub>2' \<Longrightarrow>
@@ -196,20 +186,20 @@ qed
 
 subsection \<open>Ground Layer\<close>
 
-definition G_Inf :: "'t ground_clause inference set" where
+definition G_Inf :: "'t clause inference set" where
   "G_Inf =
     {Infer [P\<^sub>2, P\<^sub>1] C | P\<^sub>2 P\<^sub>1 C. superposition P\<^sub>2 P\<^sub>1 C} \<union>
     {Infer [P] C | P C. eq_resolution P C} \<union>
     {Infer [P] C | P C. eq_factoring P C}"
 
-abbreviation G_Bot :: "'t ground_clause set" where
+abbreviation G_Bot :: "'t clause set" where
   "G_Bot \<equiv> {{#}}"
 
 (* TODO: *)
 sublocale ground_term_rewrite_system 
   by unfold_locales
 
-definition G_entails :: "'t ground_clause set \<Rightarrow> 't ground_clause set \<Rightarrow> bool" where
+definition G_entails :: "'t clause set \<Rightarrow> 't clause set \<Rightarrow> bool" where
   "G_entails N\<^sub>1 N\<^sub>2 \<longleftrightarrow> (\<forall>(I :: 't rel). refl I \<longrightarrow> trans I \<longrightarrow> sym I \<longrightarrow>
     compatible_with_context I \<longrightarrow> upair ` I \<TTurnstile>s N\<^sub>1 \<longrightarrow> upair ` I \<TTurnstile>s N\<^sub>2)"
 

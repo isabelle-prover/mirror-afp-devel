@@ -10,26 +10,38 @@ begin
 
 section \<open>Nonground Layer\<close>
 
+locale type_system =  
+  context_compatible_term_typing_properties where
+  welltyped = welltyped and from_ground_context_map = from_ground_context_map +
+  witnessed_nonground_typing where welltyped = welltyped  
+for
+  welltyped :: "('v, 'ty) var_types \<Rightarrow> 't \<Rightarrow> 'ty \<Rightarrow> bool" and
+  from_ground_context_map :: "('t\<^sub>G \<Rightarrow> 't) \<Rightarrow> 'c\<^sub>G \<Rightarrow> 'c"
+
 locale superposition_calculus =
-  witnessed_nonground_typing where
+  type_system where
   welltyped = welltyped and
-  to_ground_context_map = "to_ground_context_map :: ('t \<Rightarrow> 't\<^sub>G) \<Rightarrow> 'c \<Rightarrow> 'c\<^sub>G" +
-  nonground_order where less\<^sub>t = less\<^sub>t +
+  from_ground_context_map = "from_ground_context_map :: ('t\<^sub>G \<Rightarrow> 't) \<Rightarrow> 'c\<^sub>G \<Rightarrow> 'c" +
+
+  context_compatible_nonground_order where less\<^sub>t = less\<^sub>t +
+
   nonground_selection_function where
   select = select and atom_subst = "(\<cdot>a)" and atom_vars = atom.vars and
   atom_to_ground = atom.to_ground and atom_from_ground = atom.from_ground +
+
   tiebreakers where tiebreakers = tiebreakers +
+
   ground_critical_pairs where
   compose_context = compose_ground_context and apply_context = apply_ground_context and
   hole = ground_hole
   for
     select :: "'t atom select" and
     less\<^sub>t :: "'t \<Rightarrow> 't \<Rightarrow> bool" and
-    tiebreakers :: "('t\<^sub>G ground_atom, 't atom) tiebreakers" and
+    tiebreakers :: "('t\<^sub>G atom, 't atom) tiebreakers" and
     welltyped :: "('v :: infinite, 'ty) var_types \<Rightarrow> 't \<Rightarrow> 'ty \<Rightarrow> bool"
 begin
 
-interpretation term_order_notation.
+interpretation term_order_notation .
 
 inductive eq_resolution :: "('t, 'v, 'ty) typed_clause \<Rightarrow> ('t, 'v, 'ty) typed_clause \<Rightarrow> bool" where
   eq_resolutionI:
@@ -37,7 +49,7 @@ inductive eq_resolution :: "('t, 'v, 'ty) typed_clause \<Rightarrow> ('t, 'v, 't
    l = t !\<approx> t' \<Longrightarrow>
    C = D' \<cdot> \<mu> \<Longrightarrow>
    eq_resolution (\<V>, D) (\<V>, C)" 
-if 
+if
   "type_preserving_on (clause.vars D) \<V> \<mu>" 
   "term.is_imgu \<mu> {{t, t'}}"
   "select D = {#} \<Longrightarrow> is_maximal (l \<cdot>l \<mu>) (D \<cdot> \<mu>)"

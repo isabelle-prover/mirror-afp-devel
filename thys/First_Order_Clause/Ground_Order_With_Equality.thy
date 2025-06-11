@@ -28,4 +28,8 @@ sublocale ground_order_generic where
 
 end
 
+locale context_compatible_ground_order =
+  ground_order +
+  term.order: context_compatible_ground_term_order
+
 end
