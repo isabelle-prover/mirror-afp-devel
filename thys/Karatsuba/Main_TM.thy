@@ -499,17 +499,17 @@ fun gen_length_tm :: "nat \<Rightarrow> 'a list \<Rightarrow> nat tm" where
 "gen_length_tm n [] =1 return n"
 | "gen_length_tm n (x # xs) =1 gen_length_tm (Suc n) xs"
 
-lemma val_gen_length_tm[simp, val_simp]: "val (gen_length_tm n xs) = List.gen_length n xs"
-  by (induction n xs rule: gen_length_tm.induct) (simp_all add: List.gen_length_def)
+lemma val_gen_length_tm[simp, val_simp]: "val (gen_length_tm n xs) = List.length_tailrec xs n"
+  by (induction n xs rule: gen_length_tm.induct) simp_all
 
 lemma time_gen_length_tm[simp]: "time (gen_length_tm n xs) = length xs + 1"
   by (induction n xs rule: gen_length_tm.induct) simp_all
 
 definition length_tm :: "'a list \<Rightarrow> nat tm" where
-"length_tm xs = gen_length_tm 0 xs"
+  "length_tm xs = gen_length_tm 0 xs"
 
 lemma val_length_tm[simp, val_simp]: "val (length_tm xs) = length xs"
-  by (simp add: length_tm_def length_code)
+  by (simp add: length_tm_def)
 
 lemma time_length_tm[simp]: "time (length_tm xs) = length xs + 1"
   by (simp add: length_tm_def)

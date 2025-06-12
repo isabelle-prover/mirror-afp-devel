@@ -25,7 +25,7 @@ definition rrewrite :: "('f, 'v) term \<Rightarrow> ('f, 'v) term list"
     | Some \<sigma> \<Rightarrow> [r \<cdot> \<sigma>]) R"
 
 lemma rrewrite_sound: "t \<in> set (rrewrite s) \<Longrightarrow> (s,t) \<in> rrstep (set R)" 
-  unfolding rrewrite_def List.maps_def using match_matches[of s]
+  unfolding rrewrite_def using match_matches[of s]
   by force
 
 lemma rrewrite_complete: assumes "(s,t) \<in> rrstep (set R)"
@@ -35,7 +35,7 @@ proof -
     by (rule rrstepE)
   from match_complete'[OF s[symmetric]] obtain \<tau> where match: "match s l = Some \<tau>" 
     by auto
-  with lr match have "r \<cdot> \<tau> \<in> set (rrewrite s)" unfolding rrewrite_def List.maps_def by force
+  with lr match have "r \<cdot> \<tau> \<in> set (rrewrite s)" unfolding rrewrite_def by force
   thus ?thesis ..
 qed
 
@@ -50,7 +50,7 @@ proof (standard; clarify)
     and vars: "\<And> x. x \<in> vars_term l \<Longrightarrow> \<sigma> x = \<tau> x" by auto
   have vars': "\<And> x. x \<in> vars_term r \<Longrightarrow> \<sigma> x = \<tau> x" using assms[OF lr] vars by auto
   have t: "t = r \<cdot> \<tau>" unfolding t using vars' by (intro term_subst_eq, auto)
-  with lr match show "t \<in> set (rrewrite s)" unfolding rrewrite_def List.maps_def by force
+  with lr match show "t \<in> set (rrewrite s)" unfolding rrewrite_def by force
 qed (rule rrewrite_sound)
 
 fun rewrite :: "('f, 'v) term \<Rightarrow> ('f, 'v) term list" where
@@ -132,7 +132,7 @@ end
 
 
 lemma rrewrite_mono: "set R \<subseteq> set S \<Longrightarrow> set (rrewrite R s) \<subseteq> set (rrewrite S s)" 
-  unfolding rrewrite_def List.maps_def by auto 
+  unfolding rrewrite_def by auto 
 
 lemma Union_image_mono: "(\<And> x. x \<in> A \<Longrightarrow> f x \<subseteq> g x) \<Longrightarrow> \<Union> (f ` A) \<subseteq> \<Union> (g ` A)"
   by blast

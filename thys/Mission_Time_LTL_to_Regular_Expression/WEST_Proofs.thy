@@ -4109,7 +4109,8 @@ proof-
     by blast
   then show ?thesis
     using assms WEST_simp_helper_length length_newL
-    by (metis add_le_cancel_right enum_pairs_bound gen_length_def le_neq_implies_less length_code less_nat_zero_code less_one linordered_semidom_class.add_diff_inverse nth_mem)
+    by (metis (no_types, opaque_lifting) diff_diff_cancel enum_pairs_bound gr0I linorder_not_le nth_mem
+        order_less_imp_le zero_less_diff zero_neq_one)
 qed
 
 lemma WEST_simp_helper_same_length:

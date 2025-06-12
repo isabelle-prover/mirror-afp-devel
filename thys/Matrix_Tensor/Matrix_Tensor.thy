@@ -190,8 +190,8 @@ shows "mat 0 nc M"
 proof-
  have "set M = {}" using mat_def assms  empty_set  by auto
  then have "Ball (set M) (vec 0)" using Ball_def by auto
- then have "mat 0 nc M" using mat_def assms(1) assms(2) gen_length_code(1) length_code
- by (metis (full_types) )
+ then have "mat 0 nc M"
+   using assms(1) assms(2) by (simp add: mat_def)
  then show ?thesis by auto
 qed
 
@@ -559,8 +559,8 @@ proof(induct M)
                  ((row_length (a#M))*(length v)) 
                  (length (a#M)) 
                            (vec_mat_Tensor v (a#M))"
-           using mat_def  "5" length_code
-           by (metis (opaque_lifting, no_types))
+      using mat_def "5"
+        by (simp add: mat_def)
     then show ?thesis by auto
     qed
     with  hyp  show ?case by auto  

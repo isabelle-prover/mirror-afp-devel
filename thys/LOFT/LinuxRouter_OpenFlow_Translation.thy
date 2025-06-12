@@ -130,7 +130,7 @@ qed
 
 lemma and_assoc: "a \<and> b \<and> c \<longleftrightarrow> (a \<and> b) \<and> c" by simp
 
-lemmas custom_simpset = Let_def set_concat set_map map_map comp_def concat_map_maps set_maps UN_iff fun_app_def Set.image_iff
+lemmas custom_simpset = Let_def set_concat set_map map_map comp_def UN_iff fun_app_def Set.image_iff image_image
 
 abbreviation "simple_fw_prefix_to_wordinterval \<equiv> prefix_to_wordinterval \<circ> uncurry PrefixMatch"
 
@@ -176,8 +176,12 @@ proof -
 		hence "(case Some ssi of None \<Rightarrow> True | Some ssi \<Rightarrow> p_sport p \<in> prefix_to_wordset ssi) \<and>
             (case Some ssi of None \<Rightarrow> True
             | Some ssi \<Rightarrow> ssi \<in> set (wordinterval_CIDR_split_prefixmatch (uncurry WordInterval (sports r))))" by simp
-        with 2 show ?thesis by blast
-    qed				
+    with 2 show ?thesis by blast
+  qed				
+  then have si': \<open>si \<noteq> None \<longleftrightarrow> (\<exists>ssi. si = Some ssi \<and> p_sport p \<in> prefix_to_wordset ssi
+    \<and> ssi \<in> set (wordinterval_CIDR_split_prefixmatch (uncurry WordInterval (sports r))))\<close>
+    \<open>si = None \<longleftrightarrow> ?npm (sports r)\<close>
+    by auto
 	obtain di where di: "case di of Some ddi \<Rightarrow> p_dport p \<in> prefix_to_wordset ddi | None \<Rightarrow> True"
 		"case di of None \<Rightarrow> True | Some ddi \<Rightarrow> ddi \<in> set (
 		wordinterval_CIDR_split_prefixmatch (uncurry WordInterval (dports r)))"
@@ -187,7 +191,7 @@ proof -
 		hence "(case None of None \<Rightarrow> True | Some ssi \<Rightarrow> p_dport p \<in> prefix_to_wordset ssi) \<and>
             (case None of None \<Rightarrow> True
             | Some ssi \<Rightarrow> ssi \<in> set (wordinterval_CIDR_split_prefixmatch (uncurry WordInterval (dports r))))" by simp
-        with 1 show ?thesis by blast
+    with 1 show ?thesis by blast
 	next
 		case 2
 		from mm have "p_dport p \<in> wordinterval_to_set (uncurry WordInterval (dports r))"
@@ -199,9 +203,13 @@ proof -
 		hence "(case Some ddi of None \<Rightarrow> True | Some ssi \<Rightarrow> p_dport p \<in> prefix_to_wordset ssi) \<and>
             (case Some ddi of None \<Rightarrow> True
             | Some ssi \<Rightarrow> ssi \<in> set (wordinterval_CIDR_split_prefixmatch (uncurry WordInterval (dports r))))" by simp
-        with 2 show ?thesis by blast
-    qed
-    show ?thesis
+    with 2 show ?thesis by blast
+  qed
+	then have di': \<open>di \<noteq> None \<longleftrightarrow> (\<exists>ddi. di = Some ddi \<and> p_dport p \<in> prefix_to_wordset ddi \<and>
+    ddi \<in> set (wordinterval_CIDR_split_prefixmatch (uncurry WordInterval (dports r))))\<close>
+		\<open>di = None \<longleftrightarrow> ?npm (dports r)\<close>
+		by auto
+  show ?thesis
 	proof
 		let ?mf = "map_option (apsnd (wordNOT \<circ> mask \<circ> (-) 16) \<circ> prefix_match_dtor)"
 		let ?gr = "simple_match_to_of_match_single r
@@ -212,31 +220,22 @@ proof -
 				   simple_match_port.simps[of "fst (dports r)" "snd (dports r)", unfolded surjective_pairing[of "dports r",symmetric]]
 		note u = mm[unfolded simple_matches.simps mfu ord_class.atLeastAtMost_iff simple_packet_unext_def simple_packet.simps]
 		note of_safe_unsafe_match_eq[OF simple_match_to_of_match_generates_prereqs]
-		from u have ple: "fst (sports r) \<le> snd (sports r)" "fst (dports r) \<le> snd (dports r)" by force+
-		show eg: "?gr \<in> set (simple_match_to_of_match r ifs)"
-			unfolding simple_match_to_of_match_def
-			unfolding custom_simpset
-			unfolding smtoms_eq_hlp
-			proof(intro bexI, (intro conjI; ((rule refl)?)), goal_cases)
-				case 2 thus ?case using ple(2) di
-					apply(simp add: pfxm_mask_def prefix_match_dtor_def Set.image_iff 
-					           split: option.splits prod.splits uncurry_splits)
-					apply(erule bexI[rotated])
-					apply(simp split: prefix_match.splits)
-				done
-			next
-				case 3 thus ?case using ple(1) si
-					apply(simp add: pfxm_mask_def prefix_match_dtor_def Set.image_iff 
-					           split: option.splits prod.splits uncurry_splits)
-					apply(erule bexI[rotated])
-					apply(simp split: prefix_match.splits)
-				done
-			next
-				case 4 thus ?case
-				  using u ii by(clarsimp simp: set_maps split: if_splits)
-			next
-				case 1 thus ?case using ii u by simp_all (metis match_proto.elims(2))  
-			qed
+		from u have
+      \<open>fst (sports r) \<le> snd (sports r)\<close>
+      \<open>fst (dports r) \<le> snd (dports r)\<close>
+      \<open>fst (dports r) \<le> p_dport p\<close>
+      \<open>match_iface (iiface r) (p_iiface p)\<close>
+      \<open>match_proto (proto r) (p_proto p)\<close>
+      by auto
+		with ii show eg: "?gr \<in> set (simple_match_to_of_match r ifs)"
+			apply (simp only: simple_match_to_of_match_def custom_simpset smtoms_eq_hlp)
+		  apply (intro bexI, (intro conjI; ((rule refl)?)))
+		     apply (auto simp add: pfxm_mask_def prefix_match_dtor_def image_iff si' di' split: prefix_match.splits elim: match_proto.elims)
+ 		     apply (metis (no_types, lifting) di'(1,2) prefix_match.sel(1,2) prod.collapse uncurry_simp)
+ 		    apply (metis (no_types, lifting) di'(1,2) prefix_match.collapse prefix_match.inject prod.collapse uncurry_simp)
+ 		   apply (metis (no_types, opaque_lifting) prefix_match.sel(1,2) prod.collapse si'(1,2) uncurry_simp)
+		  apply (metis (no_types, lifting) si'(1,2) prefix_match.collapse prefix_match.inject prod.collapse uncurry_simp)
+		  done
 		have dpm: "di = Some (PrefixMatch x1 x2) \<Longrightarrow> p_dport p && ~~ (mask (16 - x2)) = x1" for x1 x2
     proof -
       have *: "di = Some (PrefixMatch x1 x2) \<Longrightarrow> prefix_match_semantics (the di) (p_dport p) \<Longrightarrow> p_dport p && ~~ (mask (16 - x2)) = x1"
@@ -293,7 +292,7 @@ proof -
 		unfolding of_safe_unsafe_match_eq[OF simple_match_to_of_match_generates_prereqs[OF mv eg]]
 		by simp
 	note this[unfolded OF_match_fields_unsafe_def]
-	note eg[unfolded simple_match_to_of_match_def simple_match_to_of_match_single_def  custom_simpset option2set_def]
+	note eg[unfolded simple_match_to_of_match_def simple_match_to_of_match_single_def custom_simpset option2set_def]
 	then guess x ..	moreover from this(2) guess xa ..	moreover from this(2) guess xb ..
 	note xx = calculation(1,3) this
 
@@ -323,10 +322,7 @@ proof -
 			 apply (simp add: match_ifaceAny) 
 			using xx(1) mo unfolding xx(4) OF_match_fields_unsafe_def
 			apply(simp only: if_False set_maps UN_iff)
-			apply(clarify)
-			apply(rename_tac a; subgoal_tac "match_iface (iiface r) a")
-			 apply(clarsimp simp add: option2set_def;fail)
-			apply(rule ccontr,simp;fail)
+			 apply(clarsimp simp add: option2set_def)
 		done
 	next
 		show "match_iface (oiface r) (p_oiface p)" using me .

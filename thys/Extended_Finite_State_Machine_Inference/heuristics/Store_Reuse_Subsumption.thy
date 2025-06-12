@@ -336,11 +336,10 @@ case Nil
 next
 case (Cons a t)
   then show ?case
-    apply simp
+    apply auto
     apply (rule obtains.cases)
-      apply simp
-     apply simp
-    by (metis (no_types, lifting) case_prodE fBexE list.inject no_further_steps no_incoming_to_zero unobtainable_if)
+      apply auto
+    using no_further_steps no_incoming_to_zero unobtainable_if by metis
 qed
 
 definition "no_illegal_updates t r = (\<forall>u \<in> set (Updates t). fst u \<noteq> r)"

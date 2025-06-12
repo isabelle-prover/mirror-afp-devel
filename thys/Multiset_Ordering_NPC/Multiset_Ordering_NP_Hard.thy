@@ -61,7 +61,7 @@ proof -
   define xs where "xs = vars_of_cnf cnf" 
   define cs where "cs = [0 ..< length cnf]"
   define NS :: "('a ms_elem \<times> 'a ms_elem)list" where "NS = concat (map (\<lambda> x. [(Inl (x,Positive), Inl (x,Unsigned)), (Inl (x,Negative), Inl (x,Unsigned))]) xs)" 
-  note res = assms[unfolded multiset_problem_of_cnf_def Let_def List.maps_def, folded xs_def cs_def]
+  note res = assms[unfolded multiset_problem_of_cnf_def Let_def, folded xs_def cs_def]
   have S: "S = concat (map (\<lambda> i. map (\<lambda> l. (ms_elem_of_lit l, Inr i)) (cnf ! i)) cs)" 
     using res by auto
   have NSS: "NSS = NS @ S" unfolding S NS_def using res by auto
@@ -250,7 +250,7 @@ proof -
   have lvs: "length vs \<le> s" unfolding assms(2)[symmetric] vs_def vars_of_cnf_def o_def size_cnf_def
     by (rule order.trans[OF length_remdups_leq], induct cnf, auto)
   have lcnf: "length cnf \<le> s" using assms(2) unfolding size_cnf_def by auto
-  note res = assms(1)[unfolded multiset_problem_of_cnf_def Let_def List.maps_def, folded vs_def, simplified]
+  note res = assms(1)[unfolded multiset_problem_of_cnf_def Let_def, folded vs_def, simplified]
   have xs: "xs = concat (map (\<lambda>x. [Inl (x, Positive), Inl (x, Negative)]) vs)" using res by auto
   have "length xs \<le> length vs + length vs" unfolding xs by (induct vs, auto)
   also have "\<dots> \<le> 2 * s" using lvs by auto

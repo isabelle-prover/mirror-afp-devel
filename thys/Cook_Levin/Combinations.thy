@@ -266,8 +266,8 @@ corollary transits_prepend:
 corollary transits_append:
   assumes "transforms M1 tps t tps'"
   shows "transits (M1 @ M2) (0, tps) t (length M1, tps')"
-  using transits_pre_append' turing_machine_sequential_empty assms
-  by (metis gen_length_def length_code list.size(3))
+  using assms transits_pre_append' [of _ _ _ _ \<open>[]\<close>]
+  by (simp add: turing_machine_sequential_empty)
 
 corollary execute_append:
   assumes "fst cfg = 0" and "halts M1 cfg" and "t \<le> running_time M1 cfg"

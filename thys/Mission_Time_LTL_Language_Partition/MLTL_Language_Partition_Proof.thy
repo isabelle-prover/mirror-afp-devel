@@ -593,7 +593,8 @@ proof-
           {
             assume "length L = 2"
             then obtain x1 x2 where "L = [x1, x2]"
-              by (metis Suc_1 Suc_length_conv gen_length_code(1) gen_length_def impossible_Cons le_add2 list.exhaust plus_1_eq_Suc) 
+              by (metis Ex_list_of_length L_eq add_2_eq_Suc le_iff_add length_Cons min_list.cases
+                  not_less_eq_eq)
             then have ?case by auto
           } moreover {
             assume length_L: "length L > 2"
@@ -1173,7 +1174,7 @@ proof(induct "length X-1" arbitrary: X)
 next
   case (Suc n)
   then obtain H t where X_is: "X = H@[t]"
-    by (metis Ands_mltl_ext.cases One_nat_def Suc_n_not_le_n gen_length_code(1) length_code)
+    by (cases X rule: Ands_mltl_ext.cases) simp_all
   then have length_H: "length H = n+1" using Suc by auto
   then have cond1: "n = length H - 1" by simp
   have cond2: "length H \<ge> 1" using length_H by simp

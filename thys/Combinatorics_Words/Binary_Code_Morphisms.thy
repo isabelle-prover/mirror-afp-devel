@@ -415,7 +415,7 @@ lemma case_finiteD': "case_finite_2 (f \<aa>) (f \<bb>) u = f\<^sup>\<C> u"
   using case_finiteD by metis
 
 lemma bin_morph_of_maps: "bin_morph_of x y = List.maps (case_finite_2 x y)"
-  unfolding bin_morph_of_def maps_def unfolding case_finite_2_if_else by simp
+  by (simp add: bin_morph_of_def fun_eq_iff case_finite_2_if_else)
 
 lemma bin_morph_ofD: "(bin_morph_of x y) \<aa> = x" "(bin_morph_of x y) \<bb> = y"
   unfolding bin_morph_of_def by simp_all

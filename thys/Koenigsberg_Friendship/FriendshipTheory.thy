@@ -1207,8 +1207,7 @@ proof (rule ccontr)
                   have "last (tl ps)=last ps" using \<open>length ps=l+1\<close> 
                     by (metis \<open>last ps \<noteq> hd ps\<close> list.sel(1,3) last_ConsL last_tl neq_Nil_conv)
                   moreover have "length ps\<noteq>1" using \<open>last ps \<noteq> hd ps\<close> 
-                    by (metis Suc_eq_plus1_left gen_length_code(1) gen_length_def list.sel(1) 
-                      last_ConsL length_Suc_conv neq_Nil_conv)
+                    by (auto simp add: length_Suc_conv)
                   hence "tl ps\<noteq>[]" using \<open>length ps=l+1\<close> 
                     by(auto simp: length_Suc_conv)
                   ultimately have "adj_path (hd ps) (tl ps @ [last x])"

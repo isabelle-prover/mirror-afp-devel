@@ -348,8 +348,8 @@ by(simp add: gen_length_cons_def split: step.split)
 lemma unstream_gen_length [stream_fusion]: "gen_length_cons 0 s = length (unstream g s)"
 by(simp add: gen_length_cons_def)
 
-lemma unstream_gen_length2 [stream_fusion]: "gen_length_cons n s = List.gen_length n (unstream g s)"
-by(simp add: List.gen_length_def gen_length_cons_def)
+lemma unstream_gen_length2 [stream_fusion]: "gen_length_cons n s = List.length_tailrec (unstream g s) n"
+by(simp add: gen_length_cons_def)
 
 end
 
@@ -1373,8 +1373,8 @@ proof(induction s taking: g rule: unstream.induct)
     case (Yield x s')
     with "1.IH"(2)[OF this] show ?thesis
       using unstream_maps_trans_Some[of f g _ "fst (f x)" "snd (f x)"]
-      by(simp add: maps_trans.rep_eq maps_simps split_def)
-  qed(simp_all add: maps_trans.rep_eq maps_simps)
+      by(simp add: maps_trans.rep_eq split_def)
+  qed(simp_all add: maps_trans.rep_eq)
 qed
 
 text \<open>
@@ -1476,8 +1476,8 @@ proof(induction s taking: g rule: unstream.induct)
     case (Yield x s')
     with "1.IH"(2)[OF this] unstream_flatten_Some[of "\<lambda>s. (s, f s)" "fix_gen g''" g]
     show ?thesis
-      by(subst (1 3) unstream.simps)(simp add: flatten.rep_eq maps_simps unstream_fix_gen)
-  qed(simp_all add: flatten.rep_eq maps_simps)
+      by(subst (1 3) unstream.simps)(simp add: flatten.rep_eq unstream_fix_gen)
+  qed(simp_all add: flatten.rep_eq)
 qed
 
 text \<open>
@@ -1492,8 +1492,8 @@ proof(induction s taking: g rule: unstream.induct)
     case (Yield x s')
     with "1.IH"(2)[OF this] show ?thesis
       using unstream_flatten_Some[of f g'' g s' "f x"]
-      by(simp add: flatten.rep_eq maps_simps o_def)
-  qed(simp_all add: maps_simps flatten.rep_eq)
+      by(simp add: flatten.rep_eq o_def)
+  qed(simp_all add: flatten.rep_eq)
 qed
 
 end

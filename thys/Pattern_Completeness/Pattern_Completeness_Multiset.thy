@@ -929,9 +929,9 @@ next
   
   let ?tau_mset = "subst_pat_problem_mset \<tau> :: ('f,'v,'s) pat_problem_mset \<Rightarrow> _"
   let ?tau = "subst_match_problem_mset \<tau> :: ('f,'v,'s) match_problem_mset \<Rightarrow> _"
-  from \<tau>[unfolded \<tau>s_def \<tau>c_def List.maps_def]
+  from \<tau>
   obtain c sorts where c: "c : sorts \<rightarrow> ?s in C" and tau: "\<tau> = subst x (Fun c (map Var (zip [n..<n + length sorts] sorts)))" 
-    by auto
+    by (clarsimp simp add: \<tau>s_def \<tau>c_def)
   with C_sub_S have sS: "?s \<in> S" and sorts: "set sorts \<subseteq> S" by auto
   define vs where "vs = zip [n..<n + length sorts] sorts" 
   have \<tau>: "\<tau> = subst x (Fun c (map Var vs))" unfolding tau vs_def by auto

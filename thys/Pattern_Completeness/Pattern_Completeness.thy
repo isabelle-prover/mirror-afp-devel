@@ -382,10 +382,10 @@ proof -
     apply unfold_locales using distC dec.
   have wf: "wf_pats (pat_list ` set P)" using condD
     by (force simp: P_def pats_def wf_pats_def wf_pat_def pat_list_def wf_match_def tvars_match_def
-        term_and_args_def List.maps_def
+        term_and_args_def
         elim!: in_set_zipE split:  prod.splits)
   have *: "pat_list ` set P = { { {(pat,lhs)} | lhs pat. pat \<in> set patL \<and> lhs \<in> set lhss} | patL. patL \<in> set pats}" 
-    unfolding pat_list_def P_def List.maps_def by (auto simp: image_comp) force+
+    unfolding pat_list_def P_def by (auto simp: image_comp) force+
   have "b = pats_complete ?C (pat_list ` set P)"
     apply (unfold b)
   proof (rule decide_pat_complete[OF dist(1) dec])
@@ -396,8 +396,8 @@ proof -
       from mem si condD
       have "si \<in> set ?S" by auto
     }
-    thus "snd ` \<Union> (vars ` fst ` set (concat (concat P))) \<subseteq> set ?S" unfolding P_def pats_def term_and_args_def List.maps_def
-      by fastforce
+    thus "snd ` \<Union> (vars ` fst ` set (concat (concat P))) \<subseteq> set ?S"
+      by (auto simp add: P_def pats_def term_and_args_def)
   qed
   also have "\<dots> \<longleftrightarrow>
      (\<forall> \<sigma> :\<^sub>s V \<rightarrow> \<T>(?C). \<forall>patL \<in> set pats. (\<exists> pat \<in> set patL. ?match_lhs (pat \<cdot> \<sigma>)))" (is "_ \<longleftrightarrow> ?L")

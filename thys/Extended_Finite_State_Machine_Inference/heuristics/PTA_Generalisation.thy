@@ -320,14 +320,15 @@ fun unzip_3_tailrec_rev :: "('a \<times> 'b \<times> 'c) list \<Rightarrow> ('a 
   "unzip_3_tailrec_rev [] (as, bs, cs) = (as, bs, cs)" |
   "unzip_3_tailrec_rev ((a, b, c)#t) (as, bs, cs) = unzip_3_tailrec_rev t (a#as, b#bs, c#cs)"
 
-lemma unzip_3_tailrec_rev: "unzip_3_tailrec_rev l (as, bs, cs) = ((map_tailrec_rev fst l as), (map_tailrec_rev (fst \<circ> snd) l bs), (map_tailrec_rev (snd \<circ> snd) l cs))"
-  by (induct l arbitrary: as bs cs, auto)
+lemma unzip_3_tailrec_rev: "unzip_3_tailrec_rev l (as, bs, cs) =
+  ((List.map_tailrec_rev fst l as), (List.map_tailrec_rev (fst \<circ> snd) l bs), (List.map_tailrec_rev (snd \<circ> snd) l cs))"
+  by (induct l arbitrary: as bs cs) auto
 
 definition "unzip_3_tailrec l = (let (as, bs, cs) = unzip_3_tailrec_rev l ([],[],[]) in (rev as, rev bs, rev cs))"
 
 lemma unzip_3_tailrec [code]: "unzip_3 l = unzip_3_tailrec l"
   apply (simp only: unzip_3_tailrec_def unzip_3_tailrec_rev)
-  by (simp add: Let_def map_tailrec_rev unzip_3 map_eq_map_tailrec)
+  by (simp add: Let_def unzip_3)
 
 text\<open>We want to return an aexp which, when evaluated in the correct context accounts for the literal
 input-output pairs within the training set. This will be replaced by symbolic regression in the
@@ -342,7 +343,7 @@ declare get_output_def [code del]
 code_printing constant get_output \<rightharpoonup> (Scala) "Dirties.getOutput"
 
 definition get_outputs :: "label \<Rightarrow> nat \<Rightarrow> value list \<Rightarrow> inputs list \<Rightarrow> registers list \<Rightarrow> value list list \<Rightarrow> (vname aexp \<times> (vname \<Rightarrow>f String.literal)) option list" where
-  "get_outputs l maxReg values I r outputs = map_tailrec (\<lambda>(maxReg, ps). get_output l maxReg values (zip I (zip r ps))) (enumerate maxReg (transpose outputs))"
+  "get_outputs l maxReg values I r outputs = List.map_tailrec (\<lambda>(maxReg, ps). get_output l maxReg values (zip I (zip r ps))) (enumerate maxReg (transpose outputs))"
 
 definition enumerate_exec_values :: "trace \<Rightarrow> value list" where
   "enumerate_exec_values vs = fold (\<lambda>(_, i, p) I. List.union (List.union i p) I) vs []"

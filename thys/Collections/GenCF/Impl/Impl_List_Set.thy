@@ -365,8 +365,7 @@ end
       apply (induction yl')
       apply simp
       apply auto []
-      apply (metis (lifting) concat_map_maps distinct.simps(2) 
-        distinct_singleton maps_simps(2))
+      apply (metis distinct_product product_concat_map)
       done
     finally (relcompI) 
     show "([ (x,y). x\<leftarrow>xl, y\<leftarrow>yl ], op_set_cart xs ys) \<in> \<langle>Rx \<times>\<^sub>r Ry\<rangle>list_set_rel"

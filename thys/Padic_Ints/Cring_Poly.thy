@@ -6250,8 +6250,8 @@ lemma cf_list_length:
 lemma cf_list_entries:
   assumes "i \<le> deg R p"
   shows "(cf_list R p)!i = p i"
-  unfolding cf_list_def 
-  by (metis add.left_neutral assms diff_zero less_Suc_eq_le map_eq_map_tailrec nth_map_upt)
+  using assms
+  by (simp add: cf_list_def nth_append)
   
 lemma(in UP_ring) list_to_poly_cf_list_inv:
   assumes "p \<in> carrier (UP R)"

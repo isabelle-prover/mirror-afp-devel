@@ -409,26 +409,8 @@ begin
       assumes a2: "take (length i2 - Suc 0) i1 = butlast i2"
       assumes a3: "butlast i1 = take (length i1 - Suc 0) x"
       shows "butlast i2 = take (length i2 - Suc 0) x"
-    proof - (*sledgehammer spass Isar proof*)
-      have f4: "List.gen_length 0 i2 \<le> List.gen_length 0 i1"
-        using a1 by (simp add: length_code)
-      have f5: "\<And>cs. List.gen_length 0 (cs::char list) - Suc 0 = List.gen_length 0 (tl cs)"
-        by (metis (no_types) One_nat_def length_code length_tl)
-      obtain nn :: "(nat \<Rightarrow> nat) \<Rightarrow> nat" where
-        "\<And>f. \<not> f (nn f) \<le> f (Suc (nn f)) \<or> f (List.gen_length 0 i2) \<le> f (List.gen_length 0 i1)"
-        using f4 by (meson lift_Suc_mono_le)
-      hence "\<not> nn (\<lambda>n. n - Suc 0) - Suc 0 \<le> nn (\<lambda>n. n - Suc 0) \<or> List.gen_length 0 (tl i2) \<le> List.gen_length 0 (tl i1)"
-        using f5 by (metis (lifting) diff_Suc_Suc diff_zero)
-      hence f6: "min (List.gen_length 0 (tl i2)) (List.gen_length 0 (tl i1)) = List.gen_length 0 (tl i2)"
-        using diff_le_self min.absorb1 by blast
-      { assume "take (List.gen_length 0 (tl i2)) i1 \<noteq> take (List.gen_length 0 (tl i2)) x"
-        have "List.gen_length 0 (tl i2) = 0 \<or> take (List.gen_length 0 (tl i2)) i1 = take (List.gen_length 0 (tl i2)) x"
-          using f6 f5 a3 by (metis (lifting) One_nat_def butlast_conv_take length_code take_take)
-        hence "take (List.gen_length 0 (tl i2)) i1 = take (List.gen_length 0 (tl i2)) x"
-          by force }
-      thus "butlast i2 = take (length i2 - Suc 0) x"
-        using f5 a2 by (metis (full_types) length_code)
-    qed
+    by (smt (verit, ccfv_threshold) One_nat_def a1 a2 a3 diff_less leI length_take length_tl
+        less_numeral_extra(1) take0 take_all take_butlast take_take tl_take)
 
     private lemma internal_iface_name_subset: "internal_iface_name_subset i1 i2 \<longleftrightarrow> 
         {i. internal_iface_name_match i1 i} \<subseteq> {i. internal_iface_name_match i2 i}"

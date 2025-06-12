@@ -269,8 +269,11 @@ next
       then have "suffix (lrange_filter x (leaves (Node ts t))) (concat (map leaves (leaf_nodes_lrange sub x @ leaf_nodes_list list @ leaf_nodes t)))"
       proof (goal_cases)
         case 1
-        have "lrange_filter x (leaves (Node ts t)) = lrange_filter x (leaves sub @ leaves_list list @ leaves t)" 
-          by (metis (no_types, lifting) "2.prems"(1) "2.prems"(2) a_split aligned_imp_Laligned append.assoc concat_map_maps fst_conv list.simps(9) list_split local.Cons lrange_sorted_split maps_simps(1))
+        from "2.prems"(2) have \<open>Laligned (Node ts t) u\<close>
+          by (rule aligned_imp_Laligned)
+        then have "lrange_filter x (leaves (Node ts t)) = lrange_filter x (leaves sub @ leaves_list list @ leaves t)"
+          using "2.prems" lrange_sorted_split [of ts t u x ls rs] list_split list_conc local.Cons a_split
+          by simp
         also have "\<dots> = lrange_filter x (leaves sub) @ leaves_list list @ leaves t"
           by (metis "2.prems"(1) "2.prems"(2) a_split aligned_imp_Laligned calculation list_split local.Cons lrange_sorted_split_right split_range.lrange_sorted_split split_range_axioms)
         moreover have "(concat (map leaves (leaf_nodes_lrange sub x @ leaf_nodes_list list @ leaf_nodes t))) = (concat (map leaves (leaf_nodes_lrange sub x)) @ leaves_list list @ leaves t)" 

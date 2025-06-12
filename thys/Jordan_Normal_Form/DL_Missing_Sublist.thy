@@ -735,7 +735,8 @@ lemma weave_complementary_nthss[simp]:
  "weave A (nths xs A) (nths xs (-A)) = xs"
 proof (induction xs rule:rev_induct)
   case Nil
-  then show ?case by (metis gen_length_def length_0_conv length_code length_weave nths_nil)
+  then show ?case
+    by (simp add: weave_def)
 next
   case (snoc x xs)
   have length_xs:"length xs = length (nths xs A) + length (nths xs (-A))" by (metis length_weave snoc.IH)

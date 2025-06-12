@@ -83,9 +83,10 @@ next
           (sa s ! j + length s - Suc 0) mod (length s)"
     proof (cases "sa s ! i")
       case 0
-      hence "(sa s ! i + length s - Suc 0) mod (length s) = length s - Suc 0"
-        by (metis diff_Suc_less gen_length_def length_code length_greater_0_conv list.size(3) 
-                  mod_by_0 mod_less)
+      moreover have \<open>length s > 0\<close>
+        using A(2) bwt_perm_def sa_length by fastforce
+      ultimately have "(sa s ! i + length s - Suc 0) mod (length s) = length s - Suc 0"
+        by simp
       moreover
       have "\<exists>m. sa s ! j = Suc m"
         using "0" \<open>sa s ! i \<noteq> sa s ! j\<close> not0_implies_Suc by force

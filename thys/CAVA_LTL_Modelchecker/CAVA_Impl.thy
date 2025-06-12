@@ -419,7 +419,7 @@ begin
     \<comment> \<open>Very specific optimization used in the next refinement\<close>
     apply -
     apply (induction l2) 
-    apply (auto simp: List.maps_def) [2]
+    apply (auto) [2]
 
     apply auto []
     done
