@@ -264,8 +264,9 @@ fun typinfo_aux_simpset thy_ctxt =
          td_names_simps @
          typ_name_simps
  in
-  umm_ctxt addsimps simps
-   addSolver (sub_typ_solver sub_typ_simps)
+  umm_ctxt
+  |> Simplifier.add_simps simps
+  |> Simplifier.add_unsafe_solver (sub_typ_solver sub_typ_simps)
   |> Context_Position.restore_visible thy_ctxt
  end
 

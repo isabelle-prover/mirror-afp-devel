@@ -74,7 +74,7 @@ lemma node_relatorD: "node_relator x y \<Longrightarrow> x \<in> y" unfolding no
 ML\<open>fun TRY' tac = tac ORELSE' K all_tac\<close>
 
 setup \<open>map_theory_simpset (fn ctxt =>
-  ctxt addSolver (Simplifier.mk_solver "node_relator"
+  ctxt |> Simplifier.add_unsafe_solver (Simplifier.mk_solver "node_relator"
     (fn ctxt => fn n =>
       let
         val tac =
