@@ -50,16 +50,6 @@ sublocale nonground_order_generic where
   ground_neg_to_mset = neg_to_mset and ground_pos_to_mset = pos_to_mset
   by unfold_locales (simp_all add: atom.from_ground_def mset_uprod_image_mset)
 
-(* TODO: Name *)
-lemma less\<^sub>t_less\<^sub>l:
-  assumes "t\<^sub>1 \<prec>\<^sub>t t\<^sub>2"
-  shows
-    less\<^sub>t_less\<^sub>l_pos: "t\<^sub>1 \<approx> t\<^sub>3 \<prec>\<^sub>l t\<^sub>2 \<approx> t\<^sub>3" and
-    less\<^sub>t_less\<^sub>l_neg: "t\<^sub>1 !\<approx> t\<^sub>3 \<prec>\<^sub>l t\<^sub>2 !\<approx> t\<^sub>3"
-  using assms
-  unfolding less\<^sub>l_def
-  by (auto simp: multp_add_mset multp_add_mset')
-
 lemma literal_order_less_if_all_lesseq_ex_less_set:
   assumes
     "\<forall>t \<in> set_uprod (atm_of l). t \<cdot>t \<sigma>' \<preceq>\<^sub>t t \<cdot>t \<sigma>"
@@ -68,6 +58,35 @@ lemma literal_order_less_if_all_lesseq_ex_less_set:
   using assms literal.order.less_if_all_lesseq_ex_less 
   unfolding literal.order.to_mset_to_set[unfolded uprod_literal_to_set_atm_of]
   by presburger
+
+end
+
+locale context_compatible_nonground_order =
+  nonground_order +
+  "term": context_compatible_nonground_term_order
+begin
+
+sublocale literal.order: subst_update_stable_multiset_extension where
+  less = less\<^sub>t and sub_subst = "(\<cdot>t)" and sub_vars = term.vars and
+  sub_to_ground = term.to_ground and sub_from_ground = term.from_ground and
+  map = map_uprod_literal and to_set = uprod_literal_to_set and
+  to_ground_map = map_uprod_literal and from_ground_map = map_uprod_literal and
+  ground_map = map_uprod_literal and to_set_ground = uprod_literal_to_set and
+  to_mset = literal_to_mset and id_subst = Var and base_vars = term.vars and base_less = less\<^sub>t and
+  base_subst = "(\<cdot>t)"
+  rewrites
+  "\<And>l \<sigma>. functional_substitution_lifting.subst (\<cdot>t) map_uprod_literal l \<sigma> = literal.subst l \<sigma>" and
+  "\<And>l. functional_substitution_lifting.vars term.vars uprod_literal_to_set l = literal.vars l" and
+  "\<And>l\<^sub>G. grounding_lifting.from_ground term.from_ground map_uprod_literal l\<^sub>G
+    = literal.from_ground l\<^sub>G" and
+  "\<And>l. grounding_lifting.to_ground term.to_ground map_uprod_literal l = literal.to_ground l"
+  by unfold_locales simp_all
+
+sublocale context_compatible_nonground_order_generic where
+  atom_subst = atom.subst and atom_vars = atom.vars and atom_from_ground = atom.from_ground and
+  atom_to_ground = atom.to_ground and neg_to_mset = neg_to_mset and pos_to_mset = pos_to_mset and
+  ground_neg_to_mset = neg_to_mset and ground_pos_to_mset = pos_to_mset
+  by unfold_locales
 
 end
 

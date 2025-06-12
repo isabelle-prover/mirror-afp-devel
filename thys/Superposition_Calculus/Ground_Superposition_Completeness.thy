@@ -11,7 +11,7 @@ subsection \<open>Model Construction\<close>
 
 context ground_superposition_calculus begin
 
-function epsilon :: "_ \<Rightarrow> 't ground_clause \<Rightarrow> 't rel" where
+function epsilon :: "'t clause set \<Rightarrow> 't clause \<Rightarrow> 't rel" where
   "epsilon N C = {(s, t)| s t C'.
     C \<in> N \<and>
     C = add_mset (Pos (Upair s t)) C' \<and>
@@ -25,23 +25,14 @@ function epsilon :: "_ \<Rightarrow> 't ground_clause \<Rightarrow> 't rel" wher
   by auto
 
 termination epsilon
-proof (relation "{((x1, x2), (y1, y2)). x2 \<prec>\<^sub>c y2}")
-  define f :: "'c \<times> 't ground_clause \<Rightarrow> 't ground_clause" where
-    "f = (\<lambda>(x1, x2). x2)"
-  have "wfp (\<lambda>(x1, x2) (y1, y2). x2 \<prec>\<^sub>c y2)"
-  proof (rule wfp_if_convertible_to_wfp)
-    show "\<And>x y. (case x of (x1, x2) \<Rightarrow> \<lambda>(y1, y2). x2 \<prec>\<^sub>c y2) y \<Longrightarrow> (snd x) \<prec>\<^sub>c (snd y)"
-      by auto
-  next
-    show "wfp (\<prec>\<^sub>c)"
-      by auto
-  qed
-  thus "wf {((x1, x2), (y1, y2)). x2 \<prec>\<^sub>c y2}"
+proof (relation "{((_, C), (_, C')). C \<prec>\<^sub>c C'}")
+
+  have "wfp (\<lambda>(_, C) (_, C'). C \<prec>\<^sub>c C')"
+    by (rule wfp_if_convertible_to_wfp[OF wfp_less, of _ snd]) auto
+
+  thus "wf {((_, C), (_, C')). C \<prec>\<^sub>c C'}"
     by (simp add: wfp_def)
-next
-  show "\<And>N C x xa xb xc xd. xd \<in> {D \<in> N. D \<prec>\<^sub>c C} \<Longrightarrow> (({E \<in> N. E \<preceq>\<^sub>c xd}, xd), N, C) \<in> {((x1, x2), y1, y2). x2 \<prec>\<^sub>c y2}"
-    by simp
-qed
+qed simp
 
 declare epsilon.simps[simp del]
 
@@ -1254,8 +1245,8 @@ qed
 
 lemma (in ground_superposition_calculus) model_preconstruction:
   fixes
-    N :: "'t ground_clause set" and
-    C :: "'t ground_clause"
+    N :: "'t clause set" and
+    C :: "'t clause"
   defines
     "entails \<equiv> \<lambda>E C. upair ` (rewrite_in_context E)\<^sup>\<down> \<TTurnstile> C"
   assumes "saturated N" and "{#} \<notin> N" and C_in: "C \<in> N"
@@ -1361,7 +1352,7 @@ proof (induction C rule: wfp_induct_rule)
         thus ?thesis
         proof (rule disjE)
           assume "s = s'"
-          define \<iota> :: "'t ground_clause inference" where
+          define \<iota> :: "'t clause inference" where
             "\<iota> = Infer [C] C'"
 
           have "eq_resolution C C'"
@@ -1511,7 +1502,7 @@ proof (induction C rule: wfp_induct_rule)
             using \<open>s \<prec>\<^sub>t s' \<or> s' \<prec>\<^sub>t s\<close> s'_eq_if s_eq_if
             by metis
 
-          define \<iota> :: "'t ground_clause inference" where
+          define \<iota> :: "'t clause inference" where
             "\<iota> = Infer [D, C] CD"
 
           have "\<iota> \<in> G_Inf"
@@ -1754,7 +1745,7 @@ proof (induction C rule: wfp_induct_rule)
 
                 let ?concl = "(add_mset (s' !\<approx> t') (add_mset (t \<approx> t') C''))"
 
-                define \<iota> :: "'t ground_clause inference" where
+                define \<iota> :: "'t clause inference" where
                   "\<iota> = Infer [C] ?concl"
 
                 have eq_fact: "eq_factoring C ?concl"
@@ -1851,7 +1842,7 @@ proof (induction C rule: wfp_induct_rule)
 
             let ?concl = "(add_mset (c\<langle>t'\<rangle> \<approx> s') (C' + D'))"
 
-            define \<iota> :: "'t ground_clause inference" where
+            define \<iota> :: "'t clause inference" where
               "\<iota> = Infer [D, C] ?concl"
 
             have super: "pos_superposition D C ?concl"
@@ -1963,7 +1954,7 @@ proof (induction C rule: wfp_induct_rule)
             using two_le_countE
             by metis
 
-          define \<iota> :: "'t ground_clause inference" where
+          define \<iota> :: "'t clause inference" where
             "\<iota> = Infer [C] (add_mset (s \<approx> s') (add_mset (s' !\<approx> s') C'))"
 
           let ?concl = "add_mset (s \<approx> s') (add_mset (s' !\<approx> s') C')"
@@ -2050,8 +2041,8 @@ qed
 
 lemma (in ground_superposition_calculus) model_construction:
   fixes
-    N :: "'t ground_clause set" and
-    C :: "'t ground_clause"
+    N :: "'t clause set" and
+    C :: "'t clause"
   defines
     "entails \<equiv> \<lambda>E C. upair ` (rewrite_in_context E)\<^sup>\<down> \<TTurnstile> C"
   assumes "saturated N" and "{#} \<notin> N" and C_in: "C \<in> N"
@@ -2077,7 +2068,7 @@ qed
 subsection \<open>Static Refutational Completeness\<close>
 
 lemma (in ground_superposition_calculus) statically_complete:
-  fixes N :: "'t ground_clause set"
+  fixes N :: "'t clause set"
   assumes "saturated N" and "G_entails N {{#}}"
   shows "{#} \<in> N"
   using \<open>G_entails N {{#}}\<close>

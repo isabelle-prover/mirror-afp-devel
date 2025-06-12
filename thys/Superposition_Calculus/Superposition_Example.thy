@@ -1,15 +1,13 @@
 theory Superposition_Example
   imports
     Monomorphic_Superposition
-    Typed_Ground_Superposition
 
     First_Order_Clause.IsaFoR_KBO
-    First_Order_Clause.Monomorphic_Typing
 begin
 
 (* TODO: use strictly_generalizes *)
 abbreviation trivial_tiebreakers ::
-  "'f gterm ground_clause \<Rightarrow> ('f,'v) term clause \<Rightarrow> ('f,'v) term clause \<Rightarrow> bool" where
+  "'f gterm clause \<Rightarrow> ('f,'v) term clause \<Rightarrow> ('f,'v) term clause \<Rightarrow> bool" where
   "trivial_tiebreakers \<equiv> \<bottom>"
 
 abbreviation trivial_select :: "'a clause \<Rightarrow> 'a clause" where
@@ -24,7 +22,7 @@ interpretation unit_types: witnessed_monomorphic_term_typing where \<F> = unit_t
 interpretation example1: monomorphic_superposition_calculus where
     select = "trivial_select :: (('f :: weighted , 'v :: infinite) term atom) select" and
     less\<^sub>t = less_kbo and
-    welltyped = unit_types.welltyped and
+    \<F> = unit_typing and
     tiebreakers = trivial_tiebreakers
   by unfold_locales auto
 
@@ -63,7 +61,7 @@ qed
 interpretation example2: monomorphic_superposition_calculus where
     select = "KBO.select_max :: (nat, nat) term atom select" and
     less\<^sub>t = less_kbo and
-    welltyped = example_types.welltyped and
+    \<F> = types and
     tiebreakers = trivial_tiebreakers
   by unfold_locales
 

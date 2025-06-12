@@ -46,7 +46,7 @@ qed
 end
 
 locale term_typing_properties = 
-  nonground_term_with_context where Var = Var +
+  "term": nonground_term where Var = Var +
   base_typed_functional_substitution where
   id_subst = Var and subst = term_subst and vars = term_vars and 
   welltyped = welltyped +
@@ -57,23 +57,15 @@ locale term_typing_properties =
   welltyped = welltyped and id_subst = Var and subst = term_subst and vars = term_vars 
 for 
   welltyped :: "('v, 'ty) var_types \<Rightarrow> 't \<Rightarrow> 'ty \<Rightarrow> bool" and
-  Var :: "'v \<Rightarrow> 't" +
-assumes "\<And>\<V>. term_typing (welltyped \<V>) apply_context"
+  Var :: "'v \<Rightarrow> 't"
 begin
 
 (* TODO: Move as far up as possible *)
 notation welltyped (\<open>_ \<turnstile> _ : _\<close> [1000, 0, 50] 50)
 
 sublocale "term": base_typing where welltyped = "welltyped \<V>" for \<V>
-  by (simp add: base_typing_def typing_axioms)
-
-sublocale "term": term_typing where 
-  welltyped = "welltyped \<V>" and apply_context = apply_context for \<V>
-  using
-    term_typing_properties_axioms 
-    term_typing_properties_axioms_def 
-    term_typing_properties_def
-  by metis
+  using typing_axioms
+  unfolding base_typing_def .
 
 end
 
@@ -81,5 +73,24 @@ locale base_witnessed_typing_properties =
   base_typing_properties +
   witnessed_typed_functional_substitution where 
   welltyped = welltyped and base_subst = subst and base_vars = vars and base_welltyped = welltyped
+
+locale context_compatible_term_typing_properties = 
+  nonground_term_with_context where Var = Var +
+  term_typing_properties where Var = Var and welltyped = welltyped
+for 
+  welltyped :: "('v, 'ty) var_types \<Rightarrow> 't \<Rightarrow> 'ty \<Rightarrow> bool" and
+  Var :: "'v \<Rightarrow> 't" +
+assumes "\<And>\<V>. term_typing (welltyped \<V>) apply_context"
+begin
+
+sublocale "term": term_typing where 
+  welltyped = "welltyped \<V>" and apply_context = apply_context for \<V>
+  using
+    context_compatible_term_typing_properties_axioms 
+    context_compatible_term_typing_properties_axioms_def 
+    context_compatible_term_typing_properties_def
+  by metis
+
+end
 
 end

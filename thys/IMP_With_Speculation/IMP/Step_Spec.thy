@@ -387,6 +387,22 @@ abbreviation
 definition "finalS = final stepS"
 lemmas finalS_defs  = final_def finalS_def
 
+lemma stepS_determ:
+"cfg_ib \<rightarrow>S cfg_ib' \<Longrightarrow> cfg_ib \<rightarrow>S cfg_ib'' \<Longrightarrow> cfg_ib'' = cfg_ib'"
+  apply(induction arbitrary: cfg_ib'' rule: stepS.induct)
+  subgoal for cfgs cfg pstate pstate' ibT ibUT
+    by(cases "nextB (cfg, ibT, ibUT)", auto elim: stepS.cases)
+  subgoal for cfgs cfg pstate pstate' ibT ibUT
+    apply(cases "nextB (cfg, ibT, ibUT)",cases "nextM (cfg, ibT, ibUT)")
+    by(auto elim: stepS.cases)
+  subgoal for cfgs pstate cfg pstate' ibT ibUT
+    by(cases "nextB (last cfgs, ibT, ibUT)", auto elim: stepS.cases)
+  subgoal for cfgs cfg pstate pstate' ibT ibUT
+    apply(cases "nextB (last cfgs, ibT, ibUT)",cases "nextM (last cfgs, ibT, ibUT)")
+    by(auto elim: stepS.cases)
+  subgoal by(auto elim: stepS.cases)
+  subgoal by(auto elim: stepS.cases) .
+
 lemma stepS_0: "(pstate, Config 0 s, [], ibT, ibUT, ls) \<rightarrow>S (pstate, Config 1 s, [], ibT, ibUT, ls)"
 using prog_0 apply-apply(rule nonspec_normal) 
 using One_nat_def stebB_0 stepB_nextB  

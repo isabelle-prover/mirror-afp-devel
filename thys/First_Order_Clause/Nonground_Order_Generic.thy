@@ -11,20 +11,17 @@ section \<open>Nonground Order\<close>
 locale nonground_order_lifting =
   grounding_lifting +
   order: ground_total_multiset_extension +
-  order: ground_subst_stable_multiset_extension +
-  order: subst_update_stable_multiset_extension
+  order: ground_subst_stable_multiset_extension
 
 locale nonground_term_based_order_lifting =
   "term": nonground_term +
   nonground_order_lifting where
-  id_subst = Var and comp_subst = "(\<odot>)" and base_vars = term.vars and base_less = less\<^sub>t and
-  base_subst = "(\<cdot>t)"
+  id_subst = Var 
 for less\<^sub>t
 
 locale nonground_order_generic =
-  nonground_term_with_context where
-  Var = "Var :: 'v \<Rightarrow> 't" and term_to_ground = "term_to_ground :: 't \<Rightarrow> 't\<^sub>G" and
-  apply_context = "apply_context :: 'c \<Rightarrow> 't \<Rightarrow> 't" +
+  "term": nonground_term where
+  Var = "Var :: 'v \<Rightarrow> 't" and term_to_ground = "term_to_ground :: 't \<Rightarrow> 't\<^sub>G" +
  
   nonground_clause_generic where
   atom_subst = atom_subst and atom_from_ground = atom_from_ground +
@@ -116,7 +113,7 @@ proof-
      unfolding is_maximal_def
      by force
 
-    then show ?thesis..
+    then show ?thesis ..
   qed
 qed
 
@@ -165,14 +162,14 @@ proof-
 
     have "l \<cdot>l \<gamma> \<preceq>\<^sub>l l' \<cdot>l \<gamma>"
       using
-        clause.order.sub.less_eq.ground_subst_stability[OF l_grounding l'_grounding l_less_eq_l'].
+        clause.order.sub.less_eq.ground_subst_stability[OF l_grounding l'_grounding l_less_eq_l'] .
 
     then have False
       using clause.subst_in_to_set_subst[OF l'_in_C] ground_strictly_maximal
       unfolding is_strictly_maximal_def subst_clause_remove1_mset[OF l_in_C]
       by simp
 
-    then show ?thesis..
+    then show ?thesis ..
   qed
 qed
 
@@ -181,8 +178,7 @@ lemma is_maximal_if_grounding_is_maximal:
    l_in_C: "l \<in># C" and
    C_grounding: "clause.is_ground (C \<cdot> \<gamma>)" and
    l_grounding_is_maximal: "is_maximal (l \<cdot>l \<gamma>) (C \<cdot> \<gamma>)"
- shows
-   "is_maximal l C"
+ shows "is_maximal l C"
 proof(rule ccontr)
   assume "\<not> is_maximal l C"
 
@@ -198,10 +194,10 @@ proof(rule ccontr)
     using clause.to_set_is_ground_subst[OF l_in_C C_grounding].
 
   have l'_\<gamma>_in_C_\<gamma>: "l' \<cdot>l \<gamma> \<in># C \<cdot> \<gamma>"
-    using clause.subst_in_to_set_subst[OF l'_in_C].
+    using clause.subst_in_to_set_subst[OF l'_in_C] .
 
   have "l \<cdot>l \<gamma> \<prec>\<^sub>l l' \<cdot>l \<gamma>"
-    using clause.order.sub.ground_subst_stability[OF l_grounding l'_grounding l_less_l'].
+    using clause.order.sub.ground_subst_stability[OF l_grounding l'_grounding l_less_l'] .
 
   then have "\<not> is_maximal (l \<cdot>l \<gamma>) (C \<cdot> \<gamma>)"
     using l'_\<gamma>_in_C_\<gamma>
@@ -209,7 +205,7 @@ proof(rule ccontr)
     by fastforce
 
   then show False
-    using l_grounding_is_maximal..
+    using l_grounding_is_maximal ..
 qed
 
 lemma is_strictly_maximal_if_grounding_is_strictly_maximal:
@@ -264,9 +260,7 @@ abbreviation ground_is_strictly_maximal where
      is_strictly_maximal (literal.from_ground l\<^sub>G) (clause.from_ground C\<^sub>G)"
 
 sublocale ground: ground_order_generic where
-  less\<^sub>t = "(\<prec>\<^sub>t\<^sub>G)" and pos_to_mset = ground_pos_to_mset and neg_to_mset = ground_neg_to_mset and
-  compose_context = compose_ground_context and apply_context = apply_ground_context and
-  hole = ground_hole
+  less\<^sub>t = "(\<prec>\<^sub>t\<^sub>G)" and pos_to_mset = ground_pos_to_mset and neg_to_mset = ground_neg_to_mset
 rewrites
   less\<^sub>l\<^sub>G_rewrite [simp]:
   "multiset_extension.multiset_extension (\<prec>\<^sub>t\<^sub>G) ground.literal_to_mset = (\<prec>\<^sub>l\<^sub>G)" and
@@ -278,9 +272,7 @@ rewrites
 proof (unfold_locales; (rule ground.inj_pos_to_mset ground.inj_neg_to_mset ground.pos_neg_neq)?)
 
   interpret ground: ground_order_generic where
-    less\<^sub>t = "(\<prec>\<^sub>t\<^sub>G)" and pos_to_mset = ground_pos_to_mset and neg_to_mset = ground_neg_to_mset and
-    compose_context = compose_ground_context and apply_context = apply_ground_context and
-    hole = ground_hole
+    less\<^sub>t = "(\<prec>\<^sub>t\<^sub>G)" and pos_to_mset = ground_pos_to_mset and neg_to_mset = ground_neg_to_mset
     using ground.inj_pos_to_mset ground.inj_neg_to_mset ground.pos_neg_neq
     by unfold_locales auto
 
@@ -359,5 +351,18 @@ lemmas less\<^sub>c_add_same [simp] =
   multp_add_same[OF literal.order.asymp literal.order.transp, folded less\<^sub>c_def]
 
 end
+
+locale context_compatible_nonground_order_generic = 
+  nonground_order_generic +
+
+  "term": context_compatible_nonground_term_order +
+
+  clause.order: subst_update_stable_multiset_extension where 
+  less = "(\<prec>\<^sub>l)" and sub_subst = literal.subst and sub_vars = literal.vars and
+  sub_to_ground = literal.to_ground and sub_from_ground = literal.from_ground and
+  map = image_mset and to_set = set_mset and to_ground_map = image_mset and
+  from_ground_map = image_mset and ground_map = image_mset and to_set_ground = set_mset and
+  to_mset = "\<lambda>x. x" and id_subst = Var and base_vars = term.vars and base_less = less\<^sub>t and
+  base_subst = "(\<cdot>t)"
 
 end

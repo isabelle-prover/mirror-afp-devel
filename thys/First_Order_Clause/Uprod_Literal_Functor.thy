@@ -32,4 +32,8 @@ global_interpretation uprod_literal_functor: natural_functor_conversion where
   map_from = map_uprod_literal and map' = map_uprod_literal and to_set' = uprod_literal_to_set
   by unfold_locales auto
 
+type_synonym 't atom = "'t uprod"
+
+type_synonym 't clause = "'t atom clause"
+
 end

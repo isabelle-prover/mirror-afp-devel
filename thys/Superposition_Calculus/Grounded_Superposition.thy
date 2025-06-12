@@ -157,7 +157,7 @@ next
 next
   fix C :: "('t, 'v, 'ty) typed_clause"
 
-  assume "ground_instances (fst C) (snd C) \<inter> ground.G_Bot \<noteq> {}"
+  assume "uncurried_ground_instances C \<inter> ground.G_Bot \<noteq> {}"
 
   moreover then have "snd C = {#}"
     unfolding ground_instances_def
@@ -187,8 +187,8 @@ begin
 abbreviation grounded_inference_ground_instances where
   "grounded_inference_ground_instances select\<^sub>G \<equiv>
     grounded_superposition_calculus.inference_ground_instances
-      (\<odot>) Var (\<cdot>t) term.vars term.to_ground term.from_ground apply_ground_context (\<prec>\<^sub>t) select\<^sub>G
-       welltyped"
+      (\<odot>) (\<cdot>t)  term.vars term.to_ground term.from_ground apply_ground_context Var (\<prec>\<^sub>t) select\<^sub>G
+      welltyped"
 
 sublocale
   lifting_intersection

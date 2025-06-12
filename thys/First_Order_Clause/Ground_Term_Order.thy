@@ -22,11 +22,21 @@ lemma less_eq_subterm_property: "t \<preceq>\<^sub>t c\<langle>t\<rangle>"
 
 end
 
-locale ground_term_order =
+locale context_compatible_ground_term_order =
   wellfounded_strict_order where less = less\<^sub>t +
   total_strict_order where less = less\<^sub>t +
   context_compatible_order where less = less\<^sub>t +
   subterm_property
+begin
+
+interpretation term_order_notation .
+
+end
+
+locale ground_term_order =
+  wellfounded_strict_order where less = less\<^sub>t +
+  total_strict_order where less = less\<^sub>t
+for less\<^sub>t :: "'t \<Rightarrow> 't \<Rightarrow> bool"
 begin
 
 interpretation term_order_notation .

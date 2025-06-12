@@ -1,12 +1,18 @@
 theory Untyped_Superposition
-  imports Superposition
+  imports 
+    First_Order_Clause.Nonground_Order_With_Equality
+    First_Order_Clause.Nonground_Selection_Function
+    First_Order_Clause.Tiebreakers
+    First_Order_Clause.Ground_Critical_Pairs
+
+    Fresh_Identifiers.Fresh
 begin
 
 locale untyped_superposition_calculus =
   nonground_term_with_context where
   term_vars = "term_vars :: 't \<Rightarrow> 'v :: infinite set" and
   term_to_ground = "term_to_ground :: 't \<Rightarrow> 't\<^sub>G" +
-  nonground_order where less\<^sub>t = less\<^sub>t +
+  context_compatible_nonground_order where less\<^sub>t = less\<^sub>t +
   nonground_selection_function where
   select = select and atom_subst = "(\<cdot>a)" and atom_vars = atom.vars and
   atom_to_ground = atom.to_ground and atom_from_ground = atom.from_ground +
@@ -16,9 +22,9 @@ locale untyped_superposition_calculus =
   compose_context = compose_ground_context and apply_context = apply_ground_context and
   hole = ground_hole
   for
-    select :: "'t atom select" and
+    select :: "'t atom select" and   
     less\<^sub>t :: "'t \<Rightarrow> 't \<Rightarrow> bool" and
-    tiebreakers :: "('t\<^sub>G ground_atom, 't atom) tiebreakers" +
+    tiebreakers :: "('t\<^sub>G atom, 't atom) tiebreakers" +
   assumes
     wfp_tiebreakers[iff]: "\<And>C\<^sub>G. wfp (tiebreakers C\<^sub>G)" and
     transp_tiebreakers[iff]: "\<And>C\<^sub>G. transp (tiebreakers C\<^sub>G)"
@@ -74,6 +80,21 @@ if
   "\<P> = Neg \<Longrightarrow> select E \<noteq> {#} \<Longrightarrow> is_maximal (l\<^sub>1 \<cdot>l \<rho>\<^sub>1 \<odot> \<mu>) ((select E) \<cdot> \<rho>\<^sub>1 \<odot> \<mu>)"
   "select D = {#}"
   "is_strictly_maximal (l\<^sub>2 \<cdot>l \<rho>\<^sub>2 \<odot> \<mu>) (D \<cdot> \<rho>\<^sub>2 \<odot> \<mu>)"
+
+abbreviation eq_factoring_inferences where
+  "eq_factoring_inferences \<equiv> { Infer [D] C | D C. eq_factoring D C }"
+
+abbreviation eq_resolution_inferences where
+  "eq_resolution_inferences \<equiv> { Infer [D] C | D C. eq_resolution D C }"
+
+abbreviation superposition_inferences where
+  "superposition_inferences \<equiv> { Infer [D, E] C | D E C. superposition D E C }"
+
+definition inferences :: "'t clause inference set" where
+  "inferences \<equiv> superposition_inferences \<union> eq_resolution_inferences \<union> eq_factoring_inferences"
+
+abbreviation bottom :: "'t clause set" where
+  "bottom \<equiv> {{#}}"
 
 end
 

@@ -188,6 +188,14 @@ lemma imgu_same_type:
   unfolding is_imgu_def is_unifier_set_def
   by blast
 
+(* TODO: Make this main *)
+lemma imgu_same_type':
+  assumes "base.type_preserving_on X \<V> \<mu>" "is_imgu \<mu> {{expr, expr'}}" "vars expr \<union> vars expr' \<subseteq> X" 
+  shows "\<forall>\<tau>. welltyped \<V> expr \<tau> \<longleftrightarrow> welltyped \<V> expr' \<tau>"
+  using unifier_same_type assms
+  unfolding is_imgu_def is_unifier_set_def
+  by blast
+
 end
 
 locale base_typed_subst_stability = 
