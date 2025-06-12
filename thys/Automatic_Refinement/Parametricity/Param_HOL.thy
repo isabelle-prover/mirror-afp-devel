@@ -388,7 +388,21 @@ lemma param_case_list':
     
 lemma param_map[param]: 
   "(map,map)\<in>(R1\<rightarrow>R2) \<rightarrow> \<langle>R1\<rangle>list_rel \<rightarrow> \<langle>R2\<rangle>list_rel"
-  unfolding map_rec[abs_def] by (parametricity)
+proof (rule fun_relI)+
+  fix f g and xs ys
+  assume \<open>(f, g) \<in> R1 \<rightarrow> R2\<close>
+  assume \<open>(xs, ys) \<in> \<langle>R1\<rangle>list_rel\<close>
+  then show \<open>(map f xs, map g ys) \<in> \<langle>R2\<rangle>list_rel\<close>
+  proof induction
+    case 1
+    show ?case
+      by simp
+  next
+    case (2 x y xs ys)
+    with \<open>(f, g) \<in> R1 \<rightarrow> R2\<close> show ?case
+      by (simp add: fun_relD2)
+  qed
+qed
     
 lemma param_fold[param]: 
   "(fold,fold)\<in>(Re\<rightarrow>Rs\<rightarrow>Rs) \<rightarrow> \<langle>Re\<rangle>list_rel \<rightarrow> Rs \<rightarrow> Rs"
@@ -397,8 +411,8 @@ lemma param_fold[param]:
   unfolding List.fold_def List.foldr_def List.foldl_def
   by (parametricity)+
 
-  lemma param_list_all[param]: "(list_all,list_all) \<in> (A\<rightarrow>bool_rel) \<rightarrow> \<langle>A\<rangle>list_rel \<rightarrow> bool_rel"
-    by (fold rel2p_def) (simp add: rel2p List.list_all_transfer)
+lemma param_list_all[param]: "(list_all,list_all) \<in> (A\<rightarrow>bool_rel) \<rightarrow> \<langle>A\<rangle>list_rel \<rightarrow> bool_rel"
+  by (fold rel2p_def) (simp add: rel2p List.list_all_transfer)
 
 context begin
   private primrec list_all2_alt :: "('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> 'a list \<Rightarrow> 'b list \<Rightarrow> bool" where
