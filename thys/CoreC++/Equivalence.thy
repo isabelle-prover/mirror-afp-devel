@@ -2062,7 +2062,7 @@ abschalten. Wieder anschalten siehe nach dem Beweis. *)
 
 declare split_paired_All [simp del] split_paired_Ex [simp del]
 
-declaration \<open>K (Simplifier.map_ss (fn ss => ss delloop "split_all_tac"))\<close>
+declaration \<open>K (Simplifier.map_ss (fn ss => ss |> Simplifier.del_loop "split_all_tac"))\<close>
 setup \<open>map_theory_claset (fn ctxt => ctxt delSWrapper "split_all_tac")\<close>
 
 
@@ -2759,7 +2759,7 @@ qed
 (* ... und wieder anschalten: *)
 declare split_paired_All [simp] split_paired_Ex [simp]
 setup \<open>map_theory_claset (fn ctxt => ctxt addSbefore ("split_all_tac", split_all_tac))\<close>
-setup \<open>map_theory_simpset (fn ctxt => ctxt addloop ("split_all_tac", split_all_tac))\<close>
+setup \<open>map_theory_simpset (fn ctxt => ctxt |> Simplifier.add_loop ("split_all_tac", split_all_tac))\<close>
 
 
 text \<open>Its extension to \<open>\<rightarrow>*\<close>:\<close> 

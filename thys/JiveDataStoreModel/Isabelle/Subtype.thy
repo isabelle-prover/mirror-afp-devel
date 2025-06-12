@@ -250,7 +250,7 @@ end
 \<close>
 
 declaration \<open>fn _ =>
-  Simplifier.map_ss (fn ss => ss addSolver (mk_solver "widen" widen_tac))
+  Simplifier.map_ss (fn ss => ss |> Simplifier.add_unsafe_solver (mk_solver "widen" widen_tac))
 \<close>
 
 

@@ -921,7 +921,7 @@ let
              else []) @
             [@{simproc field_lookup}]  
           delsimps @{thms Product_Type.prod.case Product_Type.case_prod_conv replicate_0 replicate_Suc replicate_numeral}
-          addloop ("tuple_inst_tac", Tuple_Tools.tuple_inst_tac)
+          |> Simplifier.add_loop ("tuple_inst_tac", Tuple_Tools.tuple_inst_tac)
           |> Simplifier.add_cong @{thm L2_marked_seq_gets_cong}
           |> Simplifier.add_cong @{thm L2_marked_seq_guard_block_cong}
           |> Simplifier.add_cong @{thm SPLIT_cong}

@@ -161,7 +161,7 @@ fun fun_cert_tac base_thms base_certs simps code_thms =
       val congs = Function_Context_Tree.get_function_congs ctxt @ map safe_mk_meta_eq @{thms cong}
 
       val simp_context = (clear_simpset ctxt) addsimps (certs @ super_certs @ base_certs @ base_thms @ param_dests)
-        addloop ("overload", CONVERSION o changed_conv o Axclass.overload_conv)
+        |> Simplifier.add_loop ("overload", CONVERSION o changed_conv o Axclass.overload_conv)
 
       val ihs = map (Simplifier.asm_full_simplify simp_context) ihs
 
@@ -811,7 +811,7 @@ fun consts consts proof group lthy =
       let
         val termination_ctxt =
           ctxt addsimps (@{thms equal} @ base_thms)
-            addloop ("overload", CONVERSION o changed_conv o Axclass.overload_conv)
+            |> Simplifier.add_loop ("overload", CONVERSION o changed_conv o Axclass.overload_conv)
         val fallback_tac =
           Function_Common.termination_prover_tac true termination_ctxt
 

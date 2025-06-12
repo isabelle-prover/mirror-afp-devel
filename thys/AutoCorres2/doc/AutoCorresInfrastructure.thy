@@ -513,8 +513,8 @@ lemma "L2_while (\<lambda>(x,y,z) s. 0 < (y::nat)) (\<lambda>(x,y,z). L2_seq (L2
        L2_while (\<lambda>(x,y,z) s. 0 < y) (\<lambda>(x,y,z). L2_seq (L2_guard (\<lambda>_. True)) (\<lambda>_. X)) x ns"
  apply (tactic \<open>
 simp_tac ( @{context} 
-           addloop ("tuple_inst_tac", Tuple_Tools.tuple_inst_tac)
-           addsimps @{thms split_paired_all}
+           |> Simplifier.add_loop ("tuple_inst_tac", Tuple_Tools.tuple_inst_tac)
+           |> Simplifier.add_simps @{thms split_paired_all}
            |> Simplifier.add_cong @{thm L2_seq_guard_cong}
            |> Simplifier.add_cong @{thm L2_while_cong}
            |> Simplifier.set_mksimps (Tuple_Tools.mksimps)
@@ -536,8 +536,8 @@ lemma "L2_while (\<lambda>(x,y,z) s. 0 < (y::nat)) (\<lambda>(x,y,z). L2_seq (L2
        L2_while (\<lambda>(x,y,z) s. 0 < y) (\<lambda>(x,y,z). L2_seq (L2_guard (\<lambda>_. z = a)) (\<lambda>_. X)) x ns"
 apply (tactic \<open>
 simp_tac ( @{context} 
-           addloop ("tuple_inst_tac", Tuple_Tools.tuple_inst_tac)
-           addsimps @{thms split_paired_all}
+           |> Simplifier.add_loop ("tuple_inst_tac", Tuple_Tools.tuple_inst_tac)
+           |> Simplifier.add_simps @{thms split_paired_all}
            |> Simplifier.add_cong @{thm L2_seq_guard_cong}
            |> Simplifier.add_cong @{thm L2_while_cong}
            |> Simplifier.set_mksimps (Tuple_Tools.mksimps)
@@ -580,8 +580,8 @@ lemma "L2_while (\<lambda>(x,y,z) s. 0 < (y::nat)) (\<lambda>(x,y,z). L2_seq (L2
        L2_while (\<lambda>(x,y,z) s. 0 < y) (\<lambda>(x,y,z). L2_seq (L2_guard (\<lambda>_. z = a)) (\<lambda>_. X)) x ns"
 apply (tactic \<open>
 simp_tac ( @{context} 
-           addloop ("tuple_inst_tac", Tuple_Tools.tuple_inst_tac)
-           addsimps @{thms split_paired_all}
+           |> Simplifier.add_loop ("tuple_inst_tac", Tuple_Tools.tuple_inst_tac)
+           |> Simplifier.add_simps @{thms split_paired_all}
            |> Simplifier.add_cong @{thm L2_seq_guard_cong}
            |> Simplifier.add_cong @{thm L2_while_simp_cong}
 ) 1\<close>)
@@ -601,8 +601,8 @@ lemma "L2_while (\<lambda>(x,y,z) s. 0 < (y::nat)) (\<lambda>(x,y,z). L2_seq (L2
        L2_while (\<lambda>(x,y,z) s. 0 < y) (\<lambda>(x,y,z). L2_seq (L2_guard (\<lambda>_. z = a)) (\<lambda>_. X)) x ns"
 apply (tactic \<open>
 simp_tac ( @{context} 
-           addloop ("tuple_inst_tac", Tuple_Tools.tuple_inst_tac)
-           addsimps @{thms split_paired_all}
+           |> Simplifier.add_loop ("tuple_inst_tac", Tuple_Tools.tuple_inst_tac)
+           |> Simplifier.add_simps @{thms split_paired_all}
            |> Simplifier.add_cong @{thm L2_seq_guard_cong}
            |> Simplifier.add_cong @{thm L2_while_simp_cong'}
 ) 1\<close>)
@@ -617,9 +617,9 @@ lemma "L2_while (\<lambda>(x,y,z) s. 0 < (y::nat)) (\<lambda>(x,y,z). L2_seq (L2
        L2_while (\<lambda>(x,y,z) s. 0 < y) (\<lambda>(x,y,z). L2_seq (L2_guard (\<lambda>_. z = a)) (\<lambda>_. X)) x ns"
 apply (tactic \<open>
 simp_tac ( @{context} 
-           addloop ("tuple_inst_tac", Tuple_Tools.tuple_inst_tac)
-           addsimprocs [Tuple_Tools.split_tupled_all_simproc, Tuple_Tools.tuple_case_simproc]
-           delsimps @{thms Product_Type.prod.case Product_Type.case_prod_conv}
+           |> Simplifier.add_loop ("tuple_inst_tac", Tuple_Tools.tuple_inst_tac)
+           |> fold Simplifier.add_proc [Tuple_Tools.split_tupled_all_simproc, Tuple_Tools.tuple_case_simproc]
+           |> Simplifier.del_simps @{thms Product_Type.prod.case Product_Type.case_prod_conv}
            |> Simplifier.add_cong @{thm L2_seq_guard_cong}
            |> Simplifier.add_cong @{thm L2_while_simp_cong'}
 ) 1\<close>)
@@ -673,9 +673,9 @@ schematic_goal foo:
  (case (x1, x2, x3) of (x, y, z) \<Rightarrow> L2_seq (L2_guard (\<lambda>_. Suc 0 \<le> y \<and> z = a)) X) = ?A' (x1, x2, x3) s"
   apply (tactic \<open>
 asm_full_simp_tac ( @{context} 
-           addloop ("tuple_inst_tac", Tuple_Tools.tuple_inst_tac)
-           addsimprocs [Tuple_Tools.SPLIT_simproc, Tuple_Tools.tuple_case_simproc]
-           delsimps @{thms Product_Type.prod.case Product_Type.case_prod_conv}
+           |> Simplifier.add_loop ("tuple_inst_tac", Tuple_Tools.tuple_inst_tac)
+           |> fold Simplifier.add_proc [Tuple_Tools.SPLIT_simproc, Tuple_Tools.tuple_case_simproc]
+           |> Simplifier.del_simps @{thms Product_Type.prod.case Product_Type.case_prod_conv}
 
 ) 1\<close>)
   done
@@ -690,9 +690,9 @@ lemma "L2_while (\<lambda>(x,y,z) s. 0 < (y::nat)) (\<lambda>(x,y,z). L2_seq (L2
        L2_while (\<lambda>(x,y,z) s. 0 < y) (\<lambda>(x,y,z). L2_seq (L2_guard (\<lambda>_. z = a)) X) x ns"
 apply (tactic \<open>
 asm_full_simp_tac ( @{context} 
-           addloop ("tuple_inst_tac", Tuple_Tools.tuple_inst_tac)
-           addsimprocs [Tuple_Tools.SPLIT_simproc, Tuple_Tools.tuple_case_simproc]
-           delsimps @{thms Product_Type.prod.case Product_Type.case_prod_conv}
+           |> Simplifier.add_loop ("tuple_inst_tac", Tuple_Tools.tuple_inst_tac)
+           |> fold Simplifier.add_proc [Tuple_Tools.SPLIT_simproc, Tuple_Tools.tuple_case_simproc]
+           |> Simplifier.del_simps @{thms Product_Type.prod.case Product_Type.case_prod_conv}
            |> Simplifier.add_cong @{thm L2_seq_guard_cong}
            |> Simplifier.add_cong @{thm L2_while_cong_simp_split}
            |> Simplifier.add_cong @{thm SPLIT_cong}
@@ -720,9 +720,9 @@ lemma "L2_while (\<lambda>(x,y,(z::nat)) s. 0 < (y::nat) \<and> y=x) (\<lambda>(
   L2_while (\<lambda>(x, y, z) s. 0 < y \<and> y = x) (\<lambda>(x, x, z). L2_seq (L2_guard (\<lambda>_. z = a)) X) x ns"
 apply (tactic \<open>
 asm_full_simp_tac ( @{context} 
-           addloop ("tuple_inst_tac", Tuple_Tools.tuple_inst_tac)
-           addsimprocs [Tuple_Tools.SPLIT_simproc, Tuple_Tools.tuple_case_simproc]
-           delsimps @{thms Product_Type.prod.case Product_Type.case_prod_conv}
+           |> Simplifier.add_loop ("tuple_inst_tac", Tuple_Tools.tuple_inst_tac)
+           |> fold Simplifier.add_proc [Tuple_Tools.SPLIT_simproc, Tuple_Tools.tuple_case_simproc]
+           |> Simplifier.del_simps @{thms Product_Type.prod.case Product_Type.case_prod_conv}
            |> Simplifier.add_cong @{thm L2_seq_guard_cong}
            |> Simplifier.add_cong @{thm L2_while_cong_simp_split}
            |> Simplifier.add_cong @{thm SPLIT_cong}
