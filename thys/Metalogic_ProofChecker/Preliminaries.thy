@@ -272,29 +272,6 @@ next
   qed
 qed
 
-definition "diff_list xs ys \<equiv> fold removeAll ys xs"
-
-lemma diff_list_set[simp]: "set (diff_list xs ys) = set xs - set ys"
-  unfolding diff_list_def by (induction ys arbitrary: xs) auto
-
-lemma diff_list_set_from_Nil[simp]: "diff_list [] ys = []"
-  using last_in_set by fastforce
-
-lemma diff_list_set_remove_Nil[simp]: "diff_list xs [] = xs"
-  unfolding diff_list_def by (induction xs) auto
-
-lemma diff_list_rec: "diff_list (x # xs) ys = (if x\<in>set ys then diff_list xs ys else x#diff_list xs ys)"
-  unfolding diff_list_def by (induction ys arbitrary: x xs) auto
-lemma diff_list_order_irr: "set ys = set ys' \<Longrightarrow> diff_list xs ys = diff_list xs ys'"
-proof (induction ys arbitrary: ys' xs)
-  case Nil
-  then show ?case by simp
-next
-  case (Cons y ys)
-  then show ?case
-    by (induction xs arbitrary: y ys ys') (simp_all add: diff_list_rec)
-qed
-
 (* Folding lists with option return typs. probably no longer relevant, was for implementing sorts by lists *)
 lemma fold_Option_bind_eq_Some_start_not_None:
   "fold (\<lambda>new option . Option.bind option (f new)) list start = Some res

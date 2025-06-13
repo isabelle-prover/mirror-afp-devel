@@ -1495,6 +1495,6 @@ qed
 
 (* Hs parameter to check if var is fixed by hypotheses *)
 abbreviation "forall_intro_vars t Hs \<equiv> mk_all_list 
-  (diff_list (add_vars' t []) (fold (add_vars') Hs [])) t"
+  (minus_list_set (add_vars' t []) (fold (add_vars') Hs [])) t"
 
 end
