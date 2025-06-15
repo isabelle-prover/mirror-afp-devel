@@ -7,27 +7,6 @@ begin
 section\<open>Basic Lemmas for Manipulating Indices and Lists\<close>
 (**************************************************************************************************)
 (**************************************************************************************************)
-fun index_list where
-"index_list 0 = []"|
-"index_list (Suc n) = index_list n @ [n]"
-
-lemma index_list_length:
-"length (index_list n) = n"
-  by(induction n, simp, auto ) 
-
-lemma index_list_indices:
-"k < n \<Longrightarrow> (index_list n)!k = k"
-  apply(induction n)
-  apply (simp; fail)
-  by (simp add: index_list_length nth_append)
-
-lemma index_list_set:
-"set (index_list n) = {..<n}"
-  apply(induction n)
-  apply force
-  by (metis Zero_not_Suc atLeastLessThan_empty atLeastLessThan_singleton atLeastLessThan_upt 
-      diff_Suc_1 index_list.elims ivl_disj_un_singleton(2) lessI lessThan_Suc_atMost less_Suc_eq_le 
-      set_append sorted_list_of_set_empty sorted_list_of_set_range upt_rec)
 
 fun flat_map :: "('a => 'b list) => 'a list => 'b list" where
   "flat_map f [] = []"
