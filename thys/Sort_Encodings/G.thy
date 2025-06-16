@@ -264,8 +264,7 @@ lemma wtPB_tPB[simp]: "GE.wtPB gPB" unfolding gPB_def by simp
 lemma wtA_Guard:
 assumes "GE.wtA (Pr (Guard \<sigma>) Tl)"
 shows "\<exists> T. Tl = [T] \<and> GE.wt T \<and> tpOf T = \<sigma>"
-using assms by simp (metis (opaque_lifting, no_types) list.inject map_eq_Cons_conv 
-                           list_all_simps map_is_Nil_conv neq_Nil_conv)
+using assms by auto
 
 lemma wt_Wit:
 assumes "GE.wt (Fn (Wit \<sigma>) Tl)"  shows "Tl = []"

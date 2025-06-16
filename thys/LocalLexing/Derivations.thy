@@ -311,13 +311,11 @@ lemma nonword_has_nonterminal:
 
 lemma leftmost_cons_nonterminal: 
   "is_nonterminal x \<Longrightarrow> leftmost 0 (x#xs)"
-by (metis CFG.is_word_def CFG_axioms leftmost_def length_greater_0_conv list.distinct(1) 
-    list_all_simps(2) nth_Cons_0 take_Cons')
+  by (simp add: leftmost_def)
 
 lemma leftmost_cons_terminal: 
   "is_terminal x \<Longrightarrow> leftmost i (x#xs) = (i > 0 \<and> leftmost (i - 1) xs)"
-by (metis Suc_diff_1 Suc_less_eq is_terminal_nonterminal is_word_def leftmost_def length_Cons 
-    list_all_simps(1) not_gr0 nth_Cons' take_Cons')
+  by (cases i) (auto simp add: leftmost_def is_word_def dest: is_terminal_nonterminal)
 
 lemma is_nonterminal_cons_terminal: 
   "is_terminal x \<Longrightarrow> k < length (x # a) \<Longrightarrow> is_nonterminal ((x # a) ! k) \<Longrightarrow>

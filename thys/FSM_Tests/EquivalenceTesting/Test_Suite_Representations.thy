@@ -947,8 +947,7 @@ proof
         by blast
 
       then have "passes_test_case I qI (iob@iob')"
-        using \<open>?P1\<close>
-        by (metis in_set_conv_decomp_last list_all_append list_all_simps(1)) 
+        using \<open>?P1\<close> by (simp add: list_all_iff)
       then have "passes_test_case I qI iob"
         using passes_test_case_prefix[OF assms(2)] by auto
       then have "map fst (takeWhile snd iob) \<in> LS I qI"
@@ -958,7 +957,7 @@ proof
 
       have "list_all snd iob \<Longrightarrow> (map fst iob \<in> LS I qI)"
         using \<open>map fst (takeWhile snd iob) \<in> LS I qI\<close>
-        by (metis in_set_conv_decomp_last list_all_append list_all_simps(1) takeWhile_eq_all_conv) 
+        by (simp only: list_all_iff flip: takeWhile_eq_all_conv)
       moreover have "(map fst iob \<in> LS I qI) \<Longrightarrow> list_all snd iob"
         using \<open>(\<not> list_all snd iob \<longrightarrow> map fst (take (Suc (length (takeWhile snd iob))) iob) \<notin> LS I qI)\<close>
         by (metis append_take_drop_id language_prefix map_append) 

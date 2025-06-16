@@ -23,25 +23,13 @@ fun same_lab :: "nat list \<Rightarrow> (t list) list \<Rightarrow> (t list) opt
 lemma same_lab_h_conv_list_all:
   assumes "same_lab_h ils ls ts' = Some ts"
   shows "list_all (\<lambda>i. i < length ls \<and> ls!i = ts) ils \<and> ts' = ts"
-  using assms
-proof(induction ils)
-  case (Cons a ils)
-  thus ?case
-    apply (simp,safe)
-       apply (metis not_less option.distinct(1))+
-    done
-qed simp
+  using assms by (induction ils) (simp_all split: if_splits)
 
 lemma same_lab_conv_list_all:
   assumes "same_lab ils ls = Some ts"
   shows "list_all (\<lambda>i. i < length ls \<and> ls!i = ts) ils"
-  using assms
-proof (induction rule: same_lab.induct)
-case (2 i "is" lab_c)
-  thus ?case
-    using same_lab_h_conv_list_all
-    by (metis (mono_tags, lifting) list_all_simps(1) not_less option.distinct(1) same_lab.simps(2))
-qed simp
+  using assms by (induction rule: same_lab.induct)
+    (auto dest: same_lab_h_conv_list_all split: if_splits)
 
 lemma list_all_conv_same_lab_h:
   assumes "list_all (\<lambda>i. i < length ls \<and> ls!i = ts) ils"
@@ -51,7 +39,7 @@ lemma list_all_conv_same_lab_h:
 
 lemma list_all_conv_same_lab:
   assumes "list_all (\<lambda>i. i < length ls \<and>ls!i = ts) (is@[i])"
-  shows "same_lab (is@[i]) ls = Some ts"                      
+  shows "same_lab (is@[i]) ls = Some ts"
   using assms
 proof (induction "(is@[i])")
   case (Cons a x)

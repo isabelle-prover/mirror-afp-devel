@@ -160,7 +160,7 @@ next
     then show ?thesis
       using Parallel(3) merge_all_parallel_has_Parallel normal_dir_no_nested_Parallel
             remove_all_empty_has_Parallel
-      by (smt (verit, best) image_iff list.set_map list_ex_simps(1) res_term.discI(5))
+      by (smt (verit, best) image_iff list.set_map list_ex_Cons_iff res_term.discI(5))
   next
     assume "merge_all_parallel (remove_all_empty (map normal_dir x)) = xs"
     then show ?thesis .
@@ -338,7 +338,7 @@ next
         case 1
         then show ?thesis
           by (simp add: remove_all_empty_append merge_all_parallel_append)
-             (smt (z3) image_iff list.set_map list_ex_simps(1) merge_all_parallel_has_Parallel
+             (smt (z3) image_iff list.set_map list_ex_Cons_iff merge_all_parallel_has_Parallel
               remove_all_empty_has_Parallel res_term.discI(5) normal_dir_no_nested_Parallel)
       next
         case 2

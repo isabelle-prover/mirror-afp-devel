@@ -135,10 +135,8 @@ corollary soundness':
   shows \<open>(M, g, w) \<Turnstile>\<^sub>@ p\<close>
 proof -
   let ?g = \<open>g(i := w)\<close>
-  have \<open>range ?g \<subseteq> W M\<close>
-    using assms(3-4) by auto
-  then have \<open>(M, ?g, ?g i) \<Turnstile>\<^sub>@ p\<close>
-    using assms(1, 4) soundness by (metis list_all_simps(2))
+  from assms(1) have \<open>(M, ?g, ?g i) \<Turnstile>\<^sub>@ p\<close>
+    by (rule soundness) (use assms(3-4) in auto)
   then have \<open>(M, ?g, w) \<Turnstile>\<^sub>@ p\<close>
     by simp
   then show ?thesis

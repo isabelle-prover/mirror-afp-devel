@@ -1555,10 +1555,16 @@ proof(induct r1 arbitrary: r2 \<pi>)
           by meson
         have h1_nv: "state_regex_of_vars h1 num_vars"
           using Cons.prems unfolding trace_regex_of_vars_def state_regex_of_vars_def
-          by (metis Ex_list_of_length append_self_conv2 arbitrary_regtrace_matches_any_trace bot_nat_0.not_eq_extremum le_0_eq less_nat_zero_code list.pred_inject(2) list_all_length list_ex_length list_ex_simps(1) match_regex_def nth_append_length trace_of_vars_def)
+          by (metis Ex_list_of_length append_self_conv2 arbitrary_regtrace_matches_any_trace
+            bot_nat_0.not_eq_extremum le_0_eq less_nat_zero_code list.pred_inject(2)
+            list_all_length list_ex_length list_ex_Cons_iff match_regex_def nth_append_length
+            trace_of_vars_def)
         have h2_nv: "state_regex_of_vars h2 num_vars"
           using Cons.prems unfolding trace_regex_of_vars_def h2t2 state_regex_of_vars_def
-          by (metis Ex_list_of_length append_self_conv2 arbitrary_regtrace_matches_any_trace bot_nat_0.not_eq_extremum le_0_eq less_nat_zero_code list.pred_inject(2) list_all_length list_ex_length list_ex_simps(1) match_regex_def nth_append_length trace_of_vars_def)
+          by (metis Ex_list_of_length append_self_conv2 arbitrary_regtrace_matches_any_trace
+            bot_nat_0.not_eq_extremum le_0_eq less_nat_zero_code list.pred_inject(2)
+            list_all_length list_ex_length list_ex_Cons_iff match_regex_def nth_append_length
+            trace_of_vars_def)
         have match_h: "match_timestep hxi h"
           using match_ht unfolding match_regex_def by auto
         have match_h1: "match_timestep hxi h1"

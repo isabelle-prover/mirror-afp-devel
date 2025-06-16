@@ -1948,7 +1948,7 @@ definition
 
 lemma list_all_filter_neg:
   "list_all P (filter (\<lambda>x. \<not> P x) xs) \<longleftrightarrow> (filter (\<lambda>x. \<not> P x) xs) = []"
-  by (metis Cons_eq_filterD list_all_simps(2) list_pred_cases)
+  by (auto simp add: list_all_iff filter_empty_conv)
 
 lemma dbm_subset_fed_upd_alt_def:
   "dbm_subset_fed_upd n M xs \<equiv>

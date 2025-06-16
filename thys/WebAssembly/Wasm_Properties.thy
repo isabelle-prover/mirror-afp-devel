@@ -2477,9 +2477,8 @@ next
   case (select \<C> t)
   obtain v1 v2 v3 where cs_def:"\<S>\<bullet>\<C> \<turnstile> [$ C v3] : ([] _> [T_i32])"
                                "cs = [$C v1, $C v2, $ C v3]"
-    using const_list_split_3[OF select(4,1)] select(4)
-    unfolding const_list_def
-    by (metis list_all_simps(1) e_type_const_unwrap)
+    using const_list_split_3 [OF select(4,1)] select(4)
+    by (auto simp add: const_list_def list_all_iff dest!: e_type_const_unwrap)
   obtain c3 where c_def:"v3 = ConstInt32 c3"
     using cs_def select(4) const_of_i32[OF _ cs_def(1)]
     unfolding const_list_def

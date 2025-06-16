@@ -253,14 +253,16 @@ next
   next
     case False
     hence "V tr = vl" using Cons by auto
-    moreover have "never T tr" by (metis Cons.prems list_all_simps)
+    moreover have "never T tr"
+      using Cons.prems by simp
     moreover from \<open>validFrom s (trn # tr)\<close> have "validFrom (tgtOf trn) tr" and s: "s = srcOf trn"
-    by (metis list.distinct(1) validFrom_def valid_ConsE Cons.prems(2)
-              validFrom_def list.discI list.sel(1))+
-    moreover have "exit (tgtOf trn) (hd vl)" using \<open>exit s (hd vl)\<close>
-    unfolding exit_def s by simp
-    (metis (no_types) Cons.prems(2) Cons.prems(4) append_Cons list.sel(1)
-           list.distinct list_all_simps valid.Cons validFrom_def valid_ConsE)
+      using Cons.prems by (auto simp add: validFrom_def)
+    moreover have "exit (tgtOf trn) (hd vl)"
+      using \<open>exit s (hd vl)\<close> Cons.prems(2) Cons.prems(4)
+      apply (auto simp add: s exit_def validFrom_def)
+      using append_Cons list.sel(1) list_all_Cons_iff valid.Cons valid_ConsE
+      apply metis
+      done
     ultimately show ?thesis using Cons(1) by auto
   qed
 qed

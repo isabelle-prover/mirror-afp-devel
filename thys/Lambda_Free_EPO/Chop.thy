@@ -124,12 +124,20 @@ proof -
         using Cons.prems(5) by auto
       have 1:"Suc (length p) \<noteq> num_args (fun t)"  
         by (metis (no_types, lifting) Cons.prems(1) Cons.prems(4) args.elims args_Nil_iff_is_Hd length_Cons length_append_singleton tm.sel(4))
-      have 2:"position_of (fun t) (p @ [Right])"   using \<open>position_of t ((a # p) @ [Right])\<close> \<open>is_App t\<close> 
-        by (metis (full_types) Cons.prems(5) position_of_left append_Cons list_all_simps(1) tm.collapse(2))
+      have 2:"position_of (fun t) (p @ [Right])"
+        using \<open>position_of t ((a # p) @ [Right])\<close> \<open>is_App t\<close>  
+          Cons.prems(5)
+        by (simp add: list_all_iff flip: position_of_left [of \<open>fun t\<close> \<open>arg t\<close>])
       have 3: "emb_step_at p dir.Right (fun t) = emb_step_at p dir.Right (fun t)" 
         using emb_step_at_left_context[of p Right "fun t" "arg t"] by blast
-      have "Suc (length p) < num_args (fun t)" using Cons.hyps[OF 1 2 3] 
-        by (metis "2" Cons.prems(5) Nil_is_append_conv list_all_simps(1) not_Cons_self2 position_of.elims(2) tm.discI(2))
+      have \<open>is_App (fun t)\<close>
+        by (metis "2" Embeddings.emb_step_at_head emb_step_at_if_position emb_step_equiv
+            tm.collapse(1))
+      from 1 2 3 \<open>is_App (fun t)\<close> have "Suc (length p) < num_args (fun t)"
+        apply (rule Cons.hyps)
+        using Cons.prems(5)
+        apply (simp add: list_all_iff)
+        done
       then show ?case 
         by (metis Cons.prems(4) Suc_less_eq2 args.simps(2) length_Cons length_append_singleton tm.collapse(2))
     qed      
@@ -194,14 +202,16 @@ proof -
       by (simp, metis One_nat_def args.simps(2) butlast_conv_take butlast_snoc tm.collapse(2))
   next
     case (Cons a p)
-    have "position_of (fun t) (p @ [Left])"
+    have *: "position_of (fun t) (p @ [Left])"
       by (metis (full_types) Cons.prems(1) Cons.prems(2) Cons.prems(4) position_of_left 
           append_Cons list.pred_inject(2) tm.collapse(2))
-    then have 0:"args (emb_step_at p Left (fun t))
+    have 0:"args (emb_step_at p Left (fun t))
                    = take (num_args (fun t) - Suc (length p)) (args (fun t)) 
                    @ drop (Suc (num_args (fun t) - Suc (length p))) (args (fun t))"
-      using Cons.hyps[of "fun t"] by (metis Cons.prems(1) append_Nil args_Nil_iff_is_Hd drop_Nil 
-          emb_step_at_is_App list.size(3) list_all_simps(1) take_0 zero_diff)
+      apply (rule Cons.hyps [of "fun t"])
+      using * Cons.prems apply (simp_all add: list_all_iff)
+      apply (metis emb_step_at_if_position emb_step_at_is_App emb_step_equiv')
+      done
     have 1:"s = App (emb_step_at p Left (fun t)) (arg t)" using emb_step_at_left_context[of p Left "fun t" "arg t"] 
       using Cons.prems by auto
     define k where k_def:"k = (num_args (fun t) - Suc (length p))"

@@ -1694,8 +1694,9 @@ proof-
   have issv1[simp]: "isSecV ssv1" and gissv13[simp]: "getSecO ss1 = getSecV ssv1"  
   using \<chi>3 unfolding \<chi>3_def ssv1 ss1 by auto
 
-  have niss1: "\<not> isIntO ss1"  
-    by (metis list_all_append list_all_simps(1) ninter3 tr1l)
+  have niss1: "\<not> isIntO ss1"
+    using ninter3 tr1l apply (auto simp add: list_all_iff)
+    using in_set_conv_decomp_last by fastforce 
 
   have rss1: "reachO ss1" and rssv12: "reachV ssv1" "reachV ssv2" 
   using Opt.reach_validFromS_reach r ss1l tr1NE v3 apply blast 
@@ -2257,8 +2258,8 @@ proof-
   have issv2[simp]: "isSecV ssv2" and gissv24[simp]: "getSecO ss2 = getSecV ssv2"  
   using \<chi>4 unfolding \<chi>4_def ssv2 ss2 by auto
 
-  have niss2: "\<not> isIntO ss2"  
-    by (metis list_all_append list_all_simps(1) ninter4 tr2l)
+  have niss2: "\<not> isIntO ss2"
+    using ninter4 tr2l ss2l tr2NE by (simp add: list_all_iff)
 
   have rss2: "reachO ss2" and rssv12: "reachV ssv1" "reachV ssv2" 
   using Opt.reach_validFromS_reach r ss2l tr2NE v4 apply blast 

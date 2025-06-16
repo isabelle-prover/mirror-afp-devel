@@ -1144,7 +1144,7 @@ fun add_impl_locale prog_info finfos phase ts_monads name thy =
             val fun_ptr_simps = Named_Theorems.get lthy \<^named_theorems>\<open>fun_ptr_simps\<close> @ 
                   @{thms map_of_default_default_conv}
             val simp_ctxt = put_simpset HOL_ss lthy
-                  addsimps (fun_ptr_simps @  @{thms list_all_simps case_prod_conv} )
+                  addsimps (fun_ptr_simps @ @{thms list_all_Nil_iff list_all_Cons_iff case_prod_conv})
             val def' = def |> Conv.fconv_rule (Simplifier.asm_full_rewrite simp_ctxt)
           in 
             lthy |> Utils.define_lemma' (Binding.name def_name) [define_function_declaration {concealed_named_theorems=false} filename skips phase name] def' |> snd
@@ -1311,7 +1311,3 @@ fun add_global_corres_locale (prev_phase, phase) prog_info mk_prop thy =
 
 
 end (* structure AutoCorresData *)
-
-
-
-

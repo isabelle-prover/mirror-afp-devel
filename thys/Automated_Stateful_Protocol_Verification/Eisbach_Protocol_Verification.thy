@@ -69,7 +69,7 @@ method composable_protocols_intro =
 method coverage_check_intro =
   (((unfold coverage_check_unfold_protocol_lemma)?;
     intro protocol_check_intro_lemmata;
-    simp only: list_all_simps list_all_append list.map concat.simps map_append product_concat_map;
+    simp only: list_all_Nil_iff list_all_Cons_iff list_all_append list.map concat.simps map_append product_concat_map;
     intro conjI TrueI);
    clarsimp?;
    (intro conjI TrueI)?;
@@ -78,13 +78,13 @@ method coverage_check_intro =
 method coverage_check_unfold =
   (unfold coverage_check_unfold_lemmata
           Let_def case_prod_unfold Product_Type.fst_conv Product_Type.snd_conv;
-   simp only: list_all_simps;
+   simp only: list_all_Nil_iff list_all_Cons_iff;
    intro conjI TrueI)
 
 method coverage_check_intro' =
   (((unfold coverage_check_unfold_protocol_lemma coverage_check_unfold_transaction_lemma)?;
     intro protocol_check_intro_lemmata;
-    simp only: list_all_simps list_all_append list.map concat.simps map_append product_concat_map;
+    simp only: list_all_Nil_iff list_all_Cons_iff list_all_append list.map concat.simps map_append product_concat_map;
     intro conjI TrueI);
    (clarsimp+)?;
    (intro conjI TrueI)?;

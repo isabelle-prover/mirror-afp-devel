@@ -1416,7 +1416,7 @@ unfolding simple_def by auto
 lemma simple_append_sym[sym]: "simple (S@S') \<Longrightarrow> simple (S'@S)" by auto
 
 lemma not_simple_if_snd_fun: "Fun f T \<in> set ts \<Longrightarrow> S = S'@Send ts#S'' \<Longrightarrow> \<not>simple S"
-by (metis simple_def list.set_cases list_all_append list_all_simps(1) simple\<^sub>s\<^sub>t\<^sub>p.simps(5,6))
+  by (auto simp add: simple_def list_all_iff) (metis list.set_cases simple\<^sub>s\<^sub>t\<^sub>p.simps(5,6)) 
 
 lemma not_list_all_elim: "\<not>list_all P A \<Longrightarrow> \<exists>B x C. A = B@x#C \<and> \<not>P x \<and> list_all P B"
 proof (induction A rule: List.rev_induct)
@@ -1447,9 +1447,7 @@ lemma not_simple_elim:
 by (metis assms not_list_all_elim not_simple\<^sub>s\<^sub>t\<^sub>p_elim simple_def)
 
 lemma simple_snd_is_var: "\<lbrakk>Send ts \<in> set S; simple S\<rbrakk> \<Longrightarrow> \<exists>v. ts = [Var v]"
-unfolding simple_def
-by (metis list_all_append list_all_simps(1) simple\<^sub>s\<^sub>t\<^sub>p.elims(2) split_list_first
-          strand_step.distinct(1) strand_step.distinct(5) strand_step.inject(1)) 
+  by (auto simp add: simple_def list_all_iff elim: simple\<^sub>s\<^sub>t\<^sub>p.elims(2))
 
 
 subsection \<open>Lemmata: Strand Measure\<close>

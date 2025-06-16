@@ -11,9 +11,8 @@ fun fast_exp_7681 ::" int \<Rightarrow> nat \<Rightarrow> int" where
 "fast_exp_7681 x (Suc e) = (x * (fast_exp_7681 x e)) mod 7681"
 
 lemma list_all_fast_exp_7681: 
-"list_all (\<lambda>l. fast_exp_7681 (3844::int) l \<noteq> 1) [1..<256]"
-by (subst upt_conv_Cons, simp, subst list_all_simps(1), intro conjI, eval)+ 
-   force
+  "list_all (\<lambda>l. fast_exp_7681 (3844::int) l \<noteq> 1) [1..<256]"
+  by eval
 
 lemma fast_exp_7681_to_mod_ring: 
 "fast_exp_7681 x e = to_int_mod_ring ((of_int_mod_ring x :: fin7681 mod_ring)^e)"

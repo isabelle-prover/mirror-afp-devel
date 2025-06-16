@@ -156,8 +156,7 @@ lemma wtPB_tPB[simp]: "TE.wtPB tPB" unfolding tPB_def by simp
 lemma wt_Tag:
 assumes "TE.wt (Fn (Tag \<sigma>) Tl)"
 shows "\<exists> T. Tl = [T] \<and> TE.wt T \<and> tpOf T = \<sigma>"
-using assms 
-by simp (metis (opaque_lifting, no_types) list.inject list_all_simps(1) map_eq_Cons_conv neq_Nil_conv)
+using assms by auto
 
 lemma tpOf_Tag: "TE.tpOf (Fn (Tag \<sigma>) Tl) = \<sigma>" by simp
 

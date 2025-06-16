@@ -204,8 +204,7 @@ proof (induct I)
 next
   case (Cons a I)
   moreover have eo: "signs ! a = 1 \<or> signs ! a = 0 \<or> signs ! a = -1" 
-    using assms
-    by (smt (verit, del_insts) calculation(2) list_all_length list_all_simps(1)) 
+    using assms Cons by (simp add: list_all_iff)
   have "prod_list (map ((!) (map_sgas signs)) (a # I)) = (1 - (signs ! a)^2)*prod_list (map ((!) (map_sgas signs)) (I))"
     unfolding map_sgas_def apply (auto)
     using calculation(2) by auto 
@@ -226,8 +225,8 @@ proof (induct I)
 next
   case (Cons a I)
   moreover have "signs ! a = 1 \<or> signs ! a = 0 \<or> signs ! a = -1" 
-    using assms
-    by (smt (verit, best) calculation(2) list_all_length list_all_simps(1)) 
+    using assms Cons by (simp add: list_all_iff)
+
   then have eo: "1 - (signs ! a)^2 = 1 \<or> 1 - (signs !a)^2 = 0"
     using cancel_comm_monoid_add_class.diff_cancel diff_zero by fastforce
   have "prod_list (map ((!) (map_sgas signs)) (a # I)) = (1 - (signs ! a)^2)*prod_list (map ((!) (map_sgas signs)) (I))"
@@ -331,8 +330,9 @@ next
     apply (auto)
     by (smt (z3) length_map list_all_length nth_map) 
   then have eo: "(prod_list (map ((!) (map_sgas sign)) (xa))) = 0 \<or> (prod_list (map ((!) (map_sgas sign)) (xa))) = 1"
-    using z_signs_R1 assms Cons.prems consistent_sign_vec_def length_map list_all_simps(1) length_map list_all_length list_constr_def
-    by (smt (verit, best))
+    using assms Cons.prems z_signs_R1 
+    by (clarsimp simp add: consistent_sign_vec_def list_all_iff list_constr_def image_iff)
+      (smt (verit, del_insts) image_iff length_map list.set_map)
   have "(sign ! a)^2 = 1 \<or> (sign ! a)^2 = 0" using sign_fix welldef  unfolding consistent_sign_vec_def 
     by auto
   then have s1: "(prod_list (map (nth (map_sgas sign)) (a#xa))) = 1 \<longleftrightarrow> 
@@ -385,8 +385,8 @@ proof (induction "I")
   case (Cons a xa)
   have "poly (prod_list (retrieve_polys qs (a # xa))) x = (poly (qs ! a) x)*poly (prod_list (retrieve_polys qs (xa))) x"
     by (simp add: retrieve_polys_def)
-  then show ?case using Cons.prems
-    by (smt (z3) Cons.IH class_field.neg_1_not_0 class_field.zero_not_one consistent_sign_vec_def list.simps(9) list_all_simps(1) list_constr_def mult_eq_0_iff nth_map prod_list.Cons sign_fix) 
+  then show ?case using Cons
+    by (simp add: list_all_iff consistent_sign_vec_def list_constr_def sign_fix)
 qed
 
 lemma horiz_vector_helper_pos_ind_R2: 
@@ -419,14 +419,12 @@ proof (induction "I")
     by (metis zero_less_mult_iff)
   have prodsame: "(prod_list (map (nth sign) (a#xa))) = (sign ! a)* (prod_list (map (nth sign) (xa)))"
     using lensame Cons.prems unfolding list_constr_def by auto
-  have sagt: "sign ! a = 1 \<longleftrightarrow> (poly (qs ! a) x) > 0" using assms unfolding consistent_sign_vec_def
-    apply (auto)
-     apply (smt (verit, best) Cons.prems list_all_simps(1) list_constr_def neg_equal_zero nth_map zero_neq_one)
-    by (smt (verit, ccfv_threshold) Cons.prems list_all_simps(1) list_constr_def nth_map)
-  have salt: "sign ! a = -1 \<longleftrightarrow> (poly (qs ! a) x) < 0" using assms unfolding consistent_sign_vec_def
-    apply (auto)
-     apply (smt (verit, ccfv_SIG) Cons.prems less_minus_one_simps(1) less_minus_one_simps(3) list_all_simps(1) list_constr_def neg_0_less_iff_less nth_map)
-    by (smt (verit, best) Cons.prems list_all_simps(1) list_constr_def nth_map)  
+  have sagt: "sign ! a = 1 \<longleftrightarrow> (poly (qs ! a) x) > 0"
+    using assms Cons.prems
+    by (simp add: list_all_iff consistent_sign_vec_def list_constr_def)
+  have salt: "sign ! a = -1 \<longleftrightarrow> (poly (qs ! a) x) < 0"
+    using assms Cons.prems
+    by (simp add: list_all_iff consistent_sign_vec_def list_constr_def)
   have h1: "((poly (qs ! a) x) > 0 \<and> poly (prod_list (retrieve_polys qs (xa))) x > 0) \<longrightarrow>
        (prod_list (map (nth sign) (a#xa))) = 1" 
     using prodsame sagt ih by auto
@@ -437,16 +435,20 @@ proof (induction "I")
   proof -
     assume "(prod_list (map ((!) sign) xa) = -1) "
     then show "(0 > poly (prod_list (retrieve_polys qs xa)) x)"
-      using prodsame salt ih assms Cons.prems class_field.neg_1_not_0 equal_neg_zero horiz_vector_helper_zer_ind_R2 linorder_neqE_linordered_idom list_all_simps(1) list_constr_def
-      apply (auto)
-       apply (smt (verit, ccfv_threshold) class_field.neg_1_not_0 list.set_map list_all_length semidom_class.prod_list_zero_iff)
-      by (smt (verit, ccfv_threshold) class_field.neg_1_not_0 list.set_map list_all_length semidom_class.prod_list_zero_iff)
+      using assms Cons.prems prodsame salt ih
+      apply (cases \<open>poly (prod_list (retrieve_polys qs xa)) x = 0\<close>)
+       apply (auto simp add: list_constr_def horiz_vector_helper_zer_ind_R2 not_less)
+      apply (metis horiz_vector_helper_zer_ind_R2 list_constr_def mult_minus1 mult_zero_left
+          neg_equal_iff_equal one_neq_zero root_p)
+      apply (metis horiz_vector_helper_zer_ind_R2 list_constr_def root_p zero_neq_neg_one)
+      done
   qed
   have d2: "(0 > poly (prod_list (retrieve_polys qs xa)) x) \<longrightarrow> (prod_list (map ((!) sign) xa) = -1)"
-    using eo assms horiz_vector_helper_zer_ind_R2[where p = "p", where x = "x", where sign = "sign", where I ="I"]
-    apply (auto)
-    using ih apply force
-    by (metis (full_types, lifting) Cons.prems class_field.neg_1_not_0 horiz_vector_helper_zer_ind_R2 ih imageI list.set_map list_all_simps(1) list_constr_def mem_Collect_eq neg_equal_0_iff_equal semidom_class.prod_list_zero_iff)  
+    using Cons.prems ih eo assms horiz_vector_helper_zer_ind_R2 [where p = "p", where x = "x", where sign = "sign", where I ="I"]
+    apply (auto simp add: list_constr_def list_all_iff)
+    apply (metis (mono_tags, lifting) Cons.prems eo horiz_vector_helper_zer_ind_R2
+        list.pred_inject(2) list_constr_def mem_Collect_eq order_less_irrefl)
+    done
   have "(prod_list (map ((!) sign) xa) = -1) = (0 > poly (prod_list (retrieve_polys qs xa)) x)"
     using d1 d2
     by blast       

@@ -364,9 +364,9 @@ proof(cases M)
   from this have "(x \<in> set (a #N)) \<longrightarrow> (x = a) \<or> (x \<in> (set N))" 
        using hd_set by auto
   from this and 1 have 2:"vec nr a" 
-       using mat_def by (metis Ball_set_list_all list_all_simps(1))
+       by (simp add: mat_def)
   have "row_length (a#N) = length a" 
-       using row_length_def Cons  list.distinct(1) by auto
+       using row_length_def Cons list.distinct(1) by auto
   from this have " vec (row_length (a#N)) a" 
         using vec_def by auto
   from this and 2 have 3:"(row_length M)  = nr" 
@@ -2836,8 +2836,9 @@ proof-
                ((M1 \<otimes> M2 )\<otimes> M3)"
             using  0 effective_well_defined_Tensor  row_length_mat length_Tensor by metis 
   ultimately show ?thesis using row_length_mat length_Tensor by (metis mult.assoc)
- qed
- ultimately show ?thesis using mat_eqI by blast
+  qed
+  ultimately show ?thesis
+    by (auto intro: mat_eqI)
 qed     
   
 end
