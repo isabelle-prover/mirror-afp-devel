@@ -140,8 +140,8 @@ lemma elem_exists_count_min: "\<exists> i \<in>{..<dim_vec v}. v $ i = x \<Longr
 lemma count_vec_count_mset: "vec_mset v = image_mset f A \<Longrightarrow> count_vec v a = count (image_mset f A) a"
   by (simp)
 
-lemma count_vec_alt_list: "count_vec v a = length (filter (\<lambda>y. a = y) (list_of_vec v))"
-  by (simp add: mset_vec_eq_mset_list) (metis count_mset)
+lemma count_vec_alt_list: "count_vec v a = count_list (list_of_vec v) a"
+  by (metis mset_vec_eq_mset_list count_list_mset)
 
 lemma count_vec_alt: "count_vec v x = card { i. v $ i = x \<and> i< dim_vec v}"
 proof -

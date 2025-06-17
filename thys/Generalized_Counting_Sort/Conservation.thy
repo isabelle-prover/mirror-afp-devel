@@ -1616,7 +1616,7 @@ next
   moreover have "\<And>v. card ?B = card (?C v \<inter> {i. \<exists>j. i = Suc j})"
     by (rule bij_betw_same_card [of Suc], auto)
   moreover have "card ?B \<le> count (mset xs) x"
-    by (force simp add: count_mset length_filter_conv_card intro: card_mono)
+    by (auto simp: count_mset length_filter_conv_card count_list_eq_length_filter intro: card_mono)
   ultimately show ?case
     by (simp add: nths_Cons Cons)
 qed
@@ -1712,7 +1712,7 @@ next
       have G: "length ?ws = Suc (Suc m)"
         using E and F by simp
       hence H: "card ?A \<le> count (mset ?ws) x"
-        by (auto simp add: count_mset length_filter_conv_card intro: card_mono)
+        by (auto simp: count_mset length_filter_conv_card count_list_eq_length_filter intro: card_mono)
       show "count (mset (map the (fill ?zs (offs ?ms 0) index key m ?mi ?ma))) x
         + (if ?xma = x then 1 else 0) + (if ?xmi = x then 1 else 0) =
         count (mset ?ws) x"

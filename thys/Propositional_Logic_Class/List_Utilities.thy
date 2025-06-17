@@ -618,7 +618,7 @@ next
         with Cons show ?thesis by linarith
       next
         assume "\<phi>' \<noteq> \<phi>"
-        with Cons show ?thesis by (cases "\<phi>' = \<psi>", simp+)
+        with Cons show ?thesis by simp
       qed
     qed
     ultimately show ?thesis
