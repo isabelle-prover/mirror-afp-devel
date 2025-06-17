@@ -367,7 +367,7 @@ function iterative_join_search_main ::
   "('f,'v) rules \<Rightarrow> ('f,'v) term \<Rightarrow> ('f,'v) term \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> bool"
   where
     "iterative_join_search_main R s t i n = (if i \<le> n then
-  (((list_inter (reachable_terms R s i) (reachable_terms R t i)) \<noteq> []) \<or> (iterative_join_search_main R s t (Suc i) n)) else False)"
+  (((inter_list_set (reachable_terms R s i) (reachable_terms R t i)) \<noteq> []) \<or> (iterative_join_search_main R s t (Suc i) n)) else False)"
   by pat_completeness auto
 
 termination by (relation "measure ( \<lambda> (R,s,t,i,n). Suc n - i)") auto
@@ -378,7 +378,7 @@ proof (induction rule: iterative_join_search_main.induct)
   case (1 R s t i n)
   from 1(2) have i_n: "i \<le> n" by (simp split: if_splits)
   note IH = 1(1)[OF i_n]
-  let ?I = "list_inter (reachable_terms R s i) (reachable_terms R t i)"
+  let ?I = "inter_list_set (reachable_terms R s i) (reachable_terms R t i)"
   from 1(2) i_n have "?I \<noteq> [] \<or> iterative_join_search_main R s t (Suc i) n" by auto
   then show ?case
   proof

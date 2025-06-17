@@ -722,18 +722,6 @@ qed simp
 
 declare list_union.simps[simp del]
 
-(*Why was list_inter thrown out of List.thy?*)
-fun list_inter :: "'a list \<Rightarrow> 'a list \<Rightarrow> 'a list" where
-  "list_inter [] bs = []"
-| "list_inter (a#as) bs =
-    (if a \<in> set bs then a # list_inter as bs else list_inter as bs)"
-
-lemma set_list_inter[simp]:
-  "set (list_inter xs ys) = set xs \<inter> set ys"
-  by (induct rule: list_inter.induct) simp_all
-
-declare list_inter.simps[simp del]
-
 primrec list_diff :: "'a list \<Rightarrow> 'a list \<Rightarrow> 'a list" where
   "list_diff [] ys = []"
 | "list_diff (x # xs) ys = (let zs = list_diff xs ys in if x \<in> set ys then zs else x # zs)"
