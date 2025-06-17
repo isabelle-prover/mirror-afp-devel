@@ -46,10 +46,10 @@ instantiation st :: (WN)WN
 begin
 
 definition "widen_st F1 F2 =
-  FunDom (\<lambda>x. fun F1 x \<nabla> fun F2 x) (inter_list (dom F1) (dom F2))"
+  FunDom (\<lambda>x. fun F1 x \<nabla> fun F2 x) (inter_list_set (dom F1) (dom F2))"
 
 definition "narrow_st F1 F2 =
-  FunDom (\<lambda>x. fun F1 x \<triangle> fun F2 x) (inter_list (dom F1) (dom F2))"
+  FunDom (\<lambda>x. fun F1 x \<triangle> fun F2 x) (inter_list_set (dom F1) (dom F2))"
 
 instance
 proof (standard, goal_cases)
