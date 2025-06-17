@@ -1,0 +1,23 @@
+chapter AFP
+
+session Galois_Energy_Games = Parity_Game +
+  options [timeout = 600]
+
+  sessions
+    "HOL-Library"
+    "Well_Quasi_Orders"
+    "Complete_Non_Orders"
+
+  theories
+    Energy_Game
+    Energy_Order 
+    Galois_Energy_Game
+    Decidability 
+    Update
+    Natural_Galois_Energy_Game
+    List_Lemmas
+
+document_files
+    "introduction.tex"
+    "root.bib"
+    "root.tex"

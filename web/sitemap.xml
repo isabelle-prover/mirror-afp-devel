@@ -3,10 +3,13 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://isa-afp.org/entries/index.json</loc>
-    <lastmod>2025-05-22T00:00:00+00:00</lastmod>
+    <lastmod>2025-05-23T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/</loc>
-    <lastmod>2025-05-22T00:00:00+00:00</lastmod>
+    <lastmod>2025-05-23T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Galois_Energy_Games.html</loc>
+    <lastmod>2025-05-23T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/entries/Munta_Model_Checker.html</loc>
     <lastmod>2025-05-22T00:00:00+00:00</lastmod>
@@ -3084,6 +3087,8 @@
   </url><url>
     <loc>https://isa-afp.org/sessions/cardinality_continuum/</loc>
   </url><url>
+    <loc>https://isa-afp.org/authors/lemke/</loc>
+  </url><url>
     <loc>https://isa-afp.org/authors/lameris/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/cartan_fp/</loc>
@@ -3807,6 +3812,8 @@
     <loc>https://isa-afp.org/sessions/gale_shapley/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/galestewart_games/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/sessions/galois_energy_games/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/game_based_crypto/</loc>
   </url><url>

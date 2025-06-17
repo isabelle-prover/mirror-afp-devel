@@ -4132,24 +4132,6 @@ host = [
 
 [lehr.homepages]
 
-[lemke]
-name = "Caroline Lemke"
-orcid = "0009-0008-7863-0818"
-
-[lemke.emails]
-
-[lemke.emails.lemke_email1]
-user = [
-  "caroline",
-  "lemke",
-]
-host = [
-  "uni-oldenburg",
-  "de",
-]
-
-[lemke.homepages]
-
 [leustean]
 name = "Laurentiu Leustean"
 
