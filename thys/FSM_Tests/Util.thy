@@ -2211,20 +2211,6 @@ next
 qed
 
 
-fun inter_list :: "'a list \<Rightarrow> 'a list \<Rightarrow> 'a list" where
-  "inter_list xs ys = filter (\<lambda> x . x \<in> set ys) xs"
-
-lemma inter_list_set : "set (inter_list xs ys) = (set xs) \<inter> (set ys)"
-  by auto
-
-fun subset_list :: "'a list \<Rightarrow> 'a list \<Rightarrow> bool" where
-  "subset_list xs ys = list_all (\<lambda> x . x \<in> set ys) xs"
-
-lemma subset_list_set : "subset_list xs ys = ((set xs) \<subseteq> (set ys))" 
-  unfolding subset_list.simps
-  by (simp add: Ball_set subset_code(1)) 
-
-
 subsubsection \<open>Removing Subsets in a List of Sets\<close>
 
 lemma remove1_length : "x \<in> set xs \<Longrightarrow> length (remove1 x xs) < length xs" 
