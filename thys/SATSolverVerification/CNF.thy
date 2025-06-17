@@ -2314,7 +2314,7 @@ assumes
   "formulaEntailsClause F clause"
   "formulaEntailsValuation F valuation"
 shows
-  "formulaEntailsClause F (list_diff clause (oppositeLiteralList valuation))"
+  "formulaEntailsClause F (minus_list_set clause (oppositeLiteralList valuation))"
 proof-
   {
     fix valuation'
@@ -2357,7 +2357,7 @@ proof-
         by auto
     qed
     ultimately
-    have "model valuation' (list_diff clause (oppositeLiteralList valuation))"
+    have "model valuation' (minus_list_set clause (oppositeLiteralList valuation))"
       using \<open>consistent valuation'\<close>
       using listDiffIff[of "l" "clause" "oppositeLiteralList valuation"]
       by (auto simp add: clauseTrueIffContainsTrueLiteral)

@@ -862,60 +862,25 @@ qed
 (*********************************************************)
 (*                       List diff                       *)
 (*********************************************************)
-subsection\<open>@{term "list_diff"} - the set difference operation on two lists.\<close>
-
-primrec list_diff :: "'a list \<Rightarrow> 'a list \<Rightarrow> 'a list"
-where
-"list_diff x [] = x" |
-"list_diff x (y#ys) = list_diff (removeAll y x) ys"
-
-lemma [simp]: 
-  shows "list_diff [] y = []"
-by (induct y) auto
-
-lemma [simp]: 
-  shows "list_diff (x # xs) y = (if x \<in> set y then list_diff xs y else x # list_diff xs y)"
-proof (induct y arbitrary: xs)
-  case (Cons y ys)
-  thus ?case
-  proof (cases "x = y")
-    case True
-    thus ?thesis
-      by simp
-  next
-    case False
-    thus ?thesis
-    proof (cases "x \<in> set ys")
-      case True
-      thus ?thesis
-        using Cons
-        by simp
-    next
-      case False
-      thus ?thesis
-        using Cons
-        by simp
-    qed
-  qed
-qed simp
+subsection\<open>@{term "minus_list_set"} - the set difference operation on two lists.\<close>
 
 lemma listDiffIff:
-  shows "(x \<in> set a \<and> x \<notin> set b) = (x \<in> set (list_diff a b))"
+  shows "(x \<in> set a \<and> x \<notin> set b) = (x \<in> set (minus_list_set a b))"
 by (induct a) auto
 
 lemma listDiffDoubleRemoveAll: 
   assumes "x \<in> set a"
-  shows "list_diff b a = list_diff b (x # a)"
+  shows "minus_list_set b a = minus_list_set b (x # a)"
 using assms
 by (induct b) auto
 
 lemma removeAllListDiff[simp]:
-  shows "removeAll x (list_diff a b) = list_diff (removeAll x a) b"
-by (induct a) auto
+  shows "removeAll x (minus_list_set a b) = minus_list_set (removeAll x a) b"
+by (induct a) (auto simp add: minus_list_set_Cons1)
 
 lemma listDiffRemoveAllNonMember:
   assumes "x \<notin> set a"
-  shows "list_diff a b = list_diff a (removeAll x b)"
+  shows "minus_list_set a b = minus_list_set a (removeAll x b)"
 using assms
 proof (induct b arbitrary: a)
   case (Cons y b')
@@ -942,7 +907,7 @@ qed simp
 
 lemma listDiffMap: 
   assumes "\<forall> x y. x \<noteq> y \<longrightarrow> f x \<noteq> f y"
-  shows "map f (list_diff a b) = list_diff (map f a) (map f b)"
+  shows "map f (minus_list_set a b) = minus_list_set (map f a) (map f b)"
 using assms
 by (induct b arbitrary: a) (auto simp add: removeAll_map)
 
@@ -955,205 +920,26 @@ lemma remdupsRemoveAllCommute[simp]:
 by (induct list) auto
 
 lemma remdupsAppend: 
-  shows "remdups (a @ b) = remdups (list_diff a b) @ remdups b"
+  shows "remdups (a @ b) = remdups (minus_list_set a b) @ remdups b"
 proof (induct a)
   case (Cons x a')
   thus ?case
     using listDiffIff[of "x" "a'" "b"]
-    by auto
+    by (auto simp: minus_list_set_Cons1)
 qed simp
 
 lemma remdupsAppendSet: 
-  shows "set (remdups (a @ b)) = set (remdups a @ remdups (list_diff b a))"
-proof (induct a)
-  case Nil
-  thus ?case
-    by auto
-next
-  case (Cons x a')
-  thus ?case
-  proof (cases "x \<in> set a'")
-    case True
-    thus ?thesis
-      using Cons
-      using listDiffDoubleRemoveAll[of "x" "a'" "b"]
-      by simp
-  next
-    case False
-    thus ?thesis
-    proof (cases "x \<in> set b")
-      case True
-      show ?thesis
-      proof-
-        have "set (remdups (x # a') @ remdups (list_diff b (x # a'))) = 
-          set (x # remdups a' @ remdups (list_diff b (x # a')))"
-          using \<open>x \<notin> set a'\<close>
-          by auto
-        also have "\<dots> = set (x # remdups a' @ remdups (list_diff (removeAll x b) a'))"
-          by auto
-        also have "\<dots> = set (x # remdups a' @ remdups (removeAll x (list_diff b a')))"
-          by simp
-        also have "\<dots> = set (remdups a' @ x # remdups (removeAll x (list_diff b a')))"
-          by simp
-        also have "\<dots> = set (remdups a' @ x # removeAll x (remdups (list_diff b a')))"
-          by (simp only: remdupsRemoveAllCommute)
-        also have "\<dots> = set (remdups a') \<union> set (x # removeAll x (remdups (list_diff b a')))"
-          by simp
-        also have "\<dots> = set (remdups a') \<union> {x} \<union> set (removeAll x (remdups (list_diff b a')))"
-          by auto
-        also have "\<dots> = set (remdups a') \<union> set (remdups (list_diff b a'))"
-        proof-
-          from \<open>x \<notin> set a'\<close> \<open>x \<in> set b\<close>
-          have "x \<in> set (list_diff b a')"
-            using listDiffIff[of "x" "b" "a'"]
-            by simp
-          hence "x \<in> set (remdups (list_diff b a'))"
-            by auto
-          thus ?thesis
-            by auto
-        qed
-        also have "\<dots> = set (remdups (a' @ b))"
-          using Cons(1)
-          by simp
-        also have "\<dots> = set (remdups ((x # a') @ b))"
-          using \<open>x \<in> set b\<close>
-          by simp
-        finally show ?thesis
-          by simp
-      qed
-    next
-      case False
-      thus ?thesis
-      proof-
-        have "set (remdups (x # a') @ remdups (list_diff b (x # a'))) = 
-          set (x # (remdups a') @ remdups (list_diff b (x # a')))"
-          using \<open>x \<notin> set a'\<close>
-          by auto
-        also have "\<dots> = set (x # remdups a' @ remdups (list_diff (removeAll x b) a'))"
-          by auto
-        also have "\<dots> = set (x # remdups a' @ remdups (list_diff b a'))"
-          using \<open>x \<notin> set b\<close>
-          by auto
-        also have "\<dots> = {x} \<union> set (remdups (a' @ b))"
-          using Cons(1)
-          by simp
-        also have "\<dots> = set (remdups ((x # a') @ b))"
-          by auto
-        finally show ?thesis
-          by simp
-      qed
-    qed
-  qed
-qed
+  shows "set (remdups (a @ b)) = set (remdups a @ remdups (minus_list_set b a))"
+  by simp
 
 lemma remdupsAppendMultiSet: 
-  shows "mset (remdups (a @ b)) = mset (remdups a @ remdups (list_diff b a))"
-proof (induct a)
-  case Nil
-  thus ?case
-    by auto
-next
-  case (Cons x a')
-  thus ?case
-  proof (cases "x \<in> set a'")
-    case True
-    thus ?thesis
-      using Cons
-      using listDiffDoubleRemoveAll[of "x" "a'" "b"]
-      by simp
-    next
-    case False
-    thus ?thesis
-    proof (cases "x \<in> set b")
-      case True
-      show ?thesis
-      proof-
-        have "mset (remdups (x # a') @ remdups (list_diff b (x # a'))) = 
-          mset (x # remdups a' @ remdups (list_diff b (x # a')))"
-        proof-
-          have "remdups (x # a') = x # remdups a'"
-            using \<open>x \<notin> set a'\<close>
-            by auto
-          thus ?thesis
-            by simp
-        qed
-        also have "\<dots> = mset (x # remdups a' @ remdups (list_diff (removeAll x b) a'))"
-          by auto
-        also have "\<dots> = mset (x # remdups a' @ remdups (removeAll x (list_diff b a')))"
-          by simp
-        also have "\<dots> = mset (remdups a' @ x # remdups (removeAll x (list_diff b a')))"
-          by (simp add: union_assoc)
-        also have "\<dots> = mset (remdups a' @ x # removeAll x (remdups (list_diff b a')))"
-          by (simp only: remdupsRemoveAllCommute)
-        also have "\<dots> = mset (remdups a') + mset (x # removeAll x (remdups (list_diff b a')))"
-          by simp
-        also have "\<dots> = mset (remdups a') + {#x#} + mset (removeAll x (remdups (list_diff b a')))"
-          by simp
-        also have "\<dots> = mset (remdups a') + mset (remdups (list_diff b a'))"
-        proof-
-          from \<open>x \<notin> set a'\<close> \<open>x \<in> set b\<close>
-          have "x \<in> set (list_diff b a')"
-            using listDiffIff[of "x" "b" "a'"]
-            by simp
-          hence "x \<in> set (remdups (list_diff b a'))"
-            by auto
-          thus ?thesis
-            using removeAll_multiset[of "remdups (list_diff b a')" "x"]
-            by (simp add: union_assoc)
-        qed
-        also have "\<dots> = mset (remdups (a' @ b))"
-          using Cons(1)
-          by simp
-        also have "\<dots> = mset (remdups ((x # a') @ b))"
-          using \<open>x \<in> set b\<close>
-          by simp
-        finally show ?thesis
-          by simp
-      qed
-    next
-      case False
-      thus ?thesis
-      proof-
-        have "mset (remdups (x # a') @ remdups (list_diff b (x # a'))) = 
-          mset (x # remdups a' @ remdups (list_diff b (x # a')))"
-        proof-
-          have "remdups (x # a') = x # remdups a'"
-            using \<open>x \<notin> set a'\<close>
-            by auto
-          thus ?thesis
-            by simp
-        qed
-        also have "\<dots> = mset (x # remdups a' @ remdups (list_diff (removeAll x b) a'))"
-          by auto
-        also have "\<dots> = mset (x # remdups a' @ remdups (list_diff b a'))"
-          using \<open>x \<notin> set b\<close>
-          using removeAll_id[of "x" "b"]
-          by simp
-        also have "\<dots> = {#x#} + mset (remdups (a' @ b))"
-          using Cons(1)
-          by (simp add: union_commute)
-        also have "\<dots> = mset (remdups ((x # a') @ b))"
-          using \<open>x \<notin> set a'\<close> \<open>x \<notin> set b\<close>
-          by (auto simp add: union_commute)
-        finally show ?thesis
-          by simp
-      qed
-    qed
-  qed
-qed
- 
+  shows "mset (remdups (a @ b)) = mset (remdups a @ remdups (minus_list_set b a))"
+  by (metis Diff_disjoint distinct_append distinct_remdups mset_set_set remdupsAppendSet
+      set_minus_list_set set_remdups)
+
 lemma remdupsListDiff:
-"remdups (list_diff a b) = list_diff (remdups a) (remdups b)"
-proof(induct a)
-  case Nil
-  thus ?case
-    by simp
-next
-  case (Cons x a')
-  thus ?case
-    using listDiffIff[of "x" "a'" "b"]
-    by auto
-qed
+"remdups (minus_list_set a b) = minus_list_set (remdups a) (remdups b)"
+  by (simp add: minus_list_set_eq_filter remdups_filter)
 
 (*********************************************************)
 (*                       Multiset                        *)
@@ -1239,7 +1025,7 @@ lemma multisetLeListDiff:
 assumes
   "trans r"
 shows 
-  "multiset_le (mset (list_diff a b)) (mset a) r"
+  "multiset_le (mset (minus_list_set a b)) (mset a) r"
 proof (induct a)
   case Nil
   thus ?case
@@ -1250,63 +1036,10 @@ next
   thus ?case
     using assms
     using multisetEmptyLeI[of "{#x#}" "r"]
-    using multisetUnionLeMono[of "r" "mset (list_diff a' b)" "mset a'" "{#}" "{#x#}"]
-    using multisetUnionLeMono1[of "r" "mset (list_diff a' b)" "mset a'" "{#x#}"]
-    by auto
+    using multisetUnionLeMono[of "r" "mset (minus_list_set a' b)" "mset a'" "{#}" "{#x#}"]
+    using multisetUnionLeMono1[of "r" "mset (minus_list_set a' b)" "mset a'" "{#x#}"]
+    by (simp add: minus_list_set_Cons1)
 qed
-
-(*********************************************************)
-(*                       Levi                            *)
-(*********************************************************)
-subsection\<open>Levi's lemma\<close>
-
-text\<open>Obsolete: these two lemmas are already proved as @{term
-append_eq_append_conv2} and @{term append_eq_Cons_conv}.\<close>
-
-lemma FullLevi: 
-  shows "(x @ y = z @ w) = 
-                (x = z \<and> y = w \<or> 
-                (\<exists> t. z @ t = x \<and> t @ y = w) \<or> 
-                (\<exists> t. x @ t = z \<and> t @ w = y))" (is "?lhs = ?rhs")
-proof
-  assume "?rhs"
-  thus "?lhs"
-    by auto
-next
-  assume "?lhs"
-  thus "?rhs"
-  proof (induct x arbitrary: z)
-    case (Cons a x')
-    show ?case
-    proof (cases "z = []")
-      case True
-      with \<open>(a # x') @ y = z @ w\<close>
-      obtain t where "z @ t = a # x'" "t @ y = w"
-        by auto
-      thus ?thesis
-        by auto
-    next
-      case False
-      then obtain b and z' where "z = b # z'"
-        by (auto simp add: neq_Nil_conv)
-      with \<open>(a # x') @ y = z @ w\<close>
-      have "x' @ y = z' @ w" "a = b"
-        by auto
-      with Cons(1)[of "z'"]
-      have "x' = z' \<and> y = w \<or> (\<exists>t. z' @ t = x' \<and> t @ y = w) \<or> (\<exists>t. x' @ t = z' \<and> t @ w = y)"
-        by simp
-      with \<open>a = b\<close> \<open>z = b # z'\<close> 
-      show ?thesis
-        by auto
-    qed
-  qed simp
-qed
-
-lemma SimpleLevi:
-  shows "(p @ s = a # list) = 
-             ( p = [] \<and> s = a # list \<or> 
-              (\<exists> t. p = a # t \<and> t @ s = list))"
-by (induct p) auto
 
 subsection\<open>Single element lists\<close>
 lemma lengthOneCharacterisation:

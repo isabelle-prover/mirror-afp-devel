@@ -250,7 +250,7 @@ definition setConflictAnalysisClause :: "Clause \<Rightarrow> State \<Rightarrow
 where 
 "setConflictAnalysisClause clause state = 
   (let oppM0 = oppositeLiteralList (elements (prefixToLevel 0 (getM state))) in 
-   let state' = state (| getC := remdups (list_diff clause oppM0) |) in 
+   let state' = state (| getC := remdups (minus_list_set clause oppM0) |) in 
      countCurrentLevelLiterals (findLastAssertedLiteral state')
   )"
  
