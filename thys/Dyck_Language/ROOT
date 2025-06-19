@@ -1,0 +1,8 @@
+chapter AFP
+
+session Dyck_Language = HOL +
+  options [timeout = 300]
+  theories
+    Dyck_Language
+  document_files
+    "root.tex"

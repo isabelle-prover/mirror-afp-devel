@@ -117,6 +117,7 @@ Ceva
 Chandy_Lamport
 Chebyshev_Polynomials
 Chebyshev_Prime_Bounds
+Chomsky_Schuetzenberger
 Chord_Segments
 Circus
 Clean
@@ -222,6 +223,7 @@ DiskPaxos
 Distributed_Distinct_Elements
 Dominance_CHK
 Doob_Convergence
+Dyck_Language
 DynamicArchitectures
 Dynamic_Tables
 E_Transcendental

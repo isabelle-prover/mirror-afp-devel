@@ -1,0 +1,16 @@
+chapter AFP
+
+session Chomsky_Schuetzenberger = Context_Free_Grammar +
+  options [timeout = 600]
+  sessions
+    Finite_Automata_HF
+    Dyck_Language
+    Context_Free_Grammar
+  theories [document = false]
+    Finite_Automata_Not_HF
+    Dyck_Language_Syms
+  theories
+    Chomsky_Schuetzenberger
+  document_files
+    "root.tex"
+    "root.bib"
