@@ -4,6 +4,20 @@
     <title>Archive of Formal Proofs</title>
     <link>https://isa-afp.org/</link>
     <description>Formal developments in the AFP</description><item>
+  <title>Dyck Language</title>
+  <link>https://isa-afp.org/entries/Dyck_Language.html</link>
+  <pubDate>Mon, 02 Jun 2025 00:00:00 +0000</pubDate>
+  <description>Dyck Language in the AFP</description>
+    <category>Computer science/Automata and formal languages</category>
+</item>
+<item>
+  <title>Chomsky-Schützenberger Representation Theorem</title>
+  <link>https://isa-afp.org/entries/Chomsky_Schuetzenberger.html</link>
+  <pubDate>Mon, 02 Jun 2025 00:00:00 +0000</pubDate>
+  <description>Chomsky-Schützenberger Representation Theorem in the AFP</description>
+    <category>Computer science/Automata and formal languages</category>
+</item>
+<item>
   <title>Galois Energy Games</title>
   <link>https://isa-afp.org/entries/Galois_Energy_Games.html</link>
   <pubDate>Fri, 23 May 2025 00:00:00 +0000</pubDate>

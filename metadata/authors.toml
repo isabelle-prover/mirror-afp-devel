@@ -6335,6 +6335,23 @@ host = [
 
 [romanos.homepages]
 
+[roos]
+name = "Moritz Roos"
+
+[roos.emails]
+
+[roos.emails.roos_email]
+user = [
+  "moritz",
+  "roos",
+]
+host = [
+  "tum",
+  "de",
+]
+
+[roos.homepages]
+
 [rosentrater]
 name = "Alec Rosentrater"
 orcid = "0009-0007-8186-3631"

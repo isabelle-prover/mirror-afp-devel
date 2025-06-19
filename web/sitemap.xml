@@ -3,10 +3,16 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://isa-afp.org/entries/index.json</loc>
-    <lastmod>2025-05-23T00:00:00+00:00</lastmod>
+    <lastmod>2025-06-02T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/</loc>
-    <lastmod>2025-05-23T00:00:00+00:00</lastmod>
+    <lastmod>2025-06-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Chomsky_Schuetzenberger.html</loc>
+    <lastmod>2025-06-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Dyck_Language.html</loc>
+    <lastmod>2025-06-02T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/entries/Galois_Energy_Games.html</loc>
     <lastmod>2025-05-23T00:00:00+00:00</lastmod>
@@ -3139,6 +3145,8 @@
   </url><url>
     <loc>https://isa-afp.org/sessions/cheri-c_memory_model/</loc>
   </url><url>
+    <loc>https://isa-afp.org/sessions/chomsky_schuetzenberger/</loc>
+  </url><url>
     <loc>https://isa-afp.org/sessions/chord_segments/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/dalvit/</loc>
@@ -3560,6 +3568,8 @@
     <loc>https://isa-afp.org/sessions/dpt-sat-solver/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/bryant/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/sessions/dyck_language/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/dynamic_tables/</loc>
   </url><url>
@@ -4818,6 +4828,8 @@
     <loc>https://isa-afp.org/sessions/monomorphic_monad/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/more_lazylists/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/authors/roos/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/morley_theorem/</loc>
   </url><url>
