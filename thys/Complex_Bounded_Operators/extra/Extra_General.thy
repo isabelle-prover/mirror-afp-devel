@@ -697,27 +697,10 @@ lemma enum_idx_enum:
 subsection \<open>Filtering lists/sets\<close>
 
 lemma map_filter_map: "List.map_filter f (map g l) = List.map_filter (f o g) l"
-proof (induction l)
-  show "List.map_filter f (map g []) = List.map_filter (f \<circ> g) []"
-    by (simp add: map_filter_simps)
-  show "List.map_filter f (map g (a # l)) = List.map_filter (f \<circ> g) (a # l)"
-    if "List.map_filter f (map g l) = List.map_filter (f \<circ> g) l"
-    for a :: 'c
-      and l :: "'c list"
-    using that  map_filter_simps(1)
-    by (metis comp_eq_dest_lhs list.simps(9))
-qed
+  by (induction l) (simp_all split: option.split)
 
-lemma map_filter_Some[simp]: "List.map_filter (\<lambda>x. Some (f x)) l = map f l"
-proof (induction l)
-  show "List.map_filter (\<lambda>x. Some (f x)) [] = map f []"
-    by (simp add: map_filter_simps)
-  show "List.map_filter (\<lambda>x. Some (f x)) (a # l) = map f (a # l)"
-    if "List.map_filter (\<lambda>x. Some (f x)) l = map f l"
-    for a :: 'b
-      and l :: "'b list"
-    using that by (simp add: map_filter_simps(1))
-qed
+lemma map_filter_Some [simp]: "List.map_filter (\<lambda>x. Some (f x)) l = map f l"
+  by (simp add: List.map_filter_def)
 
 lemma filter_Un: "Set.filter f (x \<union> y) = Set.filter f x \<union> Set.filter f y"
   by auto

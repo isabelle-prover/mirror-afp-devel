@@ -977,11 +977,8 @@ proof -
 qed
 
 lemma map_filter_take: "\<exists>j. List.map_filter f (take i xs) = take j (List.map_filter f xs)"
-  apply (induction xs arbitrary: i)
-   apply (auto simp: List.map_filter_simps split: option.splits)
-   apply (metis map_filter_simps(1) option.case(1) take0 take_Cons')
-  apply (metis map_filter_simps(1) map_filter_simps(2) option.case(2) take_Cons' take_Suc_Cons)
-  done
+  using filter_take [of \<open>\<lambda>x. \<exists>y. f x = Some y\<close> i xs]
+  by (auto simp add: map_filter_def take_map)
 
 lemma fo_nmlzd_take: assumes "fo_nmlzd AD xs"
   shows "fo_nmlzd AD (take i xs)"
