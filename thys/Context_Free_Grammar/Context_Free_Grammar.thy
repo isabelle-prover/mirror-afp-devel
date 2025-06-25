@@ -674,13 +674,13 @@ qed
 
 lemma derives_nts_syms_subset:
   "P \<turnstile> u \<Rightarrow>* v \<Longrightarrow> nts_syms v \<subseteq> nts_syms u \<union> Nts P"
-proof (induction rule: derives_induct)
-  case base
-  then show ?case by simp
-next
-  case (step u A v w)
-  then show ?case unfolding Nts_def nts_syms_def by (auto)
-qed
+by(drule derives_set_subset)
+  (auto simp: nts_syms_def Nts_def Syms_def)
+
+lemma derives_tms_syms_subset:
+  "P \<turnstile> u \<Rightarrow>* v \<Longrightarrow> tms_syms v \<subseteq> tms_syms u \<union> Tms P"
+by(drule derives_set_subset)
+  (auto simp: tms_syms_def Tms_def Syms_def)
 
 
 text \<open>Bottom-up definition of \<open>\<Rightarrow>*\<close>. Single definition yields more compact inductions.
