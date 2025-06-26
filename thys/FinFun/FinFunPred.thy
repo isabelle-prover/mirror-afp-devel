@@ -15,9 +15,9 @@ type_synonym 'a pred\<^sub>f = "'a \<Rightarrow>f bool"
 instantiation "finfun" :: (type, ord) ord
 begin
 
-definition le_finfun_def [code del]: "f \<le> g \<longleftrightarrow> (\<forall>x. f $ x \<le> g $ x)"
+definition le_finfun_def: "f \<le> g \<longleftrightarrow> (\<forall>x. f $ x \<le> g $ x)"
 
-definition [code del]: "(f::'a \<Rightarrow>f 'b) < g \<longleftrightarrow> f \<le> g \<and> \<not> g \<le> f"
+definition "(f::'a \<Rightarrow>f 'b) < g \<longleftrightarrow> f \<le> g \<and> \<not> g \<le> f"
 
 instance ..
 
@@ -50,7 +50,7 @@ lemma top_finfun_apply [simp]: "($) top = (\<lambda>_. top)"
 by(auto simp add: top_finfun_def)
 
 instantiation "finfun" :: (type, inf) inf begin
-definition [code]: "inf f g = (\<lambda>(x, y). inf x y) \<circ>$ ($f, g$)"
+definition "inf f g = (\<lambda>(x, y). inf x y) \<circ>$ ($f, g$)"
 instance ..
 end
 
@@ -58,7 +58,7 @@ lemma inf_finfun_apply [simp]: "($) (inf f g) = inf (($) f) (($) g)"
 by(auto simp add: inf_finfun_def o_def inf_fun_def)
 
 instantiation "finfun" :: (type, sup) sup begin
-definition [code]: "sup f g = (\<lambda>(x, y). sup x y) \<circ>$ ($f, g$)"
+definition "sup f g = (\<lambda>(x, y). sup x y) \<circ>$ ($f, g$)"
 instance ..
 end
 
@@ -110,7 +110,7 @@ abbreviation finfun_UNIV :: "'a pred\<^sub>f"
 where "finfun_UNIV \<equiv> top"
 
 definition finfun_single :: "'a \<Rightarrow> 'a pred\<^sub>f"
-where [code]: "finfun_single x = finfun_empty(x $:= True)"
+where "finfun_single x = finfun_empty(x $:= True)"
 
 lemma finfun_single_apply [simp]:
   "finfun_single x $ y \<longleftrightarrow> x = y"
@@ -132,7 +132,7 @@ text \<open>Bounded quantification.
 \<close>
 
 definition finfun_Ball_except :: "'a list \<Rightarrow> 'a pred\<^sub>f \<Rightarrow> ('a \<Rightarrow> bool) \<Rightarrow> bool"
-where [code del]: "finfun_Ball_except xs A P = (\<forall>a. A $ a \<longrightarrow> a \<in> set xs \<or> P a)"
+where "finfun_Ball_except xs A P = (\<forall>a. A $ a \<longrightarrow> a \<in> set xs \<or> P a)"
 
 lemma finfun_Ball_except_const:
   "finfun_Ball_except xs (K$ b) P \<longleftrightarrow> \<not> b \<or> set xs = UNIV \<or> Code.abort (STR ''finfun_ball_except'') (\<lambda>u. finfun_Ball_except xs (K$ b) P)"
@@ -152,14 +152,13 @@ lemma finfun_Ball_except_update_code [code]:
 by(simp add: finfun_Ball_except_update)
 
 definition finfun_Ball :: "'a pred\<^sub>f \<Rightarrow> ('a \<Rightarrow> bool) \<Rightarrow> bool"
-where [code del]: "finfun_Ball A P = Ball {x. A $ x} P"
+where "finfun_Ball A P = Ball {x. A $ x} P"
 
 lemma finfun_Ball_code [code]: "finfun_Ball = finfun_Ball_except []"
 by(auto intro!: ext simp add: finfun_Ball_except_def finfun_Ball_def)
 
-
 definition finfun_Bex_except :: "'a list \<Rightarrow> 'a pred\<^sub>f \<Rightarrow> ('a \<Rightarrow> bool) \<Rightarrow> bool"
-where [code del]: "finfun_Bex_except xs A P = (\<exists>a. A $ a \<and> a \<notin> set xs \<and> P a)"
+where "finfun_Bex_except xs A P = (\<exists>a. A $ a \<and> a \<notin> set xs \<and> P a)"
 
 lemma finfun_Bex_except_const:
   "finfun_Bex_except xs (K$ b) P \<longleftrightarrow> b \<and> set xs \<noteq> UNIV \<and> Code.abort (STR ''finfun_Bex_except'') (\<lambda>u. finfun_Bex_except xs (K$ b) P)"
@@ -179,7 +178,7 @@ lemma finfun_Bex_except_update_code [code]:
 by(simp add: finfun_Bex_except_update)
 
 definition finfun_Bex :: "'a pred\<^sub>f \<Rightarrow> ('a \<Rightarrow> bool) \<Rightarrow> bool"
-where [code del]: "finfun_Bex A P = Bex {x. A $ x} P"
+where "finfun_Bex A P = Bex {x. A $ x} P"
 
 lemma finfun_Bex_code [code]: "finfun_Bex = finfun_Bex_except []"
 by(auto intro!: ext simp add: finfun_Bex_except_def finfun_Bex_def)

@@ -303,7 +303,7 @@ next
 qed
 
 
-lemma perm_eval [code] :
+lemma perm_eval:
   "perm [] l \<longleftrightarrow> l = []" (is ?g1)
   "perm (x # xs) l \<longleftrightarrow> (case delete_first (\<lambda>e. e = x) l of
        None => False
@@ -590,7 +590,7 @@ next
   thus ?thesis by auto
 qed
 
-lemma set_case_code [code] :
+lemma set_case_code [code]:
   "set_case (set []) c_empty c_sing c_else = c_empty"
   "set_case (set [x]) c_empty c_sing c_else = c_sing x"
   "set_case (set (x1 # x2 # xs)) c_empty c_sing c_else =

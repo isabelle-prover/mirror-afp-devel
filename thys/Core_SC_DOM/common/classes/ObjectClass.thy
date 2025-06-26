@@ -208,17 +208,16 @@ definition "create_heap xs = Heap (fmap_of_list xs)"
 
 code_datatype ObjectClass.heap.Heap create_heap
 
-lemma object_ptr_kinds_code3 [code]: 
+lemma object_ptr_kinds_code3: 
   "fmlookup (the_heap (create_heap xs)) x = map_of xs x"
   by(auto simp add: create_heap_def fmlookup_of_list)
-
-lemma object_ptr_kinds_code4 [code]: 
-  "the_heap (create_heap xs) = fmap_of_list xs"
-  by(simp add: create_heap_def)
 
 lemma object_ptr_kinds_code5 [code]: 
   "the_heap (Heap x) = x"
   by simp
 
+lemma object_ptr_kinds_code4 [code]: 
+  "the_heap (create_heap xs) = fmap_of_list xs"
+  by(simp add: create_heap_def)
 
 end

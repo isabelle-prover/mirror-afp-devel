@@ -416,7 +416,7 @@ where
                              then (dests \<xi>) rip else None) \<rparr>\<rbrakk>
      groupcast(\<lambda>\<xi>. pre \<xi>, \<lambda>\<xi>. rerr(dests \<xi>, ip \<xi>)). AODV())"
 
-declare \<Gamma>\<^sub>A\<^sub>O\<^sub>D\<^sub>V.simps [simp del, code del]
+declare \<Gamma>\<^sub>A\<^sub>O\<^sub>D\<^sub>V.simps [simp del]
 lemmas \<Gamma>\<^sub>A\<^sub>O\<^sub>D\<^sub>V_simps [simp, code] = \<Gamma>\<^sub>A\<^sub>O\<^sub>D\<^sub>V.simps [simplified]
 
 fun \<Gamma>\<^sub>A\<^sub>O\<^sub>D\<^sub>V_skeleton
@@ -436,7 +436,7 @@ lemma \<Gamma>\<^sub>A\<^sub>O\<^sub>D\<^sub>V_skeleton_wf [simp]:
       by (cases pn) simp_all
   qed
 
-declare \<Gamma>\<^sub>A\<^sub>O\<^sub>D\<^sub>V_skeleton.simps [simp del, code del]
+declare \<Gamma>\<^sub>A\<^sub>O\<^sub>D\<^sub>V_skeleton.simps [simp del]
 lemmas \<Gamma>\<^sub>A\<^sub>O\<^sub>D\<^sub>V_skeleton_simps [simp, code]
            = \<Gamma>\<^sub>A\<^sub>O\<^sub>D\<^sub>V_skeleton.simps [simplified \<Gamma>\<^sub>A\<^sub>O\<^sub>D\<^sub>V_simps seqp_skeleton.simps]
 

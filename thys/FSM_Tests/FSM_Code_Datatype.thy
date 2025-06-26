@@ -161,19 +161,10 @@ proof -
     using that[of m] unfolding set_as_mapping_def by blast
 qed
 
-lemma set_as_mapping_refined[code] :
+lemma set_as_mapping_refined [code]:
   fixes t :: "('a :: ccompare \<times> 'c :: ccompare) set_rbt" 
   and   xs:: "('b :: ceq \<times> 'd :: ceq) set_dlist"
-  shows "set_as_mapping (RBT_set t) = (case ID CCOMPARE(('a \<times> 'c)) of
-           Some _ \<Rightarrow> (RBT_Set2.fold (\<lambda> (x,z) m . case Mapping.lookup m (x) of
-                        None \<Rightarrow> Mapping.update (x) {z} m |
-                        Some zs \<Rightarrow> Mapping.update (x) (Set.insert z zs) m)
-                      t
-                      Mapping.empty) |
-           None   \<Rightarrow> Code.abort (STR ''set_as_map RBT_set: ccompare = None'') 
-                                (\<lambda>_. set_as_mapping (RBT_set t)))"
-    (is "set_as_mapping (RBT_set t) = ?C1 (RBT_set t)")
-  and   "set_as_mapping (DList_set xs) = (case ID CEQ(('b \<times> 'd)) of
+  shows "set_as_mapping (DList_set xs) = (case ID CEQ(('b \<times> 'd)) of
             Some _ \<Rightarrow> (DList_Set.fold (\<lambda> (x,z) m . case Mapping.lookup m (x) of
                         None \<Rightarrow> Mapping.update (x) {z} m |
                         Some zs \<Rightarrow> Mapping.update (x) (Set.insert z zs) m)
@@ -182,6 +173,15 @@ lemma set_as_mapping_refined[code] :
            None   \<Rightarrow> Code.abort (STR ''set_as_map RBT_set: ccompare = None'') 
                                 (\<lambda>_. set_as_mapping (DList_set xs)))"
     (is "set_as_mapping (DList_set xs) = ?C2 (DList_set xs)")
+    and "set_as_mapping (RBT_set t) = (case ID CCOMPARE(('a \<times> 'c)) of
+           Some _ \<Rightarrow> (RBT_Set2.fold (\<lambda> (x,z) m . case Mapping.lookup m (x) of
+                        None \<Rightarrow> Mapping.update (x) {z} m |
+                        Some zs \<Rightarrow> Mapping.update (x) (Set.insert z zs) m)
+                      t
+                      Mapping.empty) |
+           None   \<Rightarrow> Code.abort (STR ''set_as_map RBT_set: ccompare = None'') 
+                                (\<lambda>_. set_as_mapping (RBT_set t)))"
+    (is "set_as_mapping (RBT_set t) = ?C1 (RBT_set t)")
 proof -
   show "set_as_mapping (RBT_set t) = ?C1 (RBT_set t)"
   proof (cases "ID CCOMPARE(('a \<times> 'c))")
@@ -526,20 +526,12 @@ proof -
     using that[of m] unfolding set_as_mapping_image_def by blast
 qed
 
-lemma set_as_mapping_image_code[code]  :
+lemma set_as_mapping_image_code [code]:
   fixes t :: "('a1 ::ccompare \<times> 'a2 :: ccompare) set_rbt" 
   and   f1 :: "('a1 \<times> 'a2) \<Rightarrow> ('b1 :: ccompare \<times> 'b2 ::ccompare)"
   and   xs :: "('c1 :: ceq \<times> 'c2 :: ceq) set_dlist" 
   and   f2 :: "('c1 \<times> 'c2) \<Rightarrow> ('d1 \<times> 'd2)"
-shows "set_as_mapping_image (RBT_set t) f1 = (case ID CCOMPARE(('a1 \<times> 'a2)) of
-           Some _ \<Rightarrow> (RBT_Set2.fold (\<lambda> kv m1 .
-                        ( case f1 kv of (x,z) \<Rightarrow> (case Mapping.lookup m1 (x) of None \<Rightarrow> Mapping.update (x) {z} m1 | Some zs \<Rightarrow> Mapping.update (x) (Set.insert z zs) m1)))
-                      t
-                      Mapping.empty) |
-           None   \<Rightarrow> Code.abort (STR ''set_as_map_image RBT_set: ccompare = None'') 
-                                (\<lambda>_. set_as_mapping_image (RBT_set t) f1))"
-  (is "set_as_mapping_image (RBT_set t) f1 = ?C1 (RBT_set t)")
-and   "set_as_mapping_image (DList_set xs) f2 = (case ID CEQ(('c1 \<times> 'c2)) of
+  shows "set_as_mapping_image (DList_set xs) f2 = (case ID CEQ(('c1 \<times> 'c2)) of
             Some _ \<Rightarrow> (DList_Set.fold (\<lambda> kv m1 . 
                         ( case f2 kv of (x,z) \<Rightarrow> (case Mapping.lookup m1 (x) of None \<Rightarrow> Mapping.update (x) {z} m1 | Some zs \<Rightarrow> Mapping.update (x) (Set.insert z zs) m1)))
                       xs
@@ -547,6 +539,14 @@ and   "set_as_mapping_image (DList_set xs) f2 = (case ID CEQ(('c1 \<times> 'c2))
            None   \<Rightarrow> Code.abort (STR ''set_as_map_image DList_set: ccompare = None'') 
                                 (\<lambda>_. set_as_mapping_image (DList_set xs) f2))"
   (is "set_as_mapping_image (DList_set xs) f2 = ?C2 (DList_set xs)")
+    and "set_as_mapping_image (RBT_set t) f1 = (case ID CCOMPARE(('a1 \<times> 'a2)) of
+           Some _ \<Rightarrow> (RBT_Set2.fold (\<lambda> kv m1 .
+                        ( case f1 kv of (x,z) \<Rightarrow> (case Mapping.lookup m1 (x) of None \<Rightarrow> Mapping.update (x) {z} m1 | Some zs \<Rightarrow> Mapping.update (x) (Set.insert z zs) m1)))
+                      t
+                      Mapping.empty) |
+           None   \<Rightarrow> Code.abort (STR ''set_as_map_image RBT_set: ccompare = None'') 
+                                (\<lambda>_. set_as_mapping_image (RBT_set t) f1))"
+  (is "set_as_mapping_image (RBT_set t) f1 = ?C1 (RBT_set t)")
 proof -
   show "set_as_mapping_image (RBT_set t) f1 = ?C1 (RBT_set t)"
 

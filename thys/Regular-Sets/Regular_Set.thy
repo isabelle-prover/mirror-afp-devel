@@ -27,8 +27,8 @@ definition lang_pow :: "nat \<Rightarrow> 'a lang \<Rightarrow> 'a lang" where
   lang_pow_code_def [code_abbrev]: "lang_pow = compow"
 
 lemma [code]:
-  "lang_pow (Suc n) A = A @@ (lang_pow n A)"
   "lang_pow 0 A = {[]}"
+  "lang_pow (Suc n) A = A @@ (lang_pow n A)"
   by (simp_all add: lang_pow_code_def)
 
 hide_const (open) lang_pow

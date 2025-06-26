@@ -614,20 +614,20 @@ lemma integer_of_char_simps[simp]:
 
 
 lemma rc_open_close_simp[code]: 
+  "rc_open_1 [] = []"
   "rc_open_1 (c # cs) = (if integer_of_char c = 60 then rc_open_2 cs else c # rc_open_1 cs)"
-  "rc_open_1 [] = []" 
+  "rc_open_2 [] = ''<''"
   "rc_open_2 (c # cs) = (let ic = integer_of_char c in if ic = 33 then rc_open_3 cs else if ic = 60 then c # rc_open_2 cs else CHR ''<'' # c # rc_open_1 cs)" 
-  "rc_open_2 [] = ''<''" 
-  "rc_open_3 (c # cs) = (let ic = integer_of_char c in if ic = 45 then rc_open_4 cs else if ic = 60 then c # CHR ''!'' # rc_open_2 cs else CHR ''<'' # CHR ''!'' # c # rc_open_1 cs)" 
   "rc_open_3 [] = ''<!''" 
-  "rc_open_4 (c # cs) = (let ic = integer_of_char c in if ic = 45 then rc_close_1 cs else if ic = 60 then c # CHR ''!'' # CHR ''-'' # rc_open_2 cs else CHR ''<'' # CHR ''!'' # CHR ''-'' # c # rc_open_1 cs)" 
+  "rc_open_3 (c # cs) = (let ic = integer_of_char c in if ic = 45 then rc_open_4 cs else if ic = 60 then c # CHR ''!'' # rc_open_2 cs else CHR ''<'' # CHR ''!'' # c # rc_open_1 cs)" 
   "rc_open_4 [] = ''<!-''" 
-  "rc_close_1 (c # cs) = (if integer_of_char c = 45 then rc_close_2 cs else rc_close_1 cs)"
+  "rc_open_4 (c # cs) = (let ic = integer_of_char c in if ic = 45 then rc_close_1 cs else if ic = 60 then c # CHR ''!'' # CHR ''-'' # rc_open_2 cs else CHR ''<'' # CHR ''!'' # CHR ''-'' # c # rc_open_1 cs)" 
   "rc_close_1 [] = comment_error ()" 
-  "rc_close_2 (c # cs) = (if integer_of_char c = 45 then rc_close_3 cs else rc_close_1 cs)"
+  "rc_close_1 (c # cs) = (if integer_of_char c = 45 then rc_close_2 cs else rc_close_1 cs)"
   "rc_close_2 [] = comment_error ()" 
-  "rc_close_3 (c # cs) = (if integer_of_char c = 62 then rc_open_1 cs else comment_error_hyphen ())"
+  "rc_close_2 (c # cs) = (if integer_of_char c = 45 then rc_close_3 cs else rc_close_1 cs)"
   "rc_close_3 [] = comment_error ()" 
+  "rc_close_3 (c # cs) = (if integer_of_char c = 62 then rc_open_1 cs else comment_error_hyphen ())"
   unfolding 
     rc_open_1_def 
     rc_open_2_def

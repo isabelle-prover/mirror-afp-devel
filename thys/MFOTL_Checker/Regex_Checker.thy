@@ -67,8 +67,8 @@ lemma rv_check_code_Star:
   \<and> (\<forall>k \<in> {0 ..< length ps}. rv_check r (ps ! k)))"
   by (simp add: Let_def)
 
-declare rv_check.simps[code del]
 lemmas rv_check_code[code] = rv_check.simps(1-4) rv_check_code_Times rv_check_code_Star rv_check.simps(7-)
+
 end
 
 lemma rv_check_cong[fundef_cong]:

@@ -729,8 +729,8 @@ qualified definition pfunpow :: "nat \<Rightarrow> ('a \<Rightarrow> 'a option) 
   pfunpow_code_def[code_abbrev]: "pfunpow = compow"
 
 lemma pfunpow_code[code]:
-  shows "pfunpow (Suc n) f = (\<lambda>x. (Option.bind (f x)) (pfunpow n f))"
-    and "pfunpow 0 f = Some"
+  "pfunpow 0 f = Some"
+  "pfunpow (Suc n) f = (\<lambda>x. (Option.bind (f x)) (pfunpow n f))"
 by (simp_all add: pfunpow_code_def fun_eq_iff)
 
 end

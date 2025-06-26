@@ -313,7 +313,7 @@ lemma divmod_field_poly_code [code]:
   unfolding divmod_field_poly_def by (rule pdivmod_via_divmod_list)
 
 definition normalise_decomp_poly :: "'a::field_gcd poly \<Rightarrow> 'a poly \<Rightarrow> nat \<Rightarrow> 'a poly \<times> 'a poly list" 
-  where [simp]: "normalise_decomp_poly (p :: _ poly) q n = normalise_decomp p q n"
+  where [code_abbrev, simp]: "normalise_decomp_poly (p :: _ poly) q n = normalise_decomp p q n"
 
 lemma normalise_decomp_poly_code [code]:
   "normalise_decomp_poly x y 0 = (x, [])"

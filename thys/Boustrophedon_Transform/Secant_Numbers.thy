@@ -204,7 +204,7 @@ lemma fps_nth_sec:
   using fps_nth_sec_aux[of n, where ?'a = real] fps_nth_sec_aux[of n, where ?'a = 'a]
   by (simp add: secant_number_def)
 
-lemma secant_number_conv_aux [code]:
+lemma secant_number_conv_aux:
   "secant_number n = secant_number_aux (2*n) 0"
   using fps_nth_sec[of n, where ?'a = real] fps_nth_sec_aux[of n, where ?'a = real] by simp
 

@@ -172,8 +172,6 @@ qed
 
 end
 
-lemmas [code] = sqrt_rem'_heron_correct [symmetric]
-
 
 subsection \<open>Main algorithm\<close>
 
@@ -642,11 +640,9 @@ interpretation karatsuba_sqrt_default:
   by unfold_locales (auto simp: nat_add_distrib karatsuba_sqrt_default_aux_def karatsuba_sqrt_default_def)
 
 lemmas [code] = 
-  karatsuba_sqrt_default.karatsuba_sqrt_aux.simps[unfolded power2_eq_square]
+  karatsuba_sqrt_default.karatsuba_sqrt_aux.simps [unfolded power2_eq_square]
   karatsuba_sqrt_default.karatsuba_sqrt_def
   karatsuba_sqrt_default.karatsuba_sqrt_correct [symmetric]
-
-
 
 
 subsection \<open>Using \<^const>\<open>sqrt_rem\<close> to compute floors and ceilings of \<^const>\<open>sqrt\<close>\<close>

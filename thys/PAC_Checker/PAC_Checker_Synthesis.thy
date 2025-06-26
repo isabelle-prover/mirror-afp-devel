@@ -748,13 +748,8 @@ definition \<open>hashcode_literal' s \<equiv>
     foldl (\<lambda>h x. h * 33 + uint32_of_int (of_char x)) 5381
      (raw_explode s)\<close>
 
-lemmas [code] =
-  hashcode_literal_def[unfolded String.explode_code
-    unsafe_asciis_of_literal_def[symmetric]]
-
-definition uint32_of_char where
-  [symmetric, code_unfold]: \<open>uint32_of_char x = uint32_of_int (int_of_char x)\<close>
-
+definition uint32_of_char :: \<open>char \<Rightarrow> uint32\<close>
+  where [code_abbrev]: \<open>uint32_of_char x = uint32_of_int (int_of_char x)\<close>
 
 code_printing
   constant uint32_of_char \<rightharpoonup>

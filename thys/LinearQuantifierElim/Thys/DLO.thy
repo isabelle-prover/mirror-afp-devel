@@ -83,7 +83,7 @@ apply(simp_all add:nth_Cons')
 done
 
 lemmas [folded DLO_code_lemmas, code] =
-  DLO.nnf.simps DLO.qelim_def DLO.lift_dnf_qe.simps DLO.lift_dnf_qe.simps
+  DLO.nnf.simps DLO.qelim_def DLO.lift_dnf_qe.simps
 
 setup \<open>Sign.revert_abbrev "" @{const_abbrev DLO.I}\<close>
 

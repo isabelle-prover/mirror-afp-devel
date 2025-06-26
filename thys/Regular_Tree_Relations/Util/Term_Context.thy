@@ -99,11 +99,11 @@ abbreviation "map_funs_term f \<equiv> map_term f (\<lambda> x. x)"
 abbreviation "map_both f \<equiv> map_prod f f"
 
 definition adapt_vars :: "('f, 'q) term \<Rightarrow> ('f,'v)term" where 
-  [code del]: "adapt_vars \<equiv> map_vars_term (\<lambda>_. undefined)"
+  "adapt_vars \<equiv> map_vars_term (\<lambda>_. undefined)"
 
 abbreviation "map_vars_ctxt f \<equiv> map_ctxt (\<lambda>x. x) f"
 definition adapt_vars_ctxt :: "('f,'q)ctxt \<Rightarrow> ('f,'v)ctxt" where
-  [code del]: "adapt_vars_ctxt = map_vars_ctxt (\<lambda>_. undefined)"
+  "adapt_vars_ctxt = map_vars_ctxt (\<lambda>_. undefined)"
 
 
 subsection \<open>Properties of @{type pos}\<close>
@@ -420,8 +420,9 @@ lemma adapt_vars_inj:
   using adapt_vars_adapt_vars assms by metis
 
 lemma adapt_vars_ctxt_simps[simp, code]: 
+  "adapt_vars_ctxt Hole = Hole"
   "adapt_vars_ctxt (More f bef C aft) = More f (map adapt_vars bef) (adapt_vars_ctxt C) (map adapt_vars aft)"
-  "adapt_vars_ctxt Hole = Hole" unfolding adapt_vars_ctxt_def adapt_vars_def by auto
+  by (simp_all add: adapt_vars_ctxt_def adapt_vars_def)
 
 lemma adapt_vars_ctxt[simp]: "adapt_vars (C \<langle> t \<rangle> ) = (adapt_vars_ctxt C) \<langle> adapt_vars t \<rangle>"
   by (induct C, auto)

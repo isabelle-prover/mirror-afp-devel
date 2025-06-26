@@ -51,10 +51,6 @@ qed
 lemmas inverse_mod_ring_code' [code] =
   inverse_mod_ring_altdef [where 'p = "'p :: {prime_card, card_UNIV}"]
 
-lemma divide_mod_ring_code' [code]:
-  "x / (y :: 'p :: {prime_card, card_UNIV} mod_ring) = x * inverse y"
-  by (fact divide_inverse)
-
 instantiation mod_ring :: ("{finite, card_UNIV}") card_UNIV
 begin
 definition "card_UNIV = Phantom('a mod_ring) (of_phantom (card_UNIV :: 'a card_UNIV))"

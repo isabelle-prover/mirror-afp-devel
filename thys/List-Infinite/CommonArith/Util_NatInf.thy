@@ -17,12 +17,12 @@ instantiation enat :: modulo
 begin
 
 definition
-  div_enat_def [code del]: "
+  div_enat_def: "
   a div b \<equiv> (case a of
     (enat x) \<Rightarrow> (case b of (enat y) \<Rightarrow> enat (x div y) | \<infinity> \<Rightarrow> 0) |
     \<infinity> \<Rightarrow> (case b of (enat y) \<Rightarrow> ((case y of 0 \<Rightarrow> 0 | Suc n \<Rightarrow> \<infinity>)) | \<infinity> \<Rightarrow> \<infinity> ))"
 definition
-  mod_enat_def [code del]: "
+  mod_enat_def: "
   a mod b \<equiv> (case a of
     (enat x) \<Rightarrow> (case b of (enat y) \<Rightarrow> enat (x mod y) | \<infinity> \<Rightarrow> a) |
     \<infinity> \<Rightarrow> \<infinity>)"

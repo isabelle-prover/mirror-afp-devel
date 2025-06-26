@@ -64,21 +64,6 @@ qed
 corollary map_of_remdups_wrt_rev: "map_of (remdups_wrt_rev fst xs []) = map_of xs"
   by (rule ext, simp add: map_of_remdups_wrt_rev')
 
-lemma (in term_powerprod) compute_list_to_poly [code]:
-  "list_to_poly ts cs = distr\<^sub>0 DRLEX (remdups_wrt_rev fst (zip ts cs) [])"
-  by (rule poly_mapping_eqI,
-      simp add: lookup_list_to_poly list_to_fun_def distr\<^sub>0_def oalist_of_list_ntm_def
-        oa_ntm.lookup_oalist_of_list distinct_remdups_wrt_rev lookup_dflt_def map_of_remdups_wrt_rev)
-
-lemma (in ordered_term) compute_Macaulay_list [code]:
-  "Macaulay_list ps =
-     (let ts = Keys_to_list ps in
-      filter (\<lambda>p. p \<noteq> 0) (mat_to_polys ts (row_echelon (polys_to_mat ts ps)))
-     )"
-  by (simp add: Macaulay_list_def Macaulay_mat_def Let_def)
-
-declare conversep_iff [code]
-
 global_interpretation punit': gd_powerprod "ord_pp_punit cmp_term" "ord_pp_strict_punit cmp_term"
   rewrites "punit.adds_term = (adds)"
   and "punit.pp_of_term = (\<lambda>x. x)"
@@ -143,6 +128,26 @@ global_interpretation punit': gd_powerprod "ord_pp_punit cmp_term" "ord_pp_stric
   subgoal by (simp only: ord_strict_p_punit_def ord_pp_strict_punit_alt)
   subgoal by (simp only: keys_to_list_punit_def ord_pp_punit_alt) 
   done
+
+lemma (in term_powerprod) compute_list_to_poly:
+  "list_to_poly ts cs = distr\<^sub>0 DRLEX (remdups_wrt_rev fst (zip ts cs) [])"
+  by (rule poly_mapping_eqI,
+      simp add: lookup_list_to_poly list_to_fun_def distr\<^sub>0_def oalist_of_list_ntm_def
+        oa_ntm.lookup_oalist_of_list distinct_remdups_wrt_rev lookup_dflt_def map_of_remdups_wrt_rev)
+
+declare punit.compute_list_to_poly [code]
+
+lemma (in ordered_term) compute_Macaulay_list:
+  "Macaulay_list ps =
+     (let ts = Keys_to_list ps in
+      filter (\<lambda>p. p \<noteq> 0) (mat_to_polys ts (row_echelon (polys_to_mat ts ps)))
+     )"
+  by (simp add: Macaulay_list_def Macaulay_mat_def Let_def)
+
+declare punit'.punit.compute_Macaulay_list [code]
+
+declare conversep_iff [code]
+
 
 subsection \<open>Computations\<close>
 

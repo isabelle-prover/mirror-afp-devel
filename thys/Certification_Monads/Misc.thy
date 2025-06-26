@@ -10,7 +10,7 @@ theory Misc
 begin
 
 definition span :: "('a \<Rightarrow> bool) \<Rightarrow> 'a list \<Rightarrow> 'a list \<times> 'a list"
-  where [simp]: "span P xs = (takeWhile P xs, dropWhile P xs)"
+  where [code_abbrev, simp]: "span P xs = (takeWhile P xs, dropWhile P xs)"
 
 lemma span_code [code]:
   "span P [] = ([], [])"
@@ -20,6 +20,6 @@ lemma span_code [code]:
 
 definition splitter :: "char list \<Rightarrow> string \<Rightarrow> string \<times> string"
 where
-  [code_unfold]: "splitter cs s = span (\<lambda>c. c \<in> set cs) s"
+  "splitter cs s = span (\<lambda>c. c \<in> set cs) s"
 
 end

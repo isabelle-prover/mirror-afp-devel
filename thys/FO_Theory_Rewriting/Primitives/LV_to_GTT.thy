@@ -42,16 +42,13 @@ context
 includes fset.lifting
 begin
 
-lift_definition fstates :: "('f, 'v) term fset \<Rightarrow> 'f bot_term fset" is states
-  by (simp add: finite_states)
-
 lift_definition fsubterms :: "('f, 'v) term \<Rightarrow> ('f, 'v) term fset" is subterms
   by (simp add: finite_subterms_fun)
 
-lemmas fsubterms [code] = subterms.simps[Transfer.transferred]
+lemmas fsubterms [code] = subterms.simps [Transfer.transferred]
 
-lift_definition ffunas_trs :: "(('f, 'v) term \<times> ('f, 'v) term) fset \<Rightarrow> ('f \<times> nat) fset" is funas_trs
-  by (simp add: finite_funas_trs)
+lift_definition fstates :: "('f, 'v) term fset \<Rightarrow> 'f bot_term fset" is states
+  by (simp add: finite_states)
 
 lemma fstates_def':
   "t |\<in>| fstates R \<longleftrightarrow> (\<exists> s u. s |\<in>| R \<and> s \<unrhd> u \<and> u\<^sup>\<bottom> = t)"
@@ -67,13 +64,15 @@ lemma fstates_fmemberI [intro]:
   "s |\<in>| R \<Longrightarrow> s \<unrhd> u \<Longrightarrow> u\<^sup>\<bottom> |\<in>| fstates R"
   unfolding fstates_def' by blast
 
-lemmas froot_bot_states_root_subterms = root_bot_states_root_subterms[Transfer.transferred]
-lemmas root_fsubsterms_ffunas_term_fset = root_substerms_funas_term_set[Transfer.transferred]
-
-
-lemma fstates[code]:
+lemma fstates [code]:
   "fstates R = term_to_bot_term |`| ( |\<Union>| (fsubterms |`| R))"
   by transfer (auto simp: states_conv)
+
+lemmas froot_bot_states_root_subterms = root_bot_states_root_subterms [Transfer.transferred]
+lemmas root_fsubsterms_ffunas_term_fset = root_substerms_funas_term_set [Transfer.transferred]
+
+lift_definition ffunas_trs :: "(('f, 'v) term \<times> ('f, 'v) term) fset \<Rightarrow> ('f \<times> nat) fset" is funas_trs
+  by (simp add: finite_funas_trs)
 
 end
 

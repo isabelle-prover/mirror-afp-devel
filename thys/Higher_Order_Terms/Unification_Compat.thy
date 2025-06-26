@@ -47,7 +47,8 @@ end
 lemma [simp, code_unfold]: "(to_name :: name \<Rightarrow> name) = id"
 unfolding to_name_def of_name_name_def by auto
 
-instantiation trm :: (is_name) "pre_term" begin
+instantiation trm :: (is_name) "pre_term"
+begin
 
 definition app_trm where
 "app_trm = Comb"
@@ -76,17 +77,18 @@ context
   includes fset.lifting
 begin
 
-lift_definition frees_trm :: "'a trm \<Rightarrow> name fset" is "\<lambda>t. to_name ` vars_of t"
+lift_definition frees_trm :: "'a trm \<Rightarrow> name fset" 
+  is "\<lambda>t. to_name ` vars_of t"
   by auto
 
 end
 
-lemma frees_trm[code, simp]:
+lemma frees_trm [simp, code]:
   "frees (Var v) = {| to_name v |}"
   "frees (trm.Const c) = {||}"
   "frees (M \<cdot> N) = frees M |\<union>| frees N"
-including fset.lifting
-by (transfer; auto)+
+  including fset.lifting
+  by (transfer; auto)+
 
 primrec subst_trm :: "'a trm \<Rightarrow> (name, 'a trm) fmap \<Rightarrow> 'a trm" where
 "subst_trm (Var v) env = (case fmlookup env (to_name v) of Some v' \<Rightarrow> v' | _ \<Rightarrow> Var v)" |

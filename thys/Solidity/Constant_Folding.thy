@@ -4046,7 +4046,9 @@ next
   
         from `b\<in>vbits` True have
           "expr (E.INT b v) env cd st g = Normal ((KValue (createSInt b v), Value (TSInt b)), g)" by (simp add:Statements.solidity.expr.simps)
-        also have "createSInt b v = createSInt b ?m_def" using `b\<in>vbits` `\<not> v \<ge> 0` unfolding createSInt_def by auto
+        also have "createSInt b v = createSInt b ?m_def"
+          using `b\<in>vbits` `\<not> v \<ge> 0` 
+          by (auto simp add: createSInt_def)
         also from `\<not> v \<ge> 0` `b\<in>vbits` True have
           "Normal ((KValue (createSInt b ?m_def), Value (TSInt b)),g) =expr (eupdate (E.INT b v)) env cd st g"
           by (simp add:Statements.solidity.expr.simps)

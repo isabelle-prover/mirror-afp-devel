@@ -85,8 +85,9 @@ ML_file \<open>ceq_generator.ML\<close>
 subsection \<open>Type class instances for HOL types\<close>
 
 derive (eq) ceq unit
+declare [[code drop: \<open>CEQ(unit)\<close>]]
 lemma [code]: "CEQ(unit) = Some (\<lambda>_ _. True)"
-  unfolding ceq_unit_def by (simp, intro ext, auto)
+  by (simp add: fun_eq_iff ceq_unit_def)
 derive (eq) ceq
   bool
   nat

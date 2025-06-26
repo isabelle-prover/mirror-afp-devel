@@ -10,6 +10,8 @@ theory Mapping_Impl imports
   Containers_Generator
 begin
 
+declare [[code_prepend_allowed]]
+
 section \<open>Different implementations of maps\<close>
 
 code_identifier
@@ -28,7 +30,7 @@ code_datatype Assoc_List_Mapping RBT_Mapping Mapping
 
 subsection \<open>Map operations\<close>
 
-lemma lookup_Mapping_code [code]:
+lemma lookup_Mapping_code [code prepend]:
   "Mapping.lookup (Assoc_List_Mapping al) = DAList.lookup al"
   "Mapping.lookup (RBT_Mapping t) = RBT_Mapping2.lookup t"
 by(simp_all)(transfer, rule)+
@@ -42,7 +44,7 @@ apply(case_tac y)
 apply(simp add: Mapping.is_empty_def cr_mapping_def Mapping_inverse Mapping.keys.rep_eq)
 done
 
-lemma is_empty_Mapping [code]:
+lemma is_empty_Mapping [code prepend]:
   fixes t :: "('a :: ccompare, 'b) mapping_rbt" shows
   "Mapping.is_empty (Assoc_List_Mapping al) \<longleftrightarrow> al = DAList.empty"
   "Mapping.is_empty (RBT_Mapping t) \<longleftrightarrow>
@@ -53,7 +55,7 @@ apply(simp_all split: option.split)
 apply(transfer, simp)
 done
 
-lemma update_Mapping [code]:
+lemma update_Mapping [code prepend]:
   fixes t :: "('a :: ccompare, 'b) mapping_rbt" shows
   "Mapping.update k v (Mapping m) = Mapping (m(k \<mapsto> v))"
   "Mapping.update k v (Assoc_List_Mapping al) = Assoc_List_Mapping (DAList.update k v al)"
@@ -62,7 +64,7 @@ lemma update_Mapping [code]:
                      | Some _ \<Rightarrow> RBT_Mapping (RBT_Mapping2.insert k v t))" (is ?RBT)
 by(simp_all split: option.split)(transfer, simp)+
 
-lemma delete_Mapping [code]:
+lemma delete_Mapping [code prepend]:
   fixes t :: "('a :: ccompare, 'b) mapping_rbt" shows
   "Mapping.delete k (Mapping m) = Mapping (m(k := None))"
   "Mapping.delete k (Assoc_List_Mapping al) = Assoc_List_Mapping (AssocList.delete k al)"
@@ -74,7 +76,7 @@ by(simp_all split: option.split)(transfer, simp)+
 theorem rbt_comp_lookup_map_const: "rbt_comp_lookup c (RBT_Impl.map (\<lambda>_. f) t) = map_option f \<circ> rbt_comp_lookup c t"
 by(induct t)(auto simp: fun_eq_iff split: order.split)
 
-lemma keys_Mapping [code]:
+lemma keys_Mapping [code prepend]:
   fixes t :: "('a :: ccompare, 'b) mapping_rbt" shows
   "Mapping.keys (Mapping m) = Collect (\<lambda>k. m k \<noteq> None)" (is "?Mapping")
   "Mapping.keys (Assoc_List_Mapping al) = AssocList.keys al" (is "?Assoc_List")
@@ -94,7 +96,7 @@ apply(case_tac y)
 apply(simp add: Mapping.size_def Mapping.keys.rep_eq Mapping_inverse mapping.pcr_cr_eq cr_mapping_def)
 done
 
-lemma size_Mapping [code]:
+lemma size_Mapping [code prepend]:
   fixes t :: "('a :: ccompare, 'b) mapping_rbt" shows
   "Mapping.size (Assoc_List_Mapping al) = size al"
   "Mapping.size (RBT_Mapping t) =
@@ -113,7 +115,7 @@ declare ordered_keys_def[code]
 
 declare Mapping.lookup_default_def[code]
 
-lemma filter_code [code]:
+lemma filter_code [code prepend]:
   fixes t :: "('a :: ccompare, 'b) mapping_rbt" shows
   "Mapping.filter P (Mapping m) = Mapping (\<lambda>k. case m k of None \<Rightarrow> None | Some v \<Rightarrow> if P k v then Some v else None)"
   "Mapping.filter P (Assoc_List_Mapping al) = Assoc_List_Mapping (DAList.filter (\<lambda>(k, v). P k v) al)"
@@ -125,7 +127,7 @@ lemma filter_code [code]:
   subgoal by(clarsimp simp add: Mapping_inject Mapping.filter.abs_eq fun_eq_iff split: option.split)
   done
 
-lemma map_values_code [code]:
+lemma map_values_code [code prepend]:
   fixes t :: "('a :: ccompare, 'b) mapping_rbt" shows
   "Mapping.map_values f (Mapping m) = Mapping (\<lambda>k. map_option (f k) (m k))"
   "Mapping.map_values f (Assoc_List_Mapping al) = Assoc_List_Mapping (AssocList.map_values f al)"
@@ -171,7 +173,7 @@ by(auto split: option.split simp add: DAList.lookup_empty[abs_def] Mapping.empty
 definition mapping_impl_choose2 :: "mapping_impl \<Rightarrow> mapping_impl \<Rightarrow> mapping_impl"
 where [simp]: "mapping_impl_choose2 = (\<lambda>_ _. Mapping_IMPL)"
 
-lemma mapping_impl_choose2_code [code]:
+lemma mapping_impl_choose2_code [code prepend]:
   "mapping_impl_choose2 x y = mapping_Choose"
   "mapping_impl_choose2 mapping_Mapping mapping_Mapping = mapping_Mapping"
   "mapping_impl_choose2 mapping_Assoc_List mapping_Assoc_List = mapping_Assoc_List"
@@ -181,7 +183,7 @@ by(simp_all)
 definition mapping_empty :: "mapping_impl \<Rightarrow> ('a, 'b) mapping"
 where [simp]: "mapping_empty = (\<lambda>_. Mapping.empty)"
 
-lemma mapping_empty_code [code]:
+lemma mapping_empty_code [code prepend]:
   "mapping_empty mapping_Choose = mapping_empty_choose"
   "mapping_empty mapping_Mapping = Mapping (\<lambda>_. None)"
   "mapping_empty mapping_Assoc_List = Assoc_List_Mapping DAList.empty"

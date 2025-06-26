@@ -11,6 +11,11 @@ theory Rewrite_Relations_Impl
     Multistep
 begin 
 
+lemma [code]:
+  \<open>vars_term t = set (vars_term_list t)\<close>
+  by simp
+
+
 subsubsection\<open>Checking a Single Parallel Rewrite Step with Variable Restriction\<close>
 
 context 
@@ -23,12 +28,6 @@ fun is_par_rstep_var_restr :: "('f, 'v) term \<Rightarrow> ('f, 'v) term \<Right
     vars_term (Fun g ts) \<inter> V = {} \<and> (Fun f ss, Fun g ts) \<in> rrstep (set R) \<or>
     (f = g \<and> length ss = length ts \<and> list_all2 is_par_rstep_var_restr ss ts))"
   | "is_par_rstep_var_restr s t = (s = t \<or> vars_term t \<inter> V = {} \<and> (s,t) \<in> rrstep (set R))"
-
-lemma is_par_rstep_code_helper: "vars_term t \<inter> V = {} \<longleftrightarrow>
-  (\<forall> x \<in> set (vars_term_list t). x \<notin> V)" 
-  by auto
-
-lemmas is_par_rstep_var_restr_code[code] = is_par_rstep_var_restr.simps[unfolded is_par_rstep_code_helper]
 
 lemma is_par_rstep_var_restr[simp]:
   "is_par_rstep_var_restr s t \<longleftrightarrow> (s, t) \<in> par_rstep_var_restr (set R) V"
@@ -700,8 +699,8 @@ lemma is_wf_get_TRS: "wf_trs (set (get_TRS R'))"
 
 definition "mstep_rewrite_wf R = mstep_rewrite_main (get_TRS R)" 
 
-lemmas mstep_rewrite_wf_simps = mstep_rewrite_main.simps[OF is_wf_get_TRS, folded mstep_rewrite_wf_def]
-declare mstep_rewrite_wf_simps[code]
+lemmas mstep_rewrite_wf_simps [code] =
+  mstep_rewrite_main.simps [OF is_wf_get_TRS, folded mstep_rewrite_wf_def]
 
 (* one might use an implementation which does not require show-class *)
 lift_definition (code_dt) get_wfTRS :: "('f :: showl, 'v :: showl) rules \<Rightarrow> ('f, 'v) wfTRS option" is

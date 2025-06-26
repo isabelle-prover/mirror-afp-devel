@@ -167,11 +167,8 @@ begin
     define al where "al = array_length m"
     show dist_kvs: "distinct (map fst kvs)" and "sorted (rev (map fst kvs))"
       unfolding kvs_def al_def[symmetric]
-      apply (induct al)
-      apply (simp_all 
-        add: List.map_filter_simps set_map_filter image_iff sorted_append
+      by (induct al) (simp_all add: set_map_filter image_iff sorted_append
         split: option.split)
-    done
 
     from dist_kvs
     have "\<And>i. map_of kvs i = iam_\<alpha> m i"
@@ -206,17 +203,8 @@ begin
     "iam_iterateoi_aux n (array_length a) a c f \<sigma> =
      foldli (List.map_filter (\<lambda>n. map_option (\<lambda>v. (n, v)) (array_get a n)) 
        ([n..<array_length a])) c f \<sigma>"
-    thm iam_iterateoi_aux.induct
-    apply (induct n "array_length a" a c f \<sigma> rule: iam_iterateoi_aux.induct)
-    apply (subst iam_iterateoi_aux.simps)
-    apply (auto split: option.split simp: map_filter_simps)
-    apply (subst (2) upt_conv_Cons)
-    apply simp
-    apply (simp add: map_filter_simps)
-    apply (subst (2) upt_conv_Cons)
-    apply simp
-    apply (simp add: map_filter_simps)
-    done
+    by (induct n "array_length a" a c f \<sigma> rule: iam_iterateoi_aux.induct)
+      (auto simp add: upt_conv_Cons iam_iterateoi_aux.simps split: option.split)
 
   lemma iam_iterateoi_foldli_conv :
     "iam_iterateoi a =
@@ -228,7 +216,6 @@ begin
     by simp
 
   (* TODO: Move to Misc *)
-  lemmas [simp] = map_filter_simps
   lemma map_filter_append[simp]: "List.map_filter f (la@lb) 
     = List.map_filter f la @ List.map_filter f lb"
     by (induct la) (auto split: option.split)

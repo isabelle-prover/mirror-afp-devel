@@ -188,8 +188,8 @@ qualified definition list_pow :: "nat \<Rightarrow> 'a list \<Rightarrow> 'a  li
   where list_pow_code_def [code_abbrev]: "list_pow = compow"
 
 lemma [code]:
-  "list_pow (Suc n) u = u @ list_pow n u"
   "list_pow 0 u = []"
+  "list_pow (Suc n) u = u @ list_pow n u"
   by (simp_all add: list_pow_code_def)
 
 end

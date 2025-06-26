@@ -967,7 +967,8 @@ subsection \<open>Implementation of proper intervals for sets\<close>
 definition length_last :: "'a list \<Rightarrow> nat \<times> 'a"
 where "length_last xs = (length xs, last xs)"
 
-lemma length_last_Nil [code]: "length_last [] = (0, undefined)"
+lemma length_last_Nil [code]:
+  "length_last [] = (0, undefined)"
 by(simp add: length_last_def last_def)
 
 lemma length_last_Cons_code [symmetric, code]:

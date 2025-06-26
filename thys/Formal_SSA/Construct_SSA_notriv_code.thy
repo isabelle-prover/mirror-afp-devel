@@ -19,9 +19,9 @@ lemma in_remove_iff [simp]:
 abbreviation (input) "const x \<equiv> (\<lambda>_. x)"
 
 context CFG_SSA_Transformed_notriv_base begin
-  definition [code]: "substitution_code g next = the (the_trivial (snd next) (the (phis g next)))"
-  definition [code]: "substNext_code g next \<equiv> \<lambda>v. if v = snd next then substitution_code g next else v"
-  definition [code]: "uses'_code g next n \<equiv> substNext_code g next ` uses g n"
+  definition "substitution_code g next = the (the_trivial (snd next) (the (phis g next)))"
+  definition "substNext_code g next \<equiv> \<lambda>v. if v = snd next then substitution_code g next else v"
+  definition "uses'_code g next n \<equiv> substNext_code g next ` uses g n"
 
   lemma substNext_code_alt_def:
     "substNext_code g next = id(snd next := substitution_code g next)"
@@ -47,42 +47,42 @@ for
   var :: "'g \<Rightarrow> 'val \<Rightarrow> 'var" and
   chooseNext_all :: "('g, 'node, 'val) chooseNext_code"
 begin
-  definition [code]: "cond_code g = ssa.redundant_code g"
+  definition "cond_code g = ssa.redundant_code g"
 
   definition uses'_codem :: "'g \<Rightarrow> 'node \<times> 'val \<Rightarrow> 'val \<Rightarrow> ('val, 'node set) mapping \<Rightarrow> ('node, 'val set) mapping"
-  where [code]: "uses'_codem g next next' nodes_of_uses =
+  where "uses'_codem g next next' nodes_of_uses =
     fold (\<lambda>n. Mapping.update n (Set.insert next' (Set.remove (snd next) (the (Mapping.lookup (uses g) n)))))
       (sorted_list_of_set (case_option {} id (Mapping.lookup nodes_of_uses (snd next))))
       (uses g)"
 
   definition nodes_of_uses' :: "'g \<Rightarrow> 'node \<times> 'val \<Rightarrow> 'val \<Rightarrow> 'val set \<Rightarrow> ('val, 'node set) mapping \<Rightarrow> ('val, 'node set) mapping"
-  where [code]: "nodes_of_uses' g next next' phiVals nodes_of_uses =
+  where "nodes_of_uses' g next next' phiVals nodes_of_uses =
     (let users = case_option {} id (Mapping.lookup nodes_of_uses (snd next))
     in
     if (next' \<in> phiVals) then Mapping.map_default next' {} (\<lambda>ns. ns \<union> users) (Mapping.delete (snd next) nodes_of_uses)
     else Mapping.delete (snd next) nodes_of_uses)"
 
   (* FIXME: phis'_code ist in O(n) \<rightarrow> verwende nodes_of_uses ? *)
-  definition [code]: "phis'_code g next \<equiv> map_values (\<lambda>(n,v) vs. if v = snd next then None else Some (map (substNext_code g next) vs)) (phis g)"
+  definition "phis'_code g next \<equiv> map_values (\<lambda>(n,v) vs. if v = snd next then None else Some (map (substNext_code g next) vs)) (phis g)"
 
   (* Schon besser: O(log(n)) *)
-  definition [code]: "phis'_codem g next next' nodes_of_phis =
+  definition "phis'_codem g next next' nodes_of_phis =
     fold (\<lambda>n. Mapping.update n (List.map (id(snd next := next')) (the (Mapping.lookup (phis g) n))))
       (sorted_list_of_set (case_option {} (Set.remove next) (Mapping.lookup nodes_of_phis (snd next))))
       (Mapping.delete next (phis g))"
 
   definition nodes_of_phis' :: "'g \<Rightarrow> 'node \<times> 'val \<Rightarrow> 'val \<Rightarrow> ('val, ('node \<times> 'val) set) mapping \<Rightarrow> ('val, ('node \<times> 'val) set) mapping"
-  where [code]: "nodes_of_phis' g next next' nodes_of_phis =
+  where "nodes_of_phis' g next next' nodes_of_phis =
       (let old_phis = Set.remove next (case_option {} id (Mapping.lookup nodes_of_phis (snd next)));
         nop = Mapping.delete (snd next) nodes_of_phis
       in
       Mapping.map_default next' {} (\<lambda>ns. (Set.remove next ns) \<union> old_phis) nop)"
 
-  definition [code]: "triv_phis' g next triv_phis nodes_of_phis
+  definition "triv_phis' g next triv_phis nodes_of_phis
     = (Set.remove next triv_phis) \<union> (Set.filter (\<lambda>n. ssa.trivial_code (snd n) (the (Mapping.lookup (phis g) n))) (case_option {} (Set.remove next) (Mapping.lookup nodes_of_phis (snd next))))"
 
-  definition [code]: "step_code g = (let next = chooseNext' g in (uses'_code g next, phis'_code g next))"
-  definition [code]: "step_codem g next next' nodes_of_uses nodes_of_phis = (uses'_codem g next next' nodes_of_uses, phis'_codem g next next' nodes_of_phis)"
+  definition "step_code g = (let next = chooseNext' g in (uses'_code g next, phis'_code g next))"
+  definition "step_codem g next next' nodes_of_uses nodes_of_phis = (uses'_codem g next next' nodes_of_uses, phis'_codem g next next' nodes_of_phis)"
 
   definition phi_equiv_mapping :: "'g \<Rightarrow> ('val, 'a set) mapping \<Rightarrow> ('val, 'a set) mapping \<Rightarrow> bool" (\<open>_ \<turnstile> _ \<approx>\<^sub>\<phi> _\<close> 50)
     where "g \<turnstile> nou\<^sub>1 \<approx>\<^sub>\<phi> nou\<^sub>2 \<equiv> \<forall>v \<in> Mapping.keys (ssa.phidefNodes g). case_option {} id (Mapping.lookup nou\<^sub>1 v) = case_option {} id (Mapping.lookup nou\<^sub>2 v)"
@@ -874,7 +874,7 @@ begin
     by (auto split: option.splits)[1]
   qed
 
-  definition[code]: "substAll_efficient g \<equiv>
+  definition "substAll_efficient g \<equiv>
     let phiVals = Mapping.keys (ssa.phidefNodes g);
         u = uses g;
         p = phis g;
@@ -929,7 +929,7 @@ begin
   lemma phi_equiv_mapping_refl [simp]: "uninst_code.phi_equiv_mapping ph g m m"
     unfolding uninst_code.phi_equiv_mapping_def by simp
 
-  lemma substAll_efficient_code [code]:
+  lemma substAll_efficient_code:
     "substAll g = map_prod usesOf Mapping.lookup (fst (substAll_efficient g))"
     unfolding substAll_efficient_def while_def substAll_def Let_def
   apply -

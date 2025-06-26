@@ -155,8 +155,8 @@ interpretation cheb_poly: gen_cheb_poly 1
        and "\<And>n. of_nat n * (1 - 1 :: 'a) + 1 = 1"
   by unfold_locales (simp_all add: cheb_poly_def Cheb_poly_def)
 
-lemmas cheb_poly_simps [code] = cheb_poly.f.simps
-lemmas Cheb_poly_simps [code] = cheb_poly.P.simps
+lemmas cheb_poly_simps = cheb_poly.f.simps
+lemmas Cheb_poly_simps = cheb_poly.P.simps
 
 lemma Cheb_poly_of_int: "of_int_poly (Cheb_poly n) = Cheb_poly n"
   by (induction n rule: induct_nat_012) (simp_all add: hom_distribs Cheb_poly_simps)
@@ -193,8 +193,8 @@ interpretation cheb_poly': gen_cheb_poly 2
        and "\<And>n. of_nat n * (2 - 1 :: 'a) + 1 = of_nat (Suc n)"
   by unfold_locales (simp_all add: cheb_poly'_def Cheb_poly'_def)
 
-lemmas cheb_poly'_simps [code] = cheb_poly'.f.simps
-lemmas Cheb_poly'_simps [code] = cheb_poly'.P.simps
+lemmas cheb_poly'_simps = cheb_poly'.f.simps
+lemmas Cheb_poly'_simps = cheb_poly'.P.simps
 
 lemma Cheb_poly'_of_int: "of_int_poly (Cheb_poly' n) = Cheb_poly' n"
   by (induction n rule: induct_nat_012) (simp_all add: hom_distribs Cheb_poly'_simps)

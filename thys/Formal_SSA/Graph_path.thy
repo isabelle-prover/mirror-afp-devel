@@ -121,9 +121,6 @@ begin
   definition successors :: "'g \<Rightarrow> 'node \<Rightarrow> 'node list" where
     "successors g m \<equiv> [n . n \<leftarrow> \<alpha>n g, m \<in> set (predecessors g n)]"
 
-
-  declare predecessors_def [code]
-
   declare [[inductive_internals]]
   inductive path :: "'g \<Rightarrow> 'node list \<Rightarrow> bool"
     for g :: 'g

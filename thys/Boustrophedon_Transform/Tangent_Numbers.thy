@@ -170,7 +170,7 @@ lemma fps_nth_tan:
   using fps_nth_tan_aux[of n, where ?'a = real] fps_nth_tan_aux[of n, where ?'a = 'a]
   by (simp add: tangent_number_def)
 
-lemma tangent_number_conv_aux [code]:
+lemma tangent_number_conv_aux:
   "tangent_number n = tangent_number_aux (2*n - Suc 0) 0"
   using fps_nth_tan[of n, where ?'a = real] fps_nth_tan_aux[of n, where ?'a = real] by simp
 

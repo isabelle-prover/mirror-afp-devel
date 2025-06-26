@@ -373,23 +373,23 @@ definition (in network) node_deliver_messages :: "'msg event list \<Rightarrow> 
 
 lemma (in network) node_deliver_messages_empty [simp]:
   shows "node_deliver_messages [] = []"
-  by(auto simp add: node_deliver_messages_def List.map_filter_simps)
-
-lemma (in network) node_deliver_messages_Cons:
-  shows "node_deliver_messages (x#xs) = (node_deliver_messages [x])@(node_deliver_messages xs)"
-  by(auto simp add: node_deliver_messages_def map_filter_def)
-    
-lemma (in network) node_deliver_messages_append:
-  shows "node_deliver_messages (xs@ys) = (node_deliver_messages xs)@(node_deliver_messages ys)"
-  by(auto simp add: node_deliver_messages_def map_filter_def)
+  by(simp add: node_deliver_messages_def map_filter_def)
 
 lemma (in network) node_deliver_messages_Broadcast [simp]:
   shows "node_deliver_messages [Broadcast m] = []"
-  by(clarsimp simp: node_deliver_messages_def map_filter_def)
+  by(simp add: node_deliver_messages_def map_filter_def)
 
 lemma (in network) node_deliver_messages_Deliver [simp]:
   shows "node_deliver_messages [Deliver m] = [m]"
-  by(clarsimp simp: node_deliver_messages_def map_filter_def)
+  by(simp add: node_deliver_messages_def map_filter_def)
+
+lemma (in network) node_deliver_messages_Cons:
+  shows "node_deliver_messages (x#xs) = (node_deliver_messages [x])@(node_deliver_messages xs)"
+  by(simp add: node_deliver_messages_def map_filter_def)
+    
+lemma (in network) node_deliver_messages_append:
+  shows "node_deliver_messages (xs@ys) = (node_deliver_messages xs)@(node_deliver_messages ys)"
+  by(simp add: node_deliver_messages_def map_filter_def)
 
 lemma (in network) prefix_msg_in_history:
   assumes "es prefix of i"
@@ -494,7 +494,7 @@ lemma (in network_with_ops) hb_consistent_technical:
   shows   "hb.hb_consistent (node_deliver_messages cs)"
 using assms proof (induction cs rule: rev_induct)
   case Nil thus ?case
-   by(simp add: node_deliver_messages_def hb.hb_consistent.intros(1) map_filter_simps(2))
+    by (simp add: node_deliver_messages_def hb.hb_consistent.intros List.map_filter_def)
 next
   case (snoc x xs)
   hence *: "(\<And>m n. m < length xs \<Longrightarrow> n < m \<Longrightarrow> xs ! n \<sqsubset>\<^sup>i xs ! m)"

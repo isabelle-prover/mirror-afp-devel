@@ -210,10 +210,8 @@ qed auto
 
 subsection \<open>Code for the Lucas--Lehmer test\<close>
 
-lemmas [code del] = lucas_lehmer_test_code_arithmetic
-
 lemma lucas_lehmer_test_code [code]:
-  "lucas_lehmer_test p =
+  "lucas_lehmer_test p \<longleftrightarrow>
      (2 < p \<and> (let x = gen_lucas_lehmer_sequence'' p 4 (p - 2) in x = 0 \<or> x = (push_bit p 1) - 1))"
   unfolding lucas_lehmer_test_def
 proof (rule conj_cong)

@@ -227,9 +227,9 @@ next
 qed
 
 lemma ct_prefix_code [code]:
-  "ct_prefix [] xs = True"
-  "ct_prefix (x # xs) [] = False"
-  "ct_prefix (x # xs) (y # ys) = ((ct_eq x y) \<and> ct_prefix xs ys)"
+  "ct_prefix [] xs \<longleftrightarrow> True"
+  "ct_prefix (x # xs) [] \<longleftrightarrow> False"
+  "ct_prefix (x # xs) (y # ys) \<longleftrightarrow> ct_eq x y \<and> ct_prefix xs ys"
   by (simp_all add: ct_prefix_nil)
 
 lemma ct_suffix_to_ct_prefix [code]: "ct_suffix xs ys = ct_prefix (rev xs) (rev ys)"

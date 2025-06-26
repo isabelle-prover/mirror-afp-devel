@@ -421,10 +421,10 @@ interpretation quickcheck_narrowing_samples
   "Typerep.Typerep (STR ''Uint16.uint16'') []" .
 
 definition "narrowing_uint16 d = qc_narrowing_drawn_from (narrowing_samples d) d"
-declare [[code drop: "partial_term_of :: uint16 itself \<Rightarrow> _"]]
 lemmas partial_term_of_uint16 [code] = partial_term_of_code
 
 instance ..
 end
 
 end
+

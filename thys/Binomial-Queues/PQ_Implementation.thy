@@ -599,7 +599,7 @@ proof (induct xs)
   case (Some l xs x) then show ?case
   proof (cases "xs \<noteq> []")
     case False with Some show ?thesis
-      using bt_dfs_Min_priority[of x] by (simp add: min_single)
+      using bt_dfs_Min_priority [of x] by simp
   next
     case True note T = this Some
     

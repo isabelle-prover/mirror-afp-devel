@@ -2122,8 +2122,6 @@ theorem gs: "\<lbrakk> Pref P Q; n = length P \<rbrakk> \<Longrightarrow>
 unfolding Gale_Shapley_def using Pref.gs
 by (metis fst_conv surj_pair)
 
-declare Pref_def [code]
-
 definition
 "Gale_Shapley1 P Q = (if Pref P Q then Some (fst (gs1 (length P) P (map ranking Q))) else None)"
 

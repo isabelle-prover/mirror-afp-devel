@@ -125,15 +125,15 @@ locale word_type_copy_bits = word_type_copy_ring
   opening constraintless and bit_operations_syntax +
   constrains word_of :: \<open>'a::{comm_ring_1, semiring_modulo, equal, linorder} \<Rightarrow> 'b::len word\<close>
   fixes signed_drop_bit :: \<open>nat \<Rightarrow> 'a \<Rightarrow> 'a\<close>
-  assumes bit_eq_word_of [code]: \<open>bit p = bit (word_of p)\<close>
+  assumes bit_eq_word_of: \<open>bit p = bit (word_of p)\<close>
     and word_of_not [code]: \<open>word_of (NOT p) = NOT (word_of p)\<close>
     and word_of_and [code]: \<open>word_of (p AND q) = word_of p AND word_of q\<close>
     and word_of_or [code]: \<open>word_of (p OR q) = word_of p OR word_of q\<close>
     and word_of_xor [code]: \<open>word_of (p XOR q) = word_of p XOR word_of q\<close>
     and word_of_mask [code]: \<open>word_of (mask n) = mask n\<close>
-    and word_of_push_bit [code]: \<open>word_of (push_bit n p) = push_bit n (word_of p)\<close>
-    and word_of_drop_bit [code]: \<open>word_of (drop_bit n p) = drop_bit n (word_of p)\<close>
-    and word_of_signed_drop_bit [code]: \<open>word_of (signed_drop_bit n p) = Word.signed_drop_bit n (word_of p)\<close>
+    and word_of_push_bit: \<open>word_of (push_bit n p) = push_bit n (word_of p)\<close>
+    and word_of_drop_bit: \<open>word_of (drop_bit n p) = drop_bit n (word_of p)\<close>
+    and word_of_signed_drop_bit: \<open>word_of (signed_drop_bit n p) = Word.signed_drop_bit n (word_of p)\<close>
     and word_of_take_bit [code]: \<open>word_of (take_bit n p) = take_bit n (word_of p)\<close>
     and word_of_set_bit [code]: \<open>word_of (Bit_Operations.set_bit n p) = Bit_Operations.set_bit n (word_of p)\<close>
     and word_of_unset_bit [code]: \<open>word_of (unset_bit n p) = unset_bit n (word_of p)\<close>
@@ -257,8 +257,8 @@ lemma [code]:
   by (simp add: eq_iff_word_of word_of_take_bit word_of_and word_of_mask take_bit_eq_mask)
 
 lemma [code]:
-  \<open>mask (Suc n) = push_bit n (1 :: 'a) OR mask n\<close>
   \<open>mask 0 = (0 :: 'a)\<close>
+  \<open>mask (Suc n) = push_bit n (1 :: 'a) OR mask n\<close>
   by (simp_all add: eq_iff_word_of word_of_mask word_of_or word_of_push_bit word_of_0 word_of_1 mask_Suc_exp)
 
 lemma [code]:
@@ -317,7 +317,7 @@ locale word_type_copy_misc = word_type_copy_more
   constrains word_of :: \<open>'a::{ring_bit_operations, equal, linorder} \<Rightarrow> 'b::len word\<close>
   fixes size :: nat and set_bits_aux :: \<open>(nat \<Rightarrow> bool) \<Rightarrow> nat \<Rightarrow> 'a \<Rightarrow> 'a\<close>
     assumes size_eq_length: \<open>size = LENGTH('b::len)\<close>
-    and msb_iff_word_of [code]: \<open>msb p \<longleftrightarrow> msb (word_of p)\<close>
+    and msb_iff_word_of: \<open>msb p \<longleftrightarrow> msb (word_of p)\<close>
     and size_eq_word_of: \<open>Nat.size (p :: 'a) = Nat.size (word_of p)\<close>
     and word_of_set_bits: \<open>word_of (set_bits P) = set_bits P\<close>
     and word_of_set_bits_aux: \<open>word_of (set_bits_aux P n p) = Bit_Comprehension.set_bits_aux P n (word_of p)\<close>

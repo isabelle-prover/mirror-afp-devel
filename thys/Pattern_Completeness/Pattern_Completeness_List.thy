@@ -315,7 +315,7 @@ end
 definition renaming_funs :: "(nat \<Rightarrow> 'a) \<Rightarrow> ('a \<Rightarrow> 'a) \<Rightarrow> bool" where
   "renaming_funs rn rx = (inj rn \<and> inj rx \<and> range rn \<inter> range rx = {})" 
 
-lemmas pat_complete_impl_code = 
+lemmas pat_complete_impl_code [code] = 
   pattern_completeness_context.pat_complete_impl_def
   pattern_completeness_context.pats_impl.simps
   pattern_completeness_context.pat_impl_def
@@ -331,8 +331,6 @@ lemmas pat_complete_impl_code =
   pattern_completeness_context.pat_lin_impl_def
   pattern_completeness_context.pats_lin_impl.simps
   pattern_completeness_context.pat_complete_lin_impl_def
-
-declare pat_complete_impl_code[code]
 
 
 subsection \<open>Partial Correctness of the Implementation\<close>
@@ -3494,13 +3492,19 @@ lemma pats_impl_old_code[code]:
   unfolding pat_impl_old_code
   by (auto split: list.splits option.splits)
 
-lemmas match_decomp'_impl_old_code[code] =
-  pattern_completeness_context.match_decomp'_impl_def[of Is False undefined, folded match_decomp'_impl_old_def,
-  unfolded pattern_completeness_context.apply_decompose'_def triv_ident if_False]
- 
+lemma match_decomp'_impl_old_code [code]:
+  \<open>match_decomp'_impl_old n mp =
+    map_option (\<lambda>(xs, mp). (n, mp)) (pattern_completeness_context.match_steps_impl Is mp)\<close>
+  by (simp add: match_decomp'_impl_old_def pattern_completeness_context.match_decomp'_impl_def pattern_completeness_context.apply_decompose'_def)
 
-lemmas pat_inner_impl_old_code[code] =
-  pattern_completeness_context.pat_inner_impl.simps[of Is False undefined, folded pat_inner_impl_old_def match_decomp'_impl_old_def]
+lemma pat_inner_impl_old_code [code]:
+  \<open>pat_inner_impl_old n [] pd = Some (n, pd)\<close>
+  \<open>pat_inner_impl_old n (mp # p) pd =
+    (case match_decomp'_impl_old n mp of
+       None \<Rightarrow> pat_inner_impl_old n p pd
+     | Some (n', mp') \<Rightarrow> if empty_lr mp' then None else pat_inner_impl_old n' p (mp' # pd))\<close>
+  by (simp_all add: pat_inner_impl_old_def match_decomp'_impl_old_def
+    pattern_completeness_context.pat_inner_impl.simps option.case_eq_if case_prod_unfold)
 
 context
   fixes 
@@ -3509,6 +3513,7 @@ context
     and rv :: "'v \<Rightarrow> 'v"
     and fidl_solver :: "((nat\<times>'s) \<times> int)list \<times> ((nat\<times>'s) \<times> (nat\<times>'s))list list \<Rightarrow> bool" 
 begin
+
 definition "pat_complete_impl_new = pattern_completeness_context.pat_complete_impl m Cl Is Cd True C rn rv fidl_solver"
 definition "pats_impl_new = pattern_completeness_context.pats_impl m Cl Is Cd True C rn fidl_solver "
 definition "pat_impl_new = pattern_completeness_context.pat_impl m Cl Is True C rn" 
@@ -3516,32 +3521,61 @@ definition "pat_inner_impl_new = pattern_completeness_context.pat_inner_impl Is 
 definition "match_decomp'_impl_new = pattern_completeness_context.match_decomp'_impl Is True rn"
 definition "find_var_new = find_var True"
 
-lemmas pat_complete_impl_new_code[code] = pattern_completeness_context.pat_complete_impl_def[of m Cl Is Cd True C rn rv fidl_solver,
-    folded pat_complete_impl_new_def pats_impl_new_def,
-    unfolded if_True Let_def]
+lemma pat_complete_impl_new_code [code]:
+  \<open>pat_complete_impl_new ps \<longleftrightarrow>
+    pats_impl_new (Suc (max_list (List.maps (map fst \<circ> vars_term_list \<circ> fst) (concat (concat ps)))))
+    0 (map (map (map (apsnd (map_vars rv)))) ps)\<close>
+  by (simp add: pat_complete_impl_new_def pats_impl_new_def pattern_completeness_context.pat_complete_impl_def)
 
-lemmas pat_impl_new_code[code] = pattern_completeness_context.pat_impl_def[of m Cl Is True C rn, 
-    folded pat_impl_new_def pat_inner_impl_new_def find_var_new_def,
-    unfolded triv_ident]
+lemma pat_impl_new_code [code]:
+  \<open>pat_impl_new n nl p =
+  (case pat_inner_impl_new nl p [] of None \<Rightarrow> New_Problems (n, nl, [])
+   | Some (nl', p') \<Rightarrow>
+     case partition (\<lambda>mp. snd (snd mp)) p' of
+     (ivc, no_ivc) \<Rightarrow>
+       if no_ivc = [] then Incomplete
+       else if ivc \<noteq> [] \<and> (\<forall>mp\<in>set no_ivc. fst mp = [])
+            then New_Problems (n, nl', [map mp_lr_list (filter (\<lambda>mp. \<forall>xts\<in>set (fst (snd mp)). is_singleton_list (map \<T>(C,\<V>) (snd xts))) no_ivc)])
+            else case find_var_new no_ivc of None \<Rightarrow> Fin_Var_Form (map (map (map_prod id (map the_Var)) \<circ> fst \<circ> snd) no_ivc)
+                 | Some x \<Rightarrow>
+                     let p'l = map mp_lr_list p' in New_Problems (n + m, nl', map (\<lambda>\<tau>. subst_pat_problem_list \<tau> p'l) (pattern_completeness_context.\<tau>s_list Cl n x)))\<close>
+  by (auto simp add: pat_impl_new_def pat_inner_impl_new_def find_var_new_def pattern_completeness_context.pat_impl_def split: option.split)
 
-lemmas pats_impl_new_code[code] = pattern_completeness_context.pats_impl.simps[of m Cl Is Cd True C rn fidl_solver,
-    folded pats_impl_new_def pat_impl_new_def]
+lemma pats_impl_new_code [code]:
+  \<open>pats_impl_new n nl ps \<longleftrightarrow>
+  (case ps of [] \<Rightarrow> True
+   | p # ps1 \<Rightarrow>
+     case pat_impl_new n nl p of Incomplete \<Rightarrow> False | New_Problems (n', nl', ps2) \<Rightarrow> local.pats_impl_new n' nl' (ps2 @ ps1)
+     | Fin_Var_Form p' \<Rightarrow>
+         let bnd = Cd \<circ> snd; cnf = map (map snd) p' in if fidl_solver (bounds_list bnd cnf, dist_pairs_list cnf) then False else local.pats_impl_new n nl ps1)\<close>
+  apply (auto simp add: pats_impl_new_def pat_impl_new_def pattern_completeness_context.pats_impl.simps split: list.split)
+   apply (metis Pattern_Completeness_List.pats_impl_new_def)
+  apply (metis Pattern_Completeness_List.pats_impl_new_def)
+  done
 
-lemmas match_decomp'_impl_new_code[code] =
-  pattern_completeness_context.match_decomp'_impl_def[of Is True rn, 
-    folded match_decomp'_impl_new_def,
-  unfolded pattern_completeness_context.apply_decompose'_def triv_ident]
- 
-lemmas pat_inner_impl_new_code[code] =
-  pattern_completeness_context.pat_inner_impl.simps[of Is True rn, 
-    folded pat_inner_impl_new_def match_decomp'_impl_new_def]
+lemma match_decomp'_impl_new_code [code]:
+  \<open>match_decomp'_impl_new n mp =
+    map_option (\<lambda>(xs, mp). if case mp of (xl, rx, b) \<Rightarrow> \<not> b \<and> xl = [] then pattern_completeness_context.decomp'_impl rn n xs mp else (n, mp))
+     (pattern_completeness_context.match_steps_impl Is mp)\<close>
+  by (simp add: match_decomp'_impl_new_def pattern_completeness_context.match_decomp'_impl_def
+    pattern_completeness_context.apply_decompose'_def)
 
-lemmas find_var_new_code[code] = 
-  find_var_def[of True, 
-    folded find_var_new_def,
-    unfolded if_True]
+lemma find_var_new_code [code]:
+  \<open>find_var_new p =
+  (case List.maps (\<lambda>(lx, _). lx) p of
+   [] \<Rightarrow> let flat_mps = List.maps (fst \<circ> snd) p in map_option (\<lambda>(x, ts). case find is_Var ts of Some (Var xa) \<Rightarrow> xa) (find (\<lambda>rx. \<exists>t\<in>set (snd rx). is_Fun t) flat_mps)
+   | (x, t) # xa \<Rightarrow> Some x)\<close>
+  by (simp add: find_var_new_def find_var_def)
+
+lemma pat_inner_impl_new_code [code]:
+  \<open>pat_inner_impl_new n [] pd = Some (n, pd)\<close>
+  \<open>pat_inner_impl_new n (mp # p) pd =
+    (case match_decomp'_impl_new n mp of None \<Rightarrow> pat_inner_impl_new n p pd
+     | Some (n', mp') \<Rightarrow> if empty_lr mp' then None else pat_inner_impl_new n' p (mp' # pd))\<close>
+  by (auto simp add: pat_inner_impl_new_def match_decomp'_impl_new_def pattern_completeness_context.pat_inner_impl.simps split: option.split)
 
 end
+
 end
 
 definition decide_pat_complete :: "(('f \<times> 's list) \<times> 's)list \<Rightarrow> ('f,'v,'s)pats_problem_list \<Rightarrow> bool" where

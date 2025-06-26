@@ -285,8 +285,6 @@ where
 | "odlist_equal xs [] = False"
 | "odlist_equal (x # xs) (y # ys) = (x = y \<and> odlist_equal xs ys)"
 
-declare odlist_equal.simps [code]
-
 lemma equal_odlist_equal[simp]:
   "\<lbrakk> distinct xs; distinct ys; sorted xs; sorted ys \<rbrakk>
      \<Longrightarrow> odlist_equal xs ys \<longleftrightarrow> (xs = ys)"
@@ -301,8 +299,6 @@ where
      (if x = y then difference xs ys
                else if x < y then x # difference xs (y # ys)
                              else difference (x # xs) ys)"
-
-declare difference.simps [code]
 
 lemma set_difference[simp]:
   "\<lbrakk> distinct xs; distinct ys; sorted xs; sorted ys \<rbrakk>
@@ -324,8 +320,6 @@ where
                else if x < y then intersection xs (y # ys)
                              else intersection (x # xs) ys)"
 
-declare intersection.simps [code]
-
 lemma set_intersection[simp]:
   "\<lbrakk> distinct xs; distinct ys; sorted xs; sorted ys \<rbrakk>
      \<Longrightarrow> set (intersection xs ys) = set xs \<inter> set ys"
@@ -346,8 +340,6 @@ where
      (if x = z then y # image rs (z # zs)
                else if x < z then image rs (z # zs)
                              else image ((x, y) # rs) zs)"
-
-declare image.simps [code]
 
 lemma set_image[simp]:
   "\<lbrakk> distinct R; distinct xs; sorted R; sorted xs \<rbrakk>

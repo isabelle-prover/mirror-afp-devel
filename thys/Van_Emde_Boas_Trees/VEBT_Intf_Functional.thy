@@ -20,7 +20,7 @@ begin
   context begin
     interpretation VEBT_internal .
   
-  lemma vebt_member_code[code]:
+  lemma vebt_member_code [code]:
     "vebt_member (Leaf a b) x = (if x = 0 then a else if x=1 then b else False)" 
     "vebt_member (Node None t r e) x = False"
     "vebt_member (Node (Some (mi, ma)) deg treeList summary) x = 
@@ -46,7 +46,7 @@ begin
         by simp_all 
     qed
 
-  lemma vebt_insert_code[code]:
+  lemma vebt_insert_code [code]:
     "vebt_insert (Leaf a b) x = (if x=0 then Leaf True b else if x=1 then Leaf a True else Leaf a b)"
     "vebt_insert (Node info deg treeList summary) x = (
       if deg \<le> 1 then  
@@ -83,7 +83,7 @@ begin
   
   qed 
 
-  lemma vebt_succ_code[code]:
+  lemma vebt_succ_code [code]:
     "vebt_succ (Leaf a b) x = (if b\<and> x = 0 then Some 1 else None)"
     "vebt_succ (Node info  deg treeList summary) x = (if deg \<le> 1 then None else
     (case info of None \<Rightarrow> None |
@@ -125,7 +125,7 @@ begin
     done                       
                        
 
-  lemma vebt_delete_code[code]:
+  lemma vebt_delete_code [code]:
     "vebt_delete (Leaf a b) x = (if x = 0 then Leaf False b else if x = 1 then Leaf a False else Leaf a b)"
     "vebt_delete (Node info deg treeList summary) x = (
       case info of 

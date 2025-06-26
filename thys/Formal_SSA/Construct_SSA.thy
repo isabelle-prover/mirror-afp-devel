@@ -71,7 +71,6 @@ begin
       if m = n \<and> n \<in> phiDefNodes g v \<and> v \<in> vars g \<and> def = PhiDef then
         Some [lookupDef g m v . m \<leftarrow> predecessors g n]
       else None"
-  declare uses'_def [code] defs'_def [code] phis'_def [code]
 
   abbreviation "lookupDefNode g n v \<equiv> defNode (lookupDef g n v)"
   declare lookupDef.simps [simp del]

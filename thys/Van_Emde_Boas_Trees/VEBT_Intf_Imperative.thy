@@ -25,9 +25,7 @@ begin
     interpretation VEBT_internal .
   
     lemmas [code] = replicatei.simps vebt_memberi.simps highi_def lowi_def vebt_inserti.simps
-      minNulli.simps vebt_succi.simps vebt_predi.simps vebt_deletei.simps
-  
-      greater.simps 
+      minNulli.simps vebt_succi.simps vebt_predi.simps vebt_deletei.simps greater.simps 
       
   end  
     

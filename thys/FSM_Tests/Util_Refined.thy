@@ -8,19 +8,10 @@ begin
 
 subsection \<open>New Code Equations for @{text "set_as_map"}\<close>
 
-lemma set_as_map_refined[code] :
+lemma set_as_map_refined [code]:
   fixes t :: "('a :: ccompare \<times> 'c :: ccompare) set_rbt" 
   and   xs:: "('b :: ceq \<times> 'd :: ceq) set_dlist"
-  shows "set_as_map (RBT_set t) = (case ID CCOMPARE(('a \<times> 'c)) of
-           Some _ \<Rightarrow> Mapping.lookup (RBT_Set2.fold (\<lambda> (x,z) m . case Mapping.lookup m (x) of
-                        None \<Rightarrow> Mapping.update (x) {z} m |
-                        Some zs \<Rightarrow> Mapping.update (x) (Set.insert z zs) m)
-                      t
-                      Mapping.empty) |
-           None   \<Rightarrow> Code.abort (STR ''set_as_map RBT_set: ccompare = None'') 
-                                (\<lambda>_. set_as_map (RBT_set t)))"
-    (is "?C1")
-  and   "set_as_map (DList_set xs) = (case ID CEQ(('b \<times> 'd)) of
+  shows "set_as_map (DList_set xs) = (case ID CEQ(('b \<times> 'd)) of
             Some _ \<Rightarrow> Mapping.lookup (DList_Set.fold (\<lambda> (x,z) m . case Mapping.lookup m (x) of
                         None \<Rightarrow> Mapping.update (x) {z} m |
                         Some zs \<Rightarrow> Mapping.update (x) (Set.insert z zs) m)
@@ -29,6 +20,15 @@ lemma set_as_map_refined[code] :
            None   \<Rightarrow> Code.abort (STR ''set_as_map RBT_set: ccompare = None'') 
                                 (\<lambda>_. set_as_map (DList_set xs)))"
     (is "?C2")
+  and "set_as_map (RBT_set t) = (case ID CCOMPARE(('a \<times> 'c)) of
+           Some _ \<Rightarrow> Mapping.lookup (RBT_Set2.fold (\<lambda> (x,z) m . case Mapping.lookup m (x) of
+                        None \<Rightarrow> Mapping.update (x) {z} m |
+                        Some zs \<Rightarrow> Mapping.update (x) (Set.insert z zs) m)
+                      t
+                      Mapping.empty) |
+           None   \<Rightarrow> Code.abort (STR ''set_as_map RBT_set: ccompare = None'') 
+                                (\<lambda>_. set_as_map (RBT_set t)))"
+    (is "?C1")
 proof -
   show ?C1
   proof (cases "ID CCOMPARE(('a \<times> 'c))")
@@ -263,7 +263,5 @@ proof -
     then show ?thesis unfolding set_as_map_def using Some by simp
   qed
 qed
-
-
 
 end

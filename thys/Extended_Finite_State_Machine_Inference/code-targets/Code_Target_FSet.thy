@@ -60,10 +60,10 @@ next
     by (simp add: fset_of_list.rep_eq insert_absorb)
 qed
 
-lemma fMax_fold [code]: "fMax (fset_of_list (a#as)) = fold max as a"
+lemma fMax_fold: "fMax (fset_of_list (a#as)) = fold max as a"
   by (metis Max.set_eq_fold fMax.F.rep_eq fset_of_list.rep_eq)
 
-lemma fMin_fold [code]: "fMin (fset_of_list (h#t)) = fold min t h"
+lemma fMin_fold: "fMin (fset_of_list (h#t)) = fold min t h"
   apply (simp add: fset_of_list_def)
   by (metis Min.set_eq_fold fMin_Min fset_of_list.abs_eq list.simps(15))
 
@@ -111,7 +111,7 @@ lemma [code]: "sorted_list_of_fset (fset_of_list l) = nativeSort (remdups l)"
 lemma [code]: "sorted_list_of_set (set l) = nativeSort (remdups l)"
   by (simp add: nativeSort_def sorted_list_of_set_sort_remdups)
 
-lemma [code]: "fMin (fset_of_list (h#t)) = hd (nativeSort (h#t))"
+lemma "fMin (fset_of_list (h#t)) = hd (nativeSort (h#t))"
   by (metis fMin_Min hd_sort_Min list.distinct(1) nativeSort_def)
 
 lemma sorted_Max_Cons:
@@ -133,7 +133,7 @@ next
     by (metis sorted_Max_Cons Max_singleton hd_rev last.simps list.set(1) list.simps(15) sorted_simps(2))
 qed
 
-lemma [code]: "fMax (fset_of_list (h#t)) = last (nativeSort (h#t))"
+lemma "fMax (fset_of_list (h#t)) = last (nativeSort (h#t))"
   by (metis Max.set_eq_fold fMax_fold hd_rev list.simps(3) nativeSort_def set_empty2 set_sort sorted_Max sorted_sort)
 
 definition "list_max l = fold max l"

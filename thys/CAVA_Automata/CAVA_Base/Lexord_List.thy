@@ -56,7 +56,7 @@ lemma less_eq_list_code [code]:
   "list_le (x # xs) (y # ys) \<longleftrightarrow> x < y \<or> x = y \<and> list_le xs ys"
   by simp_all
 
-instantiation  lexlist :: (ord) ord
+instantiation lexlist :: (ord) ord
 begin
 
 definition

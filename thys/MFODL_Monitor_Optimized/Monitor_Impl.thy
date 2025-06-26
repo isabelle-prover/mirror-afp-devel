@@ -9,8 +9,6 @@ begin
 
 section \<open>Instantiation of the generic algorithm and code setup\<close>
 
-declare Set_Impl.card_code[code]
-
 instantiation enat :: set_impl begin
 definition set_impl_enat :: "(enat, set_impl) phantom" where
   "set_impl_enat = phantom set_RBT"

@@ -419,11 +419,14 @@ apply (rule CFG_SSA_Transformed_codeI)
 apply (rule CFG_Construct_linorder.fst_uses'_phis'_in_\<alpha>n)
 by unfold_locales
 
-declare uninst.defNode_code[abs_def, code] uninst.allVars_code[abs_def, code] uninst.allUses_def[abs_def, code] uninst.allDefs_def[abs_def, code]
-  uninst.phiUses_code[abs_def, code] uninst.phi_def[abs_def, code] uninst.redundant_code_def[abs_def, code]
-declare uninst_code.uses'_code_def[abs_def, code] uninst_code.substNext_code_def[abs_def, code] uninst_code.substitution_code_def[abs_def, folded uninst_phi_def, code]
-declare uninst_code.phis'_code_def[folded uninst_code_substNext_def, code] uninst_code.step_code_def[folded uninst_code.uses'_code_def uninst_code.phis'_code_def, code]
-  uninst_code.cond_code_def[folded uninst_redundant_def, code]
+declare uninst.defNode_code [abs_def, code]
+declare uninst.allVars_code [abs_def, code]
+declare uninst.allUses_def [abs_def, code]
+declare uninst.allDefs_def [abs_def, code]
+declare uninst.phiUses_code [abs_def, code]
+declare uninst.phi_def [abs_def, code]
+declare uninst_code.substNext_code_def [abs_def, code]
+declare uninst_code.substitution_code_def [abs_def, folded uninst_phi_def, code]
 declare gen_ssa_wf_notriv.substAll_efficient_def
   [folded uninst_code_nodes_of_phis'_def uninst_code_nodes_of_uses'_def uninst_code_triv_phis'_def
     uninst_code_substitution_def
@@ -454,12 +457,11 @@ proof -
     by (clarsimp simp: RBT_Set.Set_def RBT.fold_fold RBT.lookup_in_tree) (rule Union_fold [simplified])
 qed
 
-definition[code]: "disjoint xs ys = (xs \<inter> ys = {})"
+definition "disjoint xs ys = (xs \<inter> ys = {})"
 
 definition "gen_ssa_wf_notriv_substAll' = fst \<circ> gen_ssa_wf_notriv_substAll_efficient"
 
-definition "fold_set f A \<equiv> fold f (sorted_list_of_set A)"
-declare fold_set_def [symmetric, code_unfold]
+definition [code_abbrev]: "fold_set f A \<equiv> fold f (sorted_list_of_set A)"
 declare fold_set_def
   [where A="RBT_Set.Set r" for r,
     unfolded sorted_list_set fold_keys_def_alt [symmetric,abs_def] fold_keys_def [abs_def],
