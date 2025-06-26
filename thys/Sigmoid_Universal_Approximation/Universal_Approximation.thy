@@ -289,7 +289,8 @@ proof-
         then have j_bounds: "j \<in> {1..N+1}"
           by (smt (verit) GreatestI_nat  atLeastAtMost_iff j_def)
         have xs_j_leq_x: "xs N ! j \<le> x"
-          by (smt (verit, del_insts) GreatestI_ex_nat GreatestI_nat atLeastAtMost_iff ex_least_nat_le j_def j_exists)
+          by (metis (mono_tags, lifting) GreatestI_ex_nat atLeastAtMost_iff empty_Collect_eq j_def
+              nonempty_definition)
 
         show "x \<in> (\<Union>i \<in> {1..N}. {xs N ! i..xs N ! (i + 1)})"
         proof(cases "j = N+1")
