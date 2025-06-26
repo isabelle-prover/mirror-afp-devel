@@ -123,9 +123,9 @@ proof (rule ccontr)
       then have "A \<subseteq> Range zorn_relation"
         unfolding Range_def by fast
       moreover have \<open>\<forall>C0. C0 \<in> (Range zorn_relation) \<longrightarrow> C0 \<in> A\<close>
-        by (meson Range_iff refl_on_zorn_relation refl_onD2)
+        unfolding Range_iff using refl_on_zorn_relation zorn_relation_def by blast
       moreover have \<open>\<forall>C0. C0 \<in> (Domain zorn_relation) \<longrightarrow> C0 \<in> A\<close>
-        by (metis Domain.cases refl_on_zorn_relation refl_on_domain)
+        using zorn_relation_def by blast 
       ultimately show ?thesis
         by (metis Field_def Un_absorb1 subrelI subset_antisym)
     qed
@@ -153,7 +153,8 @@ proof (rule ccontr)
 
       ultimately have "preorder_on A zorn_relation"
         unfolding preorder_on_def refl_on_zorn_relation
-        using refl_on_zorn_relation by simp
+        using refl_on_zorn_relation 
+        using zorn_relation_def by blast
       then have "partial_order_on A zorn_relation"
         unfolding partial_order_on_def
         using antisym_zorn_relation by simp
@@ -168,9 +169,9 @@ proof (rule ccontr)
         then have "A \<subseteq> Range zorn_relation"
           unfolding Range_def by fast
         moreover have \<open>\<forall>C0. C0 \<in> (Range zorn_relation) \<longrightarrow> C0 \<in> A\<close>
-          by (meson Range_iff refl_on_zorn_relation refl_onD2)
+          unfolding Range_iff using refl_on_zorn_relation zorn_relation_def by blast
         moreover have \<open>\<forall>C0. C0 \<in> (Domain zorn_relation) \<longrightarrow> C0 \<in> A\<close>
-          by (metis Domain.cases refl_on_zorn_relation refl_on_domain)
+          using zorn_relation_def by blast 
         ultimately show ?thesis
           by (metis Field_def Un_absorb1 subrelI subset_antisym)
       qed
