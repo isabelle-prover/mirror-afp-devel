@@ -101,7 +101,7 @@ proof (rule equivI)
     with \<open>\<pi>\<^sub>1 \<in> PI\<close> \<open>\<pi>\<^sub>2 \<in> PI\<close> \<open>\<pi>\<^sub>3 \<in> PI\<close>
     show "(\<pi>\<^sub>1, \<pi>\<^sub>3) \<in> rel_place_sim" by blast
   qed
-qed
+qed auto
 
 lemma refl_sim:
   assumes "a \<in> PI"
