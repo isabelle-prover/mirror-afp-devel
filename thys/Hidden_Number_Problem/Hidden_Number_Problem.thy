@@ -135,17 +135,15 @@ next
   have sumlist_is: "sumlist (a # ys) = a + sumlist ys"
     by simp
   have dim_a: "a \<in> carrier_vec n"
-    using Cons(2) 
-    by (metis carrier_vecI member_rec(1))
+    using Cons(2) by force
   have dim_sumlist: "sumlist ys \<in> carrier_vec n"
-    using Cons(2)
-    by (metis List.member_def carrier_vec_dim_vec dim_sumlist member_rec(1)) 
+    using Cons(2) 
+    by (metis (full_types) List.member_iff carrier_vec_dim_vec dim_sumlist insert_iff list.set(2))
   have distrib: "k \<cdot>\<^sub>v (a + sumlist ys) = k \<cdot>\<^sub>v a +  k \<cdot>\<^sub>v sumlist ys"
     using smult_add_distrib_vec[OF dim_a dim_sumlist]
     by auto
   have ih: "(\<And>w. List.member ys w \<Longrightarrow> dim_vec w = n)"
-    using Cons(2)
-    by (meson member_rec(1)) 
+    using Cons(2) by auto 
   show ?case unfolding sumlist_is distrib 
     using Cons.hyps[OF ih]
     by auto
@@ -162,8 +160,8 @@ lemma smult_in_lattice_of:
 proof -
   have dims: "\<And>w. List.member (map (\<lambda>i. of_int (c i) \<cdot>\<^sub>v lattice_basis ! i)
        [0..<length lattice_basis]) w \<Longrightarrow> dim_vec w = n" for c
-    using assms(1)
-    by (smt (verit) List.member_def in_set_conv_nth index_smult_vec(2) length_map map_nth map_nth_eq_conv) 
+    using assms(1) unfolding List.member_iff
+    by auto 
   obtain c where "init_vec = sumlist (map (\<lambda>i. of_int (c i) \<cdot>\<^sub>v lattice_basis ! i)
            [0..<length lattice_basis])"
     using vec_module.in_latticeE[OF assms(2)]  by blast
@@ -369,15 +367,15 @@ next
   interpret vec_space "TYPE(rat)" n .
   case (Cons a w)
   then obtain k1 where k1_prop: "a = map_vec rat_of_int k1"
-    by (metis member_rec(1))
+    by auto
   then obtain k2 where "sumlist w = map_vec rat_of_int k2"
-    using Cons 
-    by (meson member_rec(1))
+    using Cons by auto
   then have sumlist_is: "sumlist (a # w) = (map_vec rat_of_int k1) + (map_vec rat_of_int k2)"
     using k1_prop sumlist_Cons by presburger
   then have "sumlist (a # w) = (map_vec rat_of_int (k1 + k2))"
     using Cons(2) using casting_sum_aux
-    by (metis List.member_def dim_sumlist index_add_vec(2) index_map_vec(2) k1_prop member_rec(1))
+    unfolding List.member_iff
+    by (metis dim_sumlist index_add_vec(2) index_map_vec(2) k1_prop list.set_intros(1))
   then show ?case
     by blast
 qed
@@ -418,25 +416,26 @@ proof -
     then have h1: "foldr (+) (map (map_vec int_of_rat) (a # w)) (0\<^sub>v n) = 
       (map_vec int_of_rat a) + map_vec int_of_rat (sumlist w)"
       using Cons unfolding sumlist_def vec_int.M.sumlist_def
-      by (simp add: member_rec(1))
+      by (simp)
 
     obtain k :: "int vec" where k_prop: "map_vec rat_of_int k = a"
-      using Cons(2) 
-      by (meson member_rec(1))
+      using Cons(2) by auto
+
 
     then have dim_vec_k: "dim_vec k = dim_vec a"
       by auto
     then have "dim_vec k = n"
-      by (simp add: Cons(3) member_rec(1))
+      by (simp add: Cons(3))
 
     have "\<exists>w2_vec. foldr (+) w (0\<^sub>v n) = map_vec rat_of_int w2_vec"
-      using Cons(2) casting_sum_lemma 
-      by (metis Cons(3) member_rec(1) sumlist_def)
+      using Cons(2,3) casting_sum_lemma unfolding List.member_iff
+      by (metis insert_iff list.set(2) sumlist_def)
+
 
     then have expand: "map_vec int_of_rat ((map_vec rat_of_int k) + foldr (+) w (0\<^sub>v n)) = 
     map_vec int_of_rat (map_vec rat_of_int k) + map_vec int_of_rat (foldr (+) w (0\<^sub>v n))"
       using casting_expansion[of k "foldr (+) w (0\<^sub>v n)"]  dim_vec_k
-      by (metis List.member_def \<open>dim_vec k = n\<close> dim_sumlist index_add_vec(2) local.Cons.prems(2) sumlist_Cons sumlist_def)
+      by (metis List.member_iff \<open>dim_vec k = n\<close> dim_sumlist index_add_vec(2) local.Cons.prems(2) sumlist_Cons sumlist_def)
 
     have "map_vec int_of_rat (foldr (+) (a # w) (0\<^sub>v n)) = 
        map_vec int_of_rat (a + foldr (+) w (0\<^sub>v n))"
@@ -473,15 +472,15 @@ proof -
   let ?w = "map (\<lambda>i. rat_of_int (c i) \<cdot>\<^sub>v qs ! i) [0..<length qs]"
   have dims: "(\<And>mem. List.member ?w mem \<Longrightarrow> dim_vec mem = n)"
     using assms(2) 
-    by (smt (verit, del_insts) List.member_def in_set_conv_nth index_smult_vec(2) length_map map_nth map_nth_eq_conv)
+    by (smt (verit, del_insts) List.member_iff in_set_conv_nth index_smult_vec(2) length_map map_nth map_nth_eq_conv)
   have mem_w: "\<exists>k. map_vec rat_of_int k = mem"
     if mem_is: "List.member (map (\<lambda>i. rat_of_int (c i) \<cdot>\<^sub>v qs ! i) [0..<length qs]) mem" for mem
   proof - 
     obtain i where "i < length qs" "mem = rat_of_int (c i) \<cdot>\<^sub>v qs ! i"
       using mem_is 
-      by (smt (verit) List.member_def add_0 in_set_conv_nth length_map map_nth map_nth_eq_conv nth_upt)
+      by (smt (verit) List.member_iff add_0 in_set_conv_nth length_map map_nth map_nth_eq_conv nth_upt)
     then show ?thesis using assms(1) mem_is 
-      by (metis Matrix.of_int_hom.vec_hom_smult in_set_conv_nth in_set_member)
+      by (metis Matrix.of_int_hom.vec_hom_smult in_set_conv_nth List.member_iff)
   qed
   then obtain k where "v = map_vec rat_of_int k"
     unfolding v_is
@@ -503,7 +502,7 @@ proof -
   proof - 
     obtain k :: "int vec" where qs_i_is: "qs ! i = map_vec rat_of_int k"
       using assms i_lt 
-      by (metis List.member_def in_set_conv_nth)
+      by (metis List.member_iff in_set_conv_nth)
     have "map_vec rat_of_int ((c i) \<cdot>\<^sub>v k) = (rat_of_int (c i) \<cdot>\<^sub>v qs ! i)"
       using qs_i_is by force
     then have lhs_is: "(map_vec int_of_rat (rat_of_int (c i) \<cdot>\<^sub>v qs ! i)) = 
@@ -553,7 +552,7 @@ proof -
              mem \<Longrightarrow>
             dim_vec mem = n)"
     using dim_vecs 
-    by (smt (verit, ccfv_threshold) List.member_def in_set_conv_nth index_smult_vec(2) length_map map_nth map_nth_eq_conv)
+    by (smt (verit, ccfv_threshold) List.member_iff in_set_conv_nth index_smult_vec(2) length_map map_nth map_nth_eq_conv)
 
   have casting_mem: "\<exists>k. map_vec rat_of_int k = mem" if mem_assm: "List.member
              (map (\<lambda>i. rat_of_int (c i) \<cdot>\<^sub>v qs ! i)
@@ -562,10 +561,10 @@ proof -
     obtain i where i_prop: "mem = rat_of_int (c i) \<cdot>\<^sub>v qs ! i" 
                    "i < length (map (map_vec int_of_rat) qs)"
       using mem_assm 
-      by (smt (verit, ccfv_SIG) List.member_def arith_simps(49) in_set_conv_nth length_map map_nth map_nth_eq_conv nth_upt)
+      by (smt (verit, ccfv_SIG) List.member_iff arith_simps(49) in_set_conv_nth length_map map_nth map_nth_eq_conv nth_upt)
     obtain k1 where "map_vec rat_of_int k1 = qs ! i"
       using i_prop(2) assms(2) 
-      by (metis List.member_def \<open>length qs = length (map (map_vec int_of_rat) qs)\<close> in_set_conv_nth)
+      by (metis List.member_iff \<open>length qs = length (map (map_vec int_of_rat) qs)\<close> in_set_conv_nth)
     then show ?thesis using i_prop(1) 
       by (metis Matrix.of_int_hom.vec_hom_smult)
   qed
@@ -1589,7 +1588,7 @@ lemma gen_lattice_int_gen_lattice_vec':
         "map_vec rat_of_int (map_vec int_of_rat ((of_nat p) \<cdot>\<^sub>v v)) = (rat_of_nat p) \<cdot>\<^sub>v v"
 proof - 
   have dims: "(\<And>w. List.member (gen_basis ts) w \<Longrightarrow> dim_vec w = d + 1)"
-    by (meson List.member_def assms(1) carrier_dim_vec gen_basis_carrier subsetD)
+    by (meson List.member_iff assms(1) carrier_dim_vec gen_basis_carrier subsetD)
   have pv_in: "(rat_of_nat p \<cdot>\<^sub>v v) \<in> lattice_of (map (\<lambda>x. rat_of_nat p \<cdot>\<^sub>v x) (gen_basis ts))"
     using assms(2)
     unfolding gen_lattice_def
@@ -1652,7 +1651,7 @@ proof -
      (map_vec rat_of_int (int p \<cdot>\<^sub>v unit_vec (d + 1) i))"
       "i < d"
       using is_mem unfolding p_vecs_def 
-      by (smt (verit, ccfv_SIG) Groups.monoid_add_class.add.left_neutral List.List.list.set_map List.member_def diff_zero imageE in_set_conv_nth length_map length_upt nth_map_upt)
+      by (smt (verit, ccfv_SIG) Groups.monoid_add_class.add.left_neutral List.List.list.set_map List.member_iff diff_zero imageE in_set_conv_nth length_map length_upt nth_map_upt)
     show ?thesis
       unfolding i_prop(1)
       by (metis Matrix.of_int_hom.vec_hom_smult of_int_of_nat_eq) 
@@ -1672,10 +1671,10 @@ proof -
 
   have mem_int: "(\<And>mem. List.member ?qs2 mem \<Longrightarrow> \<exists>k. map_vec rat_of_int k = mem)"
     using mem1 mem2 
-    by (metis append_insert in_set_member insert_iff)
+    by (metis append_insert List.member_iff insert_iff)
   have mem_dims: "(\<And>mem. List.member ?qs2 mem \<Longrightarrow> dim_vec mem = d + 1)"
     using dims gen_basis_def
-    by (smt (verit, ccfv_threshold) List.List.list.set_map List.member_def append_insert eq1 imageE index_smult_vec(2) insert_iff)
+    by (smt (verit, ccfv_threshold) List.List.list.set_map List.member_iff append_insert eq1 imageE index_smult_vec(2) insert_iff)
   then have casting_hyp: "\<exists>k::int vec. map_vec rat_of_int k = rat_of_nat p \<cdot>\<^sub>v v"
     using assms(2) unfolding gen_lattice_def gen_basis_def 
     using in_lattice_casting[OF mem_int mem_dims rat_of_nat_qs2]
@@ -2077,7 +2076,7 @@ proof-
     moreover have "(Lst!i)^2 = abs(Lst!i)^2" by auto
     moreover have "0\<le>abs(Lst!i)" by simp
     ultimately show ?thesis using abs_small[of i] in_range
-      by (metis Power.linordered_semidom_class.power_mono)
+      by (metis power_mono)
   qed
   moreover have length: "length Lst = d + 1" unfolding Lst_def using dim_u dim_w by auto
   ultimately have "\<And>x. x \<in> set Lst \<Longrightarrow> sq_norm x \<le> (rat_of_nat p / rat_of_nat 2^k)^2"
@@ -2719,7 +2718,7 @@ proof-
   qed
   ultimately have "?d \<le> ?c" using dist_p_le by blast
   hence "?d\<^sup>2 \<le> ?c\<^sup>2"
-    by (meson dist_p_set_bdd_below dist_p_well_defined Power.linordered_semidom_class.power_mono)
+    by (meson dist_p_set_bdd_below dist_p_well_defined power_mono)
   moreover have "\<bar>(u - v)$i\<bar>\<^sup>2 = ((u - v)$i)\<^sup>2" by auto
   ultimately show ?thesis
     by (metis (mono_tags, lifting) of_int_le_of_int_power_cancel_iff of_int_power z)
@@ -2866,7 +2865,7 @@ proof clarify
       by (metis (mono_tags, opaque_lifting) Ring_Hom.of_rat_hom.hom_div of_nat_numeral of_rat_less of_rat_of_nat_eq of_rat_power)
   qed
   ultimately show "(of_int (dist_p ((ts ! i) * \<beta>) ((ts_to_as ts ! i)))) < p / 2 ^ \<mu>"
-    by (smt (verit, ccfv_SIG) Power.linordered_semidom_class.power_mono divide_nonneg_nonneg of_nat_0_le_iff of_rat_less_eq of_rat_of_int_eq of_rat_power zero_less_power)
+    by (smt (verit, ccfv_SIG) power_mono divide_nonneg_nonneg of_nat_0_le_iff of_rat_less_eq of_rat_of_int_eq of_rat_power zero_less_power)
 qed
 
 lemma fixed_beta_bad_prob_arith_helper:
@@ -3048,7 +3047,7 @@ lemma prob_A_helper':
   assumes False: "\<not> (\<beta> = \<alpha> mod p)"
   shows "(1 - A)^d \<le> (5 / (2^\<mu>))^d"
   using prob_A_helper[OF \<beta> False] apply simp
-  by (meson Power.linordered_semidom_class.power_mono diff_ge_0_iff_ge pmf_le_1)
+  by (meson power_mono diff_ge_0_iff_ge pmf_le_1)
 
 lemma fixed_beta_bad_prob:
   fixes \<beta>
