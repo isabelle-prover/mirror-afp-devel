@@ -1,0 +1,20 @@
+chapter AFP
+
+session Hidden_Number_Problem = "HOL-Probability" +
+  options [timeout = 1500]
+
+sessions
+  LLL_Basis_Reduction
+  BenOr_Kozen_Reif (* Needed for Babai *)
+  "HOL-Algebra"
+
+theories
+  Hidden_Number_Problem
+  Misc_PMF
+  Babai_Algorithm_Updated
+  Babai_Correctness_Updated
+  Ad_Codegen_Example
+
+document_files
+  "root.bib"
+  "root.tex"

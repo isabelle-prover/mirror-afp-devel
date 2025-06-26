@@ -1,0 +1,52 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+\usepackage{eufrak}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+
+\begin{document}
+
+\title{The Hidden Number Problem}
+\author{Sage Binder, Eric Ren, and Katherine Kosaian}
+\maketitle
+
+\begin{abstract}
+In this entry, we formalize the Hidden Number Problem (HNP),
+originally introduced by Boneh and Venkatesan in 1996 \cite{hnp}.
+Intuitively,
+the HNP involves demonstrating the existence
+of an algorithm (the ``adversary'') which can compute
+(with high probability) a hidden number $\alpha$
+given access to a bit-leaking oracle.
+Originally developed to establish the security of Diffie--Hellman key exchange,
+the HNP has since been used not only for protocol security but also in cryptographic attacks,
+including notable ones on DSA and ECDSA.
+
+Additionally, the HNP makes use of an instance of Babai's nearest plane algorithm \cite{DBLP:journals/combinatorica/Babai86},
+which solves the approximate closest vector problem.
+Thus, building on the LLL algorithm \cite{LLL} (which has already been formalized \cite{LLL_Factorization-AFP,LLL_formalized_1,LLL_formalized_2}),
+we formalize Babai's algorithm,
+which itself is of independent interest.
+Our formalizations of Babai's algorithm and the HNP adversary are executable,
+setting up potential future work, e.g.\ in developing formally verified instances of cryptographic attacks.
+
+Note, our formalization of Babai's algorithm here is an updated version of a previous AFP entry of ours.
+The updates include a tighter error bound, which is required for our HNP proof.
+\end{abstract}
+
+\tableofcontents
+
+% include generated text of all theories
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
