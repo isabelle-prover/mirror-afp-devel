@@ -4,7 +4,7 @@ theory Chomsky_Schuetzenberger
 imports
   Context_Free_Grammar.Parse_Tree
   Context_Free_Grammar.Chomsky_Normal_Form
-  Finite_Automata_Not_HF
+  Finite_Automata_HF.Finite_Automata_HF
   Dyck_Language_Syms
 begin
 
@@ -699,12 +699,12 @@ theorem succNext_induct[case_names garbage startp startnp letterQ letternQ]:
   shows "R a0 a1"
 by (metis assms prod_cases3 state.exhaust)
 
-abbreviation aut where \<open>aut \<equiv> \<lparr>dfa'.states = allStates,
+abbreviation aut where \<open>aut \<equiv> \<lparr>dfa.states = allStates,
                      init  = start,
                      final = (allStates - {garbage}),
                      nxt   = succNext \<rparr>\<close>
 
-interpretation aut : dfa' aut
+interpretation aut : dfa aut
 proof(unfold_locales, goal_cases)
   case 1
   then show ?case by simp 
@@ -814,11 +814,8 @@ next
   qed
 qed
 
-lemma aut_language_reg: \<open>regular aut.language\<close>
-by (meson aut.regular)
-
 corollary regular_successively_inter_brackets: \<open>regular {xs. successively Q xs \<and>  xs \<in> brackets}\<close> 
-  using aut_language_reg aut_lang_iff_succ_Q by auto
+  using aut.regular_dfa aut_lang_iff_succ_Q by auto
 
 end (* successivelyConstruction *)
 
@@ -884,12 +881,12 @@ theorem nxt1_induct[case_names garbage startp startnp letterQ letternQ]:
   shows "R a0 a1"
 by (metis (full_types) P1_State.exhaust assms prod_induct3)
 
-abbreviation p1_aut  where \<open>p1_aut \<equiv> \<lparr>dfa'.states = {last_ok, last_bad, garbage},
+abbreviation p1_aut  where \<open>p1_aut \<equiv> \<lparr>dfa.states = {last_ok, last_bad, garbage},
                      init  = last_ok,
                      final = {last_ok},
                      nxt   = nxt1\<rparr>\<close>
 
-interpretation p1_aut : dfa' p1_aut
+interpretation p1_aut : dfa p1_aut
 proof(unfold_locales, goal_cases)
   case 1
   then show ?case by simp 
@@ -972,11 +969,8 @@ proof-
   show ?thesis using regular_successively_inter_brackets by blast
 qed
 
-lemma aut_language_reg: \<open>regular p1_aut.language\<close>
-  using p1_aut.regular by blast 
-
 corollary aux_regular: \<open>regular {xs. xs = [] \<or> (xs \<noteq> [] \<and> good (last xs) \<and> xs \<in> brackets)}\<close> 
-  using lang_descr aut_language_reg p1_aut.language_def by simp
+  using lang_descr p1_aut.regular_dfa p1_aut.language_def by simp
 
 corollary regular_P1: \<open>regular {xs. P1 xs \<and> xs \<in> brackets}\<close> 
   unfolding P1_eq using P1'_regular aux_regular using regular_Int by blast
@@ -1015,12 +1009,12 @@ theorem nxt2_induct[case_names garbage startnp start_p_ok start_p_nok first_ok_n
   shows "R a0 a1"
 by (metis (full_types, opaque_lifting) P5_State.exhaust assms surj_pair)
 
-abbreviation p5_aut  where \<open>p5_aut \<equiv> \<lparr>dfa'.states = {start, first_ok, garbage},
+abbreviation p5_aut  where \<open>p5_aut \<equiv> \<lparr>dfa.states = {start, first_ok, garbage},
                      init  = start,
                      final = {first_ok},
                      nxt   = nxt2\<rparr>\<close>
 
-interpretation p5_aut : dfa' p5_aut
+interpretation p5_aut : dfa p5_aut
 proof(unfold_locales, goal_cases)
   case 1
   then show ?case by simp 
@@ -1100,11 +1094,8 @@ qed simp
 lemma in_P5_iff: \<open>P5 A xs \<and> xs \<in> brackets \<longleftrightarrow> (xs \<noteq> [] \<and> ok (hd xs) \<and> xs \<in> brackets)\<close>
   using P5.elims(3) by fastforce 
 
-lemma aut_language_reg: \<open>regular p5_aut.language\<close>
-  using p5_aut.regular by blast 
-
 corollary aux_regular: \<open>regular {xs. xs \<noteq> [] \<and> ok (hd xs) \<and> xs \<in> brackets}\<close> 
-  using lang_descr aut_language_reg p5_aut.language_def by simp
+  using lang_descr p5_aut.regular_dfa p5_aut.language_def by simp
 
 lemma regular_P5:\<open>regular {xs. P5 A xs \<and> xs \<in> brackets}\<close> 
   using in_P5_iff aux_regular by presburger
@@ -1408,8 +1399,8 @@ proof(induction \<open>length (map Tm x)\<close> arbitrary: A x rule: less_induc
   have bal_x: \<open>bal x\<close> 
     using xDL by blast
   then have \<open>\<exists>y r. bal y \<and> bal r \<and> [\<^sup>1\<^bsub>\<pi>\<^esub>  # tl x = [\<^sup>1\<^bsub>\<pi>\<^esub>  # y @ ]\<^sup>1\<^bsub>\<pi>\<^esub> # r\<close> 
-    using hd_x bal_x bal_Open_split[of \<open>[\<^sup>1\<^bsub>\<pi>\<^esub> \<close>, where ?xs = \<open>tl x\<close>] 
-    by (metis (no_types, lifting) List.list.exhaust_sel List.list.inject Product_Type.prod.inject P5.simps(1) p5x)
+    using hd_x bal_x bal_Open_split[of \<open>[\<^sup>1\<^bsub>\<pi>\<^esub> \<close> \<open>tl x\<close>] p5x
+    by(case_tac x) auto
   then obtain y r1 where \<open>[\<^sup>1\<^bsub>\<pi>\<^esub>  # tl x   =   [\<^sup>1\<^bsub>\<pi>\<^esub>  # y @ ]\<^sup>1\<^bsub>\<pi>\<^esub> # r1\<close> and bal_y: \<open>bal y\<close> and bal_r1: \<open>bal r1\<close> 
     by blast
   then have split1: \<open>x = [\<^sup>1\<^bsub>\<pi>\<^esub>  # y @ ]\<^sup>1\<^bsub>\<pi>\<^esub> # r1\<close> 
@@ -1425,7 +1416,8 @@ proof(induction \<open>length (map Tm x)\<close> arbitrary: A x rule: less_induc
   from p1x have hd_r1: \<open>hd r1 = [\<^sup>2\<^bsub>\<pi>\<^esub>\<close> 
     using split1 \<open>r1 \<noteq> []\<close> by (metis (no_types, lifting) List.list.discI List.successively.elims(1) P1'D P1.simps successively_Cons successively_append_iff)
   from bal_r1 have \<open>\<exists>z r2. bal z \<and> bal r2 \<and> [\<^sup>2\<^bsub>\<pi>\<^esub> # tl r1 = [\<^sup>2\<^bsub>\<pi>\<^esub> # z @ ]\<^sup>2\<^bsub>\<pi>\<^esub>  # r2\<close> 
-    using bal_Open_split[of \<open>[\<^sup>2\<^bsub>\<pi>\<^esub>\<close> \<open>tl r1\<close>] by (metis List.list.exhaust_sel List.list.sel(1) Product_Type.prod.inject hd_r1 \<open>r1 \<noteq> []\<close>) 
+    using bal_Open_split[of \<open>[\<^sup>2\<^bsub>\<pi>\<^esub>\<close> \<open>tl r1\<close>] hd_r1 \<open>r1 \<noteq> []\<close>
+    by(clarsimp simp add: neq_Nil_conv)
   then obtain z r2 where split2': \<open>[\<^sup>2\<^bsub>\<pi>\<^esub> # tl r1   =   [\<^sup>2\<^bsub>\<pi>\<^esub> # z @ ]\<^sup>2\<^bsub>\<pi>\<^esub>  # r2\<close> and bal_z: \<open>bal z\<close> and bal_r2: \<open>bal r2\<close> 
     by blast+
   then have split2: \<open>x  =   [\<^sup>1\<^bsub>\<pi>\<^esub>  # y @ ]\<^sup>1\<^bsub>\<pi>\<^esub>  # [\<^sup>2\<^bsub>\<pi>\<^esub> # z @ ]\<^sup>2\<^bsub>\<pi>\<^esub>  # r2\<close>
