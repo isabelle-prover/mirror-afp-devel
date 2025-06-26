@@ -4,6 +4,14 @@
     <title>Archive of Formal Proofs</title>
     <link>https://isa-afp.org/</link>
     <description>Formal developments in the AFP</description><item>
+  <title>The Hidden Number Problem</title>
+  <link>https://isa-afp.org/entries/Hidden_Number_Problem.html</link>
+  <pubDate>Tue, 24 Jun 2025 00:00:00 +0000</pubDate>
+  <description>The Hidden Number Problem in the AFP</description>
+    <category>Computer science/Security/Cryptography</category>
+    <category>Mathematics/Geometry</category>
+</item>
+<item>
   <title>A Modular Splitting Framework for Saturation Theorem Proving</title>
   <link>https://isa-afp.org/entries/Splitting_Framework.html</link>
   <pubDate>Wed, 18 Jun 2025 00:00:00 +0000</pubDate>

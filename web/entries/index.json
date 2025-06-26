@@ -1,5 +1,25 @@
 [
  {
+  "abstract": "In this entry, we formalize the Hidden Number Problem (HNP), originally introduced by Boneh and Venkatesan in 1996. Intuitively, the HNP involves demonstrating the existence of an algorithm (the ``adversary'') which can compute (with high probability) a hidden number $\\alpha$ given access to a bit-leaking oracle. Originally developed to establish the security of Diffie--Hellman key exchange, the HNP has since been used not only for protocol security but also in cryptographic attacks, including notable ones on DSA and ECDSA.  Additionally, the HNP makes use of an instance of Babai's nearest plane algorithm, which solves the approximate closest vector problem. Thus, building on the LLL algorithm (which has already been formalized), we formalize Babai's algorithm, which itself is of independent interest. Our formalizations of Babai's algorithm and the HNP adversary are executable, setting up potential future work, e.g. in developing formally verified instances of cryptographic attacks.  Note, our formalization of Babai's algorithm here is an updated version of a previous AFP entry of ours. The updates include a tighter error bound, which is required for our HNP proof.",
+  "authors": [
+   "Sage Binder",
+   "Eric Ren",
+   "Katherine Kosaian"
+  ],
+  "link": "/entries/Hidden_Number_Problem.html",
+  "shortname": "Hidden_Number_Problem",
+  "title": "The Hidden Number Problem",
+  "topic_links": [
+   "/topics/computer-science/security/cryptography/",
+   "/topics/mathematics/geometry/"
+  ],
+  "topics": [
+   "Computer science/Security/Cryptography",
+   "Mathematics/Geometry"
+  ],
+  "year": "2025"
+ },
+ {
   "abstract": "We formalize in Isabelle/HOL a framework for splitting, a theorem proving technique that extends saturation-based calculi with branching abilities. The framework preserves the completeness of the original calculus. We focus here on the simplest splitting model described in details in the first three sections of \"Unifying Splitting\" by Gabriel Ebner, Jasmin Blanchette and Sophie Tourret and provide an extension of the ordered resolution calculus with a variant of splitting called Lightweight AVATAR. A paper describing the present formalization has been accepted at ITP'25.",
   "authors": [
    "Ghilain Bergeron",

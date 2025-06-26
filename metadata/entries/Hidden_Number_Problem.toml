@@ -1,0 +1,41 @@
+title = "The Hidden Number Problem"
+date = 2025-06-24
+topics = [
+  "Computer science/Security/Cryptography",
+  "Mathematics/Geometry",
+]
+abstract = """
+In this entry, we formalize the Hidden Number Problem (HNP), originally introduced by Boneh and Venkatesan in 1996. Intuitively, the HNP involves demonstrating the existence of an algorithm (the ``adversary'') which can compute (with high probability) a hidden number $\\alpha$ given access to a bit-leaking oracle. Originally developed to establish the security of Diffie--Hellman key exchange, the HNP has since been used not only for protocol security but also in cryptographic attacks, including notable ones on DSA and ECDSA.
+
+Additionally, the HNP makes use of an instance of Babai's nearest plane algorithm, which solves the approximate closest vector problem. Thus, building on the LLL algorithm (which has already been formalized), we formalize Babai's algorithm, which itself is of independent interest. Our formalizations of Babai's algorithm and the HNP adversary are executable, setting up potential future work, e.g. in developing formally verified instances of cryptographic attacks.
+
+Note, our formalization of Babai's algorithm here is an updated version of a previous AFP entry of ours. The updates include a tighter error bound, which is required for our HNP proof."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.binder]
+email = "binder_email"
+
+[authors.ren]
+email = "ren_email"
+
+[authors.cordwell]
+email = "cordwell_email"
+
+[contributors]
+
+[notify]
+binder = "binder_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = [
+  "10.1007/BF02579403",
+  "10.1007/3-540-68697-5_11",
+]
+pubs = []

@@ -4,6 +4,14 @@
     <title>Sage Binder</title>
     <link>https://isa-afp.org/authors/binder/</link>
     <description>AFP entries of Sage Binder</description><item>
+  <title>The Hidden Number Problem</title>
+  <link>https://isa-afp.org/entries/Hidden_Number_Problem.html</link>
+  <pubDate>Tue, 24 Jun 2025 00:00:00 +0000</pubDate>
+  <description>The Hidden Number Problem in the AFP</description>
+    <category>Computer science/Security/Cryptography</category>
+    <category>Mathematics/Geometry</category>
+</item>
+<item>
   <title>Two Theorems on Hermitian Matrices</title>
   <link>https://isa-afp.org/entries/Two_Hermitian_Results.html</link>
   <pubDate>Sat, 16 Nov 2024 00:00:00 +0000</pubDate>
