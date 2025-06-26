@@ -689,8 +689,6 @@ lemma trim_takeWhile_inside: "trim (takeWhile ((\<noteq>) CHR ''<'') cs) = takeW
 lemma trim_dropWhile_inside: "dropWhile ((\<noteq>) CHR ''<'') cs = dropWhile ((\<noteq>) CHR ''<'') (trim cs)" 
   unfolding trim_def by (induct cs, auto)
 
-declare [[code drop: parse_text]]
-
 lemma parse_text_code[code]: "parse_text cs = parse_text_impl cs" 
 proof -
   define xs where "xs = trim cs" 
@@ -714,8 +712,6 @@ proof -
       by (metis (no_types, lifting) dropWhile_eq_Nil_conv dropWhile_idem trim_def trim_takeWhile_inside xs_def)
   qed
 qed
-
-declare [[code drop: parse_text_main]]
 
 lemma parse_text_main_code[code]:
   "parse_text_main [] res = ('''', rev (trim res))"
@@ -760,8 +756,6 @@ proof (intro ext)
     by (cases xs, auto split: sum.splits simp: err_expecting_def)
 qed
 
-declare [[code drop: oneof_closed_combined]]
-
 lemma oneof_closed_combined_code[code]: 
   "oneof_closed_combined p q [] = err_expecting (''one of [/>, >]'') ''''" 
   "oneof_closed_combined p q (x # xs) = (let xi = integer_of_char x in
@@ -795,8 +789,6 @@ lemma parse_nodes_pre_code:
   unfolding parse_nodes_current_code[of "c # cs"] exactly_close_def exactly_end_def oneof_closed_combined
   by (simp_all add: Parser_Monad.bind_def exactly_head take_1_test)
 
-declare [[code drop: parse_nodes]]
-
 lemma parse_nodes_code[code]:
   "parse_nodes [] = Parser_Monad.return [] ''''" 
   "parse_nodes (c # cs) =
@@ -816,8 +808,6 @@ lemma parse_nodes_code[code]:
   unfolding parse_nodes_pre_code
   unfolding Let_def by (auto simp: char_eq_via_integer_eq)
 
-declare [[code drop: parse_attributes]]
-
 lemma parse_attributes_code[code]: 
   "parse_attributes [] = Error_Monad.return ([], [])" 
   "parse_attributes (c # s) = (let ic = integer_of_char c in 
@@ -828,8 +818,6 @@ lemma parse_attributes_code[code]:
   unfolding parse_attributes.simps
   unfolding Let_def in_set_simps
   by (auto simp: char_eq_via_integer_eq)
-
-declare [[code drop: is_letter]]
 
 lemma is_letter_code[code]: "is_letter c = (let ci = integer_of_char c in
   (97 \<le> ci \<and> ci \<le> 122 \<or>

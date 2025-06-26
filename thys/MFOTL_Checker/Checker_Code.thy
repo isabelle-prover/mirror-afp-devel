@@ -26,7 +26,6 @@ lemma finite_coset: "finite (List.coset (xs :: 'a list)) = (case universe of Non
 
 end
 
-declare [[code drop: finite]]
 declare finite_set[THEN eqTrueI, code] finite_coset[code]
 
 instantiation bool :: universe begin
@@ -811,11 +810,15 @@ lemma map_part_code[code]: "Rep_part (map_part f xs) = map (map_prod id f) (Rep_
   using Rep_part[of xs]
   by (auto simp: map_part_def intro!: Abs_part_inverse)
 
+declare subset_code [code]
+
 lemma coset_subset_set_code[code]:
   "(List.coset (xs :: _ :: universe list) \<subseteq> set ys) = (case universe of None \<Rightarrow> False
   | Some zs \<Rightarrow> \<forall>z \<in> set zs. z \<in> set xs \<or> z \<in> set ys)"
   using finite_compl finite_subset
   by (auto split: option.splits dest!: infinite finite)
+
+declare is_empty_set [code]
 
 lemma is_empty_coset[code]: "Set.is_empty (List.coset (xs :: _ :: universe list)) =
   (case universe of None \<Rightarrow> False

@@ -7,8 +7,6 @@ theory Test_Suite_Representations_Refined
 imports Test_Suite_Representations "../Prefix_Tree_Refined" "../Util_Refined"
 begin
 
-declare [[code drop: Test_Suite_Representations.test_suite_from_io_tree]]
-
 lemma test_suite_from_io_tree_refined[code] :
   fixes M :: "('a,'b :: ccompare, 'c :: ccompare) fsm"
     and m :: "(('b\<times>'c), ('b\<times>'c) prefix_tree) mapping_rbt"

@@ -817,8 +817,6 @@ qed
 
 subsubsection \<open>New Code Generation for @{text "remove_proper_prefixes"}\<close>
 
-declare [[code drop: remove_proper_prefixes]]
-
 lemma remove_proper_prefixes_code_trie[code] :
   "remove_proper_prefixes (set xs) = (case xs of [] \<Rightarrow> {} | (x#xs') \<Rightarrow> set (paths (from_list (x#xs'))))"
   unfolding from_list_paths remove_proper_prefixes_def by (cases xs; auto)

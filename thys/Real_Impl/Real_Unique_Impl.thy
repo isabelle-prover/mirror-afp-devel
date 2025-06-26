@@ -350,20 +350,6 @@ lemma mau_show_real: "show_real (real_of_u x) = mau_show_real x"
 
 code_datatype real_of_u
 
-declare [[code drop:
-  "plus :: real \<Rightarrow> real \<Rightarrow> real"
-  "uminus :: real \<Rightarrow> real"
-  "times :: real \<Rightarrow> real \<Rightarrow> real"
-  "inverse :: real \<Rightarrow> real"
-  "floor :: real \<Rightarrow> int"
-  sqrt
-  "HOL.equal :: real \<Rightarrow> real \<Rightarrow> bool"
-  ge_0
-  is_rat
-  "less :: real \<Rightarrow> real \<Rightarrow> bool" 
-  "less_eq :: real \<Rightarrow> real \<Rightarrow> bool" 
-]]
-
 lemmas mau_code_eqns [code] = mau_floor mau_0 mau_1 mau_uminus mau_inverse mau_sqrt mau_plus mau_times mau_equal mau_ge_0 mau_is_rat
   mau_show_real comparison_impl
 

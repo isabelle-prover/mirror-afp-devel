@@ -64,8 +64,6 @@ lemma rpo_main_code[code]: "rpo_main pr c mem (s,t) = (case s of
   unfolding rpo_main_def[symmetric] rpo_mem_def[symmetric]
   by (cases s; cases t, auto simp: map_nth split: prod.splits)
 
-declare [[code drop: rpo_unbounded]]
-
 lemma rpo_unbounded_memoized_code[code]: "rpo_unbounded pr c s t = fst (rpo_mem pr c Mapping.empty (index_term s, index_term t))" 
   unfolding rpo_mem_def wpo_mem_impl_def[symmetric] wpo_ub_memoized_code[symmetric]
 proof (induct pr c s t rule: rpo_unbounded.induct)

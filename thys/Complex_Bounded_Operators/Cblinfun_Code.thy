@@ -651,7 +651,6 @@ lemma uniformity_ell2_code[code]: "(uniformity :: ('a ell2 * _) filter) = Filter
 text \<open>Code equation for \<^term>\<open>UNIV\<close>. 
   It is now implemented via type class \<^class>\<open>enum\<close> 
   (which provides a list of all values).\<close>
-declare [[code drop: UNIV]]
 declare enum_class.UNIV_enum[code]
 
 text \<open>Setup for code generation involving sets of \<^type>\<open>ell2\<close>/\<^type>\<open>ccsubspace\<close>.

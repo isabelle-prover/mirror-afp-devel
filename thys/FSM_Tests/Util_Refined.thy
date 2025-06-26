@@ -8,8 +8,6 @@ begin
 
 subsection \<open>New Code Equations for @{text "set_as_map"}\<close>
 
-declare [[code drop: set_as_map]]
-
 lemma set_as_map_refined[code] :
   fixes t :: "('a :: ccompare \<times> 'c :: ccompare) set_rbt" 
   and   xs:: "('b :: ceq \<times> 'd :: ceq) set_dlist"

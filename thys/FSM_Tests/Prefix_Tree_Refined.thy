@@ -7,9 +7,6 @@ theory Prefix_Tree_Refined
 imports Prefix_Tree Containers.Containers
 begin
 
-
-declare [[code drop: Prefix_Tree.combine]]
-
 lemma combine_refined[code] :
   fixes m1 :: "('a :: ccompare, 'a prefix_tree) mapping_rbt" 
   shows "Prefix_Tree.combine (MPT (RBT_Mapping m1)) (MPT (RBT_Mapping m2)) 
@@ -91,8 +88,6 @@ next
   then show ?thesis
     unfolding * unfolding combine_MPT by simp
 qed
-
-declare [[code drop: Prefix_Tree.is_leaf]]
 
 lemma is_leaf_refined[code] :
   fixes m :: "('a :: ccompare, 'a prefix_tree) mapping_rbt" 

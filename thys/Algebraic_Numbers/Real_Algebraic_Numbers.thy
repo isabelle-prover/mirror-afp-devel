@@ -3376,25 +3376,6 @@ lemmas real_alg_code_eqns =
 
 code_datatype real_of
 
-declare [[code drop:
-  "plus :: real \<Rightarrow> real \<Rightarrow> real"
-  "uminus :: real \<Rightarrow> real"
-  "minus :: real \<Rightarrow> real \<Rightarrow> real"
-  "times :: real \<Rightarrow> real \<Rightarrow> real"
-  "inverse :: real \<Rightarrow> real"
-  "divide :: real \<Rightarrow> real \<Rightarrow> real"
-  "floor :: real \<Rightarrow> int"
-  "HOL.equal :: real \<Rightarrow> real \<Rightarrow> bool"
-  "compare :: real \<Rightarrow> real \<Rightarrow> order"
-  "less_eq :: real \<Rightarrow> real \<Rightarrow> bool"
-  "less :: real \<Rightarrow> real \<Rightarrow> bool"
-  "0 :: real"
-  "1 :: real"
-  "sgn :: real \<Rightarrow> real"
-  "abs :: real \<Rightarrow> real"
-  min_int_poly_real
-  root]]
-
 declare real_alg_code_eqns [code equation]
 
 lemma Ratreal_code[code]:

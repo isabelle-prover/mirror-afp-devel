@@ -9,7 +9,7 @@ begin
 
 section \<open>Instantiation of the generic algorithm and code setup\<close>
 
-declare [[code drop: card]] Set_Impl.card_code[code]
+declare Set_Impl.card_code[code]
 
 instantiation enat :: set_impl begin
 definition set_impl_enat :: "(enat, set_impl) phantom" where
@@ -239,7 +239,6 @@ lemma lexordp_eq_code[code]: "lexordp_eq xs ys \<longleftrightarrow> (case xs of
 
 definition "filter_set m X t = Mapping.filter (filter_cond X m t) m"
 
-declare [[code drop: shift_end]]
 declare shift_end.simps[folded filter_set_def, code]
 
 lemma upd_set'_empty[simp]: "upd_set' m d f {} = m"
@@ -318,7 +317,6 @@ lemma upd_nested_max_tstp_code[code]:
     else Code.abort (STR ''upd_nested_max_tstp: infinite'') (\<lambda>_. upd_nested_max_tstp m d X))"
   by transfer (auto simp add: upd_nested_max_tstp_fold)
 
-declare [[code drop: add_new_mmuaux']]
 declare add_new_mmuaux'_def[unfolded add_new_mmuaux.simps, folded upd_nested_max_tstp_def, code]
 
 lemma filter_set_empty[simp]: "filter_set m {} t = m"
@@ -362,7 +360,6 @@ lemma filter_Mapping[code]:
 
 definition "filter_join pos X m = Mapping.filter (join_filter_cond pos X) m"
 
-declare [[code drop: join_mmsaux]]
 declare join_mmsaux.simps[folded filter_join_def, code]
 
 lemma filter_join_False_empty: "filter_join False {} m = m"
@@ -425,7 +422,6 @@ lemma set_minus_code[code]: "set_minus X Y =
   (if finite Y \<and> card Y < card X then set_fold_cfi remove_cfi X Y else X - Y)"
   by transfer (use set_minus_finite in \<open>auto simp add: set_minus_def\<close>)
 
-declare [[code drop: bin_join]]
 declare bin_join.simps[folded set_minus_def, code]
 
 definition remove_Union where
@@ -475,7 +471,6 @@ lemma mk_db_code[code]:
       map_of_clearjunk map_of_filter_apply dest: weak_map_of_SomeI intro!: bexI[rotated, OF map_of_SomeD]
       split: if_splits option.splits)
 
-declare [[code drop: New_max_getIJ_genericJoin New_max_getIJ_wrapperGenericJoin]]
 declare New_max.genericJoin.simps[folded remove_Union_def, code]
 declare New_max.wrapperGenericJoin_def[folded remove_Union_def, code]
 

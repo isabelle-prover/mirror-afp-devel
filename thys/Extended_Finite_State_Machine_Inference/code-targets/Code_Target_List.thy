@@ -13,14 +13,11 @@ theory Code_Target_List
 imports Main
 begin
 
-declare [[code drop: List.member]]
-
-lemma [code]: "List.insert x xs = (if List.member xs x then xs else x#xs)"
-  by simp
+declare map_filter_map_filter [code_unfold del]
 
 declare enumerate_eq_zip [code]
+
 declare foldr_conv_foldl [code]
-declare map_filter_map_filter [code_unfold del]
 
 (* Use the native implementations of list functions *)
 definition "flatmap l f = List.maps f l"
@@ -105,6 +102,8 @@ next
      apply (metis set_remdups)
     using set_remdups by fastforce
 qed
+
+declare product_concat_map [code]
 
 code_printing
   constant Cons \<rightharpoonup> (Scala) "_::_"

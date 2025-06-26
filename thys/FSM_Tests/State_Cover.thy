@@ -629,9 +629,6 @@ proof -
     unfolding restrict_to_reachable_states.simps * by simp
 qed
 
-
-
-declare [[code drop: reachable_states]]
 lemma reachable_states_refined[code] : 
   "reachable_states M = (let 
       path_assignments = reaching_paths_up_to_depth M {initial M} {} [initial M \<mapsto> []] (size M -1)

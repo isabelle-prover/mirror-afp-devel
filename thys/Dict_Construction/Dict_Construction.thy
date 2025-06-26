@@ -58,10 +58,8 @@ method_setup fo_cong_rule = \<open>
   Attrib.thm >> (fn thm => fn ctxt => SIMPLE_METHOD' (Dict_Construction_Util.fo_cong_tac ctxt thm))
 \<close> "resolve congruence rule using first-order matching"
 
-declare [[code drop: "(\<and>)"]]
 lemma [code]: "True \<and> p \<longleftrightarrow> p" "False \<and> p \<longleftrightarrow> False" by auto
 
-declare [[code drop: "(\<or>)"]]
 lemma [code]: "True \<or> p \<longleftrightarrow> True" "False \<or> p \<longleftrightarrow> p" by auto
 
 declare comp_cong[fundef_cong del]
