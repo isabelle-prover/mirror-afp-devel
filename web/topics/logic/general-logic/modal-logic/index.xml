@@ -4,6 +4,14 @@
     <title>Logic/General logic/Modal logic</title>
     <link>https://isa-afp.org/topics/logic/general-logic/modal-logic/</link>
     <description>AFP entries in Modal logic</description><item>
+  <title>Faithful Logic Embeddings in HOL — Deep and Shallow (Isabelle/HOL dataset)</title>
+  <link>https://isa-afp.org/entries/FaithfulPMLinHOL.html</link>
+  <pubDate>Tue, 06 May 2025 00:00:00 +0000</pubDate>
+  <description>Faithful Logic Embeddings in HOL — Deep and Shallow (Isabelle/HOL dataset) in the AFP</description>
+    <category>Logic/General logic/Modal logic</category>
+    <category>Logic/General logic</category>
+</item>
+<item>
   <title>Notes on Gödel’s and Scott’s Variants of the Ontological Argument (Isabelle/HOL dataset)</title>
   <link>https://isa-afp.org/entries/Notes_On_Goedels_Ontological_Argument.html</link>
   <pubDate>Tue, 07 Jan 2025 00:00:00 +0000</pubDate>

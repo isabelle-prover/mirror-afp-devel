@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Moritz Roos</title>
+    <link>https://isa-afp.org/authors/roos/</link>
+    <description>AFP entries of Moritz Roos</description><item>
+  <title>Dyck Language</title>
+  <link>https://isa-afp.org/entries/Dyck_Language.html</link>
+  <pubDate>Mon, 02 Jun 2025 00:00:00 +0000</pubDate>
+  <description>Dyck Language in the AFP</description>
+    <category>Computer science/Automata and formal languages</category>
+</item>
+<item>
+  <title>Chomsky-Schützenberger Representation Theorem</title>
+  <link>https://isa-afp.org/entries/Chomsky_Schuetzenberger.html</link>
+  <pubDate>Mon, 02 Jun 2025 00:00:00 +0000</pubDate>
+  <description>Chomsky-Schützenberger Representation Theorem in the AFP</description>
+    <category>Computer science/Automata and formal languages</category>
+</item>
+
+  </channel>
+</rss>

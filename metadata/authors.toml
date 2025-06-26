@@ -503,6 +503,14 @@ host = [
 
 [beresford.homepages]
 
+[bergeron]
+name = "Ghilain Bergeron"
+orcid = "0009-0008-2814-3480"
+
+[bergeron.emails]
+
+[bergeron.homepages]
+
 [berghofer]
 name = "Stefan Berghofer"
 
@@ -1786,6 +1794,23 @@ host = [
 ]
 
 [doty.homepages]
+
+[duan]
+name = "Yiran Duan"
+
+[duan.emails]
+
+[duan.emails.duan_email]
+user = [
+  "yiran",
+  "duan",
+]
+host = [
+  "tum",
+  "de",
+]
+
+[duan.homepages]
 
 [dubut]
 name = "Jérémy Dubut"
@@ -3790,6 +3815,14 @@ host = [
 
 [koller.homepages]
 
+[krasnopol]
+name = "Florent Krasnopol"
+orcid = "0009-0000-6577-4320"
+
+[krasnopol.emails]
+
+[krasnopol.homepages]
+
 [krauss]
 name = "Alexander Krauss"
 
@@ -4115,6 +4148,24 @@ host = [
 ]
 
 [lehr.homepages]
+
+[lemke]
+name = "Caroline Lemke"
+orcid = "0009-0008-7863-0818"
+
+[lemke.emails]
+
+[lemke.emails.lemke_email1]
+user = [
+  "caroline",
+  "lemke",
+]
+host = [
+  "uni-oldenburg",
+  "de",
+]
+
+[lemke.homepages]
 
 [leustean]
 name = "Laurentiu Leustean"
@@ -6301,6 +6352,23 @@ host = [
 
 [romanos.homepages]
 
+[roos]
+name = "Moritz Roos"
+
+[roos.emails]
+
+[roos.emails.roos_email]
+user = [
+  "moritz",
+  "roos",
+]
+host = [
+  "tum",
+  "de",
+]
+
+[roos.homepages]
+
 [rosentrater]
 name = "Alec Rosentrater"
 orcid = "0009-0007-8186-3631"
@@ -8350,6 +8418,14 @@ host = [
 
 [wolff.homepages]
 wolff_homepage = "https://www.lri.fr/~wolff/"
+
+[woodcock]
+name = "Jim Woodcock"
+orcid = "0000-0001-7955-2702"
+
+[woodcock.emails]
+
+[woodcock.homepages]
 
 [wright]
 name = "Jamie Wright"

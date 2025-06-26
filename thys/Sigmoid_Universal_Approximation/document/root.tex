@@ -1,0 +1,61 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath, amssymb}
+\usepackage{isabelle,isabellesym}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+\newcommand\sslash{\mathbin{/\mkern-5.5mu/}}%
+
+
+\begin{document}
+
+\title{The Sigmoid Function and the Universal Approximation
+Theorem}
+\author{Dustin Bryant, Jim Woodcock, and Simon Foster}
+\maketitle
+
+
+\begin{abstract}
+We present a machine-‑checked Isabelle/HOL development of the sigmoid
+function
+\[
+  \sigma(x)=\frac{e^{x}}{1+e^{x}},
+\]
+together with its most important analytic properties.  After proving
+positivity, strict monotonicity, \(C^{\infty}\) smoothness, and the
+limits at \(\pm\infty\), we derive a closed-‑form expression for the
+\(n\)--th derivative using Stirling numbers of the second kind, following
+the combinatorial argument of Minai and Williams~\cite{MINAI1993845}.
+These results are packaged into a small reusable library of lemmas on
+\(\sigma\).
+
+Building on this analytic groundwork we mechanise a constructive version
+of the classical Universal Approximation Theorem: for every continuous
+function \(f\colon[a,b]\to\mathbb{R}\) and every \(\varepsilon>0\) there
+is a single-‑hidden-‑layer neural network with sigmoidal activations whose
+output is within \(\varepsilon\) of \(f\) everywhere on \([a,b]\).  Our
+proof follows the method of Costarell and Spigler~\cite{CostarelliSpigler},
+giving the first fully verified end-‑to-‑end proof of this
+theorem inside a higher-‑order proof assistant.
+\end{abstract}
+
+
+
+\tableofcontents
+
+% include generated text of all theories
+\input{session}
+
+% force-print every entry from root.bib, even if unused
+\nocite{*}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}

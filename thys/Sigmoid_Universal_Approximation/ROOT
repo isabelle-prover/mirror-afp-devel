@@ -1,0 +1,12 @@
+chapter AFP
+
+session "Sigmoid_Universal_Approximation" = "HOL-Analysis" +
+
+  options [timeout = 600]
+
+  theories
+    Sigmoid_Universal_Approximation
+
+  document_files
+    "root.bib"
+    "root.tex"

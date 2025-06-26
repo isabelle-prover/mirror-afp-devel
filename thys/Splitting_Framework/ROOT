@@ -1,0 +1,21 @@
+chapter AFP
+
+session "Splitting_Framework" = Saturation_Framework +
+  options [timeout=300]
+  sessions
+    "HOL-Library"
+    Propositional_Proof_Systems
+    Saturation_Framework_Extensions
+  theories
+    Calculi_And_Annotations
+    Disjunctive_Consequence_Relations
+    FSet_Extra
+    Lazy_List_Limsup
+    Light_Lifting_to_Non_Ground_Calculi
+    Lightweight_Avatar
+    List_Extra
+    Modular_Splitting_Calculus
+
+  document_files
+    "root.bib"
+    "root.tex"

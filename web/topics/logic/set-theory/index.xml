@@ -4,6 +4,14 @@
     <title>Logic/Set theory</title>
     <link>https://isa-afp.org/topics/logic/set-theory/</link>
     <description>AFP entries in Set theory</description><item>
+  <title>A Verified Reduction Algorithm from MLSSmf to MLSS</title>
+  <link>https://isa-afp.org/entries/MLSSmf_to_MLSS.html</link>
+  <pubDate>Mon, 05 May 2025 00:00:00 +0000</pubDate>
+  <description>A Verified Reduction Algorithm from MLSSmf to MLSS in the AFP</description>
+    <category>Logic/Set theory</category>
+    <category>Logic/General logic/Decidability of theories</category>
+</item>
+<item>
   <title>The Elementary Theory of the Category of Sets</title>
   <link>https://isa-afp.org/entries/Category_Set.html</link>
   <pubDate>Thu, 10 Oct 2024 00:00:00 +0000</pubDate>

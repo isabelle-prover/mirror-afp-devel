@@ -1,0 +1,44 @@
+title = "A Verified Reduction Algorithm from MLSSmf to MLSS"
+date = 2025-05-05
+topics = [
+  "Logic/Set theory",
+  "Logic/General logic/Decidability of theories",
+]
+abstract = """
+<p>
+  <em>Multi-level syllogistic with monotone functions</em> (<strong>MLSSmf</strong>) is a sublanguage of set theory introduced by 
+  <a href=\"https://www.researchgate.net/publication/44197131_A_decision_procedure_for_a_sublanguage_of_set_theory_involving_monotone_additive_and_multiplicative_functions_II_The_multi-level_case\" target=\"_blank\">Cantone et al.</a>, 
+  involving set-to-set functions and their monotonicity, additivity, and multiplicativity. It is an extension of 
+  <em>multi-level syllogistic with singleton</em> (<strong>MLSS</strong>), which involves the predicates membership, set equality, set inclusion, and the operators union, intersection, set difference, and singleton.
+</p>
+
+<p>
+  In this work we formalize the reduction algorithm from <strong>MLSSmf</strong> to <strong>MLSS</strong> and verify the correctness proof originally presented by 
+  <a href=\"https://www.researchgate.net/publication/44197131_A_decision_procedure_for_a_sublanguage_of_set_theory_involving_monotone_additive_and_multiplicative_functions_II_The_multi-level_case\" target=\"_blank\">Cantone et al.</a> 
+  Combined with the verified decision procedure for <strong>MLSS</strong> formalized by 
+  <a href=\"https://www.isa-afp.org/entries/MLSS_Decision_Proc.html\" target=\"_blank\">Stevens</a>, 
+  this yields an executable and verified decision procedure for <strong>MLSSmf</strong>.
+</p>"""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.duan]
+email = "duan_email"
+
+[authors.stevens]
+email = "stevens_email"
+
+[contributors]
+
+[notify]
+duan = "duan_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

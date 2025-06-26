@@ -1,0 +1,26 @@
+chapter AFP 
+
+session MLSSmf_to_MLSS = MLSS_Decision_Proc +
+  options [timeout = 300]
+  theories [document = false]
+    MLSSmf_HF_Extras
+    MLSSmf_to_MLSS_Auxiliary
+    MLSS_Extras
+    Var_Fun_Composite
+    MLSS_Decidable
+  theories
+    MLSSmf_Defs
+    MLSSmf_Semantics
+    MLSSmf_to_MLSS
+    MLSSmf_to_MLSS_Complexity
+    Proper_Venn_Regions
+    MLSSmf_to_MLSS_Soundness
+    Place_Framework
+    Place_Realisation
+    Syntactic_Description
+    Reduced_MLSS_Formula_Singleton_Model_Property
+    MLSSmf_to_MLSS_Completeness
+    MLSSmf_to_MLSS_Correctness
+  document_files
+    "root.tex"
+    "root.bib"

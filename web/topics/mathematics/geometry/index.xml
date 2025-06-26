@@ -4,6 +4,14 @@
     <title>Mathematics/Geometry</title>
     <link>https://isa-afp.org/topics/mathematics/geometry/</link>
     <description>AFP entries in Geometry</description><item>
+  <title>The Hidden Number Problem</title>
+  <link>https://isa-afp.org/entries/Hidden_Number_Problem.html</link>
+  <pubDate>Tue, 24 Jun 2025 00:00:00 +0000</pubDate>
+  <description>The Hidden Number Problem in the AFP</description>
+    <category>Computer science/Security/Cryptography</category>
+    <category>Mathematics/Geometry</category>
+</item>
+<item>
   <title>Impossibility of the Dissection of a Cube</title>
   <link>https://isa-afp.org/entries/Cube_Dissection.html</link>
   <pubDate>Fri, 22 Nov 2024 00:00:00 +0000</pubDate>

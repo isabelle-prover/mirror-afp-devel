@@ -1,0 +1,32 @@
+title = "Galois Energy Games"
+date = 2025-05-23
+topics = [
+  "Mathematics/Games and economics",
+  "Computer science/Algorithms/Graph",
+]
+abstract = """
+We provide a generic decision procedure for energy games with energy-bounded attacker and reachability objective, moving beyond vector-valued energies and vector-addition updates. All we demand is that energies form well-founded bounded join-semilattices, and that energy updates have upward-closed domains and can be “undone” through Galois-connected functions. 
+
+Offering a simple framework to construct decidable energy games we introduce the class of Galois energy games. We establish decidability of the (un)known initial credit problem for Galois energy games assuming energy-positional determinacy. For this we show correctness and termination of a simple algorihm relying on an inductive characterization of winning budgets and properties of Galois connections. Further, we prove that energy games over vectors of (extended) naturals with vector-adition and min-updates form a subclass of Galois energy games and are thus decidable."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.lemke]
+email = "lemke_email1"
+
+[contributors]
+
+[notify]
+lemke = "lemke_email1"
+
+[history]
+
+[extra]
+
+[related]
+dois = [
+  "10.48550/arXiv.2505.14691",
+]
+pubs = []

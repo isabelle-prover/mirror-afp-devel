@@ -1,0 +1,45 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{isabelle,isabellesym}
+\usepackage{amssymb}
+\usepackage[only,bigsqcap]{stmaryrd}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+\usepackage[numbers]{natbib}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+\newcommand{\mlss}{\textbf{MLSS}}
+\newcommand{\mlssmf}{\textbf{MLSSmf}}
+
+\begin{document}
+
+\title{A Verified Reduction Algorithm from MLSSmf to MLSS}
+\author{Yiran Duan, Lukas Stevens}
+\maketitle
+
+\begin{abstract}
+\textit{Multi-level syllogistic with monotone functions} (\mlssmf{}) is a sublanguage of set theory introduced by \citeauthor{mlssmf_II}~\cite{mlssmf_II}, 
+involving set-to-set functions and their monotonicity, additivity, and multiplicativity. It is an extension of \textit{multi-level syllogistic with singleton} (\mlss{}), which involves the predicates membership, set equality, set inclusion, and the operators union, intersection, set difference, and singleton.
+
+In this work we formalize the reduction algorithm from \mlssmf{} 
+to \mlss{}, and verify the correctness proof originally presented by \citeauthor{mlssmf_II}~\cite{mlssmf_II}. Combined with the verified decision procedure for \mlss{} formalized by \citeauthor{MLSS_Decision_Proc-AFP}~\cite{MLSS_Decision_Proc-AFP}, this yields an executable and verified decision procedure for \mlssmf{}.
+\end{abstract}
+
+\newpage
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+% include generated text of all theories
+\input{session}
+
+% optional bibliography
+\nocite{*}
+\bibliographystyle{plainnat}
+\bibliography{root}
+
+\end{document}

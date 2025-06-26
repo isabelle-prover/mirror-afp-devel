@@ -4,6 +4,15 @@
     <title>Computer science/Artificial intelligence</title>
     <link>https://isa-afp.org/topics/computer-science/artificial-intelligence/</link>
     <description>AFP entries in Artificial intelligence</description><item>
+  <title>The Sigmoid Function and the Universal Approximation Theorem</title>
+  <link>https://isa-afp.org/entries/Sigmoid_Universal_Approximation.html</link>
+  <pubDate>Fri, 23 May 2025 00:00:00 +0000</pubDate>
+  <description>The Sigmoid Function and the Universal Approximation Theorem in the AFP</description>
+    <category>Computer science/Artificial intelligence</category>
+    <category>Computer science/Machine learning</category>
+    <category>Mathematics/Analysis</category>
+</item>
+<item>
   <title>Automation of Boolos&#39; Curious Inference in Isabelle/HOL</title>
   <link>https://isa-afp.org/entries/Boolos_Curious_Inference_Automated.html</link>
   <pubDate>Mon, 05 Dec 2022 00:00:00 +0000</pubDate>

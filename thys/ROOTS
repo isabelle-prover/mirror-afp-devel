@@ -117,6 +117,7 @@ Ceva
 Chandy_Lamport
 Chebyshev_Polynomials
 Chebyshev_Prime_Bounds
+Chomsky_Schuetzenberger
 Chord_Segments
 Circus
 Clean
@@ -223,6 +224,7 @@ DiskPaxos
 Distributed_Distinct_Elements
 Dominance_CHK
 Doob_Convergence
+Dyck_Language
 DynamicArchitectures
 Dynamic_Tables
 E_Transcendental
@@ -265,6 +267,7 @@ FO_Theory_Rewriting
 FSM_Tests
 Factor_Algebraic_Polynomial
 Factored_Transition_System_Bounding
+FaithfulPMLinHOL
 Falling_Factorial_Sum
 Farey_Sequences
 Farkas
@@ -309,6 +312,7 @@ GPU_Kernel_PL
 Gabow_SCC
 GaleStewart_Games
 Gale_Shapley
+Galois_Energy_Games
 Game_Based_Crypto
 Gauss-Jordan-Elim-Fun
 Gauss_Jordan
@@ -355,6 +359,7 @@ HereditarilyFinite
 Hermite
 Hermite_Lindemann
 Hidden_Markov_Models
+Hidden_Number_Problem
 Higher_Order_Terms
 Hilbert_Basis
 Hilbert_Space_Tensor_Product
@@ -528,6 +533,7 @@ Minsky_Machines
 Mission_Time_LTL
 Mission_Time_LTL_to_Regular_Expression
 Mission_Time_LTL_Language_Partition
+MLSSmf_to_MLSS
 MLSS_Decision_Proc
 ML_Unification
 Modal_Logics_for_NTS
@@ -766,6 +772,7 @@ Schoenhage_Strassen
 ShortestPath
 Show
 Sigma_Commit_Crypto
+Sigmoid_Universal_Approximation
 Signature_Groebner
 Simpl
 Simple_Clause_Learning
@@ -788,6 +795,7 @@ Source_Coding_Theorem
 SpecCheck
 Special_Function_Bounds
 Splay_Tree
+Splitting_Framework
 Sqrt_Babylonian
 Stable_Matching
 Stalnaker_Logic
