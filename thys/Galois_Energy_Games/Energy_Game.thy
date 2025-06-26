@@ -672,6 +672,11 @@ text\<open>Note that \<open>nonpos_winning_budget = winning_budget\<close> holds
 Using this fact we can give an inductive characterisation of attacker winning budgets.
 \<close>
 
+context
+begin
+
+declare [[inductive_internals]]
+
 inductive winning_budget_ind:: "'energy \<Rightarrow> 'position \<Rightarrow> bool" where
  defender: "winning_budget_ind e g" if 
  "g \<notin> attacker \<and> (\<forall>g'. weight g g' \<noteq> None \<longrightarrow> (apply_w g g' e\<noteq> None 
@@ -679,6 +684,7 @@ inductive winning_budget_ind:: "'energy \<Rightarrow> 'position \<Rightarrow> bo
  attacker: "winning_budget_ind e g" if 
  "g \<in> attacker \<and> (\<exists>g'. weight g g' \<noteq> None \<and> apply_w g g' e\<noteq> None 
   \<and> winning_budget_ind (the (apply_w g g' e)) g')"
+end
 
 text\<open>Before proving some correspondence of those definitions we first note that attacker winning budgets
 in monotonic energy games are upward-closed. We show this for two of the three definitions.\<close>
@@ -2461,7 +2467,7 @@ proof-
     using lfp_lowerbound
     by (metis order_refl)
   hence "winning_budget_ind \<le> nonpos_winning_budget"
-    using f_def HOL.nitpick_unfold(211) by simp
+    using f_def winning_budget_ind_def by simp
 
   thus ?thesis using assms
     by blast 

@@ -289,7 +289,7 @@ proof -
     using len by presburger 
   hence "those (map (\<lambda>n. apply_component n (u ! n) (the (apply_inv_update u e))) [0..<length (the (apply_inv_update u e))]) \<noteq> None" 
     using those_map_not_None
-    by (smt (verit) add_less_cancel_left gen_length_def length_code length_map map_nth nth_upt) 
+    by (metis (no_types, lifting) length_upt minus_nat.diff_0 nth_upt plus_nat.add_0)
   thus ?thesis using apply_update.simps len by presburger
 qed
 
@@ -312,7 +312,8 @@ lemma inverse_monotonic:
         using apply_inv_update.simps assms
         using energy_leq_def by auto
       also have "... =  (\<lambda>i. apply_inv_component i u e) ([0..<length e] ! i)" using nth_map
-        by (metis (full_types) \<open>i < length (the (apply_inv_update u e))\<close> add_less_mono assms(1) assms(2) energy_leq_def diff_add_inverse gen_length_def len_inv_appl length_code less_add_same_cancel2 not_less_less_Suc_eq nth_map_upt nth_upt plus_1_eq_Suc)
+        by (metis \<open>i < length (inv_upd u e)\<close> assms(1,2) energy_leq_def len_inv_appl length_map
+            map_nth)
       also have "... = apply_inv_component i u e"
         using \<open>i < length (the (apply_inv_update u e))\<close> assms(1) assms(2) energy_leq_def by auto 
       finally have E: "the (apply_inv_update u e) ! i =
@@ -328,7 +329,8 @@ lemma inverse_monotonic:
         using apply_inv_update.simps assms
         using energy_leq_def by auto
       also have "... =  (\<lambda>i. apply_inv_component i u e') ([0..<length e'] ! i)" using nth_map
-        by (metis (full_types) \<open>i < length (the (apply_inv_update u e))\<close> add_less_mono assms(1) assms(2) energy_leq_def diff_add_inverse gen_length_def len_inv_appl length_code less_add_same_cancel2 not_less_less_Suc_eq nth_map_upt nth_upt plus_1_eq_Suc)
+        by (metis \<open>i < length (inv_upd u e)\<close> assms(1,2) energy_leq_def len_inv_appl length_map
+            map_nth)
       also have "... = apply_inv_component i u e'"
         using \<open>i < length (the (apply_inv_update u e))\<close> assms(1) assms(2) energy_leq_def by auto 
       finally have E': "the (apply_inv_update u e') ! i =
