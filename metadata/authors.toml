@@ -8402,6 +8402,14 @@ host = [
 [wolff.homepages]
 wolff_homepage = "https://www.lri.fr/~wolff/"
 
+[woodcock]
+name = "Jim Woodcock"
+orcid = "0000-0001-7955-2702"
+
+[woodcock.emails]
+
+[woodcock.homepages]
+
 [wright]
 name = "Jamie Wright"
 

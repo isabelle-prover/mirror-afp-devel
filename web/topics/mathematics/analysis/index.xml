@@ -4,6 +4,15 @@
     <title>Mathematics/Analysis</title>
     <link>https://isa-afp.org/topics/mathematics/analysis/</link>
     <description>AFP entries in Analysis</description><item>
+  <title>The Sigmoid Function and the Universal Approximation Theorem</title>
+  <link>https://isa-afp.org/entries/Sigmoid_Universal_Approximation.html</link>
+  <pubDate>Fri, 23 May 2025 00:00:00 +0000</pubDate>
+  <description>The Sigmoid Function and the Universal Approximation Theorem in the AFP</description>
+    <category>Computer science/Artificial intelligence</category>
+    <category>Computer science/Machine learning</category>
+    <category>Mathematics/Analysis</category>
+</item>
+<item>
   <title>Ultrametric Structure for Restriction Spaces</title>
   <link>https://isa-afp.org/entries/Restriction_Spaces-Ultrametric.html</link>
   <pubDate>Wed, 07 May 2025 00:00:00 +0000</pubDate>

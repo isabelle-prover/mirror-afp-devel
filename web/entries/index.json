@@ -51,6 +51,28 @@
   "year": "2025"
  },
  {
+  "abstract": "We present a machine-checked Isabelle/HOL development of the sigmoid function \\[ \\sigma(x)=\\frac{e^{x}}{1+e^{x}}, \\] together with its most important analytic properties. After proving positivity, strict monotonicity, \\(C^{\\infty}\\) smoothness, and the limits at \\(\\pm\\infty\\), we derive a closed-form expression for the \\(n\\)-th derivative using Stirling numbers of the second kind, following the combinatorial argument of Minai and Williams. These results are packaged into a small reusable library of lemmas on \\(\\sigma\\). Building on this analytic groundwork we mechanise a constructive version of the classical Universal Approximation Theorem: for every continuous function \\(f\\colon[a,b]\\to\\mathbb{R}\\) and every \\(\\varepsilon\u003e0\\) there is a single‑hidden‑layer neural network with sigmoidal activations whose output is within \\(\\varepsilon\\) of \\(f\\) everywhere on \\([a,b]\\). Our proof follows the method of Costarell and Spigler, giving the first fully verified end-to‑end proof of this theorem inside a higher‑order proof assistant.",
+  "authors": [
+   "Dustin Bryant",
+   "Jim Woodcock",
+   "Simon Foster"
+  ],
+  "link": "/entries/Sigmoid_Universal_Approximation.html",
+  "shortname": "Sigmoid_Universal_Approximation",
+  "title": "The Sigmoid Function and the Universal Approximation Theorem",
+  "topic_links": [
+   "/topics/computer-science/artificial-intelligence/",
+   "/topics/computer-science/machine-learning/",
+   "/topics/mathematics/analysis/"
+  ],
+  "topics": [
+   "Computer science/Artificial intelligence",
+   "Computer science/Machine learning",
+   "Mathematics/Analysis"
+  ],
+  "year": "2025"
+ },
+ {
   "abstract": "Munta is a verified model checker for timed automata. It has been described in detail in a PhD thesis [3] and conference publications [4, 2]. This entry supersedes earlier versions of Munta hosted on GitHub.",
   "authors": [
    "Simon Wimmer"

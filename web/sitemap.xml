@@ -17,6 +17,9 @@
     <loc>https://isa-afp.org/entries/Galois_Energy_Games.html</loc>
     <lastmod>2025-05-23T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>https://isa-afp.org/entries/Sigmoid_Universal_Approximation.html</loc>
+    <lastmod>2025-05-23T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>https://isa-afp.org/entries/Munta_Model_Checker.html</loc>
     <lastmod>2025-05-22T00:00:00+00:00</lastmod>
   </url><url>
@@ -4245,6 +4248,8 @@
   </url><url>
     <loc>https://isa-afp.org/authors/xu/</loc>
   </url><url>
+    <loc>https://isa-afp.org/authors/woodcock/</loc>
+  </url><url>
     <loc>https://isa-afp.org/sessions/jinja/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/jinjadci/</loc>
@@ -5481,6 +5486,8 @@
     <loc>https://isa-afp.org/sessions/sifum_type_systems/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/sigma_commit_crypto/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/sessions/sigmoid_universal_approximation/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/signature_groebner/</loc>
   </url><url>
