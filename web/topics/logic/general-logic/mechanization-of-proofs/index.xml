@@ -4,6 +4,13 @@
     <title>Logic/General logic/Mechanization of proofs</title>
     <link>https://isa-afp.org/topics/logic/general-logic/mechanization-of-proofs/</link>
     <description>AFP entries in Mechanization of proofs</description><item>
+  <title>A Modular Splitting Framework for Saturation Theorem Proving</title>
+  <link>https://isa-afp.org/entries/Splitting_Framework.html</link>
+  <pubDate>Wed, 18 Jun 2025 00:00:00 +0000</pubDate>
+  <description>A Modular Splitting Framework for Saturation Theorem Proving in the AFP</description>
+    <category>Logic/General logic/Mechanization of proofs</category>
+</item>
+<item>
   <title>A Modular Formalization of Superposition</title>
   <link>https://isa-afp.org/entries/Superposition_Calculus.html</link>
   <pubDate>Thu, 24 Oct 2024 00:00:00 +0000</pubDate>

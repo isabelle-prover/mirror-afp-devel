@@ -4,6 +4,13 @@
     <title>Archive of Formal Proofs</title>
     <link>https://isa-afp.org/</link>
     <description>Formal developments in the AFP</description><item>
+  <title>A Modular Splitting Framework for Saturation Theorem Proving</title>
+  <link>https://isa-afp.org/entries/Splitting_Framework.html</link>
+  <pubDate>Wed, 18 Jun 2025 00:00:00 +0000</pubDate>
+  <description>A Modular Splitting Framework for Saturation Theorem Proving in the AFP</description>
+    <category>Logic/General logic/Mechanization of proofs</category>
+</item>
+<item>
   <title>Dyck Language</title>
   <link>https://isa-afp.org/entries/Dyck_Language.html</link>
   <pubDate>Mon, 02 Jun 2025 00:00:00 +0000</pubDate>

@@ -1,0 +1,33 @@
+title = "A Modular Splitting Framework for Saturation Theorem Proving"
+date = 2025-06-18
+topics = [
+  "Logic/General logic/Mechanization of proofs",
+]
+abstract = "We formalize in Isabelle/HOL a framework for splitting, a theorem proving technique that extends saturation-based calculi with branching abilities. The framework preserves the completeness of the original calculus. We focus here on the simplest splitting model described in details in the first three sections of \"Unifying Splitting\" by Gabriel Ebner, Jasmin Blanchette and Sophie Tourret and provide an extension of the ordered resolution calculus with a variant of splitting called Lightweight AVATAR. A paper describing the present formalization has been accepted at ITP'25."
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.bergeron]
+
+[authors.krasnopol]
+
+[authors.tourret]
+email = "tourret_email"
+
+[contributors]
+
+[notify]
+tourret = "tourret_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = [
+  "10.1007/s10817-023-09660-8",
+  "10.1007/978-3-030-79876-5_20",
+]
+pubs = []

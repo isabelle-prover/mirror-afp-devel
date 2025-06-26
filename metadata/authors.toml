@@ -503,6 +503,14 @@ host = [
 
 [beresford.homepages]
 
+[bergeron]
+name = "Ghilain Bergeron"
+orcid = "0009-0008-2814-3480"
+
+[bergeron.emails]
+
+[bergeron.homepages]
+
 [berghofer]
 name = "Stefan Berghofer"
 
@@ -3805,6 +3813,14 @@ host = [
 ]
 
 [koller.homepages]
+
+[krasnopol]
+name = "Florent Krasnopol"
+orcid = "0009-0000-6577-4320"
+
+[krasnopol.emails]
+
+[krasnopol.homepages]
 
 [krauss]
 name = "Alexander Krauss"

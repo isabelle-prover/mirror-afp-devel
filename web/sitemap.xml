@@ -3,10 +3,13 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://isa-afp.org/entries/index.json</loc>
-    <lastmod>2025-06-02T00:00:00+00:00</lastmod>
+    <lastmod>2025-06-18T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Splitting_Framework.html</loc>
+    <lastmod>2025-06-18T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/</loc>
-    <lastmod>2025-06-02T00:00:00+00:00</lastmod>
+    <lastmod>2025-06-18T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/entries/Chomsky_Schuetzenberger.html</loc>
     <lastmod>2025-06-02T00:00:00+00:00</lastmod>
@@ -3726,6 +3729,8 @@
   </url><url>
     <loc>https://isa-afp.org/sessions/fixed_length_vector/</loc>
   </url><url>
+    <loc>https://isa-afp.org/authors/krasnopol/</loc>
+  </url><url>
     <loc>https://isa-afp.org/authors/haftmann/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/kammueller/</loc>
@@ -3867,6 +3872,8 @@
     <loc>https://isa-afp.org/authors/klein/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/gewirthpgcproof/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/authors/bergeron/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/bella/</loc>
   </url><url>
@@ -5552,6 +5559,8 @@
     <loc>https://isa-afp.org/sessions/special_function_bounds/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/splay_tree/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/sessions/splitting_framework/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/sqrt_babylonian/</loc>
   </url><url>

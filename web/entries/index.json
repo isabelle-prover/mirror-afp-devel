@@ -1,5 +1,23 @@
 [
  {
+  "abstract": "We formalize in Isabelle/HOL a framework for splitting, a theorem proving technique that extends saturation-based calculi with branching abilities. The framework preserves the completeness of the original calculus. We focus here on the simplest splitting model described in details in the first three sections of \"Unifying Splitting\" by Gabriel Ebner, Jasmin Blanchette and Sophie Tourret and provide an extension of the ordered resolution calculus with a variant of splitting called Lightweight AVATAR. A paper describing the present formalization has been accepted at ITP'25.",
+  "authors": [
+   "Ghilain Bergeron",
+   "Florent Krasnopol",
+   "Sophie Tourret"
+  ],
+  "link": "/entries/Splitting_Framework.html",
+  "shortname": "Splitting_Framework",
+  "title": "A Modular Splitting Framework for Saturation Theorem Proving",
+  "topic_links": [
+   "/topics/logic/general-logic/mechanization-of-proofs/"
+  ],
+  "topics": [
+   "Logic/General logic/Mechanization of proofs"
+  ],
+  "year": "2025"
+ },
+ {
   "abstract": "The Chomksy-Schützenberger Representation Theorem says that any context-free language is the homomorphic image of the intersection of a regular language and a Dyck language.",
   "authors": [
    "Moritz Roos"
