@@ -14,9 +14,8 @@ closure properties established before, it is possible to conclude that the numbe
 bin in such a process are also negatively associated random variables.
 
 In this section, we will derive that permutation distributions are negatively associated. The proof
-follows Dubashi~\cite[Th. 10]{dubhashi1996} closely. A very short proof was presented
-in the work by Joag-Dev~\cite{joagdev1983}, however after close inspection that proof seemed to
-missing a lot of details. In fact, I don't think it is correct.\<close>
+follows Dubhashi~\cite[Th. 10]{dubhashi1996} closely. A very short proof was presented
+in the work by Joag-Dev~\cite{joagdev1983}, which, however, is incomplete.\<close>
 
 theory Negative_Association_Permutation_Distributions
   imports
@@ -34,7 +33,7 @@ or equal to n.) A subset $x$ is smaller or equal to $y$, if the smallest element
 smaller or equal to the smallest element of $y$, the second smallest element of $x$ is smaller or
 equal to the second smallest element of $y$, etc.)
 
-The lattice is introduced without name by Dubashi~\cite[Example 7]{dubashi1998}.\<close>
+The lattice is introduced without name by Dubhashi~\cite[Example 7]{dubhashi1998}.\<close>
 
 definition le_ordered_set_lattice :: "('a::linorder) set \<Rightarrow> 'a set \<Rightarrow> bool"
   where "le_ordered_set_lattice S T = list_all2 (\<le>) (sorted_list_of_set S) (sorted_list_of_set T)"
