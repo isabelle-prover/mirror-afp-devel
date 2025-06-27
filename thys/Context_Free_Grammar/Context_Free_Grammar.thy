@@ -87,6 +87,12 @@ abbreviation tms :: "('n,'t) prods \<Rightarrow> 't set" where
 abbreviation syms :: "('n,'t) prods \<Rightarrow> ('n,'t) sym set" where
   "syms P \<equiv> Syms (set P)"
 
+definition nts_syms_list :: "('n,'t)syms \<Rightarrow> 'n list \<Rightarrow> 'n list" where
+"nts_syms_list sys = foldr (\<lambda>sy ns. case sy of Nt A \<Rightarrow> List.insert A ns | Tm _ \<Rightarrow> ns) sys"
+
+definition nts_prods_list :: "('n,'t)prods \<Rightarrow> 'n list" where
+"nts_prods_list ps = foldr (\<lambda>(A,sys) ns. List.insert A (nts_syms_list sys ns)) ps []"
+
 definition Lhss :: "('n, 't) Prods \<Rightarrow> 'n set" where
 "Lhss P = (\<Union>(A,w) \<in> P. {A})"
 
@@ -151,6 +157,20 @@ lemma Lhss_simps[simp]:
   "Lhss(insert (A,w) P) = {A} \<union> Lhss P"
   "Lhss(P \<union> P') = Lhss P \<union> Lhss P'"
 by(auto simp: Lhss_def)
+
+lemma set_nts_syms_list: "set(nts_syms_list sys ns) = nts_syms sys \<union> set ns"
+unfolding nts_syms_list_def
+by(induction sys arbitrary: ns) (auto split: sym.split)
+
+lemma set_nts_prods_list: "set(nts_prods_list ps) = nts ps"
+by(induction ps) (auto simp: nts_prods_list_def Nts_def set_nts_syms_list split: prod.splits)
+
+lemma distinct_nts_syms_list: "distinct(nts_syms_list sys ns) = distinct ns"
+unfolding nts_syms_list_def
+by(induction sys arbitrary: ns) (auto split: sym.split)
+
+lemma distinct_nts_prods_list: "distinct(nts_prods_list ps)"
+by(induction ps) (auto simp: nts_prods_list_def distinct_nts_syms_list split: sym.split)
 
 
 subsubsection \<open>Finiteness Lemmas\<close>
