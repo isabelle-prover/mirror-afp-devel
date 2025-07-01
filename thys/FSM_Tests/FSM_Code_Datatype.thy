@@ -417,9 +417,7 @@ proof -
     have "ID CEQ('b \<times> 'd) \<noteq> None"
       using Some by auto
     then have **: "\<And> x . x \<in> set (list_of_dlist xs) = (x \<in> (DList_set xs))" 
-      using DList_Set.member.rep_eq[of xs]
-      using Set_member_code(2) ceq_class.ID_ceq by fastforce 
-    
+      by (simp add: Collect_member DList_set_def)
     have "Mapping.lookup (?f' xs) = (\<lambda> x . if (\<exists> z . (x,z) \<in> (DList_set xs)) then Some {z . (x,z) \<in> (DList_set xs)} else None)"
       using *[of "(list_of_dlist xs)"] 
       unfolding DList_Set.fold.rep_eq ** by assumption
@@ -783,9 +781,8 @@ proof -
     have "ID CEQ('c1 \<times> 'c2) \<noteq> None"
       using Some by auto
     then have **: "\<And> x . x \<in> f2 ` set (list_of_dlist xs) = (x \<in> f2 ` (DList_set xs))" 
-      using DList_Set.member.rep_eq[of xs]
-      using Set_member_code(2) ceq_class.ID_ceq by fastforce 
-    
+      by (simp add: Collect_member DList_set_def)
+   
     have "Mapping.lookup (?f' xs) = (\<lambda> x . if (\<exists> z . (x,z) \<in> f2 ` (DList_set xs)) then Some {z . (x,z) \<in> f2 ` (DList_set xs)} else None)"
       using *[of "(list_of_dlist xs)"] 
       unfolding DList_Set.fold.rep_eq ** .

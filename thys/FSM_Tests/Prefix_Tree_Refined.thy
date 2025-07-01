@@ -39,7 +39,7 @@ next
 
         have "?M1 = None"
           using \<open>RBT_Mapping2.lookup m1 x = None\<close> None
-          by (metis combine_options_simps(1) lookup_Mapping_code(2) lookup_combine)
+          by (simp add: lookup_combine Mapping.lookup.abs_eq)
         moreover have "?M2 = None"
           using \<open>RBT_Mapping2.lookup m1 x = None\<close> None
           by (simp add: Mapping.lookup.abs_eq \<open>ID ccompare \<noteq> None\<close> lookup_join) 
@@ -49,7 +49,7 @@ next
         case (Some a)
         have "?M1 = Some a"
           using \<open>RBT_Mapping2.lookup m1 x = None\<close> Some
-          by (metis combine_options_simps(1) lookup_Mapping_code(2) lookup_combine)
+          by (simp add: lookup_combine Mapping.lookup.abs_eq)
         moreover have "?M2 = Some a"
           using \<open>RBT_Mapping2.lookup m1 x = None\<close> Some
           by (simp add: Mapping.lookup.abs_eq \<open>ID ccompare \<noteq> None\<close> lookup_join) 
@@ -63,7 +63,7 @@ next
 
         have "?M1 = Some a"
           using None Some
-          by (metis combine_options_simps(2) lookup_Mapping_code(2) lookup_combine) 
+          by (simp add: lookup_combine Mapping.lookup.abs_eq) 
         moreover have "?M2 = Some a"
           using None Some 
           by (simp add: Mapping.lookup.abs_eq \<open>ID ccompare \<noteq> None\<close> lookup_join) 
@@ -74,7 +74,7 @@ next
 
         have "?M1 = Some (Prefix_Tree.combine a b)"
           using \<open>RBT_Mapping2.lookup m1 x = Some a\<close> Some
-          by (metis combine_options_simps(3) lookup_Mapping_code(2) lookup_combine) 
+          by (simp add: lookup_combine Mapping.lookup.abs_eq) 
         moreover have "?M2 = Some (Prefix_Tree.combine a b)"
           using \<open>RBT_Mapping2.lookup m1 x = Some a\<close> Some 
           by (simp add: Mapping.lookup.abs_eq \<open>ID ccompare \<noteq> None\<close> lookup_join) 
@@ -104,9 +104,7 @@ next
   then have *: "?PT2 = RBT_Mapping2.is_empty m"
     by auto
   show ?thesis
-    unfolding *
-    by (metis (no_types, opaque_lifting) MPT_def Mapping.is_empty_empty RBT_Mapping2.is_empty_empty Some is_leaf.elims(2) is_leaf_MPT lookup_Mapping_code(2) lookup_empty_empty mapping_empty_code(4) mapping_empty_def option.distinct(1) prefix_tree.inject) 
+    by (simp add: * MPT_def Mapping.lookup.abs_eq Prefix_Tree.empty_def Some)
 qed
-
 
 end
