@@ -60,30 +60,20 @@ fun decr\<^sub>d\<^sub>l\<^sub>o :: "atom \<Rightarrow> atom" where
 "decr\<^sub>d\<^sub>l\<^sub>o (Less i j) = Less (i - 1) (j - 1)" |
 "decr\<^sub>d\<^sub>l\<^sub>o (Eq i j) = Eq (i - 1) (j - 1)"
 
-(* needed for code generation *)
-definition [code del]: "nnf = ATOM.nnf neg\<^sub>d\<^sub>l\<^sub>o"
-definition [code del]: "qelim = ATOM.qelim depends\<^sub>d\<^sub>l\<^sub>o decr\<^sub>d\<^sub>l\<^sub>o"
-definition [code del]: "lift_dnf_qe = ATOM.lift_dnf_qe neg\<^sub>d\<^sub>l\<^sub>o depends\<^sub>d\<^sub>l\<^sub>o decr\<^sub>d\<^sub>l\<^sub>o"
-definition [code del]: "lift_nnf_qe = ATOM.lift_nnf_qe neg\<^sub>d\<^sub>l\<^sub>o"
-
-hide_const nnf qelim lift_dnf_qe lift_nnf_qe
-
-lemmas DLO_code_lemmas = nnf_def qelim_def lift_dnf_qe_def lift_nnf_qe_def
-
-interpretation DLO:
-  ATOM neg\<^sub>d\<^sub>l\<^sub>o "(\<lambda>a. True)" I\<^sub>d\<^sub>l\<^sub>o depends\<^sub>d\<^sub>l\<^sub>o decr\<^sub>d\<^sub>l\<^sub>o
-apply(unfold_locales)
-apply(case_tac a)
-apply simp_all
-apply(case_tac a)
-apply (simp_all add:linorder_class.not_less_iff_gr_or_eq
-                    linorder_not_less linorder_neq_iff)
-apply(case_tac a)
-apply(simp_all add:nth_Cons')
-done
-
-lemmas [folded DLO_code_lemmas, code] =
-  DLO.nnf.simps DLO.qelim_def DLO.lift_dnf_qe.simps
+global_interpretation DLO:
+  ATOM neg\<^sub>d\<^sub>l\<^sub>o \<open>\<lambda>_. True\<close> I\<^sub>d\<^sub>l\<^sub>o depends\<^sub>d\<^sub>l\<^sub>o decr\<^sub>d\<^sub>l\<^sub>o
+  defines nnf = DLO.nnf
+    and qelim = DLO.qelim
+    and lift_dnf_qe = DLO.lift_dnf_qe
+    and lift_nnf_qe = DLO.lift_nnf_qe
+proof
+  show \<open>nqfree (neg\<^sub>d\<^sub>l\<^sub>o a)\<close> for a
+    by (cases a) simp_all
+  show \<open>interpret I\<^sub>d\<^sub>l\<^sub>o (neg\<^sub>d\<^sub>l\<^sub>o a) xs \<longleftrightarrow> \<not> I\<^sub>d\<^sub>l\<^sub>o a xs\<close> for a and xs :: \<open>'a list\<close>
+    by (cases a) auto
+  show \<open>I\<^sub>d\<^sub>l\<^sub>o a (x # xs) \<longleftrightarrow> I\<^sub>d\<^sub>l\<^sub>o (decr\<^sub>d\<^sub>l\<^sub>o a) xs\<close> if \<open>\<not> depends\<^sub>d\<^sub>l\<^sub>o a\<close> for a and x and xs :: \<open>'a list\<close>
+    using that by (cases a) simp_all
+qed simp_all
 
 setup \<open>Sign.revert_abbrev "" @{const_abbrev DLO.I}\<close>
 

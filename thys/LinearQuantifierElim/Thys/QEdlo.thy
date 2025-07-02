@@ -101,41 +101,17 @@ lemma subst\<^sub>0_pretty:
   "subst\<^sub>0 (Eq i j) (Eq m n) = Eq (subst i j m) (subst i j n)"
 by auto
 
-(*<*)
-(* needed for code generation *)
-definition [code del]: "lift_dnfeq_qe = ATOM_EQ.lift_dnfeq_qe neg\<^sub>d\<^sub>l\<^sub>o depends\<^sub>d\<^sub>l\<^sub>o decr\<^sub>d\<^sub>l\<^sub>o (\<lambda>Eq i j \<Rightarrow> i=0 \<or> j=0 | a \<Rightarrow> False)
-          (\<lambda>Eq i j \<Rightarrow> i=j | a \<Rightarrow> False) subst\<^sub>0"
-definition [code del]:
-  "lift_eq_qe = ATOM_EQ.lift_eq_qe (\<lambda>Eq i j \<Rightarrow> i=0 \<or> j=0 | a \<Rightarrow> False)
-                                   (\<lambda>Eq i j \<Rightarrow> i=j | a \<Rightarrow> False) subst\<^sub>0"
-
-lemmas DLOe_code_lemmas = DLO_code_lemmas lift_dnfeq_qe_def lift_eq_qe_def
-
-hide_const lift_dnfeq_qe lift_eq_qe
-(*>*)
-
-interpretation DLO\<^sub>e:
-  ATOM_EQ neg\<^sub>d\<^sub>l\<^sub>o "(\<lambda>a. True)" I\<^sub>d\<^sub>l\<^sub>o depends\<^sub>d\<^sub>l\<^sub>o decr\<^sub>d\<^sub>l\<^sub>o
-          "(\<lambda>Eq i j \<Rightarrow> i=0 \<or> j=0 | a \<Rightarrow> False)"
-          "(\<lambda>Eq i j \<Rightarrow> i=j | a \<Rightarrow> False)" subst\<^sub>0
-apply(unfold_locales)
-apply(fastforce simp:subst_def nth_Cons' split:atom.splits if_split_asm)
-apply(simp add:subst_def split:atom.splits)
-apply(fastforce simp:subst_def nth_Cons' split:atom.splits)
-apply(fastforce simp add:subst_def split:atom.splits)
-done
-
-(*<*)
-lemmas [folded DLOe_code_lemmas, code] =
-  DLO\<^sub>e.lift_dnfeq_qe_def DLO\<^sub>e.lift_eq_qe_def
-(*>*)
+global_interpretation DLO\<^sub>e:
+  ATOM_EQ neg\<^sub>d\<^sub>l\<^sub>o \<open>\<lambda>_. True\<close> I\<^sub>d\<^sub>l\<^sub>o depends\<^sub>d\<^sub>l\<^sub>o decr\<^sub>d\<^sub>l\<^sub>o
+          \<open>\<lambda>Eq i j \<Rightarrow> i=0 \<or> j=0 | a \<Rightarrow> False\<close>
+          \<open>\<lambda>Eq i j \<Rightarrow> i=j | a \<Rightarrow> False\<close> subst\<^sub>0
+  defines lift_dnfeq_qe = \<open>DLO\<^sub>e.lift_dnfeq_qe\<close>
+    and lift_eq_qe = \<open>DLO\<^sub>e.lift_eq_qe\<close>
+  by standard (auto simp add: nth_Cons' subst_def split: atom.splits)
 
 setup \<open>Sign.revert_abbrev "" @{const_abbrev DLO\<^sub>e.lift_dnfeq_qe}\<close>
 
 definition "qe_dlo = DLO\<^sub>e.lift_dnfeq_qe qe_dlo\<^sub>1"
-(*<*)
-lemmas [folded DLOe_code_lemmas, code] = qe_dlo_def 
-(*>*)
 
 lemma qfree_qe_dlo\<^sub>1: "qfree (qe_dlo\<^sub>1 as)"
 by(auto simp:qe_dlo\<^sub>1_def intro!:qfree_list_conj)
