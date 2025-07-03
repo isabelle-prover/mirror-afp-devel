@@ -734,7 +734,7 @@ proof -
       have "p * \<epsilon> + \<epsilon> / real k \<le> 1 + \<epsilon> * p0"
       proof (intro add_mono)
         show "p * \<epsilon> \<le> 1"
-          by (smt (verit) eps_le1 \<open>0 < k\<close> mult_left_le p_def pee_ge0 pee_le1)
+          by (simp add: assms(3) eps_ge0 eps_le1 mult_le_one pee_le1)
         have "p0 > 1/k"
           by (metis Step_class_not_halted diff_le_self not_halted not_halted_pee_gt diff_is_0_eq' pee_eq_p0)
         then show "\<epsilon> / real k \<le> \<epsilon> * p0"
