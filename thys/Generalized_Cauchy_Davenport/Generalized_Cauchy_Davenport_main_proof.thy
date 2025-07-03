@@ -124,11 +124,11 @@ proof(rule ccontr)
     let ?N = "inverse ` Y"
   have "?N \<cdots> ?M = inverse ` (X \<cdots> Y)" using set_inverse_composition_commute hXYM M_def by auto
   then have hNM: "card (?N \<cdots> ?M) = card (X \<cdots> Y)" 
-    using hinvinj card_image subset_inj_on smul_subset_carrier by metis
+    using hinvinj card_image inj_on_subset smul_subset_carrier by metis
   moreover have hM: "card ?M = card X"
-    using hinvinj hXG hYG card_image subset_inj_on by metis
+    using hinvinj hXG hYG card_image inj_on_subset by metis
   moreover have hN: "card ?N = card Y" 
-    using hinvinj hYG card_image subset_inj_on by metis
+    using hinvinj hYG card_image inj_on_subset by metis
   moreover have hNplusM: "card ?N + card ?M = card X + card Y" using hM hN by auto
   ultimately have "card (?N \<cdots> ?M) < min p (card ?N + card ?M - 1)" 
     using hXYM M_def hXYlt by argo

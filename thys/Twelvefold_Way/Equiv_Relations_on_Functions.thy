@@ -394,7 +394,7 @@ proof (rule congruentI)
       by (auto dest: inj_on_imageI intro: comp_inj_on)
     also have "inj_on (p\<^sub>B o f') A \<longleftrightarrow> inj_on f' A"
       using \<open>inj_on p\<^sub>B B\<close> \<open>f' ` A \<subseteq> B\<close>
-      by (auto dest: inj_on_imageI2 intro: comp_inj_on subset_inj_on)
+      by (auto dest: inj_on_imageI2 intro: comp_inj_on inj_on_subset)
     finally show ?thesis .
   qed
 qed

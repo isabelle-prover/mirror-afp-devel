@@ -547,7 +547,7 @@ proof -
          (auto dest: \<delta>_statesI)
     
     from OQ(3,4) have INJQSO: "inj_on f (set qso \<union> set qso')"
-      by (auto intro: subset_inj_on[OF INJ])
+      by (auto intro: inj_on_subset[OF INJ])
 
     from inj_on_map_eq_map[OF INJQSO] have "qso=qso'" by simp
     with deterministic[OF RO(1)] RO(2) have "qo=qo'" by simp

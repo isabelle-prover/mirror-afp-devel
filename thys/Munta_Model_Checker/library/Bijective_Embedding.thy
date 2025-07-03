@@ -15,7 +15,7 @@ theorem card_vimage_inj_on:
   shows "card (f -` A \<inter> S) = card A"
   using assms
   by (auto 4 3 simp: subset_image_iff inj_on_vimage_image_eq
-      intro: card_image[symmetric, OF subset_inj_on])
+      intro: card_image[symmetric, OF inj_on_subset])
 
 context
 begin

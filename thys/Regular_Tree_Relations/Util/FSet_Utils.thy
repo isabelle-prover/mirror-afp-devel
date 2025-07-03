@@ -320,7 +320,7 @@ lemmas fconverse_empty[simp] = converse_empty[Transfer.transferred]
 (* injectivity *)
 
 lemmas finj_on_def' = inj_on_def[Transfer.transferred]
-lemmas fsubset_finj_on = subset_inj_on[Transfer.transferred]
+lemmas fsubset_finj_on = inj_on_subset[Transfer.transferred]
 lemmas the_finv_into_f_f = the_inv_into_f_f[Transfer.transferred]
 lemmas f_the_finv_into_f = f_the_inv_into_f[Transfer.transferred]
 lemmas the_finv_into_into = the_inv_into_into[Transfer.transferred]

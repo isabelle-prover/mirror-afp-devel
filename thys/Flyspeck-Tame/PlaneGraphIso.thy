@@ -354,7 +354,7 @@ apply(rule conjI)
  apply clarify
  apply(subgoal_tac "inj_on \<phi> (set F \<union> set F\<^sub>1)")
   prefer 2
-  apply(erule subset_inj_on)
+  apply(erule inj_on_subset)
   apply(blast)
  apply(clarsimp simp add:congs_map_eq_iff)
  apply(subgoal_tac "{\<cong>} `` {F\<^sub>1} = {\<cong>} `` {F}")
@@ -518,11 +518,11 @@ apply(rule conjI)
  apply(simp add:map_of_zip_submap is_pr_iso_def is_pr_Iso_def)
  apply(rule conjI)
   apply blast
- apply(erule subset_inj_on)
+ apply(erule inj_on_subset)
  apply blast
  apply(rule conjI)
   apply(blast intro: map_le_trans)
- apply(erule subset_inj_on)
+ apply(erule inj_on_subset)
  apply blast
 
 apply(clarsimp simp: inj_on_diff)
@@ -546,7 +546,7 @@ apply(erule inj_on_map_add_Un)
     apply assumption
    apply assumption
   apply simp
-  apply(erule subset_inj_on)
+  apply(erule inj_on_subset)
   apply fast
  apply simp
 apply(rule refl)
@@ -772,7 +772,7 @@ done
 lemma merge0_inv:
   "\<forall>I I'. oneone I \<and> oneone I' \<longrightarrow> compat I' I \<longrightarrow> oneone (merge0 I' I)"
 apply(auto simp add:merge0_def distinct_map compat_def split_def)
-apply(blast intro:subset_inj_on)+
+apply(blast intro:inj_on_subset)+
 done
 
 corollary pr_iso_test2_corr:

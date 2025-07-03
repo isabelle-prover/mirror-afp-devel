@@ -3068,7 +3068,7 @@ proof (induct l)
   { fix l
     assume l:"l \<in> set ls"
     then have "vars_term l \<subseteq> vars_term (Fun g ls)" by auto
-    then have "inj_on f (vars_term l)" using Fun(3) subset_inj_on by blast
+    then have "inj_on f (vars_term l)" using Fun(3) inj_on_subset by blast
     with Fun(1,2) l have "linear_term (map_vars_term f l)" by auto
   }
   moreover have "is_partition (map (vars_term \<circ> map_vars_term f) ls)"

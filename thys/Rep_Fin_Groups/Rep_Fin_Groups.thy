@@ -6703,7 +6703,7 @@ proof (rule FGModuleIso.intro)
   show "FGModuleIso_axioms U (T \<down> U) (T ` U)"
   proof
     from assms bijective have "bij_betw T U (T ` U)"
-      using subset_inj_on unfolding bij_betw_def by auto
+      using inj_on_subset unfolding bij_betw_def by auto
     thus "bij_betw (T \<down> U) U (T ` U)" unfolding bij_betw_def inj_on_def by auto
   qed
 qed

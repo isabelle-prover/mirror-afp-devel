@@ -45,7 +45,7 @@ proof-
   ultimately
   have "finite ?graph" by (rule finite_subset)
   thus ?thesis
-    by (rule finite_imageD[OF _ subset_inj_on[OF inj_map_graph subset_UNIV]])
+    by (rule finite_imageD[OF _ inj_on_subset[OF inj_map_graph subset_UNIV]])
 qed
 
 definition smaps_over :: "'a::type set \<Rightarrow> 'b::type set \<Rightarrow> ('a \<Rightarrow> 'b set) set"
@@ -101,7 +101,7 @@ proof-
   ultimately
   have "finite ?graph" by (rule finite_subset)
   thus ?thesis
-    by (rule finite_imageD[OF _ subset_inj_on[OF inj_smap_graph subset_UNIV]])
+    by (rule finite_imageD[OF _ inj_on_subset[OF inj_smap_graph subset_UNIV]])
 qed
 
 end

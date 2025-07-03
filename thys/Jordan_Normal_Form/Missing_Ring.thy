@@ -228,7 +228,7 @@ proof -
   from \<open>p permutes S\<close> have "inj p"
     by (rule permutes_inj)
   then have "inj_on p S"
-    by (auto intro: subset_inj_on)
+    by (auto intro: inj_on_subset)
   from finprod_reindex[OF _ this, unfolded permutes_image[OF p], OF f]
   show ?thesis unfolding o_def .
 qed

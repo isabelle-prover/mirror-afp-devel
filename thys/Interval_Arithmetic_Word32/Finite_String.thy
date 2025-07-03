@@ -387,7 +387,7 @@ next
     subgoal 
       apply(auto simp add: distinct_map)
        apply(rule distinct_char)
-      apply(rule subset_inj_on[where B=UNIV])
+      apply(rule inj_on_subset)
        apply(rule injI)
        apply(auto simp add: fin_string_cons_def)
     proof -

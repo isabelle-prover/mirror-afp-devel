@@ -127,7 +127,7 @@ proof (unfold bij_betw_def, rule conjI)
   qed
   show "inj_on (from_nat::nat\<Rightarrow>'a) {0::nat..<CARD('a)}"
   proof (unfold from_nat_def , rule comp_inj_on)
-    show "inj_on int {0::nat..<CARD('a)}" by (metis inj_of_nat subset_inj_on top_greatest)
+    show "inj_on int {0::nat..<CARD('a)}" by (metis inj_of_nat inj_on_subset top_greatest)
     show "inj_on (Abs'::int=>'a) (int ` {0::nat..<CARD('a)})"
       using bij_Abs unfolding bij_betw_def set_eq
       by (metis (opaque_lifting, no_types) Abs'_def Abs_inverse Rep_inverse Rep_mod inj_on_def set_eq)

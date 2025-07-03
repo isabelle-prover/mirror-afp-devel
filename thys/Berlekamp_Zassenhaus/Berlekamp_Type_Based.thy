@@ -2089,7 +2089,7 @@ proof -
   have "(set (berlekamp_basis u)) = (Poly \<circ> list_of_vec) ` set (find_base_vectors (berlekamp_resulting_mat u))"
     unfolding set_berlekamp_basis_eq ..
   also have " card ... = card (set (find_base_vectors (berlekamp_resulting_mat u)))"
-  proof (rule card_image, rule subset_inj_on[OF inj_Poly_list_of_vec])
+  proof (rule card_image, rule inj_on_subset[OF inj_Poly_list_of_vec])
     show "set (find_base_vectors (berlekamp_resulting_mat u)) \<subseteq> carrier_vec (degree u)"
     using find_base_vectors(1)[OF row_echelon_form_berlekamp_resulting_mat b]
     unfolding carrier_vec_def mat_kernel_def
@@ -2126,7 +2126,7 @@ proof (unfold set_berlekamp_basis_eq, rule linear_map.linear_inj_image_is_basis)
   show "linear_map class_ring V W (Poly \<circ> list_of_vec)"
     by (rule linear_map_Poly_list_of_vec')
   show "inj_on (Poly \<circ> list_of_vec) (carrier V)"
-  proof (rule subset_inj_on[OF inj_Poly_list_of_vec])
+  proof (rule inj_on_subset[OF inj_Poly_list_of_vec])
     show "carrier V \<subseteq> carrier_vec (degree u)"
       by (auto simp add: mat_kernel_def)
   qed

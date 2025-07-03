@@ -219,7 +219,7 @@ lemma in_degree_app_iso_eq:
   unfolding in_degree_def in_arcs_app_iso_eq[OF assms]
 proof (rule card_image)
   from assms show "inj_on (iso_arcs hom) (in_arcs G u)"
-    unfolding digraph_isomorphism_def by - (rule subset_inj_on, auto)
+    unfolding digraph_isomorphism_def by - (rule inj_on_subset, auto)
 qed
 
 lemma out_degree_app_iso_eq:
@@ -228,7 +228,7 @@ lemma out_degree_app_iso_eq:
   unfolding out_degree_def out_arcs_app_iso_eq[OF assms]
 proof (rule card_image)
   from assms show "inj_on (iso_arcs hom) (out_arcs G u)"
-    unfolding digraph_isomorphism_def by - (rule subset_inj_on, auto)
+    unfolding digraph_isomorphism_def by - (rule inj_on_subset, auto)
 qed
 
 lemma in_arcs_app_iso_eq':
@@ -375,7 +375,7 @@ lemma (in pre_digraph) digraph_isomorphism_subgraphI:
   assumes "digraph_isomorphism hom"
   assumes "subgraph H G"
   shows "pre_digraph.digraph_isomorphism H hom"
-  using assms by (auto simp: pre_digraph.digraph_isomorphism_def subgraph_def compatible_def intro: subset_inj_on)
+  using assms by (auto simp: pre_digraph.digraph_isomorphism_def subgraph_def compatible_def intro: inj_on_subset)
 
 (* XXX move *)
 lemma (in wf_digraph) verts_app_inv_iso_subgraph:

@@ -241,7 +241,7 @@ next
      and \<open>canceled y\<close>
      and \<open>inj_on f gens1\<close>
     have "canceled x"
-      by (auto intro!:rename_gens_canceled subset_inj_on[OF \<open>inj_on f gens1\<close>] iff:lists_eq_set)
+      by (auto intro!:rename_gens_canceled inj_on_subset[OF \<open>inj_on f gens1\<close>] iff:lists_eq_set)
     ultimately
     show "x \<in> carrier \<F>\<^bsub>gens2\<^esub>" by (simp add:free_group_def)
   next
@@ -290,7 +290,7 @@ next
       with \<open>canceled x\<close>      
        and \<open>x \<in> lists (UNIV\<times>gens2)\<close>
       have "canceled y"
-        by (auto intro!:rename_gens_canceled[OF subset_inj_on] simp add:y_def)
+        by (auto intro!:rename_gens_canceled[OF inj_on_subset] simp add:y_def)
       moreover
       {
         from \<open>bij_betw (the_inv_into gens1 f) gens2 gens1\<close>
@@ -319,7 +319,7 @@ next
 (*  hence "occuring_generators (x@y) \<subseteq> gens1"
     by(auto simp add:occuring_generators_def)
   with `inj_on f gens1` have "inj_on f (occuring_generators (x@y))"
-    by (rule subset_inj_on) *)
+    by (rule inj_on_subset) *)
 
   have "map (map_prod id f) (x \<otimes>\<^bsub>\<F>\<^bsub>gens1\<^esub>\<^esub> y)
        = map (map_prod id f) (normalize (x@y))" by (simp add:free_group_def)
@@ -328,7 +328,7 @@ next
         and \<open>inj_on f gens1\<close>
        have "\<dots> = normalize (map (map_prod id f) (x@y))"
          by -(rule rename_gens_normalize[THEN sym],
-              auto intro!: subset_inj_on[OF \<open>inj_on f gens1\<close>] iff:lists_eq_set)
+              auto intro!: inj_on_subset[OF \<open>inj_on f gens1\<close>] iff:lists_eq_set)
   also have "\<dots> = normalize (map (map_prod id f) x @ map (map_prod id f) y)"
        by (auto)
   also have "\<dots> = map (map_prod id f) x \<otimes>\<^bsub>\<F>\<^bsub>gens2\<^esub>\<^esub> map (map_prod id f) y"

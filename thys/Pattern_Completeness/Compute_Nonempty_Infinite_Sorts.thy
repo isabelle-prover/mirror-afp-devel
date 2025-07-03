@@ -375,7 +375,7 @@ proof (induct m_inf cards ls rule: compute_inf_card_main.induct)
 
 
     from inj have "finite ?TT = finite ?A"
-      by (metis (no_types, lifting) TTfA finite_imageD finite_imageI subset_UNIV subset_inj_on) 
+      by (metis (no_types, lifting) TTfA finite_imageD finite_imageI subset_UNIV inj_on_subset) 
     also have "\<dots> = (\<forall> f \<sigma>s. (f,\<sigma>s) \<in> set cs \<longrightarrow> finite (Pair f ` {ts. ts :\<^sub>l \<sigma>s in \<T>(C)}))" 
       by auto
     finally have "finite ?TT = (\<forall> f \<sigma>s. (f,\<sigma>s) \<in> set cs \<longrightarrow> finite {ts. ts :\<^sub>l \<sigma>s in \<T>(C)})" 

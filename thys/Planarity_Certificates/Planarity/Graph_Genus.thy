@@ -312,7 +312,7 @@ begin
   lemma card_isolated_verts_iso[simp]:
     "card (iso_verts hom ` pre_digraph.isolated_verts G) = card isolated_verts"
     apply (rule card_image)
-    using hom apply (rule digraph_isomorphism_inj_on_verts[THEN subset_inj_on])
+    using hom apply (rule digraph_isomorphism_inj_on_verts[THEN inj_on_subset])
     apply (auto simp: isolated_verts_def)
     done
 
@@ -443,7 +443,7 @@ begin
   
     have "f \<in> A \<rightarrow> A" using assms by (intro funcsetI_permutes)
     have inj_on_wrap: "inj_on (wrap_iso_arcs hom f) (iso_arcs hom ` A)"
-      using assms \<open>f \<in> A \<rightarrow> A\<close> by (intro inj_on_wrap_iso_arcs_f) (auto intro: subset_inj_on permutes_inj)
+      using assms \<open>f \<in> A \<rightarrow> A\<close> by (intro inj_on_wrap_iso_arcs_f) (auto intro: inj_on_subset permutes_inj)
     have woa_in_fs: "wrap_iso_arcs hom f \<in> iso_arcs hom ` A \<rightarrow> iso_arcs hom ` A"
       using assms \<open>f \<in> A \<rightarrow> A\<close> by (intro wrap_iso_arcs_in_funcsetI)
   

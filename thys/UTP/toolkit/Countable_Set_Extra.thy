@@ -278,12 +278,12 @@ proof -
     apply (rule comp_inj_on)
      apply (meson bit_seq_of_nat_set_inj cset.inj_map injD inj_onI)
     apply (rule comp_inj_on)
-     apply (metis cset2seq_inj subset_inj_on)
+     apply (metis cset2seq_inj inj_on_subset)
     apply (rule comp_inj_on)
-     apply (rule subset_inj_on)
+     apply (rule inj_on_subset)
       apply (rule seq_inj)
      apply (simp)
-    apply (meson UNIV_I bij_imp_bij_inv bij_is_inj bit_seq_of_nat_cset_bij subsetI subset_inj_on)
+    apply (meson UNIV_I bij_imp_bij_inv bij_is_inj bit_seq_of_nat_cset_bij subsetI inj_on_subset)
     done
 qed
 
@@ -363,7 +363,7 @@ lemma image_csets_surj:
   apply (simp add: image_comp)
   apply (auto simp add: image_Collect)
   apply (erule subset_imageE)
-  using countable_image_inj_on subset_inj_on by blast
+  using countable_image_inj_on inj_on_subset by blast
 
 lemma bij_betw_image_csets:
   "bij_betw f A B \<Longrightarrow> bij_betw ((`\<^sub>c) f) (csets A) (csets B)"

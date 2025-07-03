@@ -62,7 +62,7 @@ proof -
       by (rule signof_inv[OF _ pU], simp)
     from permutes_inj[OF pU]
     have pi: "inj_on p ?U"
-      by (blast intro: subset_inj_on)
+      by (blast intro: inj_on_subset)
     let ?f = "\<lambda>i. transpose_mat A $$ (i, ?inv p i)"
     note pU_U = permutes_image[OF pU]
     have "prod ?f ?U = prod ?f (p ` ?U)"
@@ -2067,7 +2067,7 @@ proof (rule bij_betw_imageI)
     unfolding permutation_insert_def
     using insert_dom_image[OF i j insert_ran_image[OF j permutes_image[OF q]]].
   have inj: "inj_on q {0..<n}"
-    apply(rule subset_inj_on) using permutes_inj[OF q] by auto
+    apply(rule inj_on_subset) using permutes_inj[OF q] by auto
   show "inj_on ?q ?N"
     unfolding permutation_insert_def
     using insert_dom_inj_on[OF _ i j]
@@ -2389,7 +2389,7 @@ proof -
           have "inj (\<lambda>i''. (insert_index i i'', insert_index j (q i'')))"
             using inj_compose[OF 2 1] unfolding o_def by auto
           thus "inj_on (\<lambda>i''. (insert_index i i'', insert_index j (q i''))) {0..<l}"
-            using subset_inj_on by auto
+            using inj_on_subset by auto
         qed auto
       also have "... = prod (\<lambda>i''. A $$ (insert_index i i'', insert_index j (q i''))) {0..<l}"
         by auto

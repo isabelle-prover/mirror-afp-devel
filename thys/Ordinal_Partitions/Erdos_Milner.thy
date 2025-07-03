@@ -367,7 +367,7 @@ next
           have [simp]: "tp (?g ` H) = tp H"
             by (meson \<open>H \<subseteq> elts \<alpha>\<close> ord down dual_order.trans elts_subset_ON gH g_less ordertype_VWF_inc_eq subsetD)
           show ?thesis
-            using ii [of "?g ` H"] subset_inj_on [OF inj_g \<open>H \<subseteq> elts \<alpha>\<close>] ot_eq 1 
+            using ii [of "?g ` H"] inj_on_subset [OF inj_g \<open>H \<subseteq> elts \<alpha>\<close>] ot_eq 1 
             by (auto simp: gH elim!: nset_image_obtains)
         qed
       qed

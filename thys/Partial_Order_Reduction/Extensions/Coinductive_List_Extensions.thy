@@ -641,7 +641,7 @@ begin
       have 1: "\<And> i. i \<in> nth_least s ` t \<Longrightarrow> enat i < llength w" using assms by auto
       have 2: "t \<subseteq> {i. enat i < esize s}"
         using assms(2) lselect_llength_le less_le_trans by blast
-      have 3: "inj_on (nth_least s) t" using subset_inj_on nth_least.inj_on 2 by this
+      have 3: "inj_on (nth_least s) t" using inj_on_subset nth_least.inj_on 2 by this
       have "llength (lselect t (lselect s w)) = esize t" using assms(2) by simp
       also have "\<dots> = esize (nth_least s ` t)" using 3 by auto
       also have "\<dots> = llength (lselect (nth_least s ` t) w)" using 1 by simp

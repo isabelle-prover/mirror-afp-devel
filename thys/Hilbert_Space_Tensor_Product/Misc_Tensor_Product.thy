@@ -428,7 +428,7 @@ proof -
     apply (rule limitin_cong)
     apply (rule eventually_finite_subsets_at_top_weakI)
     apply (rule sum.reindex)
-    using assms subset_inj_on by blast
+    using assms inj_on_subset by blast
   also have \<open>\<dots> \<longleftrightarrow> has_sum_in T (g \<circ> h) A x\<close>
     by (simp add: has_sum_in_def)
   finally show ?thesis .
@@ -663,7 +663,7 @@ proof (intro rel_funI)
    apply (induction A rule:infinite_finite_induct)
     unfolding A_copy_def
     subgoal
-      by (metis (no_types, lifting) \<open>inj_on p A\<close> assms(3) finite_image_iff subset_inj_on sum.infinite)
+      by (metis (no_types, lifting) \<open>inj_on p A\<close> assms(3) finite_image_iff inj_on_subset sum.infinite)
     using \<open>S 0 0\<close> ind_step by auto
   hence \<open>S (\<Sum>x\<in>A. f x) (\<Sum>x\<in>p ` A. g x)\<close>
     by (simp add: A_copy_def)

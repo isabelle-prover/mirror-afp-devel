@@ -107,7 +107,7 @@ proof -
   also have \<open>(\<Union>x\<in>A. c ` B x) = c ` (\<Union>a\<in>A. B a)\<close> by blast
   finally show \<open>\<box>a \<in> A. c\<^bold>?b \<in> B a \<rightarrow> P a b = c\<^bold>?b \<in> (\<Union>a\<in>A. B a) \<rightarrow> \<sqinter>a\<in>{a \<in> A. b \<in> B a}. P a b\<close>
     by (auto simp add: read_def "*" intro!: mono_Mprefix_eq mono_GlobalNdet_eq)
-      (metis (lifting) SUP_upper UN_I inv_into_f_eq subset_inj_on \<open>inj_on c (\<Union>a\<in>A. B a)\<close>)
+      (metis (lifting) SUP_upper UN_I inv_into_f_eq inj_on_subset \<open>inj_on c (\<Union>a\<in>A. B a)\<close>)
 qed
 
 

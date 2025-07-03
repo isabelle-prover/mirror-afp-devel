@@ -278,7 +278,7 @@ txt\<open>\nopagebreak\<close>
 
         also from S have "\<dots> = (\<Sum>k\<in>(G i). z1 k * \<chi> (C k) t)"
           by (simp add: G_def Let_def o_def
-                sum.reindex[OF subset_inj_on[OF prod_encode_snd_inj]])
+                sum.reindex[OF inj_on_subset[OF prod_encode_snd_inj]])
 
         finally have eq: "x i * \<chi> (A i) t = (\<Sum>k\<in> G i. z1 k * \<chi> (C k) t)" .
           (*Repeat with measure instead of char*)
@@ -335,7 +335,7 @@ txt\<open>\nopagebreak\<close>
         
         also from S have "\<dots> = (\<Sum>k\<in>(G i). z1 k * measure M (C k))"
           by (simp add: G_def Let_def o_def
-                sum.reindex[OF subset_inj_on[OF prod_encode_snd_inj]])
+                sum.reindex[OF inj_on_subset[OF prod_encode_snd_inj]])
         
         finally have 
           "x i * measure M (A i) = (\<Sum>k\<in>(G i). z1 k * measure M (C k))" .
@@ -369,7 +369,7 @@ txt\<open>\nopagebreak\<close>
           by (rule sum.cong)
         also from R have "\<dots> = (\<Sum>k\<in>(H j). z2 k * \<chi> (C k) t)" 
           by (simp add: H_def Let_def o_def
-                sum.reindex[OF subset_inj_on[OF prod_encode_fst_inj]])
+                sum.reindex[OF inj_on_subset[OF prod_encode_fst_inj]])
         finally have eq: "y j * \<chi> (B j) t = (\<Sum>k\<in> H j. z2 k * \<chi> (C k) t)" .
                 
         from R have H: "finite (H j)"  by (simp add: H_def)
@@ -419,7 +419,7 @@ txt\<open>\nopagebreak\<close>
           by (rule sum.cong)
         also from R have "\<dots> = (\<Sum>k\<in>(H j). z2 k * measure M (C k))"
           by (simp add: H_def Let_def o_def
-                sum.reindex[OF subset_inj_on[OF prod_encode_fst_inj]])
+                sum.reindex[OF inj_on_subset[OF prod_encode_fst_inj]])
         finally have eq2: 
           "y j * measure M (B j) = (\<Sum>k\<in>(H j). z2 k * measure M (C k))" .
       }

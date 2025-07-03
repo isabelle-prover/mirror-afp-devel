@@ -460,7 +460,7 @@ lemma bij_betw_chambers: "domain.chamber C \<Longrightarrow> bij_betw f C (f`C)"
   using inj_on_chamber by (fast intro: bij_betw_imageI)
 
 lemma card_map: "x\<in>X \<Longrightarrow> card (f`x) = card x"
-  using domain.simplex_in_max subset_inj_on[OF inj_on_chamber]
+  using domain.simplex_in_max inj_on_subset[OF inj_on_chamber]
         domain.finite_simplex inj_on_iff_eq_card
   by    blast
 
@@ -834,7 +834,7 @@ next
   qed
   from C show "card (the_inv_into (\<Union>X) f ` C) = card C"
     using C' codomain.finite_chamber
-          subset_inj_on[OF inj_on_the_inv_into, OF inj, of C]
+          inj_on_subset[OF inj_on_the_inv_into, OF inj, of C]
     by    (fast intro: inj_on_iff_eq_card[THEN iffD1])
 qed
 
@@ -1428,7 +1428,7 @@ qed
 
 lemma opp_chambers_distinct_map:
   "set Cs \<subseteq> \<C>-f\<turnstile>\<C> \<Longrightarrow> distinct Cs \<Longrightarrow> distinct (f\<Turnstile>Cs)"
-  using distinct_map subset_inj_on[OF inj_on_opp_chambers] by auto
+  using distinct_map inj_on_subset[OF inj_on_opp_chambers] by auto
 
 lemma opp_chamberD1: "C\<in>f\<turnstile>\<C> \<Longrightarrow> opp_chamber C \<in> \<C>-f\<turnstile>\<C>"
     using theI'[OF folding'] by simp

@@ -2358,7 +2358,7 @@ qed
 qed
 also have "... = card {i. i \<le> to_nat (GREATEST a. \<not> is_zero_row a (Gauss_Jordan A))}"
 proof (rule bij_betw_same_card[of "\<lambda>i. to_nat i"], unfold bij_betw_def, rule conjI)
-  show "inj_on to_nat {i. i \<le> (GREATEST a. \<not> is_zero_row a (Gauss_Jordan A))}" using bij_to_nat by (metis bij_betw_imp_inj_on subset_inj_on top_greatest)
+  show "inj_on to_nat {i. i \<le> (GREATEST a. \<not> is_zero_row a (Gauss_Jordan A))}" using bij_to_nat by (metis bij_betw_imp_inj_on inj_on_subset top_greatest)
   show "to_nat ` {i. i \<le> (GREATEST a. \<not> is_zero_row a (Gauss_Jordan A))} = {i. i \<le> to_nat (GREATEST a. \<not> is_zero_row a (Gauss_Jordan A))}"    
     proof (unfold image_def, auto simp add: to_nat_mono')
     fix x

@@ -23,7 +23,7 @@ lemma inj_on_Pair1 [simp]: "inj_on (\<lambda>x. (x, y)) A"
 by(simp add: inj_on_def)
 
 lemma inj_map_prod': "\<lbrakk> inj f; inj g \<rbrakk> \<Longrightarrow> inj_on (map_prod f g) X"
-by(rule subset_inj_on[OF prod.inj_map subset_UNIV])
+by(rule inj_on_subset[OF prod.inj_map subset_UNIV])
 
 lemma not_range_Inr: "x \<notin> range Inr \<longleftrightarrow> x \<in> range Inl"
 by(cases x) auto

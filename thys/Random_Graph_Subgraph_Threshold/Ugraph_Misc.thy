@@ -169,7 +169,7 @@ proof -
 qed
 
 lemma card_inj_subs: "inj_on f A \<Longrightarrow> B \<subseteq> A \<Longrightarrow> card (f ` B) = card B"
-by (metis card_image subset_inj_on)
+by (metis card_image inj_on_subset)
 
 lemma image_comp_cong: "(\<And>a. a \<in> A \<Longrightarrow> f a = f (g a)) \<Longrightarrow> f ` A = f ` (g ` A)"
   by auto

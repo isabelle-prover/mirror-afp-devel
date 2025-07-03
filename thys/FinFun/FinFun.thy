@@ -166,7 +166,7 @@ lemma finfun_right_compose:
 proof -
   from g obtain b where b: "finite {a. g a \<noteq> b}" unfolding finfun_def by blast
   moreover have "f ` {a. g (f a) \<noteq> b} \<subseteq> {a. g a \<noteq> b}" by auto
-  moreover from inj have "inj_on f {a.  g (f a) \<noteq> b}" by(rule subset_inj_on) blast
+  moreover from inj have "inj_on f {a.  g (f a) \<noteq> b}" by(rule inj_on_subset) blast
   ultimately have "finite {a. g (f a) \<noteq> b}"
     by(blast intro: finite_imageD[where f=f] finite_subset)
   thus ?thesis unfolding finfun_def by auto

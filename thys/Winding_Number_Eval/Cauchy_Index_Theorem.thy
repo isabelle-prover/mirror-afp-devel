@@ -2009,7 +2009,7 @@ proof -
   proof -
     have "inj (linepath st tt)"
       unfolding linepath_def using assms inj_segment by blast
-    then show ?thesis by (auto elim:subset_inj_on)
+    then show ?thesis by (auto elim:inj_on_subset)
   qed
   ultimately show ?thesis by (auto elim!: finite_imageD)
 qed

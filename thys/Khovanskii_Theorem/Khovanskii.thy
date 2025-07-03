@@ -1141,7 +1141,7 @@ proof -
     also have "\<dots> = sum ((\<lambda>I. (- 1) ^ (card I + 1) * int (card (\<Inter> I))) \<circ> (image (C n))) (Pow X - {{}})"
       by (simp add: sum.reindex inj_on_imageC)
     also have "\<dots> = SUM2"
-      unfolding SUM2_def using subset_inj_on [OF inj_C] by (force simp: card_image intro: sum.cong)
+      unfolding SUM2_def using inj_on_subset [OF inj_C] by (force simp: card_image intro: sum.cong)
     finally have "SUM1 = SUM2" .
 
     have "length_sum_set r n = (length_sum_set r n \<inter> {x. useful x}) \<union> (length_sum_set r n \<inter> {x. useless x})"

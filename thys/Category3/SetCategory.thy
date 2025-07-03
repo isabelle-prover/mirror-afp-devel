@@ -2129,7 +2129,7 @@ begin
           hence "\<exists>A. hom unity (dom f) \<subseteq> A \<and> inj_on (S f) A"
             using f mono_def by auto
           thus ?thesis
-            by (meson subset_inj_on)
+            by (meson inj_on_subset)
         qed
         fix x x'
         assume x: "x \<in> Dom f" and x': "x' \<in> Dom f" and xx': "Fun f x = Fun f x'"

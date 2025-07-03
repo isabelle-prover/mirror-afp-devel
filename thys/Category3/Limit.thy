@@ -4542,7 +4542,7 @@ begin
       moreover have "inj_on \<pi> (PiE' I' (\<lambda>_. Univ))"
       proof -
         have 1: "\<And>F A A'. inj_on F A \<and> A' \<subseteq> A \<Longrightarrow> inj_on F A'"
-          using subset_inj_on by blast
+          using inj_on_subset by blast
         moreover have "PiE' I' (\<lambda>_. Univ) \<subseteq> PiE' I (\<lambda>_. Univ)"
           using assms(2) extensional'_def [of I'] terminal_unity\<^sub>S\<^sub>C by auto
         ultimately show ?thesis using \<pi> assms(2) by blast
@@ -4735,7 +4735,7 @@ begin
               using setp_set_ide elem_set_implies_incl_in elem_set_implies_set_eq_singleton
                     incl_in_def PiE'_mono comp_apply subsetI
               by (metis (no_types, lifting))
-            thus ?thesis using \<pi> subset_inj_on set_\<Pi>D Pi_I' imageI by fastforce
+            thus ?thesis using \<pi> inj_on_subset set_\<Pi>D Pi_I' imageI by fastforce
           qed
           have 2: "inv_into (PiE' I (set o D)) \<pi> \<in> set ?\<Pi>D \<rightarrow> PiE' I (set o D)"
           proof

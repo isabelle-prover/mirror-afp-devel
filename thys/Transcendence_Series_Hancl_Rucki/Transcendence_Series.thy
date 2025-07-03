@@ -350,7 +350,7 @@ The witness for $\exists A>1 $ is denoted by $M$ here.\<close>
         unfolding f_def p_def q_def pq_def comp_def
         apply (fold g_def)
         by auto
-      then show ?thesis by (auto elim:subset_inj_on)
+      then show ?thesis by (auto elim:inj_on_subset)
     qed
     moreover have "(\<lambda>k. (p k, q k)) ` A \<subseteq> pqs"
       unfolding A_def pqs_def using coprime_pq q_pos by auto
@@ -883,7 +883,7 @@ proof-
         unfolding f_def p_def q_def pq_def comp_def
         apply (fold g_def)
         by auto
-      then show ?thesis by (auto elim:subset_inj_on)
+      then show ?thesis by (auto elim:inj_on_subset)
     qed
     moreover have "(\<lambda>k. (p k, q k)) ` A \<subseteq> pqs"
       unfolding A_def pqs_def using coprime_pq q_pos by auto

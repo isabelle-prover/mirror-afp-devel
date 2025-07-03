@@ -258,7 +258,7 @@ lemma lm025:
 lemma injectionPowerset: 
   assumes "inj_on f Y" "X \<subseteq> Y" 
   shows "inj_on (image f) (Pow X)"
-  using assms lm025 by (metis subset_inj_on)
+  using assms lm025 by (metis inj_on_subset)
 
 (* the finest possible partition of X, e.g., X = {1, 2, 3} goes to {{1}, {2}, {3}}. *)
 definition finestpart 

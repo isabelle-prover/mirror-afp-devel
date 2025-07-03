@@ -522,7 +522,7 @@ lemma map_to_set_inj[intro!]: "inj map_to_set"
   done
 
 corollary map_to_set_inj'[intro!]: "inj_on map_to_set S"
-  by (metis map_to_set_inj subset_UNIV subset_inj_on)
+  by (metis map_to_set_inj subset_UNIV inj_on_subset)
   
 lemma map_ord_linear[intro?]: 
   assumes A: "linorder cmpk" 

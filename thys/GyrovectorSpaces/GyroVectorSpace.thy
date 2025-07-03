@@ -409,7 +409,7 @@ definition reals :: "'a set" where
 lemma bij_reals_norms:
   shows "bij_betw of_real' norms reals"
   unfolding of_real'_def
-  by (metis bij_betw_def comp_inj_on_iff dual_order.eq_iff image_comp inj_image_eq_iff inj_of_real inj_on_of_carrier norms_carrier reals_def subset_image_inj subset_inj_on)
+  by (metis bij_betw_def comp_inj_on_iff dual_order.eq_iff image_comp inj_image_eq_iff inj_of_real inj_on_of_carrier norms_carrier reals_def subset_image_inj inj_on_subset)
 
 lemma inj_on_of_real':
   shows "inj_on of_real' norms"

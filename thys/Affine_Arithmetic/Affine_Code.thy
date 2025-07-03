@@ -204,7 +204,7 @@ proof -
   proof (transfer, goal_cases)
     case prems: (1 xs)
     hence distinct: "distinct (map fst [x\<leftarrow>xs . snd x \<noteq> 0])"
-      by (auto simp: filter_map distinct_map intro: subset_inj_on)
+      by (auto simp: filter_map distinct_map intro: inj_on_subset)
     with prems show ?case
       using sort_rev_eq_sort[symmetric, OF distinct]
       by (auto simp: rev_map rev_filter distinct_map distinct_remdups_id
@@ -301,7 +301,7 @@ proof (safe, goal_cases)
   then have "set (dropWhile (\<lambda>(i, x). n \<le> i) l1) \<subseteq> set l1"
     by (simp add: set_dropWhileD subrelI)
   with 1 show ?case
-    by (auto simp add: distinct_map add.commute [of _ n] intro!: comp_inj_on intro: subset_inj_on)
+    by (auto simp add: distinct_map add.commute [of _ n] intro!: comp_inj_on intro: inj_on_subset)
       (simp add: dropWhile_rsorted_eq_filter)
 next
   case prems: (2 n l1 l2)
@@ -373,7 +373,7 @@ subsection \<open>Filter\<close>
 lift_definition filter_slist::"(nat \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> (nat, 'a) slist \<Rightarrow> (nat, 'a) slist"
   is "\<lambda>P xs. filter (\<lambda>(i, x). (P i x)) xs"
   by (auto simp: o_def filter_map distinct_map rev_map rev_filter sorted_filter
-    intro: subset_inj_on)
+    intro: inj_on_subset)
 
 lemma slist_apply_filter_slist: "slist_apply (filter_slist P xs) i =
   (if P i (slist_apply xs i) then slist_apply xs i else 0)"

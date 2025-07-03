@@ -15,7 +15,7 @@ proof clarify
   show "card J \<le> card (\<Union>(A ` J))"
   proof-
     from assms(3) obtain R where "?R R A" and "?inj R A" by auto
-    have "inj_on R J" by(rule subset_inj_on[OF \<open>?inj R A\<close> \<open>J\<subseteq>I\<close>])
+    have "inj_on R J" by(rule inj_on_subset[OF \<open>?inj R A\<close> \<open>J\<subseteq>I\<close>])
     moreover have "(R ` J) \<subseteq> (\<Union>(A ` J))" using \<open>J\<subseteq>I\<close> \<open>?R R A\<close> by auto
     moreover have "finite (\<Union>(A ` J))" using \<open>J\<subseteq>I\<close> assms
       by (metis finite_UN_I finite_subset subsetD)

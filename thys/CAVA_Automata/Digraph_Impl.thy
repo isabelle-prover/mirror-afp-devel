@@ -357,12 +357,12 @@ lemma the_inv_into_map_impl_correct:
 
   apply (intro allI impI conjI)
 
-  apply (subst the_inv_into_f_f[OF subset_inj_on[OF INJ]], auto) []
+  apply (subst the_inv_into_f_f[OF inj_on_subset[OF INJ]], auto) []
 
-  apply (subst the_inv_into_f_f[OF subset_inj_on[OF INJ]], auto) []
+  apply (subst the_inv_into_f_f[OF inj_on_subset[OF INJ]], auto) []
 
   apply safe []
-  apply (subst the_inv_into_f_f[OF subset_inj_on[OF INJ]], (auto) [2])+
+  apply (subst the_inv_into_f_f[OF inj_on_subset[OF INJ]], (auto) [2])+
   apply simp
   done
 
@@ -477,7 +477,7 @@ context g_rename_precond begin
       apply (refine_rcg 
         order_trans[OF ECNV[unfolded fi_map_alt]] 
         refine_vcg)
-      using subset_inj_on[OF _ V0_ss]
+      using inj_on_subset[OF _ V0_ss]
       apply (auto intro: INJ simp: rename_E_aimpl_alt fi_map_alt)
       done
   qed

@@ -27,7 +27,7 @@ proof-
   also have "(mset [0..<length ys']) = mset_set {0..<length ys'}"
     by (metis mset_sorted_list_of_multiset sorted_list_of_mset_set sorted_list_of_set_range) 
   also have "image_mset f (...) = mset_set (f ` {..<length ys'})"
-    using subset_inj_on[OF bij_is_inj[OF bij]] by (subst image_mset_mset_set, auto)
+    using inj_on_subset[OF bij_is_inj[OF bij]] by (subst image_mset_mset_set, auto)
   also have "... = mset [0..<length ys']" using perm by (simp add: permutes_image)
   also have "image_mset (nth ys') ... = mset ys'" by(fold mset_map, unfold map_nth, auto)
   finally have "mset ys = Y" using ys' by auto

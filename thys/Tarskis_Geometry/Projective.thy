@@ -1891,7 +1891,7 @@ proof -
   have "card (range (($) a)) = 3" by simp
   with card_image [of proj2_rep "range (($) a)"]
     and proj2_rep_inj
-    and subset_inj_on
+    and inj_on_subset
   have "card ?B = 3" by auto
   hence "finite ?B" by simp
   with \<open>span ?B = UNIV\<close> and span_finite [of ?B]
@@ -2017,7 +2017,7 @@ proof -
     by simp
   also from sum.reindex
   [of proj2_rep "range (($) a)" "\<lambda> w. (c w) *\<^sub>R w"]
-    and proj2_rep_inj and subset_inj_on [of proj2_rep UNIV "range (($) a)"]
+    and proj2_rep_inj and inj_on_subset [of proj2_rep UNIV "range (($) a)"]
   have "\<dots> = (\<Sum> w\<in>?B. (c w) *\<^sub>R w)" by simp
   also from \<open>(\<Sum> w \<in> ?B. (c w) *\<^sub>R w) = ?v\<close> have "\<dots> = ?v" by simp
   finally have "(vector [1,1,1]) v* ?C = ?v" .

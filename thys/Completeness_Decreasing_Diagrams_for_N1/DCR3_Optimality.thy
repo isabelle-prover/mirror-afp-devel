@@ -1405,7 +1405,7 @@ proof -
     moreover then have "x \<in> B \<and> y \<in> B" using b5 unfolding Field_def by blast
     ultimately show "c \<in> f ` B" by blast
   qed
-  ultimately have "inj_on g (Field r)" using Fun.subset_inj_on by blast
+  ultimately have "inj_on g (Field r)" using Fun.inj_on_subset by blast
   moreover have "\<not> DCR 2 s" using b4 lem_dc2_to_d2 by blast
   ultimately have "\<not> DCR 2 r" using b11 lem_fmap_dcn[of g r 2] by blast
   then have "\<not> DCR2 r" using lem_d2_to_dc2 by blast

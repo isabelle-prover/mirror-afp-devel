@@ -257,7 +257,7 @@ proof-
   thus ?thesis by fast
 qed
 
-lemmas inj_inj_on = subset_inj_on[of _ UNIV, OF _ subset_UNIV]
+lemmas inj_inj_on = inj_on_subset[of _ UNIV, OF _ subset_UNIV]
 
 lemma inj_on_eq_image': "\<lbrakk> inj_on f A; X\<subseteq>A; Y\<subseteq>A; f`X\<subseteq>f`Y \<rbrakk> \<Longrightarrow> X\<subseteq>Y"
   unfolding inj_on_def by fast
@@ -1063,7 +1063,7 @@ proof (rule OrderingSetMap.isoI)
     using OrderingSetIso.axioms(1) comp by fast
   from assms(2) show "inj_on (g \<circ> f) P"
     using OrderingSetIso.inj[OF assms(1)]
-          comp_inj_on[OF inj, OF subset_inj_on]
+          comp_inj_on[OF inj, OF inj_on_subset]
     by    fast
 next
   fix a b
@@ -1073,7 +1073,7 @@ qed
 
 lemma iso_subset:
   "Q\<subseteq>P \<Longrightarrow> OrderingSetIso (\<^bold>\<le>) (\<^bold><) (\<^bold>\<le>*) (\<^bold><*) Q f"
-  using subset[of Q] subset_inj_on[OF inj] rev_ordsetmap
+  using subset[of Q] inj_on_subset[OF inj] rev_ordsetmap
   by    (blast intro: OrderingSetMap.isoI)
 
 lemma iso_dual:

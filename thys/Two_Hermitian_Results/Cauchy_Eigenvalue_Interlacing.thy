@@ -1618,7 +1618,7 @@ proof-
         proof-
           have "card vs' = k" using vs' by blast
           moreover have "vs' \<subseteq> carrier B.V" by (simp add: vs')
-          ultimately show ?thesis by (metis inj card_image subset_inj_on vs_def)
+          ultimately show ?thesis by (metis inj card_image inj_on_subset vs_def)
         qed
         moreover have "vs \<subseteq> carrier_vec n"
         proof(rule subsetI)
