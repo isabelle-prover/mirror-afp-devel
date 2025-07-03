@@ -1197,6 +1197,17 @@ proof -
     using assms cmod_zed1 cmod_zed2 by linarith
 qed
 
+lemma chord_length_less: "dist zed1 zed2 < 2 * sqrt 2 * k / N"
+proof -
+  have "dist zed1 zed2 \<le> norm zed1 + norm zed2"
+    by norm
+  also have "\<dots> < sqrt 2 * k / N + sqrt 2 * k / N"
+    by (intro add_strict_mono on_chord_bounded_cmod) auto
+  also have "\<dots> = 2 * sqrt 2 * k / N"
+    by simp
+  finally show ?thesis .
+qed
+
 end
 
 end
