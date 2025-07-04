@@ -1,20 +1,20 @@
 theory Hidden_Number_Problem
   imports
     "HOL-Number_Theory.Number_Theory"
-    "Babai_Correctness_Updated"
+    "Babai_Nearest_Plane.Babai_Correct"
     "Misc_PMF"
 
 begin
 
-hide_fact Finite_Cartesian_Product.mat_def
-hide_const Finite_Cartesian_Product.mat
-hide_const Finite_Cartesian_Product.row
-hide_fact Finite_Cartesian_Product.row_def
-hide_const Determinants.det
-hide_fact Determinants.det_def
-hide_type Finite_Cartesian_Product.vec
-hide_const Finite_Cartesian_Product.vec
-hide_fact Finite_Cartesian_Product.vec_def
+hide_fact (open) Finite_Cartesian_Product.mat_def
+hide_const (open) Finite_Cartesian_Product.mat
+hide_const (open) Finite_Cartesian_Product.row
+hide_fact (open) Finite_Cartesian_Product.row_def
+hide_const (open) Determinants.det
+hide_fact (open) Determinants.det_def
+hide_type (open) Finite_Cartesian_Product.vec
+hide_const (open) Finite_Cartesian_Product.vec
+hide_fact (open) Finite_Cartesian_Product.vec_def
 hide_const (open) Finite_Cartesian_Product.transpose
 hide_fact (open) Finite_Cartesian_Product.transpose_def
 unbundle no inner_syntax
@@ -40,7 +40,7 @@ lemma uminus_sq_norm:
   shows "sq_norm (u - v) = sq_norm (v - u)"
   using assms
 proof-
-  have "u-v = (-1) \<cdot>\<^sub>v (v - u)" using assms by auto
+  have "u - v = (-1) \<cdot>\<^sub>v (v - u)" using assms by auto
   then show ?thesis
     using sq_norm_smult_vec[of "-1" "v-u"] by auto
 qed
@@ -3475,8 +3475,8 @@ proof-
     then have b1: "babai (LLL_Impl.reduce_basis (4/3) basis) rat_u_vec" unfolding babai_with_assms_def by auto
     have b2: "babai basis rat_u_vec" using basis_length rat_u_dim unfolding babai_def by simp
     have "0 \<le> babai.closest_distance_sq (LLL_Impl.reduce_basis (4/3) basis) rat_u_vec"
-      using b babai_with_assms_epsilon.closest_distance_sq_pos[of "(LLL_Impl.reduce_basis (4/3) basis)" rat_u_vec "4/3" 2] 
-              babai_with_assms.babai_with_assms_epsilon_connect[of "(LLL_Impl.reduce_basis (4/3) basis)" rat_u_vec "4/3"] by simp
+      using b babai_with_assms_\<epsilon>.closest_distance_sq_pos[of "(LLL_Impl.reduce_basis (4/3) basis)" rat_u_vec "4/3" 2] 
+              babai_with_assms.babai_with_assms_\<epsilon>_connect[of "(LLL_Impl.reduce_basis (4/3) basis)" rat_u_vec "4/3"] by simp
     moreover have "LLL.L (d + 1) basis = LLL.L (d + 1) (LLL_Impl.reduce_basis (4/3) basis)"
       using LLL_with_assms.reduce_basis(1)[of "d + 1" "d + 1" basis "4/3" "(LLL_Impl.reduce_basis (4/3) basis)"] LLL_assms
       unfolding LLL.L_def by argo

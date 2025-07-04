@@ -1,5 +1,5 @@
-theory Babai_Correctness_Updated
-  imports Babai_Algorithm_Updated
+theory Babai_Correct
+  imports Babai_Algorithm
           "LLL_Basis_Reduction.LLL_Impl"
           "Jordan_Normal_Form.DL_Rank"
           "BenOr_Kozen_Reif.More_Matrix"
@@ -36,21 +36,22 @@ end
 
   
 text \<open>Locale setup with additional assumptions required for main theorem. Contains an arbitrary
-extra constant epsilon which appears in the final bound in this locale, giving a theorem
-quantified over all epsilon > 1. The next locale, ``babai-with-assms,'' uses this theorem to prove a theorem without epsilon. \<close>
+extra constant $\epsilon$ which appears in the final bound in this locale, giving a theorem
+quantified over all $\epsilon > 1$. The next locale, ``babai-with-assms,''
+uses this theorem to prove a theorem without $\epsilon$. \<close>
 
-locale babai_with_assms_epsilon = babai +
+locale babai_with_assms_\<epsilon> = babai +
   fixes mat_M mat_M_inv:: "rat mat"
-  fixes epsilon::"real"
+  fixes \<epsilon> :: "real"
   assumes basis: "lin_indep M"
   defines "mat_M \<equiv> mat_of_cols n (RAT M)"
   defines "mat_M_inv \<equiv> 
     (if (invertible_mat mat_M) then SOME B. (inverts_mat B mat_M) \<and> (inverts_mat mat_M B) else (0\<^sub>m n n))"
-  assumes inv:"invertible_mat mat_M"
-  assumes reduced:"weakly_reduced M n" 
-  assumes non_trivial:"0<n"
-  assumes alpha:"\<alpha> \<ge> 4/3"
-  assumes epsilon:"epsilon > 1"
+  assumes inv: "invertible_mat mat_M"
+  assumes reduced: "weakly_reduced M n" 
+  assumes non_trivial: "0<n"
+  assumes alpha: "\<alpha> \<ge> 4/3"
+  assumes \<epsilon>: "\<epsilon> > 1"
 begin
 
 lemma dim_vecs_in_M:
@@ -120,7 +121,7 @@ lemma vec_to_col:
   assumes "i < n"
   shows "(RAT M)!i = col mat_M i"
   unfolding mat_M_def
-  by (metis babai_with_assms_epsilon_axioms babai_with_assms_epsilon_axioms_def babai_with_assms_epsilon_def M_dim(2) 
+  by (metis babai_with_assms_\<epsilon>_axioms babai_with_assms_\<epsilon>_axioms_def babai_with_assms_\<epsilon>_def M_dim(2) 
       assms cols_mat_of_cols cols_nth gs.lin_indpt_list_def mat_M_def)
 
 lemma unit:
@@ -135,22 +136,23 @@ lemma linear:
   and v2:: "rat vec"
   and q:: rat
   assumes "dim_vec v1 = n"
-  assumes dim_2:"dim_vec v2 = n"
-  assumes "0\<le>i"
-  assumes dim_i:"i<n"
-  shows "(lattice_coord (v1+(q\<cdot>\<^sub>vv2)))$i = (lattice_coord v1)$i + q*((lattice_coord v2)$i)"
+  assumes dim_2: "dim_vec v2 = n"
+  assumes "0 \<le> i"
+  assumes dim_i: "i < n"
+  shows "(lattice_coord (v1 + (q \<cdot>\<^sub>v v2)))$i = (lattice_coord v1)$i + q*((lattice_coord v2)$i)"
   using assms
 proof(-)
-  have linear_vec:"(lattice_coord (v1+(q\<cdot>\<^sub>vv2))) = (lattice_coord v1) + q\<cdot>\<^sub>v((lattice_coord v2))"
+  have linear_vec:"(lattice_coord (v1 + (q \<cdot>\<^sub>v v2))) = (lattice_coord v1) + q \<cdot>\<^sub>v ((lattice_coord v2))"
   unfolding lattice_coord_def
   by (metis (mono_tags, opaque_lifting) M_inv_dim(2) assms(1) assms(2) carrier_mat_triv 
       carrier_vec_dim_vec mult_add_distrib_mat_vec mult_mat_vec smult_carrier_vec)
-  then have 2: "(lattice_coord (v1+(q\<cdot>\<^sub>vv2)))$i= ((lattice_coord v1) + q\<cdot>\<^sub>v((lattice_coord v2)))$i" by auto
+  then have 2: "(lattice_coord (v1 + (q \<cdot>\<^sub>v v2)))$i= ((lattice_coord v1) + q \<cdot>\<^sub>v ((lattice_coord v2)))$i" by auto
   also have dim_v2: "dim_vec (lattice_coord v2) = n" using dim_preserve_lattice_coord dim_2 by blast
-  then have i_in_range: "i<dim_vec (q\<cdot>\<^sub>v(lattice_coord v2))" using dim_v2 dim_i by simp
-  also have 3:"((lattice_coord v1) + q\<cdot>\<^sub>v((lattice_coord v2)))$i=(lattice_coord v1)$i+ 
-              (q\<cdot>\<^sub>v(lattice_coord v2))$i" using i_in_range by simp
-  also have 4: "(q\<cdot>\<^sub>v(lattice_coord v2))$i=q*(lattice_coord v2)$i" using i_in_range by simp
+  then have i_in_range: "i < dim_vec (q \<cdot>\<^sub>v (lattice_coord v2))" using dim_v2 dim_i by simp
+  also have 3:"((lattice_coord v1) + q \<cdot>\<^sub>v ((lattice_coord v2)))$i
+    = (lattice_coord v1)$i + (q \<cdot>\<^sub>v (lattice_coord v2))$i"
+    using i_in_range by simp
+  also have 4: "(q \<cdot>\<^sub>v (lattice_coord v2))$i = q * (lattice_coord v2)$i" using i_in_range by simp
   thus ?thesis unfolding vec_def using linear_vec 2 3 4 by simp
 qed
 
@@ -159,7 +161,7 @@ lemma sub_s:
   assumes "0\<le>i"
   assumes "i<n"
   shows "s (Suc i) = (s i) -
-( (rat_of_int (calculate_c (s i) Mt (Suc i) ) ) \<cdot>\<^sub>v (RAT M)!( (dim_vec (s i)) -(Suc i))) "
+  ( (rat_of_int (calculate_c (s i) Mt (Suc i) ) ) \<cdot>\<^sub>v (RAT M)!( (dim_vec (s i)) - (Suc i))) "
   using assms babai_help.simps[of "-t" "RAT M" Mt] unfolding s_def
   by (metis update_s.simps)
 
@@ -178,8 +180,8 @@ lemma more_dim: "length (RAT M) = n"
   by simp
 
 lemma Mt_gso_connect:
-  fixes j::nat
-  assumes "j<n"
+  fixes j :: nat
+  assumes "j < n"
   shows "Mt!j = gs.gso j"
 proof(-)
  have "Mt = map gs.gso[0..<n]"
@@ -193,14 +195,14 @@ qed
 lemma access_index_M_dim: 
   assumes "0 \<le> i"
   assumes "i < n"
-  shows "dim_vec (map of_int_hom.vec_hom M ! i) =  n"
+  shows "dim_vec (map of_int_hom.vec_hom M ! i) = n"
   using assms dim_vecs_in_M 
   by auto
 
 lemma s_dim:
   fixes i::nat
   assumes "i\<le> n"
-  shows "dim_vec (s i) = n \<and> (s i) \<in>carrier_vec n"
+  shows "dim_vec (s i) = n \<and> (s i) \<in> carrier_vec n"
   using assms
   proof(induct i)
   case 0
@@ -219,27 +221,27 @@ lemma s_dim:
     by simp
  next
   case (Suc i)
-  then have leq: "i\<le>n" by linarith
-  have sub:"s (Suc i) = (s i) - ( (rat_of_int (calculate_c (s i) Mt (Suc i) ) ) \<cdot>\<^sub>v (RAT M)!( (dim_vec (s i)) -(Suc i))) "
+  then have leq: "i \<le> n" by linarith
+  have sub:"s (Suc i) = (s i) - ( (rat_of_int (calculate_c (s i) Mt (Suc i) ) ) \<cdot>\<^sub>v (RAT M)!( (dim_vec (s i)) - (Suc i))) "
     using sub_s Suc 
     by auto
   moreover have prev_s_dim:"(s i)\<in>carrier_vec n"
     using Suc
     by simp
-  moreover have "dim_vec (s i)=n"
+  moreover have "dim_vec (s i) = n"
     using Suc
     by simp
-  then have "0\<le>(dim_vec (s i)) -(Suc i)\<and> (dim_vec (s i)) -(Suc i)<n"
+  then have "0 \<le> (dim_vec (s i)) -(Suc i) \<and> (dim_vec (s i)) - (Suc i) < n"
     using Suc
     by linarith
-  then have dim_m:"(dim_vec  ((RAT M)!( (dim_vec (s i)) -(Suc i)))) = n"
-    using access_index_M_dim[of "(dim_vec (s i)) -(Suc i)"]
+  then have dim_m: "(dim_vec ((RAT M)!( (dim_vec (s i)) - (Suc i)))) = n"
+    using access_index_M_dim[of "(dim_vec (s i)) - (Suc i)"]
     by simp
   then have dim_qm:"dim_vec ( (rat_of_int (calculate_c (s i) Mt (Suc i) ) ) \<cdot>\<^sub>v 
-    (RAT M)!((dim_vec (s i)) -(Suc i))) = n"
+    (RAT M)!((dim_vec (s i)) - (Suc i))) = n"
     by simp
   then have final_dim:"dim_vec ((s i) -
-    ((rat_of_int (calculate_c (s i) Mt (Suc i) ) ) \<cdot>\<^sub>v (RAT M)!( (dim_vec (s i)) -(Suc i)))) = n"
+    ((rat_of_int (calculate_c (s i) Mt (Suc i) ) ) \<cdot>\<^sub>v (RAT M)!( (dim_vec (s i)) - (Suc i)))) = n"
     using index_minus_vec(2) prev_s_dim dim_qm
     by metis
    show ?case 
@@ -249,25 +251,25 @@ lemma s_dim:
 
 lemma dim_vecs_in_Mt:
   fixes i::nat
-  assumes "i<n"
+  assumes "i < n"
   shows "dim_vec (Mt!i) = n"
   using Mt_gso_connect[of "i"] M_locale_1 assms gram_schmidt_fs_Rn.gso_dim
   by fastforce
 lemma upper_tri:
-  fixes i::nat
-    and j::nat
-  assumes "j>i"
-  assumes "j<n"
-  shows "((RAT M)!i)\<bullet> (Mt!j) =0"
+  fixes i :: nat
+    and j :: nat
+  assumes "j > i"
+  assumes "j < n"
+  shows "((RAT M)!i) \<bullet> (Mt!j) = 0"
 proof(-)
-   have "(gs.gso j)\<bullet> (RAT M)!i= 0"
+   have "(gs.gso j) \<bullet> (RAT M)!i = 0"
     using gram_schmidt_fs_lin_indpt.gso_scalar_zero[of n "(RAT M)" j i]
         Mt_gso_connect[of "j"]
         assms
         M_locale_2  
         more_dim
     by presburger
-  then have "(Mt!j)\<bullet> ((RAT M)!i)= 0"
+  then have "(Mt!j)\<bullet> ((RAT M)!i) = 0"
     using Mt_gso_connect[of "j"] assms
     by simp
   then show ?thesis
@@ -285,14 +287,14 @@ lemma one_diag:
   assumes "i<n"
   shows "((RAT M)!i)\<bullet> (Mt!i)=sq_norm (Mt!i)"
 proof(-)
-   have mu:"((RAT M)!i)\<bullet>(Mt!i) = (gs.\<mu> i i)*sq_norm (Mt!i) "
+  have mu: "((RAT M)!i) \<bullet> (Mt!i) = (gs.\<mu> i i) * sq_norm (Mt!i)"
     using gram_schmidt_fs_lin_indpt.fi_scalar_prod_gso[of "n" "(RAT M)" i i]
           M_locale_2
           assms
           more_dim
           Mt_gso_connect
     by presburger
-  moreover have "gs.\<mu> i i=1"
+  moreover have "gs.\<mu> i i = 1"
     by (meson gs.\<mu>.elims order_less_imp_not_eq2) 
   then show ?thesis
     using mu
@@ -526,13 +528,13 @@ proof(-)
     using final_sub rearrange_final_ineq
     by argo
 qed
-lemma lattice_carrier: "L\<subseteq> carrier_vec n"
+lemma lattice_carrier: "L \<subseteq> carrier_vec n"
 proof-
-  have "x\<in>carrier_vec n" if x_def:"x\<in>L" for x
+  have "x \<in> carrier_vec n" if x_def:"x \<in> L" for x
   proof-
     obtain f where f_def:"x = sumlist (map (\<lambda>i. (f i)\<cdot>\<^sub>v M!i ) [0..<n])"
       using x_def unfolding L_def lattice_of_def by fast
-    have "(f i)\<cdot>\<^sub>v M!i\<in>carrier_vec n" if "0\<le>i\<and>i<n" for i
+    have "(f i)\<cdot>\<^sub>v M!i \<in> carrier_vec n" if "0 \<le> i \<and> i < n" for i
       using access_index_M_dim[of i]
       by (metis carrier_vec_dim_vec map_carrier_vec nth_map smult_closed that)
     then have "set (map (\<lambda>i. (f i)\<cdot>\<^sub>v M!i ) [0..<n]) \<subseteq> carrier_vec n" by auto
@@ -546,24 +548,24 @@ section \<open>Lattice Lemmas\<close>
 
 lemma lattice_sum_close:
   fixes u::"int vec" and v::"int vec"
-  assumes "u\<in>L" "v\<in>L"
-  shows "u+v\<in>L"
+  assumes "u \<in> L" "v \<in> L"
+  shows "u + v \<in> L"
 proof - 
   let ?mM = "mat_of_cols n M"
-  have 1:"?mM \<in>carrier_mat n n" using dim_vecs_in_M by fastforce
+  have 1:"?mM \<in> carrier_mat n n" using dim_vecs_in_M by fastforce
   have set_M: "set M \<subseteq> carrier_vec n"
     using dim_vecs_in_M carrier_vecI by blast
-  have as_mat_mult:"lattice_of M = {y\<in>carrier_vec n. \<exists>x\<in>carrier_vec n. ?mM *\<^sub>v x = y}"
+  have as_mat_mult:"lattice_of M = {y \<in> carrier_vec n. \<exists>x\<in>carrier_vec n. ?mM *\<^sub>v x = y}"
      using lattice_of_as_mat_mult[OF set_M] by blast
-  then obtain u1 where u1_def:"u = ?mM *\<^sub>v u1 \<and> u1\<in>carrier_vec n" using assms unfolding L_def by auto
-  obtain v1 where v1_def:"v = ?mM *\<^sub>v v1 \<and> v1\<in>carrier_vec n" 
+  then obtain u1 where u1_def:"u = ?mM *\<^sub>v u1 \<and> u1 \<in> carrier_vec n" using assms unfolding L_def by auto
+  obtain v1 where v1_def:"v = ?mM *\<^sub>v v1 \<and> v1 \<in> carrier_vec n" 
     using assms as_mat_mult unfolding L_def by auto
-  have "u1+v1\<in>carrier_vec n" using u1_def v1_def by blast
-  moreover have "?mM*\<^sub>v (u1+v1) = u+v" 
+  have "u1 + v1 \<in> carrier_vec n" using u1_def v1_def by blast
+  moreover have "?mM *\<^sub>v (u1 + v1) = u + v" 
     using u1_def v1_def 1 mult_add_distrib_mat_vec[of ?mM n n u1 v1]
     by metis
-  moreover have "u+v\<in>carrier_vec n" using assms lattice_carrier by blast
-  ultimately show "u+v\<in>L"
+  moreover have "u + v \<in> carrier_vec n" using assms lattice_carrier by blast
+  ultimately show "u + v \<in> L"
     using as_mat_mult unfolding L_def
     by blast
 qed
@@ -571,21 +573,21 @@ qed
 
 lemma lattice_smult_close:
   fixes u::"int vec" and q::int
-  assumes "u\<in>L"
-  shows "q\<cdot>\<^sub>v u\<in>L"
+  assumes "u \<in> L"
+  shows "q \<cdot>\<^sub>v u \<in> L"
 
 proof-
   let ?mM = "mat_of_cols n M"
-  have 1:"?mM \<in>carrier_mat n n" using dim_vecs_in_M by fastforce
+  have 1:"?mM \<in> carrier_mat n n" using dim_vecs_in_M by fastforce
   have set_M: "set M \<subseteq> carrier_vec n"
     using dim_vecs_in_M carrier_vecI by blast
-  have as_mat_mult:"lattice_of M = {y\<in>carrier_vec n. \<exists>x\<in>carrier_vec n. ?mM *\<^sub>v x = y}"
+  have as_mat_mult:"lattice_of M = {y \<in> carrier_vec n. \<exists>x\<in>carrier_vec n. ?mM *\<^sub>v x = y}"
     using lattice_of_as_mat_mult[OF set_M] by blast
-  then obtain v::"int vec" where v_def:"u = ?mM *\<^sub>v v\<and>v\<in>carrier_vec n" 
+  then obtain v::"int vec" where v_def: "u = ?mM *\<^sub>v v \<and> v \<in> carrier_vec n" 
     using assms unfolding L_def by auto
-  then have "q\<cdot>\<^sub>v v \<in>carrier_vec n" by blast
-  moreover then have "q\<cdot>\<^sub>v u= ?mM *\<^sub>v (q\<cdot>\<^sub>v v)" using 1 v_def by fastforce
-  ultimately show "q\<cdot>\<^sub>v u \<in> L"
+  then have "q \<cdot>\<^sub>v v \<in> carrier_vec n" by blast
+  moreover then have "q \<cdot>\<^sub>v u = ?mM *\<^sub>v (q\<cdot>\<^sub>v v)" using 1 v_def by fastforce
+  ultimately show "q \<cdot>\<^sub>v u \<in> L"
     by (metis (mono_tags, lifting) L_def as_mat_mult assms mem_Collect_eq smult_closed)
 qed 
 
@@ -597,20 +599,20 @@ lemma smult_vec_zero:
 
 lemma coset_s:
   fixes i::nat
-  assumes "i\<le>n"
+  assumes "i \<le> n"
   shows "s i \<in>coset"
   using assms
 proof(induct i)
   case 0
   have "s 0 = -t" unfolding s_def by simp
-  moreover have carrier_mt:"-t\<in>carrier_vec n" using length_M carrier_vecI[of t n] by fastforce
-  ultimately have pzero:"s 0 = of_int_hom.vec_hom (0\<^sub>v n) -t" by fastforce
-  let ?zero = "\<lambda> j. 0"
-  have "0<length M" using non_trivial by fast
+  moreover have carrier_mt:"-t \<in> carrier_vec n" using length_M carrier_vecI[of t n] by fastforce
+  ultimately have pzero:"s 0 = of_int_hom.vec_hom (0\<^sub>v n) - t" by fastforce
+  let ?zero = "\<lambda>j. 0"
+  have "0 < length M" using non_trivial by fast
   then have "M!0 \<in> set M" by force
-  then have "M!0\<in>L" using basis_in_latticeI[of M "M!0"] dim_vecs_in_M carrier_vecI L_def
+  then have "M!0 \<in> L" using basis_in_latticeI[of M "M!0"] dim_vecs_in_M carrier_vecI L_def
     by blast
-  then have "0\<^sub>v n \<in>L" 
+  then have "0\<^sub>v n \<in> L" 
     using lattice_smult_close[of "M!0" 0] smult_vec_zero[of "M!0"] access_index_M_dim[of 0] non_trivial
     unfolding L_def
     by fastforce
@@ -618,71 +620,71 @@ proof(induct i)
 next
   case (Suc i)
   let ?q = "(rat_of_int (calculate_c (s i) Mt (Suc i) ) )"
-  let ?ind = "( (dim_vec (s i)) -(Suc i))"
+  let ?ind = "( (dim_vec (s i)) - (Suc i))"
   have sub:"s (Suc i) = (s i) - (?q \<cdot>\<^sub>v (RAT M)!?ind)"
     using sub_s[of i] Suc.prems by linarith
-  have "s i \<in>coset" using Suc by auto
-  then obtain x where x_def:"x\<in>L \<and> (s i) = of_int_hom.vec_hom x-t" by blast
-  have "( ?q \<cdot>\<^sub>v (RAT M)!?ind)\<in> of_int_hom.vec_hom` L"
+  have "s i \<in> coset" using Suc by auto
+  then obtain x where x_def:"x \<in> L \<and> (s i) = of_int_hom.vec_hom x - t" by blast
+  have "(?q \<cdot>\<^sub>v (RAT M)!?ind) \<in> of_int_hom.vec_hom`L"
   proof-
     have "dim_vec (s i) = n" using s_dim[of i] Suc.prems by fastforce
-    then have in_range:"?ind<n\<and> 0\<le>?ind" using Suc.prems by simp
-    then have com_hom:"(RAT M)!(?ind) = of_int_hom.vec_hom (M!?ind)" by auto
-    have "M!?ind\<in>set M" using in_range by simp
+    then have in_range: "?ind < n \<and> 0 \<le> ?ind" using Suc.prems by simp
+    then have com_hom: "(RAT M)!(?ind) = of_int_hom.vec_hom (M!?ind)" by auto
+    have "M!?ind \<in> set M" using in_range by simp
     then have mil:"M!?ind \<in> L" using basis_in_latticeI[of M "M!?ind"] dim_vecs_in_M carrier_vecI L_def
       by blast
-    moreover have "?q\<cdot>\<^sub>v(of_int_hom.vec_hom (M!?ind)) =
+    moreover have "?q \<cdot>\<^sub>v (of_int_hom.vec_hom (M!?ind)) =
                    of_int_hom.vec_hom ((calculate_c (s i) Mt (Suc i) ) \<cdot>\<^sub>v M!?ind)"
       by fastforce
-    moreover have "(calculate_c (s i) Mt (Suc i) ) \<cdot>\<^sub>v M!?ind\<in>L"
+    moreover have "(calculate_c (s i) Mt (Suc i) ) \<cdot>\<^sub>v M!?ind \<in> L"
       using lattice_smult_close[of "M!?ind" "(calculate_c (s i) Mt (Suc i) )"] mil by simp
-    ultimately show "( ?q \<cdot>\<^sub>v (RAT M)!?ind) \<in> of_int_hom.vec_hom` L"
+    ultimately show "( ?q \<cdot>\<^sub>v (RAT M)!?ind) \<in> of_int_hom.vec_hom`L"
       using com_hom
       by force
   qed
-  then obtain y where y_def:"( ?q \<cdot>\<^sub>v (RAT M)!?ind) = of_int_hom.vec_hom y\<and> y\<in>L" by blast
-  have carrier_x: "x\<in>carrier_vec n" using lattice_carrier x_def by blast
-  have carrier_y: "y\<in>carrier_vec n" using lattice_carrier y_def by blast
-  then have carrier_my: "-y\<in>carrier_vec n" by simp
+  then obtain y where y_def: "( ?q \<cdot>\<^sub>v (RAT M)!?ind) = of_int_hom.vec_hom y \<and> y \<in> L" by blast
+  have carrier_x: "x \<in> carrier_vec n" using lattice_carrier x_def by blast
+  have carrier_y: "y \<in> carrier_vec n" using lattice_carrier y_def by blast
+  then have carrier_my: "-y \<in> carrier_vec n" by simp
   then have 1:"-( ?q \<cdot>\<^sub>v (RAT M)!?ind) = of_int_hom.vec_hom (-y)" using y_def by fastforce
-  then have "s (Suc i) = of_int_hom.vec_hom x-t+ of_int_hom.vec_hom (-y)"
+  then have "s (Suc i) = of_int_hom.vec_hom x - t + of_int_hom.vec_hom (-y)"
     using sub x_def y_def 1 by fastforce
   then have "s (Suc i) = of_int_hom.vec_hom x + of_int_hom.vec_hom (-y) - t"
     using lattice_carrier x_def y_def length_M
     by fastforce
-  moreover have "of_int_hom.vec_hom x + of_int_hom.vec_hom (-y) = of_int_hom.vec_hom (x+ -y)"
+  moreover have "of_int_hom.vec_hom x + of_int_hom.vec_hom (-y) = of_int_hom.vec_hom (x + -y)"
     using carrier_my carrier_x by fastforce
-  ultimately have 2:"s (Suc i) = of_int_hom.vec_hom (x+ -y) -t "
+  ultimately have 2: "s (Suc i) = of_int_hom.vec_hom (x + -y) -t "
     by metis
   have "-y = -1 \<cdot>\<^sub>v y" by auto
-  then have "-y\<in>L" using lattice_smult_close y_def by simp
-  then have "x+-y\<in>L" using lattice_sum_close x_def by simp
+  then have "-y \<in> L" using lattice_smult_close y_def by simp
+  then have "x + -y \<in> L" using lattice_sum_close x_def by simp
   then show ?case using 2 by fast
 qed
 
 lemma subtract_coset_into_lattice:
   fixes v::"rat vec"
   fixes w::"rat vec"
-  assumes "v\<in>coset"
-  assumes "w\<in>coset"
-  shows " (v-w)\<in>of_int_hom.vec_hom` L"
+  assumes "v \<in> coset"
+  assumes "w \<in> coset"
+  shows "v - w \<in> of_int_hom.vec_hom`L"
 proof-
-  obtain l1 where l1_def:"v=l1-t\<and> l1\<in>of_int_hom.vec_hom` L" using assms(1) by blast
-  obtain l2 where l2_def:"w = l2-t\<and> l2\<in>of_int_hom.vec_hom` L" using assms(2) by blast
-  have carrier_l1:"l1 \<in> carrier_vec n" using lattice_carrier l1_def by force
-  have carrier_l2:"l2 \<in> carrier_vec n" using lattice_carrier l2_def by force
-  obtain l1p where l1p_def:"l1 = of_int_hom.vec_hom l1p \<and> l1p\<in>L" using l1_def by fast
-  obtain l2p where l2p_def:"l2 = of_int_hom.vec_hom l2p \<and> l2p\<in>L" using l2_def by fast
-  have "-l2p = -1\<cdot>\<^sub>v l2p" using carrier_l2 by fastforce
-  then have ml2p:"-l2p\<in>  L" using lattice_smult_close[of l2p "-1"] l2p_def by presburger
-  then have "of_int_hom.vec_hom (-l2p)\<in> of_int_hom.vec_hom` L" by simp
+  obtain l1 where l1_def: "v = l1 - t \<and> l1 \<in> of_int_hom.vec_hom`L" using assms(1) by blast
+  obtain l2 where l2_def: "w = l2 - t \<and> l2 \<in> of_int_hom.vec_hom`L" using assms(2) by blast
+  have carrier_l1: "l1 \<in> carrier_vec n" using lattice_carrier l1_def by force
+  have carrier_l2: "l2 \<in> carrier_vec n" using lattice_carrier l2_def by force
+  obtain l1p where l1p_def: "l1 = of_int_hom.vec_hom l1p \<and> l1p \<in> L" using l1_def by fast
+  obtain l2p where l2p_def:" l2 = of_int_hom.vec_hom l2p \<and> l2p \<in> L" using l2_def by fast
+  have "-l2p = -1 \<cdot>\<^sub>v l2p" using carrier_l2 by fastforce
+  then have ml2p:"-l2p \<in> L" using lattice_smult_close[of l2p "-1"] l2p_def by presburger
+  then have "of_int_hom.vec_hom (-l2p) \<in> of_int_hom.vec_hom` L" by simp
   moreover have "of_int_hom.vec_hom (-l2p) = -l2" using l2p_def by fastforce
-  then have "l1-l2 = of_int_hom.vec_hom (l1p - l2p)" using l1p_def l2p_def carrier_l1 carrier_l2 by auto
-  moreover have "l1p-l2p\<in>L" using lattice_sum_close[of l1p "-l2p"]
+  then have "l1 - l2 = of_int_hom.vec_hom (l1p - l2p)" using l1p_def l2p_def carrier_l1 carrier_l2 by auto
+  moreover have "l1p - l2p \<in> L" using lattice_sum_close[of l1p "-l2p"]
      l1p_def l2p_def ml2p carrier_l1 carrier_l2
     by (simp add: minus_add_uminus_vec)
-  ultimately have "l1-l2\<in> of_int_hom.vec_hom` L" by fast
-  moreover have "v-w = l1-l2" using l1_def l2_def length_M carrier_vecI carrier_l1 carrier_l2 by force
+  ultimately have "l1 - l2 \<in> of_int_hom.vec_hom`L" by fast
+  moreover have "v - w = l1 - l2" using l1_def l2_def length_M carrier_vecI carrier_l1 carrier_l2 by force
   ultimately show ?thesis by simp
 qed
 lemma t_in_coset:
@@ -691,32 +693,32 @@ lemma t_in_coset:
 
 section "Lemmas on closest distance"
 
-lemma closest_distance_sq_pos: "closest_distance_sq\<ge>0"
+lemma closest_distance_sq_pos: "closest_distance_sq \<ge> 0"
 proof-
-  have  "\<forall>N\<in> {real_of_rat (sq_norm x::rat) |x. x \<in> coset}. 0\<le>N"
+  have  "\<forall>N \<in> {real_of_rat (sq_norm x::rat) |x. x \<in> coset}. 0 \<le> N"
     using sq_norm_vec_ge_0 by auto
-  moreover have "{real_of_rat (sq_norm x::rat) |x. x \<in> coset}\<noteq>{}" using t_in_coset by blast
-  ultimately have "0\<le>Inf {real_of_rat (sq_norm x::rat) |x. x \<in> coset}"
+  moreover have "{real_of_rat (sq_norm x::rat) |x. x \<in> coset} \<noteq> {}" using t_in_coset by blast
+  ultimately have "0 \<le> Inf {real_of_rat (sq_norm x::rat) |x. x \<in> coset}"
     by (meson cInf_greatest)
   then show ?thesis unfolding closest_distance_sq_def by blast
 qed
 
-definition witness:: "rat vec\<Rightarrow>rat \<Rightarrow> bool" 
-  where "witness v eps_closest = (sq_norm v \<le> eps_closest \<and> v\<in>coset\<and>dim_vec v = n)"
+definition witness:: "rat vec \<Rightarrow> rat \<Rightarrow> bool" 
+  where "witness v \<epsilon>_closest = (sq_norm v \<le> \<epsilon>_closest \<and> v \<in> coset \<and> dim_vec v = n)"
 
 definition close_condition::"rat \<Rightarrow> bool"
-  where "close_condition eps_closest \<equiv> 
-    (if closest_distance_sq = 0 then 0\<le> real_of_rat eps_closest 
-    else real_of_rat (eps_closest)>closest_distance_sq)
-    \<and> (real_of_rat (eps_closest)\<le>epsilon*closest_distance_sq)"
+  where "close_condition \<epsilon>_closest \<equiv> 
+    (if closest_distance_sq = 0 then 0 \<le> real_of_rat \<epsilon>_closest 
+    else real_of_rat \<epsilon>_closest > closest_distance_sq)
+    \<and> (real_of_rat \<epsilon>_closest \<le> \<epsilon> * closest_distance_sq)"
 
 lemma close_rat:
-  obtains eps_closest::rat 
-  where "close_condition eps_closest"
+  obtains \<epsilon>_closest::rat 
+  where "close_condition \<epsilon>_closest"
 proof(cases "closest_distance_sq = 0")
   case t:True
-  then have "epsilon*closest_distance_sq = real_of_rat (0::rat)" by simp
-  then have "real_of_rat (0::rat)\<le> epsilon*closest_distance_sq\<and>closest_distance_sq
+  then have "\<epsilon>*closest_distance_sq = real_of_rat (0::rat)" by simp
+  then have "real_of_rat (0::rat) \<le> \<epsilon>*closest_distance_sq \<and> closest_distance_sq
             \<le>(real_of_rat (0::rat))"
     using t by force
   then show ?thesis
@@ -725,19 +727,19 @@ proof(cases "closest_distance_sq = 0")
     case f:False
     then have "0<closest_distance_sq"
       using closest_distance_sq_pos by linarith
-    moreover have "(1::real)<epsilon" using epsilon by simp
-    ultimately have "closest_distance_sq<epsilon*closest_distance_sq" by simp
+    moreover have "(1::real)<\<epsilon>" using \<epsilon> by simp
+    ultimately have "closest_distance_sq<\<epsilon>*closest_distance_sq" by simp
     then show ?thesis
-      using Rats_dense_in_real[of closest_distance_sq "epsilon*closest_distance_sq"] that
+      using Rats_dense_in_real[of closest_distance_sq "\<epsilon>*closest_distance_sq"] that
       unfolding close_condition_def
       by (metis Rats_cases less_eq_real_def)
 qed
 
-definition eps_closest::rat
-  where "eps_closest = (if \<exists>r. close_condition r then SOME r. close_condition r else 0)"
+definition \<epsilon>_closest::rat
+  where "\<epsilon>_closest = (if \<exists>r. close_condition r then SOME r. close_condition r else 0)"
 
-lemma eps_closest_lemma: "close_condition eps_closest"
-  using close_rat unfolding eps_closest_def by (metis (full_types))
+lemma \<epsilon>_closest_lemma: "close_condition \<epsilon>_closest"
+  using close_rat unfolding \<epsilon>_closest_def by (metis (full_types))
 
 lemma rational_tri_ineq:
   fixes v::"rat vec"
@@ -792,15 +794,15 @@ proof-
 qed
 
 lemma witness_exists:
-  shows "\<exists>v. witness v eps_closest"
+  shows "\<exists>v. witness v \<epsilon>_closest"
 proof(cases "closest_distance_sq = 0")
   case t:True
-  have "eps_closest = 0"
-    using eps_closest_lemma t
+  have "\<epsilon>_closest = 0"
+    using \<epsilon>_closest_lemma t
     unfolding witness_def unfolding close_condition_def
     by auto
   then have equiv:"?thesis = (\<exists>v. v\<in>coset\<and> (dim_vec v = n) \<and> (sq_norm v) \<le> 0)" 
-    unfolding witness_def eps_closest_def by auto
+    unfolding witness_def \<epsilon>_closest_def by auto
   show ?thesis
   proof(rule ccontr)
     assume contra:"\<not>?thesis"
@@ -877,15 +879,15 @@ proof(cases "closest_distance_sq = 0")
   qed
 next
   case False
-  then have "closest_distance_sq < real_of_rat eps_closest"
-    using eps_closest_lemma unfolding eps_closest_def close_condition_def
+  then have "closest_distance_sq < real_of_rat \<epsilon>_closest"
+    using \<epsilon>_closest_lemma unfolding \<epsilon>_closest_def close_condition_def
     by presburger
-  moreover have "{real_of_rat (sq_norm x::rat) |x. x \<in> coset}\<noteq>{}" using t_in_coset by fast
-  ultimately obtain l where "l\<in>{real_of_rat (sq_norm x::rat) |x. x \<in> coset}\<and> l< real_of_rat eps_closest"
+  moreover have "{real_of_rat (sq_norm x::rat) |x. x \<in> coset} \<noteq> {}" using t_in_coset by fast
+  ultimately obtain l where "l \<in> {real_of_rat (sq_norm x::rat) |x. x \<in> coset} \<and> l < real_of_rat \<epsilon>_closest"
     using closest_distance_sq_pos
     unfolding closest_distance_sq_def
     by (meson cInf_lessD)
-  moreover then obtain v::"rat vec" where "l = real_of_rat (sq_norm v) \<and> v\<in>coset" by blast
+  moreover then obtain v::"rat vec" where "l = real_of_rat (sq_norm v) \<and> v \<in> coset" by blast
   ultimately show ?thesis unfolding witness_def lattice_carrier 
     by (smt (verit) length_M index_minus_vec(2) mem_Collect_eq of_rat_less_eq)
 qed
@@ -893,7 +895,7 @@ qed
 section \<open>More linear algebra lemmas\<close>
 
 lemma carrier_Ms:
-  shows "mat_M \<in>carrier_mat n n" "mat_M_inv \<in>carrier_mat n n"
+  shows "mat_M \<in> carrier_mat n n" "mat_M_inv \<in> carrier_mat n n"
     using M_dim M_inv_dim
      apply blast
     by (simp add: M_inv_dim(1) M_inv_dim(2) carrier_matI)
@@ -901,7 +903,7 @@ lemma carrier_Ms:
 lemma carrier_L:
   fixes v::"rat vec"
   assumes "dim_vec v = n"
-  shows "lattice_coord v\<in>carrier_vec n"
+  shows "lattice_coord v \<in> carrier_vec n"
   unfolding lattice_coord_def
   using mult_mat_vec_carrier[of "mat_M_inv" n n v]
             carrier_Ms
@@ -912,8 +914,8 @@ lemma carrier_L:
 lemma sumlist_index_commute:
   fixes Lst::"rat vec list" (*Want to make this more general*)
   fixes i::nat
-  assumes "set Lst\<subseteq>carrier_vec n"
-  assumes "i<n"
+  assumes "set Lst \<subseteq> carrier_vec n"
+  assumes "i < n"
   shows "(gs.sumlist Lst)$i = sum_list (map (\<lambda>j. (Lst!j)$i) [0..<(length Lst)])"
   using assms
 proof(induct Lst)
@@ -949,11 +951,11 @@ lemma mat_mul_to_sum_list:
   fixes v::"rat vec"
   assumes "dim_vec v = dim_col A"
   assumes "dim_row A = n"
-  shows "A*\<^sub>vv = gs.sumlist (map (\<lambda>j. v$j  \<cdot>\<^sub>v (col A j)) [0 ..< dim_col A])"
+  shows "A*\<^sub>vv = gs.sumlist (map (\<lambda>j. v$j \<cdot>\<^sub>v (col A j)) [0 ..< dim_col A])"
 proof-
   have carrier:"set (map (\<lambda>j. v $ j \<cdot>\<^sub>v col A j) [0..<dim_col A]) \<subseteq> Rn"
       by (smt (verit) assms(2) carrier_dim_vec dim_col ex_map_conv index_smult_vec(2) subset_code(1))
-  have "(A*\<^sub>vv)$i = gs.sumlist (map (\<lambda>j. v$j  \<cdot>\<^sub>v (col A j)) [0 ..< dim_col A])$i" if small:"i<dim_row A" for i
+  have "(A*\<^sub>vv)$i = gs.sumlist (map (\<lambda>j. v$j \<cdot>\<^sub>v (col A j)) [0 ..< dim_col A])$i" if small:"i<dim_row A" for i
   proof-
     let ?rAi = "row A i"
 
@@ -974,14 +976,13 @@ proof-
   moreover have "dim_vec (A*\<^sub>vv) = dim_row A" by fastforce
   moreover have "dim_vec (gs.sumlist (map (\<lambda>j. v$j  \<cdot>\<^sub>v (col A j)) [0 ..< dim_col A])) = n" 
     using carrier by auto
-  ultimately show ?thesis using assms
-    by auto
+  ultimately show ?thesis using assms by (metis (no_types, lifting) eq_vecI)
 qed
 
 lemma recover_from_lattice_coord:
   fixes v::"rat vec"
   assumes "dim_vec v = n"
-  shows "v = gs.sumlist (map (\<lambda>i. (lattice_coord  v)$i  \<cdot>\<^sub>v (RAT M)!i) [0 ..< n]) "
+  shows "v = gs.sumlist (map (\<lambda>i. (lattice_coord  v)$i \<cdot>\<^sub>v (RAT M)!i) [0 ..< n]) "
 proof -
   have "(mat_M * mat_M_inv)*\<^sub>v  v= mat_M*\<^sub>v(lattice_coord v)"
     unfolding lattice_coord_def
@@ -1222,8 +1223,8 @@ text \<open> This section shows that the algorithm output matches true closest (
 in some trailing coordinates. \<close>
 
 definition I where 
-  "I =  (if ({i\<in>{0..<n}. ((sq_norm (Mt!i)::rat))\<le>4*eps_closest}::nat set) \<noteq> {} 
-   then Max ({i\<in>{0..<n}. ((sq_norm (Mt!i)::rat))\<le>4*eps_closest}::nat set) else -1)"
+  "I =  (if ({i\<in>{0..<n}. ((sq_norm (Mt!i)::rat))\<le>4*\<epsilon>_closest}::nat set) \<noteq> {} 
+   then Max ({i\<in>{0..<n}. ((sq_norm (Mt!i)::rat))\<le>4*\<epsilon>_closest}::nat set) else -1)"
 
 lemma I_geq:
   shows "I\<ge>-1"
@@ -1240,14 +1241,14 @@ lemma index_geq_I_big:
   fixes i::nat
   assumes "i>I"
   assumes "i<n"
-  shows "((sq_norm (Mt!i)::rat))>4*eps_closest"
+  shows "((sq_norm (Mt!i)::rat))>4*\<epsilon>_closest"
 proof(rule ccontr)
   assume "\<not>?thesis"
-  then have "((sq_norm (Mt!i)::rat))\<le>4*eps_closest" by linarith
-  then have i_def:"i\<in>({i\<in>{0..<n}. ((sq_norm (Mt!i)::rat))\<le>4*eps_closest}::nat set)" using assms by fastforce
-  then have "({i\<in>{0..<n}. ((sq_norm (Mt!i)::rat))\<le>4*eps_closest}::nat set)\<noteq>{}" by fast
-  moreover then have "I= Max ({i\<in>{0..<n}. ((sq_norm (Mt!i)::rat))\<le>4*eps_closest}::nat set)" unfolding I_def by presburger
-  moreover have "finite ({i\<in>{0..<n}. ((sq_norm (Mt!i)::rat))\<le>4*eps_closest}::nat set)"
+  then have "((sq_norm (Mt!i)::rat))\<le>4*\<epsilon>_closest" by linarith
+  then have i_def:"i\<in>({i\<in>{0..<n}. ((sq_norm (Mt!i)::rat))\<le>4*\<epsilon>_closest}::nat set)" using assms by fastforce
+  then have "({i\<in>{0..<n}. ((sq_norm (Mt!i)::rat))\<le>4*\<epsilon>_closest}::nat set)\<noteq>{}" by fast
+  moreover then have "I= Max ({i\<in>{0..<n}. ((sq_norm (Mt!i)::rat))\<le>4*\<epsilon>_closest}::nat set)" unfolding I_def by presburger
+  moreover have "finite ({i\<in>{0..<n}. ((sq_norm (Mt!i)::rat))\<le>4*\<epsilon>_closest}::nat set)"
     by simp
   ultimately show False using assms i_def eq_Max_iff by auto
 qed
@@ -1363,7 +1364,7 @@ qed
 lemma correct_coord_help:
   fixes i::"nat"
   assumes "i<(int n)-I"
-  assumes "witness v (eps_closest)"
+  assumes "witness v (\<epsilon>_closest)"
   assumes "0<i"
   shows "(lattice_coord (s i))$(n-i)=(lattice_coord v)$(n-i)
           \<and> ( (s i)  \<bullet> Mt!(n-i) = v \<bullet> Mt!(n-i) )"
@@ -1550,11 +1551,11 @@ proof(induct i rule: less_induct)
       by (simp add: power2_eq_square)
     have "n-i>I"
       using less by linarith
-    then have big_again:"sq_norm ?gsv > 4*eps_closest"
+    then have big_again:"sq_norm ?gsv > 4*\<epsilon>_closest"
       using index_geq_I_big[of "n-i"] nms by simp
-    then have "sq_norm v> 1/4 *4*eps_closest"
+    then have "sq_norm v> 1/4 *4*\<epsilon>_closest"
       using big by fastforce
-    then have "sq_norm v > eps_closest" by auto
+    then have "sq_norm v > \<epsilon>_closest" by auto
     then show False
       using assms(2)
       unfolding witness_def
@@ -1571,7 +1572,7 @@ qed
 lemma correct_coord:
   fixes v::"rat vec"
   fixes k::nat
-  assumes "witness v eps_closest"
+  assumes "witness v \<epsilon>_closest"
   assumes "I<k"
   assumes "k<n"
   shows "(s n) \<bullet> Mt!(k) = v \<bullet> Mt!(k)"
@@ -1585,8 +1586,8 @@ proof -
   ultimately show ?thesis by simp
 qed
 
-section \<open>Bound on distance to target, with epsilon factor.\<close>
-text \<open> This section culminates in a bound (which includes the epsilon factor) on the output's distance to the target vector.\<close>
+section \<open>Bound on distance to target, with \<epsilon> factor.\<close>
+text \<open> This section culminates in a bound (which includes the \<epsilon> factor) on the output's distance to the target vector.\<close>
 lemma sq_norm_from_Mt:
   fixes v::"rat vec"
   assumes v_carr:"v\<in>carrier_vec n"
@@ -1782,26 +1783,26 @@ qed
 lemma basis_decay_cor:
   fixes i::nat
   fixes j::nat
-  assumes "i<n"
-  assumes "j<n"
-  assumes "i\<le>j"
-  shows "sq_norm (Mt!i)\<le> \<alpha>^n*sq_norm(Mt!j)"
+  assumes "i < n"
+  assumes "j < n"
+  assumes "i \<le> j"
+  shows "sq_norm (Mt!i) \<le> \<alpha>^n*sq_norm(Mt!j)"
 proof-
-  have 1:"sq_norm (Mt!i)\<le> \<alpha>^(j-i)*sq_norm(Mt!j)"
+  have 1:"sq_norm (Mt!i) \<le> \<alpha>^(j-i)*sq_norm(Mt!j)"
     using basis_decay[of i "j-i"] assms
     by simp
-  have "\<alpha>^(j-i)\<le>\<alpha>^n" using assms using alpha by force
-  then have "\<alpha>^(j-i)*sq_norm(Mt!j)\<le>\<alpha>^n*sq_norm(Mt!j)"
+  have "\<alpha>^(j-i) \<le> \<alpha>^n" using assms using alpha by force
+  then have "\<alpha>^(j-i)*sq_norm(Mt!j) \<le> \<alpha>^n*sq_norm(Mt!j)"
     using mult_right_mono by blast
   then show ?thesis using 1 by order
 qed
 
 theorem babai_correct:
-  shows "real_of_rat ((sq_norm (s n))::rat) \<le>  (real_of_rat ((rat_of_int n)*\<alpha>^n) * epsilon * closest_distance_sq)\<and> s n \<in> coset"
+  shows "real_of_rat ((sq_norm (s n))::rat) \<le> (real_of_rat ((rat_of_int n)*\<alpha>^n) * \<epsilon> * closest_distance_sq) \<and> s n \<in> coset"
 proof-
   let ?s = "s n"
   let ?component = "(\<lambda>i. (?s\<bullet>Mt!i)^2/(sq_norm (Mt!i)))"
-  obtain v where wit_v:"witness v (eps_closest)"
+  obtain v where wit_v:"witness v (\<epsilon>_closest)"
     using witness_exists by force
   have split_norm:"sq_norm ?s = sum_list (map ?component [0..<n])"
     using s_dim[of n] sq_norm_from_Mt[of ?s] by fast
@@ -1818,7 +1819,7 @@ proof-
     using split_norm by force
 
 
-  have "?component i \<le> eps_closest " if i:"Inat\<le>i\<and>i<n" for i
+  have "?component i \<le> \<epsilon>_closest " if i:"Inat\<le>i\<and>i<n" for i
   proof-
     have ge0:"sq_norm (Mt!i) > 0"
       using gram_schmidt_fs_lin_indpt.sq_norm_pos[of n "RAT M" i]
@@ -1833,45 +1834,45 @@ proof-
             i
       unfolding witness_def
       by algebra
-    also have "sq_norm v \<le> eps_closest"
+    also have "sq_norm v \<le> \<epsilon>_closest"
       using wit_v unfolding witness_def by fast
     finally show ?thesis using ge0
       by (simp add: divide_right_mono)
   qed
-  then have "\<And>x. x\<in>set [Inat..<n] \<Longrightarrow> ?component x \<le> (\<lambda>i. eps_closest) x" by simp
-  then have "sum_list (map ?component [Inat..<n])\<le> sum_list (map (\<lambda>i. eps_closest) [Inat..<n])"
-    using sum_list_mono[of "[Inat..<n]" ?component "(\<lambda>i. eps_closest)"] by argo
-  then have right_sum:"sum_list (map ?component [Inat..<n])\<le>(rat_of_nat (n-Inat))*eps_closest"
-    using sum_list_triv[of "eps_closest" "[Inat..<n]" ] by force
+  then have "\<And>x. x\<in>set [Inat..<n] \<Longrightarrow> ?component x \<le> (\<lambda>i. \<epsilon>_closest) x" by simp
+  then have "sum_list (map ?component [Inat..<n])\<le> sum_list (map (\<lambda>i. \<epsilon>_closest) [Inat..<n])"
+    using sum_list_mono[of "[Inat..<n]" ?component "(\<lambda>i. \<epsilon>_closest)"] by argo
+  then have right_sum:"sum_list (map ?component [Inat..<n])\<le>(rat_of_nat (n-Inat))*\<epsilon>_closest"
+    using sum_list_triv[of "\<epsilon>_closest" "[Inat..<n]" ] by force
   have "(1::rat) \<le>\<alpha>" using alpha by fastforce 
   moreover have "n\<ge>0" by simp
   ultimately have "(1::rat)\<le>\<alpha>^n" by simp
   moreover have "(0::rat)\<le>1" by simp
-  moreover have "0\<le>(rat_of_nat (n-Inat))*eps_closest"
+  moreover have "0\<le>(rat_of_nat (n-Inat))*\<epsilon>_closest"
   proof-
     have "0\<le>(rat_of_nat (n-Inat))" using Inat_small by fast
-    moreover have "0\<le>eps_closest" 
+    moreover have "0\<le>\<epsilon>_closest" 
     proof(cases "closest_distance_sq = 0")
       case t:True
-      then show ?thesis using eps_closest_lemma closest_distance_sq_pos unfolding close_condition_def
+      then show ?thesis using \<epsilon>_closest_lemma closest_distance_sq_pos unfolding close_condition_def
         by auto
     next
       case f:False
-      then show ?thesis using eps_closest_lemma closest_distance_sq_pos unfolding close_condition_def
+      then show ?thesis using \<epsilon>_closest_lemma closest_distance_sq_pos unfolding close_condition_def
         by (smt (verit, del_insts) zero_le_of_rat_iff)
     qed
     ultimately show ?thesis by blast
   qed
-  ultimately have "(rat_of_nat (n-Inat))*eps_closest \<le> (rat_of_nat (n-Inat))*eps_closest * \<alpha>^n"
-    using mult_left_mono[of 1 "\<alpha>^n" "(rat_of_nat (n-Inat))*eps_closest"] by linarith
-  then have "sum_list (map ?component [Inat..<n])\<le>(rat_of_nat (n-Inat))*eps_closest*\<alpha>^n" using right_sum by order
-  then have right_sum_alpha:"sum_list (map ?component [Inat..<n])\<le>(rat_of_nat (n-Inat))*\<alpha>^n*eps_closest"
+  ultimately have "(rat_of_nat (n-Inat))*\<epsilon>_closest \<le> (rat_of_nat (n-Inat))*\<epsilon>_closest * \<alpha>^n"
+    using mult_left_mono[of 1 "\<alpha>^n" "(rat_of_nat (n-Inat))*\<epsilon>_closest"] by linarith
+  then have "sum_list (map ?component [Inat..<n])\<le>(rat_of_nat (n-Inat))*\<epsilon>_closest*\<alpha>^n" using right_sum by order
+  then have right_sum_alpha:"sum_list (map ?component [Inat..<n])\<le>(rat_of_nat (n-Inat))*\<alpha>^n*\<epsilon>_closest"
     by algebra
-  have "sum_list (map ?component [0..<Inat]) + sum_list (map ?component [Inat..<n])\<le> (rat_of_int n)*\<alpha>^n*eps_closest"
+  have "sum_list (map ?component [0..<Inat]) + sum_list (map ?component [Inat..<n])\<le> (rat_of_int n)*\<alpha>^n*\<epsilon>_closest"
   proof(cases "Inat = 0")
     case Inat:True
     then have "sum_list (map ?component [0..<Inat]) = 0" by auto
-    then have "sum_list (map ?component [0..<Inat]) + sum_list (map ?component [Inat..<n])\<le>(rat_of_int (n-Inat))*\<alpha>^n * eps_closest"
+    then have "sum_list (map ?component [0..<Inat]) + sum_list (map ?component [Inat..<n])\<le>(rat_of_int (n-Inat))*\<alpha>^n * \<epsilon>_closest"
       using right_sum_alpha by simp
     also have "n-Inat = n" using Inat by simp
     finally show ?thesis by linarith
@@ -1879,20 +1880,20 @@ proof-
     case False
     then have non_zero:"Inat>0" by blast
     then have I_not_min:"I\<ge>0" using Inat_def by simp
-    then have non_empty:"I = Max ({i\<in>{0..<n}. ((sq_norm (Mt!i)::rat))\<le>4*eps_closest}::nat set)"
+    then have non_empty:"I = Max ({i\<in>{0..<n}. ((sq_norm (Mt!i)::rat))\<le>4*\<epsilon>_closest}::nat set)"
       unfolding I_def by presburger
-    then have max:"Inat-1= Max({i\<in>{0..<n}. ((sq_norm (Mt!i)::rat))\<le>4*eps_closest}::nat set)"
+    then have max:"Inat-1= Max({i\<in>{0..<n}. ((sq_norm (Mt!i)::rat))\<le>4*\<epsilon>_closest}::nat set)"
       using Inat_def by linarith
-    then have "Inat -1 \<in> ({i\<in>{0..<n}. ((sq_norm (Mt!i)::rat))\<le>4*eps_closest}::nat set)"
+    then have "Inat -1 \<in> ({i\<in>{0..<n}. ((sq_norm (Mt!i)::rat))\<le>4*\<epsilon>_closest}::nat set)"
     proof-
-      have "finite ({i\<in>{0..<n}. ((sq_norm (Mt!i)::rat))\<le>4*eps_closest}::nat set)"
+      have "finite ({i\<in>{0..<n}. ((sq_norm (Mt!i)::rat))\<le>4*\<epsilon>_closest}::nat set)"
         by simp
-      moreover have "({i\<in>{0..<n}. ((sq_norm (Mt!i)::rat))\<le>4*eps_closest}::nat set)\<noteq>{}"
+      moreover have "({i\<in>{0..<n}. ((sq_norm (Mt!i)::rat))\<le>4*\<epsilon>_closest}::nat set)\<noteq>{}"
         using I_not_min unfolding I_def by presburger
-      ultimately show "Inat -1 \<in> ({i\<in>{0..<n}. ((sq_norm (Mt!i)::rat))\<le>4*eps_closest}::nat set)"
+      ultimately show "Inat -1 \<in> ({i\<in>{0..<n}. ((sq_norm (Mt!i)::rat))\<le>4*\<epsilon>_closest}::nat set)"
         using max eq_Max_iff by blast
     qed 
-    then have 2:"(sq_norm (Mt!(Inat-1))::rat)\<le>4*eps_closest" by blast
+    then have 2:"(sq_norm (Mt!(Inat-1))::rat)\<le>4*\<epsilon>_closest" by blast
     have "(1::rat) \<le>\<alpha>" using alpha by fastforce 
     moreover have "n\<ge>0" by simp
     ultimately have "(1::rat)\<le>\<alpha>^n" by simp 
@@ -1902,9 +1903,9 @@ proof-
       using gram_schmidt_fs_lin_indpt.sq_norm_pos[of n "RAT M" "Inat-1"]
             M_locale_2 M_locale_1 gram_schmidt_fs_Rn.main_connect[of n "(RAT M)"]
             non_zero Inat_small by force
-    ultimately have bound:"1/4 *\<alpha>^n* (sq_norm (Mt!(Inat-1)))\<le> ((1/4 * \<alpha>^n)* 4*eps_closest)"
+    ultimately have bound:"1/4 *\<alpha>^n* (sq_norm (Mt!(Inat-1)))\<le> ((1/4 * \<alpha>^n)* 4*\<epsilon>_closest)"
        using 2 by auto
-    have "?component i \<le> \<alpha>^n *eps_closest" if list1:"i<Inat" for i
+    have "?component i \<le> \<alpha>^n *\<epsilon>_closest" if list1:"i<Inat" for i
     proof-
       have 1:"0<n-i" using list1 Inat_small by simp
       then have "?s\<bullet>Mt!i = (s (n-i))\<bullet>Mt!i"
@@ -1927,49 +1928,49 @@ proof-
         using basis_decay_cor[of i "Inat-1"] list1 Inat_small mult_left_mono[
             of "sq_norm (Mt!i)" "\<alpha>^n * (sq_norm (Mt!(Inat-1)))" "1/4"]
           by linarith
-      finally have "?component i \<le> 1/4 * \<alpha>^n * 4 *eps_closest"
+      finally have "?component i \<le> 1/4 * \<alpha>^n * 4 *\<epsilon>_closest"
         using bound by linarith
-      also have "1/4 * \<alpha>^n * 4 * eps_closest=\<alpha>^n * eps_closest" by force
+      also have "1/4 * \<alpha>^n * 4 * \<epsilon>_closest=\<alpha>^n * \<epsilon>_closest" by force
       finally show ?thesis by blast
     qed
-    then have "sum_list (map ?component [0..<Inat])\<le> sum_list (map (\<lambda>i. \<alpha>^n * eps_closest)[0..<Inat])"
-      using sum_list_mono[of "[0..<Inat]" ?component "(\<lambda>i. \<alpha>^n * eps_closest)"] by fastforce
-    then have "sum_list (map ?component [0..<Inat])\<le> (rat_of_int Inat)*\<alpha>^n * eps_closest"
-      using sum_list_triv[of "\<alpha>^n * eps_closest" "[0..<Inat]"] by auto
+    then have "sum_list (map ?component [0..<Inat])\<le> sum_list (map (\<lambda>i. \<alpha>^n * \<epsilon>_closest)[0..<Inat])"
+      using sum_list_mono[of "[0..<Inat]" ?component "(\<lambda>i. \<alpha>^n * \<epsilon>_closest)"] by fastforce
+    then have "sum_list (map ?component [0..<Inat])\<le> (rat_of_int Inat)*\<alpha>^n * \<epsilon>_closest"
+      using sum_list_triv[of "\<alpha>^n * \<epsilon>_closest" "[0..<Inat]"] by auto
     then have "(sum_list (map ?component [0..<Inat])) + sum_list (map ?component [Inat..<n])
-                \<le> (rat_of_int Inat)*\<alpha>^n * eps_closest+(rat_of_int (n-Inat))*\<alpha>^n * eps_closest"
+                \<le> (rat_of_int Inat)*\<alpha>^n * \<epsilon>_closest+(rat_of_int (n-Inat))*\<alpha>^n * \<epsilon>_closest"
       using right_sum_alpha by linarith
     then have "(sum_list (map ?component [0..<Inat])) + sum_list (map ?component [Inat..<n])
-                \<le> ((rat_of_int Inat)+(rat_of_int (n-Inat)))*\<alpha>^n * eps_closest"
+                \<le> ((rat_of_int Inat)+(rat_of_int (n-Inat)))*\<alpha>^n * \<epsilon>_closest"
       using gs.cring_simprules(13) by auto
     then show ?thesis
       by (metis (no_types, lifting) Inat_small add_diff_inverse_nat diff_is_0_eq' less_nat_zero_code 
           of_int_of_nat_eq of_nat_add zero_less_diff)
   qed
-  then have "sq_norm ?s \<le> (rat_of_int n)*\<alpha>^n * eps_closest"
+  then have "sq_norm ?s \<le> (rat_of_int n)*\<alpha>^n * \<epsilon>_closest"
     using split_norm_sum by argo
-  then have "real_of_rat (sq_norm ?s) \<le> real_of_rat ((rat_of_int n)*\<alpha>^n * eps_closest)"
+  then have "real_of_rat (sq_norm ?s) \<le> real_of_rat ((rat_of_int n)*\<alpha>^n * \<epsilon>_closest)"
     by (simp add: of_rat_less_eq)
-  then have "real_of_rat (sq_norm ?s) \<le> real_of_rat ((rat_of_int n)*\<alpha>^n) * (real_of_rat eps_closest)"
+  then have "real_of_rat (sq_norm ?s) \<le> real_of_rat ((rat_of_int n)*\<alpha>^n) * (real_of_rat \<epsilon>_closest)"
     using of_rat_mult by metis
-  moreover have "real_of_rat eps_closest \<le> epsilon * closest_distance_sq"
-    using eps_closest_lemma closest_distance_sq_pos unfolding close_condition_def by blast
+  moreover have "real_of_rat \<epsilon>_closest \<le> \<epsilon> * closest_distance_sq"
+    using \<epsilon>_closest_lemma closest_distance_sq_pos unfolding close_condition_def by blast
   ultimately show ?thesis 
     using coset_s alpha 
-    using mult_left_mono[of "real_of_rat eps_closest" "epsilon * closest_distance_sq" "real_of_rat (rat_of_int (int n) * \<alpha> ^ n)"]
+    using mult_left_mono[of "real_of_rat \<epsilon>_closest" "\<epsilon> * closest_distance_sq" "real_of_rat (rat_of_int (int n) * \<alpha> ^ n)"]
     by simp
 qed
 
 end
 
-text \<open>In this section we remove the arbitrary constant epsilon and clean up the assumptions and results.\<close>
+text \<open>In this section we remove the arbitrary constant \<epsilon> and clean up the assumptions and results.\<close>
 
 locale babai_with_assms = babai +
   fixes mat_M :: "rat mat"
   assumes basis: "lin_indep M"
   defines "mat_M \<equiv> mat_of_cols n (RAT M)"
   assumes reduced:"weakly_reduced M n" 
-  assumes non_trivial:"0<n"
+  assumes non_trivial:"0 < n"
   assumes alpha:"\<alpha> \<ge> 4/3"
 begin
 
@@ -1995,28 +1996,28 @@ qed
 
 abbreviation babai_out where "babai_out \<equiv> babai_of_LLL (-t) (RAT M)"
 
-lemma babai_with_assms_epsilon_connect:
-  shows "babai_with_assms_epsilon M t \<alpha> 2"
-  using mat_M_inv_is_inv unfolding babai_with_assms_epsilon_def babai_with_assms_epsilon_axioms_def
+lemma babai_with_assms_\<epsilon>_connect:
+  shows "babai_with_assms_\<epsilon> M t \<alpha> 2"
+  using mat_M_inv_is_inv unfolding babai_with_assms_\<epsilon>_def babai_with_assms_\<epsilon>_axioms_def
   using babai_axioms alpha basis mat_M_def non_trivial reduced by simp
 
 text \<open>This shows that the output, which is of the form v-t, with v in L, is short \<close>
 lemma babai_correct:
-  shows "real_of_rat (sq_norm (babai_out)) \<le>  (real_of_rat ((rat_of_int n)*\<alpha>^n) * closest_distance_sq) \<and> (babai_out) \<in> coset"
+  shows "real_of_rat (sq_norm (babai_out)) \<le> (real_of_rat ((rat_of_int n)*\<alpha>^n) * closest_distance_sq) \<and> (babai_out) \<in> coset"
 proof-
-  have *:"real_of_rat (sq_norm (babai_out)) \<le> (real_of_rat ((rat_of_int n)*\<alpha>^n) * epsilon * closest_distance_sq)" if eps:"1 < epsilon" for epsilon
+  have *:"real_of_rat (sq_norm (babai_out)) \<le> (real_of_rat ((rat_of_int n)*\<alpha>^n) * \<epsilon> * closest_distance_sq)" if eps:"1 < \<epsilon>" for \<epsilon>
   proof-
-    have "babai_with_assms_epsilon M t \<alpha> epsilon"
-      using eps mat_M_inv_is_inv unfolding babai_with_assms_epsilon_def babai_with_assms_epsilon_axioms_def
+    have "babai_with_assms_\<epsilon> M t \<alpha> \<epsilon>"
+      using eps mat_M_inv_is_inv unfolding babai_with_assms_\<epsilon>_def babai_with_assms_\<epsilon>_axioms_def
       using babai_axioms alpha basis mat_M_def non_trivial reduced by blast
-    then show ?thesis using babai_with_assms_epsilon.babai_correct[of M t \<alpha> epsilon] babai_with_assms_epsilon.babai_to_help[of M t \<alpha> epsilon]
+    then show ?thesis using babai_with_assms_\<epsilon>.babai_correct[of M t \<alpha> \<epsilon>] babai_with_assms_\<epsilon>.babai_to_help[of M t \<alpha> \<epsilon>]
        s_def by simp
   qed
-  have "real_of_rat (sq_norm (babai_out)) \<le>  (real_of_rat ((rat_of_int n)*\<alpha>^n) * closest_distance_sq)"
+  have "real_of_rat (sq_norm (babai_out)) \<le> (real_of_rat ((rat_of_int n)*\<alpha>^n) * closest_distance_sq)"
   proof(rule ccontr)
     assume "\<not>?thesis"
     then have not:"(real_of_rat ((rat_of_int n)*\<alpha>^n) * closest_distance_sq) < real_of_rat (sq_norm (babai_of_LLL (-t) (RAT M)))" by auto
-    then obtain epsilon where "(real_of_rat ((rat_of_int n)*\<alpha>^n) * epsilon * closest_distance_sq) < real_of_rat (sq_norm (babai_of_LLL (-t) (RAT M))) \<and> 1 < epsilon"
+    then obtain \<epsilon> where "(real_of_rat ((rat_of_int n)*\<alpha>^n) * \<epsilon> * closest_distance_sq) < real_of_rat (sq_norm (babai_of_LLL (-t) (RAT M))) \<and> 1 < \<epsilon>"
     proof(cases "closest_distance_sq = 0")
       case True
       then have "(real_of_rat ((rat_of_int n)*\<alpha>^n) * 2 * closest_distance_sq) = (real_of_rat ((rat_of_int n)*\<alpha>^n) * closest_distance_sq)" by auto
@@ -2024,24 +2025,24 @@ proof-
       ultimately show ?thesis using that[of 2] not by presburger
     next
       case f:False 
-      then have pos:"0<( real_of_rat ((rat_of_int n)*\<alpha>^n) * closest_distance_sq)" using babai_with_assms_epsilon.closest_distance_sq_pos[of M t \<alpha> "11/10"]
-        using mat_M_inv_is_inv unfolding babai_with_assms_epsilon_def babai_with_assms_epsilon_axioms_def
+      then have pos:"0<( real_of_rat ((rat_of_int n)*\<alpha>^n) * closest_distance_sq)" using babai_with_assms_\<epsilon>.closest_distance_sq_pos[of M t \<alpha> "11/10"]
+        using mat_M_inv_is_inv unfolding babai_with_assms_\<epsilon>_def babai_with_assms_\<epsilon>_axioms_def
         using babai_axioms alpha basis mat_M_def non_trivial reduced by simp
       obtain delta where delta:"(real_of_rat ((rat_of_int n)*\<alpha>^n) * closest_distance_sq) < delta \<and> delta < real_of_rat (sq_norm (babai_of_LLL (-t) (RAT M)))"
         using dense not by blast
-      define epsilon where e:"epsilon = delta / (real_of_rat ((rat_of_int n)*\<alpha>^n) * closest_distance_sq)"
-      then have "1 < epsilon" 
+      define \<epsilon> where e:"\<epsilon> = delta / (real_of_rat ((rat_of_int n)*\<alpha>^n) * closest_distance_sq)"
+      then have "1 < \<epsilon>" 
         using pos delta divide_strict_right_mono
           divide_eq_1_iff[of "(real_of_rat (rat_of_int (int n) * \<alpha> ^ n) * closest_distance_sq)" "(real_of_rat (rat_of_int (int n) * \<alpha> ^ n) * closest_distance_sq)"] 
         by auto
-      moreover have "epsilon * (real_of_rat ((rat_of_int n)*\<alpha>^n) * closest_distance_sq) = delta" using e pos
+      moreover have "\<epsilon> * (real_of_rat ((rat_of_int n)*\<alpha>^n) * closest_distance_sq) = delta" using e pos
         by (metis nonzero_divide_eq_eq rel_simps(70))
-      ultimately show ?thesis using that[of epsilon] not delta by argo
+      ultimately show ?thesis using that[of \<epsilon>] not delta by argo
     qed
-    then show False using *[of epsilon] by linarith
+    then show False using *[of \<epsilon>] by linarith
   qed
   then show ?thesis 
-    using babai_with_assms_epsilon.babai_correct babai_with_assms_epsilon_connect babai_with_assms_epsilon.babai_to_help[of M t \<alpha> 2]
+    using babai_with_assms_\<epsilon>.babai_correct babai_with_assms_\<epsilon>_connect babai_with_assms_\<epsilon>.babai_to_help[of M t \<alpha> 2]
        s_def by force
 qed
 
@@ -2058,16 +2059,16 @@ proof-
   have "?vC \<in> coset" using babai_correct by blast
   then obtain v where v:"?vC = of_int_hom.vec_hom v - t \<and> v \<in> L" by blast
   then have "?vC + t = of_int_hom.vec_hom v + 0\<^sub>v n" using t_carr by force
-  then have 2:"?vC + t = of_int_hom.vec_hom v" using babai_with_assms_epsilon.lattice_carrier v babai_with_assms_epsilon_connect by force
+  then have 2:"?vC + t = of_int_hom.vec_hom v" using babai_with_assms_\<epsilon>.lattice_carrier v babai_with_assms_\<epsilon>_connect by force
   then have 1:"map_vec int_of_rat (?vC + t) =  map_vec int_of_rat (of_int_hom.vec_hom v)" by fastforce
   have "(map_vec int_of_rat (of_int_hom.vec_hom v))$i = v$i" if i:"i<n" for i
-    using i babai_with_assms_epsilon.lattice_carrier v babai_with_assms_epsilon_connect by fastforce
-  then have "map_vec int_of_rat (of_int_hom.vec_hom v) = v" using babai_with_assms_epsilon.lattice_carrier v babai_with_assms_epsilon_connect by auto
+    using i babai_with_assms_\<epsilon>.lattice_carrier v babai_with_assms_\<epsilon>_connect by fastforce
+  then have "map_vec int_of_rat (of_int_hom.vec_hom v) = v" using babai_with_assms_\<epsilon>.lattice_carrier v babai_with_assms_\<epsilon>_connect by auto
   then have part1:"map_vec int_of_rat (?vC + t) \<in> L" using 1 v
     by auto
   have "map_vec rat_of_int (map_vec int_of_rat (?vC + t)) = (?vC + t)" using 1 2 by fastforce
   then have "map_vec rat_of_int (map_vec int_of_rat (?vC + t)) - t = ?vC" 
-    using t_carr part1 babai_with_assms_epsilon.lattice_carrier v babai_with_assms_epsilon_connect
+    using t_carr part1 babai_with_assms_\<epsilon>.lattice_carrier v babai_with_assms_\<epsilon>_connect
     by auto
   then show ?thesis using babai_correct part1
     by presburger
@@ -2131,8 +2132,8 @@ proof-
   then have "out = map_vec int_of_rat
           (babai_of_LLL (uminus target) (LLL.RAT fs) 
           + target)" 
-    using babai_with_assms.babai_with_assms_epsilon_connect
-          babai_with_assms_epsilon.babai_to_help[of fs target] bab by metis
+    using babai_with_assms.babai_with_assms_\<epsilon>_connect
+          babai_with_assms_\<epsilon>.babai_to_help[of fs target] bab by metis
   then have "out \<in> vec_module.lattice_of n fs \<and>
     real_of_rat
      \<parallel>of_int_hom.vec_hom out - target\<parallel>\<^sup>2
@@ -2203,18 +2204,18 @@ next
   have "?SN=1\<or>?SN=2\<or>2<?SN" by fastforce
   then show ?case
   proof(elim disjE)
-    {assume 1:"?SN = 1"
+    { assume 1:"?SN = 1"
       then have "real_of_rat ((rat_of_int ?SN)*(4/3)^?SN) = real_of_rat ((rat_of_int 1)*4/3)"
         by auto
       then show ?thesis using 1 by simp}
   next
-    {assume 2:"?SN=2" 
+    { assume 2:"?SN=2" 
       then have "real_of_rat ((rat_of_int ?SN)*(4/3)^?SN) = real_of_rat ((rat_of_int 2)*(4/3)^2)"
         by (metis int_ops(3))
       then show ?thesis
         using 2 by auto}
   next
-    {assume ind:"?SN>2" 
+    { assume ind:"?SN>2" 
       then have "n>0" by simp
       then have 1:"?SN = n*(?SN/n)" by auto
       moreover have 2:"((4::rat)/3)^?SN = (4/3)^n*(4/3)" by auto
