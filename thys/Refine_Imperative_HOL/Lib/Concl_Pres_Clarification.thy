@@ -30,7 +30,7 @@ begin
       fun eq_assume_contr_tac ctxt = eq_assume_tac ORELSE' eq_contr_tac ctxt;
 
       fun cp_bimatch_from_nets_tac ctxt =
-        biresolution_from_nets_tac ctxt (order_list o filter (is_cp_brl o snd)) true;
+        Bires.biresolution_from_nets_tac ctxt (order_list o filter (is_cp_brl o snd)) true;
 
 
     in

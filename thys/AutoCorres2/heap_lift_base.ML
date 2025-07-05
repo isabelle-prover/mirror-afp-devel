@@ -1531,7 +1531,7 @@ let
         (\<^infer_instantiate>\<open> upd = \<open>#hupd d\<close> and w = \<open>s\<close> in
           prop \<open>\<And>p f g. upd p f o w g = w g o upd p f\<close>\<close> lthy)
         (fn { context, ... } => REPEAT_ALL_NEW (
-          DETERM' (match_from_net_tac context disjnt_heap_fields_comp) ORELSE'
+          DETERM' (Bires.match_from_net_tac context disjnt_heap_fields_comp) ORELSE'
           SOLVED' (asm_full_simp_tac (context addsimps @{thms fun_eq_iff}))) 1)
       val update_thms = [@{thm comp_eq_dest} OF [disj_thm]]
       val read_thms = [@{thm lense.get_commute_of_commute} OF [atomic_lense, disj_thm]]
@@ -1571,7 +1571,7 @@ let
             (\<^infer_instantiate>\<open> upd = \<open>#hupd d2\<close> and w = \<open>atomic_setter\<close> in
               prop \<open>\<And>p f g. upd p f o w g = w g o upd p f\<close>\<close> lthy)
             (fn { context, ... } => REPEAT_ALL_NEW (
-              DETERM' (match_from_net_tac context disjnt_heap_fields_comp) ORELSE'
+              DETERM' (Bires.match_from_net_tac context disjnt_heap_fields_comp) ORELSE'
               SOLVED' (asm_full_simp_tac (context addsimps @{thms fun_eq_iff}))) 1)
         in
           ([@{thm comp_eq_dest} OF [disj_thm]],
@@ -1602,7 +1602,7 @@ let
             (\<^infer_instantiate>\<open> upd1 = \<open>#hupd d2\<close> and upd2 = \<open>#hupd d1\<close> in
               prop \<open>\<And>p f q g. upd2 p f o upd1 q g = upd1 q g o upd2 p f\<close>\<close> lthy)
             (fn { context, ... } => REPEAT_ALL_NEW (
-              DETERM' (match_from_net_tac context disjnt_heap_fields_comp) ORELSE'
+              DETERM' (Bires.match_from_net_tac context disjnt_heap_fields_comp) ORELSE'
               SOLVED' (asm_full_simp_tac (context addsimps @{thms fun_eq_iff}))) 1)
         in
           ([@{thm comp_eq_dest} OF [disj_thm]],
@@ -1623,7 +1623,7 @@ let
 
   val disjnt_heap_fields_comp = Named_Theorems.get lthy @{named_theorems disjnt_heap_fields_comp}
     |> (fn disj_thms => disj_thms @ map (fn thm => @{thm sym} OF [thm]) disj_thms)
-    |> Tactic.build_net
+    |> Bires.build_net
 
   val static_fields = take (length copied_fields) all_fields
   val lthy = Utils.timeit_msg 0 lthy (fn _ => "Prove heap field commutation rules [update_commute]") (fn _ => lthy
