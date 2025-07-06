@@ -281,7 +281,7 @@ ML \<open>
       val thy = Proof_Context.theory_of ctxt
       val typ_net = intf_types.get ctxt
         |> Refine_Util.subsume_sort Thm.concl_of thy
-        |> Tactic.build_net
+        |> Bires.build_net
     in typ_net end
 
     fun typ_thms_of_seq' ctxt typ_net c = let
@@ -290,7 +290,7 @@ ML \<open>
         |> HOLogic.mk_Trueprop
         |> Thm.cterm_of ctxt
         |> Goal.init
-        |> resolve_from_net_tac ctxt typ_net 1
+        |> Bires.resolve_from_net_tac ctxt typ_net 1
         |> Seq.map Goal.conclude
     in typ_thms end
 
@@ -340,7 +340,7 @@ ML \<open>
         else K no_tac
 
       val id_typ = 
-        resolve_from_net_tac ctxt typ_net
+        Bires.resolve_from_net_tac ctxt typ_net
         ORELSE' tr_iu
 
       val pat_net = op_patterns.get ctxt 
@@ -636,13 +636,13 @@ structure Autoref_Rel_Inf :AUTOREF_REL_INF = struct
 
 
   fun roi_step_tac ctxt = let
-    val ind_net = rel_indirect.get ctxt |> Tactic.build_net
+    val ind_net = rel_indirect.get ctxt |> Bires.build_net
   in
     IF_EXGOAL (
       assume_tac ctxt
       ORELSE'
       Indep_Vars.indep_tac ctxt
-      ORELSE' resolve_from_net_tac ctxt ind_net
+      ORELSE' Bires.resolve_from_net_tac ctxt ind_net
       ORELSE'
       (fn i => fn st => 
         case Logic.concl_of_goal (Thm.prop_of st) i of

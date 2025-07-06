@@ -154,7 +154,7 @@ ML \<open>
       thm_pairs
       |> map #2
       |> (fn thms => thms @ @{thms dflt_trans_rules})
-      |> Tactic.build_net 
+      |> Bires.build_net 
 
     structure trans_netD = Autoref_Data (
       type T = trans_net
@@ -189,7 +189,7 @@ ML \<open>
 
     local
       open Autoref_Tacticals
-      fun trans_rule_tac ctxt net = resolve_from_net_tac ctxt net
+      fun trans_rule_tac ctxt net = Bires.resolve_from_net_tac ctxt net
         THEN_ALL_NEW (TRY o match_tac ctxt [@{thm PRIO_TAGI}])
 
     in
