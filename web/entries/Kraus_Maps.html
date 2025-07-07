@@ -3,12 +3,12 @@
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Without Loss of Generality - Archive of Formal Proofs</title>
-    <meta name="description" content="Without Loss of Generality in the Archive of Formal Proofs" />
-    <meta property="og:description" content="Without Loss of Generality in the Archive of Formal Proofs" />
+    <title>Kraus Maps - Archive of Formal Proofs</title>
+    <meta name="description" content="Kraus Maps in the Archive of Formal Proofs" />
+    <meta property="og:description" content="Kraus Maps in the Archive of Formal Proofs" />
 
-  <meta property="og:title" content="Without Loss of Generality" />
-  <meta property="og:url" content="https://isa-afp.org/entries/Wlog.html" />
+  <meta property="og:title" content="Kraus Maps" />
+  <meta property="og:url" content="https://isa-afp.org/entries/Kraus_Maps.html" />
   <meta property="og:image" content="https://isa-afp.org/images/afp.png" />
     <meta property="og:type" content="article" />
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
@@ -95,19 +95,47 @@
         </datalist>
       </div>
     </form>
-  <h1 ><span class='first'>W</span>ithout <span class='first'>L</span>oss of <span class='first'>G</span>enerality
+  <h1 ><span class='first'>K</span>raus <span class='first'>M</span>aps
   </h1>
   <div>
-      <p><a href="../authors/unruh/">Dominique Unruh</a> <a href="https://qis.rwth-aachen.de/people/unruh/">🌐</a>
+      <p><a href="../authors/unruh/">Dominique Unruh</a> <a class="obfuscated" data="eyJ1c2VyIjpbInVucnVoIl0sImhvc3QiOlsidXQiLCJlZSJdfQ==">📧</a>
       </p>
-      <p class="date">August 30, 2024</p>
+      <p class="date">June 26, 2025</p>
   </div>
 </header>
       <div>
   <main>
 
     <h3>Abstract</h3>
-    <div class="abstract mathjax_process">We introduce a new command <code>wlog</code> in Isabelle/HOL that allows us to (soundly) assume facts without loss of generality inside a proof.</div>
+    <div class="abstract mathjax_process">We formalize Kraus maps, i.e., quantum channels of the form
+$\rho\mapsto\sum_x M_x\rho M_x^\dagger$ for suitable families of
+``Kraus operators'' $M_x$.  (In the finite-dimensional setting and the
+setting of separable Hilbert spaces, those are known to be equivalent
+to completely-positive maps, another common formalization of quantum
+channels.)  Our results hold for arbitrary (i.e., not necessarily
+finite-dimensional or separable Hilbert spaces.
+
+
+Specifically, in theory Kraus_Families, we formalize the type
+$(\alpha,\beta,\xi)\ \mathtt{kraus\_family}$ of families of Kraus
+operators $M_x$ (Kraus families for short), from trace-class operators
+on Hilbert space $\alpha$ to those on $\beta$, indexed by $x$ of type
+$\xi$.  This induces both a Kraus map $\rho\mapsto\sum_x M_x\rho
+M_x^\dagger$, as well as a quantum measurement with outcomes of type
+$\xi$.
+
+
+We define and study various special Kraus families such as zero,
+identity, application of an operator, sum of two Kraus maps,
+sequential composition, infinite sum, random sampling, trace, tensor
+products, and complete measurements.
+
+
+Furthermore, since working with explicit Kraus families can be
+cumbersome when the specific family of operators is not relevant, in
+theory Kraus_Maps, we define a Kraus map to be a function between two
+spaces that is of the form $\rho\mapsto\sum_x M_x\rho M_x^\dagger$ for
+some Kraus family, and restate our results in terms of such functions.</div>
 
     <h3>License</h3>
     <div>
@@ -115,28 +143,31 @@
     </div>
       <h3>Topics</h3>
       <ul>
-          <li><a href="../topics/tools/">Tools</a></li>
+          <li><a href="../topics/mathematics/physics/quantum-information/">Mathematics/Physics/Quantum information</a></li>
+          <li><a href="../topics/mathematics/analysis/">Mathematics/Analysis</a></li>
       </ul>
-      <h3>Session Wlog</h3>
+      <h3>Session Kraus_Maps</h3>
       <ul>
-          <li><a href="../sessions/wlog/#Wlog">Wlog</a></li>
-          <li><a href="../sessions/wlog/#Wlog_Examples">Wlog_Examples</a></li>
+          <li><a href="../sessions/kraus_maps/#Backported">Backported</a></li>
+          <li><a href="../sessions/kraus_maps/#Misc_Kraus_Maps">Misc_Kraus_Maps</a></li>
+          <li><a href="../sessions/kraus_maps/#Kraus_Families">Kraus_Families</a></li>
+          <li><a href="../sessions/kraus_maps/#Kraus_Maps">Kraus_Maps</a></li>
       </ul>
 
     <div class="flex-wrap">
         <div>
           <h3>Depends on</h3>
           <ul class="horizontal-list">
-              <li><a href="../entries/Mersenne_Primes.html">Mersenne primes and the Lucas–Lehmer test</a></li>
+              <li><a href="../entries/Hilbert_Space_Tensor_Product.html">The Tensor Product on Hilbert Spaces</a></li>
+              <li><a href="../entries/Ordinary_Differential_Equations.html">Ordinary Differential Equations</a></li>
+              <li><a href="../entries/With_Type.html">With-Type – Poor man's dependent types</a></li>
+              <li><a href="../entries/Wlog.html">Without Loss of Generality</a></li>
           </ul>
         </div>
         <div>
           <h3>Used by</h3>
           <ul class="horizontal-list">
-              <li><a href="../entries/Complex_Bounded_Operators.html">Complex Bounded Operators</a></li>
-              <li><a href="../entries/Hilbert_Space_Tensor_Product.html">The Tensor Product on Hilbert Spaces</a></li>
-              <li><a href="../entries/Sophie_Germain.html">Sophie Germain’s Theorem</a></li>
-              <li><a href="../entries/Kraus_Maps.html">Kraus Maps</a></li>
+              <li><a href="../entries/Oneway2Hiding.html">The Oneway to Hiding Theorem</a></li>
           </ul>
         </div>
     </div>
@@ -146,9 +177,9 @@
     <a class="popup-button" href="#cite-popup">Cite</a>
     <a class="popup-button" href="#download-popup">Download</a>
     <h4>PDFs</h4>
-    <a href="https://www.isa-afp.org/browser_info/current/AFP/Wlog/outline.pdf">Proof outline</a>
-    <a href="https://www.isa-afp.org/browser_info/current/AFP/Wlog/document.pdf">Proof document</a>
-    <a href="https://www.isa-afp.org/browser_info/current/AFP/Wlog/session_graph.pdf">Dependencies</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Kraus_Maps/outline.pdf">Proof outline</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Kraus_Maps/document.pdf">Proof document</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Kraus_Maps/session_graph.pdf">Dependencies</a>
   </nav>
 
   <div id="cite-popup" class="overlay">
@@ -157,14 +188,14 @@
       <h2>Cite</h2>
       <a class="close" href="#">&times;</a>
       <div>
-        <p style="display:none;" id="bibtex-filename">Wlog-AFP</p>
-        <pre id="copy-text">@article{Wlog-AFP,
+        <p style="display:none;" id="bibtex-filename">Kraus_Maps-AFP</p>
+        <pre id="copy-text">@article{Kraus_Maps-AFP,
   author  = {Dominique Unruh},
-  title   = {Without Loss of Generality},
+  title   = {Kraus Maps},
   journal = {Archive of Formal Proofs},
-  month   = {August},
-  year    = {2024},
-  note    = {\url{https://isa-afp.org/entries/Wlog.html},
+  month   = {June},
+  year    = {2025},
+  note    = {\url{https://isa-afp.org/entries/Kraus_Maps.html},
              Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -178,21 +209,8 @@
     <div class="popup">
       <h2>Download</h2>
       <a class="close" href="#">&times;</a>
-      <a href="https://www.isa-afp.org/release/afp-Wlog-current.tar.gz" download>
+      <a href="https://www.isa-afp.org/release/afp-Kraus_Maps-current.tar.gz" download>
         Download latest</a>
-        <p>Older releases:</p>
-        <ul>
-            <li>
-              <a href="https://www.isa-afp.org/release/afp-Wlog-2025-03-17.tar.gz">Mar 17, 2025
-              </a>
-              : Isabelle2025
-            </li>
-            <li>
-              <a href="https://www.isa-afp.org/release/afp-Wlog-2024-09-06.tar.gz">Sep 6, 2024
-              </a>
-              : Isabelle2024
-            </li>
-        </ul>
     </div>
   </div>
       </div>

@@ -16,6 +16,43 @@
   "year": "2025"
  },
  {
+  "abstract": "As the standardization process for post-quantum cryptography progresses, the need for computer-verified security proofs against classical and quantum attackers increases.  Even though some tools are already tackling this issue, none are foundational.  We take a first step in this direction and present a complete formalization of the One-way to Hiding (O2H) Theorem, a central theorem for security proofs against quantum attackers.  With this new formalization, we build more secure foundations for proof-checking tools in the quantum setting. Using the theorem prover Isabelle, we verify the semi-classical O2H Theorem by Ambainis, Hamburg and Unruh (Crypto 2019) in different variations. We also give a novel (and for the formalization simpler) proof to the O2H Theorem for mixed states and extend the theorem to non-terminating adversaries.  This work provides a theoretical and foundational background for several verification tools and for security proofs in the quantum setting.",
+  "authors": [
+   "Katharina Kreuzer",
+   "Dominique Unruh"
+  ],
+  "link": "/entries/Oneway2Hiding.html",
+  "shortname": "Oneway2Hiding",
+  "title": "The Oneway to Hiding Theorem",
+  "topic_links": [
+   "/topics/computer-science/security/cryptography/",
+   "/topics/mathematics/physics/quantum-information/"
+  ],
+  "topics": [
+   "Computer science/Security/Cryptography",
+   "Mathematics/Physics/Quantum information"
+  ],
+  "year": "2025"
+ },
+ {
+  "abstract": "We formalize Kraus maps, i.e., quantum channels of the form $\\rho\\mapsto\\sum_x M_x\\rho M_x^\\dagger$ for suitable families of ``Kraus operators'' $M_x$.  (In the finite-dimensional setting and the setting of separable Hilbert spaces, those are known to be equivalent to completely-positive maps, another common formalization of quantum channels.)  Our results hold for arbitrary (i.e., not necessarily finite-dimensional or separable Hilbert spaces.   Specifically, in theory Kraus_Families, we formalize the type $(\\alpha,\\beta,\\xi)\\ \\mathtt{kraus\\_family}$ of families of Kraus operators $M_x$ (Kraus families for short), from trace-class operators on Hilbert space $\\alpha$ to those on $\\beta$, indexed by $x$ of type $\\xi$.  This induces both a Kraus map $\\rho\\mapsto\\sum_x M_x\\rho M_x^\\dagger$, as well as a quantum measurement with outcomes of type $\\xi$.   We define and study various special Kraus families such as zero, identity, application of an operator, sum of two Kraus maps, sequential composition, infinite sum, random sampling, trace, tensor products, and complete measurements.   Furthermore, since working with explicit Kraus families can be cumbersome when the specific family of operators is not relevant, in theory Kraus_Maps, we define a Kraus map to be a function between two spaces that is of the form $\\rho\\mapsto\\sum_x M_x\\rho M_x^\\dagger$ for some Kraus family, and restate our results in terms of such functions.",
+  "authors": [
+   "Dominique Unruh"
+  ],
+  "link": "/entries/Kraus_Maps.html",
+  "shortname": "Kraus_Maps",
+  "title": "Kraus Maps",
+  "topic_links": [
+   "/topics/mathematics/physics/quantum-information/",
+   "/topics/mathematics/analysis/"
+  ],
+  "topics": [
+   "Mathematics/Physics/Quantum information",
+   "Mathematics/Analysis"
+  ],
+  "year": "2025"
+ },
+ {
   "abstract": "In formal language theory, the Parikh image of a language $L$ is the set of multisets of the words in $L$: the order of letters in a word becomes irrelevant, only the number of occurrences is relevant. Parikh's Theorem states that the Parikh image of a context-free language is the same as the Parikh image of some regular language. This formalization closely follows Pilling's proof: It describes a context-free language as a minimal solution to a system of equations induced by a context free grammar for this language. Then it is shown that there exists a minimal solution to this system which is regular, such that the regular solution and the context-free language have the same Parikh image.",
   "authors": [
    "Fabian Lehr"

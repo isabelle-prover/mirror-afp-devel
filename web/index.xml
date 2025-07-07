@@ -11,11 +11,27 @@
     <category>Mathematics/Algebra</category>
 </item>
 <item>
+  <title>The Oneway to Hiding Theorem</title>
+  <link>https://isa-afp.org/entries/Oneway2Hiding.html</link>
+  <pubDate>Fri, 27 Jun 2025 00:00:00 +0000</pubDate>
+  <description>The Oneway to Hiding Theorem in the AFP</description>
+    <category>Computer science/Security/Cryptography</category>
+    <category>Mathematics/Physics/Quantum information</category>
+</item>
+<item>
   <title>Parikh&#39;s Theorem</title>
   <link>https://isa-afp.org/entries/Parikh.html</link>
   <pubDate>Thu, 26 Jun 2025 00:00:00 +0000</pubDate>
   <description>Parikh&#39;s Theorem in the AFP</description>
     <category>Computer science/Automata and formal languages</category>
+</item>
+<item>
+  <title>Kraus Maps</title>
+  <link>https://isa-afp.org/entries/Kraus_Maps.html</link>
+  <pubDate>Thu, 26 Jun 2025 00:00:00 +0000</pubDate>
+  <description>Kraus Maps in the AFP</description>
+    <category>Mathematics/Physics/Quantum information</category>
+    <category>Mathematics/Analysis</category>
 </item>
 <item>
   <title>The Hidden Number Problem</title>

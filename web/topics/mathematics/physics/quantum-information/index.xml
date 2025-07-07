@@ -4,6 +4,22 @@
     <title>Mathematics/Physics/Quantum information</title>
     <link>https://isa-afp.org/topics/mathematics/physics/quantum-information/</link>
     <description>AFP entries in Quantum information</description><item>
+  <title>The Oneway to Hiding Theorem</title>
+  <link>https://isa-afp.org/entries/Oneway2Hiding.html</link>
+  <pubDate>Fri, 27 Jun 2025 00:00:00 +0000</pubDate>
+  <description>The Oneway to Hiding Theorem in the AFP</description>
+    <category>Computer science/Security/Cryptography</category>
+    <category>Mathematics/Physics/Quantum information</category>
+</item>
+<item>
+  <title>Kraus Maps</title>
+  <link>https://isa-afp.org/entries/Kraus_Maps.html</link>
+  <pubDate>Thu, 26 Jun 2025 00:00:00 +0000</pubDate>
+  <description>Kraus Maps in the AFP</description>
+    <category>Mathematics/Physics/Quantum information</category>
+    <category>Mathematics/Analysis</category>
+</item>
+<item>
   <title>Quantum Fourier Transform</title>
   <link>https://isa-afp.org/entries/Quantum_Fourier_Transform.html</link>
   <pubDate>Tue, 28 Jan 2025 00:00:00 +0000</pubDate>

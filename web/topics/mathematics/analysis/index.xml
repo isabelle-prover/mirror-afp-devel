@@ -4,6 +4,14 @@
     <title>Mathematics/Analysis</title>
     <link>https://isa-afp.org/topics/mathematics/analysis/</link>
     <description>AFP entries in Analysis</description><item>
+  <title>Kraus Maps</title>
+  <link>https://isa-afp.org/entries/Kraus_Maps.html</link>
+  <pubDate>Thu, 26 Jun 2025 00:00:00 +0000</pubDate>
+  <description>Kraus Maps in the AFP</description>
+    <category>Mathematics/Physics/Quantum information</category>
+    <category>Mathematics/Analysis</category>
+</item>
+<item>
   <title>The Sigmoid Function and the Universal Approximation Theorem</title>
   <link>https://isa-afp.org/entries/Sigmoid_Universal_Approximation.html</link>
   <pubDate>Fri, 23 May 2025 00:00:00 +0000</pubDate>

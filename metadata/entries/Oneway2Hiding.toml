@@ -1,0 +1,48 @@
+title = "The Oneway to Hiding Theorem"
+date = 2025-06-27
+topics = [
+  "Computer science/Security/Cryptography",
+  "Mathematics/Physics/Quantum information",
+]
+abstract = """
+As the standardization process for post-quantum cryptography
+progresses, the need for computer-verified security proofs against
+classical and quantum attackers increases.  Even though some tools are
+already tackling this issue, none are foundational.  We take a first
+step in this direction and present a complete formalization of the
+One-way to Hiding (O2H) Theorem, a central theorem for security proofs
+against quantum attackers.  With this new formalization, we build more
+secure foundations for proof-checking tools in the quantum setting.
+Using the theorem prover Isabelle, we verify the semi-classical O2H
+Theorem by Ambainis, Hamburg and Unruh (Crypto 2019) in different
+variations. We also give a novel (and for the formalization simpler)
+proof to the O2H Theorem for mixed states and extend the theorem to
+non-terminating adversaries.  This work provides a theoretical and
+foundational background for several verification tools and for
+security proofs in the quantum setting."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.kreuzer]
+email = "kreuzer_email"
+
+[authors.unruh]
+homepage = "unruh_homepage1"
+
+[contributors]
+
+[notify]
+unruh = "unruh_email1"
+kreuzer = "kreuzer_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = [
+  "10.1145/3703595.3705887",
+]
+pubs = []

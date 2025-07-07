@@ -1,0 +1,60 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+\usepackage{geometry}
+\usepackage{amsmath, amssymb}
+\usepackage{wasysym}
+\usepackage{stmaryrd}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+% for uniform font size
+%\renewcommand{\isastyle}{\isastyleminor}
+
+
+\begin{document}
+
+\title{The Oneway to Hiding Theorem\thanks{Supported by the research training group ConVeY of the German Research Foundation under grant GRK 2428 and the Deutsche Forschungsgemeinschaft (DFG, German Research Foundation) -- NI 491/18-1, by the ERC consolidator grant CerQuS (Certified Quantum Security,  819317), by
+the Estonian Centre of Excellence in IT (EXCITE, TK148), by
+the Estonian Centre of Excellence "Foundations of the Universe" (TK202), and by
+the Estonian Research Council PRG grant "Secure Quantum Technology" (PRG946).}}
+
+\author{Katharina Heidler\and Dominique Unruh}
+\maketitle
+
+\begin{abstract}
+As the standardization process for post-quantum cryptography progresses, the need for computer-verified security proofs against classical and quantum attackers increases. 
+Even though some tools are already tackling this issue, none are foundational. 
+We take a first step in this direction and present a complete formalization of the One-way to Hiding (O2H) Theorem, a central theorem for security proofs against quantum attackers. 
+With this new formalization, we build more secure foundations for proof-checking tools in the quantum setting.
+Using the theorem prover Isabelle, we verify the semi-classical O2H Theorem by Ambainis, Hamburg and Unruh (Crypto 2019) in different variations. We also give a novel (and for the formalization simpler) proof to the O2H Theorem for mixed states and extend the theorem to non-terminating adversaries.
+This work provides a theoretical and foundational background for several verification tools and for security proofs in the quantum setting.
+\end{abstract}
+
+A paper describing this work in more detail appeared at \cite{HeidlerU25}.
+
+\nocite{Ambainis19}
+
+\tableofcontents
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+% generated text of all theories
+\input{session}
+
+% optional bibliography
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
