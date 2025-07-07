@@ -1,0 +1,41 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{literal}
+
+
+\begin{document}
+
+\title{Parikh's theorem}
+\author{Fabian Lehr}
+\maketitle
+
+\begin{abstract}
+  In formal language theory, the \emph{Parikh image} of a language $L$
+  is the set of multisets of the words in $L$: the order of letters
+  becomes irrelevant, only the number of occurrences is relevant.
+  Parikh's Theorem states that the Parikh image of a context-free
+  language is the same as the Parikh image of some regular language.
+  This formalization closely follows Pilling's proof \cite{Pilling}:
+  It describes a context-free language as a minimal solution to a
+  system of equations induced by a context free grammar for this
+  language. Then it is shown that there exists a minimal solution
+  to this system which is regular, such that the regular solution and the
+  context-free language have the same Parikh image.
+\end{abstract}
+
+\tableofcontents
+
+% include generated text of all theories
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
