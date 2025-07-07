@@ -1,0 +1,19 @@
+chapter AFP
+
+session Computational_pAdics = HOL +
+  options [timeout = 600]
+  sessions
+    "HOL-Analysis"
+    "HOL-Computational_Algebra"
+    "HOL-Library"
+  theories
+    Distinguished_Quotients
+    Polynomial_Extras
+    Parametric_Equiv_Depth
+    FLS_Prime_Equiv_Depth
+    pAdic_Product
+    Fin_Field_Product
+    More_pAdic_Product
+  document_files
+    "root.tex"
+    "root.bib"
