@@ -826,7 +826,7 @@ proof -
     proof -
       from that obtain Y where \<open>(X,Y) \<in> F\<close> and \<open>X = {} \<or> Y = {}\<close>
         apply atomize_elim
-        by (auto intro!: simp: F'_def)
+        by (force intro!: simp: F'_def)
       then consider (X) \<open>X = {}\<close> | (Y) \<open>Y = {}\<close>
         by auto
       then show ?thesis
@@ -858,7 +858,7 @@ proof -
     proof -
       from that obtain X where \<open>(X,Y) \<in> F\<close> and \<open>X = {} \<or> Y = {}\<close>
         apply atomize_elim
-        by (auto intro!: simp: F'_def)
+        by (force intro!: simp: F'_def)
       then consider (X) \<open>X = {}\<close> | (Y) \<open>Y = {}\<close>
         by auto
       then show ?thesis
@@ -1097,7 +1097,7 @@ proof -
       using False
       apply (transfer fixing: x P)
       using *
-      by (auto intro!: ext simp: kraus_family_def image_iff)
+      by (force intro!: ext simp: kraus_family_def image_iff)
     then show ?thesis
       by simp
   qed
@@ -2126,7 +2126,7 @@ proof (rule kf_eqI)
   fix x \<rho>
   define \<EE>fx where \<open>\<EE>fx = kf_filter (\<lambda>z. f z = x) \<EE>\<close>
   from assms have inj_\<EE>fx: \<open>inj_on f (kf_domain \<EE>fx)\<close>
-    by (simp add: inj_on_def kf_domain.rep_eq \<EE>fx_def kf_filter.rep_eq)
+    by (auto simp add: inj_on_def kf_domain.rep_eq \<EE>fx_def kf_filter.rep_eq)
   have \<open>kf_map_inj f \<EE> *\<^sub>k\<^sub>r @{x} \<rho> = kf_filter (\<lambda>z. z=x) (kf_map_inj f \<EE>) *\<^sub>k\<^sub>r \<rho>\<close>
     by (simp add: kf_apply_on_def)
   also have \<open>\<dots> = kf_map_inj f \<EE>fx *\<^sub>k\<^sub>r \<rho>\<close>
@@ -2298,7 +2298,7 @@ lemma kf_apply_on_map_inj[simp]:
 proof -
   from assms
   have \<open>inj_on f (Set.filter (\<lambda>x. f x \<in> X) (kf_domain E))\<close>
-    by (smt (verit, del_insts) IntI Set.member_filter inj_onD inj_onI vimage_eq)
+    by (simp add: Collect_conj_eq Int_ac(3) vimage_def)
   then show ?thesis
     by (auto intro!: simp: kf_apply_on_def kf_filter_map_inj)
 qed
@@ -2559,8 +2559,8 @@ proof -
       apply (rule sandwich_mono)
       using that CE_BE by simp
     have \<open>F = 0\<close> if \<open>y \<notin> kf_domain \<FF>\<close>
-        using C_subset CF_def \<open>CF \<subseteq> Rep_kraus_family \<FF>\<close> \<open>i \<in> CF\<close> that i
-        by (smt (verit, ccfv_SIG) Set.basic_monos(7) Set.member_filter case_prodI image_iff kf_domain.rep_eq prod.sel(2))
+      using C_subset CF_def \<open>CF \<subseteq> Rep_kraus_family \<FF>\<close> \<open>i \<in> CF\<close> that i
+        by (smt (verit, ccfv_SIG) Set.basic_monos(7) Set.filter_eq case_prodI image_iff kf_domain.rep_eq prod.sel(2))
     then have 2: \<open>sandwich (F*) *\<^sub>V (\<Sum>(E,x)\<in>CE y. E* o\<^sub>C\<^sub>L E) \<le> sandwich (F*) *\<^sub>V BE\<close> if \<open>y \<notin> kf_domain \<FF>\<close>
       using that by simp
     from 1 2 show \<open>(case i of (F, y) \<Rightarrow> sandwich (F*) *\<^sub>V (\<Sum>(E, x)\<in>CE y. E* o\<^sub>C\<^sub>L E))
@@ -3422,8 +3422,7 @@ proof (cases \<open>bdd_above ((kf_norm \<circ> E) ` kf_domain F)\<close>)
     define F' where \<open>F' x = kf_filter (\<lambda>x'. x' = x) F\<close> for x
     define E'f where \<open>E'f y e = kf_filter (\<lambda>x. f e x = y) (E e)\<close> for e y
     have bdd2: \<open>bdd_above ((\<lambda>x. kf_norm (E'f y x)) ` kf_domain (F' x))\<close>
-      apply (simp add: E'f_def F'_def)
-      by fastforce
+      by (simp add: E'f_def F'_def)
     have \<open>kf_comp_dependent (\<lambda>x. kf_map (f x) (E x)) F *\<^sub>k\<^sub>r @{xy} \<rho>
         = kf_filter (\<lambda>(x',y'). y'=y \<and> x'=x) (kf_comp_dependent (\<lambda>x. kf_map (f x) (E x)) F) *\<^sub>k\<^sub>r \<rho>\<close>
       (is \<open>?lhs = _\<close>)
@@ -3481,7 +3480,7 @@ proof (cases \<open>bdd_above ((kf_norm \<circ> E) ` kf_domain (kf_map f F))\<cl
     define E' where \<open>E' y e = kf_filter (\<lambda>y'. y' = y) (E e)\<close> for e y
     have bdd2: \<open>bdd_above ((kf_norm \<circ> E' y) ` kf_domain (kf_map f (F'f x)))\<close>
       apply (simp add: E'_def F'f_def)
-      by fastforce
+      by (metis (no_types, lifting) bdd_above.I2 image_iff order.refl)
     have bdd3: \<open>bdd_above ((kf_norm \<circ> (\<lambda>x. E (f x))) ` kf_domain F)\<close>
       by (metis (no_types, lifting) ext True comp_apply image_comp kf_domain_map)
     have bdd4: \<open>bdd_above ((kf_norm \<circ> (\<lambda>_. E' y x)) ` kf_domain (F'f x))\<close>
@@ -3562,7 +3561,7 @@ proof -
     have \<open>inj_on (\<lambda>(E, F, x, y). (E, F, f x, y)) (UNIV \<times> UNIV \<times> kf_domain F \<times> UNIV)\<close>
       using assms by (auto simp: inj_on_def)
     with dom show ?thesis
-      by (rule subset_inj_on[rotated])
+      by (rule inj_on_subset[rotated])
   qed
   have inj3: \<open>inj_on (\<lambda>(x, y). (f x, y)) ((\<lambda>(F, E, x). x) ` kf_domain (kf_comp_dependent_raw (\<lambda>x. E (f x)) F))\<close>
   proof -
@@ -3571,7 +3570,7 @@ proof -
     moreover have \<open>inj_on (\<lambda>(x, y). (f x, y)) (kf_domain F \<times> UNIV)\<close>
       using assms by (auto simp: o_def inj_on_def)
     ultimately show ?thesis
-      by (rule subset_inj_on[rotated])
+      by (rule inj_on_subset[rotated])
   qed
   have \<open>kf_comp_dependent E (kf_map_inj f F) = kf_map (\<lambda>(F, E, y). y) (kf_comp_dependent_raw E (kf_map_inj f F))\<close>
     by (simp add: kf_comp_dependent_def id_def)
