@@ -4,6 +4,14 @@
     <title>Computer science/Security/Cryptography</title>
     <link>https://isa-afp.org/topics/computer-science/security/cryptography/</link>
     <description>AFP entries in Cryptography</description><item>
+  <title>The Oneway to Hiding Theorem</title>
+  <link>https://isa-afp.org/entries/Oneway2Hiding.html</link>
+  <pubDate>Fri, 27 Jun 2025 00:00:00 +0000</pubDate>
+  <description>The Oneway to Hiding Theorem in the AFP</description>
+    <category>Computer science/Security/Cryptography</category>
+    <category>Mathematics/Physics/Quantum information</category>
+</item>
+<item>
   <title>The Hidden Number Problem</title>
   <link>https://isa-afp.org/entries/Hidden_Number_Problem.html</link>
   <pubDate>Tue, 24 Jun 2025 00:00:00 +0000</pubDate>
