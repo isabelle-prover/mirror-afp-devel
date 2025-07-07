@@ -1074,18 +1074,23 @@ next
   then show ?case by (simp add: ctxt_closed_one ctxt_closed_rsteps)
 next
   case (Crule \<alpha> ss1 C ss2)
+  let ?ts="map target (ss1 @ C\<langle>to_pterm t \<cdot> \<sigma>\<rangle> # ss2)"
+  let ?vs="map target (ss1 @ C\<langle>to_pterm v \<cdot> \<sigma>\<rangle> # ss2)"
   {fix x assume "x \<in> vars_term (rhs \<alpha>)"
-    from Crule have "((\<langle>map target (ss1 @ C\<langle>to_pterm t \<cdot> \<sigma>\<rangle> # ss2)\<rangle>\<^sub>\<alpha>) x, (\<langle>map target (ss1 @ C\<langle>to_pterm v \<cdot> \<sigma>\<rangle> # ss2)\<rangle>\<^sub>\<alpha>) x) \<in> (rstep R)\<^sup>*"
-    proof(cases "x \<in> vars_term (lhs \<alpha>)")
+    from Crule have "((\<langle>?ts\<rangle>\<^sub>\<alpha>) x, (\<langle>?vs\<rangle>\<^sub>\<alpha>) x) \<in> (rstep R)\<^sup>*"
+    proof(cases "\<exists>i<length ?ts. i < length (var_rule \<alpha>) \<and> x = var_rule \<alpha> ! i")
       case True
-      then obtain i where "i < length (vars_distinct (lhs \<alpha>))" "x = vars_distinct (lhs \<alpha>)!i"
-        by (metis in_set_idx set_vars_term_list vars_term_list_vars_distinct)
-      then show ?thesis using Crule
-        by (smt (z3) append_Cons_nth_not_middle length_append length_map length_nth_simps(2) lhs_subst_not_var_i lhs_subst_var_i map_nth_eq_conv nth_append_length rtrancl.simps) 
+      then obtain i where i:"i < length ?ts" "i < length ?vs" "i < length (var_rule \<alpha>)" "x = var_rule \<alpha> ! i"
+        by auto
+      show ?thesis using Crule unfolding lhs_subst_var_i[OF i(4,3,1)] lhs_subst_var_i[OF i(4,3,2)]
+        nth_map[OF i(1)[unfolded length_map]] nth_map[OF i(2)[unfolded length_map]]
+        by (metis append_Cons_nth_not_middle nth_append_length rtrancl.rtrancl_refl) 
     next
       case False
-      then show ?thesis
-        by (simp add: mk_subst_not_mem)
+      then have *:"\<not>(\<exists>i<length ?vs. i < length (var_rule \<alpha>) \<and> x = var_rule \<alpha> ! i)"
+        by simp 
+      show ?thesis
+        unfolding lhs_subst_not_var_i[OF False] lhs_subst_not_var_i[OF *] by simp
     qed
   }
   then show ?case by (simp add: subst_rsteps_imp_rsteps)
