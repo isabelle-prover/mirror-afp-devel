@@ -16,6 +16,22 @@
   "year": "2025"
  },
  {
+  "abstract": "In formal language theory, the Parikh image of a language $L$ is the set of multisets of the words in $L$: the order of letters in a word becomes irrelevant, only the number of occurrences is relevant. Parikh's Theorem states that the Parikh image of a context-free language is the same as the Parikh image of some regular language. This formalization closely follows Pilling's proof: It describes a context-free language as a minimal solution to a system of equations induced by a context free grammar for this language. Then it is shown that there exists a minimal solution to this system which is regular, such that the regular solution and the context-free language have the same Parikh image.",
+  "authors": [
+   "Fabian Lehr"
+  ],
+  "link": "/entries/Parikh.html",
+  "shortname": "Parikh",
+  "title": "Parikh's Theorem",
+  "topic_links": [
+   "/topics/computer-science/automata-and-formal-languages/"
+  ],
+  "topics": [
+   "Computer science/Automata and formal languages"
+  ],
+  "year": "2025"
+ },
+ {
   "abstract": "In this entry, we formalize the Hidden Number Problem (HNP), originally introduced by Boneh and Venkatesan in 1996. Intuitively, the HNP involves demonstrating the existence of an algorithm (the ``adversary'') which can compute (with high probability) a hidden number $\\alpha$ given access to a bit-leaking oracle. Originally developed to establish the security of Diffie--Hellman key exchange, the HNP has since been used not only for protocol security but also in cryptographic attacks, including notable ones on DSA and ECDSA.  Additionally, the HNP makes use of an instance of Babai's nearest plane algorithm, which solves the approximate closest vector problem. Thus, building on the LLL algorithm (which has already been formalized), we formalize Babai's algorithm, which itself is of independent interest. Our formalizations of Babai's algorithm and the HNP adversary are executable, setting up potential future work, e.g. in developing formally verified instances of cryptographic attacks.  Note, our formalization of Babai's algorithm here is an updated version of a previous AFP entry of ours. The updates include a tighter error bound, which is required for our HNP proof.",
   "authors": [
    "Sage Binder",
