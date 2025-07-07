@@ -1,0 +1,56 @@
+title = "Kraus Maps"
+date = 2025-06-26
+topics = [
+  "Mathematics/Physics/Quantum information",
+  "Mathematics/Analysis",
+]
+abstract = """
+We formalize Kraus maps, i.e., quantum channels of the form
+$\\rho\\mapsto\\sum_x M_x\\rho M_x^\\dagger$ for suitable families of
+``Kraus operators'' $M_x$.  (In the finite-dimensional setting and the
+setting of separable Hilbert spaces, those are known to be equivalent
+to completely-positive maps, another common formalization of quantum
+channels.)  Our results hold for arbitrary (i.e., not necessarily
+finite-dimensional or separable Hilbert spaces.
+
+
+Specifically, in theory Kraus_Families, we formalize the type
+$(\\alpha,\\beta,\\xi)\\ \\mathtt{kraus\\_family}$ of families of Kraus
+operators $M_x$ (Kraus families for short), from trace-class operators
+on Hilbert space $\\alpha$ to those on $\\beta$, indexed by $x$ of type
+$\\xi$.  This induces both a Kraus map $\\rho\\mapsto\\sum_x M_x\\rho
+M_x^\\dagger$, as well as a quantum measurement with outcomes of type
+$\\xi$.
+
+
+We define and study various special Kraus families such as zero,
+identity, application of an operator, sum of two Kraus maps,
+sequential composition, infinite sum, random sampling, trace, tensor
+products, and complete measurements.
+
+
+Furthermore, since working with explicit Kraus families can be
+cumbersome when the specific family of operators is not relevant, in
+theory Kraus_Maps, we define a Kraus map to be a function between two
+spaces that is of the form $\\rho\\mapsto\\sum_x M_x\\rho M_x^\\dagger$ for
+some Kraus family, and restate our results in terms of such functions."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.unruh]
+email = "unruh_email"
+
+[contributors]
+
+[notify]
+unruh = "unruh_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []
