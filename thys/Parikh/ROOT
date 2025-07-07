@@ -1,0 +1,15 @@
+chapter AFP
+
+session Parikh = Context_Free_Grammar +
+  options [timeout=300]
+
+  sessions
+    "HOL-Library"
+    "Regular-Sets"
+
+  theories
+    Pilling
+
+  document_files
+    "root.bib"
+    "root.tex"
