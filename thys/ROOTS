@@ -82,8 +82,6 @@ CAVA_LTL_Modelchecker
 CCS
 CHERI-C_Memory_Model
 CISC-Kernel
-Concentration_Inequalities
-Coppersmith_Method
 CRDT
 CRYSTALS-Kyber
 CRYSTALS-Kyber_Security
@@ -148,6 +146,8 @@ Complex_Bounded_Operators
 Complex_Geometry
 Complx
 ComponentDependencies
+Computational_pAdics
+Concentration_Inequalities
 ConcurrentGC
 ConcurrentHOL
 ConcurrentIMP
@@ -164,6 +164,7 @@ Containers
 Context_Free_Grammar
 Continued_Fractions
 Cook_Levin
+Coppersmith_Method
 Coproduct_Measure
 CoreC++
 Core_DOM

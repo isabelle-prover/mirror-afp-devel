@@ -1,0 +1,30 @@
+title = "Computational p-Adics"
+date = 2025-07-04
+topics = [
+  "Mathematics/Algebra",
+]
+abstract = """
+We develop a framework for reasoning computationally about \\(p\\)-adic fields via formal Laurent series with integer coefficients.
+We define a ring-class quotient type consisting of equivalence classes of prime-indexed sequences of formal Laurent series, in which every \\(p\\)-adic field is contained as a subring.
+Via a further quotient of the ring of \\(p\\)-adic integers (that is, the elements of depth at least \\(0\\)) by the prime ideal (that is, the subring of elements of depth at least \\(1\\)), we define a ring-class type in which every prime-order finite field is contained as a subring.
+Finally, some topological properties are developed using depth as a proxy for a metric, Hensel's Lemma is proved, and the compactness of local rings of integers is established."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.sylvestre]
+email = "sylvestre_email"
+
+[contributors]
+
+[notify]
+sylvestre = "sylvestre_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

@@ -1,0 +1,48 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+
+\usepackage{amsmath,amssymb}
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+\begin{document}
+
+\title{Computational $p$-Adics}
+\author{Jeremy Sylvestre \ University of Alberta (Augustana Campus)}
+\maketitle
+
+\begin{abstract}
+  We develop a framework for reasoning computationally about $p$-adic fields via formal Laurent
+  series with integer coefficients.
+  We define a ring-class quotient type consisting of equivalence classes of prime-indexed
+  sequences of formal Laurent series,
+  in which every $p$-adic field is contained as a subring.
+  Via a further quotient of the ring of $p$-adic integers
+  (that is, the elements of depth at least $0$) by the prime ideal
+  (that is, the subring of elements of depth at least $1$),
+  we define a ring-class type in which every prime-order finite field is contained as a subring.
+  Finally, some topological properties are developed using depth as a proxy for a metric,
+  Hensel's Lemma is proved,
+  and the compactness of local rings of integers is established.
+\end{abstract}
+
+\tableofcontents
+
+\parindent 0pt\parskip 0.5ex
+
+\input{session}
+
+\nocite{*}
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
