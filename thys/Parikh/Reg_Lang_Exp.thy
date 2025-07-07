@@ -109,13 +109,6 @@ qed fastforce+
 
 subsection \<open>Continuity\<close>
 
-(* TODO: rm, is in devel *)
-lemma lang_pow_mono:
-  fixes A :: "'a lang"
-  assumes "A \<subseteq> B"
-  shows "A ^^ n \<subseteq> B ^^ n"
-  by (induction n) (use assms conc_mono[of A B] in auto)
-
 lemma rlexp_cont_aux1:
   assumes "\<forall>i. v i \<le> v (Suc i)"
       and "w \<in> (\<Union>i. eval f (v i))"

@@ -573,33 +573,6 @@ proof -
   qed
 qed
 
-(* TODO rm with next release *)
-lemma singleton_set_mset_subset: fixes X Y :: "'a list set"
-  assumes "\<forall>xs \<in> X. set xs \<subseteq> {a}" "mset ` X \<subseteq> mset ` Y"
-  shows "X \<subseteq> Y"
-proof
-  fix xs assume "xs \<in> X"
-  obtain ys where ys: "ys \<in> Y" "mset xs = mset ys"
-    using \<open>xs \<in> X\<close> assms(2) by auto
-  then show "xs \<in> Y" using \<open>xs \<in> X\<close> assms(1) ys
-    by (metis singleton_iff mset_eq_setD replicate_eqI set_empty subset_singletonD size_mset)
-qed
-
-lemma singleton_set_mset_eq: fixes X Y :: "'a list set"
-  assumes "\<forall>xs \<in> X. set xs \<subseteq> {a}" "mset ` X = mset ` Y"
-  shows "X = Y"
-proof -
-  have "\<forall>ys \<in> Y. set ys \<subseteq> {a}"
-    by (metis (mono_tags, lifting) assms image_iff mset_eq_setD)
-  thus ?thesis
-    by (metis antisym assms(1,2) singleton_set_mset_subset subset_refl)
-qed
-
-lemma derives_tms_syms_subset:
-  "P \<turnstile> \<alpha> \<Rightarrow>* \<gamma> \<Longrightarrow> tms_syms \<gamma> \<subseteq> tms_syms \<alpha> \<union> Tms P"
-by(induction rule: derives_induct) (auto simp:tms_syms_def Tms_def)
-(* end rm *)
-
 text \<open>Corollary: Every context-free language over a single letter is regular.\<close>
 
 corollary CFL_1_Tm_regular:
