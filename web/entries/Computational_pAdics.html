@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Computational p-Adics - Archive of Formal Proofs</title>
+    <meta name="description" content="Computational p-Adics in the Archive of Formal Proofs" />
+    <meta property="og:description" content="Computational p-Adics in the Archive of Formal Proofs" />
+
+  <meta property="og:title" content="Computational p-Adics" />
+  <meta property="og:url" content="https://isa-afp.org/entries/Computational_pAdics.html" />
+  <meta property="og:image" content="https://isa-afp.org/images/afp.png" />
+    <meta property="og:type" content="article" />
+  <link rel="stylesheet" type="text/css" href="../css/front.min.css">
+
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
+    
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [["$", "$"], ["\\(", "\\)"]]
+        },
+        processEscapes: true,
+        svg: {
+          fontCache: "global"
+        }
+      };
+    </script>
+    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
+    </script>
+    <script src="../js/entries.js"></script>
+
+  <script src="../js/obfuscate.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
+  <script src="../js/scroll-spy.js"></script>
+  <script src="../js/theory.js"></script>
+  <script src="../js/util.js"></script>
+    <script src="../js/header-search.js"></script>
+  <script src="../js/search-autocomplete.js"></script>
+</head>
+
+  <body class="mathjax_ignore">
+    <aside><div id="menu-toggle">
+  <input id="toggle" type="checkbox" />
+  <label for="toggle">
+    <span>menu</span>
+    <img src="../images/menu.svg" alt="Menu" />
+  </label>
+
+  <a href="../" class="logo-link">
+    <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
+  </a>
+
+  <nav id="menu">
+    <div>
+      <a href="../" class="logo-link">
+        <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
+      </a>
+      <ul>
+          <a href="../">
+            <li >Home</li>
+          </a>
+          <a href="../topics/">
+            <li >Topics</li>
+          </a>
+          <a href="../download/">
+            <li >Download</li>
+          </a>
+          <a href="../help/">
+            <li >Help</li>
+          </a>
+          <a href="../submission/">
+            <li >Submission</li>
+          </a>
+          <a href="../statistics/">
+            <li >Statistics</li>
+          </a>
+          <a href="../about/">
+            <li >About</li>
+          </a>
+      </ul>
+    </div>
+  </nav>
+</div>
+    </aside>
+
+    <div class="content entries"><header>
+    <form autocomplete="off" action="../search">
+      <div class="form-container">
+        <input id="search-input" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="button">
+          <img src="../images/search.svg" alt="Search" />
+        </button>
+        <datalist id="autocomplete">
+        </datalist>
+      </div>
+    </form>
+  <h1 ><span class='first'>C</span>omputational p-<span class='first'>A</span>dics
+  </h1>
+  <div>
+      <p><a href="../authors/sylvestre/">Jeremy Sylvestre</a> <a class="obfuscated" data="eyJ1c2VyIjpbImplcmVteSIsInN5bHZlc3RyZSJdLCJob3N0IjpbInVhbGJlcnRhIiwiY2EiXX0=">📧</a>
+      </p>
+      <p class="date">July 4, 2025</p>
+  </div>
+</header>
+      <div>
+  <main>
+
+    <h3>Abstract</h3>
+    <div class="abstract mathjax_process">We develop a framework for reasoning computationally about \(p\)-adic fields via formal Laurent series with integer coefficients.
+We define a ring-class quotient type consisting of equivalence classes of prime-indexed sequences of formal Laurent series, in which every \(p\)-adic field is contained as a subring.
+Via a further quotient of the ring of \(p\)-adic integers (that is, the elements of depth at least \(0\)) by the prime ideal (that is, the subring of elements of depth at least \(1\)), we define a ring-class type in which every prime-order finite field is contained as a subring.
+Finally, some topological properties are developed using depth as a proxy for a metric, Hensel's Lemma is proved, and the compactness of local rings of integers is established.</div>
+
+    <h3>License</h3>
+    <div>
+        <a href="https://isa-afp.org/LICENSE">BSD License</a>
+    </div>
+      <h3>Topics</h3>
+      <ul>
+          <li><a href="../topics/mathematics/algebra/">Mathematics/Algebra</a></li>
+      </ul>
+      <h3>Session Computational_pAdics</h3>
+      <ul>
+          <li><a href="../sessions/computational_padics/#Distinguished_Quotients">Distinguished_Quotients</a></li>
+          <li><a href="../sessions/computational_padics/#Polynomial_Extras">Polynomial_Extras</a></li>
+          <li><a href="../sessions/computational_padics/#Parametric_Equiv_Depth">Parametric_Equiv_Depth</a></li>
+          <li><a href="../sessions/computational_padics/#FLS_Prime_Equiv_Depth">FLS_Prime_Equiv_Depth</a></li>
+          <li><a href="../sessions/computational_padics/#pAdic_Product">pAdic_Product</a></li>
+          <li><a href="../sessions/computational_padics/#Fin_Field_Product">Fin_Field_Product</a></li>
+          <li><a href="../sessions/computational_padics/#More_pAdic_Product">More_pAdic_Product</a></li>
+      </ul>
+
+    <div class="flex-wrap">
+    </div>
+  </main>
+
+  <nav class="links">
+    <a class="popup-button" href="#cite-popup">Cite</a>
+    <a class="popup-button" href="#download-popup">Download</a>
+    <h4>PDFs</h4>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Computational_pAdics/outline.pdf">Proof outline</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Computational_pAdics/document.pdf">Proof document</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Computational_pAdics/session_graph.pdf">Dependencies</a>
+  </nav>
+
+  <div id="cite-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Cite</h2>
+      <a class="close" href="#">&times;</a>
+      <div>
+        <p style="display:none;" id="bibtex-filename">Computational_pAdics-AFP</p>
+        <pre id="copy-text">@article{Computational_pAdics-AFP,
+  author  = {Jeremy Sylvestre},
+  title   = {Computational p-Adics},
+  journal = {Archive of Formal Proofs},
+  month   = {July},
+  year    = {2025},
+  note    = {\url{https://isa-afp.org/entries/Computational_pAdics.html},
+             Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
+        <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
+      </div>
+    </div>
+  </div>
+
+  <div id="download-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Download</h2>
+      <a class="close" href="#">&times;</a>
+      <a href="https://www.isa-afp.org/release/afp-Computational_pAdics-current.tar.gz" download>
+        Download latest</a>
+    </div>
+  </div>
+      </div>
+    </div>
+  </body>
+</html>

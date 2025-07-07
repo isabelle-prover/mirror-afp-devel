@@ -3,10 +3,13 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://isa-afp.org/entries/index.json</loc>
-    <lastmod>2025-06-24T00:00:00+00:00</lastmod>
+    <lastmod>2025-07-04T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/</loc>
-    <lastmod>2025-06-24T00:00:00+00:00</lastmod>
+    <lastmod>2025-07-04T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Computational_pAdics.html</loc>
+    <lastmod>2025-07-04T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/entries/Hidden_Number_Problem.html</loc>
     <lastmod>2025-06-24T00:00:00+00:00</lastmod>
@@ -3255,6 +3258,8 @@
     <loc>https://isa-afp.org/sessions/complx/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/componentdependencies/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/sessions/computational_padics/</loc>
   </url><url>
     <loc>https://isa-afp.org/topics/computer-science/</loc>
   </url><url>
