@@ -5,7 +5,6 @@ theory Kraus_Families
     Wlog.Wlog
     Hilbert_Space_Tensor_Product.Partial_Trace
   
-    Backported
     Misc_Kraus_Maps
   
   abbrevs
@@ -3539,7 +3538,7 @@ proof -
     by (auto intro!: image_eqI simp: Sigma_image_left kf_map_inj.rep_eq)
   then show ?thesis
     apply (transfer' fixing: f)
-    by (simp add: image_image case_prod_unfold filter_image)
+    by (simp add: case_prod_unfold filter_image image_image del: Set.filter_eq)
 qed
 
 lemma kf_comp_dependent_map_inj_right:
@@ -3909,7 +3908,7 @@ proof (rule CollectI, rename_tac \<EE> A)
         by (auto intro!: inj_onI simp: C_def case_prod_unfold)
       also have \<open>\<dots> = (\<Sum>a\<in>fst ` F'. \<Sum>(E, x)\<in>snd ` Set.filter (\<lambda>(a',Ex). a'=a) F'. E* o\<^sub>C\<^sub>L E)\<close>
         apply (subst sum.Sigma)
-        by (auto intro!: finite_imageI simp: Sigma_decomp)
+        by (auto intro!: finite_imageI simp: Sigma_decomp simp del: Set.filter_eq)
       also have \<open>\<dots> = (\<Sum>a\<in>fst ` F'. infsum_in cweak_operator_topology (\<lambda>(E, x). E* o\<^sub>C\<^sub>L E) (snd ` Set.filter (\<lambda>(a',Ex). a'=a) F'))\<close>
         apply (rule sum.cong[OF refl])
         apply (rule infsum_in_finite[symmetric])
@@ -4298,7 +4297,9 @@ proof -
         by -
     qed
     then have \<open>kraus_family (Set.filter (\<lambda>(E,_). E\<noteq>0) (range (\<lambda>x. (sqrt (p x) *\<^sub>R (id_cblinfun ::'a\<Rightarrow>\<^sub>C\<^sub>L_), x))))\<close>
-      by (force intro!: bdd_aboveI[where M=\<open>B *\<^sub>R id_cblinfun\<close>] simp: kraus_family_def case_prod_unfold)
+      apply (simp add: kraus_family_def case_prod_unfold del: Set.filter_eq)
+      apply (safe intro!: bdd_aboveI[where M=\<open>B *\<^sub>R id_cblinfun\<close>])
+      by simp_all
     then show ?thesis
       using True by simp
   next
@@ -6490,7 +6491,8 @@ proof (rule ext)
   have Rep_F: \<open>Rep_kraus_family F = (Set.filter (\<lambda>(E,_). E\<noteq>0) ((\<lambda>a. (f a,a)) ` A))\<close>
     unfolding F_def
     apply (rule Abs_kraus_family_inverse)
-    by (auto intro!: kf_reconstruction_is_kraus_family[of _ _ \<EE>] assms simp: F_def)
+    by (auto intro!: kf_reconstruction_is_kraus_family[of _ _ \<EE>] assms simp: F_def
+        simp del: Set.filter_eq)
   have \<open>((\<lambda>(E,x). sandwich_tc E \<rho>) has_sum kf_apply F \<rho>) (Rep_kraus_family F)\<close>
     by (auto intro!: kf_apply_has_sum)
   then have \<open>((\<lambda>(E,x). sandwich_tc E \<rho>) has_sum kf_apply F \<rho>) ((\<lambda>a. (f a,a)) ` A)\<close>

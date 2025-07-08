@@ -10,3 +10,5 @@ session Kraus_Maps = Hilbert_Space_Tensor_Product +
     Kraus_Maps
   document_files
     "root.tex"
+    "root.bib"
+
