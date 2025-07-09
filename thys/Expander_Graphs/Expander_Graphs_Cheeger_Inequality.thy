@@ -682,7 +682,7 @@ end
 context regular_graph
 begin
 
-lemmas (in regular_graph) cheeger_aux_1 =
+lemmas cheeger_aux_1 =
   regular_graph_tts.cheeger_aux_1[OF eg_tts_1,
     internalize_sort "'n :: finite", OF _ regular_graph_axioms,
     unfolded remove_finite_premise, cancel_type_definition, OF verts_non_empty]

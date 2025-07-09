@@ -285,10 +285,40 @@ proof -
   finally show ?thesis by simp
 qed
 
+lemma KL_div_extreme_cases:
+  assumes "p \<in> {0,1}"
+  shows "KL_div p p = 0" (is "?L = ?R")
+proof -
+  have "?L = (\<integral>x. ln (pmf (bernoulli_pmf p) x / pmf (bernoulli_pmf p) x) \<partial>bernoulli_pmf p)"
+    unfolding KL_div_def by (subst KL_divergence_pmf) (simp_all add:log_ln[symmetric])
+  also have "\<dots> = 0" using assms
+    by (cases "p = 0") auto
+  finally show ?thesis by simp
+qed
+
+lemma KL_div_eq':
+  assumes "q \<in> {0..1}" "p \<in> {0..1}" "q > 0 \<or> p = 0" "q < 1 \<or> p = 1"
+  shows "KL_div p q = p * ln (p/q) + (1-p) * ln ((1-p)/(1-q))" (is "?L = ?R")
+proof (cases "q \<in> {0,1}")
+  case True
+  hence 0:"p = q" using assms by auto
+  hence "KL_div p q = 0" using True unfolding 0 by (intro KL_div_extreme_cases) auto
+  also have "\<dots> = p * ln (p/q) + (1-p) * ln ((1-p)/(1-q))" unfolding 0 using True by simp
+  finally show ?thesis by simp
+next
+  case False
+  then show ?thesis using assms by (intro KL_div_eq) auto
+qed
+
+lemma KL_div_swap_gen:
+  assumes "q \<in> {0..1}" "p \<in> {0..1}"  "q > 0 \<or> p = 0" "q < 1 \<or> p = 1"
+  shows "KL_div p q = KL_div (1-p) (1-q)"
+  using assms by (subst (1 2) KL_div_eq') auto
+
 lemma KL_div_swap:
   assumes "q \<in> {0<..<1}" "p \<in> {0..1}"
   shows "KL_div p q = KL_div (1-p) (1-q)"
-  using assms by (subst (1 2) KL_div_eq) auto
+  using assms by (intro KL_div_swap_gen) auto
 
 text \<open>A few results about independent random variables:\<close>
 

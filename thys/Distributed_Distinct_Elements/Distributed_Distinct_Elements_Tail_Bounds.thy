@@ -128,7 +128,7 @@ proof (cases "\<mu> > 0")
   also have "... = \<gamma> * ln (\<gamma>*(1/(\<mu>+\<Lambda>\<^sub>a*(1-\<mu>))))+(1-\<gamma>)*ln((1-\<gamma>)*(1/(1-(\<mu>+\<Lambda>\<^sub>a*(1-\<mu>)))))"
     using 2 4 by (simp add: ln_mult ln_div)
   also have "... = KL_div \<gamma> (\<mu>+\<Lambda>\<^sub>a*(1-\<mu>))"
-    unfolding KL_div_def by simp
+    using assms(4,5) 2 4 \<gamma>_ge_0 by (subst KL_div_eq) simp_all
   finally have 1: "\<gamma> * ln (1 / (\<mu> + \<Lambda>\<^sub>a)) - 2 * exp (- 1) \<le> KL_div \<gamma> (\<mu> + \<Lambda>\<^sub>a * (1 - \<mu>))"
     by simp
 
@@ -269,7 +269,7 @@ proof -
     by (simp add:algebra_simps)
   also have "... = \<gamma> * ln (\<gamma>*(1/(\<mu>+\<Lambda>*(1-\<mu>))))+(1-\<gamma>)*ln((1-\<gamma>)*(1/(1-(\<mu>+\<Lambda>*(1-\<mu>)))))"
     using 2 1 assms(4)  by (simp add: ln_mult ln_div)
-  also have "... = KL_div \<gamma> (\<mu>+\<Lambda>*(1-\<mu>))" unfolding KL_div_def by simp
+  also have "... = KL_div \<gamma> (\<mu>+\<Lambda>*(1-\<mu>))" using \<gamma>_ge_0 2 assms(4) 1 by (subst KL_div_eq') force+
   finally have 4: "\<gamma> * ln (1 / (\<mu> + \<Lambda>)) - 2 * exp (- 1) \<le> KL_div \<gamma> (\<mu> + \<Lambda> * (1 - \<mu>))"
     by simp
 
