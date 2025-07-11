@@ -237,7 +237,7 @@ translations
   "_FLIPBIND f g"   => "g \<bind> f"
 
 context
-  fixes S
+  fixes S :: "'a pseudorandom_object"
   fixes d :: nat
   fixes k :: nat
   assumes size_prime_power: "is_prime_power (pro_size S)"

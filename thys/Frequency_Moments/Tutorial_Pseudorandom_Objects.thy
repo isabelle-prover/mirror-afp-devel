@@ -76,24 +76,31 @@ proof -
 qed
 
 lemma classic_chernoff_bound:
-  assumes "AE x in measure_pmf p. f x \<in> {0,1::real}" "l > (0::nat)" "\<gamma> \<ge> 0"
-  defines "\<mu> \<equiv> (\<integral>x. f x \<partial>p)"
-  shows "measure (prod_pmf {0..<l} (\<lambda>_. p)) {w. \<bar>(\<Sum>i<l. f (w i))/l-\<mu>\<bar>\<ge>\<gamma>} \<le> 2*exp (-2*real l*\<gamma>^2)"
+  assumes "AE x in measure_pmf p. f x \<in> {0,1::real}" "\<gamma> \<ge> 0"
+  defines "\<mu> \<equiv> measure_pmf.expectation p f"
+  shows "\<P>(w in prod_pmf {0..<l} (\<lambda>_. p). \<bar>(\<Sum>i<l. f (w i))-real l*\<mu>\<bar>\<ge>real l*\<gamma>) \<le> 2*exp (-2*real l*\<gamma>^2)"
     (is "?L \<le> ?R")
-proof -
+proof (cases "l > 0")
+  case True
   have [simp]:"integrable p f" using assms(1) unfolding AE_measure_pmf_iff
     by (intro integrable_bounded_pmf boundedI[where B="1"]) auto
   let ?w = "prod_pmf {0..<l} (\<lambda>_. p)"
-  have "?L \<le> measure ?w {w. (\<Sum>i<l. f (w i))/l-\<mu>\<ge>\<gamma>} + measure ?w {w. (\<Sum>i<l. f (w i))/l-\<mu>\<le>-(\<gamma>)}"
+  have "?L = measure ?w {w. \<bar>(\<Sum>i<l. f (w i))/l-\<mu>\<bar>\<ge>\<gamma>}"
+    using True by (intro arg_cong2[where f="measure"] refl) (simp add:field_simps)
+  also have "\<dots> \<le> measure ?w {w. (\<Sum>i<l. f (w i))/l-\<mu>\<ge>\<gamma>} + measure ?w {w. (\<Sum>i<l. f (w i))/l-\<mu>\<le>-\<gamma>}"
     by (intro pmf_add) auto
-  also have "... \<le> exp (-2*real l*\<gamma>^2) + measure ?w {w. -((\<Sum>i<l. f (w i))/l-\<mu>)\<ge>\<gamma>}"
-    using assms by (intro add_mono classic_chernoff_bound_one_sided) (auto simp:algebra_simps)
-  also have "... \<le> exp (-2*real l*\<gamma>^2) + measure ?w {w. ((\<Sum>i<l. 1-f (w i))/l-(1-\<mu>))\<ge>\<gamma>}"
-    using assms(2) by (auto simp: sum_subtractf field_simps)
-  also have "... \<le> exp (-2*real l*\<gamma>^2) + exp (-2*real l*\<gamma>^2)"
-    using assms by (intro add_mono classic_chernoff_bound_one_sided) auto
-  also have "... = ?R" by simp
+  also have "\<dots> \<le> exp (-2*real l*\<gamma>^2) + measure ?w {w. -((\<Sum>i<l. f (w i))/l-\<mu>)\<ge>\<gamma>}"
+    using assms True by (intro add_mono classic_chernoff_bound_one_sided) (auto simp:algebra_simps)
+  also have "\<dots> \<le> exp (-2*real l*\<gamma>^2) + measure ?w {w. ((\<Sum>i<l. 1-f (w i))/l-(1-\<mu>))\<ge>\<gamma>}"
+    using True by (auto simp: sum_subtractf field_simps)
+  also have "\<dots> \<le> exp (-2*real l*\<gamma>^2) + exp (-2*real l*\<gamma>^2)"
+    using assms True by (intro add_mono classic_chernoff_bound_one_sided) auto
+  also have "\<dots> = ?R" by simp
   finally show ?thesis by simp
+next
+  case False
+  hence "l = 0" by simp
+  thus ?thesis by simp
 qed
 
 text \<open>Definition of the second frequency moment of a stream.\<close>

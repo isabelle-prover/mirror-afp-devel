@@ -602,10 +602,10 @@ theorem f2_exact_space_usage:
   assumes "\<epsilon> \<in> {0<..<1}"
   assumes "\<delta> > 0"
   assumes "set as \<subseteq> {..<n}"
-  defines "M \<equiv> fold (\<lambda>a state. state \<bind> f2_update a) as (f2_init \<delta> \<epsilon> n)"
-  shows "AE \<omega> in M. bit_count (encode_f2_state \<omega>) \<le> f2_space_usage (n, length as, \<epsilon>, \<delta>)"
+  defines "\<Omega> \<equiv> fold (\<lambda>a state. state \<bind> f2_update a) as (f2_init \<delta> \<epsilon> n)"
+  shows "AE \<omega> in \<Omega>. bit_count (encode_f2_state \<omega>) \<le> f2_space_usage (n, length as, \<epsilon>, \<delta>)"
   using f2_exact_space_usage'[OF assms(1,2,3)]
-  by (subst (asm) sketch_def[OF assms(1,2,3)], subst M_def, simp)
+  by (subst (asm) sketch_def[OF assms(1,2,3)], subst \<Omega>_def, simp)
 
 theorem f2_asymptotic_space_complexity:
   "f2_space_usage \<in> O[at_top \<times>\<^sub>F at_top \<times>\<^sub>F at_right 0 \<times>\<^sub>F at_right 0](\<lambda> (n, m, \<epsilon>, \<delta>).

@@ -626,7 +626,8 @@ proof -
   thus ?thesis using xe by simp
 qed
 
-definition "is_prime_power n = (\<exists>p k. Factorial_Ring.prime p \<and> k > 0 \<and> n = p^k)"
+definition is_prime_power :: "nat \<Rightarrow> bool" where
+  "is_prime_power n = (\<exists>p k. prime p \<and> k > 0 \<and> n = p^k)"
 
 lemma is_prime_powerI:
   assumes "prime p" "k > 0"
