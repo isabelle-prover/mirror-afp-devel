@@ -449,7 +449,7 @@ begin
       context
         notes [sepref_import_param] = times_param
       begin
-        sepref_definition scmul_impl 
+        qualified sepref_definition scmul_impl
           is "uncurry scmul" :: "(id_assn\<^sup>k *\<^sub>a (amtx_assn N M id_assn)\<^sup>d \<rightarrow>\<^sub>a amtx_assn N M id_assn)"
           unfolding scmul_def[abs_def]
           by sepref
@@ -502,14 +502,10 @@ begin
 
     end  
   
-    export_code scmul_impl in SML_imp
-  end  
-  hide_const scmul_impl
+    export_code IICF_Array_Matrix.scmul_impl in SML_imp
 
-
-
+  end
 
   hide_const(open) is_amtx
-
 
 end
