@@ -7989,15 +7989,6 @@ name = "Dominique Unruh"
 
 [unruh.emails.unruh_email]
 user = [
-  "unruh",
-]
-host = [
-  "ut",
-  "ee",
-]
-
-[unruh.emails.unruh_email1]
-user = [
   "afp",
   "xkjnfh",
 ]
@@ -8008,8 +7999,7 @@ host = [
 ]
 
 [unruh.homepages]
-unruh_homepage = "https://www.ut.ee/~unruh/"
-unruh_homepage1 = "https://qis.rwth-aachen.de/people/unruh/"
+unruh_homepage = "https://qis.rwth-aachen.de/people/unruh/"
 
 [urban]
 name = "Christian Urban"

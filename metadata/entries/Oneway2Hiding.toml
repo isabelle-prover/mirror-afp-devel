@@ -29,12 +29,12 @@ note = ""
 email = "kreuzer_email"
 
 [authors.unruh]
-homepage = "unruh_homepage1"
+homepage = "unruh_homepage"
 
 [contributors]
 
 [notify]
-unruh = "unruh_email1"
+unruh = "unruh_email"
 kreuzer = "kreuzer_email"
 
 [history]
