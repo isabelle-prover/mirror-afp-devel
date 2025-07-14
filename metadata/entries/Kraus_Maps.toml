@@ -11,7 +11,7 @@ $\\rho\\mapsto\\sum_x M_x\\rho M_x^\\dagger$ for suitable families of
 setting of separable Hilbert spaces, those are known to be equivalent
 to completely-positive maps, another common formalization of quantum
 channels.)  Our results hold for arbitrary (i.e., not necessarily
-finite-dimensional or separable Hilbert spaces.
+finite-dimensional or separable) Hilbert spaces.
 
 
 Specifically, in theory Kraus_Families, we formalize the type
