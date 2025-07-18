@@ -1,3 +1,5 @@
+chapter\<open>Löb's Theorem\<close>
+
 (*  Title:       Löb's Theorem
     Author:      Janis Bailitis, 2024
     Maintainer:  Janis Bailitis
