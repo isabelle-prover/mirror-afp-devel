@@ -234,6 +234,25 @@ name = "Ralph-Johan Back"
 [back.homepages]
 back_homepage = "http://users.abo.fi/Ralph-Johan.Back/"
 
+[bailitis]
+name = "Janis Bailitis"
+
+[bailitis.emails]
+
+[bailitis.emails.bailitis_email]
+user = [
+  "Janis",
+  "Bailitis",
+]
+host = [
+  "maths",
+  "ox",
+  "ac",
+  "uk",
+]
+
+[bailitis.homepages]
+
 [baksys]
 name = "Mantas Bakšys"
 

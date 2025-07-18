@@ -18,6 +18,9 @@ homepage = "paulson_homepage"
 
 [contributors]
 
+[contributors.bailitis]
+email = "bailitis_email"
+
 [notify]
 paulson = "paulson_email"
 
