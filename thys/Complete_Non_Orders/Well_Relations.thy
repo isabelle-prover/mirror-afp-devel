@@ -774,7 +774,7 @@ proof
   from order.nonempty_imp_ex_extreme[OF I0]
   obtain i where "least I i" by auto
   with mono 
-  show "\<exists>e. extreme X (\<sqsupseteq>) e" by (auto intro!: exI[of _ "f i"] extremeI simp: X monotoneD)
+  show "\<exists>e. extreme X (\<sqsupseteq>) e" by (intro exI[of _ "f i"] extremeI, auto simp: X monotoneD)
 qed
 
 lemma (in semiattractive) omega_chain_imp_pre_well_ordered:
@@ -821,7 +821,7 @@ proof-
     with fXfA fX0 have XA: "X \<subseteq> A" and "X \<noteq> {}" by (auto simp: ex_in_conv[symmetric])
     from nonempty_imp_ex_extreme[OF this] obtain e where Xe: "extreme X (\<sqsupseteq>) e" by auto
     with XA have eA: "e \<in> A" by auto
-    from fXfA have fX: "f ` X = fX" by (auto simp: X_def intro!: equalityI)
+    from fXfA have fX: "f ` X = fX" by (auto simp: X_def)
     show "\<exists>fe. extreme fX (well_image f A (\<sqsubseteq>))\<^sup>- fe"
     proof (safe intro!: exI extremeI elim!: subset_imageE)
       from Xe fX show fefX: "f e \<in> fX" by auto

@@ -79,7 +79,7 @@ lemma those_map_Some[simp]: "those (map Some xs) = Some xs" by simp
 
 lemma those_append:
   "those (as @ bs) = do {xs \<leftarrow> those as; ys \<leftarrow> those bs; Some (xs@ys)}"
-  by (auto simp: those_eq_None split: bind_split)
+  by (auto split: bind_split)
 
 lemma those_Cons:
   "those (a#as) = do {x \<leftarrow> a; xs \<leftarrow> those as; Some (x # xs)}"
@@ -392,6 +392,12 @@ lemma same_value_imp_in_dom_iff:
   assumes fafa': "f a = f a'" and a: "a : \<sigma> in A" shows a': "a' \<in> dom A \<longleftrightarrow> a' : \<sigma> in A"
   using same_value_imp_same_type[OF a _ fafa'] by (auto elim!: in_dom_hastypeE)
 
+lemma sort_preserving_subsset:
+  assumes "A' \<subseteq>\<^sub>m A"
+  shows "sort_preserving f A'"
+  using same_value_imp_same_type
+  apply unfold_locales by (auto dest!: subssetD[OF assms])
+
 end
 
 lemma sort_preserving_cong:
@@ -572,6 +578,10 @@ locale inhabited = fixes A
   assumes inhabited: "\<And>\<sigma>. \<exists>a. a : \<sigma> in A"
 begin
 
+lemma some_hastype:
+  "(SOME a. a : \<sigma> in A) : \<sigma> in A"
+  using inhabited[of \<sigma>] by (auto intro: someI)
+
 lemma ex_sorted_map: "\<exists>\<alpha>. \<alpha> :\<^sub>s V \<rightarrow> A"
 proof (unfold sorted_map_def, intro choice allI)
   fix v
@@ -691,7 +701,7 @@ lemma dom_image_subset[intro!]: "f ` dom A \<subseteq> dom B"
 end
 
 lemma sorted_image_cong: "(\<And>a \<sigma>. a : \<sigma> in A \<Longrightarrow> f a = f' a) \<Longrightarrow> f `\<^sup>s A = f' `\<^sup>s A"
-  by (auto 0 3 intro!: ext arg_cong[of _ _ safe_The] simp: sorted_image_def)
+  by (auto 0 3 intro!: arg_cong[of _ _ safe_The] simp: fun_eq_iff sorted_image_def)
 
 lemma inj_on_dom_imp_sort_preserving_inv_into:
   assumes inj: "inj_on f (dom A)" shows "sort_preserving (inv_into (dom A) f) (f `\<^sup>s A)"

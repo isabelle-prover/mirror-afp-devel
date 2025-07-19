@@ -6,6 +6,8 @@ theory Sorted_Contexts
     Sorted_Terms
 begin
 
+text \<open>We introduce the sort signature for abstract contexts:\<close>
+
 fun aContext where
   "aContext F A (Hole,\<sigma>) = Some \<sigma>"
 | "aContext F A (More f ls C rs, \<sigma>) = do {
@@ -13,6 +15,11 @@ fun aContext where
     \<mu> \<leftarrow> aContext F A (C,\<sigma>);
     \<nu>s \<leftarrow> those (map A rs);
     F (f, \<rho>s @ \<mu> # \<nu>s)}"
+
+text \<open>Term contexts are abstract contexts in the term algebra.\<close>
+
+abbreviation Context (\<open>(2\<C>'(_,/_'))\<close> [1,1]50) where
+  "\<C>(F,V) \<equiv> aContext F \<T>(F,V)"
 
 lemma Hole_hastype[simp]: "Hole : \<sigma> \<rightarrow> \<tau> in aContext F A \<longleftrightarrow> \<sigma> = \<tau>"
   and More_hastype: "More f ls C rs : \<sigma> \<rightarrow> \<tau> in aContext F A \<longleftrightarrow> (\<exists>\<rho>s \<mu> \<nu>s.
@@ -60,6 +67,38 @@ next
     by (auto simp: bind_eq_Some_conv)
 qed
 
+lemma hastype_aContext_cases[consumes 1, case_names Hole More]:
+  assumes C: "C : \<sigma> \<rightarrow> \<tau> in aContext F A"
+    and hole: "C = \<box> \<Longrightarrow> thesis"
+    and more: "\<And>f \<mu>s \<rho> \<nu>s ls D rs.
+      C = More f ls D rs \<Longrightarrow>
+      f : \<mu>s @ \<rho> # \<nu>s \<rightarrow> \<tau> in F \<Longrightarrow>
+      ls :\<^sub>l \<mu>s in A \<Longrightarrow>
+      D : \<sigma> \<rightarrow> \<rho> in aContext F A \<Longrightarrow>
+      rs :\<^sub>l \<nu>s in A \<Longrightarrow>
+      thesis"
+  shows thesis
+proof (cases C)
+  case Hole
+  with hole show ?thesis by auto
+next
+  case (More f ls D rs)
+  from C[unfolded this More_hastype]
+  obtain \<rho>s \<mu> \<nu>s
+    where f: "f : \<rho>s @ \<mu> # \<nu>s \<rightarrow> \<tau> in F"
+      and ls: "ls :\<^sub>l \<rho>s in A"
+      and D: "D : \<sigma> \<rightarrow> \<mu> in aContext F A"
+      and rs: "rs :\<^sub>l \<nu>s in A" by auto
+  show ?thesis
+    using more[OF More f ls D rs].
+qed
+
+lemma (in sorted_map) map_args_actxt_hastype:
+  assumes "C : \<sigma> \<rightarrow> \<tau> in aContext F A"
+  shows "map_args_actxt f C : \<sigma> \<rightarrow> \<tau> in aContext F B"
+  using assms
+  apply (induct C arbitrary: \<tau>)
+  by (auto dest!: sorted_map_list simp: More_hastype)
 
 context sorted_algebra begin
 
@@ -80,7 +119,15 @@ lemma ctxt_has_same_type:
   shows "I\<langle>C;a\<rangle> : \<tau>' in A \<longleftrightarrow> \<tau>' = \<tau>"
   using assms by (auto simp: has_same_type intp_ctxt_hastype)
 
+lemma eval_ctxt_hastype:
+  assumes C: "C : \<sigma> \<rightarrow> \<tau> in \<C>(F,V)" and \<alpha>: "\<alpha> :\<^sub>s V \<rightarrow> A"
+  shows "I\<lbrakk>C\<rbrakk>\<^sub>c \<alpha> : \<sigma> \<rightarrow> \<tau> in aContext F A"
+  using sorted_map.map_args_actxt_hastype[OF eval_sorted_map[OF \<alpha>] C].
+
 end
+
+lemmas apply_ctxt_hastype = term.intp_ctxt_hastype
+lemmas subst_ctxt_hastype = term.eval_ctxt_hastype
 
 lemma subt_in_dom:
   assumes s: "s \<in> dom \<T>(F,V)" and st: "s \<unrhd> t" shows "t \<in> dom \<T>(F,V)"
@@ -94,12 +141,6 @@ next
   show ?case by auto
 qed
 
-text \<open>Term contexts are abstract contexts in the term algebra.\<close>
-
-abbreviation Context (\<open>(2\<C>'(_,/_'))\<close> [1,1]50) where
-  "\<C>(F,V) \<equiv> aContext F \<T>(F,V)"
-
-lemmas hastype_context_apply = term.intp_ctxt_hastype
 
 lemma hastype_context_decompose:
   assumes "C\<langle>t\<rangle> : \<tau> in \<T>(F,V)"
@@ -141,50 +182,5 @@ lemma apply_ctxt_hastype_imp_hastype_context:
   assumes C: "C\<langle>t\<rangle> : \<tau> in \<T>(F,V)" and t: "t : \<sigma> in \<T>(F,V)"
   shows "C : \<sigma> \<rightarrow> \<tau> in \<C>(F,V)"
   using hastype_context_decompose[OF C] t by (auto simp: has_same_type)
-
-lemma subst_apply_ctxt_sorted:
-  assumes "C : \<sigma> \<rightarrow> \<tau> in \<C>(F,X)" and "\<theta> :\<^sub>s X \<rightarrow> \<T>(F,V)"
-  shows "C \<cdot>\<^sub>c \<theta> : \<sigma> \<rightarrow> \<tau> in \<C>(F,V)"
-  using assms
-proof(induct arbitrary: \<theta> rule: hastype_aContext_induct)
-  case (Hole)
-  then show ?case by simp
-next
-  case (More f \<sigma>b \<rho> \<sigma>a \<tau> bef C aft)
-  have fssig: "f : \<sigma>b @ \<rho> # \<sigma>a \<rightarrow> \<tau> in F" using More(1) .
-  have bef:"bef :\<^sub>l \<sigma>b in \<T>(F,X)" using More(2) .
-  have Cssig:"C : \<sigma> \<rightarrow> \<rho> in \<C>(F,X)" using More(3) .
-  have aft:"aft :\<^sub>l \<sigma>a in \<T>(F,X)" using More(5) .
-  have theta:"\<theta> :\<^sub>s X \<rightarrow> \<T>(F,V)" using More(6) .
-  hence ctheta:"C \<cdot>\<^sub>c \<theta> : \<sigma> \<rightarrow> \<rho> in \<C>(F,V)" using More(4) by simp
-  have len_bef:"length bef = length \<sigma>b" using bef list_all2_iff by blast
-  have len_aft:"length aft = length \<sigma>a" using aft list_all2_iff by blast
-  { fix i
-    assume len_i:"i < length \<sigma>b"
-    hence "bef ! i \<cdot> \<theta> : \<sigma>b ! i in \<T>(F,V)"
-    proof -
-      have "bef ! i : \<sigma>b ! i in \<T>(F,X)" using bef
-        by (simp add: len_i list_all2_conv_all_nth)
-      from subst_hastype[OF theta this] 
-      show ?thesis.
-    qed
-  } note * = this
-  have mb: "map (\<lambda>t. t \<cdot> \<theta>) bef :\<^sub>l \<sigma>b in \<T>(F,V)" using length_map 
-    by (auto simp:* theta bef list_all2_conv_all_nth len_bef)
-  { fix i
-    assume len_i:"i < length \<sigma>a"
-    hence "aft ! i \<cdot> \<theta> : \<sigma>a ! i in \<T>(F,V)"
-    proof -
-      have "aft ! i : \<sigma>a ! i in \<T>(F,X)" using aft
-        by (simp add: len_i list_all2_conv_all_nth)
-      from subst_hastype[OF theta this] 
-      show ?thesis.
-    qed
-  } note ** = this
-  have ma: "map (\<lambda>t. t \<cdot> \<theta>) aft :\<^sub>l \<sigma>a in \<T>(F,V)" using length_map
-    by (auto simp:** theta aft list_all2_conv_all_nth len_aft)
-  show "More f bef C aft \<cdot>\<^sub>c \<theta> : \<sigma> \<rightarrow> \<tau> in \<C>(F,V)"
-    by (auto intro!: More_hastypeI fssig simp:ctheta mb ma)
-qed
 
 end

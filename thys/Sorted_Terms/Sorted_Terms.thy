@@ -239,6 +239,19 @@ lemmas eval_hastype_vars =
 lemmas eval_has_same_type_vars =
   eval_has_same_type[OF _ hastype_in_Term_restrict_vars[THEN iffD2]]
 
+lemma eval_subst_sorted_map:
+  assumes \<theta>: "\<theta> :\<^sub>s X \<rightarrow> \<T>(F,V)" and \<alpha>: "\<alpha> :\<^sub>s V \<rightarrow> A"
+  shows "I\<lbrakk>\<theta>\<rbrakk>\<^sub>s \<alpha> :\<^sub>s X \<rightarrow> A"
+proof
+  fix x \<sigma> assume "x : \<sigma> in X"
+  from sorted_mapD[OF \<theta> this]
+  show "(I\<lbrakk>\<theta>\<rbrakk>\<^sub>s \<alpha>) x : \<sigma> in A" by (auto simp: eval_subst_def intro!: eval_hastype[OF \<alpha>])
+qed
+
+lemmas eval_ground_hastype = eval_hastype[OF sorted_map_empty]
+lemmas map_eval_ground_hastype = map_eval_hastype[OF sorted_map_empty]
+lemmas eval_ground_sorted_map = eval_sorted_map[OF sorted_map_empty]
+
 end
 
 lemma sorted_algebra_cong:
@@ -261,6 +274,10 @@ text \<open>Sorted substitution preserves type:\<close>
 lemma subst_hastype: "\<theta> :\<^sub>s X \<rightarrow> \<T>(F,V) \<Longrightarrow> s : \<sigma> in \<T>(F,X) \<Longrightarrow> s\<cdot>\<theta> : \<sigma> in \<T>(F,V)"
   using term.eval_hastype.
 
+lemma subst_compose_sorted_map:
+  "\<theta> :\<^sub>s X \<rightarrow> \<T>(F,Y) \<Longrightarrow> \<rho> :\<^sub>s Y \<rightarrow> \<T>(F,Z) \<Longrightarrow> \<theta> \<circ>\<^sub>s \<rho> :\<^sub>s X \<rightarrow> \<T>(F,Z)"
+  using term.eval_subst_sorted_map.
+
 lemmas subst_hastype_imp_dom_iff = term.dom_iff_hastype
 lemmas subst_hastype_vars = term.eval_hastype_vars
 lemmas subst_has_same_type = term.eval_has_same_type
@@ -270,10 +287,12 @@ lemmas subst_o = eval_o[of Fun]
 lemmas subst_sorted_map = term.eval_sorted_map
 lemmas map_subst_hastype = term.map_eval_hastype
 
-lemma subst_compose_sorted_map:
-  assumes "\<theta> :\<^sub>s X \<rightarrow> \<T>(F,Y)" and "\<rho> :\<^sub>s Y \<rightarrow> \<T>(F,Z)"
-  shows "\<theta> \<circ>\<^sub>s \<rho> :\<^sub>s X \<rightarrow> \<T>(F,Z)"
-  using assms by (simp add: sorted_map_def subst_compose subst_hastype)
+lemma eval_ground_eq: "s : \<sigma> in \<T>(F,\<emptyset>) \<Longrightarrow> I\<lbrakk>s\<rbrakk>\<alpha> = I\<lbrakk>s\<rbrakk>\<alpha>'"
+  apply (induct rule: hastype_in_Term_induct)
+  by (auto simp: list_all2_indep2 cong: map_cong)
+
+lemma map_eval_ground_eq: "ss :\<^sub>l \<sigma>s in \<T>(F,\<emptyset>) \<Longrightarrow> [I\<lbrakk>s\<rbrakk>\<alpha>. s \<leftarrow> ss] = [I\<lbrakk>s\<rbrakk>\<alpha>'. s \<leftarrow> ss]"
+  by (auto 0 3 simp: in_set_conv_nth list_all2_conv_all_nth eval_ground_eq)
 
 lemma subst_hastype_iff_vars:
   assumes "\<forall>x\<in>vars s. \<forall>\<sigma>. \<theta> x : \<sigma> in \<T>(F,W) \<longleftrightarrow> x : \<sigma> in V"
@@ -744,9 +763,9 @@ end
 
 text \<open>By `unsorted' we mean the situation where any element has the unique type @{term "()"}.\<close>
 
-lemma Term_UNIV[simp]: "\<TT>(UNIV,UNIV) = UNIV"
+lemma Term_UNIV[simp]: "\<TT>(UNIV,UNIV) = UNIV" (is "?l = _")
 proof-
-  have "s \<in> \<TT>(UNIV,UNIV)" for s by (induct s, auto)
+  have "s \<in> ?l" for s by (induct s, auto)
   then show ?thesis by auto
 qed
 
@@ -1041,22 +1060,6 @@ lemma term_subalgebra:
   shows "subalgebra F \<T>(F,V) Fun G \<T>(G,W) Fun"
   apply unfold_locales
   using FG VW Term_mono[OF FG VW] by auto
-
-
-text \<open> An algebra where every element has a representation: \<close>
-locale sorted_algebra_constant = sorted_algebra_syntax +
-  fixes const
-  assumes vars_const[simp]: "\<And>d. vars (const d) = {}"
-  assumes eval_const[simp]: "\<And>d \<alpha>. I\<lbrakk>const d\<rbrakk>\<alpha> = d"
-begin
-
-lemma eval_subst_const[simp]: "I\<lbrakk>e\<cdot>(const\<circ>\<alpha>)\<rbrakk>\<beta> = I\<lbrakk>e\<rbrakk>\<alpha>"
-  by (induct e, auto simp:o_def intro!:arg_cong[of _ _ "I _"])
-
-lemma eval_upd_as_subst: "I\<lbrakk>e\<rbrakk>\<alpha>(x:=a) = I\<lbrakk>e \<cdot> Var(x:=const a)\<rbrakk>\<alpha>"
-  by (induct e, auto simp: o_def intro: arg_cong[of _ _ "I _"])
-
-end
 
 context sorted_algebra_syntax begin
 
