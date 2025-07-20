@@ -329,7 +329,6 @@ declare [[code drop:
   Bex
   Ball
   sorted_list_of_set
-  List.map_project
   finite
   card
   pred_of_set
@@ -1713,39 +1712,36 @@ lemma sorted_list_of_set_code [code, set_base_code]:
     "sorted_list_of_set (Set_Monad xs) = sort (remdups xs)"
   by (auto simp add: DList_set_def RBT_set_def sorted_list_of_set_sort_remdups Collect_member distinct_remdups_id distinct_list_of_dlist member_conv_keys split: option.split)
 
-lemma map_project_set: "List.map_project f (set xs) = set (List.map_filter f xs)"
-by(auto simp add: List.map_project_def List.map_filter_def intro: rev_image_eqI)
+lemma image_filter_set_conv_fold: 
+  \<open>Option.image_filter f (set xs) = 
+   fold (\<lambda>x A. case f x of None \<Rightarrow> A | Some y \<Rightarrow> insert y A) xs {}\<close>
+  by (induction xs rule: rev_induct) (simp_all add: Option.image_filter_eq split: option.split)
 
-lemma map_project_simps:
-  shows map_project_empty: "List.map_project f {} = {}"
-  and map_project_insert: 
-  "List.map_project f (insert x A) = 
-  (case f x of None \<Rightarrow> List.map_project f A 
-   | Some y \<Rightarrow> insert y (List.map_project f A))"
-by(auto simp add: List.map_project_def split: option.split)
-
-lemma map_project_conv_fold: 
-  "List.map_project f (set xs) = 
-   fold (\<lambda>x A. case f x of None \<Rightarrow> A | Some y \<Rightarrow> insert y A) xs {}"
-by(induct xs rule: rev_induct)(simp_all add: map_project_simps cong: option.case_cong)
-
-lemma map_project_code [code, set_base_code]:
+lemma image_filter_code [code, set_base_code]:
   fixes dxs :: "'a :: ceq set_dlist" 
     and rbt :: "'b :: ccompare set_rbt"
   shows
-    "List.map_project h (RBT_set rbt) = 
-      (case ID CCOMPARE('b) of None \<Rightarrow> Code.abort (STR ''map_project RBT_set: ccompare = None'') (\<lambda>_. List.map_project h (RBT_set rbt))
+    "Option.image_filter h (RBT_set rbt) = 
+      (case ID CCOMPARE('b) of None \<Rightarrow> Code.abort (STR ''Option.image_filter RBT_set: ccompare = None'') (\<lambda>_. Option.image_filter h (RBT_set rbt))
                          | Some _ \<Rightarrow> RBT_Set2.fold (\<lambda>x A. case h x of None \<Rightarrow> A | Some y \<Rightarrow> insert y A) rbt {})"
       (is ?rbt)
-    "List.map_project g (DList_set dxs) = 
-      (case ID CEQ('a) of None \<Rightarrow> Code.abort (STR ''map_project DList_set: ceq = None'') (\<lambda>_. List.map_project g (DList_set dxs))
+    "Option.image_filter g (DList_set dxs) = 
+      (case ID CEQ('a) of None \<Rightarrow> Code.abort (STR ''Option.image_filter DList_set: ceq = None'') (\<lambda>_. Option.image_filter g (DList_set dxs))
                      | Some _ \<Rightarrow> DList_Set.fold (\<lambda>x A. case g x of None \<Rightarrow> A | Some y \<Rightarrow> insert y A) dxs {})"
       (is ?dlist)
-    "List.map_project f (Set_Monad xs) = Set_Monad (List.map_filter f xs)"
+    "Option.image_filter f (Set_Monad xs) = Set_Monad (List.map_filter f xs)"
+      (is ?set_monad)
 proof -
   show ?dlist ?rbt
-    by(auto split: option.split simp add: RBT_set_def DList_set_def DList_Set.fold.rep_eq Collect_member map_project_conv_fold RBT_Set2.fold_conv_fold_keys member_conv_keys del: equalityI)
-qed(auto simp add: List.map_project_def List.map_filter_def intro: rev_image_eqI)
+    by (auto split: option.split simp add: RBT_set_def DList_set_def DList_Set.fold.rep_eq Collect_member
+      image_filter_set_conv_fold RBT_Set2.fold_conv_fold_keys member_conv_keys del: equalityI)
+  show ?set_monad
+    by (auto simp add: Option.image_filter_eq Option.these_eq Option.is_none_def List.map_filter_def)
+qed
+
+lemma these_code [code, set_base_code]:
+  \<open>Option.these A = Option.image_filter (\<lambda>x. x) A\<close>
+  by (simp add: Option.image_filter_eq)
 
 lemma can_select_code [code, set_base_code]:
   fixes xs :: "'a :: ceq list" 

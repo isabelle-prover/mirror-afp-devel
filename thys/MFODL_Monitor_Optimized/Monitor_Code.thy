@@ -1,6 +1,8 @@
 (*<*)
 theory Monitor_Code
-  imports Monitor_Impl
+  imports
+    Monitor_Impl
+    "HOL-Library.Code_Target_Nat"
 begin
 (*>*)
 
