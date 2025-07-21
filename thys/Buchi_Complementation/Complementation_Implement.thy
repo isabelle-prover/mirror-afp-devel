@@ -597,9 +597,7 @@ begin
     fix a f g
     assume "g \<in> expand_map (get_4 A (bounds_3 A a (refresh_1 f)))"
     then show "g \<in> expand_map (get_3 A (bounds_3 A a (refresh_1 f)))"
-      unfolding get_4_def get_3_def items_4_def items_3_def expand_map_alt_def mem_Collect_eq
-      supply not_None_eq [iff del] by blast
-
+      unfolding get_4_def get_3_def items_4_def items_3_def expand_map_alt_def by blast
   qed
   lemma complement_4_language_2: "language (complement_4 A) \<subseteq> language (complement_3 A)"
     using language_mono complement_4_less by (auto dest: monoD)

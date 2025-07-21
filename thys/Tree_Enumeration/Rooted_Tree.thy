@@ -554,7 +554,7 @@ qed
 abbreviation "ltree_stree_subtrees ts \<equiv> SOME xs. fset_of_list xs = ltree_stree |`| ts \<and> distinct xs \<and> sorted_wrt (\<lambda>t s. tree_ltree t \<le> tree_ltree s) xs"
 
 lemma fset_of_list_ltree_stree_subtrees[simp]: "fset_of_list (ltree_stree_subtrees ts) = ltree_stree |`| ts"
-  using someI_ex[OF distinct_sorted_wrt_list] by force
+  using someI_ex[OF distinct_sorted_wrt_list] by fast
 
 lemma set_ltree_stree_subtrees[simp]: "set (ltree_stree_subtrees ts) = ltree_stree ` fset ts"
   using fset_of_list_ltree_stree_subtrees by (metis (mono_tags, lifting) fset.set_map fset_of_list.rep_eq)
