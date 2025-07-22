@@ -22,8 +22,6 @@ theory Pattern_Completeness_Set
     Compute_Nonempty_Infinite_Sorts
 begin
 
-lemmas type_conversion = hastype_in_Term_empty_imp_subst
-
 lemma ball_insert_un_cong: "f y = Ball zs f \<Longrightarrow> Ball (insert y A) f = Ball (zs \<union> A) f"
   by auto
 
@@ -189,7 +187,7 @@ proof (unfold match_complete_wrt_def)
   have "\<forall>x \<in> tvars_match mp. \<sigma> x : snd x in \<T>(C,\<emptyset>)"
     by (auto intro!: sorted_mapD[OF s] simp: hastype_restrict)
   then have g: "x \<in> tvars_match mp \<Longrightarrow> ground (\<sigma> x)" for x
-    by (auto simp: hatype_imp_ground)
+    by (auto simp: Term_empty_imp_ground)
   { fix t l
     assume tl: "(t,l) \<in> mp"
     then have "ground (t\<cdot>\<sigma>)" by (force intro!: g simp: tvars_match_def)
@@ -965,8 +963,6 @@ proof -
   with conflicts(2)[OF conf] show ?thesis by metis
 qed
 
-lemmas cg_term_vars = hastype_in_Term_empty_imp_vars
-
 text \<open>Main partial correctness theorems on well-formed problems: the transformation rules do
   not change the semantics of a problem\<close>
 
@@ -1053,10 +1049,10 @@ next
             show "var_ind 0 x \<Longrightarrow> \<sigma> x = Var x" unfolding \<sigma>_def by auto
             show "\<not> var_ind 0 x \<Longrightarrow> vars (\<sigma> x) = {}" 
               unfolding \<sigma>_def conv_def using \<delta>[THEN sorted_mapD, of x] 
-              by (auto simp: vars_term_subst  hastype_in_Term_empty_imp_vars)
+              by (auto simp: vars_term_subst Term_empty_vars)
             show "\<not> var_ind 0 x \<Longrightarrow> snd x \<in> S \<Longrightarrow> \<sigma> x : snd x in \<T>(C,\<emptyset>)" 
               using \<delta>[THEN sorted_mapD, of x]
-              unfolding \<sigma>_def conv_def by (auto simp: \<sigma>_def intro: type_conversion)
+              unfolding \<sigma>_def conv_def by (auto simp: \<sigma>_def intro: subst_Term_empty_hastype)
             show "snd x \<in> S \<Longrightarrow> \<not> inf_sort (snd x) \<Longrightarrow> \<sigma> x = conv (\<delta> x)" 
               unfolding \<sigma>_def by (auto dest: var_ind_inf)
           qed            
@@ -1127,7 +1123,7 @@ next
           from z_inf(1)[of d]
           obtain u :: "('f,nat\<times>'s) term"
             where u: "u : snd z in \<T>(C,\<emptyset>)" and du: "d \<le> size u" by auto
-          have vars_u: "vars u = {}" by (rule cg_term_vars[OF u])
+          have vars_u: "vars u = {}" by (rule Term_empty_vars[OF u])
           define \<sigma>' where "\<sigma>' x = (if x = z then u else \<sigma> x)" for x
           have \<sigma>'_def': "\<sigma>' x = (if x \<in> y ` pp \<and> index x = i then u else \<sigma> x)" for x
             unfolding \<sigma>'_def by (rule if_cong, insert bij z, auto simp: bij_betw_def inj_on_def) 
@@ -1389,7 +1385,7 @@ next
         fix x :: "nat \<times> 's" 
         assume *: "snd x \<in> S" "\<not> inf_sort (snd x)" 
         from \<delta>[THEN sorted_mapD, of x] * have "\<delta> x : snd x in \<T>(C,\<emptyset>)" by auto
-        hence vars: "vars (\<delta> x) = {}" by (simp add: hastype_in_Term_empty_imp_vars)
+        hence vars: "vars (\<delta> x) = {}" by (simp add: Term_empty_vars)
         from * \<sigma>[unfolded cg_subst_ind_def] have "\<sigma> x = conv (\<delta> x)" by blast
         hence "?\<sigma> x = \<delta> x \<cdot> (undefined \<circ>\<^sub>s \<sigma>')" by (simp add: subst_compose_def conv_def subst_subst)
         also have "\<dots> = \<delta> x" by (rule ground_term_subst[OF vars]) 
@@ -1402,7 +1398,7 @@ next
         then have "snd x = \<iota>" "\<iota> \<in> S" by auto
         with \<sigma>[unfolded cg_subst_ind_def, rule_format, of x]
         have "\<sigma> x : \<iota> in \<T>(C,\<emptyset>)" by auto
-        thus "\<sigma> x \<cdot> \<sigma>' : \<iota> in \<T>(C,\<emptyset>)" by (rule type_conversion)
+        thus "\<sigma> x \<cdot> \<sigma>' : \<iota> in \<T>(C,\<emptyset>)" by (rule subst_Term_empty_hastype)
       qed
       from pp[unfolded wf_pat_complete_iff[OF wf] match_complete_wrt_def, rule_format, OF this]
       obtain mp \<mu> where mp: "mp \<in> pp \<union> pp'" and match: "\<And> ti li. (ti, li)\<in> mp \<Longrightarrow> ti \<cdot> ?\<sigma> = li \<cdot> \<mu>" by force

@@ -248,9 +248,9 @@ proof
   show "(I\<lbrakk>\<theta>\<rbrakk>\<^sub>s \<alpha>) x : \<sigma> in A" by (auto simp: eval_subst_def intro!: eval_hastype[OF \<alpha>])
 qed
 
-lemmas eval_ground_hastype = eval_hastype[OF sorted_map_empty]
-lemmas map_eval_ground_hastype = map_eval_hastype[OF sorted_map_empty]
-lemmas eval_ground_sorted_map = eval_sorted_map[OF sorted_map_empty]
+lemmas eval_Term_empty_hastype = eval_hastype[OF sorted_map_empty]
+lemmas map_eval_Term_empty_hastype = map_eval_hastype[OF sorted_map_empty]
+lemmas eval_Term_empty_sorted_map = eval_sorted_map[OF sorted_map_empty]
 
 end
 
@@ -286,13 +286,6 @@ lemmas subst_map_vars = eval_map_vars[of Fun]
 lemmas subst_o = eval_o[of Fun]
 lemmas subst_sorted_map = term.eval_sorted_map
 lemmas map_subst_hastype = term.map_eval_hastype
-
-lemma eval_ground_eq: "s : \<sigma> in \<T>(F,\<emptyset>) \<Longrightarrow> I\<lbrakk>s\<rbrakk>\<alpha> = I\<lbrakk>s\<rbrakk>\<alpha>'"
-  apply (induct rule: hastype_in_Term_induct)
-  by (auto simp: list_all2_indep2 cong: map_cong)
-
-lemma map_eval_ground_eq: "ss :\<^sub>l \<sigma>s in \<T>(F,\<emptyset>) \<Longrightarrow> [I\<lbrakk>s\<rbrakk>\<alpha>. s \<leftarrow> ss] = [I\<lbrakk>s\<rbrakk>\<alpha>'. s \<leftarrow> ss]"
-  by (auto 0 3 simp: in_set_conv_nth list_all2_conv_all_nth eval_ground_eq)
 
 lemma subst_hastype_iff_vars:
   assumes "\<forall>x\<in>vars s. \<forall>\<sigma>. \<theta> x : \<sigma> in \<T>(F,W) \<longleftrightarrow> x : \<sigma> in V"
@@ -823,61 +816,63 @@ qed
 
 subsection \<open>Ground Terms\<close>
 
-lemma hastype_in_Term_empty_imp_vars: "s : \<sigma> in \<T>(F,\<emptyset>) \<Longrightarrow> vars s = {}" 
+lemma Term_empty_vars: "s : \<sigma> in \<T>(F,\<emptyset>) \<Longrightarrow> vars s = {}" 
   by (auto dest: hastype_in_Term_imp_vars_subset)
 
-lemma hastype_in_Term_empty_imp_vars_subst: "s : \<sigma> in \<T>(F,\<emptyset>) \<Longrightarrow> vars (s\<cdot>\<theta>) = {}"
-  by (auto simp: vars_term_subst_apply_term hastype_in_Term_empty_imp_vars)
+lemma Term_empty_vars_subst: "s : \<sigma> in \<T>(F,\<emptyset>) \<Longrightarrow> vars (s\<cdot>\<theta>) = {}"
+  by (auto simp: vars_term_subst_apply_term Term_empty_vars)
 
-lemma ground_Term_iff: "s : \<sigma> in \<T>(F,V) \<and> ground s \<longleftrightarrow> s : \<sigma> in \<T>(F,\<emptyset>)"
+lemma Term_empty_iff: "s : \<sigma> in \<T>(F,V) \<and> ground s \<longleftrightarrow> s : \<sigma> in \<T>(F,\<emptyset>)"
   using hastype_in_Term_restrict_vars[of s \<sigma> F V]
-  by (auto simp: hastype_in_Term_empty_imp_vars ground_vars_term_empty)
+  by (auto simp: Term_empty_vars ground_vars_term_empty)
 
-lemma hatype_imp_ground: "s : \<sigma> in \<T>(F,\<emptyset>) \<Longrightarrow> ground s"
-  using ground_Term_iff[of s \<sigma>] by auto
+lemma Term_empty_imp_ground: "s : \<sigma> in \<T>(F,\<emptyset>) \<Longrightarrow> ground s"
+  using Term_empty_iff[of s \<sigma>] by auto
 
-lemma hastype_in_Term_empty_imp_subst:
-  "s : \<sigma> in \<T>(F,\<emptyset>) \<Longrightarrow> s\<cdot>\<theta> : \<sigma> in \<T>(F,V)"
-  by (rule subst_hastype, auto)
-
-lemma hastype_in_Term_empty_imp_subst_eq:
-  "s : \<sigma> in \<T>(F,\<emptyset>) \<Longrightarrow> s\<cdot>\<theta> = s\<cdot>\<rho>"
-  apply (induction rule: hastype_in_Term_induct)
-  by (auto simp: list_all2_indep2 cong: map_cong)
-
-lemma hastype_in_Term_empty_imp_subst_id:
-  assumes s: "s : \<sigma> in \<T>(F,\<emptyset>)" shows "s\<cdot>\<theta> = s"
-  using hastype_in_Term_empty_imp_subst_eq[OF s, of Var] by simp
-
-lemma hastype_in_Term_empty_imp_subst_subst:
-  "s : \<sigma> in \<T>(F,\<emptyset>) \<Longrightarrow> s\<cdot>\<theta>\<cdot>\<rho> = s\<cdot>undefined"
-  apply (unfold subst_subst)
-  using hastype_in_Term_empty_imp_subst_eq.
-
-lemma in_dom_Term_empty_imp_subst_id:
-  "s \<in> dom \<T>(F,\<emptyset>) \<Longrightarrow> s\<cdot>\<theta> = s"
-  by (auto elim: in_dom_hastypeE simp: hastype_in_Term_empty_imp_subst_id)
+lemmas subst_Term_empty_hastype = term.eval_Term_empty_hastype
 
 lemma in_dom_Term_empty_imp_subst:
   "s \<in> dom \<T>(F,\<emptyset>) \<Longrightarrow> s\<cdot>\<theta> \<in> dom \<T>(F,V)"
 proof (elim in_dom_hastypeE)
   fix \<sigma> assume "s : \<sigma> in \<T>(F,\<emptyset>)"
-  from hastype_in_Term_empty_imp_subst[OF this, of \<theta> V]
+  from subst_Term_empty_hastype[OF this, of \<theta> V]
   show "s\<cdot>\<theta> \<in> dom \<T>(F,V)" by auto
 qed
 
-lemma hastype_in_Term_empty_imp_map_subst_eq:
-  "ss :\<^sub>l \<sigma>s in \<T>(F,\<emptyset>) \<Longrightarrow> [s\<cdot>\<theta>. s \<leftarrow> ss] = [s\<cdot>\<rho>. s \<leftarrow> ss]"
-  by (auto simp: list_eq_iff_nth_eq hastype_in_Term_empty_imp_subst_eq list_all2_conv_all_nth)
+lemma eval_ground_eq: "ground s \<Longrightarrow> I\<lbrakk>s\<rbrakk>\<alpha> = I\<lbrakk>s\<rbrakk>\<alpha>'"
+  apply (induct rule: ground.induct)
+  by (auto cong: map_cong)
 
-lemma hastype_in_Term_empty_imp_map_subst_id:
-  assumes ss: "ss :\<^sub>l \<sigma>s in \<T>(F,\<emptyset>)" shows "[s\<cdot>\<theta>. s \<leftarrow> ss] = ss"
-  using hastype_in_Term_empty_imp_map_subst_eq[OF ss, of \<theta> Var] by simp
+lemmas eval_Term_empty_eq = eval_ground_eq[OF Term_empty_imp_ground]
 
-lemma hastype_in_Term_empty_imp_map_subst_subst:
+lemmas subst_Term_empty_eq = eval_Term_empty_eq[where I=Fun]
+
+lemma subst_Term_empty_id:
+  assumes s: "s : \<sigma> in \<T>(F,\<emptyset>)" shows "s\<cdot>\<theta> = s"
+  using subst_Term_empty_eq[OF s, of Var] by simp
+
+lemma subst_subst_Term_empty:
+  "s : \<sigma> in \<T>(F,\<emptyset>) \<Longrightarrow> s\<cdot>\<theta>\<cdot>\<rho> = s\<cdot>undefined"
+  apply (unfold subst_subst)
+  using subst_Term_empty_eq.
+
+lemma in_dom_Term_empty_subst_id:
+  "s \<in> dom \<T>(F,\<emptyset>) \<Longrightarrow> s\<cdot>\<theta> = s"
+  by (auto elim: in_dom_hastypeE simp: subst_Term_empty_id)
+
+lemma map_eval_Term_empty_eq: "ss :\<^sub>l \<sigma>s in \<T>(F,\<emptyset>) \<Longrightarrow> [I\<lbrakk>s\<rbrakk>\<alpha>. s \<leftarrow> ss] = [I\<lbrakk>s\<rbrakk>\<alpha>'. s \<leftarrow> ss]"
+  by (auto 0 3 simp: in_set_conv_nth list_all2_conv_all_nth eval_Term_empty_eq)
+
+lemma map_subst_Term_empty_eq: "ss :\<^sub>l \<sigma>s in \<T>(F,\<emptyset>) \<Longrightarrow> [s\<cdot>\<theta>. s \<leftarrow> ss] = [s\<cdot>\<rho>. s \<leftarrow> ss]"
+  using map_eval_Term_empty_eq.
+
+lemma map_subst_Term_empty_id: "ss :\<^sub>l \<sigma>s in \<T>(F,\<emptyset>) \<Longrightarrow> [s\<cdot>\<theta>. s \<leftarrow> ss] = ss"
+  using map_subst_Term_empty_eq[of _ _ _ _ Var] by simp
+
+lemma map_subst_subst_Term_empty:
   "ss :\<^sub>l \<sigma>s in \<T>(F,\<emptyset>) \<Longrightarrow> [s\<cdot>\<theta>\<cdot>\<rho>. s \<leftarrow> ss] = [s\<cdot>undefined. s \<leftarrow> ss]"
   apply (unfold subst_subst)
-  using hastype_in_Term_empty_imp_map_subst_eq.
+  using map_subst_Term_empty_eq.
 
 context fixes \<theta> :: "'v \<Rightarrow> ('f,'w) term" begin
 
@@ -888,9 +883,9 @@ proof
     show "(\<lambda>s. s\<cdot>undefined) : dom \<T>(F,\<emptyset>) \<rightarrow> dom \<T>(F,\<emptyset>)"
       by (auto simp: in_dom_Term_empty_imp_subst)
   qed (auto simp del: subst_subst_compose
-      simp: subst_subst hastype_in_Term_empty_imp_subst_id in_dom_Term_empty_imp_subst_id
+      simp: subst_subst subst_Term_empty_id in_dom_Term_empty_subst_id
       in_dom_Term_empty_imp_subst)
-qed (auto simp: hastype_in_Term_empty_imp_subst)
+qed (auto simp: subst_Term_empty_hastype)
 
 lemmas sorted_bijection_Term_empty = sorted_bijection_axioms
 
@@ -898,7 +893,7 @@ lemmas bij_betw_dom_Term_empty = bij
 
 lemmas bij_betw_sort_Term_empty = bij_betw_sort
 
-lemma all_in_Term_empty_subst_iff:
+lemma all_Term_empty_subst_iff:
   "(\<forall>s : \<sigma> in \<T>(F,\<emptyset>). P (s\<cdot>\<theta>)) \<longleftrightarrow> (\<forall>s : \<sigma> in \<T>(F,\<emptyset>). P s)"
   by (simp add: all_in_target_iff)
 

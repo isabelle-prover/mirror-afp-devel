@@ -41,7 +41,7 @@ proof -
   from t
   have t2: "?t \<cdot> undefined = t"
     by (auto simp: basic_terms_def o_def
-        simp: hastype_in_Term_empty_imp_map_subst_subst hastype_in_Term_empty_imp_map_subst_id)
+        simp: map_subst_subst_Term_empty map_subst_Term_empty_id)
   from l show "\<exists>l \<in> L. l matches t"
     apply (subst t2[symmetric])
     by (force simp: matches_subst)
