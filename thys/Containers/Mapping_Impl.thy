@@ -12,13 +12,7 @@ begin
 
 section \<open>Different implementations of maps\<close>
 
-code_identifier
-  code_module Mapping \<rightharpoonup> (SML) Mapping_Impl
-| code_module Mapping_Impl \<rightharpoonup> (SML) Mapping_Impl
-
 subsection \<open>Map implementations\<close>
-
-declare [[code drop: Mapping.combine_with_key Mapping.combine]]
 
 definition Assoc_List_Mapping :: "('a, 'b) alist \<Rightarrow> ('a, 'b) mapping"
 where [simp]: "Assoc_List_Mapping al = Mapping.Mapping (DAList.lookup al)"
@@ -150,8 +144,6 @@ lemma bulkload_code [code]:
   by (simp add: Mapping.bulkload.abs_eq Mapping_inject ccompare_nat_def ID_def fun_eq_iff)
 
 datatype mapping_impl = Mapping_IMPL
-
-declare [[code drop: rec_mapping_impl case_mapping_impl \<open>HOL.equal :: mapping_impl \<Rightarrow> _\<close>]]
 
 lemma [code]:
   fixes x :: mapping_impl
@@ -299,5 +291,17 @@ definition "MAPPING_IMPL(('a, 'b) phantom) = Phantom (('a, 'b) phantom)
 instance ..
 
 end
+
+declare [[code drop:
+  rec_mapping_impl
+  case_mapping_impl
+  \<open>HOL.equal :: mapping_impl \<Rightarrow> _\<close>
+  Mapping.combine_with_key
+  Mapping.combine
+  ]]
+
+code_identifier
+  code_module Mapping \<rightharpoonup> (SML) Mapping_Impl
+| code_module Mapping_Impl \<rightharpoonup> (SML) Mapping_Impl
 
 end

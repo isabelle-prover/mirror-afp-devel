@@ -248,7 +248,7 @@ lemma case_val'_cert:
 
 setup \<open>Code.declare_case_global @{thm case_val'_cert}\<close>
 
-declare [[code drop: case_val Word]]
+declare [[code drop: case_val]]
 
 
 subsection \<open>Make functions use functions on machine words\<close>

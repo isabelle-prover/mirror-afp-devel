@@ -16,9 +16,6 @@ imports
   Containers.Set_Impl
 begin
 
-declare [[code drop: Gcd_fin]]
-declare [[code drop: Lcm_fin]]
-
 definition gcds :: "'a::semiring_gcd list \<Rightarrow> 'a"
   where [simp, code_abbrev]: "gcds xs = gcd_list xs"
 

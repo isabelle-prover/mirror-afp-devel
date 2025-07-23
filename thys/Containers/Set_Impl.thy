@@ -284,62 +284,6 @@ lemma is_UNIV_unfold [code_unfold]:
   "set_eq UNIV A \<longleftrightarrow> is_UNIV A"
 by(auto simp add: is_UNIV_def set_eq_def)
 
-declare [[code drop:
-  Set.empty
-  Set.is_empty
-  uminus_set_inst.uminus_set
-  Set.member
-  Set.insert
-  Set.remove
-  UNIV
-  Set.filter
-  image
-  Set.subset_eq
-  Set.union
-  minus_set_inst.minus_set
-  Set.inter
-  card
-  Set.bind
-  the_elem
-  Pow
-  sum
-  prod
-  Product_Type.product
-  Id_on
-  Image
-  trancl
-  relcomp
-  wf_code
-  \<open>Inf :: _ \<Rightarrow> 'a \<Rightarrow> 'b::Inf\<close>
-  \<open>Sup :: _ \<Rightarrow> 'a \<Rightarrow> 'b::Sup\<close>
-  \<open>Inf :: _ \<Rightarrow> 'a set\<close>
-  \<open>Sup :: _ \<Rightarrow> 'a set\<close>
-  \<open>Inf :: _ \<Rightarrow> 'a Predicate.pred\<close>
-  \<open>Sup :: _ \<Rightarrow> 'a Predicate.pred\<close>
-  Inf_fin
-  Sup_fin
-  Min
-  Max
-  \<open>Gcd :: _ \<Rightarrow> nat\<close>
-  \<open>Lcm :: _ \<Rightarrow> nat\<close>
-  \<open>Gcd :: _ \<Rightarrow> int\<close>
-  \<open>Lcm :: _ \<Rightarrow> int\<close>
-  Gcd_fin
-  Lcm_fin
-  Bex
-  Ball
-  sorted_list_of_set
-  finite
-  card
-  pred_of_set
-  Wellfounded.acc
-  Set.can_select
-  (* "set_eq :: 'a set \<Rightarrow> 'a set \<Rightarrow> bool" *)
-  irrefl_on
-  bacc
-  set_of_pred
-  set_of_seq
-  ]]
 
 subsection \<open>Set implementations\<close>
 
@@ -1743,7 +1687,7 @@ lemma these_code [code, set_base_code]:
   \<open>Option.these A = Option.image_filter (\<lambda>x. x) A\<close>
   by (simp add: Option.image_filter_eq)
 
-lemma can_select_code [code, set_base_code]:
+lemma can_select_code: \<comment> \<open>TODO: filter_generator not executable!?\<close>
   fixes xs :: "'a :: ceq list" 
     and dxs :: "'a :: ceq set_dlist" 
     and rbt :: "'b :: ccompare set_rbt"
@@ -1784,6 +1728,10 @@ proof -
     apply blast
     done
 qed
+
+lemma can_select_iff_card_eq_1 [code]:
+  \<open>Set.can_select P A \<longleftrightarrow> card (Set.filter P A) = 1\<close>
+  by (simp add: card_eq_Suc_0_ex1)
 
 lemma pred_of_set_code [code, set_base_code]:
   fixes dxs :: "'a :: ceq set_dlist" 
@@ -2062,5 +2010,16 @@ lemma Set_Monad_code_post [code_post]:
   shows "Set_Monad [] = {}"
   and "Set_Monad (x#xs) = insert x (Set_Monad xs)"
 by simp_all
+
+declare [[code drop:
+  \<open>Gcd :: _ \<Rightarrow> nat\<close>
+  \<open>Lcm :: _ \<Rightarrow> nat\<close>
+  \<open>Gcd :: _ \<Rightarrow> int\<close>
+  \<open>Lcm :: _ \<Rightarrow> int\<close>
+  Gcd_fin
+  Lcm_fin
+  \<open>Inf :: _ \<Rightarrow> 'a Predicate.pred\<close>
+  \<open>Sup :: _ \<Rightarrow> 'a Predicate.pred\<close>
+  ]]
 
 end
