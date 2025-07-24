@@ -131,11 +131,36 @@ by (auto simp: nts_syms_def)
 lemma nts_syms_map_Nt[simp]: "nts_syms (map Nt w) = set w"
 unfolding nts_syms_def by auto
 
+lemma nts_syms_rev: "nts_syms (rev w) = nts_syms w"
+by(auto simp: nts_syms_def)
+
 lemma nts_syms_map_Tm[simp]: "nts_syms (map Tm w) = {}"
 unfolding nts_syms_def by auto
 
+lemma nts_syms_empty_iff: "nts_syms w = {} \<longleftrightarrow> (\<exists>u. w = map Tm u)"
+by(induction w) (auto simp: ex_map_conv split: sym.split)
+
+text \<open>If a sentential form contains a \<open>Nt\<close>, it must have a last and a first \<open>Nt\<close>:\<close>
+
+lemma non_word_has_last_Nt: "nts_syms w \<noteq> {} \<Longrightarrow> \<exists>u A v. w = u @ [Nt A] @ map Tm v"
+proof (induction w)
+  case Nil
+  then show ?case by simp
+next
+  case (Cons a list)
+  then show ?case using nts_syms_empty_iff[of list]
+    by(auto simp: Cons_eq_append_conv split: sym.splits)
+qed
+
+lemma non_word_has_first_Nt: "nts_syms w \<noteq> {} \<Longrightarrow> \<exists>u A v. w = map Tm u @ Nt A # v"
+  using nts_syms_rev non_word_has_last_Nt[of "rev w"]
+  by (metis append.assoc append_Cons append_Nil rev.simps(2) rev_eq_append_conv rev_map)
+
 lemma in_Nts_iff_in_Syms: "B \<in> Nts P \<longleftrightarrow> Nt B \<in> Syms P"
 unfolding Nts_def Syms_def nts_syms_def by (auto)
+
+lemma Nts_mono: "G \<subseteq> H \<Longrightarrow> Nts G \<subseteq> Nts H"
+by (auto simp add: Nts_def)
 
 lemma Nts_Un: "Nts (P1 \<union> P2) = Nts P1 \<union> Nts P2"
 by (simp add: Nts_def)
@@ -245,6 +270,9 @@ abbreviation langS :: "('n,'t) cfg \<Rightarrow> 't list set" where
 
 lemma Lang_Ders: "map Tm ` (Lang P A) \<subseteq> Ders P A"
 unfolding Lang_def Ders_def by auto
+
+lemma Lang_subset_if_Ders_subset: "Ders R A \<subseteq> Ders R' A \<Longrightarrow> Lang R A \<subseteq> Lang R' A"
+by (auto simp add: Lang_def Ders_def)
 
 lemma Lang_eqI_derives:
   assumes "\<And>v. R \<turnstile> [Nt A] \<Rightarrow>* map Tm v \<longleftrightarrow> S \<turnstile> [Nt A] \<Rightarrow>* map Tm v"
@@ -500,6 +528,9 @@ next
   then show ?case by (force simp: derive_Tm_Cons relpowp_Suc_left OO_def)
 qed
 
+lemma deriven_Tms_prepend: "R \<turnstile> map Tm t @ u \<Rightarrow>(n) v \<Longrightarrow> \<exists>v1. v = map Tm t @ v1 \<and> R \<turnstile> u \<Rightarrow>(n) v1"
+  by (induction t arbitrary: v) (auto simp add: deriven_Tm_Cons)  
+
 lemma derives_Tm_Cons:
   "P \<turnstile> Tm a # u \<Rightarrow>* v \<longleftrightarrow> (\<exists>w. v = Tm a # w \<and> P \<turnstile> u \<Rightarrow>* w)"
   by (metis deriven_Tm_Cons rtranclp_power)
@@ -669,6 +700,45 @@ proof (induction \<alpha> arbitrary: \<beta> n)
     then show ?thesis by blast
   qed
 qed simp
+
+lemma word_decomp1: 
+  "R \<turnstile> p @ [Nt A] @ map Tm ts \<Rightarrow>(n) map Tm q 
+  \<Longrightarrow> \<exists>pt At w k m. R \<turnstile> p \<Rightarrow>(k) map Tm pt \<and> R \<turnstile> w \<Rightarrow>(m) map Tm At \<and> (A, w) \<in> R 
+      \<and> q = pt @ At @ ts \<and> n = Suc(k + m)"
+proof -
+  assume assm: "R \<turnstile> p @ [Nt A] @ map Tm ts \<Rightarrow>(n) map Tm q"
+  then obtain q1 where P: "R \<turnstile> p@[Nt A] \<Rightarrow>(n) q1 \<and> map Tm q = q1 @ map Tm ts"
+    unfolding deriven_append_decomp
+    by (metis add.commute add_0 append.assoc not_derive_from_Tms relpowp_E2)
+  then obtain q1t where "q1 = map Tm q1t" "q = q1t @ ts"
+    by (metis map_Tm_inject_iff map_eq_append_conv)
+  with P obtain pt At w k m where P2: "R \<turnstile> p \<Rightarrow>(k) map Tm pt \<and> R \<turnstile> w \<Rightarrow>(m) map Tm At \<and> (A, w) \<in> R 
+     \<and> q1t = pt @ At \<and> n = Suc(k + m)" 
+    by(fastforce simp: deriven_append_decomp map_eq_append_conv dest: deriven_start1)
+  then have "q = pt @ At @ ts" using \<open>q = _\<close> by simp
+  then show ?thesis using P2 by blast
+qed
+
+lemma deriven_start_sent: 
+  "R \<turnstile> u @ Nt V # w \<Rightarrow>(Suc n) map Tm x \<Longrightarrow> \<exists>v. (V, v) \<in> R \<and> R \<turnstile> u @ v @ w \<Rightarrow>(n) map Tm x"
+proof -
+  assume assm: "R \<turnstile> u @ Nt V # w \<Rightarrow>(Suc n) map Tm x"
+  then obtain n1 n2 xu xvw 
+    where P1: "Suc n = n1 + n2 \<and> map Tm x = xu @ xvw \<and> R \<turnstile> u \<Rightarrow>(n1) xu \<and> R \<turnstile> Nt V # w \<Rightarrow>(n2) xvw"
+    by (auto simp add: deriven_append_decomp)
+  then have t: "\<nexists>t. xvw = Nt V # t"
+    by (metis append_eq_map_conv map_eq_Cons_D sym.distinct(1))
+  then obtain n3 n4 v xv xw 
+    where P2: "n2 = Suc (n3 + n4) \<and> xvw = xv @ xw \<and> (V,v) \<in> R \<and> R \<turnstile> v \<Rightarrow>(n3) xv \<and> R \<turnstile> w \<Rightarrow>(n4) xw"
+    using P1 t by (auto simp add: deriven_Cons_decomp)
+  then have "R \<turnstile> v @ w \<Rightarrow>(n3 + n4) xvw" using P2
+    using deriven_append_decomp diff_Suc_1 by blast
+  then have "R \<turnstile> u @ v @ w \<Rightarrow>(n1 + n3 + n4) map Tm x" using P1 P2 deriven_append_decomp
+    using ab_semigroup_add_class.add_ac(1) by blast
+  then have "R \<turnstile> u @ v @ w \<Rightarrow>(n) map Tm x" using P1 P2
+    by (simp add: add.assoc)
+  then show ?thesis using P2 by blast
+qed
 
 lemma derives_simul_rules:
   assumes "\<And>A w. (A,w) \<in> P \<Longrightarrow> P' \<turnstile> [Nt A] \<Rightarrow>* w"
@@ -1022,6 +1092,9 @@ lemma derivern_iff_deriven: "P \<turnstile> u \<Rightarrow>r(n) map Tm v \<longl
 lemma derivers_iff_derives: "P \<turnstile> u \<Rightarrow>r* map Tm v \<longleftrightarrow> P \<turnstile> u \<Rightarrow>* map Tm v"
   by (simp add: derivern_iff_deriven rtranclp_power)
 
+lemma derivern_prepend: "R \<turnstile> u \<Rightarrow>r(n) v \<Longrightarrow> R \<turnstile> p @ u \<Rightarrow>r(n) p @ v"
+  by (fastforce simp: derivern_iff_rev_deriveln rev_map deriveln_append rev_eq_append_conv)
+
 lemma deriver_append_map_Tm:
   "P \<turnstile> u @ map Tm w \<Rightarrow>r v \<longleftrightarrow> (\<exists>x. v = x @ map Tm w \<and> P \<turnstile> u \<Rightarrow>r x)"
   by (fastforce simp: deriver_iff_rev_derivel rev_map derivel_map_Tm_append rev_eq_append_conv)
@@ -1061,6 +1134,86 @@ lemma derivern_singleton:
   case n of 0 \<Rightarrow> v = [Nt A]
   | Suc m \<Rightarrow> \<exists>w. (A,w) \<in> P \<and> P \<turnstile> w \<Rightarrow>r(m) v)"
   using derivern_snoc_Nt[of n P "[]" A v] by (cases n, auto)
+
+lemma derivern_snoc_Nt_Tms_decomp1: 
+  "R \<turnstile> p @ [Nt A] \<Rightarrow>r(n) map Tm q 
+   \<Longrightarrow> \<exists>pt At w k m. R \<turnstile> p \<Rightarrow>(k) map Tm pt \<and> R \<turnstile> w \<Rightarrow>(m) map Tm At \<and> (A, w) \<in> R 
+        \<and> q = pt @ At \<and> n = Suc(k + m)"
+proof-
+  assume assm: "R \<turnstile> p @ [Nt A] \<Rightarrow>r(n) map Tm q"
+  then have "R \<turnstile> p @ [Nt A] \<Rightarrow>(n) map Tm q" by (simp add: derivern_iff_deriven)
+  then have "\<exists>n1 n2 q1 q2. n = n1 + n2 \<and> map Tm q = q1@q2 \<and> R \<turnstile> p \<Rightarrow>(n1) q1 \<and> R \<turnstile> [Nt A] \<Rightarrow>(n2) q2"
+    using deriven_append_decomp by blast
+  then obtain n1 n2 q1 q2 
+    where decomp1: "n = n1 + n2 \<and> map Tm q = q1 @ q2 \<and> R \<turnstile> p \<Rightarrow>(n1) q1 \<and> R \<turnstile> [Nt A] \<Rightarrow>(n2) q2"
+    by blast
+  then have "\<exists>pt At. q1 = map Tm pt \<and> q2 = map Tm At \<and> q = pt @ At"
+    by (meson map_eq_append_conv)
+  then obtain pt At where decomp_tms: "q1 = map Tm pt \<and> q2 = map Tm At \<and> q = pt @ At" by blast
+  then have "\<exists>w m. n2 = Suc m \<and> R \<turnstile> w \<Rightarrow>(m) (map Tm At) \<and> (A,w) \<in> R" 
+    using decomp1 
+    by (auto simp add: deriven_start1)
+  then obtain w m where "n2 = Suc m \<and> R \<turnstile> w \<Rightarrow>(m) (map Tm At) \<and> (A,w) \<in> R" by blast
+  then have "R \<turnstile> p \<Rightarrow>(n1) map Tm pt \<and> R \<turnstile> w \<Rightarrow>(m) map Tm At \<and> (A, w) \<in> R 
+     \<and> q = pt @ At \<and> n = Suc(n1 + m)" 
+    using decomp1 decomp_tms by auto
+  then show ?thesis by blast
+qed
+
+text \<open>If there exists a derivation from \<open>u\<close> to \<open>v\<close> then there exists one which does not use
+  productions of the form \<open>A \<rightarrow> A\<close>. Also for left-derivation.\<close>
+
+lemma no_self_loops_derives: "P \<turnstile> u \<Rightarrow>(n) v \<Longrightarrow> {p\<in>P. \<not>(\<exists>A. p = (A,[Nt A]))} \<turnstile> u \<Rightarrow>* v"
+proof(induction n arbitrary: u)
+  case 0
+  then show ?case by simp
+next
+  case (Suc n)
+  then have "\<exists>w. P \<turnstile> u \<Rightarrow> w \<and> P \<turnstile> w \<Rightarrow>(n) v"
+    by (simp add: relpowp_Suc_D2)
+  then obtain w where W: "P \<turnstile> u \<Rightarrow> w \<and> P \<turnstile> w \<Rightarrow>(n) v" by blast
+  then have "\<exists> (A,x) \<in> P. \<exists>u1 u2. u = u1 @ Nt A # u2 \<and> w = u1 @ x @ u2" 
+    by (simp add: derive_iff)
+  then obtain A x u1 u2 where prod: "u = u1 @Nt A#u2 \<and> w = u1 @x@u2 \<and> (A, x) \<in> P"
+    by blast
+  then show ?case
+  proof(cases "x = [Nt A]")
+    case True
+    then have "u = w" using prod by auto
+    then show ?thesis using Suc W by auto
+  next
+    case False
+    then have "(A, x) \<in> {p\<in>P. \<not>(\<exists>A. p = (A,[Nt A]))}" using prod by (auto)
+    then show ?thesis using Suc W
+      by (metis (no_types, lifting) derives_rule prod rtranclp.rtrancl_refl)
+  qed
+qed
+
+lemma no_self_loops_derivels: "P \<turnstile> u \<Rightarrow>l(n) v \<Longrightarrow> {p\<in>P. \<not>(\<exists>A. p = (A,[Nt A]))} \<turnstile> u \<Rightarrow>l* v"
+proof(induction n arbitrary: u)
+  case 0
+  then show ?case by simp
+next
+  case (Suc n)
+  then have "\<exists>w. P \<turnstile> u \<Rightarrow>l w \<and> P \<turnstile> w \<Rightarrow>l(n) v"
+    by (simp add: relpowp_Suc_D2)
+  then obtain w where W: "P \<turnstile> u \<Rightarrow>l w \<and> P \<turnstile> w \<Rightarrow>l(n) v" by blast
+  then have "\<exists> (A,x) \<in> P. \<exists>u1 u2. u = map Tm u1 @ Nt A # u2 \<and> w = map Tm u1 @ x @ u2" 
+    by (simp add: derivel_iff)
+  then obtain A x u1 u2 where prod: "u = map Tm u1 @Nt A#u2 \<and> w = map Tm u1 @x@u2 \<and> (A, x) \<in> P"
+    by blast
+  then show ?case
+  proof(cases "x = [Nt A]")
+    case True
+    then have "u = w" using prod by auto
+    then show ?thesis using Suc W by auto
+  next
+    case False
+    then have "(A, x) \<in> {p\<in>P. \<not>(\<exists>A. p = (A,[Nt A]))}" using prod by (auto)
+    then show ?thesis using Suc W
+      by (metis (lifting) converse_rtranclp_into_rtranclp derivel.intros prod)
+  qed
+qed
 
 
 subsection \<open>Substitution in Lists\<close>
@@ -1131,6 +1284,10 @@ proof
     then show ?case by (auto simp: Eps_free_Nil[OF R])
   qed
 qed auto
+
+lemma Eps_free_deriven_Nil:
+  "\<lbrakk> Eps_free R; R \<turnstile> l \<Rightarrow>(n) [] \<rbrakk> \<Longrightarrow> l = []"
+by (metis Eps_free_derives_Nil relpowp_imp_rtranclp)
 
 lemma Eps_free_derivels_Nil: "Eps_free R \<Longrightarrow> R \<turnstile> l \<Rightarrow>l* [] \<longleftrightarrow> l = []"
 by (meson Eps_free_derives_Nil derivels_from_empty derivels_imp_derives)
