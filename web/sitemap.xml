@@ -3,10 +3,13 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://isa-afp.org/entries/index.json</loc>
-    <lastmod>2025-07-04T00:00:00+00:00</lastmod>
+    <lastmod>2025-07-22T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Bisimulation_Logic.html</loc>
+    <lastmod>2025-07-22T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/</loc>
-    <lastmod>2025-07-04T00:00:00+00:00</lastmod>
+    <lastmod>2025-07-22T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/entries/Computational_pAdics.html</loc>
     <lastmod>2025-07-04T00:00:00+00:00</lastmod>
@@ -2866,6 +2869,8 @@
   </url><url>
     <loc>https://isa-afp.org/authors/maximova/</loc>
   </url><url>
+    <loc>https://isa-afp.org/authors/burrieza/</loc>
+  </url><url>
     <loc>https://isa-afp.org/sessions/algebraic_numbers/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/algebraic_vcs/</loc>
@@ -2909,6 +2914,8 @@
     <loc>https://isa-afp.org/sessions/anselmgod/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/bordg/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/authors/ginel/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/aodv/</loc>
   </url><url>
@@ -3041,6 +3048,8 @@
     <loc>https://isa-afp.org/sessions/birdkmp/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/birkhoff_finite_distributive_lattices/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/sessions/bisimulation_logic/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/blue_eyes/</loc>
   </url><url>
@@ -3707,6 +3716,8 @@
     <loc>https://isa-afp.org/authors/krayer/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/fermat3_4/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/authors/toscano/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/fft/</loc>
   </url><url>

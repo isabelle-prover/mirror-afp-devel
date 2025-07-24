@@ -1,5 +1,23 @@
 [
  {
+  "abstract": "Bisimulations are a fundamental formal tool in the model theory of standard modal logic. Roughly speaking, bisimulations provide a clear answer to a foundational model-theoretical question: Given two (Kripke-style) models, what conditions are sufficient and necessary for them to satisfy the same modal formulas?  We propose a modal study of the notion of bisimulation. We extend the basic modal language with a new modality $[b]$, whose intended meaning is universal quantification over all states that are bisimilar to the current one. We provide a sound and complete axiomatisation of the class of all pairs of Kripke models linked by bisimulations.",
+  "authors": [
+   "Alfredo Burrieza",
+   "Fernando Soler-Toscano",
+   "Antonio Yuste-Ginel"
+  ],
+  "link": "/entries/Bisimulation_Logic.html",
+  "shortname": "Bisimulation_Logic",
+  "title": "A meta-modal logic for bisimulations",
+  "topic_links": [
+   "/topics/logic/general-logic/modal-logic/"
+  ],
+  "topics": [
+   "Logic/General logic/Modal logic"
+  ],
+  "year": "2025"
+ },
+ {
   "abstract": "We develop a framework for reasoning computationally about \\(p\\)-adic fields via formal Laurent series with integer coefficients. We define a ring-class quotient type consisting of equivalence classes of prime-indexed sequences of formal Laurent series, in which every \\(p\\)-adic field is contained as a subring. Via a further quotient of the ring of \\(p\\)-adic integers (that is, the elements of depth at least \\(0\\)) by the prime ideal (that is, the subring of elements of depth at least \\(1\\)), we define a ring-class type in which every prime-order finite field is contained as a subring. Finally, some topological properties are developed using depth as a proxy for a metric, Hensel's Lemma is proved, and the compactness of local rings of integers is established.",
   "authors": [
    "Jeremy Sylvestre"

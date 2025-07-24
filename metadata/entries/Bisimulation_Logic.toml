@@ -1,0 +1,34 @@
+title = "A meta-modal logic for bisimulations"
+date = 2025-07-22
+topics = [
+  "Logic/General logic/Modal logic",
+]
+abstract = "Bisimulations are a fundamental formal tool in the model theory of standard modal logic. Roughly speaking, bisimulations provide a clear answer to a foundational model-theoretical question: Given two (Kripke-style) models, what conditions are sufficient and necessary for them to satisfy the same modal formulas?  We propose a modal study of the notion of bisimulation. We extend the basic modal language with a new modality $[b]$, whose intended meaning is universal quantification over all states that are bisimilar to the current one. We provide a sound and complete axiomatisation of the class of all pairs of Kripke models linked by bisimulations."
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.burrieza]
+email = "burrieza_email"
+
+[authors.toscano]
+email = "toscano_email"
+
+[authors.ginel]
+email = "ginel_email"
+
+[contributors]
+
+[notify]
+toscano = "toscano_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = [
+  "10.48550/arXiv.2507.15117",
+]
+pubs = []

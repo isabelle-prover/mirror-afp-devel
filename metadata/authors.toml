@@ -1162,6 +1162,23 @@ host = [
 
 [bulwahn.homepages]
 
+[burrieza]
+name = "Alfredo Burrieza"
+orcid = "0000-0002-2033-6033"
+
+[burrieza.emails]
+
+[burrieza.emails.burrieza_email]
+user = [
+  "burrieza",
+]
+host = [
+  "uma",
+  "es",
+]
+
+[burrieza.homepages]
+
 [buss]
 name = "Sebastián Buss"
 
@@ -2371,6 +2388,23 @@ host = [
 ]
 
 [ghourabi.homepages]
+
+[ginel]
+name = "Antonio Yuste-Ginel"
+orcid = "0000-0002-4380-3095"
+
+[ginel.emails]
+
+[ginel.emails.ginel_email]
+user = [
+  "ayusteginel",
+]
+host = [
+  "uma",
+  "es",
+]
+
+[ginel.homepages]
 
 [gioiosa]
 name = "Gianpaolo Gioiosa"
@@ -7777,6 +7811,23 @@ host = [
 
 [tiu.homepages]
 tiu_homepage = "http://users.cecs.anu.edu.au/~tiu/"
+
+[toscano]
+name = "Fernando Soler-Toscano"
+orcid = "0000-0003-1953-4136"
+
+[toscano.emails]
+
+[toscano.emails.toscano_email]
+user = [
+  "fsoler",
+]
+host = [
+  "us",
+  "es",
+]
+
+[toscano.homepages]
 
 [toth]
 name = "Balazs Toth"

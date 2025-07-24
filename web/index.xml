@@ -4,6 +4,13 @@
     <title>Archive of Formal Proofs</title>
     <link>https://isa-afp.org/</link>
     <description>Formal developments in the AFP</description><item>
+  <title>A meta-modal logic for bisimulations</title>
+  <link>https://isa-afp.org/entries/Bisimulation_Logic.html</link>
+  <pubDate>Tue, 22 Jul 2025 00:00:00 +0000</pubDate>
+  <description>A meta-modal logic for bisimulations in the AFP</description>
+    <category>Logic/General logic/Modal logic</category>
+</item>
+<item>
   <title>Computational p-Adics</title>
   <link>https://isa-afp.org/entries/Computational_pAdics.html</link>
   <pubDate>Fri, 04 Jul 2025 00:00:00 +0000</pubDate>
