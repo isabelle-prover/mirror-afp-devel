@@ -1729,9 +1729,9 @@ proof -
     done
 qed
 
-lemma can_select_iff_card_eq_1 [code]:
-  \<open>Set.can_select P A \<longleftrightarrow> card (Set.filter P A) = 1\<close>
-  by (simp add: card_eq_Suc_0_ex1)
+lemma [code]:
+  \<open>Set.can_select P A \<longleftrightarrow> is_singleton (Set.filter P A)\<close>
+  by (fact Set.can_select_iff_is_singleton)
 
 lemma pred_of_set_code [code, set_base_code]:
   fixes dxs :: "'a :: ceq set_dlist" 
