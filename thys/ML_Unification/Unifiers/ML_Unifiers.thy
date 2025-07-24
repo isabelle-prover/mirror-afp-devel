@@ -29,9 +29,9 @@ paragraph \<open>Combining Unifiers\<close>
 
 ML_file\<open>unification_combine.ML\<close>
 ML\<open>
-  @{functor_instance struct_name = Standard_Unification_Combine
-    and functor_name = Unification_Combine
-    and id = \<open>""\<close>}
+\<^functor_instance>\<open>struct_name = Standard_Unification_Combine
+  and functor_name = Unification_Combine
+  and id = \<open>""\<close>\<close>
 \<close>
 local_setup \<open>Standard_Unification_Combine.setup_attribute NONE\<close>
 
@@ -39,13 +39,13 @@ paragraph \<open>Mixture of Unifiers\<close>
 
 ML_file\<open>mixed_unification.ML\<close>
 ML\<open>
-  @{functor_instance struct_name = Standard_Mixed_Unification
-    and functor_name = Mixed_Unification
-    and id = \<open>""\<close>
-    and more_args = \<open>structure UC = Standard_Unification_Combine\<close>}
+\<^functor_instance>\<open>struct_name = Standard_Mixed_Unification
+  and functor_name = Mixed_Unification
+  and id = \<open>""\<close>
+  and more_args = \<open>structure UC = Standard_Unification_Combine\<close>\<close>
 \<close>
 
-declare [[ucombine add = \<open>Standard_Unification_Combine.eunif_data
+declare [[ucombine add: \<open>Standard_Unification_Combine.eunif_data
   (Var_Higher_Order_Pattern_Unification.e_unify Unification_Combinator.fail_unify
   |> Unification_Combinator.norm_unifier
     (Unification_Util.inst_norm_term'
@@ -53,7 +53,7 @@ declare [[ucombine add = \<open>Standard_Unification_Combine.eunif_data
   |> K)
   (Standard_Unification_Combine.metadata \<^binding>\<open>var_hop_unif\<close> Prio.HIGH)\<close>]]
 
-declare [[ucombine add = \<open>
+declare [[ucombine add: \<open>
   let
     open Term_Normalisation
     (*ignore changes of schematic variables to avoid loops due to index-raising of some tactics*)

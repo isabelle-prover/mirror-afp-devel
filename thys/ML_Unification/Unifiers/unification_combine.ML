@@ -35,6 +35,7 @@ sig
   type eunif_datas = eunif_data list Prio.Table.table
   (*storing the e-unifiers and metadata*)
   structure Data : GENERIC_DATA
+  where type T = eunif_datas
 
   val get_eunif_datas : Context.generic -> eunif_datas
   val map_eunif_datas : (eunif_datas -> eunif_datas) -> Context.generic -> Context.generic
@@ -54,15 +55,15 @@ sig
 end
 
 functor Unification_Combine(A : sig
-  structure FIA : FUNCTOR_INSTANCE_ARGS
+  structure FI : FUNCTOR_INSTANCE_BASE
   end) : UNIFICATION_COMBINE =
 struct
 
 structure UCB = Unification_Combinator
 structure UB = Unification_Base
-structure FIU = Functor_Instance_Util(A.FIA)
+structure FI = Functor_Instance(A.FI)
 
-val logger = Logger.setup_new_logger Unification_Base.logger FIU.base_name
+val logger = Logger.setup_new_logger Unification_Base.logger FI.name
 
 @{parse_entries (struct) PA
   [add, del]}
@@ -159,7 +160,7 @@ fun e_unify unif binders ctxt tp env = Seq.make (fn _ =>
     ] |> Pretty.string_of);
   UCB.concat_e_unifiers (get_e_unifiers (Context.Proof ctxt)) unif binders ctxt tp env) |> Seq.pull)
 
-val binding = FIU.mk_binding_id_prefix "ucombine"
+val binding = Binding.make (FI.prefix_id "ucombine", FI.pos)
 
 val arg_parsers = {
   add = SOME (Parse_Util.nonempty_code (K "eunif_data to add must not be empty")),
@@ -169,7 +170,7 @@ val arg_parsers = {
 val parse_arg_entries =
   let
     val parse_value = PA.parse_entry (PA.get_add arg_parsers) (PA.get_del arg_parsers)
-    val parse_entry = Parse_Key_Value.parse_entry PA.parse_key Parse_Util.eq parse_value
+    val parse_entry = Parse_Key_Value.parse_entry PA.parse_key (Parse.$$$ ":") parse_value
   in PA.parse_entries_required Parse.and_list1 [] parse_entry (PA.empty_entries ()) end
 
 fun attribute (entries, pos) =
@@ -177,10 +178,10 @@ fun attribute (entries, pos) =
     fun default (context, _) = (SOME context, NONE)
     val run_code = ML_Attribute.run_map_context o rpair pos
     val add = case PA.get_add_safe entries of
-        SOME c => FIU.code_struct_op "insert_eunif_data" @ ML_Code_Util.atomic c |> run_code
+        SOME c => FI.code_struct_op "insert_eunif_data" @ ML_Code_Util.atomic c |> run_code
       | NONE => default
     val del = case PA.get_del_safe entries of
-        SOME c => FIU.code_struct_op "delete_eunif_data" @ ML_Code_Util.atomic c |> run_code
+        SOME c => FI.code_struct_op "delete_eunif_data" @ ML_Code_Util.atomic c |> run_code
       | NONE => default
   in ML_Attribute_Util.apply_attribute del #> add end
 
@@ -188,6 +189,6 @@ val parse_attribute = (parse_arg_entries |> Parse_Util.position) >> attribute
 
 val setup_attribute = Attrib.local_setup binding
   (Parse.!!! parse_attribute |> Scan.lift) o
-  the_default ("set unification-combine arguments (" ^ FIU.FIA.full_name ^ ")")
+  the_default ("set unification-combine arguments " ^ enclose "(" ")" FI.long_name)
 
 end

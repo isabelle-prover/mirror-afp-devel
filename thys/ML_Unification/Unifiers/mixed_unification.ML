@@ -15,14 +15,15 @@ sig
   val norms_first_higherp_decomp_comb_higher_unify : Unification_Base.normalisers
 end
 
-functor Mixed_Unification (A : sig
-  structure FIA : FUNCTOR_INSTANCE_ARGS
-  structure UC : UNIFICATION_COMBINE
+functor Mixed_Unification (A :
+  sig
+    structure FI : FUNCTOR_INSTANCE_BASE
+    structure UC : UNIFICATION_COMBINE
   end) : MIXED_UNIFICATION =
 struct
 
-structure FIU = Functor_Instance_Util(A.FIA)
-val logger = Logger.setup_new_logger Unification_Base.logger FIU.base_name
+structure FI = Functor_Instance(A.FI)
+val logger = Logger.setup_new_logger Unification_Base.logger FI.name
 
 structure UUtil = Unification_Util
 structure UCO = Unification_Combinator

@@ -120,8 +120,7 @@ fun unify_eresolve_tac_index norms_resolve unify_resolve norms_assume unify_assu
   unify_resolve_tac norms_resolve unify_resolve rule ctxt i state
   |> Seq.maps (Unify_Assumption_Base.unify_assumption_tac_index norms_assume unify_assume ctxt i)
 
-fun unify_eresolve_tac norms_resolve unify_resolve norms_assume unify_assume
-  rule ctxt i state =
+fun unify_eresolve_tac norms_resolve unify_resolve norms_assume unify_assume rule ctxt i =
   let val nprems = Thm.nprems_of rule
   in
     if nprems = 0 then
@@ -132,10 +131,10 @@ fun unify_eresolve_tac norms_resolve unify_resolve norms_assume unify_assume
           Pretty.str " has no premises."
         ] |> Pretty.string_of
       );
-      Seq.empty)
+      no_tac)
     else
-      unify_eresolve_tac_index norms_resolve unify_resolve norms_assume unify_assume rule ctxt i state
-      |> Seq.maps (fn (n, state) =>
+      unify_eresolve_tac_index norms_resolve unify_resolve norms_assume unify_assume rule ctxt i
+      #> Seq.maps (fn (n, state) =>
         Tactic_Util.EVERY_ARG (Tactic_Util.thin_tac n) (i upto i + nprems - 2) state)
   end
 
@@ -174,7 +173,7 @@ fun unify_dresolve_every_tac norms unify rules = unify_dresolve_tacs norms unify
 fun unify_dresolve_any_tac norms unify rules =
   unify_dresolve_tacs norms unify rules #> Tactic_Util.CONCAT'
 
-fun unify_fresolve_tac norms unify rule ctxt i state =
+fun unify_fresolve_tac norms unify rule ctxt i =
   let val nprems = Thm.nprems_of rule
   in
     if nprems = 0 then
@@ -185,11 +184,10 @@ fun unify_fresolve_tac norms unify rule ctxt i state =
           Pretty.str " has no premises."
         ] |> Pretty.string_of
       );
-      Seq.empty)
+      no_tac)
     else
-      unify_eresolve_tac_index HOPU.norms_unify HOPU.unify norms unify (Tactic.make_elim rule)
-        ctxt i state
-      |> Seq.map snd
+      unify_eresolve_tac_index HOPU.norms_unify HOPU.unify norms unify (Tactic.make_elim rule) ctxt i
+      #> Seq.map snd
   end
 
 fun unify_fresolve_tacs norms unify rules ctxt =

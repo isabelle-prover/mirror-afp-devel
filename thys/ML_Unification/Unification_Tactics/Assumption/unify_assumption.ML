@@ -52,6 +52,8 @@ sig
 
   val binding : binding
 
+  val parse_arg_entries : (ML_Code_Util.code, ML_Code_Util.code) Unify_Assumption_Args.PA.entries
+    parser
   val attribute : (ML_Code_Util.code, ML_Code_Util.code) Unify_Assumption_Args.PA.entries *
     Position.T -> attribute
   val parse_attribute : attribute parser
@@ -61,8 +63,9 @@ sig
   val setup_method : string option -> local_theory -> local_theory
 end
 
-functor Unify_Assumption(A : sig
-    structure FIA : FUNCTOR_INSTANCE_ARGS
+functor Unify_Assumption(A :
+  sig
+    structure FI : FUNCTOR_INSTANCE_BASE
     val init_args : Unify_Assumption_Args.args
   end) : UNIFY_ASSUMPTION =
 struct
@@ -70,7 +73,7 @@ struct
 structure UAA = Unify_Assumption_Args
 structure PA = UAA.PA
 
-structure FIU = Functor_Instance_Util(A.FIA)
+structure FI = Functor_Instance(A.FI)
 structure MCU = ML_Code_Util
 
 structure Data = Generic_Data(struct
@@ -90,7 +93,7 @@ val map_unifier = map_args o PA.map_unifier
 
 fun unify_assumption_tac ctxt = UAA.unify_assumption_tac (get_args (Context.Proof ctxt)) ctxt
 
-val binding = FIU.mk_binding_id_prefix "uassm"
+val binding = Binding.make (FI.prefix_id "uassm", FI.pos)
 
 val parse_arg_entries =
   let
@@ -108,7 +111,7 @@ fun attribute (entries, pos) =
     val code_entries = PA.key_entry_entries_from_entries entries
       |> map (fn (k, v) => code_from_key k @ code_from_entry v)
       |> MCU.list
-    val code = FIU.code_struct_op "map_args" @ MCU.atomic (code_PA_op "merge_entries" @
+    val code = FI.code_struct_op "map_args" @ MCU.atomic (code_PA_op "merge_entries" @
       MCU.atomic (code_PA_op "entries_from_entry_list" @ code_entries))
   in ML_Attribute.run_map_context (code, pos) end
 
@@ -116,7 +119,7 @@ val parse_attribute = (parse_arg_entries |> Parse_Util.position) >> attribute
 
 val setup_attribute = Attrib.local_setup binding
   (Parse.!!! parse_attribute |> Scan.lift) o
-  the_default ("set unify-assumption arguments (" ^ FIU.FIA.full_name ^ ")")
+  the_default ("set unify-assumption arguments " ^ enclose "(" ")" FI.long_name)
 
 val parse_method =
   Parse_Util.option (Parse.!!! parse_attribute)
@@ -126,7 +129,7 @@ val parse_method =
   |> Scan.lift
 
 val setup_method = Method.local_setup binding parse_method o
-  the_default ("solve first subgoal by assumption; with adjustable unifier ("
-    ^ FIU.FIA.full_name ^ ")")
+  the_default ("solve first subgoal by assumption; with adjustable unifier " ^
+    enclose "(" ")" FI.long_name)
 
 end

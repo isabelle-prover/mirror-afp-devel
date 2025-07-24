@@ -103,41 +103,38 @@ ML_file\<open>transport_util.ML\<close>
 paragraph \<open>Unification Setup\<close>
 
 ML\<open>
-  @{functor_instance struct_name = Transport_Unification_Combine
-    and functor_name = Unification_Combine
-    and id = Transport_Util.transport_id}
+\<^functor_instance>\<open>struct_name = Transport_Unification_Combine
+  and functor_name = Unification_Combine
+  and id = Transport_Util.transport_id\<close>
 \<close>
 local_setup \<open>Transport_Unification_Combine.setup_attribute NONE\<close>
 ML\<open>
-  @{functor_instance struct_name = Transport_Mixed_Unification
-    and functor_name = Mixed_Unification
-    and id = Transport_Util.transport_id
-    and more_args = \<open>structure UC = Transport_Unification_Combine\<close>}
+\<^functor_instance>\<open>struct_name = Transport_Mixed_Unification
+  and functor_name = Mixed_Unification
+  and id = Transport_Util.transport_id
+  and more_args = \<open>structure UC = Transport_Unification_Combine\<close>\<close>
 \<close>
 ML\<open>
-  structure A = Standard_Mixed_Unification
-\<close>
-ML\<open>
-  @{functor_instance struct_name = Transport_Unification_Hints
-    and functor_name = Term_Index_Unification_Hints
-    and id = Transport_Util.transport_id
-    and more_args = \<open>
-      structure TI = Discrimination_Tree
-      val init_args = {
-        concl_unifier = SOME (Higher_Order_Pattern_Unification.unify
-          |> Type_Unification.e_unify Unification_Util.unify_types),
-        prems_unifier = SOME (Transport_Mixed_Unification.first_higherp_decomp_comb_higher_unify
-          |> Unification_Combinator.norm_unifier Envir_Normalisation.beta_norm_term_unif),
-        normalisers = SOME Transport_Mixed_Unification.norms_first_higherp_decomp_comb_higher_unify,
-        retrieval = SOME (Term_Index_Unification_Hints_Args.mk_retrieval_sym_pair
-          TI.unifiables TI.norm_term),
-        hint_preprocessor = SOME (K I)
-      }\<close>}
+\<^functor_instance>\<open>struct_name = Transport_Unification_Hints
+  and functor_name = Term_Index_Unification_Hints
+  and id = Transport_Util.transport_id
+  and more_args = \<open>
+    structure TI = Discrimination_Tree
+    val init_args = {
+      concl_unifier = SOME (Higher_Order_Pattern_Unification.unify
+        |> Type_Unification.e_unify Unification_Util.unify_types),
+      prems_unifier = SOME (Transport_Mixed_Unification.first_higherp_decomp_comb_higher_unify
+        |> Unification_Combinator.norm_unifier Envir_Normalisation.beta_norm_term_unif),
+      normalisers = SOME Transport_Mixed_Unification.norms_first_higherp_decomp_comb_higher_unify,
+      retrieval = SOME (Term_Index_Unification_Hints_Args.mk_retrieval_sym_pair
+        TI.unifiables TI.norm_term),
+      hint_preprocessor = SOME (K I)
+    }\<close>\<close>
 \<close>
 local_setup \<open>Transport_Unification_Hints.setup_attribute NONE\<close>
-declare [[trp_uhint where hint_preprocessor = \<open>Unification_Hints_Base.obj_logic_hint_preprocessor
+declare [[trp_uhint config: hint_preprocessor = \<open>Unification_Hints_Base.obj_logic_hint_preprocessor
   @{thm atomize_eq[symmetric]} (Conv.rewr_conv @{thm eq_eq_True})\<close>]]
-declare [[trp_ucombine add = \<open>Transport_Unification_Combine.eunif_data
+declare [[trp_ucombine add: \<open>Transport_Unification_Combine.eunif_data
   (Transport_Unification_Hints.try_hints
   |> Unification_Combinator.norm_unifier
     (Unification_Util.inst_norm_term'

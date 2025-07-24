@@ -97,13 +97,10 @@ val pretty_env = Show.env
 fun pretty_unif_problem ctxt (t1, t2) =
   Pretty.block [pretty_term ctxt t1, Pretty.str " \<equiv>\<^sup>? " , pretty_term ctxt t2]
 
-fun pretty_unif_result ctxt (env, thm) = Pretty.block [
-    Pretty.str "Environment: ",
-    pretty_env ctxt env,
-    Pretty.fbrk,
-    Pretty.str "Theorem: ",
-    Thm.pretty_thm ctxt thm
-  ]
+fun pretty_unif_result ctxt (env, thm) = Pretty.fbreaks [
+    Pretty.block [Pretty.str "Environment: ", pretty_env ctxt env],
+    Pretty.block [Pretty.str "Theorem: ", Thm.pretty_thm ctxt thm]
+  ] |> Pretty.block
 
 fun pretty_call_theory_match ctxt pt = Pretty.block [
     Pretty.str "Calling theory matcher for ",
@@ -215,7 +212,7 @@ fun smash_tpairs_if_occurs ctxt t (env, thm) = Seq.make (fn _ =>
           in Thm.flexflex_rule (SOME ctxt) normed_thm |> Seq.map (pair new_env) end)
           handle Vartab.DUP _ => (@{log Logger.INFO} ctxt
             (fn _ => Pretty.block [
-                Pretty.str"Failed to merge environment for smashed tpairs and environment created by flexflex_rule: ",
+                Pretty.str "Failed to merge environment for smashed tpairs and environment created by flexflex_rule: ",
                 pretty_unif_result ctxt (env, thm)
               ]|> Pretty.string_of);
             Seq.empty))

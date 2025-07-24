@@ -117,13 +117,13 @@ val mk_parse_key_struct = U.mk_val_struct parse_key_name
 val entries_type_name = "entries"
 val mk_entries_type = U.mk_type_app entries_type_name oo mk_type_args
 
-val mk_entries_type_sig = U.mk_type_abstract o mk_entries_type mk_poly_type_a
-
 val mk_option_type = U.mk_type_app "option"
 
-fun mk_entries_type_struct ks =
+fun mk_entries_type_sig ks =
   let val record = map_index (apfst (mk_option_type o mk_poly_type_a) #> swap) ks |> U.mk_record ":"
   in U.mk_type (mk_entries_type mk_poly_type_a ks) record end
+
+val mk_entries_type_struct = mk_entries_type_sig
 
 val empty_entries_name = "empty_entries"
 

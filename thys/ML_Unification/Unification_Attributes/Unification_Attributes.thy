@@ -9,14 +9,14 @@ paragraph \<open>Summary\<close>
 text \<open>Setup of OF attribute with adjustable unifier.\<close>
 
 ML\<open>
-  @{functor_instance struct_name = Standard_Unify_OF
-    and functor_name = Unify_OF
-    and id = \<open>""\<close>
-    and more_args = \<open>val init_args = {
-      normalisers = SOME Standard_Mixed_Unification.norms_first_higherp_decomp_comb_higher_unify,
-      unifier = SOME Standard_Mixed_Unification.first_higherp_decomp_comb_higher_unify,
-      mode = SOME (Unify_OF_Args.PM.key Unify_OF_Args.PM.fact)
-    }\<close>}
+\<^functor_instance>\<open>struct_name = Standard_Unify_OF
+  and functor_name = Unify_OF
+  and id = \<open>""\<close>
+  and more_args = \<open>val init_args = {
+    normalisers = SOME Standard_Mixed_Unification.norms_first_higherp_decomp_comb_higher_unify,
+    unifier = SOME Standard_Mixed_Unification.first_higherp_decomp_comb_higher_unify,
+    mode = SOME (Unify_OF_Args.PM.key Unify_OF_Args.PM.fact)
+  }\<close>\<close>
 \<close>
 local_setup \<open>Standard_Unify_OF.setup_attribute NONE\<close>
 
@@ -64,7 +64,7 @@ lemma
   and h2: "\<And>P. PROP P"
   shows "PROP E"
   by (fact h1[uOF h2 where unifier = First_Order_Unification.unify]) \<comment>\<open>the line below is equivalent\<close>
-  (* using [[uOF unifier = First_Order_Unification.unify]] by (fact h1[uOF h2]) *)
+  (* supply [[uOF unifier = First_Order_Unification.unify]] by (fact h1[uOF h2]) *)
 end
 
 end

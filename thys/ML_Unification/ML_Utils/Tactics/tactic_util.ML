@@ -6,11 +6,14 @@ Tactic utilities.
 signature TACTIC_UTIL =
 sig
   include HAS_LOGGER
-  (* tactic combinators*)
+  (* tactic combinators *)
   val HEADGOAL : (int -> 'a) -> 'a
 
   val THEN : ('a -> 'b Seq.seq) * ('b -> 'c Seq.seq) -> 'a -> 'c Seq.seq
   val THEN' : ('a -> 'b -> 'c Seq.seq) * ('a -> 'c -> 'd Seq.seq) -> 'a -> 'b -> 'd Seq.seq
+
+  val ORELSE : ('a -> 'b Seq.seq) * ('a -> 'b Seq.seq) -> 'a -> 'b Seq.seq
+  val ORELSE' : ('a -> 'b -> 'c Seq.seq) * ('a -> 'b -> 'c Seq.seq) -> 'a -> 'b -> 'c Seq.seq
 
   val TRY' : ('a -> tactic) -> 'a -> tactic
 
@@ -18,6 +21,11 @@ sig
   val EVERY_ARG' : ('a -> 'b -> tactic) -> 'a list -> 'b -> tactic
   val CONCAT : tactic list -> tactic
   val CONCAT' : ('a -> tactic) list -> 'a -> tactic
+
+  (*filters duplicate results*)
+  val unique_thmsq : thm Seq.seq -> thm Seq.seq
+  val UNIQUE : tactic -> tactic
+  val UNIQUE' : ('a -> tactic) -> 'a -> tactic
 
   val FOCUS_PARAMS' : (Subgoal.focus -> int -> tactic) -> Proof.context -> int -> tactic
   val FOCUS_PARAMS_CTXT : (Proof.context -> tactic) -> Proof.context -> int -> tactic
@@ -97,13 +105,33 @@ fun HEADGOAL f = f 1
 fun (tac1 THEN tac2) = Seq.THEN (tac1, tac2)
 fun (tac1 THEN' tac2) x = tac1 x THEN tac2 x
 
-fun TRY' tac =  tac ORELSE' K all_tac
+fun (tac1 ORELSE tac2) st = Seq.make (fn _ => case Seq.pull (tac1 st) of
+    NONE => Seq.pull (tac2 st)
+  | some => some)
+fun (tac1 ORELSE' tac2) x = tac1 x ORELSE tac2 x
+
+fun TRY' tac = tac ORELSE' K all_tac
 
 fun EVERY_ARG tac = EVERY o map tac
 fun EVERY_ARG' tac = EVERY' o map tac
 
 fun CONCAT tacs = fold_rev (curry (op APPEND)) tacs no_tac
 fun CONCAT' tacs = fold_rev (curry (op APPEND')) tacs (K no_tac)
+
+local structure TI = Net
+in
+fun unique_thmsq thmsq =
+  let fun go ti = Seq.pull #> Option.mapPartial (fn (thm, thmsq) =>
+    let val key = Thm.full_prop_of thm |> TI.key_of_term
+    in
+      if null (TI.lookup ti key)
+      then SOME (thm, Seq.make (fn _ => go (TI.insert (K false) (key, thm) ti) thmsq))
+      else go ti thmsq
+    end)
+  in Seq.make (fn _ => go TI.empty thmsq) end
+fun UNIQUE tac = unique_thmsq o tac
+fun UNIQUE' tac = UNIQUE o tac
+end
 
 fun FOCUS_PARAMS' tac = Subgoal.FOCUS_PARAMS (HEADGOAL o tac)
 fun FOCUS_PARAMS_FIXED' tac = Subgoal.FOCUS_PARAMS_FIXED (HEADGOAL o tac)

@@ -9,13 +9,13 @@ paragraph \<open>Summary\<close>
 text \<open>Setup of assumption tactic and examples.\<close>
 
 ML\<open>
-  @{functor_instance struct_name = Standard_Unify_Assumption
-    and functor_name = Unify_Assumption
-    and id = \<open>""\<close>
-    and more_args = \<open>val init_args = {
-      normalisers = SOME Standard_Mixed_Unification.norms_first_higherp_decomp_comb_higher_unify,
-      unifier = SOME Standard_Mixed_Unification.first_higherp_decomp_comb_higher_unify
-    }\<close>}
+\<^functor_instance>\<open>struct_name = Standard_Unify_Assumption
+  and functor_name = Unify_Assumption
+  and id = \<open>""\<close>
+  and more_args = \<open>val init_args = {
+    normalisers = SOME Standard_Mixed_Unification.norms_first_higherp_decomp_comb_higher_unify,
+    unifier = SOME Standard_Mixed_Unification.first_higherp_decomp_comb_higher_unify
+  }\<close>\<close>
 \<close>
 local_setup \<open>Standard_Unify_Assumption.setup_attribute NONE\<close>
 local_setup \<open>Standard_Unify_Assumption.setup_method NONE\<close>
@@ -49,7 +49,7 @@ schematic_goal
 schematic_goal
   "\<And>x. PROP D \<Longrightarrow> (\<And>P y. PROP P y x) \<Longrightarrow> PROP C \<Longrightarrow> PROP P x"
   by (uassm unifier = Higher_Order_Unification.unify) \<comment>\<open>the line below is equivalent\<close>
-  (* using [[uassm unifier = Higher_Order_Unification.unify]] by uassm *)
+  (* supply [[uassm unifier = Higher_Order_Unification.unify]] by uassm *)
 
 text \<open>Unlike @{method assumption}, @{method uassm} will not close the goal if the order of premises
 of the assumption and the goal are different. Compare the following two examples:\<close>

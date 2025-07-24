@@ -14,13 +14,22 @@ key-value pairs.\<close>
 ML_file\<open>parse_util.ML\<close>
 
 ML_file\<open>parse_key_value.ML\<close>
+
+ML_file\<open>record_antiquot.ML\<close>
+
+(*use the following to test the code generation*)
+ML\<open>
+  Record_Antiquot.mk_all "option" "Test" NONE ["foo", "boo" ]
+  |> split_lines |> map Pretty.str |> Pretty.fbreaks |> Pretty.block |> Pretty.writeln
+\<close>
+
 ML_file\<open>parse_key_value_antiquot.ML\<close>
 
 (*use the following to test the code generation*)
-(* ML_command\<open>
+ML_command\<open>
   Parse_Key_Value_Antiquot.mk_all "Test" NONE ["ABC", "DEFG" ]
   |> split_lines |> map Pretty.str |> Pretty.fbreaks |> Pretty.block |> Pretty.writeln
-\<close> *)
+\<close>
 
 paragraph \<open>Example\<close>
 

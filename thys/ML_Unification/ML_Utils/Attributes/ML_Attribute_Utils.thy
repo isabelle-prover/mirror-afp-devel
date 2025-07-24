@@ -2,7 +2,7 @@
 section \<open>ML Attribute Utils\<close>
 theory ML_Attribute_Utils
   imports
-    Pure
+    ML_Term_Utils
 begin
 
 paragraph \<open>Summary\<close>

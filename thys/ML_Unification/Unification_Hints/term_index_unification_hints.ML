@@ -3,30 +3,19 @@
 
 Unification hints stored in term indexes.
 *)
-@{parse_entries (sig) PARSE_TERM_INDEX_UNIFICATION_HINTS_MODE
-  [add, del]}
-
-@{parse_entries (sig) PARSE_TERM_INDEX_UNIFICATION_HINTS_ARGS
-  [concl_unifier, normalisers, prems_unifier, retrieval, hint_preprocessor, prio]}
-
-@{parse_entries (sig) PARSE_TERM_INDEX_UNIFICATION_HINTS_CONTEXT_ARGS
+@{parse_entries (sig) PARSE_TERM_INDEX_UNIFICATION_HINTS_MODE [add, del, config]}
+@{parse_entries (sig) PARSE_TERM_INDEX_UNIFICATION_HINTS_ADD_ARGS [prio]}
+@{parse_entries (sig) PARSE_TERM_INDEX_UNIFICATION_HINTS_CONFIG_ARGS
   [concl_unifier, normalisers, prems_unifier, retrieval, hint_preprocessor]}
 
 signature TERM_INDEX_UNIFICATION_HINTS_ARGS =
 sig
-  structure PA : PARSE_TERM_INDEX_UNIFICATION_HINTS_ARGS
-  structure PCA : PARSE_TERM_INDEX_UNIFICATION_HINTS_CONTEXT_ARGS
+  structure PM : PARSE_TERM_INDEX_UNIFICATION_HINTS_MODE
+  structure PAA : PARSE_TERM_INDEX_UNIFICATION_HINTS_ADD_ARGS
+  structure PCA : PARSE_TERM_INDEX_UNIFICATION_HINTS_CONFIG_ARGS
 
-  val PCA_entries_from_PA_entries : ('a, 'b, 'c, 'd, 'e, 'f) PA.entries ->
-    ('a, 'b, 'c, 'd, 'e) PCA.entries
-  val PA_entries_from_PCA_entries : ('a, 'b, 'c, 'd, 'e) PCA.entries -> 'f ->
-    ('a, 'b, 'c, 'd, 'e, 'f) PA.entries
   val UHA_PA_entries_from_PCA_entries : ('a, 'b, 'c, 'd, 'e) PCA.entries ->
     ('a, 'b, 'c) Unification_Hints_Args.PA.entries
-
-  structure PM : PARSE_TERM_INDEX_UNIFICATION_HINTS_MODE
-  type mode = PM.key
-  val parse_mode : mode parser
 
   type hint_prio = Unification_Hints_Base.unif_hint * Prio.prio
   val pretty_hint_prio : Proof.context -> hint_prio -> Pretty.T
@@ -52,15 +41,13 @@ sig
   val mk_retrieval_sym_pair : ('ti -> term -> hint_prio list) -> Term_Normalisation.term_normaliser ->
     'ti * 'ti -> Unification_Hints_Base.hint_retrieval
 
-  type 'ti args = (Unification_Base.unifier, Unification_Base.normalisers, Unification_Base.unifier,
-    'ti * 'ti -> Unification_Hints_Base.hint_retrieval, Unification_Hints_Base.hint_preprocessor,
-    Prio.prio) PA.entries
-  type 'ti context_args = (Unification_Base.unifier, Unification_Base.normalisers,
+  type 'ti config_args = (Unification_Base.unifier, Unification_Base.normalisers,
     Unification_Base.unifier, 'ti * 'ti -> Unification_Hints_Base.hint_retrieval,
     Unification_Hints_Base.hint_preprocessor) PCA.entries
 
-  val arg_parsers : (ML_Code_Util.code parser, ML_Code_Util.code parser, ML_Code_Util.code parser,
-    ML_Code_Util.code parser, ML_Code_Util.code parser, Prio.prio context_parser) PA.entries
+  val add_arg_parsers : (Prio.prio context_parser) PAA.entries
+  val config_arg_parsers : (ML_Code_Util.code parser, ML_Code_Util.code parser,
+    ML_Code_Util.code parser, ML_Code_Util.code parser, ML_Code_Util.code parser) PCA.entries
 end
 
 structure Term_Index_Unification_Hints_Args : TERM_INDEX_UNIFICATION_HINTS_ARGS =
@@ -72,29 +59,14 @@ structure UHB = Unification_Hints_Base
 structure UHA = Unification_Hints_Args
 structure TUHP = Prio
 
-@{parse_entries (struct) PA
-  [concl_unifier, normalisers, prems_unifier, retrieval, hint_preprocessor, prio]}
-
+@{parse_entries (struct) PM [add, del, config]}
+@{parse_entries (struct) PAA [prio]}
 @{parse_entries (struct) PCA
   [concl_unifier, normalisers, prems_unifier, retrieval, hint_preprocessor]}
-
-fun PCA_entries_from_PA_entries {concl_unifier = concl_unifier, normalisers = normalisers,
-  prems_unifier = prems_unifier, retrieval = retrieval, hint_preprocessor = hint_preprocessor,...} =
-  {concl_unifier = concl_unifier, normalisers = normalisers, prems_unifier = prems_unifier,
-    retrieval = retrieval, hint_preprocessor = hint_preprocessor}
-fun PA_entries_from_PCA_entries {concl_unifier = concl_unifier, normalisers = normalisers,
-  prems_unifier = prems_unifier, retrieval = retrieval, hint_preprocessor = hint_preprocessor} prio =
-  {concl_unifier = concl_unifier, normalisers = normalisers, prems_unifier = prems_unifier,
-    retrieval = retrieval, hint_preprocessor = hint_preprocessor, prio = SOME prio}
 
 fun UHA_PA_entries_from_PCA_entries {concl_unifier = concl_unifier, normalisers = normalisers,
   prems_unifier = prems_unifier,...} =
   {concl_unifier = concl_unifier, normalisers = normalisers, prems_unifier = prems_unifier}
-
-@{parse_entries (struct) PM
-  [add, del]}
-type mode = PM.key
-val parse_mode = PM.parse_key
 
 type hint_prio = UHB.unif_hint * TUHP.prio
 
@@ -132,18 +104,19 @@ fun mk_retrieval_pair retrieve = mk_retrieval (retrieve_pair retrieve) o apply2
 fun mk_retrieval_sym retrieve = mk_retrieval (retrieve_sym retrieve) o apply2
 fun mk_retrieval_sym_pair retrieve = mk_retrieval (retrieve_sym (retrieve_pair retrieve)) o apply2
 
-type 'ti args = (UB.unifier, UB.normalisers, UB.unifier, 'ti * 'ti -> UHB.hint_retrieval,
-  UHB.hint_preprocessor, TUHP.prio) PA.entries
-type 'ti context_args = (UB.unifier, UB.normalisers, UB.unifier, 'ti * 'ti -> UHB.hint_retrieval,
+type 'ti config_args = (UB.unifier, UB.normalisers, UB.unifier, 'ti * 'ti -> UHB.hint_retrieval,
   UHB.hint_preprocessor) PCA.entries
 
-val arg_parsers = {
+val add_arg_parsers = {
+    prio = SOME Prio.parse
+  }
+
+val config_arg_parsers = {
     concl_unifier = UHA.PA.get_concl_unifier_safe UHA.arg_parsers,
     normalisers = UHA.PA.get_normalisers_safe UHA.arg_parsers,
     prems_unifier = UHA.PA.get_prems_unifier_safe UHA.arg_parsers,
     retrieval = SOME (Parse_Util.nonempty_code (K "retrieval function must not be empty")),
-    hint_preprocessor = SOME (Parse_Util.nonempty_code (K "hint preprocessor must not be empty")),
-    prio = SOME Prio.parse
+    hint_preprocessor = SOME (Parse_Util.nonempty_code (K "hint preprocessor must not be empty"))
   }
 
 end
@@ -192,43 +165,52 @@ sig
 
   val binding : binding
 
-  val attribute : (Term_Index_Unification_Hints_Args.mode *
-    ((ML_Code_Util.code, ML_Code_Util.code, ML_Code_Util.code,
-      ML_Code_Util.code, ML_Code_Util.code, Prio.prio)
-      Term_Index_Unification_Hints_Args.PA.entries)) *
-    Position.T -> attribute
+  val parse_add_arg_entries : Prio.prio Term_Index_Unification_Hints_Args.PAA.entries context_parser
+  val add_attribute : Prio.prio Term_Index_Unification_Hints_Args.PAA.entries -> attribute
+
+  val del_attribute : attribute
+
+  val parse_config_arg_entries : (ML_Code_Util.code, ML_Code_Util.code, ML_Code_Util.code,
+    ML_Code_Util.code, ML_Code_Util.code) Term_Index_Unification_Hints_Args.PCA.entries parser
+  val config_attribute : (ML_Code_Util.code, ML_Code_Util.code, ML_Code_Util.code,
+      ML_Code_Util.code, ML_Code_Util.code) Term_Index_Unification_Hints_Args.PCA.entries
+      * Position.T ->
+    attribute
+
   val parse_attribute : attribute context_parser
   val setup_attribute : string option -> local_theory -> local_theory
 end
 
-functor Term_Index_Unification_Hints(A : sig
-  structure FIA : FUNCTOR_INSTANCE_ARGS
-  structure TI : TERM_INDEX
-  val init_args : (Term_Index_Unification_Hints_Args.hint_prio TI.term_index)
-    Term_Index_Unification_Hints_Args.context_args
+functor Term_Index_Unification_Hints(A :
+  sig
+    structure FI : FUNCTOR_INSTANCE_BASE
+    structure TI : TERM_INDEX
+    val init_args : (Term_Index_Unification_Hints_Args.hint_prio TI.term_index)
+      Term_Index_Unification_Hints_Args.config_args
   end) : TERM_INDEX_UNIFICATION_HINTS =
 struct
 
 structure UHB = Unification_Hints_Base
 structure TUHA = Term_Index_Unification_Hints_Args
 structure TUHP = Prio
-structure PA = TUHA.PA
+structure PAA = TUHA.PAA
 structure PCA = TUHA.PCA
 structure PM = TUHA.PM
+structure AU = ML_Attribute_Util
 
-structure FIU = Functor_Instance_Util(A.FIA)
+structure FI = Functor_Instance(A.FI)
 structure TI = A.TI
 
 structure MCU = ML_Code_Util
 structure PU = Parse_Util
 
-val logger = Logger.setup_new_logger Unification_Hints_Base.logger FIU.base_name
+val logger = Logger.setup_new_logger Unification_Hints_Base.logger FI.name
 
-@{functor_instance struct_name = UH
+\<^functor_instance>\<open>struct_name = UH
   and functor_name = Unification_Hints
-  and accessor = FIU.accessor
-  and id = FIU.FIA.id
-  and more_args = \<open>val init_args = TUHA.UHA_PA_entries_from_PCA_entries A.init_args\<close>}
+  and path = FI.long_name
+  and id = FI.id
+  and more_args = \<open>val init_args = TUHA.UHA_PA_entries_from_PCA_entries A.init_args\<close>\<close>
 
 fun are_hint_variants hp =
   let
@@ -241,9 +223,7 @@ val term_index_data_eq = are_hint_variants o apply2 fst
 type term_index = TUHA.hint_prio TI.term_index
 
 structure Data = Generic_Data(Pair_Generic_Data_Args(
-struct
   structure Data1 = Pair_Generic_Data_Args(
-  struct
     structure Data1 =
     struct
       type T = term_index * term_index -> Unification_Hints_Base.hint_retrieval
@@ -255,22 +235,16 @@ struct
       type T = UHB.hint_preprocessor
       val empty = PCA.get_hint_preprocessor A.init_args
       val merge = fst
-    end
-  end)
+    end)
   structure Data2 = Pair_Generic_Data_Args(
     structure Data1 = Term_Index_Generic_Data_Args(
-    struct
       type data = TUHA.hint_prio
       structure TI = TI
-      val data_eq = term_index_data_eq
-    end)
+      val data_eq = term_index_data_eq)
     structure Data2 = Term_Index_Generic_Data_Args(
-    struct
       type data = TUHA.hint_prio
       structure TI = TI
-      val data_eq = term_index_data_eq
-    end))
-end))
+      val data_eq = term_index_data_eq))))
 
 val get_retrieval = fst o fst o Data.get
 val map_retrieval = Data.map o apfst o apfst
@@ -311,7 +285,7 @@ fun pretty_indexes ctxt = Pretty.fbreaks [
 val term_index_keys_from_hint =
   UHB.cdest_hint_concl #> apply2 (Thm.term_of #> TI.norm_term)
 
-val pretty_spaced_block = Pretty.separate "" #> Pretty.block #> Pretty.string_of
+val pretty_spaced_block = Pretty.breaks #> Pretty.block #> Pretty.string_of
 
 fun msg_illegal_hint_format ctxt hint = pretty_spaced_block [
     Pretty.str "Illegal hint format for",
@@ -320,15 +294,16 @@ fun msg_illegal_hint_format ctxt hint = pretty_spaced_block [
 
 fun preprocess_hint context = get_hint_preprocessor context (Context.proof_of context)
 
-fun add_hint_prio index_description get_index map_index key (hint, prio) context =
+local fun add_hint_prio index_description get_index map_index key (hint, prio) context =
   let
     val ctxt = Context.proof_of context
     val is_hint_variant = curry are_hint_variants hint o fst
   in
     (@{log Logger.DEBUG} ctxt (fn _ => pretty_spaced_block [
-        Pretty.str "Adding hint to",
-        index_description,
-        UHB.pretty_hint ctxt hint
+        Pretty.str "Adding hint",
+        UHB.pretty_hint ctxt hint,
+        Pretty.str "to",
+        index_description
       ]);
     TI.insert is_hint_variant (key, (hint, prio)) (get_index context)
     |> (fn ti => map_index (K ti) context))
@@ -344,9 +319,10 @@ fun add_hint_prio index_description get_index map_index key (hint, prio) context
     | TERM _ => (@{log Logger.WARN} ctxt (fn _ => msg_illegal_hint_format ctxt hint);
       context)
   end
-
+in
 val add_hint_prio_lhs = add_hint_prio pretty_lhs_index_description get_lhs_index map_lhs_index
 val add_hint_prio_rhs = add_hint_prio pretty_rhs_index_description get_rhs_index map_rhs_index
+end
 
 fun add_hint_prio (hint, prio) context =
   let
@@ -357,15 +333,16 @@ fun add_hint_prio (hint, prio) context =
     |> add_hint_prio_rhs rhs_key (hint, prio)
   end
 
-fun del_hint index_description get_index map_index key hint context =
+local fun del_hint index_description get_index map_index key hint context =
   let
     val ctxt = Context.proof_of context
     val is_hint_variant = curry are_hint_variants hint o fst
   in
     (@{log Logger.DEBUG} ctxt (fn _ => pretty_spaced_block [
-        Pretty.str "Deleting hint from",
-        index_description,
-        UHB.pretty_hint ctxt hint
+        Pretty.str "Deleting hint",
+        UHB.pretty_hint ctxt hint,
+        Pretty.str "from",
+        index_description
       ]);
     TI.delete is_hint_variant key (get_index context)
     |> (fn ti => map_index (K ti) context))
@@ -374,16 +351,17 @@ fun del_hint index_description get_index map_index key hint context =
         (fn _ => pretty_spaced_block [
           Pretty.str "Hint ",
           UHB.pretty_hint ctxt hint,
-          Pretty.str " not found in",
+          Pretty.str "not found in",
           index_description
         ]);
       context)
     | TERM _ => (@{log Logger.WARN} ctxt (fn _ => msg_illegal_hint_format ctxt hint);
       context)
   end
-
+in
 val del_hint_lhs = del_hint pretty_lhs_index_description get_lhs_index map_lhs_index
 val del_hint_rhs = del_hint pretty_rhs_index_description get_rhs_index map_rhs_index
+end
 
 fun del_hint hint context =
   let
@@ -391,7 +369,7 @@ fun del_hint hint context =
     val (lhs_key, rhs_key) = term_index_keys_from_hint hint
   in del_hint_lhs lhs_key hint context |> del_hint_rhs rhs_key hint end
 
-val binding = FIU.mk_binding_id_prefix "uhint"
+val binding = Binding.make (FI.prefix_id "uhint", FI.pos)
 
 fun try_hints binders ctxt tp env = Seq.make (fn _ =>
   let
@@ -404,56 +382,63 @@ fun try_hints binders ctxt tp env = Seq.make (fn _ =>
       ])
   in UH.try_hints (get_retrieval context (get_indexes context)) binders ctxt tp env |> Seq.pull end)
 
-val default_entries = PA.empty_entries () |> fold PA.set_entry [PA.prio TUHP.MEDIUM]
-
-fun parse_arg_entries mode =
+val parse_add_arg_entries =
   let
-    val parsers = TUHA.arg_parsers
-    val parse_value = PA.parse_entry (PA.get_concl_unifier parsers |> Scan.lift)
-      (PA.get_normalisers parsers |> Scan.lift) (PA.get_prems_unifier parsers |> Scan.lift)
-      (PA.get_retrieval parsers |> Scan.lift) (PA.get_hint_preprocessor parsers |> Scan.lift)
-      (PA.get_prio parsers)
-    val parse_entry = Parse_Key_Value.parse_entry' (Scan.lift PA.parse_key)
-      (Scan.lift PU.eq) parse_value
-  in
-    PA.parse_entries_required' Parse.and_list1' [] parse_entry default_entries
-    |> mode = PM.key PM.del ?
-      PU.filter_cut' (is_none o PA.get_prio_safe) (K o K "Priority may not be specified for deletion.")
-  end
+    val parsers = TUHA.add_arg_parsers
+    val parse_value = PAA.parse_entry (PAA.get_prio parsers)
+    val parse_entry = Parse_Key_Value.parse_entry' (Scan.lift PAA.parse_key) (Scan.lift PU.eq)
+      parse_value
+    val default_entries = PAA.empty_entries () |> fold PAA.set_entry [PAA.prio TUHP.MEDIUM]
+  in PAA.parse_entries_required' Parse.and_list' [] parse_entry default_entries end
 
-fun attribute ((mode, entries), pos) =
+fun add_attribute entries =
+  let fun update thm = add_hint_prio (thm, PAA.get_prio entries)
+  in Thm.declaration_attribute update end
+
+val del_attribute = Thm.declaration_attribute del_hint
+
+val parse_config_arg_entries =
   let
-    fun update_index thm = Term_Util.no_dummy_pattern (Thm.prop_of thm) ? (
-      case mode of
-        PM.add _ => add_hint_prio (thm, PA.get_prio entries)
-      | PM.del _ => del_hint thm)
-    val PCA_entries = TUHA.PCA_entries_from_PA_entries entries
-    val UHA_PA_entries = TUHA.UHA_PA_entries_from_PCA_entries PCA_entries
+    val parsers = TUHA.config_arg_parsers
+    val parse_value = PCA.parse_entry (PCA.get_concl_unifier parsers) (PCA.get_normalisers parsers)
+      (PCA.get_prems_unifier parsers) (PCA.get_retrieval parsers) (PCA.get_hint_preprocessor parsers)
+    val parse_entry = Parse_Key_Value.parse_entry PCA.parse_key PU.eq parse_value
+    val default_entries = PCA.empty_entries ()
+  in PCA.parse_entries_required Parse.and_list1 [] parse_entry default_entries end
+
+fun config_attribute (entries, pos) =
+  let
+    val UHA_PA_entries = TUHA.UHA_PA_entries_from_PCA_entries entries
     val run_code = ML_Attribute.run_map_context o rpair pos
-    fun default_code (context, _) = (SOME context, NONE)
-    val map_retrieval = case PCA.get_retrieval_safe PCA_entries of
-        SOME c => FIU.code_struct_op "map_retrieval" @ MCU.atomic (MCU.read "K" @ MCU.atomic c)
+    fun default_attr (context, _) = (SOME context, NONE)
+    val map_retrieval = case PCA.get_retrieval_safe entries of
+        SOME c => FI.code_struct_op "map_retrieval" @ MCU.atomic (MCU.read "K" @ MCU.atomic c)
           |> run_code
-      | NONE => default_code
-    val map_hint_preprocessor = case PCA.get_hint_preprocessor_safe PCA_entries of
-        SOME c => FIU.code_struct_op "map_hint_preprocessor" @ MCU.atomic (MCU.read "K" @ MCU.atomic c)
+      | NONE => default_attr
+    val map_hint_preprocessor = case PCA.get_hint_preprocessor_safe entries of
+        SOME c => FI.code_struct_op "map_hint_preprocessor" @ MCU.atomic (MCU.read "K" @ MCU.atomic c)
           |> run_code
-      | NONE => default_code
+      | NONE => default_attr
   in
-    ML_Attribute_Util.apply_attribute (Thm.declaration_attribute update_index)
-    #> ML_Attribute_Util.apply_attribute (UH.attribute (UHA_PA_entries, pos))
-    #> ML_Attribute_Util.apply_attribute map_retrieval
+    AU.apply_attribute (UH.attribute (UHA_PA_entries, pos))
+    #> AU.apply_attribute map_retrieval
     #> map_hint_preprocessor
   end
 
 val parse_attribute =
-  (Scan.lift (Scan.optional TUHA.parse_mode (PM.key PM.add))
-  :-- (fn mode => PU.optional' ((Scan.lift Parse.where_ |-- parse_arg_entries mode) |> Parse.!!!!)
-    default_entries)
-  |> PU.position')
-  >> attribute
+  let
+    val colon = Scan.lift (Parse.$$$ ":")
+    val parse_add_attr = parse_add_arg_entries >> add_attribute
+  in
+    Scan.lift PM.parse_key :|-- (Parse.!!!! o
+      (fn PM.add _ => colon |-- parse_add_attr
+        | PM.del _ => Scan.succeed del_attribute
+        | PM.config _ => colon |-- (parse_config_arg_entries |> PU.position |> Scan.lift)
+            >> config_attribute))
+    || parse_add_attr
+  end
 
 val setup_attribute = Attrib.local_setup binding (Parse.!!!! parse_attribute) o
-  the_default ("set unification hints arguments (" ^ FIU.FIA.full_name ^ ")")
+  the_default ("set unification hints arguments " ^ enclose "(" ")" FI.long_name)
 
 end
