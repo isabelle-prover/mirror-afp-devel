@@ -104,6 +104,13 @@ host = [
 
 [ammer.homepages]
 
+[andre]
+name = "Théo André"
+
+[andre.emails]
+
+[andre.homepages]
+
 [andreka]
 name = "Hajnal Andreka"
 
@@ -986,6 +993,13 @@ host = [
 [breitner.homepages]
 breitner_homepage = "http://pp.ipd.kit.edu/~breitner"
 
+[brenner]
+name = "Eva Brenner"
+
+[brenner.emails]
+
+[brenner.homepages]
+
 [brien]
 name = "Nicolas Robinson-O'Brien"
 
@@ -1814,6 +1828,13 @@ host = [
 
 [dongol.homepages]
 
+[dorneich]
+name = "Charlotte Dorneich"
+
+[dorneich.emails]
+
+[dorneich.homepages]
+
 [doty]
 name = "Matthew Doty"
 
@@ -1891,6 +1912,13 @@ host = [
 ]
 
 [dunaev.homepages]
+
+[dupuis]
+name = "Mathis Bouverot-Dupuis"
+
+[dupuis.emails]
+
+[dupuis.homepages]
 
 [dyckhoff]
 name = "Roy Dyckhoff"
@@ -5796,6 +5824,13 @@ name = "Edward Pierzchalski"
 
 [pierzchalski.homepages]
 
+[pige]
+name = "Xavier Pigé"
+
+[pige.emails]
+
+[pige.homepages]
+
 [pillai]
 name = "Shiv Pillai"
 
@@ -6333,6 +6368,13 @@ host = [
 ]
 
 [rincon.homepages]
+
+[ringeard]
+name = "Timothé Ringeard"
+
+[ringeard.emails]
+
+[ringeard.homepages]
 
 [rizaldi]
 name = "Albert Rizaldi"
@@ -8151,6 +8193,13 @@ host = [
 
 [verbeek.homepages]
 
+[vermande]
+name = "Quentin Vermande"
+
+[vermande.emails]
+
+[vermande.homepages]
+
 [villadsen]
 name = "Jørgen Villadsen"
 
@@ -8239,6 +8288,13 @@ name = "Shuling Wang"
 [wang.emails]
 
 [wang.homepages]
+
+[wangp]
+name = "Paul Wang"
+
+[wangp.emails]
+
+[wangp.homepages]
 
 [wangz]
 name = "Zili Wang"
@@ -8613,6 +8669,13 @@ host = [
 ]
 
 [yao.homepages]
+
+[yaoa]
+name = "Annie Yao"
+
+[yaoa.emails]
+
+[yaoa.homepages]
 
 [ye]
 name = "Lina Ye"

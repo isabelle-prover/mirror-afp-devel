@@ -176,6 +176,10 @@
   "name": "Anna Danilkin"
  },
  {
+  "link": "/authors/yaoa/",
+  "name": "Annie Yao"
+ },
+ {
   "link": "/authors/bordg/",
   "name": "Anthony Bordg"
  },
@@ -338,6 +342,10 @@
  {
   "link": "/authors/staats/",
   "name": "Charles Staats"
+ },
+ {
+  "link": "/authors/dorneich/",
+  "name": "Charlotte Dorneich"
  },
  {
   "link": "/authors/edmonds/",
@@ -602,6 +610,10 @@
  {
   "link": "/authors/stark/",
   "name": "Eugene W. Stark"
+ },
+ {
+  "link": "/authors/brenner/",
+  "name": "Eva Brenner"
  },
  {
   "link": "/authors/suarez/",
@@ -1368,6 +1380,10 @@
   "name": "Mathias Schack Rabing"
  },
  {
+  "link": "/authors/dupuis/",
+  "name": "Mathis Bouverot-Dupuis"
+ },
+ {
   "link": "/authors/scharager/",
   "name": "Matias Scharager"
  },
@@ -1600,6 +1616,10 @@
   "name": "Paul Hofmeier"
  },
  {
+  "link": "/authors/wangp/",
+  "name": "Paul Wang"
+ },
+ {
   "link": "/authors/brodmann/",
   "name": "Paul-David Brodmann"
  },
@@ -1642,6 +1662,10 @@
  {
   "link": "/authors/hibon/",
   "name": "Quentin Hibon"
+ },
+ {
+  "link": "/authors/vermande/",
+  "name": "Quentin Vermande"
  },
  {
   "link": "/authors/guerraoui/",
@@ -1980,6 +2004,10 @@
   "name": "Thaynara Arielly de Lima"
  },
  {
+  "link": "/authors/andre/",
+  "name": "Théo André"
+ },
+ {
   "link": "/authors/delemazure/",
   "name": "Théo Delemazure"
  },
@@ -2014,6 +2042,10 @@
  {
   "link": "/authors/weerwag/",
   "name": "Timmy Weerwag"
+ },
+ {
+  "link": "/authors/ringeard/",
+  "name": "Timothé Ringeard"
  },
  {
   "link": "/authors/bourke/",
@@ -2114,6 +2146,10 @@
  {
   "link": "/authors/parent/",
   "name": "Xavier Parent"
+ },
+ {
+  "link": "/authors/pige/",
+  "name": "Xavier Pigé"
  },
  {
   "link": "/authors/gao/",
