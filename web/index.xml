@@ -18,6 +18,14 @@
     <category>Logic/General logic/Modal logic</category>
 </item>
 <item>
+  <title>Unconstrained Optimization</title>
+  <link>https://isa-afp.org/entries/Unconstrained_Optimization.html</link>
+  <pubDate>Wed, 16 Jul 2025 00:00:00 +0000</pubDate>
+  <description>Unconstrained Optimization in the AFP</description>
+    <category>Computer science/Algorithms/Optimization</category>
+    <category>Mathematics/Analysis</category>
+</item>
+<item>
   <title>Computational p-Adics</title>
   <link>https://isa-afp.org/entries/Computational_pAdics.html</link>
   <pubDate>Fri, 04 Jul 2025 00:00:00 +0000</pubDate>

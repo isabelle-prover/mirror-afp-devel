@@ -48,6 +48,24 @@
   "year": "2025"
  },
  {
+  "abstract": " As formal methods gain traction in machine learning and numerical analysis, the community needs computer-checked proofs of core optimization results. Existing Isabelle libraries still lack a foundational framework for unconstrained optimization. We close this gap with a comprehensive Isabelle/HOL development that formalizes: minimizers, strict and isolated local minimizers; first- and second-order optimality conditions for scalar functions \\( f : \\mathbb{R} \\to \\mathbb{R} \\); first-order optimality conditions for vector functions \\( g : \\mathbb{R}^{n} \\to \\mathbb{R} \\); and a worked example showing that the continuous function \\[ h(x) = \\begin{cases} x^{4} \\left( \\cos(1/x) + 2 \\right), \u0026 \\text{if } x \\neq 0, \\\\[4pt] 0, \u0026 \\text{if } x = 0 \\end{cases} \\] has a strict but non-isolated local minimizer at \\( x = 0 \\). The new session Unconstrained_Optimization provides sound, reusable foundations for future proof-checking tools and mechanized research in optimization, analysis, and algorithmic correctness. ",
+  "authors": [
+   "Dustin Bryant"
+  ],
+  "link": "/entries/Unconstrained_Optimization.html",
+  "shortname": "Unconstrained_Optimization",
+  "title": "Unconstrained Optimization",
+  "topic_links": [
+   "/topics/computer-science/algorithms/optimization/",
+   "/topics/mathematics/analysis/"
+  ],
+  "topics": [
+   "Computer science/Algorithms/Optimization",
+   "Mathematics/Analysis"
+  ],
+  "year": "2025"
+ },
+ {
   "abstract": "We develop a framework for reasoning computationally about \\(p\\)-adic fields via formal Laurent series with integer coefficients. We define a ring-class quotient type consisting of equivalence classes of prime-indexed sequences of formal Laurent series, in which every \\(p\\)-adic field is contained as a subring. Via a further quotient of the ring of \\(p\\)-adic integers (that is, the elements of depth at least \\(0\\)) by the prime ideal (that is, the subring of elements of depth at least \\(1\\)), we define a ring-class type in which every prime-order finite field is contained as a subring. Finally, some topological properties are developed using depth as a proxy for a metric, Hensel's Lemma is proved, and the compactness of local rings of integers is established.",
   "authors": [
    "Jeremy Sylvestre"

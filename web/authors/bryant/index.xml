@@ -4,6 +4,14 @@
     <title>Dustin Bryant</title>
     <link>https://isa-afp.org/authors/bryant/</link>
     <description>AFP entries of Dustin Bryant</description><item>
+  <title>Unconstrained Optimization</title>
+  <link>https://isa-afp.org/entries/Unconstrained_Optimization.html</link>
+  <pubDate>Wed, 16 Jul 2025 00:00:00 +0000</pubDate>
+  <description>Unconstrained Optimization in the AFP</description>
+    <category>Computer science/Algorithms/Optimization</category>
+    <category>Mathematics/Analysis</category>
+</item>
+<item>
   <title>The Sigmoid Function and the Universal Approximation Theorem</title>
   <link>https://isa-afp.org/entries/Sigmoid_Universal_Approximation.html</link>
   <pubDate>Fri, 23 May 2025 00:00:00 +0000</pubDate>

@@ -14,6 +14,9 @@
     <loc>https://isa-afp.org/entries/Bisimulation_Logic.html</loc>
     <lastmod>2025-07-22T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>https://isa-afp.org/entries/Unconstrained_Optimization.html</loc>
+    <lastmod>2025-07-16T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>https://isa-afp.org/entries/Computational_pAdics.html</loc>
     <lastmod>2025-07-04T00:00:00+00:00</lastmod>
   </url><url>
@@ -5872,6 +5875,8 @@
     <loc>https://isa-afp.org/authors/sulejmani/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/uncertainty_principle/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/sessions/unconstrained_optimization/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/undirected_graph_theory/</loc>
   </url><url>
