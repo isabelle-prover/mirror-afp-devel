@@ -628,9 +628,17 @@ lemma hastype_in_imageE:
   shows thesis
   using assms by (auto simp: hastype_def sorted_image_def safe_The_eq_Some)
 
-lemma in_dom_imageE:
+lemma in_dom_image_hastypeE:
   "b \<in> dom (f `\<^sup>s A) \<Longrightarrow> (\<And>a \<sigma>. a : \<sigma> in A \<Longrightarrow> b = f a \<Longrightarrow> thesis) \<Longrightarrow> thesis"
   by (elim in_dom_hastypeE hastype_in_imageE)
+
+lemma in_dom_imageE:
+  assumes x: "x \<in> dom (f `\<^sup>s A)" and main: "\<And>a. a \<in> dom A \<Longrightarrow> x = f a \<Longrightarrow> thesis"
+  shows thesis
+proof-
+  from x obtain a \<sigma> where a: "a : \<sigma> in A" and xf: "x = f a" by (auto elim!: in_dom_image_hastypeE)
+  from main[OF hastype_imp_dom[OF a] xf] show thesis.
+qed
 
 context sort_preserving begin
 

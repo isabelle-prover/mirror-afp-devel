@@ -18,7 +18,7 @@ fun aContext where
 
 text \<open>Term contexts are abstract contexts in the term algebra.\<close>
 
-abbreviation Context (\<open>(2\<C>'(_,/_'))\<close> [1,1]50) where
+abbreviation Context (\<open>(2\<C>'(_,/_'))\<close> [1,1]1000) where
   "\<C>(F,V) \<equiv> aContext F \<T>(F,V)"
 
 lemma Hole_hastype[simp]: "Hole : \<sigma> \<rightarrow> \<tau> in aContext F A \<longleftrightarrow> \<sigma> = \<tau>"

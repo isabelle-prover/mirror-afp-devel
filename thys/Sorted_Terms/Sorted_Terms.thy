@@ -193,11 +193,14 @@ next
   show ?case by (auto simp: list_all2_conv_all_nth)
 qed
 
+lemma hastype_in_Term_imp_vars_subset: "s : \<sigma> in \<T>(F,V) \<Longrightarrow> vars s \<subseteq> dom V" 
+  by (auto dest!: hastype_in_Term_imp_vars)
+
 lemma in_dom_Term_imp_vars: "s \<in> dom \<T>(F,V) \<Longrightarrow> v \<in> vars s \<Longrightarrow> v \<in> dom V"
   by (auto elim!: in_dom_hastypeE simp: hastype_in_Term_imp_vars)
 
-lemma hastype_in_Term_imp_vars_subset: "t : s in \<T>(F,V) \<Longrightarrow> vars t \<subseteq> dom V" 
-  by (auto dest: hastype_in_Term_imp_vars)
+lemma in_dom_Term_vars_subset: "s \<in> dom \<T>(F,V) \<Longrightarrow> vars s \<subseteq> dom V"
+  by (auto dest!: in_dom_Term_imp_vars)
 
 interpretation Var: sorted_map Var V "\<T>(F,V)" for F V by (auto intro!: sorted_mapI)
 
