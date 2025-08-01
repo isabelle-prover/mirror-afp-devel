@@ -46,23 +46,8 @@ lemma has_derivative_transfer_on_ball:
   assumes eq_on_ball: "\<forall>y. y \<in> ball x \<epsilon> \<longrightarrow> f y = g y"
   assumes f_has_deriv: "(f has_derivative D) (at x)"
   shows "(g has_derivative D) (at x)"
-proof -
-  from f_has_deriv
-  have lim: "((\<lambda>y. (f y - f x - D (y - x)) / \<bar>y - x\<bar>) \<longlongrightarrow> 0) (at x)"
-    unfolding has_derivative_def
-    by (simp add: divide_inverse_commute)
-  
-  \<comment> \<open>Using @{thm Lim_transform_within_open}, we switch from \(f\) to \(g\) in the difference quotient.\<close>
-  from assms(1,2) lim have "((\<lambda>y. (g y - f x - D (y - x)) / \<bar>y - x\<bar>) \<longlongrightarrow> 0) (at x)"
-    by (subst Lim_transform_within_open
-          [where f = "\<lambda>xa. (f xa - f x - D (xa - x)) / \<bar>xa - x\<bar>" and s = "ball x \<epsilon>"], simp_all)
- \<comment> \<open>Then we replace \(f(x)\) by \(g(x)\) using the assumption \texttt{eq\_on\_ball}.\<close>
-
-  then have "((\<lambda>y. (g y - g x - D (y - x)) / \<bar>y - x\<bar>) \<longlongrightarrow> 0) (at x)"
-    by (simp add: assms(1) eq_on_ball)
-  thus ?thesis
-    using assms centre_in_ball has_derivative_transform_within_open by blast
-qed
+  using centre_in_ball eps_gt0 eq_on_ball f_has_deriv
+    has_derivative_transform_within_open by blast
 
 corollary field_differentiable_transfer_on_ball:
   fixes f g :: "real \<Rightarrow> real"
@@ -70,17 +55,8 @@ corollary field_differentiable_transfer_on_ball:
   assumes eq_on_ball: "\<forall>y. y \<in> ball x \<epsilon> \<longrightarrow> f y = g y"
   assumes f_diff: "f field_differentiable at x"
   shows "g field_differentiable at x"
-proof -
-  from f_diff obtain d
-    where f_has_real_deriv: "(f has_real_derivative d) (at x)"
-    by (auto simp: field_differentiable_def)
-
-  have "(g has_real_derivative d) (at x)"
-    by (meson Elementary_Metric_Spaces.open_ball assms(1,2) centre_in_ball f_has_real_deriv has_field_derivative_transform_within_open)
-  thus ?thesis
-    unfolding field_differentiable_def
-    by blast
-qed
+  by (metis UNIV_I assms dist_commute_lessI
+      field_differentiable_transform_within mem_ball)
 
 subsection \<open>Trigonometric Contraction\<close>
 
