@@ -883,7 +883,7 @@ proof -
       also have "... = (2 ^ (2 ^ i) mod n) ^ (2 ^ (k - i)) mod n"
         by (simp add: power_mod)
       also have "2 ^ (2 ^ i) mod n = 1" using \<open>ord n 2 = 2 ^ i\<close>
-        using ord[of 2 n] unfolding cong_def using n_gt_1 by simp
+        using ord[of 2 n] n_gt_1 unfolding cong_def by simp
       finally show ?thesis by simp
     qed
     ultimately show "False" by argo

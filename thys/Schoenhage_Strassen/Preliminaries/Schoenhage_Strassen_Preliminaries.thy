@@ -8,6 +8,8 @@ imports
   "Karatsuba.Nat_LSBF"
 begin
 
+lemmas cong_def = unique_euclidean_semiring_class.cong_def
+
 lemma two_pow_pos: "(2 :: nat) ^ x > 0"
   by simp
 
