@@ -2,9 +2,9 @@ chapter AFP
 
 session Padic_Field = "Padic_Ints" +
   options [timeout = 3600]
-sessions
+  sessions
     "Localization_Ring"
-theories
+  theories
     Fraction_Field
     Cring_Multivariable_Poly
     Indices
@@ -14,7 +14,7 @@ theories
     Padic_Field_Topology
     Generated_Boolean_Algebra
     Padic_Field_Powers
-    Padic_Semialgebraic_Function_Ring   
+    Padic_Semialgebraic_Function_Ring
   document_files
     "root.tex"
     "root.bib"
