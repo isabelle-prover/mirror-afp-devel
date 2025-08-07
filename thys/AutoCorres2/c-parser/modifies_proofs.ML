@@ -302,7 +302,7 @@ fun get_mod_inv_prop ctxt post_abs mod_inv_props = let
         resolve_tac ctxt @{thms CollectI} 1 THEN
         TRY (REPEAT_ALL_NEW (resolve_tac ctxt @{thms exI}) 1) THEN
         resolve_tac ctxt [globals_equality] 1 THEN
-        ALLGOALS (simp_tac (clear_simpset ctxt addsimprocs [Record.simproc]))
+        ALLGOALS (simp_tac (clear_simpset ctxt |> Simplifier.add_proc Record.simproc))
       fun mi_incl_tac _ =
         simp_tac (clear_simpset ctxt addsimps @{thms modifies_inv_incl_def mex_def meq_def}) 1 THEN
         resolve_tac ctxt @{thms allI} 1 THEN

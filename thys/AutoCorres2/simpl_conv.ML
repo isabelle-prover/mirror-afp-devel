@@ -290,8 +290,8 @@ let
 
   (* Conversion to simplify guards. *)
   fun guard_ctxt ctxt = put_simpset simpl_conv_ss ctxt 
-       addsimps @{thms L1_functions.L1_dyn_call_def pred_conj_def}
-       delsimprocs [Record.upd_simproc]
+       |> Simplifier.add_simps @{thms L1_functions.L1_dyn_call_def pred_conj_def}
+       |> Simplifier.del_proc Record.upd_simproc
 
   fun guard_conv' ctxt c =
     case (Thm.term_of c) of

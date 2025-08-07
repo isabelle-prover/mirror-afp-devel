@@ -18,7 +18,7 @@ fun wb_prism_proof x thms ctx =
   (fn {context = context, prems = _}
                        => EVERY [ PARALLEL_ALLGOALS (full_simp_tac (fold Simplifier.add_simp thms context))
                                 , Classical.rule_tac context [@{thm wb_ctor_prism_intro}] [] 1
-                                , auto_tac (context delsimprocs [@{simproc unit_eq}])
+                                , auto_tac (context |> Simplifier.del_proc @{simproc unit_eq})
                                 ])
 
 fun codep_proof thms ctx (x, y) =

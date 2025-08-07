@@ -1509,8 +1509,8 @@ fun list_of_pair (x, y) = [x, y]
 fun eta_tupled ctxt =
   let
     val ctxt' = Simplifier.clear_simpset ctxt 
-      addsimps @{thms fst_conv snd_conv}
-      addsimprocs [@{simproc ETA_TUPLED}]
+      |> Simplifier.add_simps @{thms fst_conv snd_conv}
+      |> Simplifier.add_proc @{simproc ETA_TUPLED}
   in Simplifier.asm_full_simplify ctxt' end
 
 val L2_seq_eliminate_ptr = Unsynchronized.ref true;
@@ -3001,9 +3001,9 @@ let
           fun canonical thm =
             let
               val canonical_ctxt = Simplifier.clear_simpset ctxt
-                   addsimps @{thms L2_call_canonical_convs fst_conv snd_conv Un_empty_left Un_empty_right} @ 
-                     [override_heap_on_empty]
-                   addsimprocs [@{simproc ETA_TUPLED}]
+                |> Simplifier.add_simps (@{thms L2_call_canonical_convs fst_conv snd_conv Un_empty_left Un_empty_right} @ 
+                     [override_heap_on_empty])
+                |> Simplifier.add_proc @{simproc ETA_TUPLED}
               val res_thm = Simplifier.simplify canonical_ctxt thm
             in res_thm end
           val f_args_kind =
@@ -3252,14 +3252,13 @@ let
                   refines_rel_stack_root_upd_result OF [rel_alloc, modifies_globals_thm]
                 val embed_thm = Utils.solve_sideconditions ctxt embed_thm (
                    dprint_tac d ctxt "embed_thm (0)" THEN                   
-                   auto_tac (embellish_simp_ctxt 
-                     delrules @{thms subsetI} 
-                     addsimps @{thms subset_union_left subset_union_right sup_aci}) THEN
+                   auto_tac (embellish_simp_ctxt delrules @{thms subsetI} 
+                     |> Simplifier.add_simps @{thms subset_union_left subset_union_right sup_aci}) THEN
                    dprint_tac d ctxt "embed_thm (1)")
                 val embed_thm = embed_thm 
                   |> Simplifier.simplify (Simplifier.clear_simpset ctxt 
-                       addsimps (sel_eqs @ @{thms fst_conv snd_conv})
-                       addsimprocs [@{simproc ETA_TUPLED}])
+                       |> Simplifier.add_simps (sel_eqs @ @{thms fst_conv snd_conv})
+                       |> Simplifier.add_proc @{simproc ETA_TUPLED})
               in
                 embed_thm
               end
@@ -3272,8 +3271,8 @@ let
             |> rewrs ctxt @{thms L2_call_ETA_TUPLED1 L2_call_ETA_TUPLED2}
             |> tap (fn thm => Utils.verbose_msg 6 ctxt (fn _ => "ETA_TUPLED: " ^ Thm.string_of_thm ctxt thm)) 
             |> Simplifier.asm_full_simplify ((Simplifier.clear_simpset ctxt) 
-                 addsimps @{thms L2_call_final_convs fst_conv snd_conv}  
-                 addsimprocs [@{simproc ETA_TUPLED}])
+                 |> Simplifier.add_simps @{thms L2_call_final_convs fst_conv snd_conv}
+                 |> Simplifier.add_proc @{simproc ETA_TUPLED})
 
           val _ = Utils.verbose_msg 5 ctxt (fn _ => "thm (0): " ^ Thm.string_of_thm ctxt thm)
           val thm = thm |> Simplifier.asm_full_simplify ((Simplifier.clear_simpset ctxt) 
@@ -3375,8 +3374,9 @@ let
          val thm = thm OF [rel_alloc, f1_thm]
 
          val simp_ctxt = mk_simp {silent = !sd8, M = M} ctxt |>
-           !use_Union_Diff_conv ? (fn ctxt => ctxt
-             addsimprocs [@{simproc Union_Diff_conv}] addsimps @{thms Union_assoc})
+           !use_Union_Diff_conv ?
+             (Simplifier.add_proc @{simproc Union_Diff_conv} #>
+              Simplifier.add_simps @{thms Union_assoc})
          val d = !L2_seq_debug
          val _ = if d then tracing ("f1_thm: " ^ Thm.string_of_thm ctxt f1_thm) else ()
          val _ = if d then tracing ("f2_thm: " ^ Thm.string_of_thm ctxt f2_thm) else ()
@@ -3488,7 +3488,8 @@ let
 
         val d = !d9
         val _ = if d then tracing ("f_thm: " ^ Thm.string_of_thm ctxt f_thm) else ()
-        val simp_ctxt = mk_simp {silent = !sd10, M = M} ctxt delsimprocs [@{simproc case_prod_beta}]
+        val simp_ctxt = mk_simp {silent = !sd10, M = M} ctxt
+          |> Simplifier.del_proc @{simproc case_prod_beta}
              (* Eta expansion in unification might yield (within g)
                   \<lambda>a. case a of (x1, x2) \<Rightarrow> Inl (undefined (x1, x2)) which gets
                   \<lambda>a. Inl (undefined a) with case_prod_beta       

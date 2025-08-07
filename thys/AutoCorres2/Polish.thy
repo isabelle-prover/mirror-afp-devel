@@ -2151,14 +2151,15 @@ fun prepare_simpset max_depth ctxt =
     val state_fold_congs = Named_Theorems.get ctxt @{named_theorems state_fold_congs}
     val recursive_records_fold_congs = Named_Theorems.get ctxt @{named_theorems recursive_records_fold_congs}
 
-    val ctxt' = (ctxt |> Context_Position.set_visible false
+    val ctxt' = ctxt
+      |> Context_Position.set_visible false
       |> Simplifier.add_cong @{thm STOP_cong}
       |> fold Simplifier.add_cong (state_fold_congs @ recursive_records_fold_congs)
-      |> fold Simplifier.add_cong stop_congs)
-      addsimprocs [@{simproc spec_monad_simproc}, @{simproc monad_run_simproc}, @{simproc Arrays.fold_update}] @ simprocs'
-      delsimps @{thms return_bind bind_return Spec_Monad.run_case_prod_distrib} @ run_spec_monad
-      addsimps monad_cong_simps
-      addsimps @{thms Arrays.fupdate_def [symmetric]}
+      |> fold Simplifier.add_cong stop_congs
+      |> fold Simplifier.add_proc ([@{simproc spec_monad_simproc}, @{simproc monad_run_simproc}, @{simproc Arrays.fold_update}] @ simprocs')
+      |> Simplifier.del_simps (@{thms return_bind bind_return Spec_Monad.run_case_prod_distrib} @ run_spec_monad)
+      |> Simplifier.add_simps monad_cong_simps
+      |> Simplifier.add_simps @{thms Arrays.fupdate_def [symmetric]}
       |> Context_Position.set_visible visible
       |> Config.map simp_depth_limit (K (max_depth + 20))
    in ctxt' end

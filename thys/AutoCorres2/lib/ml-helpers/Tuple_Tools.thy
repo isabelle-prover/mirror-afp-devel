@@ -1141,39 +1141,39 @@ declare [[simp_trace=false]]
 text \<open>Variable names should be preserved here, since all abstractions stay in place.\<close>
 lemma "\<And>r. (\<lambda>(x,y). (x::nat) < y \<and> y < 200) r"
   apply (tactic \<open>
-simp_tac (put_simpset HOL_basic_ss @{context} addsimprocs [Tuple_Tools.split_tupled_all_simproc, Tuple_Tools.tuple_case_simproc]
- delsimps @{thms Product_Type.prod.case Product_Type.case_prod_conv}) 1
-\<close>)
+    simp_tac (put_simpset HOL_basic_ss @{context}
+      |> fold Simplifier.add_proc [Tuple_Tools.split_tupled_all_simproc, Tuple_Tools.tuple_case_simproc]
+      |> Simplifier.del_simps @{thms Product_Type.prod.case Product_Type.case_prod_conv}) 1\<close>)
   oops
 
 text \<open>Variable names are not preserved due to eta contraction:
   @{lemma "(\<lambda>(x,y). (x::nat) < y ) = case_prod (<)" by (rule refl)}\<close>
 lemma "\<And>r. (\<lambda>(x,y). (x::nat) < y ) r"
   apply (tactic \<open>
-simp_tac (put_simpset HOL_basic_ss @{context} addsimprocs [Tuple_Tools.split_tupled_all_simproc, Tuple_Tools.tuple_case_simproc]
- delsimps @{thms Product_Type.prod.case Product_Type.case_prod_conv}) 1
-\<close>)
+    simp_tac (put_simpset HOL_basic_ss @{context}
+      |> fold Simplifier.add_proc [Tuple_Tools.split_tupled_all_simproc, Tuple_Tools.tuple_case_simproc]
+      |> Simplifier.del_simps @{thms Product_Type.prod.case Product_Type.case_prod_conv}) 1\<close>)
   oops
 
 lemma "(\<lambda>(x,y,p,z,f). (x::nat) < y) (a,b,c) = (case c of (p,z,f) \<Rightarrow> a < b)"
   apply (tactic \<open>
-simp_tac (put_simpset HOL_basic_ss @{context} addsimprocs [Tuple_Tools.split_tupled_all_simproc, Tuple_Tools.tuple_case_simproc]
- delsimps @{thms Product_Type.prod.case Product_Type.case_prod_conv}) 1
-\<close>)
+    simp_tac (put_simpset HOL_basic_ss @{context}
+      |> fold Simplifier.add_proc [Tuple_Tools.split_tupled_all_simproc, Tuple_Tools.tuple_case_simproc]
+      |> Simplifier.del_simps @{thms Product_Type.prod.case Product_Type.case_prod_conv}) 1\<close>)
   done
 
 lemma "\<And>r. (\<lambda>(x,y,p,z,f). (p::nat) < f) r"
   apply (tactic \<open>
-simp_tac (put_simpset HOL_basic_ss @{context} addsimprocs [Tuple_Tools.split_tupled_all_simproc, Tuple_Tools.tuple_case_simproc]
- delsimps @{thms Product_Type.prod.case Product_Type.case_prod_conv}) 1
-\<close>)
+    simp_tac (put_simpset HOL_basic_ss @{context}
+      |> fold Simplifier.add_proc [Tuple_Tools.split_tupled_all_simproc, Tuple_Tools.tuple_case_simproc]
+      |> Simplifier.del_simps @{thms Product_Type.prod.case Product_Type.case_prod_conv}) 1\<close>)
   oops
 
 lemma "(\<lambda>(x,y,p). (x::nat) < y) (a,b,c,d,e) = (a < b)"
   apply (tactic \<open>
-simp_tac (put_simpset HOL_basic_ss @{context} addsimprocs [Tuple_Tools.split_tupled_all_simproc, Tuple_Tools.tuple_case_simproc]
- delsimps @{thms Product_Type.prod.case Product_Type.case_prod_conv}) 1
-\<close>)
+    simp_tac (put_simpset HOL_basic_ss @{context}
+      |> fold Simplifier.add_proc [Tuple_Tools.split_tupled_all_simproc, Tuple_Tools.tuple_case_simproc]
+      |> Simplifier.del_simps @{thms Product_Type.prod.case Product_Type.case_prod_conv}) 1\<close>)
   done
 
 ML_val \<open>
@@ -1223,19 +1223,17 @@ val x = Tuple_Tools.calc_inst @{context} 2 test
 lemma "SPLIT (\<And>r. ((\<lambda>z. Q z \<and> (Q z \<longrightarrow> P z)) r))
  \<equiv> XXX"
   apply (tactic \<open>
-simp_tac ( @{context}
- addsimprocs [Tuple_Tools.SPLIT_simproc, Tuple_Tools.tuple_case_simproc]
-  |> Simplifier.add_cong @{thm SPLIT_cong}
-  |> Simplifier.add_cong @{thm conj_cong}) 1
-\<close>)
+    simp_tac (@{context}
+      |> fold Simplifier.add_proc [Tuple_Tools.SPLIT_simproc, Tuple_Tools.tuple_case_simproc]
+      |> Simplifier.add_cong @{thm SPLIT_cong}
+      |> Simplifier.add_cong @{thm conj_cong}) 1\<close>)
   oops
 
 lemma "PROP SPLIT (\<And>r. ((\<lambda>(x,y,z). y < z \<and> z=s) r) \<Longrightarrow> P r)
  \<equiv> (\<And>x y z. y < z \<and> z = s \<Longrightarrow> P (x, y, s))"
   apply (tactic \<open>
-asm_full_simp_tac (put_simpset HOL_basic_ss @{context}
- addsimprocs [Tuple_Tools.SPLIT_simproc, Tuple_Tools.tuple_case_simproc] |> Simplifier.add_cong @{thm SPLIT_cong}) 1
-\<close>)
+    asm_full_simp_tac (put_simpset HOL_basic_ss @{context}
+      |> fold Simplifier.add_proc [Tuple_Tools.SPLIT_simproc, Tuple_Tools.tuple_case_simproc] |> Simplifier.add_cong @{thm SPLIT_cong}) 1\<close>)
   done
 
 schematic_goal "ETA_TUPLED (\<lambda>x::('a \<times>'b \<times> 'c). f x) = ?XXX"

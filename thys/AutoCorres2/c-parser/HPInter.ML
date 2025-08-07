@@ -257,10 +257,11 @@ local
 val ss =
   simpset_of
     (put_simpset (simpset_of @{theory_context Fun}) @{context}
-      addsimps (@{thm StateFun.id_id_cancel}
+    |> Simplifier.add_simps (@{thm StateFun.id_id_cancel}
       :: @{thms list.inject list.distinct char.inject
-      cong_exp_iff_simps simp_thms} )
-    addsimprocs [Record.simproc, StateFun.lazy_conj_simproc] @ @{code_simprocs state_simp}
+      cong_exp_iff_simps simp_thms})
+    |> fold Simplifier.add_proc [Record.simproc, StateFun.lazy_conj_simproc]
+    |> fold Simplifier.add_proc @{code_simprocs state_simp}
     |> fold Simplifier.add_cong @{thms block_conj_cong});
 
 in

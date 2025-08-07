@@ -505,9 +505,9 @@ struct
     Tactic must not fail! *)
   fun dflt_tac ctxt = asm_full_simp_tac
     (put_simpset HOL_ss ctxt
-      addsimprocs [assn_simproc] 
-      addsimps @{thms norm_assertion_simps}
-      addsimps (Named_Theorems.get ctxt @{named_theorems sep_dflt_simps})
+      |> Simplifier.add_proc assn_simproc
+      |> Simplifier.add_simps @{thms norm_assertion_simps}
+      |> Simplifier.add_simps (Named_Theorems.get ctxt @{named_theorems sep_dflt_simps})
       |> fold Splitter.del_split @{thms if_split}
     );
 

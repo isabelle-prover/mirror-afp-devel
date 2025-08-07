@@ -142,8 +142,9 @@ fun identify context thm =
   let
     val ctxt' = Context.proof_of context
     val ss = put_simpset HOL_basic_ss ctxt'
-    val ctxt1 = ss addsimps Containers_Pre.get ctxt' addsimprocs [\<^simproc>\<open>map_apply\<close>]
-    val ctxt2 = ss addsimps Containers_Post.get ctxt'
+    val ctxt1 = ss |> Simplifier.add_simps (Containers_Pre.get ctxt')
+      |> Simplifier.add_proc \<^simproc>\<open>map_apply\<close>
+    val ctxt2 = ss |> Simplifier.add_simps (Containers_Post.get ctxt')
 
     (* Hack to recover Transfer.transferred function from attribute *)
     fun transfer_transferred thm = Transfer.transferred_attribute [] (context, thm) |> snd |> the

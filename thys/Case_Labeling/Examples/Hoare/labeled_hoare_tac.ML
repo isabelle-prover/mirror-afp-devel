@@ -172,7 +172,8 @@ fun basic_simp_tac ctxt var_names tac =
   wrap_label_tac ctxt (
     simp_tac
       (put_simpset HOL_basic_ss ctxt
-        addsimps @{thms mem_Collect_eq split_conv} addsimprocs [Record.simproc])
+        |> Simplifier.add_simps @{thms mem_Collect_eq split_conv}
+        |> Simplifier.add_proc Record.simproc)
     THEN_MAYBE' max_simp_tac ctxt var_names tac
   );
 

@@ -1400,7 +1400,7 @@ fun umm_struct_calculation cse ((recname, (flds, attrs)), tag_def_thm, typ_info_
   val _ = trac "About to sub_typ_simps ..."
   val sub_typ_simps =
     let
-      val ctxt = lthy delsimprocs [field_lookup_simproc, type_calculations_simproc]
+      val ctxt = lthy |> fold Simplifier.del_proc [field_lookup_simproc, type_calculations_simproc]
       val distinct_fl_Some_thms = map #2 flds ~~ fl_Some_thms
            |> distinct (fn ((T1, _) , (T2, _)) => T1 = T2) |> map #2
       val thms = distinct_fl_Some_thms |>

@@ -309,7 +309,7 @@ simproc_setup passive mpoly ("Pm_fmap mpp::(_ \<Rightarrow>\<^sub>0 nat) \<Right
 
 (* The simproc slows down computations *a lot*, so it is deactivated by default. *)
 
-(* setup \<open>Code_Preproc.map_post (fn ctxt => ctxt addsimprocs [\<^simproc>\<open>mpoly\<close>])\<close> *)
+(* setup \<open>Code_Preproc.map_post (Simplifier.add_proc \<^simproc>\<open>mpoly\<close>)\<close> *)
 
 
 subsubsection \<open>Ordered Power-Products\<close>

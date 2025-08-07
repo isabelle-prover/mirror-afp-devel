@@ -65,14 +65,14 @@ fun setup_l2_ss base_ss ctxt =
     val state_simps = Named_Theorems.get ctxt @{named_theorems "state_simp"}
     val state_simprocs = @{code_simprocs "state_simp"}
   in
-    (put_simpset base_ss (Context_Position.set_visible false ctxt))
-      addsimps (@{thms
+    put_simpset base_ss (Context_Position.set_visible false ctxt)
+    |> Simplifier.add_simps (@{thms
         globals_surj ucast_id pred_conj_def
         Hoare.Collect_False
         Set.mem_Collect_eq Set.Int_iff Set.empty_iff
         simp_thms HOL.implies_True_equals prod.sel
         Pure.triv_forall_equality comp_def K_eq_cong} @ state_simps)
-      addsimprocs ([Record.simproc,
+    |> fold Simplifier.add_proc ([Record.simproc,
         @{simproc arg_cong}, @{simproc fun_cong} (* To trigger state_simprocs on nested arguments, e.g. heap updates*)] @
         state_simprocs)
   end

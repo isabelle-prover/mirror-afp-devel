@@ -642,7 +642,7 @@ lemma
   apply (tactic \<open>
     asm_full_simp_tac (L2Opt.cleanup_ss @{context} [] FunctionInfo.HL FunctionInfo.PEEP) 1\<close>)
     apply (tactic \<open>
-    asm_full_simp_tac (Simplifier.clear_simpset @{context} addsimprocs [@{simproc ETA_TUPLED}]) 1\<close>)
+    asm_full_simp_tac (Simplifier.clear_simpset @{context} |> Simplifier.add_proc @{simproc ETA_TUPLED}) 1\<close>)
   apply (subst XX_def)
   apply (rule refl)
   done
@@ -661,7 +661,8 @@ lemma "PROP SPLIT (\<And>r. ((\<lambda>(x,y,z). y < z \<and> z=s) r) \<Longright
  \<equiv> (\<And>x y z. y < z \<and> z = s \<Longrightarrow> P (x, y, s))"
   apply (tactic \<open>
 asm_full_simp_tac (put_simpset HOL_basic_ss @{context} 
- addsimprocs [Tuple_Tools.SPLIT_simproc, Tuple_Tools.tuple_case_simproc] |> Simplifier.add_cong @{thm SPLIT_cong}) 1
+  |> fold Simplifier.add_proc [Tuple_Tools.SPLIT_simproc, Tuple_Tools.tuple_case_simproc]
+  |> Simplifier.add_cong @{thm SPLIT_cong}) 1
 \<close>)
   done
  

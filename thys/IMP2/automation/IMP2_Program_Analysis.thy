@@ -26,9 +26,8 @@ begin
   \<close>
   declare [[simproc del: ANALYZE]]
 
-  declaration \<open>fn _ => Named_Simpsets.map_ctxt @{named_simpset vcg_bb} (
-    fn ctxt => ctxt addsimprocs [@{simproc ANALYZE}]
-  )\<close>
+  declaration \<open>fn _ =>
+    Named_Simpsets.map_ctxt @{named_simpset vcg_bb} (Simplifier.add_proc @{simproc ANALYZE})\<close>
 
   (* TODO: There's a more general concept here: 
     Activating specific simpsets depending on the context, or, in this case, a trigger constant.

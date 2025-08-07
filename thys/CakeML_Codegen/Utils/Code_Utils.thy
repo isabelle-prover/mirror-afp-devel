@@ -28,6 +28,6 @@ lemma [code]: \<comment> \<open>TODO: work-around non-well-behaved simproc\<clos
   \<open>m < Suc n \<longleftrightarrow> m \<le> n\<close>
   by auto
 
-setup \<open>Code_Preproc.map_pre (fn ctxt => ctxt addsimprocs [@{simproc dynamic_unfold}])\<close>
+setup \<open>Code_Preproc.map_pre (Simplifier.add_proc @{simproc dynamic_unfold})\<close>
 
 end

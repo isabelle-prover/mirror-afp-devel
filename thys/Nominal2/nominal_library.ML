@@ -339,8 +339,8 @@ fun pat_completeness_simp simps ctxt =
 (* simpset for size goals *)
 val size_ss =
   simpset_of (put_simpset HOL_ss @{context}
-   addsimprocs [@{simproc natless_cancel_numerals}]
-   addsimps @{thms in_measure wf_measure sum.case add_Suc_right add.right_neutral
+   |> Simplifier.add_proc @{simproc natless_cancel_numerals}
+   |> Simplifier.add_simps @{thms in_measure wf_measure sum.case add_Suc_right add.right_neutral
      zero_less_Suc prod.size(1) mult_Suc_right})
 
 val natT = @{typ nat}

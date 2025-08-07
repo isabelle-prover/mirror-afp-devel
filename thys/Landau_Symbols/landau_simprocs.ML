@@ -325,9 +325,9 @@ fun landau_conv conv ctxt = changed_conv (fn ct =>
 
 fun simplify_landau_product_conv ctxt ct =
   let
-    val ctxt1 = put_simpset HOL_basic_ss ctxt addsimps @{thms bigtheta_factors_eq}
-    val ctxt2 = ctxt addsimps @{thms landau_simps} delsimprocs (landau_simprocs ctxt)
-    val ctxt3 = put_simpset HOL_basic_ss ctxt addsimps @{thms bigtheta_factors_eq[symmetric]}
+    val ctxt1 = put_simpset HOL_basic_ss ctxt |> Simplifier.add_simps @{thms bigtheta_factors_eq}
+    val ctxt2 = ctxt addsimps @{thms landau_simps} |> fold Simplifier.del_proc (landau_simprocs ctxt)
+    val ctxt3 = put_simpset HOL_basic_ss ctxt |> Simplifier.add_simps @{thms bigtheta_factors_eq[symmetric]}
     val conv = 
       Simplifier.rewrite ctxt1 
       then_conv Simplifier.asm_full_rewrite ctxt2

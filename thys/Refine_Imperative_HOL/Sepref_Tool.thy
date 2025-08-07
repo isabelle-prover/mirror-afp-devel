@@ -89,16 +89,16 @@ ML \<open>
 
     fun opt_tac ctxt = let 
       val opt1_ss = put_simpset HOL_basic_ss ctxt
-        addsimps sepref_opt_simps.get ctxt
-        addsimprocs [@{simproc "HOL.let_simp"}]
-      |> Simplifier.add_cong @{thm SP_cong}
-      |> Simplifier.add_cong @{thm PR_CONST_cong}
+        |> Simplifier.add_simps (sepref_opt_simps.get ctxt)
+        |> Simplifier.add_proc @{simproc "HOL.let_simp"}
+        |> Simplifier.add_cong @{thm SP_cong}
+        |> Simplifier.add_cong @{thm PR_CONST_cong}
 
       val unsp_ss = put_simpset HOL_basic_ss ctxt addsimps @{thms SP_def}
 
       val opt2_ss = put_simpset HOL_basic_ss ctxt
-        addsimps sepref_opt_simps2.get ctxt
-        addsimprocs [@{simproc "HOL.let_simp"}]
+        |> Simplifier.add_simps (sepref_opt_simps2.get ctxt)
+        |> Simplifier.add_proc @{simproc "HOL.let_simp"}
 
     in 
       simp_tac opt1_ss THEN' simp_tac unsp_ss THEN'

@@ -1219,10 +1219,10 @@ let
           pointer_writer_disjnt_ptr_corce_signed'} @
         Named_Theorems.get ctxt @{named_theorems pointer_writer_disjnt_intros})) ORELSE'
       SOLVED' (SELECT_GOAL (asm_full_simp_tac (
-        (ctxt |> put_simpset HOL_ss |>
-          Config.put Record.sort_updates true)
-          addsimps @{thms pointer_writer_disjntI option.inject prod.inject}
-          addsimprocs [@{simproc field_lookup}, @{simproc Record.update}]) 1)))
+        (ctxt |> put_simpset HOL_ss
+          |> Config.put Record.sort_updates true)
+          |> Simplifier.add_simps @{thms pointer_writer_disjntI option.inject prod.inject}
+          |> fold Simplifier.add_proc [@{simproc field_lookup}, @{simproc Record.update}]) 1)))
 
   fun construct_heap_typ (T, (All_Addressable _, _)) (tab : heap_field_info Typtab.table, lthy) =
     if TermsTypes.is_array_type T then

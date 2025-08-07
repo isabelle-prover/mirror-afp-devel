@@ -308,8 +308,10 @@ fun L2_guarded_local_simproc orig_ctxt =
        val ([s'], ctxt') = Utils.fix_variant_cfrees [("s", stateT)] ctxt
        val guard_ctxt = 
          if seq_guard then ctxt'
-         else (put_simpset (simpset_of orig_ctxt) ctxt') addsimprocs [c_fnptr_guard_simproc]
-            |> Simplifier.add_cong @{thm "HOL.conj_cong"}
+         else
+           put_simpset (simpset_of orig_ctxt) ctxt'
+           |> Simplifier.add_proc c_fnptr_guard_simproc
+           |> Simplifier.add_cong @{thm "HOL.conj_cong"}
 
        val g_eq = Thm.apply g s' |> Cached_Theory_Simproc.rewrite_solve guard_ctxt
       
@@ -741,8 +743,8 @@ val FUSE_simproc = \<^simproc_setup>\<open>passive FUSE ("FUSE X") = \<open>K (f
   let
     val {X,...} = @{cterm_match "FUSE ?X"} ct
     val simp_ctxt = ctxt 
-      addsimps @{thms L2_seq_assoc}
-      addsimprocs [L2_seq_propagate_zero_simproc]
+      |> Simplifier.add_simps @{thms L2_seq_assoc}
+      |> Simplifier.add_proc L2_seq_propagate_zero_simproc
     val X_eq = Simplifier.asm_full_rewrite simp_ctxt X 
   in 
     SOME (@{thm FUSE_STOP} OF [X_eq])
@@ -906,12 +908,12 @@ let
   fun basic_ss ctxt = ctxt
       |> put_simpset autocorres_record_ss
       |> UMM_Proofs.set_array_bound_mksimps
-      |> not (opt = FunctionInfo.RAW) ? (fn ctxt => ctxt 
-          addsimps (Utils.get_rules ctxt @{named_theorems L2opt})
-          addsimps ptr_access_thms
-          delsimps size_simps
-          delsimprocs [@{simproc case_prod_beta}]
-          addsimprocs [
+      |> not (opt = FunctionInfo.RAW) ?
+         (Simplifier.add_simps (Utils.get_rules ctxt @{named_theorems L2opt}) #>
+          Simplifier.add_simps ptr_access_thms #>
+          Simplifier.del_simps size_simps #>
+          Simplifier.del_proc @{simproc case_prod_beta} #>
+          fold Simplifier.add_proc ([
             L2_guarded_local_simproc guarded_ctxt,
             l2_marked_gets_bind_simproc,
             Tuple_Tools.SPLIT_simproc, Tuple_Tools.tuple_case_simproc, FUSE_simproc] @ 
@@ -919,22 +921,21 @@ let
               [L2_seq_unknown_simproc, L2_condition_distrib_simproc, L2_while_unbind_simproc,
                L2_seq_condition_distrib_simproc] 
              else []) @
-            [@{simproc field_lookup}]  
-          delsimps @{thms Product_Type.prod.case Product_Type.case_prod_conv replicate_0 replicate_Suc replicate_numeral}
-          |> Simplifier.add_loop ("tuple_inst_tac", Tuple_Tools.tuple_inst_tac)
-          |> Simplifier.add_cong @{thm L2_marked_seq_gets_cong}
-          |> Simplifier.add_cong @{thm L2_marked_seq_guard_block_cong}
-          |> Simplifier.add_cong @{thm SPLIT_cong}
-          |> Simplifier.add_cong @{thm STOP_cong}
-          |> Simplifier.add_cong @{thm if_cong}
-          |> Simplifier.add_cong @{thm HOL.conj_cong}
-          |> Simplifier.add_cong @{thm L2_condition_cong}
-          |> Simplifier.add_cong (if phase = FunctionInfo.L2 then @{thm L2_while_cong_block} else @{thm L2_while_cong_simp_split})
-          |> Simplifier.add_cong @{thm L2_guarded_block_cong}
-          |> Simplifier.add_cong @{thm FUSE_cong}
-          |> Simplifier.add_cong @{thm STOP_UNBIND_cong}
-          |> Simplifier.add_cong @{thm L2_seq_condition_block_cong} (* Only relevant in L2 *)
-      )
+            [@{simproc field_lookup}]) #>  
+          Simplifier.del_simps @{thms Product_Type.prod.case Product_Type.case_prod_conv replicate_0 replicate_Suc replicate_numeral} #>
+          Simplifier.add_loop ("tuple_inst_tac", Tuple_Tools.tuple_inst_tac) #>
+          Simplifier.add_cong @{thm L2_marked_seq_gets_cong} #>
+          Simplifier.add_cong @{thm L2_marked_seq_guard_block_cong} #>
+          Simplifier.add_cong @{thm SPLIT_cong} #>
+          Simplifier.add_cong @{thm STOP_cong} #>
+          Simplifier.add_cong @{thm if_cong} #>
+          Simplifier.add_cong @{thm HOL.conj_cong} #>
+          Simplifier.add_cong @{thm L2_condition_cong} #>
+          Simplifier.add_cong (if phase = FunctionInfo.L2 then @{thm L2_while_cong_block} else @{thm L2_while_cong_simp_split}) #>
+          Simplifier.add_cong @{thm L2_guarded_block_cong} #>
+          Simplifier.add_cong @{thm FUSE_cong} #>
+          Simplifier.add_cong @{thm STOP_UNBIND_cong} #>
+          Simplifier.add_cong @{thm L2_seq_condition_block_cong}) (* Only relevant in L2 *)
       |> (fn ctxt => ctxt addsimps word_simps)
 in
   basic_ss ctxt
@@ -959,12 +960,12 @@ let
 
   val l2opt_conv =
     (Simplifier.rewrite (put_simpset HOL_basic_ss ctxt
-      addsimprocs [@{simproc ETA_TUPLED}, @{simproc Product_Type.unit_eq}]
-      addsimps
-      (Utils.get_rules ctxt 
-        @{named_theorems L2opt} @ 
-        @{thms STOP_def STOP_UNBIND_def L2_seq_guard_def L2_seq_gets_def L2_seq_unknown_def} @
-        aux_simps)))
+      |> fold Simplifier.add_proc [@{simproc ETA_TUPLED}, @{simproc Product_Type.unit_eq}]
+      |> Simplifier.add_simps
+        (Utils.get_rules ctxt 
+          @{named_theorems L2opt} @ 
+          @{thms STOP_def STOP_UNBIND_def L2_seq_guard_def L2_seq_gets_def L2_seq_unknown_def} @
+          aux_simps)))
 
   fun simp_conv ctxt =
     Drule.beta_eta_conversion
