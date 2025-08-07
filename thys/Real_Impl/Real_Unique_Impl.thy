@@ -291,7 +291,7 @@ definition real_lt :: "real \<Rightarrow> real \<Rightarrow> bool" where "real_l
 
 text\<open>The following code equation terminates if it is started on two
   different inputs.\<close>
-lemma real_lt [code equation]: "real_lt x y = (let fx = floor x; fy = floor y in
+lemma real_lt [code]: "real_lt x y = (let fx = floor x; fy = floor y in
   (if fx < fy then True else if fx > fy then False else real_lt (x * 1024) (y * 1024)))"
 proof (cases "floor x < floor y")
   case True
