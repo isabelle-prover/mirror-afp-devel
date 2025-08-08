@@ -1,5 +1,22 @@
 [
  {
+  "abstract": "This theory presents a proof that two-way DFAs are as powerful as DFAs, i.e. they accept exactly the regular languages. The formalization follows Kozen.",
+  "authors": [
+   "Felipe Escallón",
+   "Tobias Nipkow"
+  ],
+  "link": "/entries/Two_Way_DFA_HF.html",
+  "shortname": "Two_Way_DFA_HF",
+  "title": "Two-Way Deterministic Finite Automata",
+  "topic_links": [
+   "/topics/computer-science/automata-and-formal-languages/"
+  ],
+  "topics": [
+   "Computer science/Automata and formal languages"
+  ],
+  "year": "2025"
+ },
+ {
   "abstract": "We formalize a universal construction of Diophantine equations with bounded complexity. This is a formalization of our own work in number theory. Hilbert's Tenth Problem was answered negatively by Yuri Matiyasevich, who showed that there is no general algorithm to decide whether an arbitrary Diophantine equation has a solution. However, the problem remains open when generalized to the field of rational numbers, or contrarily, when restricted to Diophantine equations with bounded complexity, characterized by the number of variables $\\nu$ and the degree $\\delta$. If every Diophantine set can be represented within the bounds $(\\nu, \\delta)$, we say that this pair is universal, and it follows that the corresponding class of equations is undecidable. In a separate mathematics article, we have determined the first non-trivial universal pair for the case of integer unknowns. This AFP entry contributes the main construction required to establish said universal pair. In doing so, we markedly extend previous work on multivariate polynomials, and develop classical theory on Diophantine equations. Additionally, our work includes metaprogramming infrastructure designed to efficiently handle complex definitions of multivariate polynomials. Our mathematical draft has been formalized while the mathematical research was ongoing, and benefitted largely from the help of the theorem prover.",
   "authors": [
    "Marco David",

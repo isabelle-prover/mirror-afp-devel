@@ -1,0 +1,29 @@
+title = "Two-Way Deterministic Finite Automata"
+date = 2025-07-29
+topics = [
+  "Computer science/Automata and formal languages",
+]
+abstract = "This theory presents a proof that two-way DFAs are as powerful as DFAs, i.e. they accept exactly the regular languages. The formalization follows Kozen."
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.escallon]
+email = "escallon_email"
+
+[authors.nipkow]
+email = "nipkow_email"
+
+[contributors]
+
+[notify]
+nipkow = "nipkow_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

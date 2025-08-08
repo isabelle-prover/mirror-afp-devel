@@ -104,6 +104,13 @@ host = [
 
 [ammer.homepages]
 
+[andre]
+name = "Théo André"
+
+[andre.emails]
+
+[andre.homepages]
+
 [andreka]
 name = "Hajnal Andreka"
 
@@ -233,6 +240,25 @@ name = "Ralph-Johan Back"
 
 [back.homepages]
 back_homepage = "http://users.abo.fi/Ralph-Johan.Back/"
+
+[bailitis]
+name = "Janis Bailitis"
+
+[bailitis.emails]
+
+[bailitis.emails.bailitis_email]
+user = [
+  "Janis",
+  "Bailitis",
+]
+host = [
+  "maths",
+  "ox",
+  "ac",
+  "uk",
+]
+
+[bailitis.homepages]
 
 [baksys]
 name = "Mantas Bakšys"
@@ -502,6 +528,14 @@ host = [
 ]
 
 [beresford.homepages]
+
+[bergeron]
+name = "Ghilain Bergeron"
+orcid = "0009-0008-2814-3480"
+
+[bergeron.emails]
+
+[bergeron.homepages]
 
 [berghofer]
 name = "Stefan Berghofer"
@@ -959,6 +993,13 @@ host = [
 [breitner.homepages]
 breitner_homepage = "http://pp.ipd.kit.edu/~breitner"
 
+[brenner]
+name = "Eva Brenner"
+
+[brenner.emails]
+
+[brenner.homepages]
+
 [brien]
 name = "Nicolas Robinson-O'Brien"
 
@@ -1134,6 +1175,23 @@ host = [
 ]
 
 [bulwahn.homepages]
+
+[burrieza]
+name = "Alfredo Burrieza"
+orcid = "0000-0002-2033-6033"
+
+[burrieza.emails]
+
+[burrieza.emails.burrieza_email]
+user = [
+  "burrieza",
+]
+host = [
+  "uma",
+  "es",
+]
+
+[burrieza.homepages]
 
 [buss]
 name = "Sebastián Buss"
@@ -1770,6 +1828,13 @@ host = [
 
 [dongol.homepages]
 
+[dorneich]
+name = "Charlotte Dorneich"
+
+[dorneich.emails]
+
+[dorneich.homepages]
+
 [doty]
 name = "Matthew Doty"
 
@@ -1847,6 +1912,13 @@ host = [
 ]
 
 [dunaev.homepages]
+
+[dupuis]
+name = "Mathis Bouverot-Dupuis"
+
+[dupuis.emails]
+
+[dupuis.homepages]
 
 [dyckhoff]
 name = "Roy Dyckhoff"
@@ -2344,6 +2416,23 @@ host = [
 ]
 
 [ghourabi.homepages]
+
+[ginel]
+name = "Antonio Yuste-Ginel"
+orcid = "0000-0002-4380-3095"
+
+[ginel.emails]
+
+[ginel.emails.ginel_email]
+user = [
+  "ayusteginel",
+]
+host = [
+  "uma",
+  "es",
+]
+
+[ginel.homepages]
 
 [gioiosa]
 name = "Gianpaolo Gioiosa"
@@ -3805,6 +3894,14 @@ host = [
 ]
 
 [koller.homepages]
+
+[krasnopol]
+name = "Florent Krasnopol"
+orcid = "0009-0000-6577-4320"
+
+[krasnopol.emails]
+
+[krasnopol.homepages]
 
 [krauss]
 name = "Alexander Krauss"
@@ -5727,6 +5824,13 @@ name = "Edward Pierzchalski"
 
 [pierzchalski.homepages]
 
+[pige]
+name = "Xavier Pigé"
+
+[pige.emails]
+
+[pige.homepages]
+
 [pillai]
 name = "Shiv Pillai"
 
@@ -6264,6 +6368,13 @@ host = [
 ]
 
 [rincon.homepages]
+
+[ringeard]
+name = "Timothé Ringeard"
+
+[ringeard.emails]
+
+[ringeard.homepages]
 
 [rizaldi]
 name = "Albert Rizaldi"
@@ -7743,6 +7854,23 @@ host = [
 [tiu.homepages]
 tiu_homepage = "http://users.cecs.anu.edu.au/~tiu/"
 
+[toscano]
+name = "Fernando Soler-Toscano"
+orcid = "0000-0003-1953-4136"
+
+[toscano.emails]
+
+[toscano.emails.toscano_email]
+user = [
+  "fsoler",
+]
+host = [
+  "us",
+  "es",
+]
+
+[toscano.homepages]
+
 [toth]
 name = "Balazs Toth"
 
@@ -8065,6 +8193,13 @@ host = [
 
 [verbeek.homepages]
 
+[vermande]
+name = "Quentin Vermande"
+
+[vermande.emails]
+
+[vermande.homepages]
+
 [villadsen]
 name = "Jørgen Villadsen"
 
@@ -8153,6 +8288,13 @@ name = "Shuling Wang"
 [wang.emails]
 
 [wang.homepages]
+
+[wangp]
+name = "Paul Wang"
+
+[wangp.emails]
+
+[wangp.homepages]
 
 [wangz]
 name = "Zili Wang"
@@ -8402,6 +8544,14 @@ host = [
 [wolff.homepages]
 wolff_homepage = "https://www.lri.fr/~wolff/"
 
+[woodcock]
+name = "Jim Woodcock"
+orcid = "0000-0001-7955-2702"
+
+[woodcock.emails]
+
+[woodcock.homepages]
+
 [wright]
 name = "Jamie Wright"
 
@@ -8519,6 +8669,13 @@ host = [
 ]
 
 [yao.homepages]
+
+[yaoa]
+name = "Annie Yao"
+
+[yaoa.emails]
+
+[yaoa.homepages]
 
 [ye]
 name = "Lina Ye"

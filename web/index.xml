@@ -4,6 +4,13 @@
     <title>Archive of Formal Proofs</title>
     <link>https://isa-afp.org/</link>
     <description>Formal developments in the AFP</description><item>
+  <title>Two-Way Deterministic Finite Automata</title>
+  <link>https://isa-afp.org/entries/Two_Way_DFA_HF.html</link>
+  <pubDate>Tue, 29 Jul 2025 00:00:00 +0000</pubDate>
+  <description>Two-Way Deterministic Finite Automata in the AFP</description>
+    <category>Computer science/Automata and formal languages</category>
+</item>
+<item>
   <title>Universal Pairs for Diophantine Equations</title>
   <link>https://isa-afp.org/entries/Diophantine_Universal_Pairs.html</link>
   <pubDate>Tue, 29 Jul 2025 00:00:00 +0000</pubDate>
