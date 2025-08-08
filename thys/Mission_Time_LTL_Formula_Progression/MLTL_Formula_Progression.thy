@@ -37,10 +37,8 @@ function formula_progression_len1:: "'a mltl \<Rightarrow> 'a set \<Rightarrow> 
     (if 0< a \<and> a\<le> b then  (F\<^sub>m [(a-1), (b-1)] F) 
     else if (0 = a \<and> a < b) then ((formula_progression_len1 F tr_entry) Or\<^sub>m (F\<^sub>m [0, (b-1)] F))
     else (formula_progression_len1 F tr_entry))"
-  apply auto 
-  by (meson mltl.exhaust)
-termination apply (relation  "measure (\<lambda>(F,tr_entry). (weight_operators F))")
-  by auto
+  by pat_completeness auto
+termination by (relation  "measure (\<lambda>(F,tr_entry). (weight_operators F))") auto
 
 text \<open> Note that formula progression needs to be defined when the
   length of the trace is 0. In this case, we define it to just
