@@ -47,6 +47,25 @@
   "year": "2025"
  },
  {
+  "abstract": "We build on the Isabelle/HOL formalization of Mission-time Linear Temporal Logic (MLTL) to formalize a formula progression algorithm for MLTL formulas (https://dblp.org/rec/conf/rv/LiR18.html), a key algorithm in the FPROGG tool for generating MLTL benchmarks. The formula progression algorithm takes a MLTL formula and steps through a given trace to partially evaluate a logically equivalent simpler formula at each step, ultimately checking whether or not the trace satisfies the original formula. Our formalization is executable and we export it to code in SML.",
+  "authors": [
+   "Katherine Kosaian",
+   "Zili Wang"
+  ],
+  "link": "/entries/Mission_Time_LTL_Formula_Progression.html",
+  "shortname": "Mission_Time_LTL_Formula_Progression",
+  "title": "Mission-time Linear Temporal Logic Formula Progression",
+  "topic_links": [
+   "/topics/computer-science/",
+   "/topics/logic/general-logic/temporal-logic/"
+  ],
+  "topics": [
+   "Computer science",
+   "Logic/General logic/Temporal logic"
+  ],
+  "year": "2025"
+ },
+ {
   "abstract": "Bisimulations are a fundamental formal tool in the model theory of standard modal logic. Roughly speaking, bisimulations provide a clear answer to a foundational model-theoretical question: Given two (Kripke-style) models, what conditions are sufficient and necessary for them to satisfy the same modal formulas?  We propose a modal study of the notion of bisimulation. We extend the basic modal language with a new modality $[b]$, whose intended meaning is universal quantification over all states that are bisimilar to the current one. We provide a sound and complete axiomatisation of the class of all pairs of Kripke models linked by bisimulations.",
   "authors": [
    "Alfredo Burrieza",

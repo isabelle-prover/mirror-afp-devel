@@ -3,12 +3,12 @@
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Mission-time Linear Temporal Logic - Archive of Formal Proofs</title>
-    <meta name="description" content="Mission-time Linear Temporal Logic in the Archive of Formal Proofs" />
-    <meta property="og:description" content="Mission-time Linear Temporal Logic in the Archive of Formal Proofs" />
+    <title>Mission-time Linear Temporal Logic Formula Progression - Archive of Formal Proofs</title>
+    <meta name="description" content="Mission-time Linear Temporal Logic Formula Progression in the Archive of Formal Proofs" />
+    <meta property="og:description" content="Mission-time Linear Temporal Logic Formula Progression in the Archive of Formal Proofs" />
 
-  <meta property="og:title" content="Mission-time Linear Temporal Logic" />
-  <meta property="og:url" content="https://isa-afp.org/entries/Mission_Time_LTL.html" />
+  <meta property="og:title" content="Mission-time Linear Temporal Logic Formula Progression" />
+  <meta property="og:url" content="https://isa-afp.org/entries/Mission_Time_LTL_Formula_Progression.html" />
   <meta property="og:image" content="https://isa-afp.org/images/afp.png" />
     <meta property="og:type" content="article" />
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
@@ -95,19 +95,19 @@
         </datalist>
       </div>
     </form>
-  <h1 ><span class='first'>M</span>ission-time <span class='first'>L</span>inear <span class='first'>T</span>emporal <span class='first'>L</span>ogic
+  <h1 ><span class='first'>M</span>ission-time <span class='first'>L</span>inear <span class='first'>T</span>emporal <span class='first'>L</span>ogic <span class='first'>F</span>ormula <span class='first'>P</span>rogression
   </h1>
   <div>
-      <p><a href="../authors/cordwell/">Katherine Kosaian</a> <a class="obfuscated" data="eyJ1c2VyIjpbImthdGhlcmluZS1rb3NhaWFuIl0sImhvc3QiOlsidWlvd2EiLCJlZHUiXX0=">📧</a>, <a href="../authors/wangz/">Zili Wang</a> <a class="obfuscated" data="eyJ1c2VyIjpbInppbGl3MSJdLCJob3N0IjpbImlhc3RhdGUiLCJlZHUiXX0=">📧</a> and <a href="../authors/sloan/">Elizabeth Sloan</a> <a class="obfuscated" data="eyJ1c2VyIjpbImVsaXNsb2FuIl0sImhvc3QiOlsiaWFzdGF0ZSIsImVkdSJdfQ==">📧</a>
+      <p><a href="../authors/cordwell/">Katherine Kosaian</a> <a class="obfuscated" data="eyJ1c2VyIjpbImthdGhlcmluZS1rb3NhaWFuIl0sImhvc3QiOlsidWlvd2EiLCJlZHUiXX0=">📧</a> and <a href="../authors/wangz/">Zili Wang</a> <a class="obfuscated" data="eyJ1c2VyIjpbInppbGl3MSJdLCJob3N0IjpbImlhc3RhdGUiLCJlZHUiXX0=">📧</a>
       </p>
-      <p class="date">January 24, 2025</p>
+      <p class="date">July 28, 2025</p>
   </div>
 </header>
       <div>
   <main>
 
     <h3>Abstract</h3>
-    <div class="abstract mathjax_process">We formalize the syntax, semantics, and some useful properties of Mission-time Linear Temporal Logic (MLTL), following the literature. MLTL is a variant of Linear Temporal Logic, which has already been formalized in Isabelle/HOL. In contrast to LTL, MLTL includes finite discrete time bounds on the temporal operators. We do not directly build on the LTL AFP entry, but aim to mirror its style; in particular, we found it useful when defining our syntactic sugar binding precedences. Another closely related AFP entry is the formalization of MFOTL.</div>
+    <div class="abstract mathjax_process">We build on the Isabelle/HOL formalization of Mission-time Linear Temporal Logic (MLTL) to formalize a formula progression algorithm for MLTL formulas (https://dblp.org/rec/conf/rv/LiR18.html), a key algorithm in the FPROGG tool for generating MLTL benchmarks. The formula progression algorithm takes a MLTL formula and steps through a given trace to partially evaluate a logically equivalent simpler formula at each step, ultimately checking whether or not the trace satisfies the original formula. Our formalization is executable and we export it to code in SML.</div>
 
     <h3>License</h3>
     <div>
@@ -115,22 +115,23 @@
     </div>
       <h3>Topics</h3>
       <ul>
-          <li><a href="../topics/computer-science/automata-and-formal-languages/">Computer science/Automata and formal languages</a></li>
+          <li><a href="../topics/computer-science/">Computer science</a></li>
           <li><a href="../topics/logic/general-logic/temporal-logic/">Logic/General logic/Temporal logic</a></li>
       </ul>
-      <h3>Session Mission_Time_LTL</h3>
+      <h3>Related publications</h3>
       <ul>
-          <li><a href="../sessions/mission_time_ltl/#MLTL_Encoding">MLTL_Encoding</a></li>
-          <li><a href="../sessions/mission_time_ltl/#MLTL_Properties">MLTL_Properties</a></li>
+        <li>Katherine Kosaian, Zili Wang, Elizabeth Sloan, Kristin Yvonne Rozier. Formalizing MLTL Formula Progression in Isabelle/HOL. To appear in Conference on Intelligent Computer Mathematics (CICM 2025).</li>
+      </ul>
+      <h3>Session Mission_Time_LTL_Formula_Progression</h3>
+      <ul>
+          <li><a href="../sessions/mission_time_ltl_formula_progression/#MLTL_Formula_Progression">MLTL_Formula_Progression</a></li>
       </ul>
 
     <div class="flex-wrap">
         <div>
-          <h3>Used by</h3>
+          <h3>Depends on</h3>
           <ul class="horizontal-list">
-              <li><a href="../entries/Mission_Time_LTL_to_Regular_Expression.html">Mission-time Linear Temporal Logic to Regular Expressions</a></li>
-              <li><a href="../entries/Mission_Time_LTL_Language_Partition.html">Language Partitioning for Mission-time Linear Temporal Logic</a></li>
-              <li><a href="../entries/Mission_Time_LTL_Formula_Progression.html">Mission-time Linear Temporal Logic Formula Progression</a></li>
+              <li><a href="../entries/Mission_Time_LTL.html">Mission-time Linear Temporal Logic</a></li>
           </ul>
         </div>
     </div>
@@ -140,9 +141,9 @@
     <a class="popup-button" href="#cite-popup">Cite</a>
     <a class="popup-button" href="#download-popup">Download</a>
     <h4>PDFs</h4>
-    <a href="https://www.isa-afp.org/browser_info/current/AFP/Mission_Time_LTL/outline.pdf">Proof outline</a>
-    <a href="https://www.isa-afp.org/browser_info/current/AFP/Mission_Time_LTL/document.pdf">Proof document</a>
-    <a href="https://www.isa-afp.org/browser_info/current/AFP/Mission_Time_LTL/session_graph.pdf">Dependencies</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Mission_Time_LTL_Formula_Progression/outline.pdf">Proof outline</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Mission_Time_LTL_Formula_Progression/document.pdf">Proof document</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Mission_Time_LTL_Formula_Progression/session_graph.pdf">Dependencies</a>
   </nav>
 
   <div id="cite-popup" class="overlay">
@@ -151,14 +152,14 @@
       <h2>Cite</h2>
       <a class="close" href="#">&times;</a>
       <div>
-        <p style="display:none;" id="bibtex-filename">Mission_Time_LTL-AFP</p>
-        <pre id="copy-text">@article{Mission_Time_LTL-AFP,
-  author  = {Katherine Kosaian and Zili Wang and Elizabeth Sloan},
-  title   = {Mission-time Linear Temporal Logic},
+        <p style="display:none;" id="bibtex-filename">Mission_Time_LTL_Formula_Progression-AFP</p>
+        <pre id="copy-text">@article{Mission_Time_LTL_Formula_Progression-AFP,
+  author  = {Katherine Kosaian and Zili Wang},
+  title   = {Mission-time Linear Temporal Logic Formula Progression},
   journal = {Archive of Formal Proofs},
-  month   = {January},
+  month   = {July},
   year    = {2025},
-  note    = {\url{https://isa-afp.org/entries/Mission_Time_LTL.html},
+  note    = {\url{https://isa-afp.org/entries/Mission_Time_LTL_Formula_Progression.html},
              Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -172,21 +173,8 @@
     <div class="popup">
       <h2>Download</h2>
       <a class="close" href="#">&times;</a>
-      <a href="https://www.isa-afp.org/release/afp-Mission_Time_LTL-current.tar.gz" download>
+      <a href="https://www.isa-afp.org/release/afp-Mission_Time_LTL_Formula_Progression-current.tar.gz" download>
         Download latest</a>
-        <p>Older releases:</p>
-        <ul>
-            <li>
-              <a href="https://www.isa-afp.org/release/afp-Mission_Time_LTL-2025-03-17.tar.gz">Mar 17, 2025
-              </a>
-              : Isabelle2025
-            </li>
-            <li>
-              <a href="https://www.isa-afp.org/release/afp-Mission_Time_LTL-2025-01-28.tar.gz">Jan 28, 2025
-              </a>
-              : Isabelle2024
-            </li>
-        </ul>
     </div>
   </div>
       </div>
