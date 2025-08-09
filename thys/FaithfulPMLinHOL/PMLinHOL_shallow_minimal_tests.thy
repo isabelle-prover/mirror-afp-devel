@@ -1,6 +1,6 @@
 subsection\<open>Tests with the minimal shallow embedding\<close>
 
-theory PMLinHOL_shallow_minimal_tests (* Christoph Benzmüller, 2025 *)
+theory PMLinHOL_shallow_minimal_tests 
   imports PMLinHOL_shallow_minimal
 begin 
 

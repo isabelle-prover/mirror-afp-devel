@@ -1,7 +1,7 @@
 section\<open>Shallow embedding of PML in HOL (minimal)\label{sec:pmlinhol_shallow_min}\<close>
 
-theory PMLinHOL_shallow_minimal (* Christoph Benzmüller, 2025 *)
-imports PMLinHOL_preliminaries
+theory PMLinHOL_shallow_minimal
+  imports PMLinHOL_preliminaries
 begin
 
 \<comment>\<open>The acessibility relation R and the valuation function V are introduced as constants at the meta-level HOL\<close>

@@ -1,6 +1,6 @@
 section\<open>Automated faithfulness proofs\label{sec:faithfulness}\<close>
 
-theory PMLinHOL_faithfulness (* Christoph Benzmüller, 2025 *)
+theory PMLinHOL_faithfulness 
   imports PMLinHOL_deep PMLinHOL_shallow PMLinHOL_shallow_minimal
 begin 
 
@@ -19,8 +19,8 @@ theorem Faithful2: "\<forall>w. \<langle>(\<lambda>x::\<w>. True),R,V\<rangle>,w
 theorem Faithful3: "\<forall>w. \<langle>(\<lambda>x::\<w>. True),R,V\<rangle>,w \<Turnstile>\<^sup>s \<lparr>\<phi>\<rparr> \<longleftrightarrow> w \<Turnstile>\<^sup>m \<lbrakk>\<phi>\<rbrakk>" apply induct by auto
 
 \<comment>\<open>Additional check for soundness for the minimal shallow embedding\<close>
-lemma Sound1: "\<Turnstile>\<^sup>m \<psi> \<longrightarrow> (\<exists>\<phi>. \<psi>=\<lbrakk>\<phi>\<rbrakk> \<and> \<Turnstile>\<^sup>d \<phi>)"  \<comment>\<open>sledgehammer: Proof found; metis reconstruction timeout\<close> oops
-lemma Sound2: "\<Turnstile>\<^sup>m \<psi> \<longrightarrow> (\<exists>\<phi>. \<psi>=\<lbrakk>\<phi>\<rbrakk> \<and> \<Turnstile>\<^sup>m \<lbrakk>\<phi>\<rbrakk>)" \<comment>\<open>sledgehammer: Proof found; metis reconstruction timeout\<close> oops
+lemma Sound1: "\<Turnstile>\<^sup>m \<psi> \<longleftrightarrow> (\<exists>\<phi>. \<psi>=\<lbrakk>\<phi>\<rbrakk> \<and> \<Turnstile>\<^sup>d \<phi>)" by (smt Faithful2 DefM DefD RelativeTruthD.simps ext[of \<psi> "\<lbrakk>x\<supset>\<^sup>dx\<rbrakk>"])   
+lemma Sound2: "\<Turnstile>\<^sup>m \<psi> \<longleftrightarrow> (\<exists>\<phi>. \<psi>=\<lbrakk>\<phi>\<rbrakk> \<and> \<Turnstile>\<^sup>m \<lbrakk>\<phi>\<rbrakk>)" using Sound1 by blast
 end
 
 

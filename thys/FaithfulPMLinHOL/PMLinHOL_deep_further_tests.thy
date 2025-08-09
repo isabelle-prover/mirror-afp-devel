@@ -1,5 +1,5 @@
 
-theory PMLinHOL_deep_further_tests    (* Christoph Benzmüller, 2025 *)
+theory PMLinHOL_deep_further_tests
   imports PMLinHOL_deep_tests  
 begin  
 

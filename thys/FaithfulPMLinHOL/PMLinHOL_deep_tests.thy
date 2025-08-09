@@ -1,7 +1,7 @@
 section\<open>Appendix: proof automation tests\label{sec:automation_tests}\<close>
 subsection\<open>Tests with the deep embedding\<close>
 
-theory PMLinHOL_deep_tests   (* Christoph Benzmüller, 2025 *)
+theory PMLinHOL_deep_tests  
   imports PMLinHOL_deep                                               
 begin   
 

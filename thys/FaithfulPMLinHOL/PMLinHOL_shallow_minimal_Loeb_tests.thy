@@ -1,8 +1,7 @@
 
-theory PMLinHOL_shallow_minimal_Loeb_tests   (* Christoph Benzmüller, 2025 *)
+theory PMLinHOL_shallow_minimal_Loeb_tests  
   imports PMLinHOL_shallow_minimal
 begin
-
 \<comment>\<open>Löb axiom: with the minimal shallow embedding automated reasoning tools are still partly responsive\<close>
 lemma Loeb1: "\<forall>\<phi>. \<Turnstile>\<^sup>m \<box>\<^sup>m( \<box>\<^sup>m\<phi> \<supset>\<^sup>m\<phi>) \<supset>\<^sup>m \<box>\<^sup>m\<phi>" nitpick[card \<w>=1,card \<S>=1] oops \<comment>\<open>nitpick: Counterexample.\<close>
 lemma Loeb2: "(conversewf R \<and> transitive R) \<longrightarrow>(\<forall>\<phi>. \<Turnstile>\<^sup>m \<box>\<^sup>m(\<box>\<^sup>m\<phi> \<supset>\<^sup>m\<phi>) \<supset>\<^sup>m \<box>\<^sup>m\<phi>)" \<comment>\<open>sh: Proof found\<close> oops

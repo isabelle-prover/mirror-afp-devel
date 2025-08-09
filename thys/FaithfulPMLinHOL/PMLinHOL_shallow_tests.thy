@@ -1,6 +1,6 @@
 subsection\<open>Tests with the maximal shallow embedding\<close>
 
-theory PMLinHOL_shallow_tests   (* Christoph Benzmüller, 2025 *)
+theory PMLinHOL_shallow_tests 
    imports PMLinHOL_shallow
 begin
 

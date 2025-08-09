@@ -1,6 +1,6 @@
 section\<open>Shallow embedding of PML in HOL (maximal)\label{sec:pmlinhol_shallow_max}\<close>
  
-theory PMLinHOL_shallow    (* Christoph Benzmüller, 2025 *)
+theory PMLinHOL_shallow   
   imports PMLinHOL_preliminaries 
 begin
 

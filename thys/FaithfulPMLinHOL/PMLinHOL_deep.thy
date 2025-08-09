@@ -1,9 +1,8 @@
 section\<open>Deep embedding of PML in HOL\label{sec:pmlinhol_deep}\<close>
 
-theory PMLinHOL_deep               (* Christoph Benzmüller, 2025 *)
+theory PMLinHOL_deep              
  imports PMLinHOL_preliminaries    
 begin 
-
 \<comment>\<open>Deep embedding (of propositional modal logic in HOL)\<close>
 datatype PML = AtmD \<S> ("_\<^sup>d") | NotD PML ("\<not>\<^sup>d") | ImpD PML PML (infixr "\<supset>\<^sup>d" 93) | BoxD PML ("\<box>\<^sup>d")
 

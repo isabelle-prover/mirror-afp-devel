@@ -1,5 +1,5 @@
 
-theory PMLinHOL_deep_Loeb_tests     (* Christoph Benzmüller, 2025 *)
+theory PMLinHOL_deep_Loeb_tests    
   imports PMLinHOL_deep 
 begin 
 

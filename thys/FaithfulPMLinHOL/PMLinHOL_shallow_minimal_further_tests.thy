@@ -1,5 +1,5 @@
 
-theory PMLinHOL_shallow_minimal_further_tests    (* Christoph Benzmüller, 2025 *)
+theory PMLinHOL_shallow_minimal_further_tests  
   imports PMLinHOL_shallow_minimal_tests 
 begin 
 

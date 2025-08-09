@@ -2,14 +2,14 @@ section\<open>Preliminaries\<close>
 text\<open>The following preliminaries are are shared between all embeddings introduced in 
 the remainder of this paper.\<close>
 
-theory PMLinHOL_preliminaries  (* Christoph Benzmüller, 2025 *)
+theory PMLinHOL_preliminaries 
  imports Main 
 begin  
 
 \<comment>\<open>Type declarations common for both the deep and shallow embedding\<close>
 typedecl \<w> \<comment>\<open>Type for possible worlds\<close> 
 typedecl \<S> \<comment>\<open>Type for propositional constant symbols\<close> 
-consts p::\<S> q::\<S> r::\<S> \<comment>\<open>Some propositional constant symbols\<close> 
+consts p::\<S> q::\<S>  \<comment>\<open>Some propositional constant symbols\<close> 
 type_synonym \<W> = "\<w>\<Rightarrow>bool" \<comment>\<open>Type for sets of possible worlds\<close> 
 type_synonym \<R> = "\<w>\<Rightarrow>\<w>\<Rightarrow>bool" \<comment>\<open>Type for accessibility relations\<close> 
 type_synonym \<V> = "\<S>\<Rightarrow>\<w>\<Rightarrow>bool" \<comment>\<open>Type for valuation functions\<close> 
@@ -35,6 +35,7 @@ abbreviation(input) Bimp (infixr "\<longleftarrow>" 50) where "\<phi> \<longleft
 
 \<comment>\<open>Some further settings\<close> 
 declare[[syntax_ambiguity_warning=false]] 
-nitpick_params[user_axioms,expect=genuine] 
+nitpick_params[user_axioms,expect=genuine,timeout=60] 
+
 end
 
