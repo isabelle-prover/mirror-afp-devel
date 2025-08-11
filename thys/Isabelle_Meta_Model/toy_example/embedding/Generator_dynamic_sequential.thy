@@ -812,9 +812,8 @@ val compiler = let open Export_code_env in
                 [ "mv " ^ tmp_file ^ " " ^ Path.implode (Path.append tmp_export_code
                                                            (Path.make [SML.Filename.argument ml_ext_ml]))
                 , "cd " ^ Path.implode tmp_export_code ^
-                  " && echo 'use_thy \"" ^ SML.main ^ "\";' | " ^
-                  File.standard_path (Path.append (Path.variable "ISABELLE_HOME") (Path.make ["bin", "isabelle"])) ^
-                  " console" ]
+                  " && " ^ File.standard_path (Path.append (Path.variable "ISABELLE_HOME") (Path.make ["bin", "isabelle"])) ^
+                  " process_theories -D. " ^ SML.main]
                 "true"
             val stdout =
               case try File.read stdout_file of
