@@ -16,11 +16,15 @@ email = "cordwell_email"
 [authors.wangz]
 email = "wangz_email"
 
+[authors.sloan]
+email = "sloan_email"
+
 [contributors]
 
 [notify]
 cordwell = "cordwell_email"
 wangz = "wangz_email"
+sloan = "sloan_email"
 
 [history]
 
