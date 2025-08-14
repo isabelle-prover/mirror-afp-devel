@@ -22,351 +22,351 @@ declare imp_cong[cong del]
 
 experiment begin
 lemma S5: "\<forall>w:W. (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d (\<box>\<^sup>d\<phi>) \<supset>\<^sup>d \<phi>) \<and> (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d \<phi> \<supset>\<^sup>d \<box>\<^sup>d(\<diamond>\<^sup>d\<phi>)) \<and> (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d (\<box>\<^sup>d\<phi>) \<supset>\<^sup>d \<box>\<^sup>d(\<box>\<^sup>d\<phi>)) \<longrightarrow> \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d F1" 
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
-  apply simp nitpick[expect=unknown] \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>proof\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
+  apply simp \<comment>\<open>nitpick[expect=unknown]\<close> \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>proof\<close>
   by (smt (z3) PML.simps(22))
 lemma S4: "\<forall>w:W. (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d (\<box>\<^sup>d\<phi>) \<supset>\<^sup>d \<phi>) \<and> (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d (\<box>\<^sup>d\<phi>) \<supset>\<^sup>d \<box>\<^sup>d(\<box>\<^sup>d\<phi>)) \<longrightarrow> \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d F1" 
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
-  apply simp nitpick[expect=unknown] \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
+  apply simp \<comment>\<open>nitpick[expect=unknown]\<close> \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
   by (smt (z3) PML.simps(22))
 lemma KB4: "\<forall>w:W. (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d \<phi> \<supset>\<^sup>d \<box>\<^sup>d(\<diamond>\<^sup>d\<phi>)) \<and> (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d (\<box>\<^sup>d\<phi>) \<supset>\<^sup>d \<box>\<^sup>d(\<box>\<^sup>d\<phi>)) \<longrightarrow> \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d F1" 
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
-  apply simp nitpick[expect=unknown] \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>proof\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
+  apply simp \<comment>\<open>nitpick[expect=unknown]\<close> \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>proof\<close>
   by (smt (z3) PML.simps(22)) 
 lemma KTB: "\<forall>w:W. (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d (\<box>\<^sup>d\<phi>) \<supset>\<^sup>d \<phi>) \<and> (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d \<phi> \<supset>\<^sup>d \<box>\<^sup>d(\<diamond>\<^sup>d\<phi>)) \<longrightarrow> \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d F1" 
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=unknown] \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=unknown]\<close> \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
   oops
 lemma KT: "\<forall>w:W. (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d (\<box>\<^sup>d\<phi>) \<supset>\<^sup>d \<phi>) \<longrightarrow> \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d F1" 
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=unknown] \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=unknown]\<close> \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
   oops
 lemma KB: "\<forall>w:W. (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d \<phi> \<supset>\<^sup>d \<box>\<^sup>d(\<diamond>\<^sup>d\<phi>)) \<longrightarrow> \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d F1" 
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=unknown] \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=unknown]\<close> \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
   oops
 lemma K4: "\<forall>w:W. (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d (\<box>\<^sup>d\<phi>) \<supset>\<^sup>d \<box>\<^sup>d(\<box>\<^sup>d\<phi>)) \<longrightarrow> \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d F1" 
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
-  apply simp nitpick[expect=unknown] \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>proof\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
+  apply simp \<comment>\<open>nitpick[expect=unknown]\<close> \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>proof\<close>
   by (smt (z3) PML.simps(22)) 
 lemma K: "\<forall>w:W. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d F1" 
-  nitpick[expect=genuine] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=unknown] \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=genuine]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=unknown]\<close> \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
   oops
 end
 
 experiment begin
 lemma S5: "\<forall>w:W. (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d (\<box>\<^sup>d\<phi>) \<supset>\<^sup>d \<phi>) \<and> (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d \<phi> \<supset>\<^sup>d \<box>\<^sup>d(\<diamond>\<^sup>d\<phi>)) \<and> (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d (\<box>\<^sup>d\<phi>) \<supset>\<^sup>d \<box>\<^sup>d(\<box>\<^sup>d\<phi>)) \<longrightarrow> \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d F2" 
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=unknown] \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=unknown]\<close> \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
   oops
 lemma S4: "\<forall>w:W. (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d (\<box>\<^sup>d\<phi>) \<supset>\<^sup>d \<phi>) \<and> (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d (\<box>\<^sup>d\<phi>) \<supset>\<^sup>d \<box>\<^sup>d(\<box>\<^sup>d\<phi>)) \<longrightarrow> \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d F2" 
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=unknown] \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=unknown]\<close> \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
   oops
 lemma KB4: "\<forall>w:W. (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d \<phi> \<supset>\<^sup>d \<box>\<^sup>d(\<diamond>\<^sup>d\<phi>)) \<and> (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d (\<box>\<^sup>d\<phi>) \<supset>\<^sup>d \<box>\<^sup>d(\<box>\<^sup>d\<phi>)) \<longrightarrow> \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d F2" 
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=unknown] \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>proof\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=unknown]\<close> \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>proof\<close>
   by (smt (z3) PML.simps(22))
 lemma KTB: "\<forall>w:W. (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d (\<box>\<^sup>d\<phi>) \<supset>\<^sup>d \<phi>) \<and> (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d \<phi> \<supset>\<^sup>d \<box>\<^sup>d(\<diamond>\<^sup>d\<phi>)) \<longrightarrow> \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d F2" 
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=unknown] \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>proof\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=unknown]\<close> \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>proof\<close>
   by (smt (z3) PML.simps(22))
 lemma KT: "\<forall>w:W. (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d (\<box>\<^sup>d\<phi>) \<supset>\<^sup>d \<phi>) \<longrightarrow> \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d F2" 
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=unknown] \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=unknown]\<close> \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
   oops
 lemma KB: "\<forall>w:W. (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d \<phi> \<supset>\<^sup>d \<box>\<^sup>d(\<diamond>\<^sup>d\<phi>)) \<longrightarrow> \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d F2" 
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
-  apply simp nitpick[expect=unknown] \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>proof\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
+  apply simp \<comment>\<open>nitpick[expect=unknown]\<close> \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>proof\<close>
   by (smt (z3) PML.simps(22))
 lemma K4: "\<forall>w:W. (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d (\<box>\<^sup>d\<phi>) \<supset>\<^sup>d \<box>\<^sup>d(\<box>\<^sup>d\<phi>)) \<longrightarrow> \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d F2" 
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=genuine] \<comment>\<open>sledgehammer\<close>   \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=genuine]\<close> \<comment>\<open>sledgehammer\<close>   \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
   oops
 lemma K: "\<forall>w:W. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d F2" 
-  nitpick[expect=genuine] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=unknown] \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=genuine]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=unknown]\<close> \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
   oops
 end
 
 experiment begin
 lemma S5: "\<forall>w:W. (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d (\<box>\<^sup>d\<phi>) \<supset>\<^sup>d \<phi>) \<and> (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d \<phi> \<supset>\<^sup>d \<box>\<^sup>d(\<diamond>\<^sup>d\<phi>)) \<and> (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d (\<box>\<^sup>d\<phi>) \<supset>\<^sup>d \<box>\<^sup>d(\<box>\<^sup>d\<phi>)) \<longrightarrow> \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d F3" 
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=unknown] \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=unknown]\<close> \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
   oops
 lemma S4: "\<forall>w:W. (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d (\<box>\<^sup>d\<phi>) \<supset>\<^sup>d \<phi>) \<and> (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d (\<box>\<^sup>d\<phi>) \<supset>\<^sup>d \<box>\<^sup>d(\<box>\<^sup>d\<phi>)) \<longrightarrow> \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d F3" 
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=unknown] \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=unknown]\<close> \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
   oops
 lemma KB4: "\<forall>w:W. (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d \<phi> \<supset>\<^sup>d \<box>\<^sup>d(\<diamond>\<^sup>d\<phi>)) \<and> (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d (\<box>\<^sup>d\<phi>) \<supset>\<^sup>d \<box>\<^sup>d(\<box>\<^sup>d\<phi>)) \<longrightarrow> \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d F3" 
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=unknown] \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=unknown]\<close> \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
   oops
 lemma KTB: "\<forall>w:W. (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d (\<box>\<^sup>d\<phi>) \<supset>\<^sup>d \<phi>) \<and> (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d \<phi> \<supset>\<^sup>d \<box>\<^sup>d(\<diamond>\<^sup>d\<phi>)) \<longrightarrow> \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d F3" 
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=unknown] \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=unknown]\<close> \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
   oops
 lemma KT: "\<forall>w:W. (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d (\<box>\<^sup>d\<phi>) \<supset>\<^sup>d \<phi>) \<longrightarrow> \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d F3" 
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=unknown] \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=unknown]\<close> \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
   oops
 lemma KB: "\<forall>w:W. (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d \<phi> \<supset>\<^sup>d \<box>\<^sup>d(\<diamond>\<^sup>d\<phi>)) \<longrightarrow> \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d F3" 
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=unknown] \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=unknown]\<close> \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
   oops
 lemma K4: "\<forall>w:W. (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d (\<box>\<^sup>d\<phi>) \<supset>\<^sup>d \<box>\<^sup>d(\<box>\<^sup>d\<phi>)) \<longrightarrow> \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d F3" 
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=unknown] \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=unknown]\<close> \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
   oops
 lemma K: "\<forall>w:W. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d F3" 
-  nitpick[expect=genuine] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=unknown] \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=genuine]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=unknown]\<close> \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
   oops
 end
 
 experiment begin
 lemma S5: "\<forall>w:W. (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d (\<box>\<^sup>d\<phi>) \<supset>\<^sup>d \<phi>) \<and> (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d \<phi> \<supset>\<^sup>d \<box>\<^sup>d(\<diamond>\<^sup>d\<phi>)) \<and> (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d (\<box>\<^sup>d\<phi>) \<supset>\<^sup>d \<box>\<^sup>d(\<box>\<^sup>d\<phi>)) \<longrightarrow> \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d F4" 
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=unknown] \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=unknown]\<close> \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
   oops
 lemma S4: "\<forall>w:W. (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d (\<box>\<^sup>d\<phi>) \<supset>\<^sup>d \<phi>) \<and> (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d (\<box>\<^sup>d\<phi>) \<supset>\<^sup>d \<box>\<^sup>d(\<box>\<^sup>d\<phi>)) \<longrightarrow> \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d F4" 
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=unknown] \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=unknown]\<close> \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
   oops
 lemma KB4: "\<forall>w:W. (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d \<phi> \<supset>\<^sup>d \<box>\<^sup>d(\<diamond>\<^sup>d\<phi>)) \<and> (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d (\<box>\<^sup>d\<phi>) \<supset>\<^sup>d \<box>\<^sup>d(\<box>\<^sup>d\<phi>)) \<longrightarrow> \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d F4" 
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=unknown] \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=unknown]\<close> \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
   oops
 lemma KTB: "\<forall>w:W. (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d (\<box>\<^sup>d\<phi>) \<supset>\<^sup>d \<phi>) \<and> (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d \<phi> \<supset>\<^sup>d \<box>\<^sup>d(\<diamond>\<^sup>d\<phi>)) \<longrightarrow> \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d F4" 
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=unknown] \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=unknown]\<close> \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
   oops
 lemma KT: "\<forall>w:W. (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d (\<box>\<^sup>d\<phi>) \<supset>\<^sup>d \<phi>) \<longrightarrow> \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d F4" 
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=unknown] \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=unknown]\<close> \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
   oops
 lemma KB: "\<forall>w:W. (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d \<phi> \<supset>\<^sup>d \<box>\<^sup>d(\<diamond>\<^sup>d\<phi>)) \<longrightarrow> \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d F4" 
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=unknown] \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=unknown]\<close> \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
   oops
 lemma K4: "\<forall>w:W. (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d (\<box>\<^sup>d\<phi>) \<supset>\<^sup>d \<box>\<^sup>d(\<box>\<^sup>d\<phi>)) \<longrightarrow> \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d F4" 
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=unknown] \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=unknown]\<close> \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
   oops
 lemma K: "\<forall>w:W. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d F4" 
-  nitpick[expect=genuine] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=unknown] \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=genuine]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=unknown]\<close> \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
   oops
 end
 
 experiment begin
 lemma S5: "\<forall>w:W. (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d (\<box>\<^sup>d\<phi>) \<supset>\<^sup>d \<phi>) \<and> (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d \<phi> \<supset>\<^sup>d \<box>\<^sup>d(\<diamond>\<^sup>d\<phi>)) \<and> (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d (\<box>\<^sup>d\<phi>) \<supset>\<^sup>d \<box>\<^sup>d(\<box>\<^sup>d\<phi>)) \<longrightarrow> \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d F5" 
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
-  apply simp nitpick[expect=unknown] \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
+  apply simp \<comment>\<open>nitpick[expect=unknown]\<close> \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
   by (smt (z3) PML.simps(22))
 lemma S4: "\<forall>w:W. (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d (\<box>\<^sup>d\<phi>) \<supset>\<^sup>d \<phi>) \<and> (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d (\<box>\<^sup>d\<phi>) \<supset>\<^sup>d \<box>\<^sup>d(\<box>\<^sup>d\<phi>)) \<longrightarrow> \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d F5" 
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
-  apply simp nitpick[expect=unknown] \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
+  apply simp \<comment>\<open>nitpick[expect=unknown]\<close> \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
   by (smt (z3) PML.simps(22))
 lemma KB4: "\<forall>w:W. (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d \<phi> \<supset>\<^sup>d \<box>\<^sup>d(\<diamond>\<^sup>d\<phi>)) \<and> (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d (\<box>\<^sup>d\<phi>) \<supset>\<^sup>d \<box>\<^sup>d(\<box>\<^sup>d\<phi>)) \<longrightarrow> \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d F5" 
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=unknown] \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>proof\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=unknown]\<close> \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>proof\<close>
   by (smt (z3) PML.simps(22))
 lemma KTB: "\<forall>w:W. (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d (\<box>\<^sup>d\<phi>) \<supset>\<^sup>d \<phi>) \<and> (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d \<phi> \<supset>\<^sup>d \<box>\<^sup>d(\<diamond>\<^sup>d\<phi>)) \<longrightarrow> \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d F5" 
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=unknown] \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=unknown]\<close> \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
   oops
 lemma KT: "\<forall>w:W. (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d (\<box>\<^sup>d\<phi>) \<supset>\<^sup>d \<phi>) \<longrightarrow> \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d F5" 
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=unknown] \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=unknown]\<close> \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
   oops
 lemma KB: "\<forall>w:W. (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d \<phi> \<supset>\<^sup>d \<box>\<^sup>d(\<diamond>\<^sup>d\<phi>)) \<longrightarrow> \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d F5" 
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=unknown] \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=unknown]\<close> \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
   oops
 lemma K4: "\<forall>w:W. (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d (\<box>\<^sup>d\<phi>) \<supset>\<^sup>d \<box>\<^sup>d(\<box>\<^sup>d\<phi>)) \<longrightarrow> \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d F5" 
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
-  apply simp nitpick[expect=unknown] \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>proof\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
+  apply simp \<comment>\<open>nitpick[expect=unknown]\<close> \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>proof\<close>
   by (smt (z3) PML.simps(22))
 lemma K: "\<forall>w:W. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d F5" 
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=unknown] \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=unknown]\<close> \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
   oops
 end
 
 experiment begin
 lemma S5: "\<forall>w:W. (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d (\<box>\<^sup>d\<phi>) \<supset>\<^sup>d \<phi>) \<and> (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d \<phi> \<supset>\<^sup>d \<box>\<^sup>d(\<diamond>\<^sup>d\<phi>)) \<and> (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d (\<box>\<^sup>d\<phi>) \<supset>\<^sup>d \<box>\<^sup>d(\<box>\<^sup>d\<phi>)) \<longrightarrow> \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d F6" 
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=unknown] \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=unknown]\<close> \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
   oops
 lemma S4: "\<forall>w:W. (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d (\<box>\<^sup>d\<phi>) \<supset>\<^sup>d \<phi>) \<and> (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d (\<box>\<^sup>d\<phi>) \<supset>\<^sup>d \<box>\<^sup>d(\<box>\<^sup>d\<phi>)) \<longrightarrow> \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d F6" 
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=unknown] \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=unknown]\<close> \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
   oops
 lemma KB4: "\<forall>w:W. (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d \<phi> \<supset>\<^sup>d \<box>\<^sup>d(\<diamond>\<^sup>d\<phi>)) \<and> (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d (\<box>\<^sup>d\<phi>) \<supset>\<^sup>d \<box>\<^sup>d(\<box>\<^sup>d\<phi>)) \<longrightarrow> \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d F6" 
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=unknown] \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=unknown]\<close> \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
   oops
 lemma KTB: "\<forall>w:W. (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d (\<box>\<^sup>d\<phi>) \<supset>\<^sup>d \<phi>) \<and> (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d \<phi> \<supset>\<^sup>d \<box>\<^sup>d(\<diamond>\<^sup>d\<phi>)) \<longrightarrow> \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d F6" 
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=unknown] \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=unknown]\<close> \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
   oops
 lemma KT: "\<forall>w:W. (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d (\<box>\<^sup>d\<phi>) \<supset>\<^sup>d \<phi>) \<longrightarrow> \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d F6" 
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=unknown] \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=unknown]\<close> \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
   oops
 lemma KB: "\<forall>w:W. (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d \<phi> \<supset>\<^sup>d \<box>\<^sup>d(\<diamond>\<^sup>d\<phi>)) \<longrightarrow> \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d F6" 
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=unknown] \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=unknown]\<close> \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
   oops
 lemma K4: "\<forall>w:W. (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d (\<box>\<^sup>d\<phi>) \<supset>\<^sup>d \<box>\<^sup>d(\<box>\<^sup>d\<phi>)) \<longrightarrow> \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d F6" 
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=genuine] \<comment>\<open>sledgehammer\<close>   \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=genuine]\<close> \<comment>\<open>sledgehammer\<close>   \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
   oops
 lemma K: "\<forall>w:W. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d F6" 
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=unknown] \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=unknown]\<close> \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
   oops
 end
 
 experiment begin
 lemma S5: "\<forall>w:W. (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d (\<box>\<^sup>d\<phi>) \<supset>\<^sup>d \<phi>) \<and> (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d \<phi> \<supset>\<^sup>d \<box>\<^sup>d(\<diamond>\<^sup>d\<phi>)) \<and> (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d (\<box>\<^sup>d\<phi>) \<supset>\<^sup>d \<box>\<^sup>d(\<box>\<^sup>d\<phi>)) \<longrightarrow> \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d F7" 
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=unknown] \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=unknown]\<close> \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
   oops
 lemma S4: "\<forall>w:W. (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d (\<box>\<^sup>d\<phi>) \<supset>\<^sup>d \<phi>) \<and> (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d (\<box>\<^sup>d\<phi>) \<supset>\<^sup>d \<box>\<^sup>d(\<box>\<^sup>d\<phi>)) \<longrightarrow> \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d F7" 
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=unknown] \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=unknown]\<close> \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
   oops
 lemma KB4: "\<forall>w:W. (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d \<phi> \<supset>\<^sup>d \<box>\<^sup>d(\<diamond>\<^sup>d\<phi>)) \<and> (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d (\<box>\<^sup>d\<phi>) \<supset>\<^sup>d \<box>\<^sup>d(\<box>\<^sup>d\<phi>)) \<longrightarrow> \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d F7" 
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=unknown] \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=unknown]\<close> \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
   oops
 lemma KTB: "\<forall>w:W. (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d (\<box>\<^sup>d\<phi>) \<supset>\<^sup>d \<phi>) \<and> (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d \<phi> \<supset>\<^sup>d \<box>\<^sup>d(\<diamond>\<^sup>d\<phi>)) \<longrightarrow> \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d F7" 
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=unknown] \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=unknown]\<close> \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
   oops
 lemma KT: "\<forall>w:W. (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d (\<box>\<^sup>d\<phi>) \<supset>\<^sup>d \<phi>) \<longrightarrow> \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d F7" 
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=unknown] \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=unknown]\<close> \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
   oops
 lemma KB: "\<forall>w:W. (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d \<phi> \<supset>\<^sup>d \<box>\<^sup>d(\<diamond>\<^sup>d\<phi>)) \<longrightarrow> \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d F7" 
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=unknown] \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=unknown]\<close> \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
   oops
 lemma K4: "\<forall>w:W. (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d (\<box>\<^sup>d\<phi>) \<supset>\<^sup>d \<box>\<^sup>d(\<box>\<^sup>d\<phi>)) \<longrightarrow> \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d F7" 
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=unknown] \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=unknown]\<close> \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
   oops
 lemma K: "\<forall>w:W. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d F7" 
-  nitpick[expect=genuine] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=unknown] \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=genuine]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=unknown]\<close> \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
   oops
 end
 
 experiment begin
 lemma S5: "\<forall>w:W. (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d (\<box>\<^sup>d\<phi>) \<supset>\<^sup>d \<phi>) \<and> (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d \<phi> \<supset>\<^sup>d \<box>\<^sup>d(\<diamond>\<^sup>d\<phi>)) \<and> (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d (\<box>\<^sup>d\<phi>) \<supset>\<^sup>d \<box>\<^sup>d(\<box>\<^sup>d\<phi>)) \<longrightarrow> \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d F8" 
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=unknown] \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=unknown]\<close> \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
   oops
 lemma S4: "\<forall>w:W. (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d (\<box>\<^sup>d\<phi>) \<supset>\<^sup>d \<phi>) \<and> (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d (\<box>\<^sup>d\<phi>) \<supset>\<^sup>d \<box>\<^sup>d(\<box>\<^sup>d\<phi>)) \<longrightarrow> \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d F8" 
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=unknown] \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=unknown]\<close> \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
   oops
 lemma KB4: "\<forall>w:W. (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d \<phi> \<supset>\<^sup>d \<box>\<^sup>d(\<diamond>\<^sup>d\<phi>)) \<and> (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d (\<box>\<^sup>d\<phi>) \<supset>\<^sup>d \<box>\<^sup>d(\<box>\<^sup>d\<phi>)) \<longrightarrow> \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d F8" 
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
-  apply simp nitpick[expect=unknown] \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>proof\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
+  apply simp \<comment>\<open>nitpick[expect=unknown]\<close> \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>proof\<close>
   by (smt (z3) PML.simps(22))
 lemma KTB: "\<forall>w:W. (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d (\<box>\<^sup>d\<phi>) \<supset>\<^sup>d \<phi>) \<and> (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d \<phi> \<supset>\<^sup>d \<box>\<^sup>d(\<diamond>\<^sup>d\<phi>)) \<longrightarrow> \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d F8" 
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=unknown] \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>proof\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=unknown]\<close> \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>proof\<close>
   by (smt (z3) PML.simps(22))
 lemma KT: "\<forall>w:W. (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d (\<box>\<^sup>d\<phi>) \<supset>\<^sup>d \<phi>) \<longrightarrow> \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d F8" 
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=unknown] \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=unknown]\<close> \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
   oops
 lemma KB: "\<forall>w:W. (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d \<phi> \<supset>\<^sup>d \<box>\<^sup>d(\<diamond>\<^sup>d\<phi>)) \<longrightarrow> \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d F8" 
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=unknown] \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=unknown]\<close> \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
   oops
 lemma K4: "\<forall>w:W. (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d (\<box>\<^sup>d\<phi>) \<supset>\<^sup>d \<box>\<^sup>d(\<box>\<^sup>d\<phi>)) \<longrightarrow> \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d F8" 
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=unknown] \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=unknown]\<close> \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
   oops
 lemma K: "\<forall>w:W. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d F8" 
-  nitpick[expect=genuine] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=unknown] \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=genuine]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=unknown]\<close> \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close>
   oops
 end
 
 experiment begin
 lemma S5: "\<forall>w:W. (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d (\<box>\<^sup>d\<phi>) \<supset>\<^sup>d \<phi>) \<and> (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d \<phi> \<supset>\<^sup>d \<box>\<^sup>d(\<diamond>\<^sup>d\<phi>)) \<and> (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d (\<box>\<^sup>d\<phi>) \<supset>\<^sup>d \<box>\<^sup>d(\<box>\<^sup>d\<phi>)) \<longrightarrow> \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d F9" 
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close> 
-  apply simp nitpick[expect=unknown] \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>proof\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close> 
+  apply simp \<comment>\<open>nitpick[expect=unknown]\<close> \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>proof\<close>
   by (metis (mono_tags, lifting) PML.simps(22))  
 lemma S4: "\<forall>w:W. (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d (\<box>\<^sup>d\<phi>) \<supset>\<^sup>d \<phi>) \<and> (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d (\<box>\<^sup>d\<phi>) \<supset>\<^sup>d \<box>\<^sup>d(\<box>\<^sup>d\<phi>)) \<longrightarrow> \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d F9" 
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
-  apply simp nitpick[expect=unknown] \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>proof\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
+  apply simp \<comment>\<open>nitpick[expect=unknown]\<close> \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>proof\<close>
   by (metis (mono_tags, lifting) PML.simps(22))  
 lemma KB4: "\<forall>w:W. (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d \<phi> \<supset>\<^sup>d \<box>\<^sup>d(\<diamond>\<^sup>d\<phi>)) \<and> (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d (\<box>\<^sup>d\<phi>) \<supset>\<^sup>d \<box>\<^sup>d(\<box>\<^sup>d\<phi>)) \<longrightarrow> \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d F9" 
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=genuine] \<comment>\<open>sledgehammer\<close>   \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=genuine]\<close> \<comment>\<open>sledgehammer\<close>   \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
   oops
 lemma KTB: "\<forall>w:W. (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d (\<box>\<^sup>d\<phi>) \<supset>\<^sup>d \<phi>) \<and> (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d \<phi> \<supset>\<^sup>d \<box>\<^sup>d(\<diamond>\<^sup>d\<phi>)) \<longrightarrow> \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d F9" 
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
-  apply simp nitpick[expect=unknown] \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>proof\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
+  apply simp \<comment>\<open>nitpick[expect=unknown]\<close> \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>proof\<close>
   by (metis (mono_tags, lifting) PML.simps(22))  
 lemma KT: "\<forall>w:W. (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d (\<box>\<^sup>d\<phi>) \<supset>\<^sup>d \<phi>) \<longrightarrow> \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d F9" 
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
-  apply simp nitpick[expect=unknown] \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>proof\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
+  apply simp \<comment>\<open>nitpick[expect=unknown]\<close> \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>proof\<close>
   by (metis (mono_tags, lifting) PML.simps(22))  
 lemma KB: "\<forall>w:W. (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d \<phi> \<supset>\<^sup>d \<box>\<^sup>d(\<diamond>\<^sup>d\<phi>)) \<longrightarrow> \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d F9" 
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=genuine] \<comment>\<open>sledgehammer\<close>   \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=genuine]\<close> \<comment>\<open>sledgehammer\<close>   \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
   oops
 lemma K4: "\<forall>w:W. (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d (\<box>\<^sup>d\<phi>) \<supset>\<^sup>d \<box>\<^sup>d(\<box>\<^sup>d\<phi>)) \<longrightarrow> \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d F9" 
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=genuine] \<comment>\<open>sledgehammer\<close>   \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=genuine]\<close> \<comment>\<open>sledgehammer\<close>   \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
   oops
 lemma K: "\<forall>w:W. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d F9" 
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=genuine] \<comment>\<open>sledgehammer\<close>   \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=genuine]\<close> \<comment>\<open>sledgehammer\<close>   \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
   oops
 end
 
 experiment begin
 lemma S5: "\<forall>w:W. (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d (\<box>\<^sup>d\<phi>) \<supset>\<^sup>d \<phi>) \<and> (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d \<phi> \<supset>\<^sup>d \<box>\<^sup>d(\<diamond>\<^sup>d\<phi>)) \<and> (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d (\<box>\<^sup>d\<phi>) \<supset>\<^sup>d \<box>\<^sup>d(\<box>\<^sup>d\<phi>)) \<longrightarrow> \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d F10" 
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
-  apply simp nitpick[expect=unknown] \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>proof\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
+  apply simp \<comment>\<open>nitpick[expect=unknown]\<close> \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>proof\<close>
   by (metis (mono_tags, lifting) PML.simps(22))  
 lemma S4: "\<forall>w:W. (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d (\<box>\<^sup>d\<phi>) \<supset>\<^sup>d \<phi>) \<and> (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d (\<box>\<^sup>d\<phi>) \<supset>\<^sup>d \<box>\<^sup>d(\<box>\<^sup>d\<phi>)) \<longrightarrow> \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d F10" 
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
-  apply simp nitpick[expect=unknown] \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>proof\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
+  apply simp \<comment>\<open>nitpick[expect=unknown]\<close> \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>proof\<close>
   by (metis (mono_tags, lifting) PML.simps(22))  
 lemma KB4: "\<forall>w:W. (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d \<phi> \<supset>\<^sup>d \<box>\<^sup>d(\<diamond>\<^sup>d\<phi>)) \<and> (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d (\<box>\<^sup>d\<phi>) \<supset>\<^sup>d \<box>\<^sup>d(\<box>\<^sup>d\<phi>)) \<longrightarrow> \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d F10" 
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=genuine] \<comment>\<open>sledgehammer\<close>   \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=genuine]\<close> \<comment>\<open>sledgehammer\<close>   \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
   oops
 lemma KTB: "\<forall>w:W. (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d (\<box>\<^sup>d\<phi>) \<supset>\<^sup>d \<phi>) \<and> (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d \<phi> \<supset>\<^sup>d \<box>\<^sup>d(\<diamond>\<^sup>d\<phi>)) \<longrightarrow> \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d F10" 
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close> 
-  apply simp nitpick[expect=unknown] \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close> 
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close> 
+  apply simp \<comment>\<open>nitpick[expect=unknown]\<close> \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close> 
   by (smt (verit) PML.simps(22,24))
 lemma KT: "\<forall>w:W. (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d (\<box>\<^sup>d\<phi>) \<supset>\<^sup>d \<phi>) \<longrightarrow> \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d F10" 
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close> 
-  apply simp nitpick[expect=unknown] \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close> 
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close> 
+  apply simp \<comment>\<open>nitpick[expect=unknown]\<close> \<comment>\<open>sledgehammer\<close>   \<comment>\<open>unkn\<close> \<comment>\<open>no prf\<close> 
   by (smt (verit) PML.simps(22,24))
 lemma KB: "\<forall>w:W. (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d \<phi> \<supset>\<^sup>d \<box>\<^sup>d(\<diamond>\<^sup>d\<phi>)) \<longrightarrow> \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d F10" 
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=genuine] \<comment>\<open>sledgehammer\<close>   \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=genuine]\<close> \<comment>\<open>sledgehammer\<close>   \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
   oops
 lemma K4: "\<forall>w:W. (\<forall>\<phi>. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d (\<box>\<^sup>d\<phi>) \<supset>\<^sup>d \<box>\<^sup>d(\<box>\<^sup>d\<phi>)) \<longrightarrow> \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d F10" 
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=genuine] \<comment>\<open>sledgehammer\<close>   \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=genuine]\<close> \<comment>\<open>sledgehammer\<close>   \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
   oops
 lemma K: "\<forall>w:W. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d F10" 
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=genuine] \<comment>\<open>sledgehammer\<close>   \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=genuine]\<close> \<comment>\<open>sledgehammer\<close>   \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
   oops
 end
 

@@ -3,7 +3,7 @@ text\<open>The following preliminaries are are shared between all embeddings int
 the remainder of this paper.\<close>
 
 theory PMLinHOL_preliminaries 
- imports Main 
+  imports Main 
 begin  
 
 \<comment>\<open>Type declarations common for both the deep and shallow embedding\<close>
@@ -35,7 +35,7 @@ abbreviation(input) Bimp (infixr "\<longleftarrow>" 50) where "\<phi> \<longleft
 
 \<comment>\<open>Some further settings\<close> 
 declare[[syntax_ambiguity_warning=false]] 
-nitpick_params[user_axioms,expect=genuine,timeout=60] 
+nitpick_params[user_axioms,expect=genuine,timeout=60]  
 
 end
 

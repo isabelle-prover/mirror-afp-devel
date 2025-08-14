@@ -24,351 +24,351 @@ declare imp_cong[cong del]
 
 experiment begin
 lemma S5: "\<r> R \<and> \<s> R \<and> \<t> R \<longrightarrow> (\<Turnstile>\<^sup>m F1)"  
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
-  apply simp nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
+  apply simp \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
   by metis
 lemma S4: "\<r> R \<and> \<t> R \<longrightarrow> (\<Turnstile>\<^sup>m F1)"  
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
-  apply simp nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
+  apply simp \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
   by metis
 lemma KB4: " \<s> R \<and> \<t> R \<longrightarrow> (\<Turnstile>\<^sup>m F1)"  
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
-  apply simp nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
+  apply simp \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
   by metis
 lemma KTB: "\<r> R \<and> \<s> R \<longrightarrow> (\<Turnstile>\<^sup>m F1)"  
-  nitpick[expect=genuine] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=genuine] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=genuine]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=genuine]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
   oops
 lemma KT: "\<r> R \<longrightarrow> (\<Turnstile>\<^sup>m F1)"  
-  nitpick[expect=genuine] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=genuine] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=genuine]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=genuine]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
   oops
 lemma KB: " \<s> R \<longrightarrow> (\<Turnstile>\<^sup>m F1)"  
-  nitpick[expect=genuine] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=genuine] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=genuine]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=genuine]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
   oops
 lemma K4: " \<t> R \<longrightarrow> (\<Turnstile>\<^sup>m F1)"  
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
-  apply simp nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
+  apply simp \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
   by metis
 lemma K: " (\<Turnstile>\<^sup>m F1)"  
-  nitpick[expect=genuine] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=genuine] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=genuine]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=genuine]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
   oops
 end
 
 experiment begin
 lemma S5: "\<r> R \<and> \<s> R \<and> \<t> R \<longrightarrow> (\<Turnstile>\<^sup>m F2)"  
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
-  apply simp nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
+  apply simp \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
   by metis
 lemma S4: "\<r> R \<and> \<t> R \<longrightarrow> (\<Turnstile>\<^sup>m F2)"  
-  nitpick[expect=genuine] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=genuine] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=genuine]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=genuine]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
   oops
 lemma KB4: " \<s> R \<and> \<t> R \<longrightarrow> (\<Turnstile>\<^sup>m F2)"  
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
-  apply simp nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
+  apply simp \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
   by metis
 lemma KTB: "\<r> R \<and> \<s> R \<longrightarrow> (\<Turnstile>\<^sup>m F2)"  
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
-  apply simp nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
+  apply simp \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
   by metis
 lemma KT: "\<r> R \<longrightarrow> (\<Turnstile>\<^sup>m F2)"  
-  nitpick[expect=genuine] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=genuine] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=genuine]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=genuine]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
   oops
 lemma KB: " \<s> R \<longrightarrow> (\<Turnstile>\<^sup>m F2)"  
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
-  apply simp nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
+  apply simp \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
   by metis
 lemma K4: " \<t> R \<longrightarrow> (\<Turnstile>\<^sup>m F2)"  
-  nitpick[expect=genuine] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=genuine] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=genuine]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=genuine]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
   oops
 lemma K: " (\<Turnstile>\<^sup>m F2)"  
-  nitpick[expect=genuine] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=genuine] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=genuine]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=genuine]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
    oops
 end
 
 experiment begin
 lemma S5: "\<r> R \<and> \<s> R \<and> \<t> R \<longrightarrow> (\<Turnstile>\<^sup>m F3)"  
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
-  apply simp nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
+  apply simp \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
   by metis
 lemma S4: "\<r> R \<and> \<t> R \<longrightarrow> (\<Turnstile>\<^sup>m F3)"  
-  nitpick[expect=genuine] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=genuine] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=genuine]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=genuine]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
   oops
 lemma KB4: " \<s> R \<and> \<t> R \<longrightarrow> (\<Turnstile>\<^sup>m F3)"  
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
-  apply simp nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
+  apply simp \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
   by metis
 lemma KTB: "\<r> R \<and> \<s> R \<longrightarrow> (\<Turnstile>\<^sup>m F3)"  
-  nitpick[expect=genuine] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=genuine] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=genuine]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=genuine]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
   oops
 lemma KT: "\<r> R \<longrightarrow> (\<Turnstile>\<^sup>m F3)"  
-  nitpick[expect=genuine] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=genuine] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=genuine]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=genuine]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
   oops
 lemma KB: " \<s> R \<longrightarrow> (\<Turnstile>\<^sup>m F3)"  
-  nitpick[expect=genuine] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=genuine] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=genuine]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=genuine]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
   oops
 lemma K4: " \<t> R \<longrightarrow> (\<Turnstile>\<^sup>m F3)"  
-  nitpick[expect=genuine] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=genuine] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=genuine]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=genuine]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
   oops
 lemma K: " (\<Turnstile>\<^sup>m F3)"  
-  nitpick[expect=genuine] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=genuine] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=genuine]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=genuine]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
   oops
 end
 
 experiment begin
 lemma S5: "\<r> R \<and> \<s> R \<and> \<t> R \<longrightarrow> (\<Turnstile>\<^sup>m F4)"  
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
-  apply simp nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
+  apply simp \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
   by metis
 lemma S4: "\<r> R \<and> \<t> R \<longrightarrow> (\<Turnstile>\<^sup>m F4)"  
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
-  apply simp nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
+  apply simp \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
   by metis
 lemma KB4: " \<s> R \<and> \<t> R \<longrightarrow> (\<Turnstile>\<^sup>m F4)"  
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
-  apply simp nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
+  apply simp \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
   by metis
 lemma KTB: "\<r> R \<and> \<s> R \<longrightarrow> (\<Turnstile>\<^sup>m F4)"  
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
-  apply simp nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
+  apply simp \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
   by metis
 lemma KT: "\<r> R \<longrightarrow> (\<Turnstile>\<^sup>m F4)"  
-  nitpick[expect=genuine] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=genuine] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=genuine]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=genuine]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
   oops
 lemma KB: " \<s> R \<longrightarrow> (\<Turnstile>\<^sup>m F4)"  
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
-  apply simp nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
+  apply simp \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
   by metis 
 lemma K4: " \<t> R \<longrightarrow> (\<Turnstile>\<^sup>m F4)"  
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
-  apply simp nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
+  apply simp \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
   by metis
 lemma K: " (\<Turnstile>\<^sup>m F4)"  
-  nitpick[expect=genuine] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=genuine] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=genuine]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=genuine]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
   oops
 end
 
 experiment begin
 lemma S5: "\<r> R \<and> \<s> R \<and> \<t> R \<longrightarrow> (\<Turnstile>\<^sup>m F5)"  
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
-  apply simp nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
+  apply simp \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
   by metis
 lemma S4: "\<r> R \<and> \<t> R \<longrightarrow> (\<Turnstile>\<^sup>m F5)"  
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
-  apply simp nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
+  apply simp \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
   by metis
 lemma KB4: " \<s> R \<and> \<t> R \<longrightarrow> (\<Turnstile>\<^sup>m F5)"  
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
-  apply simp nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
+  apply simp \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
   by metis
 lemma KTB: "\<r> R \<and> \<s> R \<longrightarrow> (\<Turnstile>\<^sup>m F5)"  
-  nitpick[expect=genuine] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=genuine] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=genuine]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=genuine]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
   oops
 lemma KT: "\<r> R \<longrightarrow> (\<Turnstile>\<^sup>m F5)"  
-  nitpick[expect=genuine] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=genuine] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=genuine]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=genuine]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
   oops
 lemma KB: " \<s> R \<longrightarrow> (\<Turnstile>\<^sup>m F5)"  
-  nitpick[expect=genuine] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=genuine] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=genuine]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=genuine]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
   oops
 lemma K4: " \<t> R \<longrightarrow> (\<Turnstile>\<^sup>m F5)"  
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
-  apply simp nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
+  apply simp \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
   by metis
 lemma K: " (\<Turnstile>\<^sup>m F5)"  
-  nitpick[expect=genuine] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=genuine] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=genuine]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=genuine]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
   oops
 end
 
 experiment begin
 lemma S5: "\<r> R \<and> \<s> R \<and> \<t> R \<longrightarrow> (\<Turnstile>\<^sup>m F6)"  
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
-  apply simp nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
+  apply simp \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
   by metis
 lemma S4: "\<r> R \<and> \<t> R \<longrightarrow> (\<Turnstile>\<^sup>m F6)"  
-  nitpick[expect=genuine] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=genuine] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=genuine]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=genuine]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
   oops
 lemma KB4: " \<s> R \<and> \<t> R \<longrightarrow> (\<Turnstile>\<^sup>m F6)"  
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
-  apply simp nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
+  apply simp \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
   by metis
 lemma KTB: "\<r> R \<and> \<s> R \<longrightarrow> (\<Turnstile>\<^sup>m F6)"  
-  nitpick[expect=genuine] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=genuine] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=genuine]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=genuine]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
   oops
 lemma KT: "\<r> R \<longrightarrow> (\<Turnstile>\<^sup>m F6)"  
-  nitpick[expect=genuine] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=genuine] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=genuine]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=genuine]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
   oops
 lemma KB: " \<s> R \<longrightarrow> (\<Turnstile>\<^sup>m F6)"  
-  nitpick[expect=genuine] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=genuine] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=genuine]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=genuine]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
   oops
 lemma K4: " \<t> R \<longrightarrow> (\<Turnstile>\<^sup>m F6)"  
-  nitpick[expect=genuine] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=genuine] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=genuine]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=genuine]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
   oops
 lemma K: " (\<Turnstile>\<^sup>m F6)"  
-  nitpick[expect=genuine] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=genuine] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=genuine]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=genuine]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
   oops
 end
 
 experiment begin
 lemma S5: "\<r> R \<and> \<s> R \<and> \<t> R \<longrightarrow> (\<Turnstile>\<^sup>m F7)"  
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
-  apply simp nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
+  apply simp \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
   by metis
 lemma S4: "\<r> R \<and> \<t> R \<longrightarrow> (\<Turnstile>\<^sup>m F7)"  
-  nitpick[expect=genuine] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=genuine] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=genuine]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=genuine]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
   oops
 lemma KB4: " \<s> R \<and> \<t> R \<longrightarrow> (\<Turnstile>\<^sup>m F7)"  
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
-  apply simp nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
+  apply simp \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
   by metis
 lemma KTB: "\<r> R \<and> \<s> R \<longrightarrow> (\<Turnstile>\<^sup>m F7)"  
-  nitpick[expect=genuine] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=genuine] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=genuine]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=genuine]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
   oops
 lemma KT: "\<r> R \<longrightarrow> (\<Turnstile>\<^sup>m F7)"  
-  nitpick[expect=genuine] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=genuine] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=genuine]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=genuine]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
   oops
 lemma KB: " \<s> R \<longrightarrow> (\<Turnstile>\<^sup>m F7)"  
-  nitpick[expect=genuine] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=genuine] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=genuine]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=genuine]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
   oops
 lemma K4: " \<t> R \<longrightarrow> (\<Turnstile>\<^sup>m F7)"  
-  nitpick[expect=genuine] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=genuine] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=genuine]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=genuine]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
   oops
 lemma K: " (\<Turnstile>\<^sup>m F7)"  
-  nitpick[expect=genuine] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=genuine] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=genuine]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=genuine]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
   oops
 end
 
 experiment begin
 lemma S5: "\<r> R \<and> \<s> R \<and> \<t> R \<longrightarrow> (\<Turnstile>\<^sup>m F8)"  
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
-  apply simp nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
+  apply simp \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
   by metis
 lemma S4: "\<r> R \<and> \<t> R \<longrightarrow> (\<Turnstile>\<^sup>m F8)"  
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
-  apply simp nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
+  apply simp \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
   by metis
 lemma KB4: " \<s> R \<and> \<t> R \<longrightarrow> (\<Turnstile>\<^sup>m F8)"  
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
-  apply simp nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
+  apply simp \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
   by metis
 lemma KTB: "\<r> R \<and> \<s> R \<longrightarrow> (\<Turnstile>\<^sup>m F8)"  
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
-  apply simp nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
+  apply simp \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
   by metis
 lemma KT: "\<r> R \<longrightarrow> (\<Turnstile>\<^sup>m F8)"  
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
-  apply simp nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
+  apply simp \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
   by metis
 lemma KB: " \<s> R \<longrightarrow> (\<Turnstile>\<^sup>m F8)"  
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
-  apply simp nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
+  apply simp \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
   by metis
 lemma K4: " \<t> R \<longrightarrow> (\<Turnstile>\<^sup>m F8)"  
-  nitpick[expect=genuine] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=genuine] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=genuine]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=genuine]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
   oops
 lemma K: " (\<Turnstile>\<^sup>m F8)"  
-  nitpick[expect=genuine] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=genuine] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=genuine]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=genuine]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
   oops
 end
 
 experiment begin
 lemma S5: "\<r> R \<and> \<s> R \<and> \<t> R \<longrightarrow> (\<Turnstile>\<^sup>m F9)"  
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
-  apply simp nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
+  apply simp \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
   by metis
 lemma S4: "\<r> R \<and> \<t> R \<longrightarrow> (\<Turnstile>\<^sup>m F9)"  
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
-  apply simp nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
+  apply simp \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
   by metis
 lemma KB4: " \<s> R \<and> \<t> R \<longrightarrow> (\<Turnstile>\<^sup>m F9)"  
-  nitpick[expect=genuine] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=genuine] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=genuine]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=genuine]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
   oops
 lemma KTB: "\<r> R \<and> \<s> R \<longrightarrow> (\<Turnstile>\<^sup>m F9)"  
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
-  apply simp nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
+  apply simp \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
   by metis
 lemma KT: "\<r> R \<longrightarrow> (\<Turnstile>\<^sup>m F9)"  
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
-  apply simp nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
+  apply simp \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
   by metis
 lemma KB: " \<s> R \<longrightarrow> (\<Turnstile>\<^sup>m F9)"  
-  nitpick[expect=genuine] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=genuine] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=genuine]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=genuine]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
   oops
 lemma K4: " \<t> R \<longrightarrow> (\<Turnstile>\<^sup>m F9)"  
-  nitpick[expect=genuine] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=genuine] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=genuine]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=genuine]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
   oops
 lemma K: " (\<Turnstile>\<^sup>m F9)"  
-  nitpick[expect=genuine] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=genuine] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=genuine]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=genuine]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
   oops
 end
 
 experiment begin
 lemma S5: "\<r> R \<and> \<s> R \<and> \<t> R \<longrightarrow> (\<Turnstile>\<^sup>m F10)"  
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
-  apply simp nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
+  apply simp \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
   by metis
 lemma S4: "\<r> R \<and> \<t> R \<longrightarrow> (\<Turnstile>\<^sup>m F10)"  
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
-  apply simp nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
+  apply simp \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
   by metis
 lemma KB4: " \<s> R \<and> \<t> R \<longrightarrow> (\<Turnstile>\<^sup>m F10)"  
-  nitpick[expect=genuine] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=genuine] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=genuine]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=genuine]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
   oops
 lemma KTB: "\<r> R \<and> \<s> R \<longrightarrow> (\<Turnstile>\<^sup>m F10)"  
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
-  apply simp nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
+  apply simp \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
   by metis 
 lemma KT: "\<r> R \<longrightarrow> (\<Turnstile>\<^sup>m F10)"  
-  nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
-  apply simp nitpick[expect=none] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
+  \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
+  apply simp \<comment>\<open>nitpick[expect=none]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>none\<close> \<comment>\<open>proof\<close>
   by metis
 lemma KB: " \<s> R \<longrightarrow> (\<Turnstile>\<^sup>m F10)"  
-  nitpick[expect=genuine] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=genuine] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=genuine]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=genuine]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
   oops
 lemma K4: " \<t> R \<longrightarrow> (\<Turnstile>\<^sup>m F10)"  
-  nitpick[expect=genuine] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=genuine] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=genuine]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=genuine]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
   oops
 lemma K: " (\<Turnstile>\<^sup>m F10)"  
-  nitpick[expect=genuine] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
-  apply simp nitpick[expect=genuine] \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
+  \<comment>\<open>nitpick[expect=genuine]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
+  apply simp \<comment>\<open>nitpick[expect=genuine]\<close> \<comment>\<open>sledgehammer\<close>  \<comment>\<open>ctex\<close> \<comment>\<open>no prf\<close>
   oops
 end
 
