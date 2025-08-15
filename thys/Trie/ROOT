@@ -1,7 +1,9 @@
 chapter AFP
 
-session Trie = "HOL-Library" +
+session Trie = HOL +
   options [timeout = 600]
+  sessions
+    "HOL-Library"
   theories
     Tries
   document_files

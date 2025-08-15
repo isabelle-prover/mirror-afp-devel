@@ -1,10 +1,9 @@
 chapter AFP
 
-session Design_Theory = "HOL-Library"  +
+session Design_Theory = Nested_Multisets_Ordinals +
   options [timeout = 600]
   sessions
     Card_Partitions
-    Nested_Multisets_Ordinals
     Graph_Theory
   theories
     Design_Theory_Root

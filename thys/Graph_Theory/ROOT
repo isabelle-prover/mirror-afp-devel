@@ -1,9 +1,7 @@
 chapter AFP
 
-session "Graph_Theory" = "HOL-Library" +
+session "Graph_Theory" = "HOL-Combinatorics" +
   options [timeout = 600]
-  sessions
-    "HOL-Combinatorics"
   theories
     Graph_Theory
   document_files
