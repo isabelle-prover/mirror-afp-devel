@@ -1687,7 +1687,7 @@ lemma these_code [code, set_base_code]:
   \<open>Option.these A = Option.image_filter (\<lambda>x. x) A\<close>
   by (simp add: Option.image_filter_eq)
 
-lemma can_select_code: \<comment> \<open>TODO: filter_generator not executable!?\<close>
+lemma can_select_code: (*TODO: filter_generator not executable!?*)
   fixes xs :: "'a :: ceq list" 
     and dxs :: "'a :: ceq set_dlist" 
     and rbt :: "'b :: ccompare set_rbt"
