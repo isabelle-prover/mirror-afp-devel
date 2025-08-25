@@ -8,7 +8,6 @@ begin
 subsection "Function definition and Boilerplate"
 no_notation bot (\<open>\<bottom>\<close>)
 
-
 consts NN::"nat"
 
 lemma NN:"int NN \<ge> 0" by auto
