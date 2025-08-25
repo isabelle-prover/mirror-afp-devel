@@ -206,7 +206,7 @@ spec_Fence:
 |
 spec_resolve: 
 "cfgs \<noteq> [] \<Longrightarrow> 
- resolve pstate (pcOf cfg # map pcOf cfgs) \<Longrightarrow>  
+ resolve pstate (pcOf cfg # map pcOf cfgs) \<or> is_Output (prog!(pcOf (last cfgs))) \<or> is_getInput (prog!(pcOf (last cfgs))) \<Longrightarrow>  
  pstate' = update pstate (pcOf cfg # map pcOf cfgs) \<Longrightarrow>
  cfg' = cfg \<Longrightarrow> cfgs' = butlast cfgs \<Longrightarrow> 
  ibT = ibT' \<Longrightarrow> ibUT = ibUT' \<Longrightarrow> ls' = ls 
@@ -252,14 +252,14 @@ apply(subst stepS.simps) by auto
 lemma stepS_spec_normal_iff[simp]: 
 "cfgs \<noteq> [] \<Longrightarrow> 
  \<not> resolve pstate (pcOf cfg # map pcOf cfgs)  \<Longrightarrow> 
+ \<not> is_getInput (prog!(pcOf (last cfgs))) \<Longrightarrow>
+ \<not> is_Output (prog!(pcOf (last cfgs))) \<Longrightarrow>
  \<not> is_IfJump (prog!(pcOf (last cfgs))) \<or> \<not> mispred pstate (pcOf cfg # map pcOf cfgs) \<Longrightarrow> 
  prog!(pcOf (last cfgs)) \<noteq> Fence 
  \<Longrightarrow> 
  (pstate, cfg, cfgs, ibT, ibUT, ls) \<rightarrow>S (pstate', cfg', cfgs', ibT', ibUT', ls')
  \<longleftrightarrow>
  (\<exists>cfg1'. pstate' = pstate \<and> 
-    \<not> is_getInput (prog!(pcOf (last cfgs))) \<and>
-    \<not> is_getInput (prog!(pcOf (last cfgs))) \<and> \<not> is_Output (prog!(pcOf (last cfgs))) \<and> 
     \<not> finalB (last cfgs, ibT, ibUT) \<and> (cfg1',ibT',ibUT') = nextB (last cfgs, ibT, ibUT) \<and>  
     cfg' = cfg \<and> cfgs' = butlast cfgs @ [cfg1'] \<and> ls' = ls \<union> readLocs (last cfgs))"
 apply(subst stepS.simps) by auto
@@ -303,7 +303,7 @@ apply(subst stepS.simps) by auto
 lemma stepS_cases[cases pred: stepS, 
  consumes 1, 
  case_names nonspec_normal nonspec_mispred 
-            spec_normal spec_mispred spec_Fence spec_resolve]:
+            spec_normal spec_mispred spec_Fence spec_resolve spec_resolveI spec_resolveO]:
 assumes "(pstate, cfg, cfgs, ibT, ibUT, ls) \<rightarrow>S (pstate', cfg', cfgs', ibT', ibUT', ls')"
 obtains 
 (* nonspec_normal: *)
@@ -365,6 +365,26 @@ obtains
 (* spec_resolve: *)
 "cfgs \<noteq> []"   
    "resolve pstate (pcOf cfg # map pcOf cfgs)"
+   "pstate' = update pstate (pcOf cfg # map pcOf cfgs)"
+   "cfg' = cfg"
+   "cfgs' = butlast cfgs"
+   "ls' = ls"
+   "ibT' = ibT" 
+   "ibUT' = ibUT" 
+|
+(* spec_resolve: *)
+"cfgs \<noteq> []"   
+   "is_getInput (prog!(pcOf (last cfgs)))"
+   "pstate' = update pstate (pcOf cfg # map pcOf cfgs)"
+   "cfg' = cfg"
+   "cfgs' = butlast cfgs"
+   "ls' = ls"
+   "ibT' = ibT" 
+   "ibUT' = ibUT" 
+|
+(* spec_resolve: *)
+"cfgs \<noteq> []"   
+   "is_Output (prog!(pcOf (last cfgs)))"
    "pstate' = update pstate (pcOf cfg # map pcOf cfgs)"
    "cfg' = cfg"
    "cfgs' = butlast cfgs"

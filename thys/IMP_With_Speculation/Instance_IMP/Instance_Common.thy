@@ -25,7 +25,8 @@ lemma noMisSpec_ext[simp]:"map x cfgs = map x cfgs' \<Longrightarrow> noMisSpec 
   by (auto simp: noMisSpec_def)
 (* mis-speculation of nestedness level 1: *)
 definition misSpecL1 where "misSpecL1 (cfgs::config list) \<equiv> (length cfgs = Suc 0)"
-lemma misSpecL1_len[simp]:"misSpecL1 cfgs \<longleftrightarrow> length cfgs = 1" by (simp add: misSpecL1_def)
+lemma misSpecL1_len:"misSpecL1 cfgs \<longleftrightarrow> length cfgs = 1" by (simp add: misSpecL1_def)
+lemma misSpecL1_ne:"misSpecL1 cfgs \<Longrightarrow> cfgs \<noteq> []"  by (auto simp add: misSpecL1_def)
 (*level 2*)
 definition misSpecL2 where "misSpecL2 (cfgs::config list) \<equiv> (length cfgs = 2)"
 
@@ -214,6 +215,9 @@ lemma cfgs_map[simp]:"length cfgs = Suc 0 \<Longrightarrow> map pcOf cfgs = [pcO
   apply(frule cfgs_Suc_zero[of cfgs])
   apply(rule ssubst[of "map pcOf cfgs" "map pcOf [last cfgs]"]) 
   by (presburger,metis list.simps(8,9))
+
+
+lemma  is_misSpecL1[simp]: "misSpecL1 [a]" unfolding misSpecL1_def by auto
 
 end (* context Prog_Mispred_Init *)
 

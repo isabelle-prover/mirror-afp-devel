@@ -147,15 +147,8 @@ lemma nfence[simp]:"prog ! 6 \<noteq> Fence" by(simp add: prog_def)
 (* *)
 
 consts mispred :: "predState \<Rightarrow> pcounter list \<Rightarrow> bool"
-fun resolve :: "predState \<Rightarrow> pcounter list \<Rightarrow> bool" where
-  "resolve p pc = 
-  (if (set pc = {4,11} \<or> (6 \<in> set pc \<and> (4 \<in> set pc \<or> 11 \<in> set pc)))
-   then True else False)"
+consts resolve :: "predState \<Rightarrow> pcounter list \<Rightarrow> bool" 
 
-lemma resolve_63: "\<not>resolve p [6,3]" by auto
-lemma resolve_64: "resolve p [6,4]" by auto
-lemma resolve_611: "resolve p [6,11]" by auto
-lemma resolve_106: "\<not>resolve p [10,6]" by auto
 
 consts update :: "predState \<Rightarrow> pcounter list \<Rightarrow> predState"
 consts initPstate :: predState
@@ -529,7 +522,7 @@ lemma map_L2:"length cfgs = 2 \<Longrightarrow>
   by (smt (verit) Suc_length_conv cfgs_map last.simps 
       length_0_conv map_eq_Cons_conv nth_Cons_0 numeral_2_eq_2)
 
-lemma "length cfgs = 2 \<Longrightarrow> (cfgs ! 0) = last (butlast cfgs)" 
+lemma length2_butlast:"length cfgs = 2 \<Longrightarrow> (cfgs ! 0) = last (butlast cfgs)" 
   by (cases cfgs, auto) 
 
 lemma nextB_stepB_pc: 
@@ -753,13 +746,12 @@ lemma finalS_while_spec:
   subgoal for vst avst hh p apply(cases vst, cases avst, cases hh)
     subgoal for vs as h
       apply(elim disjE, elim conjE) unfolding finalS_defs
-      subgoal using stepS_spec_resolve_iff[of cfgs pstate cfg ibT ibUT ls "update pstate (pcOf cfg # map pcOf cfgs)"]
-            by (metis (no_types, lifting) cfgs_map empty_set insert_commute less_numeral_extra(3) 
-                resolve.simps list.simps(15) list.size(3) numeral_2_eq_2 pos2)
-      subgoal apply(elim conjE) 
-              using spec_resolve[of cfgs pstate cfg "update pstate (pcOf cfg # map pcOf cfgs)" cfg "[]" ibT ibT ibUT ibUT ls ls ]
-              by (metis (no_types, lifting) empty_set insert_commute last_ConsL resolve.simps
-                  length_0_conv length_1_butlast length_Suc_conv list.simps(9,8,15)) . . . . 
+      subgoal apply(cases "resolve pstate (pcOf cfg # map pcOf cfgs)")
+        subgoal using stepS_spec_resolve_iff[of cfgs pstate cfg ibT ibUT ls "update pstate (pcOf cfg # map pcOf cfgs)"] by fastforce
+        subgoal using spec_resolve[of cfgs pstate cfg "update pstate (pcOf cfg # map pcOf cfgs)" cfg "[]" ibT ibT ibUT ibUT ls ls ] by fastforce .
+      subgoal apply(cases "resolve pstate (pcOf cfg # map pcOf cfgs)")
+        subgoal using stepS_spec_resolve_iff[of cfgs pstate cfg ibT ibUT ls "update pstate (pcOf cfg # map pcOf cfgs)"] by fastforce
+        subgoal using spec_resolve[of cfgs pstate cfg "update pstate (pcOf cfg # map pcOf cfgs)" cfg "[]" ibT ibT ibUT ibUT ls ls ] by fastforce . . . . .
 
 lemma finalS_while_spec_L2:
       "pcOf cfg = 6 \<Longrightarrow>
@@ -771,16 +763,15 @@ apply(unfold whileSpec_defs, cases cfg)
   subgoal for vst avst hh p apply(cases vst, cases avst, cases hh)
     subgoal for vs as h
       apply(elim disjE, elim conjE) unfolding finalS_defs
-      subgoal using stepS_spec_resolve_iff[of cfgs pstate cfg ibT ibUT ls "update pstate (pcOf cfg # map pcOf cfgs)"]
-        unfolding resolve.simps
-        using list.set_intros(1,2) map_L2 zero_neq_numeral
-        by fastforce
-      subgoal apply(elim conjE) 
-        using spec_resolve
-        unfolding resolve.simps
-        using list.set_intros(1,2) map_L2 zero_neq_numeral
-        by (metis (no_types, lifting) Prog_Mispred.spec_resolve Prog_Mispred_axioms list.size(3))
-      . . . . 
+      subgoal
+        apply(cases "resolve pstate (pcOf cfg # map pcOf cfgs)")
+        subgoal using stepS_spec_resolve_iff[of cfgs pstate cfg ibT ibUT ls "update pstate (pcOf cfg # map pcOf cfgs)"] by fastforce
+        subgoal using spec_resolve[of cfgs pstate cfg _ _ _ ibT _ ibUT _ _ ls]  by force .
+      subgoal
+        apply(cases "resolve pstate (pcOf cfg # map pcOf cfgs)")
+        subgoal using stepS_spec_resolve_iff[of cfgs pstate cfg ibT ibUT ls "update pstate (pcOf cfg # map pcOf cfgs)"] by fastforce
+        subgoal using spec_resolve[of cfgs pstate cfg _ _ _ ibT _ ibUT _ _ ls]  by force
+      . . . .  .
 
 lemma finalS_if_spec:
       "(pcOf (last cfgs) \<in> inThenIfBeforeFence \<and> pcOf cfg = 10) \<or> 
@@ -794,19 +785,25 @@ lemma finalS_if_spec:
     subgoal for vs h
       apply(elim disjE, elim conjE) unfolding finalS_defs
       subgoal apply(elim disjE)
-        subgoal apply(rule notI, 
+        subgoal apply(cases "resolve pstate (pcOf cfg # map pcOf cfgs)") 
+          subgoal using spec_resolve[of cfgs pstate cfg _ _ _ ibT _ ibUT _ _ ls] using cfgs_Suc_zero by blast 
+           subgoal apply(rule notI, 
       erule allE[of _ "(pstate,cfg,
                         [Config 7 (State (Vstore (vs(vv := h (array_loc aa1 (nat (vs xx)) avst)))) avst hh p)],
                         ibT,ibUT,ls \<union> readLocs (last cfgs))"])
-        by(erule notE, rule spec_normal[of _ _ _ _ _ _"Config 7 (State (Vstore (vs(vv := h (array_loc aa1 (nat (vs xx)) avst)))) avst hh p)"], auto)
+        by(erule notE, rule spec_normal[of _ _ _ _ _ _"Config 7 (State (Vstore (vs(vv := h (array_loc aa1 (nat (vs xx)) avst)))) avst hh p)"], auto) .
         by (metis cfgs_Suc_zero fence not_Cons_self2 stepS_spec_Fence_iff spec_resolve)
       subgoal apply(elim conjE, elim disjE) 
-        subgoal apply(rule notI, 
+        subgoal apply(cases "resolve pstate (pcOf cfg # map pcOf cfgs)") 
+           subgoal using spec_resolve[of cfgs pstate cfg _ _ _ ibT _ ibUT _ _ ls] using cfgs_Suc_zero by blast 
+           subgoal apply(rule notI, 
         erule allE[of _ "(pstate,cfg,
                         [Config 3 (State (Vstore vs) avst hh p)],
                         ibT,ibUT,ls \<union> readLocs (last cfgs))"])
-          by(erule notE, rule spec_normal[of _ _ _ _ _ _"Config 3 (State (Vstore vs) avst hh p)"], auto)
-        subgoal apply(cases "mispred pstate [6,3]")
+          by(erule notE, rule spec_normal[of _ _ _ _ _ _"Config 3 (State (Vstore vs) avst hh p)"], auto) .
+      subgoal apply(cases "resolve pstate (pcOf cfg # map pcOf cfgs)") 
+        subgoal using spec_resolve[of cfgs pstate cfg _ _ _ ibT _ ibUT _ _ ls] using cfgs_Suc_zero by blast 
+         subgoal apply(cases "mispred pstate [6,3]")
           subgoal apply(rule notI, erule allE[of _ "
             (update pstate (pcOf cfg # map pcOf cfgs),
            cfg,
@@ -821,12 +818,10 @@ lemma finalS_if_spec:
         apply(rule notI, erule allE[of _ "
             (pstate, cfg, [Config (if vs xx \<noteq> 0 then 4 else 11) (State (Vstore vs) avst hh p)], ibT,ibUT,
              ls \<union> readLocs (Config pc (State (Vstore vs) avst hh p)))"])
-          by(erule notE, rule spec_normal[of _ _ _ _ _ _"Config (if vs xx \<noteq> 0 then 4 else 11) (State (Vstore vs) avst hh p)"], auto)
+          by(erule notE, rule spec_normal[of _ _ _ _ _ _"Config (if vs xx \<noteq> 0 then 4 else 11) (State (Vstore vs) avst hh p)"], auto) .
 
-        subgoal by (metis resolve_64 stepS_spec_resolve_iff 
-                          map_L1 cfgs_Suc_zero not_Cons_self2) 
-        subgoal by (metis resolve_611 stepS_spec_resolve_iff 
-                          map_L1 cfgs_Suc_zero not_Cons_self2) 
+        subgoal using spec_resolve[of cfgs pstate cfg _ _ _ ibT _ ibUT _ _ ls] by fastforce 
+        subgoal using spec_resolve[of cfgs pstate cfg _ _ _ ibT _ ibUT _ _ ls] by fastforce 
   . . . . .
 
 

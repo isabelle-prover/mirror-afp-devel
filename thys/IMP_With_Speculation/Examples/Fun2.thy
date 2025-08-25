@@ -85,9 +85,7 @@ by (auto simp: prog_def)
 (* *)
 
 consts mispred :: "predState \<Rightarrow> pcounter list \<Rightarrow> bool"
-fun resolve :: "predState \<Rightarrow> pcounter list \<Rightarrow> bool" where
-  "resolve p pc = (if (set pc = {6,4}) then True else False)"
-
+consts resolve :: "predState \<Rightarrow> pcounter list \<Rightarrow> bool" 
 
 consts update :: "predState \<Rightarrow> pcounter list \<Rightarrow> predState"
 consts initPstate :: predState
@@ -97,7 +95,8 @@ interpretation Prog_Mispred_Init where
 prog = prog and initPstate = initPstate and 
 mispred = mispred and resolve = resolve and update = update and 
 istate = istate
-  by (standard, simp add: prog_def)
+  apply(unfold_locales)
+  unfolding prog_def by auto 
 
 (* *)
 
@@ -154,11 +153,11 @@ lemma isOutput1[simp]:"prog ! 6 = Output U (V tt)"
   by (auto simp: prog_def)
 
 
-lemma is_Output_pcOf[simp]: "pcOf cfg < 6 \<Longrightarrow> is_Output (prog!(pcOf cfg)) \<longleftrightarrow> pcOf cfg = 6"
+lemma is_Output_pcOf[simp]: "pcOf cfg < 7 \<Longrightarrow> is_Output (prog!(pcOf cfg)) \<longleftrightarrow> pcOf cfg = 6"
 using cases_6[of "pcOf cfg"] by (auto simp: prog_def)
 
 
-lemma is_Fence_pcOf[simp]: "pcOf cfg < 6 \<Longrightarrow>(prog!(pcOf cfg)) = Fence \<longleftrightarrow> pcOf cfg = 4"
+lemma is_Fence_pcOf[simp]: "pcOf cfg < 7 \<Longrightarrow>(prog!(pcOf cfg)) = Fence \<longleftrightarrow> pcOf cfg = 4"
 using cases_6[of "pcOf cfg"] by (auto simp: prog_def)
 
 lemma is_Output[simp]: "is_Output (prog ! 6)"
@@ -494,6 +493,7 @@ lemma finalS_cond:"pcOf cfg < 7 \<Longrightarrow> cfgs = [] \<Longrightarrow> (p
 
     by simp_all . . .
 
+
 lemma finalS_cond_spec:
       "pcOf cfg < 7 \<Longrightarrow> 
        (pcOf (last cfgs) = 4 \<and> pcOf cfg = 6) \<or> (pcOf (last cfgs) = 6 \<and> pcOf cfg = 4) \<Longrightarrow> 
@@ -504,14 +504,15 @@ lemma finalS_cond_spec:
   subgoal for vst avst hh p apply(cases vst, cases avst, cases hh)
     subgoal for vs as h
       apply(elim disjE, elim conjE) unfolding finalS_defs
-      subgoal using spec_resolve[of cfgs pstate cfg "update pstate (pcOf cfg # map pcOf cfgs)" cfg "[]" ibT ibT ibUT ibUT ls ls ]
-              by (metis (no_types, lifting) butlast.simps(2) empty_set last_ConsL 
-                  length_0_conv length_Suc_conv list.simps(8,9,15) pos2 resolve.simps)
+      subgoal apply(cases "resolve pstate (pcOf cfg # map pcOf cfgs)")
+        subgoal using spec_resolve[of cfgs pstate cfg "update pstate (pcOf cfg # map pcOf cfgs)" cfg "[]" ibT ibT ibUT ibUT ls ls ] by fastforce
+        subgoal using spec_Fence[of cfgs pstate cfg pstate cfg "[]" ibT ibT ibUT ibUT ls ls] by fastforce .
 
       subgoal apply(elim conjE) 
-              using spec_resolve[of cfgs pstate cfg "update pstate (pcOf cfg # map pcOf cfgs)" cfg "[]" ibT ibT ibUT ibUT ls ls ]
-              by (metis (no_types, lifting) empty_set insert_commute last_ConsL resolve.simps
-                  length_0_conv length_1_butlast length_Suc_conv list.simps(9,8,15)) . . . .
+        apply(cases "resolve pstate (pcOf cfg # map pcOf cfgs)")
+        subgoal using spec_resolve[of cfgs pstate cfg "update pstate (pcOf cfg # map pcOf cfgs)" cfg "[]" ibT ibT ibUT ibUT ls ls ] by fastforce
+        subgoal using spec_resolve[of cfgs pstate cfg "update pstate (pcOf cfg # map pcOf cfgs)" cfg "[]" ibT ibT ibUT ibUT ls ls] by force . . . . .
+
 
 
 end

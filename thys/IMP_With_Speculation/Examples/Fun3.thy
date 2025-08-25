@@ -88,8 +88,7 @@ by (auto simp: prog_def)
 
 (* *)
 
-fun resolve :: "predState \<Rightarrow> pcounter list \<Rightarrow> bool" where
-  "resolve p pc = (if (pc = [4,7]) then True else False)"
+consts resolve :: "predState \<Rightarrow> pcounter list \<Rightarrow> bool" 
 
 
 
