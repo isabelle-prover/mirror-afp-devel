@@ -27,7 +27,7 @@ private definition prim_sem_res where
 local_setup \<open>fn lthy =>
   let
     val thm = Code_Simp.dynamic_conv lthy @{cterm prim_sem_res}
-    val (_, lthy') = Local_Theory.note ((@{binding prim_sem_res_code}, @{attributes [code equation]}), [thm]) lthy
+    val (_, lthy') = Local_Theory.note ((@{binding prim_sem_res_code}, [Code.singleton_default_equation_attrib]), [thm]) lthy
   in lthy' end
 \<close>
 

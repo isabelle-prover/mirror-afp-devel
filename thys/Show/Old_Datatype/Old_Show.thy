@@ -142,7 +142,7 @@ let
       val ((c, _), rhs) = Syntax.check_term lthy shows_list_eq |> Logic.dest_equals |>> dest_Free;
       val ((_, (_, def_thm')), lthy') =
         Local_Theory.define
-          ((Binding.name c, NoSyn), ((Binding.name (c ^ "_def"), @{attributes [code equation]}), rhs))
+          ((Binding.name c, NoSyn), ((Binding.name (c ^ "_def"), [Code.singleton_default_equation_attrib]), rhs))
           lthy
       val def_thm =
         Proof_Context.theory_of lthy'

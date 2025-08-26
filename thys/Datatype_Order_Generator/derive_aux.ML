@@ -227,7 +227,7 @@ fun define_overloaded_generic (binding,eq) lthy =
   in (thm', lthy')
 end
 
-fun define_overloaded (name,eq) = define_overloaded_generic ((Binding.name name, @{attributes [code equation]}),eq)
+fun define_overloaded (name,eq) = define_overloaded_generic ((Binding.name name, [Code.singleton_default_equation_attrib]),eq)
 
 
 fun mk_def T c rhs = Logic.mk_equals (Const (c, T), rhs)

@@ -94,7 +94,7 @@ fun compare_instance gen_type tname thy =
         in
           Generator_Aux.define_overloaded_generic
            ((Binding.name ("compare_" ^ Long_Name.base_name tname ^ "_def"),
-            @{attributes [code equation, compare_simps]}),
+            Code.singleton_default_equation_attrib :: @{attributes [compare_simps]}),
             cmp_def) ctxt
         end)
   in
@@ -127,9 +127,9 @@ fun linorder_instance gen_type tname thy =
         in
           (ctxt 
           |> Generator_Aux.define_overloaded_generic
-            ((Binding.name ("less_" ^ base_name ^ "_def"), @{attributes [code equation]}), less_def)            
+            ((Binding.name ("less_" ^ base_name ^ "_def"), [Code.singleton_default_equation_attrib]), less_def)
           ||> Generator_Aux.define_overloaded_generic
-            ((Binding.name ("less_eq_" ^ base_name ^ "_def"), @{attributes [code equation]}), less_eq_def))
+            ((Binding.name ("less_eq_" ^ base_name ^ "_def"), [Code.singleton_default_equation_attrib]), less_eq_def))
 
         end)
     fun linear_tac ctxt i = 

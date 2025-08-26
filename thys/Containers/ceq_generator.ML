@@ -98,7 +98,7 @@ fun ceq_instance_via_equality tname thy =
         in
           (Ts, define_overloaded_generic
            ((Binding.name ("ceq_" ^ Long_Name.base_name tname ^ "_def"),
-            @{attributes [code equation]}),
+            [Code.singleton_default_equation_attrib]),
             eq_def) ctxt)
         end)
     val thy = Class.prove_instantiation_exit (fn ctxt =>

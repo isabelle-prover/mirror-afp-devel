@@ -382,7 +382,7 @@ fun hashable_instance tname thy =
         in
           Generator_Aux.define_overloaded_generic
            ((Binding.name ("hashcode_" ^ basename ^ "_def"),
-            @{attributes [code equation]}),
+            [Code.singleton_default_equation_attrib]),
             hash_def) ctxt
           ||> define_overloaded ("def_hashmap_size_" ^ basename ^ "_def", hashs_def)
         end)

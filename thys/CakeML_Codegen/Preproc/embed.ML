@@ -301,9 +301,9 @@ fun embed_def_cmd def_binding binding raw_consts opts lthy =
     val lthy' = (snd o Local_Theory.begin_nested) lthy
     val def_binding =
       if Binding.is_empty_atts def_binding then
-        (Thm.def_binding binding, @{attributes [code equation]})
+        (Thm.def_binding binding, [Code.singleton_default_equation_attrib])
       else
-        apsnd (fn attribs => @{attributes [code equation]} @ attribs) def_binding
+        apsnd (fn attribs => Code.singleton_default_equation_attrib :: attribs) def_binding
     val terms = map (Syntax.parse_term lthy') raw_consts
     val ((rs_term, _, C_term, thm), lthy'') = embed_def (binding, def_binding) terms opts lthy'
     val lthy''' = Local_Theory.end_nested lthy''
