@@ -40,7 +40,6 @@ fun getSecV :: "stateV \<Rightarrow> secret" where
  (case prog!(pcOf cfg) of 
     Start \<Rightarrow> (stateOf cfg, \<bottom>, \<bottom>)
    |Input T _ \<Rightarrow> (\<bottom>, lhd ibT, \<bottom>)
-   |Output T _ \<Rightarrow> (\<bottom>,\<bottom>,outOf (prog!(pcOf cfg)) (stateOf cfg))
    |_ \<Rightarrow> (\<bottom>,\<bottom>,\<bottom>))"
 
 
@@ -56,7 +55,6 @@ fun getSecO :: "stateO \<Rightarrow> secret" where
  (case prog!(pcOf cfg) of 
     Start \<Rightarrow> (stateOf cfg, \<bottom>, \<bottom>)
    |Input T _ \<Rightarrow> (\<bottom>, lhd ibT, \<bottom>)
-   |Output T _ \<Rightarrow> (\<bottom>,\<bottom>,outOf (prog!(pcOf cfg)) (stateOf cfg))
    |_ \<Rightarrow> (\<bottom>,\<bottom>,\<bottom>))"
 end (* context Prog_Mispred *)
 

@@ -417,7 +417,7 @@ readLocsB :: "bexp \<Rightarrow> state \<Rightarrow> loc set" where
 fun readLocsC :: "com \<Rightarrow> state \<Rightarrow> loc set" where
 "readLocsC (x ::= a) s = readLocsA a s"
 |
-"readLocsC (arr[index] ::= a) s = readLocsA a s"
+"readLocsC (arr[index] ::= a) s = readLocsA (VA arr index) s \<union> readLocsA a s"
 |
 "readLocsC (Output t a) s = readLocsA a s"
 |
