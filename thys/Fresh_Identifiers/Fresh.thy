@@ -22,11 +22,27 @@ class fresh =
   and fresh_eq: "x \<notin> A \<Longrightarrow> fresh A x = x"
 begin
 
-text \<open>Generate a list of fresh names \<open>[a', b', c', \<dots>]\<close> given a list \<open>[a, b, c, \<dots>]\<close>:\<close>
+text \<open>Generate a list of fresh names \<open>[a', b', c', \<dots>]\<close> given the list \<open>[a, b, c, \<dots>]\<close>:\<close>
 
 fun freshs :: "'a set \<Rightarrow> 'a list \<Rightarrow> 'a list" where
 "freshs X [] = []" |
 "freshs X (a#as) = (let a' = fresh X a in a' # freshs (insert a' X) as)"
+
+lemma length_freshs: "finite X \<Longrightarrow> length(freshs X as) = length as"
+by(induction as arbitrary: X)(auto simp: fresh_notIn Let_def)
+
+lemma freshs_disj: "finite X \<Longrightarrow> X \<inter> set(freshs X as) = {}"
+proof(induction as arbitrary: X)
+  case Cons
+  then show ?case using fresh_notIn by(auto simp add: Let_def)
+qed simp
+
+lemma freshs_distinct: "finite X \<Longrightarrow> distinct (freshs X as)"
+proof(induction as arbitrary: X)
+  case (Cons a as)
+  then show ?case
+    using freshs_disj[of "insert (fresh X a) X" as] fresh_notIn by(auto simp add: Let_def)
+qed simp
 
 end
 
