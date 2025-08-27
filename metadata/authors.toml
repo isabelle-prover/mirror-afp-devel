@@ -53,6 +53,24 @@ name = "Klaus Aehlig"
 [aehlig.homepages]
 aehlig_homepage = "http://www.linta.de/~aehlig/"
 
+[ahmed]
+name = "Adnan Mohammed Ahmed"
+
+[ahmed.emails]
+
+[ahmed.emails.ahmed_email]
+user = [
+  "Adnan",
+  "Ahmed",
+]
+host = [
+  "campus",
+  "lmu",
+  "de",
+]
+
+[ahmed.homepages]
+
 [aissat]
 name = "Romain Aissat"
 

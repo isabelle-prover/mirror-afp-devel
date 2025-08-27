@@ -107,6 +107,23 @@
   "year": "2025"
  },
  {
+  "abstract": "Ordered Resolution is a proof calculus for reasoning about first-order logic that is implemented in many automatic theorem provers. It works by saturating the given set of clauses and is refutationally complete, meaning that if the set is inconsistent, the saturation will contain a contradiction. In this formalization, we restructured the completeness proof to cleanly separate the ground (i.e., variable-free) and nonground aspects. We also added a type system to the calculus. We relied on the library for first-order clauses and on the saturation framework.",
+  "authors": [
+   "Adnan Mohammed Ahmed",
+   "Balazs Toth"
+  ],
+  "link": "/entries/Typed_Ordered_Resolution.html",
+  "shortname": "Typed_Ordered_Resolution",
+  "title": "Typed Ordered Resolution",
+  "topic_links": [
+   "/topics/logic/general-logic/mechanization-of-proofs/"
+  ],
+  "topics": [
+   "Logic/General logic/Mechanization of proofs"
+  ],
+  "year": "2025"
+ },
+ {
   "abstract": "The Chomksy-Schützenberger Representation Theorem says that any context-free language is the homomorphic image of the intersection of a regular language and a Dyck language.",
   "authors": [
    "Moritz Roos"

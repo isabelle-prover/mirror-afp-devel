@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Adnan Mohammed Ahmed</title>
+    <link>https://isa-afp.org/authors/ahmed/</link>
+    <description>AFP entries of Adnan Mohammed Ahmed</description><item>
+  <title>Typed Ordered Resolution</title>
+  <link>https://isa-afp.org/entries/Typed_Ordered_Resolution.html</link>
+  <pubDate>Wed, 11 Jun 2025 00:00:00 +0000</pubDate>
+  <description>Typed Ordered Resolution in the AFP</description>
+    <category>Logic/General logic/Mechanization of proofs</category>
+</item>
+
+  </channel>
+</rss>

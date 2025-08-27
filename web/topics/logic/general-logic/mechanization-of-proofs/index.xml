@@ -11,6 +11,13 @@
     <category>Logic/General logic/Mechanization of proofs</category>
 </item>
 <item>
+  <title>Typed Ordered Resolution</title>
+  <link>https://isa-afp.org/entries/Typed_Ordered_Resolution.html</link>
+  <pubDate>Wed, 11 Jun 2025 00:00:00 +0000</pubDate>
+  <description>Typed Ordered Resolution in the AFP</description>
+    <category>Logic/General logic/Mechanization of proofs</category>
+</item>
+<item>
   <title>A Modular Formalization of Superposition</title>
   <link>https://isa-afp.org/entries/Superposition_Calculus.html</link>
   <pubDate>Thu, 24 Oct 2024 00:00:00 +0000</pubDate>

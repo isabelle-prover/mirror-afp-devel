@@ -49,6 +49,13 @@
     <category>Logic/General logic/Mechanization of proofs</category>
 </item>
 <item>
+  <title>Typed Ordered Resolution</title>
+  <link>https://isa-afp.org/entries/Typed_Ordered_Resolution.html</link>
+  <pubDate>Wed, 11 Jun 2025 00:00:00 +0000</pubDate>
+  <description>Typed Ordered Resolution in the AFP</description>
+    <category>Logic/General logic/Mechanization of proofs</category>
+</item>
+<item>
   <title>Dyck Language</title>
   <link>https://isa-afp.org/entries/Dyck_Language.html</link>
   <pubDate>Mon, 02 Jun 2025 00:00:00 +0000</pubDate>

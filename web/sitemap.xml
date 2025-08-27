@@ -26,6 +26,9 @@
     <loc>https://isa-afp.org/entries/Splitting_Framework.html</loc>
     <lastmod>2025-06-18T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>https://isa-afp.org/entries/Typed_Ordered_Resolution.html</loc>
+    <lastmod>2025-06-11T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>https://isa-afp.org/entries/Chomsky_Schuetzenberger.html</loc>
     <lastmod>2025-06-02T00:00:00+00:00</lastmod>
   </url><url>
@@ -2823,6 +2826,8 @@
   </url><url>
     <loc>https://isa-afp.org/authors/swami/</loc>
   </url><url>
+    <loc>https://isa-afp.org/authors/ahmed/</loc>
+  </url><url>
     <loc>https://isa-afp.org/authors/mateo/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/ads_functor/</loc>
@@ -3268,8 +3273,6 @@
     <loc>https://isa-afp.org/sessions/completeness_decreasing_diagrams_for_n1/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/complex_bounded_operators/</loc>
-  </url><url>
-    <loc>https://isa-afp.org/sessions/complex_bounded_operators_dependencies/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/complex_geometry/</loc>
   </url><url>
@@ -5847,6 +5850,8 @@
     <loc>https://isa-afp.org/sessions/two_hermitian_results/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/tycon/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/sessions/typed_ordered_resolution/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/types_tableaus_and_goedels_god/</loc>
   </url><url>

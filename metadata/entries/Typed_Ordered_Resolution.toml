@@ -1,0 +1,29 @@
+title = "Typed Ordered Resolution"
+date = 2025-06-11
+topics = [
+  "Logic/General logic/Mechanization of proofs",
+]
+abstract = "Ordered Resolution is a proof calculus for reasoning about first-order logic that is implemented in many automatic theorem provers. It works by saturating the given set of clauses and is refutationally complete, meaning that if the set is inconsistent, the saturation will contain a contradiction. In this formalization, we restructured the completeness proof to cleanly separate the ground (i.e., variable-free) and nonground aspects. We also added a type system to the calculus. We relied on the library for first-order clauses and on the saturation framework."
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.ahmed]
+email = "ahmed_email"
+
+[authors.toth]
+email = "toth_email1"
+
+[contributors]
+
+[notify]
+toth = "toth_email1"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []
