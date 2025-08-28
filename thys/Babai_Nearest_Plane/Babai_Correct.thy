@@ -1586,8 +1586,8 @@ proof -
   ultimately show ?thesis by simp
 qed
 
-section \<open>Bound on distance to target, with \<epsilon> factor.\<close>
-text \<open> This section culminates in a bound (which includes the \<epsilon> factor) on the output's distance to the target vector.\<close>
+section \<open>Bound on distance to target, with $\epsilon$ factor.\<close>
+text \<open> This section culminates in a bound (which includes the $\epsilon$ factor) on the output's distance to the target vector.\<close>
 lemma sq_norm_from_Mt:
   fixes v::"rat vec"
   assumes v_carr:"v\<in>carrier_vec n"
@@ -1963,7 +1963,7 @@ qed
 
 end
 
-text \<open>In this section we remove the arbitrary constant \<epsilon> and clean up the assumptions and results.\<close>
+text \<open>In this section we remove the arbitrary constant $\epsilon$ and clean up the assumptions and results.\<close>
 
 locale babai_with_assms = babai +
   fixes mat_M :: "rat mat"
