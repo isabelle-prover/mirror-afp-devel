@@ -123,7 +123,7 @@ lemma pn_choose_k_modp_0:
 proof - 
   have inequality: "k \<le> p^n" using assms (2) by arith
   have choose_take_1: "((p^n - 1) choose ( k - 1))= fact (p^n - 1) div (fact (k - 1) * fact (p^n - k))"
-    using binomial_altdef_nat diff_le_mono inequality assms(2) by auto
+    using binomial_fact' diff_le_mono inequality assms(2) by auto
   have "k * (p^n choose k) = k * ((fact (p^n)) div (fact k * fact((p^n) - k)))" 
     using assms binomial_fact'[OF inequality] by auto
   also have "... = k * fact (p^n) div (fact k * fact((p^n) - k))"

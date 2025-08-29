@@ -68,6 +68,6 @@ subsection \<open>@{const binomial}\<close>
 
 lemma binomial_code[code]:
   "n choose k = (if k \<le> n then fact n div (fact k * fact (n - k)) else 0)"
-  using binomial_eq_0[of n k] binomial_altdef_nat[of k n] by simp
+  using binomial_eq_0[of n k] binomial_fact'[of k n] by simp
 
 end
