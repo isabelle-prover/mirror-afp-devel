@@ -103,6 +103,23 @@ IfFalse:
 "pc < endPC \<Longrightarrow> prog!pc = IfJump b pc1 pc2 \<Longrightarrow> 
  \<not> bval b s \<Longrightarrow> 
  (Config pc s, ibT, ibUT) \<rightarrow>B (Config pc2 s, ibT, ibUT)" 
+|
+MaskTrue:  
+"pc < endPC \<Longrightarrow> prog!pc = (M x I b T a1 E a2 ) \<Longrightarrow> 
+ bval b s \<Longrightarrow>
+ s = State (Vstore vs) avst h p \<Longrightarrow>
+ (Config pc s, ibT, ibUT) 
+ \<rightarrow>B 
+ (Config (Suc pc) (State (Vstore (vs(x := aval a1 s))) avst h p), ibT, ibUT)" 
+|
+MaskFalse:  
+"pc < endPC \<Longrightarrow> prog!pc = (M x I b T a1 E a2 ) \<Longrightarrow>
+ \<not>bval b s \<Longrightarrow>
+ s = State (Vstore vs) avst h p \<Longrightarrow>
+ (Config pc s, ibT, ibUT) 
+ \<rightarrow>B 
+ (Config (Suc pc) (State (Vstore (vs(x := aval a2 s))) avst h p), ibT, ibUT)" 
+
 
 lemmas stepB_induct = stepB.induct[split_format(complete)]
 (* thm stepB_induct *)
@@ -148,6 +165,7 @@ apply (cases "prog!pc")
   subgoal by (auto elim: stepB.cases, blast)   
   subgoal by (auto elim: stepB.cases, blast)
   subgoal by (auto elim: stepB.cases, blast)
+  subgoal by (auto elim: stepB.cases, blast) 
   subgoal by (auto elim: stepB.cases, blast) . . .
 
 lemma finalB_iff: 
@@ -271,6 +289,26 @@ lemma nextB_IfFalse[simp]:
  nextB (Config pc s, ibT, ibUT) = (Config pc2 s, ibT, ibUT)" 
 by(intro stepB_nextB[THEN sym] stepB.intros)
 
+
+lemma nextB_MaskTrue[simp]:  
+"pc < endPC \<Longrightarrow> prog!pc = (M x I b T a1 E a2) \<Longrightarrow> 
+ bval b s \<Longrightarrow> 
+ s = State (Vstore vs) avst h p \<Longrightarrow> 
+ nextB (Config pc s, ibT, ibUT) 
+ = 
+ (Config (Suc pc) (State (Vstore (vs(x := aval a1 s))) avst h p), 
+    ibT, ibUT)" 
+by(intro stepB_nextB[THEN sym] stepB.intros)
+
+lemma nextB_MaskFalse[simp]:  
+"pc < endPC \<Longrightarrow> prog!pc = (M x I b T a1 E a2) \<Longrightarrow> 
+ \<not>bval b s \<Longrightarrow> 
+ s = State (Vstore vs) avst h p \<Longrightarrow> 
+ nextB (Config pc s, ibT, ibUT) 
+ = 
+ (Config (Suc pc) (State (Vstore (vs(x := aval a2 s))) avst h p), 
+    ibT, ibUT)"  
+by(intro stepB_nextB[THEN sym] stepB.intros)
 (* *)
 
 
@@ -377,6 +415,28 @@ lemma stepB_IfFalseE:
   using assms apply (cases "(cfg, ibT, ibUT)" "(cfg', ibT',ibUT')" rule: stepB.cases)
   by auto 
 
+lemma stepB_MaskTrueE:
+  assumes \<open>(cfg, ibT, ibUT) \<rightarrow>B (cfg', ibT',ibUT')\<close>
+      and \<open>cfg = (Config pc (State (Vstore vs) avst h p))\<close> 
+      and \<open>cfg' = (Config pc' (State (Vstore vs') avst' h' p'))\<close>
+      and \<open>prog!pc = M x I b T a1 E a2\<close> and \<open>bval b (stateOf cfg)\<close>
+    shows \<open>vs' = (vs(x := aval a1 (stateOf cfg))) \<and>
+           ibT = ibT' \<and> ibUT = ibUT' \<and> pc' = Suc pc \<and>
+           avst' = avst \<and> h' = h \<and> p' = p\<close>
+  using assms apply (cases "(cfg, ibT, ibUT)" "(cfg', ibT',ibUT')" rule: stepB.cases)
+  by auto 
+
+lemma stepB_MaskFalseE:
+  assumes \<open>(cfg, ibT, ibUT) \<rightarrow>B (cfg', ibT',ibUT')\<close>
+      and \<open>cfg = (Config pc (State (Vstore vs) avst h p))\<close> 
+      and \<open>cfg' = (Config pc' (State (Vstore vs') avst' h' p'))\<close>
+      and \<open>prog!pc = M x I b T a1 E a2\<close> and \<open>\<not>bval b (stateOf cfg)\<close>
+    shows \<open>vs' = (vs(x := aval a2 (stateOf cfg))) \<and>
+           ibT = ibT' \<and> ibUT = ibUT' \<and> pc' = Suc pc \<and>
+           avst' = avst \<and> h' = h \<and> p' = p\<close>
+  using assms apply (cases "(cfg, ibT, ibUT)" "(cfg', ibT',ibUT')" rule: stepB.cases)
+  by auto 
+
 end (* context Prog *)
 
 subsection "Read locations"
@@ -422,6 +482,9 @@ fun readLocsC :: "com \<Rightarrow> state \<Rightarrow> loc set" where
 "readLocsC (Output t a) s = readLocsA a s"
 |
 "readLocsC (IfJump b n1 n2) s = readLocsB b s"
+|
+"readLocsC (M x I b T a1 E a2) s = readLocsB b s \<union> (if (bval b s) then readLocsA a1 s 
+                                    else readLocsA a2 s) "
 |
 "readLocsC _ _ = {}"
 

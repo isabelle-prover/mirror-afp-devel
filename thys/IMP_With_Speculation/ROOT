@@ -27,7 +27,9 @@ session IMP_With_Speculation = Secret_Directed_Unwinding +
     Fun5
     Fun5_secure
     Fun6
-    Fun6_secure
+    Fun6_secure    
+    Fun_mask
+    Fun_mask_secure
   document_files
     "root.tex"
     "root.bib"

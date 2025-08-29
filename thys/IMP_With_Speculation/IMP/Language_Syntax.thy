@@ -57,6 +57,7 @@ datatype (discs_sels) com =
       
       | getInput trustStat vname ("(Input _/ _)"  [0, 61] 61)
       | Output trustStat aexp ("(Output _/ _)"  [0, 61] 61)
+      | Mask vname bexp aexp aexp ("M _/ I _/ T _/ E _" [1000, 61, 61, 61] 61)
       | Fence
       | Jump nat 
       | Assign vname aexp ("_ ::= _" [1000, 61] 61)
