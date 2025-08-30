@@ -2920,7 +2920,7 @@ end
 
 lemma q_omega_1: "$q_($\<omega>-1) = 1"
   using q_1_equiv_nat
-  by (metis diff_less dual_order.refl le_diff_conv of_nat_1 omega_pos zero_less_one)
+  by (metis diff_less order.refl le_diff_conv of_nat_1 omega_pos zero_less_one)
 
 end
 

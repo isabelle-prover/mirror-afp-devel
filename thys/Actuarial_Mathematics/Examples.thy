@@ -105,10 +105,11 @@ proof -
   proof -
     have integ_mu: "integral {0..x} (\<lambda>t. $\<mu>_t) = (a + 1) / a * ln ((a*x + b) / b)"
     proof -
+      have 0: "negligible ({0..x} - {0<..x})"
+        by (simp add: Icc_minus_Ioc asm_x(1))
+      from integral_subset_negligible [OF _ this] 
       have "integral {0..x} (\<lambda>t. $\<mu>_t) = integral {0<..x} (\<lambda>t. $\<mu>_t)"
-        apply (rule integral_spike_set)
-         apply (rule negligible_subset[where s="{0}"]; force)
-        by (rule negligible_subset[where s="{}"]; simp)
+        by (metis greaterThanAtMost_subseteq_atLeastAtMost_iff order.refl)
       also have "\<dots> = integral {0<..x} (\<lambda>t. ((a + 1) / a) * (a / (a*t + b)))"
         using asm_x assms by (intro integral_cong) (rewrite mu; simp)
       also have "\<dots> = (a + 1) / a * integral {0<..x} (\<lambda>t. a / (a*t + b))"
@@ -116,9 +117,7 @@ proof -
       also have "\<dots> = (a + 1) / a * ln ((a*x + b) / b)"
       proof -
         have "integral {0<..x} (\<lambda>t. a / (a*t + b)) = integral {0..x} (\<lambda>t. a / (a*t + b))"
-          apply (rule integral_spike_set)
-           apply (rule negligible_subset[where s="{}"]; simp)
-          by (rule negligible_subset[where s="{0}"]; force)
+          using integral_subset_negligible [OF _ 0] by force
         also have "\<dots> = ln (a*x + b) - ln (a*0 + b)"
           apply (rule integral_unique)
           using assms asm_x apply (intro inverse_fun_has_integral_ln, simp_all)
