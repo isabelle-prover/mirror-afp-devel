@@ -3376,7 +3376,7 @@ lemmas real_alg_code_eqns =
 
 code_datatype real_of
 
-declare real_alg_code_eqns [code equation]
+declare real_alg_code_eqns [code]
 
 lemma Ratreal_code[code]:
   "Ratreal = real_of \<circ> of_rat_real_alg"
