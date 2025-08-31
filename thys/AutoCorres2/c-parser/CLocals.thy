@@ -496,15 +496,11 @@ fun define_locals qualifier decls thy =
         val b = Binding.make (vname, \<^here>) |> fold_rev (Binding.qualify true) qualifier
         val attrib = Attrib.internal \<^here> (fn _ => add_entry_attr qualifier i name typ kind)
         val rhs = HOLogic.mk_number @{typ nat} i
-        val ((t, (s, thm)), lthy) = lthy
-         |> Local_Theory.define ((b, Mixfix.NoSyn), ((Binding.suffix_name "_def" b, [attrib] @ @{attributes [locals]} ), rhs))
       in
-        lthy |> Code.declare_default_eqns [(thm, true)]
- (*|>
-          Local_Theory.declaration {pervasive=true, syntax=false} (fn _ =>
-          Context.mapping
-            (Code.declare_default_eqns_global [(thm, true)])
-            I)*)
+        lthy
+        |> Local_Theory.define ((b, Mixfix.NoSyn),
+             ((Binding.suffix_name "_def" b, attrib :: @{attributes [locals]} @ [Code.singleton_default_equation_attrib]), rhs))
+        |> snd
       end
     val lthy = lthy
       |> fold define (tag_list 0 decls)
