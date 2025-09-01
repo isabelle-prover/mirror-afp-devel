@@ -75,7 +75,7 @@ lemma reflexive_on_in_field_if_partial_equivalence_rel:
 lemma partial_equivalence_relE [elim]:
   assumes "partial_equivalence_rel R"
   obtains "preorder_on (in_field R) R" "symmetric R"
-  using assms by (urule (e) partial_equivalence_rel_onE where chained = insert)
+  using assms by (urule (e) partial_equivalence_rel_onE chained: insert)
   (auto intro: reflexive_on_in_field_if_partial_equivalence_rel
     simp flip: transitive_eq_transitive_on symmetric_eq_symmetric_on)
 

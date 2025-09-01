@@ -207,7 +207,7 @@ lemma inflationaryI [intro]:
 lemma inflationaryD:
   assumes "inflationary R f"
   shows "R x (f x)"
-  using assms by (urule (d) inflationary_onD where chained = insert) simp
+  using assms by (urule (d) inflationary_onD chained: insert) simp
 
 lemma inflationary_on_if_inflationary:
   fixes P :: "'a \<Rightarrow> bool" and R :: "'a \<Rightarrow> 'b \<Rightarrow> bool" and f :: "'a \<Rightarrow> 'b"
@@ -321,7 +321,7 @@ lemma deflationaryI [intro]:
 lemma deflationaryD:
   assumes "deflationary R f"
   shows "R (f x) x"
-  using assms by (urule (d) deflationary_onD where chained = insert) simp
+  using assms by (urule (d) deflationary_onD chained: insert) simp
 
 lemma deflationary_on_if_deflationary:
   fixes P :: "'a \<Rightarrow> bool" and R :: "'b \<Rightarrow> 'a \<Rightarrow> bool" and f :: "'a \<Rightarrow> 'b"

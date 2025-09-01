@@ -65,7 +65,7 @@ lemma bin_relI [intro]:
   assumes "\<And>x y. R x y \<Longrightarrow> A x"
   and "\<And>x y. R x y \<Longrightarrow> A x \<Longrightarrow> B y"
   shows "(A {\<times>} B) R"
-  using assms by (urule dep_bin_relI where chained = fact)
+  using assms by (urule dep_bin_relI chained: fact)
 
 lemma bin_rel_if_bin_rel_and:
   assumes "\<And>x y. R x y \<Longrightarrow> A x \<and> B y"

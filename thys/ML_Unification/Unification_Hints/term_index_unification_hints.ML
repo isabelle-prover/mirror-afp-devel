@@ -206,11 +206,11 @@ structure PU = Parse_Util
 
 val logger = Logger.setup_new_logger Unification_Hints_Base.logger FI.name
 
-\<^functor_instance>\<open>struct_name = UH
-  and functor_name = Unification_Hints
-  and path = FI.long_name
-  and id = FI.id
-  and more_args = \<open>val init_args = TUHA.UHA_PA_entries_from_PCA_entries A.init_args\<close>\<close>
+\<^functor_instance>\<open>struct_name: UH
+  functor_name: Unification_Hints
+  path: FI.long_name
+  id: FI.id
+  more_args: \<open>val init_args = TUHA.UHA_PA_entries_from_PCA_entries A.init_args\<close>\<close>
 
 fun are_hint_variants hp =
   let
@@ -382,14 +382,15 @@ fun try_hints binders ctxt tp env = Seq.make (fn _ =>
       ])
   in UH.try_hints (get_retrieval context (get_indexes context)) binders ctxt tp env |> Seq.pull end)
 
+val default_add_arg_entries = PAA.empty_entries () |> fold PAA.set_entry [PAA.prio TUHP.MEDIUM]
+
 val parse_add_arg_entries =
   let
     val parsers = TUHA.add_arg_parsers
     val parse_value = PAA.parse_entry (PAA.get_prio parsers)
-    val parse_entry = Parse_Key_Value.parse_entry' (Scan.lift PAA.parse_key) (Scan.lift PU.eq)
+    val parse_entry = Parse_Key_Value.parse_entry' (Scan.lift PAA.parse_key) (K (Scan.lift PU.eq))
       parse_value
-    val default_entries = PAA.empty_entries () |> fold PAA.set_entry [PAA.prio TUHP.MEDIUM]
-  in PAA.parse_entries_required' Parse.and_list' [] parse_entry default_entries end
+  in PAA.parse_entries_required' Scan.repeat [] parse_entry default_add_arg_entries end
 
 fun add_attribute entries =
   let fun update thm = add_hint_prio (thm, PAA.get_prio entries)
@@ -402,9 +403,9 @@ val parse_config_arg_entries =
     val parsers = TUHA.config_arg_parsers
     val parse_value = PCA.parse_entry (PCA.get_concl_unifier parsers) (PCA.get_normalisers parsers)
       (PCA.get_prems_unifier parsers) (PCA.get_retrieval parsers) (PCA.get_hint_preprocessor parsers)
-    val parse_entry = Parse_Key_Value.parse_entry PCA.parse_key PU.eq parse_value
+    val parse_entry = Parse_Key_Value.parse_entry PCA.parse_key (K PU.eq) parse_value
     val default_entries = PCA.empty_entries ()
-  in PCA.parse_entries_required Parse.and_list1 [] parse_entry default_entries end
+  in PCA.parse_entries_required Scan.repeat1 [] parse_entry default_entries end
 
 fun config_attribute (entries, pos) =
   let
@@ -425,18 +426,28 @@ fun config_attribute (entries, pos) =
     #> map_hint_preprocessor
   end
 
-val parse_attribute =
+val parse_entries =
   let
-    val colon = Scan.lift (Parse.$$$ ":")
-    val parse_add_attr = parse_add_arg_entries >> add_attribute
-  in
-    Scan.lift PM.parse_key :|-- (Parse.!!!! o
-      (fn PM.add _ => colon |-- parse_add_attr
-        | PM.del _ => Scan.succeed del_attribute
-        | PM.config _ => colon |-- (parse_config_arg_entries |> PU.position |> Scan.lift)
-            >> config_attribute))
-    || parse_add_attr
-  end
+    val parse_value = PM.parse_entry parse_add_arg_entries (Scan.succeed ())
+      (Scan.lift parse_config_arg_entries)
+    val parse_entry = Parse_Key_Value.parse_entry' (Scan.lift PM.parse_key)
+      (K (Scan.lift (Parse.$$$ ":"))) parse_value
+    val default_entries = PM.empty_entries ()
+  in PM.parse_entries_required' Scan.repeat1 [] parse_entry default_entries end
+
+fun attribute (entries, pos) =
+  let
+    fun default_attr (context, thm) = (SOME context, SOME thm)
+    val add_attr = PM.get_add_safe entries
+      |> (fn SOME entries => add_attribute entries | NONE => default_attr)
+    val del_attr = PM.get_del_safe entries
+      |> (fn SOME _ => del_attribute | NONE => default_attr)
+    val config_attr = PM.get_config_safe entries
+      |> (fn SOME entries => config_attribute (entries, pos) | NONE => default_attr)
+  in AU.apply_attribute config_attr #> AU.apply_attribute del_attr #> add_attr end
+
+val parse_attribute = PU.position' parse_entries >> attribute
+  || parse_add_arg_entries >> add_attribute
 
 val setup_attribute = Attrib.local_setup binding (Parse.!!!! parse_attribute) o
   the_default ("set unification hints arguments " ^ enclose "(" ")" FI.long_name)

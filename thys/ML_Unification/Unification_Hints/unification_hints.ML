@@ -42,6 +42,7 @@ end
 signature UNIFICATION_HINTS =
 sig
   structure Data : GENERIC_DATA
+  where type T = Unification_Hints_Args.args
 
   val get_args : Context.generic -> Unification_Hints_Args.args
   val map_args : (Unification_Hints_Args.args -> Unification_Hints_Args.args) ->
@@ -65,7 +66,8 @@ sig
     Unification_Hints_Args.PA.entries * Position.T -> attribute
 end
 
-functor Unification_Hints(A : sig
+functor Unification_Hints(A :
+  sig
     structure FI : FUNCTOR_INSTANCE_BASE
     val init_args : Unification_Hints_Args.args
   end) : UNIFICATION_HINTS =

@@ -19,10 +19,10 @@ subsection \<open>Setup\<close>
 text \<open>One-time setup to obtain a unifier with unification hints for the purpose of reification.\<close>
 
 ML\<open>
-\<^functor_instance>\<open>struct_name = Reification_Unification_Hints
-  and functor_name = Term_Index_Unification_Hints
-  and id = \<open>"reify"\<close>
-  and more_args = \<open>
+\<^functor_instance>\<open>struct_name: Reification_Unification_Hints
+  functor_name: Term_Index_Unification_Hints
+  id: \<open>"reify"\<close>
+  more_args: \<open>
     structure TI = Discrimination_Tree
     val init_args = {
       concl_unifier = NONE, (*will be set later*)
@@ -95,7 +95,7 @@ declare [[reify_uhint config: concl_unifier = reify_unify]]
 
 schematic_goal
   "interp ?f (?vs :: ('a :: ord) list) = (\<exists>(x :: 'a). x < y \<and> \<not>(\<exists>(z :: 'a). v < z \<or> \<not>False))"
-  by (ufact refl where unifier = reify_unify)
+  by (ufact refl unifier: reify_unify)
 
 text \<open>While this all works nicely if set up correctly, it can be rather difficult to
 understand and debug the recursive unification process for a hint's conclusion.
@@ -111,7 +111,7 @@ text \<open>We disallow the hint unifier to recursively look for hints while uni
 instead, we only allow the hint unifier to match the hint's conclusion against the disagreement terms.\<close>
 declare [[reify_uhint config: concl_unifier =
   \<open>Higher_Order_Pattern_Unification.match |> Type_Unification.e_match Unification_Util.match_types\<close>
-and retrieval = \<open>Term_Index_Unification_Hints_Args.mk_retrieval_sym
+  retrieval = \<open>Term_Index_Unification_Hints_Args.mk_retrieval_sym
   (Term_Index_Unification_Hints_Args.retrieve_left Reification_Unification_Hints.TI.unifiables)
   Reification_Unification_Hints.TI.norm_term\<close>]]
 
@@ -143,7 +143,7 @@ lemma [reify_uhint]:
 
 schematic_goal
   "interp ?f (?vs :: ('a :: ord) list) = (\<exists>(x :: 'a). x < y \<and> \<not>(\<exists>(z :: 'a). v < z \<or> \<not>False))"
-  by (urule refl where unifier = reify_unify)
+  by (urule refl unifier: reify_unify)
 
 end
 
@@ -171,7 +171,7 @@ ML_command\<open>
 \<close>
 
 schematic_goal "eval_add_expr ?e = (1 + (2 + 7) :: int)"
-  by (urule refl where unifier = reify_unify)
+  by (urule refl unifier: reify_unify)
 
 
 subsection \<open>Arithmetic with Environment\<close>
@@ -215,6 +215,6 @@ ML_command\<open>
 \<close>
 
 schematic_goal "eval_mul_expr ?e = (1 * inverse 3 * 5 :: rat)"
-  by (ufact refl where unifier = reify_unify)
+  by (ufact refl unifier: reify_unify)
 
 end

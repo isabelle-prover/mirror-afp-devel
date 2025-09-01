@@ -158,9 +158,10 @@ end
 signature UNIFY_RESOLVE =
 sig
   structure Data : GENERIC_DATA
+  where type T = Unify_Resolve_Args.config_args
 
-  val get_args : Context.generic -> Unify_Resolve_Args.config_args
-  val map_args : (Unify_Resolve_Args.config_args -> Unify_Resolve_Args.config_args) ->
+  val get_config_args : Context.generic -> Unify_Resolve_Args.config_args
+  val map_config_args : (Unify_Resolve_Args.config_args -> Unify_Resolve_Args.config_args) ->
     Context.generic -> Context.generic
 
   val get_normalisers : Context.generic -> Unification_Base.normalisers
@@ -213,23 +214,23 @@ structure Data = Generic_Data(
   val empty = init_args
   val merge = fst)
 
-val get_args = Data.get
-val map_args = Data.map
+val get_config_args = Data.get
+val map_config_args = Data.map
 
-val get_normalisers = PCA.get_normalisers o get_args
-val map_normalisers = map_args o PCA.map_normalisers
+val get_normalisers = PCA.get_normalisers o get_config_args
+val map_normalisers = map_config_args o PCA.map_normalisers
 
-val get_unifier = PCA.get_unifier o get_args
-val map_unifier = map_args o PCA.map_unifier
+val get_unifier = PCA.get_unifier o get_config_args
+val map_unifier = map_config_args o PCA.map_unifier
 
-val get_mode = PCA.get_mode o get_args
-val map_mode = map_args o PCA.map_mode
+val get_mode = PCA.get_mode o get_config_args
+val map_mode = map_config_args o PCA.map_mode
 
-val get_chained = PCA.get_chained o get_args
-val map_chained = map_args o PCA.map_chained
+val get_chained = PCA.get_chained o get_config_args
+val map_chained = map_config_args o PCA.map_chained
 
 fun unify_resolve_tac resolve_mode rules facts ctxt =
-  URA.unify_resolve_config_args_tac (get_args (Context.Proof ctxt)) resolve_mode rules facts
+  URA.unify_resolve_config_args_tac (get_config_args (Context.Proof ctxt)) resolve_mode rules facts
     ctxt
 
 val binding = Binding.make (FI.prefix_id "urule", FI.pos)
@@ -239,8 +240,9 @@ val parse_config_arg_entries =
     val parsers = URA.arg_parsers |> URA.PCA_entries_from_PA_entries
     val parse_value = PCA.parse_entry (PCA.get_normalisers parsers)
       (PCA.get_unifier parsers) (PCA.get_mode parsers) (PCA.get_chained parsers)
-    val parse_entry = Parse_Key_Value.parse_entry PCA.parse_key Parse_Util.eq parse_value
-  in PCA.parse_entries_required Parse.and_list1 [] parse_entry (PCA.empty_entries ()) end
+    val parse_entry = Parse_Key_Value.parse_entry PCA.parse_key (K (Parse.$$$ ":")) parse_value
+      |> Parse.!!! |> Scan.unless Parse.eof
+  in PCA.parse_entries_required Scan.repeat1 [] parse_entry (PCA.empty_entries ()) end
 
 fun attribute (entries, pos) =
   let
@@ -256,7 +258,7 @@ fun attribute (entries, pos) =
       |> map (fn (k, v) => code_from_key k @ MCU.atomic (code_from_entry v))
       |> MCU.list
     val code =
-      FI.code_struct_op "map_args" @ MCU.atomic (code_PCA_op "merge_entries" @
+      FI.code_struct_op "map_config_args" @ MCU.atomic (code_PCA_op "merge_entries" @
       MCU.atomic (code_PCA_op "entries_from_entry_list" @ code_entries))
   in ML_Attribute.run_map_context (code, pos) end
 
@@ -272,8 +274,8 @@ val parse_method =
     (PRM.key PRM.r)
   in
     Scan.lift parse_resolve_mode
-    -- PA.get_rules URA.arg_parsers
-    -- ((Parse.where_ |-- parse_attribute) |> Parse.!!! |> Parse_Util.option |> Scan.lift)
+    -- Parse.!!!! (PA.get_rules URA.arg_parsers)
+    -- ((Scan.option Parse.where_ |-- parse_attribute) |> Parse.!!! |> Parse_Util.option |> Scan.lift)
     >> (fn ((resolve_mode, rules), opt_attr) =>
       the_default I (Option.map ML_Attribute_Util.attribute_map_ctxt opt_attr)
       #> Method_Util.METHOD_CONTEXT' (unify_resolve_tac resolve_mode rules))

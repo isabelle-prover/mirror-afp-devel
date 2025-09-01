@@ -9,8 +9,8 @@ sig
   type ('k, 'v) entries = ('k, 'v) entry list
 
   (*takes key parser, delimiter parser, value parser*)
-  val parse_entry : 'k parser -> 'd parser -> ('k -> 'v parser) -> (('k, 'v) entry) parser
-  val parse_entry' : 'k context_parser -> 'd context_parser -> ('k -> 'v context_parser) ->
+  val parse_entry : 'k parser -> ('k -> 'd parser) -> ('k -> 'v parser) -> (('k, 'v) entry) parser
+  val parse_entry' : 'k context_parser -> ('k -> 'd context_parser) -> ('k -> 'v context_parser) ->
     (('k, 'v) entry) context_parser
 
   val pretty_keys : ('k -> string) -> 'k list -> Pretty.T
@@ -34,7 +34,7 @@ type ('k, 'v) entries = ('k, 'v) entry list
 
 fun gen_parse_entry cut parse_key parse_delim parse_value =
   parse_key
-  :-- (fn n => parse_delim
+  :-- (fn n => parse_delim n
   |-- cut (parse_value n))
 fun parse_entry parse_key = gen_parse_entry Parse.!!! parse_key
 fun parse_entry' parse_key = gen_parse_entry Parse.!!!! parse_key

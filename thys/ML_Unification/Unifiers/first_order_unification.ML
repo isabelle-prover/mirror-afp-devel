@@ -26,6 +26,7 @@ val logger = Logger.setup_new_logger Unification_Base.logger "First_Order_Unific
 (* shared utils *)
 structure Util = Unification_Util
 structure Norm = Envir_Normalisation
+structure Comb = Unification_Combinator
 
 exception FALLBACK
 
@@ -131,7 +132,7 @@ fun e_match match_types match_theory binders ctxt pt env = Seq.make (fn _ =>
   end)
 
 (*standard first-order matching*)
-val match = e_match Util.match_types Unification_Combinator.fail_match
+val match = e_match Util.match_types Comb.fail_match
 
 (* e-unification *)
 
@@ -189,7 +190,7 @@ fun e_unify unify_types unify_theory binders ctxt st env = Seq.make (fn _ =>
                       handle Unification_Base.UNIF => Seq.empty (*types do not unify*)
                   end))
           end
-       | (_, Var _) => unif binders ctxt (t, s) env |> Seq.map (apsnd Unification_Base.symmetric)
+       | (_, Var _) => Comb.flip_unifier unif binders ctxt st env
        | (Abs (ns, Ts, ts), Abs (nt, Tt, tt)) =>
           ((let val name = if ns = "" then nt else ns
           in
@@ -208,7 +209,7 @@ fun e_unify unify_types unify_theory binders ctxt st env = Seq.make (fn _ =>
             |> seq_try
           end)
           handle Unification_Base.UNIF => Seq.empty) (*types do not unify*)
-      | (_, Abs _) => unif binders ctxt (t, s) env |> Seq.map (apsnd Unification_Base.symmetric)
+      | (_, Abs _) => Comb.flip_unifier unif binders ctxt st env
       | (Bound i, Bound j) => Util.bound_bound binders ctxt (i, j) |> Seq.map (pair env)
       | (Free _, Free g) => rigid_rigid ctxt s g env
       | (Const _, Const d) => rigid_rigid ctxt s d env
@@ -232,6 +233,6 @@ fun e_unify unify_types unify_theory binders ctxt st env = Seq.make (fn _ =>
   end)
 
 (*standard first-order unification*)
-val unify = e_unify Util.unify_types Unification_Combinator.fail_unify
+val unify = e_unify Util.unify_types Comb.fail_unify
 
 end

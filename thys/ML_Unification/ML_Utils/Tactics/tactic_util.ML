@@ -12,6 +12,9 @@ sig
   val THEN : ('a -> 'b Seq.seq) * ('b -> 'c Seq.seq) -> 'a -> 'c Seq.seq
   val THEN' : ('a -> 'b -> 'c Seq.seq) * ('a -> 'c -> 'd Seq.seq) -> 'a -> 'b -> 'd Seq.seq
 
+  val APPEND : ('a -> 'b Seq.seq) * ('a -> 'b Seq.seq) -> 'a -> 'b Seq.seq
+  val APPEND' : ('a -> 'b -> 'c Seq.seq) * ('a -> 'b -> 'c Seq.seq) -> 'a -> 'b -> 'c Seq.seq
+
   val ORELSE : ('a -> 'b Seq.seq) * ('a -> 'b Seq.seq) -> 'a -> 'b Seq.seq
   val ORELSE' : ('a -> 'b -> 'c Seq.seq) * ('a -> 'b -> 'c Seq.seq) -> 'a -> 'b -> 'c Seq.seq
 
@@ -19,8 +22,8 @@ sig
 
   val EVERY_ARG : ('a -> tactic) -> 'a list -> tactic
   val EVERY_ARG' : ('a -> 'b -> tactic) -> 'a list -> 'b -> tactic
-  val CONCAT : tactic list -> tactic
-  val CONCAT' : ('a -> tactic) list -> 'a -> tactic
+  val CONCAT : ('a -> 'b Seq.seq) list -> ('a -> 'b Seq.seq)
+  val CONCAT' : ('a -> 'b -> 'c Seq.seq) list -> 'a -> 'b -> 'c Seq.seq
 
   (*filters duplicate results*)
   val unique_thmsq : thm Seq.seq -> thm Seq.seq
@@ -115,8 +118,11 @@ fun TRY' tac = tac ORELSE' K all_tac
 fun EVERY_ARG tac = EVERY o map tac
 fun EVERY_ARG' tac = EVERY' o map tac
 
-fun CONCAT tacs = fold_rev (curry (op APPEND)) tacs no_tac
-fun CONCAT' tacs = fold_rev (curry (op APPEND')) tacs (K no_tac)
+fun (tac1 APPEND tac2) st = Seq.append (tac1 st) (Seq.make (fn _ => Seq.pull (tac2 st)))
+fun (tac1 APPEND' tac2) x = tac1 x APPEND tac2 x
+
+fun CONCAT tacs = fold_rev (curry (op APPEND)) tacs (K Seq.empty)
+fun CONCAT' tacs = fold_rev (curry (op APPEND')) tacs (K (K Seq.empty))
 
 local structure TI = Net
 in

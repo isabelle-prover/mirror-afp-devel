@@ -10,12 +10,12 @@ paragraph \<open>Summary\<close>
 text \<open>Setup of fact tactic and examples.\<close>
 
 ML\<open>
-\<^functor_instance>\<open>struct_name = Standard_Unify_Fact
-  and functor_name = Unify_Fact
-  and id = \<open>""\<close>
-  and more_args = \<open>val init_args = {
-    normalisers = SOME Standard_Mixed_Unification.norms_first_higherp_decomp_comb_higher_unify,
-    unifier = SOME Standard_Mixed_Unification.first_higherp_decomp_comb_higher_unify
+\<^functor_instance>\<open>struct_name: Standard_Unify_Fact
+  functor_name: Unify_Fact
+  id: \<open>""\<close>
+  more_args: \<open>val init_args = {
+    normalisers = SOME Standard_Mixed_Comb_Unification.norms_first_higherp_decomp_comb_higher_unify,
+    unifier = SOME Standard_Mixed_Comb_Unification.first_higherp_decomp_comb_higher_unify
   }\<close>\<close>
 \<close>
 local_setup \<open>Standard_Unify_Fact.setup_attribute NONE\<close>
@@ -33,8 +33,8 @@ lemma
 lemma
   assumes "\<And>P y. PROP P y x"
   shows "PROP P x"
-  (* by (ufact assms where unifier = Higher_Order_Unification.unify) \<comment>\<open>the line below is equivalent\<close> *)
-  supply [[ufact unifier = Higher_Order_Unification.unify]] by (ufact assms)
+  (* by (ufact assms unifier: Higher_Order_Unification.unify) \<comment>\<open>the line below is equivalent\<close> *)
+  supply [[ufact unifier: Higher_Order_Unification.unify]] by (ufact assms)
 
 lemma
   assumes "\<And>x y. PROP A x \<Longrightarrow> PROP B x \<Longrightarrow> PROP P x"

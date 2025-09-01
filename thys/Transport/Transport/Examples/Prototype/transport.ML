@@ -33,8 +33,8 @@ fun simp_transported_def ctxt simps y_def =
 (* resolution setup *)
 
 val any_unify_trp_hints_resolve_tac = Unify_Resolve_Base.unify_resolve_any_tac
-  Transport_Mixed_Unification.norms_first_higherp_decomp_comb_higher_unify
-  Transport_Mixed_Unification.first_higherp_decomp_comb_higher_unify
+  Transport_Mixed_Comb_Unification.norms_first_higherp_decomp_comb_higher_unify
+  Transport_Mixed_Comb_Unification.first_higherp_decomp_comb_higher_unify
 
 fun get_theorems_tac f get_theorems ctxt = f (get_theorems ctxt) ctxt
 val get_theorems_resolve_tac = get_theorems_tac any_unify_trp_hints_resolve_tac
@@ -151,7 +151,7 @@ val _ = Theory.setup (
 val parse_cmd_entries =
   let
     val parse_value = PA.parse_entry Parse.term Parse.term Parse.term Parse.term
-    val parse_entry = Parse_Key_Value.parse_entry PA.parse_key Parse_Util.eq parse_value
+    val parse_entry = Parse_Key_Value.parse_entry PA.parse_key (K Parse_Util.eq) parse_value
   in PA.parse_entries_required Parse.and_list1 [PA.key PA.x] parse_entry (PA.empty_entries ()) end
 
 (*some utilities to destruct terms*)

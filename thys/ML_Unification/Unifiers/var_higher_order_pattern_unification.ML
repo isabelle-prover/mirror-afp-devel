@@ -29,6 +29,7 @@ struct
 val logger = Logger.setup_new_logger Unification_Base.logger "Var_Higher_Order_Pattern_Unification"
 
 structure Util = Unification_Util
+structure Comb = Unification_Combinator
 
 fun can_var_pattern_unif (p, t) = let val (head, args) = strip_comb p
   in
@@ -42,12 +43,12 @@ fun e_unify unif_theory binders ctxt (tp as (t, p)) env = Seq.make (fn _ =>
   let
     exception FALLBACK of Pretty.T
     val unify_types = Util.unify_types
-    val hop_match_type_unif = Higher_Order_Pattern_Unification.e_match unify_types
-      Unification_Combinator.fail_match Unification_Combinator.fail_match
+    val hop_match_type_unif =
+      Higher_Order_Pattern_Unification.e_match unify_types Comb.fail_match Comb.fail_match
       |> Type_Unification.e_unify unify_types
-      |> (fn unif => unif binders ctxt)
-    val hop_match_type_unif_tp = hop_match_type_unif tp
-    val hop_match_type_unif_pt = hop_match_type_unif (p, t) #> Seq.map (apsnd Unification_Base.symmetric)
+      |> (fn unif => unif binders)
+    val hop_match_type_unif_tp = hop_match_type_unif ctxt tp
+    val hop_match_type_unif_pt = Comb.flip_closed_unifier hop_match_type_unif ctxt tp
     val seq_try = General_Util.seq_try (FALLBACK (Pretty.str "Higher-order pattern matching failed."))
   in
     ((@{log Logger.DEBUG} ctxt (fn _ => Pretty.block [

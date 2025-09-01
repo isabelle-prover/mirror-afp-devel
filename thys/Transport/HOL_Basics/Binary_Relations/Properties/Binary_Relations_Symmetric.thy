@@ -64,7 +64,7 @@ lemma symmetricD:
   assumes "symmetric R"
   and "R x y"
   shows "R y x"
-  using assms by (urule (d) symmetric_onD where chained = insert) simp_all
+  using assms by (urule (d) symmetric_onD chained: insert) simp_all
 
 lemma symmetric_on_if_symmetric:
   fixes P :: "'a \<Rightarrow> bool" and R :: "'a \<Rightarrow> 'a \<Rightarrow> bool"

@@ -70,7 +70,7 @@ lemma idempotentI [intro]:
 lemma idempotentD [dest]:
   assumes "idempotent R f"
   shows "f x \<equiv>\<^bsub>R\<^esub> f (f x)"
-  using assms by (urule (e) idempotent_onE where chained = insert) simp
+  using assms by (urule (e) idempotent_onE chained: insert) simp
 
 lemma idempotent_on_if_idempotent:
   assumes "idempotent R f"

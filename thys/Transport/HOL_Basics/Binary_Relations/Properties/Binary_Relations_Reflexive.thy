@@ -97,7 +97,7 @@ lemma reflexiveI [intro]:
 lemma reflexiveD:
   assumes "reflexive R"
   shows "R x x"
-  using assms by (urule (d) reflexive_onD where chained = insert) simp
+  using assms by (urule (d) reflexive_onD chained: insert) simp
 
 lemma reflexive_on_if_reflexive:
   fixes P :: "'a \<Rightarrow> bool" and R :: "'a \<Rightarrow> 'a \<Rightarrow> bool"

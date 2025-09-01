@@ -151,7 +151,13 @@ fun unify_eresolve_any_tac norms_resolve unify_resolve norms_assume unify_assume
   #> Tactic_Util.CONCAT'
 
 fun unify_dresolve_tac norms unify rule ctxt =
-  let val nprems = Thm.nprems_of rule
+  let
+    val nprems = Thm.nprems_of rule
+    (*Tactic.make_elim allows no context passing but Thm.biresolution fails to certificate certain
+    theorems without a context*)
+    fun make_elim thm =
+      let val resolve = Thm.biresolution (SOME ctxt) false [(false, thm)] |> HEADGOAL #> Seq.hd
+      in zero_var_indexes (resolve revcut_rl) end
   in
     if nprems = 0 then
       (@{log Logger.WARN} ctxt (fn _ =>
@@ -162,7 +168,7 @@ fun unify_dresolve_tac norms unify rule ctxt =
         ] |> Pretty.string_of
       );
       K no_tac)
-    else unify_eresolve_tac HOPU.norms_unify HOPU.unify norms unify (Tactic.make_elim rule) ctxt
+    else unify_eresolve_tac HOPU.norms_unify HOPU.unify norms unify (make_elim rule) ctxt
   end
 
 fun unify_dresolve_tacs norms unify rules ctxt =
@@ -186,7 +192,8 @@ fun unify_fresolve_tac norms unify rule ctxt i =
       );
       no_tac)
     else
-      unify_eresolve_tac_index HOPU.norms_unify HOPU.unify norms unify (Tactic.make_elim rule) ctxt i
+      unify_eresolve_tac_index HOPU.norms_unify HOPU.unify norms
+        (Unification_Combinator.flip_unifier unify) (Tactic.make_elim rule) ctxt i
       #> Seq.map snd
   end
 

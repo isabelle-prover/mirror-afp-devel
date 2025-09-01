@@ -42,7 +42,7 @@ ML_command\<open>
       \<comment> \<open>Create the key-value parser.\<close>
       val parse_entry = Parse_Key_Value.parse_entry
         Test.parse_key \<comment>\<open>parser for keys\<close>
-        Parse_Util.eq  \<comment>\<open>delimiter parser\<close>
+        (K Parse_Util.eq)  \<comment>\<open>delimiter parser\<close>
         (Test.parse_entry \<comment>\<open>value parser\<close>
           Parse.string \<comment>\<open>parser for ABC\<close>
           Parse.int) \<comment>\<open>parser for DEFG\<close>

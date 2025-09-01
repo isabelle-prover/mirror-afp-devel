@@ -77,12 +77,12 @@ lemma asymmetricD [dest]:
   assumes "asymmetric R"
   and "R x y"
   shows "\<not>(R y x)"
-  using assms by (urule (d) asymmetric_onD where chained = insert) simp_all
+  using assms by (urule (d) asymmetric_onD chained: insert) simp_all
 
 lemma asymmetricE:
   assumes "asymmetric R"
   obtains "\<And>x y. R x y \<Longrightarrow> \<not>(R y x)"
-  using assms by (urule (e) asymmetric_onE where chained = insert) simp_all
+  using assms by (urule (e) asymmetric_onE chained: insert) simp_all
 
 lemma asymmetric_on_if_asymmetric:
   fixes P :: "'a \<Rightarrow> bool" and R :: "'a \<Rightarrow> 'a \<Rightarrow> bool"

@@ -35,6 +35,7 @@ end
 signature UNIFY_ASSUMPTION =
 sig
   structure Data : GENERIC_DATA
+  where type T = Unify_Assumption_Args.args
 
   val get_args : Context.generic -> Unify_Assumption_Args.args
   val map_args : (Unify_Assumption_Args.args -> Unify_Assumption_Args.args) ->
@@ -76,11 +77,10 @@ structure PA = UAA.PA
 structure FI = Functor_Instance(A.FI)
 structure MCU = ML_Code_Util
 
-structure Data = Generic_Data(struct
+structure Data = Generic_Data(
   type T = UAA.args
   val empty = A.init_args
-  val merge = fst
-end)
+  val merge = fst)
 
 val get_args = Data.get
 val map_args = Data.map
@@ -99,8 +99,9 @@ val parse_arg_entries =
   let
     val parse_value = PA.parse_entry (PA.get_normalisers UAA.arg_parsers)
       (PA.get_unifier UAA.arg_parsers)
-    val parse_entry = Parse_Key_Value.parse_entry PA.parse_key Parse_Util.eq parse_value
-  in PA.parse_entries_required Parse.and_list1 [] parse_entry (PA.empty_entries ()) end
+    val parse_entry = Parse_Key_Value.parse_entry PA.parse_key (K (Parse.$$$ ":")) parse_value
+      |> Parse.!!! |> Scan.unless Parse.eof
+  in PA.parse_entries_required Scan.repeat1 [] parse_entry (PA.empty_entries ()) end
 
 fun attribute (entries, pos) =
   let

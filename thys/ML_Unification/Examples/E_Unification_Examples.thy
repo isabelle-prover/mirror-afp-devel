@@ -29,8 +29,8 @@ lemma [uhint prio = Prio.LOW]: "n \<noteq> 0 \<Longrightarrow> PROP SIMPS_TO_UNI
   unfolding SIMPS_TO_UNIF_eq by linarith
 
 text \<open>By default, below unification methods use
-@{ML Standard_Mixed_Unification.first_higherp_decomp_comb_higher_unify}, which is a combination of
-various practical unification algorithms.\<close>
+@{ML Standard_Mixed_Comb_Unification.first_higherp_decomp_comb_higher_unify}, which is a combination
+of various practical unification algorithms.\<close>
 
 schematic_goal "(\<And>x. x + 4 = n) \<Longrightarrow> Suc ?x = n"
   by uassm
@@ -98,7 +98,7 @@ schematic_goal "n - ?m = length []"
   supply [[ucombine del: \<open>(Standard_Unification_Combine.default_metadata \<^binding>\<open>simp_unif\<close>)\<close>]]
   (*doesn't work*)
   \<comment> \<open>by (ufact refl)\<close>
-  supply sub_self_eq_zero[uhint del, rec_uhint]
+  supply sub_self_eq_zero[uhint del:, rec_uhint]
   by (ufact refl)
 
 text \<open>Solution 2: make the recursion explicit in the hint.\<close>

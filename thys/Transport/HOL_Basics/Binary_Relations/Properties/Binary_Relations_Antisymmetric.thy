@@ -60,12 +60,12 @@ lemma antisymmetricD:
   assumes "antisymmetric R"
   and "R x y" "R y x"
   shows "x = y"
-  using assms by (urule (d) antisymmetric_onD where chained = insert) simp_all
+  using assms by (urule (d) antisymmetric_onD chained: insert) simp_all
 
 lemma antisymmetricE:
   assumes "antisymmetric R"
   obtains "\<And>x y. R x y \<Longrightarrow> R y x \<Longrightarrow> x = y"
-  using assms by (urule (e) antisymmetric_onE where chained = insert) simp_all
+  using assms by (urule (e) antisymmetric_onE chained: insert) simp_all
 
 lemma antisymmetric_on_if_antisymmetric:
   fixes P :: "'a \<Rightarrow> bool" and R :: "'a \<Rightarrow> 'a \<Rightarrow> bool"

@@ -30,11 +30,11 @@ ML_command\<open>
   \<comment>\<open>create an instance (structure) called \<open>Test_Functor_Instance\<close>\<close>
 structure A =
 struct
-\<^functor_instance>\<open>struct_name = Test
-  and functor_name = My_Functor
-  and path = \<open>"A"\<close>
-  and id = \<open>"test"\<close>
-  and more_args = \<open>val n = 42\<close>\<close>
+\<^functor_instance>\<open>struct_name: Test
+  functor_name: My_Functor
+  path: \<open>"A"\<close>
+  id: \<open>"test"\<close>
+  more_args: \<open>val n = 42\<close>\<close>
 end
   val _ = A.Test.get_n ()
 \<close>

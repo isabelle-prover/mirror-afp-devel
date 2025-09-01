@@ -134,12 +134,12 @@ lemma inverseI [intro]:
 lemma inverseD:
   assumes "inverse f g"
   shows "g (f x) = x"
-  using assms by (urule (d) inverse_onD where chained = insert) simp_all
+  using assms by (urule (d) inverse_onD chained: insert) simp_all
 
 lemma inverseE:
   assumes "inverse f g"
   obtains "\<And>x. g (f x) = x"
-  using assms by (urule (e) inverse_onE where chained = insert) simp_all
+  using assms by (urule (e) inverse_onE chained: insert) simp_all
 
 lemma inverse_on_if_inverse:
   fixes P :: "'a \<Rightarrow> bool" and f :: "'a \<Rightarrow> 'b" and g :: "'b \<Rightarrow> 'a"

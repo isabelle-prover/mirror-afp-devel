@@ -12,10 +12,10 @@ text \<open>Shared setup for unification tests. We use \<^cite>\<open>speccheck\
 tests and create unit tests.\<close>
 
 ML\<open>
-\<^functor_instance>\<open>struct_name = Test_Unification_Hints
-  and functor_name = Term_Index_Unification_Hints
-  and id = \<open>"test"\<close>
-  and more_args = \<open>
+\<^functor_instance>\<open>struct_name: Test_Unification_Hints
+  functor_name: Term_Index_Unification_Hints
+  id: \<open>"test"\<close>
+  more_args: \<open>
     structure TI = Discrimination_Tree
     val init_args = {
       concl_unifier = SOME (Higher_Order_Pattern_Unification.match

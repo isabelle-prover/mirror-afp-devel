@@ -40,9 +40,6 @@ sig
   val scale : Rat.rat -> prio -> prio
   val double : prio -> prio
 
-  val inc : prio -> prio
-  val dec : prio -> prio
-
   structure Table : TABLE
   where type key = prio
 
@@ -50,7 +47,6 @@ sig
 
   structure Internal_Prio_Data : GENERIC_DATA
   val parse : prio context_parser
-
 end
 
 structure Prio : PRIO =
@@ -68,9 +64,10 @@ val two_rat = Rat.of_int 2
 val BOTTOM_EXCLUSIVE = Prio (Rat.of_int 0)
 
 fun between (p1, p2) = Prio ((dest_prio p1 + dest_prio p2) / two_rat)
+(*assumption: BOTTOM_EXCLUSIVE = 0*)
 fun halve p = between (BOTTOM_EXCLUSIVE, p)
 fun scale r p = Prio (dest_prio p * r)
-val double = scale two_rat (*assumption: BOTTOM_EXCLUSIVE = 0*)
+val double = scale two_rat
 
 local
   fun mk_steps init next =
@@ -92,10 +89,6 @@ val [LOW1, LOW2, LOW3, LOW4, LOW5] = mk_steps LOW MEDIUM
 val [MEDIUM1, MEDIUM2, MEDIUM3, MEDIUM4, MEDIUM5] = mk_steps MEDIUM HIGH
 val [HIGH1, HIGH2, HIGH3, HIGH4, HIGH5] = mk_steps HIGH VERY_HIGH
 end
-
-val epsilon = Rat.make (1, 100)
-fun inc p = Prio (dest_prio p + epsilon)
-fun dec p = let val r = dest_prio p in if r <= epsilon then halve p else Prio (r - epsilon) end
 
 structure Table = Table(type key = prio; val ord = rev_order o ord)
 

@@ -90,7 +90,7 @@ lemma rel_injectiveD:
   assumes "rel_injective R"
   and "R x y" "R x' y"
   shows "x = x'"
-  using assms by (urule (d) rel_injective_onD where chained = insert) simp_all
+  using assms by (urule (d) rel_injective_onD chained: insert) simp_all
 
 lemma rel_injective_eq_rel_injective_at:
   "(rel_injective :: ('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> bool) = rel_injective_at (\<top> :: 'b \<Rightarrow> bool)"

@@ -53,4 +53,3 @@ session ML_Unification = HOL +
   document_files
     "root.tex"
     "root.bib"
-

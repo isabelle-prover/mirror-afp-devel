@@ -38,6 +38,7 @@ val logger = Logger.setup_new_logger Unification_Base.logger "Higher_Order_Patte
 (* shared utils *)
 structure Util = Unification_Util
 structure Norm = Envir_Normalisation
+structure Comb = Unification_Combinator
 
 exception FALLBACK
 
@@ -189,8 +190,7 @@ fun e_match match_types match_theory_pattern match_theory_fail binders ctxt pt e
   end)
 
 (*standard higher-order pattern matching*)
-val match = e_match Util.match_types Unification_Combinator.fail_match
-  Unification_Combinator.fail_match
+val match = e_match Util.match_types Comb.fail_match Comb.fail_match
 
 (*unification*)
 
@@ -425,7 +425,7 @@ fun e_unify unify_types unify_theory_pattern unify_theory_fail binders ctxt st e
               |> seq_try
             end)
             handle Unification_Base.UNIF => Seq.empty) (*types do not unify*)
-        | (_, Abs _) => unif binders ctxt (t', s') env |> Seq.map (apsnd Unification_Base.symmetric)
+        | (_, Abs _) => Comb.flip_unifier unif binders ctxt st' env
         | (Bound i, Bound j) => Util.bound_bound binders ctxt (i, j) |> Seq.map (pair env)
         | (Free _, Free g) => rigid_rigid ctxt s' g env
         | (Const _, Const d) => rigid_rigid ctxt s' d env
@@ -467,7 +467,6 @@ fun e_unify unify_types unify_theory_pattern unify_theory_fail binders ctxt st e
   end)
 
 (*standard higher-order pattern unification*)
-val unify = e_unify Util.unify_types Unification_Combinator.fail_unify
-  Unification_Combinator.fail_unify
+val unify = e_unify Util.unify_types Comb.fail_unify Comb.fail_unify
 
 end
