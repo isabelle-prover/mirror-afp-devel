@@ -3,10 +3,13 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://isa-afp.org/entries/index.json</loc>
-    <lastmod>2025-07-29T00:00:00+00:00</lastmod>
+    <lastmod>2025-08-23T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/</loc>
-    <lastmod>2025-07-29T00:00:00+00:00</lastmod>
+    <lastmod>2025-08-23T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/No_Free_Lunch_ML.html</loc>
+    <lastmod>2025-08-23T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/entries/Two_Way_DFA_HF.html</loc>
     <lastmod>2025-07-29T00:00:00+00:00</lastmod>
@@ -4966,6 +4969,8 @@
     <loc>https://isa-afp.org/authors/cremer/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/lauermann/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/sessions/no_free_lunch_ml/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/no_ftl_observers/</loc>
   </url><url>

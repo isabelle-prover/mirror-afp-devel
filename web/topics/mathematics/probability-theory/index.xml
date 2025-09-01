@@ -4,6 +4,14 @@
     <title>Mathematics/Probability theory</title>
     <link>https://isa-afp.org/topics/mathematics/probability-theory/</link>
     <description>AFP entries in Probability theory</description><item>
+  <title>No-free-lunch theorem for machine learning</title>
+  <link>https://isa-afp.org/entries/No_Free_Lunch_ML.html</link>
+  <pubDate>Sat, 23 Aug 2025 00:00:00 +0000</pubDate>
+  <description>No-free-lunch theorem for machine learning in the AFP</description>
+    <category>Computer science/Machine learning</category>
+    <category>Mathematics/Probability theory</category>
+</item>
+<item>
   <title>The Kolmogorov-Chentsov theorem</title>
   <link>https://isa-afp.org/entries/Kolmogorov_Chentsov.html</link>
   <pubDate>Sun, 06 Apr 2025 00:00:00 +0000</pubDate>
