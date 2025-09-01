@@ -29,6 +29,7 @@ fun first_higherp_decomp_e_match match_theory binders ctxt tp env = Seq.make (fn
       (first_higherp_decomp_e_match match_theory) match_theory
     val higherp_decomp_comb_higher = Higher_Order_Pattern_Unification.e_match
       match_types decomp_comb_higher match_theory
+      |> Type_Unification.e_match match_types
     val fo_higherp_decomp_comb_higher = First_Order_Unification.e_match match_types
       higherp_decomp_comb_higher
   in
@@ -47,6 +48,7 @@ fun first_higherp_decomp_e_unify unif_theory binders ctxt tp env = Seq.make (fn 
       (first_higherp_decomp_e_unify unif_theory) unif_theory
     val higherp_decomp_comb_higher = Higher_Order_Pattern_Unification.e_unify
       unify_types decomp_comb_higher unif_theory
+      |> Type_Unification.e_unify unify_types
     val fo_higherp_decomp_comb_higher = First_Order_Unification.e_unify unify_types
       higherp_decomp_comb_higher
   in
