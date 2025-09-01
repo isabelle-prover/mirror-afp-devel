@@ -3016,15 +3016,11 @@ name = "Michikazu Hirata"
 
 [hirata.emails.hirata_email]
 user = [
-  "hirata",
-  "m",
-  "ac",
+  "michi-isa",
 ]
 host = [
-  "m",
-  "titech",
-  "ac",
-  "jp",
+  "mail",
+  "ee",
 ]
 
 [hirata.homepages]
