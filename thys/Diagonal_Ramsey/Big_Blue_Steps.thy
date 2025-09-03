@@ -4,11 +4,6 @@ theory Big_Blue_Steps imports Book
 
 begin
 
-(*FIXME: move?*)
-lemma gbinomial_is_prod: "(a gchoose k) = (\<Prod>i<k. (a - of_nat i) / (1 + of_nat i))"
-  unfolding gbinomial_prod_rev
-  by (induction k; simp add: divide_simps)
-
 subsection \<open>Preliminaries\<close>
 
 text \<open>A bounded increasing sequence of finite sets eventually terminates\<close>
@@ -152,7 +147,7 @@ text \<open>This is fact 4.2 (page 11) as well as equation (73), page 55.\<close
 lemma Fact_D1_73:
   fixes \<sigma>::real and m b::nat  
   assumes \<sigma>: "0<\<sigma>" "\<sigma>\<le>1" and b: "real b \<le> \<sigma> * m / 2"
-  shows  "(\<sigma>*m) gchoose b \<in> {\<sigma>^b * (real m gchoose b) * exp (- (real b ^ 2) / (\<sigma>*m)) .. \<sigma>^b * (m gchoose b)}"
+  shows  "(\<sigma>*m) gchoose b \<in> {\<sigma>^b * (m gchoose b) * exp (- (real b)\<^sup>2 / (\<sigma>*m)) .. \<sigma>^b * (m gchoose b)}"
 proof (cases "m=0 \<or> b=0")
   case True
   then show ?thesis
@@ -214,7 +209,7 @@ next
     by simp
 qed
 
-text \<open>Exact at zero, so cannot be done using the approximation method\<close>
+text \<open>Exact at zero, so cannot be done entirely using the approximation method\<close>
 lemma exp_inequality_17:
   fixes x::real
   assumes "0 \<le> x" "x \<le> 1/7"
@@ -255,12 +250,7 @@ next
     have "exp (- 3* real i / (2*m)) \<le> 1 - 4*i / (3*m)"
       using exp_inequality_17 [OF im] by (simp add: mult.commute)
     also have "\<dots> \<le> 1 - 8*i / (7 * (real m - real b))"
-    proof -
-      have "real i * (real b * 7) \<le> real i * real m"
-        using b' by (simp add: mult_left_mono)
-      then show ?thesis
-        using b' by (simp add: field_split_simps)
-    qed
+      using b' nle_le by (fastforce simp: field_split_simps)
     also have "\<dots> \<le> 1 - ((1-\<sigma>)*i) / (\<sigma> * (real m - real i))"
     proof -
       have 1: "(1 - \<sigma>) / \<sigma> \<le> 8/7"
