@@ -1,6 +1,6 @@
 (*  Title:       Deriving class instances for datatypes
     Author:      Christian Sternagel and René Thiemann  <christian.sternagel|rene.thiemann@uibk.ac.at>
-    Maintainer:  Christian Sternagel and René Thiemann 
+    Maintainer:  Christian Sternagel and René Thiemann
     License:     LGPL
 *)
 signature HASHCODE_GENERATOR =
@@ -10,7 +10,7 @@ sig
    {map : term,                    (* take % x. x, if there is no map *)
     phash : term,                  (* partial hash *)
     hash : term,                   (* full hash *)
-    hash_def : thm option,         (* definition of hash, important for nesting *) 
+    hash_def : thm option,         (* definition of hash, important for nesting *)
     map_comp : thm option,         (* hashositionality of map, important for nesting *)
     used_positions : bool list}
 
@@ -27,7 +27,7 @@ sig
   val register_foreign_partial_and_full_hash :
     string -> (* long type name *)
     term -> (* map function, should be \<lambda>x. x, if there is no map *)
-    term -> (* partial hash-function of type (hashcode, 'b)ty => hashcode, 
+    term -> (* partial hash-function of type (hashcode, 'b)ty => hashcode,
       where 'a is used, 'b is unused *)
     term -> (* (full) hash-function of type ('a \<Rightarrow> hashcode) \<Rightarrow> ('a,'b)ty \<Rightarrow> hashcode,
       where 'a is used, 'b is unused *)
@@ -38,15 +38,15 @@ sig
 
   datatype hash_type = HASHCODE | BNF
 
-  val generate_hashs_from_bnf_fp : 
+  val generate_hashs_from_bnf_fp :
     string ->                 (* name of type *)
-    local_theory -> 
+    local_theory ->
     ((term * thm list) list * (* partial hashs + simp-rules *)
     (term * thm) list) *      (* non-partial hash + def_rule *)
     local_theory
 
-  val generate_hash : 
-    hash_type -> 
+  val generate_hash :
+    hash_type ->
     string -> (* name of type *)
     local_theory -> local_theory
 
@@ -57,7 +57,7 @@ sig
 
   (* ensures that the info will be available on later requests *)
   val ensure_info : hash_type -> string -> local_theory -> local_theory
-    
+
 end
 
 structure Hashcode_Generator : HASHCODE_GENERATOR =
@@ -87,7 +87,7 @@ fun int_of_string s = fold
 fun create_factor ty_name con_name i =
   (1444315237 * int_of_string ty_name +
   1336760419 * int_of_string con_name +
-  2044890737 * (i + 1) 
+  2044890737 * (i + 1)
   ) mod max_int
 
 fun create_hashes ty_name con_name Ts = map (fn i =>
@@ -135,21 +135,21 @@ fun register_foreign_partial_and_full_hash tyco m p c c_def m_hash eq_thm c_thm 
 fun default_hash T = absdummy T @{term "0 :: hashcode"} (*%_. 0*)
 
 fun register_foreign_hash T hash lthy =
-  let 
+  let
     val tyco = (case T of Type (tyco, []) => tyco | _ => error "expected type constant with no arguments")
   in
-    register_foreign_partial_and_full_hash 
+    register_foreign_partial_and_full_hash
       tyco (HOLogic.id_const T) hash hash NONE NONE [] lthy
   end
 
-fun register_hash_of tyco lthy = 
-  let 
+fun register_hash_of tyco lthy =
+  let
     val _ = is_class_instance (Proof_Context.theory_of lthy) tyco hashS
       orelse error ("type " ^ quote tyco ^ " is not an instance of class \"hashable\"")
     val (T,_) = typ_and_vs_of_typname (Proof_Context.theory_of lthy) tyco @{sort type}
     val hash = Const (hash_name, hashfunT T)
   in register_foreign_hash T hash lthy end
-                       
+
 
 fun generate_hashs_from_bnf_fp tyco lthy =
   let
@@ -165,21 +165,21 @@ fun generate_hashs_from_bnf_fp tyco lthy =
 
     val map_simps = Bnf_Access.map_simps lthy tycos
     val case_simps = Bnf_Access.case_simps lthy tycos
-    val maps = Bnf_Access.map_terms lthy tycos
+    val map_terms = Bnf_Access.map_terms lthy tycos
     val map_comp_thms = Bnf_Access.map_comps lthy tycos
-    
+
 
     (* primrec definitions of partial hashs *)
 
     fun mk_phash (tyco, T) = ("partial_hash_code_" ^ Long_Name.base_name tyco, phashfunT T)
 
-    fun constr_terms lthy =  
-      Bnf_Access.constr_terms lthy 
+    fun constr_terms lthy =
+      Bnf_Access.constr_terms lthy
       #> map (apsnd (map freeify_tvars o fst o strip_type) o dest_Const)
 
     fun generate_phash_eqs lthy (tyco, T) =
       let
-        val constrs = constr_terms lthy tyco 
+        val constrs = constr_terms lthy tyco
 
         fun hash_arg T x =
           let
@@ -220,7 +220,7 @@ fun generate_hashs_from_bnf_fp tyco lthy =
         val cs = map (subT "h") used_tfrees
         val arg_Ts = map hashfunT used_tfrees
         val args = map Free (cs ~~ arg_Ts)
-        val (phash, m) = AList.lookup (op =) (tycos ~~ (phashs ~~ maps)) tyco |> the
+        val (phash, m) = AList.lookup (op =) (tycos ~~ (phashs ~~ map_terms)) tyco |> the
         val ts = tfrees |> map TFree |> map (fn T =>
           AList.lookup (op =) (used_tfrees ~~ args) T |> the_default (default_hash T))
         val rhs = HOLogic.mk_comp (phash, list_comb (m, ts)) |> infer_type lthy
@@ -293,15 +293,15 @@ fun generate_hashs_from_bnf_fp tyco lthy =
                     dep_map_comps @ hash_defs @ dep_hash_defs @ flat map_simps))
           in thms end
 
-        val thms = map (generate_eq_thm lthy) constrs |> flat
+        val thms = maps (generate_eq_thm lthy) constrs
         val simp_thms = map (Local_Defs.unfold lthy @{thms hash_combine_unfold}) thms
-        
+
         val name = "hash_code_" ^ Long_Name.base_name tyco
       in
         lthy
-        |> Local_Theory.note ((Binding.name (name ^ "_simps"), @{attributes [simp, code equation]}), simp_thms)
-        |> snd
-        |> (fn lthy => (thms, lthy))
+        |> Local_Theory.note ((Binding.name (name ^ "_simps"), @{attributes [simp]}), simp_thms)
+        |-> (fn (_, simps) => Code.declare_default_eqns (map (rpair true) simps))
+        |> pair thms
       end
 
     val lthy =
@@ -315,21 +315,21 @@ fun generate_hashs_from_bnf_fp tyco lthy =
   in
     ((phashs ~~ phash_simps, hashs ~~ hash_defs), lthy)
     ||> fold (fn (((((tyco, map), phash), hash), hash_def), map_comp) =>
-          declare_info tyco map phash hash (SOME hash_def) (SOME map_comp) 
+          declare_info tyco map phash hash (SOME hash_def) (SOME map_comp)
             used_positions)
-         (tycos ~~ maps ~~ phashs ~~ hashs ~~ hash_defs ~~ map_comp_thms)
+         (tycos ~~ map_terms ~~ phashs ~~ hashs ~~ hash_defs ~~ map_comp_thms)
   end
 
 fun generate_hash gen_type tyco lthy =
-  let 
+  let
     val _ = is_some (get_info lthy tyco)
       andalso error ("type " ^ quote tyco ^ " does already have a hash")
   in
-    case gen_type of 
+    case gen_type of
       BNF => generate_hashs_from_bnf_fp tyco lthy |> snd
     | HASHCODE => register_hash_of tyco lthy
   end
-  
+
 fun ensure_info gen_type tyco lthy =
   (case get_info lthy tyco of
     SOME _ => lthy
@@ -360,8 +360,8 @@ fun hashable_instance tname thy =
       andalso error ("type " ^ quote tname ^ " is already an instance of class \"hashcode\"")
     val _ = writeln ("deriving \"hashable\" instance for type " ^ quote tname)
     val thy = Named_Target.theory_map (ensure_info BNF tname) thy
-    val {used_positions = us, ...} = the (get_info 
-        (Named_Target.theory_init thy) tname) 
+    val {used_positions = us, ...} = the (get_info
+        (Named_Target.theory_init thy) tname)
 
     val (_, xs) = typ_and_vs_of_used_typname tname us hashS
     val (_, (hashs_thm,lthy)) =
@@ -402,11 +402,11 @@ fun generate_hash_cmd tyco param = Named_Target.theory_map (
 
 val _ =
   Theory.setup
-    (Derive_Manager.register_derive 
+    (Derive_Manager.register_derive
       "hash_code" "generate a hash function, options are () and (hashcode)" generate_hash_cmd
-    #> Derive_Manager.register_derive 
-      "hashable" 
-      "register types in class hashable" 
+    #> Derive_Manager.register_derive
+      "hashable"
+      "register types in class hashable"
       (fn tyname => K (hashable_instance tyname)))
 
 end

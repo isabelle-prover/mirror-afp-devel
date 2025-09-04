@@ -260,8 +260,9 @@ fun generate_showsp tyco lthy =
        val name = "showsp_" ^ Long_Name.base_name tyco
       in
         lthy
-        |> Local_Theory.note ((Binding.name (name ^ "_simps"), @{attributes [simp, code equation]}), thms)
-        |> apfst snd
+        |> Local_Theory.note ((Binding.name (name ^ "_simps"), @{attributes [simp]}), thms)
+        |-> (fn (_, simps) => Code.declare_default_eqns (map (rpair true) simps)
+          #> pair simps)
       end
 
     val (show_simps, lthy) =
