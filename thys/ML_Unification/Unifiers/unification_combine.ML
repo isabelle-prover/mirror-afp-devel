@@ -25,13 +25,15 @@ sig
   val default_metadata : binding -> metadata
 
   type eunif_data
-  val eunif_data : Unification_Base.e_unifier -> metadata -> eunif_data
-  val dest_eunif_data : eunif_data -> Unification_Base.e_unifier * metadata
+  val eunif_data : metadata * Unification_Base.e_unifier -> eunif_data
+  val dest_eunif_data : eunif_data -> metadata * Unification_Base.e_unifier
   val eunif_data_e_unifier : eunif_data -> Unification_Base.e_unifier
   val eunif_data_metadata : eunif_data -> metadata
   val pretty_eunif_data : eunif_data -> Pretty.T
 
-  type eunif_datas = eunif_data list Prio.Table.table
+  structure Table : TABLE
+  where type key = Prio.prio
+  type eunif_datas = eunif_data list Table.table
   (*storing the e-unifiers and metadata*)
   structure Data : GENERIC_DATA
   where type T = eunif_datas
@@ -93,34 +95,35 @@ fun pretty_metadata (Metadata (binding, prio))= Pretty.block [
 
 fun default_metadata binding = metadata binding Prio.MEDIUM
 
-datatype eunif_data = EUnif_Data of UB.e_unifier * metadata
+datatype eunif_data = EUnif_Data of metadata * UB.e_unifier
 
-fun eunif_data unify meta = EUnif_Data (unify, meta)
+fun eunif_data (meta, unify) = EUnif_Data (meta, unify)
 fun dest_eunif_data (EUnif_Data data) = data
-fun eunif_data_e_unifier (EUnif_Data (unify, _)) = unify
-fun eunif_data_metadata (EUnif_Data (_, meta)) = meta
+fun eunif_data_metadata (EUnif_Data (meta, _)) = meta
+fun eunif_data_e_unifier (EUnif_Data (_, unify)) = unify
 val eunif_data_prio = eunif_data_metadata #> metadata_prio
 
 val eq_eunif_data = eq_metadata o apply2 eunif_data_metadata
-fun pretty_eunif_data (EUnif_Data (_, meta)) = pretty_metadata meta
+fun pretty_eunif_data (EUnif_Data (meta, _)) = pretty_metadata meta
 
-type eunif_datas = eunif_data list Prio.Table.table
+structure Table = Table(type key = Prio.prio; val ord = rev_order o Prio.ord)
+type eunif_datas = eunif_data list Table.table
 
 (*invariant: data is sorted with respect to the priorities*)
 structure Data = Generic_Data(
   type T = eunif_datas
-  val empty = Prio.Table.empty
-  val merge = Prio.Table.merge_list eq_eunif_data)
+  val empty = Table.empty
+  val merge = Table.merge_list eq_eunif_data)
 
 val get_eunif_datas = Data.get
-val get_e_unifiers = map (eunif_data_e_unifier o snd) o Prio.Table.dest_list o get_eunif_datas
+val get_e_unifiers = map (eunif_data_e_unifier o snd) o Table.dest_list o get_eunif_datas
 val map_eunif_datas = Data.map
 
 fun insert_eunif_data data context =
   let val prio = eunif_data_prio data
   in
     Data.map (fn datas =>
-      if member eq_eunif_data (Prio.Table.lookup_list datas prio) data
+      if member eq_eunif_data (Table.lookup_list datas prio) data
       then (@{log Logger.WARN} (Context.proof_of context) (fn _ =>
         Pretty.block [
           Pretty.str "eunif data (",
@@ -128,7 +131,7 @@ fun insert_eunif_data data context =
           Pretty.str ") already added."
         ] |> Pretty.string_of);
         datas)
-      else Prio.Table.insert_list eq_eunif_data (prio, data) datas
+      else Table.insert_list eq_eunif_data (prio, data) datas
     ) context
   end
 
@@ -136,8 +139,8 @@ fun delete_eunif_data metadata context =
   let val prio = metadata_prio metadata
   in
     Data.map (fn datas =>
-      if member eq_metadata (Prio.Table.lookup_list datas prio |> map eunif_data_metadata) metadata
-      then Prio.Table.remove_list (eq_metadata o apsnd eunif_data_metadata) (prio, metadata) datas
+      if member eq_metadata (Table.lookup_list datas prio |> map eunif_data_metadata) metadata
+      then Table.remove_list (eq_metadata o apsnd eunif_data_metadata) (prio, metadata) datas
       else (@{log Logger.WARN} (Context.proof_of context) (fn _ =>
         Pretty.block [
           Pretty.str "metadata (",
@@ -149,7 +152,7 @@ fun delete_eunif_data metadata context =
   end
 
 fun pretty_data ctxt = get_eunif_datas (Context.Proof ctxt)
-  |> Prio.Table.dest_list
+  |> Table.dest_list
   |> map (pretty_eunif_data o snd)
   |> Pretty.fbreaks
   |> Pretty.block

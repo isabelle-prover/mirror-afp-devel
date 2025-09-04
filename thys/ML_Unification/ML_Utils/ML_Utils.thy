@@ -4,6 +4,7 @@ theory ML_Utils
   imports
     ML_Attribute_Utils
     ML_Conversion_Utils
+    ML_Costs_Priorities
     ML_Functor_Instances
     ML_General_Utils
     ML_Generic_Data_Utils
@@ -11,7 +12,6 @@ theory ML_Utils
     ML_Attributes
     ML_Code_Utils
     ML_Parsing_Utils
-    ML_Priorities
     ML_Tactic_Utils
     ML_Term_Utils
     ML_Theorem_Utils

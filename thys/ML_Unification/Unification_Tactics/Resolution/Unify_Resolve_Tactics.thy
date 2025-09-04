@@ -14,8 +14,8 @@ ML\<open>
   functor_name: Unify_Resolve
   id: \<open>""\<close>
   more_args: \<open>val init_args = {
-    normalisers = SOME Standard_Mixed_Comb_Unification.norms_first_higherp_decomp_comb_higher_unify,
-    unifier = SOME Standard_Mixed_Comb_Unification.first_higherp_decomp_comb_higher_unify,
+    normalisers = SOME Standard_Mixed_Comb_Unification.norms_first_higherp_comb_unify,
+    unifier = SOME Standard_Mixed_Comb_Unification.first_higherp_comb_unify,
     mode = SOME (Unify_Resolve_Args.PM.key Unify_Resolve_Args.PM.any),
     chained = SOME (Unify_Resolve_Args.PCM.key Unify_Resolve_Args.PCM.resolve)
   }\<close>\<close>

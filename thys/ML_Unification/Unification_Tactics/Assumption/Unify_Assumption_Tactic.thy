@@ -13,8 +13,8 @@ ML\<open>
   functor_name: Unify_Assumption
   id: \<open>""\<close>
   more_args: \<open>val init_args = {
-    normalisers = SOME Standard_Mixed_Comb_Unification.norms_first_higherp_decomp_comb_higher_unify,
-    unifier = SOME Standard_Mixed_Comb_Unification.first_higherp_decomp_comb_higher_unify
+    normalisers = SOME Standard_Mixed_Comb_Unification.norms_first_higherp_comb_unify,
+    unifier = SOME Standard_Mixed_Comb_Unification.first_higherp_comb_unify
   }\<close>\<close>
 \<close>
 local_setup \<open>Standard_Unify_Assumption.setup_attribute NONE\<close>

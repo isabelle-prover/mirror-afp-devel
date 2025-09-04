@@ -5,7 +5,7 @@ theory ML_Unification_Hints_Base
     ML_Conversion_Utils
     ML_Functor_Instances
     ML_Generic_Data_Utils
-    ML_Priorities
+    ML_Costs_Priorities
     ML_Term_Index
     ML_Tactic_Utils
     ML_Term_Utils

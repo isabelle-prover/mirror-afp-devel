@@ -14,27 +14,25 @@ and [[rec_uhint config: hint_preprocessor = \<open>Unification_Hints_Base.obj_lo
 
 lemma eq_TrueI: "PROP P \<Longrightarrow> PROP P \<equiv> Trueprop True" by (standard) simp
 declare [[ucombine \<open>Standard_Unification_Combine.eunif_data
-  (Simplifier_Unification.SIMPS_TO_unify @{thm eq_TrueI}
+  (Standard_Unification_Combine.metadata \<^binding>\<open>SIMPS_TO_unif\<close> Prio.HIGH,
+  Simplifier_Unification.SIMPS_TO_unify @{thm eq_TrueI}
   |> Unification_Combinator.norm_unifier (Unification_Util.inst_norm_term'
-      Standard_Mixed_Comb_Unification.norms_first_higherp_decomp_comb_higher_unify)
-  |> K)
-  (Standard_Unification_Combine.metadata \<^binding>\<open>SIMPS_TO_unif\<close> Prio.HIGH)\<close>]]
+      Standard_Mixed_Comb_Unification.norms_first_higherp_comb_unify)
+  |> K)\<close>]]
 
 declare [[ucombine \<open>
-  let
-    open Term_Normalisation
+  let open Term_Normalisation
     (*ignore changes of schematic variables to avoid loops due to index-raising of some tactics*)
     val eq_beta_eta_dummy_vars = apply2 (beta_eta_short #> dummy_vars) #> op aconv
+    fun simp_unif unify_theory = Simplifier_Unification.simp_unify_progress eq_beta_eta_dummy_vars
+      (Simplifier_Unification.SIMPS_TO_UNIF_unify @{thm eq_TrueI}
+        Standard_Mixed_Comb_Unification.norms_first_higherp_comb_unify)
+      (Unification_Util.inst_norm_term'
+        Standard_Mixed_Comb_Unification.norms_first_higherp_comb_unify)
+      (Standard_Mixed_Comb_Unification.first_higherp_comb_e_unify unify_theory)
   in
     Standard_Unification_Combine.eunif_data
-      (Simplifier_Unification.simp_unify_progress eq_beta_eta_dummy_vars
-        (Simplifier_Unification.SIMPS_TO_UNIF_unify @{thm eq_TrueI}
-          Standard_Mixed_Comb_Unification.norms_first_higherp_decomp_comb_higher_unify)
-        (Unification_Util.inst_norm_term'
-          Standard_Mixed_Comb_Unification.norms_first_higherp_decomp_comb_higher_unify)
-        Standard_Mixed_Comb_Unification.first_higherp_decomp_comb_higher_unify
-      |> K)
-      (Standard_Unification_Combine.metadata \<^binding>\<open>SIMPS_TO_UNIF_unif\<close> Prio.HIGH)
+    (Standard_Unification_Combine.metadata \<^binding>\<open>SIMPS_TO_UNIF_unif\<close> Prio.HIGH, simp_unif)
   end\<close>]]
 
 end

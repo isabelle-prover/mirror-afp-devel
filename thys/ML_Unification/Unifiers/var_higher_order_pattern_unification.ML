@@ -2,16 +2,16 @@
     Author:     Kevin Kappelmann
 
 Unifies terms of the form ?H b1 ... bn \<equiv>\<^sup>? t where
-(1) b1,...,bn are bound variables and
+(1) b1,...,bn are distinct, bound variables and
 (2) ?H does not occur in t
 with the higher-order pattern matcher. This pattern occurs frequently when unifying theorems with a
 goal containing bound variables.
 
 Example: If we want to solve the goal "\<And>x. ?P x 0" with a lemma ?Q by resolution,
-the bound variables of the goal are first lifted to lemma, resulting in "?Q x".
+the bound variables of the goal are first lifted to the lemma, resulting in "?Q x".
 Next, the terms "?Q x \<equiv>\<^sup>? ?P x 0" are unified. Unfortunately, this problem falls outside the
-higher-order pattern fragment since 0 is a constant.
-However, the problem seems essentially first-order before lifting the bound variables:
+higher-order pattern fragment since 0 is a constant and outside the first-order fragment.
+However, the problem is first-order before lifting the bound variables:
 we should be able to use ?Q to solve any goal G by setting ?Q to G.
 The unifier of this file returns the expected substitution "?Q := \<lambda>x. ?P x 0" in this case.
 *)

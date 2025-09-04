@@ -123,9 +123,9 @@ ML\<open>
     val init_args = {
       concl_unifier = SOME (Higher_Order_Pattern_Unification.unify
         |> Type_Unification.e_unify Unification_Util.unify_types),
-      prems_unifier = SOME (Transport_Mixed_Comb_Unification.first_higherp_decomp_comb_higher_unify
+      prems_unifier = SOME (Transport_Mixed_Comb_Unification.first_higherp_comb_unify
         |> Unification_Combinator.norm_unifier Envir_Normalisation.beta_norm_term_unif),
-      normalisers = SOME Transport_Mixed_Comb_Unification.norms_first_higherp_decomp_comb_higher_unify,
+      normalisers = SOME Transport_Mixed_Comb_Unification.norms_first_higherp_comb_unify,
       retrieval = SOME (Term_Index_Unification_Hints_Args.mk_retrieval_sym_pair
         TI.unifiables TI.norm_term),
       hint_preprocessor = SOME (K I)
@@ -135,12 +135,11 @@ local_setup \<open>Transport_Unification_Hints.setup_attribute NONE\<close>
 declare [[trp_uhint config: hint_preprocessor = \<open>Unification_Hints_Base.obj_logic_hint_preprocessor
   @{thm atomize_eq[symmetric]} (Conv.rewr_conv @{thm eq_eq_True})\<close>]]
 declare [[trp_ucombine add: \<open>Transport_Unification_Combine.eunif_data
-  (Transport_Unification_Hints.try_hints
-  |> Unification_Combinator.norm_unifier
-    (Unification_Util.inst_norm_term'
-      Transport_Mixed_Comb_Unification.norms_first_higherp_decomp_comb_higher_unify)
-  |> K)
-  (Transport_Unification_Combine.default_metadata Transport_Unification_Hints.binding)\<close>]]
+  (Transport_Unification_Combine.default_metadata Transport_Unification_Hints.binding,
+  Transport_Unification_Hints.try_hints
+  |> Unification_Combinator.norm_unifier (Unification_Util.inst_norm_term'
+      Transport_Mixed_Comb_Unification.norms_first_higherp_comb_unify)
+  |> K)\<close>]]
 
 paragraph \<open>Prototype\<close>
 ML_file\<open>transport.ML\<close>
