@@ -25,22 +25,22 @@ proof (cases "a=0")
     case True
     then have "(f \<longlongrightarrow> pi / 2) at_top \<longleftrightarrow> ((\<lambda>x. arctan (x * inverse a)) \<longlongrightarrow> pi / 2) at_top"
       unfolding f_def field_class.field_divide_inverse by auto
-    also have "... \<longleftrightarrow> (arctan \<longlongrightarrow> pi / 2) at_top"
+    also have "\<dots> \<longleftrightarrow> (arctan \<longlongrightarrow> pi / 2) at_top"
       apply (subst filterlim_at_top_linear_iff[of "inverse a" arctan 0 "nhds (pi/2)",simplified])
       using True by auto
-    also have "..." using tendsto_arctan_at_top .
+    also have "\<dots>" using tendsto_arctan_at_top .
     finally show ?thesis .    
   next
     case False
     then have "(f \<longlongrightarrow> pi / 2) at_top \<longleftrightarrow> ((\<lambda>x. arctan (x * inverse a) + pi) \<longlongrightarrow> pi / 2) at_top"
       unfolding f_def field_class.field_divide_inverse by auto
-    also have "... \<longleftrightarrow> ((\<lambda>x. arctan (x * inverse a)) \<longlongrightarrow> - pi / 2) at_top"
+    also have "\<dots> \<longleftrightarrow> ((\<lambda>x. arctan (x * inverse a)) \<longlongrightarrow> - pi / 2) at_top"
       apply (subst tendsto_add_const_iff[of "-pi",symmetric])
       by auto
-    also have "... \<longleftrightarrow> (arctan \<longlongrightarrow> - pi / 2) at_bot"
+    also have "\<dots> \<longleftrightarrow> (arctan \<longlongrightarrow> - pi / 2) at_bot"
       apply (subst filterlim_at_top_linear_iff[of "inverse a" arctan 0,simplified])
       using False \<open>a\<noteq>0\<close> by auto
-    also have "..." using tendsto_arctan_at_bot by simp
+    also have "\<dots>" using tendsto_arctan_at_bot by simp
     finally show ?thesis .
   qed
   moreover have "\<forall>\<^sub>F x in at_top. f x = g x"
@@ -69,22 +69,22 @@ proof (cases "a=0")
     case True
     then have "(f \<longlongrightarrow> - pi / 2) at_bot \<longleftrightarrow> ((\<lambda>x. arctan (x * inverse a)) \<longlongrightarrow> - pi / 2) at_bot"
       unfolding f_def field_class.field_divide_inverse by auto
-    also have "... \<longleftrightarrow> (arctan \<longlongrightarrow> - pi / 2) at_bot"
+    also have "\<dots> \<longleftrightarrow> (arctan \<longlongrightarrow> - pi / 2) at_bot"
       apply (subst filterlim_at_bot_linear_iff[of "inverse a" arctan 0,simplified])
       using True by auto
-    also have "..." using tendsto_arctan_at_bot by simp
+    also have "\<dots>" using tendsto_arctan_at_bot by simp
     finally show ?thesis .    
   next
     case False
     then have "(f \<longlongrightarrow> - pi / 2) at_bot \<longleftrightarrow> ((\<lambda>x. arctan (x * inverse a) - pi) \<longlongrightarrow> - pi / 2) at_bot"
       unfolding f_def field_class.field_divide_inverse by auto
-    also have "... \<longleftrightarrow> ((\<lambda>x. arctan (x * inverse a)) \<longlongrightarrow> pi / 2) at_bot"
+    also have "\<dots> \<longleftrightarrow> ((\<lambda>x. arctan (x * inverse a)) \<longlongrightarrow> pi / 2) at_bot"
       apply (subst tendsto_add_const_iff[of "pi",symmetric])
       by auto
-    also have "... \<longleftrightarrow> (arctan \<longlongrightarrow> pi / 2) at_top"
+    also have "\<dots> \<longleftrightarrow> (arctan \<longlongrightarrow> pi / 2) at_top"
       apply (subst filterlim_at_bot_linear_iff[of "inverse a" arctan 0,simplified])
       using False \<open>a\<noteq>0\<close> by auto
-    also have "..." using tendsto_arctan_at_top by simp
+    also have "\<dots>" using tendsto_arctan_at_top by simp
     finally show ?thesis .
   qed
   moreover have "\<forall>\<^sub>F x in at_bot. f x = g x"
@@ -125,7 +125,7 @@ proof (cases "Im z0\<le>Im a")
           unfolding g2_def path_image_part_circlepath[of pi "2*pi",simplified]  
           by auto
         then have "Im p=Im z0 + sin t * r" by (auto simp add:Im_exp)
-        also have "... \<le> Im z0"
+        also have "\<dots> \<le> Im z0"
         proof -
           have "sin t\<le>0" using \<open>pi\<le>t\<close> \<open>t\<le>2*pi\<close> sin_le_zero by fastforce
           moreover have "r\<ge>0" 
@@ -134,7 +134,7 @@ proof (cases "Im z0\<le>Im a")
           ultimately have "sin t * r\<le>0" using mult_le_0_iff by blast
           then show ?thesis by auto
         qed
-        also have "... \<le> Im a" using True .
+        also have "\<dots> \<le> Im a" using True .
         finally show ?thesis .
       qed
       moreover have "valid_path (g2 r)" unfolding g2_def by auto
@@ -181,14 +181,14 @@ proof (cases "Im z0\<le>Im a")
       unfolding f1_def f2_def g1_def g2_def
       apply (subst winding_number_join)
       using asm by (auto intro!:not_on_circlepathI)
-    also have "... = Re(winding_number (circlepath z0 r) a)"
+    also have "\<dots> = Re(winding_number (circlepath z0 r) a)"
     proof -
       have "g1 r +++ g2 r = circlepath z0 r"
         unfolding circlepath_def g1_def g2_def joinpaths_def part_circlepath_def linepath_def
         by (auto simp add:field_simps)
       then show ?thesis by auto
     qed
-    also have "... = 1"
+    also have "\<dots> = 1"
     proof -
       have "winding_number (circlepath z0 r) a = 1"
         apply (rule winding_number_circlepath)
@@ -355,7 +355,7 @@ next
         apply auto
         by (metis (no_types, opaque_lifting) add.right_neutral mult.commute mult_zero_right 
             poly_0 poly_pCons uminus_add_conv_diff)
-      also have "... =  winding_number (g r) a "
+      also have "\<dots> =  winding_number (g r) a "
         apply (subst winding_number_comp_linear[where b="-pc*a",simplified])
         subgoal using \<open>pc\<noteq>0\<close> .
         subgoal unfolding g_def by auto
@@ -391,7 +391,7 @@ next
         unfolding w_def 
         apply (subst winding_number_comp[of UNIV,simplified])
         using asm unfolding g_def cc_def  by auto
-      also have "... = cc * contour_integral (g r) (\<lambda>w. deriv (poly p) w / poly p w + 1/(w-a))"  
+      also have "\<dots> = cc * contour_integral (g r) (\<lambda>w. deriv (poly p) w / poly p w + 1/(w-a))"  
       proof -
         have "contour_integral (g r) (\<lambda>w. deriv (poly q) w / poly q w) 
             = contour_integral (g r) (\<lambda>w. deriv (poly p) w / poly p w + 1/(w-a))"
@@ -421,7 +421,7 @@ next
         qed
         then show ?thesis by auto
       qed
-      also have "... = cc * contour_integral (g r) (\<lambda>w. deriv (poly p) w / poly p w) 
+      also have "\<dots> = cc * contour_integral (g r) (\<lambda>w. deriv (poly p) w / poly p w) 
           + cc * contour_integral (g r) (\<lambda>w. 1/(w-a))"  
       proof (subst contour_integral_add)
         have "continuous_on (path_image (g r)) (\<lambda>w. deriv (poly p) w)"
@@ -437,7 +437,7 @@ next
           subgoal using asm unfolding q_def path_image_compose by auto
           done
       qed (auto simp add:algebra_simps)
-      also have "... =  winding_number (g r) a +  winding_number (poly p o g r) 0"
+      also have "\<dots> =  winding_number (g r) a +  winding_number (poly p o g r) 0"
       proof -
         have "winding_number (poly p o g r) 0
             = cc * contour_integral (g r) (\<lambda>w. deriv (poly p) w / poly p w)"
@@ -510,29 +510,26 @@ proof -
     qed
     then have "(f \<longlongrightarrow> 0) at_infinity"
       unfolding f_def using poly_divide_tendsto_0_at_infinity by auto
-    then have "(f \<longlongrightarrow> 0) at_bot" "(f \<longlongrightarrow> 0) at_top"
+    then have 0: "(f \<longlongrightarrow> 0) at_bot" "(f \<longlongrightarrow> 0) at_top"
       by (auto elim!:filterlim_mono simp add:at_top_le_at_infinity at_bot_le_at_infinity)
-    then have "((\<lambda>r. arctan (f r))\<longlongrightarrow> 0) at_top" "((\<lambda>r. arctan (f (-r)))\<longlongrightarrow> 0) at_top"
-      apply -
-      subgoal by (auto intro:tendsto_eq_intros)
-      subgoal 
-        apply (subst tendsto_compose_filtermap[of _ uminus,unfolded comp_def])
-        by (auto intro:tendsto_eq_intros simp add:at_bot_mirror[symmetric])
-      done
-    then show ?thesis 
-      by (auto intro:tendsto_eq_intros)
+    have "((\<lambda>r. arctan (f r))\<longlongrightarrow> 0) at_top"
+      by (auto intro: 0 tendsto_eq_intros)
+    moreover have "((\<lambda>r. arctan (f (-r)))\<longlongrightarrow> 0) at_top"
+      using 0 filterlim_at_bot_mirror tendsto_arctan by fastforce
+    ultimately show ?thesis 
+      by (auto intro: tendsto_eq_intros)
   next
     case False
     obtain c where "f=(\<lambda>r. c)"
     proof -
       have "degree p=0" using False by auto
-      moreover have "degree q\<le>degree p"
+      moreover have "degree q \<le> degree p"
       proof -
         have "degree p=degree pp" 
           unfolding p_def using \<open>lead_coeff pp=1\<close>
           by (auto intro:map_poly_degree_eq)
-        moreover have "degree q\<le>degree pp"
-          unfolding q_def by simp
+        moreover have "degree q \<le> degree pp"
+          by (simp add: degree_map_poly_le q_def)
         ultimately show ?thesis by auto
       qed
       ultimately have "degree q=0" by simp
@@ -557,7 +554,7 @@ proof -
         / Re ((poly pp o of_real o (\<lambda>x. 2*r*x - r)) t)"
       unfolding g_def linepath_def comp_def 
       by (auto simp add:algebra_simps)
-    also have "... = (f o (\<lambda>x. 2*r*x - r)) t"
+    also have "\<dots> = (f o (\<lambda>x. 2*r*x - r)) t"
       unfolding comp_def
       by (simp only:Im_poly_of_real diff_0_right Re_poly_of_real f_def q_def p_def)
     finally show ?thesis .
@@ -596,7 +593,7 @@ proof -
         subgoal using image_pos by auto
         subgoal by (auto simp add:not_g_image)
         done
-      also have "... = (arctan (f r) - arctan (f (-r)))/(2*pi)"
+      also have "\<dots> = (arctan (f r) - arctan (f (-r)))/(2*pi)"
       proof -
         have "Im (Ln (pathfinish (g r))) = arctan (f r)"
         proof -
@@ -605,7 +602,7 @@ proof -
           then have "Im (Ln (pathfinish (g r))) 
               = arctan (Im (pathfinish (g r)) / Re (pathfinish (g r)))" 
             by (subst Im_Ln_eq,auto)
-          also have "... = arctan (f r)"
+          also have "\<dots> = arctan (f r)"
             unfolding path_defs by (subst g_f_eq,auto)
           finally show ?thesis .
         qed
@@ -616,7 +613,7 @@ proof -
           then have "Im (Ln (pathstart (g r))) 
               = arctan (Im (pathstart (g r)) / Re (pathstart (g r)))" 
             by (subst Im_Ln_eq,auto)
-          also have "... = arctan (f (-r))"
+          also have "\<dots> = arctan (f (-r))"
             unfolding path_defs by (subst g_f_eq,auto)
           finally show ?thesis .
         qed  
@@ -628,13 +625,13 @@ proof -
         have "cindex_pathE (g r) 0 = cindex_pathE (poly pp o of_real o (\<lambda>x. 2*r*x - r)) 0"
           unfolding g_def linepath_def comp_def 
           by (auto simp add:algebra_simps)
-        also have "... = cindexE 0 1 (f o (\<lambda>x. 2*r*x - r)) "
+        also have "\<dots> = cindexE 0 1 (f o (\<lambda>x. 2*r*x - r)) "
           unfolding cindex_pathE_def comp_def
           by (simp only:Im_poly_of_real diff_0_right Re_poly_of_real f_def q_def p_def)
-        also have "... = cindexE (-r) r f"
+        also have "\<dots> = cindexE (-r) r f"
           apply (subst cindexE_linear_comp[of "2*r" 0 1 _ "-r",simplified])
           using \<open>r\<ge>1\<close> by auto
-        also have "... = 0"
+        also have "\<dots> = 0"
         proof -
           have "jumpF f (at_left x) =0" "jumpF f (at_right x) = 0" when "x\<in>{-r..r}" for x
           proof -
@@ -764,7 +761,7 @@ proof -
             subgoal using \<open>valid_path h\<close> .
             subgoal using h_img .
             done
-          also have "... = (farg - arctan (f (-r))) / (2 * pi)"
+          also have "\<dots> = (farg - arctan (f (-r))) / (2 * pi)"
           proof -
             have "Im (Ln (pathfinish h)) = farg"
               using \<open>Re(h 1)=0\<close> unfolding farg_def path_defs
@@ -780,7 +777,7 @@ proof -
               then have "Im (Ln (pathstart h)) = arctan (Im (pathstart h) / Re (pathstart h))"
                 using Re_pos[rule_format,of 0]
                 by (simp add: Im_Ln_eq path_defs)
-              also have "... = arctan (f (-r))"
+              also have "\<dots> = arctan (f (-r))"
                 unfolding f_def path_defs hp[rule_format] hq[rule_format] 
                 by simp
               finally show ?thesis .
@@ -793,10 +790,10 @@ proof -
             have "cindex_pathE h 0 = cindexE 0 1 (f \<circ> (\<lambda>x. (min_r + r) * x - r))"
               unfolding cindex_pathE_def using \<open>c\<noteq>0\<close>
               by (auto simp add:hp hq f_def comp_def algebra_simps) 
-            also have "... = cindexE (-r) min_r f"
+            also have "\<dots> = cindexE (-r) min_r f"
               apply (subst cindexE_linear_comp[where b="-r",simplified])
               using r_asm by auto
-            also have "... = - jumpF f (at_left min_r)"
+            also have "\<dots> = - jumpF f (at_left min_r)"
             proof -
               define right where "right = {x. jumpF f (at_right x) \<noteq> 0 \<and> - r \<le> x \<and> x < min_r}"
               define left where "left = {x. jumpF f (at_left x) \<noteq> 0 \<and> - r < x \<and> x \<le> min_r}"
@@ -818,7 +815,7 @@ proof -
               ultimately show ?thesis
                 unfolding cindexE_def by (fold left_def right_def,auto)
             qed
-            also have "... = (-farg/pi)"
+            also have "\<dots> = (-farg/pi)"
             proof -
               have p_pos:"c*poly p x > 0" when "x \<in> {- r<..<min_r}" for x
               proof -
@@ -979,7 +976,7 @@ proof -
             subgoal using \<open>valid_path h\<close> .
             subgoal using h_img .
             done
-          also have "... = (arctan (f r) - farg) / (2 * pi)"
+          also have "\<dots> = (arctan (f r) - farg) / (2 * pi)"
           proof -
             have "Im (Ln (pathstart h)) = farg"
               using \<open>Re(h 0)=0\<close> unfolding farg_def path_defs
@@ -995,7 +992,7 @@ proof -
               then have "Im (Ln (pathfinish h)) = arctan (Im (pathfinish h) / Re (pathfinish h))"
                 using Re_pos[rule_format,of 1]
                 by (simp add: Im_Ln_eq path_defs)
-              also have "... = arctan (f r)"
+              also have "\<dots> = arctan (f r)"
                 unfolding f_def path_defs hp[rule_format] hq[rule_format] 
                 by simp
               finally show ?thesis .
@@ -1008,10 +1005,10 @@ proof -
             have "cindex_pathE h 0 = cindexE 0 1 (f \<circ> (\<lambda>x. (r-max_r)*x + max_r))"
               unfolding cindex_pathE_def using \<open>c\<noteq>0\<close>
               by (auto simp add:hp hq f_def comp_def algebra_simps) 
-            also have "... = cindexE max_r r f"
+            also have "\<dots> = cindexE max_r r f"
               apply (subst cindexE_linear_comp)
               using r_asm by auto
-            also have "... = jumpF f (at_right max_r)"
+            also have "\<dots> = jumpF f (at_right max_r)"
             proof -
               define right where "right = {x. jumpF f (at_right x) \<noteq> 0 \<and> max_r \<le> x \<and> x < r}"
               define left where "left = {x. jumpF f (at_left x) \<noteq> 0 \<and> max_r < x \<and> x \<le> r}"
@@ -1033,7 +1030,7 @@ proof -
               ultimately show ?thesis
                 unfolding cindexE_def by (fold left_def right_def,auto)
             qed
-            also have "... = farg/pi"
+            also have "\<dots> = farg/pi"
             proof -
               have p_pos:"c*poly p x > 0" when "x \<in> {max_r<..<r}" for x
               proof -
@@ -1283,15 +1280,15 @@ next
       qed
       then show "of_nat (order x p) = winding_number lr x * of_nat (order x p)" by auto
     qed
-    also have "... = 1/(2*pi*\<i>) * contour_integral lr (\<lambda>x. deriv (poly p) x / poly p x)"
+    also have "\<dots> = 1/(2*pi*\<i>) * contour_integral lr (\<lambda>x. deriv (poly p) x / poly p x)"
       apply (subst argument_principle_poly[of p lr])
       using \<open>p\<noteq>0\<close> img_ll img_rr unfolding lr_def ll_def rr_def
       by (auto simp add:path_image_join)
-    also have "... = winding_number (poly p \<circ> lr) 0"  
+    also have "\<dots> = winding_number (poly p \<circ> lr) 0"  
       apply (subst winding_number_comp[of UNIV "poly p" lr 0])
       using \<open>p\<noteq>0\<close> img_ll img_rr unfolding lr_def ll_def rr_def
       by (auto simp add:path_image_join path_image_compose)
-    also have "... = Re (winding_number (poly p \<circ> lr) 0)" 
+    also have "\<dots> = Re (winding_number (poly p \<circ> lr) 0)" 
     proof -
       have "winding_number (poly p \<circ> lr) 0 \<in> Ints" 
         apply (rule integer_winding_number)
@@ -1300,11 +1297,11 @@ next
             pathstart_compose pathfinish_compose valid_path_imp_path)
       then show ?thesis by (simp add: complex_eqI complex_is_Int_iff)
     qed
-    also have "... =  Re (winding_number (poly p \<circ> ll) 0) + Re (winding_number (poly p \<circ> rr) 0)"
+    also have "\<dots> =  Re (winding_number (poly p \<circ> ll) 0) + Re (winding_number (poly p \<circ> rr) 0)"
       unfolding lr_def path_compose_join using img_ll img_rr
       apply (subst winding_number_join)
       by (auto simp add:valid_path_imp_path path_image_compose pathstart_compose pathfinish_compose)
-    also have "... = w1 r  +w2 r"
+    also have "\<dots> = w1 r  +w2 r"
       unfolding w1_def w2_def ll_def rr_def of_real_linepath by auto
     finally have "of_nat (proots_count p {x. 0 < Im x}) = complex_of_real (w1 r + w2 r)" .
     then have "proots_count p {x. 0 < Im x} = w1 r + w2 r" 
@@ -1314,12 +1311,12 @@ next
       define f where "f=(\<lambda>x. Im (poly p (of_real x)) / Re (poly p x))"
       have "cp r = cindex_pathE (poly p \<circ> (\<lambda>x. 2*r*x - r)) 0"
         unfolding cp_def linepath_def by (auto simp add:algebra_simps)
-      also have "... = cindexE 0 1 (f o (\<lambda>x. 2*r*x - r))"
+      also have "\<dots> = cindexE 0 1 (f o (\<lambda>x. 2*r*x - r))"
         unfolding cp_def ci_def cindex_pathE_def f_def comp_def by auto
-      also have "... = cindexE (-r) r f"
+      also have "\<dots> = cindexE (-r) r f"
         apply (subst cindexE_linear_comp[of "2*r" 0 1 f "-r",simplified])
         using \<open>r>0\<close> by auto
-      also have "... = ci r"
+      also have "\<dots> = ci r"
         unfolding ci_def f_def Im_poly_of_real Re_poly_of_real by simp
       finally show ?thesis .
     qed
@@ -1363,7 +1360,7 @@ next
           = cindexE lb ub (\<lambda>t. Im (qrg t * (g t - b)) / Re (qrg t * (g t - b)))"
       unfolding qrg_def \<open>p = q * ([:- b, 1:] * r)\<close> comp_def
       by (simp add:algebra_simps)
-    also have "... = cindexE lb ub
+    also have "\<dots> = cindexE lb ub
         (\<lambda>t. ((Re a + t * s - Re b )* Im (qrg t)) /
            ((Re a + t * s - Re b )* Re (qrg t)))" 
     proof -
@@ -1373,7 +1370,7 @@ next
         unfolding cindex_pathE_def g_def linepath_def
         by (simp add:algebra_simps)
     qed
-    also have "... = cindexE lb ub (\<lambda>t. Im (qrg t) / Re (qrg t))"
+    also have "\<dots> = cindexE lb ub (\<lambda>t. Im (qrg t) / Re (qrg t))"
     proof (rule cindexE_cong[of "{t. Re a + t * s - Re b = 0}"])
       show "finite {t. Re a + t * s - Re b = 0}"
       proof (cases "Re a= Re b")
@@ -1394,7 +1391,7 @@ next
       then show "tt * Im (qrg x) / (tt * Re (qrg x)) = Im (qrg x) / Re (qrg x)"
         by auto
     qed 
-    also have "... = cindexE lb ub (\<lambda>t. Im ((poly q \<circ> g) t) / Re ((poly q \<circ> g) t))"
+    also have "\<dots> = cindexE lb ub (\<lambda>t. Im ((poly q \<circ> g) t) / Re ((poly q \<circ> g) t))"
       unfolding qrg_def
     proof (rule root(1))
       show "lead_coeff r = 1" 
@@ -1407,7 +1404,6 @@ next
 qed
 
 
-
 lemma poly_decompose_by_proots:
   fixes p ::"'a::idom poly"
   assumes "p\<noteq>0"
@@ -1417,10 +1413,8 @@ proof (induct p rule:poly_root_induct_alt)
   then show ?case by simp
 next
   case (no_proots p)
-  then show ?case 
-    apply (rule_tac x=1 in exI)
-    apply (rule_tac x=p in exI)
-    by (simp add:proots_def)
+  then show ?case
+    by (metis lead_coeff_1 mult_1 poly_1 proots_within_iff zero_neq_one) 
 next
   case (root a p)
   then obtain q r where pqr:"p = q * r" and leadq:"lead_coeff q=1" 
@@ -1451,25 +1445,24 @@ proof -
     by auto
   have "real_of_int (proots_upper p) = proots_upper q + proots_upper r"
     using \<open>p\<noteq>0\<close> unfolding proots_upper_def pqr by (auto simp add:proots_count_times)
-  also have "... = proots_upper q"
+  also have "\<dots> = proots_upper q"
   proof -
     have "proots_within r {z. 0 < Im z} = {}"
       using rball by auto
-    then have "proots_upper r =0 " 
+    then have "proots_upper r = 0" 
       unfolding proots_upper_def proots_count_def by simp
     then show ?thesis by auto
   qed
-  also have "... =  (degree q - cindex_poly_ubd (map_poly Im q) (map_poly Re q)) / 2"
+  also have "\<dots> =  (degree q - cindex_poly_ubd (map_poly Im q) (map_poly Re q)) / 2"
     by (rule proots_upper_cindex_eq[OF leadq qball])
-  also have "... = (degree p - proots_count p {x. Im x=0} 
-                      - cindex_poly_ubd (map_poly Im p) (map_poly Re p)) /2"
+  also have "\<dots> = (degree p - proots_count p {x. Im x=0} 
+                    - cindex_poly_ubd (map_poly Im p) (map_poly Re p)) / 2"
   proof -
     have "degree q = degree p - proots_count p {x. Im x=0}"
     proof -
       have "degree p= degree q + degree r"
         unfolding pqr
-        apply (rule degree_mult_eq)
-        using \<open>p \<noteq> 0\<close> pqr by auto
+        using \<open>p \<noteq> 0\<close> degree_monic_mult leadq pqr by auto
       moreover have "degree r = proots_count p {x. Im x=0}"
         unfolding degree_proots_count proots_count_def
       proof (rule sum.cong)
@@ -1503,14 +1496,11 @@ proof -
           unfolding scaleR_conv_of_real iq_def ip_def rq_def rp_def 
           by (simp add:Im_poly_of_real Re_poly_of_real)
       qed
-      then have "\<forall>\<^sub>F r::real in at_top.
-        real_of_int (cindex_poly_ubd iq rq) = cindex_poly_ubd ip rp"
+      then have "\<forall>\<^sub>F r::real in at_top. (cindex_poly_ubd iq rq) = cindex_poly_ubd ip rp"
         using eventually_conj[OF cindex_poly_ubd_eventually[of iq rq] 
-                cindex_poly_ubd_eventually[of ip rp]]
-        by (elim eventually_mono,auto)
+                cindex_poly_ubd_eventually[of ip rp]] cindex_poly_ubd_def by auto
       then show ?thesis
-        apply (fold iq_def rq_def ip_def rp_def)
-        by simp
+        by (simp flip: iq_def rq_def ip_def rp_def)
     qed
     ultimately show ?thesis by auto
   qed
@@ -1536,18 +1526,17 @@ proof -
   define g where  "g = gcd pR pI"
   have "card (proots_within p {x. Im x >0}) = proots_upper p"
     unfolding proots_upper_def using card_proots_within_rsquarefree[OF assms] by auto
-  also have "... = proots_upper pp"
+  also have "\<dots> = proots_upper pp"
     unfolding proots_upper_def pp_def
     apply (subst proots_count_smult)
     using assms by auto
-  also have "... = (degree pp - proots_count pp {x. Im x = 0} - cindex_poly_ubd pI pR) div 2"
+  also have "\<dots> = (degree pp - proots_count pp {x. Im x = 0} - cindex_poly_ubd pI pR) div 2"
   proof -
     define rr where "rr = proots_count pp {x. Im x = 0}"
     define cpp where "cpp = cindex_poly_ubd pI pR"
     have *:"proots_upper pp = (degree pp - rr - cpp) / 2"
-      apply (rule proots_upper_cindex_eq'[of pp,folded rr_def cpp_def pR_def pI_def])
-      unfolding pp_def using assms by auto
-    also have "... = (degree pp - rr - cpp) div 2"
+      using assms cpp_def pI_def pR_def pp_def proots_upper_cindex_eq' rr_def by auto
+    also have "\<dots> = (degree pp - rr - cpp) div 2"
     proof (subst real_of_int_div)
       define tt where "tt=int (degree pp - rr) - cpp"
       have "real_of_int tt=2*proots_upper pp"
@@ -1556,7 +1545,7 @@ proof -
     qed simp
     finally show ?thesis unfolding rr_def cpp_def by simp
   qed
-  also have "... = (degree pp - changes_R_smods g (pderiv g) 
+  also have "\<dots> = (degree pp - changes_R_smods g (pderiv g) 
                         - cindex_poly_ubd pI pR) div 2"
   proof -
     have "rsquarefree pp" 
@@ -1565,18 +1554,14 @@ proof -
     from card_proots_within_rsquarefree[OF this] 
     have "proots_count pp {x. Im x = 0} = card (proots_within pp {x. Im x = 0})"
       by simp
-    also have "... = card (proots_within pp (unbounded_line 0 1))"
+    also have "\<dots> = card (proots_within pp (unbounded_line 0 1))"
     proof -
       have "{x. Im x = 0} = unbounded_line 0 1"
-        unfolding unbounded_line_def 
-        apply auto
-        subgoal for x
-          apply (rule_tac x="Re x" in exI)
-          by (metis complex_is_Real_iff of_real_Re of_real_def)
-        done
+        unfolding unbounded_line_def
+        by (simp add: complex_eq_iff) 
       then show ?thesis by simp
     qed
-    also have "... = changes_R_smods g (pderiv g)"
+    also have "\<dots> = changes_R_smods g (pderiv g)"
       unfolding card_proots_unbounded_line[of 0 1 pp,simplified,folded pI_def pR_def] g_def
       by (auto simp add:Let_def sturm_R[symmetric])
     finally have "proots_count pp {x. Im x = 0} = changes_R_smods g (pderiv g)" .
@@ -1585,14 +1570,12 @@ proof -
     ultimately show ?thesis 
       by auto
   qed
-  also have "... = (degree p - changes_R_smods g (pderiv g) 
-                        - changes_R_smods pR pI) div 2"
+  also have "\<dots> = (degree p - changes_R_smods g (pderiv g)  - changes_R_smods pR pI) div 2"
     using cindex_poly_ubd_code unfolding pp_def by simp
   finally have "card (proots_within p {x. 0 < Im x}) = (degree p - changes_R_smods g (pderiv g) -
                   changes_R_smods pR pI) div 2" .
   then show ?thesis unfolding Let_def
-    apply (fold pp_def pR_def pI_def g_def)
-    by (simp add: pp_def)
+    by (simp add: pp_def flip: pp_def pR_def pI_def g_def)
 qed
     
 lemma proots_upper_code1[code]:
@@ -1620,8 +1603,7 @@ proof -
     define rr where "rr=int (degree pp - proots_count pp {x. Im x = 0}) - cindex_poly_ubd pI pR"
     have "lead_coeff p\<noteq>0" using \<open>p\<noteq>0\<close> by simp
     then have "proots_upper pp = rr / 2" unfolding rr_def
-      apply (rule_tac proots_upper_cindex_eq'[of pp, folded pI_def pR_def])
-      unfolding pp_def lead_coeff_smult by auto
+      by (simp add: pI_def pR_def pp_def proots_upper_cindex_eq')
     then have "proots_upper pp = nat (rr div 2)" by linarith
     moreover have
       "rr = degree p - nat (changes_R_smods_ext g (pderiv g)) - changes_R_smods pR pI"
@@ -1640,13 +1622,11 @@ proof -
       ultimately show ?thesis unfolding rr_def by auto
     qed
     moreover have "proots_upper pp = proots_upper p"
-      unfolding pp_def proots_upper_def 
-      apply (subst proots_count_smult)
-      using that by auto
+      unfolding pp_def proots_upper_def
+      by (meson \<open>lead_coeff p \<noteq> 0\<close> inverse_nonzero_iff_nonzero proots_count_smult) 
     ultimately show ?thesis 
       unfolding Let_def using that
-      apply (fold pp_def pI_def pR_def g_def)
-      by argo
+      by (simp flip: pp_def pI_def pR_def g_def)
   qed
   ultimately show ?thesis by blast
 qed
@@ -1680,13 +1660,13 @@ next
       by auto
     then show ?thesis unfolding proots_upper_card_def by auto
   qed
-  also have "... = nat ((degree pf - changes_R_smods g (pderiv g) - changes_R_smods pR pI) div 2)"
+  also have "\<dots> = nat ((degree pf - changes_R_smods g (pderiv g) - changes_R_smods pR pI) div 2)"
     using proots_within_upper_squarefree[OF rsquarefree_gcd_pderiv[OF \<open>p\<noteq>0\<close>]
         ,unfolded Let_def,folded pf_def,folded pp_def pI_def pR_def g_def]
     unfolding proots_upper_card_def by blast
   finally show ?thesis unfolding Let_def
-    apply (fold pf_def,fold pp_def pI_def pR_def g_def)
-    using False by auto
+    using False
+    by (simp flip: pf_def pp_def pI_def pR_def g_def)
 qed
 
 subsection \<open>Polynomial roots on a general half-plane\<close>
@@ -1706,15 +1686,15 @@ lemma proots_half_proots_upper:
   assumes "a\<noteq>b" "p\<noteq>0"
   shows "proots_half p a b= proots_upper (pcompose p [:a, (b-a):])"
 proof -
-  define q where "q=[:a, (b - a):]"
-  define f where "f=(\<lambda>x. (b-a)*x+ a)"
+  define q where "q \<equiv> [:a, (b - a):]"
+  define f where "f \<equiv> (\<lambda>x. (b-a)*x+ a)"
   have "(\<Sum>r\<in>proots_within p {w. Im ((w-a) / (b-a)) > 0}. order r p) 
       = (\<Sum>r\<in>proots_within (p \<circ>\<^sub>p q) {z. 0 < Im z}. order r (p \<circ>\<^sub>pq))"
   proof (rule sum.reindex_cong[of f])
     have "inj f"
       using assms unfolding f_def inj_on_def by fastforce
     then show "inj_on f (proots_within (p \<circ>\<^sub>p q) {z. 0 < Im z})"
-      by (elim inj_on_subset,auto)
+      using inj_on_subset by blast
   next
     show "proots_within p {w. Im ((w-a) / (b-a)) > 0} = f ` proots_within (p \<circ>\<^sub>p q) {z. 0 < Im z}"
     proof safe
@@ -1726,13 +1706,12 @@ proof -
         unfolding xx_def using x_asm by auto
       ultimately have "xx \<in> proots_within (p \<circ>\<^sub>p q) {z. 0 < Im z}" by auto
       then show "x \<in> f ` proots_within (p \<circ>\<^sub>p q) {z. 0 < Im z}" 
-        apply (intro rev_image_eqI[of xx])
-        unfolding f_def xx_def using assms by auto
+        unfolding f_def xx_def using assms by (force intro: image_eqI)
     next
       fix x assume "x \<in> proots_within (p \<circ>\<^sub>p q) {z. 0 < Im z}"
       then show "f x \<in> proots_within p {w. 0 < Im ((w-a) / (b - a))}" 
         unfolding f_def q_def using assms 
-        apply (auto simp add:poly_pcompose)
+        apply (simp add:poly_pcompose)
         by (auto simp add:algebra_simps)
     qed
   next
@@ -1744,18 +1723,15 @@ proof -
     next
       case (no_proots p)
       have "order (f x) p = 0"
-        apply (rule order_0I)        
-        using no_proots by auto
+        by (simp add: no_proots.hyps order_0I)
       moreover have "order x (p \<circ>\<^sub>p q) = 0"
-        apply (rule order_0I)
-        unfolding poly_pcompose q_def using no_proots by auto
+        by (simp add: no_proots.hyps order_0I poly_pcompose)
       ultimately show ?case by auto
     next
       case (root c p)
-      have "order (f x) ([:- c, 1:] * p) = order (f x) [:-c,1:] + order (f x) p" 
-        apply (subst order_mult)
-        using root by auto
-      also have "... =  order x ([:- c, 1:] \<circ>\<^sub>p q) +  order x (p \<circ>\<^sub>p q)" 
+      have "order (f x) ([:- c, 1:] * p) = order (f x) [:-c,1:] + order (f x) p"
+        using order_mult root.prems by blast 
+      also have "\<dots> =  order x ([:- c, 1:] \<circ>\<^sub>p q) +  order x (p \<circ>\<^sub>p q)" 
       proof -
         have "order (f x) [:- c, 1:] = order x ([:- c, 1:] \<circ>\<^sub>p q)" 
         proof (cases "f x=c")
@@ -1765,33 +1741,28 @@ proof -
           then have "order x ([:- c, 1:] \<circ>\<^sub>p q) = order x (smult (b-a) [:-x,1:])"
             by auto
           then have "order x ([:- c, 1:] \<circ>\<^sub>p q) = 1"
-            apply (subst (asm) order_smult)
-            using assms order_power_n_n[of _ 1,simplified] by auto   
+            by (metis assms(1) eq_iff_diff_eq_0 order_linear order_smult)
           moreover have "order (f x) [:- c, 1:] = 1"
             using True order_power_n_n[of _ 1,simplified] by auto
           ultimately show ?thesis by auto
         next
           case False
           have "order (f x) [:- c, 1:] = 0"
-            apply (rule order_0I)
-            using False unfolding f_def by auto
-          moreover have "order x ([:- c, 1:] \<circ>\<^sub>p q) = 0"
-            apply (rule order_0I)
+            by (simp add: False)
+          moreover have "poly ([:- c, 1:] \<circ>\<^sub>p q) x \<noteq> 0"
             using False unfolding f_def q_def poly_pcompose by auto
-          ultimately show ?thesis by auto
+          ultimately show ?thesis
+            by (metis order_0I)
         qed
         moreover have "order (f x) p = order x (p \<circ>\<^sub>p q)"
-          apply (rule root)
-          using root by auto 
+          using root by fastforce
         ultimately show ?thesis by auto
       qed
-      also have "... = order x (([:- c, 1:] * p) \<circ>\<^sub>p q)" 
-        unfolding pcompose_mult
-        apply (subst order_mult)
-        apply (metis add_0 assms(1) bot_nat_0.not_eq_extremum degree_pCons_0 degree_pCons_eq
-            diff_eq_eq n_not_Suc_n pCons_eq_0_iff pcompose_eq_0_iff pcompose_mult q_def
-            root(2))
-        by simp
+      also have "\<dots> = order x (([:- c, 1:] * p) \<circ>\<^sub>p q)" 
+        unfolding pcompose_mult q_def
+        by (metis One_nat_def assms(1) degree_pCons_eq_if zero_less_one order_mult
+            pCons_eq_0_iff pcompose_eq_0_iff pcompose_hom.hom_mult right_minus_eq
+            root.prems)
       finally show ?case .
     qed
   qed
@@ -1805,14 +1776,6 @@ lemma proots_half_code1[code]:
                         else Code.abort (STR ''proots_half fails when p=0.'') 
                           (\<lambda>_. proots_half p a b) 
                         else 0)"
-proof -
-  have ?thesis when "a=b"
-    using proots_half_empty that by auto
-  moreover have ?thesis when "a\<noteq>b" "p=0"
-    using that by auto
-  moreover have ?thesis when "a\<noteq>b" "p\<noteq>0"
-    using proots_half_proots_upper[OF that] that by auto
-  ultimately show ?thesis by auto
-qed
+using proots_half_empty proots_half_proots_upper by auto
 
 end
