@@ -1147,18 +1147,14 @@ proof -
     using gcd_dvd1 gcd_dvd2 dvd_def[of "gcd p q", simplified mult.commute] g_def by metis
   hence "coprime p' q'" using gcd_coprime \<open>p\<noteq>0\<close> unfolding g_def by auto
   have "p'\<noteq>0" "q'\<noteq>0" "g \<noteq>0" using p' q' \<open>p\<noteq>0\<close> \<open>q\<noteq>0\<close> by auto
-  have "?L=cindex_poly a b q' p' + cindex_poly a b p' q'"
-    apply (simp only: p' q' mult.commute)
-    using cindex_poly_mult[OF \<open>g\<noteq>0\<close>] cindex_poly_mult[OF \<open>g\<noteq>0\<close>]
-    by auto
+  have "?L = cindex_poly a b q' p' + cindex_poly a b p' q'"
+    by (simp add: \<open>g \<noteq> 0\<close> cindex_poly_mult mult.commute p' q')
   also have "... = cindex_poly a b 1 (q' * p')"
     using  cindex_poly_inverse_add[OF \<open>coprime p' q'\<close>, of a b] .
   also have "... = cross (p' * q') a b"
     using cindex_poly_cross[OF \<open>a<b\<close>, of "q'*p'"] \<open>p'\<noteq>0\<close> \<open>q'\<noteq>0\<close> 
       \<open>poly (p * q) a \<noteq>0\<close> \<open>poly (p * q) b \<noteq>0\<close>
-    unfolding p' q' 
-    apply (subst (2) mult.commute)
-    by auto
+    unfolding p' q' by (simp add: mult.commute)
   also have "... = ?R" 
   proof -
     have "poly (p * q) a = poly (g*g) a * poly (p' * q') a"
@@ -1192,21 +1188,11 @@ qed
 
 lemma cindex_poly_congr:
   fixes p q:: "real poly"
-  assumes "a<a'" "a'<b'" "b'<b" 
+  assumes "a<a'" "b'<b" 
   assumes "\<forall>x. ((a<x\<and>x\<le>a') \<or> (b'\<le>x \<and> x<b)) \<longrightarrow> poly p x \<noteq>0"
   shows "cindex_poly a b q p=cindex_poly a' b' q p" 
-proof (cases "p=0")
-  case True
-  then show ?thesis by auto
-next
-  case False
-  show ?thesis unfolding cindex_poly_def
-    apply (rule sum.mono_neutral_right)
-    subgoal using poly_roots_finite[OF \<open>p\<noteq>0\<close>] by auto
-    subgoal using assms by auto
-    subgoal using assms(4) by fastforce
-    done
-qed    
+  unfolding cindex_poly_def
+  by (meson assms less_eq_real_def linorder_le_less_linear order_le_less_trans)
   
 lemma greaterThanLessThan_unfold:"{a<..<b} = {x. a<x \<and> x<b}" 
   by fastforce
@@ -1249,7 +1235,8 @@ termination
 done
 
 lemma smods_nil_eq:"smods p q = [] \<longleftrightarrow> (p=0)" by auto
-lemma smods_singleton:"[x] = smods p q \<Longrightarrow> (p\<noteq>0 \<and> q=0 \<and> x=p)" 
+
+lemma smods_singleton:"[x] = smods p q \<Longrightarrow> (p\<noteq>0 \<and> q=0 \<and> x=p)"
   by (metis list.discI list.inject smods.elims)
 
 lemma smods_0[simp]:
@@ -1258,8 +1245,15 @@ lemma smods_0[simp]:
 by auto
 
 lemma no_0_in_smods: "0\<notin>set (smods p q)"
-  apply (induct "smods p q" arbitrary:p q)
-  by (simp,metis list.inject neq_Nil_conv set_ConsD smods.elims)
+proof (induct "smods p q" arbitrary:p q)
+  case Nil
+  then show ?case by simp
+next
+  case (Cons a x)
+  then show ?case
+    by (metis list.distinct(1) list.inject set_ConsD smods.simps) 
+qed
+
 
 fun changes:: "('a ::linordered_idom) list \<Rightarrow> int" where
   "changes [] = 0"|
@@ -1347,7 +1341,7 @@ proof (cases "p=0 \<or> q=0 \<or> p mod q = 0")
     unfolding changes_itv_smods_def changes_poly_at_def by (erule HOL.disjE,auto)
   moreover have "p mod q = 0 \<Longrightarrow> ?thesis"  
     unfolding changes_itv_smods_def changes_poly_at_def cross_def 
-    apply (insert assms(2,3))
+    using assms
     apply (subst (asm) (1 2) neq_iff)
     by (auto simp add: variation_cases)
   ultimately show ?thesis by auto 
