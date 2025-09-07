@@ -81,7 +81,8 @@ proof -
     ultimately have "order z (pderiv p) = n" by (auto elim: Suc.hyps)
     moreover have "order z p \<noteq> 0"
       using Suc(3)[rule_format,of z] \<open>r>0\<close> order_root \<open>p\<noteq>0\<close> by auto
-    ultimately show ?case using order_pderiv[OF \<open>pderiv p \<noteq> 0\<close>] by auto
+    ultimately show ?case
+      by (meson \<open>pderiv p \<noteq> 0\<close> order_pderiv2)
   qed
   then show ?thesis unfolding n_def .
 qed  

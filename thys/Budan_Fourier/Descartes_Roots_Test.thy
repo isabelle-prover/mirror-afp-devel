@@ -114,9 +114,8 @@ corollary descartes_roots_test_real:
 proof -
   define q where "q=fcompose p [:a,b:] [:1,1:]"
   have "q\<noteq>0"
-    unfolding q_def
-    apply (rule fcompose_nzero[OF \<open>p\<noteq>0\<close>])
-    using \<open>a<b\<close> infinite_UNIV_char_0 by auto
+    unfolding q_def using assms
+    by (metis all_real_roots_mobius all_roots_real_const_iff degree_0 poly_0)
   have "proots_count p {x. a < x \<and> x <b} = proots_count q {x. 0 < x}"
     using proots_sphere_pos_interval[OF \<open>p\<noteq>0\<close> \<open>a<b\<close>,folded q_def] .
   moreover have "int (proots_count q {x. 0 < x}) = changes (coeffs q)"
@@ -124,9 +123,8 @@ proof -
     unfolding q_def by (rule all_real_roots_mobius[OF \<open>all_roots_real p\<close> \<open>a<b\<close>])
   then have "proots_count q {x. 0 < x} = nat (changes (coeffs q))"
     by simp
-  ultimately show ?thesis unfolding descartes_roots_test_def 
-    apply (fold q_def)
-    by auto
+  ultimately show ?thesis unfolding descartes_roots_test_def q_def
+    by argo 
 qed
 
 end

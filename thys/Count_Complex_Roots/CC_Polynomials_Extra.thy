@@ -25,11 +25,10 @@ lemma path_poly_comp[intro]:
   by (auto intro:continuous_intros)
 
 lemma cindex_poly_noroot:
-  assumes "a<b" "\<forall>x. a<x \<and> x<b \<longrightarrow> poly p x\<noteq>0"
+  assumes "\<forall>x. a<x \<and> x<b \<longrightarrow> poly p x\<noteq>0"
   shows "cindex_poly a b q p = 0" 
   unfolding cindex_poly_def
-  apply (rule sum.neutral)
-  using assms by (auto intro:jump_poly_not_root)
+  by (metis (lifting) assms mem_Collect_eq sum.neutral)
 
 subsection \<open>More polynomial homomorphism interpretations\<close>
 
@@ -94,8 +93,7 @@ proof -
       then have "oq - min op oq = 0" by auto
       moreover have "coprime (xx ^ (op - min op oq)) (qq div pq)" by auto
       moreover have "coprime (pp div pq) (qq div pq)"
-        apply (rule div_gcd_coprime[of pp qq,folded pq_def])
-        using \<open>pp\<noteq>0\<close> by auto
+        using \<open>pp \<noteq> 0\<close> div_gcd_coprime pq_def by blast
       ultimately show ?thesis by auto
     next
       case False
@@ -103,24 +101,20 @@ proof -
       moreover have "coprime (pp div pq) (xx ^ (oq - min op oq))" 
         by (auto simp:coprime_commute)
       moreover have "coprime (pp div pq) (qq div pq)"
-        apply (rule div_gcd_coprime[of pp qq,folded pq_def])
-        using \<open>pp\<noteq>0\<close> by auto
+        using \<open>pp \<noteq> 0\<close> div_gcd_coprime pq_def by blast
       ultimately show ?thesis by auto
     qed 
     then show ?thesis unfolding p_unfold q_unfold
-      apply (subst gcd_mult_left)
-      by auto
+      by (simp add: gcd_mult_left)
   qed
   then have "order x (gcd p q) = order x pq + order x (xx ^ (min op oq))"
-    apply simp
-    apply (subst order_mult)
-    using assms(1) p_unfold by auto
-  also have "... = order x (xx ^ (min op oq))"
+    by (metis assms(1) mult_zero_left order_mult order_normalize p_unfold)
+  also have "\<dots> = order x (xx ^ (min op oq))"
     using pp(2) qq(2) unfolding pq_def xx_def 
     by (auto simp add: order_0I poly_eq_0_iff_dvd)
-  also have "... = min op oq"
+  also have "\<dots> = min op oq"
     unfolding xx_def by (rule order_power_n_n)
-  also have "... = min (order x p) (order x q)" unfolding op_def oq_def by simp
+  also have "\<dots> = min (order x p) (order x q)" unfolding op_def oq_def by simp
   finally show ?thesis .
 qed
 
@@ -130,41 +124,42 @@ lemma pderiv_power: "pderiv (p ^ n) = smult (of_nat n) (p ^ (n-1)) * pderiv p"
 
 (*TODO: to replace the one (with the same name) in the library, as this version does 
   not require 'a to be a field?*)
-lemma order_pderiv:
-  fixes p::"'a::{idom,semiring_char_0} poly"
-  assumes "p\<noteq>0" "poly p x=0"
-  shows "order x p = Suc (order x (pderiv p))" using assms
-proof -
-  define xx op where "xx=[:- x, 1:]" and "op = order x p"
-  have "op \<noteq>0" unfolding op_def using assms order_root by blast
-  obtain pp where pp:"p = xx ^ op * pp" "\<not> xx dvd pp"
-    using order_decomp[OF \<open>p\<noteq>0\<close>,of x,folded xx_def op_def] by auto
-  have p_der:"pderiv p = smult (of_nat op) (xx^(op -1)) * pp + xx^op*pderiv pp"
-    unfolding pp(1) by (auto simp:pderiv_mult pderiv_power xx_def algebra_simps pderiv_pCons)
-  have "xx^(op -1) dvd (pderiv p)"
-    unfolding p_der 
-    by (metis One_nat_def Suc_pred assms(1) assms(2) dvd_add dvd_mult_right dvd_triv_left 
-        neq0_conv op_def order_root power_Suc smult_dvd_cancel)
-  moreover have "\<not> xx^op dvd (pderiv p)"
-  proof 
-    assume "xx ^ op dvd pderiv p"
-    then have "xx ^ op dvd smult (of_nat op) (xx^(op -1) * pp)"
-      unfolding p_der by (simp add: dvd_add_left_iff)
-    then have "xx ^ op dvd (xx^(op -1)) * pp"
-      apply (elim dvd_monic[rotated])
-      using \<open>op\<noteq>0\<close> by (auto simp:lead_coeff_power xx_def)
-    then have "xx ^ (op-1) * xx dvd (xx^(op -1))"
-      using \<open>\<not> xx dvd pp\<close> by (simp add: \<open>op \<noteq> 0\<close> mult.commute power_eq_if)
-    then have "xx dvd 1" 
-      using assms(1) pp(1) by auto
-    then show False unfolding xx_def by (meson assms(1) dvd_trans one_dvd order_decomp)
-  qed
-  ultimately have "op - 1 = order x (pderiv p)"
-    using order_unique_lemma[of x "op-1" "pderiv p",folded xx_def] \<open>op\<noteq>0\<close> 
-    by auto
-  then show ?thesis using \<open>op\<noteq>0\<close> unfolding op_def by auto
-qed
-
+thm order_pderiv
+      lemma order_pderiv:
+        fixes p::"'a::{idom,semiring_char_0} poly"
+        assumes "p\<noteq>0" "poly p x=0"
+        shows "order x p = Suc (order x (pderiv p))" using assms
+      proof -
+        define xx op where "xx=[:- x, 1:]" and "op = order x p"
+        have "op \<noteq> 0" unfolding op_def using assms order_root by blast
+        obtain pp where pp:"p = xx ^ op * pp" "\<not> xx dvd pp"
+          using order_decomp[OF \<open>p\<noteq>0\<close>,of x,folded xx_def op_def] by auto
+        have p_der:"pderiv p = smult (of_nat op) (xx^(op -1)) * pp + xx^op*pderiv pp"
+          unfolding pp(1) by (auto simp:pderiv_mult pderiv_power xx_def algebra_simps pderiv_pCons)
+        have "xx^(op -1) dvd (pderiv p)"
+          unfolding p_der
+          by (metis \<open>op \<noteq> 0\<close> dvd_add_left_iff dvd_mult2 dvd_refl dvd_smult dvd_triv_right
+              power_eq_if) 
+        moreover have "\<not> xx^op dvd (pderiv p)"
+        proof 
+          assume "xx ^ op dvd pderiv p"
+          then have "xx ^ op dvd smult (of_nat op) (xx^(op -1) * pp)"
+            unfolding p_der by (simp add: dvd_add_left_iff)
+          then have "xx ^ op dvd (xx^(op -1)) * pp"
+            apply (elim dvd_monic[rotated])
+            using \<open>op\<noteq>0\<close> by (auto simp:lead_coeff_power xx_def)
+          then have "xx ^ (op-1) * xx dvd (xx^(op -1))"
+            using \<open>\<not> xx dvd pp\<close> by (simp add: \<open>op \<noteq> 0\<close> mult.commute power_eq_if)
+          then have "xx dvd 1" 
+            using assms(1) pp(1) by auto
+          then show False unfolding xx_def by (meson assms(1) dvd_trans one_dvd order_decomp)
+        qed
+        ultimately have "op - 1 = order x (pderiv p)"
+          using order_unique_lemma[of x "op-1" "pderiv p",folded xx_def] \<open>op\<noteq>0\<close> 
+          by auto
+        then show ?thesis using \<open>op\<noteq>0\<close> unfolding op_def by auto
+      qed
+      
 subsection \<open>More about @{term rsquarefree}\<close>
 
 lemma rsquarefree_0[simp]: "\<not> rsquarefree 0"
@@ -180,22 +175,16 @@ next
   case (no_proots p)
   then have [simp]:"p\<noteq>0" "q\<noteq>0" "\<And>a. order a p = 0" 
     using order_0I by auto
-  have "order a (p * q) = 0 \<longleftrightarrow> order a q = 0"
-       "order a (p * q) = 1 \<longleftrightarrow> order a q = 1"
-       for a
-    subgoal by (subst order_mult) auto
-    subgoal by (subst order_mult) auto
-    done
+  obtain "order a (p * q) = 0 \<longleftrightarrow> order a q = 0"
+         "order a (p * q) = 1 \<longleftrightarrow> order a q = 1" for a
+    by (simp add: order_mult)
   then show ?case using \<open>rsquarefree (p * q)\<close>
     unfolding rsquarefree_def by simp
 next
   case (root a p)
   define pq aa where "pq = p * q" and "aa = [:- a, 1:]"
-  have [simp]:"pq\<noteq>0" "aa\<noteq>0" "order a aa=1"
-    subgoal using pq_def root.prems by auto
-    subgoal by (simp add: aa_def)
-    subgoal by (metis aa_def order_power_n_n power_one_right)
-    done
+  obtain [simp]:"pq\<noteq>0" "aa\<noteq>0" "order a aa=1"
+    using aa_def pq_def root.prems by force
   have "rsquarefree (aa * pq)"
     unfolding aa_def pq_def using root(2) by (simp add:algebra_simps)
   then have "rsquarefree pq"
@@ -222,18 +211,16 @@ next
 next
   case (root a p)
   have "proots_count ([:a, - 1:] * p) s = 1 + proots_count p s"
-    apply (subst proots_count_times)
-    subgoal using root.prems rsquarefree_def by blast
-    subgoal by (metis (no_types, opaque_lifting) add.inverse_inverse add.inverse_neutral 
-                  minus_pCons proots_count_pCons_1_iff proots_count_uminus root.hyps(1))  
-    done
-  also have "... = 1 + card (proots_within p s)"
-  proof -
-    have "rsquarefree p" using \<open>rsquarefree ([:a, - 1:] * p)\<close> 
-      by (elim rsquarefree_times)
-    from root(2)[OF this] show ?thesis by simp
+  proof (subst proots_count_times)
+    show "[:a, - 1:] * p \<noteq> 0"
+      using root.prems rsquarefree_def by blast
+    show "proots_count [:a, - 1:] s + proots_count p s = 1 + proots_count p s"
+      by (metis (no_types, opaque_lifting) add.inverse_inverse add.inverse_neutral minus_pCons
+          proots_count_pCons_1_iff proots_count_uminus root.hyps(1))
   qed
-  also have "... = card (proots_within ([:a, - 1:] * p) s)" unfolding proots_within_times 
+  also have "\<dots> = 1 + card (proots_within p s)"
+    by (metis root.hyps(2) root.prems rsquarefree_times)
+  also have "\<dots> = card (proots_within ([:a, - 1:] * p) s)" unfolding proots_within_times 
   proof (subst card_Un_disjoint)
     have [simp]:"p\<noteq>0" using root.prems by auto
     show "finite (proots_within [:a, - 1:] s)" "finite (proots_within p s)"
@@ -241,20 +228,16 @@ next
     show " 1 + card (proots_within p s) = card (proots_within [:a, - 1:] s)
                + card (proots_within p s)"
       using \<open>a \<in> s\<close>
-      apply (subst proots_within_pCons_1_iff)
-      by simp
+      by (simp add: proots_within_pCons_1_iff(2))
     have "poly p a\<noteq>0" 
     proof (rule ccontr)
       assume "\<not> poly p a \<noteq> 0"
       then have "order a p >0" by (simp add: order_root)
       moreover have "order a [:a,-1:] = 1"
-        by (metis (no_types, opaque_lifting) add.inverse_inverse add.inverse_neutral minus_pCons 
-            order_power_n_n order_uminus power_one_right)
+        by (metis add.inverse_inverse add.inverse_neutral minus_pCons order_linear
+            order_uminus)
       ultimately have "order a  ([:a, - 1:] * p) > 1"
-        apply (subst order_mult)
-        subgoal using root.prems by auto
-        subgoal by auto
-        done
+        by (metis root.prems order_mult add_cancel_right_right linorder_neqE_nat not_add_less1 rsquarefree_0)
       then show False using \<open>rsquarefree ([:a, - 1:] * p)\<close> 
         unfolding rsquarefree_def using gr_implies_not0 less_not_refl2 by blast
     qed
@@ -270,7 +253,7 @@ lemma rsquarefree_gcd_pderiv:
   shows "rsquarefree (p div (gcd p (pderiv p)))"
 proof (cases "pderiv p = 0")
   case True
-  have "poly (unit_factor p) x \<noteq>0" for x 
+  have "poly (unit_factor p) x \<noteq> 0" for x 
     using unit_factor_is_unit[OF \<open>p\<noteq>0\<close>] 
     by (meson assms dvd_trans order_decomp poly_eq_0_iff_dvd unit_factor_dvd)
   then have "order x (unit_factor p) = 0" for x
@@ -284,11 +267,10 @@ next
   have order_pq:"order x p = order x q + min (order x p) (order x (pderiv p))"
     for x
   proof -
-    have *:"p = q * gcd p (pderiv p)"
+    have "p = q * gcd p (pderiv p)"
       unfolding q_def by simp
-    show ?thesis
-      apply (subst *)
-      using \<open>q\<noteq>0\<close> \<open>p\<noteq>0\<close> \<open>pderiv p\<noteq>0\<close> by (simp add:order_mult order_gcd)
+    then show ?thesis
+      by (metis CC_Polynomials_Extra.order_gcd False assms order_mult)
   qed
   have "order x q = 0 \<or> order x q=1" for x
   proof (cases "poly p x=0")
@@ -324,25 +306,13 @@ next
     have *:"p = q * gcd p (pderiv p)"
       unfolding q_def by simp
     show ?thesis
-      apply (subst *)
-      using \<open>q\<noteq>0\<close> \<open>p\<noteq>0\<close> \<open>pderiv p\<noteq>0\<close> by (simp add:order_mult order_gcd)
+      by (metis "*" CC_Polynomials_Extra.order_gcd False \<open>p \<noteq> 0\<close> order_mult)
   qed
-
-  have "order x q =0 \<longleftrightarrow> order x p = 0" 
-  proof (cases "poly p x=0")
-    case True
-    from order_pderiv[OF \<open>p\<noteq>0\<close> this] 
-    have "order x p = order x (pderiv p) + 1" by simp
-    then show ?thesis using order_pq[of x] by auto
-  next
-    case False
-    then have "order x p = 0" by (simp add: order_0I)
-    then have "order x q = 0" using order_pq[of x] by simp
-    then show ?thesis using \<open>order x p = 0\<close> by simp
-  qed 
-  then show ?thesis 
-    apply (fold q_def)
-    unfolding order_root using \<open>p\<noteq>0\<close> \<open>q\<noteq>0\<close> by auto
+  have "order x q = 0 \<longleftrightarrow> order x p = 0"
+    by (metis order_pderiv \<open>p \<noteq> 0\<close> add.commute add_0 lessI min_0L
+        min_less_iff_disj order_0I order_pq less_irrefl) 
+  then show ?thesis
+    using \<open>p \<noteq> 0\<close> \<open>q \<noteq> 0\<close> order_root q_def by blast 
 qed
 
 subsection \<open>Composition of a polynomial and a circular path\<close>
@@ -356,7 +326,7 @@ lemma poly_circlepath_tan_eq:
 proof -
   have "?L = poly p (z0+ r*exp (2 * of_real pi * \<i>  * t))" 
     unfolding circlepath by simp
-  also have "... = ?R"
+  also have "\<dots> = ?R"
   proof -
     define f where "f = (poly p \<circ> (\<lambda>x::real. z0 + r * exp (\<i> * x)))"
     have f_eq:"f t = ((\<lambda>x::real. poly q1 x / poly q2 x) o  (\<lambda>x. tan (x/2)) ) t" 
@@ -364,23 +334,22 @@ proof -
     proof -
       have "f t = poly p (z0 + r * (cos t + \<i> * sin t)) " 
         unfolding f_def exp_Euler  by (auto simp add:cos_of_real sin_of_real)
-      also have "... = poly p ((\<lambda>x. ((z0-r)*x+(z0+r)*\<i>) / (\<i>+x)) (tan (t/2)))"
+      also have "\<dots> = poly p ((\<lambda>x. ((z0-r)*x+(z0+r)*\<i>) / (\<i>+x)) (tan (t/2)))"
       proof -
         define tt where "tt=complex_of_real (tan (t / 2))"
         define rr where "rr = complex_of_real r"
-        have "cos t = (1-tt*tt) / (1 + tt * tt)" 
-             "sin t = 2*tt  / (1 + tt * tt)"
+        have \<section>: "cos t = (1-tt*tt) / (1 + tt * tt)" 
+                "sin t = 2*tt  / (1 + tt * tt)"
           unfolding sin_tan_half[of "t/2",simplified] cos_tan_half[of "t/2",OF that, simplified] tt_def
           by (auto simp add:power2_eq_square)
-        moreover have "1 + tt * tt \<noteq> 0" unfolding tt_def 
-          apply (fold of_real_mult)
-          by (metis (no_types, opaque_lifting) mult_numeral_1 numeral_One of_real_add of_real_eq_0_iff
-              of_real_numeral sum_squares_eq_zero_iff zero_neq_one)
-        ultimately have "z0 +  r * ( (cos t) + \<i> * (sin t))
+        then have "1 + tt * tt \<noteq> 0"
+          by (metis cmod_unit_one division_ring_divide_zero mult_2 mult_zero_right norm_eq_zero
+              zero_neq_one)
+        with \<section> have "z0 +  r * ( (cos t) + \<i> * (sin t))
             =(z0*(1+tt*tt)+rr*(1-tt*tt)+\<i>*rr*2*tt ) / (1 + tt * tt) "
-          apply (fold rr_def,simp add:add_divide_distrib)
+          apply (simp flip: rr_def add: add_divide_distrib)
           by (simp add:algebra_simps)
-        also have "... = ((z0-rr)*tt+z0*\<i>+rr*\<i>) / (tt + \<i>)"
+        also have "\<dots> = ((z0-rr)*tt+z0*\<i>+rr*\<i>) / (tt + \<i>)"
         proof -
           have "tt + \<i> \<noteq> 0" 
             using \<open>1 + tt * tt \<noteq> 0\<close> 
@@ -392,20 +361,17 @@ proof -
         then show ?thesis unfolding tt_def rr_def 
           by (auto simp add:algebra_simps power2_eq_square)
       qed
-      also have "... = (poly p o ((\<lambda>x. ((z0-r)*x+(z0+r)*\<i>) / (\<i>+x)) o (\<lambda>x. tan (x/2)) )) t"
+      also have "\<dots> = (poly p o ((\<lambda>x. ((z0-r)*x+(z0+r)*\<i>) / (\<i>+x)) o (\<lambda>x. tan (x/2)) )) t"
         unfolding comp_def by (auto simp:tan_of_real)
-      also have "... = ((\<lambda>x::real. poly q1 x / poly q2 x) o  (\<lambda>x. tan (x/2)) ) t"
+      also have "\<dots> = ((\<lambda>x::real. poly q1 x / poly q2 x) o  (\<lambda>x. tan (x/2)) ) t"
         unfolding q2_def q1_def
         apply (subst fcompose_poly[symmetric])
-        subgoal for x
-          apply simp
-          by (metis Re_complex_of_real add_cancel_right_left complex_i_not_zero imaginary_unit.sel(1) plus_complex.sel(1) rcis_zero_arg rcis_zero_mod)
-        subgoal by (auto simp:tan_of_real algebra_simps)
-        done
+          using Re_poly_hom.base.hom_add_eq_zero apply fastforce
+        by (auto simp:tan_of_real algebra_simps)
       finally show ?thesis .
     qed
     
-    have "cos (pi * t) \<noteq>0" unfolding cos_zero_iff_int2
+    have "cos (pi * t) \<noteq> 0" unfolding cos_zero_iff_int2
     proof 
       assume "\<exists>i. pi * t = real_of_int i * pi + pi / 2"
       then obtain i where "pi * t = real_of_int i * pi + pi / 2" by auto
@@ -433,8 +399,7 @@ proof -
     have "complex_of_real (coeff pR n) + \<i> * complex_of_real (coeff pI n) = 0" for n
       using that unfolding poly_eq_iff cpoly_of_def by (auto simp:coeff_map_poly)
     then have "coeff pR n = 0 \<and> coeff pI n = 0" for n
-      by (metis Complex_eq Im_complex_of_real Re_complex_of_real complex.sel(1) complex.sel(2) 
-          of_real_0)
+      using Complex_eq Complex_eq_0 by force
     then show ?thesis unfolding poly_eq_iff by auto 
   qed
   then show ?thesis by (auto simp:cpoly_of_def)
@@ -443,8 +408,7 @@ qed
 lemma cpoly_of_decompose:
     "p = cpoly_of (map_poly Re p) (map_poly Im p)"
   unfolding cpoly_of_def 
-  apply (induct p)
-  by (auto simp add:map_poly_pCons map_poly_map_poly complex_eq)
+  by (induct p) (auto simp add: map_poly_map_poly complex_eq)
 
 lemma cpoly_of_dist_right:
     "cpoly_of (pR*g) (pI*g) = cpoly_of pR pI * (map_poly of_real g)"
@@ -466,16 +430,16 @@ proof -
   have [simp]:"g\<noteq>0" unfolding g_def using assms by auto
   obtain pr pi where pri: "pR = pr * g" "pI = pi * g" "coprime pr pi"
     unfolding g_def using assms(1) gcd_coprime_exists \<open>g \<noteq> 0\<close> g_def by blast
-  then have "pr \<noteq>0 \<or> pi \<noteq>0" using assms mult_zero_left by blast
+  then have "pr \<noteq> 0 \<or> pi \<noteq> 0" using assms mult_zero_left by blast
 
   have "order t (cpoly_of pR pI) = order t (cpoly_of pr pi * (map_poly of_real g))"
     unfolding pri cpoly_of_dist_right by simp
-  also have "... = order t (cpoly_of pr pi) + order t g" 
-    apply (subst order_mult)
-    using \<open>pr \<noteq>0 \<or> pi \<noteq>0\<close> by (auto simp:map_poly_order_of_real)
-  also have "... = order t g"
+  also have "\<dots> = order t (cpoly_of pr pi) + order t g"
+    using \<open>pr \<noteq> 0 \<or> pi \<noteq> 0\<close> \<open>g \<noteq> 0\<close>
+    by (simp add: map_poly_order_of_real order_mult)
+  also have "\<dots> = order t g"
   proof -
-    have "poly (cpoly_of pr pi) t \<noteq>0" unfolding poly_cpoly_of_real_iff
+    have "poly (cpoly_of pr pi) t \<noteq> 0" unfolding poly_cpoly_of_real_iff
       using \<open>coprime pr pi\<close> coprime_poly_0 by blast
     then have "order t (cpoly_of pr pi) = 0" by (simp add: order_0I)
     then show ?thesis by auto
@@ -499,13 +463,11 @@ qed
 lemma map_poly_Re_cpoly[simp]:
   "map_poly Re (cpoly_of pR pI) = pR"
   unfolding cpoly_of_def smult_map_poly
-  apply (simp add:map_poly_map_poly Re_poly_hom.hom_add comp_def)
-  by (metis coeff_map_poly leading_coeff_0_iff)
+  by (simp add:map_poly_map_poly Re_poly_hom.hom_add comp_def coeff_map_poly poly_eq_iff)
 
 lemma map_poly_Im_cpoly[simp]:
   "map_poly Im (cpoly_of pR pI) = pI"
   unfolding cpoly_of_def smult_map_poly
-  apply (simp add:map_poly_map_poly Im_poly_hom.hom_add comp_def)
-  by (metis coeff_map_poly leading_coeff_0_iff)
+  by (simp add:map_poly_map_poly Im_poly_hom.hom_add comp_def coeff_map_poly poly_eq_iff)
 
 end

@@ -872,8 +872,8 @@ next
   proof -
     have "order x p - order x (pderiv p * q) = order x p - order x (pderiv p) - order x q" 
       using order_mult \<open>pderiv p\<noteq>0\<close> False by (metis diff_diff_left mult_eq_0_iff) 
-    moreover have "order x p - order x (pderiv p) = 1" 
-      using order_pderiv[OF \<open>pderiv p\<noteq>0\<close>, of x] \<open>poly p x=0\<close> order_root[of p x] \<open>p\<noteq>0\<close> by auto
+    moreover have "order x p - order x (pderiv p) = 1"
+      by (simp add: assms order_pderiv) 
     ultimately show ?thesis by auto
   qed
   have elim_p_sign_r_pos:"sign_r_pos (pderiv p * q * p) x=sign_r_pos q x" 
