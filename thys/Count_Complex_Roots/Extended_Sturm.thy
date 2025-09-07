@@ -2470,7 +2470,7 @@ next
             = (if poly P a = 0 then jumpF_polyR (p * r - q * s) P a else 0)"
       proof -
         have "cindex_poly a b (p * r - q * s) P = 0"
-          apply (rule cindex_poly_noroot[OF \<open>a<b\<close>])
+          apply (rule cindex_poly_noroot)
           using noroot1 by fastforce
         moreover have "jumpF_polyL (p * r - q * s) P b  = 0"
           apply (rule jumpF_poly_noroot)

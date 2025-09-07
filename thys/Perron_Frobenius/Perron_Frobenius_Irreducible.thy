@@ -844,13 +844,16 @@ proof -
       by (rule sum_pos, (force simp: charpoly_erase_mat_sr)+)
     finally have False by simp
   } 
-  hence nZ: "poly (pderiv (charpoly A)) sr \<noteq> 0" and nZ': "pderiv (charpoly A) \<noteq> 0" by auto
+  hence nZ: "poly (pderiv (charpoly A)) sr \<noteq> 0" and nZ': "pderiv (charpoly A) \<noteq> 0" 
+    by auto
   from eigen_vector_z_sr have "eigen_value A sr" unfolding eigen_value_def ..
   from this[unfolded eigen_value_root_charpoly]
   have "poly (charpoly A) sr = 0" .
-  hence "order sr (charpoly A) \<noteq> 0" unfolding order_root using nZ' by auto
-  from order_pderiv[OF nZ' this] order_0I[OF nZ]
-  show ?thesis by simp
+  hence "order sr (charpoly A) \<noteq> 0"
+    by (metis nZ' order_root pderiv_0)
+  with order_pderiv nZ' order_0I[OF nZ]
+  show ?thesis
+    by (metis One_nat_def order_pderiv2)
 qed
 
 lemma sr_spectral_radius: "sr = spectral_radius cA" 
