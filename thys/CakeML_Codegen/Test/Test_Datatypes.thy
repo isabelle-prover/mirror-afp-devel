@@ -15,7 +15,18 @@ fun app where
 embed app' is app .
 print_theorems
 
-declare app'.C_info_def[code]
+declare
+  constructors.C_def [code]
+  constructors.as_static_cenv_def [code]
+  constructors.flat_C_info_def [code]
+  constructors.cake_dt_prelude_def [code]
+  constructors.as_cake_type_def_def [code]
+  app'.C_info_def [code]
+  cakeml.mk_exp.simps [code]
+  cakeml.mk_con.simps [code]
+  cakeml.mk_clauses.simps [code]
+  cakeml.mk_letrec_body_def [code]
+  cakeml.compile_group_def [code]
 
 (* FIXME code_simp doesn't work for the below cakeml invocation *)
 
