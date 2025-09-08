@@ -1517,7 +1517,7 @@ next
     thus ?thesis 
       using 
           changes_itv_smods_congr[OF \<open>a<a'\<close> \<open>a'<b'\<close> \<open>b'<b\<close> Cons(4,5),of q]
-          no_root cindex_poly_congr[OF \<open>a<a'\<close> \<open>a'<b'\<close> \<open>b'<b\<close> ] ps
+          no_root cindex_poly_congr[OF \<open>a<a'\<close> \<open>b'<b\<close> ] ps
       by (metis insert_iff list.set(2))
   qed
   ultimately show ?case by metis
