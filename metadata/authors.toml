@@ -2829,6 +2829,14 @@ host = [
 
 [hall.homepages]
 
+[hansen]
+name = "René Rydhof Hansen"
+orcid = "0000-0002-5688-6432"
+
+[hansen.emails]
+
+[hansen.homepages]
+
 [haslbeck]
 name = "Max W. Haslbeck"
 
@@ -5430,6 +5438,14 @@ host = [
 ]
 
 [nielsen.homepages]
+
+[nielson]
+name = "Flemming Nielson"
+orcid = "0000-0001-7362-6176"
+
+[nielson.emails]
+
+[nielson.homepages]
 
 [nikiforov]
 name = "Denis Nikiforov"

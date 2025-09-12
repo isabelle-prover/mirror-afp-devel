@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Flemming Nielson</title>
+    <link>https://isa-afp.org/authors/nielson/</link>
+    <description>AFP entries of Flemming Nielson</description><item>
+  <title>Stratified Datalog and Program Analysis</title>
+  <link>https://isa-afp.org/entries/Stratified_Datalog.html</link>
+  <pubDate>Mon, 01 Sep 2025 00:00:00 +0000</pubDate>
+  <description>Stratified Datalog and Program Analysis in the AFP</description>
+    <category>Computer science</category>
+    <category>Computer science/Artificial intelligence</category>
+    <category>Computer science/Programming languages</category>
+    <category>Computer science/Programming languages/Static analysis</category>
+</item>
+
+  </channel>
+</rss>

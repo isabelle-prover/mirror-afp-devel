@@ -2006,6 +2006,23 @@ host = [
 
 [eriksson.homepages]
 
+[escallon]
+name = "Felipe Escallón"
+
+[escallon.emails]
+
+[escallon.emails.escallon_email]
+user = [
+  "felipe",
+  "escallon",
+]
+host = [
+  "tum",
+  "de",
+]
+
+[escallon.homepages]
+
 [esparza]
 name = "Javier Esparza"
 
@@ -2758,6 +2775,23 @@ host = [
 
 [guzman.homepages]
 guzman_homepage = "https://sites.google.com/view/lpgamboa/home"
+
+[haberl]
+name = "Alexander Haberl"
+
+[haberl.emails]
+
+[haberl.emails.haberl_email]
+user = [
+  "alexander",
+  "haberl",
+]
+host = [
+  "tum",
+  "de",
+]
+
+[haberl.homepages]
 
 [haftmann]
 name = "Florian Haftmann"

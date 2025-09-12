@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Stratified Datalog and Program Analysis - Archive of Formal Proofs</title>
+    <meta name="description" content="Stratified Datalog and Program Analysis in the Archive of Formal Proofs" />
+    <meta property="og:description" content="Stratified Datalog and Program Analysis in the Archive of Formal Proofs" />
+
+  <meta property="og:title" content="Stratified Datalog and Program Analysis" />
+  <meta property="og:url" content="https://isa-afp.org/entries/Stratified_Datalog.html" />
+  <meta property="og:image" content="https://isa-afp.org/images/afp.png" />
+    <meta property="og:type" content="article" />
+  <link rel="stylesheet" type="text/css" href="../css/front.min.css">
+
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
+    
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [["$", "$"], ["\\(", "\\)"]]
+        },
+        processEscapes: true,
+        svg: {
+          fontCache: "global"
+        }
+      };
+    </script>
+    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
+    </script>
+    <script src="../js/entries.js"></script>
+
+  <script src="../js/obfuscate.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
+  <script src="../js/scroll-spy.js"></script>
+  <script src="../js/theory.js"></script>
+  <script src="../js/util.js"></script>
+    <script src="../js/header-search.js"></script>
+  <script src="../js/search-autocomplete.js"></script>
+</head>
+
+  <body class="mathjax_ignore">
+    <aside><div id="menu-toggle">
+  <input id="toggle" type="checkbox" />
+  <label for="toggle">
+    <span>menu</span>
+    <img src="../images/menu.svg" alt="Menu" />
+  </label>
+
+  <a href="../" class="logo-link">
+    <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
+  </a>
+
+  <nav id="menu">
+    <div>
+      <a href="../" class="logo-link">
+        <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
+      </a>
+      <ul>
+          <a href="../">
+            <li >Home</li>
+          </a>
+          <a href="../topics/">
+            <li >Topics</li>
+          </a>
+          <a href="../download/">
+            <li >Download</li>
+          </a>
+          <a href="../help/">
+            <li >Help</li>
+          </a>
+          <a href="../submission/">
+            <li >Submission</li>
+          </a>
+          <a href="../statistics/">
+            <li >Statistics</li>
+          </a>
+          <a href="../about/">
+            <li >About</li>
+          </a>
+      </ul>
+    </div>
+  </nav>
+</div>
+    </aside>
+
+    <div class="content entries"><header>
+    <form autocomplete="off" action="../search">
+      <div class="form-container">
+        <input id="search-input" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="button">
+          <img src="../images/search.svg" alt="Search" />
+        </button>
+        <datalist id="autocomplete">
+        </datalist>
+      </div>
+    </form>
+  <h1 ><span class='first'>S</span>tratified <span class='first'>D</span>atalog and <span class='first'>P</span>rogram <span class='first'>A</span>nalysis
+  </h1>
+  <div>
+      <p><a href="../authors/schlichtkrull/">Anders Schlichtkrull</a> <a href="https://people.compute.dtu.dk/andschl/">🌐</a>, <a href="../authors/hansen/">René Rydhof Hansen</a> and <a href="../authors/nielson/">Flemming Nielson</a>
+      </p>
+      <p class="date">September 1, 2025</p>
+  </div>
+</header>
+      <div>
+  <main>
+
+    <h3>Abstract</h3>
+    <div class="abstract mathjax_process"><p>In this entry we formalize stratified Datalog, the first such formalization in Isabelle to the best of our knowledge. Next we formally establish the existence of least solutions for any stratified Datalog program, essential for reasoning about negations in clauses. Lastly we illustrate the usefulness of our Datalog formalization by further formalizing the general Bit-Vector Framework and formalize and prove correct five analyses in this framework namely liveness, reaching definitions, available expressions, very busy expressions and reachability. Many of our definitions follow Nielson and Nielson’s textbook [NN20]. The formalization is described in our SAC 2024 paper [SHN24].</p>
+
+<p>
+[NN20] Flemming Nielson and Hanne Riis Nielson. Program analysis (an appetizer). CoRR, abs/2012.10086, 2020. <a href="https://arxiv.org/abs/2012.10086">https://arxiv.org/abs/2012.10086</a><br>
+[SHN24] Anders Schlichtkrull, René Rydhof Hansen, and Flemming Nielson. Isabelle-verified correctness of Datalog programs for program analysis. In Jiman Hong and Juw Won Park, editors, Proceedings of the 39th ACM/SIGAPP Symposium on Applied Computing, SAC 2024, Avila, Spain, April 8-12, 2024, pages 1731–1734. ACM, 2024.
+</p></div>
+
+    <h3>License</h3>
+    <div>
+        <a href="https://isa-afp.org/LICENSE">BSD License</a>
+    </div>
+      <h3>Topics</h3>
+      <ul>
+          <li><a href="../topics/computer-science/">Computer science</a></li>
+          <li><a href="../topics/computer-science/artificial-intelligence/">Computer science/Artificial intelligence</a></li>
+          <li><a href="../topics/computer-science/programming-languages/">Computer science/Programming languages</a></li>
+          <li><a href="../topics/computer-science/programming-languages/static-analysis/">Computer science/Programming languages/Static analysis</a></li>
+      </ul>
+      <h3>Related publications</h3>
+      <ul>
+        <li>Schlichtkrull, A., Rydhof Hansen, R., & Nielson, F. (2024). Isabelle-verified correctness of Datalog programs for program analysis. Proceedings of the 39th ACM/SIGAPP Symposium on Applied Computing, 1731–1734. <a href="https://doi.org/10.1145/3605098.3636091">https://doi.org/10.1145/3605098.3636091</a>
+</li>
+        <li>Nielson, F., &amp; Nielson, H. R. (2020). <i>Program Analysis (an Appetizer)</i> (Version 1). arXiv. https://doi.org/10.48550/ARXIV.2012.10086</li>
+      </ul>
+      <h3>Session Stratified_Datalog</h3>
+      <ul>
+          <li><a href="../sessions/stratified_datalog/#Datalog">Datalog</a></li>
+          <li><a href="../sessions/stratified_datalog/#Program_Graph">Program_Graph</a></li>
+          <li><a href="../sessions/stratified_datalog/#Bit_Vector_Framework">Bit_Vector_Framework</a></li>
+          <li><a href="../sessions/stratified_datalog/#Reaching_Definitions">Reaching_Definitions</a></li>
+          <li><a href="../sessions/stratified_datalog/#Live_Variables">Live_Variables</a></li>
+          <li><a href="../sessions/stratified_datalog/#Available_Expressions">Available_Expressions</a></li>
+          <li><a href="../sessions/stratified_datalog/#Very_Busy_Expressions">Very_Busy_Expressions</a></li>
+          <li><a href="../sessions/stratified_datalog/#Reachable_Nodes">Reachable_Nodes</a></li>
+      </ul>
+
+    <div class="flex-wrap">
+        <div>
+          <h3>Depends on</h3>
+          <ul class="horizontal-list">
+              <li><a href="../entries/Labeled_Transition_Systems.html">Labeled Transition Systems</a></li>
+          </ul>
+        </div>
+    </div>
+  </main>
+
+  <nav class="links">
+    <a class="popup-button" href="#cite-popup">Cite</a>
+    <a class="popup-button" href="#download-popup">Download</a>
+    <h4>PDFs</h4>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Stratified_Datalog/outline.pdf">Proof outline</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Stratified_Datalog/document.pdf">Proof document</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Stratified_Datalog/session_graph.pdf">Dependencies</a>
+  </nav>
+
+  <div id="cite-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Cite</h2>
+      <a class="close" href="#">&times;</a>
+      <div>
+        <p style="display:none;" id="bibtex-filename">Stratified_Datalog-AFP</p>
+        <pre id="copy-text">@article{Stratified_Datalog-AFP,
+  author  = {Anders Schlichtkrull and René Rydhof Hansen and Flemming Nielson},
+  title   = {Stratified Datalog and Program Analysis},
+  journal = {Archive of Formal Proofs},
+  month   = {September},
+  year    = {2025},
+  note    = {\url{https://isa-afp.org/entries/Stratified_Datalog.html},
+             Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
+        <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
+      </div>
+    </div>
+  </div>
+
+  <div id="download-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Download</h2>
+      <a class="close" href="#">&times;</a>
+      <a href="https://www.isa-afp.org/release/afp-Stratified_Datalog-current.tar.gz" download>
+        Download latest</a>
+    </div>
+  </div>
+      </div>
+    </div>
+  </body>
+</html>

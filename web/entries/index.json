@@ -1,5 +1,29 @@
 [
  {
+  "abstract": "In this entry we formalize stratified Datalog, the first such formalization in Isabelle to the best of our knowledge. Next we formally establish the existence of least solutions for any stratified Datalog program, essential for reasoning about negations in clauses. Lastly we illustrate the usefulness of our Datalog formalization by further formalizing the general Bit-Vector Framework and formalize and prove correct five analyses in this framework namely liveness, reaching definitions, available expressions, very busy expressions and reachability. Many of our definitions follow Nielson and Nielson’s textbook [NN20]. The formalization is described in our SAC 2024 paper [SHN24].\n[NN20] Flemming Nielson and Hanne Riis Nielson. Program analysis (an appetizer). CoRR, abs/2012.10086, 2020. https://arxiv.org/abs/2012.10086\n[SHN24] Anders Schlichtkrull, René Rydhof Hansen, and Flemming Nielson. Isabelle-verified correctness of Datalog programs for program analysis. In Jiman Hong and Juw Won Park, editors, Proceedings of the 39th ACM/SIGAPP Symposium on Applied Computing, SAC 2024, Avila, Spain, April 8-12, 2024, pages 1731–1734. ACM, 2024. ",
+  "authors": [
+   "Anders Schlichtkrull",
+   "René Rydhof Hansen",
+   "Flemming Nielson"
+  ],
+  "link": "/entries/Stratified_Datalog.html",
+  "shortname": "Stratified_Datalog",
+  "title": "Stratified Datalog and Program Analysis",
+  "topic_links": [
+   "/topics/computer-science/",
+   "/topics/computer-science/artificial-intelligence/",
+   "/topics/computer-science/programming-languages/",
+   "/topics/computer-science/programming-languages/static-analysis/"
+  ],
+  "topics": [
+   "Computer science",
+   "Computer science/Artificial intelligence",
+   "Computer science/Programming languages",
+   "Computer science/Programming languages/Static analysis"
+  ],
+  "year": "2025"
+ },
+ {
   "abstract": "This theory formalizes Hopcroft and Ullman’s algorithm to transform a set of productions into Greibach Normal Form (GNF). We concentrate on the essential property of the GNF: every production starts with a terminal; the tail of a rhs may contain further terminals. The complexity of the algorithm can be exponential.",
   "authors": [
    "Alexander Haberl",

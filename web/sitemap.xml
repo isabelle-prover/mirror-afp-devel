@@ -3,10 +3,13 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://isa-afp.org/entries/index.json</loc>
-    <lastmod>2025-08-27T00:00:00+00:00</lastmod>
+    <lastmod>2025-09-01T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/</loc>
-    <lastmod>2025-08-27T00:00:00+00:00</lastmod>
+    <lastmod>2025-09-01T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Stratified_Datalog.html</loc>
+    <lastmod>2025-09-01T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/entries/Greibach_Normal_Form.html</loc>
     <lastmod>2025-08-27T00:00:00+00:00</lastmod>
@@ -3787,6 +3790,8 @@
   </url><url>
     <loc>https://isa-afp.org/sessions/fixed_length_vector/</loc>
   </url><url>
+    <loc>https://isa-afp.org/authors/nielson/</loc>
+  </url><url>
     <loc>https://isa-afp.org/authors/krasnopol/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/haftmann/</loc>
@@ -5365,6 +5370,8 @@
   </url><url>
     <loc>https://isa-afp.org/authors/neumann/</loc>
   </url><url>
+    <loc>https://isa-afp.org/authors/hansen/</loc>
+  </url><url>
     <loc>https://isa-afp.org/authors/thiemann/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/rensets/</loc>
@@ -5699,6 +5706,8 @@
     <loc>https://isa-afp.org/sessions/stone_relation_algebras/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/store_buffer_reduction/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/sessions/stratified_datalog/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/stream_fusion_code/</loc>
   </url><url>
