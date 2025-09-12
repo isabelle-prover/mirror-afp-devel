@@ -6742,15 +6742,16 @@ name = "Anders Schlichtkrull"
 
 [schlichtkrull.emails.schlichtkrull_email]
 user = [
-  "andschl",
+  "andsch",
 ]
 host = [
-  "dtu",
+  "cs",
+  "aau",
   "dk",
 ]
 
 [schlichtkrull.homepages]
-schlichtkrull_homepage = "https://people.compute.dtu.dk/andschl/"
+schlichtkrull_homepage = "https://people.cs.aau.dk/~andsch/"
 
 [schmaltz]
 name = "Julien Schmaltz"
