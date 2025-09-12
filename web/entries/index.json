@@ -1,5 +1,23 @@
 [
  {
+  "abstract": "This theory formalizes Hopcroft and Ullman’s algorithm to transform a set of productions into Greibach Normal Form (GNF). We concentrate on the essential property of the GNF: every production starts with a terminal; the tail of a rhs may contain further terminals. The complexity of the algorithm can be exponential.",
+  "authors": [
+   "Alexander Haberl",
+   "Tobias Nipkow",
+   "Akihisa Yamada"
+  ],
+  "link": "/entries/Greibach_Normal_Form.html",
+  "shortname": "Greibach_Normal_Form",
+  "title": "Greibach Normal Form",
+  "topic_links": [
+   "/topics/computer-science/automata-and-formal-languages/"
+  ],
+  "topics": [
+   "Computer science/Automata and formal languages"
+  ],
+  "year": "2025"
+ },
+ {
   "abstract": "This entry is a formalization of the no-free-lunch theorem for machine learning following Section 5.1 of the book Understanding Machine Learning: From Theory to Algorithms by Shai Shalev-Shwartz and Shai Ben-David. The theorem states that for binary classification prediction tasks, there is no universal learner, meaning that for every learning algorithms, there exists a distribution on which it fails.",
   "authors": [
    "Michikazu Hirata"

@@ -3,10 +3,13 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://isa-afp.org/entries/index.json</loc>
-    <lastmod>2025-08-23T00:00:00+00:00</lastmod>
+    <lastmod>2025-08-27T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/</loc>
-    <lastmod>2025-08-23T00:00:00+00:00</lastmod>
+    <lastmod>2025-08-27T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Greibach_Normal_Form.html</loc>
+    <lastmod>2025-08-27T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/entries/No_Free_Lunch_ML.html</loc>
     <lastmod>2025-08-23T00:00:00+00:00</lastmod>
@@ -2866,6 +2869,8 @@
   </url><url>
     <loc>https://isa-afp.org/authors/jensen/</loc>
   </url><url>
+    <loc>https://isa-afp.org/authors/haberl/</loc>
+  </url><url>
     <loc>https://isa-afp.org/authors/katovsky/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/krauss/</loc>
@@ -3971,6 +3976,8 @@
     <loc>https://isa-afp.org/authors/keefe/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/snelting/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/sessions/greibach_normal_form/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/groebner_bases/</loc>
   </url><url>
