@@ -818,6 +818,7 @@ Stone_Cech
 Stone_Kleene_Relation_Algebras
 Stone_Relation_Algebras
 Store_Buffer_Reduction
+Stratified_Datalog
 Stream-Fusion
 Stream_Fusion_Code
 StrictOmegaCategories

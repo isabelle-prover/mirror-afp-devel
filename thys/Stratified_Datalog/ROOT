@@ -1,0 +1,17 @@
+chapter AFP
+
+session Stratified_Datalog = "Labeled_Transition_Systems" +
+  options [timeout = 300]
+  theories
+    Datalog
+    Bit_Vector_Framework
+    Program_Graph
+    Reaching_Definitions   
+    Live_Variables
+    Available_Expressions
+    Very_Busy_Expressions
+    Reachable_Nodes
+  document_files
+    "root.bib"
+    "root.tex"
+
