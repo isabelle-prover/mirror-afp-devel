@@ -32,6 +32,8 @@ Your submission must contain an abstract to be displayed on the web site – usu
 
 It is possible and encouraged to build on other archive entries in your submission. There is a standardised way to [refer to other AFP entries](/help) in your theories.
 
+It is also encouraged to identify parts of your submission as potentially suitable for inclusion in the Isabelle distribution (i.e. the basic libraries in `isabelle/src/HOL`).  Use the comment field of the submission form to alert the editors to this material, ideally with a suggestion where it could go (e.g. into `List`). You may also want to put it in a separate theory with a descriptive name like `More_List`.
+
 ## Submission Form
 
 [Submission form](/webapp/submit)
