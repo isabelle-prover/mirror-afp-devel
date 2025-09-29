@@ -1170,7 +1170,7 @@
  {
   "abstract": "SCL(FOL) (i.e., Simple Clause Learning for First-Order Logic without equality) is known to be able to simulate the derivation of nonredundant clauses by the ground ordered resolution calculus (see Bromberger et al. at CADE 2023). Due to the space constraints of a 16-pages paper, the published proof is monolithic and hard to comprehend. In this work, we reuse the existing strategy for ground ordered resolution and present a new, simpler strategy for SCL(FOL). We prove a stronger bisimulation theorem between these two strategies (i.e., they both simulate each other). Our proof is modular: it consists of ten refinement steps focusing on different aspects of the two strategies.",
   "authors": [
-   "Martin Desharnais"
+   "Martin Desharnais-Schäfer"
   ],
   "link": "/entries/SCL_Simulates_Ground_Resolution.html",
   "shortname": "SCL_Simulates_Ground_Resolution",
@@ -1186,7 +1186,7 @@
  {
   "abstract": "Superposition is an efficient proof calculus for reasoning about first-order logic with equality that is implemented in many automatic theorem provers. It works by saturating the given set of clauses and is refutationally complete, meaning that if the set is inconsistent, the saturation will contain a contradiction. In this formalization, we restructured the completeness proof to cleanly separate the ground (i.e., variable-free) and nonground aspects. We relied on the IsaFoR library for first-order terms and on the Isabelle saturation framework. A paper describing this formalization was published at the 15th International Conference on Interactive Theorem Proving (ITP 2024).",
   "authors": [
-   "Martin Desharnais",
+   "Martin Desharnais-Schäfer",
    "Balazs Toth"
   ],
   "link": "/entries/Superposition_Calculus.html",
@@ -1203,7 +1203,7 @@
  {
   "abstract": "This entry provides small, reusable, theories that specify the concepts of minimal, maximal, least, and greatest elements in sets, final sets, and final multisets. The concepts are uniformly specified as predicates parametrized by a binary relation. The binary relation is only required to be an ordering on the elements of the concrete collection considered. This is useful when working with a partial ordering, but some assumption or invariant proves that the ordering is total on all elements of the considered set.",
   "authors": [
-   "Martin Desharnais"
+   "Martin Desharnais-Schäfer"
   ],
   "link": "/entries/Min_Max_Least_Greatest.html",
   "shortname": "Min_Max_Least_Greatest",
@@ -1342,7 +1342,7 @@
  {
   "abstract": "This entry provides a small, reusable, theory that specifies the abstract concept of substition as monoid action. Both the substitution type and the object type are kept abstract. The theory provides multiple useful definitions and lemmas. Two example usages are provided for first order terms: one for terms from the AFP/First_Order_Terms session and one for terms from the Isabelle/HOL-ex session.",
   "authors": [
-   "Martin Desharnais"
+   "Martin Desharnais-Schäfer"
   ],
   "link": "/entries/Abstract_Substitution.html",
   "shortname": "Abstract_Substitution",
@@ -3377,7 +3377,7 @@
  {
   "abstract": "This Isabelle/HOL formalization covers the unexecutable specification of Simple Clause Learning for first-order logic without equality: SCL(FOL). The main results are formal proofs of soundness, non-redundancy of learned clauses, termination, and refutational completeness. Compared to the unformalized version, the formalized calculus is simpler, a number of results were generalized, and the non-redundancy statement was strengthened. We found and corrected one bug in a previously published version of the SCL Backtrack rule. Compared to related formalizations, we introduce a new technique for showing termination based on non-redundant clause learning.",
   "authors": [
-   "Martin Desharnais"
+   "Martin Desharnais-Schäfer"
   ],
   "link": "/entries/Simple_Clause_Learning.html",
   "shortname": "Simple_Clause_Learning",
@@ -6319,7 +6319,7 @@
  {
   "abstract": "This Isabelle/HOL formalization builds on the VeriComp entry of the Archive of Formal Proofs to provide the following contributions: an operational semantics for a realistic virtual machine (Std) for dynamically typed programming languages; the formalization of an inline caching optimization (Inca), a proof of bisimulation with (Std), and a compilation function; the formalization of an unboxing optimization (Ubx), a proof of bisimulation with (Inca), and a simple compilation function. This formalization was described in the CPP 2021 paper Towards Efficient and Verified Virtual Machines for Dynamic Languages",
   "authors": [
-   "Martin Desharnais"
+   "Martin Desharnais-Schäfer"
   ],
   "link": "/entries/Interpreter_Optimizations.html",
   "shortname": "Interpreter_Optimizations",
@@ -7274,7 +7274,7 @@
  {
   "abstract": "This is a generic framework for formalizing compiler transformations. It leverages Isabelle/HOL’s locales to abstract over concrete languages and transformations. It states common definitions for language semantics, program behaviours, forward and backward simulations, and compilers. We provide generic operations, such as simulation and compiler composition, and prove general (partial) correctness theorems, resulting in reusable proof components.",
   "authors": [
-   "Martin Desharnais"
+   "Martin Desharnais-Schäfer"
   ],
   "link": "/entries/VeriComp.html",
   "shortname": "VeriComp",
