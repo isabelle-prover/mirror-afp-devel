@@ -1754,7 +1754,7 @@
     <category>Computer science/Programming languages/Logics</category>
 </item>
 <item>
-  <title>Khovanskii&#x27;s Theorem</title>
+  <title>Khovanskii&amp;#x27;s Theorem</title>
   <link>https://isa-afp.org/entries/Khovanskii_Theorem.html</link>
   <pubDate>Fri, 02 Sep 2022 00:00:00 +0000</pubDate>
   <description>Khovanskii&amp;#x27;s Theorem in the AFP</description>
@@ -2767,21 +2767,21 @@
     <category>Logic/Proof theory</category>
 </item>
 <item>
-  <title>An Abstract Formalization of G&ouml;del&#39;s Incompleteness Theorems</title>
+  <title>An Abstract Formalization of G&amp;ouml;del&#39;s Incompleteness Theorems</title>
   <link>https://isa-afp.org/entries/Goedel_Incompleteness.html</link>
   <pubDate>Wed, 16 Sep 2020 00:00:00 +0000</pubDate>
   <description>An Abstract Formalization of G&amp;ouml;del&#39;s Incompleteness Theorems in the AFP</description>
     <category>Logic/Proof theory</category>
 </item>
 <item>
-  <title>From Abstract to Concrete G&ouml;del&#39;s Incompleteness Theorems&mdash;Part II</title>
+  <title>From Abstract to Concrete G&amp;ouml;del&#39;s Incompleteness Theorems&amp;mdash;Part II</title>
   <link>https://isa-afp.org/entries/Goedel_HFSet_Semanticless.html</link>
   <pubDate>Wed, 16 Sep 2020 00:00:00 +0000</pubDate>
   <description>From Abstract to Concrete G&amp;ouml;del&#39;s Incompleteness Theorems&amp;mdash;Part II in the AFP</description>
     <category>Logic/Proof theory</category>
 </item>
 <item>
-  <title>From Abstract to Concrete G&ouml;del&#39;s Incompleteness Theorems&mdash;Part I</title>
+  <title>From Abstract to Concrete G&amp;ouml;del&#39;s Incompleteness Theorems&amp;mdash;Part I</title>
   <link>https://isa-afp.org/entries/Goedel_HFSet_Semantic.html</link>
   <pubDate>Wed, 16 Sep 2020 00:00:00 +0000</pubDate>
   <description>From Abstract to Concrete G&amp;ouml;del&#39;s Incompleteness Theorems&amp;mdash;Part I in the AFP</description>
@@ -3051,7 +3051,7 @@
     <category>Computer science/Functional programming</category>
 </item>
 <item>
-  <title>Implementing the Goodstein Function in &lambda;-Calculus</title>
+  <title>Implementing the Goodstein Function in &amp;lambda;-Calculus</title>
   <link>https://isa-afp.org/entries/Goodstein_Lambda.html</link>
   <pubDate>Fri, 21 Feb 2020 00:00:00 +0000</pubDate>
   <description>Implementing the Goodstein Function in &amp;lambda;-Calculus in the AFP</description>
@@ -6635,7 +6635,7 @@
 </item>
 <item>
   <title>CoreC&#43;&#43;</title>
-  <link>https://isa-afp.org/entries/CoreC&#43;&#43;.html</link>
+  <link>https://isa-afp.org/entries/CoreC++.html</link>
   <pubDate>Mon, 15 May 2006 00:00:00 +0000</pubDate>
   <description>CoreC++ in the AFP</description>
     <category>Computer science/Programming languages/Language definitions</category>
