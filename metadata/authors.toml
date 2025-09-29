@@ -1697,17 +1697,18 @@ host = [
 [derrick.homepages]
 
 [desharnais]
-name = "Martin Desharnais"
+name = "Martin Desharnais-Schäfer"
 
 [desharnais.emails]
 
 [desharnais.emails.desharnais_email]
 user = [
-  "desharnais",
+  "martin",
+  "desharnais-schaefer",
 ]
 host = [
-  "mpi-inf",
-  "mpg",
+  "ifi",
+  "lmu",
   "de",
 ]
 
