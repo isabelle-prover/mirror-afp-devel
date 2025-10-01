@@ -2,7 +2,7 @@
 \usepackage[T1]{fontenc}
 \usepackage{isabelle,isabellesym}
 \usepackage[only,bigsqcap]{stmaryrd}  % for \<Sqinter>
-\usepackage[ngerman]{babel}  % for guillemots
+\usepackage{amssymb}
 
 % this should be the last package used
 \usepackage{pdfsetup}
@@ -15,12 +15,17 @@
 \begin{document}
 
 \title{G\"odel's Incompleteness Theorems}
-\author{Lawrence C. Paulson}
+\author{Lawrence C. Paulson, with Janis Bailitis}
 \maketitle
 
 \begin{abstract}
 G\"odel's two incompleteness theorems \cite{goedel-I} are formalised, following a careful presentation by {\'S}wierczkowski \cite{swierczkowski-finite}, in the theory of hereditarily finite sets. This represents the first ever machine-assisted proof of the second incompleteness theorem. Compared with traditional formalisations using Peano arithmetic \cite{boolos-provability}, coding is simpler, with no need to formalise the notion of multiplication (let alone that of a prime number) in the formalised calculus upon which the theorem is based.
 However, other technical problems had to be solved in order to complete the argument.
+
+L\"{o}b's theorem~\cite{loeb1955} states that, for a sentence $\varphi$ we have that $\mathsf{HF} \vdash \mathsf{PfP}(\ulcorner \varphi \urcorner) \rightarrow \varphi$ implies $\mathsf{HF} \vdash \varphi$, where the formula $\mathsf{PfP}(x)$ is the standard provability predicate for $\mathsf{HF}$. It is a strengthening of G\"{o}del's second incompleteness theorem, which can be recovered via $\varphi := \bot$. The formalised argument follows a modern textbook presentation of L\"{o}b's~\cite{loeb1955} argumentation by Smith~\cite[pp.~255]{smith2020} via the Hilbert-Bernays-L\"{o}b derivability conditions~\cite{hilbert1939,loeb1955}. 
+The formalisation is part of Janis Bailitis's Bachelor's thesis~\cite{bailitis2024}, completed at Saarland University in 2024.
+
+Note: Janis Bailitis contributed L\"{o}b's theorem in May 2025.
 \end{abstract}
 
 \tableofcontents

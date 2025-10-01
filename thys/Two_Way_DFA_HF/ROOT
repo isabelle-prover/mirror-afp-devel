@@ -1,0 +1,11 @@
+chapter AFP
+
+session Two_Way_DFA_HF = Finite_Automata_HF +
+  options [timeout = 300]
+
+  theories
+    Two_Way_DFA_HF
+
+  document_files
+    "root.tex"
+    "root.bib"

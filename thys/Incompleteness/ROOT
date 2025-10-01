@@ -2,12 +2,13 @@ chapter AFP
 
 session Incompleteness = HereditarilyFinite +
   description "The Incompleteness Theorems"
-  options [timeout = 2400]
+  options [timeout = 1200]
   sessions
     Nominal2
   theories
     Goedel_I
     Goedel_II
+    Loebs_Theorem
   document_files
     "root.bib"
     "root.tex"

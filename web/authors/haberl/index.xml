@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Alexander Haberl</title>
+    <link>https://isa-afp.org/authors/haberl/</link>
+    <description>AFP entries of Alexander Haberl</description><item>
+  <title>Greibach Normal Form</title>
+  <link>https://isa-afp.org/entries/Greibach_Normal_Form.html</link>
+  <pubDate>Wed, 27 Aug 2025 00:00:00 +0000</pubDate>
+  <description>Greibach Normal Form in the AFP</description>
+    <category>Computer science/Automata and formal languages</category>
+</item>
+
+  </channel>
+</rss>

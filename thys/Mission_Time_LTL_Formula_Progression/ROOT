@@ -1,0 +1,9 @@
+chapter AFP
+
+session Mission_Time_LTL_Formula_Progression = Mission_Time_LTL +
+  options [timeout = 600]
+  theories
+    MLTL_Formula_Progression
+  document_files 
+    "root.tex"
+    "root.bib"

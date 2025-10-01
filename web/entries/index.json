@@ -1,5 +1,168 @@
 [
  {
+  "abstract": "In this entry we formalize stratified Datalog, the first such formalization in Isabelle to the best of our knowledge. Next we formally establish the existence of least solutions for any stratified Datalog program, essential for reasoning about negations in clauses. Lastly we illustrate the usefulness of our Datalog formalization by further formalizing the general Bit-Vector Framework and formalize and prove correct five analyses in this framework namely liveness, reaching definitions, available expressions, very busy expressions and reachability. Many of our definitions follow Nielson and Nielson’s textbook [NN20]. The formalization is described in our SAC 2024 paper [SHN24].\n[NN20] Flemming Nielson and Hanne Riis Nielson. Program analysis (an appetizer). CoRR, abs/2012.10086, 2020. https://arxiv.org/abs/2012.10086\n[SHN24] Anders Schlichtkrull, René Rydhof Hansen, and Flemming Nielson. Isabelle-verified correctness of Datalog programs for program analysis. In Jiman Hong and Juw Won Park, editors, Proceedings of the 39th ACM/SIGAPP Symposium on Applied Computing, SAC 2024, Avila, Spain, April 8-12, 2024, pages 1731–1734. ACM, 2024. ",
+  "authors": [
+   "Anders Schlichtkrull",
+   "René Rydhof Hansen",
+   "Flemming Nielson"
+  ],
+  "link": "/entries/Stratified_Datalog.html",
+  "shortname": "Stratified_Datalog",
+  "title": "Stratified Datalog and Program Analysis",
+  "topic_links": [
+   "/topics/computer-science/",
+   "/topics/computer-science/artificial-intelligence/",
+   "/topics/computer-science/programming-languages/",
+   "/topics/computer-science/programming-languages/static-analysis/"
+  ],
+  "topics": [
+   "Computer science",
+   "Computer science/Artificial intelligence",
+   "Computer science/Programming languages",
+   "Computer science/Programming languages/Static analysis"
+  ],
+  "year": "2025"
+ },
+ {
+  "abstract": "This theory formalizes Hopcroft and Ullman’s algorithm to transform a set of productions into Greibach Normal Form (GNF). We concentrate on the essential property of the GNF: every production starts with a terminal; the tail of a rhs may contain further terminals. The complexity of the algorithm can be exponential.",
+  "authors": [
+   "Alexander Haberl",
+   "Tobias Nipkow",
+   "Akihisa Yamada"
+  ],
+  "link": "/entries/Greibach_Normal_Form.html",
+  "shortname": "Greibach_Normal_Form",
+  "title": "Greibach Normal Form",
+  "topic_links": [
+   "/topics/computer-science/automata-and-formal-languages/"
+  ],
+  "topics": [
+   "Computer science/Automata and formal languages"
+  ],
+  "year": "2025"
+ },
+ {
+  "abstract": "This entry is a formalization of the no-free-lunch theorem for machine learning following Section 5.1 of the book Understanding Machine Learning: From Theory to Algorithms by Shai Shalev-Shwartz and Shai Ben-David. The theorem states that for binary classification prediction tasks, there is no universal learner, meaning that for every learning algorithms, there exists a distribution on which it fails.",
+  "authors": [
+   "Michikazu Hirata"
+  ],
+  "link": "/entries/No_Free_Lunch_ML.html",
+  "shortname": "No_Free_Lunch_ML",
+  "title": "No-free-lunch theorem for machine learning",
+  "topic_links": [
+   "/topics/computer-science/machine-learning/",
+   "/topics/mathematics/probability-theory/"
+  ],
+  "topics": [
+   "Computer science/Machine learning",
+   "Mathematics/Probability theory"
+  ],
+  "year": "2025"
+ },
+ {
+  "abstract": "This theory presents a proof that two-way DFAs are as powerful as DFAs, i.e. they accept exactly the regular languages. The formalization follows Kozen.",
+  "authors": [
+   "Felipe Escallón",
+   "Tobias Nipkow"
+  ],
+  "link": "/entries/Two_Way_DFA_HF.html",
+  "shortname": "Two_Way_DFA_HF",
+  "title": "Two-Way Deterministic Finite Automata",
+  "topic_links": [
+   "/topics/computer-science/automata-and-formal-languages/"
+  ],
+  "topics": [
+   "Computer science/Automata and formal languages"
+  ],
+  "year": "2025"
+ },
+ {
+  "abstract": "We formalize a universal construction of Diophantine equations with bounded complexity. This is a formalization of our own work in number theory. Hilbert's Tenth Problem was answered negatively by Yuri Matiyasevich, who showed that there is no general algorithm to decide whether an arbitrary Diophantine equation has a solution. However, the problem remains open when generalized to the field of rational numbers, or contrarily, when restricted to Diophantine equations with bounded complexity, characterized by the number of variables $\\nu$ and the degree $\\delta$. If every Diophantine set can be represented within the bounds $(\\nu, \\delta)$, we say that this pair is universal, and it follows that the corresponding class of equations is undecidable. In a separate mathematics article, we have determined the first non-trivial universal pair for the case of integer unknowns. This AFP entry contributes the main construction required to establish said universal pair. In doing so, we markedly extend previous work on multivariate polynomials, and develop classical theory on Diophantine equations. Additionally, our work includes metaprogramming infrastructure designed to efficiently handle complex definitions of multivariate polynomials. Our mathematical draft has been formalized while the mathematical research was ongoing, and benefitted largely from the help of the theorem prover.",
+  "authors": [
+   "Marco David",
+   "Théo André",
+   "Mathis Bouverot-Dupuis",
+   "Eva Brenner",
+   "Loïc Chevalier",
+   "Anna Danilkin",
+   "Charlotte Dorneich",
+   "Kevin Lee",
+   "Xavier Pigé",
+   "Timothé Ringeard",
+   "Quentin Vermande",
+   "Paul Wang",
+   "Annie Yao",
+   "Zhengkun Ye",
+   "Jonas Bayer"
+  ],
+  "link": "/entries/Diophantine_Universal_Pairs.html",
+  "shortname": "Diophantine_Universal_Pairs",
+  "title": "Universal Pairs for Diophantine Equations",
+  "topic_links": [
+   "/topics/mathematics/number-theory/"
+  ],
+  "topics": [
+   "Mathematics/Number theory"
+  ],
+  "year": "2025"
+ },
+ {
+  "abstract": "We build on the Isabelle/HOL formalization of Mission-time Linear Temporal Logic (MLTL) to formalize a formula progression algorithm for MLTL formulas (https://dblp.org/rec/conf/rv/LiR18.html), a key algorithm in the FPROGG tool for generating MLTL benchmarks. The formula progression algorithm takes a MLTL formula and steps through a given trace to partially evaluate a logically equivalent simpler formula at each step, ultimately checking whether or not the trace satisfies the original formula. Our formalization is executable and we export it to code in SML.",
+  "authors": [
+   "Katherine Kosaian",
+   "Zili Wang",
+   "Elizabeth Sloan"
+  ],
+  "link": "/entries/Mission_Time_LTL_Formula_Progression.html",
+  "shortname": "Mission_Time_LTL_Formula_Progression",
+  "title": "Mission-time Linear Temporal Logic Formula Progression",
+  "topic_links": [
+   "/topics/computer-science/",
+   "/topics/logic/general-logic/temporal-logic/"
+  ],
+  "topics": [
+   "Computer science",
+   "Logic/General logic/Temporal logic"
+  ],
+  "year": "2025"
+ },
+ {
+  "abstract": "Bisimulations are a fundamental formal tool in the model theory of standard modal logic. Roughly speaking, bisimulations provide a clear answer to a foundational model-theoretical question: Given two (Kripke-style) models, what conditions are sufficient and necessary for them to satisfy the same modal formulas?  We propose a modal study of the notion of bisimulation. We extend the basic modal language with a new modality $[b]$, whose intended meaning is universal quantification over all states that are bisimilar to the current one. We provide a sound and complete axiomatisation of the class of all pairs of Kripke models linked by bisimulations.",
+  "authors": [
+   "Alfredo Burrieza",
+   "Fernando Soler-Toscano",
+   "Antonio Yuste-Ginel"
+  ],
+  "link": "/entries/Bisimulation_Logic.html",
+  "shortname": "Bisimulation_Logic",
+  "title": "A meta-modal logic for bisimulations",
+  "topic_links": [
+   "/topics/logic/general-logic/modal-logic/"
+  ],
+  "topics": [
+   "Logic/General logic/Modal logic"
+  ],
+  "year": "2025"
+ },
+ {
+  "abstract": " As formal methods gain traction in machine learning and numerical analysis, the community needs computer-checked proofs of core optimization results. Existing Isabelle libraries still lack a foundational framework for unconstrained optimization. We close this gap with a comprehensive Isabelle/HOL development that formalizes: minimizers, strict and isolated local minimizers; first- and second-order optimality conditions for scalar functions \\( f : \\mathbb{R} \\to \\mathbb{R} \\); first-order optimality conditions for vector functions \\( g : \\mathbb{R}^{n} \\to \\mathbb{R} \\); and a worked example showing that the continuous function \\[ h(x) = \\begin{cases} x^{4} \\left( \\cos(1/x) + 2 \\right), \u0026 \\text{if } x \\neq 0, \\\\[4pt] 0, \u0026 \\text{if } x = 0 \\end{cases} \\] has a strict but non-isolated local minimizer at \\( x = 0 \\). The new session Unconstrained_Optimization provides sound, reusable foundations for future proof-checking tools and mechanized research in optimization, analysis, and algorithmic correctness. ",
+  "authors": [
+   "Dustin Bryant"
+  ],
+  "link": "/entries/Unconstrained_Optimization.html",
+  "shortname": "Unconstrained_Optimization",
+  "title": "Unconstrained Optimization",
+  "topic_links": [
+   "/topics/computer-science/algorithms/optimization/",
+   "/topics/mathematics/analysis/"
+  ],
+  "topics": [
+   "Computer science/Algorithms/Optimization",
+   "Mathematics/Analysis"
+  ],
+  "year": "2025"
+ },
+ {
   "abstract": "We develop a framework for reasoning computationally about \\(p\\)-adic fields via formal Laurent series with integer coefficients. We define a ring-class quotient type consisting of equivalence classes of prime-indexed sequences of formal Laurent series, in which every \\(p\\)-adic field is contained as a subring. Via a further quotient of the ring of \\(p\\)-adic integers (that is, the elements of depth at least \\(0\\)) by the prime ideal (that is, the subring of elements of depth at least \\(1\\)), we define a ring-class type in which every prime-order finite field is contained as a subring. Finally, some topological properties are developed using depth as a proxy for a metric, Hensel's Lemma is proved, and the compactness of local rings of integers is established.",
   "authors": [
    "Jeremy Sylvestre"
@@ -35,7 +198,7 @@
   "year": "2025"
  },
  {
-  "abstract": "We formalize Kraus maps, i.e., quantum channels of the form $\\rho\\mapsto\\sum_x M_x\\rho M_x^\\dagger$ for suitable families of ``Kraus operators'' $M_x$.  (In the finite-dimensional setting and the setting of separable Hilbert spaces, those are known to be equivalent to completely-positive maps, another common formalization of quantum channels.)  Our results hold for arbitrary (i.e., not necessarily finite-dimensional or separable Hilbert spaces.   Specifically, in theory Kraus_Families, we formalize the type $(\\alpha,\\beta,\\xi)\\ \\mathtt{kraus\\_family}$ of families of Kraus operators $M_x$ (Kraus families for short), from trace-class operators on Hilbert space $\\alpha$ to those on $\\beta$, indexed by $x$ of type $\\xi$.  This induces both a Kraus map $\\rho\\mapsto\\sum_x M_x\\rho M_x^\\dagger$, as well as a quantum measurement with outcomes of type $\\xi$.   We define and study various special Kraus families such as zero, identity, application of an operator, sum of two Kraus maps, sequential composition, infinite sum, random sampling, trace, tensor products, and complete measurements.   Furthermore, since working with explicit Kraus families can be cumbersome when the specific family of operators is not relevant, in theory Kraus_Maps, we define a Kraus map to be a function between two spaces that is of the form $\\rho\\mapsto\\sum_x M_x\\rho M_x^\\dagger$ for some Kraus family, and restate our results in terms of such functions.",
+  "abstract": "We formalize Kraus maps, i.e., quantum channels of the form $\\rho\\mapsto\\sum_x M_x\\rho M_x^\\dagger$ for suitable families of ``Kraus operators'' $M_x$.  (In the finite-dimensional setting and the setting of separable Hilbert spaces, those are known to be equivalent to completely-positive maps, another common formalization of quantum channels.)  Our results hold for arbitrary (i.e., not necessarily finite-dimensional or separable) Hilbert spaces.   Specifically, in theory Kraus_Families, we formalize the type $(\\alpha,\\beta,\\xi)\\ \\mathtt{kraus\\_family}$ of families of Kraus operators $M_x$ (Kraus families for short), from trace-class operators on Hilbert space $\\alpha$ to those on $\\beta$, indexed by $x$ of type $\\xi$.  This induces both a Kraus map $\\rho\\mapsto\\sum_x M_x\\rho M_x^\\dagger$, as well as a quantum measurement with outcomes of type $\\xi$.   We define and study various special Kraus families such as zero, identity, application of an operator, sum of two Kraus maps, sequential composition, infinite sum, random sampling, trace, tensor products, and complete measurements.   Furthermore, since working with explicit Kraus families can be cumbersome when the specific family of operators is not relevant, in theory Kraus_Maps, we define a Kraus map to be a function between two spaces that is of the form $\\rho\\mapsto\\sum_x M_x\\rho M_x^\\dagger$ for some Kraus family, and restate our results in terms of such functions.",
   "authors": [
    "Dominique Unruh"
   ],
@@ -1078,7 +1241,7 @@
  {
   "abstract": "SCL(FOL) (i.e., Simple Clause Learning for First-Order Logic without equality) is known to be able to simulate the derivation of nonredundant clauses by the ground ordered resolution calculus (see Bromberger et al. at CADE 2023). Due to the space constraints of a 16-pages paper, the published proof is monolithic and hard to comprehend. In this work, we reuse the existing strategy for ground ordered resolution and present a new, simpler strategy for SCL(FOL). We prove a stronger bisimulation theorem between these two strategies (i.e., they both simulate each other). Our proof is modular: it consists of ten refinement steps focusing on different aspects of the two strategies.",
   "authors": [
-   "Martin Desharnais"
+   "Martin Desharnais-Schäfer"
   ],
   "link": "/entries/SCL_Simulates_Ground_Resolution.html",
   "shortname": "SCL_Simulates_Ground_Resolution",
@@ -1094,7 +1257,7 @@
  {
   "abstract": "Superposition is an efficient proof calculus for reasoning about first-order logic with equality that is implemented in many automatic theorem provers. It works by saturating the given set of clauses and is refutationally complete, meaning that if the set is inconsistent, the saturation will contain a contradiction. In this formalization, we restructured the completeness proof to cleanly separate the ground (i.e., variable-free) and nonground aspects. We relied on the IsaFoR library for first-order terms and on the Isabelle saturation framework. A paper describing this formalization was published at the 15th International Conference on Interactive Theorem Proving (ITP 2024).",
   "authors": [
-   "Martin Desharnais",
+   "Martin Desharnais-Schäfer",
    "Balazs Toth"
   ],
   "link": "/entries/Superposition_Calculus.html",
@@ -1111,7 +1274,7 @@
  {
   "abstract": "This entry provides small, reusable, theories that specify the concepts of minimal, maximal, least, and greatest elements in sets, final sets, and final multisets. The concepts are uniformly specified as predicates parametrized by a binary relation. The binary relation is only required to be an ordering on the elements of the concrete collection considered. This is useful when working with a partial ordering, but some assumption or invariant proves that the ordering is total on all elements of the considered set.",
   "authors": [
-   "Martin Desharnais"
+   "Martin Desharnais-Schäfer"
   ],
   "link": "/entries/Min_Max_Least_Greatest.html",
   "shortname": "Min_Max_Least_Greatest",
@@ -1250,7 +1413,7 @@
  {
   "abstract": "This entry provides a small, reusable, theory that specifies the abstract concept of substition as monoid action. Both the substitution type and the object type are kept abstract. The theory provides multiple useful definitions and lemmas. Two example usages are provided for first order terms: one for terms from the AFP/First_Order_Terms session and one for terms from the Isabelle/HOL-ex session.",
   "authors": [
-   "Martin Desharnais"
+   "Martin Desharnais-Schäfer"
   ],
   "link": "/entries/Abstract_Substitution.html",
   "shortname": "Abstract_Substitution",
@@ -3285,7 +3448,7 @@
  {
   "abstract": "This Isabelle/HOL formalization covers the unexecutable specification of Simple Clause Learning for first-order logic without equality: SCL(FOL). The main results are formal proofs of soundness, non-redundancy of learned clauses, termination, and refutational completeness. Compared to the unformalized version, the formalized calculus is simpler, a number of results were generalized, and the non-redundancy statement was strengthened. We found and corrected one bug in a previously published version of the SCL Backtrack rule. Compared to related formalizations, we introduce a new technique for showing termination based on non-redundant clause learning.",
   "authors": [
-   "Martin Desharnais"
+   "Martin Desharnais-Schäfer"
   ],
   "link": "/entries/Simple_Clause_Learning.html",
   "shortname": "Simple_Clause_Learning",
@@ -6227,7 +6390,7 @@
  {
   "abstract": "This Isabelle/HOL formalization builds on the VeriComp entry of the Archive of Formal Proofs to provide the following contributions: an operational semantics for a realistic virtual machine (Std) for dynamically typed programming languages; the formalization of an inline caching optimization (Inca), a proof of bisimulation with (Std), and a compilation function; the formalization of an unboxing optimization (Ubx), a proof of bisimulation with (Inca), and a simple compilation function. This formalization was described in the CPP 2021 paper Towards Efficient and Verified Virtual Machines for Dynamic Languages",
   "authors": [
-   "Martin Desharnais"
+   "Martin Desharnais-Schäfer"
   ],
   "link": "/entries/Interpreter_Optimizations.html",
   "shortname": "Interpreter_Optimizations",
@@ -7182,7 +7345,7 @@
  {
   "abstract": "This is a generic framework for formalizing compiler transformations. It leverages Isabelle/HOL’s locales to abstract over concrete languages and transformations. It states common definitions for language semantics, program behaviours, forward and backward simulations, and compilers. We provide generic operations, such as simulation and compiler composition, and prove general (partial) correctness theorems, resulting in reusable proof components.",
   "authors": [
-   "Martin Desharnais"
+   "Martin Desharnais-Schäfer"
   ],
   "link": "/entries/VeriComp.html",
   "shortname": "VeriComp",
@@ -13632,9 +13795,10 @@
   "year": "2013"
  },
  {
-  "abstract": "Gödel's two incompleteness theorems are formalised, following a careful presentation by Swierczkowski, in the theory of hereditarily finite sets. This represents the first ever machine-assisted proof of the second incompleteness theorem. Compared with traditional formalisations using Peano arithmetic (see e.g. Boolos), coding is simpler, with no need to formalise the notion of multiplication (let alone that of a prime number) in the formalised calculus upon which the theorem is based. However, other technical problems had to be solved in order to complete the argument.",
+  "abstract": "Gödel's two incompleteness theorems are formalised, following a careful presentation by Swierczkowski, in the theory of hereditarily finite sets. This represents the first ever machine-assisted proof of the second incompleteness theorem. Compared with traditional formalisations using Peano arithmetic (see e.g. Boolos), coding is simpler, with no need to formalise the notion of multiplication (let alone that of a prime number) in the formalised calculus upon which the theorem is based. However, other technical problems had to be solved in order to complete the argument. Löb's theorem states that we have that $\\mathsf{HF} \\vdash \\mathsf{PfP}(\\ulcorner \\varphi \\urcorner) \\rightarrow \\varphi$ implies $\\mathsf{HF} \\vdash \\varphi$, where the formula $\\mathsf{PfP}(x)$ is the standard provability predicate for $\\mathsf{HF}$. It is a strengthening of Gödel's second incompleteness theorem, which can be recovered via $\\varphi := \\bot$. The formalised argument follows a modern textbook presentation of Löb's argumentation by Smith via the Hilbert-Bernays-Löb derivability conditions. The formalisation of Löb's theorem is part of Janis Bailitis's Bachelor' s thesis completed at Saarland University in 2024. ",
   "authors": [
-   "Lawrence C. Paulson"
+   "Lawrence C. Paulson",
+   null
   ],
   "link": "/entries/Incompleteness.html",
   "shortname": "Incompleteness",

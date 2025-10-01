@@ -1,0 +1,63 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath, amssymb}
+\usepackage{isabelle,isabellesym}
+\usepackage{graphicx}
+\usepackage{enumitem} 
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+\newcommand\sslash{\mathbin{/\mkern-5.5mu/}}%
+
+
+\begin{document}
+
+\title{Fundamentals of Unconstrained Optimization}
+\author{Dustin Bryant}
+\maketitle
+
+\begin{abstract}
+As formal methods gain traction in machine learning and numerical analysis,
+the community needs computer-checked proofs of core optimization results.
+Existing Isabelle libraries still lack a foundational framework for
+unconstrained optimization.  
+We close this gap with a comprehensive Isabelle/HOL development that formalizes:
+
+\begin{enumerate}[label=(\arabic*), leftmargin=*] % (1), (2), …
+  \item minimizers, strict and isolated local minimizers;
+  \item first- and second-order optimality conditions for scalar functions
+        \(f : \mathbb{R} \to \mathbb{R}\);
+  \item first-order optimality conditions for vector functions
+        \(g : \mathbb{R}^{n} \to \mathbb{R}\); and
+  \item a worked example showing that the continuous function
+        \[
+          h(x)=
+          \begin{cases}
+            x^{4}\bigl(\cos(1/x)+2\bigr), & x \neq 0,\\[4pt]
+            0, & x = 0
+          \end{cases}
+        \]
+        has a \emph{strict} but \emph{non-isolated} local minimizer at \(x = 0\).
+\end{enumerate}
+The new session \texttt{Unconstrained\_Optimization} provides sound,
+reusable foundations for future proof-checking tools and mechanized research
+in optimization, analysis, and algorithmic correctness.
+\end{abstract}
+
+
+
+\tableofcontents
+
+% include generated text of all theories
+\input{session}
+
+% force-print every entry from root.bib, even if unused
+\nocite{*}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}

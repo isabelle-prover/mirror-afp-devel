@@ -1,0 +1,55 @@
+title = "Unconstrained Optimization"
+date = 2025-07-16
+topics = [
+  "Computer science/Algorithms/Optimization",
+  "Mathematics/Analysis",
+]
+abstract = """
+<p>
+As formal methods gain traction in machine learning and numerical analysis,
+the community needs computer-checked proofs of core optimization results.
+Existing Isabelle libraries still lack a foundational framework for
+unconstrained optimization.  
+We close this gap with a comprehensive Isabelle/HOL development that formalizes:
+</p>
+
+<ol>
+  <li>minimizers, strict and isolated local minimizers;</li>
+  <li>first- and second-order optimality conditions for scalar functions \\( f : \\mathbb{R} \\to \\mathbb{R} \\);</li>
+  <li>first-order optimality conditions for vector functions \\( g : \\mathbb{R}^{n} \\to \\mathbb{R} \\); and</li>
+  <li>a worked example showing that the continuous function
+    \\[
+      h(x) =
+      \\begin{cases}
+        x^{4} \\left( \\cos(1/x) + 2 \\right), & \\text{if } x \\neq 0, \\\\[4pt]
+        0, & \\text{if } x = 0
+      \\end{cases}
+    \\]
+    has a <em>strict</em> but <em>non-isolated</em> local minimizer at \\( x = 0 \\).</li>
+</ol>
+
+<p>
+The new session <code>Unconstrained_Optimization</code> provides sound,
+reusable foundations for future proof-checking tools and mechanized research
+in optimization, analysis, and algorithmic correctness.
+</p>"""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.bryant]
+email = "bryant_email"
+
+[contributors]
+
+[notify]
+bryant = "bryant_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

@@ -1,0 +1,10 @@
+chapter AFP
+session Bisimulation_Logic = HOL +
+  options [timeout = 600]
+  sessions
+    Synthetic_Completeness
+  theories
+    Bisimulation_Logic
+  document_files
+    "root.bib"  
+    "root.tex"

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Felipe Escallón</title>
+    <link>https://isa-afp.org/authors/escallon/</link>
+    <description>AFP entries of Felipe Escallón</description><item>
+  <title>Two-Way Deterministic Finite Automata</title>
+  <link>https://isa-afp.org/entries/Two_Way_DFA_HF.html</link>
+  <pubDate>Tue, 29 Jul 2025 00:00:00 +0000</pubDate>
+  <description>Two-Way Deterministic Finite Automata in the AFP</description>
+    <category>Computer science/Automata and formal languages</category>
+</item>
+
+  </channel>
+</rss>

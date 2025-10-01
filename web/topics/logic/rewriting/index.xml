@@ -99,7 +99,7 @@
     <category>Logic/Rewriting</category>
 </item>
 <item>
-  <title>Implementing the Goodstein Function in &lambda;-Calculus</title>
+  <title>Implementing the Goodstein Function in &amp;lambda;-Calculus</title>
   <link>https://isa-afp.org/entries/Goodstein_Lambda.html</link>
   <pubDate>Fri, 21 Feb 2020 00:00:00 +0000</pubDate>
   <description>Implementing the Goodstein Function in &amp;lambda;-Calculus in the AFP</description>

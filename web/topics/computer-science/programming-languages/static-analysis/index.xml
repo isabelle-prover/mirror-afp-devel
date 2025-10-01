@@ -4,6 +4,16 @@
     <title>Computer science/Programming languages/Static analysis</title>
     <link>https://isa-afp.org/topics/computer-science/programming-languages/static-analysis/</link>
     <description>AFP entries in Static analysis</description><item>
+  <title>Stratified Datalog and Program Analysis</title>
+  <link>https://isa-afp.org/entries/Stratified_Datalog.html</link>
+  <pubDate>Mon, 01 Sep 2025 00:00:00 +0000</pubDate>
+  <description>Stratified Datalog and Program Analysis in the AFP</description>
+    <category>Computer science</category>
+    <category>Computer science/Artificial intelligence</category>
+    <category>Computer science/Programming languages</category>
+    <category>Computer science/Programming languages/Static analysis</category>
+</item>
+<item>
   <title>Extension of Stateful Intransitive Noninterference with Inputs, Outputs, and Nondeterminism in Language IMP</title>
   <link>https://isa-afp.org/entries/IMP_Noninterference_Extension.html</link>
   <pubDate>Mon, 02 Sep 2024 00:00:00 +0000</pubDate>

@@ -4,6 +4,20 @@
     <title>Computer science/Automata and formal languages</title>
     <link>https://isa-afp.org/topics/computer-science/automata-and-formal-languages/</link>
     <description>AFP entries in Automata and formal languages</description><item>
+  <title>Greibach Normal Form</title>
+  <link>https://isa-afp.org/entries/Greibach_Normal_Form.html</link>
+  <pubDate>Wed, 27 Aug 2025 00:00:00 +0000</pubDate>
+  <description>Greibach Normal Form in the AFP</description>
+    <category>Computer science/Automata and formal languages</category>
+</item>
+<item>
+  <title>Two-Way Deterministic Finite Automata</title>
+  <link>https://isa-afp.org/entries/Two_Way_DFA_HF.html</link>
+  <pubDate>Tue, 29 Jul 2025 00:00:00 +0000</pubDate>
+  <description>Two-Way Deterministic Finite Automata in the AFP</description>
+    <category>Computer science/Automata and formal languages</category>
+</item>
+<item>
   <title>Parikh&#39;s Theorem</title>
   <link>https://isa-afp.org/entries/Parikh.html</link>
   <pubDate>Thu, 26 Jun 2025 00:00:00 +0000</pubDate>

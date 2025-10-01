@@ -62,6 +62,7 @@ Binomial-Heaps
 Binomial-Queues
 BirdKMP
 Birkhoff_Finite_Distributive_Lattices
+Bisimulation_Logic
 Blue_Eyes
 Bondy
 Boolean_Expression_Checkers
@@ -215,6 +216,7 @@ Digit_Expansions
 Dijkstra_Shortest_Path
 Dilworth
 Diophantine_Eqns_Lin_Hom
+Diophantine_Universal_Pairs
 Directed_Sets
 Dirichlet_L
 Dirichlet_Series
@@ -340,6 +342,7 @@ Graph_Saturation
 Graph_Theory
 Gray_Codes
 Green
+Greibach_Normal_Form
 Groebner_Bases
 Groebner_Macaulay
 Gromov_Hyperbolicity
@@ -534,6 +537,7 @@ Minkowskis_Theorem
 Minsky_Machines
 Mission_Time_LTL
 Mission_Time_LTL_to_Regular_Expression
+Mission_Time_LTL_Formula_Progression
 Mission_Time_LTL_Language_Partition
 MLSSmf_to_MLSS
 MLSS_Decision_Proc
@@ -567,6 +571,7 @@ Network_Security_Policy_Verification
 Neumann_Morgenstern_Utility
 No_FTL_observers
 No_FTL_observers_Gen_Rel
+No_Free_Lunch_ML
 Nominal2
 Nominal_Myhill_Nerode
 Noninterference_CSP
@@ -816,6 +821,7 @@ Stone_Cech
 Stone_Kleene_Relation_Algebras
 Stone_Relation_Algebras
 Store_Buffer_Reduction
+Stratified_Datalog
 Stream-Fusion
 Stream_Fusion_Code
 StrictOmegaCategories
@@ -873,6 +879,7 @@ Turans_Graph_Theorem
 Twelvefold_Way
 Two_Generated_Word_Monoids_Intersection
 Two_Hermitian_Results
+Two_Way_DFA_HF
 Tycon
 Typed_Ordered_Resolution
 Types_Tableaus_and_Goedels_God
@@ -881,6 +888,7 @@ UPF
 UPF_Firewall
 UTP
 Uncertainty_Principle
+Unconstrained_Optimization
 Undirected_Graph_Theory
 Universal_Hash_Families
 Universal_Turing_Machine
