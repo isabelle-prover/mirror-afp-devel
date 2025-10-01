@@ -35,7 +35,7 @@ fun gen_theorems (name, thms) lthy =
     val (res, lthy') = lthy |> Local_Theory.notes_kind kind facts';
     val _ =
       Proof_Display.print_results
-        {interactive = true, pos = Position.thread_data (), proof_state = false}
+        {interactive = true, pos = Position.thread_data ()}
         lthy' ((kind, ""), res);
   in (res, lthy') end;
 

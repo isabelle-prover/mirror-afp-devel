@@ -1535,34 +1535,6 @@ lemma T_eq_is_\<T>_eq:
         shows "T x = T y \<longleftrightarrow> \<T> x = \<T> y"
   using assms \<T>_def by fastforce
 
-(* TODO: rm after next release because in devel *)
-
-definition kern :: "('b \<Rightarrow> 'c) \<Rightarrow> ('b \<times> 'b) set" where
-  "kern f \<equiv> {(x, y). f x = f y}"
-
-lemma equiv_kern:
-  "equiv UNIV (kern f)"
-  unfolding kern_def by (simp add: equivI refl_on_def sym_def trans_def eq_app_right_def)
-
-lemma inj_on_vimage_image: "inj_on (\<lambda>b. f -` {b}) (f ` A)"
-  using inj_on_def by fastforce
-
-lemma kern_Image: "kern f `` A = f -` (f ` A)"
-  unfolding kern_def by (auto simp: rev_image_eqI)
-
-lemma quotient_kern_eq_image: "A // kern f = (\<lambda>b. f-` {b}) ` f ` A"
-  by (auto simp: quotient_def kern_Image)
-
-lemma bij_betw_image_quotient_kern: 
-  "bij_betw (\<lambda>b. f -` {b}) (f ` A) (A // kern f)"
-  unfolding bij_betw_def 
-  by (simp add: inj_on_vimage_image quotient_kern_eq_image)
-
-lemma finite_quotient_kern_iff_finite_image:
-  "finite (A // kern \<T>) = finite (\<T> ` A)"
-  by (metis bij_betw_finite bij_betw_image_quotient_kern)
-(* end of rm *)
-
 theorem \<T>_finite_image:
   "finite (\<T> ` UNIV)"
 proof -
@@ -1574,12 +1546,12 @@ proof -
 qed
 
 lemma kern_\<T>_subset_eq_app_right:
-  "kern \<T> \<subseteq> eq_app_right Lang"
+  "kernel \<T> \<subseteq> eq_app_right Lang"
 proof 
   fix xy
-  assume "xy \<in> kern \<T>"
+  assume "xy \<in> kernel \<T>"
   then obtain x y where xy_def: "xy = (x, y)" "\<T> x = \<T> y" 
-    unfolding kern_def by blast
+    unfolding kernel_def by blast
   show "xy \<in> eq_app_right Lang"
   proof (cases x)
     case Nil
@@ -1602,10 +1574,10 @@ text \<open>Lastly, \<open>eq_app_right\<close> is of finite index, from which t
 theorem dfa2_Lang_regular:
   "regular Lang"
 proof -
-  from \<T>_finite_image have "finite (UNIV // kern \<T>)"
-    using finite_quotient_kern_iff_finite_image by blast
+  from \<T>_finite_image have "finite (UNIV // kernel \<T>)"
+    by (simp add: quotient_kernel_eq_image)
   then have "finite (UNIV // eq_app_right Lang)" 
-    using equiv_kern equiv_eq_app_right finite_refines_finite kern_\<T>_subset_eq_app_right 
+    using equiv_kernel equiv_eq_app_right finite_refines_finite kern_\<T>_subset_eq_app_right 
     by blast
   then show "regular Lang" using L3_1 by auto
 qed
@@ -1631,7 +1603,7 @@ lemma infinite_UNIV_state: "infinite(UNIV :: state set)"
   using hmem_HF_iff by blast
 
 text \<open>Let \<open>L \<subseteq> \<Sigma>\<^sup>*\<close> be regular. Then there exists a DFA \<open>M = (Q, q\<^sub>0, F, \<delta>)\<close>\footnote{We define automata
-      in accordance with the records @{typ "'a dfa"} and @{typ "'a dfa2"}, which do not define an
+      in accordance with the records @{typ "('a,'s) dfa"} and @{typ "'a dfa2"}, which do not define an
       alphabet explicitly. Hence, we implicitly set \<open>\<Sigma>\<close> as the input alphabet for \<open>M\<close> and \<open>M'\<close>.} 
       that accepts \<open>L\<close>. Furthermore, let \<open>q\<^sub>0, q\<^sub>a, q\<^sub>r \<notin> Q\<close> be pairwise distinct states.
       We construct the 2DFA \<open>M' = (Q \<union> {q\<^sub>0', q\<^sub>a, q\<^sub>r}, q\<^sub>0', q\<^sub>a, q\<^sub>r, \<delta>')\<close> where\newline
@@ -1667,7 +1639,7 @@ text \<open>Let \<open>L \<subseteq> \<Sigma>\<^sup>*\<close> be regular. Then t
      
 theorem regular_language_impl_dfa2:
   assumes "regular L"
-  obtains M M' q0 qa qr where 
+  obtains M :: "'a dfa_hf" and M' q0 qa qr where 
     "dfa M" "dfa.language M = L"
     "{q0, qa, qr} \<inter> dfa.states M = {}"
     "qa \<noteq> qr" 
@@ -1686,7 +1658,7 @@ theorem regular_language_impl_dfa2:
                       dfa2.rej = qr,
                       dfa2.nxt = \<delta>\<rparr>)"
 proof -
-  from assms obtain M where M_def: "dfa M" "dfa.language M = L"
+  from assms obtain M :: "'a dfa_hf" where M_def: "dfa M" "dfa.language M = L"
     unfolding regular_def by blast
   then obtain q0 qa qr where q_defs:
     "{q0, qa, qr} \<inter> dfa.states M = {}"
@@ -1779,7 +1751,7 @@ proof -
     qed
   next
     case (10 q)
-    then show ?case using \<open>dfa M\<close> dfa_def q_defs(1) by auto
+    then show ?case using \<open>dfa M\<close> dfa_def q_defs(1) by fastforce
   qed (use q_defs dfa.finite[OF \<open>dfa M\<close>] in simp)+
 
   have nextl_reachable:

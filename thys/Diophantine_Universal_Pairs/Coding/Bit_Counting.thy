@@ -822,7 +822,7 @@ proof (cases "i \<le> q")
   thus ?thesis 
     using False unfolding nth_digit_def
     by (metis (no_types, lifting) assms(1) div_less dual_order.strict_trans2 
-        linordered_nonzero_semiring_class.zero_le_one mod_less not_less_eq_eq power_increasing_iff 
+        zero_le_one mod_less not_less_eq_eq power_increasing_iff 
         verit_comp_simplify1(3))
 next
   case True

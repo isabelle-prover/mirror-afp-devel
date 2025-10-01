@@ -299,7 +299,7 @@ proof -
       \<le> ( (abs (U l X Y))^2 / (abs (U l X Y^2*V w g Y) - 1) )^(nat X)"
       using 1 2 by simp
     have 4: "... \<le> (1 / 2)^(nat X)"
-      using min_U2V XBe3 Power.linordered_semidom_class.power_mono
+      using min_U2V XBe3 power_mono
         [of "(abs (U l X Y))^2 / (abs (U l X Y^2*V w g Y) - 1)" "1/2" "nat X"] abs_U2V_B2
       by (smt (verit, ccfv_SIG) of_int_0_le_iff zero_le_divide_iff zero_le_power2)
     have 5: "(1/2)^(Suc n) \<le> (1/2::real)" for n::nat
