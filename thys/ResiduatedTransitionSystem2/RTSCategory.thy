@@ -629,10 +629,14 @@ begin
 
     lemma cov_HOM_resid:
     assumes "obj a" and "V.con t u"
-    shows "cov_HOM a (t \\ u) =
-           consistent_transformations.resid
-             (HOM a (dom t)) (HOM a (cod t)) (HOM\<^sup>\<rightarrow> a (trg u))
+    shows "consistent_transformations
+             (HOM a (dom t)) (HOM a (cod t))
+             (HOM\<^sup>\<rightarrow> a (src t)) (HOM\<^sup>\<rightarrow> a (trg t)) (HOM\<^sup>\<rightarrow> a (trg u))
              (HOM\<^sup>\<rightarrow> a t) (HOM\<^sup>\<rightarrow> a u)"
+    and "cov_HOM a (t \\ u) =
+         consistent_transformations.resid
+           (HOM a (dom t)) (HOM a (cod t)) (HOM\<^sup>\<rightarrow> a (trg u))
+           (HOM\<^sup>\<rightarrow> a t) (HOM\<^sup>\<rightarrow> a u)"
     proof -
       have 1: "HOM a (dom u) = HOM a (dom t)"
         using assms V.con_imp_eq_src dom_src by metis
@@ -664,15 +668,16 @@ begin
           fix x
           assume x: "A.ide x"
           show "HOM\<^sup>\<rightarrow> a t x \<frown>\<^sub>B HOM\<^sup>\<rightarrow> a u x"
-            using assms x resid_hcomp B.con_char B.arr_char at.preserves_arr
-                  au.preserves_arr
-            apply auto[1]
-             apply (metis (no_types, lifting) B.inclusion V.arrE arr_coincidence
-                A.ide_implies_arr H.seqE)
-            by (metis (full_types) B.not_arr_null B.null_char A.ide_implies_arr
-                rts_category.sub_rts_HOM)
+            using assms x 1 resid_hcomp B.con_char B.arr_char at.preserves_arr
+                  au.preserves_arr A.ide_char B.inclusion
+            by fastforce
         qed
       qed
+      show "consistent_transformations
+              (HOM a (dom t)) (HOM a (cod t))
+              (HOM\<^sup>\<rightarrow> a (src t)) (HOM\<^sup>\<rightarrow> a (trg t)) (HOM\<^sup>\<rightarrow> a (trg u))
+              (HOM\<^sup>\<rightarrow> a t) (HOM\<^sup>\<rightarrow> a u)"
+        ..
       show "HOM\<^sup>\<rightarrow> a (t \\ u) = at_au.resid"
       proof (intro transformation_eqI)
         show "extensional_rts (HOM a (cod t))" ..

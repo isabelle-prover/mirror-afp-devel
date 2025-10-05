@@ -1585,8 +1585,6 @@ begin
   proof
     interpret elementary_category_with_terminal_object C \<open>\<one>\<^sup>?\<close> \<open>\<lambda>a. \<t>\<^sup>?[a]\<close>
       using extends_to_elementary_category_with_terminal_object by blast
-    show "cospan \<t>\<^sup>?[a] \<t>\<^sup>?[b]"
-      using assms by fastforce
     show "commutative_square \<t>\<^sup>?[a] \<t>\<^sup>?[b] p q"
       using assms trm_naturality by fastforce
     show "\<And>h k. commutative_square \<t>\<^sup>?[a] \<t>\<^sup>?[b] h k \<Longrightarrow> \<exists>!l. p \<cdot> l = h \<and> q \<cdot> l = k"

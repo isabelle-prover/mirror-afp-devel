@@ -514,15 +514,17 @@ text \<open>
     where "has_pullbacks = (\<forall>f0 f1. cospan f0 f1 \<longrightarrow> (\<exists>p0 p1. has_as_pullback f0 f1 p0 p1))"
 
     lemma has_as_pullbackI [intro]:
-    assumes "cospan f g" and "commutative_square f g p q"
+    assumes "commutative_square f g p q"
     and "\<And>h k. commutative_square f g h k \<Longrightarrow> \<exists>!l. p \<cdot> l = h \<and> q \<cdot> l = k"
     shows "has_as_pullback f g p q"
     proof (unfold has_as_pullback_def, intro conjI)
       show "arr f" and "arr g" and "cod f = cod g"
         using assms(1) by auto
+      hence 0: "cospan f g"
+        by auto
       interpret J: cospan_shape .
       interpret D: cospan_diagram C f g
-        using assms(1-2) by unfold_locales auto
+        using 0 by unfold_locales auto
       show "D.has_as_pullback p q"
       proof -
         have 1: "D.is_rendered_commutative_by p q"
@@ -540,7 +542,7 @@ text \<open>
           have 2: "D.is_rendered_commutative_by (\<chi>' J.AA) (\<chi>' J.BB)"
             using \<chi>' D.is_rendered_commutative_by_cone [of x \<chi>'] by blast
           have 3: "\<exists>!l. p \<cdot> l = \<chi>' J.AA \<and> q \<cdot> l = \<chi>' J.BB"
-            using assms(1,3) 2 \<chi>'.preserves_hom J.arr_char J.ide_char by simp
+            using assms(2) 0 2 \<chi>'.preserves_hom J.arr_char J.ide_char by simp
           obtain l where l: "p \<cdot> l = \<chi>' J.AA \<and> q \<cdot> l = \<chi>' J.BB"
             using 3 by blast
           have "\<guillemotleft>l : x \<rightarrow> ?a\<guillemotright>"

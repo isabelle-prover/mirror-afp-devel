@@ -718,6 +718,61 @@ begin
 
   end
 
+  lemma equivalence_functor_comp:
+  assumes "equivalence_functor B C F" and "equivalence_functor C D H"
+  shows "equivalence_functor B D (H \<circ> F)"
+    using assms
+    by (meson equivalence_functor.induces_equivalence equivalence_functor_def
+        equivalence_of_categories.G_is_essentially_surjective
+        equivalence_of_categories.G_is_faithful equivalence_of_categories.G_is_full
+        essentially_surjective_functors_compose faithful_functors_compose full_functors_compose
+        fully_faithful_and_essentially_surjective_functor.intro
+        fully_faithful_and_essentially_surjective_functor.is_equivalence_functor
+        fully_faithful_functor.intro)
+
+  definition equivalent_categories
+  where "equivalent_categories C D \<equiv> \<exists>F. equivalence_functor C D F"
+
+  lemma equivalent_categoriesI [intro]:
+  assumes "equivalence_functor C D F"
+  shows "equivalent_categories C D"
+    using assms equivalent_categories_def by blast
+
+  lemma equivalent_categoriesE [elim]:
+  assumes "equivalent_categories C D"
+  obtains F where "equivalence_functor C D F"
+    using assms equivalent_categories_def [of C D] by blast
+
+  lemma equivalent_categories_refl:
+  assumes "category C"
+  shows "equivalent_categories C C"
+    using assms equivalent_categories_def identity_functor.is_equivalence
+          identity_functor_def
+    by blast
+
+  lemma equivalent_categories_sym:
+  assumes "equivalent_categories C D"
+  shows "equivalent_categories D C"
+  proof -
+    obtain G F \<eta> \<epsilon> where 1: "equivalence_of_categories C D F G \<eta> \<epsilon>"
+      using assms equivalence_functor.induces_equivalence by blast
+    interpret equivalence_of_categories C D F G \<eta> \<epsilon>
+      using 1 by blast
+    interpret F: fully_faithful_and_essentially_surjective_functor D C F
+      using F.functor_axioms F_is_essentially_surjective F_is_faithful F_is_full
+            fully_faithful_and_essentially_surjective_functor.intro
+            fully_faithful_functor.intro functor_def
+      by blast
+    have "equivalence_functor D C F"
+      using F.is_equivalence_functor by fastforce
+    thus ?thesis by auto
+  qed
+
+  lemma equivalent_categories_trans [trans]:
+  assumes "equivalent_categories B C" and "equivalent_categories C D"
+  shows "equivalent_categories B D"
+    using assms equivalence_functor_comp by blast
+
   context equivalence_of_categories
   begin
 

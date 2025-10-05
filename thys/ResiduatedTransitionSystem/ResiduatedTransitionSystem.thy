@@ -8047,10 +8047,12 @@ begin
 
     type_synonym 'b arr = "'b list set"
 
-    interpretation N: coherent_normal_sub_rts R \<open>Collect R.ide\<close>
+    sublocale N: coherent_normal_sub_rts R \<open>Collect R.ide\<close>
       using R.rts_axioms R.identities_form_coherent_normal_sub_rts by auto
     sublocale P: paths_in_rts_with_coherent_normal R \<open>Collect R.ide\<close> ..
     sublocale Q: quotient_by_coherent_normal P.Resid \<open>Collect P.NPath\<close> ..
+
+    notation P.Cong_class (\<open>\<lbrace>_\<rbrace>\<close>)
 
     definition resid    (infix \<open>\<lbrace>\<^sup>*\\<^sup>*\<rbrace>\<close> 70)
     where "resid \<equiv> Q.Resid"
@@ -9050,6 +9052,10 @@ begin
       using con_char preserves_con preserves_resid extensionality
       by unfold_locales auto
 
+    lemma is_simulation:
+    shows "simulation Resid B map"
+      ..
+
     lemma is_extension:
     shows "map \<circ> incl = F"
       using map_o_incl_eq by auto
@@ -9236,28 +9242,24 @@ begin
   and F :: "'a \<Rightarrow> 'b"
   begin
 
-    interpretation N: coherent_normal_sub_rts A \<open>Collect A.ide\<close>
-      using A.rts_axioms A.identities_form_coherent_normal_sub_rts by auto
-    sublocale P: paths_in_rts_with_coherent_normal A \<open>Collect A.ide\<close> ..
-    sublocale Q: quotient_by_coherent_normal P.Resid \<open>Collect P.NPath\<close> ..
-    sublocale Ac: composite_completion A ..
+    interpretation Ac: composite_completion A ..
 
-    notation P.Resid    (infix \<open>\<^sup>*\\<^sub>A\<^sup>*\<close> 70)
-    notation P.Resid1x  (infix \<open>\<^sup>1\\<^sub>A\<^sup>*\<close> 70)
-    notation P.Residx1  (infix \<open>\<^sup>*\\<^sub>A\<^sup>1\<close> 70)
-    notation P.Con      (infix \<open>\<^sup>*\<frown>\<^sub>A\<^sup>*\<close> 70)
-    notation B.comp     (infixr \<open>\<cdot>\<^sub>B\<close> 55)
-    notation B.con      (infix \<open>\<frown>\<^sub>B\<close> 50)
+    notation Ac.P.Resid    (infix \<open>\<^sup>*\\<^sub>A\<^sup>*\<close> 70)
+    notation Ac.P.Resid1x  (infix \<open>\<^sup>1\\<^sub>A\<^sup>*\<close> 70)
+    notation Ac.P.Residx1  (infix \<open>\<^sup>*\\<^sub>A\<^sup>1\<close> 70)
+    notation Ac.P.Con      (infix \<open>\<^sup>*\<frown>\<^sub>A\<^sup>*\<close> 70)
+    notation B.comp        (infixr \<open>\<cdot>\<^sub>B\<close> 55)
+    notation B.con         (infix \<open>\<frown>\<^sub>B\<close> 50)
 
     interpretation F_ext: extension_to_paths A B B.comp F ..
 
     definition map
-    where "map = Q.ext_to_quotient B F_ext.map"
+    where "map = Ac.Q.ext_to_quotient B F_ext.map"
 
     sublocale simulation Ac.resid B map
       unfolding map_def Ac.resid_def
-      using Q.ext_to_quotient_props [of B F_ext.map] F_ext.simulation_axioms
-            F_ext.preserves_ide B.extensional_rts_axioms P.ide_char Ac.P_ide_iff_NPath
+      using Ac.Q.ext_to_quotient_props [of B F_ext.map] F_ext.simulation_axioms
+            F_ext.preserves_ide B.extensional_rts_axioms Ac.P.ide_char Ac.P_ide_iff_NPath
       by blast
 
     lemma is_simulation:
@@ -9267,12 +9269,12 @@ begin
     lemma is_extension:
     shows "map \<circ> Ac.incl = F"
     proof -
-      have "map \<circ> Ac.incl = map \<circ> Q.quot \<circ> P.incl"
+      have "map \<circ> Ac.incl = map \<circ> Ac.Q.quot \<circ> Ac.P.incl"
         using Ac.incl_def by auto
-      also have "... = F_ext.map \<circ> P.incl"
-        using Q.ext_to_quotient_props [of B F_ext.map]
+      also have "... = F_ext.map \<circ> Ac.P.incl"
+        using Ac.Q.ext_to_quotient_props [of B F_ext.map]
         by (simp add: B.extensional_rts_axioms F_ext.simulation_axioms
-            Ac.P_ide_iff_NPath P.ide_char map_def)
+            Ac.P_ide_iff_NPath Ac.P.ide_char map_def)
       also have "... = F"
         by (simp add: F_ext.is_extension)
       finally show ?thesis by blast
@@ -9289,25 +9291,25 @@ begin
         using F' by blast
       show "F' = map"
       proof -
-        have "F' \<circ> Q.quot = F_ext.map"
+        have "F' \<circ> Ac.Q.quot = F_ext.map"
         proof -
-          interpret F'_o_quot: simulation P.Resid B \<open>F' \<circ> Q.quot\<close>
-            using F' Q.quotient_is_simulation Ac.resid_def by auto
-          interpret incl: simulation A P.Resid P.incl
-            using P.incl_is_simulation by blast
-          interpret F'_o_quot_o_incl: composite_simulation A P.Resid B P.incl
-                                        \<open>F' \<circ> Q.quot\<close>
+          interpret F'_o_quot: simulation Ac.P.Resid B \<open>F' \<circ> Ac.Q.quot\<close>
+            using F' Ac.Q.quotient_is_simulation Ac.resid_def by auto
+          interpret incl: simulation A Ac.P.Resid Ac.P.incl
+            using Ac.P.incl_is_simulation by blast
+          interpret F'_o_quot_o_incl: composite_simulation A Ac.P.Resid B Ac.P.incl
+                                        \<open>F' \<circ> Ac.Q.quot\<close>
             ..
-          have "(F' \<circ> Q.quot) \<circ> P.incl = F"
+          have "(F' \<circ> Ac.Q.quot) \<circ> Ac.P.incl = F"
             using F' Ac.incl_def by auto
-          hence "\<forall>T. P.arr T \<longrightarrow> (F' \<circ> Q.quot) T \<sim>\<^sub>B F_ext.map T"
+          hence "\<forall>T. Ac.P.arr T \<longrightarrow> (F' \<circ> Ac.Q.quot) T \<sim>\<^sub>B F_ext.map T"
             using F_ext.is_universal(3) F'_o_quot.simulation_axioms by blast
-          hence "\<forall>T. P.arr T \<longrightarrow> (F' \<circ> Q.quot) T = F_ext.map T"
+          hence "\<forall>T. Ac.P.arr T \<longrightarrow> (F' \<circ> Ac.Q.quot) T = F_ext.map T"
             using B.cong_char by blast
           thus ?thesis
           proof -
-            have "\<forall>as. (F' \<circ> Q.quot) as = F_ext.map as \<or> \<not> P.arr as"
-              using \<open>\<forall>T. P.arr T \<longrightarrow> (F' \<circ> Q.quot) T = F_ext.map T\<close> by blast
+            have "\<forall>as. (F' \<circ> Ac.Q.quot) as = F_ext.map as \<or> \<not> Ac.P.arr as"
+              using \<open>\<forall>T. Ac.P.arr T \<longrightarrow> (F' \<circ> Ac.Q.quot) T = F_ext.map T\<close> by blast
             then show ?thesis
               using F'_o_quot.extensionality F_ext.extensionality by fastforce
           qed
@@ -9315,7 +9317,7 @@ begin
         thus ?thesis 
           by (metis (no_types, lifting) "0" B.extensional_rts_axioms F'
               F_ext.preserves_ide F_ext.simulation_axioms Ac.P_ide_iff_NPath
-              Q.ext_to_quotient_props(2) Q.is_couniversal map_def mem_Collect_eq
+              Ac.Q.ext_to_quotient_props(2) Ac.Q.is_couniversal map_def mem_Collect_eq
               Ac.resid_def)
       qed
     qed
@@ -9385,8 +9387,8 @@ begin
       have "G \<circ> Fc.map \<circ> Ac.incl = GoFc.map \<circ> Ac.incl"
         using GoFc.is_extension Fc.is_extension comp_assoc by metis
       thus ?thesis
-        using GoFc.is_extension GoFc.is_universal GoFc.simulation_axioms
-              G.simulation_axioms Fc.simulation_axioms simulation_comp
+        using GoFc.is_extension GoFc.is_universal GoFc.is_simulation
+              G.simulation_axioms Fc.is_simulation simulation_comp
         by metis
     qed
   qed
@@ -9396,7 +9398,7 @@ begin
    *)
   lemma composite_completion_of_rts:
   assumes "rts A"
-  shows "\<exists>(A' :: 'a list set resid) I.
+  shows "\<exists>(A' :: 'a composite_completion.arr resid) I.
              extensional_rts_with_composites A' \<and> simulation A A' I \<and>
           (\<forall>B (J :: 'a \<Rightarrow> 'c). extensional_rts_with_composites B \<and> simulation A B J
                                  \<longrightarrow> (\<exists>!J'. simulation A' B J' \<and> J' o I = J))"
