@@ -44,7 +44,8 @@ material on equivalence of categories, cartesian categories,
 categories with pullbacks, categories with finite limits, and
 cartesian closed categories.  A construction was given of the category
 of hereditarily finite sets and functions between them, and it was
-shown that this category is cartesian closed.
+shown that this category is cartesian closed.  Definitions and facts
+about colimits were added, dualizing a portion the of material about limits.
 Using \"ZFC_in_HOL\", a construction was also given of the (large)
 category of small sets and functions between them, and it was shown
 that this category is small-complete.
@@ -98,6 +99,10 @@ Added various proof rules for limits.
 2024-03-28 = """
 Additions to CartesianCategory.  Added facts about dual equivalences of categories.
 (revision 6610630663ea)<br>"""
+"""
+2025-10-05 = """
+Added Colimit, which dualizes some of the definitions and facts in Limit.
+(revision ea931f162ae8)<br>"""
 
 [extra]
 
