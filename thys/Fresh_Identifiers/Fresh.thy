@@ -5,15 +5,18 @@ theory Fresh
 begin
 
 text \<open>A type in this class comes with a mechanism to generate fresh elements.
-The \<open>fresh\<close> operator takes a set of items to be avoided, \<open>xs\<close>, and
+The \<open>fresh\<close> operator takes a set of items to be avoided, \<open>X\<close>, and
 a preferred element to be generated, \<open>x\<close>.
 
 It is required that implementations of fresh for specific types produce \<open>x\<close> if possible
-(i.e., if not in \<open>xs\<close>).
+(i.e., if not in \<open>X\<close>).
 
 While not required, it is also expected that, if \<open>x\<close> is not possible,
 then implementation produces an element that is as close to \<open>x\<close> as
 possible, given a notion of distance.
+
+A subclass \<open>fresh0\<close> provides function \<open>fresh0 :: 'a set \<Rightarrow> 'a\<close> that does not require
+an initial item.
 \<close>
 
 class fresh =
@@ -59,5 +62,17 @@ the former).\<close>
 subclass (in fresh) infinite
   apply (standard)
   using local.fresh_notIn by auto
+
+class fresh0 = fresh +
+fixes fresh0_default :: "'a"
+begin
+
+definition fresh0 :: "'a set \<Rightarrow> 'a" where
+"fresh0 X = fresh X fresh0_default"
+
+lemma fresh0_notIn: "finite F \<Longrightarrow> fresh0 F \<notin> F"
+unfolding fresh0_def by(rule fresh_notIn)
+
+end
 
 end

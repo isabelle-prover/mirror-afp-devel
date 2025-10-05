@@ -186,6 +186,9 @@ since \<^typ>\<open>string\<close> is a type synonym for \<^typ>\<open>char list
 interpretation fresh_string: fresh where fresh = fresh_string
   by standard (use fresh_string_set in auto)
 
+interpretation fresh_string: fresh0 fresh_string "[CHR ''A'']"
+  by standard (use fresh_string_set in auto)
+
 subsection \<open>Lifting to string literals\<close>
 
 abbreviation "is_ascii str \<equiv> (\<forall>c \<in> set str. \<not>digit7 c)"
@@ -237,6 +240,15 @@ lift_definition fresh_literal :: "String.literal set \<Rightarrow> String.litera
 instance by (standard; transfer) (use fresh_string_set in auto)
 
 end
+
+end
+
+instantiation String.literal :: fresh0
+begin
+
+definition "fresh0_default = STR ''A''"
+
+instance ..
 
 end
 
