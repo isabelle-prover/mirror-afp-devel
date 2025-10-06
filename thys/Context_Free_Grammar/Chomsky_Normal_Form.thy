@@ -20,7 +20,7 @@ unfolding Nts_def nts_syms_def by auto
 definition uniformize :: "'n::infinite \<Rightarrow> 't \<Rightarrow> 'n \<Rightarrow> ('n,'t)prods \<Rightarrow> ('n,'t) prods \<Rightarrow> bool" where 
       "uniformize A t S ps ps' \<equiv> (
     \<exists> l r p s. (l,r) \<in> set ps \<and> (r = p@[Tm t]@s) 
-    \<and> (p \<noteq> [] \<or> s \<noteq> []) \<and> A = fresh(nts ps \<union> {S})
+    \<and> (p \<noteq> [] \<or> s \<noteq> []) \<and> A \<notin> nts ps \<union> {S}
     \<and> ps' = ((removeAll (l,r) ps) @ [(A,[Tm t]), (l, p@[Nt A]@s)]))"
 
 lemma uniformize_Eps_free:
@@ -153,7 +153,7 @@ qed
 definition binarizeNt :: "'n::infinite \<Rightarrow> 'n \<Rightarrow> 'n \<Rightarrow> 'n \<Rightarrow> ('n,'t)prods \<Rightarrow> ('n,'t)prods \<Rightarrow> bool" where
 "binarizeNt A B\<^sub>1 B\<^sub>2 S ps ps' \<equiv> (
     \<exists>l r p s. (l,r) \<in> set ps \<and> (r = p@[Nt B\<^sub>1,Nt B\<^sub>2]@s)
-    \<and> (p \<noteq> [] \<or> s \<noteq> []) \<and> (A = fresh(nts ps \<union> {S}))
+    \<and> (p \<noteq> [] \<or> s \<noteq> []) \<and> (A \<notin> (nts ps \<union> {S}))
     \<and> ps' = ((removeAll (l,r) ps) @ [(A, [Nt B\<^sub>1,Nt B\<^sub>2]), (l, p@[Nt A]@s)]))"
 
 lemma binarizeNt_Eps_free:
@@ -181,13 +181,10 @@ lemma binarizeNt_Unit_free:
   ultimately show ?thesis unfolding Unit_free_def by simp
 qed
 
-lemma fresh_nts_single: "fresh(nts ps \<union> {S}) \<notin> nts ps \<union> {S}"
-by(rule fresh_finite) (simp add: finite_nts)
-
 lemma binarizeNt_aux1:
   assumes "binarizeNt A B\<^sub>1 B\<^sub>2 S ps ps'"
   shows "A \<noteq> B\<^sub>1 \<and> A \<noteq> B\<^sub>2"
-using assms fresh_nts_single unfolding binarizeNt_def Nts_def nts_syms_def by fastforce
+using assms unfolding binarizeNt_def Nts_def nts_syms_def by fastforce
 
 lemma derives_sub:
   assumes "P \<turnstile> [Nt A] \<Rightarrow> u" and "P \<turnstile> xs \<Rightarrow> p @ [Nt A] @ s"
@@ -208,7 +205,7 @@ proof -
     using derive.cases[OF assms(2)] by fastforce
   obtain l r p s where lrps: "(l,r) \<in> set ps \<and> (r = p@[Tm t]@s) \<and> (p \<noteq> [] \<or> s \<noteq> []) \<and> (A \<notin> Nts (set ps))
       \<and> set ps' = ((set ps - {(l,r)}) \<union> {(A,[Tm t]), (l, p@[Nt A]@s)})"
-    using assms(1) set_removeAll fresh_nts_single[of ps S] unfolding uniformize_def by fastforce
+    using assms(1) set_removeAll unfolding uniformize_def by fastforce
   thus ?thesis
   proof (cases "(B, v) \<in> set ps'")
     case True
@@ -238,7 +235,7 @@ proof -
     using derive.cases[OF assms(2)] by fastforce
   obtain l r p s where lrps: "(l,r) \<in> set ps \<and> (r = p@[Nt B\<^sub>1,Nt B\<^sub>2]@s) \<and> (p \<noteq> [] \<or> s \<noteq> []) \<and> (A \<notin> Nts (set ps))
     \<and> (set ps' = ((set ps - {(l,r)}) \<union> {(A, [Nt B\<^sub>1,Nt B\<^sub>2]), (l, p@[Nt A]@s)}))"
-    using assms(1) set_removeAll fresh_nts_single[of ps S] unfolding binarizeNt_def by fastforce
+    using assms(1) set_removeAll unfolding binarizeNt_def by fastforce
   thus ?thesis
   proof (cases "(C, v) \<in> set ps'")
     case True
@@ -265,7 +262,7 @@ lemma slemma1_1:
   shows "\<alpha> = [Tm t]"
 proof -
   have "A \<notin> Nts (set ps)"
-    using assms(1) fresh_nts_single unfolding uniformize_def by blast
+    using assms(1) unfolding uniformize_def by blast
   hence "\<nexists>\<alpha>. (A, \<alpha>) \<in> set ps"
     unfolding Nts_def by auto
   hence "\<nexists>\<alpha>. \<alpha> \<noteq> [Tm t] \<and> (A, \<alpha>) \<in> set ps'"
@@ -280,7 +277,7 @@ lemma slemma1_1Nt:
   shows "\<alpha> = [Nt B\<^sub>1,Nt B\<^sub>2]"
 proof -
   have "A \<notin> Nts (set ps)"
-    using assms(1) fresh_nts_single unfolding binarizeNt_def by blast
+    using assms(1) unfolding binarizeNt_def by blast
   hence "\<nexists>\<alpha>. (A, \<alpha>) \<in> set ps"
     unfolding Nts_def  by auto
   hence "\<nexists>\<alpha>. \<alpha> \<noteq> [Nt B\<^sub>1,Nt B\<^sub>2] \<and> (A, \<alpha>) \<in> set ps'"
@@ -305,7 +302,7 @@ lemma slemma4_4:
   shows "Nt A \<notin> set r"
 proof -
   have "A \<notin> Nts (set ps)"
-    using assms(1) fresh_nts_single unfolding uniformize_def by blast
+    using assms(1) unfolding uniformize_def by blast
   hence "\<nexists>S \<alpha>. (S, \<alpha>) \<in> set ps \<and> (Nt A \<in> {Nt S} \<union> set \<alpha>)"
     using Nts_correct[of A \<open>set ps\<close>] by blast
   thus ?thesis 
@@ -318,7 +315,7 @@ lemma slemma4_4Nt:
   shows "(Nt A) \<notin> set r"
 proof -
   have "A \<notin> Nts (set ps)"
-    using assms(1) fresh_nts_single unfolding binarizeNt_def by blast
+    using assms(1) unfolding binarizeNt_def by blast
   hence "\<nexists>S \<alpha>. (S, \<alpha>) \<in> set ps \<and> (Nt A \<in> {Nt S} \<union> set \<alpha>)"
     using Nts_correct[of A \<open>set ps\<close>] by blast
   thus ?thesis 
@@ -334,7 +331,7 @@ lemma lemma1:
 proof -
   obtain l r p s where lrps: "(l,r) \<in> set ps \<and> (r = p@[Tm t]@s) \<and> (p \<noteq> [] \<or> s \<noteq> []) \<and> (A \<notin> Nts (set ps)) 
       \<and> set ps' = ((set ps - {(l,r)}) \<union> {(A,[Tm t]), (l, p@[Nt A]@s)})"
-    using assms(1) set_removeAll fresh_nts_single[of ps S] unfolding uniformize_def by fastforce
+    using assms(1) set_removeAll unfolding uniformize_def by fastforce
   obtain p' s' u v where uv: "lhs = p'@[Nt u]@s' \<and> rhs = p'@v@s' \<and> (u,v) \<in> set ps'"
     using derive.cases[OF assms(2)] by fastforce
   thus ?thesis
@@ -405,7 +402,7 @@ lemma lemma1Nt:
 proof -
   obtain l r p s where lrps: "(l,r) \<in> set ps \<and> (r = p@[Nt B\<^sub>1,Nt B\<^sub>2]@s) \<and> (p \<noteq> [] \<or> s \<noteq> []) \<and> (A \<notin> Nts (set ps))
     \<and> (set ps' = ((set ps - {(l,r)}) \<union> {(A, [Nt B\<^sub>1,Nt B\<^sub>2]), (l, p@[Nt A]@s)}))"
-    using assms(1) set_removeAll fresh_nts_single[of ps S] unfolding binarizeNt_def by fastforce
+    using assms(1) set_removeAll unfolding binarizeNt_def by fastforce
   obtain p' s' u v where uv: "lhs = p'@[Nt u]@s' \<and> rhs = p'@v@s' \<and> (u,v) \<in> set ps'"
     using derive.cases[OF assms(2)] by fastforce
   thus ?thesis
@@ -509,7 +506,7 @@ proof
   hence "set ps \<turnstile> substsNt A [Tm t] [Nt S] \<Rightarrow>* substsNt A [Tm t] (map Tm w)"
     using assms lemma3[of ps' \<open>[Nt S]\<close> \<open>map Tm w\<close>] by blast
   moreover have "substsNt A [Tm t] [Nt S] = [Nt S]"
-    using assms fresh_nts_single[of ps S] unfolding uniformize_def by auto
+    using assms unfolding uniformize_def by auto
   moreover have "substsNt A [Tm t] (map Tm w) = map Tm w" 
     by simp
   ultimately show "w \<in> lang ps S" 
@@ -529,7 +526,7 @@ proof
   hence "set ps \<turnstile> substsNt A [Nt B\<^sub>1, Nt B\<^sub>2] [Nt S] \<Rightarrow>*  substsNt A [Nt B\<^sub>1, Nt B\<^sub>2] (map Tm w)"
     using assms lemma3Nt[of ps' \<open>[Nt S]\<close> \<open>map Tm w\<close>] by blast
   moreover have "substsNt A [Nt B\<^sub>1, Nt B\<^sub>2] [Nt S] = [Nt S]"
-    using assms fresh_nts_single[of ps S] unfolding binarizeNt_def by auto
+    using assms unfolding binarizeNt_def by auto
   moreover have "substsNt A [Nt B\<^sub>1, Nt B\<^sub>2] (map Tm w) = map Tm w" by simp
   ultimately show "w \<in> lang ps S" using Lang_def
     by (metis (no_types, lifting) mem_Collect_eq)
@@ -609,7 +606,7 @@ lemma uniformize_Nts:
 proof -
   obtain l r p s where lrps: "(l,r) \<in> set ps \<and> (r = p@[Tm t]@s) \<and> (p \<noteq> [] \<or> s \<noteq> []) \<and> (A \<notin> Nts (set ps)) 
       \<and> set ps' = ((set ps - {(l,r)}) \<union> {(A,[Tm t]), (l, p@[Nt A]@s)})"
-    using assms(1) set_removeAll fresh_nts_single[of ps S] unfolding uniformize_def by fastforce
+    using assms(1) set_removeAll unfolding uniformize_def by fastforce
   thus ?thesis
   proof (cases "S \<in> Nts {(l,r)}")
     case True
@@ -681,7 +678,7 @@ lemma lemma6_a:
 proof -
   from assms obtain l r p s where lrps: "(l,r) \<in> set ps \<and> (r = p@[Tm t]@s) \<and> (p \<noteq> [] \<or> s \<noteq> []) \<and> (A \<notin> Nts (set ps)) 
       \<and> ps' = ((removeAll (l,r) ps) @ [(A,[Tm t]), (l, p@[Nt A]@s)])"
-    using fresh_nts_single[of ps S] unfolding uniformize_def by auto
+    unfolding uniformize_def by auto
   hence "prodTms (l,p@[Tm t]@s) = length (filter (isTm) (p@[Tm t]@s))"
     unfolding prodTms_def by auto
   hence 1: "prodTms (l,p@[Tm t]@s) = Suc (length (filter (isTm) (p@s)))"
@@ -715,7 +712,7 @@ lemma lemma6_b:
 proof -
   from assms obtain l r p s where lrps: "(l,r) \<in> set ps \<and> (r = p@[Nt B\<^sub>1,Nt B\<^sub>2]@s) \<and> (p \<noteq> [] \<or> s \<noteq> []) \<and> (A \<notin> Nts (set ps))
     \<and> ps' = ((removeAll (l,r) ps) @ [(A, [Nt B\<^sub>1,Nt B\<^sub>2]), (l, p@[Nt A]@s)])"
-    using fresh_nts_single[of ps S] unfolding binarizeNt_def by auto
+    unfolding binarizeNt_def by auto
   hence "prodNts (l,p@[Nt B\<^sub>1,Nt B\<^sub>2]@s) = length (filter (isNt) (p@[Nt B\<^sub>1,Nt B\<^sub>2]@s))"
     unfolding prodNts_def by auto
   hence 1: "prodNts (l,p@[Nt B\<^sub>1,Nt B\<^sub>2]@s) = Suc (Suc (length (filter (isNt) (p@s))))"
@@ -754,7 +751,7 @@ lemma slemma15_a:
 proof -
   obtain l r p s where lrps: "(l,r) \<in> set ps \<and> (r = p@[Nt B\<^sub>1,Nt B\<^sub>2]@s) \<and> (p \<noteq> [] \<or> s \<noteq> []) \<and> (A \<notin> Nts (set ps))
     \<and> (ps' = ((removeAll (l,r) ps) @ [(A, [Nt B\<^sub>1,Nt B\<^sub>2]), (l, p@[Nt A]@s)]))"
-    using assms(1) fresh_nts_single[of ps S] unfolding binarizeNt_def by auto
+    using assms(1) unfolding binarizeNt_def by auto
   hence "badTmsCount ps' = badTmsCount (removeAll (l,r) ps) + badTmsCount [(l, (p@[Nt A]@s))]"
     by (auto simp: badTmsCount_append prodTms_def isTm_def)
   moreover have "badTmsCount (removeAll (l,r) ps) = 0"
@@ -822,17 +819,19 @@ lemma list_longer2: "length l \<ge> 2 \<and> x \<in> set l \<Longrightarrow> (\<
 lemma list_longer3: "length l \<ge> 3 \<Longrightarrow> (\<exists>hd tl x y. l = hd@[x]@[y]@tl \<and> (hd \<noteq> [] \<or> tl \<noteq> []))"
   by (metis Suc_le_length_iff append.left_neutral append_Cons neq_Nil_conv numeral_3_eq_3)
 
-lemma lemma8_a: "badTmsCount ps > 0 \<Longrightarrow> \<exists>ps' A t. uniformize A t S ps ps'"
+lemma lemma8_a:
+assumes "badTmsCount ps > 0" shows "\<exists>ps' A t. uniformize A t S ps ps'"
 proof -
-  assume "badTmsCount ps > 0"
+  obtain A where A: "A \<notin> nts ps \<union> {S}" using ex_new_if_finite[OF infinite_UNIV] finite_nts[of ps]
+    by blast
   then obtain l r t where lr: "(l,r) \<in> set ps \<and> length r \<ge> 2 \<and> Tm t \<in> set r"
-    using badTmsCountNot0 by blast
-  from this obtain p s where ps: "r = p@[Tm t]@s \<and> (p \<noteq> [] \<or> s \<noteq> [])"
+    using assms badTmsCountNot0 by blast
+  then obtain p s where ps: "r = p@[Tm t]@s \<and> (p \<noteq> [] \<or> s \<noteq> [])"
     unfolding isTm_def using lr list_longer2[of r] by blast
-  from this obtain A ps' where "A = fresh(nts ps \<union> {S}) \<and> ps' = removeAll (l, r) ps @ [(A, [Tm t]), (l, p @ [Nt A] @ s)]" 
+  from this obtain ps' where "ps' = removeAll (l, r) ps @ [(A, [Tm t]), (l, p @ [Nt A] @ s)]" 
     by auto
   hence "uniformize A t S ps ps'"
-    unfolding uniformize_def using lr ps by auto
+    unfolding uniformize_def using lr ps A by auto
   thus ?thesis by blast
 qed
 
@@ -842,6 +841,8 @@ lemma lemma8_b:
 proof -
   obtain l r where lr: "(l, r) \<in> set ps \<and> length r \<ge> 3"
     using assms(2) badNtsCountNot0 by blast
+  obtain A where A: "A \<notin> nts ps \<union> {S}" using ex_new_if_finite[OF infinite_UNIV] finite_nts[of ps]
+    by blast
   obtain p s X Y where psXY: "r = p@[X]@[Y]@s \<and> (p \<noteq> [] \<or> s \<noteq> [])"
     using lr list_longer3[of r] by blast
   have "(\<forall>a \<in> set r. isNt a)"
@@ -850,10 +851,8 @@ proof -
     using isNt_def psXY by fastforce
   hence B: "(r = p@[Nt B\<^sub>1,Nt B\<^sub>2]@s) \<and> (p \<noteq> [] \<or> s \<noteq> [])"
     using psXY by auto
-  from this obtain A ps' where "A = fresh(nts ps \<union> {S}) \<and> ps' = removeAll (l, r) ps @ [(A, [Nt B\<^sub>1, Nt B\<^sub>2]), (l, p @ [Nt A] @ s)]"
-    by simp
-  hence "binarizeNt A B\<^sub>1 B\<^sub>2 S ps ps'"
-    unfolding binarizeNt_def using lr B by auto
+  hence "binarizeNt A B\<^sub>1 B\<^sub>2 S ps (removeAll (l, r) ps @ [(A, [Nt B\<^sub>1, Nt B\<^sub>2]), (l, p @ [Nt A] @ s)])"
+    unfolding binarizeNt_def using A lr B by auto
   thus ?thesis by blast
 qed
 
