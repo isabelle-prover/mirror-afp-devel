@@ -44,21 +44,21 @@ text
  maximum number of symbols 2, into two productions. The step function is then defined as the auxiliary function \<open>binarize'\<close>.
  We also define the count function \<open>count\<close> that counts the right-hand sides whose length is more than or equal to 2\<close>
 
-fun binarize1 :: "('n :: infinite, 't) prods \<Rightarrow> ('n, 't) prods \<Rightarrow> ('n, 't) prods" where
+fun binarize1 :: "('n :: fresh0, 't) prods \<Rightarrow> ('n, 't) prods \<Rightarrow> ('n, 't) prods" where
   "binarize1 ps' [] = []"
 | "binarize1 ps' ((A, []) # ps) = (A, []) # binarize1 ps' ps"
 | "binarize1 ps' ((A, s0 # u) # ps) =
  (if length u \<le> 1 then (A, s0 # u) # binarize1 ps' ps
-  else let B = fresh (nts ps') in (A,[s0, Nt B]) # (B, u) # ps)"
+  else let B = fresh0 (nts ps') in (A,[s0, Nt B]) # (B, u) # ps)"
 
-definition binarize' :: "('n::infinite, 't) prods \<Rightarrow> ('n, 't) prods" where
+definition binarize' :: "('n::fresh0, 't) prods \<Rightarrow> ('n, 't) prods" where
   "binarize' ps = binarize1 ps ps"
 
 fun count :: "('n::infinite, 't) prods \<Rightarrow> nat" where
   "count [] = 0"
 | "count ((A,u) # ps) = (if length u \<le> 2 then count ps else length u + count ps)"
 
-definition binarize :: "('n::infinite, 't) prods \<Rightarrow> ('n, 't) prods" where
+definition binarize :: "('n::fresh0, 't) prods \<Rightarrow> ('n, 't) prods" where
   "binarize ps = (binarize' ^^ (count ps)) ps"
 
 text
@@ -77,7 +77,7 @@ using assms proof (induction ps' ps rule: binarize1.induct)
     with True show ?thesis by simp
   next
     case False
-    let ?B = "fresh(nts ps')"
+    let ?B = "fresh0(nts ps')"
     from False have "count (binarize1 ps' ((A, s0 # u) # ps)) = count ((A,[s0, Nt ?B]) # (?B, u) # ps)"
       by (metis binarize1.simps(3))
     also have "... = count ((?B, u) # ps)" by simp
@@ -163,7 +163,7 @@ next
    next
     case False
     then show ?thesis
-      using fresh_nts in_Nts_iff_in_Syms[of "fresh (nts ps')" "set ps'"]
+      using fresh0_nts in_Nts_iff_in_Syms[of "fresh0 (nts ps')" "set ps'"]
       by (fastforce simp add: Let_def)
   qed
 qed simp
@@ -211,7 +211,7 @@ proof (induction ps' ps rule: binarize1.induct)
     with 3 show ?thesis by auto
   next
     case False
-    let ?B = "fresh(nts ps')"
+    let ?B = "fresh0(nts ps')"
     have "lhss ((A, s0 # u) # ps) = {A} \<union> lhss ps" by simp
     also have "... \<subseteq> {A} \<union> {?B} \<union> lhss ps" by blast
     also have "... = lhss ((A,[s0, Nt ?B]) # (?B, u) # ps)" by simp
@@ -281,7 +281,7 @@ lemma binarize_lhss_nts1:
     with 3 show ?thesis by auto
   next
     case False
-    with 3 show ?thesis by (auto simp add: Let_def fresh_nts)
+    with 3 show ?thesis by (auto simp add: Let_def fresh0_nts)
   qed
 qed simp_all
 

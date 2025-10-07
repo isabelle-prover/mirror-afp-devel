@@ -5,15 +5,8 @@ Authors: Tobias Nipkow, Akihisa Yamada
 section "Context-Free Grammars"
 
 theory Context_Free_Grammar
-imports "HOL-Library.Infinite_Typeclass"
+imports "Fresh_Identifiers.Fresh"
 begin
-
-(* TODO: make function fresh executable *)
-definition fresh :: "('n::infinite) set \<Rightarrow> 'n" where
-"fresh A = (SOME x. x \<notin> A)"
-
-lemma fresh_finite: "finite A \<Longrightarrow> fresh A \<notin> A"
-unfolding fresh_def by (metis arb_element someI)
 
 declare relpowp.simps(2)[simp del]
 
@@ -210,14 +203,14 @@ qed
 lemma finite_nts: "finite(nts ps)"
 unfolding Nts_def by (simp add: finite_nts_syms split_def)
 
-lemma fresh_nts: "fresh(nts ps) \<notin> nts ps"
-by(fact fresh_finite[OF finite_nts])
+lemma fresh0_nts: "fresh0(nts ps) \<notin> nts ps"
+by(fact fresh0_notIn[OF finite_nts])
 
 lemma finite_nts_prods_start: "finite(nts(prods g) \<union> {start g})"
 unfolding Nts_def by (simp add: finite_nts_syms split_def)
 
-lemma fresh_nts_prods_start: "fresh(nts(prods g) \<union> {start g}) \<notin> nts(prods g) \<union> {start g}"
-by(fact fresh_finite[OF finite_nts_prods_start])
+lemma fresh_nts_prods_start: "fresh0(nts(prods g) \<union> {start g}) \<notin> nts(prods g) \<union> {start g}"
+by(fact fresh0_notIn[OF finite_nts_prods_start])
 
 lemma finite_Nts: "finite P \<Longrightarrow> finite (Nts P)"
 unfolding Nts_def by (simp add: case_prod_beta finite_nts_syms)

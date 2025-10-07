@@ -72,13 +72,13 @@ text
  then the auxiliary function \<open>finalize'\<close>. We also define the count function as \<open>countfin\<close> which counts the the productions that
  consists only of terminal and has at least length one\<close>
 
-fun finalize1 :: "('n :: infinite, 't) prods \<Rightarrow> ('n, 't) prods \<Rightarrow> ('n, 't) prods" where
+fun finalize1 :: "('n :: fresh0, 't) prods \<Rightarrow> ('n, 't) prods \<Rightarrow> ('n, 't) prods" where
   "finalize1 ps' [] = []"
 | "finalize1 ps' ((A,[])#ps) = (A,[]) # finalize1 ps' ps"
 | "finalize1 ps' ((A,w)#ps) = 
-    (if \<exists>u. w = map Tm u then let B = fresh(nts ps') in (A,w @ [Nt B])#(B,[])#ps else (A,w) # finalize1 ps' ps)"
+    (if \<exists>u. w = map Tm u then let B = fresh0(nts ps') in (A,w @ [Nt B])#(B,[])#ps else (A,w) # finalize1 ps' ps)"
 
-definition finalize' :: "('n::infinite, 't) prods \<Rightarrow> ('n, 't) prods" where
+definition finalize' :: "('n::fresh0, 't) prods \<Rightarrow> ('n, 't) prods" where
   "finalize' ps = finalize1 ps ps"
 
 fun countfin :: "('n::infinite, 't) prods \<Rightarrow> nat" where
@@ -86,7 +86,7 @@ fun countfin :: "('n::infinite, 't) prods \<Rightarrow> nat" where
 | "countfin ((A,[])#ps) = countfin ps"
 | "countfin ((A,w) # ps) = (if \<exists>u. w = map Tm u then 1 + countfin ps else countfin ps)"
 
-definition finalize :: "('n::infinite, 't) prods \<Rightarrow> ('n, 't) prods" where
+definition finalize :: "('n::fresh0, 't) prods \<Rightarrow> ('n, 't) prods" where
   "finalize ps = (finalize' ^^ (countfin ps)) ps"
 
 text
@@ -99,7 +99,7 @@ using assms proof (induction ps' ps rule: finalize1.induct)
   case (3 ps' A v va ps)
   thus ?case proof (cases "\<exists>u. v # va = map Tm u")
     case True
-    let ?B = "fresh(nts ps')"
+    let ?B = "fresh0(nts ps')"
     have not_tm: "\<nexists>u. v # va @ [Nt ?B] = map Tm u"
       by (simp add: ex_map_conv)
     from True have "countfin (finalize1 ps' ((A, v # va) # ps)) = countfin ((A,v#va @ [Nt ?B])#(?B,[])#ps)"
@@ -220,7 +220,7 @@ next
   case (3 ps' C v va ps)
   thus ?case proof (cases "\<exists>u. v#va = map Tm u")
     case True
-    thus ?thesis using fresh_nts in_Nts_iff_in_Syms
+    thus ?thesis using fresh0_nts in_Nts_iff_in_Syms
       by (simp add: Let_def) fastforce
   next
     case false1: False
@@ -347,7 +347,7 @@ using assms proof (induction ps' ps rule: finalize1.induct)
   case (3 ps' A v va ps)
   thus ?case proof (cases "\<exists>u. v#va = map Tm u")
     case True
-    with 3 show ?thesis unfolding Lhss_def by (auto simp: Let_def fresh_nts)
+    with 3 show ?thesis unfolding Lhss_def by (auto simp: Let_def fresh0_nts)
   next
     case False
     with 3 show ?thesis unfolding Lhss_def by (auto simp: Let_def)
@@ -443,7 +443,7 @@ next
       by (simp add: rlin_noterm_def)
   next
     case False
-    let ?B = "fresh(nts ps')"
+    let ?B = "fresh0(nts ps')"
     from "3.prems" have a1: "rlin_noterm (set ps)"
       by (simp add: rlin_noterm_def)
     from "3.prems" have ex: "\<exists>v B. s0 # u = map Tm v @ [Nt B]"
@@ -515,7 +515,7 @@ text
 \<open>The transformation \<open>rlin2_of_rlin\<close> applies the presented functions in the right order. At the end, we show that \<open>rlin2_of_rlin\<close>
  converts a production set from \<open>rlin\<close> to a production set from \<open>rlin2\<close>, without changing the language\<close>
 
-definition rlin2_of_rlin :: "('n::infinite,'t) prods \<Rightarrow> ('n,'t)prods" where
+definition rlin2_of_rlin :: "('n::fresh0,'t) prods \<Rightarrow> ('n,'t)prods" where
   "rlin2_of_rlin ps = unit_elim (binarize (finalize ps))"
 
 theorem rlin_to_rlin2: 
