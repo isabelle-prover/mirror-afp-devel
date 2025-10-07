@@ -5,7 +5,7 @@ Authors: Tobias Nipkow, Akihisa Yamada
 section "Context-Free Grammars"
 
 theory Context_Free_Grammar
-imports "Fresh_Identifiers.Fresh"
+imports "Fresh_Identifiers.Fresh_Nat"
 begin
 
 declare relpowp.simps(2)[simp del]
@@ -59,8 +59,14 @@ by auto
 definition nts_syms :: "('n,'t)syms \<Rightarrow> 'n set" where
 "nts_syms w = {A. Nt A \<in> set w}"
 
+lemma nts_syms_code[code]: "nts_syms w = (\<Union>s \<in> set w. case s of Nt A \<Rightarrow> {A} | _ \<Rightarrow> {})"
+unfolding nts_syms_def by (auto split: sym.splits)
+
 definition tms_syms :: "('n,'t)syms \<Rightarrow> 't set" where
 "tms_syms w = {a. Tm a \<in> set w}"
+
+lemma tms_syms_code[code]: "tms_syms w = (\<Union>s \<in> set w. case s of Tm a \<Rightarrow> {a} | _ \<Rightarrow> {})"
+unfolding tms_syms_def by (auto split: sym.splits)
 
 definition Nts :: "('n,'t)Prods \<Rightarrow> 'n set" where
   "Nts P = (\<Union>(A,w)\<in>P. {A} \<union> nts_syms w)"

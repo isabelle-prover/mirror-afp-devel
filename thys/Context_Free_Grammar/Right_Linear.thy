@@ -78,6 +78,12 @@ fun finalize1 :: "('n :: fresh0, 't) prods \<Rightarrow> ('n, 't) prods \<Righta
 | "finalize1 ps' ((A,w)#ps) = 
     (if \<exists>u. w = map Tm u then let B = fresh0(nts ps') in (A,w @ [Nt B])#(B,[])#ps else (A,w) # finalize1 ps' ps)"
 
+declare finalize1.simps(1,2)[code]
+
+lemma finalize1_code[code]:
+  "finalize1 ps' ((A,x#xs) # ps) = (if nts_syms (x#xs) = {} then let B = fresh0(nts ps') in (A,(x#xs) @ [Nt B])#(B,[])#ps else (A,x#xs) # finalize1 ps' ps)"
+unfolding finalize1.simps by(simp only: nts_syms_empty_iff)
+
 definition finalize' :: "('n::fresh0, 't) prods \<Rightarrow> ('n, 't) prods" where
   "finalize' ps = finalize1 ps ps"
 
@@ -85,6 +91,11 @@ fun countfin :: "('n::infinite, 't) prods \<Rightarrow> nat" where
   "countfin [] = 0"
 | "countfin ((A,[])#ps) = countfin ps"
 | "countfin ((A,w) # ps) = (if \<exists>u. w = map Tm u then 1 + countfin ps else countfin ps)"
+
+declare countfin.simps(1,2)[code]
+
+lemma countfin_code[code]: "countfin ((A,x#ys) # ps) = (if nts_syms (x#ys) = {} then 1 + countfin ps else countfin ps)"
+unfolding countfin.simps by(simp only: nts_syms_empty_iff)
 
 definition finalize :: "('n::fresh0, 't) prods \<Rightarrow> ('n, 't) prods" where
   "finalize ps = (finalize' ^^ (countfin ps)) ps"
@@ -517,6 +528,11 @@ text
 
 definition rlin2_of_rlin :: "('n::fresh0,'t) prods \<Rightarrow> ('n,'t)prods" where
   "rlin2_of_rlin ps = unit_elim (binarize (finalize ps))"
+
+(* Test for eval *)
+lemma "binarize(finalize [(0::nat, [Tm (0::int), Tm 1, Tm 2])])
+ = [(0, [Tm 0, Nt 2]), (2, [Tm 1, Nt 3]), (3, [Tm 2, Nt 1]), (1, [])]"
+by eval
 
 theorem rlin_to_rlin2: 
   assumes "rlin (set ps)" 

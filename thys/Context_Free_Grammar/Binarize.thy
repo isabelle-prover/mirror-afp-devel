@@ -54,12 +54,17 @@ fun binarize1 :: "('n :: fresh0, 't) prods \<Rightarrow> ('n, 't) prods \<Righta
 definition binarize' :: "('n::fresh0, 't) prods \<Rightarrow> ('n, 't) prods" where
   "binarize' ps = binarize1 ps ps"
 
-fun count :: "('n::infinite, 't) prods \<Rightarrow> nat" where
+fun count :: "('n, 't) prods \<Rightarrow> nat" where
   "count [] = 0"
 | "count ((A,u) # ps) = (if length u \<le> 2 then count ps else length u + count ps)"
 
 definition binarize :: "('n::fresh0, 't) prods \<Rightarrow> ('n, 't) prods" where
   "binarize ps = (binarize' ^^ (count ps)) ps"
+
+(* Test for eval *)
+lemma "binarize [(0::nat, [Tm (0::int), Tm 1, Nt 0, Nt 1])]
+  = [(0, [Tm 0, Nt 2]), (2, [Tm 1, Nt 3]), (3, [Nt 0, Nt 1])]"
+by eval
 
 text
 \<open>Firstly we show that the \<open>binarize\<close> function transforms a production list into a binary production list\<close>
