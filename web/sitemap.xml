@@ -3,10 +3,13 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://isa-afp.org/entries/index.json</loc>
-    <lastmod>2025-09-01T00:00:00+00:00</lastmod>
+    <lastmod>2025-10-09T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/</loc>
-    <lastmod>2025-09-01T00:00:00+00:00</lastmod>
+    <lastmod>2025-10-09T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Relational_Divisibility.html</loc>
+    <lastmod>2025-10-09T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/entries/Stratified_Datalog.html</loc>
     <lastmod>2025-09-01T00:00:00+00:00</lastmod>
@@ -5353,6 +5356,8 @@
     <loc>https://isa-afp.org/sessions/relational_cardinality/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/relational_disjoint_set_forests/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/sessions/relational_divisibility/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/relational_forests/</loc>
   </url><url>

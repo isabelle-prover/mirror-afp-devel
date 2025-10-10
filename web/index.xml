@@ -4,6 +4,13 @@
     <title>Archive of Formal Proofs</title>
     <link>https://isa-afp.org/</link>
     <description>Formal developments in the AFP</description><item>
+  <title>Relational Divisibility</title>
+  <link>https://isa-afp.org/entries/Relational_Divisibility.html</link>
+  <pubDate>Thu, 09 Oct 2025 00:00:00 +0000</pubDate>
+  <description>Relational Divisibility in the AFP</description>
+    <category>Mathematics/Order</category>
+</item>
+<item>
   <title>Stratified Datalog and Program Analysis</title>
   <link>https://isa-afp.org/entries/Stratified_Datalog.html</link>
   <pubDate>Mon, 01 Sep 2025 00:00:00 +0000</pubDate>
