@@ -3,211 +3,12 @@
 theory Greibach_Normal_Form
 imports
   "Context_Free_Grammar.Context_Free_Grammar"
+  "Context_Free_Grammar.Epsilon_Elimination"
   Fresh_Identifiers.Fresh_Nat
 begin
 
 (* Import of additional theories undoes this deletion in \<open>Context_Free_Grammar\<close>: *)
 declare relpowp.simps(2)[simp del] 
-
-(* TODO: rm after next release, are in AFP/devel/CFG *)
-section \<open>Aux Lemmas\<close>
-
-lemma Nts_mono: "G \<subseteq> H \<Longrightarrow> Nts G \<subseteq> Nts H"
-by (auto simp add: Nts_def)
-
-lemma derivern_prepend: "R \<turnstile> u \<Rightarrow>r(n) v \<Longrightarrow> R \<turnstile> p @ u \<Rightarrow>r(n) p @ v"
-  by (fastforce simp: derivern_iff_rev_deriveln rev_map deriveln_append rev_eq_append_conv)
-
-lemma Lang_subset_if_Ders_subset: "Ders R A \<subseteq> Ders R' A \<Longrightarrow> Lang R A \<subseteq> Lang R' A"
-by (auto simp add: Lang_def Ders_def)
-
-lemma Eps_free_deriven_Nil:
-  "\<lbrakk> Eps_free R; R \<turnstile> l \<Rightarrow>(n) [] \<rbrakk> \<Longrightarrow> l = []"
-by (metis Eps_free_derives_Nil relpowp_imp_rtranclp)
-
-lemma nts_syms_empty_iff: "nts_syms w = {} \<longleftrightarrow> (\<exists>u. w = map Tm u)"
-by(induction w) (auto simp: ex_map_conv split: sym.split)
-
-lemma non_word_has_last_Nt: "nts_syms w \<noteq> {} \<Longrightarrow> \<exists>u A v. w = u @ [Nt A] @ map Tm v"
-proof (induction w)
-  case Nil
-  then show ?case by simp
-next
-  case (Cons a list)
-  then show ?case using nts_syms_empty_iff[of list]
-    by(auto simp: Cons_eq_append_conv split: sym.splits)
-qed
-
-lemma nts_syms_rev: "nts_syms (rev w) = nts_syms w"
-by(auto simp: nts_syms_def)
-
-text \<open>Sentential form that is not a word has a first \<open>Nt\<close>.\<close>
-lemma non_word_has_first_Nt: "nts_syms w \<noteq> {} \<Longrightarrow> \<exists>u A v. w = map Tm u @ Nt A # v"
-  using nts_syms_rev non_word_has_last_Nt[of "rev w"]
-  by (metis append.assoc append_Cons append_Nil rev.simps(2) rev_eq_append_conv rev_map)
-
-text \<open>If there exists a derivation from \<open>u\<close> to \<open>v\<close> then there exists one which does not use
-  productions of the form \<open>A \<rightarrow> A\<close>.\<close>
-lemma no_self_loops_derivels: "P \<turnstile> u \<Rightarrow>l(n) v \<Longrightarrow> {p\<in>P. \<not>(\<exists>A. p = (A,[Nt A]))} \<turnstile> u \<Rightarrow>l* v"
-proof(induction n arbitrary: u)
-  case 0
-  then show ?case by simp
-next
-  case (Suc n)
-  then have "\<exists>w. P \<turnstile> u \<Rightarrow>l w \<and> P \<turnstile> w \<Rightarrow>l(n) v"
-    by (simp add: relpowp_Suc_D2)
-  then obtain w where W: "P \<turnstile> u \<Rightarrow>l w \<and> P \<turnstile> w \<Rightarrow>l(n) v" by blast
-  then have "\<exists> (A,x) \<in> P. \<exists>u1 u2. u = map Tm u1 @ Nt A # u2 \<and> w = map Tm u1 @ x @ u2" 
-    by (simp add: derivel_iff)
-  then obtain A x u1 u2 where prod: "u = map Tm u1 @Nt A#u2 \<and> w = map Tm u1 @x@u2 \<and> (A, x) \<in> P"
-    by blast
-  then show ?case
-  proof(cases "x = [Nt A]")
-    case True
-    then have "u = w" using prod by auto
-    then show ?thesis using Suc W by auto
-  next
-    case False
-    then have "(A, x) \<in> {p\<in>P. \<not>(\<exists>A. p = (A,[Nt A]))}" using prod by (auto)
-    then show ?thesis using Suc W
-      by (metis (lifting) converse_rtranclp_into_rtranclp derivel.intros prod)
-  qed
-qed
-
-text \<open>A decomposition of a derivation from a sentential form to a word into multiple 
-      derivations that derive words.\<close>
-lemma derivern_snoc_Nt_Tms_decomp1: 
-  "R \<turnstile> p @ [Nt A] \<Rightarrow>r(n) map Tm q 
-   \<Longrightarrow> \<exists>pt At w k m. R \<turnstile> p \<Rightarrow>(k) map Tm pt \<and> R \<turnstile> w \<Rightarrow>(m) map Tm At \<and> (A, w) \<in> R 
-        \<and> q = pt @ At \<and> n = Suc(k + m)"
-proof -
-  assume assm: "R \<turnstile> p @ [Nt A] \<Rightarrow>r(n) map Tm q"
-  then have "R \<turnstile> p @ [Nt A] \<Rightarrow>(n) map Tm q" by (simp add: derivern_iff_deriven)
-  then have "\<exists>n1 n2 q1 q2. n = n1 + n2 \<and> map Tm q = q1@q2 \<and> R \<turnstile> p \<Rightarrow>(n1) q1 \<and> R \<turnstile> [Nt A] \<Rightarrow>(n2) q2"
-    using deriven_append_decomp by blast
-  then obtain n1 n2 q1 q2 
-    where decomp1: "n = n1 + n2 \<and> map Tm q = q1 @ q2 \<and> R \<turnstile> p \<Rightarrow>(n1) q1 \<and> R \<turnstile> [Nt A] \<Rightarrow>(n2) q2"
-    by blast
-  then have "\<exists>pt At. q1 = map Tm pt \<and> q2 = map Tm At \<and> q = pt @ At"
-    by (meson map_eq_append_conv)
-  then obtain pt At where decomp_tms: "q1 = map Tm pt \<and> q2 = map Tm At \<and> q = pt @ At" by blast
-  then have "\<exists>w m. n2 = Suc m \<and> R \<turnstile> w \<Rightarrow>(m) (map Tm At) \<and> (A,w) \<in> R" 
-    using decomp1 
-    by (auto simp add: deriven_start1)
-  then obtain w m where "n2 = Suc m \<and> R \<turnstile> w \<Rightarrow>(m) (map Tm At) \<and> (A,w) \<in> R" by blast
-  then have "R \<turnstile> p \<Rightarrow>(n1) map Tm pt \<and> R \<turnstile> w \<Rightarrow>(m) map Tm At \<and> (A, w) \<in> R 
-     \<and> q = pt @ At \<and> n = Suc(n1 + m)" 
-    using decomp1 decomp_tms by auto
-  then show ?thesis by blast
-qed
-
-text \<open>A decomposition of a derivation from a sentential form to a word into multiple derivations 
-      that derive words.\<close>
-lemma word_decomp1: 
-  "R \<turnstile> p @ [Nt A] @ map Tm ts \<Rightarrow>(n) map Tm q 
-  \<Longrightarrow> \<exists>pt At w k m. R \<turnstile> p \<Rightarrow>(k) map Tm pt \<and> R \<turnstile> w \<Rightarrow>(m) map Tm At \<and> (A, w) \<in> R 
-      \<and> q = pt @ At @ ts \<and> n = Suc(k + m)"
-proof -
-  assume assm: "R \<turnstile> p @ [Nt A] @ map Tm ts \<Rightarrow>(n) map Tm q"
-  then have "\<exists>q1 q2 n1 n2. R \<turnstile> p @ [Nt A] \<Rightarrow>(n1) q1 \<and> R \<turnstile> map Tm ts \<Rightarrow>(n2) q2 
-     \<and> map Tm q = q1 @ q2 \<and> n = n1 + n2"
-    using deriven_append_decomp[of n R "p @ [Nt A]" "map Tm ts" "map Tm q"] by auto
-  then obtain q1 q2 n1 n2 
-    where P: "R \<turnstile> p@[Nt A] \<Rightarrow>(n1) q1 \<and> R \<turnstile> map Tm ts \<Rightarrow>(n2) q2 \<and> map Tm q = q1 @ q2 \<and> n = n1 + n2"
-    by blast
-  then have "(\<exists>q1t q2t. q1 = map Tm q1t \<and> q2 = map Tm q2t \<and> q = q1t @ q2t)"
-    using deriven_from_TmsD map_eq_append_conv by blast
-  then obtain q1t q2t where P1: "q1 = map Tm q1t \<and> q2 = map Tm q2t \<and> q = q1t @ q2t" by blast
-  then have "q2 = map Tm ts" using P
-    using deriven_from_TmsD by blast
-  then have 1: "ts = q2t" using P1
-    by (metis list.inj_map_strong sym.inject(2))
-  then have "n1 = n" using P
-    by (metis add.right_neutral not_derive_from_Tms relpowp_E2)
-  then have "\<exists>pt At w k m. R \<turnstile> p \<Rightarrow>(k) map Tm pt \<and> R \<turnstile> w \<Rightarrow>(m) map Tm At \<and> (A, w) \<in> R 
-     \<and> q1t = pt @ At \<and> n = Suc(k + m)"
-    using P P1 derivern_snoc_Nt_Tms_decomp1[of n R p A q1t] derivern_iff_deriven by blast
-  then obtain pt At w k m where P2: "R \<turnstile> p \<Rightarrow>(k) map Tm pt \<and> R \<turnstile> w \<Rightarrow>(m) map Tm At \<and> (A, w) \<in> R 
-     \<and> q1t = pt @ At \<and> n = Suc(k + m)" 
-    by blast
-  then have "q = pt @ At @ ts" using P1 1 by auto
-  then show ?thesis using P2 by blast
-qed
-
-text \<open>Sentential form that derives to terminals and has a Nt in it has a derivation that starts 
-      with some rule acting on that Nt.\<close>
-lemma deriven_start_sent: 
-  "R \<turnstile> u @ Nt V # w \<Rightarrow>(Suc n) map Tm x \<Longrightarrow> \<exists>v. (V, v) \<in> R \<and> R \<turnstile> u @ v @ w \<Rightarrow>(n) map Tm x"
-proof -
-  assume assm: "R \<turnstile> u @ Nt V # w \<Rightarrow>(Suc n) map Tm x"
-  then have "\<exists>n1 n2 xu xvw. Suc n = n1 + n2 \<and> map Tm x = xu @ xvw \<and> R \<turnstile> u \<Rightarrow>(n1) xu 
-     \<and> R \<turnstile> Nt V # w \<Rightarrow>(n2) xvw" 
-    by (simp add: deriven_append_decomp)
-  then obtain n1 n2 xu xvw 
-    where P1: "Suc n = n1 + n2 \<and> map Tm x = xu @ xvw \<and> R \<turnstile> u \<Rightarrow>(n1) xu \<and> R \<turnstile> Nt V # w \<Rightarrow>(n2) xvw"
-    by blast
-  then have t: "\<nexists>t. xvw = Nt V # t"
-    by (metis append_eq_map_conv map_eq_Cons_D sym.distinct(1))
-  then have "(\<exists>n3 n4 v xv xw. n2 = Suc (n3 + n4) \<and> xvw = xv @ xw \<and> (V,v) \<in> R 
-     \<and> R \<turnstile> v \<Rightarrow>(n3) xv \<and> R \<turnstile> w \<Rightarrow>(n4) xw)" 
-    using P1 t by (simp add: deriven_Cons_decomp)
-  then obtain n3 n4 v xv xw 
-    where P2: "n2 = Suc (n3 + n4) \<and> xvw = xv @ xw \<and> (V,v) \<in> R \<and> R \<turnstile> v \<Rightarrow>(n3) xv \<and> R \<turnstile> w \<Rightarrow>(n4) xw"
-    by blast
-  then have "R \<turnstile> v @ w \<Rightarrow>(n3 + n4) xvw" using P2
-    using deriven_append_decomp diff_Suc_1 by blast
-  then have "R \<turnstile> u @ v @ w \<Rightarrow>(n1 + n3 + n4) map Tm x" using P1 P2 deriven_append_decomp
-    using ab_semigroup_add_class.add_ac(1) by blast
-  then have "R \<turnstile> u @ v @ w \<Rightarrow>(n) map Tm x" using P1 P2
-    by (simp add: add.assoc)
-  then show ?thesis using P2 by blast
-qed
-
-
-definition nts_syms_list :: "('n,'t)syms \<Rightarrow> 'n list \<Rightarrow> 'n list" where
-"nts_syms_list sys = foldr (\<lambda>sy ns. case sy of Nt A \<Rightarrow> List.insert A ns | Tm _ \<Rightarrow> ns) sys"
-
-definition nts_prods_list :: "('n,'t)prods \<Rightarrow> 'n list" where
-"nts_prods_list ps = foldr (\<lambda>(A,sys) ns. List.insert A (nts_syms_list sys ns)) ps []"
-
-lemma set_nts_syms_list: "set(nts_syms_list sys ns) = nts_syms sys \<union> set ns"
-unfolding nts_syms_list_def
-by(induction sys arbitrary: ns) (auto split: sym.split)
-
-lemma set_nts_prods_list: "set(nts_prods_list ps) = nts ps"
-by(induction ps) (auto simp: nts_prods_list_def Nts_def set_nts_syms_list split: prod.splits)
-
-lemma distinct_nts_syms_list: "distinct(nts_syms_list sys ns) = distinct ns"
-unfolding nts_syms_list_def
-by(induction sys arbitrary: ns) (auto split: sym.split)
-
-lemma distinct_nts_prods_list: "distinct(nts_prods_list ps)"
-by(induction ps) (auto simp: nts_prods_list_def distinct_nts_syms_list split: sym.split)
-(* end TODO rm *)
-
-(* TODO rm after next release (is in AFP/devel/Fresh_Identifiers) *)
-
-fun freshs :: "('a::fresh) set \<Rightarrow> 'a list \<Rightarrow> 'a list" where
-"freshs X [] = []" |
-"freshs X (a#as) = (let a' = fresh X a in a' # freshs (insert a' X) as)"
-
-lemma length_freshs: "finite X \<Longrightarrow> length(freshs X as) = length as"
-by(induction as arbitrary: X)(auto simp: fresh_notIn Let_def)
-
-lemma freshs_disj: "finite X \<Longrightarrow> X \<inter> set(freshs X as) = {}"
-proof(induction as arbitrary: X)
-  case Cons
-  then show ?case using fresh_notIn by(auto simp add: Let_def)
-qed simp
-
-lemma freshs_distinct: "finite X \<Longrightarrow> distinct (freshs X as)"
-proof(induction as arbitrary: X)
-  case (Cons a as)
-  then show ?case
-    using freshs_disj[of "insert (fresh X a) X" as] fresh_notIn by(auto simp add: Let_def)
-qed simp
-(* end rm freshs *)
-
 
 text \<open>This theory formalizes a method to transform a set of productions into 
 Greibach Normal Form (GNF) \<^cite>\<open>Greibach\<close>. We concentrate on the essential property of the GNF:
@@ -368,9 +169,9 @@ text \<open>The main function \<open>gnf_hd\<close> converts into \<open>GNF_hd\
 definition gnf_hd :: "('n::fresh,'t)prods \<Rightarrow> ('n,'t)Prods" where
 "gnf_hd ps =
   (let As = nts_prods_list ps;
+       ps' = eps_elim ps;
        As' = freshs (set As) As
-   in expand_tri (As' @ rev As) (solve_tri As As' (set ps)))"
-
+   in expand_tri (As' @ rev As) (solve_tri As As' (set ps')))"
 
 section \<open>Some Basic Lemmas\<close>
 
@@ -1922,33 +1723,41 @@ section \<open>Function \<open>gnf_hd\<close>: Conversion to \<open>GNF_hd\<clos
 
 text \<open>All epsilon-free grammars can be put into GNF while preserving their language.\<close>
 text \<open>Putting the productions into GNF via \<open>expand_tri (solve_tri)\<close> preserves the language.\<close>
-lemma GNF_of_R_Lang: 
+lemma Lang_expand_solve_tri: 
   assumes "Eps_free R" "length As \<le> length As'" "distinct (As @ As')" "Nts R \<inter> set As' = {}" "A \<notin> set As'"
   shows "Lang (expand_tri (As' @ rev As) (solve_tri As As' R)) A = Lang R A"
 using solve_tri_Lang[OF assms] expand_tri_Lang[of "(As' @ rev As)"] by blast
 
-text \<open>Any epsilon-free Grammar can be brought into GNF.\<close>
-theorem GNF_hd_gnf_hd: "eps_free ps \<Longrightarrow> GNF_hd (gnf_hd ps)"
-by(simp add: gnf_hd_def Let_def GNF_of_R[simplified]
-  distinct_nts_prods_list freshs_distinct finite_nts freshs_disj set_nts_prods_list length_freshs)
+text \<open>Any Grammar can be brought into GNF.\<close>
+theorem GNF_hd_gnf_hd: "GNF_hd (gnf_hd ps)"
+unfolding gnf_hd_def Let_def
+by(simp add: gnf_hd_def Let_def GNF_of_R[OF eps_free_eps_elim]
+  distinct_nts_prods_list freshs_distinct finite_nts freshs_disj nts_eps_elim set_nts_prods_list length_freshs)
 
 lemma distinct_app_freshs: "\<lbrakk> As = nts_prods_list ps; As' = freshs (set As) As \<rbrakk> \<Longrightarrow>
    distinct (As @ As')"
 using freshs_disj[of "set As" As]
 by (auto simp: distinct_nts_prods_list freshs_distinct)
 
-text \<open>\<open>gnf_hd\<close> preserves the language:\<close>
-theorem Lang_gnf_hd: "\<lbrakk> eps_free ps; A \<in> nts ps \<rbrakk> \<Longrightarrow> Lang (gnf_hd ps) A = lang ps A"
+lemma lem: "A \<notin> Nts P \<Longrightarrow> Lang P A = {}"
+  by (simp add: Lang_empty_if_notin_Lhss Nts_Lhss_Rhs_Nts)
+
+text \<open>\<open>gnf_hd\<close> preserves the language (modulo \<open>[]\<close>):\<close>
+theorem Lang_gnf_hd: "A \<in> nts ps \<Longrightarrow> Lang (gnf_hd ps) A = lang ps A - {[]}"
 unfolding gnf_hd_def Let_def
-by (metis GNF_of_R_Lang IntI distinct_app_freshs empty_iff finite_nts freshs_disj 
-      length_freshs order_refl set_nts_prods_list)
+apply(rule Lang_expand_solve_tri[OF eps_free_eps_elim, simplified lang_eps_elim])
+   apply (simp add: length_freshs)
+  apply (metis distinct_app_freshs)
+ using set_nts_prods_list distinct_app_freshs nts_eps_elim apply fastforce
+apply(metis IntI empty_iff finite_nts freshs_disj set_nts_prods_list)
+done
 
 text \<open>Two simple examples:\<close>
 
 lemma "gnf_hd [(0, [Nt(0::nat), Tm (1::int)])] = {(1, [Tm 1]), (1, [Tm 1, Nt 1])}"
   by eval
 
-lemma "gnf_hd [(0, [Nt(0::nat), Tm (1::int)]), (0, [Tm 2])] =
+lemma "gnf_hd [(0, [Nt(0::nat), Tm (1::int)]), (0, [Tm 2]), (8, []), (9, [Nt 8])] =
   { (0, [Tm 2, Nt 1]), (0, [Tm 2]), (1, [Tm 1, Nt 1]), (1, [Tm 1]) }"
   by eval
 

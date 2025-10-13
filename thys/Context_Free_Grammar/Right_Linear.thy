@@ -503,13 +503,13 @@ text
  same production set as \<open>ps'\<close> without the unit productions. The language preservation property is already given\<close>
 
 lemma uppr_rlin2:
-  assumes rlinbin: "rlin_bin (set ps')"
+  assumes rlinbin: "rlin_bin ps'"
     and uppr_ps': "unit_elim_rel ps' ps"
-  shows "rlin2 (set ps)"
+  shows "rlin2 ps"
 proof - 
-  from rlinbin have "rlin2 (set ps' - {(A,w) \<in> set ps'. \<exists>B. w = [Nt B]})"
+  from rlinbin have "rlin2 (ps' - {(A,w) \<in> ps'. \<exists>B. w = [Nt B]})"
     using rlin2_def rlin_bin_def by fastforce
-  hence "rlin2 (set ps' - (unit_prods ps'))"
+  hence "rlin2 (ps' - (unit_prods ps'))"
     by (simp add: unit_prods_def)
   hence 1: "rlin2 (unit_rm ps')"
     by (simp add: unit_rm_def)
@@ -517,7 +517,7 @@ proof -
     unfolding new_prods_def rlin2_def by fastforce
   from 1 2 have "rlin2 (unit_rm ps' \<union> new_prods ps')"
     unfolding rlin2_def by auto
-  with uppr_ps' have "rlin2 (set ps)"
+  with uppr_ps' have "rlin2 ps"
     by (simp add: unit_elim_rel_def)
   thus ?thesis .
 qed
@@ -526,8 +526,8 @@ text
 \<open>The transformation \<open>rlin2_of_rlin\<close> applies the presented functions in the right order. At the end, we show that \<open>rlin2_of_rlin\<close>
  converts a production set from \<open>rlin\<close> to a production set from \<open>rlin2\<close>, without changing the language\<close>
 
-definition rlin2_of_rlin :: "('n::fresh0,'t) prods \<Rightarrow> ('n,'t)prods" where
-  "rlin2_of_rlin ps = unit_elim (binarize (finalize ps))"
+definition rlin2_of_rlin :: "('n::fresh0,'t) prods \<Rightarrow> ('n,'t)Prods" where
+  "rlin2_of_rlin ps = unit_elim (set (binarize (finalize ps)))"
 
 (* Test for eval *)
 lemma "binarize(finalize [(0::nat, [Tm (0::int), Tm 1, Tm 2])])
@@ -536,21 +536,21 @@ by eval
 
 theorem rlin_to_rlin2: 
   assumes "rlin (set ps)" 
-  shows "rlin2 (set (rlin2_of_rlin ps))"
+  shows "rlin2 ((rlin2_of_rlin ps))"
 using assms proof -
   assume "rlin (set ps)"
   hence "rlin_noterm (set (finalize ps))"
     using finalize_rlinnoterm by blast
   hence "rlin_bin (set (binarize (finalize ps)))"
     by (simp add: binarize_rlinbin)
-  hence "rlin2 (set (unit_elim (binarize (finalize ps))))"
+  hence "rlin2 (unit_elim (set (binarize (finalize ps))))"
     by (simp add: unit_elim_rel_unit_elim uppr_rlin2)
-  thus "rlin2 (set (rlin2_of_rlin ps))"
+  thus "rlin2 ((rlin2_of_rlin ps))"
     by (simp add: rlin2_of_rlin_def)
 qed
 
 lemma lang_rlin2_of_rlin:
-  "A \<in> Nts (set ps) \<Longrightarrow> lang (rlin2_of_rlin ps) A = lang ps A"
+  "A \<in> Nts (set ps) \<Longrightarrow> Lang (rlin2_of_rlin ps) A = lang ps A"
 by(simp add: rlin2_of_rlin_def lang_unit_elim finalize_nts lang_binarize lang_finalize)
 
 
