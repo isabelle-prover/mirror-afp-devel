@@ -36,21 +36,14 @@ section \<open>Function Definitions\<close>
 
 text \<open>Depend on: \<open>A\<close> depends on \<open>B\<close> if there is a rule \<open>A \<rightarrow> B w\<close>:\<close>
 definition dep_on :: "('n,'t) Prods \<Rightarrow> 'n \<Rightarrow> 'n set" where
-"dep_on R A = {B. \<exists>w. (A,Nt B # w) \<in> R}"
+"dep_on R A = {B. \<exists>w. (A, Nt B # w) \<in> R}"
 
 text \<open>GNF property: All productions start with a terminal.\<close>
 definition GNF_hd :: "('n,'t)Prods \<Rightarrow> bool" where 
-"GNF_hd R = (\<forall>(A, w) \<in> R. \<exists>t. hd w = Tm t)"
-
-text \<open>GNF property expressed via \<open>dep_on\<close>:\<close>
-definition GNF_hd_dep_on :: "('n,'t)Prods \<Rightarrow> bool" where
-"GNF_hd_dep_on R = (\<forall>A \<in> Nts R. dep_on R A = {})"
-
-abbreviation lrec_Prods :: "('n,'t)Prods \<Rightarrow> 'n \<Rightarrow> 'n set \<Rightarrow> ('n,'t)Prods" where
-"lrec_Prods R A S \<equiv> {(A',Bw) \<in> R. A'=A \<and> (\<exists>w B. Bw = Nt B # w \<and> B \<in> S)}"
+"GNF_hd R = (\<forall>(A, w) \<in> R. \<exists>t v. w = Tm t # v)"
 
 abbreviation subst_hd :: "('n,'t)Prods \<Rightarrow> ('n,'t)Prods \<Rightarrow> 'n \<Rightarrow> ('n,'t)Prods" where
-"subst_hd R X A \<equiv>  {(A,v@w) |v w. \<exists>B. (A,Nt B # w) \<in> X \<and> (B,v) \<in> R}"
+"subst_hd R X A \<equiv> {(A,v@w) | B v w. (B,v) \<in> R \<and> (A, Nt B # w) \<in> X}"
 
 text \<open>Expand head: Replace all rules \<open>A \<rightarrow> B w\<close> where \<open>B \<in> Ss\<close>
 (\<open>Ss\<close> = solved Nts in \<open>triangular\<close> form)
@@ -59,7 +52,7 @@ fun expand_hd :: "'n \<Rightarrow> 'n list \<Rightarrow> ('n,'t)Prods \<Rightarr
 "expand_hd A [] R = R" |
 "expand_hd A (S#Ss) R =
  (let R' = expand_hd A Ss R;
-      X = lrec_Prods R' A {S};
+      X = {r \<in> R'. \<exists>w. r = (A, Nt S # w)};
       Y = subst_hd R' X A
   in R' - X \<union> Y)"
 
@@ -149,24 +142,26 @@ text \<open>Expand triangular: Expands all head-Nts of productions with a Lhs in
 \<open>A \<rightarrow> B w\<close> is expanded if \<open>B \<in> set As\<close>. If the productions were in \<open>triangular\<close> form wrt \<open>rev As\<close> 
 then \<open>Ai\<close> only depends on \<open>A(i+1), \<dots>, An\<close> which have already been expanded in the first part
 of the step and are in GNF. Then the all \<open>A\<close>-productions are also is in GNF after expansion.\<close>
+
 fun expand_tri :: "'n list \<Rightarrow> ('n,'t)Prods \<Rightarrow> ('n,'t)Prods" where
 "expand_tri [] R = R" |
 "expand_tri (A#As) R =
  (let R' = expand_tri As R;
-      X = lrec_Prods R' A (set As);
+      X = {r \<in> R'. \<exists>w B. r = (A, Nt B # w) \<and> B \<in> set As};
       Y = subst_hd R' X A
   in R' - X \<union> Y)"
 
 declare expand_tri.simps(1)[code]
 lemma expand_tri_Cons_code[code]: "expand_tri (S#Ss) R =
  (let R' = expand_tri Ss R;
-      X = {w \<in> Rhss R' S. w \<noteq> [] \<and> hd w \<in> Nt ` (set Ss)};
+      X = {w \<in> Rhss R' S. w \<noteq> [] \<and> hd w \<in> Nt ` set Ss};
       Y = (\<Union>(B,v) \<in> R'. \<Union>w \<in> X. if hd w \<noteq> Nt B then {} else {(S,v @ tl w)})
   in R' - ({S} \<times> X) \<union> Y)"
 by(simp add: Let_def Rhss_def neq_Nil_conv Ball_def, safe, force+)
 
 text \<open>The main function \<open>gnf_hd\<close> converts into \<open>GNF_hd\<close>:\<close>
-definition gnf_hd :: "('n::fresh,'t)prods \<Rightarrow> ('n,'t)Prods" where
+definition 
+gnf_hd :: "('n::fresh,'t)prods \<Rightarrow> ('n,'t)Prods" where
 "gnf_hd ps =
   (let As = nts_prods_list ps;
        ps' = eps_elim ps;
@@ -226,19 +221,19 @@ proof (induction A As R rule: expand_hd.induct)
 next
   case (2 A S Ss R)
   let ?R' = "expand_hd A Ss R"
-  let ?X = "{(Al, Bw). (Al, Bw) \<in> ?R' \<and> Al = A \<and> (\<exists>w. Bw = Nt S # w)}"
-  let ?Y = "{(A, v @ w) |v w. (A, Nt S # w) \<in> ?R' \<and> (S, v) \<in> ?R'}"
+  let ?X = "{r \<in> ?R'. \<exists>w. r = (A, Nt S # w)}"
+  let ?Y = "{(A, v @ w) |v w. (S, v) \<in> ?R' \<and> (A, Nt S # w) \<in> ?R'}"
 
   have lhs_sub: "Lhss ?Y \<subseteq> Lhss ?R'" by (auto simp add: Lhss_def)
 
   have "B \<notin> Rhs_Nts ?R' \<longrightarrow> B \<notin> Rhs_Nts ?Y" for B 
-    by (fastforce simp add: Rhs_Nts_def split: prod.splits)
-  then have "B \<in> Rhs_Nts ?Y \<longrightarrow> B \<in> Rhs_Nts ?R'" for B by blast
+    by (force simp add: Rhs_Nts_def split: prod.splits)
   then have rhs_sub: "Rhs_Nts ?Y \<subseteq> Rhs_Nts ?R'" by auto
 
   have "Nts ?Y \<subseteq> Nts ?R'" using lhs_sub rhs_sub by (auto simp add: Nts_Lhss_Rhs_Nts)
   then have "Nts ?Y \<subseteq> Nts R" using 2 by auto
-  then show ?case using Nts_mono[of "?R' - ?X"] 2 by (auto simp add: Let_def Nts_Un)
+  then show ?case using Nts_mono[of "?R' - ?X"] 2
+    by (auto simp add: Let_def Nts_def)
 qed
   
 lemma Nts_solve_lrec_sub: "Nts (solve_lrec A A' R) \<subseteq> Nts R \<union> {A'}"
@@ -1370,9 +1365,9 @@ proof (induction B As R rule: expand_hd.induct)
 next
   case (2 C H Ss R)
   let ?R' = "expand_hd C Ss R"
-  let ?X = "{(Al,Bw) \<in> ?R'. Al=C \<and> (\<exists>w. Bw = Nt H # w)}"
-  let ?Y = "{(C,v@w) |v w. \<exists>B. (C,Nt B # w) \<in> ?X \<and> (B,v) \<in> ?R'}"
-  have "expand_hd C (H # Ss) R = ?R' - ?X \<union> ?Y" by (simp add: Let_def)
+  let ?X = "{r \<in> ?R'. \<exists>w. r = (C, Nt H # w)}"
+  let ?Y = "subst_hd ?R' ?X C"
+  have "expand_hd C (H # Ss) R = ?R' - ?X \<union> ?Y" by (auto simp: Let_def)
 
   let ?S = "{x. \<exists>A w. x = (A, [], H, w) \<and> (A, Nt H # w) \<in> ?X}"
   let ?S' = "{x. \<exists>A a1 B a2. x = (A, a1 @ Nt B # a2) \<and> (A, a1, B, a2) \<in> ?S}"
@@ -1605,8 +1600,8 @@ proof (induction As R rule: expand_tri.induct)
   then show ?case by simp
 next
   case (2 S Ss R)
-  let ?X = "{(Al, Bw). (Al, Bw) \<in> expand_tri Ss R \<and> Al = S \<and> (\<exists>w B. Bw = Nt B # w \<and> B \<in> set Ss)}"
-  let ?Y = "{(S,v@w)|v w. \<exists>B. (S,Nt B#w) \<in> expand_tri Ss R \<and> B \<in> set Ss \<and> (B,v) \<in> expand_tri Ss R}"
+  let ?X = "{r \<in> expand_tri Ss R. \<exists>w B. r = (S, Nt B # w) \<and> B \<in> set Ss}"
+  let ?Y = "{(S,v@w)|B v w. (B,v) \<in> expand_tri Ss R \<and> (S, Nt B # w) \<in> expand_tri Ss R \<and> B \<in> set Ss}"
   have F1: "Rhs_Nts ?X \<subseteq> Rhs_Nts R" using 2 by (auto simp add: Rhs_Nts_def)
   have "Rhs_Nts ?Y \<subseteq> Rhs_Nts R"
   proof
@@ -1699,8 +1694,8 @@ next
   next
     case (2 D Ds R)
     let ?R' = "expand_tri Ds R"
-    let ?X = "{(Al,Bw) \<in> ?R'. Al=D \<and> (\<exists>w B. Bw = Nt B # w \<and> B \<in> set (Ds))}"
-    let ?Y = "{(D,v@w) |v w. \<exists>B. (D, Nt B # w) \<in> ?X \<and> (B,v) \<in> ?R'}"
+    let ?X = "{r \<in> ?R'. (\<exists>w B. r = (D, Nt B # w) \<and> B \<in> set (Ds))}"
+    let ?Y = "{(D,v@w) |B v w. (B,v) \<in> ?R' \<and> (D, Nt B # w) \<in> ?X}"
     have F1: "expand_tri (D#Ds) R = ?R' - ?X \<union> ?Y" by (simp add: Let_def)
 
     let ?S = "{x. \<exists>A w H. x = (A, [], H, w) \<and> (A, Nt H # w) \<in> ?X}"
@@ -1884,9 +1879,9 @@ proof (induction As R rule: expand_tri.induct)
   then show ?case by simp
 next
   case (2 S Ss R)
-  let ?S = "{(S,v@w)|v w. \<exists>B. (S,Nt B#w) \<in> expand_tri Ss R \<and> B \<in> set Ss \<and> (B,v) \<in> expand_tri Ss R}"
+  let ?S = "{(S,v@w)|B v w.  (B,v) \<in> expand_tri Ss R \<and> (S,Nt B#w) \<in> expand_tri Ss R \<and> B \<in> set Ss}"
   let ?f = "\<lambda>((A,w),(B,v)). (A, v @ (tl w))"
-  have "?S \<subseteq> ?f ` ((expand_tri Ss R) \<times> (expand_tri Ss R))"
+  have "?S \<subseteq> ?f ` (expand_tri Ss R \<times> expand_tri Ss R)"
   proof
     fix x
     assume "x \<in> ?S"
