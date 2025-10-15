@@ -49,7 +49,7 @@ fun binarize1 :: "('n :: fresh0, 't) prods \<Rightarrow> ('n, 't) prods \<Righta
 | "binarize1 ps' ((A, []) # ps) = (A, []) # binarize1 ps' ps"
 | "binarize1 ps' ((A, s0 # u) # ps) =
  (if length u \<le> 1 then (A, s0 # u) # binarize1 ps' ps
-  else let B = fresh0 (nts ps') in (A,[s0, Nt B]) # (B, u) # ps)"
+  else let B = fresh0 (Nts (set ps')) in (A,[s0, Nt B]) # (B, u) # ps)"
 
 definition binarize' :: "('n::fresh0, 't) prods \<Rightarrow> ('n, 't) prods" where
   "binarize' ps = binarize1 ps ps"
@@ -82,7 +82,7 @@ using assms proof (induction ps' ps rule: binarize1.induct)
     with True show ?thesis by simp
   next
     case False
-    let ?B = "fresh0(nts ps')"
+    let ?B = "fresh0 (Nts (set ps'))"
     from False have "count (binarize1 ps' ((A, s0 # u) # ps)) = count ((A,[s0, Nt ?B]) # (?B, u) # ps)"
       by (metis binarize1.simps(3))
     also have "... = count ((?B, u) # ps)" by simp
@@ -133,7 +133,7 @@ text
 \<open>Now we prove the property of language preservation\<close>
 
 lemma binarize1_cases:
-  "binarize1 ps' ps = ps \<or> (\<exists>A ps'' B u s. set ps = {(A, s#u)} \<union> set ps'' \<and> set (binarize1 ps' ps) = {(A,[s,Nt B]),(B,u)} \<union> set ps'' \<and> Nt B \<notin> syms ps')"
+  "binarize1 ps' ps = ps \<or> (\<exists>A ps'' B u s. set ps = {(A, s#u)} \<union> set ps'' \<and> set (binarize1 ps' ps) = {(A,[s,Nt B]),(B,u)} \<union> set ps'' \<and> Nt B \<notin> Syms (set ps'))"
 proof (induction ps' ps rule: binarize1.induct)
   case (2 ps' C ps)
   then show ?case
@@ -142,11 +142,11 @@ proof (induction ps' ps rule: binarize1.induct)
     then show ?thesis by simp
   next
     case False
-    then obtain A ps'' B u s where defs: "set ps = {(A, s # u)} \<union> set ps'' \<and> set (binarize1 ps' ps) = {(A, [s, Nt B]), (B, u)} \<union> set ps'' \<and> Nt B \<notin> syms ps'"
+    then obtain A ps'' B u s where defs: "set ps = {(A, s # u)} \<union> set ps'' \<and> set (binarize1 ps' ps) = {(A, [s, Nt B]), (B, u)} \<union> set ps'' \<and> Nt B \<notin> Syms (set ps')"
       using 2 by blast
     from defs have wit: "set ((C, []) # ps) = {(A, s # u)} \<union> set ((C, []) # ps'')" by simp
     from defs have wit2: "set (binarize1 ps' ((C, []) # ps)) = {(A, [s, Nt B]), (B, u)} \<union> set ((C, []) # ps'')" by simp
-    from defs have wit3: "Nt B \<notin> syms ps'" by simp
+    from defs have wit3: "Nt B \<notin> Syms (set ps')" by simp
     from wit wit2 wit3 show ?thesis by blast
   qed
 next
@@ -158,17 +158,17 @@ next
       with T1 show ?thesis by simp
     next
       case False
-      with T1 obtain A ps'' B v s where defs: "set ps = {(A, s # v)} \<union> set ps'' \<and> set (binarize1 ps' ps) = {(A, [s, Nt B]), (B, v)} \<union> set ps'' \<and> Nt B \<notin> syms ps'"
+      with T1 obtain A ps'' B v s where defs: "set ps = {(A, s # v)} \<union> set ps'' \<and> set (binarize1 ps' ps) = {(A, [s, Nt B]), (B, v)} \<union> set ps'' \<and> Nt B \<notin> Syms (set ps')"
         using 3 by blast
       from defs have wit: "set ((C, s0 # u) # ps) = {(A, s # v)} \<union> set ((C, s0 # u) # ps'')" by simp
       from defs T1 have wit2: "set (binarize1 ps' ((C, s0 # u) # ps)) = {(A, [s, Nt B]), (B, v)} \<union> set ((C, s0 # u) # ps'')" by simp
-      from defs have wit3: "Nt B \<notin> syms ps'" by simp
+      from defs have wit3: "Nt B \<notin> Syms (set ps')" by simp
       from wit wit2 wit3 show ?thesis by blast
     qed
    next
     case False
     then show ?thesis
-      using fresh0_nts in_Nts_iff_in_Syms[of "fresh0 (nts ps')" "set ps'"]
+      using fresh0_nts in_Nts_iff_in_Syms[of "fresh0 (Nts (set ps'))" "set ps'"]
       by (fastforce simp add: Let_def)
   qed
 qed simp
@@ -183,7 +183,7 @@ lemma binarize_der':
   shows "set ps \<turnstile> [Nt A] \<Rightarrow>* map Tm x \<longleftrightarrow> set (binarize' ps) \<turnstile> [Nt A] \<Rightarrow>* map Tm x"
   unfolding binarize'_def proof (cases "binarize1 ps ps = ps")
   case False
-  then obtain C ps'' B u s where defs: "set ps = {(C, s # u)} \<union> set ps'' \<and> set (binarize1 ps ps) = {(C, [s, Nt B]), (B, u)} \<union> set ps'' \<and> Nt B \<notin> syms ps"
+  then obtain C ps'' B u s where defs: "set ps = {(C, s # u)} \<union> set ps'' \<and> set (binarize1 ps ps) = {(C, [s, Nt B]), (B, u)} \<union> set ps'' \<and> Nt B \<notin> Syms (set ps)"
     by (meson binarize1_cases)
   from defs have a_not_b: "C \<noteq> B" unfolding Syms_def by fast
   from defs assms have a1: "A \<noteq> B" unfolding Lhss_def Syms_def by auto
@@ -191,7 +191,7 @@ lemma binarize_der':
   from defs have a3: "Nt B \<notin> set u" unfolding Syms_def by fastforce
   from defs have "set ps = set ((C, s # u) # ps'')" by simp
   with defs a_not_b have a4: "B \<notin> lhss ((C, [s, Nt B]) # ps'')" unfolding Lhss_def Syms_def by auto
-  from defs have notB: "Nt B \<notin> syms ps''" by fastforce
+  from defs have notB: "Nt B \<notin> Syms (set ps'')" by fastforce
   then have 1: "set ps = set (substP (Nt B) u ((C, [s, Nt B]) # ps''))" proof -
     from defs have "set ps = {(C, s # u)} \<union> set ps''" by simp
     also have "... = set ((C, s#u) # ps'')" by simp
@@ -216,7 +216,7 @@ proof (induction ps' ps rule: binarize1.induct)
     with 3 show ?thesis by auto
   next
     case False
-    let ?B = "fresh0(nts ps')"
+    let ?B = "fresh0 (Nts (set ps'))"
     have "lhss ((A, s0 # u) # ps) = {A} \<union> lhss ps" by simp
     also have "... \<subseteq> {A} \<union> {?B} \<union> lhss ps" by blast
     also have "... = lhss ((A,[s0, Nt ?B]) # (?B, u) # ps)" by simp
@@ -262,8 +262,8 @@ text
  sides of the production set\<close>
 
 lemma binarize_syms1:
-  assumes  "Nt A \<in> syms ps"
-    shows  "Nt A \<in> syms (binarize1 ps' ps)"
+  assumes  "Nt A \<in> Syms (set ps)"
+    shows  "Nt A \<in> Syms (set (binarize1 ps' ps))"
 using assms proof (induction ps' ps rule: binarize1.induct)
   case (3 ps' A s0 u ps)
   show ?case proof (cases "length u \<le> 1")
@@ -277,7 +277,7 @@ qed auto
 
 lemma binarize_lhss_nts1:
   assumes "A \<notin> lhss ps"
-      and "A \<in> nts ps'"
+      and "A \<in> Nts (set ps')"
     shows "A \<notin> lhss (binarize1 ps' ps)"
   using assms proof (induction ps' ps rule: binarize1.induct)
   case (3 ps' A s0 u ps)
@@ -292,8 +292,8 @@ qed simp_all
 
 lemma binarize_lhss_nts'n:
   assumes "A \<notin> lhss ps"
-      and "A \<in> nts ps"
-    shows "A \<notin> lhss ((binarize'^^n) ps) \<and> A \<in> nts ((binarize'^^n) ps)"
+      and "A \<in> Nts (set ps)"
+    shows "A \<notin> lhss ((binarize'^^n) ps) \<and> A \<in> Nts (set ((binarize'^^n) ps))"
 using assms proof (induction n)
   case (Suc n)
   thus ?case 
@@ -302,13 +302,13 @@ qed simp
 
 lemma binarize_lhss_nts:
    assumes "A \<notin> lhss ps"
-      and  "A \<in> nts ps"
-    shows "A \<notin> lhss (binarize ps) \<and> A \<in> nts (binarize ps)"
+      and  "A \<in> Nts (set ps)"
+    shows "A \<notin> lhss (binarize ps) \<and> A \<in> Nts (set (binarize ps))"
   unfolding binarize_def using binarize_lhss_nts'n[OF assms] by simp
 
 lemma binarize_nts'n:
-  assumes "A \<in> nts ps"
-  shows   "A \<in> nts ((binarize' ^^ n) ps)"
+  assumes "A \<in> Nts (set ps)"
+  shows   "A \<in> Nts (set ((binarize' ^^ n) ps))"
 using assms proof (induction n)
   case (Suc n)
   thus ?case 
@@ -316,12 +316,12 @@ using assms proof (induction n)
 qed simp
 
 lemma binarize_nts:
-  assumes "A \<in> nts ps"
-  shows   "A \<in> nts (binarize ps)"
+  assumes "A \<in> Nts (set ps)"
+  shows   "A \<in> Nts (set (binarize ps))"
   unfolding binarize_def using assms binarize_nts'n by blast
 
 lemma lang_binarize: 
-  assumes "A \<in> nts ps"
+  assumes "A \<in> Nts (set ps)"
   shows "lang (binarize ps) A = lang ps A"
 proof (cases "A \<in> lhss ps")
   case True

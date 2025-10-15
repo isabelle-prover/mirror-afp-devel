@@ -18,7 +18,7 @@ for P where
 abbreviation "Nullables P w \<equiv> (\<forall>s \<in> set w. Nullable P s)"
 
 definition nullables_wrt :: "'n set \<Rightarrow> ('n, 't) syms \<Rightarrow> bool" where
-"nullables_wrt N w = (tms_syms w = {} \<and> nts_syms w \<subseteq> N)"
+"nullables_wrt N w = (Tms_syms w = {} \<and> Nts_syms w \<subseteq> N)"
 
 definition nullable_step :: "('n,'t)Prods \<Rightarrow> 'n set \<Rightarrow> 'n set" where
 "nullable_step P N = fst ` {(A,w) \<in> P. nullables_wrt N w}"
@@ -48,11 +48,11 @@ proof -
   have 0: "?I {}" by simp
   have "?I (nullable_step P N)" if "?I N" for N
   proof -
-    have "Nullable P (Nt A)" if asms: "(A, w) \<in> P" "tms_syms w = {}" "nts_syms w \<subseteq> N" for A w
+    have "Nullable P (Nt A)" if asms: "(A, w) \<in> P" "Tms_syms w = {}" "Nts_syms w \<subseteq> N" for A w
     proof -
       have "Nullable P s" if "s \<in> set w" for s
       proof -
-        have "s \<in> Nt ` N" using asms(2,3) \<open>s \<in> set w\<close> unfolding nts_syms_def tms_syms_def
+        have "s \<in> Nt ` N" using asms(2,3) \<open>s \<in> set w\<close> unfolding Nts_syms_def Tms_syms_def
           by(cases s) auto
         thus ?thesis using \<open>?I N\<close> by blast
       qed
@@ -70,7 +70,7 @@ proof(induction rule: Nullable.induct)
   case (NullableSym B w)
   then have [simp]: "B = A" by auto
   from NullableSym have "A \<in> nullable_step P N"
-   unfolding nullable_step_def nullables_wrt_def image_def nts_syms_def tms_syms_def
+   unfolding nullable_step_def nullables_wrt_def image_def Nts_syms_def Tms_syms_def
    apply auto
    using Nullable.cases by blast
   with NullableSym show ?case
@@ -480,10 +480,10 @@ apply (fastforce split: if_splits)
 done
 
 lemma Nts_Eps_elim: "Nts (Eps_elim P) \<subseteq> Nts P"
-unfolding Nts_def Eps_elim_def nts_syms_def
+unfolding Nts_def Eps_elim_def Nts_syms_def
 by(auto split: prod.splits dest: set_eps_closure_subset)
 
-corollary nts_eps_elim: "nts (eps_elim P) \<subseteq> nts P"
+corollary nts_eps_elim: "Nts(set(eps_elim ps)) \<subseteq> Nts(set ps)"
   by (metis set_eps_elim Nts_Eps_elim)
 
 corollary lang_eps_elim: "lang (eps_elim ps) S = lang ps S - {[]}"

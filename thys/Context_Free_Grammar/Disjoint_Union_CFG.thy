@@ -17,49 +17,49 @@ one grammar is unchanged by adding productions involving only disjoint nontermin
 lemma derivel_disj_Un_if:
   assumes "Rhs_Nts P \<inter> Lhss P' = {}"
       and "P \<union> P' \<turnstile> u \<Rightarrow>l v"
-      and "nts_syms u \<inter> Lhss P' = {}"
-    shows "P \<turnstile> u \<Rightarrow>l v \<and> nts_syms v \<inter> Lhss P' = {}"
+      and "Nts_syms u \<inter> Lhss P' = {}"
+    shows "P \<turnstile> u \<Rightarrow>l v \<and> Nts_syms v \<inter> Lhss P' = {}"
 proof -
   from assms(2) obtain A w u' v' where
         A_w: "(A, w)\<in>(P \<union> P')"
       and u: "u = map Tm u' @ Nt A # v'"
       and v: "v = map Tm u' @ w @ v'"
     unfolding derivel_iff by fast
-  then have "(A,w) \<notin> P'" using assms(3) unfolding nts_syms_def Lhss_def by auto
+  then have "(A,w) \<notin> P'" using assms(3) unfolding Nts_syms_def Lhss_def by auto
   then have "(A,w) \<in> P" using A_w by blast
   with u v have "(A, w) \<in> P"
       and u: "u = map Tm u' @ Nt A # v'"
       and v: "v = map Tm u' @ w @ v'" by auto
   then have "P \<turnstile> u \<Rightarrow>l v" using derivel.intros by fastforce
-  moreover have "nts_syms v \<inter> Lhss P' = {}"
-    using u v assms \<open>(A, w) \<in> P\<close> unfolding nts_syms_def Nts_def Rhs_Nts_def by auto
+  moreover have "Nts_syms v \<inter> Lhss P' = {}"
+    using u v assms \<open>(A, w) \<in> P\<close> unfolding Nts_syms_def Nts_def Rhs_Nts_def by auto
   ultimately show ?thesis by fast
 qed
 
 lemma derive_disj_Un_if:
   assumes "Rhs_Nts P \<inter> Lhss P' = {}"
       and "P \<union> P' \<turnstile> u \<Rightarrow> v"
-      and "nts_syms u \<inter> Lhss P' = {}"
-    shows "P \<turnstile> u \<Rightarrow> v \<and> nts_syms v \<inter> Lhss P' = {}"
+      and "Nts_syms u \<inter> Lhss P' = {}"
+    shows "P \<turnstile> u \<Rightarrow> v \<and> Nts_syms v \<inter> Lhss P' = {}"
 proof -
   from assms(2) obtain A w u' v' where
         A_w: "(A, w) \<in> P \<union> P'"
       and u: "u = u' @ Nt A # v'"
       and v: "v = u' @ w @ v'"
     unfolding derive_iff by fast
-  then have "(A,w) \<notin> P'" using assms(3) unfolding nts_syms_def Lhss_def by auto
+  then have "(A,w) \<notin> P'" using assms(3) unfolding Nts_syms_def Lhss_def by auto
   then have "(A,w) \<in> P" using A_w by blast
   with u v have "(A, w) \<in> P" and u: "u = u' @ Nt A # v'" and v: "v = u' @ w @ v'" by auto
   then have "P \<turnstile> u \<Rightarrow> v" using derive.intros by fastforce
-  moreover have "nts_syms v \<inter> Lhss P' = {}"
-    using u v assms \<open>(A, w) \<in> P\<close> unfolding nts_syms_def Nts_def Rhs_Nts_def by auto
+  moreover have "Nts_syms v \<inter> Lhss P' = {}"
+    using u v assms \<open>(A, w) \<in> P\<close> unfolding Nts_syms_def Nts_def Rhs_Nts_def by auto
   ultimately show ?thesis by blast
 qed
 
 lemma deriveln_disj_Un_if:
 assumes "Rhs_Nts P \<inter> Lhss P' = {}"
-shows "\<lbrakk> P \<union> P' \<turnstile> u \<Rightarrow>l(n) v;  nts_syms u \<inter> Lhss P' = {} \<rbrakk> \<Longrightarrow>
-  P \<turnstile> u \<Rightarrow>l(n) v \<and> nts_syms v \<inter> Lhss P' = {}"
+shows "\<lbrakk> P \<union> P' \<turnstile> u \<Rightarrow>l(n) v;  Nts_syms u \<inter> Lhss P' = {} \<rbrakk> \<Longrightarrow>
+  P \<turnstile> u \<Rightarrow>l(n) v \<and> Nts_syms v \<inter> Lhss P' = {}"
 proof (induction n arbitrary: v)
   case 0
   then show ?case by simp
@@ -67,7 +67,7 @@ next
   case (Suc n')
   then obtain v' where split: "P \<union> P' \<turnstile> u \<Rightarrow>l(n') v' \<and> P \<union> P' \<turnstile> v' \<Rightarrow>l v"
     by (meson relpowp_Suc_E)
-  with Suc have "P \<turnstile> u \<Rightarrow>l(n') v' \<and> nts_syms v' \<inter> Lhss P' = {}"
+  with Suc have "P \<turnstile> u \<Rightarrow>l(n') v' \<and> Nts_syms v' \<inter> Lhss P' = {}"
     by fast
   with Suc show ?case using assms derivel_disj_Un_if
     by (metis split relpowp_Suc_I)
@@ -75,8 +75,8 @@ qed
 
 lemma deriven_disj_Un_if:
 assumes "Rhs_Nts P \<inter> Lhss P' = {}"
-shows "\<lbrakk> P \<union> P' \<turnstile> u \<Rightarrow>(n) v;  nts_syms u \<inter> Lhss P' = {} \<rbrakk> \<Longrightarrow>
-  P \<turnstile> u \<Rightarrow>(n) v \<and> nts_syms v \<inter> Lhss P' = {}"
+shows "\<lbrakk> P \<union> P' \<turnstile> u \<Rightarrow>(n) v;  Nts_syms u \<inter> Lhss P' = {} \<rbrakk> \<Longrightarrow>
+  P \<turnstile> u \<Rightarrow>(n) v \<and> Nts_syms v \<inter> Lhss P' = {}"
 proof (induction n arbitrary: v)
   case 0
   then show ?case by simp
@@ -84,7 +84,7 @@ next
   case (Suc n')
   then obtain v' where split: "P \<union> P' \<turnstile> u \<Rightarrow>(n') v' \<and> P \<union> P' \<turnstile> v' \<Rightarrow> v"
     by (meson relpowp_Suc_E)
-  with Suc have "P \<turnstile> u \<Rightarrow>(n') v' \<and> nts_syms v' \<inter> Lhss P' = {}"
+  with Suc have "P \<turnstile> u \<Rightarrow>(n') v' \<and> Nts_syms v' \<inter> Lhss P' = {}"
     by fast
   with Suc show ?case using assms derive_disj_Un_if
     by (metis split relpowp_Suc_I)
@@ -92,31 +92,31 @@ qed
 
 lemma derivel_disj_Un_iff:
   assumes "Rhs_Nts P \<inter> Lhss P' = {}"
-      and "nts_syms u \<inter> Lhss P' = {}"
+      and "Nts_syms u \<inter> Lhss P' = {}"
     shows "P \<union> P' \<turnstile> u \<Rightarrow>l v \<longleftrightarrow> P \<turnstile> u \<Rightarrow>l v"
 using assms Un_derivel derivel_disj_Un_if by fastforce
 
 lemma derive_disj_Un_iff:
   assumes "Rhs_Nts P \<inter> Lhss P' = {}"
-      and "nts_syms u \<inter> Lhss P' = {}"
+      and "Nts_syms u \<inter> Lhss P' = {}"
     shows "P \<union> P' \<turnstile> u \<Rightarrow> v \<longleftrightarrow> P \<turnstile> u \<Rightarrow> v"
 using assms Un_derive derive_disj_Un_if by fastforce
 
 lemma deriveln_disj_Un_iff:
   assumes "Rhs_Nts P \<inter> Lhss P' = {}"
-      and "nts_syms u \<inter> Lhss P' = {}"
+      and "Nts_syms u \<inter> Lhss P' = {}"
     shows "P \<union> P' \<turnstile> u \<Rightarrow>l(n) v \<longleftrightarrow> P \<turnstile> u \<Rightarrow>l(n) v"
 by (metis Un_derivel assms(1,2) deriveln_disj_Un_if relpowp_mono)
 
 lemma deriven_disj_Un_iff:
   assumes "Rhs_Nts P \<inter> Lhss P' = {}"
-      and "nts_syms u \<inter> Lhss P' = {}"
+      and "Nts_syms u \<inter> Lhss P' = {}"
     shows "P \<union> P' \<turnstile> u \<Rightarrow>(n) v \<longleftrightarrow> P \<turnstile> u \<Rightarrow>(n) v"
 by (metis Un_derive assms(1,2) deriven_disj_Un_if relpowp_mono)
 
 lemma derives_disj_Un_iff:
   assumes "Rhs_Nts P \<inter> Lhss P' = {}"
-      and "nts_syms u \<inter> Lhss P' = {}"
+      and "Nts_syms u \<inter> Lhss P' = {}"
     shows "P \<union> P' \<turnstile> u \<Rightarrow>* v \<longleftrightarrow> P \<turnstile> u \<Rightarrow>* v"
 by (simp add: deriven_disj_Un_iff[OF assms] rtranclp_power)
 
@@ -125,7 +125,7 @@ lemma Lang_disj_Un1:
   and "S \<notin> Lhss P'"
 shows "Lang P S = Lang (P \<union> P') S"
 proof -
-  from assms(2) have "nts_syms [Nt S] \<inter> Lhss P' = {}" unfolding nts_syms_def Lhss_def by simp
+  from assms(2) have "Nts_syms [Nt S] \<inter> Lhss P' = {}" unfolding Nts_syms_def Lhss_def by simp
   then show ?thesis unfolding Lang_def
     by (simp add: derives_disj_Un_iff[OF assms(1)])
 qed

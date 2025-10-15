@@ -28,7 +28,7 @@ definition nxts_rlin2_set :: "('n,'t)Prods \<Rightarrow> 'n set \<Rightarrow> 't
 lemma nxt_rlin2_nts:
   assumes "B\<in>nxt_rlin2 P A a"
   shows "B\<in>Nts P"
-  using assms nxt_rlin2_def Nts_def nts_syms_def by fastforce
+  using assms nxt_rlin2_def Nts_def Nts_syms_def by fastforce
 
 lemma nxts_rlin2_set_app: 
   "nxts_rlin2_set P M (x @ y) = nxts_rlin2_set P (nxts_rlin2_set P M x) y"

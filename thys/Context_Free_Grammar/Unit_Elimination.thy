@@ -62,7 +62,7 @@ lemma finite_unit_rtc:
   shows  "finite (unit_rtc ps)"
 proof -
   have "finite (Nts ps)"
-    unfolding Nts_def using assms finite_nts_syms by auto
+    unfolding Nts_def using assms finite_Nts_syms by auto
   hence "finite (NtsCross ps)"
     unfolding NtsCross_def by auto
   moreover have "unit_rtc ps \<subseteq> NtsCross ps"
@@ -197,7 +197,7 @@ proof -
   hence "unit_prods ps \<turnstile> [Nt A] \<Rightarrow> [Nt B]"
     by (simp add: derive_singleton)
   moreover have "B \<in> Nts (unit_prods ps) \<and> A \<in> Nts (unit_prods ps)"
-    using \<open>(A, [Nt B]) \<in> unit_prods ps\<close> Nts_def nts_syms_def by fastforce
+    using \<open>(A, [Nt B]) \<in> unit_prods ps\<close> Nts_def Nts_syms_def by fastforce
   ultimately show ?thesis
     unfolding unit_rtc_def by blast
 qed

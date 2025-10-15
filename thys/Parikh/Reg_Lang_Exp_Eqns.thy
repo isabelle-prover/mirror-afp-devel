@@ -217,7 +217,7 @@ lemma rlexp_concats_vars: "vars (rlexp_concats fs) = \<Union>(vars ` set fs)"
   unfolding rlexp_concats_def by (induction fs) simp_all
 
 (* it even holds equality, but we will not need it *)
-lemma insts'_vars: "vars (rlexp_syms w) \<subseteq> \<gamma>' ` nts_syms w"
+lemma insts'_vars: "vars (rlexp_syms w) \<subseteq> \<gamma>' ` Nts_syms w"
 proof
   fix x
   assume "x \<in> vars (rlexp_syms w)"
@@ -226,9 +226,9 @@ proof
   then obtain f where *: "f \<in> set (map rlexp_sym w) \<and> x \<in> vars f" by blast
   then obtain s where **: "s \<in> set w \<and> rlexp_sym s = f" by auto
   with * rlexp_sym_vars_Tm obtain A where ***: "s = Nt A" by (metis empty_iff sym.exhaust)
-  with ** have ****: "A \<in> nts_syms w" unfolding nts_syms_def by blast
+  with ** have ****: "A \<in> Nts_syms w" unfolding Nts_syms_def by blast
   with rlexp_sym_vars_Nt have "vars (rlexp_sym (Nt A)) = {\<gamma>' A}" by blast
-  with * ** *** **** show "x \<in> \<gamma>' ` nts_syms w" by blast
+  with * ** *** **** show "x \<in> \<gamma>' ` Nts_syms w" by blast
 qed
 
 
@@ -259,7 +259,7 @@ next
 qed
 
 lemma rlexp_syms_insts:
-  assumes "\<forall>A \<in> nts_syms w. v (\<gamma>' A) = L A"
+  assumes "\<forall>A \<in> Nts_syms w. v (\<gamma>' A) = L A"
     shows "eval (rlexp_syms w) v = inst_syms L w"
 proof -
   have "\<forall>i < length w. eval (rlexp_sym (w!i)) v = inst_sym L (w!i)"
@@ -269,7 +269,7 @@ proof -
     then show "eval (rlexp_sym (w ! i)) v = inst_sym L (w ! i)"
       proof (induction "w!i")
       case (Nt A)
-      with assms have "v (\<gamma>' A) = L A" unfolding nts_syms_def by force
+      with assms have "v (\<gamma>' A) = L A" unfolding Nts_syms_def by force
       with rlexp_sym_inst_Nt Nt show ?case by metis
     next
       case (Tm x)
@@ -299,7 +299,7 @@ proof -
     assume "x \<in> vars eq"
     with * obtain f where **: "f \<in> ?Insts \<and> x \<in> vars f" by blast
     then obtain w where ***: "w \<in> Rhss P A \<and> f = rlexp_syms w" by blast
-    with ** insts'_vars have "x \<in> \<gamma>' ` nts_syms w" by auto
+    with ** insts'_vars have "x \<in> \<gamma>' ` Nts_syms w" by auto
     with *** show "x \<in> \<gamma>' ` Nts P" unfolding Nts_def Rhss_def by blast
   qed
   moreover have "\<forall>v L. (\<forall>A \<in> Nts P. v (\<gamma>' A) = L A) \<longrightarrow> eval eq v = subst_lang P L A"
@@ -310,7 +310,7 @@ proof -
     proof
       fix w
       assume "w \<in> Rhss P A"
-      with state_L Nts_nts_syms have "\<forall>A \<in> nts_syms w. v (\<gamma>' A) = L A" by fast
+      with state_L Nts_Nts_syms have "\<forall>A \<in> Nts_syms w. v (\<gamma>' A) = L A" by fast
       from rlexp_syms_insts[OF this] show "eval (rlexp_syms w) v = inst_syms L w" by blast
     qed
     then have "subst_lang P L A = (\<Union>f \<in> ?Insts. eval f v)" unfolding subst_lang_def by auto

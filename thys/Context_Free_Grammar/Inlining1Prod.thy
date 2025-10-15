@@ -25,10 +25,10 @@ lemma substP_split: "substP s u (ps @ ps') = substP s u ps @ substP s u ps'"
 lemma substP_skip1: "s \<notin> set v \<Longrightarrow> substP s u ((A,v) # ps) = (A,v) # substP s u ps"
   by (auto simp add: substs_skip substP_def)
 
-lemma substP_skip2: "s \<notin> syms ps \<Longrightarrow> substP s u ps = ps"
+lemma substP_skip2: "s \<notin> Syms (set ps) \<Longrightarrow> substP s u ps = ps"
   by (induction ps) (auto simp add: substP_def substs_skip)
 
-lemma substP_rev: "Nt B \<notin> syms ps \<Longrightarrow> substP (Nt B) [s] (substP s [Nt B] ps) = ps"
+lemma substP_rev: "Nt B \<notin> Syms (set ps) \<Longrightarrow> substP (Nt B) [s] (substP s [Nt B] ps) = ps"
 proof (induction ps)
   case Nil
   then show ?case
