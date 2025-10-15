@@ -42,8 +42,8 @@ text \<open>GNF property: All productions start with a terminal.\<close>
 definition GNF_hd :: "('n,'t)Prods \<Rightarrow> bool" where 
 "GNF_hd R = (\<forall>(A, w) \<in> R. \<exists>t v. w = Tm t # v)"
 
-abbreviation subst_hd :: "('n,'t)Prods \<Rightarrow> ('n,'t)Prods \<Rightarrow> 'n \<Rightarrow> ('n,'t)Prods" where
-"subst_hd R X A \<equiv> {(A,v@w) | B v w. (B,v) \<in> R \<and> (A, Nt B # w) \<in> X}"
+abbreviation subst_hd :: "('n,'t)Prods \<Rightarrow> ('n,'t)Prods \<Rightarrow> ('n,'t)Prods" where
+"subst_hd R X \<equiv> {(A,v@w) | A v w. \<exists>B. (B,v) \<in> R \<and> (A, Nt B # w) \<in> X}"
 
 text \<open>Expand head: Replace all rules \<open>A \<rightarrow> B w\<close> where \<open>B \<in> Ss\<close>
 (\<open>Ss\<close> = solved Nts in \<open>triangular\<close> form)
@@ -53,7 +53,7 @@ fun expand_hd :: "'n \<Rightarrow> 'n list \<Rightarrow> ('n,'t)Prods \<Rightarr
 "expand_hd A (S#Ss) R =
  (let R' = expand_hd A Ss R;
       X = {r \<in> R'. \<exists>w. r = (A, Nt S # w)};
-      Y = subst_hd R' X A
+      Y = subst_hd R' X
   in R' - X \<union> Y)"
 
 lemma Rhss_code[code]: "Rhss P A = snd ` {Aw \<in> P. fst Aw = A}"
@@ -85,14 +85,16 @@ enter the else part.\<close>
 definition rrec_of_lrec ::  "'n \<Rightarrow> 'n \<Rightarrow> ('n,'t)Prods \<Rightarrow> ('n,'t)Prods" where
 "rrec_of_lrec A A' R =
   (let V = {v. (A,Nt A # v) \<in> R \<and> v \<noteq> []};
-       U = {u. (A,u) \<in> R \<and> \<not>(\<exists>v. u = Nt A # v) }
-  in if V = {} then R - {(A, [Nt A])} else ({A} \<times> U) \<union> (\<Union>u\<in>U. {(A,u@[Nt A'])}) \<union> ({A'} \<times> V) \<union> (\<Union>v\<in>V. {(A',v @ [Nt A'])}))"
+       U = {u. (A,u) \<in> R \<and> (\<nexists>v. u = Nt A # v) }
+  in if V = {} then {A}\<times>U
+     else {A}\<times>U \<union> {(A, u @ [Nt A'])|u. u\<in>U} \<union> {A'}\<times>V \<union> {(A', v @ [Nt A']) |v. v\<in>V})"
 
 lemma rrec_of_lrec_code[code]: "rrec_of_lrec A A' R =
   (let RA = Rhss R A;
        V = tl ` {w \<in> RA. w \<noteq> [] \<and> hd w = Nt A \<and> tl w \<noteq> []};
        U = {u \<in> RA. u = [] \<or> hd u \<noteq> Nt A }
-  in if V = {} then R - {(A, [Nt A])} else ({A} \<times> U) \<union> (\<Union>u\<in>U. {(A,u@[Nt A'])}) \<union> ({A'} \<times> V) \<union> (\<Union>v\<in>V. {(A',v @ [Nt A'])}))"
+  in if V = {} then {A}\<times>U
+     else {A}\<times>U \<union> {(A, u @ [Nt A'])|u. u\<in>U} \<union> {A'}\<times>V \<union> {(A', v @ [Nt A']) |v. v\<in>V})"
 proof -
   let ?RA = "Rhss R A"
   let ?Vc = "tl ` {w \<in> ?RA. w \<noteq> [] \<and> hd w = Nt A \<and> tl w \<noteq> []}"
@@ -105,7 +107,8 @@ proof -
   moreover have 2: "?U = ?Uc" by (auto simp add: Rhss_def neq_Nil_conv)
 
   ultimately show ?thesis
-    unfolding rrec_of_lrec_def Let_def by presburger
+    unfolding rrec_of_lrec_def Let_def by presburger 
+
 qed
 
 text \<open>Solve left-recursions: Solves the left-recursion of Nt \<open>A\<close> by replacing it with a 
@@ -148,7 +151,7 @@ fun expand_tri :: "'n list \<Rightarrow> ('n,'t)Prods \<Rightarrow> ('n,'t)Prods
 "expand_tri (A#As) R =
  (let R' = expand_tri As R;
       X = {r \<in> R'. \<exists>w B. r = (A, Nt B # w) \<and> B \<in> set As};
-      Y = subst_hd R' X A
+      Y = subst_hd R' X
   in R' - X \<union> Y)"
 
 declare expand_tri.simps(1)[code]
@@ -1366,7 +1369,7 @@ next
   case (2 C H Ss R)
   let ?R' = "expand_hd C Ss R"
   let ?X = "{r \<in> ?R'. \<exists>w. r = (C, Nt H # w)}"
-  let ?Y = "subst_hd ?R' ?X C"
+  let ?Y = "subst_hd ?R' ?X"
   have "expand_hd C (H # Ss) R = ?R' - ?X \<union> ?Y" by (auto simp: Let_def)
 
   let ?S = "{x. \<exists>A w. x = (A, [], H, w) \<and> (A, Nt H # w) \<in> ?X}"
@@ -1601,7 +1604,7 @@ proof (induction As R rule: expand_tri.induct)
 next
   case (2 S Ss R)
   let ?X = "{r \<in> expand_tri Ss R. \<exists>w B. r = (S, Nt B # w) \<and> B \<in> set Ss}"
-  let ?Y = "{(S,v@w)|B v w. (B,v) \<in> expand_tri Ss R \<and> (S, Nt B # w) \<in> expand_tri Ss R \<and> B \<in> set Ss}"
+  let ?Y = "{(S,v@w)|v w. \<exists>B. (B,v) \<in> expand_tri Ss R \<and> (S, Nt B # w) \<in> expand_tri Ss R \<and> B \<in> set Ss}"
   have F1: "Rhs_Nts ?X \<subseteq> Rhs_Nts R" using 2 by (auto simp add: Rhs_Nts_def)
   have "Rhs_Nts ?Y \<subseteq> Rhs_Nts R"
   proof
@@ -1611,7 +1614,7 @@ next
     then obtain y ys where P1: "(y, ys) \<in> ?Y \<and> x \<in> nts_syms ys" by blast
     then show "x \<in> Rhs_Nts R" using P1 2 Rhs_Nts_def by fastforce
   qed
-  then show ?case using F1 2 by (auto simp add: Rhs_Nts_def Let_def)
+  then show ?case using F1 2 by (auto simp add: Rhs_Nts_def Let_def UN_subset_iff subset_eq)
 qed 
 
 lemma Nts_expand_tri: "Nts (expand_tri As R) \<subseteq> Nts R"
@@ -1695,8 +1698,8 @@ next
     case (2 D Ds R)
     let ?R' = "expand_tri Ds R"
     let ?X = "{r \<in> ?R'. (\<exists>w B. r = (D, Nt B # w) \<and> B \<in> set (Ds))}"
-    let ?Y = "{(D,v@w) |B v w. (B,v) \<in> ?R' \<and> (D, Nt B # w) \<in> ?X}"
-    have F1: "expand_tri (D#Ds) R = ?R' - ?X \<union> ?Y" by (simp add: Let_def)
+    let ?Y = "{(D,v@w) | v w. \<exists>B. (B,v) \<in> ?R' \<and> (D, Nt B # w) \<in> ?X}"
+    have F1: "expand_tri (D#Ds) R = ?R' - ?X \<union> ?Y" by (auto simp: Let_def)
 
     let ?S = "{x. \<exists>A w H. x = (A, [], H, w) \<and> (A, Nt H # w) \<in> ?X}"
     let ?S' = "{x. \<exists>A a1 B a2. x = (A, a1 @ Nt B # a2) \<and> (A, a1, B, a2) \<in> ?S}"
@@ -1847,7 +1850,8 @@ lemma expand_tri_iff1: "A \<notin> set As \<Longrightarrow> (A, Bs) \<in> expand
 
 lemma expand_tri_insert_simp: 
   "B \<notin> set As \<Longrightarrow> expand_tri As (insert (B, Bs) R) = insert (B, Bs) (expand_tri As R)"
-  by (induction As R rule: expand_tri.induct) (auto simp add: Let_def)
+  apply (induction As R rule: expand_tri.induct)
+   apply (auto simp add: Let_def)apply auto done
 
 lemma expand_tri_bad_grammar_simp1: 
   "distinct (A#As) \<Longrightarrow> length As \<ge> 1 
@@ -1879,7 +1883,7 @@ proof (induction As R rule: expand_tri.induct)
   then show ?case by simp
 next
   case (2 S Ss R)
-  let ?S = "{(S,v@w)|B v w.  (B,v) \<in> expand_tri Ss R \<and> (S,Nt B#w) \<in> expand_tri Ss R \<and> B \<in> set Ss}"
+  let ?S = "{(A, v @ w) |A v w. \<exists>B. (B, v) \<in> expand_tri Ss R \<and> (A, Nt B # w) \<in> expand_tri Ss R \<and> A = S \<and> B \<in> set Ss}"
   let ?f = "\<lambda>((A,w),(B,v)). (A, v @ (tl w))"
   have "?S \<subseteq> ?f ` (expand_tri Ss R \<times> expand_tri Ss R)"
   proof
@@ -1897,7 +1901,7 @@ next
   qed
   then have "finite ?S"
     by (meson "2.IH" "2.prems" finite_SigmaI finite_surj)
-  then show ?case using 2 by (auto simp add: Let_def)
+  with 2 show ?case by (auto simp add: Let_def)
 qed
 
 text \<open>The last Nt expanded by \<open>expand_tri\<close> has an exponential number of productions.\<close>
