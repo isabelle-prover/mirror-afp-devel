@@ -45,9 +45,14 @@ definition isNt :: "('n, 't) sym \<Rightarrow> bool" where
 fun destTm :: "('n, 't) sym  \<Rightarrow> 't" where 
 \<open>destTm (Tm a) = a\<close>
 
+lemma isNt_simps[simp,code]:
+  \<open>isNt (Nt A) = True\<close>
+  \<open>isNt (Tm a) = False\<close> 
+by (simp_all add: isNt_def)
+
 lemma isTm_simps[simp]:
   \<open>isTm (Nt A) = False\<close>
-  \<open>isTm (Tm a)\<close> 
+  \<open>isTm (Tm a) = True\<close> 
 by (simp_all add: isTm_def)
 
 lemma filter_isTm_map_Tm[simp]: \<open>filter isTm (map Tm xs) = map Tm xs\<close>

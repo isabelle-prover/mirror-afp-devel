@@ -13,6 +13,11 @@ begin
 definition unit_prods :: "('n,'t) Prods \<Rightarrow> ('n,'t) Prods" where
 "unit_prods ps = {(l,r) \<in> ps. \<exists>A. r = [Nt A]}"
 
+lemma unit_prods_code[code]:
+  "unit_prods(set ps) = set(filter (\<lambda>(_,w). case w of [Nt _] \<Rightarrow> True | _ \<Rightarrow> False) ps)"
+unfolding unit_prods_def
+by(auto simp: neq_Nil_conv split: list.splits sym.splits) (meson neq_Nil_conv)
+
 (* A \<Rightarrow>* B where A and B are in nonTerminals g *)
 definition unit_rtc :: "('n, 't) Prods \<Rightarrow> ('n \<times> 'n) set" where
 "unit_rtc Ps = {(A,B). Ps \<turnstile> [Nt A] \<Rightarrow>* [Nt B] \<and> {A,B} \<subseteq> Nts Ps}"
@@ -40,22 +45,12 @@ lemma unit_elim_rel_Eps_free:
 
 (* Finiteness & Existence *)
 
-(* finiteness unit_prods which also implies finiteness for unit_rm *)
-fun uprods :: "('n,'t) prods \<Rightarrow> ('n,'t) prods" where
-"uprods [] = []" |
-"uprods (p#ps) = (if \<exists>A. (snd p) = [Nt A] then p#uprods ps else uprods ps)"
-
-lemma unit_prods_code[code]:
-  "unit_prods(set ps) = set(filter (\<lambda>(_,w). case w of [Nt _] \<Rightarrow> True | _ \<Rightarrow> False) ps)"
-unfolding unit_prods_def
-by(auto simp: neq_Nil_conv split: list.splits sym.splits) (meson neq_Nil_conv)
-
 lemma finiteunit_prods: "finite ps \<Longrightarrow> finite (unit_prods ps)"
   by (metis List.finite_set finite_list unit_prods_code)
 
 (* finiteness for unit_rtc *)
 definition NtsCross :: "('n, 't) Prods  \<Rightarrow> ('n \<times> 'n) set" where
-"NtsCross Ps = {(A, B). A \<in> Nts Ps \<and> B \<in> Nts Ps }"
+"NtsCross Ps = Nts Ps \<times> Nts Ps"
 
 lemma finite_unit_rtc: 
   assumes "finite ps" 
@@ -111,7 +106,7 @@ by (simp add: finite_new_prods finite_unit_rm)
 lemma unit_elim_rel_exists: "finite ps \<Longrightarrow> \<exists>ps'. unit_elim_rel ps ps' \<and> finite ps'"
 unfolding unit_elim_rel_def using finite_list[OF finiteunit_elim_relRules] by blast
 
-definition unit_elim where
+definition unit_elim :: "('n,'t)Prods \<Rightarrow> ('n,'t)Prods" where
 "unit_elim ps = (SOME ps'. unit_elim_rel ps ps' \<and> finite ps')"
 
 lemma unit_elim_rel_unit_elim: "finite ps \<Longrightarrow> unit_elim_rel ps (unit_elim ps)"
