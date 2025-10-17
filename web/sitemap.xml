@@ -3,10 +3,13 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://isa-afp.org/entries/index.json</loc>
-    <lastmod>2025-10-09T00:00:00+00:00</lastmod>
+    <lastmod>2025-10-16T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/</loc>
-    <lastmod>2025-10-09T00:00:00+00:00</lastmod>
+    <lastmod>2025-10-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Z_Toolkit.html</loc>
+    <lastmod>2025-10-16T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/entries/Relational_Divisibility.html</loc>
     <lastmod>2025-10-09T00:00:00+00:00</lastmod>
@@ -6055,6 +6058,8 @@
     <loc>https://isa-afp.org/authors/matiyasevich/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/nagashima/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/sessions/z_toolkit/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/zeckendorf/</loc>
   </url><url>

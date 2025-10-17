@@ -1,0 +1,43 @@
+title = "Z Mathematical Toolkit in Isabelle/HOL"
+date = 2025-10-16
+topics = [
+  "Computer science/Semantics and reasoning",
+]
+abstract = """
+The objective of this theory development is an implementation of the Z mathematical 
+toolkit in Isabelle/HOL that is both efficient for proof and faithful to the standard.
+We construct the Z metalanguage and type universe on top of HOL, and link this to
+corresponding concrete types (finite functions, lists etc.) in Isabelle, to enable
+efficient proof automation. We then utilise coercive subtyping and overloading to
+support processing of Z-like expressions in Isabelle/HOL. We then use this to develop
+the mathematical toolkit for sets, relations, functions, and sequences."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.fosters]
+email = "fosters_email"
+
+[authors.ribeiro]
+
+[authors.zeyda]
+email = "zeyda_email"
+
+[authors.woodcock]
+
+[contributors]
+
+[notify]
+fosters = "fosters_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = [
+  "10.1016/j.scico.2020.102510",
+  "10.1145/3702981",
+]
+pubs = []

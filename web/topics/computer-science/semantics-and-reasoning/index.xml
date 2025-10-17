@@ -4,6 +4,13 @@
     <title>Computer science/Semantics and reasoning</title>
     <link>https://isa-afp.org/topics/computer-science/semantics-and-reasoning/</link>
     <description>AFP entries in Semantics and reasoning</description><item>
+  <title>Z Mathematical Toolkit in Isabelle/HOL</title>
+  <link>https://isa-afp.org/entries/Z_Toolkit.html</link>
+  <pubDate>Thu, 16 Oct 2025 00:00:00 +0000</pubDate>
+  <description>Z Mathematical Toolkit in Isabelle/HOL in the AFP</description>
+    <category>Computer science/Semantics and reasoning</category>
+</item>
+<item>
   <title>Shallow Expressions</title>
   <link>https://isa-afp.org/entries/Shallow_Expressions.html</link>
   <pubDate>Fri, 16 May 2025 00:00:00 +0000</pubDate>
