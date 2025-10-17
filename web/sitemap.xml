@@ -11,6 +11,9 @@
     <loc>https://isa-afp.org/entries/Z_Toolkit.html</loc>
     <lastmod>2025-10-16T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>https://isa-afp.org/entries/Pushdown_Automata.html</loc>
+    <lastmod>2025-10-15T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>https://isa-afp.org/entries/Relational_Divisibility.html</loc>
     <lastmod>2025-10-09T00:00:00+00:00</lastmod>
   </url><url>
@@ -5253,6 +5256,8 @@
     <loc>https://isa-afp.org/sessions/pure-ex/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/pure-examples/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/sessions/pushdown_automata/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/pushdown_systems/</loc>
   </url><url>

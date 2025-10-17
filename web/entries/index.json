@@ -19,6 +19,23 @@
   "year": "2025"
  },
  {
+  "abstract": "This entry formalizes pushdown automata and proves their equivalence with context-free grammars. It also shows that acceptance by empty stack and by final state are equivalent.",
+  "authors": [
+   "Kaan Taskin",
+   "Tobias Nipkow"
+  ],
+  "link": "/entries/Pushdown_Automata.html",
+  "shortname": "Pushdown_Automata",
+  "title": "Pushdown Automata",
+  "topic_links": [
+   "/topics/computer-science/automata-and-formal-languages/"
+  ],
+  "topics": [
+   "Computer science/Automata and formal languages"
+  ],
+  "year": "2025"
+ },
+ {
   "abstract": "We formalise key concepts and axioms of the divisibility relation on natural numbers using relation algebras. They use standard relational constructions for extrema, bounds, suprema, the univalent part and symmetric quotients, which we also formalise. We moreover prove that mono-atomic elements correspond to join-irreducible elements under the divisibility axioms.",
   "authors": [
    "Walter Guttmann"

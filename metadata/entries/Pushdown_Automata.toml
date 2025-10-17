@@ -1,0 +1,32 @@
+title = "Pushdown Automata"
+date = 2025-10-15
+topics = [
+  "Computer science/Automata and formal languages",
+]
+abstract = """
+This entry formalizes pushdown automata and proves their equivalence
+with context-free grammars. It also shows that acceptance by empty
+stack and by final state are equivalent."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.taskin]
+email = "taskin_email"
+
+[authors.nipkow]
+email = "nipkow_email"
+
+[contributors]
+
+[notify]
+nipkow = "nipkow_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []
