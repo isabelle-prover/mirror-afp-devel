@@ -108,6 +108,9 @@ unfolding unit_elim_fun_def unit_rm_Un_new_prods_eq by auto
 lemma "unit_elim_fun {(0::int, [Nt 1]), (1, [Tm(2::int)])} = {(0, [Tm 2]), (1, [Tm 2])}"
 by eval
 
+corollary unit_elim_fun_correct: "unit_elim_rel P (unit_elim_fun P)"
+by (metis unit_elim_rel_def unit_elim_fun_def)
+
 
 subsection \<open>Finiteness and Existence\<close>
 
