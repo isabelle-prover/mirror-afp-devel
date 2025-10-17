@@ -9,24 +9,17 @@ theory Unit_Elimination
 imports Context_Free_Grammar
 begin
 
-(* Rules of the form A\<rightarrow>B, where A and B are in nonterminals ps *)
 definition unit_prods :: "('n,'t) Prods \<Rightarrow> ('n,'t) Prods" where
-"unit_prods ps = {(l,r) \<in> ps. \<exists>A. r = [Nt A]}"
+"unit_prods P = {(l,r) \<in> P. \<exists>A. r = [Nt A]}"
 
-lemma unit_prods_code[code]:
-  "unit_prods(set ps) = set(filter (\<lambda>(_,w). case w of [Nt _] \<Rightarrow> True | _ \<Rightarrow> False) ps)"
-unfolding unit_prods_def
-by(auto simp: neq_Nil_conv split: list.splits sym.splits) (meson neq_Nil_conv)
-
-(* A \<Rightarrow>* B where A and B are in nonTerminals g *)
 definition unit_rtc :: "('n, 't) Prods \<Rightarrow> ('n \<times> 'n) set" where
-"unit_rtc Ps = {(A,B). Ps \<turnstile> [Nt A] \<Rightarrow>* [Nt B] \<and> {A,B} \<subseteq> Nts Ps}"
+"unit_rtc P = {(A,B). P \<turnstile> [Nt A] \<Rightarrow>* [Nt B] \<and> {A,B} \<subseteq> Nts P}"
 
 definition unit_rm :: "('n, 't) Prods \<Rightarrow> ('n, 't) Prods" where
-"unit_rm ps = (ps - unit_prods ps)"
+"unit_rm P = P - unit_prods P"
 
 definition new_prods :: "('n, 't) Prods \<Rightarrow> ('n, 't) Prods" where 
-"new_prods ps = {(A,r). \<exists>B. (B,r) \<in> (unit_rm ps) \<and> (A, B) \<in> unit_rtc (unit_prods ps)}"
+"new_prods P = {(A,r). \<exists>B. (B,r) \<in> unit_rm P \<and> (A, B) \<in> unit_rtc (unit_prods P)}"
 
 definition unit_elim_rel :: "('n, 't) Prods \<Rightarrow> ('n, 't) Prods \<Rightarrow> bool" where
 "unit_elim_rel ps ps' \<equiv> ps' = (unit_rm ps \<union> new_prods ps)"
@@ -43,10 +36,84 @@ lemma unit_elim_rel_Eps_free:
   using assms 
   unfolding unit_elim_rel_def Eps_free_def unit_rm_def unit_prods_def new_prods_def by auto
 
-(* Finiteness & Existence *)
+
+subsection \<open>Code\<close>
+
+definition unit_pairs :: "('n,'t) Prods \<Rightarrow> ('n \<times> 'n) set" where
+"unit_pairs P = {(A,B). (A,[Nt B]) \<in> P}"
+
+lemma unit_pairs_code[code]: "unit_pairs P = (\<Union>(A,w) \<in> P. case w of [Nt B] \<Rightarrow> {(A,B)} | _ \<Rightarrow> {})"
+unfolding unit_pairs_def by (auto split: list.splits sym.splits)
+
+lemma unit_prods_unit_pairs[code]: "unit_prods P = (\<lambda>(A,B). (A,[Nt B])) ` unit_pairs P"
+unfolding unit_prods_def unit_pairs_def by (auto)
+
+lemma unit_prods_iff_unit_pairs: "unit_prods P \<turnstile> [Nt A] \<Rightarrow> [Nt B] \<longleftrightarrow> (A, B) \<in> unit_pairs P"
+unfolding unit_pairs_def unit_prods_def by(simp add: derive_singleton)
+
+lemma Nts_unit_prods:
+  "(A, B) \<in> unit_pairs P \<Longrightarrow> A \<in> Lhss (unit_prods P) \<and> B \<in> Rhs_Nts (unit_prods P)"
+apply(auto simp: unit_prods_unit_pairs image_def Nts_Lhss_Rhs_Nts Lhss_def Rhs_Nts_def
+           split: prod.splits)
+ apply blast
+by force
+
+lemma rtc_unit_prods_if_tc_unit_pairs:
+  "(A,B) \<in> (unit_pairs P)^+ \<Longrightarrow> (A,B) \<in> unit_rtc (unit_prods P)"
+proof(induction rule: converse_trancl_induct)
+  case (base A)
+  then show ?case unfolding unit_rtc_def
+  by (auto simp add: r_into_rtranclp unit_prods_iff_unit_pairs Nts_unit_prods Nts_Lhss_Rhs_Nts)
+next
+  case (step A A')
+  then show ?case unfolding unit_rtc_def
+    by (auto simp add: Nts_Lhss_Rhs_Nts Nts_unit_prods
+        intro: converse_rtranclp_into_rtranclp[of "derive (unit_prods P)"]
+               unit_prods_iff_unit_pairs[THEN iffD2])
+qed
+
+lemma tc_unit_pairs_if_rtc_unit_prods:
+  fixes P :: "('n,'t)Prods"
+  assumes "(A,B) \<in> unit_rtc (unit_prods P)"
+  shows "A=B \<or> (A,B) \<in> (unit_pairs P)^+"
+proof -
+  have *: "unit_prods P \<turnstile> [Nt B] \<Rightarrow>* [Nt A] \<Longrightarrow> B=A \<or> (B,A) \<in> (unit_pairs P)^+" for A B
+  proof(induction "[Nt B]::('n,'t)syms" arbitrary: B rule: converse_rtranclp_induct)
+    case base thus ?case by simp
+  next
+    case (step \<alpha> C)
+    from step.hyps(1) obtain C' where "(C,C') \<in> unit_pairs P" "\<alpha> = [Nt C']"
+      by (auto simp: derive_singleton unit_prods_def unit_pairs_def)
+    with step.hyps(2-)
+    show ?case
+      by (metis trancl.r_into_trancl trancl_into_trancl2)
+  qed
+  with assms show ?thesis
+    by (simp add: unit_rtc_def)
+qed
+
+lemma unit_rm_Un_new_prods_eq: "unit_rm P \<union> new_prods P = unit_rm P \<union>
+  {(A,r). \<exists>B. (B,r) \<in> unit_rm P \<and> (A, B) \<in> (unit_pairs P)^+}"
+unfolding new_prods_def unit_rm_def
+by(auto intro: rtc_unit_prods_if_tc_unit_pairs dest: tc_unit_pairs_if_rtc_unit_prods)
+
+definition unit_elim_fun where
+"unit_elim_fun P = unit_rm P \<union> new_prods P"
+
+lemma unit_elim_fun_code[code]: "unit_elim_fun P = unit_rm P \<union>
+  (\<Union>(B,r) \<in> unit_rm P. (\<lambda>(A,B). (A,r)) ` {(X,Y) \<in> (unit_pairs P)^+. Y = B})"
+unfolding unit_elim_fun_def unit_rm_Un_new_prods_eq by auto
+
+(* Test for executability only *)
+lemma "unit_elim_fun {(0::int, [Nt 1]), (1, [Tm(2::int)])} = {(0, [Tm 2]), (1, [Tm 2])}"
+by eval
+
+
+subsection \<open>Finiteness and Existence\<close>
 
 lemma finiteunit_prods: "finite ps \<Longrightarrow> finite (unit_prods ps)"
-  by (metis List.finite_set finite_list unit_prods_code)
+unfolding unit_prods_def
+by (metis (no_types, lifting) case_prodE finite_subset mem_Collect_eq subsetI)
 
 (* finiteness for unit_rtc *)
 definition NtsCross :: "('n, 't) Prods  \<Rightarrow> ('n \<times> 'n) set" where
