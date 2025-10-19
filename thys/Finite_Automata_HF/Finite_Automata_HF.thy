@@ -718,6 +718,36 @@ lemma nextl_UN: "nextl (\<Union>i\<in>I. f i) xs = (\<Union>i\<in>I. nextl (f i)
 
 end
 
+text \<open>Also works for state type \<open>'s\<close> of DFA leading to state type \<open>'s set\<close> in NFA\<close>
+lemma nfa_of_dfa:
+  assumes "dfa (M::('a,hf)dfa)"
+  obtains N :: "('a,hf)nfa" where "nfa N \<and> nfa.language N = dfa.language M"
+proof-
+  interpret M: dfa M using assms by blast 
+  let ?N = "\<lparr>states = dfa.states M,
+             init = {dfa.init M},
+             final = dfa.final M,
+             nxt = \<lambda>q x. {dfa.nxt M q x},
+             eps = {}\<rparr>"
+  interpret N: nfa ?N
+    using assms dfa_def nfa_def by fastforce
+  have "q\<in>dfa.states M \<longrightarrow> N.nextl {q} xs = {dfa.nextl M q xs}" for q xs
+  proof (induction xs arbitrary: q)
+    case Cons
+    then show ?case by (simp add: M.nxt)
+  qed simp
+  hence "N.language = M.language"
+    by (simp add:N.language_def M.language_def)
+  then show ?thesis
+    using N.nfa_axioms that[of ?N] by blast
+qed
+
+corollary nfa_if_regular:
+  assumes "regular L"
+  obtains N :: "('a,hf)nfa" where "nfa N \<and> nfa.language N = L"
+  by (metis assms nfa_of_dfa regular_def)
+
+
 subsection\<open>The Powerset Construction\<close>
 
 text \<open>First: The construction of a \<^typ>\<open>('a,'s set) dfa\<close> from an \<^typ>\<open>('a,'s) nfa\<close>.
