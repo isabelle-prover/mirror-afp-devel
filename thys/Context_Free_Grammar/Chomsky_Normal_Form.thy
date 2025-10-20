@@ -10,7 +10,7 @@ imports Unit_Elimination Epsilon_Elimination
 begin
 
 definition CNF :: "('n, 't) Prods \<Rightarrow> bool" where
-"CNF P \<equiv> (\<forall>(A,\<alpha>) \<in> P. (\<exists>B C. \<alpha> = [Nt B, Nt C]) \<or> (\<exists>t. \<alpha> = [Tm t]))"
+"CNF P \<equiv> (\<forall>(A,\<alpha>) \<in> P. (\<exists>B C. \<alpha> = [Nt B, Nt C]) \<or> (\<exists>a. \<alpha> = [Tm a]))"
 
 lemma Nts_correct: "A \<notin> Nts P \<Longrightarrow> (\<nexists>S \<alpha>. (S, \<alpha>) \<in> P \<and> (Nt A \<in> {Nt S} \<union> set \<alpha>))"
 unfolding Nts_def Nts_syms_def by auto
