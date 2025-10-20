@@ -31,7 +31,7 @@ proof -
     using \<open>(t, t') \<in> R\<close> \<open>l = c\<langle>t'\<rangle>\<close> rewrite_in_context_def
     by fast
 
-  ultimately show ?thesis 
+  ultimately show ?thesis
     by auto
 qed
 

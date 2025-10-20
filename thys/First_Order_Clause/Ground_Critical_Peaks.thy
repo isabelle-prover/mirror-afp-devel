@@ -29,7 +29,7 @@ begin
 
 sublocale ground_critical_pairs
   using ground_critical_peaks_main ground_critical_peak_to_pair
-  by unfold_locales meson
+  by unfold_locales metis
 
 end
 

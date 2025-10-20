@@ -25,22 +25,57 @@ sublocale nonground_typing_generic where
 sublocale clause_typing "welltyped \<V>"
   by unfold_locales
 
-definition type_preserving_atom where
-  "type_preserving_atom \<V> a \<equiv>
+definition weakly_welltyped_atom where
+  "weakly_welltyped_atom \<V> a \<equiv>
     case rep_uprod a of (t, t') \<Rightarrow> \<forall>\<tau>. \<V> \<turnstile> t : \<tau> \<longleftrightarrow> \<V> \<turnstile> t' : \<tau>"
 
-definition type_preserving_literal where
-  "type_preserving_literal \<V> l \<equiv> type_preserving_atom \<V> (atm_of l)"
+definition weakly_welltyped_literal where
+  "weakly_welltyped_literal \<V> l \<equiv> weakly_welltyped_atom \<V> (atm_of l)"
 
-definition type_preserving_literals where
-  "type_preserving_literals \<V> C \<equiv> \<forall>l\<in># C. type_preserving_literal \<V> l"
+lemma imgu_weakly_welltyped_atom [intro]:
+  assumes "type_preserving_on (atom.vars a) \<V> \<mu>" "term.is_imgu \<mu> {set_uprod a}"
+  shows "weakly_welltyped_atom \<V> a"
+proof -
+
+  obtain t t' where rep_uprod_a: "rep_uprod a = (t, t')" and a: "a = Upair t t'"
+    by (cases a) (metis Quotient3_uprod surj_pair Quotient3_def Upair.abs_eq)
+
+  have "type_preserving_on (term.vars t \<union> term.vars t') \<V> \<mu>" "term.is_imgu \<mu> {{t, t'}}"
+    using assms
+    unfolding a
+    by simp_all
+
+  then show ?thesis
+    using term.imgu_same_type
+    unfolding weakly_welltyped_atom_def rep_uprod_a
+    by blast
+qed  
+
+lemma imgu_weakly_welltyped_literal [intro]:
+  assumes "type_preserving_on (literal.vars l) \<V> \<mu>" "term.is_imgu \<mu> {uprod_literal_to_set l}"
+  shows "weakly_welltyped_literal \<V> l"
+  using imgu_weakly_welltyped_atom assms
+  unfolding weakly_welltyped_literal_def
+  by (cases l) simp_all
+
+lemma [intro]:
+  assumes "type_preserving_on (term.vars t \<union> term.vars t') \<V> \<mu>" "term.is_imgu \<mu> {{t, t'}}"
+  shows 
+    imgu_weakly_welltyped_literal_Pos: "weakly_welltyped_literal \<V> (t \<approx> t')" and 
+    imgu_weakly_welltyped_literal_Neg: "weakly_welltyped_literal \<V> (t !\<approx> t')"
+  using imgu_weakly_welltyped_atom assms
+  unfolding weakly_welltyped_literal_def
+  by simp_all
+
+definition weakly_welltyped_clause where
+  "weakly_welltyped_clause \<V> C \<equiv> \<forall>l\<in># C. weakly_welltyped_literal \<V> l"
 
 abbreviation is_ground_instance where 
   "is_ground_instance \<V> C \<gamma> \<equiv>
     clause.is_ground (C \<cdot> \<gamma>) \<and>
     type_preserving_on (clause.vars C) \<V> \<gamma> \<and>
     infinite_variables_per_type \<V> \<and>
-    type_preserving_literals \<V> C"
+    weakly_welltyped_clause \<V> C"
 
 sublocale groundable_nonground_clause where 
   atom_subst = "(\<cdot>a)" and atom_vars = atom.vars and atom_to_ground = atom.to_ground and
@@ -52,31 +87,31 @@ lemma rep_uprod_same_type [simp]:
    (\<forall>\<tau>. \<V> \<turnstile> t : \<tau> \<longleftrightarrow> \<V> \<turnstile> t' : \<tau>)"
   by (rule rep_uprod_UpairI) auto
 
-lemma type_preserving_atom_iff [simp]: 
-  "type_preserving_atom \<V> (Upair t t') \<longleftrightarrow> (\<forall>\<tau>. \<V> \<turnstile> t : \<tau> \<longleftrightarrow> \<V> \<turnstile> t' : \<tau>)"
-  unfolding type_preserving_atom_def
+lemma weakly_welltyped_atom_iff [simp]: 
+  "weakly_welltyped_atom \<V> (Upair t t') \<longleftrightarrow> (\<forall>\<tau>. \<V> \<turnstile> t : \<tau> \<longleftrightarrow> \<V> \<turnstile> t' : \<tau>)"
+  unfolding weakly_welltyped_atom_def
   by auto
 
-lemma type_preserving_literal_iff [simp]:
-  "type_preserving_literal \<V> (Pos a) \<longleftrightarrow> type_preserving_atom \<V> a"
-  "type_preserving_literal \<V> (Neg a) \<longleftrightarrow> type_preserving_atom \<V> a"
-  unfolding type_preserving_literal_def
+lemma weakly_welltyped_literal_iff [simp]:
+  "weakly_welltyped_literal \<V> (Pos a) \<longleftrightarrow> weakly_welltyped_atom \<V> a"
+  "weakly_welltyped_literal \<V> (Neg a) \<longleftrightarrow> weakly_welltyped_atom \<V> a"
+  unfolding weakly_welltyped_literal_def
   by auto
 
-lemma type_preserving_literals_add_mset [simp]: 
-  "type_preserving_literals \<V> (add_mset l C) \<longleftrightarrow> 
-   type_preserving_literal \<V> l \<and>  type_preserving_literals \<V> C"
-  unfolding type_preserving_literals_def
+lemma weakly_welltyped_clause_add_mset [simp]: 
+  "weakly_welltyped_clause \<V> (add_mset l C) \<longleftrightarrow>
+   weakly_welltyped_literal \<V> l \<and> weakly_welltyped_clause \<V> C"
+  unfolding weakly_welltyped_clause_def
   by auto
 
-lemma type_preserving_literals_plus [simp]: 
-  "type_preserving_literals \<V> (C + C') \<longleftrightarrow> 
-   type_preserving_literals \<V> C \<and> type_preserving_literals \<V> C'"
-  unfolding type_preserving_literals_def
+lemma weakly_welltyped_clause_plus [simp]: 
+  "weakly_welltyped_clause \<V> (C + C') \<longleftrightarrow> 
+   weakly_welltyped_clause \<V> C \<and> weakly_welltyped_clause \<V> C'"
+  unfolding weakly_welltyped_clause_def
   by auto
 
-lemma type_preserving_literals_empty [intro]: "type_preserving_literals \<V>' {#}"
-  unfolding type_preserving_literals_def
+lemma weakly_welltyped_clause_empty [intro]: "weakly_welltyped_clause \<V>' {#}"
+  unfolding weakly_welltyped_clause_def
   by simp
 
 lemma \<P>_simps:
@@ -86,14 +121,14 @@ lemma \<P>_simps:
     "\<And>\<V> a. literal.is_welltyped \<V> (\<P> a) \<longleftrightarrow> atom.is_welltyped \<V> a"
     "\<And>a. literal.vars (\<P> a) = atom.vars a"
     "\<And>a. atm_of (\<P> a) = a"
-    "\<And>\<V> a. type_preserving_literal \<V> (\<P> a) \<longleftrightarrow> type_preserving_atom \<V> a"
+    "\<And>\<V> a. weakly_welltyped_literal \<V> (\<P> a) \<longleftrightarrow> weakly_welltyped_atom \<V> a"
   using assms
   by (auto simp: literal_is_welltyped_iff_atm_of)
 
 (* TODO: Lifting? *)
-lemma type_preserving_atom_subst [simp]:
+lemma weakly_welltyped_atom_subst [simp]:
   assumes "type_preserving_on (atom.vars a) \<V> \<sigma>"
-  shows "type_preserving_atom \<V> (a \<cdot>a \<sigma>) \<longleftrightarrow> type_preserving_atom \<V> a"
+  shows "weakly_welltyped_atom \<V> (a \<cdot>a \<sigma>) \<longleftrightarrow> weakly_welltyped_atom \<V> a"
   using assms
 proof (cases a)
   case (Upair t t')
@@ -109,42 +144,42 @@ proof (cases a)
     by auto
 qed
 
-lemma type_preserving_literal_subst [simp]:
+lemma weakly_welltyped_literal_subst [simp]:
   assumes "type_preserving_on (literal.vars l) \<V> \<sigma>"
-  shows "type_preserving_literal \<V> (l \<cdot>l \<sigma>) \<longleftrightarrow> type_preserving_literal \<V> l"
+  shows "weakly_welltyped_literal \<V> (l \<cdot>l \<sigma>) \<longleftrightarrow> weakly_welltyped_literal \<V> l"
   using assms
-  unfolding type_preserving_literal_def
+  unfolding weakly_welltyped_literal_def
   by (cases l) auto
 
-lemma type_preserving_literals_subst [simp]:
+lemma weakly_welltyped_clause_subst [simp]:
   assumes "type_preserving_on (clause.vars C) \<V> \<sigma>"
-  shows "type_preserving_literals \<V> (C \<cdot> \<sigma>) \<longleftrightarrow> type_preserving_literals \<V> C"
+  shows "weakly_welltyped_clause \<V> (C \<cdot> \<sigma>) \<longleftrightarrow> weakly_welltyped_clause \<V> C"
   using assms
   by (induction C) auto
 
-lemma type_preserving_atom_renaming [simp]:
+lemma weakly_welltyped_atom_renaming [simp]:
   assumes
     \<rho>: "term.is_renaming \<rho>" and
     \<V>_\<V>': "\<forall>x\<in>atom.vars a. \<V> x = \<V>' (term.rename \<rho> x)"
-  shows "type_preserving_atom \<V>' (a \<cdot>a \<rho>) \<longleftrightarrow> type_preserving_atom \<V> a"
+  shows "weakly_welltyped_atom \<V>' (a \<cdot>a \<rho>) \<longleftrightarrow> weakly_welltyped_atom \<V> a"
   using term.welltyped_renaming[OF \<rho>] \<V>_\<V>'
-  unfolding type_preserving_atom_def
+  unfolding weakly_welltyped_atom_def
   by (cases a) (auto simp: Set.ball_Un)
 
-lemma type_preserving_literal_renaming [simp]:
+lemma weakly_welltyped_literal_renaming [simp]:
   assumes
     \<rho>: "term.is_renaming \<rho>" and
     \<V>_\<V>': "\<forall>x\<in>literal.vars l. \<V> x = \<V>' (term.rename \<rho> x)"
-  shows "type_preserving_literal \<V>' (l \<cdot>l \<rho>) \<longleftrightarrow> type_preserving_literal \<V> l"
-  using assms type_preserving_atom_renaming
-  unfolding type_preserving_literal_def
+  shows "weakly_welltyped_literal \<V>' (l \<cdot>l \<rho>) \<longleftrightarrow> weakly_welltyped_literal \<V> l"
+  using assms weakly_welltyped_atom_renaming
+  unfolding weakly_welltyped_literal_def
   by (cases l) auto
 
-lemma type_preserving_literals_renaming [simp]:
+lemma weakly_welltyped_clause_renaming [simp]:
   assumes
     \<rho>: "term.is_renaming \<rho>" and
     \<V>_\<V>': "\<forall>x\<in>clause.vars C. \<V> x = \<V>' (term.rename \<rho> x)"
-  shows "type_preserving_literals \<V>' (C \<cdot> \<rho>) \<longleftrightarrow> type_preserving_literals \<V> C"
+  shows "weakly_welltyped_clause \<V>' (C \<cdot> \<rho>) \<longleftrightarrow> weakly_welltyped_clause \<V> C"
   using assms 
   by (induction C) (auto simp: Set.ball_Un)
 

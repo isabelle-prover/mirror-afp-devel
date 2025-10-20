@@ -18,53 +18,14 @@ lemma eq_factoring_preserves_typing:
     eq_factoring: "eq_factoring (\<V>, D) (\<V>, C)" and
     D_is_welltyped: "clause.is_welltyped \<V> D"
   shows "clause.is_welltyped \<V> C"
-  using assms
+  using eq_factoring D_is_welltyped
 proof (cases "(\<V>, D)" "(\<V>, C)" rule: eq_factoring.cases)
   case (eq_factoringI l\<^sub>1 \<mu> t\<^sub>1 t\<^sub>1' t\<^sub>2 l\<^sub>2 D' t\<^sub>2')
 
-  moreover have t\<^sub>1_t\<^sub>2': "\<exists>\<tau>. \<V> \<turnstile> t\<^sub>1 : \<tau> \<and> \<V> \<turnstile> t\<^sub>2' : \<tau>"
-  proof - 
-
-    have "\<forall>\<tau>. \<V> \<turnstile> t\<^sub>1 : \<tau> \<longleftrightarrow> \<V> \<turnstile> t\<^sub>2 : \<tau>"
-    proof (rule term.imgu_same_type[OF _  eq_factoringI(5)])
-      show "type_preserving_on (term.vars t\<^sub>1 \<union> term.vars t\<^sub>2) \<V> \<mu>"
-        using eq_factoringI(4) 
-        unfolding eq_factoringI
-        by auto
-    qed
-
-    then show ?thesis
-      using D_is_welltyped
-      unfolding eq_factoringI
-      by auto
-  qed
-
-  then have "\<exists>\<tau>. \<V> \<turnstile> t\<^sub>1 \<cdot>t \<mu> : \<tau> \<and> \<V> \<turnstile> t\<^sub>2' \<cdot>t \<mu> : \<tau>"
-    using eq_factoringI(4)
+  show ?thesis
+    using D_is_welltyped term.imgu_same_type[OF _  eq_factoringI(5)] eq_factoringI(4)
     unfolding eq_factoringI
-    by auto
-
-  moreover have "\<exists>\<tau>. \<V> \<turnstile> t\<^sub>1' \<cdot>t \<mu> : \<tau> \<and> \<V> \<turnstile> t\<^sub>2' \<cdot>t \<mu> : \<tau>"
-  proof -
-
-    have "\<exists>\<tau>. \<V> \<turnstile> t\<^sub>1' : \<tau> \<and> \<V> \<turnstile> t\<^sub>2' : \<tau>"
-      using t\<^sub>1_t\<^sub>2' D_is_welltyped
-      unfolding eq_factoringI
-      by auto
-
-    then show ?thesis
-      using eq_factoringI(4)
-      unfolding eq_factoringI
-      by auto
-  qed
-
-  moreover have "clause.is_welltyped \<V> (D' \<cdot> \<mu>)"
-    using D_is_welltyped eq_factoringI(4)
-    unfolding eq_factoringI
-    by auto
-
-  ultimately show ?thesis
-    by auto
+    by fastforce
 qed
 
 lemma superposition_preserves_typing:
@@ -79,20 +40,12 @@ proof (cases "(\<V>\<^sub>2, D)" "(\<V>\<^sub>1, E)" "(\<V>\<^sub>3, C)" rule: s
 
   note [simp] = \<P>_simps[OF superpositionI(1)]
 
-  have "clause.is_welltyped \<V>\<^sub>3 (E \<cdot> \<rho>\<^sub>1)"
-    using E_is_welltyped clause.welltyped_renaming[OF superpositionI(4, 19)]
-    by blast
-
-  then have "clause.is_welltyped \<V>\<^sub>3 (E \<cdot> \<rho>\<^sub>1 \<odot> \<mu>)"
-    using superpositionI(8)
+  have "clause.is_welltyped \<V>\<^sub>3 (E \<cdot> \<rho>\<^sub>1 \<odot> \<mu>)"
+    using E_is_welltyped clause.welltyped_renaming[OF superpositionI(4, 19)] superpositionI(8)
     by simp
 
-  moreover have "clause.is_welltyped \<V>\<^sub>3 (D \<cdot> \<rho>\<^sub>2)"
-    using D_is_welltyped clause.welltyped_renaming[OF superpositionI(5, 20)]
-    by blast
-
-  then have "clause.is_welltyped \<V>\<^sub>3 (D \<cdot> \<rho>\<^sub>2 \<odot> \<mu>)"
-    using superpositionI(8, 9)
+  moreover have "clause.is_welltyped \<V>\<^sub>3 (D \<cdot> \<rho>\<^sub>2 \<odot> \<mu>)"
+    using D_is_welltyped clause.welltyped_renaming[OF superpositionI(5, 20)] superpositionI(8, 9)
     by simp
 
   moreover have "t\<^sub>1 \<cdot>t \<rho>\<^sub>1 \<odot> \<mu> = t\<^sub>2 \<cdot>t \<rho>\<^sub>2 \<odot> \<mu>"
@@ -104,89 +57,60 @@ proof (cases "(\<V>\<^sub>2, D)" "(\<V>\<^sub>1, E)" "(\<V>\<^sub>3, C)" rule: s
     by auto
 qed
 
-lemma eq_resolution_type_preserving_literals:
+lemma eq_resolution_weakly_welltyped_clause:
   assumes eq_resolution: "eq_resolution (\<V>, D) (\<V>, C)"
-  shows "type_preserving_literals \<V> D \<longleftrightarrow> type_preserving_literals \<V> C"
+  shows "weakly_welltyped_clause \<V> D \<longleftrightarrow> weakly_welltyped_clause \<V> C"
   using eq_resolution
 proof (cases "(\<V>, D)" "(\<V>, C)" rule: eq_resolution.cases)
   case (eq_resolutionI \<mu> t t' l D')
 
-  have "type_preserving_literals \<V> D' \<longleftrightarrow> type_preserving_literals \<V> (D' \<cdot> \<mu>)"
-    using eq_resolutionI(1)
-    unfolding eq_resolutionI
-    by auto
-
-  moreover have "type_preserving_on (term.vars t \<union> term.vars t') \<V> \<mu>"
-    using eq_resolutionI(1)
-    unfolding eq_resolutionI
-    by auto
-
-  then have "\<forall>\<tau>. \<V> \<turnstile> t : \<tau> \<longleftrightarrow> \<V> \<turnstile> t' : \<tau>"
-    using eq_resolutionI(2) term.imgu_same_type
-    unfolding eq_resolutionI
-    by metis
-
-  ultimately show ?thesis
+  show ?thesis
+    using eq_resolutionI(1) imgu_weakly_welltyped_literal_Neg[OF _ eq_resolutionI(2)]
     unfolding eq_resolutionI
     by auto
 qed 
 
-lemma eq_factoring_type_preserving_literals:
+lemma eq_factoring_weakly_welltyped_clause:
   assumes eq_factoring: "eq_factoring (\<V>, D) (\<V>, C)"
-  shows "type_preserving_literals \<V> D \<longleftrightarrow> type_preserving_literals \<V> C"
+  shows "weakly_welltyped_clause \<V> D \<longleftrightarrow> weakly_welltyped_clause \<V> C"
   using eq_factoring
 proof (cases "(\<V>, D)" "(\<V>, C)" rule: eq_factoring.cases)
   case (eq_factoringI l\<^sub>1 \<mu> t\<^sub>1 t\<^sub>1' t\<^sub>2 l\<^sub>2 D' t\<^sub>2')
 
-  have "type_preserving_literals \<V> D' \<longleftrightarrow> type_preserving_literals \<V> (D' \<cdot> \<mu>)"
-    using eq_factoringI(4)
-    unfolding eq_factoringI
-    by auto
-
-  moreover have "type_preserving_on (term.vars t\<^sub>1 \<union> term.vars t\<^sub>2) \<V> \<mu>"
-    using eq_factoringI(4)
-    unfolding eq_factoringI
-    by auto
-
-  then have "\<forall>\<tau>. \<V> \<turnstile> t\<^sub>1 : \<tau> \<longleftrightarrow> \<V> \<turnstile> t\<^sub>2 : \<tau>"
-    using eq_factoringI(5) term.imgu_same_type
-    unfolding eq_factoringI
-    by metis
-
-  ultimately show ?thesis
-    using eq_factoringI(4)
+  show ?thesis
+    using eq_factoringI(4) imgu_weakly_welltyped_literal_Pos[OF _ eq_factoringI(5)]
     unfolding eq_factoringI
     by auto
 qed
 
-lemma superposition_type_preserving_literals:
+lemma superposition_weakly_welltyped_clause:
   assumes superposition: "superposition (\<V>\<^sub>2, D) (\<V>\<^sub>1, E) (\<V>\<^sub>3, C)"
   shows 
-    "type_preserving_literals \<V>\<^sub>2 D \<and> type_preserving_literals \<V>\<^sub>1 E \<longleftrightarrow>
-     type_preserving_literals \<V>\<^sub>3 C"
+    "weakly_welltyped_clause \<V>\<^sub>2 D \<and> weakly_welltyped_clause \<V>\<^sub>1 E \<longleftrightarrow>
+     weakly_welltyped_clause \<V>\<^sub>3 C"
   using assms
 proof (cases "(\<V>\<^sub>2, D)" "(\<V>\<^sub>1, E)" "(\<V>\<^sub>3, C)" rule: superposition.cases)
   case (superpositionI \<P> \<rho>\<^sub>1 \<rho>\<^sub>2 t\<^sub>1 \<mu> t\<^sub>2 c\<^sub>1 t\<^sub>1' t\<^sub>2' l\<^sub>1 l\<^sub>2 E' D')
 
   note [simp] = \<P>_simps[OF superpositionI(1)]
 
-  have "type_preserving_literals \<V>\<^sub>3 (E' \<cdot> \<rho>\<^sub>1 \<cdot> \<mu>) \<longleftrightarrow> type_preserving_literals \<V>\<^sub>1 E'"
-    using 
-      type_preserving_literals_renaming[OF superpositionI(4)] 
+  have "weakly_welltyped_clause \<V>\<^sub>3 (E' \<cdot> \<rho>\<^sub>1 \<cdot> \<mu>) \<longleftrightarrow> weakly_welltyped_clause \<V>\<^sub>1 E'"
+    using
+      weakly_welltyped_clause_renaming[OF superpositionI(4)] 
       superpositionI(8, 19)
     unfolding superpositionI
     by auto
 
-  moreover have "type_preserving_literals \<V>\<^sub>3 (D' \<cdot> \<rho>\<^sub>2 \<cdot> \<mu>) \<longleftrightarrow> type_preserving_literals \<V>\<^sub>2 D'"
-    using 
-      type_preserving_literals_renaming[OF superpositionI(5)] 
+  moreover have "weakly_welltyped_clause \<V>\<^sub>3 (D' \<cdot> \<rho>\<^sub>2 \<cdot> \<mu>) \<longleftrightarrow> weakly_welltyped_clause \<V>\<^sub>2 D'"
+    using
+      weakly_welltyped_clause_renaming[OF superpositionI(5)] 
       superpositionI(8, 20)
     unfolding superpositionI
     by auto
 
   moreover have 
-    "type_preserving_literal \<V>\<^sub>3 (\<P> (Upair (c\<^sub>1 \<cdot>t\<^sub>c \<rho>\<^sub>1)\<langle>t\<^sub>2' \<cdot>t \<rho>\<^sub>2\<rangle> (t\<^sub>1' \<cdot>t \<rho>\<^sub>1)) \<cdot>l \<mu>) \<longleftrightarrow>
-      type_preserving_literal \<V>\<^sub>2 (t\<^sub>2 \<approx> t\<^sub>2') \<and> type_preserving_literal \<V>\<^sub>1 (\<P> (Upair c\<^sub>1\<langle>t\<^sub>1\<rangle> t\<^sub>1'))"
+    "weakly_welltyped_literal \<V>\<^sub>3 (\<P> (Upair (c\<^sub>1 \<cdot>t\<^sub>c \<rho>\<^sub>1)\<langle>t\<^sub>2' \<cdot>t \<rho>\<^sub>2\<rangle> (t\<^sub>1' \<cdot>t \<rho>\<^sub>1)) \<cdot>l \<mu>) \<longleftrightarrow>
+      weakly_welltyped_literal \<V>\<^sub>2 (t\<^sub>2 \<approx> t\<^sub>2') \<and> weakly_welltyped_literal \<V>\<^sub>1 (\<P> (Upair c\<^sub>1\<langle>t\<^sub>1\<rangle> t\<^sub>1'))"
   proof -
     
     have "\<forall>\<tau>. \<V>\<^sub>3 \<turnstile> t\<^sub>2 \<cdot>t \<rho>\<^sub>2 : \<tau> \<longleftrightarrow> \<V>\<^sub>3 \<turnstile> t\<^sub>1 \<cdot>t \<rho>\<^sub>1 : \<tau>"
@@ -207,12 +131,12 @@ proof (cases "(\<V>\<^sub>2, D)" "(\<V>\<^sub>1, E)" "(\<V>\<^sub>3, C)" rule: s
       unfolding superpositionI
       by auto
 
-    have type_preserving_l\<^sub>2: "type_preserving_literal \<V>\<^sub>2 (t\<^sub>2 \<approx> t\<^sub>2')"
+    have type_preserving_l\<^sub>2: "weakly_welltyped_literal \<V>\<^sub>2 (t\<^sub>2 \<approx> t\<^sub>2')"
       using superpositionI(23)
-      by auto
+      unfolding superpositionI .
 
-    then have "type_preserving_literal \<V>\<^sub>3 (t\<^sub>2 \<approx> t\<^sub>2' \<cdot>l \<rho>\<^sub>2)"
-      unfolding type_preserving_literal_renaming[OF superpositionI(5) \<V>] .
+    then have "weakly_welltyped_literal \<V>\<^sub>3 (t\<^sub>2 \<approx> t\<^sub>2' \<cdot>l \<rho>\<^sub>2)"
+      unfolding weakly_welltyped_literal_renaming[OF superpositionI(5) \<V>] .
 
     then have  "\<forall>\<tau>. \<V>\<^sub>3 \<turnstile> t\<^sub>2 \<cdot>t \<rho>\<^sub>2 : \<tau> \<longleftrightarrow> \<V>\<^sub>3 \<turnstile> t\<^sub>2' \<cdot>t \<rho>\<^sub>2 : \<tau>"
       by auto
@@ -220,7 +144,7 @@ proof (cases "(\<V>\<^sub>2, D)" "(\<V>\<^sub>1, E)" "(\<V>\<^sub>3, C)" rule: s
     ultimately have "\<forall>\<tau>. \<V>\<^sub>3 \<turnstile> t\<^sub>2' \<cdot>t \<rho>\<^sub>2 : \<tau> \<longleftrightarrow> \<V>\<^sub>3 \<turnstile> t\<^sub>1 \<cdot>t \<rho>\<^sub>1 : \<tau>"
       by auto      
 
-    then have "type_preserving_atom \<V>\<^sub>3 (Upair (t\<^sub>2' \<cdot>t \<rho>\<^sub>2) (t\<^sub>1 \<cdot>t \<rho>\<^sub>1))"
+    then have "weakly_welltyped_atom \<V>\<^sub>3 (Upair (t\<^sub>2' \<cdot>t \<rho>\<^sub>2) (t\<^sub>1 \<cdot>t \<rho>\<^sub>1))"
       by auto     
 
     moreover have "type_preserving_on (atom.vars (Upair (t\<^sub>2' \<cdot>t \<rho>\<^sub>2) (t\<^sub>1 \<cdot>t \<rho>\<^sub>1))) \<V>\<^sub>3 \<mu>"
@@ -228,7 +152,7 @@ proof (cases "(\<V>\<^sub>2, D)" "(\<V>\<^sub>1, E)" "(\<V>\<^sub>3, C)" rule: s
       unfolding superpositionI
       by auto
 
-    ultimately have "type_preserving_atom \<V>\<^sub>3 (Upair (t\<^sub>2' \<cdot>t \<rho>\<^sub>2) (t\<^sub>1 \<cdot>t \<rho>\<^sub>1) \<cdot>a \<mu>)"
+    ultimately have "weakly_welltyped_atom \<V>\<^sub>3 (Upair (t\<^sub>2' \<cdot>t \<rho>\<^sub>2) (t\<^sub>1 \<cdot>t \<rho>\<^sub>1) \<cdot>a \<mu>)"
       by auto
 
     then have "\<And>\<tau>. \<V>\<^sub>3 \<turnstile> t\<^sub>2' \<cdot>t \<rho>\<^sub>2 \<cdot>t \<mu> : \<tau> \<longleftrightarrow> \<V>\<^sub>3 \<turnstile> t\<^sub>1 \<cdot>t \<rho>\<^sub>1 \<cdot>t \<mu> : \<tau>"
@@ -239,8 +163,8 @@ proof (cases "(\<V>\<^sub>2, D)" "(\<V>\<^sub>1, E)" "(\<V>\<^sub>3, C)" rule: s
            term.welltyped_subterm)
 
     then have
-      "type_preserving_literal \<V>\<^sub>3 (\<P> (Upair (c\<^sub>1 \<cdot>t\<^sub>c \<rho>\<^sub>1)\<langle>t\<^sub>2' \<cdot>t \<rho>\<^sub>2\<rangle> (t\<^sub>1' \<cdot>t \<rho>\<^sub>1)) \<cdot>l \<mu>) \<longleftrightarrow>
-       type_preserving_literal \<V>\<^sub>3 (\<P> (Upair (c\<^sub>1 \<cdot>t\<^sub>c \<rho>\<^sub>1)\<langle>t\<^sub>1 \<cdot>t \<rho>\<^sub>1\<rangle> (t\<^sub>1' \<cdot>t \<rho>\<^sub>1)) \<cdot>l \<mu>)"
+      "weakly_welltyped_literal \<V>\<^sub>3 (\<P> (Upair (c\<^sub>1 \<cdot>t\<^sub>c \<rho>\<^sub>1)\<langle>t\<^sub>2' \<cdot>t \<rho>\<^sub>2\<rangle> (t\<^sub>1' \<cdot>t \<rho>\<^sub>1)) \<cdot>l \<mu>) \<longleftrightarrow>
+       weakly_welltyped_literal \<V>\<^sub>3 (\<P> (Upair (c\<^sub>1 \<cdot>t\<^sub>c \<rho>\<^sub>1)\<langle>t\<^sub>1 \<cdot>t \<rho>\<^sub>1\<rangle> (t\<^sub>1' \<cdot>t \<rho>\<^sub>1)) \<cdot>l \<mu>)"
       by auto
 
     moreover have \<mu>: "type_preserving_on (literal.vars (\<P> (Upair c\<^sub>1\<langle>t\<^sub>1\<rangle> t\<^sub>1') \<cdot>l \<rho>\<^sub>1)) \<V>\<^sub>3 \<mu>"
@@ -248,10 +172,10 @@ proof (cases "(\<V>\<^sub>2, D)" "(\<V>\<^sub>1, E)" "(\<V>\<^sub>3, C)" rule: s
       unfolding superpositionI
       by auto
 
-    have "type_preserving_literal \<V>\<^sub>3 (\<P> (Upair c\<^sub>1\<langle>t\<^sub>1\<rangle> t\<^sub>1') \<cdot>l \<rho>\<^sub>1 \<cdot>l \<mu>) \<longleftrightarrow>
-        type_preserving_literal \<V>\<^sub>1 (\<P> (Upair c\<^sub>1\<langle>t\<^sub>1\<rangle> t\<^sub>1'))"
-      unfolding type_preserving_literal_subst[OF \<mu>]
-    proof (rule type_preserving_literal_renaming[OF superpositionI(4)])
+    have "weakly_welltyped_literal \<V>\<^sub>3 (\<P> (Upair c\<^sub>1\<langle>t\<^sub>1\<rangle> t\<^sub>1') \<cdot>l \<rho>\<^sub>1 \<cdot>l \<mu>) \<longleftrightarrow>
+        weakly_welltyped_literal \<V>\<^sub>1 (\<P> (Upair c\<^sub>1\<langle>t\<^sub>1\<rangle> t\<^sub>1'))"
+      unfolding weakly_welltyped_literal_subst[OF \<mu>]
+    proof (rule weakly_welltyped_literal_renaming[OF superpositionI(4)])
       show "\<forall>x\<in>literal.vars (\<P> (Upair c\<^sub>1\<langle>t\<^sub>1\<rangle> t\<^sub>1')). \<V>\<^sub>1 x = \<V>\<^sub>3 (clause.rename \<rho>\<^sub>1 x)"
         using superpositionI(19)
         unfolding superpositionI

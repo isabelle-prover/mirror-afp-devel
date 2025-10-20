@@ -29,7 +29,7 @@ proof (cases D C rule: eq_resolution.cases)
       refl_I: "refl I" and
       entails_ground_instances: "\<forall>D\<^sub>G \<in> ground_instances \<V> D. ?I \<TTurnstile> D\<^sub>G" and
       C_is_ground: "clause.is_ground (C \<cdot> \<gamma>)" and
-      type_preserving_literals: "type_preserving_literals \<V> C" and
+      weakly_welltyped_clause: "weakly_welltyped_clause \<V> C" and
       type_preserving_\<gamma>: "type_preserving_on (clause.vars C) \<V> \<gamma>" and
       \<V>: "infinite_variables_per_type \<V>"
 
@@ -66,10 +66,10 @@ proof (cases D C rule: eq_resolution.cases)
         by presburger
     next
 
-      show "type_preserving_literals \<V> D" 
+      show "weakly_welltyped_clause \<V> D" 
         using 
-          eq_resolution_type_preserving_literals[OF eq_resolution[unfolded eq_resolutionI]] 
-          type_preserving_literals
+          eq_resolution_weakly_welltyped_clause[OF eq_resolution[unfolded eq_resolutionI]] 
+          weakly_welltyped_clause
         unfolding eq_resolutionI
         by satx
     qed
@@ -141,7 +141,7 @@ proof (cases D C rule: eq_factoring.cases)
       sym_I: "sym I" and
       entails_ground_instances: "\<forall>D\<^sub>G \<in> ground_instances \<V> D. ?I \<TTurnstile> D\<^sub>G" and
       C_is_ground: "clause.is_ground (C \<cdot> \<gamma>)" and
-      type_preserving_literals: "type_preserving_literals \<V> C" and
+      weakly_welltyped_clause: "weakly_welltyped_clause \<V> C" and
       type_preserving_\<gamma>: "type_preserving_on (clause.vars C) \<V> \<gamma>" and
       \<V>: "infinite_variables_per_type \<V>"
 
@@ -182,11 +182,11 @@ proof (cases D C rule: eq_factoring.cases)
         by presburger
     next
 
-      show "type_preserving_literals \<V> D"
-        using type_preserving_literals
+      show "weakly_welltyped_clause \<V> D"
+        using weakly_welltyped_clause
         unfolding 
           eq_factoringI
-          eq_factoring_type_preserving_literals[OF eq_factoring[unfolded eq_factoringI]] .
+          eq_factoring_weakly_welltyped_clause[OF eq_factoring[unfolded eq_factoringI]] .
     qed
 
     then have "?I \<TTurnstile> ?D\<^sub>G"
@@ -273,7 +273,7 @@ proof (cases D E C rule: superposition.cases)
       E_entails_ground_instances: "\<forall>E\<^sub>G \<in> ground_instances \<V>\<^sub>1 E. ?I \<TTurnstile> E\<^sub>G" and
       D_entails_ground_instances: "\<forall>D\<^sub>G \<in> ground_instances \<V>\<^sub>2 D. ?I \<TTurnstile> D\<^sub>G" and
       C_is_ground: "clause.is_ground (C \<cdot> \<gamma>)" and
-      type_preserving_literals: "type_preserving_literals \<V>\<^sub>3 C" and
+      weakly_welltyped_clause: "weakly_welltyped_clause \<V>\<^sub>3 C" and
       type_preserving_\<gamma>: "type_preserving_on (clause.vars C) \<V>\<^sub>3 \<gamma>"
 
     obtain \<gamma>' where
@@ -339,10 +339,10 @@ proof (cases D E C rule: superposition.cases)
         by (simp add: clause.vars_subst term.assoc)
     next
 
-      show "type_preserving_literals \<V>\<^sub>1 E"
+      show "weakly_welltyped_clause \<V>\<^sub>1 E"
         using 
-          type_preserving_literals
-          superposition_type_preserving_literals[OF superposition[unfolded superpositionI]]
+          weakly_welltyped_clause
+          superposition_weakly_welltyped_clause[OF superposition[unfolded superpositionI]]
         unfolding superpositionI
         by satx
     qed
@@ -371,10 +371,10 @@ proof (cases D E C rule: superposition.cases)
         by (simp add: term.assoc clause.vars_subst)
     next
 
-      show "type_preserving_literals \<V>\<^sub>2 D"
+      show "weakly_welltyped_clause \<V>\<^sub>2 D"
         using 
-          type_preserving_literals
-          superposition_type_preserving_literals[OF superposition[unfolded superpositionI]]
+          weakly_welltyped_clause
+          superposition_weakly_welltyped_clause[OF superposition[unfolded superpositionI]]
         unfolding superpositionI
         by satx  
     qed

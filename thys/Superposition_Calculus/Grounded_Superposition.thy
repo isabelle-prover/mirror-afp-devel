@@ -40,8 +40,8 @@ abbreviation is_inference_ground_instance_one_premise where
       inference.is_ground (Infer [D] C \<cdot>\<iota> \<gamma>) \<and>
       \<iota>\<^sub>G = inference.to_ground (Infer [D] C \<cdot>\<iota> \<gamma>) \<and>
       type_preserving_on (clause.vars C) \<V> \<gamma> \<and>
-      type_preserving_literals \<V> D \<and>
-      type_preserving_literals \<V> C \<and>
+      weakly_welltyped_clause \<V> D \<and>
+      weakly_welltyped_clause \<V> C \<and>
       \<V> = \<V>' \<and>
       infinite_variables_per_type \<V>"
 
@@ -54,9 +54,9 @@ abbreviation is_inference_ground_instance_two_premises where
       inference.is_ground (Infer [D \<cdot> \<rho>\<^sub>2, E \<cdot> \<rho>\<^sub>1] C \<cdot>\<iota> \<gamma>) \<and>
       \<iota>\<^sub>G = inference.to_ground (Infer [D \<cdot> \<rho>\<^sub>2, E \<cdot> \<rho>\<^sub>1] C \<cdot>\<iota> \<gamma>) \<and>
       type_preserving_on (clause.vars C) \<V>\<^sub>3 \<gamma> \<and>
-      type_preserving_literals \<V>\<^sub>1 E \<and>
-      type_preserving_literals \<V>\<^sub>2 D \<and>
-      type_preserving_literals \<V>\<^sub>3 C \<and>
+      weakly_welltyped_clause \<V>\<^sub>1 E \<and>
+      weakly_welltyped_clause \<V>\<^sub>2 D \<and>
+      weakly_welltyped_clause \<V>\<^sub>3 C \<and>
       infinite_variables_per_type \<V>\<^sub>1 \<and>
       infinite_variables_per_type \<V>\<^sub>2 \<and>
       infinite_variables_per_type \<V>\<^sub>3"
@@ -173,7 +173,7 @@ next
   fix \<iota> :: "('t, 'v, 'ty) typed_clause inference"
 
   show
-    "the ((Some \<circ> inference_ground_instances) \<iota>) \<subseteq> 
+    "the ((Some \<circ> inference_ground_instances) \<iota>) \<subseteq>
       ground.GRed_I (uncurried_ground_instances (concl_of \<iota>))"
     using ground_inference_red_in_ground_instances_of_concl
     by auto
@@ -187,7 +187,7 @@ begin
 abbreviation grounded_inference_ground_instances where
   "grounded_inference_ground_instances select\<^sub>G \<equiv>
     grounded_superposition_calculus.inference_ground_instances
-      (\<odot>) (\<cdot>t)  term.vars term.to_ground term.from_ground apply_ground_context Var (\<prec>\<^sub>t) select\<^sub>G
+      (\<odot>) (\<cdot>t) term.vars term.to_ground term.from_ground apply_ground_context Var (\<prec>\<^sub>t) select\<^sub>G
       welltyped"
 
 sublocale
