@@ -42,8 +42,8 @@ text \<open>GNF property: All productions start with a terminal.\<close>
 definition GNF_hd :: "('n,'t)Prods \<Rightarrow> bool" where 
 "GNF_hd P = (\<forall>(A, w) \<in> P. \<exists>t v. w = Tm t # v)"
 
-abbreviation subst_hd :: "('n,'t)Prods \<Rightarrow> ('n,'t)Prods \<Rightarrow> ('n,'t)Prods" where
-"subst_hd P X \<equiv> {(A,v@w) | A v w. \<exists>B. (B,v) \<in> P \<and> (A, Nt B # w) \<in> X}"
+definition subst_hd :: "('n,'t)Prods \<Rightarrow> ('n,'t)Prods \<Rightarrow> ('n,'t)Prods" where
+"subst_hd P X = P - X \<union> {(A,v@w) | A v w. \<exists>B. (B,v) \<in> P \<and> (A, Nt B # w) \<in> X}"
 
 text \<open>Expand head: Replace all rules \<open>A \<rightarrow> B w\<close> where \<open>B \<in> Ss\<close>
 (\<open>Ss\<close> = solved Nts in \<open>triangular\<close> form)
@@ -52,9 +52,8 @@ fun expand_hd :: "'n \<Rightarrow> 'n list \<Rightarrow> ('n,'t)Prods \<Rightarr
 "expand_hd A [] P = P" |
 "expand_hd A (S#Ss) P =
  (let P' = expand_hd A Ss P;
-      X = {r \<in> P'. \<exists>w. r = (A, Nt S # w)};
-      Y = subst_hd P' X
-  in P' - X \<union> Y)"
+      X = {r \<in> P'. \<exists>w. r = (A, Nt S # w)}
+  in subst_hd P' X)"
 
 lemma Rhss_code[code]: "Rhss P A = snd ` {Aw \<in> P. fst Aw = A}"
 by(auto simp add: Rhss_def image_iff)
@@ -65,7 +64,7 @@ lemma expand_hd_Cons_code[code]: "expand_hd A (S#Ss) P =
       X = {w \<in> Rhss R' A. w \<noteq> [] \<and> hd w = Nt S};
       Y = (\<Union>(B,v) \<in> R'. \<Union>w \<in> X. if hd w \<noteq> Nt B then {} else {(A,v @ tl w)})
   in R' - ({A} \<times> X) \<union> Y)"
-by(simp add: Rhss_def Let_def neq_Nil_conv Ball_def hd_append split: if_splits, safe, force+)
+by(simp add: Rhss_def Let_def neq_Nil_conv Ball_def hd_append subst_hd_def split: if_splits, safe, force+)
 
 text \<open>Remove left-recursions: Remove left-recursive rules \<open>A \<rightarrow> A w\<close>:\<close>
 definition rm_lrec ::  "'n \<Rightarrow> ('n,'t)Prods \<Rightarrow> ('n,'t)Prods" where
@@ -150,9 +149,8 @@ fun expand_tri :: "'n list \<Rightarrow> ('n,'t)Prods \<Rightarrow> ('n,'t)Prods
 "expand_tri [] P = P" |
 "expand_tri (A#As) P =
  (let P' = expand_tri As P;
-      X = {r \<in> P'. \<exists>w B. r = (A, Nt B # w) \<and> B \<in> set As};
-      Y = subst_hd P' X
-  in P' - X \<union> Y)"
+      X = {r \<in> P'. \<exists>w B. r = (A, Nt B # w) \<and> B \<in> set As}
+  in subst_hd P' X)"
 
 declare expand_tri.simps(1)[code]
 lemma expand_tri_Cons_code[code]: "expand_tri (S#Ss) R =
@@ -160,7 +158,7 @@ lemma expand_tri_Cons_code[code]: "expand_tri (S#Ss) R =
       X = {w \<in> Rhss P' S. w \<noteq> [] \<and> hd w \<in> Nt ` set Ss};
       Y = (\<Union>(B,v) \<in> P'. \<Union>w \<in> X. if hd w \<noteq> Nt B then {} else {(S,v @ tl w)})
   in P' - ({S} \<times> X) \<union> Y)"
-by(simp add: Let_def Rhss_def neq_Nil_conv Ball_def, safe, force+)
+by(simp add: Let_def Rhss_def neq_Nil_conv Ball_def subst_hd_def, safe, force+)
 
 text \<open>The main function \<open>gnf_hd\<close> converts into \<open>GNF_hd\<close>:\<close>
 (*TODO: expand_tri A' is not needed *)
@@ -177,7 +175,7 @@ subsection \<open>\<open>Eps_free\<close> preservation\<close>
 
 lemma Eps_free_expand_hd: "Eps_free R \<Longrightarrow> Eps_free (expand_hd A Ss R)"
   by (induction A Ss R rule: expand_hd.induct)
-    (auto simp add: Eps_free_def Let_def)
+    (auto simp add: Eps_free_def Let_def subst_hd_def)
 
 lemma Eps_free_solve_lrec: "Eps_free R \<Longrightarrow> Eps_free (solve_lrec A A' R)"
   unfolding solve_lrec_defs Eps_free_def by (auto)
@@ -187,7 +185,7 @@ lemma Eps_free_solve_tri: "Eps_free R \<Longrightarrow> length As \<le> length A
     (auto simp add: Eps_free_solve_lrec Eps_free_expand_hd)
 
 lemma Eps_free_expand_tri: "Eps_free R \<Longrightarrow> Eps_free (expand_tri As R)"
-  by (induction As R rule: expand_tri.induct) (auto simp add: Let_def Eps_free_def)
+  by (induction As R rule: expand_tri.induct) (auto simp add: Let_def Eps_free_def subst_hd_def)
 
 
 subsection \<open>Lemmas about \<open>Nts\<close> and \<open>dep_on\<close>\<close>
@@ -203,7 +201,7 @@ lemma dep_on_insert: "dep_on (insert (A,w) P) A' =
   by (auto simp: dep_on_def split: list.splits sym.splits)
 
 lemma expand_hd_preserves_neq: "B \<noteq> A \<Longrightarrow> (B,w) \<in> expand_hd A Ss R \<longleftrightarrow> (B,w) \<in> R"
-  by(induction A Ss R rule: expand_hd.induct) (auto simp add: Let_def)
+  by(induction A Ss R rule: expand_hd.induct) (auto simp add: Let_def subst_hd_def)
 
 text \<open>Let \<open>R\<close> be epsilon-free and in \<open>triangular\<close> form wrt \<open>Bs\<close>.
 After \<open>expand_hd A Bs R\<close>, \<open>A\<close> depends only on what \<open>A\<close> depended on before or
@@ -218,11 +216,11 @@ next
   case (2 A B Bs R)
   then show ?case
     by(fastforce simp add: Let_def dep_on_def Cons_eq_append_conv Eps_free_expand_hd Eps_free_Nil 
-        expand_hd_preserves_neq set_eq_iff)
+        subst_hd_def expand_hd_preserves_neq set_eq_iff)
 qed
 
 lemma expand_hd_id: "dep_on P A \<inter> set As = {} \<Longrightarrow> expand_hd A As P = P"
-  by (induction As, auto simp: dep_on_def)
+  by (induction As, auto simp: dep_on_def subst_hd_def)
 
 lemma dep_on_subs_Nts: "dep_on R A \<subseteq> Nts R"
   by (auto simp add: Nts_def dep_on_def)
@@ -246,7 +244,7 @@ next
   have "Nts ?Y \<subseteq> Nts ?R'" using lhs_sub rhs_sub by (auto simp add: Nts_Lhss_Rhs_Nts)
   then have "Nts ?Y \<subseteq> Nts R" using 2 by auto
   then show ?case using Nts_mono[of "?R' - ?X"] 2
-    by (auto simp add: Let_def Nts_def)
+    by (auto simp add: Let_def Nts_def subst_hd_def)
 qed
   
 lemma Nts_solve_lrec_sub: "Nts (solve_lrec A A' R) \<subseteq> Nts R \<union> {A'}"
@@ -1261,15 +1259,15 @@ next
   proof (cases "B = A")
     case True
     then have Aw_or_ACv: "(A, w) \<in> expand_hd A Ss R \<or> (\<exists>C v. (A, Nt C # v) \<in> expand_hd A Ss R)"
-      using 2 by (auto simp add: Let_def)
+      using 2 by (auto simp add: Let_def subst_hd_def)
     then show ?thesis
     proof (cases "(A, w) \<in> expand_hd A Ss R")
       case True
-      then show ?thesis using 2 True by (auto simp add: Let_def)
+      then show ?thesis using 2 True by (auto simp add: Let_def subst_hd_def)
     next
       case False
       then have "\<exists> v wv. w = v @ wv \<and> (A, Nt S#wv) \<in> expand_hd A Ss R \<and> (S, v) \<in> expand_hd A Ss R"
-        using 2 True by (auto simp add: Let_def)
+        using 2 True by (auto simp add: Let_def subst_hd_def)
       then obtain v wv 
         where P: "w = v @ wv \<and> (A, Nt S # wv) \<in> expand_hd A Ss R \<and> (S, v) \<in> expand_hd A Ss R"
         by blast
@@ -1280,7 +1278,7 @@ next
     qed
   next
     case False
-    then show ?thesis using 2 by (auto simp add: Let_def)
+    then show ?thesis using 2 by (auto simp add: Let_def subst_hd_def)
   qed
 qed
 
@@ -1387,15 +1385,14 @@ next
   case (2 C H Ss R)
   let ?R' = "expand_hd C Ss R"
   let ?X = "{r \<in> ?R'. \<exists>w. r = (C, Nt H # w)}"
-  let ?Y = "subst_hd ?R' ?X"
-  have "expand_hd C (H # Ss) R = ?R' - ?X \<union> ?Y" by (auto simp: Let_def)
+  have "expand_hd C (H # Ss) R = subst_hd ?R' ?X" by (auto simp: Let_def)
 
   let ?S = "{x. \<exists>A w. x = (A, [], H, w) \<and> (A, Nt H # w) \<in> ?X}"
   let ?S' = "{x. \<exists>A a1 B a2. x = (A, a1 @ Nt B # a2) \<and> (A, a1, B, a2) \<in> ?S}"
   let ?E = "{x. \<exists>A v a1 a2 B. x = (A,a1@v@a2) \<and> (A, a1, B, a2) \<in> ?S \<and> (B,v) \<in> ?R'}"
 
   have S'_eq_X: "?S' = ?X" by fastforce
-  have E_eq_Y: "?E = ?Y" by fastforce
+  have E_eq_Y: "?E = {(A,v@w) | A v w. \<exists>B. (B,v) \<in> ?R' \<and> (A, Nt B # w) \<in> ?X}" by fastforce
 
   have "\<forall>x \<in> ?S. \<exists>A a1 B a2. x = (A, a1, B, a2) \<and> (A, a1 @ Nt B # a2) \<in> ?R'" by fastforce
   then have Lang_sub: "Lang ?R' A \<subseteq> Lang (?R' - ?S' \<union> ?E) A"
@@ -1403,7 +1400,7 @@ next
 
   have "Lang R A \<subseteq> Lang ?R' A" using 2 by simp
   also have "... \<subseteq> Lang (?R' - ?S' \<union> ?E) A" using Lang_sub by simp
-  also have "... \<subseteq> Lang (?R' - ?X \<union> ?Y) A" using S'_eq_X E_eq_Y by simp
+  also have "... \<subseteq> Lang (subst_hd ?R' ?X) A" using S'_eq_X E_eq_Y by (simp add: subst_hd_def)
   finally show ?case by (simp add: Let_def)
 qed
 
@@ -1472,7 +1469,7 @@ next
 qed
 
 lemma helper_expand_tri1: "A \<notin> set As \<Longrightarrow> (A, w) \<in> expand_tri As P \<Longrightarrow> (A, w) \<in> P"
-  by (induction As P rule: expand_tri.induct) (auto simp add: Let_def)
+  by (induction As P rule: expand_tri.induct) (auto simp add: Let_def subst_hd_def)
 
 text \<open>If none of the expanded Nts depend on \<open>A\<close> then any rule depending on \<open>A\<close> in \<open>expand_tri As R\<close>
       must already have been in \<open>R\<close>.\<close>
@@ -1491,7 +1488,8 @@ next
     let ?X = "{(Al,Bw) \<in> ?R'. Al=S \<and> (\<exists>w B. Bw = Nt B # w \<and> B \<in> set (Ss))}"
     let ?Y = "{(S,v@w) |v w. \<exists>B. (S, Nt B # w) \<in> ?X \<and> (B,v) \<in> ?R'}"
     have "(B, Nt A # w) \<notin> ?X" using 2 by auto
-    then have 3: "(B, Nt A # w) \<in> ?R' \<or> (B, Nt A # w) \<in> ?Y" using 2 by (auto simp add: Let_def)
+    then have 3: "(B, Nt A # w) \<in> ?R' \<or> (B, Nt A # w) \<in> ?Y" using 2
+      by (auto simp add: Let_def subst_hd_def)
     then show ?thesis
     proof (cases "(B, Nt A # w) \<in> ?R'")
       case True
@@ -1519,7 +1517,7 @@ next
     qed
   next
     case False
-    then show ?thesis using 2 by (auto simp add: Let_def)
+    then show ?thesis using 2 by (auto simp add: Let_def subst_hd_def)
   qed
 
   then show ?case using 2 by auto
@@ -1561,7 +1559,7 @@ next
       assume "(S, Nt S # w) \<in> expand_tri (S#Ss) R"
       then have "\<exists>v wa B. Nt S # w = v @ wa \<and> B \<in> set Ss \<and> (S, Nt B # wa) \<in> expand_tri Ss R 
          \<and> (B, v) \<in> expand_tri Ss R"
-        using 2 F1 by (auto simp add: Let_def)
+        using 2 F1 by (auto simp add: Let_def subst_hd_def)
       then obtain v wa B 
         where v_wa_B_P: "Nt S # w = v @ wa \<and> B \<in> set Ss \<and> (S, Nt B # wa) \<in> expand_tri Ss R 
          \<and> (B, v) \<in> expand_tri Ss R" 
@@ -1580,7 +1578,7 @@ next
       assume assm: "(S, Nt x # w) \<in> expand_tri (S # Ss) R"
       then have "\<exists>v wa B. Nt x # w = v @ wa \<and> (S, Nt B # wa) \<in> expand_tri Ss R \<and> B \<in> set Ss 
          \<and> (B, v) \<in> expand_tri Ss R"
-        using 2 asm by (auto simp add: Let_def)
+        using 2 asm by (auto simp add: Let_def subst_hd_def)
       then obtain v wa B 
         where v_wa_B_P:"Nt x # w = v @ wa \<and> (S, Nt B # wa) \<in> expand_tri Ss R \<and> B \<in> set Ss 
          \<and> (B, v) \<in> expand_tri Ss R" 
@@ -1606,14 +1604,14 @@ next
       have "S \<notin> dep_on R A" using dep_on_fact False 2 by auto
       then show "False" using F by simp
     qed
-    then show ?thesis using 2 False by (auto simp add: tri_Snoc_impl_tri Let_def dep_on_def)
+    then show ?thesis using 2 False by (auto simp add: tri_Snoc_impl_tri Let_def dep_on_def subst_hd_def)
   qed
 qed
 
 text \<open>Interlude: \<open>Nts\<close> of \<open>expand_tri\<close>:\<close>
 
 lemma Lhss_expand_tri: "Lhss (expand_tri As R) \<subseteq> Lhss R"
-  by (induction As R rule: expand_tri.induct) (auto simp add: Lhss_def Let_def)
+  by (induction As R rule: expand_tri.induct) (auto simp add: Lhss_def Let_def subst_hd_def)
 
 lemma Rhs_Nts_expand_tri: "Rhs_Nts (expand_tri As R) \<subseteq> Rhs_Nts R"
 proof (induction As R rule: expand_tri.induct)
@@ -1632,8 +1630,8 @@ next
     then obtain y ys where P1: "(y, ys) \<in> ?Y \<and> x \<in> Nts_syms ys" by blast
     then show "x \<in> Rhs_Nts R" using P1 2 Rhs_Nts_def by fastforce
   qed
-  then show ?case using F1 2 by (auto simp add: Rhs_Nts_def Let_def UN_subset_iff subset_eq)
-qed 
+  then show ?case using F1 2 by (auto simp add: Rhs_Nts_def Let_def UN_subset_iff subset_eq subst_hd_def)
+qed
 
 lemma Nts_expand_tri: "Nts (expand_tri As R) \<subseteq> Nts R"
   by (metis Lhss_expand_tri Nts_Lhss_Rhs_Nts Rhs_Nts_expand_tri Un_mono)
@@ -1679,7 +1677,7 @@ next
       case True
       then have "\<exists>C cw v.(bs = cw@v \<and> (B, Nt C#v) \<in> (expand_tri As R) \<and> (C,cw) \<in> (expand_tri As R)) 
           \<or> (B, bs) \<in> (expand_tri As R)"
-        using 2 by (auto simp add: Let_def)
+        using 2 by (auto simp add: Let_def subst_hd_def)
       then obtain C cw v 
         where "(bs = cw @ v \<and> (B, Nt C # v) \<in> (expand_tri As R) \<and> (C, cw) \<in> (expand_tri As R)) 
          \<or> (B, bs) \<in> (expand_tri As R)" 
@@ -1689,7 +1687,7 @@ next
       then show ?thesis by (meson derives_append rtranclp_trans)
     next
       case False
-      then have "(B, bs) \<in> (expand_tri As R)" using 2 by (auto simp add: Let_def)
+      then have "(B, bs) \<in> (expand_tri As R)" using 2 by (auto simp add: Let_def subst_hd_def)
       then show ?thesis using "2.IH" by (simp add: bu_prod derives_if_bu)
     qed
   next
@@ -1717,7 +1715,7 @@ next
     let ?R' = "expand_tri Ds R"
     let ?X = "{r \<in> ?R'. (\<exists>w B. r = (D, Nt B # w) \<and> B \<in> set (Ds))}"
     let ?Y = "{(D,v@w) | v w. \<exists>B. (B,v) \<in> ?R' \<and> (D, Nt B # w) \<in> ?X}"
-    have F1: "expand_tri (D#Ds) R = ?R' - ?X \<union> ?Y" by (auto simp: Let_def)
+    have F1: "expand_tri (D#Ds) R = ?R' - ?X \<union> ?Y" by (auto simp: Let_def subst_hd_def)
 
     let ?S = "{x. \<exists>A w H. x = (A, [], H, w) \<and> (A, Nt H # w) \<in> ?X}"
     let ?S' = "{x. \<exists>A a1 B a2. x = (A, a1 @ Nt B # a2) \<and> (A, a1, B, a2) \<in> ?S}"
@@ -1863,7 +1861,7 @@ lemma bad_gram_simp1: "n < m \<Longrightarrow> (m,w) \<notin> set (bad_grammar n
   by (induction n rule: bad_grammar.induct) auto
 
 lemma expand_tri_simp1: "A \<notin> set As \<Longrightarrow> (A,w) \<in> R \<Longrightarrow> (A,w) \<in> expand_tri As R"
-  by (induction As R rule: expand_tri.induct) (auto simp add: Let_def)
+  by (induction As R rule: expand_tri.induct) (auto simp add: Let_def subst_hd_def)
 
 lemma expand_tri_iff1: "A \<notin> set As \<Longrightarrow> (A,w) \<in> expand_tri As R \<longleftrightarrow> (A,w) \<in> R"
   using expand_tri_simp1 helper_expand_tri1 by auto
@@ -1871,7 +1869,7 @@ lemma expand_tri_iff1: "A \<notin> set As \<Longrightarrow> (A,w) \<in> expand_t
 lemma expand_tri_insert_simp: 
   "B \<notin> set As \<Longrightarrow> expand_tri As (insert (B,w) R) = insert (B,w) (expand_tri As R)"
   apply (induction As R rule: expand_tri.induct)
-   apply (auto simp add: Let_def)apply auto done
+   apply (auto simp add: Let_def subst_hd_def)apply auto done
 
 lemma expand_tri_bad_grammar_simp1: 
   "expand_tri (rev [0..<Suc n]) (set (bad_grammar (Suc n))) =
@@ -1879,7 +1877,7 @@ lemma expand_tri_bad_grammar_simp1:
    expand_tri (rev [0..<Suc n]) (set (bad_grammar n))"
 proof (induction n)
   case 0
-  then show ?case by auto
+  then show ?case by (auto simp: subst_hd_def)
 next
   case (Suc n)
   have 1: "rev [0..< Suc (Suc n)] = Suc n # rev [0..<Suc n]" by simp
@@ -1888,7 +1886,7 @@ next
     unfolding 1
     apply (simp del: upt_Suc bad_grammar.simps(2)
         add: bad_grammar.simps(2)[of "Suc n"] expand_tri_insert_simp Suc
-        S_def[symmetric])
+        S_def[symmetric] subst_hd_def)
     by auto (* takes time *)
 qed
 
@@ -1919,7 +1917,7 @@ next
   qed
   then have "finite ?S"
     by (meson "2.IH" "2.prems" finite_SigmaI finite_surj)
-  with 2 show ?case by (auto simp add: Let_def)
+  with 2 show ?case by (auto simp add: Let_def subst_hd_def)
 qed
 
 text \<open>The last Nt expanded by \<open>expand_tri\<close> has an exponential number of productions.\<close>
@@ -1933,7 +1931,7 @@ lemma bad_gram_last_expanded_card:
 proof(induction n)
   case 0
   have 4: "{v. v = [Tm False] \<or> v = [Tm True]} = {[Tm False], [Tm True]}" by auto
-  show ?case by (auto simp: 4)
+  show ?case by (auto simp: 4 subst_hd_def)
 next
   case (Suc n)
   have 1: "rev [0..<Suc (Suc n)] = Suc n # rev [0..<Suc n]" by simp
@@ -1967,7 +1965,7 @@ next
 
   have "?R' - ?X = expand_tri (rev [0..<Suc n]) (set (bad_grammar n))" using 7 6 5 by simp
   have S_from_Y: "?S = {v. (Suc n, v) \<in> ?Y}"
-    by (auto simp: 1 Let_def expand_tri_iff1 bad_gram_simp1 expand_tri_insert_simp)
+    by (auto simp: 1 Let_def expand_tri_iff1 bad_gram_simp1 expand_tri_insert_simp subst_hd_def)
 
   note bad_grammar.simps(2)[simp del]
   have Y_decomp: "?Y = {(Suc n, v @ [Tm False]) | v. (n,v) \<in> ?R'} \<union> {(Suc n, v @ [Tm True]) | v. (n,v) \<in> ?R'}"
