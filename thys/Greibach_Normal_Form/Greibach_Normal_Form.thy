@@ -163,13 +163,13 @@ lemma expand_tri_Cons_code[code]: "expand_tri (S#Ss) R =
 by(simp add: Let_def Rhss_def neq_Nil_conv Ball_def, safe, force+)
 
 text \<open>The main function \<open>gnf_hd\<close> converts into \<open>GNF_hd\<close>:\<close>
+(*TODO: expand_tri A' is not needed *)
 definition 
 gnf_hd :: "('n::fresh,'t)prods \<Rightarrow> ('n,'t)Prods" where
 "gnf_hd ps =
   (let As = nts ps;
-       ps' = eps_elim ps;
        As' = freshs (set As) As
-   in expand_tri (As' @ rev As) (solve_tri As As' (set ps')))"
+   in expand_tri (As' @ rev As) (solve_tri As As' (Eps_elim (set ps))))"
 
 section \<open>Some Basic Lemmas\<close>
 
@@ -195,6 +195,13 @@ subsection \<open>Lemmas about \<open>Nts\<close> and \<open>dep_on\<close>\<clo
 lemma dep_on_Un[simp]: "dep_on (R \<union> S) A = dep_on R A \<union> dep_on S A"
   by(auto simp add: dep_on_def)
 
+lemma dep_on_empty[simp]: "dep_on {} A = {}"
+  by (simp add: dep_on_def)
+
+lemma dep_on_insert: "dep_on (insert (A,w) P) A' =
+  (if A = A' then case w of Nt B # w' \<Rightarrow> {B} | _ \<Rightarrow> {} else {}) \<union> dep_on P A'"
+  by (auto simp: dep_on_def split: list.splits sym.splits)
+
 lemma expand_hd_preserves_neq: "B \<noteq> A \<Longrightarrow> (B,w) \<in> expand_hd A Ss R \<longleftrightarrow> (B,w) \<in> R"
   by(induction A Ss R rule: expand_hd.induct) (auto simp add: Let_def)
 
@@ -213,6 +220,9 @@ next
     by(fastforce simp add: Let_def dep_on_def Cons_eq_append_conv Eps_free_expand_hd Eps_free_Nil 
         expand_hd_preserves_neq set_eq_iff)
 qed
+
+lemma expand_hd_id: "dep_on P A \<inter> set As = {} \<Longrightarrow> expand_hd A As P = P"
+  by (induction As, auto simp: dep_on_def)
 
 lemma dep_on_subs_Nts: "dep_on R A \<subseteq> Nts R"
   by (auto simp add: Nts_def dep_on_def)
@@ -315,6 +325,13 @@ lemma dep_on_expand_hd_simp2: "B \<noteq> A \<Longrightarrow> dep_on (expand_hd 
 
 lemma dep_on_solve_lrec_simp2: "A \<noteq> B \<Longrightarrow> A' \<noteq> B \<Longrightarrow> dep_on (solve_lrec A A' R) B = dep_on R B"
 unfolding solve_lrec_defs dep_on_def by (auto)
+
+lemma solve_lrec_id: "A \<notin> dep_on P A \<Longrightarrow> solve_lrec A A' P = P"
+  by (auto simp: solve_lrec_defs dep_on_def)
+
+lemma solve_tri_id:
+  "\<lbrakk>triangular As P; length As' = length As\<rbrakk> \<Longrightarrow> solve_tri As As' P = P"
+  by (induction rule: solve_tri.induct, simp_all add: expand_hd_id solve_lrec_id)
 
 
 subsection \<open>Triangular Form\<close>
@@ -1730,8 +1747,8 @@ using solve_tri_Lang[OF assms] expand_tri_Lang[of "(As' @ rev As)"] by blast
 text \<open>Any Grammar can be brought into GNF.\<close>
 theorem GNF_hd_gnf_hd: "GNF_hd (gnf_hd ps)"
 unfolding gnf_hd_def Let_def
-by(simp add: gnf_hd_def Let_def GNF_of_R[OF eps_free_eps_elim]
-  distinct_nts freshs_distinct finite_nts freshs_disj nts_eps_elim set_nts length_freshs)
+by(simp add: gnf_hd_def Let_def GNF_of_R[OF Eps_free_Eps_elim]
+  distinct_nts freshs_distinct finite_nts freshs_disj Nts_Eps_elim set_nts length_freshs)
 
 lemma distinct_app_freshs: "\<lbrakk> As = nts ps; As' = freshs (set As) As \<rbrakk> \<Longrightarrow>
    distinct (As @ As')"
@@ -1744,10 +1761,10 @@ lemma lem: "A \<notin> Nts P \<Longrightarrow> Lang P A = {}"
 text \<open>\<open>gnf_hd\<close> preserves the language (modulo \<open>[]\<close>):\<close>
 theorem Lang_gnf_hd: "A \<in> Nts(set ps) \<Longrightarrow> Lang (gnf_hd ps) A = lang ps A - {[]}"
 unfolding gnf_hd_def Let_def
-apply(rule Lang_expand_solve_tri[OF eps_free_eps_elim, simplified lang_eps_elim])
+apply(rule Lang_expand_solve_tri[OF Eps_free_Eps_elim, simplified Lang_Eps_elim])
    apply (simp add: length_freshs)
   apply (metis distinct_app_freshs)
- using set_nts distinct_app_freshs nts_eps_elim apply fastforce
+ using set_nts distinct_app_freshs Nts_Eps_elim apply fastforce
 apply(metis IntI empty_iff finite_nts freshs_disj set_nts)
 done
 
@@ -1835,48 +1852,48 @@ Below we prove formally that \<open>expand_tri\<close> can cause exponential blo
 
 text \<open>Bad grammar: Constructs a grammar which leads to a exponential blowup when expanded 
       by \<open>expand_tri\<close>:\<close>
-fun bad_grammar :: "'n list \<Rightarrow> ('n, nat)Prods" where
- "bad_grammar [] = {}"
-|"bad_grammar [A] = {(A, [Tm 0]), (A, [Tm 1])}"
-|"bad_grammar (A#B#As) = {(A, Nt B # [Tm 0]), (A, Nt B # [Tm 1])} \<union> (bad_grammar (B#As))"
+fun bad_grammar :: "nat \<Rightarrow> (nat,bool) prods" where
+ "bad_grammar 0 = [(0, [Tm False]), (0, [Tm True])]"
+|"bad_grammar (Suc n) = [(Suc n, Nt n # [Tm False]), (Suc n, Nt n # [Tm True])] @ bad_grammar n"
 
-lemma bad_gram_simp1: "A \<notin> set As \<Longrightarrow> (A, Bs) \<notin> (bad_grammar As)"
-  by (induction As rule: bad_grammar.induct) auto
 
-lemma expand_tri_simp1: "A \<notin> set As \<Longrightarrow> (A, Bs) \<in> R \<Longrightarrow> (A, Bs) \<in> expand_tri As R"
+value "nts (bad_grammar 4)"
+
+lemma bad_gram_simp1: "n < m \<Longrightarrow> (m,w) \<notin> set (bad_grammar n)"
+  by (induction n rule: bad_grammar.induct) auto
+
+lemma expand_tri_simp1: "A \<notin> set As \<Longrightarrow> (A,w) \<in> R \<Longrightarrow> (A,w) \<in> expand_tri As R"
   by (induction As R rule: expand_tri.induct) (auto simp add: Let_def)
 
-lemma expand_tri_iff1: "A \<notin> set As \<Longrightarrow> (A, Bs) \<in> expand_tri As R \<longleftrightarrow> (A, Bs) \<in> R"
+lemma expand_tri_iff1: "A \<notin> set As \<Longrightarrow> (A,w) \<in> expand_tri As R \<longleftrightarrow> (A,w) \<in> R"
   using expand_tri_simp1 helper_expand_tri1 by auto
 
 lemma expand_tri_insert_simp: 
-  "B \<notin> set As \<Longrightarrow> expand_tri As (insert (B, Bs) R) = insert (B, Bs) (expand_tri As R)"
+  "B \<notin> set As \<Longrightarrow> expand_tri As (insert (B,w) R) = insert (B,w) (expand_tri As R)"
   apply (induction As R rule: expand_tri.induct)
    apply (auto simp add: Let_def)apply auto done
 
 lemma expand_tri_bad_grammar_simp1: 
-  "distinct (A#As) \<Longrightarrow> length As \<ge> 1 
-   \<Longrightarrow> expand_tri As (bad_grammar (A#As)) 
-       = {(A, Nt (hd As) # [Tm 0]), (A, Nt (hd As) # [Tm 1])} \<union> (expand_tri As (bad_grammar As))"
-proof (induction As)
-  case Nil
-  then show ?case by simp
+  "expand_tri (rev [0..<Suc n]) (set (bad_grammar (Suc n))) =
+   {(Suc n, Nt n # [Tm False]), (Suc n, Nt n # [Tm True])} \<union>
+   expand_tri (rev [0..<Suc n]) (set (bad_grammar n))"
+proof (induction n)
+  case 0
+  then show ?case by auto
 next
-  case Cons1: (Cons B Bs)
-  then show ?case
-  proof (cases Bs)
-    case Nil
-    then show ?thesis by auto
-  next
-    case Cons2: (Cons C Cs)
-    then show ?thesis using Cons1 expand_tri_insert_simp
-      by (smt (verit) Un_insert_left bad_grammar.elims distinct.simps(2) insert_is_Un 
-          list.distinct(1) list.inject list.sel(1))
-  qed
+  case (Suc n)
+  have 1: "rev [0..< Suc (Suc n)] = Suc n # rev [0..<Suc n]" by simp
+  define S where "S \<equiv> expand_tri (rev [0..<Suc n]) (set (bad_grammar n))"
+  show ?case
+    unfolding 1
+    apply (simp del: upt_Suc bad_grammar.simps(2)
+        add: bad_grammar.simps(2)[of "Suc n"] expand_tri_insert_simp Suc
+        S_def[symmetric])
+    by auto (* takes time *)
 qed
 
-lemma finite_bad_grammar: "finite (bad_grammar As)"
-  by (induction As rule: bad_grammar.induct) auto
+lemma finite_bad_grammar: "finite (set (bad_grammar As))"
+  by (induction As rule: bad_grammar.induct) (auto simp: bad_grammar.simps(2))
 
 lemma finite_expand_tri: "finite R \<Longrightarrow> finite (expand_tri As R)"
 proof (induction As R rule: expand_tri.induct)
@@ -1906,115 +1923,137 @@ next
 qed
 
 text \<open>The last Nt expanded by \<open>expand_tri\<close> has an exponential number of productions.\<close>
+(*
 lemma bad_gram_last_expanded_card: 
   "\<lbrakk>distinct As; length As = n; n \<ge> 1\<rbrakk>
    \<Longrightarrow> card ({v. (hd As, v) \<in> expand_tri As (bad_grammar As)}) = 2 ^ n" 
-proof(induction As arbitrary: n rule: bad_grammar.induct)
-  case 1
-  then show ?case by simp
+*)
+lemma bad_gram_last_expanded_card:
+  "card ({v. (n, v) \<in> expand_tri (rev [0..<Suc n]) (set (bad_grammar n))}) = 2 ^ Suc n" 
+proof(induction n)
+  case 0
+  have 4: "{v. v = [Tm False] \<or> v = [Tm True]} = {[Tm False], [Tm True]}" by auto
+  show ?case by (auto simp: 4)
 next
-  case (2 A)
-  have 4: "{v. v = [Tm 0] \<or> v = [Tm (Suc 0)]} = {[Tm 0], [Tm 1]}" by auto
-  then show ?case using 2 by (auto simp add: 4)
-next
-  case (3 A C As)
-  let ?R' = "expand_tri (C#As) (bad_grammar (A#C#As))"
-  let ?X = "{(Al,Bw) \<in> ?R'. Al=A \<and> (\<exists>w B. Bw = Nt B # w \<and> B \<in> set (C#As))}"
-  let ?Y = "{(A,v@w) |v w. \<exists>B. (A, Nt B # w) \<in> ?X \<and> (B,v) \<in> ?R'}"
+  case (Suc n)
+  have 1: "rev [0..<Suc (Suc n)] = Suc n # rev [0..<Suc n]" by simp
+  note upt_Suc[simp del]
+  let ?R = "expand_tri (rev [0..<Suc (Suc n)]) (set (bad_grammar (Suc n)))"
+  let ?S = "{v. (Suc n, v) \<in> ?R}"
+  let ?Rn = "expand_tri (rev [0..<Suc n]) (set (bad_grammar n))"
+  let ?Sn = "{v. (n, v) \<in> ?Rn}"
+  
+  let ?R' = "expand_tri (rev [0..<Suc n]) (set (bad_grammar (Suc n)))"
+  let ?X = "{(Al,Bw) \<in> ?R'. Al=Suc n \<and> (\<exists>w B. Bw = Nt B # w \<and> B \<le> n)}"
+  let ?Y = "{(Suc n, v@w) |v w. \<exists>B. (Suc n, Nt B # w) \<in> ?X \<and> (B,v) \<in> ?R'}"
 
-  let ?S = "{v. (hd (A#C#As), v) \<in> expand_tri (A#C#As) (bad_grammar (A#C#As))}"
 
-  have 4: "(A,Bw) \<in> ?R' \<longleftrightarrow> (A, Bw) \<in> (bad_grammar (A#C#As))" for Bw
-    using expand_tri_iff1[of "A" "C#As" Bw] 3 by auto
-  then have "?X = {(Al,Bw) \<in> (bad_grammar (A#C#As)). Al=A \<and> (\<exists>w B. Bw = Nt B#w \<and> B \<in> set (C#As))}" 
-    using expand_tri_iff1 by auto
-  also have "... = {(A, Nt C # [Tm 0]), (A, Nt C # [Tm 1])}" 
-    using 3 by (auto simp add: bad_gram_simp1)
-  finally have 5: "?X = {(A, [Nt C, Tm 0]), (A, [Nt C, Tm 1])}".
-  then have cons5: "?X = {(A, Nt C # [Tm 0]), (A, Nt C # [Tm 1])}" by simp
+  have 4: "(Suc n, Bw) \<in> ?R' \<longleftrightarrow> (Suc n, Bw) \<in> set (bad_grammar (Suc n))" for Bw
+    by (simp add: expand_tri_iff1)
+  have "?X = {(Al,Bw) \<in> set (bad_grammar (Suc n)). Al = Suc n \<and> (\<exists>w B. Bw = Nt B#w \<and> B \<le> n)}"
+    by (auto simp add: expand_tri_iff1)
+  also have "... = {(Suc n, Nt n # [Tm False]), (Suc n, Nt n # [Tm True])}" 
+    by (auto simp: bad_gram_simp1)
+  finally have 5: "?X = \<dots>".
+  then have cons5: "?X = {(Suc n, Nt n # [Tm False]), (Suc n, Nt n # [Tm True])}" by simp
 
-  have 6: "?R' = {(A, [Nt C, Tm 0]), (A, [Nt C, Tm 1])} \<union> expand_tri (C#As) (bad_grammar (C#As))"
-    using 3 expand_tri_bad_grammar_simp1[of A "C#As"] by auto
-  have 8: "(A, as) \<notin> expand_tri (C#As) (bad_grammar (C#As))" for as 
-    using "3.prems" bad_gram_simp1 expand_tri_iff1
-    by (metis distinct.simps(2))
-  then have 7: "{(A,[Nt C, Tm 0]), (A,[Nt C, Tm 1])} \<inter> expand_tri (C#As) (bad_grammar (C#As)) = {}"
+  have 6: "?R' = {(Suc n, [Nt n, Tm False]), (Suc n, [Nt n, Tm True])} \<union> expand_tri (rev[0..<Suc n]) (set (bad_grammar n))"
+    using expand_tri_bad_grammar_simp1
+    by simp
+  have 8: "(Suc n, w) \<notin> expand_tri (rev [0..<Suc n]) (set (bad_grammar n))" for w 
+    by (simp add: bad_gram_simp1 expand_tri_iff1)
+  then have 7: "{(Suc n, [Nt n, Tm False]), (Suc n, [Nt n, Tm True])} \<inter> expand_tri (rev [0..<Suc n]) (set (bad_grammar n)) = {}"
     by auto
-    
-  have "?R' - ?X = expand_tri (C#As) (bad_grammar (C#As))" using 7 6 5 by auto
-  then have S_from_Y: "?S = {v. (A, v) \<in> ?Y}" using 6 8 by auto
 
-  have Y_decomp: "?Y = {(A, v @ [Tm 0]) | v. (C,v) \<in> ?R'} \<union> {(A, v @ [Tm 1]) | v. (C,v) \<in> ?R'}"
+  have "?R' - ?X = expand_tri (rev [0..<Suc n]) (set (bad_grammar n))" using 7 6 5 by simp
+  have S_from_Y: "?S = {v. (Suc n, v) \<in> ?Y}"
+    by (auto simp: 1 Let_def expand_tri_iff1 bad_gram_simp1 expand_tri_insert_simp)
+
+  note bad_grammar.simps(2)[simp del]
+  have Y_decomp: "?Y = {(Suc n, v @ [Tm False]) | v. (n,v) \<in> ?R'} \<union> {(Suc n, v @ [Tm True]) | v. (n,v) \<in> ?R'}"
+    (is "?Y = ?Z")
   proof
-    show "?Y \<subseteq> {(A, v @ [Tm 0]) | v. (C,v) \<in> ?R'} \<union> {(A, v @ [Tm 1]) | v. (C,v) \<in> ?R'}"
+    show "?Y \<subseteq> ?Z"
     proof
       fix x
       assume assm: "x \<in> ?Y"
-      then have "\<exists>v w. x = (A, v @ w) \<and> (\<exists>B. (A, Nt B # w) \<in> ?X \<and> (B,v) \<in> ?R')" by blast
-      then obtain v w where P: "x = (A, v @ w) \<and> (\<exists>B. (A, Nt B # w) \<in> ?X \<and> (B,v) \<in> ?R')" by blast
-      then have cfact:"(A, Nt C # w) \<in> ?X \<and> (C,v) \<in> ?R'" using cons5 
+      then have "\<exists>v w. x = (Suc n, v @ w) \<and> (\<exists>B. (Suc n, Nt B # w) \<in> ?X \<and> (B,v) \<in> ?R')" by blast
+      then obtain v w where P: "x = (Suc n, v @ w) \<and> (\<exists>B. (Suc n, Nt B # w) \<in> ?X \<and> (B,v) \<in> ?R')" by blast
+      then have cfact:"(Suc n, Nt n # w) \<in> ?X \<and> (n,v) \<in> ?R'" using cons5 
         by (metis (no_types, lifting) Pair_inject insert_iff list.inject singletonD sym.inject(1))
-      then have "w = [Tm 0] \<or> w = [Tm 1]" using cons5
+      then have "w = [Tm False] \<or> w = [Tm True]" using cons5
         by (metis (no_types, lifting) empty_iff insertE list.inject prod.inject)
-      then show "x \<in> {(A, v @ [Tm 0]) | v. (C,v) \<in> ?R'} \<union> {(A, v @ [Tm 1]) | v. (C,v) \<in> ?R'}" 
-        using P cfact by auto
+      then show "x \<in> ?Z" using P cfact by auto
     qed
   next
-    show "{(A, v @ [Tm 0]) | v. (C,v) \<in> ?R'} \<union> {(A, v @ [Tm 1]) | v. (C,v) \<in> ?R'} \<subseteq> ?Y" 
+    show "?Z \<subseteq> ?Y" 
       using cons5 by auto
   qed
   
-  from Y_decomp have S_decomp: "?S = {v@[Tm 0] | v. (C, v) \<in> ?R'} \<union> {v@[Tm 1] | v. (C, v) \<in> ?R'}" 
+  from Y_decomp have S_decomp: "?S = {v@[Tm False] | v. (n,v) \<in> ?R'} \<union> {v@[Tm True] | v. (n,v) \<in> ?R'}"
     using S_from_Y by auto
 
-  have cardCvR: "card {v. (C, v) \<in> ?R'} = 2^(n-1)" using 3 6 by auto
-  have "bij_betw (\<lambda>x. x@[Tm 0]) {v. (C, v) \<in> ?R'} {v@[Tm 0] | v. (C, v) \<in> ?R'}"
+  have cardCvR: "card {v. (n, v) \<in> ?R'} = 2 ^ Suc n" using Suc 6 by auto
+  have "bij_betw (\<lambda>x. x@[Tm False]) {v. (n, v) \<in> ?R'} {v@[Tm False] | v. (n, v) \<in> ?R'}"
     by (auto simp add: bij_betw_def inj_on_def)
-  then have cardS1: "card {v@[Tm 0] | v. (C, v) \<in> ?R'} = 2^(n-1)"
+  then have cardS1: "card {v@[Tm False] | v. (n, v) \<in> ?R'} = 2 ^ Suc n"
     using cardCvR by (auto simp add: bij_betw_same_card)
-  have "bij_betw (\<lambda>x. x@[Tm 1]) {v. (C, v) \<in> ?R'} {v@[Tm 1] | v. (C, v) \<in> ?R'}"
+  have "bij_betw (\<lambda>x. x@[Tm True]) {v. (n, v) \<in> ?R'} {v@[Tm True] | v. (n,v) \<in> ?R'}"
     by (auto simp add: bij_betw_def inj_on_def)
-  then have cardS2: "card {v@[Tm 1] | v. (C, v) \<in> ?R'} = 2^(n-1)" 
+  then have cardS2: "card {v@[Tm True] | v. (n,v) \<in> ?R'} = 2 ^ Suc n" 
     using cardCvR by (auto simp add: bij_betw_same_card)
 
   have fin_R': "finite ?R'" using finite_bad_grammar finite_expand_tri by blast
-  let ?f1 = "\<lambda>(C,v). v@[Tm 0]"
-  have "{v@[Tm 0] | v. (C, v) \<in> ?R'} \<subseteq> ?f1 ` ?R'" by auto
-  then have fin1: "finite {v@[Tm 0] | v. (C, v) \<in> ?R'}"
+  let ?f1 = "\<lambda>(C,v). v@[Tm False]"
+  have "{v@[Tm False] | v. (n,v) \<in> ?R'} \<subseteq> ?f1 ` ?R'" by auto
+  then have fin1: "finite {v@[Tm False] | v. (n,v) \<in> ?R'}"
     using fin_R' by (meson finite_SigmaI finite_surj)
-  let ?f2 = "\<lambda>(C,v). v@[Tm 1]"
-  have "{v@[Tm 1] | v. (C, v) \<in> ?R'} \<subseteq> ?f2 ` ?R'" by auto
-  then have fin2: "finite {v@[Tm 1] | v. (C, v) \<in> ?R'}"
+  let ?f2 = "\<lambda>(C,v). v@[Tm True]"
+  have "{v@[Tm True] | v. (n,v) \<in> ?R'} \<subseteq> ?f2 ` ?R'" by auto
+  then have fin2: "finite {v@[Tm True] | v. (n,v) \<in> ?R'}"
     using fin_R' by (meson finite_SigmaI finite_surj)
 
-  have fin_sets: "finite {v@[Tm 0] | v. (C, v) \<in> ?R'} \<and> finite {v@[Tm 1] | v. (C, v) \<in> ?R'}"
+  have fin_sets: "finite {v@[Tm False] | v. (n,v) \<in> ?R'} \<and> finite {v@[Tm True] | v. (n,v) \<in> ?R'}"
     using fin1 fin2 by simp
 
-  have "{v@[Tm 0] | v. (C, v) \<in> ?R'} \<inter> {v@[Tm 1] | v. (C, v) \<in> ?R'} = {}" by auto
-  then have "card ?S = 2^(n-1) + 2^(n-1)"
+  have "{v@[Tm False] | v. (n,v) \<in> ?R'} \<inter> {v@[Tm True] | v. (n,v) \<in> ?R'} = {}" by auto
+  then have "card ?S = 2^(Suc n) + 2^(Suc n)"
     using S_decomp cardS1 cardS2 fin_sets 
     by (auto simp add: card_Un_disjoint)
-
-  then show ?case using 3 by auto
+  then show ?case by auto
 qed
 
 text \<open>The productions resulting from \<open>expand_tri (bad_grammar)\<close> have at least exponential size.\<close>
-theorem expand_tri_blowup: assumes "n \<ge> 1"
-  shows "card (expand_tri [0..<n] (bad_grammar [0..<n])) \<ge> 2^n"
+theorem expand_tri_blowup:
+  "card (expand_tri (rev [0..<Suc n]) (set (bad_grammar n))) \<ge> 2^(Suc n)"
+(is "card ?R \<ge> _")
 proof -
-  from assms have "length [0..<n] \<ge> 1 \<and> distinct [0..<n] \<and> length [0..<n] = n" by auto
-  then have 1: "card ({v. (hd [0..<n], v) \<in> expand_tri [0..<n] (bad_grammar [0..<n])}) = 2 ^ n"
-    using bad_gram_last_expanded_card assms by blast
-
-  let ?S = "{v. (hd [0..<n], v) \<in> expand_tri [0..<n] (bad_grammar [0..<n])}"
-  have 2: "card ?S = card ({hd [0..<n]} \<times> ?S)"
-    by (simp add: card_cartesian_product_singleton)
-  have 3: "({hd [0..<n]} \<times> ?S) \<subseteq> (expand_tri [0..<n] (bad_grammar [0..<n]))" by fastforce
-
-  have "finite (expand_tri [0..<n] (bad_grammar [0..<n]))"
+  have fin: "finite ?R"
     using finite_bad_grammar finite_expand_tri by blast
-  then show ?thesis using 1 2 3
-    by (metis card_mono)
+  have "{v. (n,v) \<in> ?R} \<subseteq> snd ` ?R" by (force simp del: upt_Suc simp: image_def)
+  from fin card_mono[OF _ this, unfolded bad_gram_last_expanded_card]
+    card_image_le[OF fin, of snd]
+  show ?thesis by (auto simp del: upt_Suc)
 qed
+
+(* Attempt to prove gnf_hd (bad_grammar n). Aborted because nts cannot be ordered properly. *)
+lemma in_dep_on_bad_grammar: "n \<in> dep_on (set (bad_grammar m)) l \<longleftrightarrow> l = Suc n \<and> n < m"
+  by (induction m, auto simp: dep_on_insert)
+
+lemma triangular_bad_grammar: "triangular [m..<n] (set (bad_grammar l))"
+proof (induction "n-m" arbitrary: n m)
+  case 0
+  then show ?case by (auto simp: dep_on_def)
+next
+  case (Suc d)
+  then have 1: "[m..<n] = m # [Suc m..<n]" by (simp add: upt_conv_Cons)
+  from Suc have "d = n - Suc m" by simp
+  from Suc(1)[OF this]
+  show ?case by (auto simp add: 1 in_dep_on_bad_grammar)
+qed
+
+lemma solve_tri_bad_grammar:
+  "length As' = Suc n \<Longrightarrow> solve_tri [0..<Suc n] As' (set (bad_grammar l)) = set (bad_grammar l)"
+  apply (rule solve_tri_id[OF triangular_bad_grammar]) by simp
 
 end
