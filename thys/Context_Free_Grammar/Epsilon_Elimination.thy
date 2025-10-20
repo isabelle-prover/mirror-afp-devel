@@ -180,6 +180,17 @@ by eval
 lemma Eps_free_Eps_elim: "Eps_free (Eps_elim ps')"
 unfolding Eps_elim_def Eps_free_def by blast
 
+text \<open>@{const Eps_elim} is identity on @{const Eps_free} input.\<close>
+
+lemma Eps_free_not_Nullable: "Eps_free P \<Longrightarrow> \<not> Nullable P A"
+  by (auto simp: nullable_iff Eps_free_derives_Nil)
+
+lemma Eps_free_eps_closure: "Eps_free P \<Longrightarrow> eps_closure P w = [w]"
+  by (induction w, auto simp: Eps_free_not_Nullable)
+
+lemma Eps_elim_id: "Eps_free P \<Longrightarrow> Eps_elim P = P"
+  by (auto simp: Eps_elim_def Eps_free_eps_closure Eps_free_Nil)
+
 (* auxiliary function to prove finiteness *)
 definition Eps_elim_fun :: "('n, 't) Prods \<Rightarrow> ('n, 't) prod \<Rightarrow> ('n, 't) Prods" where 
   "Eps_elim_fun ps p = {(l',r'). l' = fst p \<and> r' \<in> set (eps_closure ps (snd p)) \<and> (r' \<noteq> [])}"
