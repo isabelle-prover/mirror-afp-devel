@@ -1,0 +1,114 @@
+{
+  "automata": [
+    {
+      "name": "A2",
+      "initial": 6,
+      "nodes": [
+        {
+          "id": 7,
+          "name": "n2",
+          "x": 414.378173828125,
+          "y": 496.5647277832031,
+          "invariant": ""
+        },
+        {
+          "id": 6,
+          "name": "n1",
+          "x": 410.9903564453125,
+          "y": -14.026785850524902,
+          "invariant": ""
+        }
+      ],
+      "edges": [
+        {
+          "source": 6,
+          "target": 7,
+          "guard": "z < 8",
+          "label": "",
+          "update": "x := z + 3, z := 0"
+        },
+        {
+          "source": 7,
+          "target": 6,
+          "guard": "z >= 4",
+          "label": "",
+          "update": ""
+        }
+      ]
+    },
+    {
+      "name": "A1",
+      "initial": 1,
+      "nodes": [
+        {
+          "id": 4,
+          "name": "l4",
+          "x": 147.95437622070312,
+          "y": 746.6243286132812,
+          "invariant": ""
+        },
+        {
+          "id": 3,
+          "name": "l3",
+          "x": 999.8117065429688,
+          "y": 758.354248046875,
+          "invariant": "x <= 14"
+        },
+        {
+          "id": 2,
+          "name": "l2",
+          "x": 1050.4342041015625,
+          "y": 235.3621368408203,
+          "invariant": "x <= 14"
+        },
+        {
+          "id": 1,
+          "name": "l1",
+          "x": 179.5,
+          "y": 226.2,
+          "invariant": ""
+        }
+      ],
+      "edges": [
+        {
+          "source": 4,
+          "target": 1,
+          "guard": "y >= 1000000",
+          "label": "",
+          "update": ""
+        },
+        {
+          "source": 3,
+          "target": 4,
+          "guard": "",
+          "label": "",
+          "update": "y := 0"
+        },
+        {
+          "source": 3,
+          "target": 2,
+          "guard": "y >= 5",
+          "label": "",
+          "update": "x := 0"
+        },
+        {
+          "source": 2,
+          "target": 3,
+          "guard": "",
+          "label": "",
+          "update": "z := y + 1"
+        },
+        {
+          "source": 1,
+          "target": 2,
+          "guard": "x <= 5",
+          "label": "",
+          "update": ""
+        }
+      ]
+    }
+  ],
+  "clocks": "x, y, z",
+  "vars": "",
+  "formula": "E<> A1.l1"
+}

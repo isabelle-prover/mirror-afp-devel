@@ -1,0 +1,11 @@
+local
+$(SML_LIB)/basis/basis.mlb
+$(ISABASICS)
+$(ISALIB)
+prelude.sml
+serializable.sml
+certificate.sml
+in
+signature BOUND
+functor Deserializer64Bit
+end
