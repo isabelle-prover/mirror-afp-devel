@@ -1050,7 +1050,7 @@ corollary regular_Un:
 
 subsection\<open>The Concatenation of Two Languages\<close>
 
-lemma Inlr_rtrancl [simp]: "((\<lambda>q. (Inl q, Inr a)) ` A)\<^sup>* = ((\<lambda>q. (Inl q, Inr a)) ` A)\<^sup>="
+lemma Inlr_rtrancl [simp]: "((\<lambda>q. (HF.Inl q, HF.Inr a)) ` A)\<^sup>* = ((\<lambda>q. (HF.Inl q, HF.Inr a)) ` A)\<^sup>="
   by (auto elim: rtranclE)
 
 theorem regular_conc:
@@ -1060,22 +1060,22 @@ proof -
     using S T by (auto simp: regular_def dfa_hf_def)
   note M = dfa_hf.axioms[OF M(1)] dfa_hf.axioms[OF M(2)]
   note [simp] = dfa.init dfa.nxt dfa.nextl.simps dfa.nextl_snoc
-  let ?ST = "\<lparr>nfa.states = Inl ` (dfa.states MS) \<union> Inr ` (dfa.states MT),
-                  init  = {Inl (dfa.init MS)},
-                  final = Inr ` (dfa.final MT),
-                  nxt   = \<lambda>q x. sum_case (\<lambda>qs. {Inl (dfa.nxt MS qs x)})
-                                             (\<lambda>qt. {Inr (dfa.nxt MT qt x)}) q,
-                  eps   = (\<lambda>q. (Inl q, Inr (dfa.init MT))) ` dfa.final MS\<rparr>"
+  let ?ST = "\<lparr>nfa.states = HF.Inl ` (dfa.states MS) \<union> HF.Inr ` (dfa.states MT),
+                  init  = {HF.Inl (dfa.init MS)},
+                  final = HF.Inr ` (dfa.final MT),
+                  nxt   = \<lambda>q x. sum_case (\<lambda>qs. {HF.Inl (dfa.nxt MS qs x)})
+                                             (\<lambda>qt. {HF.Inr (dfa.nxt MT qt x)}) q,
+                  eps   = (\<lambda>q. (HF.Inl q, HF.Inr (dfa.init MT))) ` dfa.final MS\<rparr>"
   interpret ST: nfa ?ST
     using M dfa.final
     by (force simp add: nfa_def dfa.finite)
-  have Inl_in_eps_iff: "\<And>q Q. Inl q \<in> nfa.epsclo ?ST Q \<longleftrightarrow> Inl q \<in> Q \<and> q \<in> dfa.states MS"
+  have Inl_in_eps_iff: "\<And>q Q. HF.Inl q \<in> nfa.epsclo ?ST Q \<longleftrightarrow> HF.Inl q \<in> Q \<and> q \<in> dfa.states MS"
     by (auto simp: M dfa.finite ST.epsclo_def)
-  have Inr_in_eps_iff: "\<And>q Q. Inr q \<in> nfa.epsclo ?ST Q \<longleftrightarrow>
-           (Inr q \<in> Q \<and> q \<in> dfa.states MT \<or> (q = dfa.init MT \<and> (\<exists>qf \<in> dfa.final MS. Inl qf \<in> Q)))"
+  have Inr_in_eps_iff: "\<And>q Q. HF.Inr q \<in> nfa.epsclo ?ST Q \<longleftrightarrow>
+           (HF.Inr q \<in> Q \<and> q \<in> dfa.states MT \<or> (q = dfa.init MT \<and> (\<exists>qf \<in> dfa.final MS. HF.Inl qf \<in> Q)))"
     by (auto simp: M dfa.finite ST.epsclo_def)
   { fix u
-    have "\<And>q. Inl q \<in> ST.nextl {Inl (dfa.init MS)} u \<longleftrightarrow> q = (dfa.nextl MS (dfa.init MS) u)"
+    have "\<And>q. HF.Inl q \<in> ST.nextl {HF.Inl (dfa.init MS)} u \<longleftrightarrow> q = (dfa.nextl MS (dfa.init MS) u)"
     proof (induct u rule: List.rev_induct)
       case Nil show ?case
         by (auto simp: M Inl_in_eps_iff)
@@ -1087,7 +1087,7 @@ proof -
     qed
   } note Inl_ST_iff = this
   { fix u
-    have "\<And>q. Inr q \<in> ST.nextl {Inl (dfa.init MS)} u  \<longleftrightarrow>
+    have "\<And>q. HF.Inr q \<in> ST.nextl {HF.Inl (dfa.init MS)} u  \<longleftrightarrow>
                (\<exists>uS uT. uS \<in> dfa.language MS \<and> u = uS@uT \<and> q = dfa.nextl MT (dfa.init MT) uT)"
     proof (induct u rule: List.rev_induct)
       case Nil show ?case
@@ -1102,7 +1102,7 @@ proof -
         apply (metis (lifting) append_Nil2 dfa.nextl.simps(1) dfa.nextl_snoc)
         apply (rename_tac uS uT)
         apply (rule_tac xs=uT in rev_exhaust, simp)
-        apply (rule bexI [where x="Inl (dfa.nextl MS (dfa.init MS) u)"])
+        apply (rule bexI [where x="HF.Inl (dfa.nextl MS (dfa.init MS) u)"])
         apply (auto simp: Inl_ST_iff)
         apply (rule bexI)
         apply (auto simp: dfa.nextl_init_state)

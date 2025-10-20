@@ -1104,4 +1104,7 @@ lemma sum_case_split_asm:
   "P (sum_case f g a) \<longleftrightarrow> \<not> ((\<exists>x. a = Inl x \<and> \<not> P(f x)) \<or> (\<exists>y. a = Inr y \<and> \<not> P(g y)) \<or> (\<not> is_hsum a \<and> \<not> P undefined))"
   by (auto simp add: sum_case_split)
 
+text \<open>Expose standard \<open>Inl\<close> and \<open>Inr\<close> on sum types:\<close>
+hide_const (open) HF.Inl HF.Inr
+
 end

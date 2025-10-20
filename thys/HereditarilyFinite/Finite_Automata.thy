@@ -142,8 +142,8 @@ definition Plus where
   "Plus fsm1 fsm2 = \<lparr>states = states fsm1 + states fsm2,
                       init = init fsm1 + init fsm2,
                       final = final fsm1 + final fsm2,
-                      next = \<lambda>st x st'. (\<exists>st1 st1'. st = Inl st1 \<and> st' = Inl st1' \<and> next fsm1 st1 x st1') \<or>
-                                       (\<exists>st2 st2'. st = Inr st2 \<and> st' = Inr st2' \<and> next fsm2 st2 x st2')\<rparr>"
+                      next = \<lambda>st x st'. (\<exists>st1 st1'. st = HF.Inl st1 \<and> st' = HF.Inl st1' \<and> next fsm1 st1 x st1') \<or>
+                                       (\<exists>st2 st2'. st = HF.Inr st2 \<and> st' = HF.Inr st2' \<and> next fsm2 st2 x st2')\<rparr>"
 
 lemma states_Plus [simp]: "states (Plus fsm1 fsm2) = states fsm1 + states fsm2"
   by (simp add: Plus_def)
@@ -154,15 +154,15 @@ lemma init_Plus [simp]: "init (Plus fsm1 fsm2) = init fsm1 + init fsm2"
 lemma final_Plus [simp]: "final (Plus fsm1 fsm2) = final fsm1 + final fsm2"
   by (simp add: Plus_def)
 
-lemma next_Plus1: "next (Plus fsm1 fsm2) (Inl st1) x st' \<longleftrightarrow> (\<exists>st1'. st' = Inl st1' \<and> next fsm1 st1 x st1')"
+lemma next_Plus1: "next (Plus fsm1 fsm2) (HF.Inl st1) x st' \<longleftrightarrow> (\<exists>st1'. st' = HF.Inl st1' \<and> next fsm1 st1 x st1')"
   by (simp add: Plus_def)
 
-lemma next_Plus2: "next (Plus fsm1 fsm2) (Inr st2) x st' \<longleftrightarrow> (\<exists>st2'. st' = Inr st2' \<and> next fsm2 st2 x st2')"
+lemma next_Plus2: "next (Plus fsm1 fsm2) (HF.Inr st2) x st' \<longleftrightarrow> (\<exists>st2'. st' = HF.Inr st2' \<and> next fsm2 st2 x st2')"
   by (simp add: Plus_def)
 
 lemma reaches_Plus_iff1 [simp]:
-     "reaches (Plus fsm1 fsm2) (Inl st1) xs st' \<longleftrightarrow>
-      (\<exists>st1'. st' = Inl st1' \<and> reaches fsm1 st1 xs st1')"
+     "reaches (Plus fsm1 fsm2) (HF.Inl st1) xs st' \<longleftrightarrow>
+      (\<exists>st1'. st' = HF.Inl st1' \<and> reaches fsm1 st1 xs st1')"
 proof (induction xs arbitrary: st1)
   case Nil
   then show ?case by auto
@@ -173,8 +173,8 @@ next
 qed
 
 lemma reaches_Plus_iff2 [simp]:
-     "reaches (Plus fsm1 fsm2) (Inr st2) xs st' \<longleftrightarrow>
-      (\<exists>st2'. st' = Inr st2' \<and> reaches fsm2 st2 xs st2')"
+     "reaches (Plus fsm1 fsm2) (HF.Inr st2) xs st' \<longleftrightarrow>
+      (\<exists>st2'. st' = HF.Inr st2' \<and> reaches fsm2 st2 xs st2')"
 proof (induction xs arbitrary: st2)
   case Nil
   then show ?case by auto
@@ -185,8 +185,8 @@ qed
 
 lemma reaches_Plus_iff [simp]:
      "reaches (Plus fsm1 fsm2) st xs st' \<longleftrightarrow>
-      (\<exists>st1 st1'. st = Inl st1 \<and> st' = Inl st1' \<and> reaches fsm1 st1 xs st1') \<or>
-      (\<exists>st2 st2'. st = Inr st2 \<and> st' = Inr st2' \<and> reaches fsm2 st2 xs st2')"
+      (\<exists>st1 st1'. st = HF.Inl st1 \<and> st' = HF.Inl st1' \<and> reaches fsm1 st1 xs st1') \<or>
+      (\<exists>st2 st2'. st = HF.Inr st2 \<and> st' = HF.Inr st2' \<and> reaches fsm2 st2 xs st2')"
 proof (induction xs arbitrary: st st')
   case Nil
   then show ?case by auto
