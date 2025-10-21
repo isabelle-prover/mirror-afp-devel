@@ -4,6 +4,35 @@
     <title>Archive of Formal Proofs</title>
     <link>https://isa-afp.org/</link>
     <description>Formal developments in the AFP</description><item>
+  <title>Z Mathematical Toolkit in Isabelle/HOL</title>
+  <link>https://isa-afp.org/entries/Z_Toolkit.html</link>
+  <pubDate>Thu, 16 Oct 2025 00:00:00 +0000</pubDate>
+  <description>Z Mathematical Toolkit in Isabelle/HOL in the AFP</description>
+    <category>Computer science/Semantics and reasoning</category>
+</item>
+<item>
+  <title>Pushdown Automata</title>
+  <link>https://isa-afp.org/entries/Pushdown_Automata.html</link>
+  <pubDate>Wed, 15 Oct 2025 00:00:00 +0000</pubDate>
+  <description>Pushdown Automata in the AFP</description>
+    <category>Computer science/Automata and formal languages</category>
+</item>
+<item>
+  <title>Muntac: A Verified Certificate Checker for Timed Automata</title>
+  <link>https://isa-afp.org/entries/Munta_Certificate_Checker.html</link>
+  <pubDate>Sun, 12 Oct 2025 00:00:00 +0000</pubDate>
+  <description>Muntac: A Verified Certificate Checker for Timed Automata in the AFP</description>
+    <category>Computer science/Automata and formal languages</category>
+    <category>Tools</category>
+</item>
+<item>
+  <title>Relational Divisibility</title>
+  <link>https://isa-afp.org/entries/Relational_Divisibility.html</link>
+  <pubDate>Thu, 09 Oct 2025 00:00:00 +0000</pubDate>
+  <description>Relational Divisibility in the AFP</description>
+    <category>Mathematics/Order</category>
+</item>
+<item>
   <title>Stratified Datalog and Program Analysis</title>
   <link>https://isa-afp.org/entries/Stratified_Datalog.html</link>
   <pubDate>Mon, 01 Sep 2025 00:00:00 +0000</pubDate>

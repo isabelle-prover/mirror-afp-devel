@@ -3,10 +3,22 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://isa-afp.org/entries/index.json</loc>
-    <lastmod>2025-09-01T00:00:00+00:00</lastmod>
+    <lastmod>2025-10-16T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/</loc>
-    <lastmod>2025-09-01T00:00:00+00:00</lastmod>
+    <lastmod>2025-10-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Z_Toolkit.html</loc>
+    <lastmod>2025-10-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Pushdown_Automata.html</loc>
+    <lastmod>2025-10-15T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Munta_Certificate_Checker.html</loc>
+    <lastmod>2025-10-12T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Relational_Divisibility.html</loc>
+    <lastmod>2025-10-09T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/entries/Stratified_Datalog.html</loc>
     <lastmod>2025-09-01T00:00:00+00:00</lastmod>
@@ -2810,8 +2822,6 @@
     <loc>https://isa-afp.org/entries/Example-Submission.html</loc>
     <lastmod>2004-02-25T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://isa-afp.org/xxx/</loc>
-  </url><url>
     <loc>https://isa-afp.org/authors/whitley/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/crighton/</loc>
@@ -4954,6 +4964,8 @@
   </url><url>
     <loc>https://isa-afp.org/sessions/munta_base/</loc>
   </url><url>
+    <loc>https://isa-afp.org/sessions/munta_certificate_checker/</loc>
+  </url><url>
     <loc>https://isa-afp.org/sessions/munta_model_checker/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/myhill-nerode/</loc>
@@ -5268,6 +5280,8 @@
   </url><url>
     <loc>https://isa-afp.org/sessions/pure-examples/</loc>
   </url><url>
+    <loc>https://isa-afp.org/sessions/pushdown_automata/</loc>
+  </url><url>
     <loc>https://isa-afp.org/sessions/pushdown_systems/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/q0_metatheory/</loc>
@@ -5373,6 +5387,8 @@
     <loc>https://isa-afp.org/sessions/relational_cardinality/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/relational_disjoint_set_forests/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/sessions/relational_divisibility/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/relational_forests/</loc>
   </url><url>
@@ -6072,6 +6088,8 @@
     <loc>https://isa-afp.org/authors/matiyasevich/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/nagashima/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/sessions/z_toolkit/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/zeckendorf/</loc>
   </url><url>

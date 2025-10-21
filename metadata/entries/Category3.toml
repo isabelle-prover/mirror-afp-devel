@@ -98,7 +98,7 @@ Added various proof rules for limits.
 """
 2024-03-28 = """
 Additions to CartesianCategory.  Added facts about dual equivalences of categories.
-(revision 6610630663ea)<br>"""
+(revision 6610630663ea)<br>
 """
 2025-10-05 = """
 Added Colimit, which dualizes some of the definitions and facts in Limit.

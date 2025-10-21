@@ -1,0 +1,28 @@
+chapter AFP
+
+session Munta_Certificate_Checker = Munta_Model_Checker +
+  options [timeout = 1200]
+  sessions
+    Graph_Theory
+    Munta_Model_Checker
+  directories
+    Certification
+  theories
+    "Certification/Lasso_Freeness_Certificates_Complete"
+    "Certification/Unreachability_Certification"
+    "Certification/Unreachability_Certification2"
+    "Certification/Simulation_Graphs2"
+    "Certification/TA_Simulation"
+    "Certification/Normalized_Zone_Semantics_Certification_Impl"
+    "Certification/Normalized_Zone_Semantics_Certification_Impl2"
+  theories
+    Simple_Network_Language_Certificate_Code
+  theories [condition = ISABELLE_MLTON]
+    Munta_Certificate_Compile_MLton
+    Munta_Certificate_Compile_Poly
+  document_files
+    "root.tex"
+    "root.bib"
+  export_files (in ".") [1]
+    "Munta_Certificate_Checker.Munta_Certificate_Compile_MLton:*"
+    "Munta_Certificate_Checker.Munta_Certificate_Compile_Poly:*"
