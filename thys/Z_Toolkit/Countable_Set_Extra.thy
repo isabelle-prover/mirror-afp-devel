@@ -254,12 +254,12 @@ proof -
     apply (rule comp_inj_on)
      apply (meson bit_infseq_of_nat_set_inj cset.inj_map injD inj_onI)
     apply (rule comp_inj_on)
-     apply (metis cset2infseq_inj subset_inj_on)
+     apply (metis cset2infseq_inj inj_on_subset)
     apply (rule comp_inj_on)
-     apply (rule subset_inj_on)
+     apply (rule inj_on_subset)
       apply (rule infseq_inj)
      apply (simp)
-    apply (meson UNIV_I bij_imp_bij_inv bij_is_inj bit_infseq_of_nat_cset_bij subsetI subset_inj_on)
+    apply (meson UNIV_I bij_imp_bij_inv bij_is_inj bit_infseq_of_nat_cset_bij subsetI inj_on_subset)
     done
 qed
 

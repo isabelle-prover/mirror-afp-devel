@@ -442,7 +442,7 @@ proof -
     from ys obtain v where v: "(k, v) \<in> set xs"
       using hd_in_set by fastforce
     hence ys':"?ys = replicate (length ?ys) (k, v)"
-      by (metis (mono_tags) case_prodI filter_set in_set_replicate member_filter ys(2))
+      by (metis in_set_replicate kmem ys(2))
     hence "snd (hd ?ys) = v"
       by (metis hd_replicate replicate_0 snd_conv ys(1))
     moreover have "(THE y. (k, y) \<in> set xs) = v"
