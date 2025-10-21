@@ -43,6 +43,10 @@ lemma type_preserving_on_subset:
   using assms
   by blast
 
+lemma type_preserving_on_union [simp]: 
+  "type_preserving_on (X \<union> Y) \<V> \<mu> \<longleftrightarrow> type_preserving_on X \<V> \<mu> \<and> type_preserving_on Y \<V> \<mu>"
+  by auto
+
 lemma type_preserving_on_id_subst [intro]: "type_preserving_on X \<V> id_subst"
   by auto
 

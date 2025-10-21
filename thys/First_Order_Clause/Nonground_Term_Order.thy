@@ -6,6 +6,7 @@ theory Nonground_Term_Order
 begin
 
 locale base_grounded_order =
+  (* TODO: Would a restricted_strict_order be enough? *)
   order: grounded_restricted_total_strict_order +
   order: grounded_restricted_wellfounded_strict_order +
   order: ground_subst_stable_grounded_order +

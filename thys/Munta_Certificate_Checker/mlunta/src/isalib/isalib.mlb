@@ -1,0 +1,11 @@
+$(SML_LIB)/basis/basis.mlb
+unsynchronized.sml
+exn.sml
+ann "nonexhaustiveMatch ignore" in
+    basics.sml
+    library.sml
+    table.sml
+    alist.sml
+    graph.sml
+    scan.sml
+end

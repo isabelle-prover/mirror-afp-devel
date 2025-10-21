@@ -19,6 +19,6 @@ locale monomorphic_superposition_calculus =
   context_to_set = set2_actxt and hole = \<box> and apply_context = ctxt_apply_term and 
   occurences = occurences and ground_hole = \<box> and apply_ground_context = apply_ground_context and
   compose_ground_context = "(\<circ>\<^sub>c)" and ground_context_map = map_args_actxt and
-  ground_context_to_set = set2_actxt and welltyped = welltyped 
+  ground_context_to_set = set2_actxt and welltyped = welltyped
 
 end

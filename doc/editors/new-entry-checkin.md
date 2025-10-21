@@ -98,6 +98,12 @@ development snapshot.
 The check-in procedure is the same as for a normal release entry, apart
 from the fact that everything happens in the devel instead of release
 directory and that the last step (publish) is omitted.
+If the submission does not work with the stable version, there is also no
+lint report. With the [linter installed](https://github.com/isabelle-prover/isabelle-linter#installation)),
+it can be generated via:
+```
+isabelle lint -d '$AFP' -o lint_bundles=afp_mandatory <sessions>
+```
 
 The authors of the entry should be notified that the entry will only
 show up on the front page when the next Isabelle version is released.

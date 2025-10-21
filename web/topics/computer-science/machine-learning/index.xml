@@ -4,6 +4,14 @@
     <title>Computer science/Machine learning</title>
     <link>https://isa-afp.org/topics/computer-science/machine-learning/</link>
     <description>AFP entries in Machine learning</description><item>
+  <title>No-free-lunch theorem for machine learning</title>
+  <link>https://isa-afp.org/entries/No_Free_Lunch_ML.html</link>
+  <pubDate>Sat, 23 Aug 2025 00:00:00 +0000</pubDate>
+  <description>No-free-lunch theorem for machine learning in the AFP</description>
+    <category>Computer science/Machine learning</category>
+    <category>Mathematics/Probability theory</category>
+</item>
+<item>
   <title>The Sigmoid Function and the Universal Approximation Theorem</title>
   <link>https://isa-afp.org/entries/Sigmoid_Universal_Approximation.html</link>
   <pubDate>Fri, 23 May 2025 00:00:00 +0000</pubDate>

@@ -68,7 +68,7 @@ next
   qed
 qed
 
-lemma parallel_induct_second_in_positions\<^sub>G [case_names base step]: 
+lemma parallel_induct_second_in_positions\<^sub>G [case_names parallel p\<^sub>2_in_t base step]: 
   assumes
     parallel: "p\<^sub>1 \<bottom> p\<^sub>2" and
     p\<^sub>2_in_t: "p\<^sub>2 \<in> positions\<^sub>G t" and
@@ -149,7 +149,7 @@ lemma parallel_induct_in_positions\<^sub>G [case_names parallel p\<^sub>1_in_t p
         P p\<^sub>1 p\<^sub>2 t"
     shows "P p\<^sub>1 p\<^sub>2 t"
   using p\<^sub>1_in_t p\<^sub>2_in_t
-proof (induction arbitrary: t rule: parallel_induct[OF parallel ])
+proof (induction arbitrary: t rule: parallel_induct[OF parallel])
   case base': (1 p\<^sub>1 p\<^sub>2 i j q\<^sub>1 q\<^sub>2 t)
 
   then obtain f ts where "t = GFun f ts" "j < length ts" "i < length ts"

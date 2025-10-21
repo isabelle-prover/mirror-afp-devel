@@ -1,0 +1,20 @@
+chapter AFP
+
+session "Unconstrained_Optimization" = "Sigmoid_Universal_Approximation"+          
+
+  options [timeout = 300]
+
+  sessions     
+     "HOL-Library"
+     
+  theories
+    Unconstrained_Optimization   (* cap theory*)
+    
+  document_files
+    "root.tex"
+    "root.bib"
+    "Plot.png"
+
+    
+    
+        

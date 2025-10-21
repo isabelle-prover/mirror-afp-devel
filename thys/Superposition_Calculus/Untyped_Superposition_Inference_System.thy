@@ -14,6 +14,14 @@ sublocale typed: superposition_calculus where
     unfold_locales
     (auto intro: term.ground_exists simp: term.exists_imgu right_unique_def split: unit.splits)
 
+lemma weakly_welltyped_atom [simp]: "typed.weakly_welltyped_atom (\<lambda>_. ()) a"
+  unfolding typed.weakly_welltyped_atom_def
+  by blast
+  
+lemma weakly_welltyped_literal [simp]: "typed.weakly_welltyped_literal (\<lambda>_. ()) l"
+  unfolding typed.weakly_welltyped_literal_def
+  by simp
+
 declare
   typed.term.welltyped_renaming [simp del]
   typed.term.welltyped_subst_stability [simp del]

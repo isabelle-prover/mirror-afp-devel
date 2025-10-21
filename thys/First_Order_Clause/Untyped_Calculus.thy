@@ -1,5 +1,5 @@
 theory Untyped_Calculus
-  imports First_Order_Clause.Nonground_Typing_Generic
+  imports Nonground_Typing_Generic
 begin
 
 abbreviation remove_types :: "('a, 'v, 'ty) typed_clause inference \<Rightarrow> 'a clause inference" where

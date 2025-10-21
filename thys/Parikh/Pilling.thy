@@ -592,8 +592,8 @@ corollary CFG_1_Tm_regular:
 proof -
   let ?L = "Lang P A"
   have "\<forall>w \<in> ?L. set w \<subseteq> {a}"
-    using derives_tms_syms_subset[of P "[Nt A]" "map Tm _"] assms(2)
-    unfolding Lang_def tms_syms_def by auto
+    using derives_Tms_syms_subset[of P "[Nt A]" "map Tm _"] assms(2)
+    unfolding Lang_def Tms_syms_def by auto
   thus ?thesis
     by (meson CFL_1_Tm_regular CFL_def assms(1))
 qed

@@ -4,6 +4,13 @@
     <title>Frank Zeyda</title>
     <link>https://isa-afp.org/authors/zeyda/</link>
     <description>AFP entries of Frank Zeyda</description><item>
+  <title>Z Mathematical Toolkit in Isabelle/HOL</title>
+  <link>https://isa-afp.org/entries/Z_Toolkit.html</link>
+  <pubDate>Thu, 16 Oct 2025 00:00:00 +0000</pubDate>
+  <description>Z Mathematical Toolkit in Isabelle/HOL in the AFP</description>
+    <category>Computer science/Semantics and reasoning</category>
+</item>
+<item>
   <title>Isabelle/UTP: Mechanised Theory Engineering for Unifying Theories of Programming</title>
   <link>https://isa-afp.org/entries/UTP.html</link>
   <pubDate>Fri, 01 Feb 2019 00:00:00 +0000</pubDate>

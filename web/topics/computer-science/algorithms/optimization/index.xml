@@ -4,6 +4,14 @@
     <title>Computer science/Algorithms/Optimization</title>
     <link>https://isa-afp.org/topics/computer-science/algorithms/optimization/</link>
     <description>AFP entries in Optimization</description><item>
+  <title>Unconstrained Optimization</title>
+  <link>https://isa-afp.org/entries/Unconstrained_Optimization.html</link>
+  <pubDate>Wed, 16 Jul 2025 00:00:00 +0000</pubDate>
+  <description>Unconstrained Optimization in the AFP</description>
+    <category>Computer science/Algorithms/Optimization</category>
+    <category>Mathematics/Analysis</category>
+</item>
+<item>
   <title>An Incremental Simplex Algorithm with Unsatisfiable Core Generation</title>
   <link>https://isa-afp.org/entries/Simplex.html</link>
   <pubDate>Fri, 24 Aug 2018 00:00:00 +0000</pubDate>

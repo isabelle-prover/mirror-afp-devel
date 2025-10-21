@@ -4,13 +4,6 @@ begin
 
 section \<open>An Executable Specification of the Procedure\<close>
 
-instantiation nat :: default
-begin
-definition "default_nat = (0::nat)"
-
-instance ..
-end
-
 fun subterms_term_list :: "'a pset_term \<Rightarrow> 'a pset_term list"  where
   "subterms_term_list (\<emptyset> n) = [\<emptyset> n]"
 | "subterms_term_list (Var i) = [Var i]"
@@ -322,14 +315,14 @@ proof -
     by (auto split: option.splits)
 qed
 
-fun bexpand_wit1 :: "('a::{fresh,default}) branch \<Rightarrow> 'a pset_fm \<Rightarrow> 'a branch list list" where
+fun bexpand_wit1 :: "('a::fresh0) branch \<Rightarrow> 'a pset_fm \<Rightarrow> 'a branch list list" where
   "bexpand_wit1 b (AF (t1 =\<^sub>s t2)) =
     (if t1 \<in> subterms (last b) \<and> t2 \<in> subterms (last b) \<and>
         (\<forall>t \<in> set b. case t of AT (x \<in>\<^sub>s t1') \<Rightarrow> t1' = t1 \<longrightarrow> AF (x \<in>\<^sub>s t2) \<notin> set b | _ \<Rightarrow> True) \<and>
         (\<forall>t \<in> set b. case t of AT (x \<in>\<^sub>s t2') \<Rightarrow> t2' = t2 \<longrightarrow> AF (x \<in>\<^sub>s t1) \<notin> set b | _ \<Rightarrow> True) \<and>
         \<not> urelem_code (last b) t1 \<and> \<not> urelem_code (last b) t2
       then
-        (let x = fresh (vars b) default
+        (let x = fresh0 (vars b)
          in [[[AT (Var x \<in>\<^sub>s t1), AF (Var x \<in>\<^sub>s t2)],
               [AT (Var x \<in>\<^sub>s t2), AF (Var x \<in>\<^sub>s t1)]]])
       else [])"
@@ -345,7 +338,7 @@ lemma Not_Ex_wit_code:
   by (auto split: fm.splits pset_atom.splits)
 
 lemma bexpand_wit1_if_bexpands_wit:
-  assumes "bexpands_wit t1 t2 (fresh (vars b) default) bs' b"
+  assumes "bexpands_wit t1 t2 (fresh0 (vars b)) bs' b"
   shows "bs' \<in> set ` set (bexpand_wit1 b (AF (t1 =\<^sub>s t2)))"
 proof -
   from bexpands_witD[OF assms] show ?thesis
@@ -353,7 +346,7 @@ proof -
 qed
 
 lemma bexpand_wit_if_bexpands_wit:
-  assumes "bexpands_wit t1 t2 (fresh (vars b) default) bs' b"
+  assumes "bexpands_wit t1 t2 (fresh0 (vars b)) bs' b"
   shows "bs' \<in> set ` set (bexpand_wit b)"
   using assms(1)[THEN bexpand_wit1_if_bexpands_wit] bexpands_witD(2)[OF assms(1)]
   unfolding bexpand_wit_def 
@@ -365,9 +358,9 @@ proof(induction b l rule: bexpand_wit1.induct)
   case (1 b t1 t2)
   show ?case
     apply(rule exI[where ?x=t1], rule exI[where ?x=t2],
-          rule exI[where ?x="fresh (vars b) default"])
+          rule exI[where ?x="fresh0 (vars b)"])
     using 1
-    by (auto simp: Let_def bexpands_wit.simps finite_vars_branch[THEN fresh_notIn]
+    by (auto simp: Let_def bexpands_wit.simps finite_vars_branch[THEN fresh0_notIn]
                    Not_Ex_wit_code[symmetric] urelem_code_if_mem_subterms)
 qed auto
     
@@ -402,8 +395,8 @@ proof
   next
     case (2 t1 t2 x bs' b)
     note fresh_notIn[OF finite_vars_branch, of b]
-    with 2 obtain bs'' where "bexpands_wit t1 t2 (fresh (vars b) default) bs'' b"
-      by (auto simp: bexpands_wit.simps)
+    with 2 obtain bs'' where "bexpands_wit t1 t2 (fresh0 (vars b)) bs'' b"
+      unfolding fresh0_def by (auto simp: bexpands_wit.simps)
     from 2 bexpand_wit_if_bexpands_wit[OF this] show ?case
       by (simp add: bexpand_def)
   qed
@@ -559,7 +552,7 @@ lemma monotone_map[partial_function_mono]:
   by (simp add: fun_ord_def list_all2_conv_all_nth monotone_on_def)
 
 partial_function (option) mlss_proc_branch_partial
-  :: "('a::{fresh,default}) branch \<Rightarrow> bool option" where
+  :: "('a::fresh0) branch \<Rightarrow> bool option" where
   "mlss_proc_branch_partial b =
     (if \<not> lin_sat b then mlss_proc_branch_partial (lexpand_safe b @ b)
      else if bclosed_code b then Some True

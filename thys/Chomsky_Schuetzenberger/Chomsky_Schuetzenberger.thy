@@ -1860,20 +1860,17 @@ lemma Chomsky_Schuetzenberger_not_empty:
   shows \<open>\<exists>(R::('n,'t) bracket3 list set) h \<Gamma>. regular R \<and> L = h ` (R \<inter> Dyck_lang \<Gamma>) \<and> hom_list h\<close>
 proof -
   define h where \<open>h = (the_hom:: ('n,'t) bracket3 list \<Rightarrow> 't list)\<close>
-  obtain ps where ps_def: \<open>set ps = P\<close> 
-    using \<open>finite P\<close> finite_list by auto
   from cnf_exists obtain ps' where
-    \<open>CNF(set ps')\<close> and lang_ps_eq_lang_ps': \<open>Lang (set ps') S = Lang (set ps) S - {[]}\<close> 
-    by blast
-  then have \<open>finite (set ps')\<close>
-    by auto
-  interpret Chomsky_Schuetzenberger_locale \<open>(set ps')\<close> S
+    \<open>CNF ps'\<close> \<open>finite ps'\<close> and lang_ps_eq_lang_ps': \<open>Lang ps' S = Lang P S - {[]}\<close>
+    using finiteP by blast
+
+  interpret Chomsky_Schuetzenberger_locale \<open>ps'\<close> S
     apply unfold_locales
-    using \<open>finite (set ps')\<close> \<open>CNF (set ps')\<close> by auto
-  have \<open>regular (brackets \<inter> Reg S) \<and> Lang (set ps') S = h ` (brackets \<inter> Reg S \<inter> Dyck_lang \<Gamma>) \<and> hom_list h\<close> 
+    using \<open>finite ps'\<close> \<open>CNF ps'\<close> by auto
+  have \<open>regular (brackets \<inter> Reg S) \<and> Lang ps' S = h ` (brackets \<inter> Reg S \<inter> Dyck_lang \<Gamma>) \<and> hom_list h\<close> 
     using Chomsky_Schuetzenberger_CNF L_def h_def by argo
-  moreover have  \<open>Lang (set ps') S = L - {[]}\<close> 
-    unfolding lang_ps_eq_lang_ps' using L_def ps_def by (simp add: assms(1))
+  moreover have  \<open>Lang ps' S = L - {[]}\<close> 
+    unfolding lang_ps_eq_lang_ps' using L_def by (simp add: assms(1))
   ultimately have \<open>regular (brackets \<inter> Reg S) \<and> L - {[]} = h ` (brackets \<inter> Reg S \<inter> Dyck_lang \<Gamma>) \<and> hom_list h\<close> 
     by presburger
   then show ?thesis 

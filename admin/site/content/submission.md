@@ -9,7 +9,7 @@ weight = 5
 
 ## Submission Guidelines
 
-**The submission must follow the following Isabelle style rules.** For additional guidelines on Isabelle proofs, also see the this [guide](https://proofcraft.org/blog/isabelle-style.html) (feel free to follow all of these; only the below are mandatory). **Technical details about the submission process and the format of the submission are explained on the submission site.**
+**The submission must follow the following Isabelle style rules.** For additional guidelines on Isabelle proofs, also see the this [guide](https://proofcraft.org/blog/isabelle-style.html) (feel free to follow all of these; only the below are mandatory). For technical details about the submission process see the [submission form section](#submission-form).
 
 *   No use of the commands `sorry` or `back`.
 *   Instantiations must not use Isabelle-generated names such as `xa` — use Isar, the `subgoal` command or `rename_tac` to avoid such names.
@@ -21,7 +21,7 @@ weight = 5
 *   We prefer structured Isar proofs over apply style, but do not mandate them.
 *   If there are proof steps that take significant time, i.e. longer than roughly 1 min, please add a short comment to that step, so maintainers will know what to expect.
 *   The entry must contain a ROOT file with one session that has the name of the entry. We strongly encourage precisely one session per entry, but exceptions can be made. All sessions must be in chapter AFP, and all theory files of the submission must be contained in at least one session. See also the example [ROOT](https://foss.heptapod.net/isa-afp/afp-2023/-/blob/branch/default/thys/Example-Submission/ROOT) file in the [Example submission](/entries/Example-Submission.html).
-*   The submission should run in the current Isabelle/AFP release and produce a PDF document. To test this, you can run the following [Isabelle command on the command line](https://isabelle.in.tum.de/installation.html): 
+*   The submission should run in the current Isabelle/AFP release and produce a PDF document. To test this, you can run the following [Isabelle command on the command line](https://isabelle.in.tum.de/installation.html):
   ```
   <isabelle> build -v -o browser_info -o "document=pdf" -o "document_variants=document:outline=/proof,/ML" -D <entry dir>
   ```
@@ -31,6 +31,8 @@ weight = 5
 Your submission must contain an abstract to be displayed on the web site – usually this will be the same as the abstract of your proof document in the root.tex file. You can use MathJax formulae in this web site abstract, either inline formulae in the form $a+b$ or \\(a+b\\) or display formulae in the form $$a + b$$ or \\\[a + b\\\]. Other occurrences of these characters must be escaped (e.g. \\$ or \\\\(). Note that MathJax in the title of an entry is _not_ allowed. MathJax supports most basic LaTeX functionality. For details on what parts of LaTeX are supported, see the [MathJax documentation.](https://docs.mathjax.org/en/v2.7-latest/tex.html)
 
 It is possible and encouraged to build on other archive entries in your submission. There is a standardised way to [refer to other AFP entries](/help) in your theories.
+
+It is also encouraged to identify parts of your submission as potentially suitable for inclusion in the Isabelle distribution (i.e. the basic libraries in `isabelle/src/HOL`).  Use the comment field of the submission form to alert the editors to this material, ideally with a suggestion where it could go (e.g. into `List`). You may also want to put it in a separate theory with a descriptive name like `More_List`.
 
 ## Submission Form
 
@@ -66,6 +68,6 @@ Major monotone changes, e.g. adding a new concept rather than more results on ex
 
 The above means that if you are an author and would like to provide a new, better version of your AFP entry, you can do so.
 
-To achieve this, you should base your changes on the [mercurial development version](https://foss.heptapod.net/isa-afp/afp-devel/) of your AFP entry and test it against the current [Isabelle development version](https://isabelle-dev.sketis.net/source/isabelle/).
+To achieve this, you should base your changes on the [mercurial development version](https://foss.heptapod.net/isa-afp/afp-devel/) of your AFP entry and test it against the current [Isabelle development version](https://isabelle.sketis.net/repos/isabelle/).
 
 If you would like to get write access to your entry in the mercurial repository or if you need assistance, please contact the [editors](/about#editors).

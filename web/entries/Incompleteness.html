@@ -99,6 +99,7 @@
   </h1>
   <div>
       <p><a href="../authors/paulson/">Lawrence C. Paulson</a> <a href="https://www.cl.cam.ac.uk/~lp15/">🌐</a>
+          with contributions from Janis Bailitis <a class="obfuscated" data="eyJ1c2VyIjpbIkphbmlzIiwiQmFpbGl0aXMiXSwiaG9zdCI6WyJtYXRocyIsIm94IiwiYWMiLCJ1ayJdfQ==">📧</a>
       </p>
       <p class="date">November 17, 2013</p>
   </div>
@@ -110,7 +111,20 @@
     <div class="abstract mathjax_process">Gödel's two incompleteness theorems are formalised, following a careful  <a href="http://journals.impan.gov.pl/dm/Inf/422-0-1.html">presentation</a> by Swierczkowski, in the theory of <a href="HereditarilyFinite.html">hereditarily finite sets</a>. This represents the first ever machine-assisted proof of the second incompleteness theorem. Compared with traditional formalisations using Peano arithmetic (see e.g. Boolos), coding is simpler, with no need to formalise the notion
 of multiplication (let alone that of a prime number)
 in the formalised calculus upon which the theorem is based.
-However, other technical problems had to be solved in order to complete the argument.</div>
+However, other technical problems had to be solved in order to complete the argument.
+
+Löb's theorem states that we have that $\mathsf{HF} \vdash
+\mathsf{PfP}(\ulcorner \varphi \urcorner) \rightarrow \varphi$
+implies $\mathsf{HF} \vdash \varphi$, where the formula
+$\mathsf{PfP}(x)$ is the standard provability predicate for
+$\mathsf{HF}$. It is a strengthening of Gödel's second incompleteness
+theorem, which can be recovered via $\varphi := \bot$. The formalised
+argument follows a modern textbook presentation of Löb's argumentation
+by Smith via the Hilbert-Bernays-Löb derivability conditions. 
+
+The formalisation of Löb's theorem is part of Janis Bailitis's <a
+href="https://www.ps.uni-saarland.de/~bailitis/bachelor.php">Bachelor'
+s thesis</a> completed at Saarland University in 2024.</div>
 
     <h3>License</h3>
     <div>
@@ -134,6 +148,7 @@ However, other technical problems had to be solved in order to complete the argu
           <li><a href="../sessions/incompleteness/#Pseudo_Coding">Pseudo_Coding</a></li>
           <li><a href="../sessions/incompleteness/#Quote">Quote</a></li>
           <li><a href="../sessions/incompleteness/#Goedel_II">Goedel_II</a></li>
+          <li><a href="../sessions/incompleteness/#Loebs_Theorem">Loebs_Theorem</a></li>
       </ul>
 
     <div class="flex-wrap">

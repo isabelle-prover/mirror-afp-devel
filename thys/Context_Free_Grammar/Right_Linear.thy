@@ -72,13 +72,19 @@ text
  then the auxiliary function \<open>finalize'\<close>. We also define the count function as \<open>countfin\<close> which counts the the productions that
  consists only of terminal and has at least length one\<close>
 
-fun finalize1 :: "('n :: infinite, 't) prods \<Rightarrow> ('n, 't) prods \<Rightarrow> ('n, 't) prods" where
+fun finalize1 :: "('n :: fresh0, 't) prods \<Rightarrow> ('n, 't) prods \<Rightarrow> ('n, 't) prods" where
   "finalize1 ps' [] = []"
 | "finalize1 ps' ((A,[])#ps) = (A,[]) # finalize1 ps' ps"
 | "finalize1 ps' ((A,w)#ps) = 
-    (if \<exists>u. w = map Tm u then let B = fresh(nts ps') in (A,w @ [Nt B])#(B,[])#ps else (A,w) # finalize1 ps' ps)"
+    (if \<exists>u. w = map Tm u then let B = fresh0(Nts (set ps')) in (A,w @ [Nt B])#(B,[])#ps else (A,w) # finalize1 ps' ps)"
 
-definition finalize' :: "('n::infinite, 't) prods \<Rightarrow> ('n, 't) prods" where
+declare finalize1.simps(1,2)[code]
+
+lemma finalize1_code[code]:
+  "finalize1 ps' ((A,x#xs) # ps) = (if Nts_syms (x#xs) = {} then let B = fresh0(Nts (set ps')) in (A,(x#xs) @ [Nt B])#(B,[])#ps else (A,x#xs) # finalize1 ps' ps)"
+unfolding finalize1.simps by(simp only: Nts_syms_empty_iff)
+
+definition finalize' :: "('n::fresh0, 't) prods \<Rightarrow> ('n, 't) prods" where
   "finalize' ps = finalize1 ps ps"
 
 fun countfin :: "('n::infinite, 't) prods \<Rightarrow> nat" where
@@ -86,7 +92,12 @@ fun countfin :: "('n::infinite, 't) prods \<Rightarrow> nat" where
 | "countfin ((A,[])#ps) = countfin ps"
 | "countfin ((A,w) # ps) = (if \<exists>u. w = map Tm u then 1 + countfin ps else countfin ps)"
 
-definition finalize :: "('n::infinite, 't) prods \<Rightarrow> ('n, 't) prods" where
+declare countfin.simps(1,2)[code]
+
+lemma countfin_code[code]: "countfin ((A,x#ys) # ps) = (if Nts_syms (x#ys) = {} then 1 + countfin ps else countfin ps)"
+unfolding countfin.simps by(simp only: Nts_syms_empty_iff)
+
+definition finalize :: "('n::fresh0, 't) prods \<Rightarrow> ('n, 't) prods" where
   "finalize ps = (finalize' ^^ (countfin ps)) ps"
 
 text
@@ -99,7 +110,7 @@ using assms proof (induction ps' ps rule: finalize1.induct)
   case (3 ps' A v va ps)
   thus ?case proof (cases "\<exists>u. v # va = map Tm u")
     case True
-    let ?B = "fresh(nts ps')"
+    let ?B = "fresh0(Nts (set ps'))"
     have not_tm: "\<nexists>u. v # va @ [Nt ?B] = map Tm u"
       by (simp add: ex_map_conv)
     from True have "countfin (finalize1 ps' ((A, v # va) # ps)) = countfin ((A,v#va @ [Nt ?B])#(?B,[])#ps)"
@@ -204,33 +215,33 @@ text
 \<open>Now proving the language preservation property of \<open>finalize\<close>, similarly to \<open>binarize\<close>\<close>
 
 lemma finalize1_cases:
-  "finalize1 ps' ps = ps \<or> (\<exists>A w ps'' B. set ps = {(A, w)} \<union> set ps'' \<and> set (finalize1 ps' ps) = {(A,w @ [Nt B]),(B,[])} \<union> set ps'' \<and> Nt B \<notin> syms ps')"
+  "finalize1 ps' ps = ps \<or> (\<exists>A w ps'' B. set ps = {(A, w)} \<union> set ps'' \<and> set (finalize1 ps' ps) = {(A,w @ [Nt B]),(B,[])} \<union> set ps'' \<and> Nt B \<notin> Syms (set ps'))"
 proof (induction ps' ps rule: finalize1.induct)
   case (2 ps' C ps)
   thus ?case proof (cases "finalize1 ps' ps = ps")
     case False
-    then obtain A w ps'' B where defs: "set ps = {(A, w)} \<union> set ps'' \<and> set (finalize1 ps' ps) = {(A, w @ [Nt B]), (B, [])} \<union> set ps'' \<and> Nt B \<notin> syms ps'"
+    then obtain A w ps'' B where defs: "set ps = {(A, w)} \<union> set ps'' \<and> set (finalize1 ps' ps) = {(A, w @ [Nt B]), (B, [])} \<union> set ps'' \<and> Nt B \<notin> Syms (set ps')"
     using 2 by blast
     from defs have wit: "set ((C, []) # ps) = {(A, w)} \<union> set ((C, []) # ps'')" by simp
     from defs have wit2: "set (finalize1 ps' ((C, []) # ps)) = {(A, w @ [Nt B]), (B, [])} \<union> set ((C, []) # ps'')" by simp
-    from defs have wit3: "Nt B \<notin> syms ps'" by simp
+    from defs have wit3: "Nt B \<notin> Syms (set ps')" by simp
     from wit wit2 wit3 show ?thesis by blast
   qed simp
 next
   case (3 ps' C v va ps)
   thus ?case proof (cases "\<exists>u. v#va = map Tm u")
     case True
-    thus ?thesis using fresh_nts in_Nts_iff_in_Syms
+    thus ?thesis using fresh0_nts in_Nts_iff_in_Syms
       by (simp add: Let_def) fastforce
   next
     case false1: False
     thus ?thesis proof (cases "finalize1 ps' ps = ps")
     case False
-    with false1 obtain A w ps'' B where defs: "set ps = {(A, w)} \<union> set ps'' \<and> set (finalize1 ps' ps) = {(A, w @ [Nt B]), (B, [])} \<union> set ps'' \<and> Nt B \<notin> syms ps'"
+    with false1 obtain A w ps'' B where defs: "set ps = {(A, w)} \<union> set ps'' \<and> set (finalize1 ps' ps) = {(A, w @ [Nt B]), (B, [])} \<union> set ps'' \<and> Nt B \<notin> Syms (set ps')"
     using 3 by blast
     from defs have wit: "set ((C, v#va) # ps) = {(A, w)} \<union> set ((C, v#va) # ps'')" by simp
     from defs false1 have wit2: "set (finalize1 ps' ((C, v#va) # ps)) = {(A, w @ [Nt B]), (B, [])} \<union> set ((C, v#va) # ps'')" by simp
-    from defs have wit3: "Nt B \<notin> syms ps'" by simp
+    from defs have wit3: "Nt B \<notin> Syms (set ps')" by simp
     from wit wit2 wit3 show ?thesis by blast
   qed simp
   qed
@@ -241,7 +252,7 @@ lemma finalize_der':
   shows "set ps \<turnstile> [Nt A] \<Rightarrow>* map Tm x \<longleftrightarrow> set (finalize' ps) \<turnstile> [Nt A] \<Rightarrow>* map Tm x"
   unfolding finalize'_def proof (cases "finalize1 ps ps = ps")
   case False
-  then obtain C w ps'' B where defs: "set ps = {(C, w)} \<union> set ps'' \<and> set (finalize1 ps ps) = {(C, w @ [Nt B]), (B, [])} \<union> set ps'' \<and> Nt B \<notin> syms ps"
+  then obtain C w ps'' B where defs: "set ps = {(C, w)} \<union> set ps'' \<and> set (finalize1 ps ps) = {(C, w @ [Nt B]), (B, [])} \<union> set ps'' \<and> Nt B \<notin> Syms (set ps)"
     by (meson finalize1_cases)
   from defs have a_not_b: "C \<noteq> B" unfolding Syms_def by fast
   from defs assms have a1: "A \<noteq> B" unfolding Lhss_def Syms_def by auto
@@ -250,9 +261,9 @@ lemma finalize_der':
   from defs have "set ps = set ((C, w) # ps'')" by simp
   with defs a_not_b have a4: "B \<notin> lhss ((C, w @ [Nt B]) # ps'')"
     unfolding Lhss_def Syms_def by auto
-  from defs have notB: "Nt B \<notin> syms ps''" unfolding Syms_def by blast
+  from defs have notB: "Nt B \<notin> Syms (set ps'')" unfolding Syms_def by blast
   then have 1: "set ps = set (substP (Nt B) [] ((C, w @ [Nt B]) # ps''))" proof -
-    from defs have s1: "Nt B \<notin> syms ps" unfolding Syms_def by meson
+    from defs have s1: "Nt B \<notin> Syms (set ps)" unfolding Syms_def by meson
     from defs have s2: "(C,w) \<in> set ps" by blast
     from s1 s2 have b_notin_w: "Nt B \<notin> set w" unfolding Syms_def by fastforce
     from defs have "set ps = {(C, w)} \<union> set ps''" by simp
@@ -312,8 +323,8 @@ lemma lang_finalize_lhss:
   using finalize_der[OF assms] Lang_eqI_derives by metis
 
 lemma finalize_syms1:
-  assumes  "Nt A \<in> syms ps"
-    shows  "Nt A \<in> syms (finalize1 ps' ps)"
+  assumes  "Nt A \<in> Syms (set ps)"
+    shows  "Nt A \<in> Syms (set (finalize1 ps' ps))"
 using assms proof (induction ps' ps rule: finalize1.induct)
   case (3 ps' A v va ps)
   thus ?case proof (cases "\<exists>u. v#va = map Tm u")
@@ -326,8 +337,8 @@ using assms proof (induction ps' ps rule: finalize1.induct)
 qed auto
 
 lemma finalize_nts'n:
-  assumes "A \<in> nts ps"
-  shows   "A \<in> nts ((finalize' ^^ n) ps)"
+  assumes "A \<in> Nts (set ps)"
+  shows   "A \<in> Nts (set ((finalize' ^^ n) ps))"
   using assms proof (induction n)
   case (Suc n)
   thus ?case
@@ -335,19 +346,19 @@ lemma finalize_nts'n:
 qed simp
 
 lemma finalize_nts:
-  assumes "A \<in> nts ps"
-  shows   "A \<in> nts (finalize ps)"
+  assumes "A \<in> Nts (set ps)"
+  shows   "A \<in> Nts (set (finalize ps))"
   unfolding finalize_def using finalize_nts'n[OF assms] by simp
 
 lemma finalize_lhss_nts1:
   assumes "A \<notin> lhss ps"
-      and "A \<in> nts ps'"
+      and "A \<in> Nts (set ps')"
     shows "A \<notin> lhss (finalize1 ps' ps)"
 using assms proof (induction ps' ps rule: finalize1.induct)
   case (3 ps' A v va ps)
   thus ?case proof (cases "\<exists>u. v#va = map Tm u")
     case True
-    with 3 show ?thesis unfolding Lhss_def by (auto simp: Let_def fresh_nts)
+    with 3 show ?thesis unfolding Lhss_def by (auto simp: Let_def fresh0_nts)
   next
     case False
     with 3 show ?thesis unfolding Lhss_def by (auto simp: Let_def)
@@ -356,8 +367,8 @@ qed simp_all
 
 lemma finalize_lhss_nts'n:
   assumes "A \<notin> lhss ps"
-      and "A \<in> nts ps"
-    shows "A \<notin> lhss ((finalize'^^n) ps) \<and> A \<in> nts ((finalize'^^n) ps)"
+      and "A \<in> Nts (set ps)"
+    shows "A \<notin> lhss ((finalize'^^n) ps) \<and> A \<in> Nts (set ((finalize'^^n) ps))"
   using assms proof (induction n)
   case (Suc n)
   thus ?case
@@ -366,12 +377,12 @@ qed simp
 
 lemma finalize_lhss_nts:
    assumes "A \<notin> lhss ps"
-      and  "A \<in> nts ps"
-    shows "A \<notin> lhss (finalize ps) \<and> A \<in> nts (finalize ps)"
+      and  "A \<in> Nts (set ps)"
+    shows "A \<notin> lhss (finalize ps) \<and> A \<in> Nts (set (finalize ps))"
   unfolding finalize_def using finalize_lhss_nts'n[OF assms] by simp
 
 lemma lang_finalize: 
-  assumes "A \<in> nts ps"
+  assumes "A \<in> Nts (set ps)"
   shows "lang (finalize ps) A = lang ps A"
 proof (cases "A \<in> lhss ps")
   case True
@@ -443,7 +454,7 @@ next
       by (simp add: rlin_noterm_def)
   next
     case False
-    let ?B = "fresh(nts ps')"
+    let ?B = "fresh0 (Nts (set ps'))"
     from "3.prems" have a1: "rlin_noterm (set ps)"
       by (simp add: rlin_noterm_def)
     from "3.prems" have ex: "\<exists>v B. s0 # u = map Tm v @ [Nt B]"
@@ -492,13 +503,13 @@ text
  same production set as \<open>ps'\<close> without the unit productions. The language preservation property is already given\<close>
 
 lemma uppr_rlin2:
-  assumes rlinbin: "rlin_bin (set ps')"
+  assumes rlinbin: "rlin_bin ps'"
     and uppr_ps': "unit_elim_rel ps' ps"
-  shows "rlin2 (set ps)"
+  shows "rlin2 ps"
 proof - 
-  from rlinbin have "rlin2 (set ps' - {(A,w) \<in> set ps'. \<exists>B. w = [Nt B]})"
+  from rlinbin have "rlin2 (ps' - {(A,w) \<in> ps'. \<exists>B. w = [Nt B]})"
     using rlin2_def rlin_bin_def by fastforce
-  hence "rlin2 (set ps' - (unit_prods ps'))"
+  hence "rlin2 (ps' - (unit_prods ps'))"
     by (simp add: unit_prods_def)
   hence 1: "rlin2 (unit_rm ps')"
     by (simp add: unit_rm_def)
@@ -506,7 +517,7 @@ proof -
     unfolding new_prods_def rlin2_def by fastforce
   from 1 2 have "rlin2 (unit_rm ps' \<union> new_prods ps')"
     unfolding rlin2_def by auto
-  with uppr_ps' have "rlin2 (set ps)"
+  with uppr_ps' have "rlin2 ps"
     by (simp add: unit_elim_rel_def)
   thus ?thesis .
 qed
@@ -515,26 +526,31 @@ text
 \<open>The transformation \<open>rlin2_of_rlin\<close> applies the presented functions in the right order. At the end, we show that \<open>rlin2_of_rlin\<close>
  converts a production set from \<open>rlin\<close> to a production set from \<open>rlin2\<close>, without changing the language\<close>
 
-definition rlin2_of_rlin :: "('n::infinite,'t) prods \<Rightarrow> ('n,'t)prods" where
-  "rlin2_of_rlin ps = unit_elim (binarize (finalize ps))"
+definition rlin2_of_rlin :: "('n::fresh0,'t) prods \<Rightarrow> ('n,'t)Prods" where
+  "rlin2_of_rlin ps = unit_elim (set (binarize (finalize ps)))"
+
+(* Test for eval *)
+lemma "binarize(finalize [(0::nat, [Tm (0::int), Tm 1, Tm 2])])
+ = [(0, [Tm 0, Nt 2]), (2, [Tm 1, Nt 3]), (3, [Tm 2, Nt 1]), (1, [])]"
+by eval
 
 theorem rlin_to_rlin2: 
   assumes "rlin (set ps)" 
-  shows "rlin2 (set (rlin2_of_rlin ps))"
+  shows "rlin2 ((rlin2_of_rlin ps))"
 using assms proof -
   assume "rlin (set ps)"
   hence "rlin_noterm (set (finalize ps))"
     using finalize_rlinnoterm by blast
   hence "rlin_bin (set (binarize (finalize ps)))"
     by (simp add: binarize_rlinbin)
-  hence "rlin2 (set (unit_elim (binarize (finalize ps))))"
+  hence "rlin2 (unit_elim (set (binarize (finalize ps))))"
     by (simp add: unit_elim_rel_unit_elim uppr_rlin2)
-  thus "rlin2 (set (rlin2_of_rlin ps))"
+  thus "rlin2 ((rlin2_of_rlin ps))"
     by (simp add: rlin2_of_rlin_def)
 qed
 
 lemma lang_rlin2_of_rlin:
-  "A \<in> Nts (set ps) \<Longrightarrow> lang (rlin2_of_rlin ps) A = lang ps A"
+  "A \<in> Nts (set ps) \<Longrightarrow> Lang (rlin2_of_rlin ps) A = lang ps A"
 by(simp add: rlin2_of_rlin_def lang_unit_elim finalize_nts lang_binarize lang_finalize)
 
 

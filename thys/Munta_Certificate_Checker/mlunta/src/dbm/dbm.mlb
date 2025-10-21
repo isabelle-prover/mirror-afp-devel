@@ -1,0 +1,12 @@
+$(SML_LIB)/basis/basis.mlb
+../isalib/isalib.mlb
+../util/util.mlb
+../serialization/build.mlb
+signed_word.sml
+dbm_entry.sml
+word_entry.sml
+entry.sml
+matrix_iter.sml
+sp_iter.sml
+dbm_iter.sml
+dbm.sml

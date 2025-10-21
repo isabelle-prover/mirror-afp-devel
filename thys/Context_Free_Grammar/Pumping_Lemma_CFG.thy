@@ -365,17 +365,15 @@ theorem Pumping_Lemma:
   assumes "finite (P :: ('n::infinite,'t)Prods)"
   shows "\<exists>n. pumping_property (Lang P S) n"
 proof -
-  obtain ps where "set ps = P" using finite_list[OF assms] by blast
-  obtain ps' :: "('n,'t)prods" where ps': "CNF(set ps')" "lang ps' S= lang ps S - {[]}"
-    using cnf_exists[of S ps] by auto
-  let ?P' = "set ps'"
-  have P': "CNF ?P'" "finite ?P'" using ps'(1) by auto
+  obtain ps' :: "('n,'t)Prods" where ps': "finite ps'" "CNF(ps')" "Lang ps' S = Lang P S - {[]}"
+    using cnf_exists[of P S, OF \<open>finite P\<close>] by auto
+  have P': "CNF ps'" "finite ps'" using ps'(1,2) by auto
   from Pumping_Lemma_CNF[OF P', of S] obtain n where
-    pump: "pumping_property (Lang ?P' S) n" by blast
-  then have "pumping_property (Lang ?P' S) (Suc n)"
+    pump: "pumping_property (Lang ps' S) n" by blast
+  then have "pumping_property (Lang ps' S) (Suc n)"
     by (metis Suc_leD nle_le)
   then have "pumping_property (Lang P S) (Suc n)"
-    using ps'(2) \<open>set ps = P\<close> by (metis Diff_iff list.size(3) not_less_eq_eq singletonD zero_le)
+    using ps'(3) by (metis Diff_iff list.size(3) not_less_eq_eq singletonD zero_le)
   then show ?thesis by blast
 qed
 

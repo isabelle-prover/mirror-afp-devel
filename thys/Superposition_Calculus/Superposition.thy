@@ -10,7 +10,7 @@ begin
 
 section \<open>Nonground Layer\<close>
 
-locale type_system =  
+locale type_system =
   context_compatible_term_typing_properties where
   welltyped = welltyped and from_ground_context_map = from_ground_context_map +
   witnessed_nonground_typing where welltyped = welltyped  
@@ -88,7 +88,7 @@ if
   "term.is_renaming \<rho>\<^sub>2"
   "clause.vars (E \<cdot> \<rho>\<^sub>1) \<inter> clause.vars (D \<cdot> \<rho>\<^sub>2) = {}"
   "\<not> term.is_Var t\<^sub>1"
-  "type_preserving_on (clause.vars (E \<cdot> \<rho>\<^sub>1) \<union> clause.vars (D \<cdot> \<rho>\<^sub>2)) \<V>\<^sub>3 \<mu>" 
+  "type_preserving_on (clause.vars (E \<cdot> \<rho>\<^sub>1) \<union> clause.vars (D \<cdot> \<rho>\<^sub>2)) \<V>\<^sub>3 \<mu>"
   "term.is_imgu \<mu> {{t\<^sub>1 \<cdot>t \<rho>\<^sub>1, t\<^sub>2 \<cdot>t \<rho>\<^sub>2}}"
   "\<not> (E \<cdot> \<rho>\<^sub>1 \<odot> \<mu> \<preceq>\<^sub>c D \<cdot> \<rho>\<^sub>2 \<odot> \<mu>)"
   "\<not> (c\<^sub>1\<langle>t\<^sub>1\<rangle> \<cdot>t \<rho>\<^sub>1 \<odot> \<mu> \<preceq>\<^sub>t t\<^sub>1' \<cdot>t \<rho>\<^sub>1 \<odot> \<mu>)"
@@ -103,7 +103,7 @@ if
   "\<forall>x \<in> clause.vars D. \<V>\<^sub>2 x = \<V>\<^sub>3 (term.rename \<rho>\<^sub>2 x)"
   "type_preserving_on (clause.vars E) \<V>\<^sub>1 \<rho>\<^sub>1"
   "type_preserving_on (clause.vars D) \<V>\<^sub>2 \<rho>\<^sub>2"
-  "\<And>\<tau>. \<V>\<^sub>2 \<turnstile> t\<^sub>2 : \<tau> \<longleftrightarrow> \<V>\<^sub>2 \<turnstile> t\<^sub>2' : \<tau>"
+  "weakly_welltyped_literal \<V>\<^sub>2 l\<^sub>2"
 
 abbreviation eq_factoring_inferences where
   "eq_factoring_inferences \<equiv> { Infer [D] C | D C. eq_factoring D C }"
@@ -144,7 +144,7 @@ inductive superposition' ::
     \<forall>x \<in> clause.vars D. \<V>\<^sub>2 x = \<V>\<^sub>3 (term.rename \<rho>\<^sub>2 x) \<Longrightarrow>
     type_preserving_on (clause.vars E) \<V>\<^sub>1 \<rho>\<^sub>1 \<Longrightarrow>
     type_preserving_on (clause.vars D) \<V>\<^sub>2 \<rho>\<^sub>2 \<Longrightarrow>
-    (\<And>\<tau>. \<V>\<^sub>2 \<turnstile> t\<^sub>2 : \<tau> \<longleftrightarrow> \<V>\<^sub>2 \<turnstile> t\<^sub>2' : \<tau>) \<Longrightarrow>
+    weakly_welltyped_literal \<V>\<^sub>2 l\<^sub>2 \<Longrightarrow>
     \<not> (E \<cdot> \<rho>\<^sub>1 \<odot> \<mu> \<preceq>\<^sub>c D \<cdot> \<rho>\<^sub>2 \<odot> \<mu>) \<Longrightarrow>
     (\<P> = Pos \<and> select E = {#} \<and> is_strictly_maximal (l\<^sub>1 \<cdot>l \<rho>\<^sub>1 \<odot> \<mu>) (E \<cdot> \<rho>\<^sub>1 \<odot> \<mu>) \<or>
      \<P> = Neg \<and> (select E = {#} \<and> is_maximal (l\<^sub>1 \<cdot>l \<rho>\<^sub>1 \<odot> \<mu>) (E \<cdot> \<rho>\<^sub>1 \<odot> \<mu>) \<or>
@@ -216,7 +216,7 @@ where
     \<forall>x \<in> clause.vars D. \<V>\<^sub>2 x = \<V>\<^sub>3 (term.rename \<rho>\<^sub>2 x) \<Longrightarrow>
     type_preserving_on (clause.vars E) \<V>\<^sub>1 \<rho>\<^sub>1 \<Longrightarrow>
     type_preserving_on (clause.vars D) \<V>\<^sub>2 \<rho>\<^sub>2 \<Longrightarrow>
-    (\<And>\<tau>. \<V>\<^sub>2 \<turnstile> t\<^sub>2 : \<tau> \<longleftrightarrow> \<V>\<^sub>2 \<turnstile> t\<^sub>2' : \<tau>) \<Longrightarrow>
+    weakly_welltyped_literal \<V>\<^sub>2 l\<^sub>2 \<Longrightarrow>
     \<not> (E \<cdot> \<rho>\<^sub>1 \<odot> \<mu> \<preceq>\<^sub>c D \<cdot> \<rho>\<^sub>2 \<odot> \<mu>) \<Longrightarrow>
     select E = {#} \<Longrightarrow>
     is_strictly_maximal (l\<^sub>1 \<cdot>l \<rho>\<^sub>1 \<odot> \<mu>) (E \<cdot> \<rho>\<^sub>1 \<odot> \<mu>) \<Longrightarrow>
@@ -258,7 +258,7 @@ where
     \<forall>x \<in> clause.vars D. \<V>\<^sub>2 x = \<V>\<^sub>3 (term.rename \<rho>\<^sub>2 x) \<Longrightarrow>
     type_preserving_on (clause.vars E) \<V>\<^sub>1 \<rho>\<^sub>1 \<Longrightarrow>
     type_preserving_on (clause.vars D) \<V>\<^sub>2 \<rho>\<^sub>2 \<Longrightarrow>
-    (\<And>\<tau>. \<V>\<^sub>2 \<turnstile> t\<^sub>2 : \<tau> \<longleftrightarrow> \<V>\<^sub>2 \<turnstile> t\<^sub>2' : \<tau>) \<Longrightarrow>
+    weakly_welltyped_literal \<V>\<^sub>2 l\<^sub>2 \<Longrightarrow>
     \<not> (E \<cdot> \<rho>\<^sub>1 \<odot> \<mu> \<preceq>\<^sub>c D \<cdot> \<rho>\<^sub>2 \<odot> \<mu>) \<Longrightarrow>
     (select E = {#} \<Longrightarrow> is_maximal (l\<^sub>1 \<cdot>l \<rho>\<^sub>1 \<odot> \<mu>) (E \<cdot> \<rho>\<^sub>1 \<odot> \<mu>)) \<Longrightarrow>
     (select E \<noteq> {#} \<Longrightarrow> is_maximal (l\<^sub>1 \<cdot>l \<rho>\<^sub>1 \<odot> \<mu>) ((select E) \<cdot> \<rho>\<^sub>1 \<odot> \<mu>)) \<Longrightarrow>

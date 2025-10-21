@@ -1,0 +1,1 @@
+{"automata":[{"name":"P","initial":6,"nodes":[{"id":7,"name":"B","x":639.780029296875,"y":122.0553970336914,"invariant":"x1 <= 10"},{"id":6,"name":"A","x":308.6673583984375,"y":335.13685607910156,"invariant":"x1 <= 4"}],"edges":[{"source":6,"target":7,"guard":"","label":"","update":""}]}],"clocks":"x1","vars":"","formula":"P.A --> P.B"}

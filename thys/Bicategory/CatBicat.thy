@@ -1043,9 +1043,13 @@ begin
                         (AD.MkArr (AD.Dom (Map f) \<circ> AD.Dom (Map g) \<circ> AD.Dom (Map h))
                          (AD.Cod (Map f) \<circ> AD.Cod (Map g) \<circ> AD.Cod (Map h))
                          (AD.Map (Map f) \<circ> AD.Map (Map g) \<circ> AD.Map (Map h)))"
-        using assms 1 ide_char'' \<a>_simp_ide [of f g h]
-              arr_char [of f] arr_char [of g] arr_char [of h]   
-        by simp
+      proof -
+        have "BC.arr (Map g) \<and> CD.arr (Map f) \<and> AB.arr (Map h)"
+          using assms 1 arr_char ide_char''
+          by (simp add: ide_char'')
+        thus ?thesis
+          using assms \<a>_simp_ide [of f g h] assoc_def [of f g h] by simp
+      qed
       moreover have "AD.ide (AD.MkArr
                               (CD.Dom (Map f) \<circ> BC.Dom (Map g) \<circ> AB.Dom (Map h))
                               (CD.Cod (Map f) \<circ> BC.Cod (Map g) \<circ> AB.Cod (Map h))

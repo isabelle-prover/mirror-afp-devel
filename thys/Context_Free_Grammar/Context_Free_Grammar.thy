@@ -5,15 +5,8 @@ Authors: Tobias Nipkow, Akihisa Yamada
 section "Context-Free Grammars"
 
 theory Context_Free_Grammar
-imports "HOL-Library.Infinite_Typeclass"
+imports "Fresh_Identifiers.Fresh_Nat"
 begin
-
-(* TODO: make function fresh executable *)
-definition fresh :: "('n::infinite) set \<Rightarrow> 'n" where
-"fresh A = (SOME x. x \<notin> A)"
-
-lemma fresh_finite: "finite A \<Longrightarrow> fresh A \<notin> A"
-unfolding fresh_def by (metis arb_element someI)
 
 declare relpowp.simps(2)[simp del]
 
@@ -52,9 +45,14 @@ definition isNt :: "('n, 't) sym \<Rightarrow> bool" where
 fun destTm :: "('n, 't) sym  \<Rightarrow> 't" where 
 \<open>destTm (Tm a) = a\<close>
 
+lemma isNt_simps[simp,code]:
+  \<open>isNt (Nt A) = True\<close>
+  \<open>isNt (Tm a) = False\<close> 
+by (simp_all add: isNt_def)
+
 lemma isTm_simps[simp]:
   \<open>isTm (Nt A) = False\<close>
-  \<open>isTm (Tm a)\<close> 
+  \<open>isTm (Tm a) = True\<close> 
 by (simp_all add: isTm_def)
 
 lemma filter_isTm_map_Tm[simp]: \<open>filter isTm (map Tm xs) = map Tm xs\<close>
@@ -63,35 +61,32 @@ by(induction xs) auto
 lemma destTm_o_Tm[simp]: \<open>destTm \<circ> Tm = id\<close>
 by auto
 
-definition nts_syms :: "('n,'t)syms \<Rightarrow> 'n set" where
-"nts_syms w = {A. Nt A \<in> set w}"
+definition Nts_syms :: "('n,'t)syms \<Rightarrow> 'n set" where
+"Nts_syms w = {A. Nt A \<in> set w}"
 
-definition tms_syms :: "('n,'t)syms \<Rightarrow> 't set" where
-"tms_syms w = {a. Tm a \<in> set w}"
+lemma Nts_syms_code[code]: "Nts_syms w = (\<Union>s \<in> set w. case s of Nt A \<Rightarrow> {A} | _ \<Rightarrow> {})"
+unfolding Nts_syms_def by (auto split: sym.splits)
+
+definition Tms_syms :: "('n,'t)syms \<Rightarrow> 't set" where
+"Tms_syms w = {a. Tm a \<in> set w}"
+
+lemma Tms_syms_code[code]: "Tms_syms w = (\<Union>s \<in> set w. case s of Tm a \<Rightarrow> {a} | _ \<Rightarrow> {})"
+unfolding Tms_syms_def by (auto split: sym.splits)
 
 definition Nts :: "('n,'t)Prods \<Rightarrow> 'n set" where
-  "Nts P = (\<Union>(A,w)\<in>P. {A} \<union> nts_syms w)"
+  "Nts P = (\<Union>(A,w)\<in>P. {A} \<union> Nts_syms w)"
 
 definition Tms :: "('n,'t)Prods \<Rightarrow> 't set" where 
-  "Tms P = (\<Union>(A,w)\<in>P. tms_syms w)"
-
-abbreviation nts :: "('n,'t) prods \<Rightarrow> 'n set" where
-  "nts P \<equiv> Nts (set P)"
+  "Tms P = (\<Union>(A,w)\<in>P. Tms_syms w)"
 
 definition Syms :: "('n,'t)Prods \<Rightarrow> ('n,'t) sym set" where 
   "Syms P = (\<Union>(A,w)\<in>P. {Nt A} \<union> set w)"
 
-abbreviation tms :: "('n,'t) prods \<Rightarrow> 't set" where
-  "tms P \<equiv> Tms (set P)"
+definition nts_syms :: "('n,'t)syms \<Rightarrow> 'n list \<Rightarrow> 'n list" where
+"nts_syms sys = foldr (\<lambda>sy ns. case sy of Nt A \<Rightarrow> List.insert A ns | Tm _ \<Rightarrow> ns) sys"
 
-abbreviation syms :: "('n,'t) prods \<Rightarrow> ('n,'t) sym set" where
-  "syms P \<equiv> Syms (set P)"
-
-definition nts_syms_list :: "('n,'t)syms \<Rightarrow> 'n list \<Rightarrow> 'n list" where
-"nts_syms_list sys = foldr (\<lambda>sy ns. case sy of Nt A \<Rightarrow> List.insert A ns | Tm _ \<Rightarrow> ns) sys"
-
-definition nts_prods_list :: "('n,'t)prods \<Rightarrow> 'n list" where
-"nts_prods_list ps = foldr (\<lambda>(A,sys) ns. List.insert A (nts_syms_list sys ns)) ps []"
+definition nts :: "('n,'t)prods \<Rightarrow> 'n list" where
+"nts ps = foldr (\<lambda>(A,sys) ns. List.insert A (nts_syms sys ns)) ps []"
 
 definition Lhss :: "('n, 't) Prods \<Rightarrow> 'n set" where
 "Lhss P = (\<Union>(A,w) \<in> P. {A})"
@@ -100,7 +95,7 @@ abbreviation lhss :: "('n, 't) prods \<Rightarrow> 'n set" where
 "lhss ps \<equiv> Lhss(set ps)"
 
 definition Rhs_Nts :: "('n, 't) Prods \<Rightarrow> 'n set" where
-"Rhs_Nts P = (\<Union>(_,w)\<in>P. nts_syms w)"
+"Rhs_Nts P = (\<Union>(_,w)\<in>P. Nts_syms w)"
 
 definition Rhss :: "('n \<times> 'a) set \<Rightarrow> 'n \<Rightarrow> 'a set" where
 "Rhss P A = {w. (A,w) \<in> P}"
@@ -119,45 +114,45 @@ by (cases u) auto
 
 lemmas map_Tm_eq_map_Nt_iff[simp] = eq_iff_swap[OF map_Nt_eq_map_Tm_iff]
 
-lemma nts_syms_Nil[simp]: "nts_syms [] = {}"
-unfolding nts_syms_def by auto
+lemma Nts_syms_Nil[simp]: "Nts_syms [] = {}"
+unfolding Nts_syms_def by auto
 
-lemma nts_syms_Cons[simp]: "nts_syms (a#v) = (case a of Nt A \<Rightarrow> {A} | _ \<Rightarrow> {}) \<union> nts_syms v"
-by (auto simp: nts_syms_def split: sym.split)
+lemma Nts_syms_Cons[simp]: "Nts_syms (a#v) = (case a of Nt A \<Rightarrow> {A} | _ \<Rightarrow> {}) \<union> Nts_syms v"
+by (auto simp: Nts_syms_def split: sym.split)
 
-lemma nts_syms_append[simp]: "nts_syms (u @ v) = nts_syms u \<union> nts_syms v"
-by (auto simp: nts_syms_def)
+lemma Nts_syms_append[simp]: "Nts_syms (u @ v) = Nts_syms u \<union> Nts_syms v"
+by (auto simp: Nts_syms_def)
 
-lemma nts_syms_map_Nt[simp]: "nts_syms (map Nt w) = set w"
-unfolding nts_syms_def by auto
+lemma Nts_syms_map_Nt[simp]: "Nts_syms (map Nt w) = set w"
+unfolding Nts_syms_def by auto
 
-lemma nts_syms_rev: "nts_syms (rev w) = nts_syms w"
-by(auto simp: nts_syms_def)
+lemma Nts_syms_rev: "Nts_syms (rev w) = Nts_syms w"
+by(auto simp: Nts_syms_def)
 
-lemma nts_syms_map_Tm[simp]: "nts_syms (map Tm w) = {}"
-unfolding nts_syms_def by auto
+lemma Nts_syms_map_Tm[simp]: "Nts_syms (map Tm w) = {}"
+unfolding Nts_syms_def by auto
 
-lemma nts_syms_empty_iff: "nts_syms w = {} \<longleftrightarrow> (\<exists>u. w = map Tm u)"
+lemma Nts_syms_empty_iff: "Nts_syms w = {} \<longleftrightarrow> (\<exists>u. w = map Tm u)"
 by(induction w) (auto simp: ex_map_conv split: sym.split)
 
 text \<open>If a sentential form contains a \<open>Nt\<close>, it must have a last and a first \<open>Nt\<close>:\<close>
 
-lemma non_word_has_last_Nt: "nts_syms w \<noteq> {} \<Longrightarrow> \<exists>u A v. w = u @ [Nt A] @ map Tm v"
+lemma non_word_has_last_Nt: "Nts_syms w \<noteq> {} \<Longrightarrow> \<exists>u A v. w = u @ [Nt A] @ map Tm v"
 proof (induction w)
   case Nil
   then show ?case by simp
 next
   case (Cons a list)
-  then show ?case using nts_syms_empty_iff[of list]
+  then show ?case using Nts_syms_empty_iff[of list]
     by(auto simp: Cons_eq_append_conv split: sym.splits)
 qed
 
-lemma non_word_has_first_Nt: "nts_syms w \<noteq> {} \<Longrightarrow> \<exists>u A v. w = map Tm u @ Nt A # v"
-  using nts_syms_rev non_word_has_last_Nt[of "rev w"]
+lemma non_word_has_first_Nt: "Nts_syms w \<noteq> {} \<Longrightarrow> \<exists>u A v. w = map Tm u @ Nt A # v"
+  using Nts_syms_rev non_word_has_last_Nt[of "rev w"]
   by (metis append.assoc append_Cons append_Nil rev.simps(2) rev_eq_append_conv rev_map)
 
 lemma in_Nts_iff_in_Syms: "B \<in> Nts P \<longleftrightarrow> Nt B \<in> Syms P"
-unfolding Nts_def Syms_def nts_syms_def by (auto)
+unfolding Nts_def Syms_def Nts_syms_def by (auto)
 
 lemma Nts_mono: "G \<subseteq> H \<Longrightarrow> Nts G \<subseteq> Nts H"
 by (auto simp add: Nts_def)
@@ -168,7 +163,7 @@ by (simp add: Nts_def)
 lemma Nts_Lhss_Rhs_Nts: "Nts P = Lhss P \<union> Rhs_Nts P"
 unfolding Nts_def Lhss_def Rhs_Nts_def by auto
 
-lemma Nts_nts_syms: "w \<in> Rhss P A \<Longrightarrow> nts_syms w \<subseteq> Nts P"
+lemma Nts_Nts_syms: "w \<in> Rhss P A \<Longrightarrow> Nts_syms w \<subseteq> Nts P"
 unfolding Rhss_def Nts_def by blast
 
 lemma Syms_simps[simp]:
@@ -183,44 +178,44 @@ lemma Lhss_simps[simp]:
   "Lhss(P \<union> P') = Lhss P \<union> Lhss P'"
 by(auto simp: Lhss_def)
 
-lemma set_nts_syms_list: "set(nts_syms_list sys ns) = nts_syms sys \<union> set ns"
-unfolding nts_syms_list_def
+lemma set_nts_syms: "set(nts_syms sys ns) = Nts_syms sys \<union> set ns"
+unfolding nts_syms_def
 by(induction sys arbitrary: ns) (auto split: sym.split)
 
-lemma set_nts_prods_list: "set(nts_prods_list ps) = nts ps"
-by(induction ps) (auto simp: nts_prods_list_def Nts_def set_nts_syms_list split: prod.splits)
+lemma set_nts: "set(nts ps) = Nts (set ps)"
+by(induction ps) (auto simp: nts_def Nts_def set_nts_syms split: prod.splits)
 
-lemma distinct_nts_syms_list: "distinct(nts_syms_list sys ns) = distinct ns"
-unfolding nts_syms_list_def
+lemma distinct_nts_syms: "distinct(nts_syms sys ns) = distinct ns"
+unfolding nts_syms_def
 by(induction sys arbitrary: ns) (auto split: sym.split)
 
-lemma distinct_nts_prods_list: "distinct(nts_prods_list ps)"
-by(induction ps) (auto simp: nts_prods_list_def distinct_nts_syms_list split: sym.split)
+lemma distinct_nts: "distinct(nts ps)"
+by(induction ps) (auto simp: nts_def distinct_nts_syms split: sym.split)
 
 
 subsubsection \<open>Finiteness Lemmas\<close>
 
-lemma finite_nts_syms: "finite (nts_syms w)"
+lemma finite_Nts_syms: "finite (Nts_syms w)"
 proof -
   have "Nt ` {A. Nt A \<in> set w} \<subseteq> set w" by auto
   from finite_inverse_image[OF _ inj_Nt]
-  show ?thesis unfolding nts_syms_def using finite_inverse_image[OF _ inj_Nt] by auto
+  show ?thesis unfolding Nts_syms_def using finite_inverse_image[OF _ inj_Nt] by auto
 qed
 
-lemma finite_nts: "finite(nts ps)"
-unfolding Nts_def by (simp add: finite_nts_syms split_def)
+lemma finite_nts: "finite(Nts (set ps))"
+unfolding Nts_def by (simp add: finite_Nts_syms split_def)
 
-lemma fresh_nts: "fresh(nts ps) \<notin> nts ps"
-by(fact fresh_finite[OF finite_nts])
+lemma fresh0_nts: "fresh0(Nts (set ps)) \<notin> Nts (set ps)"
+by(fact fresh0_notIn[OF finite_nts])
 
-lemma finite_nts_prods_start: "finite(nts(prods g) \<union> {start g})"
-unfolding Nts_def by (simp add: finite_nts_syms split_def)
+lemma finite_nts_prods_start: "finite(Nts(set(prods g)) \<union> {start g})"
+unfolding Nts_def by (simp add: finite_Nts_syms split_def)
 
-lemma fresh_nts_prods_start: "fresh(nts(prods g) \<union> {start g}) \<notin> nts(prods g) \<union> {start g}"
-by(fact fresh_finite[OF finite_nts_prods_start])
+lemma fresh_nts_prods_start: "fresh0(Nts(set(prods g)) \<union> {start g}) \<notin> Nts(set(prods g)) \<union> {start g}"
+by(fact fresh0_notIn[OF finite_nts_prods_start])
 
 lemma finite_Nts: "finite P \<Longrightarrow> finite (Nts P)"
-unfolding Nts_def by (simp add: case_prod_beta finite_nts_syms)
+unfolding Nts_def by (simp add: case_prod_beta finite_Nts_syms)
 
 lemma finite_Rhss: "finite P \<Longrightarrow> finite (Rhss P A)"
 unfolding Rhss_def by (metis Image_singleton finite_Image)
@@ -762,15 +757,15 @@ next
   then show ?case unfolding Syms_def by (auto)
 qed
 
-lemma derives_nts_syms_subset:
-  "P \<turnstile> u \<Rightarrow>* v \<Longrightarrow> nts_syms v \<subseteq> nts_syms u \<union> Nts P"
+lemma derives_Nts_syms_subset:
+  "P \<turnstile> u \<Rightarrow>* v \<Longrightarrow> Nts_syms v \<subseteq> Nts_syms u \<union> Nts P"
 by(drule derives_set_subset)
-  (auto simp: nts_syms_def Nts_def Syms_def)
+  (auto simp: Nts_syms_def Nts_def Syms_def)
 
-lemma derives_tms_syms_subset:
-  "P \<turnstile> u \<Rightarrow>* v \<Longrightarrow> tms_syms v \<subseteq> tms_syms u \<union> Tms P"
+lemma derives_Tms_syms_subset:
+  "P \<turnstile> u \<Rightarrow>* v \<Longrightarrow> Tms_syms v \<subseteq> Tms_syms u \<union> Tms P"
 by(drule derives_set_subset)
-  (auto simp: tms_syms_def Tms_def Syms_def)
+  (auto simp: Tms_syms_def Tms_def Syms_def)
 
 
 text \<open>Bottom-up definition of \<open>\<Rightarrow>*\<close>. Single definition yields more compact inductions.

@@ -1,6 +1,6 @@
 theory IsaFoR_Ground_Context
-  imports 
-    Generic_Context 
+  imports
+    Generic_Context
     IsaFoR_Ground_Term
 begin
 
@@ -156,7 +156,7 @@ proof (induction rule: parallel_induct_in_positions\<^sub>G[OF assms])
 next
   case step: 2
 
-  then show ?case 
+  then show ?case
     by (simp add: nth_append)
 qed
 

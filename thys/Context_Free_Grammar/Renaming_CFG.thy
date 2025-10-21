@@ -30,7 +30,7 @@ lemma Nt_notin_rename_syms_if_notin_range:
 by(auto elim!: rename_sym.elims[OF sym])
 
 lemma in_Nts_rename_Prods: "B \<in> Nts (rename_Prods f P) = (\<exists>A \<in> Nts P. f A = B)"
-unfolding Nts_def nts_syms_def by(force split: prod.splits elim!: rename_sym.elims[OF sym])
+unfolding Nts_def Nts_syms_def by(force split: prod.splits elim!: rename_sym.elims[OF sym])
 
 lemma rename_preserves_deriven:
    "P \<turnstile> \<alpha> \<Rightarrow>(n) \<beta> \<Longrightarrow> rename_Prods f P \<turnstile> rename_syms f \<alpha> \<Rightarrow>(n) rename_syms f \<beta>"
@@ -85,17 +85,17 @@ by (meson rename_preserves_deriveln rtranclp_power)
 
 lemma rename_deriven_iff_inj:
 fixes P :: "('a,'t)Prods"
-assumes "inj_on f (Nts P \<union> nts_syms \<alpha> \<union> nts_syms \<beta>)"
+assumes "inj_on f (Nts P \<union> Nts_syms \<alpha> \<union> Nts_syms \<beta>)"
 shows "rename_Prods f P \<turnstile> rename_syms f \<alpha> \<Rightarrow>(n) rename_syms f \<beta> \<longleftrightarrow> P \<turnstile> \<alpha> \<Rightarrow>(n) \<beta>" (is "?l \<longleftrightarrow> ?r")
 proof
   show "?r \<Longrightarrow> ?l" by (rule rename_preserves_deriven)
 next
   (* since f is injective, the second direction follows from the first by using the inverse *)
-  let ?M = "Nts P \<union> nts_syms \<alpha> \<union> nts_syms \<beta>"
+  let ?M = "Nts P \<union> Nts_syms \<alpha> \<union> Nts_syms \<beta>"
   obtain "g" where "g = the_inv_into ?M f" and inv: "(\<And>x. x \<in> ?M \<Longrightarrow> (g (f x) = x))"
     using assms by (simp add: the_inv_into_f_f inj_on_Un)
   then have "s \<in> Syms P \<union> set \<alpha> \<union> set \<beta> \<Longrightarrow> rename_sym g (rename_sym f s) = s" for s::"('a,'t) sym"
-    by (cases s) (auto simp: Nts_def Syms_def nts_syms_def)
+    by (cases s) (auto simp: Nts_def Syms_def Nts_syms_def)
   then have inv_rename_syms: "\<And>(ss::('a,'t) syms). set ss \<subseteq> Syms P \<union> set \<alpha> \<union> set \<beta> \<Longrightarrow> rename_syms g (rename_syms f ss) = ss"
     by (simp add: list.map_ident_strong subset_iff)
   with inv have "p \<in> P \<Longrightarrow> rename_prod g (rename_prod f p) = p" for p::"('a,'t) prod"
@@ -107,22 +107,22 @@ next
 qed
 
 lemma rename_derives_iff_inj:
-  assumes "inj_on f (Nts P \<union> nts_syms \<alpha> \<union> nts_syms \<beta>)"
+  assumes "inj_on f (Nts P \<union> Nts_syms \<alpha> \<union> Nts_syms \<beta>)"
   shows "rename_Prods f P \<turnstile> rename_syms f \<alpha> \<Rightarrow>* rename_syms f \<beta> \<longleftrightarrow> P \<turnstile> \<alpha> \<Rightarrow>* \<beta>"
 by (meson assms relpowp_imp_rtranclp rename_deriven_iff_inj rtranclp_imp_relpowp)
 
 lemma rename_deriveln_iff_inj:
 fixes P :: "('a,'t)Prods"
-assumes "inj_on f (Nts P \<union> nts_syms \<alpha> \<union> nts_syms \<beta>)"
+assumes "inj_on f (Nts P \<union> Nts_syms \<alpha> \<union> Nts_syms \<beta>)"
 shows "rename_Prods f P \<turnstile> rename_syms f \<alpha> \<Rightarrow>l(n) rename_syms f \<beta> \<longleftrightarrow> P \<turnstile> \<alpha> \<Rightarrow>l(n) \<beta>" (is "?l \<longleftrightarrow> ?r")
 proof
   show "?r \<Longrightarrow> ?l" by (rule rename_preserves_deriveln)
 next
-  let ?M = "Nts P \<union> nts_syms \<alpha> \<union> nts_syms \<beta>"
+  let ?M = "Nts P \<union> Nts_syms \<alpha> \<union> Nts_syms \<beta>"
   obtain "g" where "g = the_inv_into ?M f" and inv: "(\<And>x. x \<in> ?M \<Longrightarrow> (g (f x) = x))"
     using assms by (simp add: the_inv_into_f_f inj_on_Un)
   then have "s \<in> Syms P \<union> set \<alpha> \<union> set \<beta> \<Longrightarrow> rename_sym g (rename_sym f s) = s" for s::"('a,'t) sym"
-    by (cases s) (auto simp: Nts_def Syms_def nts_syms_def)
+    by (cases s) (auto simp: Nts_def Syms_def Nts_syms_def)
   then have inv_rename_syms: "\<And>(ss::('a,'t) syms). set ss \<subseteq> Syms P \<union> set \<alpha> \<union> set \<beta> \<Longrightarrow> rename_syms g (rename_syms f ss) = ss"
     by (simp add: list.map_ident_strong subset_iff)
   with inv have "p \<in> P \<Longrightarrow> rename_prod g (rename_prod f p) = p" for p::"('a,'t) prod"
@@ -134,7 +134,7 @@ next
 qed
 
 lemma rename_derivels_iff_inj:
-  assumes "inj_on f (Nts P \<union> nts_syms \<alpha> \<union> nts_syms \<beta>)"
+  assumes "inj_on f (Nts P \<union> Nts_syms \<alpha> \<union> Nts_syms \<beta>)"
   shows "rename_Prods f P \<turnstile> rename_syms f \<alpha> \<Rightarrow>l* rename_syms f \<beta> \<longleftrightarrow> P \<turnstile> \<alpha> \<Rightarrow>l* \<beta>"
 by (meson assms relpowp_imp_rtranclp rename_deriveln_iff_inj rtranclp_imp_relpowp)
 

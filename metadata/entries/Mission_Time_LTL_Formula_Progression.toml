@@ -1,0 +1,37 @@
+title = "Mission-time Linear Temporal Logic Formula Progression"
+date = 2025-07-28
+topics = [
+  "Computer science",
+  "Logic/General logic/Temporal logic",
+]
+abstract = "We build on the Isabelle/HOL formalization of Mission-time Linear Temporal Logic (MLTL) to formalize a formula progression algorithm for MLTL formulas (https://dblp.org/rec/conf/rv/LiR18.html), a key algorithm in the FPROGG tool for generating MLTL benchmarks. The formula progression algorithm takes a MLTL formula and steps through a given trace to partially evaluate a logically equivalent simpler formula at each step, ultimately checking whether or not the trace satisfies the original formula. Our formalization is executable and we export it to code in SML."
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.cordwell]
+email = "cordwell_email"
+
+[authors.wangz]
+email = "wangz_email"
+
+[authors.sloan]
+email = "sloan_email"
+
+[contributors]
+
+[notify]
+cordwell = "cordwell_email"
+wangz = "wangz_email"
+sloan = "sloan_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = [
+  "Katherine Kosaian, Zili Wang, Elizabeth Sloan, Kristin Yvonne Rozier. Formalizing MLTL Formula Progression in Isabelle/HOL. To appear in Conference on Intelligent Computer Mathematics (CICM 2025).",
+]

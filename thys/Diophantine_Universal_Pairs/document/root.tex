@@ -1,0 +1,117 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{isabelle,isabellesym}
+\usepackage{authblk}
+
+\usepackage[T1]{fontenc}
+
+% further packages required for unusual symbols (see also
+% isabellesym.sty), use only when needed
+
+\usepackage{amssymb}
+  %for \<leadsto>, \<box>, \<diamond>, \<sqsupset>, \<mho>, \<Join>,
+  %\<lhd>, \<lesssim>, \<greatersim>, \<lessapprox>, \<greaterapprox>,
+  %\<triangleq>, \<yen>, \<lozenge>
+
+%\usepackage{eurosym}
+  %for \<euro>
+
+%\usepackage[only,bigsqcap]{stmaryrd}
+  %for \<Sqinter>
+
+%\usepackage{eufrak}
+  %for \<AA> ... \<ZZ>, \<aa> ... \<zz> (also included in amssymb)
+
+\usepackage{textcomp}
+  %for \<onequarter>, \<onehalf>, \<threequarters>, \<degree>, \<cent>,
+  %\<currency>
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+% for uniform font size
+%\renewcommand{\isastyle}{\isastyleminor}
+
+
+\begin{document}
+
+\title{Universal Pairs for Diophantine Equations}
+
+\author{Marco David and Th\'eo Andr\'e and Mathis Bouverot-Dupuis and Eva Brenner and Lo\"ic Chevalier and Anna Danilkin and Charlotte Dorneich and Kevin Lee and Xavier Pig\'e and Timoth\'e Ringeard and Quentin Vermande and Paul Wang and Annie Yao and Zhengkun Ye and Jonas Bayer}
+\maketitle
+
+%\footnotetext[*]{Text}
+
+\begin{abstract}
+We formalize a universal construction of Diophantine equations with bounded complexity. 
+This is a formalization of our own work in number theory~\cite{manuscript}.
+
+Hilbert's Tenth Problem was answered negatively by Yuri Matiyasevich, who showed that there is no 
+general algorithm to decide whether an arbitrary Diophantine equation has a solution\cite{matiyasevich-book}. 
+However, the 
+problem remains open when generalized to the field of rational numbers, or contrarily, when 
+restricted to Diophantine equations with bounded complexity, characterized by the number of 
+variables $\nu$ and the degree $\delta$. If every Diophantine set can be represented within the 
+bounds $(\nu, \delta)$, we say that this pair is \emph{universal}, and it follows that the 
+corresponding class of equations is undecidable. In a separate mathematics article, we have 
+determined the first non-trivial universal pair for the case of integer unknowns. 
+
+This AFP entry contributes the main construction required to establish said universal pair. In 
+doing so, we markedly extend previous work on multivariate polynomials~\cite{polynomials-afp}, 
+and develop classical theory on Diophantine equations~\cite{MR75}. Additionally, our work includes 
+metaprogramming infrastructure designed to efficiently handle complex definitions of multivariate 
+polynomials. Our mathematical draft has been formalized while the mathematical research was 
+ongoing, and benefitted largely from the help of the theorem prover. 
+\end{abstract}
+
+\tableofcontents
+
+\newpage
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+\paragraph{Overview}
+We provide a detailed high-level overview of this formal proof in a forthcoming paper~\cite{itp-paper}. 
+Here we just reference the various mathematical sources that we have formalized. 
+
+The main mathematical text is our preprint 
+``Diophantine Equations over $\mathbb Z$: Universal Bounds and Parallel Formalization''~\cite{manuscript}. 
+It contains the majority of the proofs verified here. A lot of it is based on ideas by Zhi-Wei Sun~\cite{Sun, SunDFI}. 
+
+Moreover, we formalize classical theory on Diophantine Equations following an article by 
+Matyivasevich and Robinson~\cite{MR75}. This material can be found in the section on relation combining. 
+
+We also formalize a variety of statements on multivariate polynomials adding to the current entry
+on multivariate polynomials~\cite{polynomials-afp}. Finally, our proof relies on the 
+Three Squares Theorem~\cite{three-squares-afp} which we import.
+
+
+\paragraph{Acknowledgements}
+This project would not exist without Yuri Matiyasevich who proposed the formalization of 
+Hilbert's Tenth Problem and encouraged our exploration of Universal Pairs. We are deeply grateful 
+to Dierk Schleicher for his unwavering support throughout, both on a personal level and through his 
+mathematical insight. We thank Malte Haßler, Thomas Serafini and Simon Dubischar for their 
+mathematical contributions to the project.
+%
+We gratefully acknowledge support from the D\'epartement de math\'emathiques et applications 
+at \'Ecole Normale Sup\'erieure de Paris.
+
+\newpage
+
+% generated text of all theories
+\input{session}
+
+% optional bibliography
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

@@ -1,0 +1,73 @@
+chapter AFP
+
+(* Builds on Complex_Analysis because Three_Squares needs it *)
+session "Diophantine_Universal_Pairs" (AFP) = "HOL-Complex_Analysis" +
+  description \<open>Universal Pairs for Diophantine Equations\<close>
+  options [document_build = "pdflatex",
+           timeout = 900]
+
+  sessions 
+    "HOL-Computational_Algebra"
+    "HOL-Algebra"
+    "HOL-Number_Theory"
+    "Digit_Expansions"
+    "Polynomials"
+    "Three_Squares"
+
+  directories 
+    "MPoly_Utils"
+    "Coding"
+    "Coding_Theorem"
+    "Bridge_Theorem"
+    "Nine_Unknowns_N_Z"
+    "Lucas_Sequences"
+
+  theories  
+    "MPoly_Utils/More_More_MPoly_Type"
+    "MPoly_Utils/Poly_Extract"
+
+    "Coding/Bit_Counting"
+    "Coding/Utils"
+    "Coding/Tau_Reduction"
+    "Coding/Masking"
+    "Coding/Multinomial"
+    "Coding/Lemma_1_8_Defs"
+    "Coding/Lemma_1_8_Coding"
+    "Coding/Lemma_1_8"
+    "Coding/Suitable_For_Coding"
+
+    "Coding_Theorem/Coding_Theorem_Definitions"
+    "Coding_Theorem/Lemma_2_2"    
+    "Coding_Theorem/Lower_Bounds"
+    "Coding_Theorem/Coding_Theorem"
+
+    "Lucas_Sequences/Lucas_Sequences"
+    "Lucas_Sequences/Pell_Equation"
+    "Lucas_Sequences/Lucas_Diophantine"
+    "Lucas_Sequences/Lemma_4_4"
+    "Lucas_Sequences/DFI_square_0"
+    "Lucas_Sequences/DFI_square_1"
+    "Lucas_Sequences/DFI_square_2"
+    "Lucas_Sequences/DFI_square_3"
+
+    "Bridge_Theorem/Bridge_Theorem_Imp"
+    "Bridge_Theorem/Bridge_Theorem_Rev"
+    "Bridge_Theorem/Bridge_Theorem"
+
+    "Nine_Unknowns_N_Z/Algebra_Basics"
+    "Nine_Unknowns_N_Z/J3_Polynomial"
+    "Nine_Unknowns_N_Z/J3_Relations"
+    "Nine_Unknowns_N_Z/Pi_Relations"
+    "Nine_Unknowns_N_Z/Pi_to_M3_rat"
+    "Nine_Unknowns_N_Z/Matiyasevich_Polynomial"
+
+    "Nine_Unknowns_N_Z/Nine_Unknowns_N_Z_Definitions"
+    "Nine_Unknowns_N_Z/Nine_Unknowns_N_Z"
+
+    "Eleven_Unknowns_Z"
+
+    "Universal_Pairs"
+
+  document_files
+    "root.tex"    
+    "root.bib"

@@ -84,6 +84,10 @@
   "name": "Alexander Birch Jensen"
  },
  {
+  "link": "/authors/haberl/",
+  "name": "Alexander Haberl"
+ },
+ {
   "link": "/authors/katovsky/",
   "name": "Alexander Katovsky"
  },
@@ -118,6 +122,10 @@
  {
   "link": "/authors/maximova/",
   "name": "Alexandra Maximova"
+ },
+ {
+  "link": "/authors/burrieza/",
+  "name": "Alfredo Burrieza"
  },
  {
   "link": "/authors/tiu/",
@@ -176,8 +184,16 @@
   "name": "Anna Danilkin"
  },
  {
+  "link": "/authors/yaoa/",
+  "name": "Annie Yao"
+ },
+ {
   "link": "/authors/bordg/",
   "name": "Anthony Bordg"
+ },
+ {
+  "link": "/authors/ginel/",
+  "name": "Antonio Yuste-Ginel"
  },
  {
   "link": "/authors/heller/",
@@ -334,6 +350,10 @@
  {
   "link": "/authors/staats/",
   "name": "Charles Staats"
+ },
+ {
+  "link": "/authors/dorneich/",
+  "name": "Charlotte Dorneich"
  },
  {
   "link": "/authors/edmonds/",
@@ -600,6 +620,10 @@
   "name": "Eugene W. Stark"
  },
  {
+  "link": "/authors/brenner/",
+  "name": "Eva Brenner"
+ },
+ {
   "link": "/authors/suarez/",
   "name": "Fabián Fernando Serran Suárez"
  },
@@ -628,12 +652,20 @@
   "name": "Fahad Ausaf"
  },
  {
+  "link": "/authors/escallon/",
+  "name": "Felipe Escallón"
+ },
+ {
   "link": "/authors/brandt/",
   "name": "Felix Brandt"
  },
  {
   "link": "/authors/krayer/",
   "name": "Felix Krayer"
+ },
+ {
+  "link": "/authors/toscano/",
+  "name": "Fernando Soler-Toscano"
  },
  {
   "link": "/authors/maricf/",
@@ -646,6 +678,10 @@
  {
   "link": "/authors/nielsen/",
   "name": "Finn Nielsen"
+ },
+ {
+  "link": "/authors/nielson/",
+  "name": "Flemming Nielson"
  },
  {
   "link": "/authors/krasnopol/",
@@ -1329,7 +1365,7 @@
  },
  {
   "link": "/authors/desharnais/",
-  "name": "Martin Desharnais"
+  "name": "Martin Desharnais-Schäfer"
  },
  {
   "link": "/authors/hofmann/",
@@ -1358,6 +1394,10 @@
  {
   "link": "/authors/rabing/",
   "name": "Mathias Schack Rabing"
+ },
+ {
+  "link": "/authors/dupuis/",
+  "name": "Mathis Bouverot-Dupuis"
  },
  {
   "link": "/authors/scharager/",
@@ -1592,6 +1632,10 @@
   "name": "Paul Hofmeier"
  },
  {
+  "link": "/authors/wangp/",
+  "name": "Paul Wang"
+ },
+ {
   "link": "/authors/brodmann/",
   "name": "Paul-David Brodmann"
  },
@@ -1634,6 +1678,10 @@
  {
   "link": "/authors/hibon/",
   "name": "Quentin Hibon"
+ },
+ {
+  "link": "/authors/vermande/",
+  "name": "Quentin Vermande"
  },
  {
   "link": "/authors/guerraoui/",
@@ -1682,6 +1730,10 @@
  {
   "link": "/authors/neumann/",
   "name": "René Neumann"
+ },
+ {
+  "link": "/authors/hansen/",
+  "name": "René Rydhof Hansen"
  },
  {
   "link": "/authors/thiemann/",
@@ -1972,6 +2024,10 @@
   "name": "Thaynara Arielly de Lima"
  },
  {
+  "link": "/authors/andre/",
+  "name": "Théo André"
+ },
+ {
   "link": "/authors/delemazure/",
   "name": "Théo Delemazure"
  },
@@ -2006,6 +2062,10 @@
  {
   "link": "/authors/weerwag/",
   "name": "Timmy Weerwag"
+ },
+ {
+  "link": "/authors/ringeard/",
+  "name": "Timothé Ringeard"
  },
  {
   "link": "/authors/bourke/",
@@ -2106,6 +2166,10 @@
  {
   "link": "/authors/parent/",
   "name": "Xavier Parent"
+ },
+ {
+  "link": "/authors/pige/",
+  "name": "Xavier Pigé"
  },
  {
   "link": "/authors/gao/",

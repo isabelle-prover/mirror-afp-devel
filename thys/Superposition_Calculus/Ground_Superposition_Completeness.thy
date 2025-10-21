@@ -477,14 +477,16 @@ proof (intro subsetI ballI)
   fix tuple
   assume tuple_in: "tuple \<in> ground_critical_pairs (\<Union> (epsilon N2 ` N))"
 
-  then obtain t1 t2 where tuple_def: "tuple = (t1, t2)"
+  obtain t1 t2 where tuple_def: "tuple = (t1, t2)"
     by fastforce
 
   moreover have "(t1, t2) \<in> (rewrite_in_context (\<Union> (epsilon N2 ` N)))\<^sup>\<down>" if "t1 = t2"
-    using that by auto
+    using that
+    by auto
 
   moreover have False if "t1 \<noteq> t2"
-    using that tuple_def tuple_in no_crit_pairs by simp
+    using that tuple_def tuple_in no_crit_pairs 
+    by simp
 
   ultimately show "tuple \<in> (rewrite_in_context (\<Union> (epsilon N2 ` N)))\<^sup>\<down>"
     by (cases "t1 = t2") simp_all

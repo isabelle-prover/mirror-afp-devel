@@ -5,7 +5,7 @@ session "Category3" = "HOL-Library" +
   sessions
     "HereditarilyFinite" "ZFC_in_HOL"
   theories
-    EquivalenceOfCategories HF_SetCat_Interp ZFC_SetCat_Interp
+    Colimit EquivalenceOfCategories HF_SetCat_Interp ZFC_SetCat_Interp
   document_files
     "root.bib"
     "root.tex"

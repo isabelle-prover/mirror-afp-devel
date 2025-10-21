@@ -5,6 +5,7 @@ session Context_Free_Grammar = Finite_Automata_HF +
   sessions
     "HOL-Library"
     List_Power
+    Fresh_Identifiers
   theories
     Context_Free_Grammar
     Parse_Tree

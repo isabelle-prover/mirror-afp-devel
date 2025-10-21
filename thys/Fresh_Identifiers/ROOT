@@ -5,6 +5,7 @@ session Fresh_Identifiers = HOL +
   theories
     Fresh
     Fresh_Nat
+    Fresh_Int
     Fresh_String
     Fresh_Infinite
   document_files

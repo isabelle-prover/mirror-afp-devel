@@ -175,6 +175,104 @@ begin
 
   end
 
+  lemma category_of_transitions_preserved_by_iso:
+  assumes "isomorphic_categories A B"
+  and "category_of_transitions A"
+  shows "category_of_transitions B"
+  proof -
+    interpret A: category A
+      using assms(1) isomorphic_categories.axioms(1) by blast
+    interpret B: category B
+      using assms(1) isomorphic_categories.axioms(2) by blast
+    obtain F G where FG: "inverse_functors A B G F"
+      using assms isomorphic_categories.iso by blast
+    interpret FG: inverse_functors A B G F
+      using FG by blast
+    interpret A: category_of_transitions A
+      using assms(2) by blast
+    show ?thesis
+    proof
+      show "\<And>t. B.iso t \<Longrightarrow> B.ide t"
+        by (metis FG.F.preserves_iso FG.G.preserves_ide FG.inv FG.iso assms(2)
+            category.iso_is_arr category_of_transitions.iso_implies_ide comp_eq_dest_lhs
+            identity_functor.map_simp identity_functor_def inverse_functors_def)
+      show "\<And>t. B.arr t \<Longrightarrow> B.epi t"
+      proof -
+        fix t
+        assume t: "B.arr t"
+        hence "A.arr (G t)"
+          by blast
+        hence "A.epi (G t)"
+          using A.arr_implies_epi by blast
+        hence "B.epi (F (G t))"
+        proof (intro B.epiI)
+          show "A.epi (G t) \<Longrightarrow> B.arr (F (G t))"
+            using \<open>A.arr (G t)\<close> by blast
+          show "\<And>g g'. \<lbrakk>A.epi (G t); B.seq g (F (G t)); B.seq g' (F (G t));
+                        B g (F (G t)) = B g' (F (G t))\<rbrakk> \<Longrightarrow> g = g'"
+            by (metis A.arr_implies_epi A.category_axioms B.category_axioms B.is_faithful
+                FG.F.preserves_arr FG.F.preserves_comp FG.inv category.cod_comp
+                category.epi_cancel category.seqE o_apply)
+        qed
+        thus "B.epi t"
+          by (metis B.map_simp FG.inv o_apply t)
+      qed
+      show "\<And>h k. B.bounded_span h k \<Longrightarrow> \<exists>f g. B.pushout_square f g h k"
+      proof -
+        fix h k
+        assume hk: "B.bounded_span h k"
+        have 1: "A.bounded_span (G h) (G k)"
+        proof -
+          obtain f g where fg: "B.commutative_square f g h k"
+            using hk by blast
+          have "A.commutative_square (G f) (G g) (G h) (G k)"
+            by (metis (mono_tags, lifting) A.commutative_squareI B.commutative_squareE
+                B.seqI FG.F.preserves_cod FG.F.preserves_comp FG.F.preserves_dom
+                FG.F.preserves_reflects_arr fg)
+          thus ?thesis by blast
+        qed
+        obtain Gf Gg where fg: "A.pushout_square Gf Gg (G h) (G k)"
+          using 1 A.has_bounded_pushouts by blast
+        have "B.pushout_square (F Gf) (F Gg) h k"
+        proof
+          show "B.span h k"
+            using hk by auto
+          show "B.cospan (F Gf) (F Gg)"
+            using A.commutative_square_def A.pushout_square_def FG.G.preserves_arr
+                  FG.G.preserves_cod fg
+            by presburger
+          show "B.dom (F Gf) = B.cod h"
+            by (metis A.commutative_square_def A.pushout_square_def B.identity_functor_axioms
+                FG.G.preserves_cod FG.G.preserves_dom FG.inv \<open>B.span h k\<close> fg
+                identity_functor.map_def o_apply)
+          show "B (F Gf) h = B (F Gg) k"
+            by (metis (no_types, lifting) A.category_axioms A.pushout_square_def
+                B.map_simp FG.G.preserves_comp FG.inv \<open>B.span h k\<close> category.commutative_squareE
+                category.seqI fg o_apply)
+          show "\<And>f' g'. B.commutative_square f' g' h k \<Longrightarrow> \<exists>!l. B l (F Gf) = f' \<and> B l (F Gg) = g'"
+          proof -
+            fix f' g'
+            assume 1: "B.commutative_square f' g' h k"
+            have 2: "A.commutative_square (G f') (G g') (G h) (G k)"
+              by (metis (no_types, lifting) ext "1" A.commutative_squareI A.seqE
+                  B.commutative_square_def B.comp_arr_dom B.seqI
+                  FG.F.as_nat_trans.preserves_comp_2 FG.F.preserves_cod FG.F.preserves_seq
+                  \<open>B.span h k\<close>)
+            hence "\<exists>!Gl. A Gl Gf = G f' \<and> A Gl Gg = G g'"
+              using A.pushout_square_def fg by presburger
+            thus "\<exists>!l. B l (F Gf) = f' \<and> B l (F Gg) = g'"
+              by (metis (full_types) "1" "2" A.category_axioms B.category_axioms
+                  B.identity_functor_axioms FG.G.preserves_comp FG.inv
+                  \<open>B.cospan (F Gf) (F Gg)\<close> \<open>\<And>t. B.arr t \<Longrightarrow> B.epi t\<close>
+                  category.commutative_square_def category.epi_cancel
+                  identity_functor.map_simp o_apply)
+          qed
+        qed
+        thus "\<exists>f g. B.pushout_square f g h k" by blast
+      qed
+    qed
+  qed
+
 section "Extensional RTS's with Composites as Categories"
 
   text \<open>
@@ -322,6 +420,10 @@ section "Extensional RTS's with Composites as Categories"
 
   end
 
+  locale composite_completion_as_category =
+    R: rts +
+    extensional_rts_with_composites_as_category \<open>composite_completion.resid resid\<close>
+
   section "Characterization"
 
   text \<open>
@@ -399,7 +501,10 @@ section "Extensional RTS's with Composites as Categories"
     C: category_of_transitions
   begin
 
-    interpretation ResiduatedTransitionSystem.partial_magma \<open>\<lambda>h k. \<i>\<^sub>0[h, k]\<close>
+    abbreviation resid
+    where "resid \<equiv> \<lambda>h k. \<i>\<^sub>0[h, k]"
+
+    interpretation ResiduatedTransitionSystem.partial_magma resid
       using C.inj0_ext C.inj1_ext C.commutative_squareE C.not_arr_null C.pushout_commutes
       by unfold_locales metis
 
@@ -408,7 +513,7 @@ section "Extensional RTS's with Composites as Categories"
       using null_eqI C.inj0_ext C.not_arr_null C.pushout_commutes
       by (metis C.commutative_squareE)
 
-    interpretation residuation \<open>\<lambda>h k. \<i>\<^sub>0[h, k]\<close>
+    interpretation residuation resid
     proof
       show 0: "\<And>t u. \<i>\<^sub>0[t, u] \<noteq> null \<Longrightarrow> \<i>\<^sub>0[u, t] \<noteq> null"
         by (metis C.inj0_ext C.inj_sym C.not_arr_null C.pushout_commutes
@@ -552,7 +657,7 @@ section "Extensional RTS's with Composites as Categories"
             arr_char con_char ide_char arr_resid_iff_con con_sym ide_implies_arr)
     qed
 
-    interpretation extensional_rts \<open>\<lambda>h k. \<i>\<^sub>0[h, k]\<close>
+    interpretation extensional_rts resid
       by unfold_locales
          (metis C.ideD(2) C.inj_sym C.pushout_commutes prfx_implies_con
                 C.commutative_squareE C.comp_cod_arr con_char ide_char)
@@ -579,15 +684,328 @@ section "Extensional RTS's with Composites as Categories"
           arr_char composable_imp_seq cong_reflexive comp_def null_char
           prfx_decomp seq_char)
 
-    sublocale extensional_rts_with_composites \<open>\<lambda>h k. \<i>\<^sub>0[h, k]\<close>
+    sublocale extensional_rts_with_composites resid
       by unfold_locales
          (metis C.not_arr_null composable_iff_comp_not_null comp_char null_char
            seq_char)
 
     proposition is_extensional_rts_with_composites:
-    shows "extensional_rts_with_composites (\<lambda>h k. \<i>\<^sub>0[h, k])"
+    shows "extensional_rts_with_composites resid"
       ..
 
   end
+
+  context extensional_rts_with_composites_as_category
+  begin
+
+    interpretation R: underlying_rts comp ..
+
+    lemma resid_char:
+    shows "R.resid = resid"
+    proof -
+      have 1: "\<And>t u. R.con t u = (t \<frown> u)"
+      proof -
+        fix t u
+        have "R.con t u \<longleftrightarrow> bounded_span t u"
+          using R.con_char by blast
+        also have "... \<longleftrightarrow> (\<exists>v w. seq v t \<and> comp v t = comp w u)"
+          unfolding bounded_span_def
+          by (metis (lifting) HOL.ext cod_comp commutative_square_def dom_comp seqE seqI)
+        also have "... \<longleftrightarrow> (\<exists>v w. A.seq t v \<and> A.comp t v = A.comp u w)"
+          using seq_char by simp
+        also have "... \<longleftrightarrow> A.con t u"
+          by (metis A.arr_def A.arr_resid_iff_con A.con_comp_iff\<^sub>E\<^sub>C(2) A.con_implies_arr(2)
+              A.diamond_commutes A.has_joins A.join_expansion(2) A.seq_implies_arr_comp)
+        finally show "R.con t u = (t \<frown> u)" by blast
+      qed
+      have "\<And>t u. R.resid t u = t \\ u"
+        using 1
+        by (metis A.con_def R.con_char has_bounded_pushouts inj0_ext null_char pushouts_unique(2))
+      thus ?thesis by blast
+    qed
+
+  end
+
+  locale pushout_preserving_functor =
+    "functor" +
+  assumes preserves_pushouts: "A.pushout_square f g h k
+                                  \<Longrightarrow> B.pushout_square (F f) (F g) (F h) (F k)"
+
+  lemma pushout_preserving_functor_identity:
+  assumes "category A"
+  shows "pushout_preserving_functor A A (identity_functor.map A)"
+  proof -
+    interpret A: category A
+      using assms by blast
+    interpret A: identity_functor A ..
+    show ?thesis
+    proof
+      show "\<And>f g h k. A.pushout_square f g h k \<Longrightarrow>
+                         A.pushout_square (A.map f) (A.map g) (A.map h) (A.map k)"
+        by (simp add: A.commutative_square_def A.pushout_square_def)
+    qed
+  qed
+
+  lemma pushout_preserving_functor_comp:
+  assumes "pushout_preserving_functor A B F"
+  and "pushout_preserving_functor B C G"
+  shows "pushout_preserving_functor A C (G \<circ> F)"
+  proof -
+    interpret F: pushout_preserving_functor A B F
+      using assms(1) by blast
+    interpret G: pushout_preserving_functor B C G
+      using assms(2) by blast
+    interpret GoF: composite_functor A B C F G ..
+    show ?thesis
+      using F.preserves_pushouts G.preserves_pushouts
+      by unfold_locales auto
+  qed
+
+  lemma pushout_preserving_functor_const:
+  assumes "category A" and "category B"
+  and "partial_composition.ide B b"
+  shows "pushout_preserving_functor A B (constant_functor.map A B b)"
+  proof -
+    interpret A: category A
+      using assms(1) by blast
+    interpret B: category B
+      using assms(2) by blast
+    interpret F: constant_functor A B b
+      using assms(3) by unfold_locales blast
+    show ?thesis
+    proof
+      fix f g h k
+      assume 1: "A.pushout_square f g h k"
+      show "B.pushout_square (F.map f) (F.map g) (F.map h) (F.map k)"
+      proof
+        show 2: "B.cospan (F.map f) (F.map g)"
+          using 1 A.pushout_square_def by auto
+        show 3: "B.span (F.map h) (F.map k)"
+          using 1 A.commutative_square_def A.pushout_square_def F.value_is_ide by force
+        show "B.dom (F.map f) = B.cod (F.map h)"
+          using 2 3 B.ide_char F.map_simp F.preserves_reflects_arr F.value_is_ide
+          by metis
+        show "B (F.map f) (F.map h) = B (F.map g) (F.map k)"
+          using 2 3 by force
+        fix f' g'
+        assume 4: "B.commutative_square f' g' (F.map h) (F.map k)"
+        show "\<exists>!l. B l (F.map f) = f' \<and> B l (F.map g) = g'"
+          by (metis (lifting) ext 2 4 B.commutative_square_def B.comp_arr_dom B.ide_char
+              B.seqE F.map_simp F.preserves_reflects_arr F.value_is_ide)
+      qed
+    qed
+  qed
+
+  lemma invertible_functor_is_pushout_preserving:
+  assumes "invertible_functor A B F"
+  shows "pushout_preserving_functor A B F"
+  proof -
+    interpret F: invertible_functor A B F
+      using assms by blast
+    obtain G where G: "inverse_functors A B G F"
+      using F.has_unique_inverse by blast
+    interpret FG: inverse_functors A B G F
+      using G by blast
+    show ?thesis
+    proof
+      fix f g h k
+      assume 1: "F.A.pushout_square f g h k"
+      show "F.B.pushout_square (F f) (F g) (F h) (F k)"
+      proof
+        show "F.B.cospan (F f) (F g)"
+          using 1 F.A.commutative_square_def F.A.pushout_square_def by force
+        show "F.B.span (F h) (F k)"
+          using 1 F.A.pushout_square_def by auto
+        show "F.B.dom (F f) = F.B.cod (F h)"
+          using 1 F.A.pushout_square_def by auto
+        show "B (F f) (F h) = B (F g) (F k)"
+          by (metis 1 F.A.commutative_square_def F.A.pushout_square_def F.A.seqI
+              F.G.preserves_comp)
+        fix f' g'
+        assume 2: "F.B.commutative_square f' g' (F h) (F k)"
+        show "\<exists>!l'. B l' (F f) = f' \<and> B l' (F g) = g'"
+        proof -
+          have 3: "F.A.commutative_square (G f') (G g') h k"
+          proof
+            show "F.A.cospan (G f') (G g')"
+              by (metis 2 F.B.commutative_square_def FG.F.preserves_arr FG.F.preserves_cod)
+            show "F.A.span h k"
+              using 1 F.A.pushout_square_def by blast
+            show "F.A.dom (G f') = F.A.cod h"
+              by (metis 2 F.A.map_simp F.B.commutative_square_def FG.F.preserves_cod
+                  FG.F.preserves_dom FG.inv' \<open>F.A.span h k\<close> o_apply)
+            show "A (G f') h = A (G g') k"
+              by (metis 2 F.A.map_simp F.B.commutative_squareE FG.F.preserves_comp G
+                  \<open>F.A.span h k\<close> F.B.seqI comp_eq_dest_lhs inverse_functors.inv')
+          qed
+          obtain l where l: "A l f = G f' \<and> A l g = G g'"
+            using 1 3 by (meson F.A.pushout_square_def)
+          have "B (F l) (F f) = f' \<and> B (F l) (F g) = g'"
+            by (metis 2 F.B.commutative_square_def F.B.identity_functor_axioms
+                F.G.preserves_comp FG.F.preserves_arr FG.inv identity_functor.map_simp
+                l o_apply)
+          moreover have "\<And>l'. \<lbrakk>B l' (F f) = f'; B l' (F g) = g'\<rbrakk> \<Longrightarrow> F l = l'"
+          proof -
+            fix l'
+            assume 4: "B l' (F f) = f'" and 5: "B l' (F g) = g'"
+            have "A (G l') f = G f' \<and> A (G l') g = G g'"
+              by (metis 3 4 5 F.A.commutative_square_def F.A.map_simp
+                  F.G.preserves_reflects_arr FG.F.as_nat_trans.preserves_comp_2
+                  FG.F.preserves_reflects_arr FG.inv' \<open>F.B.cospan (F f) (F g)\<close> o_apply)
+            hence "G l' = l"
+              using 1 3 l F.A.pushout_square_def [of f g h k] by blast
+            thus "F l = l'"
+              by (metis 3 F.A.commutative_squareE F.A.null_is_zero(1)
+                  F.A.partial_composition_axioms F.B.map_def FG.F.extensionality FG.inv
+                  l o_apply partial_composition.not_arr_null)
+          qed
+          ultimately show "\<exists>!l'. B l' (F f) = f' \<and> B l' (F g) = g'" by blast
+        qed
+      qed
+    qed
+  qed
+
+  locale simulation_as_functor =
+    simulation +
+    A: extensional_rts_with_composites A +
+    B: extensional_rts_with_composites B
+  begin
+
+    sublocale A.as_category: extensional_rts_with_composites_as_category A ..
+    sublocale B.as_category: extensional_rts_with_composites_as_category B ..
+
+    sublocale "functor" A.as_category.comp B.as_category.comp F
+    proof
+      show "\<And>f. \<not> A.as_category.arr f \<Longrightarrow> F f = B.as_category.null"
+        by (simp add: A.as_category.arr_char B.as_category.null_char extensionality)
+      show "\<And>f. A.as_category.arr f \<Longrightarrow> B.as_category.arr (F f)"
+        by (simp add: A.as_category.arr_char B.as_category.arr_char)
+      show "\<And>f. A.as_category.arr f \<Longrightarrow> B.as_category.dom (F f) = F (A.as_category.dom f)"
+        by (simp add: A.as_category.arr_char A.as_category.dom_char
+            B.as_category.dom_char B.src_eqI)
+      show "\<And>f. A.as_category.arr f \<Longrightarrow> B.as_category.cod (F f) = F (A.as_category.cod f)"
+        by (simp add: A.as_category.arr_char A.as_category.cod_char
+            B.as_category.cod_char)
+      show "\<And>g f. A.as_category.seq g f \<Longrightarrow>
+                     F (A.as_category.comp g f) = B.as_category.comp (F g) (F f)"
+        by (metis A.as_category.seq_char A.comp_is_composite_of(1)
+            A.rts_with_chosen_composites_axioms A.seq_implies_arr_comp
+            B.extensional_rts_axioms rts_with_chosen_composites.composable_iff_arr_comp\<^sub>C\<^sub>C
+            simulation_axioms simulation_to_extensional_rts.intro
+            simulation_to_extensional_rts.preserves_comp)
+    qed
+
+    lemma is_functor:
+    shows "functor A.as_category.comp B.as_category.comp F"
+      ..
+
+    sublocale pushout_preserving_functor A.as_category.comp B.as_category.comp F
+    proof
+      fix f g h k
+      assume 1: "A.as_category.pushout_square f g h k"
+      show "B.as_category.pushout_square (F f) (F g) (F h) (F k)"
+      proof
+        show "B.as_category.cospan (F f) (F g)"
+          by (metis 1 A.as_category.commutative_square_def A.as_category.pushout_square_def
+              preserves_arr preserves_cod)
+        show "B.as_category.span (F h) (F k)"
+          using 1 A.as_category.pushout_square_def by auto
+        show "B.as_category.dom (F f) = B.as_category.cod (F h)"
+          by (metis 1 A.as_category.commutative_squareE A.as_category.pushout_square_def
+              preserves_cod preserves_dom)
+        show "B.as_category.comp (F f) (F h) = B.as_category.comp (F g) (F k)"
+          by (metis 1 A.as_category.arr_char A.as_category.cod_char
+              A.as_category.commutative_square_def A.as_category.dom_char
+              A.as_category.pushout_square_def as_nat_trans.preserves_comp_2
+              extensional_rts_with_composites.arr_comp\<^sub>E\<^sub>C simulation_as_functor_axioms
+              simulation_as_functor_def)
+        show "\<And>f' g'. B.as_category.commutative_square f' g' (F h) (F k) \<Longrightarrow>
+                         \<exists>!l. B.as_category.comp l (F f) = f' \<and> B.as_category.comp l (F g) = g'"
+        proof -
+          fix f' g'
+          assume 2: "B.as_category.commutative_square f' g' (F h) (F k)"
+          moreover have "B.as_category.pushout_square (F k \\\<^sub>B F h) (F h \\\<^sub>B F k) (F h) (F k)"
+            using 2 B.as_category.has_bounded_pushouts by blast
+          ultimately have "\<exists>!l. B.as_category.comp l (F k \\\<^sub>B F h) = f' \<and>
+                                B.as_category.comp l (F h \\\<^sub>B F k) = g'"
+            unfolding B.as_category.pushout_square_def by presburger
+          moreover have "f = k \\\<^sub>A h \<and> g = h \\\<^sub>A k"
+            by (metis 1 A.as_category.bounded_spanI A.as_category.has_bounded_pushouts
+                A.as_category.pushout_square_def A.as_category.pushouts_unique(1-2))
+          ultimately show "\<exists>!l. B.as_category.comp l (F f) = f' \<and> B.as_category.comp l (F g) = g'"
+            unfolding B.as_category.pushout_square_def
+            using A.arr_resid_iff_con A.as_category.arr_char \<open>B.as_category.cospan (F f) (F g)\<close>
+            by auto
+        qed
+      qed
+    qed
+
+    lemma is_pushout_preserving_functor:
+    shows "pushout_preserving_functor A.as_category.comp B.as_category.comp F"
+      ..
+
+  end
+
+  lemma simulation_is_pushout_preserving_functor:
+  assumes "extensional_rts_with_composites A"
+  and "extensional_rts_with_composites B"
+  and "simulation A B F"
+  shows "pushout_preserving_functor
+           (extensional_rts_with_composites_as_category.comp A)
+           (extensional_rts_with_composites_as_category.comp B)
+           F"
+  proof -
+    interpret A: extensional_rts_with_composites A
+      using assms(1) by blast
+    interpret B: extensional_rts_with_composites B
+      using assms(2) by blast
+    interpret F: simulation A B F
+      using assms(3) by blast
+    interpret F: simulation_as_functor A B F ..
+    show ?thesis
+      using F.pushout_preserving_functor_axioms by blast
+  qed
+
+  lemma pushout_preserving_functor_is_simulation:
+  assumes "category_of_transitions A"
+  and "category_of_transitions B"
+  and "pushout_preserving_functor A B F"
+  shows "simulation
+           (category_with_bounded_pushouts.inj0 A)
+           (category_with_bounded_pushouts.inj0 B)
+           F"
+  proof -
+    interpret A: category_of_transitions A
+      using assms(1) by blast
+    interpret B: category_of_transitions B
+      using assms(2) by blast
+    interpret F: pushout_preserving_functor A B F
+      using assms(3) by blast
+    interpret A': underlying_rts A ..
+    interpret B': underlying_rts B ..
+    show ?thesis
+    proof
+      show "\<And>t. \<not> A'.arr t \<Longrightarrow> F t = B'.null"
+        by (simp add: A'.arr_char B'.null_char F.extensionality)
+      show "\<And>t u. A'.con t u \<Longrightarrow> B'.con (F t) (F u)"
+      proof -
+        fix t u
+        assume con: "A'.con t u"
+        obtain v w where vw: "A'.seq t v \<and> A'.comp t v = A'.comp u w"
+          using con
+          by (meson A'.diamond_commutes A'.has_joins A'.join_expansion(2))
+        hence "F (A v t) = F (A w u)"
+          by (simp add: A'.comp_char)
+        hence "B (F v) (F t) = B (F w) (F u)"
+          by (metis A'.comp_char A'.seq_char F.preserves_comp vw)
+        thus "B'.con (F t) (F u)"
+          by (metis A'.seq_char B'.bounded_imp_con\<^sub>E B'.comp_char B'.prfx_reflexive
+              B'.seq_char B'.seq_implies_arr_comp F.preserves_seq vw)
+      qed
+      show "\<And>t u. A'.con t u \<Longrightarrow> F (A.inj0 t u) = B.inj0 (F t) (F u)"
+        by (meson A'.con_char A.has_bounded_pushouts B.category_of_transitions_axioms
+            F.preserves_pushouts category_of_transitions.pushouts_unique(2))
+    qed
+  qed
 
 end

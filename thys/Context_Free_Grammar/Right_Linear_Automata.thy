@@ -38,7 +38,7 @@ next
   then show ?case by(auto simp add: nxt_rlin2_nts)
 next
   case 4
-  then show ?case using \<open>finite P\<close> by (simp add: Nts_def finite_nts_syms split_def)
+  then show ?case using \<open>finite P\<close> by (simp add: Nts_def finite_Nts_syms split_def)
 qed
 print_theorems
 
