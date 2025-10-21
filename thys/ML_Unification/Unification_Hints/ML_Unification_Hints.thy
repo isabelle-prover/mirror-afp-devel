@@ -24,13 +24,14 @@ ML\<open>
   id: \<open>"rec"\<close>
   more_args: \<open>
     structure TI = Discrimination_Tree
+    structure Args = Term_Index_Unification_Hints_Args
     val init_args = {
       concl_unifier = SOME Standard_Mixed_Comb_Unification.first_higherp_comb_unify,
       prems_unifier = SOME (Standard_Mixed_Comb_Unification.first_higherp_comb_unify
         |> Unification_Combinator.norm_unifier Envir_Normalisation.beta_norm_term_unif),
       normalisers = SOME Standard_Mixed_Comb_Unification.norms_first_higherp_comb_unify,
-      retrieval = SOME (Term_Index_Unification_Hints_Args.mk_retrieval_sym_pair
-        TI.unifiables TI.norm_term),
+      retrieval = SOME (Args.mk_retrieval_sym_pair (K TI.unifiables |> Args.retrieve_transfer)
+        TI.norm_term),
       hint_preprocessor = SOME (K I)}\<close>\<close>
 \<close>
 local_setup \<open>Standard_Unification_Hints_Rec.setup_attribute NONE\<close>
@@ -58,17 +59,18 @@ ML\<open>
   id: \<open>""\<close>
   more_args: \<open>
     structure TI = Discrimination_Tree
+    structure Args = Term_Index_Unification_Hints_Args
     val init_args = {
       concl_unifier = NONE,
       prems_unifier = SOME (Standard_Mixed_Comb_Unification.first_higherp_comb_unify
         |> Unification_Combinator.norm_unifier Envir_Normalisation.beta_norm_term_unif),
       normalisers = SOME Standard_Mixed_Comb_Unification.norms_first_higherp_comb_unify,
-      retrieval = SOME (Term_Index_Unification_Hints_Args.mk_retrieval_sym_pair
-        TI.unifiables TI.norm_term),
+      retrieval = SOME (Args.mk_retrieval_sym_pair (K TI.unifiables |> Args.retrieve_transfer)
+        TI.norm_term),
       hint_preprocessor = SOME (K I)}\<close>\<close>
 \<close>
 local_setup \<open>Standard_Unification_Hints.setup_attribute NONE\<close>
-declare [[uhint config: concl_unifier = \<open>fn binders =>
+declare [[uhint config concl_unifier: \<open>fn binders =>
   Standard_Unification_Combine.delete_eunif_data
     (Standard_Unification_Combine.metadata Standard_Unification_Hints.binding Prio.LOW1)
   (*TODO: should we also remove the recursive hint unifier here? time will tell...*)

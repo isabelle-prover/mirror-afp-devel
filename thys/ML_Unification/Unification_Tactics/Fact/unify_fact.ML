@@ -22,8 +22,8 @@ sig
   val unify_fact_tac : args -> Proof.context -> int -> tactic
   val unify_fact_config_args_tac : config_args -> thm list -> Proof.context -> int -> tactic
 
-  val arg_parsers : (ML_Code_Util.code parser, ML_Code_Util.code parser, thm list context_parser)
-    PA.entries
+  val arg_parsers : (ML_Code_Util.code parser, ML_Code_Util.code parser,
+    'a context_parser -> thm list context_parser) PA.entries
 end
 
 structure Unify_Fact_Args : UNIFY_FACT_ARGS =
@@ -48,7 +48,7 @@ val unify_fact_config_args_tac = unify_fact_tac oo PA_entries_from_PCA_entries
 val arg_parsers = {
   normalisers = SOME Unification_Parser.parse_normalisers,
   unifier = SOME Unification_Parser.parse_unifier,
-  facts = SOME Parse_Util.thms
+  facts = SOME (fn unless => Scan.repeats (Scan.unless unless Parse_Util.multi_thm))
 }
 
 end
@@ -117,13 +117,13 @@ fun unify_fact_tac facts ctxt =
 
 val binding = Binding.make (FI.prefix_id "ufact", FI.pos)
 
-val parse_arg_entries =
+val parse_arg_entry =
   let
     val parsers = UFA.arg_parsers |> UFA.PCA_entries_from_PA_entries
     val parse_value = PCA.parse_entry (PCA.get_normalisers parsers) (PCA.get_unifier parsers)
-    val parse_entry = Parse_Key_Value.parse_entry PCA.parse_key (K (Parse.$$$ ":")) parse_value
-      |> Parse.!!! |> Scan.unless Parse.eof
-  in PCA.parse_entries_required Scan.repeat1 [] parse_entry (PCA.empty_entries ()) end
+  in Parse_Key_Value.parse_entry PCA.parse_key (K (Parse.$$$ ":")) parse_value end
+val parse_arg_entries =
+  PCA.parse_entries_required Scan.repeat1 true [] parse_arg_entry (PCA.empty_entries ())
 
 fun attribute (entries, pos) =
   let
@@ -142,11 +142,11 @@ val parse_attribute = (parse_arg_entries |> Parse_Util.position) >> attribute
 
 val setup_attribute = Attrib.local_setup binding
   (Parse.!!! parse_attribute |> Scan.lift) o
-  the_default ("set unify-fact arguments " ^ enclose "(" ")" FI.long_name)
+  the_default ("configure unify-fact data " ^ enclose "(" ")" FI.long_name)
 
 val parse_method =
-  PA.get_facts UFA.arg_parsers
-  -- ((Scan.option Parse.where_ |-- parse_attribute) |> Parse.!!! |> Parse_Util.option |> Scan.lift)
+  PA.get_facts UFA.arg_parsers (Scan.lift parse_arg_entry)
+  -- ((Scan.option (Args.$$$ "use") |-- parse_attribute) |> Parse.!!! |> Parse_Util.option |> Scan.lift)
   >> (fn (facts, opt_attr) =>
     the_default I (Option.map ML_Attribute_Util.attribute_map_ctxt opt_attr)
     #> Method_Util.METHOD_CONTEXT' (append facts #> unify_fact_tac))

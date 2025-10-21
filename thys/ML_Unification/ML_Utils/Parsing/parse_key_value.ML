@@ -14,13 +14,13 @@ sig
     (('k, 'v) entry) context_parser
 
   val pretty_keys : ('k -> string) -> 'k list -> Pretty.T
-  val parse_key : string list -> (string -> 'k) -> 'k parser
+  val parse_key : string list -> (string -> 'k option) -> 'k parser
 
   val has_required_keys : ('k * ('k, 'v) entry -> bool) -> 'k list -> ('k, 'v) entries -> bool
 
-  val parse_entries_required : ('k * 'k -> bool) -> ('k -> string) -> 'k list ->
+  val parse_entries_required : ('k * 'k -> bool) -> ('k -> string) -> bool -> 'k list ->
     (('k, 'v) entries) parser -> (('k, 'v) entries) parser
-  val parse_entries_required' : ('k * 'k -> bool) -> ('k -> string) -> 'k list ->
+  val parse_entries_required' : ('k * 'k -> bool) -> ('k -> string) -> bool -> 'k list ->
     (('k, 'v) entries) context_parser -> (('k, 'v) entries) context_parser
 end
 
@@ -32,8 +32,7 @@ structure Util = Parse_Util
 type ('k, 'v) entry = ('k * 'v)
 type ('k, 'v) entries = ('k, 'v) entry list
 
-fun gen_parse_entry cut parse_key parse_delim parse_value =
-  parse_key
+fun gen_parse_entry cut parse_key parse_delim parse_value = parse_key
   :-- (fn n => parse_delim n
   |-- cut (parse_value n))
 fun parse_entry parse_key = gen_parse_entry Parse.!!! parse_key
@@ -42,17 +41,20 @@ fun parse_entry' parse_key = gen_parse_entry Parse.!!!! parse_key
 fun pretty_keys key_to_string = map (Pretty.str o key_to_string) #> Pretty.commas #> Pretty.block
 
 fun parse_key names key_from_string =
-  let val pretty_keys = pretty_keys I names |> Pretty.string_of
-  in
-    Parse.group (K pretty_keys)
-      (Util.nonempty_name (K "Key must not be empty.") >> key_from_string)
-  end
+  let
+    val pretty_keys = pretty_keys I names |> Pretty.string_of
+    val parse_key = Parse.token (Parse.short_ident || Parse.long_ident)
+      :|-- (fn tok => case key_from_string (Token.content_of tok) of
+          NONE => Scan.fail ()
+        | SOME key => (Token.assign (SOME (Token.Literal (false, Markup.quasi_keyword))) tok;
+            Scan.succeed key))
+  in Parse.group (K pretty_keys) parse_key end
 
 fun eq_key_entry eq_key (rn, (xn, _)) = eq_key (rn, xn)
 
 fun has_required_keys eq_key_entry rks ks = subset eq_key_entry (rks, ks)
 
-fun gen_parse_entries_required filter_parser eq_key key_to_string ks parse_entries =
+fun gen_parse_entries_required filter_parser eq_key key_to_string check_dups ks parse_entries =
   let
     val eq_key_entry = eq_key_entry eq_key
     fun failure_required es = Pretty.fbreaks [
@@ -72,7 +74,7 @@ fun gen_parse_entries_required filter_parser eq_key key_to_string ks parse_entri
   in
     filter_parser
       (has_required_keys eq_key_entry ks) (Util.fail failure_required) parse_entries
-    |> Util.distinct_list (eq_key o apply2 fst) failure_distinct
+    |> check_dups ? Util.distinct_list (eq_key o apply2 fst) failure_distinct
   end
 
 fun parse_entries_required eq_key = gen_parse_entries_required Util.filter_cut eq_key

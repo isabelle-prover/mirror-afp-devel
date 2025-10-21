@@ -135,8 +135,7 @@ type hint_retrieval = term Binders.binders -> Proof.context -> term * term -> En
   unif_hint Seq.seq
 
 fun try_hints get_hints match norms unif binders ctxt (t1, t2) env = Seq.make (fn _ =>
-  (@{log Logger.TRACE} ctxt (fn _ =>
-    Pretty.block [
+  (@{log Logger.TRACE} ctxt (fn _ => Pretty.block [
       Pretty.str "Trying unification hints for ",
       UUtil.pretty_unif_problem ctxt (t1, t2)
     ] |> Pretty.string_of);

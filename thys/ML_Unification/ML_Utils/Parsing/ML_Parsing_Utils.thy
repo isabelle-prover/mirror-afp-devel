@@ -48,7 +48,7 @@ ML_command\<open>
           Parse.int) \<comment>\<open>parser for DEFG\<close>
       val required_keys = [Test.key Test.ABC] \<comment>\<open>required keys\<close>
       val default_entries = Test.empty_entries () \<comment>\<open>default values for entries\<close>
-    in Test.parse_entries_required Parse.and_list1 required_keys parse_entry default_entries end
+    in Test.parse_entries_required Parse.and_list1 true required_keys parse_entry default_entries end
     \<comment> \<open>This parses, for example, \<open>ABC = hello and DEFG = 3\<close> or \<open>DEFG = 3 and ABC = hello\<close>,
     but not \<open>DEFG = 3\<close> since the key "ABC" is missing.\<close>
 \<close>

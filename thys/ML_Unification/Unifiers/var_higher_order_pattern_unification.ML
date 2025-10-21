@@ -19,7 +19,8 @@ signature VAR_HIGHER_ORDER_PATTERN_UNIFICATION =
 sig
   include HAS_LOGGER
 
-  val can_var_pattern_unif : term * term -> bool * term list
+  val can_var_pattern_match : term * term -> bool * term list
+  val e_match : Unification_Base.e_matcher
   val e_unify : Unification_Base.e_unifier
 end
 
@@ -31,7 +32,7 @@ val logger = Logger.setup_new_logger Unification_Base.logger "Var_Higher_Order_P
 structure Util = Unification_Util
 structure Comb = Unification_Combinator
 
-fun can_var_pattern_unif (p, t) = let val (head, args) = strip_comb p
+fun can_var_pattern_match (p, t) = let val (head, args) = strip_comb p
   in
     if is_Var head andalso forall is_Bound args andalso not (has_duplicates (op aconv) args)
       andalso not (Term.exists_subterm (equal head) t)
@@ -39,37 +40,60 @@ fun can_var_pattern_unif (p, t) = let val (head, args) = strip_comb p
     else (false, [])
   end
 
-fun e_unify unif_theory binders ctxt (tp as (t, p)) env = Seq.make (fn _ =>
-  let
-    exception FALLBACK of Pretty.T
-    val unify_types = Util.unify_types
-    val hop_match_type_unif =
-      Higher_Order_Pattern_Unification.e_match unify_types Comb.fail_match Comb.fail_match
-      |> Type_Unification.e_unify unify_types
-      |> (fn unif => unif binders)
-    val hop_match_type_unif_tp = hop_match_type_unif ctxt tp
-    val hop_match_type_unif_pt = Comb.flip_closed_unifier hop_match_type_unif ctxt tp
-    val seq_try = General_Util.seq_try (FALLBACK (Pretty.str "Higher-order pattern matching failed."))
+local
+  exception FALLBACK of Pretty.T
+  val form_msg = "?H b1 ... bn \<equiv>\<^sup>? t where ?H does not occur in t."
+  fun seq_try msg = General_Util.seq_try (FALLBACK (Pretty.str msg))
+in
+
+fun e_match match_theory binders ctxt tp env = Seq.make (fn _ =>
+  let val hop_match_type_match =
+    Higher_Order_Pattern_Unification.e_match Util.match_types Comb.fail_match Comb.fail_match
+    |> Type_Unification.e_match Util.match_types
   in
-    ((@{log Logger.DEBUG} ctxt (fn _ => Pretty.block [
-        Pretty.str "Variable head higher-order pattern unifying ",
+    ((@{log Logger.DEBUG} ctxt (fn _ => Pretty.breaks [
+        Pretty.str "Variable head higher-order pattern E-matching",
         Util.pretty_unif_problem ctxt tp
-      ] |> Pretty.string_of);
-    case apply2 can_var_pattern_unif (tp, (p, t)) of
-      ((true, boundst), (true, boundsp)) =>
-        if length boundst >= length boundsp
-        then hop_match_type_unif_tp env |> seq_try
-        else hop_match_type_unif_pt env |> seq_try
-    | ((true, _), _) => hop_match_type_unif_tp env |> seq_try
-    | (_, (true, _)) => hop_match_type_unif_pt env |> seq_try
-    | _ => raise FALLBACK
-        (Pretty.str "Terms not of the form ?H b1 ... bn \<equiv>\<^sup>? t where ?H does not occur in t."))
+      ] |> Pretty.block |> Pretty.string_of);
+    case can_var_pattern_match tp of
+      (true, _) => hop_match_type_match binders ctxt tp env
+        |> seq_try "Higher-order pattern matching failed."
+    | _ => raise FALLBACK (Pretty.str ("Left-hand side term not of the form " ^ form_msg)))
     handle FALLBACK msg => (@{log Logger.DEBUG} ctxt (fn _ => Pretty.breaks [
         msg,
-        Util.pretty_call_theory_unif ctxt tp
+        Util.pretty_call_theory_match ctxt tp
       ] |> Pretty.block |> Pretty.string_of);
+      match_theory binders ctxt tp env))
+    |> Seq.pull
+  end)
+
+fun e_unify unif_theory binders ctxt (tp as (t, p)) env = Seq.make (fn _ =>
+  let
+    val hop_match_type_unif =
+      Higher_Order_Pattern_Unification.e_match Util.unify_types Comb.fail_match Comb.fail_match
+      |> Type_Unification.e_unify Util.unify_types
+    val hop_match_type_unif_tp = hop_match_type_unif binders ctxt tp
+    val hop_match_type_unif_pt = Comb.flip_unifier hop_match_type_unif binders ctxt tp
+    val seq_try = seq_try "Higher-order pattern matching failed."
+  in
+    ((@{log Logger.DEBUG} ctxt (fn _ => Pretty.breaks [
+        Pretty.str "Variable head higher-order pattern E-unifying",
+        Util.pretty_unif_problem ctxt tp
+      ] |> Pretty.block |> Pretty.string_of);
+    case apply2 can_var_pattern_match (tp, (p, t)) of
+      ((true, boundst), (true, boundsp)) => (if length boundst >= length boundsp
+          then hop_match_type_unif_tp else hop_match_type_unif_pt) env
+        |> seq_try
+    | ((true, _), _) => hop_match_type_unif_tp env |> seq_try
+    | (_, (true, _)) => hop_match_type_unif_pt env |> seq_try
+    | _ => raise FALLBACK (Pretty.str ("Terms not of the form " ^ form_msg)))
+    handle FALLBACK msg => (@{log Logger.DEBUG} ctxt (fn _ => Pretty.breaks [
+          msg,
+          Util.pretty_call_theory_unif ctxt tp
+        ] |> Pretty.block |> Pretty.string_of);
       unif_theory binders ctxt tp env))
     |> Seq.pull
   end)
+end
 
 end

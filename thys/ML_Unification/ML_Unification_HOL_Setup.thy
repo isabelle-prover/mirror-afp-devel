@@ -7,9 +7,9 @@ theory ML_Unification_HOL_Setup
 begin
 
 lemma eq_eq_True: "P \<equiv> (P \<equiv> Trueprop True)" by standard+ simp_all
-declare [[uhint config: hint_preprocessor = \<open>Unification_Hints_Base.obj_logic_hint_preprocessor
+declare [[uhint config hint_preprocessor: \<open>Unification_Hints_Base.obj_logic_hint_preprocessor
   @{thm atomize_eq[symmetric]} (Conv.rewr_conv @{thm eq_eq_True})\<close>]]
-and [[rec_uhint config: hint_preprocessor = \<open>Unification_Hints_Base.obj_logic_hint_preprocessor
+and [[rec_uhint config hint_preprocessor: \<open>Unification_Hints_Base.obj_logic_hint_preprocessor
   @{thm atomize_eq[symmetric]} (Conv.rewr_conv @{thm eq_eq_True})\<close>]]
 
 lemma eq_TrueI: "PROP P \<Longrightarrow> PROP P \<equiv> Trueprop True" by (standard) simp

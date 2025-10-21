@@ -24,13 +24,14 @@ ML\<open>
   id: \<open>"reify"\<close>
   more_args: \<open>
     structure TI = Discrimination_Tree
+    structure Args = Term_Index_Unification_Hints_Args
     val init_args = {
       concl_unifier = NONE, (*will be set later*)
       prems_unifier = NONE, (*will be set later*)
       normalisers = SOME Higher_Order_Pattern_Unification.norms_unify,
-      (*only retrieve hints based on hints' left-hand side*)
-      retrieval = SOME (Term_Index_Unification_Hints_Args.mk_retrieval_sym
-        (Term_Index_Unification_Hints_Args.retrieve_left TI.unifiables) TI.norm_term),
+      (*only retrieve hints based on hints' left-hand sides*)
+      retrieval = SOME (Args.mk_retrieval_sym
+        (Library.K TI.unifiables |> Args.retrieve_transfer |> Args.retrieve_left) TI.norm_term),
       hint_preprocessor = SOME (Standard_Unification_Hints.get_hint_preprocessor
         (Context.the_generic_context ()))}\<close>\<close>
 
@@ -45,7 +46,7 @@ val reify_unify = Unification_Combinator.add_fallback_unifier
 local_setup \<open>Reification_Unification_Hints.setup_attribute NONE\<close>
 
 text \<open>Premises of hints should again be unified by the reification unifier.\<close>
-declare [[reify_uhint config: prems_unifier = reify_unify]]
+declare [[reify_uhint config prems_unifier: reify_unify]]
 
 subsection \<open>Formulas with Quantifiers and Environment\<close>
 
@@ -80,7 +81,7 @@ experiment
 begin
 
 text \<open>Hints for list lookup.\<close>
-declare List.nth_Cons_Suc[reify_uhint prio = Prio.LOW]
+declare List.nth_Cons_Suc[reify_uhint prio: Prio.LOW]
   and List.nth_Cons_0[reify_uhint]
 
 text \<open>Hints to reify formulas of type @{type bool} into formulas of type @{type form}.\<close>
@@ -88,7 +89,7 @@ declare interp.simps[reify_uhint]
 
 text \<open>We have to allow the hint unifier to recursively look for hints during unification of
 the hint's conclusion.\<close>
-declare [[reify_uhint config: concl_unifier = reify_unify]]
+declare [[reify_uhint config concl_unifier: reify_unify]]
 
 (*uncomment the following to see the hint unification process*)
 (* declare [[ML_map_context \<open>Logger.set_log_levels Unification_Base.logger Logger.DEBUG\<close>]] *)
@@ -109,10 +110,12 @@ paragraph \<open>Reification with matching without recursion for conclusion\<clo
 
 text \<open>We disallow the hint unifier to recursively look for hints while unifying the conclusion;
 instead, we only allow the hint unifier to match the hint's conclusion against the disagreement terms.\<close>
-declare [[reify_uhint config: concl_unifier =
+declare [[reify_uhint config concl_unifier:
   \<open>Higher_Order_Pattern_Unification.match |> Type_Unification.e_match Unification_Util.match_types\<close>
-  retrieval = \<open>Term_Index_Unification_Hints_Args.mk_retrieval_sym
-  (Term_Index_Unification_Hints_Args.retrieve_left Reification_Unification_Hints.TI.unifiables)
+  retrieval: \<open>Term_Index_Unification_Hints_Args.mk_retrieval_sym
+  (K Reification_Unification_Hints.TI.generalisations
+    |> Term_Index_Unification_Hints_Args.retrieve_transfer
+    |> Term_Index_Unification_Hints_Args.retrieve_left)
   Reification_Unification_Hints.TI.norm_term\<close>]]
 
 text \<open>However, this also means that we now have to write our hints such that the hint's
@@ -124,7 +127,7 @@ these meta variables.\<close>
 experiment
 begin
 
-lemma [reify_uhint prio = Prio.LOW]:
+lemma [reify_uhint prio: Prio.LOW]:
   "n \<equiv> Suc n' \<Longrightarrow> vs \<equiv> v # vs' \<Longrightarrow> vs' ! n' \<equiv> x \<Longrightarrow> vs ! n \<equiv> x"
   by simp
 
@@ -157,7 +160,7 @@ fun eval_add_expr :: "add_expr \<Rightarrow> int" where
   "eval_add_expr (Var i) = i"
 | "eval_add_expr (Add ex1 ex2) = eval_add_expr ex1 + eval_add_expr ex2"
 
-lemma eval_add_expr_Var [reify_uhint prio = Prio.LOW]:
+lemma eval_add_expr_Var [reify_uhint prio: Prio.LOW]:
   "e \<equiv> Var i \<Longrightarrow> eval_add_expr e \<equiv> i" by simp
 
 lemma eval_add_expr_add [reify_uhint]:
@@ -189,12 +192,12 @@ fun eval_mul_expr :: "mul_expr \<times> rat list \<Rightarrow> rat" where
 | "eval_mul_expr (Inv e, \<Gamma>) = inverse (eval_mul_expr (e, \<Gamma>))"
 
 text \<open>Split @{term e} into an expression and an environment.\<close>
-lemma [reify_uhint prio = Prio.VERY_LOW]:
+lemma [reify_uhint prio: Prio.VERY_LOW]:
   "e \<equiv> (e1, \<Gamma>) \<Longrightarrow> eval_mul_expr (e1, \<Gamma>) \<equiv> n \<Longrightarrow> eval_mul_expr e \<equiv> n"
   by simp
 
 text \<open>Hints for environment lookup.\<close>
-lemma [reify_uhint prio = Prio.LOW]:
+lemma [reify_uhint prio: Prio.LOW]:
   "e \<equiv> Var (Suc p) \<Longrightarrow> \<Gamma> \<equiv> s # \<Delta> \<Longrightarrow> n \<equiv> eval_mul_expr (Var p, \<Delta>) \<Longrightarrow> eval_mul_expr (e, \<Gamma>) \<equiv> n"
   by simp
 

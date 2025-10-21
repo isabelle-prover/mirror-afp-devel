@@ -13,6 +13,7 @@ ML\<open>
   structure Prop = SpecCheck_Property
   structure UC = Unification_Combinator
   structure UU = Unification_Util
+  structure TIUHA = Term_Index_Unification_Hints_Args
   open Unification_Tests_Base
   structure Unif = Higher_Order_Pattern_Unification
   val norm_match_types = Type_Unification.e_match UU.match_types
@@ -24,8 +25,8 @@ ML\<open>
       (fn match_theory => Unif.e_match UU.match_types match_theory match_theory
         |> norm_match_types)
       ((fn binders =>
-        (Hints.map_retrieval (Term_Index_Unification_Hints_Args.mk_retrieval_pair
-          Hints.TI.generalisations Hints.TI.norm_term |> K)
+        (Hints.map_retrieval (TIUHA.mk_retrieval_pair
+          (K Hints.TI.generalisations |> TIUHA.retrieve_transfer) Hints.TI.norm_term |> K)
         #> Hints.UH.map_concl_unifier (match |> K)
         #> Hints.UH.map_normalisers (Unif.norms_match |> K)
         #> Hints.UH.map_prems_unifier (match |> K))

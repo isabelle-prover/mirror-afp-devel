@@ -31,9 +31,9 @@ val parse_arg_entries =
       Parse.embedded
     val parse_entry = Parse_Key_Value.parse_entry PA.parse_key (K (Parse.$$$ ":")) parse_value
       |> Parse.!!! |> Scan.unless Parse.eof
-    val default_entries = PA.empty_entries ()
-      |> fold PA.set_entry [PA.FI_struct_name "FI", PA.more_args "", PA.path "", PA.struct_name ""]
-  in PA.parse_entries_required Scan.repeat1 required_keys parse_entry default_entries end
+    val default_entries = PA.entries_from_entry_list
+      [PA.FI_struct_name "FI", PA.more_args "", PA.path "", PA.struct_name ""]
+  in PA.parse_entries_required Scan.repeat1 true required_keys parse_entry default_entries end
 
 fun mk_functor_instance (entries, pos) =
   let

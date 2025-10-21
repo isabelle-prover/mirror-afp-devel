@@ -15,7 +15,7 @@ struct
 
 structure U = ML_Syntax_Util
 
-val internal_param = U.internal_name o U.internal_name
+val internal_param = U.internal_name o prefix "PARAM_"
 
 val mk_poly_type_a = U.mk_poly_type_index "a"
 fun mk_type_args mk_string = U.mk_type_args o map_index (mk_string o fst)
@@ -46,9 +46,14 @@ fun mk_key_sig ks = U.mk_val_sig key_name
 val mk_key_struct = let val kparam = internal_param "k"
   in U.mk_fun key_name kparam (U.mk_app [kparam, "()"]) end
 
-val keys_name = internal_param "keys"
+val keys_name = "keys"
+
+val mk_list_type = U.mk_type_app "list"
+
+val mk_keys_sig = U.mk_val_sig keys_name (mk_list_type mk_key_type)
+
 fun mk_keys_struct ks = U.mk_val_struct
-  keys_name (U.mk_app ["map", key_name, U.mk_list ks])
+  keys_name (U.mk_app ["List.map", key_name, U.mk_list ks])
 
 val key_to_string_name = "key_to_string"
 
@@ -62,22 +67,20 @@ val mk_key_to_string_struct = U.mk_fun_cases
 
 val keys_strings_name = internal_param "keys_strings"
 val mk_keys_strings_struct = U.mk_val_struct
-  keys_strings_name (U.mk_app ["map", key_to_string_name, keys_name])
+  keys_strings_name (U.mk_app ["List.map", key_to_string_name, keys_name])
 
-val key_from_string_name = internal_param "key_from_string"
+val key_from_string_name = "key_from_string"
 
-fun mk_key_from_string_struct_entry k = (quote k, U.mk_app [key_name, k])
+val mk_option_type = U.mk_type_app "option"
+
+val mk_key_from_string_sig = U.mk_val_sig
+  key_from_string_name (U.mk_fun_type ["string", mk_option_type mk_key_type])
+
+fun mk_key_from_string_struct_entry k = (quote k, U.mk_app ["SOME", U.mk_app_atomic [key_name, k]])
 
 val mk_key_from_string_struct =
-  let val kparam = internal_param "k"
-  in
-    U.mk_fun_cases key_from_string_name (mk_key_from_string_struct_entry o snd)
-    #> U.add_fun_case key_from_string_name kparam (U.mk_app [
-      U.mk_struct_access "Scan" "fail_with",
-      U.mk_fn_atomic kparam
-        (U.mk_app ["fn _ => \"key \"", "^",  kparam, "^",  "\" not registered\""]),
-      kparam])
-  end
+  U.mk_fun_cases key_from_string_name (mk_key_from_string_struct_entry o snd)
+  #> U.add_fun_case key_from_string_name "_" "NONE"
 
 fun mk_istate_type itype jtype atype =
   U.mk_type_app (U.mk_struct_access "Parse_Util" "istate") (U.mk_type_args [itype, jtype, atype])
@@ -116,8 +119,6 @@ val mk_parse_key_struct = U.mk_val_struct parse_key_name
 
 val entries_type_name = "entries"
 val mk_entries_type = U.mk_type_app entries_type_name oo mk_type_args
-
-val mk_option_type = U.mk_type_app "option"
 
 fun mk_entries_type_sig ks =
   let val record = map_index (apfst (mk_option_type o mk_poly_type_a) #> swap) ks |> U.mk_record ":"
@@ -213,13 +214,15 @@ val mk_the_value_struct =
       (U.spaces ["error (\"No data for key \\\"\" ^", key_to_string_name, kparam, "^ \"\\\".\")"])
   end
 
+fun mk_comp f g = U.mk_app ["General.o", U.mk_tuple [f, g]]
+
 fun mk_map_struct k =
   let val fparam = internal_param "f"
   in
     U.mk_fun (mk_map_name k) fparam (U.mk_app [
       mk_map_name_safe k,
-      U.mk_app_atomic ["SOME", "o", fparam, "o",
-        U.mk_app [the_value_name, U.mk_app_atomic [key_name, k]]]])
+      U.mk_app_atomic [mk_comp "SOME" (mk_comp
+        fparam (U.mk_app [the_value_name, U.mk_app_atomic [key_name, k]]))]])
   end
 
 val mk_maps_struct = map mk_map_struct #> U.lines
@@ -254,7 +257,6 @@ fun mk_get_struct k =
 
 val mk_gets_struct = map mk_get_struct #> U.lines
 
-val mk_list_type = U.mk_type_app "list"
 fun mk_parse_key_value_entry_type mk_poly_type ks = U.mk_type_app (Parse_Key_Value_op "entry")
   (U.mk_type_args [mk_key_type, mk_entry_type mk_poly_type ks])
 fun mk_parse_key_value_entries_type mk_poly_type ks = U.mk_type_app (Parse_Key_Value_op "entries")
@@ -289,7 +291,7 @@ fun mk_key_entry_entries_from_entries_struct ks =
     val record_in = map record_in_data ks |> U.mk_record "="
     fun list_out_data k = U.mk_app [
       U.mk_struct_access "Option" "map",
-      U.mk_app_atomic ["pair", U.mk_app_atomic [key_name, k], "o", k],
+      U.atomic (mk_comp (U.mk_app ["pair", U.mk_app_atomic [key_name, k]]) k),
       prefix_key k]
     val list_out = map list_out_data ks |> U.mk_list
   in
@@ -312,24 +314,22 @@ val mk_entries_from_entry_list_struct =
 val mk_context_parser_type = U.mk_type_app (U.mk_struct_access "Token" "context_parser")
 
 local
-fun mk_names name = (prefix "gen_" name, name, suffix "'" name)
-
-fun gen_mk_parse_key_value_result_type mk_result_type mk_type mk_poly_type =
-  mk_type mk_poly_type #> mk_result_type
-val mk_parse_key_value_result_type = gen_mk_parse_key_value_result_type mk_parser_type
-val mk_parse_key_value_result_type' = gen_mk_parse_key_value_result_type mk_context_parser_type
+  fun mk_names name = (prefix "gen_" name, name, suffix "'" name)
+  fun gen_mk_parse_key_value_result_type mk_result_type mk_type mk_poly_type =
+    mk_type mk_poly_type #> mk_result_type
+  val mk_parse_key_value_result_type = gen_mk_parse_key_value_result_type mk_parser_type
+  val mk_parse_key_value_result_type' = gen_mk_parse_key_value_result_type mk_context_parser_type
 in
 
 val (gen_parse_key_entry_entries_required_name, parse_key_entry_entries_required_name,
   parse_key_entry_entries_required_name') = mk_names "parse_key_entry_entries_required"
 
 val mk_gen_parse_key_entry_entries_required_struct =
-  let
-    val (args as [parse_entries_required, parse_list, ks, parse_entry]) = map internal_param
-      ["parse_entries_required", "parse_list", "ks", "parse_entry"]
+  let val (args as [parse_entries_required, parse_list, check_dups, ks, parse_entry]) = map
+    internal_param ["parse_entries_required", "parse_list", "check_dups", "ks", "parse_entry"]
   in
     U.mk_fun gen_parse_key_entry_entries_required_name (U.spaces args)
-      (U.mk_app [parse_entries_required, "(op =)", key_to_string_name, ks,
+      (U.mk_app [parse_entries_required, "(op =)", key_to_string_name, check_dups, ks,
         U.mk_app_atomic [parse_list, parse_entry]])
   end
 
@@ -339,7 +339,7 @@ fun gen_mk_parse_entries_required_args_type mk_parse_key_value_result_type
     val entry_parser = mk_parse_key_value_result_type mk_key_entry_entry_type mk_poly_type_in ks
     val entries_parser = U.mk_fun_type_atomic [entry_parser,
       mk_parse_key_value_result_type mk_key_entry_entries_type mk_poly_type_out ks]
-  in U.mk_fun_type [entries_parser, mk_list_type key_type_name, entry_parser] end
+  in U.mk_fun_type [entries_parser, "bool", mk_list_type key_type_name, entry_parser] end
 
 fun gen_mk_parse_key_entry_entries_required_sig name mk_parse_key_value_result_type ks =
   let val (mk_poly_type_in, mk_poly_type_out) = apply2 U.mk_poly_type_index ("a", "b")
@@ -376,15 +376,15 @@ val (gen_parse_entries_required_name, parse_entries_required_name, parse_entries
 
 val mk_gen_parse_entries_required_struct =
   let
-    val (args as [parse_key_entry_entries_required, parse_list, ks, parse_entry, default_entries]) =
-      map internal_param ["parse_key_entry_entries_required", "parse_list", "ks", "parse_entry",
-        "default_entries"]
+    val (args as [parse_key_entry_entries_required, parse_list, check_dups, ks, parse_entry,
+      default_entries]) = map internal_param ["parse_key_entry_entries_required", "parse_list",
+      "check_dups", "ks", "parse_entry", "default_entries"]
     val kees = internal_param "kees"
   in
     U.mk_fun gen_parse_entries_required_name (U.spaces args)
-      (U.mk_app [parse_key_entry_entries_required, parse_list, ks, parse_entry,
+      (U.mk_app [parse_key_entry_entries_required, parse_list, check_dups, ks, parse_entry,
       ">>", U.mk_fn_atomic kees
-        (U.mk_app ["fold", U.mk_app_atomic [set_entry_name, "o", "snd"], kees, default_entries])])
+        (U.mk_app ["fold", U.atomic (mk_comp set_entry_name "snd"), kees, default_entries])])
   end
 
 fun gen_mk_parse_entries_required_sig name mk_parse_key_value_result_type ks =
@@ -423,7 +423,9 @@ fun mk_signature sig_name ks = U.mk_signature sig_name [
     mk_entry_type_sig ks,
     mk_key_type_sig,
     mk_key_sig ks,
+    mk_keys_sig,
     mk_key_to_string_sig,
+    mk_key_from_string_sig,
     mk_parse_entry_sig ks,
     mk_parse_key_sig,
     mk_entries_type_sig ks,
@@ -502,16 +504,16 @@ val parse_all = parse_struct_name -- Scan.option parse_sig_name -- parse_keys
 
 datatype mode = SIG | STRUCT | ALL
 
-fun mode_of_string "sig" = SIG
-  | mode_of_string "struct" = STRUCT
-  | mode_of_string "all" = ALL
-  | mode_of_string m = Scan.fail_with (fn m => fn _ => "illegal mode " ^ m) m
+fun mode_of_string "sig" = SOME SIG
+  | mode_of_string "struct" = SOME STRUCT
+  | mode_of_string "all" = SOME ALL
+  | mode_of_string _ = NONE
 
 val parse_mode = Parse_Key_Value.parse_key ["sig", "struct", "all"] mode_of_string
 
 val parse =
   let
-    val parse_mode = Scan.optional (Parse_Util.parenths (Parse.!!! parse_mode)) ALL
+    val parse_mode = Scan.optional (Args.parens (Parse.!!! parse_mode)) ALL
     fun parse_of_mode SIG = parse_sig >> uncurry mk_signature
       | parse_of_mode STRUCT = parse_struct
           >> (fn ((struct_name, optsig_name), ks) => mk_structure struct_name optsig_name ks)

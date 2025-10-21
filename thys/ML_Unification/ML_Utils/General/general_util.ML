@@ -29,7 +29,9 @@ sig
   val seq_try : exn -> 'a Seq.seq -> 'a Seq.seq
   val seq_is_empty : 'a Seq.seq -> (bool * 'a Seq.seq)
   val seq_merge : 'a ord -> ('a Seq.seq * 'a Seq.seq) -> 'a Seq.seq
-
+  (*uses passed callback if the nth pull takes longer than the nth timeout*)
+  val seq_with_timeout : bool -> (int -> Time.time -> ('a * 'a Seq.seq) option) ->
+    (int -> Time.time) -> 'a Seq.seq -> 'a Seq.seq
 end
 
 structure General_Util : GENERAL_UTIL =
@@ -82,5 +84,14 @@ fun seq_merge ord (xq, yq) =
         | EQUAL => SOME (x, seq_merge ord (xq', Seq.cons y yq'))
         | GREATER => SOME (y, seq_merge ord (Seq.cons x xq', yq')))
   )
+
+fun seq_with_timeout physical f_timeout timeout =
+  let
+    val apply_timeout = if physical then Timeout.apply_physical else Timeout.apply
+    fun with_timeout i sq = Seq.make (fn _ =>
+      apply_timeout (timeout i) Seq.pull sq
+      |> Option.map (apsnd (with_timeout (i + 1)))
+      handle Timeout.TIMEOUT time => f_timeout i time)
+  in with_timeout 0 end
 
 end

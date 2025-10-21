@@ -10,7 +10,7 @@ theory E_Unification_Examples
 begin
 
 paragraph \<open>Summary\<close>
-text \<open>Sample applications of e-unifiers, methods, etc. introduced in this session.\<close>
+text \<open>Sample applications of E-unifiers, methods, etc. introduced in this session.\<close>
 
 experiment
 begin
@@ -25,7 +25,7 @@ text \<open>Premises of the form @{term "SIMPS_TO_UNIF lhs rhs"} are solved by
 @{ML_structure Simplifier_Unification}. It first normalises @{term lhs} and then unifies the
 normalisation with @{term rhs}. See also @{theory ML_Unification.ML_Unification_HOL_Setup}.\<close>
 
-lemma [uhint prio = Prio.LOW]: "n \<noteq> 0 \<Longrightarrow> PROP SIMPS_TO_UNIF (n - 1) m \<Longrightarrow> n \<equiv> Suc m"
+lemma [uhint prio: Prio.LOW]: "n \<noteq> 0 \<Longrightarrow> PROP SIMPS_TO_UNIF (n - 1) m \<Longrightarrow> n \<equiv> Suc m"
   unfolding SIMPS_TO_UNIF_eq by linarith
 
 text \<open>By default, below unification methods use
@@ -98,7 +98,7 @@ schematic_goal "n - ?m = length []"
   supply [[ucombine del: \<open>(Standard_Unification_Combine.default_metadata \<^binding>\<open>simp_unif\<close>)\<close>]]
   (*doesn't work*)
   \<comment> \<open>by (ufact refl)\<close>
-  supply sub_self_eq_zero[uhint del:, rec_uhint]
+  supply sub_self_eq_zero[uhint del, rec_uhint]
   by (ufact refl)
 
 text \<open>Solution 2: make the recursion explicit in the hint.\<close>

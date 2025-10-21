@@ -52,9 +52,9 @@ fun run_declaration_attribute (code, pos) =
   let val code = U.read "Thm.declaration_attribute" @ U.atomic code
   in run_attribute (code, pos) end
 
-fun run_map_context (code, pos) (context, _) =
+fun run_map_context (code, pos) =
   let val code = U.read "Thm.declaration_attribute" @ (U.atomic (U.read "fn _ =>" @ U.atomic code))
-  in run_attribute (code, pos) (context, Drule.dummy_thm) end
+  in run_attribute (code, pos) end
 
 fun run_rule_attribute (code, pos) =
   let val code = U.read "Thm.rule_attribute []" @ U.atomic code

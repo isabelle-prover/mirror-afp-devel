@@ -31,7 +31,7 @@ sig
   val unify_OF_config_args_attribute : config_args -> thm list -> attribute
 
   val arg_parsers : (ML_Code_Util.code parser, ML_Code_Util.code parser, mode parser,
-    thm list context_parser) PA.entries
+    'a context_parser -> thm list context_parser) PA.entries
 end
 
 structure Unify_OF_Args : UNIFY_OF_ARGS =
@@ -72,7 +72,7 @@ val arg_parsers = {
   normalisers = SOME Unification_Parser.parse_normalisers,
   unifier = SOME Unification_Parser.parse_unifier,
   mode = SOME parse_mode,
-  rules = SOME Parse_Util.thms
+  rules = SOME (fn unless => Scan.repeats (Scan.unless unless Parse_Util.multi_thm))
 }
 
 end
@@ -150,14 +150,14 @@ fun unify_OF_attribute rules (context, thm) =
 
 val binding = Binding.make (FI.prefix_id "uOF", FI.pos)
 
-val parse_arg_entries =
+val parse_arg_entry =
   let
     val parsers = UOA.arg_parsers |> UOA.PCA_entries_from_PA_entries
     val parse_value = PCA.parse_entry (PCA.get_normalisers parsers)
       (PCA.get_unifier parsers) (PCA.get_mode parsers)
-    val parse_entry = Parse_Key_Value.parse_entry PCA.parse_key (K (Parse.$$$ ":")) parse_value
-      |> Parse.!!! |> Scan.unless Parse.eof
-  in PCA.parse_entries_required Scan.repeat1 [] parse_entry (PCA.empty_entries ()) end
+  in Parse_Key_Value.parse_entry PCA.parse_key (K (Parse.$$$ ":")) parse_value end
+val parse_arg_entries =
+  PCA.parse_entries_required Scan.repeat1 true [] parse_arg_entry (PCA.empty_entries ())
 
 fun set_args_attribute (entries, pos) =
   let
@@ -179,9 +179,9 @@ fun set_args_attribute (entries, pos) =
 val parse_set_args_attribute = (parse_arg_entries |> Parse_Util.position) >> set_args_attribute
 
 val parse_attribute =
-  PA.get_rules UOA.arg_parsers
+  PA.get_rules UOA.arg_parsers (Scan.lift parse_arg_entry)
   :-- (fn [] => (parse_set_args_attribute |> Parse.!!!) >> SOME |> Scan.lift
-        | _ => (Scan.option Parse.where_ |-- parse_set_args_attribute) |> Parse.!!! |> Parse_Util.option
+        | _ => (Scan.option (Args.$$$ "use") |-- parse_set_args_attribute) |> Parse.!!! |> Parse_Util.option
           |> Scan.lift)
     (*if there are no rules, we update the arguments in the context*)
   >> (fn ([], SOME attr) => attr

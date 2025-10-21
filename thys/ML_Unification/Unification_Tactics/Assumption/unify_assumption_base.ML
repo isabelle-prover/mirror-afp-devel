@@ -72,13 +72,12 @@ in
 
 fun unify_assumption_tac_index norms unify ctxt i state = Seq.make (fn _ =>
   let
-    val _ = @{log Logger.DEBUG} ctxt (fn _ => Pretty.block [
-        Pretty.str "Trying proof by assumption for subgoal ",
-        Pretty.str (Int.toString i),
-        Pretty.str ": ",
+    val _ = @{log Logger.DEBUG} ctxt (fn _ => Pretty.breaks [
+        Pretty.block [Pretty.str "Trying proof by assumption for subgoal ",
+          Pretty.str (Int.toString i), Pretty.str ":"],
         (Thm.prop_of state |> Logic.nth_prem o pair i |> Syntax.pretty_term ctxt)
         handle TERM _ => Pretty.str "<no subgoal for given index>"
-      ] |> Pretty.string_of)
+      ] |> Pretty.block |> Pretty.string_of)
     fun rewrite_subgoal ((n, binders), (res, state)) =
       (*rewrite conclusion to match the premise*)
       Tactic_Util.rewrite_subgoal_unif_concl (#inst_term norms)

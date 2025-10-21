@@ -20,7 +20,7 @@ sig
   during simplification*)
   val simp_unify_progress : (term * term -> bool) ->
     (Unification_Base.unifier -> Unification_Base.unifier) -> Envir_Normalisation.term_normaliser ->
-    Unification_Base.e_unifier
+    Unification_Base.unifier -> Unification_Base.unifier
 end
 
 structure Simplifier_Unification : SIMPLIFIER_UNIFICATION =
@@ -40,12 +40,11 @@ fun SIMPS_TO_unify preprocess_rule binders ctxt (tp as (lhs, _)) =
   if can Simps_To.dest_SIMPS_TO lhs
   then
     let fun tac tp =
-      (@{log Logger.DEBUG} ctxt (fn _ => Pretty.block [
-          Pretty.str "Solving ",
-          Syntax.pretty_term ctxt @{term SIMPS_TO},
-          Pretty.str " unification problem ",
+      (@{log Logger.DEBUG} ctxt (fn _ => Pretty.breaks [
+          Pretty.block [Pretty.str "Solving ", Syntax.pretty_term ctxt @{term SIMPS_TO},
+            Pretty.str " unification problem"],
           UUtil.pretty_unif_problem ctxt tp
-        ] |> Pretty.string_of);
+        ] |> Pretty.block |> Pretty.string_of);
       match_tac ctxt preprocess_rule
       THEN' Simps_To.SIMPS_TO_tac (safe_simp_tac ctxt) ctxt)
     in
@@ -58,12 +57,11 @@ fun SIMPS_TO_UNIF_unify preprocess_rule norms unif binders ctxt (tp as (lhs, _))
   if can Simps_To_Unif.dest_SIMPS_TO_UNIF lhs
   then
     let fun tac tp i (env, state) =
-      (@{log Logger.DEBUG} ctxt (fn _ => Pretty.block [
-          Pretty.str "Solving ",
-          Syntax.pretty_term ctxt @{term SIMPS_TO_UNIF},
-          Pretty.str " unification problem ",
+      (@{log Logger.DEBUG} ctxt (fn _ => Pretty.breaks [
+          Pretty.block [Pretty.str "Solving ", Syntax.pretty_term ctxt @{term SIMPS_TO_UNIF},
+            Pretty.str " unification problem"],
           UUtil.pretty_unif_problem ctxt tp
-        ] |> Pretty.string_of);
+        ] |> Pretty.block |> Pretty.string_of);
       match_tac ctxt preprocess_rule i state
       |> Seq.maps (pair env
         #> Simps_To_Unif.SIMPS_TO_UNIF_env_tac (safe_simp_tac ctxt) norms unif ctxt i))
@@ -75,10 +73,10 @@ fun simp_unify norms1 unif1 norms2 unif2 binders ctxt =
     fun SIMPS_TO_UNIF_env_tac norms unif =
       Simps_To_Unif.SIMPS_TO_UNIF_env_tac (safe_simp_tac ctxt) norms unif ctxt
     fun eq_tac tp i (env, state) =
-      (@{log Logger.DEBUG} ctxt (fn _ => Pretty.block [
-        Pretty.str "Solving unification problem via simplification followed by unification ",
-        UUtil.pretty_unif_problem ctxt tp
-      ] |> Pretty.string_of);
+      (@{log Logger.DEBUG} ctxt (fn _ => Pretty.breaks [
+          Pretty.str "Solving unification problem via simplification followed by unification",
+          UUtil.pretty_unif_problem ctxt tp
+        ] |> Pretty.block |> Pretty.string_of);
       (match_tac ctxt
         (Thm.incr_indexes (Envir.maxidx_of env + 1) @{thm eq_if_SIMPS_TO_UNIF_if_SIMPS_TO_UNIF})
       THEN' K (fn state => Seq.single (UUtil.update_maxidx_envir (Thm.maxidx_of state) env, state))
@@ -95,10 +93,10 @@ fun simp_unify_progress teq simp_unify norm_term unif binders ctxt tp env = Seq.
       in
         if teq (lhs, lhs') andalso teq (rhs, rhs')
         then (@{log Logger.DEBUG} ctxt (fn _ => Pretty.block [
-            Pretty.str "Simplification of ",
-            UUtil.pretty_unif_problem ctxt tp,
-            Pretty.str " failed (no progress)"
-          ] |> Pretty.string_of);
+              Pretty.str "Simplification of ",
+              UUtil.pretty_unif_problem ctxt tp,
+              Pretty.str " failed (no progress)"
+            ] |> Pretty.string_of);
           K Seq.empty) env
         else unif binders ctxt tp' env
       end

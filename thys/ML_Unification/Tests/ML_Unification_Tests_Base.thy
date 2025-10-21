@@ -17,14 +17,15 @@ ML\<open>
   id: \<open>"test"\<close>
   more_args: \<open>
     structure TI = Discrimination_Tree
+    structure Args = Term_Index_Unification_Hints_Args
     val init_args = {
       concl_unifier = SOME (Higher_Order_Pattern_Unification.match
         |> Type_Unification.e_match Unification_Util.match_types),
       normalisers = SOME Unification_Util.beta_eta_short_norms_unif,
       prems_unifier = SOME (Higher_Order_Pattern_Unification.unify
         |> Type_Unification.e_unify Unification_Util.unify_types),
-      retrieval = SOME (Term_Index_Unification_Hints_Args.mk_retrieval_sym_pair
-        TI.generalisations TI.norm_term),
+      retrieval = SOME (Args.mk_retrieval_sym_pair (K TI.generalisations |> Args.retrieve_transfer)
+        TI.norm_term),
       hint_preprocessor = SOME (K I)}\<close>\<close>
 \<close>
 

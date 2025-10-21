@@ -112,10 +112,7 @@ val parse_keys =
         Pretty.str "All keys must be distinct. Duplicates: ",
         duplicates key_eq xs |> Parse_Key_Value.pretty_keys I
       ] |> Pretty.string_of
-  in
-    Args.bracks (Parse.list1 parse_key)
-    |> Parse_Util.distinct_list key_eq dup_msg
-  end
+  in Args.bracks (Parse.list1 parse_key) |> Parse_Util.distinct_list key_eq dup_msg end
 
 val parse_sig = parse_sig_name -- parse_keys
 val parse_struct = parse_struct_name -- Scan.option parse_sig_name -- parse_keys
@@ -123,17 +120,17 @@ val parse_all = parse_struct
 
 datatype mode = SIG | STRUCT | ALL
 
-fun mode_of_string "sig" = SIG
-  | mode_of_string "struct" = STRUCT
-  | mode_of_string "all" = ALL
-  | mode_of_string m = Scan.fail_with (fn m => fn _ => "illegal mode " ^ m) m
+fun mode_of_string "sig" = SOME SIG
+  | mode_of_string "struct" = SOME STRUCT
+  | mode_of_string "all" = SOME ALL
+  | mode_of_string _ = NONE
 
 val parse_mode = Parse_Key_Value.parse_key ["sig", "struct", "all"] mode_of_string
 
 val parse =
   let
-    val parse_mode = Scan.optional (Parse_Util.parenths (Parse.!!! parse_mode)) ALL
-    val parse_Tconstr = Scan.optional (Parse_Util.parenths (Parse.!!! parse_Tconstr)) ""
+    val parse_mode = Scan.optional (Args.parens (Parse.!!! parse_mode)) ALL
+    val parse_Tconstr = Scan.optional (Args.parens (Parse.!!! parse_Tconstr)) ""
     fun parse_of_mode (SIG, Tconstr) = parse_sig >> (uncurry (mk_signature Tconstr))
       | parse_of_mode (STRUCT, Tconstr) = parse_struct >> uncurry (uncurry (mk_structure Tconstr))
       | parse_of_mode (ALL, Tconstr) = parse_all >> (uncurry (uncurry (mk_all Tconstr)))

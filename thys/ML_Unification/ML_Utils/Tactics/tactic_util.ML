@@ -26,9 +26,9 @@ sig
   val CONCAT' : ('a -> 'b -> 'c Seq.seq) list -> 'a -> 'b -> 'c Seq.seq
 
   (*filters duplicate results*)
-  val unique_thmsq : thm Seq.seq -> thm Seq.seq
-  val UNIQUE : tactic -> tactic
-  val UNIQUE' : ('a -> tactic) -> 'a -> tactic
+  val unique_thmsq : (thm * thm -> bool) -> thm Seq.seq -> thm Seq.seq
+  val UNIQUE : (thm * thm -> bool) -> tactic -> tactic
+  val UNIQUE' : (thm * thm -> bool) -> ('a -> tactic) -> 'a -> tactic
 
   val FOCUS_PARAMS' : (Subgoal.focus -> int -> tactic) -> Proof.context -> int -> tactic
   val FOCUS_PARAMS_CTXT : (Proof.context -> tactic) -> Proof.context -> int -> tactic
@@ -126,17 +126,16 @@ fun CONCAT' tacs = fold_rev (curry (op APPEND')) tacs (K (K Seq.empty))
 
 local structure TI = Net
 in
-fun unique_thmsq thmsq =
+fun unique_thmsq eq_thm thmsq =
   let fun go ti = Seq.pull #> Option.mapPartial (fn (thm, thmsq) =>
-    let val key = Thm.full_prop_of thm |> TI.key_of_term
+    let val key = Thm.full_prop_of thm |> Term_Normalisation.beta_eta_short |> TI.key_of_term
     in
-      if null (TI.lookup ti key)
-      then SOME (thm, Seq.make (fn _ => go (TI.insert (K false) (key, thm) ti) thmsq))
-      else go ti thmsq
+      TI.insert eq_thm (key, thm) ti |> (fn ti => SOME (thm, Seq.make (fn _ => go ti thmsq)))
+      handle TI.INSERT => go ti thmsq
     end)
   in Seq.make (fn _ => go TI.empty thmsq) end
-fun UNIQUE tac = unique_thmsq o tac
-fun UNIQUE' tac = UNIQUE o tac
+fun UNIQUE eq_thm tac = unique_thmsq eq_thm o tac
+fun UNIQUE' eq_thm tac = UNIQUE eq_thm o tac
 end
 
 fun FOCUS_PARAMS' tac = Subgoal.FOCUS_PARAMS (HEADGOAL o tac)

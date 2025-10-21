@@ -48,7 +48,7 @@ sig
     Proof.context -> int -> tactic
 
   val arg_parsers : (ML_Code_Util.code parser, ML_Code_Util.code parser, mode parser,
-    chained_mode parser, resolve_mode parser, thm list context_parser) PA.entries
+    chained_mode parser, resolve_mode parser, 'a context_parser -> thm list context_parser) PA.entries
 end
 
 structure Unify_Resolve_Args : UNIFY_RESOLVE_ARGS =
@@ -150,7 +150,8 @@ val arg_parsers = {
   mode = SOME parse_mode,
   chained = SOME parse_chained_mode,
   resolve_mode = SOME parse_resolve_mode,
-  rules = SOME (Parse_Util.nonempty_thms (K "must provide at least one rule to resolve"))
+  rules = SOME (fn unless => Scan.repeats (Scan.unless unless Parse_Util.multi_thm)
+    |> Parse_Util.nonempty_list (K "must provide at least one rule to resolve"))
 }
 
 end
@@ -235,14 +236,14 @@ fun unify_resolve_tac resolve_mode rules facts ctxt =
 
 val binding = Binding.make (FI.prefix_id "urule", FI.pos)
 
-val parse_config_arg_entries =
+val parse_config_arg_entry =
   let
     val parsers = URA.arg_parsers |> URA.PCA_entries_from_PA_entries
     val parse_value = PCA.parse_entry (PCA.get_normalisers parsers)
       (PCA.get_unifier parsers) (PCA.get_mode parsers) (PCA.get_chained parsers)
-    val parse_entry = Parse_Key_Value.parse_entry PCA.parse_key (K (Parse.$$$ ":")) parse_value
-      |> Parse.!!! |> Scan.unless Parse.eof
-  in PCA.parse_entries_required Scan.repeat1 [] parse_entry (PCA.empty_entries ()) end
+  in Parse_Key_Value.parse_entry PCA.parse_key (K (Parse.$$$ ":")) parse_value end
+val parse_config_arg_entries =
+  PCA.parse_entries_required Scan.repeat1 true [] parse_config_arg_entry (PCA.empty_entries ())
 
 fun attribute (entries, pos) =
   let
@@ -266,16 +267,16 @@ val parse_attribute = (parse_config_arg_entries |> Parse_Util.position) >> attri
 
 val setup_attribute = Attrib.local_setup binding
   (Parse.!!! parse_attribute |> Scan.lift) o
-  the_default ("set unify-resolution arguments (" ^ FI.long_name ^ ")")
+  the_default ("configure unify-resolution data " ^ enclose "(" ")" FI.long_name)
 
 val parse_method =
   let val parse_resolve_mode = Scan.optional
-    (Parse_Util.parenths (PA.get_resolve_mode URA.arg_parsers |> Parse.!!!))
+    (Args.parens (PA.get_resolve_mode URA.arg_parsers |> Parse.!!!))
     (PRM.key PRM.r)
   in
     Scan.lift parse_resolve_mode
-    -- Parse.!!!! (PA.get_rules URA.arg_parsers)
-    -- ((Scan.option Parse.where_ |-- parse_attribute) |> Parse.!!! |> Parse_Util.option |> Scan.lift)
+    -- Parse.!!!! (PA.get_rules URA.arg_parsers (Scan.lift parse_config_arg_entry))
+    -- ((Scan.option (Args.$$$ "use") |-- parse_attribute) |> Parse.!!! |> Parse_Util.option |> Scan.lift)
     >> (fn ((resolve_mode, rules), opt_attr) =>
       the_default I (Option.map ML_Attribute_Util.attribute_map_ctxt opt_attr)
       #> Method_Util.METHOD_CONTEXT' (unify_resolve_tac resolve_mode rules))

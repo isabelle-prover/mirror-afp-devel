@@ -27,6 +27,7 @@ sig
   val enclose : code -> code -> code -> code
   val atomic : code -> code
   val tuple : code list -> code
+  val option : code option -> code
   val list : code list -> code
   val record : code -> (code * code) list -> code
 
@@ -55,6 +56,8 @@ val commas = separate comma #> flat
 fun enclose start close code = flat [start, code, close]
 val atomic = enclose (read "(") (read ")")
 val tuple = commas #> enclose (read "(") (read ")")
+fun option NONE = read "NONE"
+  | option (SOME c) = read "SOME" @ c
 val list = commas #> enclose (read "[") (read "]")
 fun record delim = map (fn (v, t) => v @ delim @ t)
   #> commas #> enclose (read "{") (read "}")

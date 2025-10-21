@@ -100,8 +100,7 @@ val parse_arg_entries =
     val parse_value = PA.parse_entry (PA.get_normalisers UAA.arg_parsers)
       (PA.get_unifier UAA.arg_parsers)
     val parse_entry = Parse_Key_Value.parse_entry PA.parse_key (K (Parse.$$$ ":")) parse_value
-      |> Parse.!!! |> Scan.unless Parse.eof
-  in PA.parse_entries_required Scan.repeat1 [] parse_entry (PA.empty_entries ()) end
+  in PA.parse_entries_required Scan.repeat1 true [] parse_entry (PA.empty_entries ()) end
 
 fun attribute (entries, pos) =
   let
@@ -120,7 +119,7 @@ val parse_attribute = (parse_arg_entries |> Parse_Util.position) >> attribute
 
 val setup_attribute = Attrib.local_setup binding
   (Parse.!!! parse_attribute |> Scan.lift) o
-  the_default ("set unify-assumption arguments " ^ enclose "(" ")" FI.long_name)
+  the_default ("configure unify-assumption data " ^ enclose "(" ")" FI.long_name)
 
 val parse_method =
   Parse_Util.option (Parse.!!! parse_attribute)

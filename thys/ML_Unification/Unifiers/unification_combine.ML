@@ -124,12 +124,11 @@ fun insert_eunif_data data context =
   in
     Data.map (fn datas =>
       if member eq_eunif_data (Table.lookup_list datas prio) data
-      then (@{log Logger.WARN} (Context.proof_of context) (fn _ =>
-        Pretty.block [
-          Pretty.str "eunif data (",
-          pretty_eunif_data data,
-          Pretty.str ") already added."
-        ] |> Pretty.string_of);
+      then (@{log Logger.WARN} (Context.proof_of context) (fn _ => Pretty.block [
+            Pretty.str "eunif data ",
+            Pretty.enclose "(" ")" [pretty_eunif_data data],
+            Pretty.str " already added."
+          ] |> Pretty.string_of);
         datas)
       else Table.insert_list eq_eunif_data (prio, data) datas
     ) context
@@ -141,12 +140,11 @@ fun delete_eunif_data metadata context =
     Data.map (fn datas =>
       if member eq_metadata (Table.lookup_list datas prio |> map eunif_data_metadata) metadata
       then Table.remove_list (eq_metadata o apsnd eunif_data_metadata) (prio, metadata) datas
-      else (@{log Logger.WARN} (Context.proof_of context) (fn _ =>
-        Pretty.block [
-          Pretty.str "metadata (",
-          pretty_metadata metadata,
-          Pretty.str ") not found."
-        ] |> Pretty.string_of);
+      else (@{log Logger.WARN} (Context.proof_of context) (fn _ => Pretty.block [
+            Pretty.str "metadata ",
+            Pretty.enclose "(" ")" [pretty_metadata metadata],
+            Pretty.str " not found."
+          ] |> Pretty.string_of);
         datas)
     ) context
   end
@@ -183,7 +181,7 @@ val parse_entries =
     val parse_value = PM.parse_entry add_arg_parser del_arg_parser
     val parse_entry = Parse_Key_Value.parse_entry PM.parse_key (K (Parse.$$$ ":")) parse_value
     val default_entries = PM.empty_entries ()
-  in PM.parse_entries_required Parse.and_list1 [] parse_entry default_entries end
+  in PM.parse_entries_required Parse.and_list1 true [] parse_entry default_entries end
 
 fun attribute (entries, pos) =
   let
@@ -199,6 +197,6 @@ val parse_attribute = PU.position parse_entries >> attribute
 
 val setup_attribute = Attrib.local_setup binding
   (Parse.!!! parse_attribute |> Scan.lift) o
-  the_default ("set unification-combine arguments " ^ enclose "(" ")" FI.long_name)
+  the_default ("configure unification-combine data " ^ enclose "(" ")" FI.long_name)
 
 end

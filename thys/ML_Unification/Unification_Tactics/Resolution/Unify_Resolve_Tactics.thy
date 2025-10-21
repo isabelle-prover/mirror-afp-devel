@@ -70,7 +70,7 @@ lemma
   (* apply (urule h1) *)
   (* using h2 apply (rule h1) *)
   (* using h2 apply (urule h1) *)
-  using h2 apply (urule h1 chained: fact)
+  using h2 apply (urule h1 use chained: fact)
   (* using h2 apply (urule h1 chained: insert) *)
   done
 

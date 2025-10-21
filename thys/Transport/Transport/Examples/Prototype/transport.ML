@@ -152,7 +152,10 @@ val parse_cmd_entries =
   let
     val parse_value = PA.parse_entry Parse.term Parse.term Parse.term Parse.term
     val parse_entry = Parse_Key_Value.parse_entry PA.parse_key (K Parse_Util.eq) parse_value
-  in PA.parse_entries_required Parse.and_list1 [PA.key PA.x] parse_entry (PA.empty_entries ()) end
+    val required_keys = [PA.key PA.x]
+  in
+    PA.parse_entries_required Parse.and_list1 true required_keys parse_entry (PA.empty_entries ())
+  end
 
 (*some utilities to destruct terms*)
 val transport_per_start_thm = @{thm "transport.transport_per_start"}
@@ -316,9 +319,9 @@ val _ =
 
 val any_match_resolve_related_tac =
   let
-    val unif = Mixed_Unification.first_higherp_e_match Unification_Combinator.fail_match
-    val norms = Mixed_Unification.norms_first_higherp_e_match
-  in Unify_Resolve_Base.unify_resolve_any_tac norms unif end
+    val norms = Mixed_Unification.norms_first_higherp_match
+    val match = Mixed_Unification.first_higherp_e_match Unification_Combinator.fail_match
+  in Unify_Resolve_Base.unify_resolve_any_tac norms match end
 
 val related_comb_tac = any_match_resolve_related_tac @{thms related_Fun_Rel_combI}
 val related_lambda_tac = any_match_resolve_related_tac @{thms related_Fun_Rel_lambdaI}

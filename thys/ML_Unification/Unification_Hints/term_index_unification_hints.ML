@@ -19,27 +19,34 @@ sig
 
   type hint_prio = Unification_Hints_Base.unif_hint * Prio.prio
   val pretty_hint_prio : Proof.context -> hint_prio -> Pretty.T
+  val transfer_hint_prio : theory -> hint_prio -> hint_prio
 
-  val retrieve_left : ('ti -> term -> hint_prio list) -> 'ti * 'ti -> term * term -> hint_prio list
-  val retrieve_right : ('ti -> term -> hint_prio list) -> 'ti * 'ti -> term * term -> hint_prio list
-  val retrieve_pair : ('ti -> term -> hint_prio list) -> 'ti * 'ti -> term * term -> hint_prio list
-  val retrieve_sym : ('ti -> term * term -> hint_prio list) -> 'ti -> term * term -> hint_prio list
+  val retrieve_left : (Proof.context -> 'ti -> term -> hint_prio list) -> Proof.context ->
+    'ti * 'ti -> term * term -> hint_prio list
+  val retrieve_right : (Proof.context -> 'ti -> term -> hint_prio list) -> Proof.context ->
+    'ti * 'ti -> term * term -> hint_prio list
+  val retrieve_pair : (Proof.context -> 'ti -> term -> hint_prio list) -> Proof.context ->
+    'ti * 'ti -> term * term -> hint_prio list
+  val retrieve_sym : (Proof.context -> 'ti -> term * term -> hint_prio list) -> Proof.context ->
+    'ti -> term * term -> hint_prio list
+  val retrieve_transfer : (Proof.context -> 'ti -> 't -> hint_prio list) ->
+    Proof.context -> 'ti -> 't -> hint_prio list
 
   val sort_hint_prios : hint_prio list -> hint_prio list
   val sorted_hint_seq_of_hint_prios : hint_prio list -> thm Seq.seq
 
-  val mk_retrieval : ('ti -> term * term -> hint_prio list) -> (term * term -> term * term) ->
-    'ti -> Unification_Hints_Base.hint_retrieval
-  val mk_retrieval_left : ('ti -> term -> hint_prio list) -> Term_Normalisation.term_normaliser ->
-    'ti * 'ti -> Unification_Hints_Base.hint_retrieval
-  val mk_retrieval_right : ('ti -> term -> hint_prio list) -> Term_Normalisation.term_normaliser ->
-    'ti * 'ti -> Unification_Hints_Base.hint_retrieval
-  val mk_retrieval_pair : ('ti -> term -> hint_prio list) -> Term_Normalisation.term_normaliser ->
-    'ti * 'ti -> Unification_Hints_Base.hint_retrieval
-  val mk_retrieval_sym : ('ti -> term * term -> hint_prio list) -> Term_Normalisation.term_normaliser ->
-    'ti -> Unification_Hints_Base.hint_retrieval
-  val mk_retrieval_sym_pair : ('ti -> term -> hint_prio list) -> Term_Normalisation.term_normaliser ->
-    'ti * 'ti -> Unification_Hints_Base.hint_retrieval
+  val mk_retrieval : (Proof.context -> 'ti -> term * term -> hint_prio list) ->
+    (term * term -> term * term) -> 'ti -> Unification_Hints_Base.hint_retrieval
+  val mk_retrieval_left : (Proof.context -> 'ti -> term -> hint_prio list) ->
+    Term_Normalisation.term_normaliser -> 'ti * 'ti -> Unification_Hints_Base.hint_retrieval
+  val mk_retrieval_right : (Proof.context -> 'ti -> term -> hint_prio list) ->
+    Term_Normalisation.term_normaliser -> 'ti * 'ti -> Unification_Hints_Base.hint_retrieval
+  val mk_retrieval_pair : (Proof.context -> 'ti -> term -> hint_prio list) ->
+    Term_Normalisation.term_normaliser -> 'ti * 'ti -> Unification_Hints_Base.hint_retrieval
+  val mk_retrieval_sym : (Proof.context -> 'ti -> term * term -> hint_prio list) ->
+    Term_Normalisation.term_normaliser -> 'ti -> Unification_Hints_Base.hint_retrieval
+  val mk_retrieval_sym_pair : (Proof.context -> 'ti -> term -> hint_prio list) ->
+    Term_Normalisation.term_normaliser -> 'ti * 'ti -> Unification_Hints_Base.hint_retrieval
 
   type 'ti config_args = (Unification_Base.unifier, Unification_Base.normalisers,
     Unification_Base.unifier, 'ti * 'ti -> Unification_Hints_Base.hint_retrieval,
@@ -74,29 +81,32 @@ fun pretty_hint_prio ctxt (hint, prio) = Pretty.block [
     UHB.pretty_hint ctxt hint,
     Pretty.enclose " (" ")" [Pretty.str "priority: ", Prio.pretty prio]
   ]
+fun transfer_hint_prio thy = apfst (Thm.transfer thy)
 
-fun retrieve_left retrieve (ti,_) (t, _) = retrieve ti t
-fun retrieve_right retrieve (_, ti) (_, t) = retrieve ti t
+fun retrieve_left retrieve ctxt (ti,_) (t, _) = retrieve ctxt ti t
+fun retrieve_right retrieve ctxt (_, ti) (_, t) = retrieve ctxt ti t
 
-fun retrieve_pair retrieve (ti_lhs, ti_rhs) (tlhs, trhs) =
-  retrieve ti_lhs tlhs @ retrieve ti_rhs trhs
+fun retrieve_pair retrieve ctxt (ti_lhs, ti_rhs) (tlhs, trhs) =
+  retrieve ctxt ti_lhs tlhs @ retrieve ctxt ti_rhs trhs
 
 fun interleave [] ys = ys
   | interleave xs [] = xs
   | interleave (x :: xs) (y :: ys) = x :: y :: interleave xs ys
 
-fun retrieve_sym retrieve ti tp = interleave
-  (retrieve ti tp)
-  (retrieve ti (swap tp) |> map (apfst Unification_Hints_Base.symmetric_hint))
+fun retrieve_sym retrieve ctxt ti tp = interleave
+  (retrieve ctxt ti tp)
+  (retrieve ctxt ti (swap tp) |> map (apfst Unification_Hints_Base.symmetric_hint))
+
+fun retrieve_transfer retrieve ctxt = map (transfer_hint_prio (Proof_Context.theory_of ctxt)) oo
+  retrieve ctxt
 
 (*FIXME: use Prio.Table instead of sorted lists*)
 val sort_hint_prios = sort (rev_order o Prio.ord o apply2 snd)
 
-val sorted_hint_seq_of_hint_prios =
-  sort_hint_prios #> Seq.of_list #> Seq.map fst
+val sorted_hint_seq_of_hint_prios = sort_hint_prios #> Seq.of_list #> Seq.map fst
 
-fun mk_retrieval f norm_terms ti _ _ tp _ =
-  f ti (norm_terms tp) |> sorted_hint_seq_of_hint_prios
+fun mk_retrieval retrieve norm_terms ti _ ctxt tp _ =
+  retrieve ctxt ti (norm_terms tp) |> sorted_hint_seq_of_hint_prios
 
 fun mk_retrieval_left retrieve = mk_retrieval (retrieve_left retrieve) o apfst
 fun mk_retrieval_right retrieve = mk_retrieval (retrieve_right retrieve) o apsnd
@@ -212,11 +222,7 @@ val logger = Logger.setup_new_logger Unification_Hints_Base.logger FI.name
   id: FI.id
   more_args: \<open>val init_args = TUHA.UHA_PA_entries_from_PCA_entries A.init_args\<close>\<close>
 
-fun are_hint_variants hp =
-  let
-    val ctp = apply2 Thm.cprop_of hp
-    val match = Thm.first_order_match
-  in can match ctp andalso can match (swap ctp) end
+val are_hint_variants = apply2 Thm.prop_of #> Term_Util.are_term_variants
 
 val term_index_data_eq = are_hint_variants o apply2 fst
 
@@ -305,7 +311,7 @@ local fun add_hint_prio index_description get_index map_index key (hint, prio) c
         Pretty.str "to",
         index_description
       ]);
-    TI.insert is_hint_variant (key, (hint, prio)) (get_index context)
+    TI.insert is_hint_variant (key, (Thm.trim_context hint, prio)) (get_index context)
     |> (fn ti => map_index (K ti) context))
     handle Term_Index_Base.INSERT =>
       (@{log Logger.WARN} ctxt
@@ -349,7 +355,7 @@ local fun del_hint index_description get_index map_index key hint context =
     handle Term_Index_Base.DELETE =>
       (@{log Logger.WARN} ctxt
         (fn _ => pretty_spaced_block [
-          Pretty.str "Hint ",
+          Pretty.str "Hint",
           UHB.pretty_hint ctxt hint,
           Pretty.str "not found in",
           index_description
@@ -382,15 +388,15 @@ fun try_hints binders ctxt tp env = Seq.make (fn _ =>
       ])
   in UH.try_hints (get_retrieval context (get_indexes context)) binders ctxt tp env |> Seq.pull end)
 
-val default_add_arg_entries = PAA.empty_entries () |> fold PAA.set_entry [PAA.prio TUHP.MEDIUM]
+val default_add_arg_entries = PAA.entries_from_entry_list [PAA.prio TUHP.MEDIUM]
 
 val parse_add_arg_entries =
   let
     val parsers = TUHA.add_arg_parsers
     val parse_value = PAA.parse_entry (PAA.get_prio parsers)
-    val parse_entry = Parse_Key_Value.parse_entry' (Scan.lift PAA.parse_key) (K (Scan.lift PU.eq))
-      parse_value
-  in PAA.parse_entries_required' Scan.repeat [] parse_entry default_add_arg_entries end
+    val parse_entry = Parse_Key_Value.parse_entry' (Scan.lift PAA.parse_key)
+      (K (Scan.lift (Parse.$$$ ":"))) parse_value
+  in PAA.parse_entries_required' Scan.repeat true [] parse_entry default_add_arg_entries end
 
 fun add_attribute entries =
   let fun update thm = add_hint_prio (thm, PAA.get_prio entries)
@@ -403,9 +409,9 @@ val parse_config_arg_entries =
     val parsers = TUHA.config_arg_parsers
     val parse_value = PCA.parse_entry (PCA.get_concl_unifier parsers) (PCA.get_normalisers parsers)
       (PCA.get_prems_unifier parsers) (PCA.get_retrieval parsers) (PCA.get_hint_preprocessor parsers)
-    val parse_entry = Parse_Key_Value.parse_entry PCA.parse_key (K PU.eq) parse_value
+    val parse_entry = Parse_Key_Value.parse_entry PCA.parse_key (K (Parse.$$$ ":")) parse_value
     val default_entries = PCA.empty_entries ()
-  in PCA.parse_entries_required Scan.repeat1 [] parse_entry default_entries end
+  in PCA.parse_entries_required Scan.repeat1 true [] parse_entry default_entries end
 
 fun config_attribute (entries, pos) =
   let
@@ -431,9 +437,9 @@ val parse_entries =
     val parse_value = PM.parse_entry parse_add_arg_entries (Scan.succeed ())
       (Scan.lift parse_config_arg_entries)
     val parse_entry = Parse_Key_Value.parse_entry' (Scan.lift PM.parse_key)
-      (K (Scan.lift (Parse.$$$ ":"))) parse_value
+      (K (Scan.lift (Scan.succeed ""))) parse_value
     val default_entries = PM.empty_entries ()
-  in PM.parse_entries_required' Scan.repeat1 [] parse_entry default_entries end
+  in PM.parse_entries_required' Parse.and_list1' true [] parse_entry default_entries end
 
 fun attribute (entries, pos) =
   let
@@ -450,6 +456,6 @@ val parse_attribute = PU.position' parse_entries >> attribute
   || parse_add_arg_entries >> add_attribute
 
 val setup_attribute = Attrib.local_setup binding (Parse.!!!! parse_attribute) o
-  the_default ("set unification hints arguments " ^ enclose "(" ")" FI.long_name)
+  the_default ("configure unification hints data " ^ enclose "(" ")" FI.long_name)
 
 end
