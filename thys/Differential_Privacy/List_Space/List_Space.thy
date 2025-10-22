@@ -1138,10 +1138,7 @@ lemma list_update_def2:
 proof(cases"(n < length xs \<and> xs \<noteq> [])")
   case True
   thus ?thesis by(subst update_insert_exclude,auto)
-next
-  case False
-  thus ?thesis by auto
-qed
+qed (auto simp: list_update_beyond)
 
 lemma measurable_list_update[measurable]:
   shows "(\<lambda> (x,xs). list_update xs (n :: nat) x) \<in> M \<Otimes>\<^sub>M (listM M) \<rightarrow>\<^sub>M (listM M)"

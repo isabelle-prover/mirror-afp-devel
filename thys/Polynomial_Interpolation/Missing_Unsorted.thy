@@ -81,7 +81,7 @@ proof -
   have bs: "\<And> b. b \<in> bs \<Longrightarrow> b \<le> p" unfolding p_def using bs by simp
   hence p1: "p \<ge> 1" unfolding bs_def by auto
   show ?thesis
-  proof (rule exI[of _ p], intro allI)
+  proof (intro allI exI)
     fix x
     show "b ^ x * of_nat x \<le> p"
     proof (induct x)
@@ -96,7 +96,7 @@ proof -
         let ?x = "of_nat x :: 'a"
         have "b ^ (Suc x) * of_nat (Suc x) = b * (b ^ x * ?x) + b ^ Suc x" by (simp add: field_simps)
         also have "\<dots> \<le> b * p + b ^ Suc x"
-          by (rule add_right_mono[OF mult_left_mono[OF Suc]], insert b, auto)
+          using b by (intro add_right_mono[OF mult_left_mono[OF Suc]]) auto
         also have "\<dots> = p - ((1 - b) * p - b ^ (Suc x))" by (simp add: field_simps)
         also have "\<dots> \<le> p - 0"
         proof -
@@ -107,7 +107,7 @@ proof -
         qed
         finally show ?thesis by simp
       qed
-    qed (insert p1, auto)
+    qed (use p1 in auto)
   qed
 qed
 
@@ -198,6 +198,7 @@ proof -
     qed
   qed
 qed
+
 end
 
 lemma prod_list_replicate[simp]: "prod_list (replicate n a) = a ^ n"

@@ -231,7 +231,7 @@ proof (induct p arbitrary: C)
   case (Cons i p)
   from Cons(2) obtain f ss D ts where [simp]: "C = More f ss D ts" by (cases C) auto 
   show ?case using Cons(1)[of D] Cons(2)
-    by (auto simp: list_update_append nth_append_Cons minus_nat.simps(2) split: nat.splits)
+    by (auto simp: list_update_beyond list_update_append nth_append_Cons minus_nat.simps(2) split: nat.splits)
 qed auto
 
 lemma par_pos_replace_term_at:
