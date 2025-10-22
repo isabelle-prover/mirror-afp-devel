@@ -540,17 +540,17 @@ qed (auto simp add:triangular_unused_Nts)
 
 text \<open>The entire set of productions is in \<open>triangular\<close> form after \<open>solve_tri\<close> wrt \<open>As@(rev As')\<close>.\<close>
 theorem triangular_As_As'_solve_tri:
-  assumes "Eps_free R" "length As \<le> length As'" "distinct(As @ As')" "Nts R \<subseteq> set As" 
-    shows "triangular (As@(rev As')) (solve_tri As As' R)"
+  assumes "Eps_free P" "length As \<le> length As'" "distinct(As @ As')" "Nts P \<subseteq> set As" 
+    shows "triangular (As@(rev As')) (solve_tri As As' P)"
 proof -
-  from assms have 1: "triangular As (solve_tri As As' R)" by (auto simp add: triangular_solve_tri)
-  have "set As' \<inter> Nts R = {}" using assms by auto
-  then have 2: "triangular (rev As') (solve_tri As As' R)" 
+  from assms have 1: "triangular As (solve_tri As As' P)" by (auto simp add: triangular_solve_tri)
+  have "set As' \<inter> Nts P = {}" using assms by auto
+  then have 2: "triangular (rev As') (solve_tri As As' P)" 
     using assms by (auto simp add: triangular_rev_As'_solve_tri)
-  have "set As' \<inter> Nts R = {}" using assms by auto
-  then have "\<forall>A\<in>set As. dep_on (solve_tri As As' R) A \<subseteq> Nts R" 
+  have "set As' \<inter> Nts P = {}" using assms by auto
+  then have "\<forall>A\<in>set As. dep_on (solve_tri As As' P) A \<subseteq> Nts P" 
     using assms by (auto simp add: dep_on_solve_tri_Nts_R)
-  then have "\<forall>A\<in>set As. dep_on (solve_tri As As' R) A \<inter> set As' = {}" using assms by auto
+  then have "\<forall>A\<in>set As. dep_on (solve_tri As As' P) A \<inter> set As' = {}" using assms by auto
   then show ?thesis using 1 2 by (auto simp add: triangular_append)
 qed
 
