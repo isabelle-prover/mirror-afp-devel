@@ -187,12 +187,12 @@ proof -
     using finite_path_image by auto
   have polygon_p1: "polygon p1"
     using finite_path_image assms(1) p1 unfolding is_polygon_split_path_def 
-    by (smt (z3) assms(3) assms(5) assms(6))
+    by (smt (verit) assms(3) assms(5) assms(6))
   then have B1_finite: "finite ?p1_im"
     using finite_path_image by auto
    have polygon_p2: "polygon p2"
      using finite_path_image assms(1) p1 unfolding is_polygon_split_path_def 
-     by (smt (z3) assms(2) assms(4) assms(5) assms(6) p2)
+     by (smt (verit) assms(2) assms(4) assms(5) assms(6) p2)
   then have B2_finite: "finite ?p2_im"
     using finite_path_image by auto
 
@@ -429,12 +429,12 @@ proof -
     using finite_path_image by auto
   have polygon_p1: "polygon p1"
     using finite_path_image assms(1) p1 unfolding is_polygon_split_def 
-    by (smt (z3) assms(3) assms(5) assms(6))
+    by (smt (verit) assms(3) assms(5) assms(6))
   then have B1_finite: "finite ?p1_im"
     using finite_path_image by auto
    have polygon_p2: "polygon p2"
      using finite_path_image assms(1) p1 unfolding is_polygon_split_def 
-     by (smt (z3) assms(2) assms(4) assms(5) assms(6) p2)
+     by (smt (verit) assms(2) assms(4) assms(5) assms(6) p2)
   then have B2_finite: "finite ?p2_im"
     using finite_path_image by auto
 
@@ -1022,7 +1022,7 @@ proof-
     by (smt (verit) collinear_3_trans dist_indh1 distinct_length_2_or_more in_path_image_imp_collinear insert_commute)
   have path_inside_inside: "path_inside (make_polygonal_path (d # [b] @ [c, d])) \<subseteq> path_inside p"
     using polygon_split unfolding is_polygon_split_def
-    by (smt (z3) "*" One_nat_def Un_iff append_Cons append_Nil diff_Suc_1 drop0 drop_Suc_Cons nth_Cons_0 nth_Cons_Suc numeral_3_eq_3 path_inside_def subsetI take_Suc_Cons take_eq_Nil2) 
+    by (smt (verit) "*" One_nat_def Un_iff append_Cons append_Nil diff_Suc_1 drop0 drop_Suc_Cons nth_Cons_0 nth_Cons_Suc numeral_3_eq_3 path_inside_def subsetI take_Suc_Cons take_eq_Nil2) 
   then have indh1_card1: "card {x. integral_vec x \<and> x \<in> path_inside (make_polygonal_path (d # [b] @ [c, d]))}\<le> card {x. integral_vec x \<and> x \<in> path_inside p}"
     by (metis (no_types, lifting) assms(4) integral_inside Collect_empty_eq card.empty le_zero_eq subsetD)
   have indh1_card2: "card {x. integral_vec x \<and> x \<in> path_image (make_polygonal_path (d # [b] @ [c, d]))} < card {x. integral_vec x \<and> x \<in> path_image p}"
@@ -1038,7 +1038,7 @@ proof-
       by simp
     have path_image_cd1: "path_image (linepath c d) - {c, d} \<subseteq> path_inside p"
       using polygon_split unfolding is_polygon_split_def 
-      by (smt (z3) One_nat_def \<open>good_linepath c d [a, d, b, c, a] \<and> path_image (make_polygonal_path [a, d, b, c, a]) = path_image p\<close> append_Cons append_Nil insert_commute nth_Cons_0 nth_Cons_Suc numeral_3_eq_3 path_image_linepath path_inside_def segment_convex_hull sup.cobounded2)
+      by (smt (verit) One_nat_def \<open>good_linepath c d [a, d, b, c, a] \<and> path_image (make_polygonal_path [a, d, b, c, a]) = path_image p\<close> append_Cons append_Nil insert_commute nth_Cons_0 nth_Cons_Suc numeral_3_eq_3 path_image_linepath path_inside_def segment_convex_hull sup.cobounded2)
     have path_image_cd2: "{c, d} \<subseteq> path_image p"
       using linepaths_subset_make_polygonal_path_image assms(1) unfolding pick_triangle make_triangle_def 
       by (metis (no_types, lifting) \<open>good_linepath c d [a, d, b, c, a] \<and> path_image (make_polygonal_path [a, d, b, c, a]) = path_image p\<close> good_linepath_def subset_trans vertices_on_path_image)
@@ -1092,7 +1092,7 @@ proof-
     by (smt (verit) collinear_3_trans dist_indh2 distinct_length_2_or_more in_path_image_imp_collinear insert_commute)
   have path_inside_inside: "path_inside (make_polygonal_path (a # [d] @ [c, a])) \<subseteq> path_inside p"
     using polygon_split unfolding is_polygon_split_def
-    by (smt (z3) "*" One_nat_def Un_iff append_Cons append_Nil diff_Suc_1 drop0 drop_Suc_Cons nth_Cons_0 nth_Cons_Suc numeral_3_eq_3 path_inside_def subsetI take_Suc_Cons take_eq_Nil2) 
+    by (smt (verit) "*" One_nat_def Un_iff append_Cons append_Nil diff_Suc_1 drop0 drop_Suc_Cons nth_Cons_0 nth_Cons_Suc numeral_3_eq_3 path_inside_def subsetI take_Suc_Cons take_eq_Nil2) 
   then have indh2_card1: "card {x. integral_vec x \<and> x \<in> path_inside (make_polygonal_path (a # [d] @ [c, a]))}\<le> card {x. integral_vec x \<and> x \<in> path_inside p}"
     by (metis (no_types, lifting) assms(4) integral_inside Collect_empty_eq card.empty le_zero_eq subsetD)
   have indh2_card2: "card {x. integral_vec x \<and> x \<in> path_image (make_polygonal_path (a # [d] @ [c, a]))} < card {x. integral_vec x \<and> x \<in> path_image p}"
@@ -1108,7 +1108,7 @@ proof-
       by simp
     have path_image_cd1: "path_image (linepath d c) - {c, d} \<subseteq> path_inside p"
       using polygon_split unfolding is_polygon_split_def 
-      by (smt (z3) One_nat_def \<open>good_linepath c d [a, d, b, c, a] \<and> path_image (make_polygonal_path [a, d, b, c, a]) = path_image p\<close> append_Cons append_Nil insert_commute nth_Cons_0 nth_Cons_Suc numeral_3_eq_3 path_image_linepath path_inside_def segment_convex_hull sup.cobounded2)
+      by (smt (verit) One_nat_def \<open>good_linepath c d [a, d, b, c, a] \<and> path_image (make_polygonal_path [a, d, b, c, a]) = path_image p\<close> append_Cons append_Nil insert_commute nth_Cons_0 nth_Cons_Suc numeral_3_eq_3 path_image_linepath path_inside_def segment_convex_hull sup.cobounded2)
     have path_image_cd2: "{c, d} \<subseteq> path_image p"
       using linepaths_subset_make_polygonal_path_image assms(1) unfolding pick_triangle make_triangle_def 
       by (metis (no_types, lifting) \<open>good_linepath c d [a, d, b, c, a] \<and> path_image (make_polygonal_path [a, d, b, c, a]) = path_image p\<close> good_linepath_def subset_trans vertices_on_path_image)
@@ -1449,9 +1449,9 @@ proof-
     ultimately show ?thesis using assms(3) by blast
   qed
   moreover have polygon_q: "polygon ?q"
-    using 1 unfolding is_polygon_split_path_def
-      (* may take a while to load *)
-    by (smt (z3) One_nat_def append_Cons append_Nil diff_self_eq_0 drop0 drop_append length_Cons length_drop length_greater_0_conv list.size(3) nth_Cons_0 nth_Cons_Suc take_0)
+    using 1
+    using nth_Cons_0 by (fastforce simp: is_polygon_split_path_def)
+
   moreover have "{z, c} \<subseteq> set ?vts" by force
   moreover have l_q_int: "path_image ?l \<inter> path_image ?q = {z, c}"
   proof-
@@ -1624,13 +1624,13 @@ proof-
       using assms(1) assms(2) triangle_interior_point_not_collinear_vertices_wlog_helper by fastforce
     moreover have "path_inside ?p2 \<subseteq> path_inside ?q"
       using 2 unfolding is_polygon_split_def
-      by (smt (z3) One_nat_def UnCI append_Cons diff_Suc_1 drop0 drop_Suc_Cons make_triangle_def nth_Cons_0 nth_Cons_Suc numeral_3_eq_3 self_append_conv2 subsetI take0 take_Suc_Cons)
+      by (smt (verit) One_nat_def UnCI append_Cons diff_Suc_1 drop0 drop_Suc_Cons make_triangle_def nth_Cons_0 nth_Cons_Suc numeral_3_eq_3 self_append_conv2 subsetI take0 take_Suc_Cons)
     moreover have "path_inside ?p1 \<subseteq> path_inside ?q"
       using 2 unfolding is_polygon_split_def
-      by (smt (z3) One_nat_def Un_assoc append_Cons diff_Suc_1 drop0 drop_Suc_Cons inf_sup_absorb le_iff_inf make_triangle_def nth_Cons_0 nth_Cons_Suc numeral_3_eq_3 self_append_conv2 sup_commute take0 take_Suc_Cons)
+      by (smt (verit) One_nat_def Un_assoc append_Cons diff_Suc_1 drop0 drop_Suc_Cons inf_sup_absorb le_iff_inf make_triangle_def nth_Cons_0 nth_Cons_Suc numeral_3_eq_3 self_append_conv2 sup_commute take0 take_Suc_Cons)
     moreover have "path_inside ?q \<subseteq> path_inside p"
       using 1 unfolding is_polygon_split_path_def
-      by (smt (z3) One_nat_def Un_subset_iff Un_upper1 append_Cons append_Nil assms(1) diff_zero drop0 drop_Suc_Cons make_triangle_def nth_Cons_0 nth_Cons_Suc take0)
+      by (smt (verit) One_nat_def Un_subset_iff Un_upper1 append_Cons append_Nil assms(1) diff_zero drop0 drop_Suc_Cons make_triangle_def nth_Cons_0 nth_Cons_Suc take0)
     ultimately show ?thesis by blast
   qed
   moreover show "a \<notin> path_image ?p2 \<union> path_inside ?p2" using calculation by simp
@@ -1638,7 +1638,7 @@ proof-
 
   have "(path_image ?p3 - path_image ?cutpath) \<inter> (path_image ?q - path_image ?cutpath) = {}"
     using 1 unfolding make_triangle_def is_polygon_split_path_def
-    by (smt (z3) One_nat_def append_Cons append_Nil diff_self_eq_0 diff_zero drop0 drop_Suc_Cons nth_Cons_0 nth_Cons_Suc rev_singleton_conv take_0)
+    by (smt (verit) One_nat_def append_Cons append_Nil diff_self_eq_0 diff_zero drop0 drop_Suc_Cons nth_Cons_0 nth_Cons_Suc rev_singleton_conv take_0)
   moreover have "c \<in> path_image ?q" using l_q_int by auto
   ultimately have "c \<notin> path_image ?p3" using c_noton_cutpath by blast
   moreover have "c \<notin> path_inside ?p3"
@@ -1923,10 +1923,10 @@ proof(induction "card {x. integral_vec x \<and> x \<in> path_inside p} + card {x
     proof-
       have "path_inside ?p1 \<subseteq> path_inside ?q"
         using triangle_split(2) unfolding is_polygon_split_def
-        by (smt (z3) One_nat_def Un_assoc Un_upper1 append_Cons append_Nil diff_Suc_Suc diff_zero drop0 drop_Suc_Cons make_triangle_def nth_Cons_0 nth_Cons_Suc numeral_3_eq_3 sup_commute take0 take_Suc_Cons)
+        by (smt (verit) One_nat_def Un_assoc Un_upper1 append_Cons append_Nil diff_Suc_Suc diff_zero drop0 drop_Suc_Cons make_triangle_def nth_Cons_0 nth_Cons_Suc numeral_3_eq_3 sup_commute take0 take_Suc_Cons)
       moreover have "path_inside ?q \<subseteq> path_inside p"
         using triangle_split(1) unfolding is_polygon_split_path_def
-        by (smt (z3) One_nat_def Un_assoc Un_subset_iff append_Cons append_Nil diff_zero drop0 drop_Suc_Cons less.prems(1) make_triangle_def nth_Cons_0 nth_Cons_Suc sup.cobounded2 take0)
+        by (smt (verit) One_nat_def Un_assoc Un_subset_iff append_Cons append_Nil diff_zero drop0 drop_Suc_Cons less.prems(1) make_triangle_def nth_Cons_0 nth_Cons_Suc sup.cobounded2 take0)
       ultimately have "path_inside ?p1 \<subseteq> path_inside p" by blast
       moreover have "\<not> collinear {a, d, c}"
         by (metis d_inside insert_commute less.prems(1) polygon_p triangle_interior_point_not_collinear_vertices)
@@ -1947,10 +1947,10 @@ proof(induction "card {x. integral_vec x \<and> x \<in> path_inside p} + card {x
     proof-
       have "path_inside ?p2 \<subseteq> path_inside ?q"
         using triangle_split(2) unfolding is_polygon_split_def
-        by (smt (z3) One_nat_def Un_assoc Un_upper1 append_Cons append_Nil diff_Suc_Suc diff_zero drop0 drop_Suc_Cons make_triangle_def nth_Cons_0 nth_Cons_Suc numeral_3_eq_3 sup_commute take0 take_Suc_Cons)
+        by (smt (verit) One_nat_def Un_assoc Un_upper1 append_Cons append_Nil diff_Suc_Suc diff_zero drop0 drop_Suc_Cons make_triangle_def nth_Cons_0 nth_Cons_Suc numeral_3_eq_3 sup_commute take0 take_Suc_Cons)
       moreover have "path_inside ?q \<subseteq> path_inside p"
         using triangle_split(1) unfolding is_polygon_split_path_def
-        by (smt (z3) One_nat_def Un_assoc Un_subset_iff append_Cons append_Nil diff_zero drop0 drop_Suc_Cons less.prems(1) make_triangle_def nth_Cons_0 nth_Cons_Suc sup.cobounded2 take0)
+        by (smt (verit) One_nat_def Un_assoc Un_subset_iff append_Cons append_Nil diff_zero drop0 drop_Suc_Cons less.prems(1) make_triangle_def nth_Cons_0 nth_Cons_Suc sup.cobounded2 take0)
       ultimately have "path_inside ?p2 \<subseteq> path_inside p" by blast
       moreover have "\<not> collinear {d, b, c}"
         by (metis d_inside insert_commute less.prems(1) polygon_p triangle_interior_point_not_collinear_vertices)
@@ -1971,7 +1971,7 @@ proof(induction "card {x. integral_vec x \<and> x \<in> path_inside p} + card {x
     proof-
       have "path_inside ?p3 \<subseteq> path_inside p"
         using triangle_split(1) unfolding is_polygon_split_path_def
-        by (smt (z3) One_nat_def Un_assoc Un_upper1 append_Cons append_Nil diff_Suc_Suc diff_zero less.prems(1) make_triangle_def nth_Cons_0 nth_Cons_Suc rev_singleton_conv take0)
+        by (smt (verit) One_nat_def Un_assoc Un_upper1 append_Cons append_Nil diff_Suc_Suc diff_zero less.prems(1) make_triangle_def nth_Cons_0 nth_Cons_Suc rev_singleton_conv take0)
       moreover have "\<not> collinear {a, b, d}"
         by (metis d_inside less.prems(1) polygon_p triangle_interior_point_not_collinear_vertices)
       moreover have "\<not> collinear {a, b, c}" by (simp add: less.prems(4))
@@ -2213,7 +2213,7 @@ proof-
     proof
       fix v assume *: "v \<in> set (drop 1 (take ?r vts))"
       then obtain i' where i': "(drop 1 (take ?r vts))!i' = v \<and> i' < ?r - 1"
-        by (smt (z3) Cons_nth_drop_Suc One_nat_def ex_i butlast_conv_take calculation(2) drop0 hd_conv_nth hd_take index_less_size_conv length_drop length_take less_imp_le_nat linorder_not_less list.collapse list.sel(2) min.absorb4 nth_index take_all_iff take_eq_Nil vts'_length)
+        by (smt (verit) Cons_nth_drop_Suc One_nat_def ex_i butlast_conv_take calculation(2) drop0 hd_conv_nth hd_take index_less_size_conv length_drop length_take less_imp_le_nat linorder_not_less list.collapse list.sel(2) min.absorb4 nth_index take_all_iff take_eq_Nil vts'_length)
       then have "(take ?r vts)!(i' + 1) = v"
         by (metis * add.commute drop_eq_Nil empty_iff empty_set nle_le nth_drop)
       thus "\<exists>i. 0 < i \<and> i < ?r \<and> vts!i = v"
@@ -2479,9 +2479,9 @@ proof(rule disjE[OF assms(4)])
       by (metis (no_types, lifting) DiffD1 DiffD2 DiffI Int_iff assms(6) assms(7) closed_segment_subset closure_convex_hull convex_hull_eq frontier_def insert_subset subsetD)
     moreover from calculation have "v \<noteq> x \<and> v \<noteq> y" using assms(8) by auto
     moreover from calculation have "v$1 < a"
-      by (smt (z3) DiffD1 a_def assms(2) assms(3) exhaust_2 segment_horizontal vec_eq_iff zero_index)
+      by (smt (verit) DiffD1 a_def assms(2) assms(3) exhaust_2 segment_horizontal vec_eq_iff zero_index)
     moreover from calculation have "y \<in> open_segment v z"
-      by (smt (z3) Diff_iff xyz insert_iff open_segment_def open_segment_idem path_image_linepath segment_horizontal y y_neq)
+      by (smt (verit,del_insts) Diff_iff xyz insert_iff open_segment_def open_segment_idem path_image_linepath segment_horizontal y y_neq)
     ultimately have "y \<in> interior A"
       by (metis (no_types, lifting) IntD2 assms(6) assms(7) closure_convex_hull convex_hull_eq in_interior_closure_convex_segment insertI2 singletonI subsetD)
     thus False using assms(8) frontier_def by auto
@@ -2514,9 +2514,9 @@ next (* copy/paste previous case, switching the roles of x and y*)
       by (metis (no_types, lifting) DiffD1 DiffD2 DiffI Int_iff assms(6) assms(7) closed_segment_subset closure_convex_hull convex_hull_eq frontier_def insert_subset subsetD)
     moreover from calculation have "v \<noteq> x \<and> v \<noteq> y" using assms(8) by auto
     moreover from calculation have "v$1 > 0"
-      by (smt (z3) DiffD1 a_def assms(2) assms(3) exhaust_2 segment_horizontal vec_eq_iff zero_index)
+      by (smt (verit) DiffD1 a_def assms(2) assms(3) exhaust_2 segment_horizontal vec_eq_iff zero_index)
     moreover from calculation have "x \<in> open_segment v z"
-      by (smt (z3) Diff_iff xyz insert_iff open_segment_def open_segment_idem path_image_linepath segment_horizontal x x_neq)
+      by (smt (verit,del_insts) Diff_iff xyz insert_iff open_segment_def open_segment_idem path_image_linepath segment_horizontal x x_neq)
     ultimately have "x \<in> interior A"
       by (metis (no_types, lifting) IntD2 assms(6) assms(7) closure_convex_hull convex_hull_eq in_interior_closure_convex_segment insertI2 singletonI subsetD)
     thus False using assms(8) frontier_def by auto
@@ -2581,14 +2581,14 @@ proof-
     fix u assume "u \<in> {0..1::real}"
     then have *: "u \<ge> 0 \<and> 1 - u \<ge> 0" by simp
     then show "a < ((1 - u) *\<^sub>R x + u *\<^sub>R y)$1"
-      by (smt (z3) that scaleR_collapse scaleR_left_mono vector_add_component vector_scaleR_component)
+      by (smt (verit) that scaleR_collapse scaleR_left_mono vector_add_component vector_scaleR_component)
   qed
   have 2: "\<forall>u \<in> {0..1}. ((1 - u) *\<^sub>R x + u *\<^sub>R y)$1 < b" if "x$1 < b \<and> y$1 < b"
   proof clarify
     fix u assume "u \<in> {0..1::real}"
     then have *: "u \<ge> 0 \<and> 1 - u \<ge> 0" by simp
     then show "((1 - u) *\<^sub>R x + u *\<^sub>R y)$1 < b"
-      by (smt (z3) that scaleR_collapse scaleR_left_mono vector_add_component vector_scaleR_component)
+      by (smt (verit) that scaleR_collapse scaleR_left_mono vector_add_component vector_scaleR_component)
   qed
   show "a < x$1 \<and> a < y$1 \<Longrightarrow> \<forall>v \<in> path_image (linepath x y). a < v$1" using * 1 by fastforce
   show "x$1 < b \<and> y$1 < b \<Longrightarrow> \<forall>v \<in> path_image (linepath x y). v$1 < b" using * 2 by fastforce
@@ -2606,14 +2606,14 @@ proof-
     fix u assume "u \<in> {0..1::real}"
     then have *: "u \<ge> 0 \<and> 1 - u \<ge> 0" by simp
     then show "a < ((1 - u) *\<^sub>R x + u *\<^sub>R y)$2"
-      by (smt (z3) that scaleR_collapse scaleR_left_mono vector_add_component vector_scaleR_component)
+      by (smt (verit) that scaleR_collapse scaleR_left_mono vector_add_component vector_scaleR_component)
   qed
   have 2: "\<forall>u \<in> {0..1}. ((1 - u) *\<^sub>R x + u *\<^sub>R y)$2 < b" if "x$2 < b \<and> y$2 < b"
   proof clarify
     fix u assume "u \<in> {0..1::real}"
     then have *: "u \<ge> 0 \<and> 1 - u \<ge> 0" by simp
     then show "((1 - u) *\<^sub>R x + u *\<^sub>R y)$2 < b"
-      by (smt (z3) that scaleR_collapse scaleR_left_mono vector_add_component vector_scaleR_component)
+      by (smt (verit) that scaleR_collapse scaleR_left_mono vector_add_component vector_scaleR_component)
   qed
   show "a < x$2 \<and> a < y$2 \<Longrightarrow> \<forall>v \<in> path_image (linepath x y). a < v$2" using * 1 by fastforce
   show "x$2 < b \<and> y$2 < b \<Longrightarrow> \<forall>v \<in> path_image (linepath x y). v$2 < b" using * 2 by fastforce
@@ -2825,11 +2825,11 @@ proof-
     have "\<forall>v \<in> path_image ?l1. v$2 \<ge> q0$2"
       using assms(13) assms(9) p1_def pathfinish_in_path_image segment_horizontal by fastforce
     moreover have "\<forall>v \<in> path_image ?l2. v$2 \<ge> q0$2"
-      by (smt (z3) UnCI assms(13) assms(9) b_y p1_def path_image_linepath pathfinish_in_path_image segment_vertical vector_2(1) vector_2(2))
+      by (smt (verit) UnCI assms(13) assms(9) b_y p1_def path_image_linepath pathfinish_in_path_image segment_vertical vector_2(1) vector_2(2))
     moreover have "\<forall>v \<in> path_image ?l3. v$2 \<ge> q0$2"
       by (metis calculation(2) ends_in_segment(2) path_image_linepath segment_horizontal vector_2(2))
     moreover have "\<forall>v \<in> path_image ?l4. v$2 \<ge> q0$2"
-      by (smt (z3) UnCI assms(13) assms(9) b_y p1_def path_image_linepath pathfinish_in_path_image segment_vertical vector_2(1) vector_2(2))
+      by (smt (verit) UnCI assms(13) assms(9) b_y p1_def path_image_linepath pathfinish_in_path_image segment_vertical vector_2(1) vector_2(2))
     moreover have "\<forall>v \<in> path_image ?l5. v$2 \<ge> q0$2"
       by (metis assms(13) assms(9) p0_def path_image_linepath pathstart_in_path_image segment_horizontal vector_2(2))
     ultimately show ?thesis
@@ -2841,15 +2841,15 @@ proof-
     have "\<forall>v \<in> path_image ?l1. v$2 \<ge> a_x"
       by (metis UnCI a_x assms(9) linorder_le_cases linorder_not_less p0_def path_image_linepath pathstart_in_path_image segment_horizontal vector_2(2))
     moreover have "\<forall>v \<in> path_image ?l2. v$2 \<ge> a_x"
-      by (smt (z3) UnCI assms(9) b_y calculation p0_def path_image_linepath pathstart_in_path_image pathstart_linepath segment_vertical vector_2(1) vector_2(2))
+      by (smt (verit) UnCI assms(9) b_y calculation p0_def path_image_linepath pathstart_in_path_image pathstart_linepath segment_vertical vector_2(1) vector_2(2))
     moreover have "\<forall>v \<in> path_image ?l3. v$2 \<ge> a_x"
       by (metis calculation(2) ends_in_segment(2) path_image_linepath segment_horizontal vector_2(2))
     moreover have "\<forall>v \<in> path_image ?l4. v$2 \<ge> a_x"
-      by (smt (z3) assms(9) calculation(1) calculation(3) ends_in_segment(1) path_image_linepath segment_vertical vector_2(1) vector_2(2))
+      by (smt (verit) assms(9) calculation(1) calculation(3) ends_in_segment(1) path_image_linepath segment_vertical vector_2(1) vector_2(2))
     moreover have "\<forall>v \<in> path_image ?l5. v$2 \<ge> a_x"
       by (smt (verit, del_insts) UnCI a_x assms(9) p0_def path_image_linepath pathstart_in_path_image segment_horizontal vector_2(2))
     ultimately show ?thesis
-      by (smt (z3) UnCI a_x assms(9) b_x not_in_path_image_join p1_def path_image_linepath pathfinish_in_path_image segment_horizontal segment_vertical vector_2(1) vector_2(2))
+      by (smt (verit,del_insts) UnCI a_x assms(9) b_x not_in_path_image_join p1_def path_image_linepath pathfinish_in_path_image segment_horizontal segment_vertical vector_2(1) vector_2(2))
   qed
 
   have closed: "closed_path ?R" using assms p0_def unfolding simple_path_def closed_path_def by simp
@@ -2895,11 +2895,11 @@ proof-
         by (smt (verit, ccfv_threshold) Int_commute UnCI a_x b_x linepath_int_columns p0 p0_def pathstart_in_path_image pathstart_join vector_2(1) verit_comp_simplify1(3))
       have l1l4: "path_image ?l1 \<inter> path_image ?l4 = {}"
         using linepath_int_columns[of ?a ?b ?d ?e]
-        by (smt (z3) UnCI a_x assms(9) b_x disjoint_iff p1_def path_image_linepath pathfinish_in_path_image segment_horizontal segment_vertical vector_2(1) vector_2(2))
+        by (smt (verit) UnCI a_x assms(9) b_x disjoint_iff p1_def path_image_linepath pathfinish_in_path_image segment_horizontal segment_vertical vector_2(1) vector_2(2))
 
       have l1l5: "path_image ?l1 \<inter> path_image ?l5 = {}"
         using linepath_int_columns[of ?a ?b ?e ?f]
-        by (smt (z3) UnCI a_def a_x assms(10) assms(9) b_x disjoint_iff p1_def path_image_linepath pathfinish_in_path_image segment_horizontal vector_2(1) vector_2(2))
+        by (smt (verit) UnCI a_def a_x assms(10) assms(9) b_x disjoint_iff p1_def path_image_linepath pathfinish_in_path_image segment_horizontal vector_2(1) vector_2(2))
 
       have "path_image ?l4 \<inter> path_image ?l5 = {pathfinish ?l4}"
         using l4l5 by blast
@@ -2944,7 +2944,7 @@ proof-
           then have "x$1 \<le> a"
             using a_def assms(10) assms(12) assms(9) l_def linepath_image_01 segment_horizontal by auto
           moreover have "x$1 \<ge> a"
-            by (smt (z3) "*" Int_iff Un_iff a_def assms(9) b_x linepath_image_01 path_defs(4) segment_horizontal vector_2(1) vector_2(2))
+            by (smt (verit) "*" Int_iff Un_iff a_def assms(9) b_x linepath_image_01 path_defs(4) segment_horizontal vector_2(1) vector_2(2))
           moreover have "x$2 = 0" using * assms(9) segment_horizontal by auto
           ultimately show "x \<in> {p1}" using a_def assms(9) segment_vertical by fastforce
         qed
@@ -2993,7 +2993,7 @@ proof-
     fix x assume *: "x \<in> path_image q \<inter> path_image ?l1"
     then have "x$1 \<le> a" using a_def assms(10) assms(11) assms(9) l_def segment_horizontal by auto
     moreover have "x$1 \<ge> a"
-      by (smt (z3) "*" Int_iff Un_iff a_def assms(9) b_x linepath_image_01 path_defs(4) segment_horizontal vector_2(1) vector_2(2))
+      by (smt (verit) "*" Int_iff Un_iff a_def assms(9) b_x linepath_image_01 path_defs(4) segment_horizontal vector_2(1) vector_2(2))
     moreover have "x$2 = 0" using * assms(9) segment_horizontal by auto
     ultimately show "x \<in> {p1}" using a_def assms(9) segment_vertical by fastforce
   qed
@@ -3303,7 +3303,7 @@ proof-
       qed
       ultimately have "?a \<in> open_segment z ?b \<or> ?b \<in> open_segment z ?a"
         using three_points_on_line[of "{x. x \<bullet> v = 0}"]
-        by (smt (z3) \<open>z \<notin> {0--w}\<close> assms(5) collinear_3_imp_in_affine_hull ends_in_segment(1) ends_in_segment(2) hull_redundant hull_subset insert_commute open_closed_segment three_points_on_line)
+        by (smt (verit) \<open>z \<notin> {0--w}\<close> assms(5) collinear_3_imp_in_affine_hull ends_in_segment(1) ends_in_segment(2) hull_redundant hull_subset insert_commute open_closed_segment three_points_on_line)
       moreover have "open_segment z ?b \<subseteq> interior A \<and> open_segment z ?a \<subseteq> interior A"
       proof-
         have "closed_segment z ?b \<subseteq> A \<and> closed_segment z ?a \<subseteq> A"
@@ -3921,7 +3921,7 @@ proof-
       proof-
         have "q' 0 \<in> closed_segment p0 p1" using ** l_def open_closed_segment x by auto
         thus ?thesis
-          by (smt (z3) 2 a_def assms(11) atLeastAtMost_iff atLeastatMost_empty p0_def p1_def pathstart_def pathstart_subpath segment_horizontal zero_index)
+          by (smt (verit) 2 a_def assms(11) atLeastAtMost_iff atLeastatMost_empty p0_def p1_def pathstart_def pathstart_subpath segment_horizontal zero_index)
       qed
       have 5: "\<forall>x\<in>path_image p. x $ 2 < pathfinish q' $ 2" by (simp add: ** pathfinish_def y)
       have 6: "\<forall>x\<in>path_image p \<union> path_image q'. 0 \<le> x $ 2" using * ** by blast
@@ -4587,7 +4587,7 @@ proof-
       by (smt (verit) DiffE IntI Int_Un_distrib2 closed_path_def UnE \<open>arc (reversepath p) \<and> arc l\<close> arc_imp_path assms(1) assms(2) assms(3) assms(4) closed_simple_r closed_simple_s doubleton_eq_iff emptyE inf.commute l_def path_image_join path_image_reversepath path_join_eq pathfinish_join pathfinish_linepath pathstart_join pathstart_linepath simple_loop_split simple_path_endless simple_path_joinE sup_absorb2)
     then have "q`{0<..<1} \<inter> frontier A = {}" using frontier_def s_inside_subset by fastforce
     then have "(path_image p \<union> path_image q) \<inter> frontier A = {p 0, p 1}"
-      by (smt (z3) Diff_disjoint Int_Un_distrib Un_Diff_Int Un_Int_eq(3) assms(1) assms(3) assms(4) assms(7) assms(8) assms(9) frontier_def inf.commute inf.orderE inf_idem inf_left_commute insert_commute l_p_endpoints pathfinish_def pathstart_def simple_path_endless)
+      by (smt (verit,del_insts) Diff_disjoint Int_Un_distrib Un_Diff_Int Un_Int_eq(3) assms(1) assms(3) assms(4) assms(7) assms(8) assms(9) frontier_def inf.commute inf.orderE inf_idem inf_left_commute insert_commute l_p_endpoints pathfinish_def pathstart_def simple_path_endless)
     moreover have "?ep\<subseteq> path_image p \<union> path_image q"
       by (simp add: extreme_points_of_convex_hull A_def)
     moreover have "?ep \<subseteq> frontier A"
@@ -4963,18 +4963,18 @@ proof-
   moreover have "arc ?l"
     by (smt (verit) arc_linepath calculation(5) constant_linepath_is_not_loop_free)
   moreover have "arc ?filled_p_tl"
-    by (smt (z3) arc_simple_path calculation(2) calculation(3) calculation(4) calculation(7) hd_Nil_eq_last hd_conv_nth last.simps last_conv_nth list.discI list.sel(1) make_polygonal_path_gives_path pathfinish_linepath pathstart_linepath polygon_pathfinish polygon_pathstart simple_path_def)
+    by (smt (verit) arc_simple_path calculation(2) calculation(3) calculation(4) calculation(7) hd_Nil_eq_last hd_conv_nth last.simps last_conv_nth list.discI list.sel(1) make_polygonal_path_gives_path pathfinish_linepath pathstart_linepath polygon_pathfinish polygon_pathstart simple_path_def)
   moreover have "?l = make_polygonal_path [a, b]"
     using make_polygonal_path.simps by presburger
   ultimately have lf_filled: "loop_free filled_p"
-    by (smt (z3) Nat.add_diff_assoc One_nat_def Suc_pred' add_Suc_shift append_butlast_last_id arc_distinct_ends butlast.simps(2) filled_p_def hd_Nil_eq_last hd_conv_nth inf_sup_aci(1) last_ConsR less_numeral_extra(1) list.sel(1) list.simps(3) list.size(3) list.size(4) loop_free_append nth_append_length order_eq_refl plus_1_eq_Suc polygon_pathfinish polygon_pathstart)
+    by (smt (verit) Nat.add_diff_assoc One_nat_def Suc_pred' add_Suc_shift append_butlast_last_id arc_distinct_ends butlast.simps(2) filled_p_def hd_Nil_eq_last hd_conv_nth inf_sup_aci(1) last_ConsR less_numeral_extra(1) list.sel(1) list.simps(3) list.size(3) list.size(4) loop_free_append nth_append_length order_eq_refl plus_1_eq_Suc polygon_pathfinish polygon_pathstart)
   show polygon_filled_p: "polygon filled_p"
     unfolding polygon_def
     by (metis closed_path_def UNIV_def append_is_Nil_conv filled_p_def filled_vts hd_append2 last.simps last_conv_nth last_filled lf_filled list.discI list.exhaust_sel make_polygonal_path_gives_path nth_Cons_0 polygon_pathfinish polygon_pathstart polygonal_path_def rangeI simple_path_def)
 
   (* good_pocket_path_vts forms a good_polygonal_path of filled_vts from a to b*)
   have "{a, b} \<subseteq> set filled_vts"
-    using filled_vts by (smt (z3) UnCI empty_set list.simps(15) set_append subset_iff)
+    using filled_vts by (smt (verit) UnCI empty_set list.simps(15) set_append subset_iff)
   moreover have pocket_path: "?pocket_path = make_polygonal_path ([a] @ good_pocket_path_vts @ [b])"
     by (metis (no_types, lifting) a_def a_neq_b append_Cons append_Nil append_butlast_last_id b_def good_pocket_path_vts_def hd_Nil_eq_last hd_conv_nth last_conv_nth length_butlast list.collapse list.size(3) tl_append2)
   moreover have "path_image ?pocket_path \<subseteq> path_inside filled_p \<union> {a, b}"
@@ -5077,7 +5077,7 @@ proof-
   (* pocket is a polygon *)
   have polygon_pocket_rev: "polygon (make_polygonal_path (a#([] @ [b] @ (rev good_pocket_path_vts) @ [a])))"
     unfolding is_polygon_split_path_def
-    by (smt (z3) "01" One_nat_def add_diff_cancel_left' add_diff_cancel_right' filled_0_a filled_1_b is_polygon_split_path_def is_split_path nth_butlast plus_1_eq_Suc take0)
+    by (smt (verit) "01" One_nat_def add_diff_cancel_left' add_diff_cancel_right' filled_0_a filled_1_b is_polygon_split_path_def is_split_path nth_butlast plus_1_eq_Suc take0)
   moreover have rev_pocket_vts: "rev ?pocket_vts = a#([] @ [b] @ (rev good_pocket_path_vts) @ [a])"
     by (smt (verit) a_def a_neq_b append.left_neutral append_Cons append_butlast_last_id b_def good_pocket_path_vts_def hd_Nil_eq_last hd_append2 hd_conv_nth last_conv_nth length_butlast list.collapse list.size(3) rev.simps(1) rev.simps(2) rev_append)
   ultimately show "polygon pocket"
@@ -5095,7 +5095,7 @@ proof-
 
   (* filled_vts is missing at least one vertex from vts *)
   have "card (set vts) = card (set (butlast vts))"
-    by (smt (z3) Cons_nth_drop_Suc List.finite_set One_nat_def Suc_1 Suc_le_lessD two_vts_on_frontier distinct_vts hd_last_vts frontier_vts_subset butlast.simps(1) butlast_conv_take card_insert_if card_length card_mono distinct_card drop0 drop_eq_Nil dual_order.trans last_in_set last_tl length_butlast length_greater_0_conv length_tl list.collapse list.sel(3) list.simps(15) set_take_subset verit_la_disequality)
+    by (smt (verit,del_insts) Cons_nth_drop_Suc List.finite_set One_nat_def Suc_1 Suc_le_lessD two_vts_on_frontier distinct_vts hd_last_vts frontier_vts_subset butlast.simps(1) butlast_conv_take card_insert_if card_length card_mono distinct_card drop0 drop_eq_Nil dual_order.trans last_in_set last_tl length_butlast length_greater_0_conv length_tl list.collapse list.sel(3) list.simps(15) set_take_subset verit_la_disequality)
   moreover have "length good_pocket_path_vts \<ge> 1"
     unfolding good_pocket_path_vts_def pocket_path_vts_def construct_pocket_0_def
     using convex_hull_of_nonconvex_polygon_strict_subset[OF _ assms(4), of vts]
@@ -5230,7 +5230,7 @@ proof (induct "card (set vts)" arbitrary: vts p I B rule: less_induct)
       have good_linepath_ab: "good_linepath a b ((butlast vts) @ [(butlast vts) ! 0])"
         using ab_prop vts_is unfolding good_linepath_def 
         using ab_prop_restate empty_set hd_append2 hd_conv_nth insert_absorb insert_not_empty less.prems(2) same_set
-        by (smt (z3))
+        by (smt (verit))
       then have good_linepath_ba: "good_linepath b a ((butlast vts) @ [(butlast vts) ! 0])"
         using good_linepath_comm good_linepath_def by blast
       obtain i1 j1 where ij_prop: "i1 < length (butlast vts) \<and> j1 < length (butlast vts) \<and>
@@ -5677,12 +5677,12 @@ proof (induct "card (set vts)" arbitrary: vts p I B rule: less_induct)
       have 2: "?vts3 = drop (?j - ?i) (drop (Suc ?i) ?vts)"
         by (metis (no_types, lifting) One_nat_def Suc_1 diff_zero drop_butlast drop_drop plus_1_eq_Suc)
       have 3: "?a = ?vts ! ?i"
-        by (smt (z3) Nil_is_append_conv pocket_path_set filled_0 hd_conv_nth is_polygon_split_path_def length_greater_0_conv list.distinct(1) nth_append nth_butlast pocket_0 set_empty split')
+        by (smt (verit) Nil_is_append_conv pocket_path_set filled_0 hd_conv_nth is_polygon_split_path_def length_greater_0_conv list.distinct(1) nth_append nth_butlast pocket_0 set_empty split')
       have 4: "?b = ?vts ! ?j"
       proof-
         have "?b = ?filled_vts!1"
           unfolding construct_pocket_0_def fill_pocket_0_def
-          by (smt (z3) Suc_eq_plus1 a_neq_b construct_pocket_0_def diff_Suc_1 diff_is_0_eq' drop_eq_Nil hd_conv_nth hd_drop_conv_nth hd_last_rotated last_conv_nth length_take linorder_not_less min.absorb4 nat_le_linear not_less_eq_eq nth_Cons' nth_take one_neq_zero take_all_iff take_eq_Nil)
+          by (smt (verit) Suc_eq_plus1 a_neq_b construct_pocket_0_def diff_Suc_1 diff_is_0_eq' drop_eq_Nil hd_conv_nth hd_drop_conv_nth hd_last_rotated last_conv_nth length_take linorder_not_less min.absorb4 nat_le_linear not_less_eq_eq nth_Cons' nth_take one_neq_zero take_all_iff take_eq_Nil)
         thus ?thesis by (metis is_polygon_split_path_def nth_butlast split')
       qed
       have 5: "?pocket_path = make_polygonal_path (?a # ?cutvts @ [?b])"

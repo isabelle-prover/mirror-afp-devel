@@ -111,7 +111,7 @@ next
      lsrc ! (si + len) # x = take (Suc len) (drop si lsrc) @ x"
     by simp
   from Suc.prems show ?case
-    by (sep_auto simp: take_update_last drop_upd_irrelevant)
+    by (sep_auto simp: list_update_beyond take_update_last drop_upd_irrelevant)
 qed
 
 definition "srblit a s d l \<equiv> rblit a s a d l"
@@ -153,7 +153,7 @@ next
      lsrc ! (si + len) # x = take (Suc len) (drop si lsrc) @ x"
     by simp
   from Suc.prems show ?case
-    by (sep_auto simp: take_update_last drop_upd_irrelevant)
+    by (sep_auto simp: list_update_beyond take_update_last drop_upd_irrelevant)
 qed
 
 subsection "Modeling target language blit"

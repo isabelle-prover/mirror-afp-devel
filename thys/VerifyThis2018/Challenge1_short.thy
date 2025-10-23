@@ -56,7 +56,7 @@ subsection \<open>Refinement 1: List with Gap\<close>
     unfolding move_left1_def
     apply refine_vcg
     apply (auto 
-      simp: in_br_conv gap_\<alpha>_def gap_invar_def move_left1_def 
+      simp: in_br_conv gap_\<alpha>_def gap_invar_def move_left1_def list_update_beyond
       split: prod.splits)
     (* sledgehammer! *)  
     by (smt Cons_nth_drop_Suc Suc_pred append.assoc append_Cons append_Nil 

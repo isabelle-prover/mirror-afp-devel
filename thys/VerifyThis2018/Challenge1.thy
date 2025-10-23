@@ -248,7 +248,7 @@ subsection \<open>Refinement 1: List with Gap\<close>
     apply (auto 
       simp: in_br_conv gap_\<alpha>_def gap_invar_def move_left1_def 
       split: prod.splits)
-    subgoal by (simp add: butlast_take)
+    subgoal by (simp add: butlast_take list_update_beyond)
     subgoal
       by (smt Cons_nth_drop_Suc One_nat_def Suc_pred diff_Suc_less 
         drop_update_cancel last_take_nth_conv le_trans length_list_update 
