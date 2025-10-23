@@ -429,7 +429,7 @@ next
         using rel_stacktraces_Cons.hyps apply simp
         using rel_stacktraces_Cons.hyps assms \<open>f = g\<close> True
          apply (cases "pc' \<le> pc") []
-         apply (auto simp add: take_update_swap intro!: Subx.sp_instrs_list_update
+         apply (auto simp add: take_update_swap list_update_beyond intro!: Subx.sp_instrs_list_update
             dest!: next_instrD instr_atD) [2]
         using rel_stacktraces_Cons.hyps
         unfolding is_valid_fun_call_map_entry_conv[OF assms(2,4,5)]

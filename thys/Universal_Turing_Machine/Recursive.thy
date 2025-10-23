@@ -1383,14 +1383,11 @@ proof -
     apply(auto simp: nth_append list_update_append split: if_splits)
     using list_update_append[of "x # 0 \<up> (max (length xs + 3) (max fft gft) - Suc (length xs))" "0 # anything"
         "max (length xs + 3) (max fft gft) - length xs" "x"]
-    apply(auto simp: if_splits)
-    apply(simp add: list_update.simps replicate_Suc[THEN sym] del: replicate_Suc)
+    apply(clarsimp simp: list_update_beyond if_splits)
+    apply(simp add: list_update.simps flip: replicate_Suc)
     done
   from a c show "?thesis"
-    using h
-    apply(simp)
-    using b
-    by simp
+    using h b by simp
 qed
 
 lemma max_less_suc_suc[simp]: "max n (Suc n) < Suc (Suc (max (n + 3) x + anything - Suc 0))"
