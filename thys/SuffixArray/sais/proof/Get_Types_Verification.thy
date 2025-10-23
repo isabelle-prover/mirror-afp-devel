@@ -18,15 +18,11 @@ lemma get_suffix_types_step_r0_0:
 lemma get_suffix_types_step_r0_Suc:
   "\<lbrakk>Suc i < length xs; length xs = length ys; \<forall>k < length xs. i < k \<longrightarrow> xs ! k = suffix_type ys k\<rbrakk> \<Longrightarrow>
    get_suffix_types_step_r0 (xs, Suc i) ys = (xs[i := suffix_type ys i], i)"
-  apply clarsimp
-  apply (intro conjI impI arg_cong[where f = "\<lambda>x. xs[i := x]"])
-    apply (simp add: nth_gr_imp_l_type)
-   apply (simp add: nth_less_imp_s_type)
-  by (metis suffix_type_neq)
+  apply simp
+  by (metis nth_gr_imp_l_type nth_less_imp_s_type suffix_type_neq)
 
 fun get_suffix_types_inv
-  where
-"get_suffix_types_inv ys (xs, i) =
+  where "get_suffix_types_inv ys (xs, i) =
   (length xs = length ys \<and> i < length xs \<and> (\<forall>k < length xs. i \<le> k \<longrightarrow> xs ! k = suffix_type ys k))"
 
 lemma get_suffix_types_inv_maintained:

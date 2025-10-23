@@ -1345,11 +1345,7 @@ next
     case True
     with Cons show ?thesis
       by (metis add_update diff_Suc_Suc diff_is_0_eq enum.simps(2) length_Cons)
-  next
-    case False
-    with Cons show ?thesis
-      by simp
-  qed
+  qed (use Cons in \<open>simp add: list_update_beyond\<close>)
 qed
 
 lemma enum_max_le:

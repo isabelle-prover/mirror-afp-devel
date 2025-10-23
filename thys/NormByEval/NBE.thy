@@ -1841,7 +1841,7 @@ proof(induct ps dts arbitrary: ts i t' rule:no_match.induct)
           proof
             let ?rs' = "map dterm ((map term (rev vs) @ ts'')[(size vs - k - 1):=term v'])"
             have "?P ?rs'" using ob 5
-              by(simp add: list_update_append map_update[symmetric] rev_update)
+              by(simp add: rev_update list_update_append list_update_beyond flip: map_update)
             moreover have "?Q ?rs'"
               apply rule
               apply(rule "1.hyps"[OF _ ob(3)])
@@ -2475,12 +2475,7 @@ apply(erule_tac x=nm' in meta_allE)
 apply(erule_tac x="ts'" in meta_allE)
 apply(erule_tac x="rev vs'" in meta_allE)
 apply simp
-apply(subgoal_tac "no_match\<^sub>M\<^sub>L (map comp_pat ts') (rev vs')")
- apply(rule no_match_ML_swap_rev)
-  apply simp
- apply assumption
-apply(erule_tac meta_mp)
-apply (metis rev_rev_ident)
+apply (metis length_map no_match_ML_swap_rev rev_rev_ident)
 done
 
 

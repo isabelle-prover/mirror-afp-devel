@@ -1,7 +1,9 @@
 chapter AFP
 
-session Generalized_Counting_Sort = "HOL-Library" +
+session Generalized_Counting_Sort = HOL +
   options [timeout = 600]
+  sessions
+    "HOL-Library"
   theories
     Algorithm
     Conservation

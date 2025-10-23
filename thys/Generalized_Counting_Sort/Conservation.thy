@@ -1146,13 +1146,14 @@ by (simp only: offs_add take_add, simp add: add_le)
 
 lemma offs_mono:
  "i \<le> j \<Longrightarrow> j < length ns \<Longrightarrow> offs ns k ! i \<le> offs ns k ! j"
-by (frule offs_mono_aux, simp_all)
+  using add_diff_cancel_left' less_eqE offs_mono_aux
+  by force
 
 lemma offs_update:
  "j < length ns \<Longrightarrow>
     offs (ns[i := Suc (ns ! i)]) k ! j = (if j \<le> i then id else Suc) (offs ns k ! j)"
-by (simp add: offs_add not_le take_update_swap, rule impI, subst nth_take [symmetric],
- assumption, subst add_update, simp_all)
+  apply (simp add: offs_add not_le)
+  by (metis add_update length_take less_le_not_le min.absorb2 nth_take take_update_swap)
 
 lemma offs_equal_suc:
   assumes

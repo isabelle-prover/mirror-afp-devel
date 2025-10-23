@@ -478,22 +478,22 @@ shows "noWhileL cl"
 using assms unfolding noWhileL_def by auto
 
 lemma noWhileL_fin[simp]:
-assumes "noWhileL cl" and "c \<in> set cl"
-shows "noWhile c"
-using assms unfolding noWhileL_def by simp
+  assumes "noWhileL cl" and "c \<in> set cl"
+  shows "noWhile c"
+  using assms unfolding noWhileL_def by simp
 
 lemma noWhileL_update[simp]:
-assumes cl: "noWhileL cl" and c': "noWhile c'"
-shows "noWhileL (cl[n := c'])"
+  assumes cl: "noWhileL cl" and c': "noWhile c'"
+  shows "noWhileL (cl[n := c'])"
 proof(cases "n < length cl")
   case True
   show ?thesis
-  unfolding noWhileL_def proof safe
+    unfolding noWhileL_def proof safe
     fix c assume "c \<in> set (cl[n := c'])"
     hence "c \<in> insert c' (set cl)" using set_update_subset_insert by fastforce
     thus "noWhile c" using assms by (cases "c = c'") auto
   qed
-qed (insert cl, auto)
+qed (use cl in \<open>auto simp: list_update_beyond\<close>)
 
 definition finishedL where
 "finishedL cl \<equiv> \<forall> c \<in> set cl. finished c"
@@ -530,15 +530,15 @@ proof(cases "n < length cl")
     hence "c \<in> insert c' (set cl)" using set_update_subset_insert by fastforce
     thus "finished c" using assms by (cases "c = c'") auto
   qed
-qed (insert cl, auto)
+qed (use cl in \<open>auto simp: list_update_beyond\<close>)
 
 lemma finished_fin[simp]:
-"finished c \<Longrightarrow> noWhile c"
-by(induct c) auto
+  "finished c \<Longrightarrow> noWhile c"
+  by(induct c) auto
 
 lemma finishedL_noWhileL[simp]:
-"finishedL cl \<Longrightarrow> noWhileL cl"
-unfolding finishedL_def noWhileL_def by auto
+  "finishedL cl \<Longrightarrow> noWhileL cl"
+  unfolding finishedL_def noWhileL_def by auto
 
 locale PL =
   fixes
@@ -603,7 +603,7 @@ proof(cases "n < length cl")
     hence "c \<in> insert c' (set cl)" using set_update_subset_insert by fastforce
     thus "proper c" using assms by (cases "c = c'") auto
   qed (insert cl, auto)
-qed (insert cl, auto)
+qed (use cl in \<open>auto simp: list_update_beyond\<close>)
 
 lemma proper_induct[consumes 1, case_names Done Atm Seq While Ch Par ParT]:
 assumes *: "proper c"
