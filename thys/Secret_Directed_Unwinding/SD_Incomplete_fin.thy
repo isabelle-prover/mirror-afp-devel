@@ -2,8 +2,7 @@ section \<open>Secret Directed (Finatary) Unwinding Incompleteness example\<clos
 
 text \<open>Demonstrating a counterexample which is secure but fails in the finatary unwinding\<close>
 theory SD_Incomplete_fin
-  imports Main 
-  "SD_Unwinding_fin" 
+  imports SD_Unwinding_fin
 begin
 
 
