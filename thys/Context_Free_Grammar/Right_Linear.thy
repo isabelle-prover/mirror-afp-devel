@@ -551,8 +551,7 @@ qed
 
 lemma lang_rlin2_of_rlin:
   "A \<in> Nts (set ps) \<Longrightarrow> Lang (rlin2_of_rlin ps) A = lang ps A"
-by(simp add: rlin2_of_rlin_def lang_unit_elim finalize_nts lang_binarize lang_finalize)
-
+by (simp add: Lang_Unit_elim finalize_nts lang_binarize lang_finalize rlin2_of_rlin_def)
 
 subsection \<open>Properties of \<open>rlin2\<close> derivations\<close>
 

@@ -108,18 +108,18 @@ proof (induction ps rule: trancl_list.induct)
   qed
 qed
 
-definition Unit_prods_list :: "('n,'t) prods \<Rightarrow> ('n,'t) prods" where
-"Unit_prods_list ps = [(l,[Nt A]). (l,[Nt A]) \<leftarrow> ps]"
+definition unit_prods :: "('n,'t) prods \<Rightarrow> ('n,'t) prods" where
+"unit_prods ps = [(l,[Nt A]). (l,[Nt A]) \<leftarrow> ps]"
 
-definition Unit_rm_list :: "('n, 't) prods \<Rightarrow> ('n, 't) prods" where
-"Unit_rm_list ps = minus_list_set ps (Unit_prods_list ps)"
+definition unit_rm :: "('n, 't) prods \<Rightarrow> ('n, 't) prods" where
+"unit_rm ps = minus_list_set ps (unit_prods ps)"
 
-lemma set_Unit_prods_list: "set (Unit_prods_list ps) = Unit_prods (set ps)"
-unfolding Unit_prods_list_def Unit_prods_def
+lemma set_unit_prods: "set (unit_prods ps) = Unit_prods (set ps)"
+unfolding unit_prods_def Unit_prods_def
 by auto
 
-lemma set_Unit_rm_list: "set (Unit_rm_list ps) = Unit_rm (set ps)"
-unfolding Unit_rm_list_def Unit_rm_def set_minus_list_set set_Unit_prods_list ..
+lemma set_unit_rm: "set (unit_rm ps) = Unit_rm (set ps)"
+unfolding unit_rm_def Unit_rm_def set_minus_list_set set_unit_prods ..
 
 definition unit_pairs :: "('n,'t) prods \<Rightarrow> ('n \<times> 'n) list" where
 "unit_pairs ps = [(A,B). (A,[Nt B]) \<leftarrow> ps]"
@@ -139,8 +139,8 @@ apply(auto simp: Unit_prods_unit_pairs image_def Nts_Lhss_Rhs_Nts Lhss_def Rhs_N
  apply blast
 by force
 
-definition New_prods_list :: "('n, 't) prods \<Rightarrow> ('n, 't) prods" where
-"New_prods_list ps = [(A,r). (B,r) \<leftarrow> Unit_rm_list ps, (A,B) \<leftarrow> trancl_list(unit_pairs ps)]"
+definition new_prods :: "('n, 't) prods \<Rightarrow> ('n, 't) prods" where
+"new_prods ps = [(A,r). (B,r) \<leftarrow> unit_rm ps, (A,B') \<leftarrow> trancl_list(unit_pairs ps), B'=B]"
 
 lemma rtc_Unit_prods_if_tc_unit_pairs:
   "(A,B) \<in> set(trancl_list(unit_pairs ps)) \<Longrightarrow> (A,B) \<in> Unit_rtc (Unit_prods (set ps))"
@@ -196,6 +196,17 @@ by eval
 corollary Unit_elim_correct: "unit_elim_rel (set ps) (Unit_elim (set ps))"
   by (metis Unit_elim_def unit_elim_rel_def)
 
+definition unit_elim :: "('n, 't) prods \<Rightarrow> ('n, 't) prods" where
+"unit_elim ps = unit_rm ps @ new_prods ps"
+
+value "let ps = [(1::int, [Nt 1]), (2, []::(int,nat)syms)] in (unit_rm ps,new_prods ps)"
+
+lemma set_unit_elim: "set(unit_elim ps) = Unit_elim (set ps)"
+unfolding unit_elim_def Unit_elim_def Unit_rm_Un_New_prods_eq
+by(auto simp add: set_unit_rm new_prods_def)
+
+corollary unit_elim_correct: "unit_elim_rel (set ps) (set(unit_elim ps))"
+  by (metis set_unit_elim Unit_elim_correct)
 
 subsection \<open>Finiteness and Existence\<close>
 
@@ -438,10 +449,13 @@ next
   qed
 qed
 
-theorem unit_elim_rel_Lang_eq: "unit_elim_rel ps ps' \<Longrightarrow> Lang ps' S = Lang ps S"
+theorem unit_elim_rel_Lang_eq: "unit_elim_rel P P' \<Longrightarrow> Lang P' S = Lang P S"
   unfolding Lang_def using unit_elim_rel_r4 unit_elim_rel_r20 by blast
 
-corollary lang_unit_elim: "Lang (Unit_elim (set ps)) A = Lang (set ps) A"
+corollary Lang_Unit_elim: "Lang (Unit_elim (set ps)) A = lang ps A"
 by (rule unit_elim_rel_Lang_eq[OF Unit_elim_correct])
+
+corollary lang_unit_elim: "lang (unit_elim ps) A = lang ps A"
+by (metis set_unit_elim Lang_Unit_elim)
 
 end
