@@ -10,7 +10,6 @@ no_notation bot (\<open>\<bottom>\<close>)
 
 consts NN :: int
 consts SS :: int
-axiomatization where NN: "NN \<ge> 0" and SS: "SS\<ge>0"
 
 definition aa1 :: "avname" where "aa1 = ''a1''" 
 definition aa2 :: "avname" where "aa2 = ''a2''" 
@@ -96,9 +95,7 @@ using cases_8[of pc]
   by (auto simp: prog_def) 
 
 
-lemma [simp]:"\<not> is_getInput (prog ! 3)"
-  unfolding prog_def by simp
-lemma [simp]:"\<not> is_getInput (prog ! 3)"
+lemma not_isInput3[simp]:"\<not> is_getInput (prog ! 3)"
   unfolding prog_def by simp
 
 
@@ -157,7 +154,7 @@ lemma endPC[simp]: "endPC = 8"
 unfolding endPC_def unfolding prog_def by auto
 
 (* *)
-lemma [simp]:"prog ! Suc 0 = Input T ii"
+lemma isInput1[simp]:"prog ! Suc 0 = Input T ii"
   unfolding prog_def by simp
 
 lemma is_getTrustedInput_pcOf[simp]: "pcOf cfg < 8 \<Longrightarrow> is_getInput (prog!(pcOf cfg)) \<longleftrightarrow> pcOf cfg = 1"
@@ -218,9 +215,10 @@ lemma getObsO_pcOf[simp]:
   else \<bottom> 
  )"
 apply(subst getObsO_simps) 
-apply(cases cfgs, auto)
-unfolding prog_def apply auto
-using getObsV_simps is_Output_pcOf not_is_Output_getObsV prog_def by presburger 
+  apply(cases cfgs, auto)
+  subgoal unfolding prog_def by auto
+  subgoal unfolding prog_def by auto
+using getObsV_simps is_Output_pcOf not_is_Output_getObsV prog_def by presburger
 
 
 (* *)
@@ -459,8 +457,11 @@ lemma finalB_pc_iff':
 "pc < 8 \<Longrightarrow>
  finalB (Config pc s, ibT, ibUT) \<longleftrightarrow> 
  (pc = 1 \<and> ibT = [[]])"
-  using nextB_stepB_pc[of pc ibT s] apply (auto simp add: stepB_iff_nextB) 
-  unfolding finalB_iff by simp
+  apply safe
+  subgoal using nextB_stepB_pc[of pc] by (auto simp add: stepB_iff_nextB) 
+  subgoal using nextB_stepB_pc[of pc] by (auto simp add: stepB_iff_nextB) 
+  subgoal using finalB_iff by auto . 
+
 
 lemma finalB_pc_iff: 
 "pc \<le> 8 \<Longrightarrow>
@@ -607,15 +608,15 @@ lemma finalS_cond_spec:
           ibT, ibUT, ls \<union> readLocs (last cfgs))"])
           by(rule spec_normal, auto) .
 
-      subgoal by(rule notI, 
+      subgoal apply(rule notI, 
       erule allE[of _ "(update pstate (7 # map pcOf cfgs),Config 7 (State (Vstore vs) (Avstore as) (Heap h) p),
-                       [],ibT,ibUT,ls)"], 
-      erule notE, rule spec_resolve, auto) 
+                       [],ibT,ibUT,ls)"]) 
+      by(erule notE, rule spec_resolve, auto) 
 
-      subgoal by(rule notI, 
+      subgoal apply(rule notI, 
       erule allE[of _ "(update pstate (3 # map pcOf cfgs),Config 3 (State (Vstore vs) (Avstore as) (Heap h) p),
-                       [],ibT,ibUT,ls)"], 
-      erule notE, rule spec_resolve, auto)
+                       [],ibT,ibUT,ls)"])
+      by(erule notE, rule spec_resolve, auto)
       . . . . . . . 
 
 end
