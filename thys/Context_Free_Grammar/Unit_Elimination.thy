@@ -6,7 +6,7 @@ Based on HOL4 theories by Aditi Barthwal
 section \<open>Elimination of Unit Productions\<close>
 
 theory Unit_Elimination
-imports Context_Free_Grammar "HOL-Library.While_Combinator"
+imports Context_Free_Grammar (*"HOL-Library.While_Combinator"*)
 begin
 
 definition Unit_prods :: "('n,'t) Prods \<Rightarrow> ('n,'t) Prods" where
@@ -41,12 +41,72 @@ subsection \<open>Code on lists\<close>
 
 definition "trans_list_step ps = [(a,c). (a,b) \<leftarrow> ps, (b',c) \<leftarrow> ps, b=b']"
 
-definition trancl_list :: "('a * 'a)list \<Rightarrow> ('a * 'a)list" where
+lemma set_trans_list_step_subset_trancl: "set (trans_list_step ps) \<subseteq> (set ps)^+"
+unfolding trans_list_step_def by auto
+
+(* TODO mv *)
+lemma trancl_mono_subset: "A \<subseteq> B \<Longrightarrow> A^+ \<subseteq> B^+"
+by (meson subsetI trancl_mono)
+lemma trancl_incr: "r \<subseteq> r\<^sup>+"
+by auto
+
+lemma trancl_trancl_Un: "(A^+ \<union> B)^+ = (A \<union> B)^+"
+proof
+  show "(A\<^sup>+ \<union> B)\<^sup>+ \<subseteq> (A \<union> B)\<^sup>+"
+    using trancl_id trancl_incr trancl_mono_subset trans_trancl by (metis le_sup_iff)
+  show "(A \<union> B)\<^sup>+ \<subseteq> (A\<^sup>+ \<union> B)\<^sup>+"
+    using trancl_mono_subset trancl_incr by (metis subset_refl sup_mono)
+qed
+
+(* TODO mv *)
+lemma trancl_absorb_subset_trancl: "B \<subseteq> A^+ \<Longrightarrow> (A \<union> B)^+ = A^+"
+  by (metis trancl_incr trancl_trancl_Un sup_idem sup.order_iff)
+
+(* TODO mv *)
+function trancl_list :: "('a * 'a) list \<Rightarrow> ('a * 'a) list" where 
 "trancl_list ps =
-  the(while_option (\<lambda>ps. \<not> set(trans_list_step ps) \<subseteq> set ps) (List.union (trans_list_step ps)) ps)"
+  (let ps' = trans_list_step ps
+   in if set ps' \<subseteq>  set ps then ps else trancl_list (List.union ps' ps))"
+by pat_completeness auto
+
+termination
+proof
+  let ?r = "\<lambda>ps::('a * 'a) list. card ((set ps)^+ - set(ps))"
+
+  show "wf (measure ?r)" by blast
+
+  fix ps ps' :: "('a * 'a) list"
+  assume asms: "ps' = trans_list_step ps" "\<not> set ps' \<subseteq> set ps"
+  let ?P = "set ps" let ?P' = "set(trans_list_step ps)"
+  have "(?P' \<union> ?P)\<^sup>+ - (?P' \<union> ?P) = ?P\<^sup>+ - (?P' \<union> ?P)"
+    using trancl_absorb_subset_trancl[OF set_trans_list_step_subset_trancl] by (metis Un_commute)
+  also have "?P\<^sup>+ - (?P' \<union> ?P) < ?P\<^sup>+ - ?P"
+    using asms(1,2) set_trans_list_step_subset_trancl by fastforce
+  finally have "card((?P' \<union> ?P)\<^sup>+ - (?P' \<union> ?P)) < card (?P\<^sup>+ - ?P)"
+    by (meson List.finite_set finite_Diff finite_trancl psubset_card_mono)
+  with asms show "(List.union ps' ps, ps) \<in> measure ?r" by(simp)
+qed
+
+declare trancl_list.simps[code, simp del]
 
 lemma set_trancl_list: "set(trancl_list ps) = (set ps)^+"
-sorry
+proof (induction ps rule: trancl_list.induct)
+  case (1 ps)
+  let ?P = "set ps" let ?P' = "set(trans_list_step ps)"
+  show ?case
+  proof (cases "?P' \<subseteq> ?P")
+    case True
+    then have "(a,b) \<in> set ps \<Longrightarrow> (b,c) \<in> set ps \<Longrightarrow> (a,c) \<in> set ps" for a b c
+      unfolding trans_list_step_def by fastforce
+    then show ?thesis using True trancl_id[OF transI, of ?P]
+      using [[simp_depth_limit=3]] by(simp add: Let_def trancl_list.simps[of ps])
+  next
+    case False
+    from 1[OF refl False] False
+     show ?thesis using trancl_absorb_subset_trancl[OF set_trans_list_step_subset_trancl]
+       by(auto simp add: Un_commute Let_def trancl_list.simps[of ps])
+  qed
+qed
 
 definition Unit_prods_list :: "('n,'t) prods \<Rightarrow> ('n,'t) prods" where
 "Unit_prods_list ps = [(l,[Nt A]). (l,[Nt A]) \<leftarrow> ps]"
@@ -61,13 +121,6 @@ by auto
 lemma set_Unit_rm_list: "set (Unit_rm_list ps) = Unit_rm (set ps)"
 unfolding Unit_rm_list_def Unit_rm_def set_minus_list_set set_Unit_prods_list ..
 
-(*
-definition unit_pairs :: "('n,'t) Prods \<Rightarrow> ('n \<times> 'n) set" where
-"unit_pairs P = {(A,B). (A,[Nt B]) \<in> P}"
-
-lemma unit_pairs_code[code]: "unit_pairs P = (\<Union>(A,w) \<in> P. case w of [Nt B] \<Rightarrow> {(A,B)} | _ \<Rightarrow> {})"
-unfolding unit_pairs_def by (auto split: list.splits sym.splits)
-*)
 definition unit_pairs :: "('n,'t) prods \<Rightarrow> ('n \<times> 'n) list" where
 "unit_pairs ps = [(A,B). (A,[Nt B]) \<leftarrow> ps]"
 
@@ -137,7 +190,6 @@ lemma Unit_elim_code[code]: "Unit_elim (set ps) = Unit_rm (set ps) \<union>
 unfolding Unit_elim_def Unit_rm_Un_New_prods_eq by auto
 
 (* Test for executability only *)
-value "Unit_elim {(0::int, [Nt 1]), (1, [Tm(2::int)])}"
 lemma "Unit_elim {(0::int, [Nt 1]), (1, [Tm(2::int)])} = {(0, [Tm 2]), (1, [Tm 2])}"
 by eval
 
