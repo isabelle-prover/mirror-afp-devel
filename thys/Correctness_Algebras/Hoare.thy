@@ -27,7 +27,7 @@ lemma ite_pre_then:
   "-p*(x\<lhd>-p\<rhd>y\<guillemotleft>-q) = -p*(x\<guillemotleft>-q)"
 proof -
   have "-p*(x\<lhd>-p\<rhd>y\<guillemotleft>-q) = -p*(x\<guillemotleft>-q) \<squnion> bot*(y\<guillemotleft>-q)"
-    by (smt (z3) ite_pre pre_closed tests_dual.sba_dual.sup_right_unit tests_dual.sub_commutative tests_dual.sup_left_zero tests_dual.sup_right_dist_inf tests_dual.top_double_complement tests_dual.wnf_lemma_1)
+    by (smt (verit) ite_pre pre_closed tests_dual.sba_dual.sup_right_unit tests_dual.sub_commutative tests_dual.sup_left_zero tests_dual.sup_right_dist_inf tests_dual.top_double_complement tests_dual.wnf_lemma_1)
   thus ?thesis
     by (metis pre_closed tests_dual.sba_dual.sup_right_unit tests_dual.sub_sup_closed tests_dual.sup_left_zero)
 qed
@@ -38,18 +38,18 @@ lemma ite_pre_else:
   "--p*(x\<lhd>-p\<rhd>y\<guillemotleft>-q) = --p*(y\<guillemotleft>-q)"
 proof -
   have "--p*(x\<lhd>-p\<rhd>y\<guillemotleft>-q) = bot*(x\<guillemotleft>-q) \<squnion> --p*(y\<guillemotleft>-q)"
-    by (smt (z3) ite_pre pre_closed tests_dual.sub_commutative tests_dual.sub_inf_left_zero tests_dual.sup_left_zero tests_dual.sup_right_dist_inf tests_dual.top_double_complement tests_dual.wnf_lemma_3)
+    by (smt (verit) ite_pre pre_closed tests_dual.sub_commutative tests_dual.sub_inf_left_zero tests_dual.sup_left_zero tests_dual.sup_right_dist_inf tests_dual.top_double_complement tests_dual.wnf_lemma_3)
   thus ?thesis
     by (metis pre_closed tests_dual.sba_dual.sub_sup_demorgan tests_dual.sub_inf_left_zero tests_dual.sup_left_zero)
 qed
 
 lemma ite_import_mult_then:
   "-p*-q \<le> x\<guillemotleft>-r \<Longrightarrow> -p*-q \<le> x\<lhd>-p\<rhd>y\<guillemotleft>-r"
-  by (smt ite_pre_then leq_def pre_closed sub_assoc sub_comm sub_mult_closed)
+  by (smt (verit) ite_pre_then leq_def pre_closed sub_assoc sub_comm sub_mult_closed)
 
 lemma ite_import_mult_else:
   "--p*-q \<le> y\<guillemotleft>-r \<Longrightarrow> --p*-q \<le> x\<lhd>-p\<rhd>y\<guillemotleft>-r"
-  by (smt ite_pre_else leq_def pre_closed sub_assoc sub_comm sub_mult_closed)
+  by (smt (verit) ite_pre_else leq_def pre_closed sub_assoc sub_comm sub_mult_closed)
 
 text \<open>Theorem 40.1\<close>
 
@@ -68,25 +68,25 @@ text \<open>Theorem 40.4\<close>
 
 lemma while_pre_then:
   "-p*(-p\<star>x\<guillemotleft>-q) = -p*(x\<guillemotleft>-p\<star>x\<guillemotleft>-q)"
-  by (smt pre_closed tests_dual.sub_commutative while_pre tests_dual.wnf_lemma_1)
+  by (smt (verit) pre_closed tests_dual.sub_commutative while_pre tests_dual.wnf_lemma_1)
 
 text \<open>Theorem 40.5\<close>
 
 lemma while_pre_else:
   "--p*(-p\<star>x\<guillemotleft>-q) = --p*-q"
-  by (smt pre_closed tests_dual.sub_commutative while_pre tests_dual.wnf_lemma_3)
+  by (smt (verit) pre_closed tests_dual.sub_commutative while_pre tests_dual.wnf_lemma_3)
 
 text \<open>Theorem 40.6\<close>
 
 lemma while_pre_sub_1:
   "-p\<star>x\<guillemotleft>-q \<le> x*(-p\<star>x)\<lhd>-p\<rhd>1\<guillemotleft>-q"
-  by (smt (z3) ite_import_mult pre_closed pre_one_increasing pre_seq tests_dual.sba_dual.transitive tests_dual.sub_sup_closed tests_dual.upper_bound_right while_pre_else while_pre_then)
+  by (smt (verit) ite_import_mult pre_closed pre_one_increasing pre_seq tests_dual.sba_dual.transitive tests_dual.sub_sup_closed tests_dual.upper_bound_right while_pre_else while_pre_then)
 
 text \<open>Theorem 40.7\<close>
 
 lemma while_pre_sub_2:
   "-p\<star>x\<guillemotleft>-q \<le> x\<lhd>-p\<rhd>1\<guillemotleft>-p\<star>x\<guillemotleft>-q"
-  by (smt (z3) ite_import_mult pre_closed pre_one_increasing tests_dual.sba_dual.transitive tests_dual.sub_sup_closed tests_dual.upper_bound_right while_pre_then)
+  by (smt (verit,del_insts) ite_import_mult pre_closed pre_one_increasing tests_dual.sba_dual.transitive tests_dual.sub_sup_closed tests_dual.upper_bound_right while_pre_then)
 
 text \<open>Theorem 40.8\<close>
 
@@ -102,7 +102,7 @@ text \<open>Theorem 40.10\<close>
 
 lemma while_export_equiv:
   "-q \<le> -p\<star>x\<guillemotleft>1 \<longleftrightarrow> -p*-q \<le> -p\<star>x\<guillemotleft>1"
-  by (smt pre_closed tests_dual.sba_dual.shunting tests_dual.sba_dual.sub_less_eq_def tests_dual.sba_dual.top_double_complement while_pre_compl_one)
+  by (smt (verit) pre_closed tests_dual.sba_dual.shunting tests_dual.sba_dual.sub_less_eq_def tests_dual.sba_dual.top_double_complement while_pre_compl_one)
 
 lemma nat_test_pre:
   assumes "nat_test t s"
@@ -126,17 +126,17 @@ proof -
       hence "\<forall>m<n . t m*-q \<le> -p\<star>x\<guillemotleft>--p*-q"
         by (smt (verit, del_insts) assms(1) tests_dual.sup_right_unit tests_dual.sup_left_dist_inf tests_dual.sup_right_dist_inf nat_test_def tests_dual.inf_complement sub_mult_closed)
       hence "pSum t n*-q \<le> -p\<star>x\<guillemotleft>--p*-q"
-        by (smt assms(1) pSum_below_nat pre_closed sub_mult_closed)
+        by (smt (z3) assms(1) pSum_below_nat pre_closed sub_mult_closed)
       hence "t n*-p*-q*(-p\<star>x\<guillemotleft>--p*-q) = t n*-p*-q"
-        using 2 by (smt assms(1,3) leq_def pSum_test_nat pre_closed pre_sub_distr sub_assoc sub_comm sub_mult_closed transitive while_pre_then)
+        using 2 by (smt (z3) assms(1,3) leq_def pSum_test_nat pre_closed pre_sub_distr sub_assoc sub_comm sub_mult_closed transitive while_pre_then)
       thus "t n*-p*-q \<le> -p\<star>x\<guillemotleft>--p*-q"
-        using 2 by (smt (z3) pre_closed tests_dual.sub_sup_closed tests_dual.upper_bound_right)
+        using 2 by (smt (verit) pre_closed tests_dual.sub_sup_closed tests_dual.upper_bound_right)
     qed
   qed
   hence "-q*-p \<le> -p\<star>x\<guillemotleft>--p*-q"
     by (smt (verit, del_insts) assms(1,2) leq_def nat_test_def pre_closed tests_dual.sub_associative tests_dual.sub_commutative sub_mult_closed)
   thus ?thesis
-    using 1 by (smt (z3) pre_closed tests_dual.sba_dual.inf_less_eq_cases tests_dual.sub_commutative tests_dual.sub_sup_closed)
+    using 1 by (smt (verit) pre_closed tests_dual.sba_dual.inf_less_eq_cases tests_dual.sub_commutative tests_dual.sub_sup_closed)
 qed
 
 lemma nat_test_pre_1:
@@ -232,7 +232,7 @@ lemma test_expression_test:
 
 lemma disj_test:
   "p \<in> Test_expression \<Longrightarrow> q \<in> Test_expression \<Longrightarrow> p\<squnion>q \<in> Test_expression"
-  by (smt conj_test neg_test tests_dual.sub_inf_def test_expression_test)
+  by (smt (z3) conj_test neg_test tests_dual.sub_inf_def test_expression_test)
 
 lemma zero_test_expression:
   "bot \<in> Test_expression"
@@ -280,7 +280,7 @@ lemma pre_expression_test:
 
 lemma disj_pre:
   "p \<in> Pre_expression \<Longrightarrow> q \<in> Pre_expression \<Longrightarrow> p\<squnion>q \<in> Pre_expression"
-  by (smt conj_pre neg_pre tests_dual.sub_inf_def pre_expression_test)
+  by (smt (z3) conj_pre neg_pre tests_dual.sub_inf_def pre_expression_test)
 
 lemma zero_pre_expression:
   "bot \<in> Pre_expression"
@@ -310,7 +310,7 @@ definition tfun :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a \<Righ
 
 lemma tfun_test:
   "p = --p \<Longrightarrow> q = --q \<Longrightarrow> r = --r \<Longrightarrow> tfun p x q r = --tfun p x q r"
-  by (smt tfun_def sub_mult_closed pre_closed tests_dual.inf_closed)
+  by (smt (z3) tfun_def sub_mult_closed pre_closed tests_dual.inf_closed)
 
 lemma tfun_pre_expression:
   "x \<in> While_program \<Longrightarrow> p \<in> Pre_expression \<Longrightarrow> q \<in> Pre_expression \<Longrightarrow> r \<in> Pre_expression \<Longrightarrow> tfun p x q r \<in> Pre_expression"
@@ -318,7 +318,7 @@ lemma tfun_pre_expression:
 
 lemma tfun_iso:
   "p = --p \<Longrightarrow> q = --q \<Longrightarrow> r = --r \<Longrightarrow> s = --s \<Longrightarrow> r \<le> s \<Longrightarrow> tfun p x q r \<le> tfun p x q s"
-  by (smt tfun_def tests_dual.sub_sup_right_isotone pre_iso sub_mult_closed tests_dual.sub_inf_right_isotone pre_closed)
+  by (smt (z3) tfun_def tests_dual.sub_sup_right_isotone pre_iso sub_mult_closed tests_dual.sub_inf_right_isotone pre_closed)
 
 definition tseq :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> nat \<Rightarrow> 'a"
   where "tseq p x q r m \<equiv> (tfun p x q ^ m) r"
@@ -326,7 +326,7 @@ definition tseq :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a \<Righ
 lemma tseq_test:
   "p = --p \<Longrightarrow> q = --q \<Longrightarrow> r = --r \<Longrightarrow> tseq p x q r m = --tseq p x q r m"
   apply (induct m)
-  apply (smt tseq_def tfun_test power_zero_id id_def)
+  apply (smt (z3) tseq_def tfun_test power_zero_id id_def)
   by (metis tseq_def tfun_test power_succ_unfold_ext)
 
 lemma tseq_test_seq:
@@ -336,8 +336,8 @@ lemma tseq_test_seq:
 lemma tseq_pre_expression:
   "x \<in> While_program \<Longrightarrow> p \<in> Pre_expression \<Longrightarrow> q \<in> Pre_expression \<Longrightarrow> r \<in> Pre_expression \<Longrightarrow> tseq p x q r m \<in> Pre_expression"
   apply (induct m)
-  apply (smt tseq_def id_def power_zero_id)
-  by (smt tseq_def power_succ_unfold_ext tfun_pre_expression)
+  apply (smt (z3) tseq_def id_def power_zero_id)
+  by (smt (z3) tseq_def power_succ_unfold_ext tfun_pre_expression)
 
 definition tsum :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a"
   where "tsum p x q r \<equiv> Sum (tseq p x q r)"
@@ -375,7 +375,7 @@ definition tfun2 :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rig
 
 lemma tfun2_test:
   "p = --p \<Longrightarrow> q = --q \<Longrightarrow> r = --r \<Longrightarrow> s = --s \<Longrightarrow> tfun2 p q x r s = --tfun2 p q x r s"
-  by (smt tfun2_def sub_mult_closed pre_closed tests_dual.inf_closed)
+  by (smt (z3) tfun2_def sub_mult_closed pre_closed tests_dual.inf_closed)
 
 lemma tfun2_pre_expression:
   "x \<in> While_program \<Longrightarrow> p \<in> Pre_expression \<Longrightarrow> q \<in> Pre_expression \<Longrightarrow> r \<in> Pre_expression \<Longrightarrow> s \<in> Pre_expression \<Longrightarrow> tfun2 p q x r s \<in> Pre_expression"
@@ -383,7 +383,7 @@ lemma tfun2_pre_expression:
 
 lemma tfun2_iso:
   "p = --p \<Longrightarrow> q = --q \<Longrightarrow> r = --r \<Longrightarrow> s1 = --s1 \<Longrightarrow> s2 = --s2 \<Longrightarrow> s1 \<le> s2 \<Longrightarrow> tfun2 p q x r s1 \<le> tfun2 p q x r s2"
-  by (smt tfun2_def tests_dual.sub_inf_right_isotone pre_iso sub_mult_closed tests_dual.sub_sup_right_isotone pre_closed)
+  by (smt (z3) tfun2_def tests_dual.sub_inf_right_isotone pre_iso sub_mult_closed tests_dual.sub_sup_right_isotone pre_closed)
 
 definition tseq2 :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> nat \<Rightarrow> 'a"
   where "tseq2 p q x r s m \<equiv> (tfun2 p q x r ^ m) s"
@@ -391,8 +391,8 @@ definition tseq2 :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rig
 lemma tseq2_test:
   "p = --p \<Longrightarrow> q = --q \<Longrightarrow> r = --r \<Longrightarrow> s = --s \<Longrightarrow> tseq2 p q x r s m = --tseq2 p q x r s m"
   apply (induct m)
-  apply (smt tseq2_def power_zero_id id_def)
-  by (smt tseq2_def tfun2_test power_succ_unfold_ext)
+  apply (smt (z3) tseq2_def power_zero_id id_def)
+  by (smt (z3) tseq2_def tfun2_test power_succ_unfold_ext)
 
 lemma tseq2_test_seq:
   "p = --p \<Longrightarrow> q = --q \<Longrightarrow> r = --r \<Longrightarrow> s = --s \<Longrightarrow> test_seq (tseq2 p q x r s)"
@@ -401,8 +401,8 @@ lemma tseq2_test_seq:
 lemma tseq2_pre_expression:
   "x \<in> While_program \<Longrightarrow> p \<in> Pre_expression \<Longrightarrow> q \<in> Pre_expression \<Longrightarrow> r \<in> Pre_expression \<Longrightarrow> s \<in> Pre_expression \<Longrightarrow> tseq2 p q x r s m \<in> Pre_expression"
   apply (induct m)
-  apply (smt tseq2_def id_def power_zero_id)
-  by (smt tseq2_def power_succ_unfold_ext tfun2_pre_expression)
+  apply (smt (z3) tseq2_def id_def power_zero_id)
+  by (smt (z3) tseq2_def power_succ_unfold_ext tfun2_pre_expression)
 
 definition tsum2 :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a"
   where "tsum2 p q x r s \<equiv> Sum (tseq2 p q x r s)"
@@ -413,7 +413,7 @@ lemma tsum2_test:
 
 lemma t_fun2_test:
   "p = --p \<Longrightarrow> q = --q \<Longrightarrow> tfun2 (-p*q) p x (p\<star>x\<guillemotleft>q) (-p*q\<squnion>p*(x\<guillemotleft>(p\<star>x\<guillemotleft>q)*aL)) = --tfun2 (-p*q) p x (p\<star>x\<guillemotleft>q) (-p*q\<squnion>p*(x\<guillemotleft>(p\<star>x\<guillemotleft>q)*aL))"
-  by (smt (z3) aL_test pre_closed tests_dual.sub_sup_closed tfun2_def tfun2_test)
+  by (smt (verit,del_insts) aL_test pre_closed tests_dual.sub_sup_closed tfun2_def tfun2_test)
 
 lemma t_fun2_pre_expression:
   "x \<in> While_program \<Longrightarrow> p \<in> Test_expression \<Longrightarrow> q \<in> Pre_expression \<Longrightarrow> tfun2 (-p*q) p x (p\<star>x\<guillemotleft>q) (-p*q\<squnion>p*(x\<guillemotleft>(p\<star>x\<guillemotleft>q)*aL)) \<in> Pre_expression"
@@ -421,7 +421,7 @@ lemma t_fun2_pre_expression:
 
 lemma t_seq2_test:
   "p = --p \<Longrightarrow> q = --q \<Longrightarrow> tseq2 (-p*q) p x (p\<star>x\<guillemotleft>q) (-p*q\<squnion>p*(x\<guillemotleft>(p\<star>x\<guillemotleft>q)*aL)) m = --tseq2 (-p*q) p x (p\<star>x\<guillemotleft>q) (-p*q\<squnion>p*(x\<guillemotleft>(p\<star>x\<guillemotleft>q)*aL)) m"
-  by (smt (z3) aL_test pre_closed tests_dual.sub_sup_closed tfun2_def tfun2_test tseq2_test)
+  by (smt (verit,del_insts) aL_test pre_closed tests_dual.sub_sup_closed tfun2_def tfun2_test tseq2_test)
 
 lemma t_seq2_test_seq:
   "p = --p \<Longrightarrow> q = --q \<Longrightarrow> test_seq (tseq2 (-p*q) p x (p\<star>x\<guillemotleft>q) (-p*q\<squnion>p*(x\<guillemotleft>(p\<star>x\<guillemotleft>q)*aL)))"
@@ -446,14 +446,14 @@ proof -
   proof (induct m)
     case 0
     show "?t2 0 \<le> ?t 0"
-      by (smt assms aL_test id_def tests_dual.upper_bound_left tests_dual.upper_bound_right tests_dual.inf_isotone power_zero_id pre_closed pre_expression_test sub_mult_closed test_pre tseq2_def tseq_def)
+      by (smt (z3) assms aL_test id_def tests_dual.upper_bound_left tests_dual.upper_bound_right tests_dual.inf_isotone power_zero_id pre_closed pre_expression_test sub_mult_closed test_pre tseq2_def tseq_def)
   next
     fix m
     assume "?t2 m \<le> ?t m"
     hence 1: "?t2 (Suc m) \<le> tfun2 (- p * q) p x (p \<star> x \<guillemotleft> q) (?t m)"
-      by (smt assms power_succ_unfold_ext pre_closed pre_expression_test sub_mult_closed t_seq2_test t_seq_test test_pre tfun2_iso tseq2_def)
+      by (smt (z3) assms power_succ_unfold_ext pre_closed pre_expression_test sub_mult_closed t_seq2_test t_seq_test test_pre tfun2_iso tseq2_def)
     have "... \<le> ?t (Suc m)"
-      by (smt assms tests_dual.upper_bound_left tests_dual.upper_bound_right tests_dual.inf_isotone power_succ_unfold_ext pre_closed pre_expression_test sub_mult_closed t_seq_test test_pre tfun2_def tfun_def tseq_def)
+      by (smt (z3) assms tests_dual.upper_bound_left tests_dual.upper_bound_right tests_dual.inf_isotone power_succ_unfold_ext pre_closed pre_expression_test sub_mult_closed t_seq_test test_pre tfun2_def tfun_def tseq_def)
     thus "?t2 (Suc m) \<le> ?t (Suc m)"
       using 1 by (smt (verit, del_insts) assms pre_closed pre_expression_test test_expression_test tests_dual.sba_dual.transitive tests_dual.sub_sup_closed t_seq2_test t_seq_test tfun2_test)
   qed
@@ -465,17 +465,17 @@ lemma t_seq2_below_t_sum:
 
 lemma t_sum2_below_t_sum:
   "p \<in> Test_expression \<Longrightarrow> q \<in> Pre_expression \<Longrightarrow> x \<in> While_program \<Longrightarrow> tsum2 (-p*q) p x (p\<star>x\<guillemotleft>q) (-p*q\<squnion>p*(x\<guillemotleft>(p\<star>x\<guillemotleft>q)*aL)) \<le> tsum (-p) x (p\<star>x\<guillemotleft>q) (-p\<squnion>(x\<guillemotleft>(p\<star>x\<guillemotleft>q)*aL))"
-  by (smt Sum_least pre_expression_test t_seq2_below_t_sum t_seq2_test t_sum_test test_pre test_seq_def tsum2_def)
+  by (smt (z3) Sum_least pre_expression_test t_seq2_below_t_sum t_seq2_test t_sum_test test_pre test_seq_def tsum2_def)
 
 lemma t_seq2_below_w:
   "p \<in> Test_expression \<Longrightarrow> q \<in> Pre_expression \<Longrightarrow> x \<in> While_program \<Longrightarrow> tseq2 (-p*q) p x (p\<star>x\<guillemotleft>q) (-p*q\<squnion>p*(x\<guillemotleft>(p\<star>x\<guillemotleft>q)*aL)) m \<le> p\<star>x\<guillemotleft>q"
   apply (cases m)
-  apply (smt aL_test id_def tests_dual.upper_bound_left tests_dual.sub_sup_right_isotone tests_dual.inf_commutative tests_dual.sub_inf_right_isotone power_zero_id pre_closed pre_expression_test pre_iso sub_mult_closed test_pre tseq2_def while_pre)
-  by (smt tseq2_def power_succ_unfold_ext tests_dual.upper_bound_left tests_dual.sub_sup_right_isotone tests_dual.inf_commutative tests_dual.sub_inf_right_isotone pre_closed pre_expression_test pre_iso sub_mult_closed t_seq2_test test_pre tseq2_def while_pre tfun2_def)
+  apply (smt (z3) aL_test id_def tests_dual.upper_bound_left tests_dual.sub_sup_right_isotone tests_dual.inf_commutative tests_dual.sub_inf_right_isotone power_zero_id pre_closed pre_expression_test pre_iso sub_mult_closed test_pre tseq2_def while_pre)
+  by (smt (z3) tseq2_def power_succ_unfold_ext tests_dual.upper_bound_left tests_dual.sub_sup_right_isotone tests_dual.inf_commutative tests_dual.sub_inf_right_isotone pre_closed pre_expression_test pre_iso sub_mult_closed t_seq2_test test_pre tseq2_def while_pre tfun2_def)
 
 lemma t_sum2_below_w:
   "p \<in> Test_expression \<Longrightarrow> q \<in> Pre_expression \<Longrightarrow> x \<in> While_program \<Longrightarrow> tsum2 (-p*q) p x (p\<star>x\<guillemotleft>q) (-p*q\<squnion>p*(x\<guillemotleft>(p\<star>x\<guillemotleft>q)*aL)) \<le> p\<star>x\<guillemotleft>q"
-  by (smt Sum_least pre_closed pre_expression_test t_seq2_below_w t_seq2_test_seq test_pre tsum2_def)
+  by (smt (z3) Sum_least pre_closed pre_expression_test t_seq2_below_w t_seq2_test_seq test_pre tsum2_def)
 
 lemma t_sum2_w:
   assumes "aL = 1"
@@ -487,11 +487,11 @@ proof -
   let ?w = "p\<star>x\<guillemotleft>q"
   let ?s = "-p*q\<squnion>p*(x\<guillemotleft>?w*aL)"
   have "?w = tseq2 (-p*q) p x ?w ?s 0"
-    by (smt assms(1-3) tests_dual.sup_right_unit id_def tests_dual.inf_commutative power_zero_id pre_closed pre_expression_test sub_mult_closed test_expression_test tseq2_def while_pre)
+    by (smt (z3) assms(1-3) tests_dual.sup_right_unit id_def tests_dual.inf_commutative power_zero_id pre_closed pre_expression_test sub_mult_closed test_expression_test tseq2_def while_pre)
   hence "?w \<le> tsum2 (-p*q) p x ?w ?s"
-    by (smt assms(2,3) Sum_upper pre_expression_test t_seq2_test_seq test_pre tsum2_def)
+    by (smt (z3) assms(2,3) Sum_upper pre_expression_test t_seq2_test_seq test_pre tsum2_def)
   thus ?thesis
-    by (smt assms(2-4) tests_dual.antisymmetric pre_closed pre_expression_test t_sum2_test t_sum2_below_w test_pre)
+    by (smt (z3) assms(2-4) tests_dual.antisymmetric pre_closed pre_expression_test t_sum2_test t_sum2_below_w test_pre)
 qed
 
 inductive derived_hoare_triple :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" (\<open>_ \<lparr> _ \<rparr> _\<close> [54,54,54] 53)
@@ -529,7 +529,7 @@ begin
 
 lemma while_soundness_0:
   "-p*-q \<le> x\<guillemotleft>-q \<Longrightarrow> -q*aL \<le> -p\<star>x\<guillemotleft>--p*-q"
-  by (smt while_soundness aL_test sub_comm while_post)
+  by (smt (z3) while_soundness aL_test sub_comm while_post)
 
 lemma while_soundness_1:
   assumes "test_seq t"
@@ -545,7 +545,7 @@ proof -
     proof (cases n)
       case 0
       thus ?thesis
-        by (smt (z3) assms(1) assms(3) aL_test leq_def pre_closed pre_lower_bound_right test_seq_def tests_dual.sub_associative tests_dual.sub_sup_closed)
+        by (smt (verit,del_insts) assms(1) assms(3) aL_test leq_def pre_closed pre_lower_bound_right test_seq_def tests_dual.sub_associative tests_dual.sub_sup_closed)
     next
       case (Suc m)
       hence 1: "t n*-p*-q \<le> x\<guillemotleft>pSum t n*-q"
@@ -557,7 +557,7 @@ proof -
     qed
   qed
   hence 2: "-p*-q \<le> x\<guillemotleft>-q"
-    by (smt assms(1,2) Sum_test leq_def mult_right_dist_Sum pre_closed sub_assoc sub_comm sub_mult_closed test_seq_def)
+    by (smt (z3) assms(1,2) Sum_test leq_def mult_right_dist_Sum pre_closed sub_assoc sub_comm sub_mult_closed test_seq_def)
   have "\<forall>n . t n*-q \<le> -p\<star>x\<guillemotleft>--p*-q \<and> pSum t n*-q \<le> -p\<star>x\<guillemotleft>--p*-q"
   proof
     fix n
@@ -584,37 +584,37 @@ proof -
             apply (metis assms(1) test_seq_def tests_dual.sub_sup_closed)
             by (metis pre_closed tests_dual.sub_sup_closed)
           thus ?thesis
-            using 3 by (smt (z3) lessI Suc tests_dual.greatest_lower_bound sub_mult_closed)
+            using 3 by (smt (verit) lessI Suc tests_dual.greatest_lower_bound sub_mult_closed)
         qed
         finally show ?thesis
           .
       qed
       hence 5: "x\<guillemotleft>pSum t n*-q \<le> x\<guillemotleft>-p\<star>x\<guillemotleft>--p*-q"
-        by (smt assms pSum_test pre_closed pre_iso sub_mult_closed)
+        by (smt (z3) assms pSum_test pre_closed pre_iso sub_mult_closed)
       have 6: "-p*(t n*-q) \<le> -p*(-p\<star>x\<guillemotleft>--p*-q)"
       proof (cases n)
         case 0
         thus ?thesis
-          using 2 by (smt assms(1,3) aL_test leq_def tests_dual.sup_idempotent tests_dual.sub_sup_right_isotone pre_closed pre_lower_bound_left sub_assoc sub_comm sub_mult_closed test_seq_def transitive while_pre_then while_soundness_0)
+          using 2 by (smt (z3) assms(1,3) aL_test leq_def tests_dual.sup_idempotent tests_dual.sub_sup_right_isotone pre_closed pre_lower_bound_left sub_assoc sub_comm sub_mult_closed test_seq_def transitive while_pre_then while_soundness_0)
       next
         case (Suc m)
         hence "-p*(t n*-q) \<le> x\<guillemotleft>pSum t n*-q"
-          by (smt assms(1,4) test_seq_def tests_dual.sub_associative tests_dual.sub_commutative zero_less_Suc)
+          by (smt (z3) assms(1,4) test_seq_def tests_dual.sub_associative tests_dual.sub_commutative zero_less_Suc)
         hence "-p*(t n*-q) \<le> x\<guillemotleft>-p\<star>x\<guillemotleft>--p*-q"
-          using 5 by (smt assms(1) tests_dual.least_upper_bound pSum_test pre_closed sub_mult_closed test_seq_def leq_def)
+          using 5 by (smt (z3) assms(1) tests_dual.least_upper_bound pSum_test pre_closed sub_mult_closed test_seq_def leq_def)
         hence "-p*(t n*-q) \<le> -p*(x\<guillemotleft>-p\<star>x\<guillemotleft>--p*-q)"
-          by (smt assms(1) tests_dual.upper_bound_left pre_closed sub_mult_closed test_seq_def leq_def tests_dual.sub_associative)
+          by (smt (z3) assms(1) tests_dual.upper_bound_left pre_closed sub_mult_closed test_seq_def leq_def tests_dual.sub_associative)
         thus ?thesis
           using while_post while_pre_then by auto
       qed
       have "--p*(t n*-q) \<le> --p*(-p\<star>x\<guillemotleft>--p*-q)"
-        by (smt assms(1) leq_def tests_dual.upper_bound_right sub_assoc sub_comm sub_mult_closed test_seq_def while_pre_else)
+        by (smt (z3) assms(1) leq_def tests_dual.upper_bound_right sub_assoc sub_comm sub_mult_closed test_seq_def while_pre_else)
       thus "t n*-q \<le> -p\<star>x\<guillemotleft>--p*-q \<and> pSum t n*-q \<le> -p\<star>x\<guillemotleft>--p*-q"
-        using 4 6 by (smt assms(1) tests_dual.sup_less_eq_cases_2 pre_closed sub_mult_closed test_seq_def)
+        using 4 6 by (smt (z3) assms(1) tests_dual.sup_less_eq_cases_2 pre_closed sub_mult_closed test_seq_def)
     qed
   qed
   thus ?thesis
-    by (smt assms(1,2) Sum_test leq_def mult_right_dist_Sum pre_closed sub_comm sub_mult_closed)
+    by (smt (z3) assms(1,2) Sum_test leq_def mult_right_dist_Sum pre_closed sub_comm sub_mult_closed)
 qed
 
 lemma while_soundness_2:
@@ -624,21 +624,23 @@ lemma while_soundness_2:
     shows "-r \<le> -p\<star>x\<guillemotleft>1"
 proof -
   have 1: "\<forall>n>0 . t n*-p*Sum t \<le> x\<guillemotleft>pSum t n*Sum t"
-    by (smt (z3) assms(1,3) Sum_test Sum_upper leq_def pSum_below_Sum pSum_test test_seq_def tests_dual.sub_associative tests_dual.sub_commutative)
+    by (smt (verit) assms(1,3) Sum_test Sum_upper leq_def pSum_below_Sum pSum_test test_seq_def tests_dual.sub_associative tests_dual.sub_commutative)
   have 2: "t 0*-p*Sum t \<le> x\<guillemotleft>bot"
-    by (smt assms(1,3) Sum_test Sum_upper leq_def sub_assoc sub_comm test_seq_def pSum.simps(1))
+    by (smt (z3) assms(1,3) Sum_test Sum_upper leq_def sub_assoc sub_comm test_seq_def pSum.simps(1))
   have "x\<guillemotleft>bot \<le> x\<guillemotleft>aL*Sum t"
-    by (smt assms(1) Sum_test aL_test pre_iso sub_mult_closed tests_dual.top_double_complement tests_dual.top_greatest)
+    by (smt (z3) assms(1) Sum_test aL_test pre_iso sub_mult_closed tests_dual.top_double_complement tests_dual.top_greatest)
   hence "t 0*-p*Sum t \<le> x\<guillemotleft>aL*Sum t"
-    using 2 by (smt (z3) assms(1) Sum_test aL_test leq_def pSum.simps(1) pSum_test pre_closed test_seq_def tests_dual.sub_associative tests_dual.sub_sup_closed)
+    using 2 assms(1) Sum_test aL_test pSum.simps(1) pSum_test
+    by (smt (verit, del_insts) local.pre_closed local.sub_comm local.sub_mult_closed local.test_seq_def
+        local.tests_dual.sba_dual.transitive)    
   hence 3: "Sum t \<le> -p\<star>x\<guillemotleft>--p*Sum t"
     using 1 by (smt (verit, del_insts) assms(1) Sum_test tests_dual.sba_dual.one_def tests_dual.sup_right_unit tests_dual.upper_bound_left while_soundness_1)
   have "-p\<star>x\<guillemotleft>--p*Sum t \<le> -p\<star>x\<guillemotleft>1"
     by (metis assms(1) Sum_test pre_below_pre_one tests_dual.sub_sup_closed)
   hence "Sum t \<le> -p\<star>x\<guillemotleft>1"
-    using 3 by (smt (z3) assms(1) Sum_test pre_closed tests_dual.sba_dual.one_def while_post tests_dual.transitive)
+    using 3 by (smt (verit) assms(1) Sum_test pre_closed tests_dual.sba_dual.one_def while_post tests_dual.transitive)
   thus ?thesis
-    by (smt (z3) assms(1,2) Sum_test pre_closed tests_dual.sba_dual.one_def tests_dual.transitive)
+    by (smt (verit) assms(1,2) Sum_test pre_closed tests_dual.sba_dual.one_def tests_dual.transitive)
 qed
 
 theorem soundness:
@@ -661,11 +663,11 @@ lemma aL_pre_import_equal:
   "(x\<guillemotleft>-q)*aL = (x\<guillemotleft>-q*aL)*aL"
 proof -
   have 1: "(x\<guillemotleft>-q)*aL \<le> (x\<guillemotleft>-q*aL)*aL"
-    by (smt (z3) aL_pre_import aL_test pre_closed tests_dual.sub_sup_closed tests_dual.least_upper_bound tests_dual.upper_bound_right)
+    by (smt (verit) aL_pre_import aL_test pre_closed tests_dual.sub_sup_closed tests_dual.least_upper_bound tests_dual.upper_bound_right)
   have "(x\<guillemotleft>-q*aL)*aL \<le> (x\<guillemotleft>-q)*aL"
     by (smt (verit, ccfv_threshold) aL_test pre_closed pre_lower_bound_left tests_dual.sba_dual.inf_isotone tests_dual.sba_dual.reflexive tests_dual.sub_sup_closed)
   thus ?thesis
-    using 1 by (smt (z3) tests_dual.antisymmetric aL_test pre_closed tests_dual.sub_sup_closed)
+    using 1 by (smt (verit,del_insts) tests_dual.antisymmetric aL_test pre_closed tests_dual.sub_sup_closed)
 qed
 
 lemma aL_pre_below_t_seq2:
@@ -676,9 +678,9 @@ proof (unfold tseq2_def power_zero_id id_def while_pre)
   have "(p\<star>x\<guillemotleft>q)*aL = (p*(x\<guillemotleft>p\<star>x\<guillemotleft>q) \<squnion> -p*q)*aL"
     by (metis assms while_pre test_pre pre_expression_test)
   also have "... = p*(x\<guillemotleft>p\<star>x\<guillemotleft>q)*aL \<squnion> -p*q*aL"
-    by (smt (z3) assms aL_test tests_dual.sup_right_dist_inf pre_closed pre_expression_test sub_mult_closed test_pre)
+    by (smt (verit,del_insts) assms aL_test tests_dual.sup_right_dist_inf pre_closed pre_expression_test sub_mult_closed test_pre)
   also have "... = p*((x\<guillemotleft>p\<star>x\<guillemotleft>q)*aL) \<squnion> -p*q*aL"
-    by (smt assms aL_test pre_closed pre_expression_test test_pre sub_assoc)
+    by (smt (z3) assms aL_test pre_closed pre_expression_test test_pre sub_assoc)
   also have "... \<le> p*(x\<guillemotleft>(p\<star>x\<guillemotleft>q)*aL) \<squnion> -p*q"
   proof -
     have 1: "(x\<guillemotleft>p\<star>x\<guillemotleft>q)*aL \<le> x\<guillemotleft>(p\<star>x\<guillemotleft>q)*aL"
@@ -686,10 +688,10 @@ proof (unfold tseq2_def power_zero_id id_def while_pre)
     have "-p*q*aL \<le> -p*q"
       by (metis assms(2) aL_test pre_expression_test tests_dual.sub_sup_closed tests_dual.upper_bound_left)
     thus ?thesis
-      using 1 by (smt assms aL_test pre_closed pre_expression_test test_pre tests_dual.sub_sup_closed tests_dual.sub_sup_right_isotone tests_dual.inf_isotone)
+      using 1 by (smt (z3) assms aL_test pre_closed pre_expression_test test_pre tests_dual.sub_sup_closed tests_dual.sub_sup_right_isotone tests_dual.inf_isotone)
   qed
   also have "... = -p*q \<squnion> p*(x\<guillemotleft>(p\<star>x\<guillemotleft>q)*aL)"
-    by (smt assms aL_test tests_dual.inf_commutative pre_closed pre_expression_test test_pre tests_dual.sub_sup_closed)
+    by (smt (z3) assms aL_test tests_dual.inf_commutative pre_closed pre_expression_test test_pre tests_dual.sub_sup_closed)
   finally show "(p\<star>x\<guillemotleft>q)*aL \<le> -p*q \<squnion> p*(x\<guillemotleft>(p\<star>x\<guillemotleft>q)*aL)"
     .
 qed
@@ -714,7 +716,7 @@ proof (induct m)
   hence "x\<guillemotleft>?w*aL \<le> x\<guillemotleft>(?w*?r)"
     by (smt (verit, ccfv_threshold) assms Pre_expression.conj_pre Pre_expression.neg_pre Pre_expression.pre_pre While_program.while_prog aL_pre_expression disj_pre pre_expression_test pre_iso test_pre)
   hence "p*(x\<guillemotleft>?w*aL) \<le> p*(x\<guillemotleft>(?w*?r))"
-    by (smt (z3) assms Pre_expression.conj_pre Pre_expression.neg_pre Pre_expression.pre_pre While_program.while_prog aL_pre_expression disj_pre pre_expression_test test_pre tests_dual.sub_sup_right_isotone)
+    by (smt (verit,del_insts) assms Pre_expression.conj_pre Pre_expression.neg_pre Pre_expression.pre_pre While_program.while_prog aL_pre_expression disj_pre pre_expression_test test_pre tests_dual.sub_sup_right_isotone)
   hence "?r \<le> -p*q\<squnion>p*(x\<guillemotleft>(?w*?r))"
     by (smt (verit, del_insts) assms Pre_expression.conj_pre Pre_expression.neg_pre Pre_expression.pre_pre While_program.while_prog aL_pre_expression disj_pre pre_expression_test test_pre tests_dual.sba_dual.reflexive tests_dual.inf_isotone)
   thus ?case
@@ -725,15 +727,15 @@ next
   let ?t = "tseq2 (-p*q) p x ?w ?r"
   case (Suc m)
   hence "?w*?t m \<le> ?w*?t (Suc m)"
-    by (smt (z3) assms(1,2) pre_closed pre_expression_test t_seq2_test test_expression_test tests_dual.sub_sup_right_isotone)
+    by (smt (verit) assms(1,2) pre_closed pre_expression_test t_seq2_test test_expression_test tests_dual.sub_sup_right_isotone)
   hence "x\<guillemotleft>?w*?t m \<le> x\<guillemotleft>?w*?t (Suc m)"
-    by (smt (z3) assms Pre_expression.conj_pre Pre_expression.neg_pre Pre_expression.pre_pre While_program.while_prog aL_pre_expression disj_pre pre_expression_test pre_iso test_pre tseq2_pre_expression)
+    by (smt (verit,del_insts) assms Pre_expression.conj_pre Pre_expression.neg_pre Pre_expression.pre_pre While_program.while_prog aL_pre_expression disj_pre pre_expression_test pre_iso test_pre tseq2_pre_expression)
   hence "p*(x\<guillemotleft>?w*?t m) \<le> p*(x\<guillemotleft>?w*?t (Suc m))"
-    by (smt (z3) assms Pre_expression.conj_pre Pre_expression.neg_pre Pre_expression.pre_pre While_program.while_prog aL_pre_expression disj_pre pre_expression_test test_pre tests_dual.sub_sup_right_isotone tseq2_pre_expression)
+    by (smt (verit,del_insts) assms Pre_expression.conj_pre Pre_expression.neg_pre Pre_expression.pre_pre While_program.while_prog aL_pre_expression disj_pre pre_expression_test test_pre tests_dual.sub_sup_right_isotone tseq2_pre_expression)
   hence "-p*q\<squnion>p*(x\<guillemotleft>?w*?t m) \<le> -p*q\<squnion>p*(x\<guillemotleft>?w*?t (Suc m))"
-    by (smt (z3) assms Pre_expression.conj_pre Pre_expression.neg_pre Pre_expression.pre_pre While_program.while_prog aL_pre_expression disj_pre pre_expression_test test_pre tests_dual.sba_dual.reflexive tests_dual.inf_isotone tseq2_pre_expression)
+    by (smt (verit,del_insts) assms Pre_expression.conj_pre Pre_expression.neg_pre Pre_expression.pre_pre While_program.while_prog aL_pre_expression disj_pre pre_expression_test test_pre tests_dual.sba_dual.reflexive tests_dual.inf_isotone tseq2_pre_expression)
   thus ?case
-    by (smt tseq2_def power_succ_unfold_ext tfun2_def)
+    by (smt (z3) tseq2_def power_succ_unfold_ext tfun2_def)
 qed
 
 lemma t_seq2_ascending_chain:
@@ -751,11 +753,11 @@ lemma while_completeness_var:
     shows "-p\<star>x\<guillemotleft>-r \<le> -q\<squnion>aL"
 proof -
   have 1: "-p\<star>x\<guillemotleft>-q \<le> -q\<squnion>aL"
-    by (smt assms pre_closed tests_dual.sub_sup_closed tests_dual.greatest_lower_bound while_completeness)
+    by (smt (z3) assms pre_closed tests_dual.sub_sup_closed tests_dual.greatest_lower_bound while_completeness)
   have "-p\<star>x\<guillemotleft>-r \<le> -p\<star>x\<guillemotleft>-q"
-    by (smt assms pre_closed tests_dual.sub_sup_closed tests_dual.greatest_lower_bound pre_iso)
+    by (smt (z3) assms pre_closed tests_dual.sub_sup_closed tests_dual.greatest_lower_bound pre_iso)
   thus ?thesis
-    using 1 by (smt (z3) aL_test pre_closed tests_dual.sba_dual.sub_sup_closed tests_dual.sba_dual.transitive)
+    using 1 by (smt (verit) aL_test pre_closed tests_dual.sba_dual.sub_sup_closed tests_dual.sba_dual.transitive)
 qed
 
 lemma while_completeness_sum:
@@ -777,33 +779,33 @@ proof -
   have 4: "test_seq ?t"
     by (simp add: assms(1) assms(2) pre_expression_test t_seq2_test_seq test_expression_test)
   have "-p*q \<le> ?r"
-    by (smt (z3) assms(1,2) aL_test pre_closed pre_expression_test sub_mult_closed test_pre tests_dual.lower_bound_left)
+    by (smt (verit,del_insts) assms(1,2) aL_test pre_closed pre_expression_test sub_mult_closed test_pre tests_dual.lower_bound_left)
   hence 5: "-p*q \<le> ?ts"
-    using 1 2 3 by (smt assms Sum_upper id_def tests_dual.sba_dual.transitive power_zero_id pre_expression_test sub_mult_closed test_pre tseq2_def tseq2_test_seq tsum2_def)
+    using 1 2 3 by (smt (z3) assms Sum_upper id_def tests_dual.sba_dual.transitive power_zero_id pre_expression_test sub_mult_closed test_pre tseq2_def tseq2_test_seq tsum2_def)
   have "\<forall>n . p*(x\<guillemotleft>?t n) \<le> ?ts"
   proof (rule allI, unfold tsum2_def)
     fix n
     have 6: "p*(x\<guillemotleft>?t n) \<le> ?t (Suc n)"
-      using 4 by (smt assms leq_def power_succ_unfold_ext pre_closed pre_expression_test tests_dual.sub_commutative sub_mult_closed t_seq2_below_w test_pre test_seq_def tfun2_def tseq2_def tests_dual.lower_bound_right)
+      using 4 by (smt (z3) assms leq_def power_succ_unfold_ext pre_closed pre_expression_test tests_dual.sub_commutative sub_mult_closed t_seq2_below_w test_pre test_seq_def tfun2_def tseq2_def tests_dual.lower_bound_right)
     have "?t (Suc n) \<le> Sum ?t"
       using 4 Sum_upper by auto
     thus "p*(x\<guillemotleft>?t n) \<le> Sum ?t"
-      using 3 4 6 by (smt assms(1) pre_closed pre_expression_test sub_mult_closed test_pre test_seq_def tests_dual.transitive tsum2_def)
+      using 3 4 6 by (smt (z3) assms(1) pre_closed pre_expression_test sub_mult_closed test_pre test_seq_def tests_dual.transitive tsum2_def)
   qed
   hence "p*(x\<guillemotleft>?ts) \<le> ?ts"
-    using 3 4 by (smt assms mult_left_dist_Sum pre_closed pre_right_dist_Sum t_seq2_ascending_chain test_expression_test test_seq_def tsum2_def)
+    using 3 4 by (smt (z3) assms mult_left_dist_Sum pre_closed pre_right_dist_Sum t_seq2_ascending_chain test_expression_test test_seq_def tsum2_def)
   hence "p*(x\<guillemotleft>?ts)\<squnion>-p*q \<le> ?ts"
-    using 3 5 by (smt assms(1,2) tests_dual.greatest_lower_bound pre_closed pre_expression_test sub_mult_closed test_pre)
+    using 3 5 by (smt (z3) assms(1,2) tests_dual.greatest_lower_bound pre_closed pre_expression_test sub_mult_closed test_pre)
   hence "?w \<le> ?ts\<squnion>aL"
-    using 1 3 by (smt assms(1,2) pre_expression_test while_post sub_mult_closed t_sum2_below_t_sum t_sum_test test_pre transitive while_completeness_var)
+    using 1 3 by (smt (z3) assms(1,2) pre_expression_test while_post sub_mult_closed t_sum2_below_t_sum t_sum_test test_pre transitive while_completeness_var)
   hence "?w = ?w*(?ts\<squnion>aL)"
-    using 1 3 by (smt aL_test tests_dual.sba_dual.less_eq_inf tests_dual.sba_dual.sub_sup_closed)
+    using 1 3 by (smt (z3) aL_test tests_dual.sba_dual.less_eq_inf tests_dual.sba_dual.sub_sup_closed)
   also have "... = ?w*?ts\<squnion>?w*aL"
-    using 1 3 by (smt aL_test tests_dual.sup_left_dist_inf)
+    using 1 3 by (smt (z3) aL_test tests_dual.sup_left_dist_inf)
   also have "... \<le> ?ts\<squnion>?t 0"
-    using 1 3 4 by (smt (z3) assms(1,2) aL_pre_below_t_seq2 tests_dual.upper_bound_right aL_test test_seq_def tests_dual.sub_sup_closed tests_dual.inf_isotone)
+    using 1 3 4 by (smt (verit,del_insts) assms(1,2) aL_pre_below_t_seq2 tests_dual.upper_bound_right aL_test test_seq_def tests_dual.sub_sup_closed tests_dual.inf_isotone)
   also have "... = ?ts"
-    using 3 4 by (smt Sum_upper tsum2_def test_seq_def tests_dual.less_eq_inf)
+    using 3 4 by (smt (z3) Sum_upper tsum2_def test_seq_def tests_dual.less_eq_inf)
   finally have "?w \<le> ?ts"
     .
   thus ?thesis
@@ -836,7 +838,7 @@ proof -
   hence "x\<guillemotleft>?w*aL\<lparr>x\<rparr>aL*?w"
     using 1 by (metis aL_test pre_expression_test sub_comm)
   hence "(x\<guillemotleft>?w*aL)*p*?w\<lparr>x\<rparr>aL*?w"
-    using 1 by (smt (z3) assms(1) Pre_expression.conj_pre Pre_expression.test_pre derived_hoare_triple.cons_trip derived_type pre_expression_test sub_assoc tests_dual.sba_dual.reflexive tests_dual.upper_bound_left)
+    using 1 by (smt (verit,del_insts) assms(1) Pre_expression.conj_pre Pre_expression.test_pre derived_hoare_triple.cons_trip derived_type pre_expression_test sub_assoc tests_dual.sba_dual.reflexive tests_dual.upper_bound_left)
   hence "(-p\<squnion>(x\<guillemotleft>?w*aL))*p*?w\<lparr>x\<rparr>aL*?w"
     using 5 by simp
   hence 6: "?t 0*p*?w\<lparr>x\<rparr>aL*?w"
@@ -848,9 +850,9 @@ proof -
     from this obtain m where 7: "n = Suc m"
       by (auto dest: less_imp_Suc_add)
     hence "?t m*?w \<le> pSum ?t n*?w"
-      using 1 2 by (smt pSum.simps(2) pSum_test pre_expression_test test_seq_def tests_dual.lower_bound_right tests_dual.sba_dual.inf_isotone tests_dual.sba_dual.reflexive)
+      using 1 2 by (smt (z3) pSum.simps(2) pSum_test pre_expression_test test_seq_def tests_dual.lower_bound_right tests_dual.sba_dual.inf_isotone tests_dual.sba_dual.reflexive)
     thus "?t n*p*?w\<lparr>x\<rparr>pSum ?t n*?w"
-      using 1 7 by (smt assms conj_pre cons_trip tests_dual.upper_bound_left tests_dual.sba_dual.inf_complement_intro pSum_pre_expression power_succ_unfold_ext pre_closed pre_expression_test sub_assoc sub_comm t_seq_pre_expression test_pre tfun_def tseq_def)
+      using 1 7 by (smt (z3) assms conj_pre cons_trip tests_dual.upper_bound_left tests_dual.sba_dual.inf_complement_intro pSum_pre_expression power_succ_unfold_ext pre_closed pre_expression_test sub_assoc sub_comm t_seq_pre_expression test_pre tfun_def tseq_def)
   qed
   hence "?w\<lparr>p\<star>x\<rparr>-p*?w"
     using 1 2 3 6 assms while_trip by auto
@@ -865,7 +867,7 @@ lemma pre_completeness:
   apply (induct arbitrary: q rule: While_program.induct)
   apply (simp add: derived_hoare_triple.atom_trip)
   apply (metis pre_pre pre_seq seq_trip pre_expression_test)
-  apply (smt cond_prog cond_trip cons_pre_trip ite_pre_else ite_pre_then neg_pre pre_pre pre_expression_test test_pre)
+  apply (smt (z3) cond_prog cond_trip cons_pre_trip ite_pre_else ite_pre_then neg_pre pre_pre pre_expression_test test_pre)
   by (simp add: while_complete)
 
 theorem completeness:
@@ -944,16 +946,16 @@ proof -
   have "x\<guillemotleft>-r \<le> x\<guillemotleft>-r\<squnion>-s \<and> x\<guillemotleft>-s \<le> x\<guillemotleft>-r\<squnion>-s"
     by (metis pre_iso tests_dual.sba_dual.sub_sup_closed tests_dual.sba_dual.upper_bound_left tests_dual.sba_dual.upper_bound_right)
   thus ?thesis
-    by (smt assms hoare_triple_valid tests_dual.greatest_lower_bound tests_dual.sba_dual.sub_sup_closed pre_closed tests_dual.transitive)
+    by (smt (z3) assms hoare_triple_valid tests_dual.greatest_lower_bound tests_dual.sba_dual.sub_sup_closed pre_closed tests_dual.transitive)
 qed
 
 subclass hoare_rules
   apply unfold_locales
   apply (metis hoare_triple_valid pre_closed tests_dual.sba_dual.reflexive)
   apply (meson hoare_triple_valid pre_compose)
-  apply (smt hoare_triple_valid ite_import_mult sub_mult_closed)
+  apply (smt (z3) hoare_triple_valid ite_import_mult sub_mult_closed)
   apply (smt (verit, del_insts) hoare_triple_valid aL_test pSum_test sba_dual.sub_sup_closed sub_mult_closed test_seq_def while_soundness_1)
-  apply (smt hoare_triple_valid pre_iso tests_dual.transitive pre_closed)
+  apply (smt (z3) hoare_triple_valid pre_iso tests_dual.transitive pre_closed)
   by (simp add: valid_rule_disj)
 
 lemma nat_test_rule_while:
@@ -985,11 +987,11 @@ proof -
   hence 1: "t 0*-p3*(-p1*-p2)\<lbrace>z2\<rbrace>aL*(-p1*-p2)"
     by (metis aL_test sub_mult_closed rule_bot)
   have "\<forall>n>0 . t n*-p3*(-p1*-p2)\<lbrace>z2\<rbrace>pSum t n*(-p1*-p2)"
-    by (smt assms(1,5) lower_bound_left pSum_test rule_cons_pre sub_assoc sub_comm sub_mult_closed test_seq_def)
+    by (smt (z3) assms(1,5) lower_bound_left pSum_test rule_cons_pre sub_assoc sub_comm sub_mult_closed test_seq_def)
   hence "-p1*-p2\<lbrace>-p3\<star>z2\<rbrace>--p3*(-p1*-p2)"
     using 1 by (smt (verit, del_insts) assms(1,2) tests_dual.sub_bot_least rule_while sub_mult_closed)
   thus ?thesis
-    by (smt assms(4) tests_dual.upper_bound_left rule_cons_post rule_seq sub_assoc sub_comm sub_mult_closed)
+    by (smt (z3) assms(4) tests_dual.upper_bound_left rule_cons_post rule_seq sub_assoc sub_comm sub_mult_closed)
 qed
 
 end
@@ -1054,21 +1056,21 @@ lemma rule_example_3:
     shows "-p*-q\<squnion>--p*-r\<lbrace>-s\<star>x*(y\<lhd>-p\<rhd>z)\<rbrace>--s*(-p*-q\<squnion>--p*-r)"
 proof -
   have t1: "-p*-q\<squnion>--p*-r\<lbrace>x\<rbrace>--p*-q\<squnion>-p*-r"
-    by (smt assms(1,2) rule_disj sub_mult_closed)
+    by (smt (z3) assms(1,2) rule_disj sub_mult_closed)
   have "-p*-r\<lbrace>y\<rbrace>-p*-q\<squnion>--p*-r"
-    by (smt assms(3) rule_cons_post_plus sub_mult_closed)
+    by (smt (z3) assms(3) rule_cons_post_plus sub_mult_closed)
   hence t2: "-p*(--p*-q\<squnion>-p*-r)\<lbrace>y\<rbrace>-p*-q\<squnion>--p*-r"
-    by (smt (z3) tests_dual.sba_dual.less_eq_inf tests_dual.sba_dual.reflexive tests_dual.sba_dual.sub_sup_closed tests_dual.sub_associative tests_dual.sub_sup_closed tests_dual.upper_bound_left tests_dual.wnf_lemma_3)
+    by (smt (verit,del_insts) tests_dual.sba_dual.less_eq_inf tests_dual.sba_dual.reflexive tests_dual.sba_dual.sub_sup_closed tests_dual.sub_associative tests_dual.sub_sup_closed tests_dual.upper_bound_left tests_dual.wnf_lemma_3)
   have "--p*-q\<lbrace>z\<rbrace>-p*-q\<squnion>--p*-r"
-    by (smt assms(4) tests_dual.inf_commutative rule_cons_post_plus sub_mult_closed)
+    by (smt (z3) assms(4) tests_dual.inf_commutative rule_cons_post_plus sub_mult_closed)
   hence "--p*(--p*-q\<squnion>-p*-r)\<lbrace>z\<rbrace>-p*-q\<squnion>--p*-r"
-    by (smt (z3) tests_dual.sba_dual.one_def tests_dual.sba_dual.sup_absorb tests_dual.sba_dual.sup_complement_intro tests_dual.sba_dual.sup_right_unit tests_dual.sub_sup_closed tests_dual.sup_complement_intro tests_dual.sup_left_dist_inf tests_dual.sup_right_unit tests_dual.top_double_complement)
+    by (smt (verit,del_insts) tests_dual.sba_dual.one_def tests_dual.sba_dual.sup_absorb tests_dual.sba_dual.sup_complement_intro tests_dual.sba_dual.sup_right_unit tests_dual.sub_sup_closed tests_dual.sup_complement_intro tests_dual.sup_left_dist_inf tests_dual.sup_right_unit tests_dual.top_double_complement)
   hence "--p*-q\<squnion>-p*-r\<lbrace>y\<lhd>-p\<rhd>z\<rbrace>-p*-q\<squnion>--p*-r"
-    using t2 by (smt tests_dual.inf_closed rule_cond sub_mult_closed)
+    using t2 by (smt (z3) tests_dual.inf_closed rule_cond sub_mult_closed)
   hence "-s*(-p*-q\<squnion>--p*-r)\<lbrace>x*(y\<lhd>-p\<rhd>z)\<rbrace>-p*-q\<squnion>--p*-r"
-    using t1 by (smt tests_dual.inf_closed rule_cons_pre_mult rule_seq sub_mult_closed)
+    using t1 by (smt (z3) tests_dual.inf_closed rule_cons_pre_mult rule_seq sub_mult_closed)
   thus ?thesis
-    by (smt tests_dual.inf_closed rule_while_pc sub_mult_closed)
+    by (smt (z3) tests_dual.inf_closed rule_while_pc sub_mult_closed)
 qed
 
 end
@@ -1096,7 +1098,7 @@ proof -
   have "?w \<le> Sum ?b"
     using assms while_bnd by blast
   hence 5: "?w = Sum ?b*?w"
-    using 3 4 by (smt Sum_test leq_def sub_comm)
+    using 3 4 by (smt (z3) Sum_test leq_def sub_comm)
   have "\<forall>n . ?b n*?w \<le> ?t n"
   proof
     fix n
@@ -1109,23 +1111,23 @@ proof -
       assume 6: "?b n*?w \<le> ?t n"
       have "-p \<le> ?t (Suc n)"
         apply (unfold tseq_def power_succ_unfold_ext)
-        by (smt assms(2) pre_expression_test t_seq_test pre_closed sub_mult_closed tfun_def tseq_def tests_dual.lower_bound_left)
+        by (smt (z3) assms(2) pre_expression_test t_seq_test pre_closed sub_mult_closed tfun_def tseq_def tests_dual.lower_bound_left)
       hence 7: "-p*?b (Suc n)*?w \<le> ?t (Suc n)"
-        using 2 3 4 by (smt tests_dual.upper_bound_left sub_mult_closed test_seq_def tests_dual.transitive)
+        using 2 3 4 by (smt (z3) tests_dual.upper_bound_left sub_mult_closed test_seq_def tests_dual.transitive)
       have 8: "p*?b (Suc n)*?w \<le> x\<guillemotleft>?w*(?b n*?w)"
-        by (smt assms(1,2) tests_dual.upper_bound_right tests_dual.sup_idempotent power_Suc pre_closed pre_distr_mult pre_expression_test pre_import_composition sub_assoc sub_comm sub_mult_closed test_expression_test while_pre_then tests_dual.top_double_complement)
+        by (smt (z3) assms(1,2) tests_dual.upper_bound_right tests_dual.sup_idempotent power_Suc pre_closed pre_distr_mult pre_expression_test pre_import_composition sub_assoc sub_comm sub_mult_closed test_expression_test while_pre_then tests_dual.top_double_complement)
       have 9: "... \<le> x\<guillemotleft>?w*?t n"
-        using 2 3 4 6 by (smt tests_dual.sub_sup_right_isotone pre_iso sub_mult_closed test_seq_def)
+        using 2 3 4 6 by (smt (z3) tests_dual.sub_sup_right_isotone pre_iso sub_mult_closed test_seq_def)
       have "... \<le> ?t (Suc n)"
-        using 2 4 by (smt power_succ_unfold_ext pre_closed sub_mult_closed test_seq_def tfun_def tseq_def tests_dual.lower_bound_right)
+        using 2 4 by (smt (z3) power_succ_unfold_ext pre_closed sub_mult_closed test_seq_def tfun_def tseq_def tests_dual.lower_bound_right)
       hence "p*?b (Suc n)*?w \<le> ?t (Suc n)"
-        using 2 3 4 8 9 by (smt assms(1) pre_closed sub_mult_closed test_expression_test test_seq_def tests_dual.transitive)
+        using 2 3 4 8 9 by (smt (z3) assms(1) pre_closed sub_mult_closed test_expression_test test_seq_def tests_dual.transitive)
       thus "?b (Suc n)*?w \<le> ?t (Suc n)"
-        using 2 3 4 7 by (smt assms(1) tests_dual.sup_less_eq_cases sub_assoc sub_mult_closed test_expression_test test_seq_def)
+        using 2 3 4 7 by (smt (z3) assms(1) tests_dual.sup_less_eq_cases sub_assoc sub_mult_closed test_expression_test test_seq_def)
     qed
   qed
   hence "Sum ?b*?w \<le> tsum (-p) x ?w ?s"
-    using 3 4 by (smt assms(2) Sum_upper mult_right_dist_Sum pre_expression_test sub_mult_closed t_seq_test t_sum_test test_seq_def tests_dual.transitive tsum_def)
+    using 3 4 by (smt (z3) assms(2) Sum_upper mult_right_dist_Sum pre_expression_test sub_mult_closed t_seq_test t_sum_test test_seq_def tests_dual.transitive tsum_def)
   thus ?thesis
     using 5 by auto
 qed
@@ -1170,7 +1172,7 @@ lemma mult_right_dist_bnd:
     shows "bnd x*-p \<le> -q"
 proof -
   have "Sup { y*-p | y . y \<in> { x^n\<guillemotleft>bot | n::nat . True } } \<le> -q"
-    by (smt assms mem_Collect_eq tests_dual.complement_bot pre_closed sub_mult_closed sup_least test_set_def)
+    by (smt (z3) assms mem_Collect_eq tests_dual.complement_bot pre_closed sub_mult_closed sup_least test_set_def)
   thus ?thesis
     using bnd_test_set bnd_def mult_right_dist_sup by simp
 qed
