@@ -415,19 +415,17 @@ lemma control2_zero:
   shows "control2 U * (v \<Otimes> |zero\<rangle>) = v \<Otimes> |zero\<rangle>"
 proof 
   fix i j::nat
-  assume "i < dim_row (v \<Otimes> |zero\<rangle>)"
+  assume i: "i < dim_row (v \<Otimes> |zero\<rangle>)"
   hence i4:"i < 4" using assms tensor_carrier_mat ket_vec_def by auto
-  assume "j < dim_col (v \<Otimes> |zero\<rangle>)"
+  assume j: "j < dim_col (v \<Otimes> |zero\<rangle>)"
   hence j0:"j = 0" using assms tensor_carrier_mat ket_vec_def by auto
   show "(control2 U * (v \<Otimes> |zero\<rangle>)) $$ (i,j) = (v \<Otimes> |zero\<rangle>) $$ (i,j)"
   proof -
     have "(control2 U * (v \<Otimes> |zero\<rangle>)) $$ (i,j) = 
           (\<Sum>k<dim_row (v \<Otimes> |zero\<rangle>). control2 U $$ (i, k) * (v \<Otimes> |zero\<rangle>) $$ (k, j))"
-      using assms index_matrix_prod 
-      by (smt (z3) One_nat_def Suc_1 Tensor.mat_of_cols_list_def \<open>i < dim_row (v \<Otimes> |Deutsch.zero\<rangle>)\<close>
-          \<open>j < dim_col (v \<Otimes> |Deutsch.zero\<rangle>)\<close> add.commute add_Suc_right control2_def dim_col_mat(1)
-          dim_row_mat(1) dim_row_tensor_mat ket_zero_to_mat_of_cols_list list.size(3) list.size(4) 
-          mult_2 numeral_Bit0 plus_1_eq_Suc sum.cong)
+      using assms index_matrix_prod i j
+      by (smt (verit, ccfv_threshold) carrier_matD(1,2) control2_carrier_mat dim_row_mat(1) dim_row_tensor_mat
+          index_unit_vec(3) ket_vec_def numeral_Bit0_eq_double sumof4)
     also have "\<dots> = (\<Sum>k<4. control2 U $$ (i, k) * (v \<Otimes> |zero\<rangle>) $$ (k, j))"
       using assms tensor_carrier_mat ket_vec_def by auto
     also have "\<dots> = control2 U $$ (i, 0) * (v \<Otimes> |zero\<rangle>) $$ (0, 0) +
@@ -596,7 +594,7 @@ proof
       have "\<And>m. dim_col (v \<Otimes> m) = dim_col m"
         by (simp add: assms(2))
       then have "i < dim_row (control2 U) \<and> 0 < dim_col (v \<Otimes> Matrix.mat 2 1 (\<lambda>(n, n). Deutsch.one $ n)) \<and> dim_row (v \<Otimes> Matrix.mat 2 1 (\<lambda>(n, n). Deutsch.one $ n)) = dim_col (control2 U)"
-        by (smt (z3) assms(1) carrier_matD(1) carrier_matD(2) control2_carrier_mat dim_col_mat(1) dim_row_mat(1) dim_row_tensor_mat il4 mult_2 numeral_Bit0 zero_less_one_class.zero_less_one)
+        by (smt (verit) assms(1) carrier_matD(1) carrier_matD(2) control2_carrier_mat dim_col_mat(1) dim_row_mat(1) dim_row_tensor_mat il4 mult_2 numeral_Bit0 zero_less_one_class.zero_less_one)
       then show ?thesis
         by (simp add: j0 ket_vec_def)
     qed
@@ -1214,7 +1212,7 @@ proof -
           using i2 smult_mat_def index_mat_of_cols_list mat_of_cols_list_def Suc_1 \<open>i < 2\<close> 
             dim_col_mat(1) dim_row_mat(1) index_smult_mat(1) nth_Cons_0 nth_Cons_Suc
             ket_one_is_state ket_one_to_mat_of_cols_list
-          by (smt (z3) One_nat_def \<psi>\<^sub>0_to_\<psi>\<^sub>1 bot_nat_0.not_eq_extremum dim_col_tensor_mat 
+          by (smt (verit) One_nat_def \<psi>\<^sub>0_to_\<psi>\<^sub>1 bot_nat_0.not_eq_extremum dim_col_tensor_mat 
               less_2_cases_iff list.map(2) list.size(4) mult_0_right mult_1 of_real_1 
               of_real_divide of_real_minus state_def times_divide_eq_left)
         also have "\<dots> = (1/sqrt 2 \<cdot>\<^sub>m ( |zero\<rangle> - |one\<rangle>)) $$ (i,0)"
@@ -1614,9 +1612,8 @@ next
                         ( |state_basis 1 ((j div 2) div 2^Suc n)\<rangle> \<Otimes> 
                         ( |state_basis (Suc n) ((j mod 2^Suc (Suc n)) div 2)\<rangle>
                         \<Otimes> |state_basis 1 ((j mod 2^Suc (Suc n)) mod 2)\<rangle>)))"
-          using jl power_Suc power_add power_one_right
-          by (smt (z3) Suc_1 add_0 div_Suc div_exp_mod_exp_eq lessI mod_less mod_mod_cancel 
-              mod_mult_self2 n_not_Suc_n odd_Suc_div_two plus_1_eq_Suc)
+          by (smt (verit) div_exp_mod_exp_eq less_zeroE mod_greater_zero_iff_not_dvd mod_mod_cancel 
+              mod_mult_self1_is_0 plus_1_eq_Suc power_Suc power_one_right)
         also have "\<dots> = (SWAP \<Otimes> (1\<^sub>m (2^(Suc n)))) *
                         (((1\<^sub>m 2) * |state_basis 1 ((j div 2) div 2^Suc n)\<rangle>) \<Otimes>
                         ((SWAP_up (Suc (Suc n)))) *
@@ -1664,7 +1661,7 @@ next
           have "\<forall>n na. (n::nat) dvd n ^ Suc na"
             by simp
           then show ?thesis
-            using f1 by (smt (z3) div_exp_mod_exp_eq mod_mod_cancel power_one_right)
+            using f1 by (smt (verit) div_exp_mod_exp_eq mod_mod_cancel power_one_right)
         qed
         also have "\<dots> = |state_basis 1 (j mod 2)\<rangle> \<Otimes> |state_basis (Suc (Suc n)) (j div 2)\<rangle>"
           using state_basis_dec jl
@@ -2237,8 +2234,7 @@ proof -
         controlled_rotations (Suc n) *
         (1/sqrt 2 \<cdot>\<^sub>m (( |zero\<rangle> + exp(2*\<i>*pi*(complex_of_nat (j div 2^n))/2) \<cdot>\<^sub>m |one\<rangle>) \<Otimes> 
         |state_basis n (j mod 2^n)\<rangle>))"
-    using smult_mat_def tensor_mat_def 
-    by (smt (verit) One_nat_def carrier_matD(2) index_add_mat(3) index_smult_mat(3) lessI power_one_right smult_tensor1 state_basis_carrier_mat state_basis_def)
+      by (simp add: ket_vec_def)
   also have "\<dots> = 1/sqrt 2 \<cdot>\<^sub>m (controlled_rotations (Suc n) * 
                   (( |zero\<rangle> + exp(2*\<i>*pi*(complex_of_nat (j div 2^n))/2) \<cdot>\<^sub>m |one\<rangle>) \<Otimes> 
                   |state_basis n (j mod 2^n)\<rangle>))"
@@ -2248,7 +2244,7 @@ proof -
   also have "\<dots> = (1/sqrt 2 \<cdot>\<^sub>m 
                   (( |zero\<rangle> + exp(2*\<i>*pi*j/(2^(Suc n))) \<cdot>\<^sub>m |one\<rangle>)) \<Otimes> |state_basis n (j mod 2^n)\<rangle>)"
     using assms controlled_rotations_ind ket_vec_def by simp
-  finally show ?thesis by this
+  finally show ?thesis .
 qed
 
 
@@ -2653,9 +2649,14 @@ next
             also have "\<dots> = kron f ((Suc n)#(map nat (rev [1..n])))"
               using kron.simps(2) by simp
             also have "\<dots> = kron f (map nat (rev [1..(Suc n)]))"
-              using map_def rev_append
-              by (smt (z3) append_Cons append_self_conv2 list.simps(9) nat_int negative_zless 
-                  of_nat_Suc rev_eq_Cons_iff rev_is_Nil_conv upto_rec2)
+              using map_def rev_append append_Cons append_self_conv2 list.simps(9) nat_int negative_zless 
+                  of_nat_Suc rev_eq_Cons_iff rev_is_Nil_conv upto_rec2
+            proof -
+              have "Suc n # map nat (rev [1..int n]) = map nat (rev [1..int (Suc n)])"
+                by (simp add: upto_rec2)
+              then show ?thesis
+                by presburger
+            qed
             finally have "((( |zero\<rangle> + exp(2*\<i>*pi*j/(2^(Suc n))) \<cdot>\<^sub>m |one\<rangle>)) \<Otimes>
                           (kron (\<lambda>(l::nat). |zero\<rangle> + exp (2*\<i>*pi*j/(2^l)) \<cdot>\<^sub>m |one\<rangle>) 
                           (map nat (rev [1..n])))) =
@@ -3377,7 +3378,7 @@ proof -
       moreover
       { assume "((if nn (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4 = 0 \<and> nna (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4 = 0 then 1::complex else if nn (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4 = 1 \<and> nna (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4 = 2 then 1 else if nn (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4 = 2 \<and> nna (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4 = 1 then 1 else if nn (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4 = 3 \<and> nna (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4 = 3 then 1 else 0) = 0 \<and> (if nna (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4 = 0 \<and> nn (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4 = 0 then 1::complex else if nna (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4 = 1 \<and> nn (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4 = 2 then 1 else if nna (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4 = 2 \<and> nn (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4 = 1 then 1 else if nna (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4 = 3 \<and> nn (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4 = 3 then 1 else 0) = 0) \<and> (case (nn (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4, nna (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4) of (n, na) \<Rightarrow> cnj (SWAP $$ (n, na))) \<noteq> (case (nn (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4, nna (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4) of (n, na) \<Rightarrow> cnj (SWAP $$ (na, n)))"
         then have "Matrix.mat 4 4 (\<lambda>(n, na). if n = 0 \<and> na = 0 then 1::complex else if n = 1 \<and> na = 2 then 1 else if n = 2 \<and> na = 1 then 1 else if n = 3 \<and> na = 3 then 1 else 0) $$ (nn (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4, nna (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4) = (case (nn (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4, nna (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4) of (n, na) \<Rightarrow> if n = 0 \<and> na = 0 then 1 else if n = 1 \<and> na = 2 then 1 else if n = 2 \<and> na = 1 then 1 else if n = 3 \<and> na = 3 then 1 else 0) \<longrightarrow> ((if nn (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4 = 0 \<and> nna (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4 = 0 then 1::complex else if nn (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4 = 1 \<and> nna (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4 = 2 then 1 else if nn (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4 = 2 \<and> nna (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4 = 1 then 1 else if nn (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4 = 3 \<and> nna (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4 = 3 then 1 else 0) = 0 \<and> (if nna (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4 = 0 \<and> nn (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4 = 0 then 1::complex else if nna (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4 = 1 \<and> nn (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4 = 2 then 1 else if nna (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4 = 2 \<and> nn (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4 = 1 then 1 else if nna (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4 = 3 \<and> nn (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4 = 3 then 1 else 0) = 0) \<and> SWAP $$ (nna (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4, nn (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4) \<noteq> (case (nn (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4, nna (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4) of (n, na) \<Rightarrow> if n = 0 \<and> na = 0 then 1 else if n = 1 \<and> na = 2 then 1 else if n = 2 \<and> na = 1 then 1 else if n = 3 \<and> na = 3 then 1 else 0)"
-          by (smt (z3) SWAP_def old.prod.case)
+          by (smt (verit) SWAP_def old.prod.case)
         then have "Matrix.mat 4 4 (\<lambda>(n, na). if n = 0 \<and> na = 0 then 1::complex else if n = 1 \<and> na = 2 then 1 else if n = 2 \<and> na = 1 then 1 else if n = 3 \<and> na = 3 then 1 else 0) $$ (nn (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4, nna (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4) \<noteq> (case (nn (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4, nna (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4) of (n, na) \<Rightarrow> if n = 0 \<and> na = 0 then 1 else if n = 1 \<and> na = 2 then 1 else if n = 2 \<and> na = 1 then 1 else if n = 3 \<and> na = 3 then 1 else 0) \<or> SWAP $$ (nna (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4, nn (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4) \<noteq> (case (nna (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4, nn (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4) of (n, na) \<Rightarrow> if n = 0 \<and> na = 0 then 1 else if n = 1 \<and> na = 2 then 1 else if n = 2 \<and> na = 1 then 1 else if n = 3 \<and> na = 3 then 1 else 0)"
           by fastforce }
       ultimately have "SWAP $$ (nna (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4, nn (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4) = (case (nna (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4, nn (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4) of (n, na) \<Rightarrow> if n = 0 \<and> na = 0 then 1 else if n = 1 \<and> na = 2 then 1 else if n = 2 \<and> na = 1 then 1 else if n = 3 \<and> na = 3 then 1 else 0) \<and> Matrix.mat 4 4 (\<lambda>(n, na). if n = 0 \<and> na = 0 then 1::complex else if n = 1 \<and> na = 2 then 1 else if n = 2 \<and> na = 1 then 1 else if n = 3 \<and> na = 3 then 1 else 0) $$ (nn (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4, nna (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4) = (case (nn (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4, nna (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4) of (n, na) \<Rightarrow> if n = 0 \<and> na = 0 then 1 else if n = 1 \<and> na = 2 then 1 else if n = 2 \<and> na = 1 then 1 else if n = 3 \<and> na = 3 then 1 else 0) \<longrightarrow> \<not> nn (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4 < 4 \<or> \<not> nna (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4 < 4 \<or> (case (nn (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4, nna (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4) of (n, na) \<Rightarrow> cnj (SWAP $$ (n, na))) = (case (nn (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4, nna (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4) of (n, na) \<Rightarrow> cnj (SWAP $$ (na, n)))"
@@ -3387,13 +3388,13 @@ proof -
       moreover
       { assume "((if nn (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4 = 0 \<and> nna (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4 = 0 then 1::complex else if nn (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4 = 1 \<and> nna (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4 = 2 then 1 else if nn (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4 = 2 \<and> nna (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4 = 1 then 1 else if nn (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4 = 3 \<and> nna (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4 = 3 then 1 else 0) = 1 \<and> (if nna (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4 = 0 \<and> nn (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4 = 0 then 1::complex else if nna (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4 = 1 \<and> nn (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4 = 2 then 1 else if nna (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4 = 2 \<and> nn (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4 = 1 then 1 else if nna (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4 = 3 \<and> nn (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4 = 3 then 1 else 0) = 1) \<and> (case (nn (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4, nna (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4) of (n, na) \<Rightarrow> cnj (SWAP $$ (n, na))) \<noteq> (case (nn (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4, nna (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4) of (n, na) \<Rightarrow> cnj (SWAP $$ (na, n)))"
         then have "((if nn (\<lambda>(na, n). cnj (SWAP $$ (n, na))) (\<lambda>(na, n). cnj (SWAP $$ (na, n))) 4 4 = 0 \<and> nna (\<lambda>(na, n). cnj (SWAP $$ (n, na))) (\<lambda>(na, n). cnj (SWAP $$ (na, n))) 4 4 = 0 then 1::complex else if nn (\<lambda>(na, n). cnj (SWAP $$ (n, na))) (\<lambda>(na, n). cnj (SWAP $$ (na, n))) 4 4 = 1 \<and> nna (\<lambda>(na, n). cnj (SWAP $$ (n, na))) (\<lambda>(na, n). cnj (SWAP $$ (na, n))) 4 4 = 2 then 1 else if nn (\<lambda>(na, n). cnj (SWAP $$ (n, na))) (\<lambda>(na, n). cnj (SWAP $$ (na, n))) 4 4 = 2 \<and> nna (\<lambda>(na, n). cnj (SWAP $$ (n, na))) (\<lambda>(na, n). cnj (SWAP $$ (na, n))) 4 4 = 1 then 1 else if nn (\<lambda>(na, n). cnj (SWAP $$ (n, na))) (\<lambda>(na, n). cnj (SWAP $$ (na, n))) 4 4 = 3 \<and> nna (\<lambda>(na, n). cnj (SWAP $$ (n, na))) (\<lambda>(na, n). cnj (SWAP $$ (na, n))) 4 4 = 3 then 1 else 0) = 1 \<and> (if nna (\<lambda>(na, n). cnj (SWAP $$ (n, na))) (\<lambda>(na, n). cnj (SWAP $$ (na, n))) 4 4 = 0 \<and> nn (\<lambda>(na, n). cnj (SWAP $$ (n, na))) (\<lambda>(na, n). cnj (SWAP $$ (na, n))) 4 4 = 0 then 1::complex else if nna (\<lambda>(na, n). cnj (SWAP $$ (n, na))) (\<lambda>(na, n). cnj (SWAP $$ (na, n))) 4 4 = 1 \<and> nn (\<lambda>(na, n). cnj (SWAP $$ (n, na))) (\<lambda>(na, n). cnj (SWAP $$ (na, n))) 4 4 = 2 then 1 else if nna (\<lambda>(na, n). cnj (SWAP $$ (n, na))) (\<lambda>(na, n). cnj (SWAP $$ (na, n))) 4 4 = 2 \<and> nn (\<lambda>(na, n). cnj (SWAP $$ (n, na))) (\<lambda>(na, n). cnj (SWAP $$ (na, n))) 4 4 = 1 then 1 else if nna (\<lambda>(na, n). cnj (SWAP $$ (n, na))) (\<lambda>(na, n). cnj (SWAP $$ (na, n))) 4 4 = 3 \<and> nn (\<lambda>(na, n). cnj (SWAP $$ (n, na))) (\<lambda>(na, n). cnj (SWAP $$ (na, n))) 4 4 = 3 then 1 else 0) = 1) \<and> SWAP $$ (nna (\<lambda>(na, n). cnj (SWAP $$ (n, na))) (\<lambda>(na, n). cnj (SWAP $$ (na, n))) 4 4, nn (\<lambda>(na, n). cnj (SWAP $$ (n, na))) (\<lambda>(na, n). cnj (SWAP $$ (na, n))) 4 4) \<noteq> SWAP $$ (nn (\<lambda>(na, n). cnj (SWAP $$ (n, na))) (\<lambda>(na, n). cnj (SWAP $$ (na, n))) 4 4, nna (\<lambda>(na, n). cnj (SWAP $$ (n, na))) (\<lambda>(na, n). cnj (SWAP $$ (na, n))) 4 4)"
-          by (smt (z3) old.prod.case)
+          by (smt (verit) old.prod.case)
         then have "Matrix.mat 4 4 (\<lambda>(n, na). if n = 0 \<and> na = 0 then 1::complex else if n = 1 \<and> na = 2 then 1 else if n = 2 \<and> na = 1 then 1 else if n = 3 \<and> na = 3 then 1 else 0) $$ (nn (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4, nna (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4) \<noteq> (case (nn (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4, nna (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4) of (n, na) \<Rightarrow> if n = 0 \<and> na = 0 then 1 else if n = 1 \<and> na = 2 then 1 else if n = 2 \<and> na = 1 then 1 else if n = 3 \<and> na = 3 then 1 else 0) \<or> SWAP $$ (nna (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4, nn (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4) \<noteq> (case (nna (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4, nn (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4) of (n, na) \<Rightarrow> if n = 0 \<and> na = 0 then 1 else if n = 1 \<and> na = 2 then 1 else if n = 2 \<and> na = 1 then 1 else if n = 3 \<and> na = 3 then 1 else 0)"
           using SWAP_def by auto }
       ultimately have "SWAP $$ (nna (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4, nn (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4) = (case (nna (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4, nn (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4) of (n, na) \<Rightarrow> if n = 0 \<and> na = 0 then 1 else if n = 1 \<and> na = 2 then 1 else if n = 2 \<and> na = 1 then 1 else if n = 3 \<and> na = 3 then 1 else 0) \<and> Matrix.mat 4 4 (\<lambda>(n, na). if n = 0 \<and> na = 0 then 1::complex else if n = 1 \<and> na = 2 then 1 else if n = 2 \<and> na = 1 then 1 else if n = 3 \<and> na = 3 then 1 else 0) $$ (nn (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4, nna (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4) = (case (nn (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4, nna (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4) of (n, na) \<Rightarrow> if n = 0 \<and> na = 0 then 1 else if n = 1 \<and> na = 2 then 1 else if n = 2 \<and> na = 1 then 1 else if n = 3 \<and> na = 3 then 1 else 0) \<longrightarrow> \<not> nn (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4 < 4 \<or> \<not> nna (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4 < 4 \<or> (case (nn (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4, nna (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4) of (n, na) \<Rightarrow> cnj (SWAP $$ (n, na))) = (case (nn (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4, nna (\<lambda>(n, na). cnj (SWAP $$ (na, n))) (\<lambda>(n, na). cnj (SWAP $$ (n, na))) 4 4) of (n, na) \<Rightarrow> cnj (SWAP $$ (na, n)))"
         by linarith }
     ultimately show ?thesis
-      by (smt (z3) SWAP_def index_mat(1))
+      by (smt (verit) SWAP_def index_mat(1))
   qed
   also have "\<dots> = SWAP" using SWAP_def SWAP_index
     by (smt (verit, ccfv_SIG) case_prod_conv complex_cnj_one complex_cnj_zero cong_mat index_mat(1))
@@ -3408,9 +3409,7 @@ lemma SWAP_inv:
 
 lemma SWAP_inv':
   shows "(SWAP\<^sup>\<dagger>) * SWAP = 1\<^sub>m 4"
-  apply (simp add: SWAP_def times_mat_def one_mat_def)
-  apply (rule cong_mat)
-  by (auto simp: scalar_prod_def complex_eqI)
+  using SWAP_dagger_mat SWAP_inv by auto
 
 lemma SWAP_is_gate:
   shows "gate 2 SWAP"
@@ -3453,9 +3452,9 @@ proof
                 (control2 U) $$ (0,1) * ((control2 U)\<^sup>\<dagger>) $$ (1,0) +
                 (control2 U) $$ (0,2) * ((control2 U)\<^sup>\<dagger>) $$ (2,0) +
                 (control2 U) $$ (0,3) * ((control2 U)\<^sup>\<dagger>) $$ (3,0)"
-            using times_mat_def sumof4
-            by (smt (z3) carrier_matD(1) carrier_matD(2) control2_carrier_mat dagger_def 
-                dim_col_of_dagger dim_row_mat(1) i0 i4 index_matrix_prod)
+            by (smt (verit, del_insts) add.commute One_nat_def carrier_matD(1,2) control2_carrier_mat
+                dim_col_of_dagger dim_row_of_dagger index_matrix_prod numeral_One numeral_plus_numeral numerals(2)
+                plus_1_eq_Suc zero_less_numeral sumof4)
           also have "\<dots> = ((control2 U)\<^sup>\<dagger>) $$ (0,0)"
             using control2_def index_mat_of_cols_list by force
           also have "\<dots> = cnj ((control2 U) $$ (0,0))"
@@ -3480,9 +3479,9 @@ proof
                   (control2 U) $$ (0,1) * ((control2 U)\<^sup>\<dagger>) $$ (1,1) +
                   (control2 U) $$ (0,2) * ((control2 U)\<^sup>\<dagger>) $$ (2,1) +
                   (control2 U) $$ (0,3) * ((control2 U)\<^sup>\<dagger>) $$ (3,1)"
-              using times_mat_def sumof4
-              by (smt (z3) carrier_matD(1) carrier_matD(2) control2_carrier_mat dim_col_of_dagger 
-                  dim_row_of_dagger i0 i4 index_matrix_prod j1 j4)
+              using j1 j4
+              by (metis (no_types, lifting) carrier_matD(1,2) control2_carrier_mat dim_col_of_dagger dim_row_of_dagger
+                  i0 i4 index_matrix_prod sumof4)
             also have "\<dots> = ((control2 U)\<^sup>\<dagger>) $$ (0,1)"
               using control2_def index_mat_of_cols_list by force
             also have "\<dots> = cnj ((control2 U) $$ (1,0))"
@@ -3508,9 +3507,9 @@ proof
                     (control2 U) $$ (0,1) * ((control2 U)\<^sup>\<dagger>) $$ (1,2) +
                     (control2 U) $$ (0,2) * ((control2 U)\<^sup>\<dagger>) $$ (2,2) +
                     (control2 U) $$ (0,3) * ((control2 U)\<^sup>\<dagger>) $$ (3,2)"
-                using times_mat_def sumof4
-                by (smt (z3) carrier_matD(1) carrier_matD(2) control2_carrier_mat dim_col_of_dagger 
-                    dim_row_of_dagger i0 i4 index_matrix_prod j2 j4)
+                using j2 j4
+                by (metis (no_types, lifting) carrier_matD(1,2) control2_carrier_mat 
+                       dim_col_of_dagger dim_row_of_dagger i0 i4 index_matrix_prod sumof4)
               also have "\<dots> = ((control2 U)\<^sup>\<dagger>) $$ (0,2)"
                 using control2_def index_mat_of_cols_list by force
               also have "\<dots> = cnj ((control2 U) $$ (2,0))"
@@ -3530,9 +3529,16 @@ proof
                     (control2 U) $$ (0,1) * ((control2 U)\<^sup>\<dagger>) $$ (1,3) +
                     (control2 U) $$ (0,2) * ((control2 U)\<^sup>\<dagger>) $$ (2,3) +
                     (control2 U) $$ (0,3) * ((control2 U)\<^sup>\<dagger>) $$ (3,3)"
-                using times_mat_def sumof4
-                by (smt (z3) carrier_matD(1) carrier_matD(2) control2_carrier_mat dim_col_of_dagger 
-                    dim_row_of_dagger i0 i4 index_matrix_prod j3 j4)
+              proof -
+                have "\<And>m n n'. m \<in> carrier_mat n n' \<Longrightarrow> dim_row m = n"
+                  by blast
+                then have "Suc 3 = dim_row (control2 U)"
+                  by (metis One_nat_def add_Suc_right control2_carrier_mat numeral_2_eq_2 numeral_Bit0 numeral_One numeral_plus_numeral add_num_simps(4))
+                moreover have "dim_col (control2 U) = 4"
+                  using control2_carrier_mat by blast
+                ultimately show ?thesis
+                  by (simp add: sumof4)
+              qed
               also have "\<dots> = ((control2 U)\<^sup>\<dagger>) $$ (0,3)"
                 using control2_def index_mat_of_cols_list by force
               also have "\<dots> = cnj ((control2 U) $$ (3,0))"
@@ -3565,9 +3571,9 @@ proof
                     (control2 U) $$ (1,1) * ((control2 U)\<^sup>\<dagger>) $$ (1,0) +
                     (control2 U) $$ (1,2) * ((control2 U)\<^sup>\<dagger>) $$ (2,0) +
                     (control2 U) $$ (1,3) * ((control2 U)\<^sup>\<dagger>) $$ (3,0)"
-              using times_mat_def sumof4
-              by (smt (z3) carrier_matD(1) carrier_matD(2) control2_carrier_mat dim_col_of_dagger 
-                  dim_row_of_dagger i1 i4 index_matrix_prod j0 j4)
+              using j0 j4
+              by (metis (no_types, lifting) carrier_matD(1,2) control2_carrier_mat dim_col_of_dagger 
+                  dim_row_of_dagger i1 i4 index_matrix_prod sumof4)
             also have "\<dots> = (control2 U) $$ (1,1) * ((control2 U)\<^sup>\<dagger>) $$ (1,0) + 
                               (control2 U) $$ (1,3) * ((control2 U)\<^sup>\<dagger>) $$ (3,0)"
               using control2_def index_mat_of_cols_list by force
@@ -3598,9 +3604,9 @@ proof
                     (control2 U) $$ (1,1) * ((control2 U)\<^sup>\<dagger>) $$ (1,1) +
                     (control2 U) $$ (1,2) * ((control2 U)\<^sup>\<dagger>) $$ (2,1) +
                     (control2 U) $$ (1,3) * ((control2 U)\<^sup>\<dagger>) $$ (3,1)"
-                using times_mat_def sumof4
-                by (smt (z3) carrier_matD(1) carrier_matD(2) control2_carrier_mat dim_col_of_dagger 
-                    dim_row_of_dagger i1 i4 index_matrix_prod j1 j4)
+                using j1 j4
+                by (metis (no_types, lifting) carrier_matD(1,2) control2_carrier_mat dim_col_of_dagger dim_row_of_dagger
+                    index_matrix_prod sumof4)
               also have "\<dots> = (control2 U) $$ (1,1) * ((control2 U)\<^sup>\<dagger>) $$ (1,1) + 
                                 (control2 U) $$ (1,3) * ((control2 U)\<^sup>\<dagger>) $$ (3,1)"
                 using control2_def index_mat_of_cols_list by force
@@ -3639,9 +3645,9 @@ proof
                     (control2 U) $$ (1,1) * ((control2 U)\<^sup>\<dagger>) $$ (1,2) +
                     (control2 U) $$ (1,2) * ((control2 U)\<^sup>\<dagger>) $$ (2,2) +
                     (control2 U) $$ (1,3) * ((control2 U)\<^sup>\<dagger>) $$ (3,2)"
-                  using times_mat_def sumof4
-                  by (smt (z3) carrier_matD(1) carrier_matD(2) control2_carrier_mat dim_col_of_dagger 
-                      dim_row_of_dagger i1 i4 index_matrix_prod j2 j4)
+                  using i1 i4 index_matrix_prod j2 j4
+                  by (metis (no_types, lifting) carrier_matD(1,2) control2_carrier_mat 
+                            dim_col_of_dagger dim_row_of_dagger sumof4)
                 also have "\<dots> = (control2 U) $$ (1,1) * ((control2 U)\<^sup>\<dagger>) $$ (1,2) + 
                                 (control2 U) $$ (1,3) * ((control2 U)\<^sup>\<dagger>) $$ (3,2)"
                   using control2_def index_mat_of_cols_list by force
@@ -3667,9 +3673,8 @@ proof
                     (control2 U) $$ (1,1) * ((control2 U)\<^sup>\<dagger>) $$ (1,3) +
                     (control2 U) $$ (1,2) * ((control2 U)\<^sup>\<dagger>) $$ (2,3) +
                     (control2 U) $$ (1,3) * ((control2 U)\<^sup>\<dagger>) $$ (3,3)"
-                  using times_mat_def sumof4
-                  by (smt (z3) carrier_matD(1) carrier_matD(2) control2_carrier_mat dim_col_of_dagger 
-                      dim_row_of_dagger i1 i4 index_matrix_prod j3 j4)
+                  using i1 i4 index_matrix_prod j3 j4
+                  by (metis (no_types, lifting) carrier_matD(1,2) control2_carrier_mat dim_col_of_dagger dim_row_of_dagger sumof4)
                 also have "\<dots> = (control2 U) $$ (1,1) * ((control2 U)\<^sup>\<dagger>) $$ (1,3) + 
                                 (control2 U) $$ (1,3) * ((control2 U)\<^sup>\<dagger>) $$ (3,3)"
                   using control2_def index_mat_of_cols_list by force
@@ -3716,9 +3721,8 @@ proof
                   (control2 U) $$ (2,1) * ((control2 U)\<^sup>\<dagger>) $$ (1,0) +
                   (control2 U) $$ (2,2) * ((control2 U)\<^sup>\<dagger>) $$ (2,0) +
                   (control2 U) $$ (2,3) * ((control2 U)\<^sup>\<dagger>) $$ (3,0)"
-                using times_mat_def sumof4
-                by (smt (z3) carrier_matD(1) carrier_matD(2) control2_carrier_mat dim_col_of_dagger 
-                    dim_row_of_dagger i2 i4 index_matrix_prod j0 j4)
+                using i2 i4 index_matrix_prod j0 j4
+                by (metis (lifting) carrier_matD(1,2) control2_carrier_mat dim_col_of_dagger dim_row_of_dagger sumof4)
               also have "\<dots> = ((control2 U)\<^sup>\<dagger>) $$ (2,0)"
                 using control2_def index_mat_of_cols_list by force
               also have "\<dots> = cnj ((control2 U) $$ (0,2))"
@@ -3743,9 +3747,9 @@ proof
                   (control2 U) $$ (2,1) * ((control2 U)\<^sup>\<dagger>) $$ (1,1) +
                   (control2 U) $$ (2,2) * ((control2 U)\<^sup>\<dagger>) $$ (2,1) +
                   (control2 U) $$ (2,3) * ((control2 U)\<^sup>\<dagger>) $$ (3,1)"
-                  using times_mat_def sumof4
-                  by (smt (z3) carrier_matD(1) carrier_matD(2) control2_carrier_mat dim_col_of_dagger 
-                      dim_row_of_dagger i2 i4 index_matrix_prod j1 j4)
+                  using j1 j4
+                  by (metis (no_types, lifting) carrier_matD(1,2) control2_carrier_mat dim_col_of_dagger dim_row_of_dagger
+                      i2 i4 index_matrix_prod sumof4)
                 also have "\<dots> = ((control2 U)\<^sup>\<dagger>) $$ (2,1)"
                   using control2_def index_mat_of_cols_list by force
                 also have "\<dots> = cnj ((control2 U) $$ (1,2))"
@@ -3770,9 +3774,9 @@ proof
                   (control2 U) $$ (2,1) * ((control2 U)\<^sup>\<dagger>) $$ (1,2) +
                   (control2 U) $$ (2,2) * ((control2 U)\<^sup>\<dagger>) $$ (2,2) +
                   (control2 U) $$ (2,3) * ((control2 U)\<^sup>\<dagger>) $$ (3,2)"
-                    using times_mat_def sumof4
-                    by (smt (z3) carrier_matD(1) carrier_matD(2) control2_carrier_mat dim_col_of_dagger 
-                        dim_row_of_dagger i2 i4 index_matrix_prod j2 j4)
+                    using j2 j4
+                    by (metis (no_types, lifting) carrier_matD(1,2) control2_carrier_mat dim_col_of_dagger dim_row_of_dagger
+                        index_matrix_prod sumof4)
                   also have "\<dots> = ((control2 U)\<^sup>\<dagger>) $$ (2,2)"
                     using control2_def index_mat_of_cols_list by force
                   also have "\<dots> = cnj ((control2 U) $$ (2,2))"
@@ -3792,9 +3796,9 @@ proof
                   (control2 U) $$ (2,1) * ((control2 U)\<^sup>\<dagger>) $$ (1,3) +
                   (control2 U) $$ (2,2) * ((control2 U)\<^sup>\<dagger>) $$ (2,3) +
                   (control2 U) $$ (2,3) * ((control2 U)\<^sup>\<dagger>) $$ (3,3)"
-                    using times_mat_def sumof4
-                    by (smt (z3) carrier_matD(1) carrier_matD(2) control2_carrier_mat dim_col_of_dagger 
-                        dim_row_of_dagger i2 i4 index_matrix_prod j3 j4)
+                    using j3 j4
+                    by (metis (no_types, lifting) carrier_matD(1,2) control2_carrier_mat dim_col_of_dagger dim_row_of_dagger
+                        i2 i4 index_matrix_prod sumof4)
                   also have "\<dots> = ((control2 U)\<^sup>\<dagger>) $$ (2,3)"
                     using control2_def index_mat_of_cols_list by force
                   also have "\<dots> = cnj ((control2 U) $$ (3,2))"
@@ -3822,9 +3826,8 @@ proof
                     (control2 U) $$ (3,1) * ((control2 U)\<^sup>\<dagger>) $$ (1,0) +
                     (control2 U) $$ (3,2) * ((control2 U)\<^sup>\<dagger>) $$ (2,0) +
                     (control2 U) $$ (3,3) * ((control2 U)\<^sup>\<dagger>) $$ (3,0)"
-                using times_mat_def sumof4
-                by (smt (z3) carrier_matD(1) carrier_matD(2) control2_carrier_mat dim_col_of_dagger 
-                    dim_row_of_dagger i3 i4 index_matrix_prod j0 j4)
+                using i3 i4 index_matrix_prod j0 j4
+                by (metis (no_types, lifting) carrier_matD(1,2) control2_carrier_mat dim_col_of_dagger dim_row_of_dagger sumof4)
               also have "\<dots> = (control2 U) $$ (3,1) * ((control2 U)\<^sup>\<dagger>) $$ (1,0) + 
                             (control2 U) $$ (3,3) * ((control2 U)\<^sup>\<dagger>) $$ (3,0)"
                 using control2_def index_mat_of_cols_list by force
@@ -3852,9 +3855,9 @@ proof
                     (control2 U) $$ (3,1) * ((control2 U)\<^sup>\<dagger>) $$ (1,1) +
                     (control2 U) $$ (3,2) * ((control2 U)\<^sup>\<dagger>) $$ (2,1) +
                     (control2 U) $$ (3,3) * ((control2 U)\<^sup>\<dagger>) $$ (3,1)"
-                  using times_mat_def sumof4
-                  by (smt (z3) carrier_matD(1) carrier_matD(2) control2_carrier_mat dim_col_of_dagger 
-                      dim_row_of_dagger i3 i4 index_matrix_prod j1 j4)
+                  using i3 i4 index_matrix_prod j1 j4
+                  by (metis (no_types, lifting) carrier_matD(1,2) control2_carrier_mat 
+                      dim_col_of_dagger dim_row_of_dagger sumof4)
                 also have "\<dots> = (control2 U) $$ (3,1) * ((control2 U)\<^sup>\<dagger>) $$ (1,1) + 
                               (control2 U) $$ (3,3) * ((control2 U)\<^sup>\<dagger>) $$ (3,1)"
                   using control2_def index_mat_of_cols_list by force
@@ -3869,8 +3872,9 @@ proof
                   using dagger_def assms(1) gate_def by force
                 also have "\<dots> = (U * (U\<^sup>\<dagger>)) $$ (1,0)" 
                   using times_mat_def assms(1) gate_carrier_mat sumof2
-                  by (smt (z3) Suc_1 carrier_matD(2) dagger_def dim_col_mat(1) dim_row_of_dagger 
-                      gate.dim_row index_matrix_prod lessI pos2 power_one_right)
+                  by (metis (no_types, lifting) ext One_nat_def bot_nat_0.not_eq_extremum 
+                      carrier_matD(2) dim_col_of_dagger dim_row_of_dagger gate.dim_row index_matrix_prod lessI
+                      numeral_2_eq_2 power_one_right zero_neq_numeral)
                 also have "\<dots> = (1\<^sub>m 2) $$ (1,0)" using assms(1) gate_def unitary_def by auto
                 also have "\<dots> = 0" by auto
                 also have "\<dots> = 1\<^sub>m 4 $$ (3,1)" by simp
@@ -3890,9 +3894,8 @@ proof
                     (control2 U) $$ (3,1) * ((control2 U)\<^sup>\<dagger>) $$ (1,2) +
                     (control2 U) $$ (3,2) * ((control2 U)\<^sup>\<dagger>) $$ (2,2) +
                     (control2 U) $$ (3,3) * ((control2 U)\<^sup>\<dagger>) $$ (3,2)"
-                    using times_mat_def sumof4
-                    by (smt (z3) carrier_matD(1) carrier_matD(2) control2_carrier_mat dim_col_of_dagger 
-                        dim_row_of_dagger i3 i4 index_matrix_prod j2 j4)
+                    using i3 i4 index_matrix_prod j2 j4
+                    by (metis (lifting) carrier_matD(1,2) control2_carrier_mat dim_col_of_dagger dim_row_of_dagger sumof4)
                   also have "\<dots> = (control2 U) $$ (3,1) * ((control2 U)\<^sup>\<dagger>) $$ (1,2) + 
                                 (control2 U) $$ (3,3) * ((control2 U)\<^sup>\<dagger>) $$ (3,2)"
                     using control2_def index_mat_of_cols_list by force
@@ -3915,9 +3918,8 @@ proof
                     (control2 U) $$ (3,1) * ((control2 U)\<^sup>\<dagger>) $$ (1,3) +
                     (control2 U) $$ (3,2) * ((control2 U)\<^sup>\<dagger>) $$ (2,3) +
                     (control2 U) $$ (3,3) * ((control2 U)\<^sup>\<dagger>) $$ (3,3)"
-                    using times_mat_def sumof4
-                    by (smt (z3) carrier_matD(1) carrier_matD(2) control2_carrier_mat dim_col_of_dagger 
-                        dim_row_of_dagger i3 i4 index_matrix_prod j3 j4)
+                    using i3 i4 index_matrix_prod j3 j4
+                    by (metis (no_types, lifting) carrier_matD(1,2) control2_carrier_mat dim_col_of_dagger dim_row_of_dagger sumof4)
                   also have "\<dots> = (control2 U) $$ (3,1) * ((control2 U)\<^sup>\<dagger>) $$ (1,3) + 
                                 (control2 U) $$ (3,3) * ((control2 U)\<^sup>\<dagger>) $$ (3,3)"
                     using control2_def index_mat_of_cols_list by force
@@ -3932,8 +3934,8 @@ proof
                     using dagger_def assms(1) gate_def by force
                   also have "\<dots> = (U * (U\<^sup>\<dagger>)) $$ (1,1)" 
                     using times_mat_def assms(1) gate_carrier_mat sumof2
-                    by (smt (z3) Suc_1 carrier_matD(2) dagger_def dim_col_mat(1) dim_row_of_dagger 
-                        gate.dim_row index_matrix_prod lessI pos2 power_one_right)
+                    by (metis (no_types, lifting) ext One_nat_def carrier_matD(2) dim_col_of_dagger 
+                        dim_row_of_dagger gate.dim_row index_matrix_prod lessI numeral_2_eq_2 power_one_right)
                   also have "\<dots> = (1\<^sub>m 2) $$ (1,1)" using assms(1) gate_def unitary_def by auto
                   also have "\<dots> = 1" by auto
                   also have "\<dots> = 1\<^sub>m 4 $$ (3,3)" by simp
@@ -4011,9 +4013,8 @@ proof
                 ((control2 U)\<^sup>\<dagger>) $$ (0,2) * (control2 U) $$ (2,1) +
                 ((control2 U)\<^sup>\<dagger>) $$ (0,3) * (control2 U) $$ (3,1)"
               using sumof4
-              by (smt (z3) carrier_matD(1) carrier_matD(2) control2_carrier_mat dim_col_of_dagger 
-                  dim_row_of_dagger index_matrix_prod one_less_numeral_iff semiring_norm(76) 
-                  zero_less_numeral)
+              by (metis (no_types, lifting) carrier_matD(1,2) control2_carrier_mat dim_col_of_dagger 
+                  dim_row_of_dagger i0 i4 index_matrix_prod j1 j4)
             also have "\<dots> = ((control2 U)\<^sup>\<dagger>) $$ (0,1) * (control2 U) $$ (1,1) +
                             ((control2 U)\<^sup>\<dagger>) $$ (0,3) * (control2 U) $$ (3,1)"
               using control2_def index_mat_of_cols_list by force
@@ -4039,9 +4040,9 @@ proof
                 ((control2 U)\<^sup>\<dagger>) $$ (0,1) * (control2 U) $$ (1,2) +
                 ((control2 U)\<^sup>\<dagger>) $$ (0,2) * (control2 U) $$ (2,2) +
                 ((control2 U)\<^sup>\<dagger>) $$ (0,3) * (control2 U) $$ (3,2)"
-                using sumof4
-                by (smt (z3) carrier_matD(1) carrier_matD(2) control2_carrier_mat dim_col_of_dagger 
-                    dim_row_of_dagger index_matrix_prod j2 j4 zero_less_numeral)
+                using index_matrix_prod j2 j4
+                by (metis (no_types, lifting) carrier_matD(1,2) control2_carrier_mat dim_col_of_dagger 
+                    dim_row_of_dagger i0 i4 sumof4)
               also have "\<dots> = ((control2 U)\<^sup>\<dagger>) $$ (0,2)"
                 using control2_def index_mat_of_cols_list by force
               also have "\<dots> = cnj ((control2 U) $$ (2,0))"
@@ -4060,9 +4061,8 @@ proof
                 ((control2 U)\<^sup>\<dagger>) $$ (0,1) * (control2 U) $$ (1,3) +
                 ((control2 U)\<^sup>\<dagger>) $$ (0,2) * (control2 U) $$ (2,3) +
                 ((control2 U)\<^sup>\<dagger>) $$ (0,3) * (control2 U) $$ (3,3)"
-                using sumof4
-                by (smt (z3) carrier_matD(1) carrier_matD(2) control2_carrier_mat dim_col_of_dagger 
-                    dim_row_of_dagger index_matrix_prod j3 j4 zero_less_numeral)
+                using index_matrix_prod j3 j4
+                by (metis (no_types, lifting) carrier_matD(1,2) control2_carrier_mat dim_col_of_dagger dim_row_of_dagger i0 i4 sumof4)
               also have "\<dots> = ((control2 U)\<^sup>\<dagger>) $$ (0,1) * (control2 U) $$ (1,3) +
                               ((control2 U)\<^sup>\<dagger>) $$ (0,3) * (control2 U) $$ (3,3)"
                 using control2_def index_mat_of_cols_list by force
@@ -4096,10 +4096,8 @@ proof
                 ((control2 U)\<^sup>\<dagger>) $$ (1,1) * (control2 U) $$ (1,0) +
                 ((control2 U)\<^sup>\<dagger>) $$ (1,2) * (control2 U) $$ (2,0) +
                 ((control2 U)\<^sup>\<dagger>) $$ (1,3) * (control2 U) $$ (3,0)"
-              using sumof4
-              by (smt (z3) carrier_matD(1) carrier_matD(2) control2_carrier_mat dim_col_of_dagger 
-                  dim_row_of_dagger index_matrix_prod one_less_numeral_iff semiring_norm(76) 
-                  zero_less_numeral)
+              by (metis (no_types, lifting) carrier_matD(1,2) control2_carrier_mat dim_col_of_dagger 
+                  dim_row_of_dagger i1 i4 index_matrix_prod j0 j4 sumof4)
             also have "\<dots> = ((control2 U)\<^sup>\<dagger>) $$ (1,0)"
               using control2_def index_mat_of_cols_list by force
             also have "\<dots> = cnj ((control2 U) $$ (0,1))"
@@ -4123,10 +4121,8 @@ proof
                 ((control2 U)\<^sup>\<dagger>) $$ (1,1) * (control2 U) $$ (1,1) +
                 ((control2 U)\<^sup>\<dagger>) $$ (1,2) * (control2 U) $$ (2,1) +
                 ((control2 U)\<^sup>\<dagger>) $$ (1,3) * (control2 U) $$ (3,1)"
-                using sumof4
-                by (smt (z3) carrier_matD(1) carrier_matD(2) control2_carrier_mat dim_col_of_dagger 
-                    dim_row_of_dagger index_matrix_prod one_less_numeral_iff semiring_norm(76) 
-                    zero_less_numeral)
+                using sumof4 carrier_matD(1,2) dim_col_of_dagger dim_row_of_dagger
+                by (metis (no_types, lifting) control2_carrier_mat index_matrix_prod j1 j4) 
               also have "\<dots> = ((control2 U)\<^sup>\<dagger>) $$ (1,1) * (control2 U) $$ (1,1) +
                               ((control2 U)\<^sup>\<dagger>) $$ (1,3) * (control2 U) $$ (3,1)"
                 using control2_def index_mat_of_cols_list by force
@@ -4161,10 +4157,8 @@ proof
                 ((control2 U)\<^sup>\<dagger>) $$ (1,1) * (control2 U) $$ (1,2) +
                 ((control2 U)\<^sup>\<dagger>) $$ (1,2) * (control2 U) $$ (2,2) +
                 ((control2 U)\<^sup>\<dagger>) $$ (1,3) * (control2 U) $$ (3,2)"
-                  using sumof4
-                  by (smt (z3) carrier_matD(1) carrier_matD(2) control2_carrier_mat 
-                      dim_col_of_dagger dim_row_of_dagger index_matrix_prod j2 j4 
-                      one_less_numeral_iff semiring_norm(76))
+                  using sumof4 dim_row_of_dagger index_matrix_prod j2 j4
+                  by (metis (no_types, lifting) carrier_matD(1,2) control2_carrier_mat dim_col_of_dagger i1 i4)
                 also have "\<dots> = ((control2 U)\<^sup>\<dagger>) $$ (1,2)"
                   using control2_def index_mat_of_cols_list by force
                 also have "\<dots> = cnj ((control2 U) $$ (2,1))"
@@ -4229,9 +4223,8 @@ proof
                 ((control2 U)\<^sup>\<dagger>) $$ (2,1) * (control2 U) $$ (1,0) +
                 ((control2 U)\<^sup>\<dagger>) $$ (2,2) * (control2 U) $$ (2,0) +
                 ((control2 U)\<^sup>\<dagger>) $$ (2,3) * (control2 U) $$ (3,0)"
-                using sumof4
-                by (smt (z3) carrier_matD(1) carrier_matD(2) control2_carrier_mat dim_col_of_dagger
-                    dim_row_of_dagger i2 i4 index_matrix_prod zero_less_numeral)
+                using sumof4 dim_col_of_dagger dim_row_of_dagger i2 i4
+                by (metis (no_types, lifting) carrier_matD(1,2) control2_carrier_mat index_matrix_prod j0 j4)
               also have "\<dots> = ((control2 U)\<^sup>\<dagger>) $$ (2,0)"
                 using control2_def index_mat_of_cols_list by force
               also have "\<dots> = cnj ((control2 U) $$ (0,2))"
@@ -4255,10 +4248,8 @@ proof
                 ((control2 U)\<^sup>\<dagger>) $$ (2,1) * (control2 U) $$ (1,1) +
                 ((control2 U)\<^sup>\<dagger>) $$ (2,2) * (control2 U) $$ (2,1) +
                 ((control2 U)\<^sup>\<dagger>) $$ (2,3) * (control2 U) $$ (3,1)"
-                  using sumof4
-                  by (smt (z3) carrier_matD(1) carrier_matD(2) control2_carrier_mat 
-                      dim_col_of_dagger dim_row_of_dagger i2 i4 index_matrix_prod 
-                      one_less_numeral_iff semiring_norm(76))
+                  using sumof4 dim_col_of_dagger dim_row_of_dagger i2 i4
+                  by (metis (no_types, lifting) carrier_matD(1,2) control2_carrier_mat index_matrix_prod j1 j4)
                 also have "\<dots> = ((control2 U)\<^sup>\<dagger>) $$ (2,1) * (control2 U) $$ (1,1) +
                                 ((control2 U)\<^sup>\<dagger>) $$ (2,3) * (control2 U) $$ (3,1)"
                   using control2_def index_mat_of_cols_list by force
@@ -4284,9 +4275,9 @@ proof
                         ((control2 U)\<^sup>\<dagger>) $$ (2,1) * (control2 U) $$ (1,2) +
                         ((control2 U)\<^sup>\<dagger>) $$ (2,2) * (control2 U) $$ (2,2) +
                         ((control2 U)\<^sup>\<dagger>) $$ (2,3) * (control2 U) $$ (3,2)"
-                    using sumof4
-                    by (smt (z3) carrier_matD(1) carrier_matD(2) control2_carrier_mat dim_col_of_dagger
-                        dim_row_of_dagger i2 i4 index_matrix_prod zero_less_numeral)
+                    using sumof4 dim_row_of_dagger i2 i4
+                    by (metis (no_types, lifting) carrier_matD(1,2) control2_carrier_mat 
+                        dim_col_of_dagger index_matrix_prod) 
                   also have "\<dots> = ((control2 U)\<^sup>\<dagger>) $$ (2,2)"
                     using control2_def index_mat_of_cols_list by force
                   also have "\<dots> = cnj ((control2 U) $$ (2,2))"
