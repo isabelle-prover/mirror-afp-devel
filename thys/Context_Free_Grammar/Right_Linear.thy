@@ -509,13 +509,13 @@ lemma uppr_rlin2:
 proof - 
   from rlinbin have "rlin2 (ps' - {(A,w) \<in> ps'. \<exists>B. w = [Nt B]})"
     using rlin2_def rlin_bin_def by fastforce
-  hence "rlin2 (ps' - (unit_prods ps'))"
-    by (simp add: unit_prods_def)
-  hence 1: "rlin2 (unit_rm ps')"
-    by (simp add: unit_rm_def)
-  hence 2: "rlin2 (new_prods ps')"
-    unfolding new_prods_def rlin2_def by fastforce
-  from 1 2 have "rlin2 (unit_rm ps' \<union> new_prods ps')"
+  hence "rlin2 (ps' - (Unit_prods ps'))"
+    by (simp add: Unit_prods_def)
+  hence 1: "rlin2 (Unit_rm ps')"
+    by (simp add: Unit_rm_def)
+  hence 2: "rlin2 (New_prods ps')"
+    unfolding New_prods_def rlin2_def by fastforce
+  from 1 2 have "rlin2 (Unit_rm ps' \<union> New_prods ps')"
     unfolding rlin2_def by auto
   with uppr_ps' have "rlin2 ps"
     by (simp add: unit_elim_rel_def)
@@ -527,7 +527,7 @@ text
  converts a production set from \<open>rlin\<close> to a production set from \<open>rlin2\<close>, without changing the language\<close>
 
 definition rlin2_of_rlin :: "('n::fresh0,'t) prods \<Rightarrow> ('n,'t)Prods" where
-  "rlin2_of_rlin ps = unit_elim (set (binarize (finalize ps)))"
+  "rlin2_of_rlin ps = Unit_elim (set (binarize (finalize ps)))"
 
 (* Test for eval *)
 lemma "binarize(finalize [(0::nat, [Tm (0::int), Tm 1, Tm 2])])
@@ -543,8 +543,8 @@ using assms proof -
     using finalize_rlinnoterm by blast
   hence "rlin_bin (set (binarize (finalize ps)))"
     by (simp add: binarize_rlinbin)
-  hence "rlin2 (unit_elim (set (binarize (finalize ps))))"
-    by (simp add: unit_elim_rel_unit_elim uppr_rlin2)
+  hence "rlin2 (Unit_elim (set (binarize (finalize ps))))"
+    using Unit_elim_correct uppr_rlin2 by blast
   thus "rlin2 ((rlin2_of_rlin ps))"
     by (simp add: rlin2_of_rlin_def)
 qed
