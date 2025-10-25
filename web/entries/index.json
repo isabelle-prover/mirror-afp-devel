@@ -1,5 +1,21 @@
 [
  {
+  "abstract": "In complex analysis, one often has to manipulate paths, i.e. curves in the complex plane. This entry defines three useful relations on paths:\nan equivalence relation $\\equiv_{\\text{p}}$ that describes that two paths are the same up to reparametrisation a preorder $\\leq_{\\text{p}}$ that expresses the notion that one path is a subpath of another an equivalence relation $\\equiv_{\\bigcirc}$ that describes equivalence of closed paths up to reparametrisation and “shifting” (e.g. if we have a rectangular path, it does not matter which corner we start in) It also provides the path tactic, which proves or simplifies some common proof obligations for composite paths. Namely:\nproving $\\equiv_{\\text{p}}$, $\\leq_{\\text{p}}$, $\\equiv_{\\bigcirc}$ proving well-definedness of paths (path, valid_path) determining the image of a path (path_image) showing that a path is not self-intersecting (arc, simple_path) decomposing integrals on a composite path into the integrals on the constituent paths ",
+  "authors": [
+   "Manuel Eberl"
+  ],
+  "link": "/entries/Path_Automation.html",
+  "shortname": "Path_Automation",
+  "title": "Path Equivalence and Automation for Integration Contours",
+  "topic_links": [
+   "/topics/tools/"
+  ],
+  "topics": [
+   "Tools"
+  ],
+  "year": "2025"
+ },
+ {
   "abstract": "The objective of this theory development is an implementation of the Z mathematical  toolkit in Isabelle/HOL that is both efficient for proof and faithful to the standard. We construct the Z metalanguage and type universe on top of HOL, and link this to corresponding concrete types (finite functions, lists etc.) in Isabelle, to enable efficient proof automation. We then utilise coercive subtyping and overloading to support processing of Z-like expressions in Isabelle/HOL. We then use this to develop the mathematical toolkit for sets, relations, functions, and sequences.",
   "authors": [
    "Simon Foster",
