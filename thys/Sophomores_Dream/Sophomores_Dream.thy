@@ -224,11 +224,11 @@ proof -
   have "(\<lambda>t::real. t ^ n / exp t) absolutely_integrable_on g ` {0<..<1} \<and>
         integral (g ` {0<..<1}) (\<lambda>t::real. t ^ n / exp t) = fact n"
     using 1 2 bij by (simp add: bij_betw_def has_integral_iff)
-  also have "?this \<longleftrightarrow> ((\<lambda>x. \<bar>g' x\<bar> *\<^sub>R (g x ^ n / exp (g x))) absolutely_integrable_on {0<..<1} \<and>
-                       integral {0<..<1} (\<lambda>x. \<bar>g' x\<bar> *\<^sub>R (g x ^ n / exp (g x))) = fact n)"
+  also have "?this \<longleftrightarrow> ((\<lambda>x. \<bar>g' x\<bar> * (g x ^ n / exp (g x))) absolutely_integrable_on {0<..<1} \<and>
+                       integral {0<..<1} (\<lambda>x. \<bar>g' x\<bar> * (g x ^ n / exp (g x))) = fact n)"
     by (intro has_absolute_integral_change_of_variables_1' [symmetric] deriv)
        (auto simp: inj_on_def g_def)
-  finally have "((\<lambda>x. \<bar>g' x\<bar> *\<^sub>R (g x ^ n / exp (g x))) has_integral fact n) {0<..<1}"
+  finally have "((\<lambda>x. \<bar>g' x\<bar> * (g x ^ n / exp (g x))) has_integral fact n) {0<..<1}"
     using eq_integralD set_lebesgue_integral_eq_integral(1) by blast
   also have "?this \<longleftrightarrow>
      ((\<lambda>x::real. ((-1)^n*(n+1)^(n+1)) *\<^sub>R (ln x ^ n * x ^ n)) has_integral fact n) {0<..<1}"
@@ -241,8 +241,7 @@ proof -
       using x by (simp add: powr_def)
     also have "\<dots> / x = x ^ n"
       using x by (subst powr_realpow) auto
-    finally show "\<bar>g' x\<bar> *\<^sub>R (g x ^ n / exp (g x)) =
-                    ((-1)^n*(n+1)^(n+1)) *\<^sub>R (ln x ^ n * x ^ n)"
+    finally show "\<bar>g' x\<bar> * (g x ^ n / exp (g x)) = ((-1)^n*(n+1)^(n+1)) *\<^sub>R (ln x ^ n * x ^ n)"
       by (simp add: algebra_simps)
   qed
   also have "\<dots> \<longleftrightarrow> ((\<lambda>x::real. ln x ^ n * x ^ n) has_integral
