@@ -4113,10 +4113,12 @@ name = "Cárolos Laméris"
 
 [lameris.emails.lameris_email]
 user = [
-  "carolos",
+  "c",
+  "l",
+  "lameris",
 ]
 host = [
-  "live",
+  "rug",
   "nl",
 ]
 
