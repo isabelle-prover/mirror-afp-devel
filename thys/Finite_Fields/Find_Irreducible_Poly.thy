@@ -8,6 +8,7 @@ theory Find_Irreducible_Poly
     Probabilistic_While.While_SPMF
     Card_Irreducible_Polynomials
     Executable_Randomized_Algorithms.Randomized_Algorithm
+    Finite_Fields_Nth_Root_Code
     "HOL-Library.Log_Nat"
 begin
 
