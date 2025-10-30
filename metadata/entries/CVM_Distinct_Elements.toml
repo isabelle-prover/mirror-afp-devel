@@ -51,5 +51,5 @@ tan = "tan_email"
 [extra]
 
 [related]
-dois = []
+dois = ["10.4230/LIPIcs.ITP.2025.34"]
 pubs = []
