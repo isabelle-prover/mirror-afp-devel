@@ -1,8 +1,15 @@
+(*<*)
 theory MLSS_Proc_Code
   imports MLSS_Proc MLSS_Typing_Urelems "Fresh_Identifiers.Fresh_Nat" "List-Index.List_Index"
 begin
+(*>*)
 
 section \<open>An Executable Specification of the Procedure\<close>
+text \<open>
+  We develop an executable, albeit very inefficient, decision procedure for MLSS.
+  This naive implementation should serve as a proof of concept and a starting point for
+  an efficient implementation.
+\<close>
 
 fun subterms_term_list :: "'a pset_term \<Rightarrow> 'a pset_term list"  where
   "subterms_term_list (\<emptyset> n) = [\<emptyset> n]"
@@ -646,4 +653,6 @@ code_identifier
   | code_module MLSS_Proc \<rightharpoonup> (SML) MLSS_Proc_Code
 export_code mlss_proc_partial in SML
 
+(*<*)
 end
+(*>*)
