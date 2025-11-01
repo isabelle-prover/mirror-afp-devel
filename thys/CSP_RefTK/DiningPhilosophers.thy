@@ -633,7 +633,7 @@ proof(rule FD_antisym)
         by (cases "phil e", auto) (metis exists_least_iff nth_list_update_neq)
       have d:"Up\<^sub>P (butlast ps) e = butlast (Up\<^sub>P ps e)"       
         by (cases "phil e", auto simp add:\<sigma>\<^sub>p\<^sub>h\<^sub>i\<^sub>l\<^sub>s_update_def butlast_list_update 
-            lphil0_state_update_def rphil_state_update_def)
+            lphil0_state_update_def rphil_state_update_def list_update_beyond)
       have e:"length (Up\<^sub>P ps e) = Suc n"
         by (metis (full_types) step(2) length_list_update \<sigma>\<^sub>p\<^sub>h\<^sub>i\<^sub>l\<^sub>s_update_def)
       from 1 show ?case 
@@ -671,7 +671,7 @@ next
         by (cases "phil e", auto) (metis exists_least_iff nth_list_update_neq)
       have d:"Up\<^sub>P (butlast ps) e = butlast (Up\<^sub>P ps e)"       
         by (cases "phil e", auto simp add:\<sigma>\<^sub>p\<^sub>h\<^sub>i\<^sub>l\<^sub>s_update_def butlast_list_update 
-            lphil0_state_update_def rphil_state_update_def)
+            lphil0_state_update_def rphil_state_update_def list_update_beyond)
       have e:"length (Up\<^sub>P ps e) = Suc n"
         by (metis (full_types) step(3) length_list_update \<sigma>\<^sub>p\<^sub>h\<^sub>i\<^sub>l\<^sub>s_update_def)
       from 1 show ?case 
@@ -758,7 +758,7 @@ next
     apply(auto simp add:dining_transitions_def phils_transitions_def forks_transitions_def
         lphil0_transitions_def rphil_transitions_def fork_transitions_def
         lphil0_state_update_def rphil_state_update_def \<sigma>\<^sub>f\<^sub>o\<^sub>r\<^sub>k_update_def 
-        dining_state_update_def \<sigma>\<^sub>p\<^sub>h\<^sub>i\<^sub>l\<^sub>s_update_def \<sigma>\<^sub>f\<^sub>o\<^sub>r\<^sub>k\<^sub>s_update_def 
+        dining_state_update_def \<sigma>\<^sub>p\<^sub>h\<^sub>i\<^sub>l\<^sub>s_update_def \<sigma>\<^sub>f\<^sub>o\<^sub>r\<^sub>k\<^sub>s_update_def list_update_beyond
         split:if_splits prod.split) 
     unfolding inv_dining_def
   proof(goal_cases)  

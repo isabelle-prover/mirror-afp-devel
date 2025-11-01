@@ -776,7 +776,8 @@ proof(rule unwindIntoCond_simpleI)
 
       show stat: "statA = statA' \<or> statO = Diff"
       using v sa \<Delta>2
-      apply (cases ss3, cases ss4, cases ss1, cases ss2, cases ss3', cases ss4', clarsimp)
+      apply (cases ss3, cases ss4, cases ss1)
+      apply (cases ss2, cases ss3', cases ss4', clarsimp)
       using v sa \<Delta>2 unfolding ss statA' apply clarsimp        
       apply(simp_all add: \<Delta>2_defs sstatA'_def) 
       apply(cases statO, simp_all) apply(cases statA, simp_all)
@@ -969,7 +970,8 @@ proof(rule unwindIntoCond_simpleI)
 
       show stat: "statA = statA' \<or> statO = Diff"
       using v sa \<Delta>3 
-      apply (cases ss3, cases ss4, cases ss1, cases ss2, cases ss3', cases ss4', clarsimp)
+      apply (cases ss3, cases ss4, cases ss1)
+      apply(cases ss2, cases ss3', cases ss4', clarsimp)
       using v sa \<Delta>3 unfolding ss statA' apply clarsimp        
       apply(simp_all add: \<Delta>3_defs sstatA'_def) apply(cases statO, simp_all) 
       apply(cases statA, simp_all)
@@ -1250,7 +1252,7 @@ proof-
     subgoal unfolding nxt m by auto
     subgoal using init unfolding \<Delta>s by auto
     subgoal 
-      unfolding m nxt \<Delta>s apply (auto split: if_splits)
+      unfolding m nxt \<Delta>s apply (simp split: if_splits)
       using theConds
       unfolding oor_def oor3_def oor4_def by auto . 
 qed

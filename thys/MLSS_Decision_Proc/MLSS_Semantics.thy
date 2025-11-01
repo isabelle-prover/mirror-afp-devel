@@ -1,6 +1,8 @@
+(*<*)
 theory MLSS_Semantics
   imports MLSS_Logic HereditarilyFinite.Finitary
 begin
+(*>*)
 
 section \<open>Definition of MLSS\<close>
 text \<open>
@@ -327,7 +329,7 @@ subsubsection \<open>Set Atoms in a Branch\<close>
 abbreviation pset_atoms_branch :: "'a fm list \<Rightarrow> 'a set" where
   "pset_atoms_branch b \<equiv> \<Union>(atoms ` set b)"
 
-section \<open>Finiteness\<close>
+subsection \<open>Finiteness of Variables, Subterms, and Subformulae\<close>
 
 lemma finite_vars_term: "finite (vars_term t)"
   apply(induction t)
@@ -383,7 +385,7 @@ lemma finite_atoms: "finite (atoms \<phi>)"
 lemma finite_pset_atoms_branch: "finite (pset_atoms_branch b)"
   by (auto simp: finite_atoms)
 
-subsection \<open>Non-Emptiness\<close>
+subsection \<open>Non-Emptiness of Subterms\<close>
 
 lemma subterms_term_nonempty[simp]: "subterms_term t \<noteq> {}"
   by (induction t) auto
@@ -394,4 +396,6 @@ lemma subterms_atom_nonempty[simp]: "subterms_atom l \<noteq> {}"
 lemma subterms_fm_nonempty[simp]: "subterms_fm \<phi> \<noteq> {}"
   by (induction \<phi>) auto
 
+(*<*)
 end
+(*>*)

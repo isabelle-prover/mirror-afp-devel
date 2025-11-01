@@ -1,10 +1,12 @@
+(*<*)
 theory MLSS_Typing_Urelems
   imports MLSS_Suc_Theory MLSS_Typing
 begin
+(*>*)
 
 section \<open>Typing the Urelements\<close>
 text \<open>
-  In this theory, we define a recursive procedure that generates Typing
+  We define a recursive procedure that generates typing
   constraints. We then prove that the constraints can be solved with
   \<^const>\<open>MLSS_Suc_Theory.assign\<close>. The solution then gives us the urelements.
 \<close>
@@ -249,4 +251,6 @@ proof
     by blast
 qed
 
+(*<*)
 end
+(*>*)

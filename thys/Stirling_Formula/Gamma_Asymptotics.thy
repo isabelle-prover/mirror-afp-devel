@@ -292,8 +292,8 @@ proof -
 
   have "(f absolutely_integrable_on g ` {0<..} \<and> integral (g ` {0<..}) f = C)"
     using I bij by (simp add: bij_betw_def has_integral_iff absolutely_integrable_on_def f_def)
-  also have "?this \<longleftrightarrow> ((\<lambda>x. \<bar>2 * x\<bar> *\<^sub>R f (g x)) absolutely_integrable_on {0<..} \<and>
-                         integral {0<..} (\<lambda>x. \<bar>2 * x\<bar> *\<^sub>R f (g x)) = C)"
+  also have "?this \<longleftrightarrow> ((\<lambda>x. \<bar>2 * x\<bar> * f (g x)) absolutely_integrable_on {0<..} \<and>
+                         integral {0<..} (\<lambda>x. \<bar>2 * x\<bar> * f (g x)) = C)"
     using bij by (intro has_absolute_integral_change_of_variables_1' [symmetric])
                  (auto intro!: derivative_eq_intros simp: g_def bij_betw_def)
   finally have "((\<lambda>x. \<bar>2 * x\<bar> * f (g x)) has_integral C) {0<..}"

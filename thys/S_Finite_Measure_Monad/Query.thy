@@ -905,7 +905,7 @@ proof -
         by(rule ennreal_cong, rule lebesgue_integral_eq_integral) (auto simp: integrable_restrict_space integrable_completion intro!: integrable_mult_indicator[where 'b=real,simplified])
       also have "... = ennreal (integral {..<\<mu>} (\<lambda>x. normal_density \<mu> \<sigma> (- x + 2 * \<mu>)))"
       proof -
-        have "integral {\<mu><..} (normal_density \<mu> \<sigma>) = integral {..<\<mu>} (\<lambda>x. \<bar>- 1\<bar> *\<^sub>R normal_density \<mu> \<sigma> (- x + 2 * \<mu>))"
+        have "integral {\<mu><..} (normal_density \<mu> \<sigma>) = integral {..<\<mu>} (\<lambda>x. \<bar>- 1\<bar> * normal_density \<mu> \<sigma> (- x + 2 * \<mu>))"
         proof(rule conjunct2[OF has_absolute_integral_change_of_variables_1'[where g="\<lambda>x. - x + 2 * \<mu>" and S="{..<\<mu>}" and g'="\<lambda>x. - 1" and f="normal_density \<mu> \<sigma>" and b="integral {\<mu><..} (normal_density \<mu> \<sigma>)",THEN iffD2],symmetric])
           fix x :: real
           show "((\<lambda>x. - x + 2 * \<mu>) has_real_derivative - 1) (at x within {..<\<mu>})"

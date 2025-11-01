@@ -1,11 +1,12 @@
+(*<*)
 theory MLSS_Logic
   imports Main
 begin
+(*>*)
+
+chapter \<open>Syntax and Semantics of MLSS\<close>
 
 section \<open>Propositional formulae\<close>
-text \<open>
-  This theory contains syntax and semantics of propositional formulae.
-\<close>
 
 datatype (atoms: 'a) fm =
   is_Atom: Atom 'a | And "'a fm" "'a fm" | Or "'a fm" "'a fm" |
@@ -33,4 +34,6 @@ lemma Atoms_Un[simp]: "Atoms (A \<union> B) = Atoms A \<union> Atoms B"
 lemma Atoms_mono: "A \<subseteq> B \<Longrightarrow> Atoms A \<subseteq> Atoms B"
   unfolding Atoms_def by auto
 
+(*<*)
 end
+(*>*)

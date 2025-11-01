@@ -247,7 +247,7 @@ Last 50 lines from stderr (if available):
     Build_CI.Job("indexing",
       "weekly build for all of Isabelle/AFP, indexing theories into find_facts",
       Build_CI.Cluster("cluster.schedule"),
-      Time.hms(8, 0, 0),
+      Time.hms(16, 0, 0),
       afp = true,
       selection = Sessions.Selection(all_sessions = true),
       build_prefs = List(Options.Spec.eq("build_engine", Build_Schedule.Build_Engine.name)),

@@ -169,7 +169,7 @@ private lemma aux:
 proof (cases \<open>n < length (IArray.list_of ys)\<close>)
   case False
   with len upd show ?thesis
-    by simp
+    by (simp add: list_update_beyond)
 next
   case True
   moreover have *: \<open>xs \<in> set (IArray.list_of ys) \<longleftrightarrow>

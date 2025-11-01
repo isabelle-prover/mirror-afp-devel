@@ -948,17 +948,13 @@ next
 
   from lbs lower_bound_x upper_bound_x sz lpfx lsfx
   have xbs'_conv: "xbs' = xbs[x := b]"
-    by (simp add: xbs xbs' list_update_append)
+    by (simp add: \<open>x - n < size_td s\<close> list_update_append xbs xbs')
 
   note eq1 = mem_type_field_lookup_access_ti_take_drop [OF fl lxbs, simplified bs, of v]
   note eq2 = mem_type_field_lookup_access_ti_take_drop [OF fl lxbs', simplified bs', of v]
   note val_eq = padding_base.is_value_byte_acc_eq [OF is_value lxbs [simplified size_of_def], where b=b]
   show "access_ti s v bs = access_ti s v (bs[x - n := b])"
-    apply (simp add: eq1)
-    apply (simp add: val_eq)
-    apply (simp add: eq2)
-    apply (simp add: xbs'_conv)
-    done
+    using eq1 eq2 val_eq xbs'_conv by presburger
 qed
 
 lemma (in mem_type) field_lookup_is_value_byte_inner_to_outer:
@@ -1564,7 +1560,8 @@ next
       by (metis Ex_list_of_length length_append)
 
     from lbs
-    have eq1: "(take (size_td d) ((bs @ sfx)[i := b])) = bs[i := b]" by (simp add: list_update_append)
+    have eq1: "(take (size_td d) ((bs @ sfx)[i := b])) = bs[i := b]"
+      by (simp add: take_update_swap)
 
     from lbs
     have lbs': "length (bs[i:=b]) = size_td d" by simp
@@ -1807,7 +1804,8 @@ next
       by (metis Ex_list_of_length length_append)
 
     from lbs
-    have eq1: "(take (size_td d) ((bs @ sfx)[i := b])) = bs[i := b]" by (simp add: list_update_append)
+    have eq1: "(take (size_td d) ((bs @ sfx)[i := b])) = bs[i := b]"
+      by (simp add: take_update_swap)
 
     from lbs
     have lbs': "length (bs[i:=b]) = size_td d" by simp

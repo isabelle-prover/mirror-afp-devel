@@ -232,9 +232,9 @@ proof -
   then have "P \<noteq> \<t> \<circ>\<^sub>c \<beta>\<^bsub>X\<^esub> \<and> Q \<noteq> \<t> \<circ>\<^sub>c \<beta>\<^bsub>Y\<^esub>"
   proof safe
     show "\<f> \<circ>\<^sub>c \<beta>\<^bsub>X\<^esub> = \<t> \<circ>\<^sub>c \<beta>\<^bsub>X\<^esub> \<Longrightarrow> False"
-      by (typecheck_cfuncs_prems, smt X_nonempty comp_associative2 nonempty_def one_separator_contrapos terminal_func_comp terminal_func_unique true_false_distinct)
+      by (typecheck_cfuncs_prems, smt (verit) X_nonempty comp_associative2 nonempty_def one_separator_contrapos terminal_func_comp terminal_func_unique true_false_distinct)
     show "\<f> \<circ>\<^sub>c \<beta>\<^bsub>Y\<^esub> = \<t> \<circ>\<^sub>c \<beta>\<^bsub>Y\<^esub> \<Longrightarrow> False"
-      by (typecheck_cfuncs_prems, smt Y_nonempty comp_associative2 nonempty_def one_separator_contrapos terminal_func_comp terminal_func_unique true_false_distinct)
+      by (typecheck_cfuncs_prems, smt (verit) Y_nonempty comp_associative2 nonempty_def one_separator_contrapos terminal_func_comp terminal_func_unique true_false_distinct)
   qed
   then show ?thesis
     using eqs by linarith
@@ -261,7 +261,7 @@ lemma set_three:
  (left_coproj \<one> (\<one>\<Coprod>\<one>)) , 
  (right_coproj \<one> (\<one>\<Coprod>\<one>) \<circ>\<^sub>c left_coproj \<one> \<one>), 
   right_coproj \<one> (\<one>\<Coprod>\<one>) \<circ>\<^sub>c(right_coproj \<one> \<one>)}"
-  by(typecheck_cfuncs, safe, typecheck_cfuncs, smt (z3) comp_associative2 coprojs_jointly_surj one_unique_element)
+  by(typecheck_cfuncs, safe, typecheck_cfuncs, smt (verit) comp_associative2 coprojs_jointly_surj one_unique_element)
 
 lemma set_three_card: 
  "card {x. x \<in>\<^sub>c (\<one>\<Coprod>(\<one>\<Coprod>\<one>))} = 3"
@@ -325,7 +325,7 @@ proof(clarify)
   proof(cases "x = left_coproj \<one> (\<one> \<Coprod> \<one>)")
     assume case1: "x = left_coproj \<one> (\<one> \<Coprod> \<one>)"
     then show "x = y"
-      by (typecheck_cfuncs, smt (z3) mx_eqs_my element_pair_eq f1 f2 f3 false_func_type maps_into_1u1 terminal_func_unique true_false_distinct true_func_type x_form y_form)
+      by (typecheck_cfuncs, smt (verit) mx_eqs_my element_pair_eq f1 f2 f3 false_func_type maps_into_1u1 terminal_func_unique true_false_distinct true_func_type x_form y_form)
   next
     assume not_case1: "x \<noteq> left_coproj \<one> (\<one> \<Coprod> \<one>)"
     then have case2_or_3: "x = (right_coproj \<one> (\<one>\<Coprod>\<one>)\<circ>\<^sub>c left_coproj \<one> \<one>)\<or> 
@@ -335,7 +335,7 @@ proof(clarify)
     proof(cases "x = (right_coproj \<one> (\<one>\<Coprod>\<one>)\<circ>\<^sub>c left_coproj \<one> \<one>)")
       assume case2: "x = right_coproj \<one> (\<one> \<Coprod> \<one>) \<circ>\<^sub>c left_coproj \<one> \<one>"
       then show "x = y"
-        by (typecheck_cfuncs, smt (z3) cart_prod_eq2 case2 f1 f2 f3 false_func_type id_right_unit2 left_proj_type maps_into_1u1 mx_eqs_my terminal_func_comp terminal_func_comp_elem terminal_func_unique true_false_distinct true_func_type y_form)        
+        by (typecheck_cfuncs, smt (verit) cart_prod_eq2 case2 f1 f2 f3 false_func_type id_right_unit2 left_proj_type maps_into_1u1 mx_eqs_my terminal_func_comp terminal_func_comp_elem terminal_func_unique true_false_distinct true_func_type y_form)        
     next
       assume not_case2: "x \<noteq> right_coproj \<one> (\<one> \<Coprod> \<one>) \<circ>\<^sub>c left_coproj \<one> \<one>"
       then have case3: "x = right_coproj \<one> (\<one>\<Coprod>\<one>) \<circ>\<^sub>c(right_coproj \<one> \<one>)"
@@ -362,7 +362,7 @@ lemma OR_true_left_is_true:
   shows "OR \<circ>\<^sub>c \<langle>\<t>,p\<rangle> = \<t>"
 proof - 
   have "\<exists> j. j \<in>\<^sub>c \<one>\<Coprod>(\<one>\<Coprod>\<one>) \<and> (\<langle>\<t>, \<t>\<rangle>\<amalg> (\<langle>\<t>, \<f>\<rangle> \<amalg>\<langle>\<f>, \<t>\<rangle>)) \<circ>\<^sub>c j  = \<langle>\<t>,p\<rangle>"
-    by (typecheck_cfuncs, smt (z3) assms comp_associative2 comp_type left_coproj_cfunc_coprod
+    by (typecheck_cfuncs, smt (verit) assms comp_associative2 comp_type left_coproj_cfunc_coprod
         left_proj_type right_coproj_cfunc_coprod right_proj_type true_false_only_truth_values)
   then show ?thesis 
     by (typecheck_cfuncs, smt (verit, ccfv_SIG)  NOT_false_is_true NOT_is_pullback OR_is_pullback
@@ -374,7 +374,7 @@ lemma OR_true_right_is_true:
   shows "OR \<circ>\<^sub>c \<langle>p,\<t>\<rangle> = \<t>"
 proof - 
   have "\<exists> j. j \<in>\<^sub>c \<one>\<Coprod>(\<one>\<Coprod>\<one>) \<and> (\<langle>\<t>, \<t>\<rangle>\<amalg> (\<langle>\<t>, \<f>\<rangle> \<amalg>\<langle>\<f>, \<t>\<rangle>)) \<circ>\<^sub>c j = \<langle>p,\<t>\<rangle>"
-    by (typecheck_cfuncs, smt (z3) assms comp_associative2 comp_type left_coproj_cfunc_coprod
+    by (typecheck_cfuncs, smt (verit) assms comp_associative2 comp_type left_coproj_cfunc_coprod
         left_proj_type right_coproj_cfunc_coprod right_proj_type true_false_only_truth_values)
   then show ?thesis 
     by (typecheck_cfuncs, smt (verit, ccfv_SIG) NOT_false_is_true NOT_is_pullback OR_is_pullback
@@ -547,7 +547,7 @@ proof(clarify)
       then have "\<langle>\<t>,\<f>\<rangle> \<amalg> \<langle>\<f>,\<t>\<rangle> \<circ>\<^sub>c left_coproj \<one> \<one> = \<langle>\<t>,\<f>\<rangle> \<amalg> \<langle>\<f>,\<t>\<rangle> \<circ>\<^sub>c right_coproj \<one> \<one>"
         using w_is eqs id_right_unit2 x_def y_def by (typecheck_cfuncs, force)
       then have "\<langle>\<t>,\<f>\<rangle> = \<langle>\<f>,\<t>\<rangle>"
-        by (typecheck_cfuncs, smt (z3) cfunc_coprod_unique coprod_eq2 pre_XOR_type right_coproj_cfunc_coprod)      
+        by (typecheck_cfuncs, smt (verit) cfunc_coprod_unique coprod_eq2 pre_XOR_type right_coproj_cfunc_coprod)      
       then have "\<t> = \<f> \<and> \<f> = \<t>"
         using cart_prod_eq2 false_func_type true_func_type by blast
       then show False
@@ -575,7 +575,7 @@ proof(clarify)
       then have "\<langle>\<t>,\<f>\<rangle> \<amalg> \<langle>\<f>,\<t>\<rangle> \<circ>\<^sub>c left_coproj \<one> \<one> = \<langle>\<t>,\<f>\<rangle> \<amalg> \<langle>\<f>,\<t>\<rangle> \<circ>\<^sub>c right_coproj \<one> \<one>"
         using w_is eqs id_right_unit2 x_def y_def by (typecheck_cfuncs, force)
       then have "\<langle>\<t>,\<f>\<rangle> = \<langle>\<f>,\<t>\<rangle>"
-        by (typecheck_cfuncs, smt (z3)  cfunc_coprod_unique coprod_eq2 pre_XOR_type right_coproj_cfunc_coprod)      
+        by (typecheck_cfuncs, smt (verit)  cfunc_coprod_unique coprod_eq2 pre_XOR_type right_coproj_cfunc_coprod)      
       then have "\<t> = \<f> \<and> \<f> = \<t>"
         using cart_prod_eq2 false_func_type true_func_type by blast
       then show False
@@ -744,7 +744,7 @@ proof(clarify)
   proof(cases "x = left_coproj \<one> (\<one> \<Coprod> \<one>)")
     assume case1: "x = left_coproj \<one> (\<one> \<Coprod> \<one>)"
     then show "x = y"
-      by (typecheck_cfuncs, smt (z3) mx_eqs_my element_pair_eq f1 f2 f3 false_func_type maps_into_1u1 terminal_func_unique true_false_distinct true_func_type x_form y_form)
+      by (typecheck_cfuncs, smt (verit) mx_eqs_my element_pair_eq f1 f2 f3 false_func_type maps_into_1u1 terminal_func_unique true_false_distinct true_func_type x_form y_form)
   next
     assume not_case1: "x \<noteq> left_coproj \<one> (\<one> \<Coprod> \<one>)"
     then have case2_or_3: "x = right_coproj \<one> (\<one>\<Coprod>\<one>)\<circ>\<^sub>c left_coproj \<one> \<one> \<or> 
@@ -754,13 +754,13 @@ proof(clarify)
     proof(cases "x = right_coproj \<one> (\<one>\<Coprod>\<one>)\<circ>\<^sub>c left_coproj \<one> \<one>")
       assume case2: "x = right_coproj \<one> (\<one> \<Coprod> \<one>) \<circ>\<^sub>c left_coproj \<one> \<one>"
       then show "x = y"
-        by (smt (z3) NOT_false_is_true NOT_is_pullback NOT_true_is_false NOT_type x_type x_type' cart_prod_eq2 case2 cfunc_type_def characteristic_func_eq characteristic_func_is_pullback characteristic_function_exists comp_associative diag_on_elements diagonal_type element_monomorphism f1 f2 f3 false_func_type left_proj_type maps_into_1u1 mx_eqs_my terminal_func_unique true_false_distinct true_func_type x_type y_form)
+        by (smt (verit) NOT_false_is_true NOT_is_pullback NOT_true_is_false NOT_type x_type x_type' cart_prod_eq2 case2 cfunc_type_def characteristic_func_eq characteristic_func_is_pullback characteristic_function_exists comp_associative diag_on_elements diagonal_type element_monomorphism f1 f2 f3 false_func_type left_proj_type maps_into_1u1 mx_eqs_my terminal_func_unique true_false_distinct true_func_type x_type y_form)
     next
       assume not_case2: "x \<noteq> right_coproj \<one> (\<one> \<Coprod> \<one>) \<circ>\<^sub>c left_coproj \<one> \<one>"
       then have case3: "x = right_coproj \<one> (\<one>\<Coprod>\<one>) \<circ>\<^sub>c right_coproj \<one> \<one>"
         using case2_or_3 by blast
       then show "x = y"
-        by (smt (z3) NOT_false_is_true NOT_is_pullback NOT_true_is_false NOT_type x_type x_type' cart_prod_eq2 case3 cfunc_type_def characteristic_func_eq characteristic_func_is_pullback characteristic_function_exists comp_associative diag_on_elements diagonal_type element_monomorphism f1 f2 f3 false_func_type left_proj_type maps_into_1u1 mx_eqs_my terminal_func_unique true_false_distinct true_func_type x_type y_form)
+        by (smt (verit) NOT_false_is_true NOT_is_pullback NOT_true_is_false NOT_type x_type x_type' cart_prod_eq2 case3 cfunc_type_def characteristic_func_eq characteristic_func_is_pullback characteristic_function_exists comp_associative diag_on_elements diagonal_type element_monomorphism f1 f2 f3 false_func_type left_proj_type maps_into_1u1 mx_eqs_my terminal_func_unique true_false_distinct true_func_type x_type y_form)
     qed
   qed
 qed
@@ -781,7 +781,7 @@ lemma NAND_left_false_is_true:
   shows "NAND \<circ>\<^sub>c \<langle>\<f>,p\<rangle> = \<t>"
 proof - 
   have "\<exists> j. j \<in>\<^sub>c \<one>\<Coprod>(\<one>\<Coprod>\<one>) \<and> (\<langle>\<f>, \<f>\<rangle> \<amalg> (\<langle>\<t>, \<f>\<rangle> \<amalg>\<langle>\<f>, \<t>\<rangle>)) \<circ>\<^sub>c j  = \<langle>\<f>,p\<rangle>"
-    by (typecheck_cfuncs, smt (z3) assms comp_associative2 comp_type left_coproj_cfunc_coprod left_proj_type right_coproj_cfunc_coprod right_proj_type true_false_only_truth_values)
+    by (typecheck_cfuncs, smt (verit) assms comp_associative2 comp_type left_coproj_cfunc_coprod left_proj_type right_coproj_cfunc_coprod right_proj_type true_false_only_truth_values)
   then show ?thesis 
     by (typecheck_cfuncs, smt (verit, ccfv_threshold) NAND_is_pullback comp_associative2 id_right_unit2 is_pullback_def terminal_func_comp_elem)
 qed
@@ -791,7 +791,7 @@ lemma NAND_right_false_is_true:
   shows "NAND \<circ>\<^sub>c \<langle>p,\<f>\<rangle> = \<t>"
 proof - 
   have "\<exists> j. j \<in>\<^sub>c \<one>\<Coprod>(\<one>\<Coprod>\<one>) \<and> (\<langle>\<f>, \<f>\<rangle>\<amalg> (\<langle>\<t>, \<f>\<rangle> \<amalg>\<langle>\<f>, \<t>\<rangle>)) \<circ>\<^sub>c j  = \<langle>p,\<f>\<rangle>"
-    by (typecheck_cfuncs, smt (z3) assms comp_associative2 comp_type left_coproj_cfunc_coprod left_proj_type right_coproj_cfunc_coprod right_proj_type true_false_only_truth_values)
+    by (typecheck_cfuncs, smt (verit) assms comp_associative2 comp_type left_coproj_cfunc_coprod left_proj_type right_coproj_cfunc_coprod right_proj_type true_false_only_truth_values)
   then show ?thesis 
     by (typecheck_cfuncs, smt (verit, ccfv_SIG) NAND_is_pullback NOT_false_is_true NOT_is_pullback  comp_associative2 is_pullback_def  terminal_func_comp)
 qed
@@ -804,7 +804,7 @@ proof(rule ccontr)
     using  true_false_only_truth_values by (typecheck_cfuncs, blast)
   then obtain j where j_type[type_rule]:  "j \<in>\<^sub>c \<one>\<Coprod>(\<one>\<Coprod>\<one>)" and j_def: "(\<langle>\<f>, \<f>\<rangle>\<amalg> (\<langle>\<t>, \<f>\<rangle> \<amalg>\<langle>\<f>, \<t>\<rangle>)) \<circ>\<^sub>c j  = \<langle>\<t>,\<t>\<rangle>"
     using NAND_is_pullback unfolding is_pullback_def
-    by (typecheck_cfuncs, smt (z3) NAND_is_pullback id_right_unit2 id_type)
+    by (typecheck_cfuncs, smt (verit) NAND_is_pullback id_right_unit2 id_type)
   then have trichotomy: "(\<langle>\<f>,\<f>\<rangle> = \<langle>\<t>,\<t>\<rangle>) \<or> (\<langle>\<t>, \<f>\<rangle> = \<langle>\<t>,\<t>\<rangle>) \<or> (\<langle>\<f>, \<t>\<rangle> = \<langle>\<t>,\<t>\<rangle>)"
   proof(cases "j = left_coproj \<one> (\<one> \<Coprod> \<one>)")
     assume case1: "j = left_coproj \<one> (\<one> \<Coprod> \<one>)"
@@ -926,7 +926,7 @@ proof(clarify)
       then have "\<langle>\<t>, \<t>\<rangle> \<amalg>\<langle>\<f>, \<f>\<rangle> \<circ>\<^sub>c left_coproj \<one> \<one> = \<langle>\<t>, \<t>\<rangle> \<amalg>\<langle>\<f>, \<f>\<rangle> \<circ>\<^sub>c right_coproj \<one> \<one>"
         using \<open>v = id\<^sub>c \<one>\<close> \<open>w = id\<^sub>c \<one>\<close> eqs id_right_unit2 x_def y_def by (typecheck_cfuncs, force)
       then have "\<langle>\<t>, \<t>\<rangle> = \<langle>\<f>,\<f>\<rangle>"
-        by (typecheck_cfuncs, smt (z3)  cfunc_coprod_unique coprod_eq2 pre_IFF_type right_coproj_cfunc_coprod)      
+        by (typecheck_cfuncs, smt (verit)  cfunc_coprod_unique coprod_eq2 pre_IFF_type right_coproj_cfunc_coprod)      
       then have "\<t> = \<f>"
         using cart_prod_eq2 false_func_type true_func_type by blast
       then show False
@@ -954,7 +954,7 @@ proof(clarify)
       then have "\<langle>\<t>, \<t>\<rangle> \<amalg>\<langle>\<f>, \<f>\<rangle> \<circ>\<^sub>c left_coproj \<one> \<one> = \<langle>\<t>, \<t>\<rangle> \<amalg>\<langle>\<f>, \<f>\<rangle> \<circ>\<^sub>c right_coproj \<one> \<one>"
         using \<open>v = id\<^sub>c \<one>\<close> \<open>w = id\<^sub>c \<one>\<close> eqs id_right_unit2 x_def y_def by (typecheck_cfuncs, force)
       then have "\<langle>\<t>, \<t>\<rangle> = \<langle>\<f>, \<f>\<rangle>"
-        by (typecheck_cfuncs, smt (z3)  cfunc_coprod_unique coprod_eq2 pre_IFF_type right_coproj_cfunc_coprod)      
+        by (typecheck_cfuncs, smt (verit)  cfunc_coprod_unique coprod_eq2 pre_IFF_type right_coproj_cfunc_coprod)      
       then have "\<t> = \<f>"
         using cart_prod_eq2 false_func_type true_func_type by blast
       then show False
@@ -984,7 +984,7 @@ lemma IFF_true_true_is_true:
  "IFF \<circ>\<^sub>c \<langle>\<t>,\<t>\<rangle> = \<t>"
 proof - 
   have "\<exists> j. j \<in>\<^sub>c (\<one>\<Coprod>\<one>) \<and> (\<langle>\<t>, \<t>\<rangle> \<amalg>\<langle>\<f>, \<f>\<rangle>) \<circ>\<^sub>c j  = \<langle>\<t>,\<t>\<rangle>"
-    by (typecheck_cfuncs, smt (z3)  comp_associative2 comp_type left_coproj_cfunc_coprod left_proj_type right_coproj_cfunc_coprod right_proj_type true_false_only_truth_values)
+    by (typecheck_cfuncs, smt (verit)  comp_associative2 comp_type left_coproj_cfunc_coprod left_proj_type right_coproj_cfunc_coprod right_proj_type true_false_only_truth_values)
   then show ?thesis 
     by (smt (verit, ccfv_threshold) AND_is_pullback AND_true_true_is_true IFF_is_pullback comp_associative2 is_pullback_def  terminal_func_comp)
 qed
@@ -993,7 +993,7 @@ lemma IFF_false_false_is_true:
  "IFF \<circ>\<^sub>c \<langle>\<f>,\<f>\<rangle> = \<t>"
 proof - 
   have "\<exists> j. j \<in>\<^sub>c (\<one>\<Coprod>\<one>) \<and> (\<langle>\<t>, \<t>\<rangle> \<amalg>\<langle>\<f>, \<f>\<rangle>) \<circ>\<^sub>c j  = \<langle>\<f>,\<f>\<rangle>"
-    by (typecheck_cfuncs, smt (z3)  comp_associative2 comp_type left_coproj_cfunc_coprod left_proj_type right_coproj_cfunc_coprod right_proj_type true_false_only_truth_values)
+    by (typecheck_cfuncs, smt (verit)  comp_associative2 comp_type left_coproj_cfunc_coprod left_proj_type right_coproj_cfunc_coprod right_proj_type true_false_only_truth_values)
   then show ?thesis 
     by (smt (verit, ccfv_threshold) AND_is_pullback AND_true_true_is_true IFF_is_pullback comp_associative2 is_pullback_def  terminal_func_comp)
 qed
@@ -1162,7 +1162,7 @@ proof(clarify)
   proof(cases "x = left_coproj \<one> (\<one> \<Coprod> \<one>)")
     assume case1: "x = left_coproj \<one> (\<one> \<Coprod> \<one>)"
     then show "x = y"
-      by (typecheck_cfuncs, smt (z3) mx_eqs_my element_pair_eq f1 f2 f3 false_func_type maps_into_1u1 terminal_func_unique true_false_distinct true_func_type x_form y_form)
+      by (typecheck_cfuncs, smt (verit) mx_eqs_my element_pair_eq f1 f2 f3 false_func_type maps_into_1u1 terminal_func_unique true_false_distinct true_func_type x_form y_form)
   next
     assume not_case1: "x \<noteq> left_coproj \<one> (\<one> \<Coprod> \<one>)"
     then have case2_or_3: "x = (right_coproj \<one> (\<one>\<Coprod>\<one>)\<circ>\<^sub>c left_coproj \<one> \<one>)\<or> 
@@ -1172,13 +1172,13 @@ proof(clarify)
     proof(cases "x = right_coproj \<one> (\<one>\<Coprod>\<one>)\<circ>\<^sub>c left_coproj \<one> \<one>")
       assume case2: "x = right_coproj \<one> (\<one> \<Coprod> \<one>) \<circ>\<^sub>c left_coproj \<one> \<one>"
       then show "x = y"
-        by (typecheck_cfuncs, smt (z3) a1 NOT_false_is_true NOT_is_pullback  cart_prod_eq2 cfunc_prod_comp cfunc_type_def characteristic_func_eq characteristic_func_is_pullback characteristic_function_exists comp_associative element_monomorphism f1 f2 f3 false_func_type left_proj_type maps_into_1u1 mx_eqs_my terminal_func_unique true_false_distinct true_func_type y_form)
+        by (typecheck_cfuncs, smt (verit) a1 NOT_false_is_true NOT_is_pullback  cart_prod_eq2 cfunc_prod_comp cfunc_type_def characteristic_func_eq characteristic_func_is_pullback characteristic_function_exists comp_associative element_monomorphism f1 f2 f3 false_func_type left_proj_type maps_into_1u1 mx_eqs_my terminal_func_unique true_false_distinct true_func_type y_form)
     next
       assume not_case2: "x \<noteq> right_coproj \<one> (\<one> \<Coprod> \<one>) \<circ>\<^sub>c left_coproj \<one> \<one>"
       then have case3: "x = right_coproj \<one> (\<one>\<Coprod>\<one>) \<circ>\<^sub>c(right_coproj \<one> \<one>)"
         using case2_or_3 by blast
       then show "x = y"
-        by (smt (z3) NOT_false_is_true NOT_is_pullback a1 cart_prod_eq2 cfunc_type_def characteristic_func_eq characteristic_func_is_pullback characteristic_function_exists comp_associative diag_on_elements diagonal_type element_monomorphism f1 f2 f3 false_func_type left_proj_type maps_into_1u1 mx_eqs_my terminal_func_unique true_false_distinct true_func_type x_type y_form)
+        by (smt (verit) NOT_false_is_true NOT_is_pullback a1 cart_prod_eq2 cfunc_type_def characteristic_func_eq characteristic_func_is_pullback characteristic_function_exists comp_associative diag_on_elements diagonal_type element_monomorphism f1 f2 f3 false_func_type left_proj_type maps_into_1u1 mx_eqs_my terminal_func_unique true_false_distinct true_func_type x_type y_form)
     qed
   qed
 qed
@@ -1207,7 +1207,7 @@ lemma IMPLIES_false_true_is_true:
   "IMPLIES \<circ>\<^sub>c \<langle>\<f>,\<t>\<rangle> = \<t>"
 proof -   
   have "\<exists> j. j \<in>\<^sub>c \<one>\<Coprod>(\<one>\<Coprod>\<one>) \<and> (\<langle>\<t>, \<t>\<rangle>\<amalg> (\<langle>\<f>, \<f>\<rangle> \<amalg>\<langle>\<f>, \<t>\<rangle>)) \<circ>\<^sub>c j  = \<langle>\<f>,\<t>\<rangle>"
-    by (typecheck_cfuncs, smt (z3) comp_associative2 comp_type right_coproj_cfunc_coprod right_proj_type)
+    by (typecheck_cfuncs, smt (verit) comp_associative2 comp_type right_coproj_cfunc_coprod right_proj_type)
   then show ?thesis
     by (smt (verit, ccfv_threshold) IMPLIES_is_pullback NOT_false_is_true NOT_is_pullback comp_associative2 is_pullback_def  terminal_func_comp)
 qed 
@@ -1254,7 +1254,7 @@ proof(rule ccontr)
       show False
       proof - 
         have "(\<langle>\<t>, \<t>\<rangle>\<amalg> (\<langle>\<f>, \<f>\<rangle> \<amalg>\<langle>\<f>, \<t>\<rangle>)) \<circ>\<^sub>c j = \<langle>\<f>, \<f>\<rangle>"
-          by (typecheck_cfuncs, smt (z3) case2 comp_associative2 left_coproj_cfunc_coprod left_proj_type right_coproj_cfunc_coprod right_proj_type)
+          by (typecheck_cfuncs, smt (verit) case2 comp_associative2 left_coproj_cfunc_coprod left_proj_type right_coproj_cfunc_coprod right_proj_type)
         then have "\<langle>\<t>, \<t>\<rangle> = \<langle>\<f>,\<f>\<rangle>"
           using XOR_false_false_is_false XOR_only_true_left_is_true j_def by auto
         then have "\<t> = \<f>"
@@ -1269,7 +1269,7 @@ proof(rule ccontr)
       show False
       proof - 
         have "(\<langle>\<t>, \<t>\<rangle>\<amalg> (\<langle>\<f>, \<f>\<rangle> \<amalg>\<langle>\<f>, \<t>\<rangle>)) \<circ>\<^sub>c j = \<langle>\<f>, \<t>\<rangle>"
-          by (typecheck_cfuncs, smt (z3) case3 comp_associative2 left_coproj_cfunc_coprod left_proj_type right_coproj_cfunc_coprod right_proj_type)
+          by (typecheck_cfuncs, smt (verit) case3 comp_associative2 left_coproj_cfunc_coprod left_proj_type right_coproj_cfunc_coprod right_proj_type)
         then have "\<langle>\<t>, \<t>\<rangle> = \<langle>\<f>, \<t>\<rangle>"
           by (metis cart_prod_eq2 false_func_type j_def true_func_type)
         then have "\<t> = \<f>"
@@ -1495,7 +1495,7 @@ proof -
     = ((left_cart_proj \<Omega> \<Omega> \<circ>\<^sub>c \<langle>\<t>,\<t>\<rangle>) \<amalg> (left_cart_proj \<Omega> \<Omega> \<circ>\<^sub>c \<langle>\<f>,\<f>\<rangle>) \<amalg> (left_cart_proj \<Omega> \<Omega> \<circ>\<^sub>c \<langle>\<f>,\<t>\<rangle>)) \<circ>\<^sub>c z"
     by (typecheck_cfuncs_prems, simp add: cfunc_coprod_comp)
   then have "P \<circ>\<^sub>c left_cart_proj X Y = (\<t> \<amalg> \<f> \<amalg> \<f>) \<circ>\<^sub>c z"
-    by (typecheck_cfuncs_prems, smt left_cart_proj_cfunc_prod)
+    by (typecheck_cfuncs_prems, smt (verit) left_cart_proj_cfunc_prod)
 
   show "Q = \<t> \<circ>\<^sub>c \<beta>\<^bsub>Y\<^esub>"
   proof (etcs_rule one_separator)
@@ -1507,14 +1507,14 @@ proof -
     have "z \<circ>\<^sub>c \<langle>x,y\<rangle> = left_coproj \<one> (\<one> \<Coprod> \<one>)
         \<or> z \<circ>\<^sub>c \<langle>x,y\<rangle> = right_coproj \<one> (\<one> \<Coprod> \<one>) \<circ>\<^sub>c left_coproj \<one> \<one>
         \<or> z \<circ>\<^sub>c \<langle>x,y\<rangle> = right_coproj \<one> (\<one> \<Coprod> \<one>) \<circ>\<^sub>c right_coproj \<one> \<one>"
-      by (typecheck_cfuncs, smt comp_associative2 coprojs_jointly_surj one_unique_element)
+      by (typecheck_cfuncs, smt (verit) comp_associative2 coprojs_jointly_surj one_unique_element)
     then show "Q \<circ>\<^sub>c y = (\<t> \<circ>\<^sub>c \<beta>\<^bsub>Y\<^esub>) \<circ>\<^sub>c y"
     proof safe
       assume "z \<circ>\<^sub>c \<langle>x,y\<rangle> = left_coproj \<one> (\<one> \<Coprod> \<one>)"
       then have "(P \<times>\<^sub>f Q) \<circ>\<^sub>c \<langle>x,y\<rangle> = (\<langle>\<t>,\<t>\<rangle> \<amalg> \<langle>\<f>,\<f>\<rangle> \<amalg> \<langle>\<f>,\<t>\<rangle>) \<circ>\<^sub>c left_coproj \<one> (\<one> \<Coprod> \<one>)"
-        by (typecheck_cfuncs, smt comp_associative2 z_eq z_type)
+        by (typecheck_cfuncs, smt (verit) comp_associative2 z_eq z_type)
       then have "(P \<times>\<^sub>f Q) \<circ>\<^sub>c \<langle>x,y\<rangle> = \<langle>\<t>,\<t>\<rangle>"
-        by (typecheck_cfuncs_prems, smt left_coproj_cfunc_coprod)
+        by (typecheck_cfuncs_prems, smt (verit) left_coproj_cfunc_coprod)
       then have "Q \<circ>\<^sub>c y = \<t>"
         by (typecheck_cfuncs_prems, smt (verit, best) cfunc_cross_prod_comp_cfunc_prod comp_associative2 comp_type id_right_unit2 right_cart_proj_cfunc_prod)
       then show "Q \<circ>\<^sub>c y = (\<t> \<circ>\<^sub>c \<beta>\<^bsub>Y\<^esub>) \<circ>\<^sub>c y"
@@ -1522,15 +1522,15 @@ proof -
     next
       assume "z \<circ>\<^sub>c \<langle>x,y\<rangle> = right_coproj \<one> (\<one> \<Coprod> \<one>) \<circ>\<^sub>c left_coproj \<one> \<one>"
       then have "(P \<times>\<^sub>f Q) \<circ>\<^sub>c \<langle>x,y\<rangle> = (\<langle>\<t>,\<t>\<rangle> \<amalg> \<langle>\<f>,\<f>\<rangle> \<amalg> \<langle>\<f>,\<t>\<rangle>) \<circ>\<^sub>c right_coproj \<one> (\<one> \<Coprod> \<one>) \<circ>\<^sub>c left_coproj \<one> \<one>"
-        by (typecheck_cfuncs, smt comp_associative2 z_eq z_type)
+        by (typecheck_cfuncs, smt (verit) comp_associative2 z_eq z_type)
       then have "(P \<times>\<^sub>f Q) \<circ>\<^sub>c \<langle>x,y\<rangle> = (\<langle>\<f>,\<f>\<rangle> \<amalg> \<langle>\<f>,\<t>\<rangle>) \<circ>\<^sub>c left_coproj \<one> \<one>"
-        by (typecheck_cfuncs_prems, smt right_coproj_cfunc_coprod comp_associative2)
+        by (typecheck_cfuncs_prems, smt (verit) right_coproj_cfunc_coprod comp_associative2)
       then have "(P \<times>\<^sub>f Q) \<circ>\<^sub>c \<langle>x,y\<rangle> = \<langle>\<f>,\<f>\<rangle>"
-        by (typecheck_cfuncs_prems, smt left_coproj_cfunc_coprod)
+        by (typecheck_cfuncs_prems, smt (verit) left_coproj_cfunc_coprod)
       then have "P \<circ>\<^sub>c x = \<f>"
         by (typecheck_cfuncs_prems, smt (verit, best) cfunc_cross_prod_comp_cfunc_prod comp_associative2 comp_type id_right_unit2 left_cart_proj_cfunc_prod)
       also have "P \<circ>\<^sub>c x = \<t>"
-        using P_true by (typecheck_cfuncs_prems, smt (z3) comp_associative2 id_right_unit2 id_type one_unique_element terminal_func_comp terminal_func_type x_in_X)
+        using P_true by (typecheck_cfuncs_prems, smt (verit) comp_associative2 id_right_unit2 id_type one_unique_element terminal_func_comp terminal_func_type x_in_X)
       ultimately have False
         using true_false_distinct by simp
       then show "Q \<circ>\<^sub>c y = (\<t> \<circ>\<^sub>c \<beta>\<^bsub>Y\<^esub>) \<circ>\<^sub>c y"
@@ -1538,15 +1538,15 @@ proof -
     next
       assume "z \<circ>\<^sub>c \<langle>x,y\<rangle> = right_coproj \<one> (\<one> \<Coprod> \<one>) \<circ>\<^sub>c right_coproj \<one> \<one>"
       then have "(P \<times>\<^sub>f Q) \<circ>\<^sub>c \<langle>x,y\<rangle> = (\<langle>\<t>,\<t>\<rangle> \<amalg> \<langle>\<f>,\<f>\<rangle> \<amalg> \<langle>\<f>,\<t>\<rangle>) \<circ>\<^sub>c right_coproj \<one> (\<one> \<Coprod> \<one>) \<circ>\<^sub>c right_coproj \<one> \<one>"
-        by (typecheck_cfuncs, smt comp_associative2 z_eq z_type)
+        by (typecheck_cfuncs, smt (verit) comp_associative2 z_eq z_type)
       then have "(P \<times>\<^sub>f Q) \<circ>\<^sub>c \<langle>x,y\<rangle> = (\<langle>\<f>,\<f>\<rangle> \<amalg> \<langle>\<f>,\<t>\<rangle>) \<circ>\<^sub>c right_coproj \<one> \<one>"
-        by (typecheck_cfuncs_prems, smt right_coproj_cfunc_coprod comp_associative2)
+        by (typecheck_cfuncs_prems, smt (verit) right_coproj_cfunc_coprod comp_associative2)
       then have "(P \<times>\<^sub>f Q) \<circ>\<^sub>c \<langle>x,y\<rangle> = \<langle>\<f>,\<t>\<rangle>"
-        by (typecheck_cfuncs_prems, smt right_coproj_cfunc_coprod)
+        by (typecheck_cfuncs_prems, smt (verit) right_coproj_cfunc_coprod)
       then have "Q \<circ>\<^sub>c y = \<t>"
         by (typecheck_cfuncs_prems, smt (verit, best) cfunc_cross_prod_comp_cfunc_prod comp_associative2 comp_type id_right_unit2 right_cart_proj_cfunc_prod)
       then show "Q \<circ>\<^sub>c y = (\<t> \<circ>\<^sub>c \<beta>\<^bsub>Y\<^esub>) \<circ>\<^sub>c y"
-        by (typecheck_cfuncs, smt (z3) comp_associative2 id_right_unit2 id_type one_unique_element terminal_func_comp terminal_func_type)
+        by (typecheck_cfuncs, smt (verit) comp_associative2 id_right_unit2 id_type one_unique_element terminal_func_comp terminal_func_type)
     qed
   qed
 qed
@@ -1598,7 +1598,7 @@ lemma OR_AND_distributive:
   assumes "q \<in>\<^sub>c \<Omega>"
   assumes "r \<in>\<^sub>c \<Omega>"
   shows "OR \<circ>\<^sub>c \<langle>p, AND \<circ>\<^sub>c \<langle>q,r\<rangle>\<rangle> = AND \<circ>\<^sub>c \<langle>OR \<circ>\<^sub>c \<langle>p,q\<rangle>, OR \<circ>\<^sub>c \<langle>p,r\<rangle>\<rangle>"
-  by (smt (z3) AND_commutative AND_false_right_is_false AND_true_true_is_true OR_commutative OR_false_false_is_false OR_true_right_is_true assms true_false_only_truth_values)
+  by (smt (verit) AND_commutative AND_false_right_is_false AND_true_true_is_true OR_commutative OR_false_false_is_false OR_true_right_is_true assms true_false_only_truth_values)
 
 lemma OR_AND_absorption:
   assumes "p \<in>\<^sub>c \<Omega>"

@@ -1822,7 +1822,7 @@ next
     case j_gt_n
     moreover from this have "(take (Suc n) (list_decode b))[j:=v] =
         (take n (list_decode b))[j:=v] @ [(list_decode b) ! n]"
-      using n take_Suc_conv_app_nth by auto
+      using n take_Suc_conv_app_nth by (auto simp: list_update_beyond)
     ultimately show ?thesis using * by auto
   qed
 qed

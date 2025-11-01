@@ -1,11 +1,13 @@
-theory MLSS_Proc                
+(*<*)
+theory MLSS_Proc
   imports MLSS_Realisation MLSS_HF_Extras MLSS_Semantics MLSS_Typing
 begin
+(*>*)
 
 section \<open>A Decision Procedure for MLSS\<close>
 text \<open>
   This theory proves the soundness and completeness of the
-  tableau calculus defined in \<^file>\<open>./MLSS_Calculus.thy\<close>
+  tableau calculus defined above.
   It then lifts those properties to a recursive procedure
   that applies the rules of the calculus exhaustively.
   To obtain a decision procedure, we also prove termination.
@@ -2829,4 +2831,6 @@ theorem mlss_proc_sound:
 
 end
 
+(*<*)
 end
+(*>*)

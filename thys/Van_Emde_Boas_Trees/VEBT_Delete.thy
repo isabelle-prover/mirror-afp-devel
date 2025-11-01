@@ -99,8 +99,8 @@ lemma del_in_range:
                                  deg newlist summary )
                        )else 
                         (Node (Some (mi, ma)) deg treeList summary))"
-  using vebt_delete.simps(7)[of mi ma "deg-2" treeList summary x] 
-  by (smt (z3) add_2_eq_Suc assms(1) assms(2) assms(3) leD le_add_diff_inverse)
+  using vebt_delete.simps(7)[of mi ma "deg-2" treeList summary x] add_2_eq_Suc
+  by (smt (verit) add_2_eq_Suc assms(1) assms(2) assms(3) leD le_add_diff_inverse)
 
 lemma del_x_not_mia:
   assumes "x > mi \<and> x \<le> ma" and "mi \<noteq> ma"  and "deg \<ge> 2"  and "high x (deg div 2) = h" and
@@ -154,7 +154,7 @@ lemma del_x_not_mi:
                                                             else ma)))
                                  deg newlist summary )
 )" using del_x_not_mia[of mi x ma deg h l treeList summary]
-  by (smt (z3) assms(1) assms(2) assms(3) assms(4) assms(5) assms(6) assms(7) assms(8))
+  by (smt (verit) assms(1) assms(2) assms(3) assms(4) assms(5) assms(6) assms(7) assms(8))
 
 lemma del_x_not_mi_new_node_nil: 
   assumes "x > mi \<and> x \<le> ma" and "mi \<noteq> ma"  and "deg \<ge> 2"  and "high x (deg div 2) = h" and
@@ -246,7 +246,7 @@ lemma del_x_mi:
                                  deg newlist summary ))
           "
   using del_x_mia[of x mi ma deg treeList summary]
-  by (smt (z3) assms(1) assms(2) assms(3) assms(4) assms(5) assms(6) assms(7))
+  by (smt (verit) assms(1) assms(2) assms(3) assms(4) assms(5) assms(6) assms(7))
 
 lemma del_x_mi_lets_in: 
   assumes "x = mi \<and> x < ma" and "mi \<noteq> ma"  and "deg \<ge> 2"  and "high xn (deg div 2) = h" and
@@ -271,7 +271,7 @@ lemma del_x_mi_lets_in:
                                                             else ma)))
                                  deg newlist summary ))"
   using del_x_mi[of x mi ma deg xn h summary treeList l]
-  by (smt (z3) assms(1) assms(2) assms(3) assms(4) assms(5) assms(6) assms(7) assms(8) assms(9))
+  by (smt (verit) assms(1) assms(2) assms(3) assms(4) assms(5) assms(6) assms(7) assms(8) assms(9))
 
 lemma del_x_mi_lets_in_minNull: 
   assumes "x = mi \<and> x < ma" and "mi \<noteq> ma"  and "deg \<ge> 2"  and "high xn (deg div 2) = h" and
@@ -539,7 +539,7 @@ next
                   hence "both_member_options (?newlist !(high y n)) (low y n)" 
                     using assmy by presburger
                   then show ?thesis 
-                    by (smt (z3) Suc_1 Suc_le_D \<open>deg div 2 = n\<close> \<open>length treeList = length ?newlist\<close> aa add_leD1 bb both_member_options_def both_member_options_from_chilf_to_complete_tree dp membermima.simps(4) plus_1_eq_Suc)
+                    by (smt (verit) Suc_1 Suc_le_D \<open>deg div 2 = n\<close> \<open>length treeList = length ?newlist\<close> aa add_leD1 bb both_member_options_def both_member_options_from_chilf_to_complete_tree dp membermima.simps(4) plus_1_eq_Suc)
                 qed
               qed
               ultimately show ?thesis using bb by fastforce
@@ -722,7 +722,7 @@ next
                                                             else ma)))
                                  deg newlist summary ))" 
           using del_x_mi[of x mi ma deg ?xn ?h summary treeList ?l] 
-          by (smt (z3) \<open>deg div 2 = n\<close> \<open>high (summin * 2 ^ n + lx) n < length treeList\<close> \<open>summin * 2 ^ n + lx = (if x = mi then the (vebt_mint summary) * 2 ^ (deg div 2) + the (vebt_mint (treeList ! the (vebt_mint summary))) else x)\<close> \<open>x = mi\<close> add.commute append_Cons append_Nil dp mimapr nat_less_le plus_1_eq_Suc upd_conv_take_nth_drop)
+          by (smt (verit) \<open>deg div 2 = n\<close> \<open>high (summin * 2 ^ n + lx) n < length treeList\<close> \<open>summin * 2 ^ n + lx = (if x = mi then the (vebt_mint summary) * 2 ^ (deg div 2) + the (vebt_mint (treeList ! the (vebt_mint summary))) else x)\<close> \<open>x = mi\<close> add.commute append_Cons append_Nil dp mimapr nat_less_le plus_1_eq_Suc upd_conv_take_nth_drop)
         have minxnrel: "?xn \<noteq> mi" 
           by (metis "4.hyps"(2) "4.hyps"(9) \<open>high (summin * 2 ^ n + lx) n < length treeList\<close> \<open>vebt_member (treeList ! summin) lx\<close> \<open>invar_vebt (treeList ! summin) n\<close> both_member_options_equiv_member high_inv less_not_refl low_inv member_bound mimapr)
         then show ?thesis
@@ -867,7 +867,7 @@ next
               have "y = mi \<Longrightarrow> ?thesis" 
                 using False assm by force
               moreover have " y = ma \<Longrightarrow> ?thesis" 
-                by (smt (z3) Suc_le_D both_member_options_def dp membermima.simps(4) nat_1_add_1 plus_1_eq_Suc)
+                by (smt (verit) Suc_le_D both_member_options_def dp membermima.simps(4) nat_1_add_1 plus_1_eq_Suc)
               moreover have " both_member_options (treeList ! (high y n)) (low y n) \<Longrightarrow> ?thesis"
               proof-
                 assume myass: "both_member_options (treeList ! (high y n)) (low y n) "
@@ -991,7 +991,7 @@ next
                 next
                   case False
                   hence "?newlist ! (high y n) = treeList !(high y n)" 
-                    by (smt (z3) "4.hyps"(1) "4.hyps"(2) "4.hyps"(3) "4.hyps"(4) "4.hyps"(8) \<open>length treeList = length ?newlist\<close> \<open>ma \<le> 2 ^ deg\<close> aaaa calculation(2) deg_not_0 exp_split_high_low(1) less_le_trans member_inv mimapr nothprolist tvalid valid_member_both_member_options)
+                    by (smt (verit) "4.hyps"(1) "4.hyps"(2) "4.hyps"(3) "4.hyps"(4) "4.hyps"(8) \<open>length treeList = length ?newlist\<close> \<open>ma \<le> 2 ^ deg\<close> aaaa calculation(2) deg_not_0 exp_split_high_low(1) less_le_trans member_inv mimapr nothprolist tvalid valid_member_both_member_options)
                   hence "both_member_options (treeList !(high y n)) (low y n)" 
                     using assmy by presburger 
                   moreover have "x \<noteq> y" 
@@ -1019,7 +1019,7 @@ next
               have "y = mi \<Longrightarrow> ?thesis" 
                 using \<open>x = mi\<close> assm by blast
               moreover have " y = ma \<Longrightarrow> ?thesis" 
-                by (smt (z3) Suc_1 Suc_le_D both_member_options_def dp membermima.simps(4))
+                by (smt (verit) Suc_1 Suc_le_D both_member_options_def dp membermima.simps(4))
               moreover have " ( high y n < length treeList \<and> both_member_options (treeList ! (high y n)) (low y n))
                                   \<Longrightarrow> ?thesis"
               proof-
@@ -1031,7 +1031,7 @@ next
                   proof(cases "low y n = ?l")
                     case True
                     then show ?thesis
-                      by (smt (z3) Suc_1 Suc_le_D \<open>deg div 2 = n\<close> \<open>length treeList = length (treeList [high (summin * 2 ^ n + lx) n := vebt_delete (treeList ! high (summin * 2 ^ n + lx) n) (low (summin * 2 ^ n + lx) n)])\<close> add_leD1 bit_split_inv both_member_options_def both_member_options_from_chilf_to_complete_tree dp membermima.simps(4) myass nth_list_update_neq plus_1_eq_Suc)
+                      by (smt (verit) Suc_1 Suc_le_D \<open>deg div 2 = n\<close> \<open>length treeList = length (treeList [high (summin * 2 ^ n + lx) n := vebt_delete (treeList ! high (summin * 2 ^ n + lx) n) (low (summin * 2 ^ n + lx) n)])\<close> add_leD1 bit_split_inv both_member_options_def both_member_options_from_chilf_to_complete_tree dp membermima.simps(4) myass nth_list_update_neq plus_1_eq_Suc)
                   next
                     case False
                     hence "low y n \<noteq> ?l" by simp
@@ -1266,7 +1266,7 @@ next
                   hence "both_member_options (?newlist !(high y n)) (low y n)" 
                     using assmy by presburger
                   then show ?thesis 
-                    by (smt (z3) Suc_1 Suc_le_D \<open>deg div 2 = n\<close> \<open>length treeList = length ?newlist\<close> aa add_leD1 bb both_member_options_def both_member_options_from_chilf_to_complete_tree dp membermima.simps(4) plus_1_eq_Suc)
+                    by (smt (verit) Suc_1 Suc_le_D \<open>deg div 2 = n\<close> \<open>length treeList = length ?newlist\<close> aa add_leD1 bb both_member_options_def both_member_options_from_chilf_to_complete_tree dp membermima.simps(4) plus_1_eq_Suc)
                 qed
               qed
               ultimately show ?thesis using bb by fastforce
@@ -1596,7 +1596,7 @@ next
               have "y = mi \<Longrightarrow> ?thesis" 
                 using False assm by force
               moreover have " y = ma \<Longrightarrow> ?thesis" 
-                by (smt (z3) Suc_le_D both_member_options_def dp membermima.simps(4) nat_1_add_1 plus_1_eq_Suc)
+                by (smt (verit) Suc_le_D both_member_options_def dp membermima.simps(4) nat_1_add_1 plus_1_eq_Suc)
               moreover have " both_member_options (treeList ! (high y n)) (low y n) \<Longrightarrow> ?thesis"
               proof-
                 assume myass: "both_member_options (treeList ! (high y n)) (low y n) "
@@ -1744,7 +1744,7 @@ next
               have "y = mi \<Longrightarrow> ?thesis" 
                 using \<open>x = mi\<close> assm by blast
               moreover have " y = ma \<Longrightarrow> ?thesis" 
-                by (smt (z3) Suc_1 Suc_le_D both_member_options_def dp membermima.simps(4))
+                by (smt (verit) Suc_1 Suc_le_D both_member_options_def dp membermima.simps(4))
               moreover have " ( high y n < length treeList \<and> both_member_options (treeList ! (high y n)) (low y n))
                                   \<Longrightarrow> ?thesis"
               proof-
@@ -1756,7 +1756,7 @@ next
                   proof(cases "low y n = ?l")
                     case True
                     then show ?thesis
-                      by (smt (z3) "5.hyps"(3) "5.hyps"(4) Suc_1 \<open>deg div 2 = n\<close> \<open>length treeList = length (treeList [high (summin * 2 ^ n + lx) n := vebt_delete (treeList ! high (summin * 2 ^ n + lx) n) (low (summin * 2 ^ n + lx) n)])\<close> add_Suc_right add_leD1 bit_split_inv both_member_options_def both_member_options_from_chilf_to_complete_tree dp membermima.simps(4) myass nth_list_update_neq plus_1_eq_Suc)
+                      by (smt (verit) "5.hyps"(3) "5.hyps"(4) Suc_1 \<open>deg div 2 = n\<close> \<open>length treeList = length (treeList [high (summin * 2 ^ n + lx) n := vebt_delete (treeList ! high (summin * 2 ^ n + lx) n) (low (summin * 2 ^ n + lx) n)])\<close> add_Suc_right add_leD1 bit_split_inv both_member_options_def both_member_options_from_chilf_to_complete_tree dp membermima.simps(4) myass nth_list_update_neq plus_1_eq_Suc)
                   next
                     case False
                     hence "low y n \<noteq> ?l" by simp

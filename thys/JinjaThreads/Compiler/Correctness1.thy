@@ -726,9 +726,8 @@ next
     by -(rule Lock1Synchronized, auto)
   hence "sim_move01 (compP1 P) t \<lbrace>Lock\<rightarrow>a, SyncLock a\<rbrace> (sync(addr a) e) E2 (hp s) xs \<lbrace>Lock\<rightarrow>a, SyncLock a\<rbrace> (insync\<^bsub>length Vs\<^esub> (a) (compE1 (Vs@[fresh_var Vs]) e)) (hp s) (xs[length Vs := Addr a])"
     using E2 by(fastforce simp add: sim_move01_def ta_bisim_def)
-  moreover have "zip Vs (xs[length Vs := Addr a]) = (zip Vs xs)[length Vs := (arbitrary, Addr a)]"
-    by(rule sym)(simp add: update_zip)
-  hence "zip Vs (xs[length Vs := Addr a]) = zip Vs xs" by simp
+  moreover have "zip Vs (xs[length Vs := Addr a]) = zip Vs xs"
+    by (metis le_refl length_zip list_update_beyond min.cobounded1 zip_update)
   with \<open>lcl s \<subseteq>\<^sub>m [Vs [\<mapsto>] xs]\<close> have "lcl s \<subseteq>\<^sub>m [Vs [\<mapsto>] xs[length Vs := Addr a]]"
     by(auto simp add: map_le_def map_upds_def)
   ultimately show ?case using \<open>lcl s \<subseteq>\<^sub>m [Vs [\<mapsto>] xs]\<close> by fastforce
@@ -836,7 +835,7 @@ next
   case RedInstanceOf thus ?case by(auto intro!: exI)
 next
   case InstanceOfThrow thus ?case by fastforce
-qed(fastforce simp del: fun_upd_apply split: if_split_asm)+
+qed(fastforce simp del: fun_upd_apply split: if_split_asm)+  (*this takes over a minute!*)
 
 end
 
@@ -1483,9 +1482,9 @@ next
   have "bisim Vs (insync(a) E) (insync\<^bsub>length Vs\<^esub> (a) e) (xs[length Vs := Addr a])"
     unfolding \<open>e = compE1 (Vs@[fresh_var Vs]) E\<close> \<open>E2 = sync(addr a) E\<close>
     by -(rule bisimInSynchronized,rule compE1_bisim, auto)
-  moreover have "zip Vs (xs[length Vs := Addr a]) = (zip Vs xs)[length Vs := (arbitrary, Addr a)]"
-    by(rule sym)(simp add: update_zip)
-  hence "zip Vs (xs[length Vs := Addr a]) = zip Vs xs" by simp
+  moreover have "zip Vs (xs[length Vs := Addr a]) = zip Vs xs"
+    by (metis length_list_update map_fst_zip_take map_snd_zip_take min.cobounded1 take_update_cancel
+        zip_map_fst_snd)
   with \<open>X \<subseteq>\<^sub>m [Vs [\<mapsto>] (lcl (h, xs))]\<close> have "X \<subseteq>\<^sub>m [Vs [\<mapsto>] xs[length Vs := Addr a]]"
     by(auto simp add: map_le_def map_upds_def)
   ultimately show ?case by(fastforce intro: sim_move10_SyncLocks)

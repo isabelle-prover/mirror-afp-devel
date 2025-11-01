@@ -55,7 +55,7 @@ proof -
 qed
 
 lemma child_out: "length p \<le> d \<Longrightarrow> child p dir d = p"
-  unfolding child_def by auto
+  by (simp add: child_def list_update_beyond)
 
 lemma grid_dim_remove:
   assumes inset: "p \<in> grid b ({d} \<union> ds)"
@@ -97,12 +97,13 @@ lemma gridgen_dim_restrict:
   assumes inset: "p \<in> grid b (ds' \<union> ds)"
   and eq: "\<forall> d \<in> ds'. d \<ge> length b"
   shows "p \<in> grid b ds"
-  using inset eq
+  using inset eq 
 proof induct
   case (Child p' d dir)
   thus ?case
   proof (cases "d \<in> ds")
-    case False thus ?thesis using Child and child_def by auto
+    case False thus ?thesis
+      using Child.hyps child_out eq by force
   qed auto
 qed auto
 
@@ -157,7 +158,8 @@ proof induct
   next
     case False
     with Child have "length p = length b" by auto
-    with False have "child p dir d = p" using child_def by auto
+    with False have "child p dir d = p"
+      by (simp add: child_out)
     moreover with Child have "level p = level b" by auto
     with Child(2) have "p = b" by auto
     ultimately show ?thesis by auto
@@ -423,7 +425,7 @@ proof -
 
     from l_bound r_bound \<open>d < length p\<close> and \<open>x \<in> grid p {d}\<close> \<open>lv ?r d \<le> lv x d\<close> and lv_lr
     show "x \<in> grid ?l {d}" using grid_part[where p="?l" and p'=x and d=d] by auto
-  qed (auto simp add: child_def)
+  qed (auto simp add: child_out)
   thus ?thesis by (auto intro: grid_child)
 qed
 lemma grid_change_dim: assumes grid: "p \<in> grid b ds"
@@ -443,6 +445,7 @@ proof induct
     with Child show ?thesis unfolding child_def \<open>d = d'\<close> list_update_overwrite by auto
   qed
 qed auto
+
 lemma grid_change_dim_child: assumes grid: "p \<in> grid b ds" and "d \<notin> ds"
   shows "child p dir d \<in> grid (child b dir d) ds"
 proof (cases "d < length b")
@@ -450,7 +453,8 @@ proof (cases "d < length b")
     unfolding child_def lv_def ix_def grid_invariant[OF True \<open>d \<notin> ds\<close> grid] by auto
 next
   case False hence "length b \<le> d" and "length p \<le> d" using grid by auto
-  thus ?thesis unfolding child_def using list_update_beyond assms by auto
+  thus ?thesis
+    using child_out grid by presburger
 qed
 lemma grid_split: assumes grid: "p \<in> grid b (ds' \<union> ds)" shows "\<exists> x \<in> grid b ds. p \<in> grid x ds'"
   using grid

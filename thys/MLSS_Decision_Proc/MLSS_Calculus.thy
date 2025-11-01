@@ -1,10 +1,12 @@
+(*<*)
 theory MLSS_Calculus
   imports "HOL-Library.Sublist" MLSS_Semantics MLSS_Typing_Defs
 begin
+(*>*)
 
-section \<open>A Tableau Calculus for MLSS\<close>
+section \<open>The Calculus\<close>
 text \<open>
-  In this theory, we define a tableau calculus for MLSS.
+  We define a tableau calculus for MLSS build up from linear and branching expansion rules.
 \<close>
 
 subsection \<open>Closedness\<close>
@@ -181,7 +183,7 @@ lemma lexpands_induct[consumes 1]:
   done
 
 
-subsection \<open>Fulfilling Expansion Rules\<close>
+subsection \<open>Branching Expansion Rules\<close>
 
 inductive bexpands_nowit :: "'a branch set \<Rightarrow> 'a branch \<Rightarrow> bool" where
   "\<lbrakk> Or p q \<in> set b;
@@ -324,4 +326,6 @@ lemma wf_branch_lexpands:
   "wf_branch b \<Longrightarrow> lexpands b' b \<Longrightarrow> set b \<subset> set (b' @ b) \<Longrightarrow> wf_branch (b' @ b)"
   by (metis expandss.simps wf_branch_expandss)
 
+(*<*)
 end
+(*>*)

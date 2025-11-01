@@ -584,10 +584,11 @@ lemma finalS_cond_spec:
                             rule spec_normal[of _ _ _ _ _ _"Config 5 (State (Vstore (vss(vv := hs (array_loc aa1 (nat 0) avsts)))) avsts hhs ps)"])
           by auto
 
-        by(rule notI,
+        apply(rule notI,
             erule allE[of _ "(update pstate [6, 4],Config 6 (State (Vstore vs) (Avstore as) (Heap h) p),
                             [],
-                            ibT,ibUT,ls)"], erule notE, 
+                            ibT,ibUT,ls)"])
+      by( erule notE, 
                             rule spec_resolve, auto)
       subgoal apply(cases "\<not>resolve pstate [6, 5]")
       subgoal apply(rule notI, 

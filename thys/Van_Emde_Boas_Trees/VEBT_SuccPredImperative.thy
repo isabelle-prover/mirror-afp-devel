@@ -114,7 +114,7 @@ next
   have sumprop: "invar_vebt summary (n - n div 2)" using 6(3)
     by (cases) simp+
   have xprop [simp]: " \<not> ma \<le> x \<Longrightarrow> high x (Suc (va div 2)) < length treeList" 
-    by (smt (z3) "6.prems" deg_deg_n div2_Suc_Suc div_le_dividend high_bound_aux listlength mi_ma_2_deg not_le_imp_less order.strict_trans ordered_cancel_comm_monoid_diff_class.add_diff_inverse)
+    by (smt (verit) "6.prems" deg_deg_n div2_Suc_Suc div_le_dividend high_bound_aux listlength mi_ma_2_deg not_le_imp_less order.strict_trans ordered_cancel_comm_monoid_diff_class.add_diff_inverse)
   hence xprop' [simp]: " \<not> ma \<le> x \<Longrightarrow> x div (2 * 2 ^ (va div 2)) < length treeList" unfolding high_def by simp
   show ?case
     apply (cases ti)
@@ -142,8 +142,8 @@ next
       apply(simp add: high_def low_def)
       apply (rewrite in "<\<hole>>_<_>" list_assn_conv_idx)
       apply(rewrite in "<\<hole>>_<_>" listI_assn_extract[where i="(x div (2 * 2 ^ (va div 2)))"])
-      apply (smt (z3) "6.prems" atLeastLessThan_iff deg_deg_n div2_Suc_Suc div_le_dividend dual_order.strict_trans2 high_bound_aux high_def le0 le_add_diff_inverse listlength mi_ma_2_deg nat_le_linear power_Suc)
-      apply (smt (z3) "6.prems" deg_deg_n div2_Suc_Suc div_le_dividend dual_order.strict_trans2 high_bound_aux high_def le_add_diff_inverse listlength mi_ma_2_deg nat_le_linear power_Suc)
+      apply (smt (verit) "6.prems" atLeastLessThan_iff deg_deg_n div2_Suc_Suc div_le_dividend dual_order.strict_trans2 high_bound_aux high_def le0 le_add_diff_inverse listlength mi_ma_2_deg nat_le_linear power_Suc)
+      apply (smt (verit) "6.prems" deg_deg_n div2_Suc_Suc div_le_dividend dual_order.strict_trans2 high_bound_aux high_def le_add_diff_inverse listlength mi_ma_2_deg nat_le_linear power_Suc)
       apply(sep_auto heap: "6.IH"(1))
       apply(simp add: low_def)
       apply(simp add: high_def) 
@@ -152,10 +152,10 @@ next
         apply simp
       subgoal for tree_is x
         apply sep_auto
-        apply (smt (z3) "6.prems" deg_deg_n div2_Suc_Suc div_le_dividend dual_order.strict_trans2 high_bound_aux high_def le_add_diff_inverse less_shift listlength low_def mi_ma_2_deg nat_le_linear option.distinct(1) power_Suc)
+        apply (smt (verit) "6.prems" deg_deg_n div2_Suc_Suc div_le_dividend dual_order.strict_trans2 high_bound_aux high_def le_add_diff_inverse less_shift listlength low_def mi_ma_2_deg nat_le_linear option.distinct(1) power_Suc)
         apply(rule ent_trans[where Q=" vebt_assn_raw summary x14 * (x13 \<mapsto>\<^sub>a tree_is )*
                              (list_assn vebt_assn_raw treeList tree_is)"])
-        apply (smt (z3) assn_aci(10) atLeastLessThan_iff entails_def leI less_nat_zero_code listI_assn_extract list_assn_conv_idx star_aci(2) xprop')
+        apply (smt (verit) assn_aci(10) atLeastLessThan_iff entails_def leI less_nat_zero_code listI_assn_extract list_assn_conv_idx star_aci(2) xprop')
         apply(rule ent_refl)
        done
       apply simp
@@ -359,49 +359,49 @@ next
       apply sep_auto
        apply(simp add: high_def)
       apply sep_auto
-      apply (smt (z3) "7.prems" deg_deg_n div2_Suc_Suc div_le_dividend high_bound_aux high_def le_add_diff_inverse linorder_neqE_nat listlength mi_ma_2_deg order.strict_trans power_Suc)
+      apply (smt (verit) "7.prems" deg_deg_n div2_Suc_Suc div_le_dividend high_bound_aux high_def le_add_diff_inverse linorder_neqE_nat listlength mi_ma_2_deg order.strict_trans power_Suc)
       apply sep_auto
-      apply (smt (z3) "7.prems" deg_deg_n div2_Suc_Suc div_le_dividend high_bound_aux high_def le_add_diff_inverse linorder_neqE_nat listlength mi_ma_2_deg order.strict_trans power_Suc)    
+      apply (smt (verit) "7.prems" deg_deg_n div2_Suc_Suc div_le_dividend high_bound_aux high_def le_add_diff_inverse linorder_neqE_nat listlength mi_ma_2_deg order.strict_trans power_Suc)    
       apply (sep_auto heap: vebt_mintilist)
-      apply (smt (z3) "7.prems" deg_deg_n div2_Suc_Suc div_le_dividend high_bound_aux high_def le_add_diff_inverse linorder_neqE_nat listlength mi_ma_2_deg order.strict_trans power_Suc)      
+      apply (smt (verit) "7.prems" deg_deg_n div2_Suc_Suc div_le_dividend high_bound_aux high_def le_add_diff_inverse linorder_neqE_nat listlength mi_ma_2_deg order.strict_trans power_Suc)      
       apply sep_auto
       apply (rewrite in "<\<hole>>_<_>" list_assn_conv_idx)
       apply(rewrite in "<\<hole>>_<_>" listI_assn_extract[where i="(x div (2 * 2 ^ (va div 2)))"])
-      apply (smt (z3) "7.prems" atLeastLessThan_iff deg_deg_n div2_Suc_Suc div_le_dividend high_bound_aux high_def le0 le_add_diff_inverse linorder_neqE_nat listlength mi_ma_2_deg order.strict_trans power_Suc)     
-      apply (smt (z3) "7.prems" deg_deg_n div2_Suc_Suc div_le_dividend high_bound_aux high_def le_add_diff_inverse linorder_neqE_nat listlength mi_ma_2_deg order.strict_trans power_Suc)            
+      apply (smt (verit) "7.prems" atLeastLessThan_iff deg_deg_n div2_Suc_Suc div_le_dividend high_bound_aux high_def le0 le_add_diff_inverse linorder_neqE_nat listlength mi_ma_2_deg order.strict_trans power_Suc)     
+      apply (smt (verit) "7.prems" deg_deg_n div2_Suc_Suc div_le_dividend high_bound_aux high_def le_add_diff_inverse linorder_neqE_nat listlength mi_ma_2_deg order.strict_trans power_Suc)            
       apply (sep_auto heap: "7.IH"(1))
       apply(simp add: high_def low_def)+
-      apply (smt (z3) "7.prems" deg_deg_n div2_Suc_Suc div_le_dividend high_bound_aux high_def le_add_diff_inverse linorder_neqE_nat listlength mi_ma_2_deg order.strict_trans power_Suc)      
+      apply (smt (verit) "7.prems" deg_deg_n div2_Suc_Suc div_le_dividend high_bound_aux high_def le_add_diff_inverse linorder_neqE_nat listlength mi_ma_2_deg order.strict_trans power_Suc)      
       apply(rule DEADID.rel_refl)
       apply (metis greater_shift option.simps(3))
       apply(rule setprop)
       apply(rule nth_mem)
-      apply (smt (z3) "7.prems" atLeastLessThan_iff deg_deg_n div2_Suc_Suc div_le_dividend high_bound_aux high_def le0 le_add_diff_inverse linorder_neqE_nat listlength mi_ma_2_deg order.strict_trans power_Suc)     
+      apply (smt (verit) "7.prems" atLeastLessThan_iff deg_deg_n div2_Suc_Suc div_le_dividend high_bound_aux high_def le0 le_add_diff_inverse linorder_neqE_nat listlength mi_ma_2_deg order.strict_trans power_Suc)     
       apply simp
       subgoal
         apply sep_auto 
-        apply (smt (z3) "7.prems" deg_deg_n div2_Suc_Suc div_le_dividend dual_order.strict_trans2 greater_shift high_bound_aux high_def leI le_add_diff_inverse listlength low_def mi_ma_2_deg option.distinct(1) power_Suc)
+        apply (smt (verit) "7.prems" deg_deg_n div2_Suc_Suc div_le_dividend dual_order.strict_trans2 greater_shift high_bound_aux high_def leI le_add_diff_inverse listlength low_def mi_ma_2_deg option.distinct(1) power_Suc)
         apply (rule recomp)
-        apply (smt (z3) "7.prems" atLeastLessThan_iff deg_deg_n div2_Suc_Suc div_le_dividend high_bound_aux high_def le0 le_add_diff_inverse linorder_neqE_nat listlength mi_ma_2_deg order.strict_trans power_Suc)     
-        apply (smt (z3) "7.prems" deg_deg_n div2_Suc_Suc div_le_dividend dual_order.strict_trans2 greater_shift high_bound_aux high_def leI le_add_diff_inverse listlength low_def mi_ma_2_deg option.distinct(1) power_Suc)
+        apply (smt (verit) "7.prems" atLeastLessThan_iff deg_deg_n div2_Suc_Suc div_le_dividend high_bound_aux high_def le0 le_add_diff_inverse linorder_neqE_nat listlength mi_ma_2_deg order.strict_trans power_Suc)     
+        apply (smt (verit) "7.prems" deg_deg_n div2_Suc_Suc div_le_dividend dual_order.strict_trans2 greater_shift high_bound_aux high_def leI le_add_diff_inverse listlength low_def mi_ma_2_deg option.distinct(1) power_Suc)
         apply (rule recomp) 
-        apply (smt (z3) "7.prems" atLeastLessThan_iff deg_deg_n div2_Suc_Suc div_le_dividend high_bound_aux high_def le0 le_add_diff_inverse linorder_neqE_nat listlength mi_ma_2_deg order.strict_trans power_Suc)     
+        apply (smt (verit) "7.prems" atLeastLessThan_iff deg_deg_n div2_Suc_Suc div_le_dividend high_bound_aux high_def le0 le_add_diff_inverse linorder_neqE_nat listlength mi_ma_2_deg order.strict_trans power_Suc)     
        done
       apply(sep_auto heap: "7.IH"(2))
       apply(simp add: high_def low_def)+
-      apply (smt (z3) "7.prems" atLeastLessThan_iff deg_deg_n div2_Suc_Suc div_le_dividend high_bound_aux high_def le0 le_add_diff_inverse linorder_neqE_nat listlength mi_ma_2_deg order.strict_trans power_Suc)     
+      apply (smt (verit) "7.prems" atLeastLessThan_iff deg_deg_n div2_Suc_Suc div_le_dividend high_bound_aux high_def le0 le_add_diff_inverse linorder_neqE_nat listlength mi_ma_2_deg order.strict_trans power_Suc)     
       apply(rule DEADID.rel_refl)
       apply (simp add: low_def)
       apply(rule sumprop)
       apply sep_auto
       apply(sep_auto simp: high_def low_def)+
-      apply (smt (z3) "7.prems" deg_deg_n div2_Suc_Suc div_le_dividend dual_order.strict_trans2 high_bound_aux high_def leI le_add_diff_inverse listlength mi_ma_2_deg power_Suc)
+      apply (smt (verit) "7.prems" deg_deg_n div2_Suc_Suc div_le_dividend dual_order.strict_trans2 high_bound_aux high_def leI le_add_diff_inverse listlength mi_ma_2_deg power_Suc)
       apply (simp add: high_def low_def)
-      apply (smt (z3) "7.prems" deg_deg_n div2_Suc_Suc div_le_dividend dual_order.strict_trans2 greater.elims(2) high_bound_aux high_def leI le_add_diff_inverse listlength mi_ma_2_deg power_Suc)
+      apply (smt (verit) "7.prems" deg_deg_n div2_Suc_Suc div_le_dividend dual_order.strict_trans2 greater.elims(2) high_bound_aux high_def leI le_add_diff_inverse listlength mi_ma_2_deg power_Suc)
       apply sep_auto
       apply(sep_auto simp: high_def low_def)+
       apply presburger
-      apply (smt (z3) greater.elims(2) high_def low_def power_Suc)
+      apply (smt (verit) greater.elims(2) high_def low_def power_Suc)
       apply (simp add: high_def low_def)
       apply sep_auto
       subgoal
@@ -429,11 +429,11 @@ next
       apply simp
       apply(sep_auto heap: vebt_maxti_h)
       apply sep_auto
-      apply (smt (z3) "7.prems" deg_deg_n div2_Suc_Suc div_le_dividend dual_order.strict_trans2 high_bound_aux high_def leI le_add_diff_inverse listlength mi_ma_2_deg option.distinct(1) option.sel power_Suc)
-      apply (smt (z3) "7.prems" deg_deg_n div2_Suc_Suc div_le_dividend dual_order.strict_trans2 greater.elims(2) high_bound_aux high_def leI le_add_diff_inverse listlength mi_ma_2_deg option.distinct(1) option.sel power_Suc)
+      apply (smt (verit) "7.prems" deg_deg_n div2_Suc_Suc div_le_dividend dual_order.strict_trans2 high_bound_aux high_def leI le_add_diff_inverse listlength mi_ma_2_deg option.distinct(1) option.sel power_Suc)
+      apply (smt (verit) "7.prems" deg_deg_n div2_Suc_Suc div_le_dividend dual_order.strict_trans2 greater.elims(2) high_bound_aux high_def leI le_add_diff_inverse listlength mi_ma_2_deg option.distinct(1) option.sel power_Suc)
       apply(rule txe)
       using helpypredd listlength sumprop apply presburger   
-      apply (smt (z3) "7.prems" deg_deg_n div2_Suc_Suc div_le_dividend dual_order.strict_trans2 greater.elims(2) high_bound_aux high_def leI le_add_diff_inverse listlength mi_ma_2_deg option.distinct(1) option.sel power_Suc)
+      apply (smt (verit) "7.prems" deg_deg_n div2_Suc_Suc div_le_dividend dual_order.strict_trans2 greater.elims(2) high_bound_aux high_def leI le_add_diff_inverse listlength mi_ma_2_deg option.distinct(1) option.sel power_Suc)
       apply(rule txe)
       using helpypredd listlength sumprop apply presburger
       done 

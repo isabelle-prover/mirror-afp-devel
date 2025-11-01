@@ -3,7 +3,6 @@ theory Theta_Inversion
 imports 
   "Theta_Functions.Jacobi_Triple_Product"
   "Theta_Functions.Theta_Nullwert"
-  "Polylog.Polylog_Library"
   Complex_Lattices
 begin
 

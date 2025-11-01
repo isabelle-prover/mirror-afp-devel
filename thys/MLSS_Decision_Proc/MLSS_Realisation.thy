@@ -1,11 +1,15 @@
+(*<*)
 theory MLSS_Realisation
   imports HereditarilyFinite.Finitary Graph_Theory.Graph_Theory
 begin
+(*>*)
+
+chapter \<open>Deciding MLSS\<close>
 
 section \<open>The Realisation Function\<close>
 text \<open>
-  This theory contains an abstract formulation of a model
-  for membership relations.
+  We define an abstract formulation of a model for membership relations.
+  This is later used to define a model for open branches of an MLSS tableau.
 \<close>
 
 abbreviation parents :: "('a,'b) pre_digraph \<Rightarrow> 'a \<Rightarrow> 'a set"
@@ -228,4 +232,6 @@ qed
 
 end
 
+(*<*)
 end
+(*>*)

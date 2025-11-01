@@ -2508,7 +2508,7 @@ lemma mem_restr_lift_envs'_append[simp]:
   by (auto simp: list_all2_append list.rel_map intro!: exI[where x="map the xs"] list.rel_refl)
 
 lemma nth_list_update_alt: "xs[i := x] ! j = (if i < length xs \<and> i = j then x else xs ! j)"
-  by auto
+  by (simp add: linorder_not_less list_update_beyond)
 
 lemma wf_tuple_upd_None: "wf_tuple n A xs \<Longrightarrow> A - {i} = B \<Longrightarrow> wf_tuple n B (xs[i:=None])"
   unfolding wf_tuple_def

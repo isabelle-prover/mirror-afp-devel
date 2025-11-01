@@ -454,7 +454,7 @@ proof -
       using \<open>?k < e_length ?b\<close> assms gap_Suc(1) by auto
   next
     case on_1
-    then show ?thesis using assms gap_Suc(2) by auto
+    then show ?thesis using assms gap_Suc(2) by (auto simp: list_update_beyond)
   next
     case neither
     then show ?thesis by simp
