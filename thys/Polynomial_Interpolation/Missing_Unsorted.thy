@@ -201,18 +201,8 @@ qed
 
 end
 
-lemma prod_list_replicate[simp]: "prod_list (replicate n a) = a ^ n"
-  by (induct n, auto)
-
-lemma prod_list_power: fixes xs :: "'a :: comm_monoid_mult list"
-  shows "prod_list xs ^ n = (\<Prod>x\<leftarrow>xs. x ^ n)"
-  by (induct xs, auto simp: power_mult_distrib)
-
 lemma set_upt_Suc: "{0 ..< Suc i} = insert i {0 ..< i}"
   by (fact atLeast0_lessThan_Suc)
-
-lemma prod_pow[simp]: "(\<Prod>i = 0..<n. p) = (p :: 'a :: comm_monoid_mult) ^ n"
-  by simp
 
 
 (* GCD and LCM part *)
