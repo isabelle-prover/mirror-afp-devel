@@ -92,7 +92,7 @@ fun mk_structure Tconstr struct_name optsig_name ks = U.mk_struct [
   ] |> U.mk_structure struct_name optsig_name
 
 fun mk_all Tconstr struct_name optsig_name ks =
-  let val sig_name = the_default (U.mk_signature_name struct_name) optsig_name
+  let val sig_name = \<^if_none>\<open>U.mk_signature_name struct_name\<close> optsig_name
   in
     U.lines [
       mk_signature Tconstr sig_name ks,

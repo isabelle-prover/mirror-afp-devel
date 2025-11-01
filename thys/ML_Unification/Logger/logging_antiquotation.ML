@@ -19,8 +19,8 @@ val log =
       let
         val (_, pos) = Token.name_of_src ts
         val ctxt_internal = Util.internal_name "ctxt"
-        val show_log_pos = the_default
-          (Util.spaces ["Config.get", ctxt_internal, " Logging_Antiquotation.show_log_pos"])
+        val show_log_pos =
+          \<^if_none>\<open>Util.spaces ["Config.get", ctxt_internal, " Logging_Antiquotation.show_log_pos"]\<close>
           show_log_pos_opt
         val additional_info = Util.spaces [
             "if", ML_Syntax.atomic show_log_pos,

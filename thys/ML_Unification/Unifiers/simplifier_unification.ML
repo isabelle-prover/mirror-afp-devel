@@ -32,7 +32,10 @@ structure TUtil = Tactic_Util
 structure UUtil = Unification_Util
 
 (*some "safe" solvers create instantiations via flex-flex pairs, which we disallow*)
-val safe_simp_tac = TRY oo TUtil.safe_simp_tac
+fun safe_simp_tac ctxt =
+  (*stop higher-order unifier from entering difficult unification problems*)
+  let val ctxt = TUtil.set_kernel_ho_unif_bound 1 ctxt |> TUtil.silence_kernel_ho_bound_exceeded
+  in TUtil.FLEX_PAIRS_UNCHANGED o Simplifier.safe_simp_tac ctxt end
 
 fun match_tac ctxt = Tactic.match_tac ctxt o single
 

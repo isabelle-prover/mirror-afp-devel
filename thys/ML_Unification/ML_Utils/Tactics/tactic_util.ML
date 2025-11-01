@@ -51,9 +51,9 @@ sig
   val thin_tac : int -> int -> tactic
   val thin_tacs : int list -> int -> tactic
 
-  val set_kernel_ho_unif_bounds : int -> int -> Proof.context -> Proof.context
-  val silence_kernel_ho_bounds_exceeded : Proof.context -> Proof.context
-  val safe_simp_tac : Proof.context -> int -> tactic
+  val set_kernel_ho_unif_bound : int -> Proof.context -> Proof.context
+  val silence_kernel_ho_bound_exceeded : Proof.context -> Proof.context
+  val FLEX_PAIRS_UNCHANGED : tactic -> tactic
 
   (*nth_eq_assume_tac n i solves ith subgoal by assumption, without unification,
     preferring premise n*)
@@ -161,21 +161,13 @@ val thin_tacs = sort int_ord
   #> map_index ((op -) o swap)
   #> EVERY_ARG' thin_tac
 
-fun set_kernel_ho_unif_bounds trace_bound search_bound =
-  Config.put Unify.unify_trace_bound trace_bound
-  #> Config.put Unify.search_bound search_bound
+val set_kernel_ho_unif_bound = Config.put Unify.search_bound
+val silence_kernel_ho_bound_exceeded = Context_Position.set_visible false
 
-val silence_kernel_ho_bounds_exceeded = Context_Position.set_visible false
-
-(*some "safe" solvers create instantiations via flex-flex pairs, which we disallow here*)
-fun safe_simp_tac ctxt i state =
-  let
-    val eq_flexps = Thm.tpairs_of
-      #> pair (Thm.tpairs_of state)
-      #> eq_list (eq_pair (op aconv) (op aconv))
-    (*stop higher-order unifier from entering difficult unification problems*)
-    val ctxt = set_kernel_ho_unif_bounds 1 1 ctxt |> silence_kernel_ho_bounds_exceeded
-  in Simplifier.safe_simp_tac ctxt i state |> Seq.filter eq_flexps end
+fun FLEX_PAIRS_UNCHANGED tac state =
+  let val eq_flexps = Thm.tpairs_of #> pair (Thm.tpairs_of state)
+    #> eq_list (eq_pair (op aconv) (op aconv))
+  in tac state |> Seq.filter eq_flexps end
 
 fun nth_eq_assume_tac n = if n < 1 then K no_tac
   else rotate_tac (n - 1) THEN' eq_assume_tac
@@ -222,7 +214,7 @@ fun rewrite_subgoal_unif_concl inst_binders norm_state norm_eq_thm binders (env_
         norm_eq_thm ctxt env eq_thm
         |> eq_subgoal_from_eq_concl (map (apsnd cterm_of) binders) cprems ctxt
         |> Option.map rewrite_subgoal_tac
-        |> the_default (K no_tac)
+        |> \<^if_none>\<open>K no_tac\<close>
       end
   in
     (*smash tpairs in case some binder occurs*)

@@ -29,7 +29,8 @@ sig
   val seq_try : exn -> 'a Seq.seq -> 'a Seq.seq
   val seq_is_empty : 'a Seq.seq -> (bool * 'a Seq.seq)
   val seq_merge : 'a ord -> ('a Seq.seq * 'a Seq.seq) -> 'a Seq.seq
-  (*uses passed callback if the nth pull takes longer than the nth timeout*)
+  (*uses passed callback if the nth pull takes longer than the nth timeout;
+  timeouts smaller than 0 are ignored; timeouts smaller than 1ms always fail*)
   val seq_with_timeout : bool -> (int -> Time.time -> ('a * 'a Seq.seq) option) ->
     (int -> Time.time) -> 'a Seq.seq -> 'a Seq.seq
 end
@@ -85,13 +86,22 @@ fun seq_merge ord (xq, yq) =
         | GREATER => SOME (y, seq_merge ord (Seq.cons x xq', yq')))
   )
 
+local
+  val disable_threshold = Time.fromMilliseconds 0
+  val threshold = Time.fromMilliseconds 1 (*threshold taken from Timeout.ML*)
+  val _ = @{assert} (Time.< (disable_threshold, threshold))
+in
 fun seq_with_timeout physical f_timeout timeout =
   let
     val apply_timeout = if physical then Timeout.apply_physical else Timeout.apply
-    fun with_timeout i sq = Seq.make (fn _ =>
-      apply_timeout (timeout i) Seq.pull sq
-      |> Option.map (apsnd (with_timeout (i + 1)))
-      handle Timeout.TIMEOUT time => f_timeout i time)
+    fun with_timeout i sq = Seq.make (fn _ => let val time = timeout i
+      in
+        ((if Time.< (time, disable_threshold) then I
+        else if Time.< (time, threshold) then raise (Timeout.TIMEOUT time)
+        else apply_timeout time)
+        Seq.pull sq |> Option.map (apsnd (with_timeout (i + 1))))
+        handle Timeout.TIMEOUT time => f_timeout i time
+      end)
   in with_timeout 0 end
-
+end
 end
