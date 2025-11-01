@@ -1189,6 +1189,117 @@ by (fastforce simp: map_eq_append_conv split: prod.splits)
 lemma derivel_imp_derive: "P \<turnstile> u \<Rightarrow>l v \<Longrightarrow> P \<turnstile> u \<Rightarrow> v"
   using derive.simps derivel.cases self_append_conv2 by fastforce
 
+(* TODO: CFG? *)
+lemma derivel_append_iff:
+  "P \<turnstile> u@v \<Rightarrow>l w \<longleftrightarrow>
+  (\<exists>u'. w = u'@v \<and> P \<turnstile> u \<Rightarrow>l u') \<or> (\<exists>u' v'. w = u@v' \<and> u = map Tm u' \<and> P \<turnstile> v \<Rightarrow>l v')"
+(is "?l \<longleftrightarrow> ?r")
+proof
+  assume ?l
+  then obtain A r u1 u2
+    where Ar: "(A,r) \<in> P"
+      and uv: "u@v = map Tm u1 @ Nt A # u2"
+      and w: "w = map Tm u1 @ r @ u2"
+    by (auto simp: derivel_iff)
+  from uv have case_dist: "(\<exists>s. u2 = s @ v \<and> u = map Tm u1 @ Nt A # s) \<or>
+  (\<exists>s. map Tm u1 = u @ s  \<and> v = s @ Nt A # u2)" (is "?h1 \<or> ?h2")
+    by (auto simp: append_eq_append_conv2 append_eq_Cons_conv)
+  show ?r proof (rule disjE[OF case_dist])
+    assume ?h1
+    with Ar w show ?thesis by (fastforce simp: derivel_iff)
+  next
+    assume ?h2
+    then obtain s where map_u1_def: "map Tm u1 = u @ s" and v_def: "v = s @ Nt A # u2" by blast
+    from map_u1_def obtain u' s' where u_def: "u = map Tm u'" and s_def: "s = map Tm s'"
+      using append_eq_map_conv[of u s Tm u1] by auto
+
+    from w map_u1_def s_def have "w = u @ (map Tm s' @ r @ u2)" by simp
+
+    moreover from Ar v_def s_def have "P \<turnstile> v \<Rightarrow>l map Tm s' @ r @ u2"
+      using derivel_iff[of P] by blast
+
+    ultimately show ?thesis
+      using u_def by blast
+  qed
+next
+  show "?r \<Longrightarrow> ?l"
+    by (auto simp add: derivel_append derivel_map_Tm_append)
+qed
+
+lemma deriveln_ConsD:
+  assumes "P \<turnstile> x#v \<Rightarrow>l(n) u"
+  shows "(\<exists>u'. u = u' @ v \<and> P \<turnstile> [x] \<Rightarrow>l(n) u') \<or> (\<exists>w\<^sub>1 u\<^sub>2 m\<^sub>1 m\<^sub>2. m\<^sub>1 + m\<^sub>2 = n \<and> u = map Tm w\<^sub>1 @ u\<^sub>2 
+                                                    \<and> P \<turnstile> [x] \<Rightarrow>l(m\<^sub>1) map Tm w\<^sub>1 \<and> P \<turnstile> v \<Rightarrow>l(m\<^sub>2) u\<^sub>2)"
+using assms proof (induction n arbitrary: u)
+  case (Suc n)
+  from Suc(2) obtain w where x_v_deriveln_w: "P \<turnstile> x # v \<Rightarrow>l(n) w" and w_derivel_u: "P \<turnstile> w \<Rightarrow>l u"
+    by (metis relpowp_Suc_E)
+  from Suc(1)[OF x_v_deriveln_w] have IH: "(\<exists>u'. w = u' @ v \<and> P \<turnstile> [x] \<Rightarrow>l(n) u') \<or>
+  (\<exists>w\<^sub>1 u\<^sub>2 m\<^sub>1 m\<^sub>2. m\<^sub>1 + m\<^sub>2 = n \<and> w = map Tm w\<^sub>1 @ u\<^sub>2 \<and> P \<turnstile> [x] \<Rightarrow>l(m\<^sub>1) map Tm w\<^sub>1 \<and> P \<turnstile> v \<Rightarrow>l(m\<^sub>2) u\<^sub>2)" (is "?l \<or> ?r") .
+  show ?case proof (rule disjE[OF IH])
+    assume ?l
+    then obtain u' where w_def: "w = u' @ v" and x_deriveln_u': "P \<turnstile> [x] \<Rightarrow>l(n) u'" by blast
+    from w_def w_derivel_u have "P \<turnstile> u' @ v \<Rightarrow>l u" by simp
+    hence case_dist: "(\<exists>u\<^sub>0. u = u\<^sub>0 @ v \<and> P \<turnstile> u' \<Rightarrow>l u\<^sub>0) \<or>
+                  (\<exists>u\<^sub>1 u\<^sub>2. u = u' @ u\<^sub>2 \<and> u' = map Tm u\<^sub>1 \<and> P \<turnstile> v \<Rightarrow>l u\<^sub>2)" (is "?h1 \<or> ?h2")
+      using derivel_append_iff[of P u' v u] by simp
+    show ?thesis proof (rule disjE[OF case_dist])
+      assume ?h1
+      then obtain u\<^sub>0 where u_def: "u = u\<^sub>0 @ v" and u'_derivel_u0: "P \<turnstile> u' \<Rightarrow>l u\<^sub>0" by blast
+      from x_deriveln_u' u'_derivel_u0 have "P \<turnstile> [x] \<Rightarrow>l(Suc n) u\<^sub>0" by (simp add: relpowp_Suc_I)
+      with u_def show ?thesis by blast
+    next
+      assume ?h2
+      then obtain u\<^sub>1 u\<^sub>2 where u_def: "u = u' @ u\<^sub>2" and u'_def: "u' = map Tm u\<^sub>1" and v_derivel_u2: "P \<turnstile> v \<Rightarrow>l u\<^sub>2" by blast
+      from x_deriveln_u' u'_def have "P \<turnstile> [x] \<Rightarrow>l(n) map Tm u\<^sub>1" by simp
+      with u_def u'_def v_derivel_u2 show ?thesis by fastforce
+    qed
+  next
+    assume ?r
+    then obtain w\<^sub>1 u\<^sub>2 m\<^sub>1 m\<^sub>2 where m1_m2_n: "m\<^sub>1 + m\<^sub>2 = n" and w_def: "w = map Tm w\<^sub>1 @ u\<^sub>2" and 
+                                      x_derivelm1_w1: "P \<turnstile> [x] \<Rightarrow>l(m\<^sub>1) map Tm w\<^sub>1" and v_derivelm2_u2: "P \<turnstile> v \<Rightarrow>l(m\<^sub>2) u\<^sub>2" by blast
+    from w_def w_derivel_u have "P \<turnstile> map Tm w\<^sub>1 @ u\<^sub>2 \<Rightarrow>l u" by simp
+    then obtain u' where u_def: "u = map Tm w\<^sub>1 @ u'" and u2_derivel_u': "P \<turnstile> u\<^sub>2 \<Rightarrow>l u'"
+      using derivel_map_Tm_append by blast
+
+    from m1_m2_n have "m\<^sub>1 + Suc m\<^sub>2 = Suc n" by simp
+
+    moreover from v_derivelm2_u2 u2_derivel_u' have "P \<turnstile> v \<Rightarrow>l(Suc m\<^sub>2) u'"
+      by (simp add: relpowp_Suc_I)
+
+    ultimately show ?thesis
+      using u_def x_derivelm1_w1 by blast
+  qed
+qed simp
+
+lemma deriveln_Cons_TmsD:
+  assumes "P \<turnstile> x#v \<Rightarrow>l(n) map Tm w"
+  shows "\<exists>w\<^sub>1 w\<^sub>2 m\<^sub>1 m\<^sub>2. m\<^sub>1 + m\<^sub>2 = n \<and> w = w\<^sub>1 @ w\<^sub>2 \<and> P \<turnstile> [x] \<Rightarrow>l(m\<^sub>1) map Tm w\<^sub>1 \<and> P \<turnstile> v \<Rightarrow>l(m\<^sub>2) map Tm w\<^sub>2"
+proof -
+  have case_dist: "(\<exists>u'. map Tm w = u' @ v \<and> P \<turnstile> [x] \<Rightarrow>l(n) u') \<or> (\<exists>w\<^sub>1 u\<^sub>2 m\<^sub>1 m\<^sub>2. m\<^sub>1 + m\<^sub>2 = n \<and> map Tm w = map Tm w\<^sub>1 @ u\<^sub>2 
+                                                    \<and> P \<turnstile> [x] \<Rightarrow>l(m\<^sub>1) map Tm w\<^sub>1 \<and> P \<turnstile> v \<Rightarrow>l(m\<^sub>2) u\<^sub>2)" (is "?l \<or> ?r")
+    using deriveln_ConsD[OF assms] by simp
+  show ?thesis proof (rule disjE[OF case_dist])
+    assume ?l
+    then obtain u' where map_w_def: "map Tm w = u' @ v" and x_derives_u': "P \<turnstile> [x] \<Rightarrow>l(n) u'" by blast
+    from map_w_def obtain w\<^sub>1 w\<^sub>2 where "w = w\<^sub>1 @ w\<^sub>2" and map_w\<^sub>1_def: "map Tm w\<^sub>1 = u'" and "map Tm w\<^sub>2 = v"
+      using map_eq_append_conv[of Tm w u' v] by blast
+
+    moreover from x_derives_u' map_w\<^sub>1_def have "P \<turnstile> [x] \<Rightarrow>l(n) map Tm w\<^sub>1" by simp
+
+    moreover have "P \<turnstile> map Tm w\<^sub>2 \<Rightarrow>l(0) map Tm w\<^sub>2" by simp
+
+    ultimately show ?thesis by force
+  next
+    assume ?r
+    then obtain w\<^sub>1 u\<^sub>2 m\<^sub>1 m\<^sub>2 where m1_m2_n: "m\<^sub>1 + m\<^sub>2 = n" and map_w_def: "map Tm w = map Tm w\<^sub>1 @ u\<^sub>2" 
+                                               and x_derivelm1_w1: "P \<turnstile> [x] \<Rightarrow>l(m\<^sub>1) map Tm w\<^sub>1" and v_derivelm2_u2: "P \<turnstile> v \<Rightarrow>l(m\<^sub>2) u\<^sub>2" by blast
+    from map_w_def obtain w\<^sub>1' u\<^sub>2' where "w = w\<^sub>1' @ u\<^sub>2'" and "map (Tm) w\<^sub>1 = map Tm w\<^sub>1'" and "u\<^sub>2 = map (Tm) u\<^sub>2'"
+      using map_eq_append_conv[of "Tm" w "map Tm w\<^sub>1" u\<^sub>2] by auto
+    with m1_m2_n x_derivelm1_w1 v_derivelm2_u2 show ?thesis by auto
+  qed                    
+qed
+
 lemma deriveln_imp_deriven:
   "P \<turnstile> u \<Rightarrow>l(n) v \<Longrightarrow> P \<turnstile> u \<Rightarrow>(n) v"
   using relpowp_mono derivel_imp_derive by metis
