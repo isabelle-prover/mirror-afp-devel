@@ -403,12 +403,10 @@ proof -
 
   have "(rat_of_int \<parallel> short_vector \<parallel>\<^sup>2) ^ k =
    (\<Prod>i<k. \<parallel>gram_schmidt_fs.gso n (map of_int_hom.vec_hom reduce_basis) 0\<parallel>\<^sup>2)"
-    using prod_pow sve
-    by simp
+    using sve by simp
 
   also have "... \<le> (\<Prod>i<k. \<alpha>^i * \<parallel>gram_schmidt_fs.gso n (map of_int_hom.vec_hom reduce_basis) i\<parallel>\<^sup>2)"
-    apply (intro prod_mono)
-    using ** by auto
+    using ** by (intro prod_mono) auto
 
   also have "... = (\<Prod>i<k. \<alpha>^i) * rat_of_int (gs.Gramian_determinant reduce_basis k)"
     unfolding gd
@@ -422,13 +420,11 @@ proof -
 qed
 
 lemma square_Gramian_determinant_eq_det_square:
-  assumes sq:"n = m"
-  shows "gs.Gramian_determinant fs_init m =
-    (det (mat_of_rows m fs_init))^2"
+  assumes "n = m"
+  shows "gs.Gramian_determinant fs_init m = (det (mat_of_rows m fs_init))^2"
   unfolding gs.Gramian_determinant_def
-  apply (subst gs.Gramian_matrix_alt_def)
-  apply (simp add: len)
-  by (metis LLL_invD(9) assms det_mult det_transpose len mat_of_cols_carrier(1) mat_of_rows_carrier(1) power2_eq_square reduce_basis_inv take_all transpose_mat_of_rows)
+  by (metis assms det_mult det_transpose gram_schmidt.Gramian_matrix_def len mat_of_cols_carrier(1)
+      mat_of_rows_carrier(1) mat_of_rows_def power2_eq_square transpose_mat_of_rows)
 
 end
 
