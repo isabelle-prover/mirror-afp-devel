@@ -127,8 +127,6 @@ qed
 definition newton_sqrt :: "nat \<Rightarrow> nat" where
   "newton_sqrt n = newton_sqrt_aux n n"
 
-declare floor_sqrt_code [code del]
-
 theorem Discrete_sqrt_eq_newton_sqrt [code]: "floor_sqrt n = newton_sqrt n"
   unfolding newton_sqrt_def by (simp add: newton_sqrt_aux_correct floor_sqrt_le)
 
