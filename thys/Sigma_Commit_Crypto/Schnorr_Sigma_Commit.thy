@@ -266,10 +266,11 @@ lemma ss_rewrite:
     and a': "a \<otimes> h [^] e' = \<^bold>g [^] z'"
   shows  "h = \<^bold>g [^] ((int z - int z') * inverse ((e - e')) (order \<G>) mod int (order \<G>))"
 proof-
-  have gcd: "gcd (nat (int e - int e') mod (order \<G>)) (order \<G>) = 1" 
-    using prime_field 
-    by (metis Primes.prime_nat_def assms(1) assms(2) coprime_imp_gcd_eq_1 diff_is_0_eq less_imp_diff_less 
-            mod_less nat_minus_as_int not_less schnorr_base.prime_order schnorr_base_axioms)
+  have coprime: "coprime (nat (int e - int e') mod (order \<G>)) (order \<G>)"
+    using \<open>e' < e\<close> \<open>e < order \<G>\<close>
+    by (auto intro: prime_field prime_order)
+  then have gcd: "gcd (nat (int e - int e') mod (order \<G>)) (order \<G>) = 1"
+    by (rule coprime_imp_gcd_eq_1)
   have "a = \<^bold>g [^] z \<otimes> inv (h [^] e)" 
     using a a_mem 
     by (simp add: h_mem group.inv_solve_right)
