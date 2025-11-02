@@ -71,7 +71,7 @@ declare uint.of_word_of [code abstype]
 
 declare Quotient_uint [transfer_rule]
 
-instantiation uint :: \<open>{comm_ring_1, semiring_modulo, equal, linorder}\<close>
+instantiation uint :: \<open>{comm_ring_1, semiring_modulo, equal, linorder, order_bot, order_top}\<close>
 begin
 
 lift_definition zero_uint :: uint is 0 .
@@ -85,12 +85,15 @@ lift_definition modulo_uint :: \<open>uint \<Rightarrow> uint \<Rightarrow> uint
 lift_definition equal_uint :: \<open>uint \<Rightarrow> uint \<Rightarrow> bool\<close> is \<open>HOL.equal\<close> .
 lift_definition less_eq_uint :: \<open>uint \<Rightarrow> uint \<Rightarrow> bool\<close> is \<open>(\<le>)\<close> .
 lift_definition less_uint :: \<open>uint \<Rightarrow> uint \<Rightarrow> bool\<close> is \<open>(<)\<close> .
+lift_definition bot_uint :: uint is bot .
+lift_definition top_uint :: uint is top .
 
 global_interpretation uint: word_type_copy_ring Abs_uint Rep_uint
   by standard (fact zero_uint.rep_eq one_uint.rep_eq
     plus_uint.rep_eq uminus_uint.rep_eq minus_uint.rep_eq
     times_uint.rep_eq divide_uint.rep_eq modulo_uint.rep_eq
-    equal_uint.rep_eq less_eq_uint.rep_eq less_uint.rep_eq)+
+    equal_uint.rep_eq less_eq_uint.rep_eq less_uint.rep_eq
+    bot_uint.rep_eq top_uint.rep_eq)+
 
 instance proof -
   show \<open>OFCLASS(uint, comm_ring_1_class)\<close>
@@ -101,9 +104,16 @@ instance proof -
     by (fact uint.of_class_equal)
   show \<open>OFCLASS(uint, linorder_class)\<close>
     by (fact uint.of_class_linorder)
+  show \<open>OFCLASS(uint, order_bot_class)\<close>
+    by (fact uint.of_class_order_bot)
+  show \<open>OFCLASS(uint, order_top_class)\<close>
+    by (fact uint.of_class_order_top)
 qed
 
 end
+
+instance uint :: \<open>{interval_bot, interval_top}\<close>
+  by (fact uint.of_class_interval_bot uint.of_class_interval_top)+
 
 instantiation uint :: ring_bit_operations
 begin

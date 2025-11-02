@@ -23,7 +23,7 @@ declare uint32.of_word_of [code abstype]
 
 declare Quotient_uint32 [transfer_rule]
 
-instantiation uint32 :: \<open>{comm_ring_1, semiring_modulo, equal, linorder}\<close>
+instantiation uint32 :: \<open>{comm_ring_1, semiring_modulo, equal, linorder, order_bot, order_top}\<close>
 begin
 
 lift_definition zero_uint32 :: uint32 is 0 .
@@ -37,12 +37,15 @@ lift_definition modulo_uint32 :: \<open>uint32 \<Rightarrow> uint32 \<Rightarrow
 lift_definition equal_uint32 :: \<open>uint32 \<Rightarrow> uint32 \<Rightarrow> bool\<close> is \<open>HOL.equal\<close> .
 lift_definition less_eq_uint32 :: \<open>uint32 \<Rightarrow> uint32 \<Rightarrow> bool\<close> is \<open>(\<le>)\<close> .
 lift_definition less_uint32 :: \<open>uint32 \<Rightarrow> uint32 \<Rightarrow> bool\<close> is \<open>(<)\<close> .
+lift_definition bot_uint32 :: uint32 is bot .
+lift_definition top_uint32 :: uint32 is top .
 
 global_interpretation uint32: word_type_copy_ring Abs_uint32 Rep_uint32
   by standard (fact zero_uint32.rep_eq one_uint32.rep_eq
     plus_uint32.rep_eq uminus_uint32.rep_eq minus_uint32.rep_eq
     times_uint32.rep_eq divide_uint32.rep_eq modulo_uint32.rep_eq
-    equal_uint32.rep_eq less_eq_uint32.rep_eq less_uint32.rep_eq)+
+    equal_uint32.rep_eq less_eq_uint32.rep_eq less_uint32.rep_eq
+    bot_uint32.rep_eq top_uint32.rep_eq)+
 
 instance proof -
   show \<open>OFCLASS(uint32, comm_ring_1_class)\<close>
@@ -53,9 +56,16 @@ instance proof -
     by (fact uint32.of_class_equal)
   show \<open>OFCLASS(uint32, linorder_class)\<close>
     by (fact uint32.of_class_linorder)
+  show \<open>OFCLASS(uint32, order_bot_class)\<close>
+    by (fact uint32.of_class_order_bot)
+  show \<open>OFCLASS(uint32, order_top_class)\<close>
+    by (fact uint32.of_class_order_top)
 qed
 
 end
+
+instance uint32 :: \<open>{interval_bot, interval_top}\<close>
+  by (fact uint32.of_class_interval_bot uint32.of_class_interval_top)+
 
 instantiation uint32 :: ring_bit_operations
 begin

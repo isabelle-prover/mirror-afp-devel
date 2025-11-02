@@ -217,53 +217,39 @@ lemma square_test_code [code]:
 lemma square_mod_lower: "m > 0 \<Longrightarrow> (q\<^sup>2 :: nat) mod m = a \<Longrightarrow> \<exists>q' < m. q'\<^sup>2 mod m = a"
   using mod_less_divisor mod_mod_trivial power_mod by blast
 
+lemma square_mod_image_interval_eq_range_square_mod:
+  \<open>(\<lambda>x. x\<^sup>2 mod m) ` {..<m} = range (\<lambda>x. x\<^sup>2 mod m)\<close> if \<open>m > 0\<close> for m :: nat
+proof -
+  from that have \<open>\<exists>x<m. y\<^sup>2 mod m = x\<^sup>2 mod m\<close> for y
+    using square_mod_lower [of m y \<open>y\<^sup>2 mod m\<close>]
+    by auto
+  then show ?thesis
+    by auto
+qed
+
 lemma q11_upto_def: "q11 = (\<lambda>k. k\<^sup>2 mod 11) ` {..<11}"
   by (simp add: q11_def lessThan_nat_numeral lessThan_Suc insert_commute)
 
 lemma q11_infinite_def: "q11 = (\<lambda>k. k\<^sup>2 mod 11) ` {0..}"
-  unfolding q11_upto_def image_def proof (auto, goal_cases)
-  case (1 xa)
-  show ?case
-    using square_mod_lower[of 11 xa "xa\<^sup>2 mod 11"]
-      ex_nat_less_eq[of 11 "\<lambda>x. xa\<^sup>2 mod 11 = x\<^sup>2 mod 11"]
-    by auto
-qed
+  by (simp add: q11_upto_def square_mod_image_interval_eq_range_square_mod)
 
 lemma q63_upto_def: "q63 = (\<lambda>k. k\<^sup>2 mod 63) ` {..<63}"
   by (simp add: q63_def lessThan_nat_numeral lessThan_Suc insert_commute)
 
 lemma q63_infinite_def: "q63 = (\<lambda>k. k\<^sup>2 mod 63) ` {0..}"
-  unfolding q63_upto_def image_def proof (auto, goal_cases)
-  case (1 xa)
-  show ?case
-    using square_mod_lower[of 63 xa "xa\<^sup>2 mod 63"]
-      ex_nat_less_eq[of 63 "\<lambda>x. xa\<^sup>2 mod 63 = x\<^sup>2 mod 63"]
-    by auto
-qed
+  by (simp add: q63_upto_def square_mod_image_interval_eq_range_square_mod)
 
 lemma q64_upto_def: "q64 = (\<lambda>k. k\<^sup>2 mod 64) ` {..<64}"
   by (simp add: q64_def lessThan_nat_numeral lessThan_Suc insert_commute)
 
 lemma q64_infinite_def: "q64 = (\<lambda>k. k\<^sup>2 mod 64) ` {0..}"
-  unfolding q64_upto_def image_def proof (auto, goal_cases)
-  case (1 xa)
-  show ?case
-    using square_mod_lower[of 64 xa "xa\<^sup>2 mod 64"]
-      ex_nat_less_eq[of 64 "\<lambda>x. xa\<^sup>2 mod 64 = x\<^sup>2 mod 64"]
-    by auto
-qed
+  by (simp add: q64_upto_def square_mod_image_interval_eq_range_square_mod)
 
 lemma q65_upto_def: "q65 = (\<lambda>k. k\<^sup>2 mod 65) ` {..<65}"
   by (simp add: q65_def lessThan_nat_numeral lessThan_Suc insert_commute)
 
 lemma q65_infinite_def: "q65 = (\<lambda>k. k\<^sup>2 mod 65) ` {0..}"
-  unfolding q65_upto_def image_def proof (auto, goal_cases)
-  case (1 xa)
-  show ?case
-    using square_mod_lower[of 65 xa "xa\<^sup>2 mod 65"]
-      ex_nat_less_eq[of 65 "\<lambda>x. xa\<^sup>2 mod 65 = x\<^sup>2 mod 65"]
-    by auto
-qed
+  by (simp add: q65_upto_def square_mod_image_interval_eq_range_square_mod)
 
 lemma square_mod_existence:
   fixes n k :: nat

@@ -1558,8 +1558,11 @@ lemma incidence_mat_des_index:
   assumes "card I = \<t>"
   shows "mat_point_index N I = \<Lambda>\<^sub>t"
 proof -
-  have card: "card ((!) \<V>s ` I) = \<t>" using assms points_indexing_inj
-    by (metis (mono_tags, lifting) card_image ex_nat_less_eq not_le points_list_length subset_iff) 
+  have \<open>inj_on ((!) \<V>s) I\<close>
+    using points_list_length \<open>I \<subseteq> {0..<\<v>}\<close>
+    by (auto intro!: points_indexing_inj)
+  with \<open>card I = \<t>\<close> have card: "card ((!) \<V>s ` I) = \<t>"
+    by (simp add: card_image)
   have "((!) \<V>s ` I) \<subseteq> \<V>" using assms
     by (metis atLeastLessThan_iff image_subset_iff subsetD valid_points_index)
   then have "\<B> index ((!) \<V>s ` I) = \<Lambda>\<^sub>t" using balanced assms(2) card by simp

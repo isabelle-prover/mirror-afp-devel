@@ -551,7 +551,6 @@ lemma param_replicate[param]:
   "(replicate,replicate) \<in> nat_rel \<rightarrow> R \<rightarrow> \<langle>R\<rangle>list_rel"
   unfolding replicate_def by parametricity
 
-term list_update
 lemma param_list_update[param]: 
   "(list_update,list_update) \<in> \<langle>Ra\<rangle>list_rel \<rightarrow> nat_rel \<rightarrow> Ra \<rightarrow> \<langle>Ra\<rangle>list_rel"
   unfolding list_update_def[abs_def] by parametricity
@@ -568,10 +567,26 @@ lemma param_concat[param]: "(concat, concat) \<in>
     \<langle>\<langle>R\<rangle>list_rel\<rangle>list_rel \<rightarrow> \<langle>R\<rangle>list_rel"
 unfolding concat_def[abs_def] by parametricity
 
-lemma param_all_range[param]:
-  "(List.all_range, List.all_range) 
+lemma param_all_interval_nat' [param]:
+  "(List.all_interval, List.all_interval) 
   \<in> (nat_rel \<rightarrow> bool_rel) \<rightarrow> nat_rel \<rightarrow> nat_rel \<rightarrow> bool_rel"
-  unfolding List.all_range_iff [abs_def]
+  unfolding List.all_interval_iff [abs_def]
+  apply parametricity
+  apply simp
+  done
+
+context
+begin
+
+qualified definition all_interval_nat :: \<open>(nat \<Rightarrow> bool) \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> bool\<close>
+  where all_interval_nat_eq [simp]: \<open>all_interval_nat P m n \<longleftrightarrow> (\<forall>i\<in>{m..<n}. P i)\<close>
+
+end
+
+lemma param_all_interval_nat [param]:
+  \<open>(Param_HOL.all_interval_nat, Param_HOL.all_interval_nat)
+  \<in> (nat_rel \<rightarrow> bool_rel) \<rightarrow> nat_rel \<rightarrow> nat_rel \<rightarrow> bool_rel\<close>
+  unfolding Param_HOL.all_interval_nat_eq [abs_def]
   apply parametricity
   apply simp
   done

@@ -60,6 +60,10 @@ lemma eq_iff_word_of:
   \<open>p = q \<longleftrightarrow> word_of p = word_of q\<close>
   by (auto intro: word_of_eqI)
 
+lemma inj_word_of:
+  \<open>inj word_of\<close>
+  by rule (rule word_of_eqI)
+
 end
 
 bundle constraintless
@@ -70,7 +74,7 @@ declaration \<open>
     val cs = map (rpair NONE o fst o dest_Const)
       [\<^term>\<open>0\<close>, \<^term>\<open>(+)\<close>, \<^term>\<open>uminus\<close>, \<^term>\<open>(-)\<close>,
        \<^term>\<open>1\<close>, \<^term>\<open>(*)\<close>, \<^term>\<open>(div)\<close>, \<^term>\<open>(mod)\<close>,
-       \<^term>\<open>HOL.equal\<close>, \<^term>\<open>(\<le>)\<close>, \<^term>\<open>(<)\<close>,
+       \<^term>\<open>HOL.equal\<close>, \<^term>\<open>(\<le>)\<close>, \<^term>\<open>(<)\<close>, \<^term>\<open>bot\<close>, \<^term>\<open>top\<close>,
        \<^term>\<open>(dvd)\<close>, \<^term>\<open>of_bool\<close>, \<^term>\<open>numeral\<close>, \<^term>\<open>of_nat\<close>,
        \<^term>\<open>bit\<close>,
        \<^term>\<open>Bit_Operations.not\<close>, \<^term>\<open>Bit_Operations.and\<close>, \<^term>\<open>Bit_Operations.or\<close>, \<^term>\<open>Bit_Operations.xor\<close>, \<^term>\<open>mask\<close>,
@@ -98,10 +102,17 @@ locale word_type_copy_ring = word_type_copy
     and equal_iff_word_of [code]: \<open>HOL.equal p q \<longleftrightarrow> HOL.equal (word_of p) (word_of q)\<close>
     and less_eq_iff_word_of [code]: \<open>p \<le> q \<longleftrightarrow> word_of p \<le> word_of q\<close>
     and less_iff_word_of [code]: \<open>p < q \<longleftrightarrow> word_of p < word_of q\<close>
+    and word_of_bot [code]: \<open>word_of bot = bot\<close>
+    and word_of_top [code]: \<open>word_of top = top\<close>
 begin
 
 lemma of_class_comm_ring_1:
   \<open>OFCLASS('a, comm_ring_1_class)\<close>
+  by standard (simp_all add: eq_iff_word_of word_of_0 word_of_1
+    word_of_add word_of_minus word_of_diff word_of_mult algebra_simps)
+
+lemma of_class_comm_semiring_1_cancel:
+  \<open>OFCLASS('a, comm_semiring_1_cancel_class)\<close>
   by standard (simp_all add: eq_iff_word_of word_of_0 word_of_1
     word_of_add word_of_minus word_of_diff word_of_mult algebra_simps)
 
@@ -118,6 +129,36 @@ lemma of_class_equal:
 lemma of_class_linorder:
   \<open>OFCLASS('a, linorder_class)\<close>
   by standard (auto simp add: eq_iff_word_of less_eq_iff_word_of less_iff_word_of)
+
+lemma of_class_order_bot:
+  \<open>OFCLASS('a, order_bot_class)\<close>
+  by standard (auto simp add: eq_iff_word_of less_eq_iff_word_of less_iff_word_of word_of_bot)
+
+lemma of_class_order_top:
+  \<open>OFCLASS('a, order_top_class)\<close>
+  by standard (auto simp add: eq_iff_word_of less_eq_iff_word_of less_iff_word_of word_of_top)
+
+lemma of_class_interval:
+  \<open>OFCLASS('a, interval_class)\<close>
+proof -
+  have inj: \<open>inj_on word_of A\<close> for A
+    using inj_word_of by (rule inj_on_subset [of _ UNIV]) simp
+  show \<open>OFCLASS('a, interval_class)\<close>
+  using of_class_linorder of_class_comm_semiring_1_cancel
+  apply (rule interval_class.intro)
+  apply standard
+      apply (auto simp add: eq_iff_word_of less_eq_iff_word_of less_iff_word_of word_of_add word_of_diff word_of_1
+    less_eq_dec_self_iff_eq inc_less_eq_self_iff_eq dec_less_imp_less_eq simp flip: finite_image_iff [OF inj])
+  done
+qed
+
+lemma of_class_interval_bot:
+  \<open>OFCLASS('a, interval_bot_class)\<close>
+  using of_class_interval of_class_order_bot by (rule interval_bot_class.intro)
+
+lemma of_class_interval_top:
+  \<open>OFCLASS('a, interval_top_class)\<close>
+  using of_class_interval of_class_order_top by (rule interval_top_class.intro)
 
 end
 

@@ -31,9 +31,33 @@ definition
      in 
       if ( (i \<noteq> nrows A) \<and> 
            (A $ from_nat_i $ from_nat_k = 0) \<and>
-           (\<exists>m>from_nat i. A $ m $ from_nat k \<noteq> 0)) 
+           (\<exists>m>from_nat_i. A $ m $ from_nat_k \<noteq> 0)) 
          then (-1 * det_P, (echelon_form_of_column_k bezout) (A, i) k) 
          else (     det_P, (echelon_form_of_column_k bezout) (A, i) k))"
+
+lemma echelon_form_of_column_k_det_code [code]:
+  \<open>echelon_form_of_column_k_det bezout (det_P, A, i) k = (
+    let
+      a = from_nat i :: 'a::mod_type;
+      b = from_nat k :: 'b::mod_type
+    in 
+      if i = nrows A \<or> A $ a $ b \<noteq> 0 \<or> (\<forall>n\<in>{to_nat a<..<nrows A}. A $ from_nat n $ b = 0)
+      then (      det_P, echelon_form_of_column_k bezout (A, i) k)
+      else (- 1 * det_P, echelon_form_of_column_k bezout (A, i) k)
+  )\<close>
+proof -
+  have *: \<open>i \<noteq> nrows A \<and> A $ a $ b = 0 \<and> (\<exists>m>a. A $ m $ b \<noteq> 0)
+    \<longleftrightarrow> \<not> (i = nrows A \<or> A $ a $ b \<noteq> 0 \<or> (\<forall>n\<in>{to_nat a<..<nrows A}. A $ from_nat n $ b = 0))\<close>
+    for a and b and i and A :: \<open>(('c, 'b) vec, 'a) vec\<close>
+  proof -
+    have \<open>(\<forall>n\<in>{to_nat a<..<nrows A}. A $ from_nat n $ b = 0) \<longleftrightarrow> (\<forall>m>a. A $ m $ b = 0)\<close>
+      by (simp add: forall_mod_type_greater_iff nrows_def)
+    then show ?thesis
+      by auto
+  qed
+  from echelon_form_of_column_k_det_def [of bezout \<open>(det_P, A, i)\<close> k]
+  show ?thesis by (auto simp add: * Let_def)
+qed
 
 definition
   "echelon_form_of_upt_k_det bezout A' k = 
