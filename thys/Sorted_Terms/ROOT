@@ -6,6 +6,7 @@ session Sorted_Terms = First_Order_Terms +
     Complete_Non_Orders
   theories
     Sorted_Contexts
+    Basic_Terms
   document_files
     "root.tex"
     "root.bib"

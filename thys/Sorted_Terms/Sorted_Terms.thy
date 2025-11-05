@@ -863,6 +863,11 @@ lemma in_dom_Term_empty_subst_id:
   "s \<in> dom \<T>(F,\<emptyset>) \<Longrightarrow> s\<cdot>\<theta> = s"
   by (auto elim: in_dom_hastypeE simp: subst_Term_empty_id)
 
+lemma in_dom_Term_empty_subst_subst:
+  "s \<in> dom \<T>(F,\<emptyset>) \<Longrightarrow> s\<cdot>\<theta>\<cdot>\<rho> = s\<cdot>undefined"
+  apply (elim in_dom_hastypeE)
+  using subst_subst_Term_empty.
+
 lemma map_eval_Term_empty_eq: "ss :\<^sub>l \<sigma>s in \<T>(F,\<emptyset>) \<Longrightarrow> [I\<lbrakk>s\<rbrakk>\<alpha>. s \<leftarrow> ss] = [I\<lbrakk>s\<rbrakk>\<alpha>'. s \<leftarrow> ss]"
   by (auto 0 3 simp: in_set_conv_nth list_all2_conv_all_nth eval_Term_empty_eq)
 
