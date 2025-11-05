@@ -1635,7 +1635,7 @@ lemma div_inc_mapping:
     shows "mapping Dinc"
   using assms div_inc_univalent by blast
 
-lemma div_inc_mapping:
+lemma
   assumes "D1_reflexive _"
       and "D2_antisymmetric _"
       and "D3_transitive _"
