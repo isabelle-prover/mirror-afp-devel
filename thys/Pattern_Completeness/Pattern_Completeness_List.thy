@@ -3,7 +3,6 @@ section \<open>A List-Based Implementation to Decide Pattern Completeness\<close
 theory Pattern_Completeness_List
   imports 
     Pattern_Completeness_Multiset
-    Compute_Nonempty_Infinite_Sorts
     "HOL-Library.AList" 
     "HOL-Library.Mapping" 
     Singleton_List

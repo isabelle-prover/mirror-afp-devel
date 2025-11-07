@@ -19,7 +19,7 @@ theory Pattern_Completeness_Set
     First_Order_Terms.Term_More
     Complete_Non_Orders.Complete_Relations
     Sorted_Terms.Sorted_Contexts
-    Compute_Nonempty_Infinite_Sorts
+    Sorted_Terms.Compute_Nonempty_Infinite_Sorts
 begin
 
 lemma ball_insert_un_cong: "f y = Ball zs f \<Longrightarrow> Ball (insert y A) f = Ball (zs \<union> A) f"

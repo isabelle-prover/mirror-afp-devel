@@ -1,12 +1,9 @@
 chapter AFP
 
-session Pattern_Completeness = First_Order_Terms +
+session Pattern_Completeness = Sorted_Terms +
   options [timeout = 600]
   sessions
-    LP_Duality
     Certification_Monads
-    Sorted_Terms
-    FinFun
   theories
     Singleton_List
     Finite_IDL_Solver_Interface    

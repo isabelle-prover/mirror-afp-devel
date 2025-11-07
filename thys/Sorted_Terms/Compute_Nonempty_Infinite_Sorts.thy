@@ -4,11 +4,12 @@ text \<open>This theory provides two algorithms, which both take a description o
   their constructors. The first algorithm computes the set of sorts that are nonempty, i.e., those
   sorts that are inhabited by ground terms; 
   and the second algorithm computes the set of sorts that are infinite,
-  i.e., where one can build arbitrary large ground terms.\<close>
+  i.e., where one can build arbitrary large ground terms. Furthermore, the cardinalities
+  of finite sorts can be computed (exactly, or up to a certain precision).\<close>
 
 theory Compute_Nonempty_Infinite_Sorts
   imports 
-    Sorted_Terms.Sorted_Terms
+    Sorted_Terms
     LP_Duality.Minimum_Maximum
     Matrix.Utility
     FinFun_RBT_Impl
