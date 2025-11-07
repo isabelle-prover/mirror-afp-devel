@@ -434,13 +434,11 @@ lemma "\<not> pat_complete_alg_test_nl_new 6 2" by eval
 
 declare [[code drop: "equal_class.equal :: bool \<Rightarrow> bool \<Rightarrow> bool"]]
 
-(* TODO: report *)
+(* TODO: omit these code equation setup, once it has been fixed *)
 lemma equal_bool_code[code]:  
   "equal_class.equal p False = (\<not> p)" 
   "equal_class.equal p True = p"
   unfolding equal_eq by auto
-
-declare map_entry_code[code del]
 (* END TODO *)
 
 subsection \<open>Export Code to SML and Haskell\<close>
