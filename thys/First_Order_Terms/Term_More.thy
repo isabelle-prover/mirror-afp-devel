@@ -21,7 +21,21 @@ theory Term_More
     Subterm_and_Context
     Polynomial_Factorization.Missing_List
     Unification
+    Fun_More
 begin
+
+lemma fun_merge_is_partition:
+  assumes "is_partition as"
+    and "i < length as"
+    and "a \<in> as ! i"
+  shows "fun_merge fs as a = (fs ! i) a"
+  by (intro fun_merge_part assms, insert assms(1), auto simp: is_partition_alt is_partition_alt_def)
+
+lemma fun_merge_is_part:
+  assumes "is_partition as"
+  shows "\<exists>\<sigma>. \<forall>i<length as. \<forall>x\<in> as ! i. \<sigma> x = \<tau> i x"
+  by (rule fun_merge, insert assms(1), auto simp: is_partition_alt is_partition_alt_def)
+
 
 text \<open>@{text "showl"}-Instance for Terms\<close>
 
@@ -2895,7 +2909,7 @@ proof -
   let ?\<sigma> = "fun_merge ?\<tau> (map vars_term ts)"
   show ?thesis
     by (rule exI[of _ ?\<sigma>], intro allI impI ballI,
-        insert fun_merge_part[OF part, of _ _ ?\<tau>], auto)
+        insert fun_merge_is_partition[OF part, of _ _ ?\<tau>], auto)
 qed
 
 text \<open>Matching for linear terms\<close>
