@@ -729,7 +729,9 @@ val _ = Theory.setup
     (target, { serializer = serializer, literals = literals,
       check = { env_var = "ISABELLE_GOEXE",
         make_destination = fn p => p + Path.explode "export.go",
-        make_command = fn p => "test -d export.go && cd export.go && isabelle go build ./"^p^" || isabelle go build ./export.go"},
+        run_command = Code_Target.run_command_bash (fn module_name =>
+          "test -d export.go && cd export.go && isabelle go build ./" ^ module_name ^
+          " || isabelle go build ./export.go")},
       evaluation_args = []})
   #> Code_Target.set_printings (Type_Constructor ("fun",
     [(target, SOME (2, fn print_go_typ => fn fxy => fn [arg, rtyp] => let
