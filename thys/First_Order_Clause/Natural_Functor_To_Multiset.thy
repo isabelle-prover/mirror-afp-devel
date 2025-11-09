@@ -9,10 +9,8 @@ for
   to_mset :: "'b \<Rightarrow> 'a multiset" and
   to_set :: "'b \<Rightarrow> 'a set" +
 assumes
-    (* TODO: Separate inj! *)
   to_mset_to_set: "\<And>b. set_mset (to_mset b) = to_set b" and
-  to_mset_map: "\<And>f b. to_mset (map f b) = image_mset f (to_mset b)" and
-  inj_to_mset: "inj to_mset"
+  to_mset_map: "\<And>f b. to_mset (map f b) = image_mset f (to_mset b)"
 
 global_interpretation id_natural_functor_multiset: natural_functor_to_multiset where
   to_set = set_mset and map = image_mset and to_mset = "\<lambda>x. x"

@@ -24,8 +24,8 @@ sublocale literal: nonground_term_based_order_lifting where
   ground_map = map_uprod_literal and to_set_ground = uprod_literal_to_set and
   to_mset = literal_to_mset
 rewrites
-  "\<And>l \<sigma>. functional_substitution_lifting.subst (\<cdot>t) map_uprod_literal l \<sigma> = literal.subst l \<sigma>" and
-  "\<And>l. functional_substitution_lifting.vars term.vars uprod_literal_to_set l = literal.vars l" and
+  "\<And>l \<sigma>. substitution_lifting.subst (\<cdot>t) map_uprod_literal l \<sigma> = literal.subst l \<sigma>" and
+  "\<And>l. substitution_lifting.vars term.vars uprod_literal_to_set l = literal.vars l" and
   "\<And>l\<^sub>G. grounding_lifting.from_ground term.from_ground map_uprod_literal l\<^sub>G
     = literal.from_ground l\<^sub>G" and
   "\<And>l. grounding_lifting.to_ground term.to_ground map_uprod_literal l = literal.to_ground l"
@@ -72,11 +72,11 @@ sublocale literal.order: subst_update_stable_multiset_extension where
   map = map_uprod_literal and to_set = uprod_literal_to_set and
   to_ground_map = map_uprod_literal and from_ground_map = map_uprod_literal and
   ground_map = map_uprod_literal and to_set_ground = uprod_literal_to_set and
-  to_mset = literal_to_mset and id_subst = Var and base_vars = term.vars and base_less = less\<^sub>t and
+  to_mset = literal_to_mset and base_vars = term.vars and base_less = less\<^sub>t and
   base_subst = "(\<cdot>t)"
   rewrites
-  "\<And>l \<sigma>. functional_substitution_lifting.subst (\<cdot>t) map_uprod_literal l \<sigma> = literal.subst l \<sigma>" and
-  "\<And>l. functional_substitution_lifting.vars term.vars uprod_literal_to_set l = literal.vars l" and
+  "\<And>l \<sigma>. substitution_lifting.subst (\<cdot>t) map_uprod_literal l \<sigma> = literal.subst l \<sigma>" and
+  "\<And>l. substitution_lifting.vars term.vars uprod_literal_to_set l = literal.vars l" and
   "\<And>l\<^sub>G. grounding_lifting.from_ground term.from_ground map_uprod_literal l\<^sub>G
     = literal.from_ground l\<^sub>G" and
   "\<And>l. grounding_lifting.to_ground term.to_ground map_uprod_literal l = literal.to_ground l"

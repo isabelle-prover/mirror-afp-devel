@@ -7,15 +7,16 @@ begin
 
 section \<open>Grounded Multiset Extensions\<close>
 
-locale functional_substitution_multiset_extension =
+locale substitution_multiset_extension =
   sub: strict_order where less = "(\<prec>) :: 'sub \<Rightarrow> 'sub \<Rightarrow> bool" +
   multiset_extension where to_mset = to_mset +
-  functional_substitution_lifting where id_subst = id_subst and to_set = to_set +
+  substitution_lifting where id_subst = id_subst and to_set = to_set +
   natural_functor_to_multiset where to_set = to_set and to_mset = to_mset
 for
   to_mset :: "'expr \<Rightarrow> 'sub multiset" and
-  id_subst :: "'var \<Rightarrow> 'base" and
-  to_set :: "'expr \<Rightarrow> 'sub set"
+  id_subst :: "'subst" and
+  to_set :: "'expr \<Rightarrow> 'sub set" +
+assumes inj_to_mset: "inj to_mset"
 begin
 
 (* TODO *)
@@ -42,9 +43,9 @@ end
 
 locale grounded_multiset_extension =
   grounding_lifting where
-  id_subst = "id_subst :: 'var \<Rightarrow> 'base" and to_set = "to_set :: 'expr \<Rightarrow> 'sub set" and
+  id_subst = "id_subst :: 'subst" and to_set = "to_set :: 'expr \<Rightarrow> 'sub set" and
   to_set_ground = to_set_ground +
-  functional_substitution_multiset_extension where to_mset = to_mset
+  substitution_multiset_extension where to_mset = to_mset
 for
   to_mset :: "'expr \<Rightarrow> 'sub multiset" and
   to_set_ground :: "'expr\<^sub>G \<Rightarrow> 'sub\<^sub>G set"
@@ -86,7 +87,7 @@ qed
 end
 
 locale based_grounded_multiset_extension =
-  based_functional_substitution_lifting where base_vars = base_vars +
+  based_substitution_lifting where base_vars = base_vars +
   grounded_multiset_extension +
   base: strict_order where less = base_less
 for
@@ -143,9 +144,9 @@ proof unfold_locales
   fix update x \<gamma> expr
 
   assume assms:
-    "base.is_ground update" "base_less update (\<gamma> x)" "is_ground (expr \<cdot> \<gamma>)" "x \<in> vars expr"
+    "base.is_ground update" "base_less update (x \<cdot>v \<gamma>)" "is_ground (expr \<cdot> \<gamma>)" "x \<in> vars expr"
 
-  moreover then have "\<forall>sub \<in># to_mset expr. sub \<cdot>\<^sub>s \<gamma>(x := update) \<preceq> sub \<cdot>\<^sub>s \<gamma>"
+  moreover then have "\<forall>sub \<in># to_mset expr. sub \<cdot>\<^sub>s \<gamma>\<lbrakk>x := update\<rbrakk> \<preceq> sub \<cdot>\<^sub>s \<gamma>"
     using
       sub.subst_update_stability
       sub.subst_reduntant_upd
@@ -153,12 +154,12 @@ proof unfold_locales
       to_set_is_ground_subst
     by blast
 
-  moreover have "\<exists>sub \<in># to_mset expr. sub \<cdot>\<^sub>s \<gamma>(x := update) \<prec> (sub \<cdot>\<^sub>s \<gamma>)"
+  moreover have "\<exists>sub \<in># to_mset expr. sub \<cdot>\<^sub>s \<gamma>\<lbrakk>x := update\<rbrakk> \<prec> (sub \<cdot>\<^sub>s \<gamma>)"
     using sub.subst_update_stability assms
     unfolding vars_def subst_def to_mset_to_set
     by fastforce
 
-  ultimately show "expr \<cdot> \<gamma>(x := update) \<prec>\<^sub>m expr \<cdot> \<gamma>"
+  ultimately show "expr \<cdot> \<gamma>\<lbrakk>x := update\<rbrakk> \<prec>\<^sub>m expr \<cdot> \<gamma>"
     using less_if_all_lesseq_ex_less
     by blast
 qed

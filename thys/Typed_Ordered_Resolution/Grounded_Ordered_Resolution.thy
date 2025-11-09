@@ -12,13 +12,12 @@ begin
 
 locale grounded_ordered_resolution_calculus =
   ordered_resolution_calculus where
-  select = select and welltyped = welltyped and term_from_ground = "term_from_ground :: 't\<^sub>G \<Rightarrow> 't" +
+  select = select and welltyped = welltyped and
+  term_from_ground = "term_from_ground :: 't\<^sub>G \<Rightarrow> 't" and id_subst = "id_subst :: 'subst" +
+
   grounded_selection_function where
-  select = select and
-  atom_subst = "(\<cdot>t)" and
-  atom_vars = "term.vars" and
-  atom_from_ground = "term.from_ground" and
-  atom_to_ground = "term.to_ground" and
+  select = select and atom_subst = "(\<cdot>t)" and atom_vars = "term.vars" and
+  atom_from_ground = "term.from_ground" and atom_to_ground = "term.to_ground" and
   is_ground_instance = is_ground_instance
   for
     select :: "'t select" and
@@ -181,7 +180,7 @@ begin
 abbreviation grounded_inference_ground_instances where
   "grounded_inference_ground_instances select\<^sub>G \<equiv>
     grounded_ordered_resolution_calculus.inference_ground_instances
-      (\<odot>) Var (\<cdot>t) term.vars term.to_ground (\<prec>\<^sub>t) term.from_ground select\<^sub>G welltyped"
+      (\<odot>) apply_subst (\<cdot>t) term.vars term.to_ground (\<prec>\<^sub>t) id_subst term.from_ground select\<^sub>G welltyped"
 
 sublocale
   lifting_intersection

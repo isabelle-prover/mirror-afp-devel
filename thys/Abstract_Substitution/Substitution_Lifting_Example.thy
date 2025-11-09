@@ -1,7 +1,7 @@
-theory Functional_Substitution_Lifting_Example \<^marker>\<open>contributor \<open>Balazs Toth\<close>\<close>
+theory Substitution_Lifting_Example \<^marker>\<open>contributor \<open>Balazs Toth\<close>\<close>
   imports
-    Functional_Substitution_Lifting
-    Functional_Substitution_Example
+    Based_Substitution_Lifting
+    Substitution_First_Order_Term
 begin
 
 text \<open>Lifting of properties from term to equations (modelled as pairs)\<close>
@@ -10,10 +10,12 @@ type_synonym ('f,'v) equation = "('f, 'v) term \<times> ('f, 'v) term"
 
 text \<open>All property locales have corresponding lifting locales\<close>
 locale lifting_term_subst_properties =
-  based_functional_substitution_lifting where
+  based_substitution_lifting where
   id_subst = Var and comp_subst = subst_compose and base_subst = subst_apply_term and
-  base_vars = "vars_term :: ('f, 'v) term \<Rightarrow> 'v set" +
-  finite_variables_lifting where id_subst = Var and comp_subst = subst_compose
+  base_vars = "vars_term :: ('f, 'v) term \<Rightarrow> 'v set" and
+  subst_update = fun_upd and apply_subst = "\<lambda>x \<sigma>. \<sigma> x" +
+  finite_variables_lifting where id_subst = Var and comp_subst = subst_compose and
+  subst_update = fun_upd and apply_subst = "\<lambda>x \<sigma>. \<sigma> x"
 
 global_interpretation equation_subst:
   lifting_term_subst_properties where
@@ -24,7 +26,6 @@ global_interpretation equation_subst:
 text \<open>Lifted lemmas and defintions\<close>
 thm
   equation_subst.subst_reduntant_upd
-  equation_subst.subst_reduntant_if
   equation_subst.vars_subst_subset
 
   equation_subst.vars_def
@@ -40,7 +41,6 @@ global_interpretation equation_set_subst:
 text \<open>Lifted lemmas and defintions\<close>
 thm
   equation_set_subst.subst_reduntant_upd
-  equation_set_subst.subst_reduntant_if
   equation_set_subst.vars_subst_subset
 
   equation_set_subst.vars_def

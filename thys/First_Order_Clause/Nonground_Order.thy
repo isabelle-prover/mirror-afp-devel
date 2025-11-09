@@ -54,7 +54,7 @@ sublocale literal.order: subst_update_stable_multiset_extension where
   sub_to_ground = term.to_ground and sub_from_ground = term.from_ground and map = map_literal and
   to_set = set_literal and to_ground_map = map_literal and from_ground_map = map_literal and 
   ground_map = map_literal and to_set_ground = set_literal and to_mset = literal_to_mset and
-  base_less = less\<^sub>t and id_subst = Var and base_subst = "(\<cdot>t)" and base_vars = term.vars
+  base_less = less\<^sub>t and base_subst = "(\<cdot>t)" and base_vars = term.vars
   by unfold_locales
 
 sublocale context_compatible_nonground_order_generic where

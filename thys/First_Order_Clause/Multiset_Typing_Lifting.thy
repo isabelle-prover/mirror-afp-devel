@@ -2,7 +2,6 @@ theory Multiset_Typing_Lifting
   imports
     Natural_Magma_Typing_Lifting
     Multiset_Extra
-    Abstract_Substitution.Functional_Substitution_Lifting
 begin
 
 locale mulitset_typing_lifting = 

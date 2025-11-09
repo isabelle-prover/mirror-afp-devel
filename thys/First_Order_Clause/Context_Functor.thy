@@ -4,10 +4,6 @@ theory Context_Functor
     Abstract_Substitution.Natural_Functor
 begin
 
-(* TODO:*)
-no_notation subst_compose (infixl "\<circ>\<^sub>s" 75)
-no_notation subst_apply_term (infixl "\<cdot>" 67)
-
 type_synonym ('f, 'v) "context" = "('f, 'v) ctxt"
 
 global_interpretation "context": finite_natural_functor where

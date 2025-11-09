@@ -67,7 +67,7 @@ qed
 definition rewrite_sys where
   "rewrite_sys N C \<equiv> (\<Union>D \<in> {D \<in> N. D \<prec>\<^sub>c C}. epsilon N D)"
 
-lemma  rewrite_sys_subset_if_less_cls: "C \<prec>\<^sub>c D \<longrightarrow> rewrite_sys N C \<subseteq> rewrite_sys N D"
+lemma rewrite_sys_subset_if_less_cls: "C \<prec>\<^sub>c D \<longrightarrow> rewrite_sys N C \<subseteq> rewrite_sys N D"
   unfolding rewrite_sys_def
   by fastforce
 
@@ -855,7 +855,7 @@ qed
 
 subsection \<open>Static Refutational Completeness\<close>
 
-lemma  statically_complete:
+lemma statically_complete:
   fixes N :: "'t clause set"
   assumes "saturated N" and "G_entails N {{#}}"
   shows "{#} \<in> N"
@@ -881,7 +881,7 @@ proof (rule contrapos_pp)
   qed
 qed
 
-sublocale  statically_complete_calculus where
+sublocale statically_complete_calculus where
   Bot = G_Bot and
   Inf = G_Inf and
   entails = G_entails and

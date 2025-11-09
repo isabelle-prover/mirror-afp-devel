@@ -23,7 +23,7 @@ proof (cases "(\<V>, D)" "(\<V>, C)" rule: eq_factoring.cases)
   case (eq_factoringI l\<^sub>1 \<mu> t\<^sub>1 t\<^sub>1' t\<^sub>2 l\<^sub>2 D' t\<^sub>2')
 
   show ?thesis
-    using D_is_welltyped term.imgu_same_type[OF _  eq_factoringI(5)] eq_factoringI(4)
+    using D_is_welltyped term.imgu_same_type[OF  eq_factoringI(4, 5)] eq_factoringI(4)
     unfolding eq_factoringI
     by fastforce
 qed
@@ -124,7 +124,7 @@ proof (cases "(\<V>\<^sub>2, D)" "(\<V>\<^sub>1, E)" "(\<V>\<^sub>3, C)" rule: s
         using superpositionI(8)
         unfolding superpositionI
         by auto
-    qed
+    qed simp
 
     moreover have \<V>: "\<forall>x\<in>literal.vars (t\<^sub>2 \<approx> t\<^sub>2'). \<V>\<^sub>2 x = \<V>\<^sub>3 (clause.rename \<rho>\<^sub>2 x)"
       using superpositionI(20)

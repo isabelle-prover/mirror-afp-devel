@@ -15,13 +15,12 @@ locale nonground_order_lifting =
 
 locale nonground_term_based_order_lifting =
   "term": nonground_term +
-  nonground_order_lifting where
-  id_subst = Var 
+  nonground_order_lifting
 for less\<^sub>t
 
 locale nonground_order_generic =
   "term": nonground_term where
-  Var = "Var :: 'v \<Rightarrow> 't" and term_to_ground = "term_to_ground :: 't \<Rightarrow> 't\<^sub>G" +
+  id_subst = "id_subst :: 'subst" and term_to_ground = "term_to_ground :: 't \<Rightarrow> 't\<^sub>G" +
  
   nonground_clause_generic where
   atom_subst = atom_subst and atom_from_ground = atom_from_ground +
@@ -41,7 +40,7 @@ locale nonground_order_generic =
   ground: atom_to_mset where pos_to_mset = ground_pos_to_mset and neg_to_mset = ground_neg_to_mset
 for 
   pos_to_mset :: "'a \<Rightarrow> 't multiset" and 
-  atom_subst :: "'a \<Rightarrow> ('v \<Rightarrow> 't) \<Rightarrow> 'a" and
+  atom_subst :: "'a \<Rightarrow> 'subst \<Rightarrow> 'a" and
   atom_from_ground :: "'a\<^sub>G \<Rightarrow> 'a" and
   ground_pos_to_mset ground_neg_to_mset :: "'a\<^sub>G \<Rightarrow> 't\<^sub>G multiset" +
 assumes
@@ -352,7 +351,7 @@ lemmas less\<^sub>c_add_same [simp] =
 
 end
 
-locale context_compatible_nonground_order_generic = 
+locale context_compatible_nonground_order_generic =
   nonground_order_generic +
 
   "term": context_compatible_nonground_term_order +
@@ -362,7 +361,7 @@ locale context_compatible_nonground_order_generic =
   sub_to_ground = literal.to_ground and sub_from_ground = literal.from_ground and
   map = image_mset and to_set = set_mset and to_ground_map = image_mset and
   from_ground_map = image_mset and ground_map = image_mset and to_set_ground = set_mset and
-  to_mset = "\<lambda>x. x" and id_subst = Var and base_vars = term.vars and base_less = less\<^sub>t and
+  to_mset = "\<lambda>x. x" and base_vars = term.vars and base_less = less\<^sub>t and
   base_subst = "(\<cdot>t)"
 
 end

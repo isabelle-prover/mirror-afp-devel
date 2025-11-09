@@ -2,7 +2,7 @@ theory Nonground_Typing_Generic
   imports
     Nonground_Term_Typing
     Clause_Typing_Generic
-    Typed_Functional_Substitution_Lifting
+    Typed_Substitution_Lifting
     Nonground_Clause_Generic
 begin
 
@@ -17,13 +17,13 @@ locale nonground_typing_lifting =
 locale term_based_nonground_typing_lifting =
   term_typing_properties +
   nonground_typing_lifting where
-  base_welltyped = welltyped and id_subst = Var and comp_subst = "(\<odot>)" and
+  base_welltyped = welltyped and comp_subst = "(\<odot>)" and
   base_subst = "(\<cdot>t)" and base_vars = term.vars
 
 locale term_based_witnessed_nonground_typing_lifting =
   term_based_nonground_typing_lifting +
-  witnessed_typed_functional_substitution_lifting where
-  id_subst = Var and comp_subst = "(\<odot>)" and base_subst = "(\<cdot>t)" and base_vars = term.vars and 
+  witnessed_typed_substitution_lifting where
+  comp_subst = "(\<odot>)" and base_subst = "(\<cdot>t)" and base_vars = term.vars and
   base_welltyped = welltyped
 
 locale nonground_typing_generic =

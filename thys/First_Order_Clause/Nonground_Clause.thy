@@ -1,6 +1,5 @@
 theory Nonground_Clause
   imports
-    Nonground_Term
     Nonground_Clause_Generic
     Literal_Functor
 begin
