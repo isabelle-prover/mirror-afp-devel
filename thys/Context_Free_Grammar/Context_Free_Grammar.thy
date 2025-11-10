@@ -50,7 +50,7 @@ lemma isNt_simps[simp,code]:
   \<open>isNt (Tm a) = False\<close> 
 by (simp_all add: isNt_def)
 
-lemma isTm_simps[simp]:
+lemma isTm_simps[simp,code]:
   \<open>isTm (Nt A) = False\<close>
   \<open>isTm (Tm a) = True\<close> 
 by (simp_all add: isTm_def)
