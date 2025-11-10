@@ -13,19 +13,19 @@ locale base_grounded_order =
   grounding
 
 locale nonground_term_order =
-  "term": nonground_term where Var = Var +
+  "term": nonground_term +
   order: restricted_wellfounded_total_strict_order where
   less = less\<^sub>t and restriction = "range term.from_ground" +
   order: ground_subst_stability where R = less\<^sub>t and comp_subst = "(\<odot>)" and subst = "(\<cdot>t)" and
-  vars = term.vars and id_subst = Var and to_ground = term.to_ground and
+  vars = term.vars and to_ground = term.to_ground and
   from_ground = "term.from_ground"
-for less\<^sub>t and Var :: "'v \<Rightarrow> 't"
+for less\<^sub>t
 begin
 
 interpretation term_order_notation .
 
 sublocale base_grounded_order where
-  subst = "(\<cdot>t)" and vars = term.vars and id_subst = Var and comp_subst = "(\<odot>)" and
+  subst = "(\<cdot>t)" and vars = term.vars and comp_subst = "(\<odot>)" and
   to_ground = term.to_ground and from_ground = "term.from_ground" and less = "(\<prec>\<^sub>t)"
   by unfold_locales
 
@@ -68,7 +68,6 @@ locale ground_subterm_property =
 
 locale context_compatible_nonground_term_order =
   nonground_term_with_context where
-  Var = "Var :: 'v \<Rightarrow> 't" and
   from_ground_context_map = "from_ground_context_map :: ('t\<^sub>G \<Rightarrow> 't) \<Rightarrow> 'c\<^sub>G \<Rightarrow> 'c" +
   nonground_term_order +
   order: ground_context_compatible_order where less = less\<^sub>t +
@@ -78,28 +77,28 @@ begin
 interpretation term_order_notation .
 
 sublocale order: base_subst_update_stable_grounded_order where 
-  subst = "(\<cdot>t)" and vars = term.vars and id_subst = Var and comp_subst = "(\<odot>)" and
+  subst = "(\<cdot>t)" and vars = term.vars and comp_subst = "(\<odot>)" and
   to_ground = term.to_ground and from_ground = "term.from_ground" and less = "(\<prec>\<^sub>t)"
 proof unfold_locales
   fix update x \<gamma> t
   assume
     update_is_ground: "term.is_ground update" and
-    update_less: "update \<prec>\<^sub>t \<gamma> x" and
+    update_less: "update \<prec>\<^sub>t x \<cdot>v \<gamma>" and
     term_grounding: "term.is_ground (t \<cdot>t \<gamma>)" and
     x_in_t: "x \<in> term.vars t"
 
-  from x_in_t term_grounding show "t \<cdot>t \<gamma>(x := update) \<prec>\<^sub>t t \<cdot>t \<gamma>"
+  from x_in_t term_grounding show "t \<cdot>t \<gamma>\<lbrakk>x := update\<rbrakk> \<prec>\<^sub>t t \<cdot>t \<gamma>"
   proof (induction "occurences t x - 1" arbitrary: t)
     case 0
 
     then have "occurences t x = 1"
       by (simp add: vars_occurences)
 
-    then obtain c where t: "t = c\<langle>Var x\<rangle>" and "x \<notin> context.vars c"
+    then obtain c where t: "t = c\<langle>term.Var x\<rangle>" and "x \<notin> context.vars c"
       using one_occurence_obtain_context 
       by blast
 
-    then have c_update: "c\<langle>Var x\<rangle> \<cdot>t \<gamma>(x := update) = (c \<cdot>t\<^sub>c \<gamma>)\<langle>update\<rangle>"
+    then have c_update: "c\<langle>term.Var x\<rangle> \<cdot>t \<gamma>\<lbrakk>x := update\<rbrakk> = (c \<cdot>t\<^sub>c \<gamma>)\<langle>update\<rangle>"
       by auto
 
     show ?case
@@ -109,13 +108,13 @@ proof unfold_locales
   next
     case (Suc n)
 
-    obtain c where t: "t = c\<langle>Var x\<rangle>"
+    obtain c where t: "t = c\<langle>term.Var x\<rangle>"
       using Suc.prems(1) context.context_Var
       by blast
 
     let ?t' = "c\<langle>update\<rangle>"
 
-    have "?t' \<cdot>t \<gamma>(x := update) \<prec>\<^sub>t ?t' \<cdot>t \<gamma>"
+    have "?t' \<cdot>t \<gamma>\<lbrakk>x := update\<rbrakk> \<prec>\<^sub>t ?t' \<cdot>t \<gamma>"
     proof (rule Suc.hyps(1))
 
       show "n = occurences c\<langle>update\<rangle> x - 1"
@@ -139,11 +138,11 @@ proof unfold_locales
         by fastforce
     qed
 
-    moreover have "c\<langle>update\<rangle> \<cdot>t \<gamma>(x := update) = c\<langle>Var x\<rangle> \<cdot>t \<gamma>(x := update)"
+    moreover have "c\<langle>update\<rangle> \<cdot>t \<gamma>\<lbrakk>x := update\<rbrakk> = c\<langle>term.Var x\<rangle> \<cdot>t \<gamma>\<lbrakk>x := update\<rbrakk>"
       using update_is_ground
       by auto
 
-    moreover have less: "c\<langle>update\<rangle> \<cdot>t \<gamma> \<prec>\<^sub>t c\<langle>Var x\<rangle> \<cdot>t \<gamma>"
+    moreover have less: "c\<langle>update\<rangle> \<cdot>t \<gamma> \<prec>\<^sub>t c\<langle>term.Var x\<rangle> \<cdot>t \<gamma>"
       using Suc.prems(2) update_is_ground update_less
       unfolding t
       by auto

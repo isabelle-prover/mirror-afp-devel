@@ -36,6 +36,12 @@ lemma to_set_map_not_ident:
   using assms
   by (metis rev_image_eqI to_set_map)
 
+lemma map_in_to_set:
+  assumes "map f b = b" "a \<in> to_set b"
+  shows "f a \<in> to_set b"
+  using assms 
+  by (metis image_eqI to_set_map)
+
 lemma exists_functor [intro]: "\<exists>b. a \<in> to_set b"
 proof -
 

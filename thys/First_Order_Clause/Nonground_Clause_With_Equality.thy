@@ -1,6 +1,5 @@
 theory Nonground_Clause_With_Equality
   imports
-    Nonground_Term
     Nonground_Clause_Generic
     Uprod_Literal_Functor
 begin

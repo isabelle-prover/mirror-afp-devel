@@ -12,7 +12,7 @@ begin
 
 locale grounded_superposition_calculus =
   superposition_calculus where select = select and welltyped = welltyped and
-  from_ground_context_map = from_ground_context_map +
+  from_ground_context_map = from_ground_context_map and id_subst = "id_subst :: 'subst" +
   grounded_selection_function where
   select = select and atom_subst = "(\<cdot>a)" and atom_vars = atom.vars and
   atom_to_ground = atom.to_ground and atom_from_ground = atom.from_ground and
@@ -187,8 +187,8 @@ begin
 abbreviation grounded_inference_ground_instances where
   "grounded_inference_ground_instances select\<^sub>G \<equiv>
     grounded_superposition_calculus.inference_ground_instances
-      (\<odot>) (\<cdot>t) term.vars term.to_ground term.from_ground apply_ground_context Var (\<prec>\<^sub>t) select\<^sub>G
-      welltyped"
+      (\<odot>) apply_subst (\<cdot>t) term.to_ground term.from_ground apply_ground_context term.vars (\<prec>\<^sub>t)
+      id_subst select\<^sub>G welltyped"
 
 sublocale
   lifting_intersection

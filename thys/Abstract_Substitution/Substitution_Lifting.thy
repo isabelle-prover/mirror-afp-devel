@@ -1,23 +1,27 @@
-theory Functional_Substitution_Lifting \<^marker>\<open>contributor \<open>Balazs Toth\<close>\<close>
-  imports Functional_Substitution Natural_Magma_Functor
+theory Substitution_Lifting \<^marker>\<open>contributor \<open>Balazs Toth\<close>\<close>
+  imports Substitution Natural_Magma_Functor
 begin
 
-locale functional_substitution_lifting =
-  sub: functional_substitution where subst = sub_subst and vars = sub_vars +
+
+section \<open>Lifting of substitutions using natural functors\<close>
+
+locale substitution_lifting =
+  sub: substitution where subst = sub_subst and vars = sub_vars and apply_subst = apply_subst +
   natural_functor where map = map and to_set = to_set
   for
-    sub_vars :: "'sub \<Rightarrow> 'var set" and
-    sub_subst :: "'sub \<Rightarrow> ('var \<Rightarrow> 'base) \<Rightarrow> 'sub" and
+    sub_vars :: "'sub \<Rightarrow> 'v set" and
+    sub_subst :: "'sub \<Rightarrow> 'subst \<Rightarrow> 'sub" and
     map :: "('sub \<Rightarrow> 'sub) \<Rightarrow> 'expr \<Rightarrow> 'expr" and
-    to_set :: "'expr \<Rightarrow> 'sub set"
+    to_set :: "'expr \<Rightarrow> 'sub set" and
+    apply_subst :: "'v \<Rightarrow> 'subst \<Rightarrow> 'base" (infixl "\<cdot>v" 69)
 begin
 
-definition vars :: "'expr \<Rightarrow> 'var set" where
+definition vars :: "'expr \<Rightarrow> 'v set" where
   "vars expr \<equiv> \<Union> (sub_vars ` to_set expr)"
 
 notation sub_subst (infixl "\<cdot>\<^sub>s" 70)
 
-definition subst :: "'expr \<Rightarrow> ('var \<Rightarrow> 'base) \<Rightarrow> 'expr" (infixl "\<cdot>" 70) where
+definition subst :: "'expr \<Rightarrow> 'subst \<Rightarrow> 'expr" (infixl "\<cdot>" 70) where
   "expr \<cdot> \<sigma> \<equiv> map (\<lambda>sub. sub \<cdot>\<^sub>s \<sigma>) expr"
 
 lemma subst_in_to_set_subst [intro]:
@@ -27,7 +31,7 @@ lemma subst_in_to_set_subst [intro]:
   using assms
   by simp
 
-sublocale functional_substitution where subst = "(\<cdot>)" and vars = vars
+sublocale substitution where subst = "(\<cdot>)" and vars = vars
 proof unfold_locales
   fix expr \<sigma>\<^sub>1 \<sigma>\<^sub>2
 
@@ -46,14 +50,14 @@ next
     unfolding vars_def subst_def
     by simp
 next
-  fix expr and \<sigma>\<^sub>1 \<sigma>\<^sub>2 :: "'var \<Rightarrow> 'base"
-  assume "\<And>var. var \<in> vars expr \<Longrightarrow> \<sigma>\<^sub>1 var = \<sigma>\<^sub>2 var"
+  fix expr and \<sigma>\<^sub>1 \<sigma>\<^sub>2 :: "'subst"
+  assume "\<And>x. x \<in> vars expr \<Longrightarrow> x \<cdot>v \<sigma>\<^sub>1 = x \<cdot>v \<sigma>\<^sub>2"
 
   then show "expr \<cdot> \<sigma>\<^sub>1 = expr \<cdot> \<sigma>\<^sub>2"
     unfolding vars_def subst_def
     using map_cong sub.subst_eq
     by (meson UN_I)
-qed
+qed simp_all
 
 lemma ground_subst_iff_sub_ground_subst [simp]: "is_ground_subst \<gamma> \<longleftrightarrow> sub.is_ground_subst \<gamma>"
 proof(unfold is_ground_subst_def sub.is_ground_subst_def, intro iffI allI)
@@ -111,7 +115,7 @@ lemma empty_is_ground:
   by (simp add: vars_def)
 
 lemma to_set_image: "to_set (expr \<cdot> \<sigma>) = (\<lambda>a. a \<cdot>\<^sub>s \<sigma>) ` to_set expr"
-  unfolding subst_def to_set_map..
+  unfolding subst_def to_set_map ..
 
 lemma to_set_subset_vars_subset:
   assumes "to_set expr \<subseteq> to_set expr'"
@@ -127,34 +131,12 @@ lemma to_set_subset_is_ground:
 
 end
 
-locale based_functional_substitution_lifting =
-  functional_substitution_lifting +
-  base: base_functional_substitution where subst = base_subst and vars = base_vars +
-  sub: based_functional_substitution where subst = sub_subst and vars = sub_vars
-begin
-
-sublocale based_functional_substitution where subst = subst and vars = vars
-proof unfold_locales
-  fix \<gamma>
-
-  show "is_ground_subst \<gamma> = base.is_ground_subst \<gamma>"
-    using ground_subst_iff_sub_ground_subst sub.ground_subst_iff_base_ground_subst
-    by blast
-next
-  fix expr \<rho>
-
-  show "vars (expr \<cdot> \<rho>) = \<Union> (base_vars ` \<rho> ` vars expr)"
-    using sub.vars_subst
-    unfolding subst_def vars_def
-    by simp
-qed
-
-end
+subsection \<open>Lifting of properties\<close>
 
 locale finite_variables_lifting =
-  sub: finite_variables where vars = "sub_vars :: 'sub \<Rightarrow> 'var set" and subst = sub_subst +
+  sub: finite_variables where vars = "sub_vars :: 'sub \<Rightarrow> 'v set" and subst = sub_subst +
   finite_natural_functor where to_set = "to_set :: 'expr \<Rightarrow> 'sub set" +
-  functional_substitution_lifting
+  substitution_lifting
 begin
 
 abbreviation to_fset :: "'expr \<Rightarrow> 'sub fset" where
@@ -180,7 +162,7 @@ lemma to_fset_is_ground_subst:
 end
 
 locale renaming_variables_lifting =
-  functional_substitution_lifting +
+  substitution_lifting +
   sub: renaming_variables where vars = sub_vars and subst = sub_subst
 begin
 
@@ -197,39 +179,30 @@ qed (rule sub.is_renaming_iff)
 
 end
 
-locale variables_in_base_imgu_lifting =
-  based_functional_substitution_lifting +
-  sub: variables_in_base_imgu where vars = sub_vars and subst = sub_subst
+locale exists_ground_subst_lifting = 
+  substitution_lifting +
+  sub: exists_ground_subst where vars = sub_vars and subst = sub_subst
 begin
 
-sublocale variables_in_base_imgu where subst = subst and vars = vars
+sublocale exists_ground_subst where vars = vars and subst = subst
 proof unfold_locales
-  fix expr \<mu> unifications
-  assume imgu:
-    "base.is_imgu \<mu> unifications"
-    "finite unifications"
-    "\<forall>unification \<in> unifications. finite unification"
-
-  show "vars (expr \<cdot> \<mu>) \<subseteq> vars expr \<union> \<Union> (base_vars ` \<Union> unifications)"
-    using sub.variables_in_base_imgu[OF imgu]
-    unfolding vars_def subst_def to_set_map
-    by auto
+  show "\<exists>\<gamma>. is_ground_subst \<gamma>"
+    by (simp add: sub.exists_ground_subst)
 qed
 
 end
 
 locale grounding_lifting =
-  functional_substitution_lifting where sub_vars = sub_vars and sub_subst = sub_subst and
-  map = map +
+  substitution_lifting where sub_vars = sub_vars and sub_subst = sub_subst and map = map +
   sub: grounding where vars = sub_vars and subst = sub_subst and to_ground = sub_to_ground and
-  from_ground = sub_from_ground +
+    from_ground = sub_from_ground +
   natural_functor_conversion where map = map and map_to = to_ground_map and
-  map_from = from_ground_map and map' = ground_map and to_set' = to_set_ground
+    map_from = from_ground_map and map' = ground_map and to_set' = to_set_ground
   for
     sub_to_ground :: "'sub \<Rightarrow> 'sub\<^sub>G" and
     sub_from_ground :: "'sub\<^sub>G \<Rightarrow> 'sub" and
     sub_vars :: "'sub \<Rightarrow> 'var set" and
-    sub_subst :: "'sub \<Rightarrow> ('var \<Rightarrow> 'base) \<Rightarrow> 'sub" and
+    sub_subst :: "'sub \<Rightarrow> 'subst \<Rightarrow> 'sub" and
     map :: "('sub \<Rightarrow> 'sub) \<Rightarrow> 'expr \<Rightarrow> 'expr" and
     to_ground_map :: "('sub \<Rightarrow> 'sub\<^sub>G) \<Rightarrow> 'expr \<Rightarrow> 'expr\<^sub>G" and
     from_ground_map :: "('sub\<^sub>G \<Rightarrow> 'sub) \<Rightarrow> 'expr\<^sub>G \<Rightarrow> 'expr" and
@@ -307,8 +280,50 @@ lemma ground_sub:
 
 end
 
-locale all_subst_ident_iff_ground_lifting =
+
+locale exists_non_ident_subst_lifting = 
   finite_variables_lifting where map = map +
+  sub: exists_non_ident_subst where subst = sub_subst and vars = sub_vars
+for map :: "('sub \<Rightarrow> 'sub) \<Rightarrow> 'expr \<Rightarrow> 'expr"
+begin
+
+sublocale exists_non_ident_subst where subst = subst and vars = vars
+proof unfold_locales
+  fix expr :: 'expr and S :: "'expr set"
+
+  assume finite: "finite S" and not_ground: "\<not>is_ground expr"
+
+  then have finite_subs: "finite (\<Union>(to_set ` insert expr S))"
+    using finite_to_set 
+    by blast
+
+  obtain sub where sub: "sub \<in> to_set expr" and sub_not_ground: "\<not>sub.is_ground sub"
+    using not_ground
+    unfolding vars_def
+    by blast
+
+  obtain \<sigma> where \<sigma>_not_ident: "sub \<cdot>\<^sub>s \<sigma> \<noteq> sub" "sub \<cdot>\<^sub>s \<sigma> \<notin> \<Union> (to_set ` insert expr S)"
+    using sub.exists_non_ident_subst[OF finite_subs sub_not_ground]
+    by blast
+
+  then have "expr \<cdot> \<sigma> \<noteq> expr"
+    using sub
+    unfolding subst_def
+    by (simp add: to_set_map_not_ident)
+
+  moreover have "expr \<cdot> \<sigma> \<notin> S"
+    using \<sigma>_not_ident(2) sub to_set_map
+    unfolding subst_def
+    by auto
+
+  ultimately show "\<exists>\<sigma>. expr \<cdot> \<sigma> \<noteq> expr \<and> expr \<cdot> \<sigma> \<notin> S"
+    by blast
+qed
+
+end
+
+locale all_subst_ident_iff_ground_lifting =
+  exists_non_ident_subst_lifting where map = map +
   sub: all_subst_ident_iff_ground where subst = sub_subst and vars = sub_vars
 for map :: "('sub \<Rightarrow> 'sub) \<Rightarrow> 'expr \<Rightarrow> 'expr"
 begin
@@ -342,41 +357,11 @@ proof unfold_locales
         by metis
     qed
   qed
-next
-  fix expr :: 'expr and S :: "'expr set"
-
-  assume finite: "finite S" and not_ground: "\<not>is_ground expr"
-
-  then have finite_subs: "finite (\<Union>(to_set ` insert expr S))"
-    using finite_to_set by blast
-
-  obtain sub where sub: "sub \<in> to_set expr" and sub_not_ground: "\<not>sub.is_ground sub"
-    using not_ground
-    unfolding vars_def
-    by blast
-
-  obtain \<sigma> where \<sigma>_not_ident: "sub \<cdot>\<^sub>s \<sigma> \<noteq> sub" "sub \<cdot>\<^sub>s \<sigma> \<notin> \<Union> (to_set ` insert expr S)"
-    using sub.exists_non_ident_subst[OF finite_subs sub_not_ground]
-    by blast
-
-  then have "expr \<cdot> \<sigma> \<noteq> expr"
-    using sub
-    unfolding subst_def
-    by (simp add: to_set_map_not_ident)
-
-  moreover have "expr \<cdot> \<sigma> \<notin> S"
-    using \<sigma>_not_ident(2) sub to_set_map
-    unfolding subst_def
-    by auto
-
-  ultimately show "\<exists>\<sigma>. expr \<cdot> \<sigma> \<noteq> expr \<and> expr \<cdot> \<sigma> \<notin> S"
-    by blast
 qed
 
 end
 
-locale natural_magma_functional_substitution_lifting =
-  functional_substitution_lifting + natural_magma
+locale natural_magma_substitution_lifting = substitution_lifting + natural_magma
 begin
 
 lemma vars_add [simp]:
@@ -395,8 +380,8 @@ lemma is_ground_add [simp]:
 
 end
 
-locale natural_magma_functor_functional_substitution_lifting =
-  natural_magma_functional_substitution_lifting + natural_magma_functor
+locale natural_magma_functor_substitution_lifting =
+  natural_magma_substitution_lifting + natural_magma_functor
 begin
 
 lemma add_subst [simp]:
@@ -414,7 +399,7 @@ end
 
 locale natural_magma_grounding_lifting =
   grounding_lifting +
-  natural_magma_functional_substitution_lifting +
+  natural_magma_substitution_lifting +
   ground: natural_magma where
   to_set = to_set_ground and plus = plus_ground and wrap = wrap_ground and add = add_ground
 for plus_ground wrap_ground add_ground +

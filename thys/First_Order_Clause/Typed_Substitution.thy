@@ -1,41 +1,53 @@
-theory Typed_Functional_Substitution
+theory Typed_Substitution
   imports
     Typing
-    Abstract_Substitution.Functional_Substitution
+    Abstract_Substitution.Based_Substitution
     Infinite_Variables_Per_Type
 begin
 
+(* TODO: Move Typed_Substitution to own AFP Entry *)
+
 type_synonym ('v, 'ty) var_types = "'v \<Rightarrow> 'ty"
 
-locale base_typed_functional_substitution =
-  base_functional_substitution where id_subst = id_subst
+locale base_typed_substitution =
+  base_substitution where id_subst = id_subst and apply_subst = apply_subst
 for
-  id_subst :: "'v \<Rightarrow> 'base" and
-  welltyped :: "('v, 'ty) var_types \<Rightarrow> 'base \<Rightarrow> 'ty \<Rightarrow> bool" +
+  id_subst :: "'subst" and
+  welltyped :: "('v, 'ty) var_types \<Rightarrow> 'base \<Rightarrow> 'ty \<Rightarrow> bool" and
+  apply_subst :: "'v \<Rightarrow> 'subst \<Rightarrow> 'base" (infixl "\<cdot>v" 69) +
 assumes
   "\<And>\<V>. typing (welltyped \<V>)" and
   welltyped_id_subst [intro]: 
-  "\<And>\<V> x. welltyped \<V> (id_subst x) (\<V> x) \<or> (\<nexists>\<tau>. welltyped \<V> (id_subst x) \<tau>)" 
+  "\<And>\<V> x. welltyped \<V> (x \<cdot>v id_subst) (\<V> x) \<or> (\<nexists>\<tau>. welltyped \<V> (x \<cdot>v id_subst) \<tau>)" 
 begin
 
 notation welltyped (\<open>_ \<turnstile> _ : _\<close> [1000, 0, 50] 50)
 
 sublocale typing "welltyped \<V>"
-  using base_typed_functional_substitution_axioms
-  unfolding base_typed_functional_substitution_axioms_def base_typed_functional_substitution_def
+  using base_typed_substitution_axioms
+  unfolding base_typed_substitution_axioms_def base_typed_substitution_def
   by metis
 
-abbreviation type_preserving_on :: "'v set \<Rightarrow> ('v, 'ty) var_types \<Rightarrow> ('v \<Rightarrow> 'base) \<Rightarrow> bool" where
-  "type_preserving_on X \<V> \<sigma> \<equiv> \<forall>x \<in> X. \<V> \<turnstile> id_subst x : \<V> x \<longrightarrow> \<V> \<turnstile> \<sigma> x : \<V> x"
+abbreviation type_preserving_on :: "'v set \<Rightarrow> ('v, 'ty) var_types \<Rightarrow> 'subst \<Rightarrow> bool" where
+  "type_preserving_on X \<V> \<sigma> \<equiv> \<forall>x \<in> X. \<V> \<turnstile> x \<cdot>v id_subst : \<V> x \<longrightarrow> \<V> \<turnstile> x \<cdot>v \<sigma> : \<V> x"
+
+(* TODO: Could this definition make my life easier in proofs?
+   I can recover the other one using `welltyped_id_subst` *)
+abbreviation type_preserving_on' :: "'v set \<Rightarrow> ('v, 'ty) var_types \<Rightarrow> 'subst \<Rightarrow> bool" where
+  "type_preserving_on' X \<V> \<sigma> \<equiv> \<forall>x \<in> X. \<forall>\<tau>. \<V> \<turnstile> x \<cdot>v id_subst : \<tau> \<longrightarrow> \<V> \<turnstile> x \<cdot>v \<sigma> : \<tau>"
+
+lemma "type_preserving_on X \<V> \<sigma> \<longleftrightarrow> type_preserving_on' X \<V> \<sigma>"
+  using welltyped_id_subst 
+  by blast
 
 abbreviation type_preserving where
   "type_preserving \<equiv> type_preserving_on UNIV"
 
 lemma type_preserving_on_subst_update: 
-  assumes "type_preserving_on X \<V> \<sigma>" "x \<in> X \<longrightarrow> \<V> \<turnstile> id_subst x : \<V> x \<longrightarrow> \<V> \<turnstile> update : \<V> x"
-  shows "type_preserving_on X \<V> (\<sigma>(x := update))"
+  assumes "type_preserving_on X \<V> \<sigma>" "x \<in> X \<longrightarrow> \<V> \<turnstile> x \<cdot>v id_subst : \<V> x \<longrightarrow> \<V> \<turnstile> update : \<V> x"
+  shows "type_preserving_on X \<V> (\<sigma>\<lbrakk>x := update\<rbrakk>)"
   using assms
-  by auto
+  by (metis subst_update)  
 
 lemma type_preserving_on_subset:
   assumes "type_preserving_on Y \<V> \<sigma>" "X \<subseteq> Y"
@@ -56,27 +68,30 @@ abbreviation type_preserving_unifier where
 
 end
 
-locale typed_functional_substitution =
-  based_functional_substitution where vars = vars and id_subst = id_subst +
-  base: base_typed_functional_substitution where
-    subst = base_subst and vars = base_vars and welltyped = base_welltyped and id_subst = id_subst
+locale typed_substitution =
+  based_substitution where vars = vars and id_subst = id_subst and apply_subst = apply_subst +
+  base: base_typed_substitution where
+    subst = base_subst and vars = base_vars and welltyped = base_welltyped and
+    id_subst = id_subst and apply_subst = apply_subst
 for
   base_welltyped :: "('v, 'ty) var_types \<Rightarrow> 'base \<Rightarrow> 'ty \<Rightarrow> bool" and 
   vars :: "'expr \<Rightarrow> 'v set" and
   welltyped :: "('v, 'ty) var_types \<Rightarrow> 'expr \<Rightarrow> 'ty' \<Rightarrow> bool" and
-  id_subst :: "'v \<Rightarrow> 'base" +
+  id_subst :: "'subst" and 
+  apply_subst :: "'v \<Rightarrow> 'subst \<Rightarrow> 'base" (infixl "\<cdot>v" 69) +
 assumes "\<And>\<V>. typing (welltyped \<V>)"
 begin
 
 sublocale typing "welltyped \<V>"
-  using typed_functional_substitution_axioms
-  unfolding typed_functional_substitution_axioms_def typed_functional_substitution_def
+  using typed_substitution_axioms
+  unfolding typed_substitution_axioms_def typed_substitution_def
   by metis
 
 end
 
-locale witnessed_typed_functional_substitution =
- typed_functional_substitution +
+locale witnessed_typed_substitution =
+ typed_substitution +
+ subst_updates +
  assumes types_witnessed: "\<And>\<V> \<tau>. \<exists>b. base.is_ground b \<and> base_welltyped \<V> b \<tau>"
 begin
 
@@ -88,14 +103,14 @@ lemma type_preserving_ground_subst_extension:
   where
     "base.is_ground_subst \<gamma>'"
     "base.type_preserving_on UNIV \<V> \<gamma>'"
-    "\<forall>x \<in> vars expr. \<gamma> x = \<gamma>' x"
+    "\<forall>x \<in> vars expr. x \<cdot>v \<gamma> = x \<cdot>v \<gamma>'"
 proof (rule that)
 
-  define \<gamma>' where
-    "\<And>x. \<gamma>' x \<equiv>
-      if x \<in> vars expr
-      then \<gamma> x
-      else SOME base. base.is_ground base \<and> base_welltyped \<V> base (\<V> x)"
+  (* TODO: Nicer notation *)
+ define \<gamma>' where
+    "\<gamma>' \<equiv> subst_updates \<gamma> (\<lambda>x. if x \<in> vars expr
+                               then None 
+                               else Some (SOME b. base.is_ground b \<and> base_welltyped \<V> b (\<V> x)))"
 
   show "base.is_ground_subst \<gamma>'"
   proof(unfold base.is_ground_subst_def, intro allI)
@@ -104,7 +119,7 @@ proof (rule that)
     {
       fix x
 
-      have "base.is_ground (\<gamma>' x)"
+      have "base.is_ground (x \<cdot>v \<gamma>')"
       proof(cases "x \<in> vars expr")
         case True
 
@@ -115,8 +130,11 @@ proof (rule that)
       next
         case False
 
-        then show ?thesis
+        then have "x \<cdot>v \<gamma>' = (SOME b. base.is_ground b \<and> base_welltyped \<V> b (\<V> x))"
           unfolding \<gamma>'_def
+          by simp
+
+        then show ?thesis
           by (smt (verit) types_witnessed tfl_some)
       qed
     }
@@ -131,7 +149,7 @@ proof (rule that)
     using \<gamma>_type_preserving_on types_witnessed
     by (simp add: verit_sko_ex_indirect)
 
-  show "\<forall>x \<in> vars expr. \<gamma> x = \<gamma>' x"
+  show "\<forall>x \<in> vars expr. x \<cdot>v \<gamma> = x \<cdot>v \<gamma>'"
     by (simp add: \<gamma>'_def)
 qed
 
@@ -143,21 +161,20 @@ lemma type_preserving_on_ground_subst_extension:
   where
     "is_ground (expr' \<cdot> \<gamma>')"
     "base.type_preserving_on (vars expr') \<V> \<gamma>'"
-    "\<forall>x \<in> vars expr. \<gamma> x = \<gamma>' x"
+    "\<forall>x \<in> vars expr. x \<cdot>v \<gamma> = x \<cdot>v \<gamma>'"
   using type_preserving_ground_subst_extension[OF assms]
   unfolding base.is_ground_subst_def is_grounding_iff_vars_grounded
-  by (metis UNIV_I base.comp_subst_iff base.left_neutral)
+  by (metis UNIV_I base.comp_subst_iff left_neutral)
 
 end
 
-sublocale base_typed_functional_substitution \<subseteq> typed_functional_substitution where
+sublocale base_typed_substitution \<subseteq> typed_substitution where
   base_subst = subst and base_vars = vars and base_welltyped = welltyped
   by unfold_locales
 
-locale typed_grounding_functional_substitution =
-  typed_functional_substitution + grounding
+locale typed_grounding_substitution = typed_substitution + grounding
 
-locale typed_subst_stability = typed_functional_substitution +
+locale typed_subst_stability = typed_substitution +
   assumes
     welltyped_subst_stability [simp]: "\<And>\<V> expr \<sigma> \<tau>.
       base.type_preserving_on (vars expr) \<V> \<sigma> \<Longrightarrow> welltyped \<V> (expr \<cdot> \<sigma>) \<tau> \<longleftrightarrow> welltyped \<V> expr \<tau>"
@@ -181,19 +198,18 @@ lemma type_preserving_unifier:
 lemma unifier_same_type:
   assumes "base.type_preserving_on (vars expr \<union> vars expr') \<V> \<mu>" "is_unifier \<mu> {expr, expr'}"
   shows "\<forall>\<tau>. welltyped \<V> expr \<tau> \<longleftrightarrow> welltyped \<V> expr' \<tau>"
-  using is_unifier_two assms
-  using type_preserving_unifier
-  by metis
+  using assms type_preserving_unifier
+  by simp
   
-lemma imgu_same_type:
+(*lemma imgu_same_type:
   assumes "base.type_preserving_on (vars expr \<union> vars expr') \<V> \<mu>" "is_imgu \<mu> {{expr, expr'}}"
   shows "\<forall>\<tau>. welltyped \<V> expr \<tau> \<longleftrightarrow> welltyped \<V> expr' \<tau>"
   using unifier_same_type assms
   unfolding is_imgu_def is_unifier_set_def
-  by blast
+  by blast*)
 
 (* TODO: Make this main *)
-lemma imgu_same_type':
+lemma imgu_same_type:
   assumes "base.type_preserving_on X \<V> \<mu>" "is_imgu \<mu> {{expr, expr'}}" "vars expr \<union> vars expr' \<subseteq> X" 
   shows "\<forall>\<tau>. welltyped \<V> expr \<tau> \<longleftrightarrow> welltyped \<V> expr' \<tau>"
   using unifier_same_type assms
@@ -203,7 +219,7 @@ lemma imgu_same_type':
 end
 
 locale base_typed_subst_stability = 
-  base_typed_functional_substitution +
+  base_typed_substitution +
   typed_subst_stability where base_subst = subst and base_vars = vars and base_welltyped = welltyped
 begin
 
@@ -217,19 +233,19 @@ lemma type_preserving_ground_compose_ground_subst:
 lemma type_preserving_on_subst_compose [intro]:
   assumes
     \<sigma>_type_preserving: "type_preserving_on X \<V> \<sigma>" and 
-    \<sigma>'_type_preserving: "type_preserving_on (\<Union>(vars ` \<sigma> ` X)) \<V> \<sigma>'"
+    \<sigma>'_type_preserving: "type_preserving_on (\<Union>(vars ` var_subst \<sigma> ` X)) \<V> \<sigma>'"
   shows "type_preserving_on X \<V> (\<sigma> \<odot> \<sigma>')"
 proof (intro ballI impI)
   fix x
   assume 
     x_in_X: "x \<in> X" and
-    welltyped_x: "\<V> \<turnstile> id_subst x : \<V> x"
+    welltyped_x: "\<V> \<turnstile> x \<cdot>v id_subst : \<V> x"
 
-  then have "\<V> \<turnstile> \<sigma> x : \<V> x"
+  then have "\<V> \<turnstile> x \<cdot>v \<sigma> : \<V> x"
     using assms
     by blast
 
-  then show "\<V> \<turnstile> (\<sigma> \<odot> \<sigma>') x : \<V> x"
+  then show "\<V> \<turnstile> x \<cdot>v (\<sigma> \<odot> \<sigma>') : \<V> x"
     unfolding comp_subst_iff
     using \<sigma>'_type_preserving x_in_X
     by fastforce
@@ -245,7 +261,7 @@ lemma type_preserving_subst_compose [intro]:
 
 end
 
-locale replaceable_\<V> = typed_functional_substitution +
+locale replaceable_\<V> = typed_substitution +
   assumes replace_\<V>:
     "\<And>expr \<V> \<V>' \<tau>. \<forall>x\<in> vars expr. \<V> x = \<V>' x \<Longrightarrow> welltyped \<V> expr \<tau> \<Longrightarrow> welltyped \<V>' expr \<tau>"
 begin
@@ -264,24 +280,26 @@ lemma is_ground_replace_\<V>:
 
 end
 
+(* TODO: Could this be proven using replaceable_V and welltyped_subst_stability? *)
 locale typed_renaming = 
-  typed_functional_substitution + 
+  typed_substitution + 
   renaming_variables +
   assumes
     welltyped_renaming [simp]:
-    "\<And>\<V> \<V>' expr \<rho> \<tau>. base.is_renaming \<rho> \<Longrightarrow>
+    "\<And>\<V> \<V>' expr \<rho> \<tau>. is_renaming \<rho> \<Longrightarrow>
       \<forall>x \<in> vars expr. \<V> x = \<V>' (rename \<rho> x) \<Longrightarrow>
       welltyped \<V>' (expr \<cdot> \<rho>) \<tau> \<longleftrightarrow> welltyped \<V> expr \<tau>"
 
 locale base_typed_renaming =
-  base_typed_functional_substitution where
+  base_typed_substitution where
     welltyped = welltyped +
   typed_renaming where
     base_subst = subst and base_vars = vars and base_welltyped = welltyped and
     welltyped = welltyped +
   replaceable_\<V> where
     base_subst = subst and base_vars = vars and base_welltyped = welltyped and
-    welltyped = welltyped
+    welltyped = welltyped +
+  subst_updates
   for welltyped :: "('v, 'ty) var_types \<Rightarrow> 'expr \<Rightarrow> 'ty \<Rightarrow> bool"
 begin
 
@@ -290,42 +308,42 @@ lemma renaming_ground_subst:
     \<rho>: "is_renaming \<rho>" and
     \<gamma>: "is_ground_subst \<gamma>" and
     welltyped_\<rho>: "type_preserving_on X \<V> \<rho>" and
-    welltyped_\<gamma>: "type_preserving_on (\<Union>(vars ` \<rho> ` X)) \<V>' \<gamma>" and
+    welltyped_\<gamma>: "type_preserving_on (\<Union>(vars ` var_subst \<rho> ` X)) \<V>' \<gamma>" and
     rename: "\<forall>x \<in> X. \<V> x = \<V>' (rename \<rho> x)"
   shows "type_preserving_on X \<V> (\<rho> \<odot> \<gamma>)"
 proof(intro ballI impI iffI)
   fix x
   assume 
     x_in_X: "x \<in> X" and 
-    "\<V> \<turnstile> id_subst x : \<V> x"
+    "\<V> \<turnstile> x \<cdot>v id_subst : \<V> x"
 
-  then have welltyped_\<rho>_x: "\<V> \<turnstile> \<rho> x : \<V> x"
+  then have welltyped_\<rho>_x: "\<V> \<turnstile> x \<cdot>v \<rho> : \<V> x"
     using welltyped_\<rho>
     by metis
 
   define y where "y \<equiv> (rename \<rho> x)"
 
-  have "y \<in> \<Union>(vars ` \<rho> ` X)"
+  have "y \<in> \<Union>(vars ` var_subst \<rho> ` X)"
     using x_in_X
     unfolding y_def
     by (metis UN_iff \<rho> id_subst_rename image_eqI singletonI vars_id_subst)
 
-  moreover then have "\<V> \<turnstile> \<gamma> y : \<V>' y"
+  moreover then have "\<V> \<turnstile> y \<cdot>v \<gamma> : \<V>' y"
     using replace_\<V> \<gamma> welltyped_\<gamma> rename x_in_X welltyped_\<rho>_x id_subst_rename[OF \<rho>]
     unfolding y_def is_ground_subst_def
     by (metis is_ground_replace_\<V> right_uniqueD singleton_iff variable_grounding vars_id_subst 
         welltyped_id_subst)
  
-  ultimately have "\<V> \<turnstile> \<gamma> y : \<V> x"
+  ultimately have "\<V> \<turnstile> y \<cdot>v \<gamma> : \<V> x"
     unfolding y_def
     using rename x_in_X
     by fastforce
 
-  moreover have "\<gamma> y = (\<rho> \<odot> \<gamma>) x"
+  moreover have "y \<cdot>v \<gamma> = x \<cdot>v (\<rho> \<odot> \<gamma>)"
     unfolding y_def
     by (metis \<rho> comp_subst_iff id_subst_rename left_neutral)
 
-  ultimately show "\<V> \<turnstile> (\<rho> \<odot> \<gamma>) x : \<V> x"
+  ultimately show "\<V> \<turnstile> x \<cdot>v (\<rho> \<odot> \<gamma>) : \<V> x"
     by argo
 qed
 
@@ -334,9 +352,9 @@ lemma obtain_type_preserving_renaming:
   assumes
     "finite X"
     "infinite_variables_per_type \<V>"
-  obtains \<rho> :: "'v \<Rightarrow> 'expr" where
+  obtains \<rho> where
     "is_renaming \<rho>"
-    "id_subst ` X \<inter> \<rho> ` Y = {}"
+    "var_subst id_subst ` X \<inter> var_subst \<rho> ` Y = {}"
     "type_preserving_on Y \<V> \<rho>"
 proof-
 
@@ -346,38 +364,37 @@ proof-
     preserve_type: "\<forall>x \<in> Y. \<V> (renaming x) = \<V> x"
     using obtain_type_preserving_inj[OF assms].
 
-  define \<rho> :: "'v \<Rightarrow> 'expr" where
-    "\<And>x. \<rho> x \<equiv> id_subst (renaming x)"
+  (* TODO: Can I write this nicer? *)
+  define \<rho> where
+    "\<rho> \<equiv> subst_updates id_subst (\<lambda>x. Some (renaming x \<cdot>v id_subst))"
 
   have \<rho>: "is_renaming \<rho>"
       using inj inj_id_subst
       unfolding \<rho>_def is_renaming_iff inj_def
-      by blast
+      by auto
 
   then show ?thesis
   proof (rule that)
 
-    show "id_subst ` X \<inter> \<rho> ` Y = {}"
+    show "var_subst id_subst ` X \<inter> var_subst \<rho> ` Y = {}"
       using rename_apart inj_id_subst
       unfolding \<rho>_def inj_def
-      by blast
+      by auto
   next
 
     {
       fix x
-      assume x_in_Y: "x \<in> Y" and welltyped_x: "\<V> \<turnstile> id_subst x : \<V> x"
+      assume x_in_Y: "x \<in> Y" and welltyped_x: "\<V> \<turnstile> x \<cdot>v id_subst : \<V> x"
 
-      have "\<forall>x\<in>vars (id_subst x). \<V> x = \<V> (rename \<rho> x)"
+      have "\<forall>x\<in>vars (x \<cdot>v id_subst). \<V> x = \<V> (rename \<rho> x)"
         using \<rho>
         unfolding \<rho>_def
-        by (metis id_subst_rename preserve_type singletonD singletonI vars_id_subst x_in_Y)
+        by (smt (verit, del_insts) empty_iff id_subst_rename insert_iff option.simps(5)
+            preserve_type subst_updates vars_id_subst x_in_Y)
 
-      then have "\<V> \<turnstile> id_subst x \<cdot> \<rho> : \<V> x"
+      then have "\<V> \<turnstile> x \<cdot>v \<rho> : \<V> x"
         using welltyped_renaming[OF \<rho>] welltyped_x
-        by metis
-
-       then have "\<V> \<turnstile> \<rho> x : \<V> x"
-        by (metis comp_subst_iff left_neutral)
+        by (metis id_subst_subst)
     }
 
     then show "type_preserving_on Y \<V> \<rho>"
@@ -390,10 +407,10 @@ lemma obtain_type_preserving_renamings:
   assumes
     "finite X"
     "infinite_variables_per_type \<V>\<^sub>2"
-  obtains \<rho>\<^sub>1 \<rho>\<^sub>2 :: "'v \<Rightarrow> 'expr" where
+  obtains \<rho>\<^sub>1 \<rho>\<^sub>2 where
     "is_renaming \<rho>\<^sub>1"
     "is_renaming \<rho>\<^sub>2"
-    "\<rho>\<^sub>1 ` X \<inter> \<rho>\<^sub>2 ` Y = {}"
+    "var_subst \<rho>\<^sub>1 ` X \<inter> var_subst \<rho>\<^sub>2 ` Y = {}"
     "type_preserving_on X \<V>\<^sub>1 \<rho>\<^sub>1"
     "type_preserving_on Y \<V>\<^sub>2 \<rho>\<^sub>2"
   using obtain_type_preserving_renaming[OF assms] is_renaming_id_subst welltyped_id_subst
@@ -404,10 +421,10 @@ lemma obtain_type_preserving_renamings':
   assumes
     "finite Y"
     "infinite_variables_per_type \<V>\<^sub>1"
-  obtains \<rho>\<^sub>1 \<rho>\<^sub>2 :: "'v \<Rightarrow> 'expr" where
+  obtains \<rho>\<^sub>1 \<rho>\<^sub>2 where
     "is_renaming \<rho>\<^sub>1"
     "is_renaming \<rho>\<^sub>2"
-    "\<rho>\<^sub>1 ` X \<inter> \<rho>\<^sub>2 ` Y = {}"
+    "var_subst \<rho>\<^sub>1 ` X \<inter> var_subst \<rho>\<^sub>2 ` Y = {}"
     "type_preserving_on X \<V>\<^sub>1 \<rho>\<^sub>1"
     "type_preserving_on Y \<V>\<^sub>2 \<rho>\<^sub>2"
   using obtain_type_preserving_renamings[OF assms]
@@ -421,7 +438,7 @@ lemma (in renaming_variables) obtain_merged_\<V>:
     \<rho>\<^sub>2: "is_renaming \<rho>\<^sub>2" and
     rename_apart: "vars (expr \<cdot> \<rho>\<^sub>1) \<inter> vars (expr' \<cdot> \<rho>\<^sub>2) = {}" and
     finite_vars: "finite (vars expr)" "finite (vars expr')" and
-    infinite_UNIV: "infinite (UNIV :: 'a set)"
+    infinite_UNIV: "infinite (UNIV :: 'c set)"
   obtains \<V>\<^sub>3 where
     "infinite_variables_per_type_on X \<V>\<^sub>3"
     "\<forall>x\<in>vars expr. \<V>\<^sub>1 x = \<V>\<^sub>3 (rename \<rho>\<^sub>1 x)"
@@ -434,9 +451,9 @@ proof -
 
   obtain \<V>\<^sub>3 where 
     \<V>\<^sub>3: "infinite_variables_per_type_on X \<V>\<^sub>3" and
-    \<V>\<^sub>3_\<V>\<^sub>1: "\<forall>x\<in>vars (expr \<cdot> \<rho>\<^sub>1). \<V>\<^sub>3 x = \<V>\<^sub>1 (inv \<rho>\<^sub>1 (id_subst x))" and
-    \<V>\<^sub>3_\<V>\<^sub>2: "\<forall>x\<in>vars (expr' \<cdot> \<rho>\<^sub>2). \<V>\<^sub>3 x = \<V>\<^sub>2 (inv \<rho>\<^sub>2 (id_subst x))"
-    using obtain_infinite_variables_per_type_on[OF infinite_UNIV finite rename_apart].
+    \<V>\<^sub>3_\<V>\<^sub>1: "\<forall>x\<in>vars (expr \<cdot> \<rho>\<^sub>1). \<V>\<^sub>3 x = \<V>\<^sub>1 (inv (var_subst \<rho>\<^sub>1) (x \<cdot>v id_subst))" and
+    \<V>\<^sub>3_\<V>\<^sub>2: "\<forall>x\<in>vars (expr' \<cdot> \<rho>\<^sub>2). \<V>\<^sub>3 x = \<V>\<^sub>2 (inv (var_subst \<rho>\<^sub>2) (x \<cdot>v id_subst))"
+    using obtain_infinite_variables_per_type_on[OF infinite_UNIV finite rename_apart] .
 
   show ?thesis
   proof (rule that[OF \<V>\<^sub>3])
@@ -468,8 +485,8 @@ proof (rule that)
   define \<V>\<^sub>3 where
     "\<And>x. \<V>\<^sub>3 x \<equiv>
         if x \<in> vars (expr \<cdot> \<rho>\<^sub>1)
-        then \<V>\<^sub>1 (inv \<rho>\<^sub>1 (id_subst x))
-        else \<V>\<^sub>2 (inv \<rho>\<^sub>2 (id_subst x))"
+        then \<V>\<^sub>1 (inv (var_subst \<rho>\<^sub>1) (x \<cdot>v id_subst))
+        else \<V>\<^sub>2 (inv (var_subst \<rho>\<^sub>2) (x \<cdot>v id_subst))"
 
   show "\<forall>x\<in>vars expr. \<V>\<^sub>1 x = \<V>\<^sub>3 (rename \<rho>\<^sub>1 x)"
   proof (intro ballI)
@@ -507,7 +524,7 @@ proof (rule that)
   moreover {
     fix \<tau>
 
-    have "infinite {x. \<V>\<^sub>2 (inv \<rho>\<^sub>2 (id_subst x)) = \<tau>}"
+    have "infinite {x. \<V>\<^sub>2 (inv (var_subst \<rho>\<^sub>2) (x \<cdot>v id_subst)) = \<tau>}"
     proof(rule surj_infinite_set[OF surj_inv_renaming, OF \<rho>\<^sub>2])
 
       show "infinite {x. \<V>\<^sub>2 x = \<tau>}"
@@ -554,37 +571,42 @@ lemma renaming_grounding:
 proof(intro ballI impI)
   fix x
 
-  define y where "y \<equiv> inv \<rho> (id_subst x)"
+  define y where "y \<equiv> inv (var_subst \<rho>) (x \<cdot>v id_subst)"
 
   assume 
     x_in_expr: "x \<in> vars (expr \<cdot> \<rho>)" and 
-    welltyped_x: "base_welltyped \<V>' (id_subst x) (\<V>' x)"
+    welltyped_x: "base_welltyped \<V>' (x \<cdot>v id_subst) (\<V>' x)"
 
   then have y_in_vars: "y \<in> vars expr"
     using base.renaming_inv_in_vars[OF renaming] base.vars_id_subst
-    unfolding y_def base.vars_subst_vars vars_subst
+    unfolding y_def base.vars_subst vars_subst
     by fastforce
 
-  then have "base.is_ground (base_subst (id_subst y) (\<rho> \<odot> \<gamma>))"
+  then have "base.is_ground (base_subst (y \<cdot>v id_subst) (\<rho> \<odot> \<gamma>))"
     using variable_grounding[OF grounding y_in_vars]
     by (metis base.comp_subst_iff base.left_neutral)
 
-  moreover have "base_welltyped \<V> (base_subst (id_subst y) (\<rho> \<odot> \<gamma>)) (\<V> y)"
+  moreover have inv_renaming: "(inv (\<lambda>x. x \<cdot>v \<rho>) (x \<cdot>v id_subst) \<cdot>v \<rho>) = (x \<cdot>v id_subst)"
+    using renaming renaming_inv_into x_in_expr
+    by blast
+
+  then have "base_welltyped \<V> (base_subst (y \<cdot>v id_subst) (\<rho> \<odot> \<gamma>)) (\<V> y)"
     using \<rho>_\<gamma>_type_preserving y_in_vars welltyped_x x_in_expr \<V>_\<V>'
     unfolding y_def
-    by (smt (verit, del_insts) base.comp_subst_iff base.left_neutral base.vars_id_subst 
-        base.welltyped_id_subst base.welltyped_renaming renaming renaming_inv_into singletonD)
+    by (smt (verit, del_insts) assms(1) base.id_subst_subst base.vars_id_subst 
+        base.welltyped_renaming empty_iff id_subst_rename insert_iff)
+   
 
-  ultimately have "base_welltyped \<V>' (base_subst (id_subst y) (\<rho> \<odot> \<gamma>)) (\<V> y)"
+  ultimately have "base_welltyped \<V>' (base_subst (y \<cdot>v id_subst) (\<rho> \<odot> \<gamma>)) (\<V> y)"
     using base.is_ground_replace_\<V> 
     by blast
 
-  moreover have "base_subst (id_subst y) (\<rho> \<odot> \<gamma>) = \<gamma> x"
+  moreover have "base_subst (y \<cdot>v id_subst) (\<rho> \<odot> \<gamma>) = x \<cdot>v \<gamma>"
     using x_in_expr base.renaming_inv_into[OF renaming] base.left_neutral
     unfolding y_def vars_subst base.comp_subst_iff
-    by (metis (no_types, lifting) UN_E f_inv_into_f)
+    by (simp add: inv_renaming)
 
-  ultimately show "base_welltyped \<V>' (\<gamma> x) (\<V>' x)"
+  ultimately show "base_welltyped \<V>' (x \<cdot>v \<gamma>) (\<V>' x)"
     using \<V>_\<V>'[rule_format] welltyped_x
     by (metis base.right_uniqueD base.welltyped_id_subst id_subst_rename renaming renaming_inv_into
         x_in_expr y_def y_in_vars)
@@ -605,14 +627,14 @@ lemma obtain_merged_grounding:
     "vars (expr \<cdot> \<rho>\<^sub>1) \<inter> vars (expr' \<cdot> \<rho>\<^sub>2) = {}"
     "base.type_preserving_on (vars expr) \<V>\<^sub>1 \<rho>\<^sub>1"
     "base.type_preserving_on (vars expr') \<V>\<^sub>2 \<rho>\<^sub>2"
-    "\<forall>x \<in> vars expr. \<gamma>\<^sub>1 x = (\<rho>\<^sub>1 \<odot> \<gamma>) x"
-    "\<forall>x \<in> vars expr'. \<gamma>\<^sub>2 x = (\<rho>\<^sub>2 \<odot> \<gamma>) x"
+    "\<forall>x \<in> vars expr. x \<cdot>v \<gamma>\<^sub>1 =  x \<cdot>v \<rho>\<^sub>1 \<odot> \<gamma>"
+    "\<forall>x \<in> vars expr'. x \<cdot>v \<gamma>\<^sub>2 = x \<cdot>v \<rho>\<^sub>2 \<odot> \<gamma>"
 proof -
 
   obtain \<rho>\<^sub>1 \<rho>\<^sub>2 where
     \<rho>\<^sub>1: "base.is_renaming \<rho>\<^sub>1" and
     \<rho>\<^sub>2: "base.is_renaming \<rho>\<^sub>2" and
-    rename_apart: "\<rho>\<^sub>1 ` (vars expr) \<inter> \<rho>\<^sub>2 ` (vars expr') = {}" and
+    rename_apart: "var_subst \<rho>\<^sub>1 ` (vars expr) \<inter> var_subst \<rho>\<^sub>2 ` (vars expr') = {}" and
     \<rho>\<^sub>1_is_welltyped: "base.type_preserving_on (vars expr) \<V>\<^sub>1 \<rho>\<^sub>1" and
     \<rho>\<^sub>2_is_welltyped: "base.type_preserving_on (vars expr') \<V>\<^sub>2 \<rho>\<^sub>2"
     using base.obtain_type_preserving_renamings[OF finite_vars \<V>\<^sub>2].
@@ -628,62 +650,59 @@ proof -
     by blast
 
   define \<gamma> where
-    "\<And>x. \<gamma> x \<equiv>
-       if x \<in> vars (expr \<cdot> \<rho>\<^sub>1)
-       then (\<rho>\<^sub>1_inv \<odot> \<gamma>\<^sub>1) x
-       else (\<rho>\<^sub>2_inv \<odot> \<gamma>\<^sub>2) x"
+    "\<gamma> \<equiv> subst_updates id_subst (\<lambda>x. if x \<in> vars (expr \<cdot> \<rho>\<^sub>1) then Some (x \<cdot>v \<rho>\<^sub>1_inv \<odot> \<gamma>\<^sub>1) else Some (x \<cdot>v \<rho>\<^sub>2_inv \<odot> \<gamma>\<^sub>2))"
 
   show ?thesis
   proof (rule that[OF \<rho>\<^sub>1 \<rho>\<^sub>2 rename_apart \<rho>\<^sub>1_is_welltyped \<rho>\<^sub>2_is_welltyped])
 
-    have "\<forall>x\<in> vars expr.  \<gamma>\<^sub>1 x = (\<rho>\<^sub>1 \<odot> \<gamma>) x"
+    have "\<forall>x\<in> vars expr.  x \<cdot>v \<gamma>\<^sub>1 = x \<cdot>v \<rho>\<^sub>1 \<odot> \<gamma>"
     proof (intro ballI)
       fix x
       assume x_in_vars: "x \<in> vars expr"
 
-      obtain y where y: "\<rho>\<^sub>1 x = id_subst y"
+      obtain y where y: "x \<cdot>v \<rho>\<^sub>1 = y \<cdot>v id_subst"
         using obtain_renamed_variable[OF \<rho>\<^sub>1] .
 
       then have "y \<in> vars (expr \<cdot> \<rho>\<^sub>1)"
         using x_in_vars \<rho>\<^sub>1 rename_variables_id_subst
         by (metis base.inj_id_subst image_eqI inj_image_mem_iff)
 
-      then have "\<gamma> y = base_subst (\<rho>\<^sub>1_inv y) \<gamma>\<^sub>1"
+      then have "y \<cdot>v \<gamma> = base_subst (y \<cdot>v \<rho>\<^sub>1_inv) \<gamma>\<^sub>1"
         unfolding \<gamma>_def
         using base.comp_subst_iff
-        by presburger
+        by simp
 
-      then show "\<gamma>\<^sub>1 x = (\<rho>\<^sub>1 \<odot> \<gamma>) x"
+      then show "x \<cdot>v \<gamma>\<^sub>1 = x \<cdot>v \<rho>\<^sub>1 \<odot> \<gamma>"
         by (metis \<rho>\<^sub>1_inv base.comp_subst_iff base.left_neutral y)
     qed
 
-    then show "\<forall>x \<in> vars expr. \<gamma>\<^sub>1 x = (\<rho>\<^sub>1 \<odot> \<gamma>) x"
+    then show "\<forall>x \<in> vars expr. x \<cdot>v \<gamma>\<^sub>1 = x \<cdot>v \<rho>\<^sub>1 \<odot> \<gamma>"
       by auto
 
   next
 
-    have "\<forall>x\<in> vars expr'. \<gamma>\<^sub>2 x = (\<rho>\<^sub>2 \<odot> \<gamma>) x"
+    have "\<forall>x\<in> vars expr'. x \<cdot>v \<gamma>\<^sub>2 = x \<cdot>v \<rho>\<^sub>2 \<odot> \<gamma>"
     proof (intro ballI)
       fix x
       assume x_in_vars: "x \<in> vars expr'"
 
-      obtain y where y: "\<rho>\<^sub>2 x = id_subst y"
+      obtain y where y: "x \<cdot>v \<rho>\<^sub>2 = y \<cdot>v id_subst"
         using obtain_renamed_variable[OF \<rho>\<^sub>2].
 
       then have "y \<in> vars (expr' \<cdot> \<rho>\<^sub>2)"
         using x_in_vars \<rho>\<^sub>2 rename_variables_id_subst
         by (metis base.inj_id_subst imageI inj_image_mem_iff)
 
-      then have "\<gamma> y = base_subst (\<rho>\<^sub>2_inv y) \<gamma>\<^sub>2"
+      then have "y \<cdot>v \<gamma> = base_subst (y \<cdot>v \<rho>\<^sub>2_inv) \<gamma>\<^sub>2"
         unfolding \<gamma>_def
         using base.comp_subst_iff rename_apart
         by auto
 
-      then show "\<gamma>\<^sub>2 x = (\<rho>\<^sub>2 \<odot> \<gamma>) x"
+      then show "x \<cdot>v \<gamma>\<^sub>2 = x \<cdot>v \<rho>\<^sub>2 \<odot> \<gamma>"
         by (metis \<rho>\<^sub>2_inv base.comp_subst_iff base.left_neutral y)
     qed
 
-    then show "\<forall>x \<in> vars expr'. \<gamma>\<^sub>2 x = (\<rho>\<^sub>2 \<odot> \<gamma>) x"
+    then show "\<forall>x \<in> vars expr'. x \<cdot>v \<gamma>\<^sub>2 = x \<cdot>v \<rho>\<^sub>2 \<odot> \<gamma>"
       by auto
   qed
 qed
@@ -703,8 +722,8 @@ lemma obtain_merged_grounding':
     "vars (expr \<cdot> \<rho>\<^sub>1) \<inter> vars (expr' \<cdot> \<rho>\<^sub>2) = {}"
     "base.type_preserving_on (vars expr) \<V>\<^sub>1 \<rho>\<^sub>1"
     "base.type_preserving_on (vars expr') \<V>\<^sub>2 \<rho>\<^sub>2"
-    "\<forall>x \<in> vars expr. \<gamma>\<^sub>1 x = (\<rho>\<^sub>1 \<odot> \<gamma>) x"
-    "\<forall>x \<in> vars expr'. \<gamma>\<^sub>2 x = (\<rho>\<^sub>2 \<odot> \<gamma>) x"
+    "\<forall>x \<in> vars expr. x \<cdot>v \<gamma>\<^sub>1 = x \<cdot>v \<rho>\<^sub>1 \<odot> \<gamma>"
+    "\<forall>x \<in> vars expr'. x \<cdot>v \<gamma>\<^sub>2 = x \<cdot>v \<rho>\<^sub>2 \<odot> \<gamma>"
   using obtain_merged_grounding[OF typed_\<gamma>\<^sub>2 typed_\<gamma>\<^sub>1 expr'_grounding expr_grounding \<V>\<^sub>1 finite_vars]
   by (smt (verit, ccfv_threshold) inf_commute)
 
@@ -714,18 +733,18 @@ sublocale base_typed_renaming \<subseteq>
   based_typed_renaming where base_vars = vars and base_subst = subst and base_welltyped = welltyped
   by unfold_locales
 
-locale type_preserving_imgu = base_typed_functional_substitution +
+locale type_preserving_imgu = base_typed_substitution +
   assumes
     exists_type_preserving_imgu: 
     "\<And>\<V> \<upsilon> expr expr'. type_preserving_unifier \<V> \<upsilon> expr expr' \<Longrightarrow>
-      \<exists>\<mu>. \<upsilon> = \<mu> \<odot> \<upsilon> \<and> type_preserving \<V> \<mu> \<and> is_imgu \<mu> {{expr, expr'}}"
+      \<exists>\<mu>. type_preserving \<V> \<mu> \<and> is_imgu \<mu> {{expr, expr'}}"
 begin
 
 lemma obtain_type_preserving_imgu:
   fixes \<upsilon> 
   assumes "type_preserving_unifier \<V> \<upsilon> expr expr'"
   obtains \<mu>
-  where "\<upsilon> = \<mu> \<odot> \<upsilon>" "type_preserving \<V> \<mu>" "is_imgu \<mu> {{expr, expr'}}"
+  where "type_preserving \<V> \<mu>" "is_imgu \<mu> {{expr, expr'}}"
   using exists_type_preserving_imgu[OF assms] UNIV_I
   by metis
 
@@ -733,7 +752,7 @@ lemma obtain_type_preserving_on_imgu:
   fixes \<upsilon> 
   assumes "type_preserving_unifier \<V> \<upsilon> expr expr'"
   obtains \<mu>
-  where "\<upsilon> = \<mu> \<odot> \<upsilon>" "type_preserving_on X \<V> \<mu>" "is_imgu \<mu> {{expr, expr'}}"
+  where "type_preserving_on X \<V> \<mu>" "is_imgu \<mu> {{expr, expr'}}"
   using exists_type_preserving_imgu[OF assms] UNIV_I
   by metis
 

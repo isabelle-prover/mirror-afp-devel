@@ -86,9 +86,10 @@ next
 qed
 
 sublocale "term": base_typing_properties where
-  id_subst = "Var :: 'v \<Rightarrow> ('f, 'v) term" and comp_subst = "(\<circ>\<^sub>s)" and subst = "(\<cdot>)" and
+  id_subst = "Var :: 'v :: infinite \<Rightarrow> ('f, 'v) term" and comp_subst = "(\<circ>\<^sub>s)" and subst = "(\<cdot>)" and
   vars = term.vars and welltyped = welltyped and to_ground = term.to_ground and
-  from_ground = term.from_ground
+  from_ground = term.from_ground and
+  subst_updates = subst_updates and apply_subst = apply_subst and subst_update = fun_upd
 proof(unfold_locales; (intro welltyped.Var refl)?)
   fix t :: "('f, 'v) term" and \<V> \<sigma> \<tau>
   assume type_preserving_\<sigma>: " \<forall>x\<in>term.vars t. \<V> \<turnstile> Var x : \<V> x \<longrightarrow> \<V> \<turnstile> \<sigma> x : \<V> x"
@@ -150,7 +151,7 @@ next
   fix \<V> \<V>' :: "('v, 'ty) var_types" and t :: "('f, 'v) term" and \<rho> :: "('f, 'v) subst" and \<tau>
 
   assume
-    renaming: "term_subst.is_renaming \<rho>" and
+    renaming: "term.is_renaming \<rho>" and
     \<V>: "\<forall>x\<in>term.vars t. \<V> x = \<V>' (term.rename \<rho> x)"
 
   then show "\<V>' \<turnstile> t \<cdot> \<rho> : \<tau> \<longleftrightarrow> \<V> \<turnstile> t : \<tau>"
@@ -252,11 +253,12 @@ proof (intro ballI2)
   then have "term.type_preserving_on (term.vars (s \<cdot> subst x t) \<union> term.vars (s' \<cdot> subst x t)) \<V> \<upsilon>"
     using assms term.vars_id_subst_update
     unfolding subst_def
-    by (smt (verit, del_insts) UnCI UnE case_prodD list.set_intros(1,2) subset_iff)
+    by (smt (verit, del_insts) Un_iff case_prodD in_mono list.set_intros(1,2))
 
   then show "term.type_preserving_unifier \<V> \<upsilon> (s \<cdot> subst x t) (s' \<cdot> subst x t)"
     using assms s_s'
-    by auto
+    by (metis (mono_tags, lifting) eval_term.simps(1) list.set_intros(1,2) prod.case 
+        subst_apply_left_idemp)
 qed
 
 lemma type_preserving_unifier_subst_list:
@@ -428,11 +430,25 @@ lemma type_preserving_the_mgu:
   by (metis (mono_tags, lifting) option.exhaust option.simps(4,5))
 
 sublocale type_preserving_imgu where 
-  id_subst = "Var :: 'v \<Rightarrow> ('f, 'v) term" and comp_subst = "(\<circ>\<^sub>s)" and subst = "(\<cdot>)" and
-  vars = term.vars and welltyped = welltyped
-  by unfold_locales
-     (metis (full_types) the_mgu the_mgu_term_subst_is_imgu
-      type_preserving_the_mgu)
+  id_subst = "Var :: 'v :: infinite \<Rightarrow> ('f, 'v) term" and comp_subst = "(\<circ>\<^sub>s)" and subst = "(\<cdot>)" and
+  vars = term.vars and welltyped = welltyped and subst_update = fun_upd and
+  apply_subst = apply_subst
+proof unfold_locales
+  fix \<V> \<upsilon> and t t' :: "('f, 'v) term"
+  assume unifier: "term.type_preserving_unifier \<V> \<upsilon> t t'"
+  show "\<exists>\<mu>. term.type_preserving_on UNIV \<V> \<mu> \<and> term.is_imgu \<mu> {{t, t'}}"
+  proof (rule exI)
+
+    have "term.is_imgu (the_mgu t t') {{t, t'}}"
+      using the_mgu_is_imgu unifier
+      unfolding Unifiers_is_mgu_iff_is_imgu_image_set_prod
+      by auto
+
+    then show "term.type_preserving_on UNIV \<V> (the_mgu t t') \<and> term.is_imgu (the_mgu t t') {{t, t'}}"
+      using type_preserving_the_mgu[OF refl unifier]
+      by satx
+  qed
+qed
 
 end
 
@@ -442,9 +458,10 @@ assumes types_witnessed: "\<And>\<tau>. \<exists>f. \<F> f 0 = Some ([], \<tau>)
 begin
 
 sublocale "term": base_witnessed_typing_properties where
-  id_subst = "Var :: 'v \<Rightarrow> ('f, 'v) term" and comp_subst = "(\<circ>\<^sub>s)" and subst = "(\<cdot>)" and
+  id_subst = "Var :: 'v :: infinite \<Rightarrow> ('f, 'v) term" and comp_subst = "(\<circ>\<^sub>s)" and subst = "(\<cdot>)" and
   vars = term.vars and welltyped = welltyped and to_ground = term.to_ground and
-  from_ground = term.from_ground
+  from_ground = term.from_ground and subst_updates = subst_updates and
+  apply_subst = apply_subst and subst_update = fun_upd
 proof unfold_locales
   fix \<V> :: "('v, 'ty) var_types" and \<tau>
 

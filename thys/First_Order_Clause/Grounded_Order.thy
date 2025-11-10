@@ -1,7 +1,7 @@
 theory Grounded_Order
   imports
     Restricted_Order
-    Abstract_Substitution.Functional_Substitution_Lifting
+    Abstract_Substitution.Based_Substitution_Lifting
 begin
 
 section \<open>Orders with ground restrictions\<close>
@@ -104,19 +104,19 @@ end
 subsection \<open>Substitution update stability\<close>
 
 locale subst_update_stability =
-  based_functional_substitution +
+  based_substitution +
   fixes base_R R
   assumes
     subst_update_stability:
       "\<And>update x \<gamma> expr.
         base.is_ground update \<Longrightarrow>
-        base_R update (\<gamma> x) \<Longrightarrow>
+        base_R update (x \<cdot>v \<gamma>) \<Longrightarrow>
         is_ground (expr \<cdot> \<gamma>) \<Longrightarrow>
         x \<in> vars expr \<Longrightarrow>
-        R (expr \<cdot> \<gamma>(x := update)) (expr \<cdot> \<gamma>)"
+        R (expr \<cdot> \<gamma>\<lbrakk>x := update\<rbrakk>) (expr \<cdot> \<gamma>)"
 
 locale base_subst_update_stability =
-  base_functional_substitution +
+  base_substitution +
   subst_update_stability where base_R = R and base_subst = subst and base_vars = vars
 
 locale subst_update_stable_grounded_order =
@@ -127,8 +127,9 @@ begin
 sublocale less_eq: subst_update_stability
   where base_R = "base_less\<^sup>=\<^sup>=" and R = "less\<^sup>=\<^sup>="
   using subst_update_stability
-  by unfold_locales auto
-
+  by unfold_locales
+     (metis (full_types) order.order_iff_strict subst_eq sup2E subst_update)
+ 
 end
 
 locale base_subst_update_stable_grounded_order =

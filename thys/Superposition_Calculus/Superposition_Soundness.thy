@@ -21,7 +21,7 @@ proof (cases D C rule: eq_resolution.cases)
   case (eq_resolutionI D \<V> \<mu> t t' l D' C)
 
   {
-    fix I :: "'t\<^sub>G rel" and \<gamma> :: "'v \<Rightarrow> 't"
+    fix I :: "'t\<^sub>G rel" and \<gamma> :: 'subst
 
     let ?I = "upair ` I"
 
@@ -36,7 +36,7 @@ proof (cases D C rule: eq_resolution.cases)
     obtain \<gamma>' where
       \<gamma>'_is_ground_subst: "term.is_ground_subst \<gamma>'" and
       type_preserving_\<gamma>': "type_preserving \<V> \<gamma>'" and
-      \<gamma>'_\<gamma>: "\<forall>x \<in> clause.vars C. \<gamma> x = \<gamma>' x"
+      \<gamma>'_\<gamma>: "\<forall>x \<in> clause.vars C. x \<cdot>v \<gamma> = x \<cdot>v \<gamma>'"
       using clause.type_preserving_ground_subst_extension[OF C_is_ground type_preserving_\<gamma>] .
 
     let ?D\<^sub>G = "clause.to_ground (D \<cdot> \<mu> \<cdot> \<gamma>')"
@@ -132,7 +132,7 @@ proof (cases D C rule: eq_factoring.cases)
   case (eq_factoringI D l\<^sub>1 \<mu> t\<^sub>1 t\<^sub>1' \<V> t\<^sub>2 l\<^sub>2 D' t\<^sub>2' C)
 
   {
-    fix I :: "'t\<^sub>G rel" and \<gamma> :: "'v \<Rightarrow> 't"
+    fix I :: "'t\<^sub>G rel" and \<gamma> :: 'subst
 
     let ?I = "upair ` I"
 
@@ -148,7 +148,7 @@ proof (cases D C rule: eq_factoring.cases)
     obtain \<gamma>' where
       \<gamma>'_is_ground_subst: "term.is_ground_subst \<gamma>'" and
       type_preserving_\<gamma>': "type_preserving \<V> \<gamma>'" and
-      \<gamma>'_\<gamma>: "\<forall>x \<in> clause.vars C. \<gamma> x = \<gamma>' x"
+      \<gamma>'_\<gamma>: "\<forall>x \<in> clause.vars C. x \<cdot>v \<gamma> = x \<cdot>v \<gamma>'"
       using clause.type_preserving_ground_subst_extension[OF C_is_ground type_preserving_\<gamma>].
 
     let ?D\<^sub>G = "clause.to_ground (D \<cdot> \<mu> \<cdot> \<gamma>')"
@@ -262,7 +262,7 @@ proof (cases D E C rule: superposition.cases)
   case (superpositionI \<P> \<V>\<^sub>1 \<V>\<^sub>2 \<rho>\<^sub>1 \<rho>\<^sub>2 E D t\<^sub>1 \<V>\<^sub>3 \<mu> t\<^sub>2 c\<^sub>1 t\<^sub>1' t\<^sub>2' l\<^sub>1 l\<^sub>2 E' D' C)
 
   {
-    fix I :: "'t\<^sub>G rel" and \<gamma> :: "'v \<Rightarrow> 't"
+    fix I :: "'t\<^sub>G rel" and \<gamma> :: 'subst
 
     let ?I = "(\<lambda>(x, y). Upair x y) ` I"
 
@@ -279,7 +279,7 @@ proof (cases D E C rule: superposition.cases)
     obtain \<gamma>' where
       \<gamma>'_is_ground_subst: "term.is_ground_subst \<gamma>'" and
       type_preserving_\<gamma>': "type_preserving \<V>\<^sub>3 \<gamma>'" and
-      \<gamma>'_\<gamma>: "\<forall>x \<in> clause.vars C. \<gamma> x = \<gamma>' x"
+      \<gamma>'_\<gamma>: "\<forall>x \<in> clause.vars C. x \<cdot>v \<gamma> = x \<cdot>v \<gamma>'"
       using clause.type_preserving_ground_subst_extension[OF C_is_ground type_preserving_\<gamma>] .
 
     let ?E\<^sub>G = "clause.to_ground (E \<cdot> \<rho>\<^sub>1 \<cdot> \<mu> \<cdot> \<gamma>')"

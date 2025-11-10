@@ -195,10 +195,6 @@ definition G_Inf :: "'t clause inference set" where
 abbreviation G_Bot :: "'t clause set" where
   "G_Bot \<equiv> {{#}}"
 
-(* TODO: *)
-sublocale ground_term_rewrite_system 
-  by unfold_locales
-
 definition G_entails :: "'t clause set \<Rightarrow> 't clause set \<Rightarrow> bool" where
   "G_entails N\<^sub>1 N\<^sub>2 \<longleftrightarrow> (\<forall>(I :: 't rel). refl I \<longrightarrow> trans I \<longrightarrow> sym I \<longrightarrow>
     compatible_with_context I \<longrightarrow> upair ` I \<TTurnstile>s N\<^sub>1 \<longrightarrow> upair ` I \<TTurnstile>s N\<^sub>2)"

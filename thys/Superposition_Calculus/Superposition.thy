@@ -13,14 +13,14 @@ section \<open>Nonground Layer\<close>
 locale type_system =
   context_compatible_term_typing_properties where
   welltyped = welltyped and from_ground_context_map = from_ground_context_map +
-  witnessed_nonground_typing where welltyped = welltyped  
+  witnessed_nonground_typing where welltyped = welltyped
 for
   welltyped :: "('v, 'ty) var_types \<Rightarrow> 't \<Rightarrow> 'ty \<Rightarrow> bool" and
   from_ground_context_map :: "('t\<^sub>G \<Rightarrow> 't) \<Rightarrow> 'c\<^sub>G \<Rightarrow> 'c"
 
 locale superposition_calculus =
   type_system where
-  welltyped = welltyped and
+  welltyped = welltyped and id_subst = "id_subst :: 'subst" and
   from_ground_context_map = "from_ground_context_map :: ('t\<^sub>G \<Rightarrow> 't) \<Rightarrow> 'c\<^sub>G \<Rightarrow> 'c" +
 
   context_compatible_nonground_order where less\<^sub>t = less\<^sub>t +
@@ -48,9 +48,9 @@ inductive eq_resolution :: "('t, 'v, 'ty) typed_clause \<Rightarrow> ('t, 'v, 't
   "D = add_mset l D' \<Longrightarrow>
    l = t !\<approx> t' \<Longrightarrow>
    C = D' \<cdot> \<mu> \<Longrightarrow>
-   eq_resolution (\<V>, D) (\<V>, C)" 
+   eq_resolution (\<V>, D) (\<V>, C)"
 if
-  "type_preserving_on (clause.vars D) \<V> \<mu>" 
+  "type_preserving_on (clause.vars D) \<V> \<mu>"
   "term.is_imgu \<mu> {{t, t'}}"
   "select D = {#} \<Longrightarrow> is_maximal (l \<cdot>l \<mu>) (D \<cdot> \<mu>)"
   "select D \<noteq> {#} \<Longrightarrow> is_maximal (l \<cdot>l \<mu>) (select D \<cdot> \<mu>)"
