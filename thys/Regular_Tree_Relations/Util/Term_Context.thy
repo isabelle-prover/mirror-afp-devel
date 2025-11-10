@@ -36,42 +36,12 @@ definition adapt_vars_ctxt :: "('f,'q)ctxt \<Rightarrow> ('f,'v)ctxt" where
   "adapt_vars_ctxt = map_vars_ctxt (\<lambda>_. undefined)"
 
 
-subsection \<open>Properties on signature induced by a term @{type term}/context @{type ctxt}\<close>
-
-lemma funas_term_map [simp]:
-  "funas_term (map_term f h t) = (\<lambda> (g, n). (f g, n)) ` funas_term t"
-  by (induct t) auto
-
-lemma ctxt_comp_n_funas [simp]:
-  "(f, v) \<in> funas_ctxt (C^n) \<Longrightarrow> (f, v) \<in> funas_ctxt C"
-  by (induct n arbitrary: C) auto
-
-lemma ctxt_comp_n_pres_funas [intro]:
-  "funas_ctxt C \<subseteq> \<F> \<Longrightarrow> funas_ctxt (C^n) \<subseteq> \<F>"
-  by (induct n arbitrary: C) auto
-
 subsection \<open>Properties on subterm at given position @{const subt_at}\<close>
-
-lemma subt_at_Cons_comp:
-  "i # p \<in> poss s \<Longrightarrow> (s |_ [i]) |_ p = s |_ (i # p)"
-  by (metis subt_at_Cons_distr subt_at.simps(1))
 
 lemma subst_at_ctxt_of_pos_term_eq_termD:
   assumes "s = t" "p \<in> poss t"
   shows "s |_ p = t |_ p \<and> ctxt_of_pos_term p s = ctxt_of_pos_term p t" using assms
   by auto
-
-lemma subst_at_ctxt_at_eq_termI:
-  assumes "p \<in> poss s" "p \<in> poss t"
-    and "s |_p = t |_ p"
-    and "ctxt_of_pos_term p s = ctxt_of_pos_term p t"
-  shows "s = t" using assms 
-  by (metis ctxt_supt_id)
-
-
-lemma subt_at_subterm [intro!]:
-  "p \<in> poss t \<Longrightarrow> p \<noteq> [] \<Longrightarrow>  t \<rhd> t |_ p"
-  using subt_at_id_imp_eps subt_at_imp_supteq subterm.order.not_eq_order_implies_strict by blast
 
 
 subsection \<open>Properties on replace terms at a given position

@@ -353,6 +353,14 @@ next
   qed auto
 qed
 
+lemma subst_at_ctxt_at_eq_termI:
+  assumes "p \<in> poss s" "p \<in> poss t"
+    and "s |_p = t |_ p"
+    and "ctxt_of_pos_term p s = ctxt_of_pos_term p t"
+  shows "s = t" using assms 
+  by (metis ctxt_supt_id)
+
+
 text \<open>Conversions between contexts and proper subterms.\<close>
 
 text \<open>
@@ -549,6 +557,10 @@ lemma subt_at_Cons_distr [simp]:
   assumes "i # p \<in> poss t" and "p \<noteq> []" (*avoid simplifier loop*)
   shows "t |_ (i # p) = (t |_ [i]) |_ p"
   using assms by (induct t) auto
+
+lemma subt_at_Cons_comp:
+  "i # p \<in> poss s \<Longrightarrow> (s |_ [i]) |_ p = s |_ (i # p)"
+  by (metis subt_at_Cons_distr subt_at.simps(1))
 
 lemma subt_at_append [simp]:
   "p \<in> poss t \<Longrightarrow> t |_ (p @ q) = (t |_ p) |_ q"
@@ -1713,6 +1725,11 @@ proof (cases p)
       , unfolded id] have False by simp
   then show ?thesis by auto
 qed simp
+
+lemma subt_at_subterm [intro!]:
+  "p \<in> poss t \<Longrightarrow> p \<noteq> [] \<Longrightarrow>  t \<rhd> t |_ p"
+  using subt_at_id_imp_eps subt_at_imp_supteq subterm.order.not_eq_order_implies_strict by blast
+
 
 lemma pos_into_subst:
   assumes t: "t \<cdot> \<sigma> = s" and p: "p \<in> poss s" and nt: "\<not> (p \<in> poss t \<and> is_Fun (t |_ p))"

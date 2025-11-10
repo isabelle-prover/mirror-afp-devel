@@ -1880,7 +1880,8 @@ lemma join_opt_assoc:
                moreover have "(map \<tau> (var_rule \<alpha>))!i \<in> wf_pterm R"
                  using i match_well_def[OF subterm(4) Some] RuleB(3) by (simp add: vars_to_pterm)
               ultimately have "join_opt (map \<sigma> (var_rule \<alpha>) ! i) (Bs!i \<squnion> map \<tau> (var_rule \<alpha>) ! i) = ABs ! i \<squnion> map \<tau> (var_rule \<alpha>) ! i"
-                using subterm(1) RuleB(3,4) i args_AB A_sub join_sym by fastforce
+                using subterm(1) RuleB(3,4) i args_AB A_sub join_sym
+                by (smt (verit, ccfv_SIG) join_opt.simps(1) nth_map nth_mem)
             }note IH=this
             show ?thesis proof(cases "those (map2 (\<squnion>) Bs (map \<tau> (var_rule \<alpha>)))")
               case None
