@@ -8,7 +8,7 @@ section \<open>Formalization of the Bernays-Tarski Axiom System for Classical Im
 
 subsection \<open>Syntax, Semantics and Axiom System\<close>
 
-theory Implicational_Logic imports Main begin
+theory Implicational_Logic_New imports Main begin
 
 datatype form =
   (*Falsity (\<open>\<bottom>\<close>) |*)
@@ -32,41 +32,32 @@ subsection \<open>Soundness and Derived Formulas\<close>
 theorem soundness: \<open>\<turnstile> p \<Longrightarrow> I \<Turnstile> p\<close>
   by (induct p rule: Ax.induct) auto
 
-lemma Rule: \<open>\<turnstile> q \<rightarrow> r \<Longrightarrow> \<turnstile> (p \<rightarrow> q) \<rightarrow> p \<rightarrow> r\<close>
-  using MP MP Tran Tran PR MP Tran MP Tran MP Simp .
-
-lemma Swap: \<open>\<turnstile> (p \<rightarrow> q \<rightarrow> r) \<rightarrow> q \<rightarrow> p \<rightarrow> r\<close>
-  using MP MP Tran Tran MP Tran PR MP Rule Simp MP Tran Rule Simp .
-
-lemma Impl: \<open>\<turnstile> ((r \<rightarrow> s) \<rightarrow> p) \<rightarrow> ((q \<rightarrow> r) \<rightarrow> s) \<rightarrow> p\<close>
-  using MP Tran MP Tran Simp .
-
 lemma Peirce: \<open>\<turnstile> ((p \<rightarrow> q) \<rightarrow> p) \<rightarrow> p\<close>
-  using PR MP Swap Impl .
-
-lemma Hilbert: \<open>\<turnstile> (p \<rightarrow> p \<rightarrow> q) \<rightarrow> p \<rightarrow> q\<close>
-  using MP MP Tran Tran Peirce .
-
-lemma Id: \<open>\<turnstile> p \<rightarrow> p\<close>
-  using MP Hilbert Simp .
-
-lemma Tran': \<open>\<turnstile> (q \<rightarrow> r) \<rightarrow> (p \<rightarrow> q) \<rightarrow> p \<rightarrow> r\<close>
-  using MP Swap Tran .
+  using PR MP MP MP Tran Tran MP Tran PR MP MP MP Tran Tran PR MP Tran MP Tran MP Simp Simp MP Tran
+    MP MP Tran Tran PR MP Tran MP Tran MP Simp Simp MP Tran MP Tran Simp .
 
 lemma Frege: \<open>\<turnstile> (p \<rightarrow> q \<rightarrow> r) \<rightarrow> (p \<rightarrow> q) \<rightarrow> p \<rightarrow> r\<close>
-  using MP MP Tran MP MP Tran Swap Tran' MP Tran' Hilbert .
+  using MP MP Tran MP MP Tran MP MP Tran Tran MP Tran PR MP MP MP Tran Tran PR MP Tran MP Tran MP
+    Simp Simp MP Tran MP MP Tran Tran PR MP Tran MP Tran MP Simp Simp MP MP MP Tran Tran MP Tran PR
+    MP MP MP Tran Tran PR MP Tran MP Tran MP Simp Simp MP Tran MP MP Tran Tran PR MP Tran MP Tran MP
+    Simp Simp Tran MP MP MP MP Tran Tran MP Tran PR MP MP MP Tran Tran PR MP Tran MP Tran MP Simp
+    Simp MP Tran MP MP Tran Tran PR MP Tran MP Tran MP Simp Simp Tran MP MP Tran Tran Peirce .
+
+lemma Id: \<open>\<turnstile> p \<rightarrow> p\<close>
+  using MP MP Frege Simp Simp .
 
 lemma Imp1: \<open>\<turnstile> (q \<rightarrow> s) \<rightarrow> ((q \<rightarrow> r) \<rightarrow> s) \<rightarrow> s\<close>
-  using MP MP Tran MP MP Tran Tran Tran MP Tran' Peirce .
+  using MP MP Tran MP MP Tran Tran Tran MP MP MP MP Tran Tran MP Tran PR MP MP MP Tran Tran PR MP
+    Tran MP Tran MP Simp Simp MP Tran MP MP Tran Tran PR MP Tran MP Tran MP Simp Simp Tran Peirce .
 
 lemma Imp2: \<open>\<turnstile> ((r \<rightarrow> s) \<rightarrow> s) \<rightarrow> ((q \<rightarrow> r) \<rightarrow> s) \<rightarrow> s\<close>
-  using Impl .
-
-lemma Impx: \<open>\<turnstile> ((q \<rightarrow> s) \<rightarrow> p) \<rightarrow> (r \<rightarrow> s) \<rightarrow> (q \<rightarrow> r) \<rightarrow> p\<close>
-  using MP Swap MP MP Tran MP Swap Tran Tran .
+  using MP Tran MP Tran Simp .
 
 lemma Imp3: \<open>\<turnstile> ((q \<rightarrow> s) \<rightarrow> s) \<rightarrow> (r \<rightarrow> s) \<rightarrow> (q \<rightarrow> r) \<rightarrow> s\<close>
-  using Impx .
+  using MP MP MP Tran Tran MP Tran PR MP MP MP Tran Tran PR MP Tran MP Tran MP Simp Simp MP Tran MP
+    MP Tran Tran PR MP Tran MP Tran MP Simp Simp MP MP Tran MP MP MP Tran Tran MP Tran PR MP MP MP
+    Tran Tran PR MP Tran MP Tran MP Simp Simp MP Tran MP MP Tran Tran PR MP Tran MP Tran MP Simp
+    Simp Tran Tran .
 
 subsection \<open>Completeness and Main Theorem\<close>
 
