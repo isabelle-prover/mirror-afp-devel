@@ -17,8 +17,7 @@ locale term_based_multiset_lifting =
   from_ground_map = image_mset and ground_map = image_mset and to_set_ground = set_mset
 begin
 
-sublocale multiset_grounding_lifting where
-  id_subst = Var and comp_subst = comp_subst
+sublocale multiset_grounding_lifting
   by unfold_locales
 
 end
@@ -32,7 +31,7 @@ locale nonground_clause_generic =
 for
   atom_from_ground :: "'g \<Rightarrow> 'a" and
   atom_to_ground :: "'a \<Rightarrow> 'g" and
-  atom_subst :: "'a \<Rightarrow> ('v \<Rightarrow> 't) \<Rightarrow> 'a" and
+  atom_subst :: "'a \<Rightarrow> 'subst \<Rightarrow> 'a" and
   atom_vars :: "'a \<Rightarrow> 'v set"
 begin
 
@@ -116,11 +115,11 @@ lemma clause_from_ground_remove1_mset [simp]:
 
 end
 
-locale groundable_nonground_clause = 
+locale groundable_nonground_clause =
   nonground_clause_generic where atom_subst = atom_subst
-for 
-  atom_subst :: "'a \<Rightarrow> ('v \<Rightarrow> 't) \<Rightarrow> 'a"  and
-  is_ground_instance :: "'env \<Rightarrow> 'a clause \<Rightarrow> ('v \<Rightarrow> 't) \<Rightarrow> bool" +
+for
+  atom_subst :: "'a \<Rightarrow> 'subst \<Rightarrow> 'a" and
+  is_ground_instance :: "'env \<Rightarrow> 'a clause \<Rightarrow> 'subst \<Rightarrow> bool" +
 assumes is_ground_instance_is_ground:
   "\<And>\<Gamma> C \<gamma>. is_ground_instance \<Gamma> C \<gamma> \<Longrightarrow> clause.is_ground (C \<cdot> \<gamma>)"
 begin

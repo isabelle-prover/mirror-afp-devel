@@ -1,7 +1,7 @@
-theory Typed_Functional_Substitution_Example
+theory Typed_Substitution_Example
   imports
-    Typed_Functional_Substitution
-    Abstract_Substitution.Functional_Substitution_Example
+    Typed_Substitution
+    Abstract_Substitution.Substitution_First_Order_Term
 begin
 
 type_synonym ('f, 'ty) fun_types = "'f \<Rightarrow> 'ty list \<times> 'ty"
@@ -24,10 +24,10 @@ proof unfold_locales
   qed
 qed
 
-global_interpretation base_typed_functional_substitution where
-  welltyped = "welltyped \<F>" and
-  subst = subst_apply_term and id_subst = Var and comp_subst = subst_compose and
-  vars = "vars_term :: ('f, 'v) term \<Rightarrow> 'v set"
+global_interpretation base_typed_substitution where
+  welltyped = "welltyped \<F>" and subst = subst_apply_term and id_subst = Var and
+  comp_subst = subst_compose and vars = "vars_term :: ('f, 'v) term \<Rightarrow> 'v set" and
+  apply_subst = apply_subst and subst_update = fun_upd
   for \<F> :: "('f, 'ty) fun_types"
   by unfold_locales (simp_all add: welltyped.Var)
 
@@ -37,8 +37,9 @@ locale typed_term_subst_properties =
   for \<F> :: "('f, 'ty) fun_types"
 
 global_interpretation "term": typed_term_subst_properties where
-  subst = subst_apply_term and id_subst = Var and comp_subst = subst_compose and
-  vars = "vars_term :: ('f, 'v) term \<Rightarrow> 'v set" and \<F> = \<F>
+  subst = subst_apply_term and id_subst = Var and
+  comp_subst = subst_compose and vars = "vars_term :: ('f, 'v) term \<Rightarrow> 'v set" and
+  apply_subst = apply_subst and subst_update = fun_upd
   for \<F> :: "'f \<Rightarrow> 'ty list \<times> 'ty"
 proof (unfold_locales)
   fix \<V> :: "('v, 'ty) var_types" and t :: "('f, 'v) term" and \<sigma> \<tau>

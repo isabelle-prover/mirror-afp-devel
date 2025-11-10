@@ -183,7 +183,8 @@ lemma terms_pos_subterm:
   using assms
 proof (induct p arbitrary: t s)
   case (Cons a p)
-  from Cons(2) have st: "t \<unrhd> t |_ [a]" by auto
+  from Cons(2) have st: "t \<unrhd> t |_ [a]" 
+    by (simp add: subt_at_imp_supteq)
   from Cons(1)[of "t |_ [a]"] Cons(2-) show ?case
     using supteq_trans[OF st] by fastforce
 qed auto
@@ -234,7 +235,7 @@ next
   case (Cons a p)
   from Cons(2) have poss: "p \<in> poss (t |_ [a])" by auto
   from Cons(2) obtain C where C: "C\<langle>t |_ [a]\<rangle> = t"
-    using ctxt_at_pos_subt_at_id poss_Cons by blast
+    by (meson ctxt_supt_id empty_pos_in_poss poss_Cons_poss)
   from C ta_der_ctxt_decompose Cons(3) obtain q' where
     res: "q' |\<in>| ta_der A (t |_ [a])" "q |\<in>| ta_der A C\<langle>Var q'\<rangle>"
     by metis

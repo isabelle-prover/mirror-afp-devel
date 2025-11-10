@@ -84,7 +84,7 @@ proof (rule ccontr)
   then obtain t where step: "(ss ! i, t) \<in> rstep \<R>" "funas_term t \<subseteq> \<F>"
     by (auto simp: NF_def sig_step_def)
   from assms(3) have [simp]: "Suc (length ss - Suc 0) = length ss" by auto
-  from rstep_ctxtI[OF step(1), where ?C = "ctxt_at_pos (Fun f ss)[i]"]  
+  from rstep_ctxtI[OF step(1), where ?C = "ctxt_of_pos_term [i] (Fun f ss)"]  
   have "(Fun f ss, Fun f (ss[i := t])) \<in> srstep \<F> \<R>" using step(2) assms(2, 3)
     by (auto simp: sig_step_def upd_conv_take_nth_drop min_def UN_subset_iff
              dest: in_set_takeD in_set_dropD simp flip: id_take_nth_drop)
@@ -535,7 +535,7 @@ proof -
   then show ?thesis
     by (auto simp: all_ctxt_closed_def NE_redp_def)
 qed
-
+ 
 lemma NE_rrstep_intro:
   assumes "\<And> s t. (s, t) \<in> srsteps_with_root_step \<F> \<R> \<Longrightarrow> NE_redp \<F> \<R> \<S> s t"
     and "\<And> s t. (s, t) \<in> srsteps_with_root_step \<F> \<S> \<Longrightarrow> NE_redp \<F> \<S> \<R> s t"
@@ -562,7 +562,7 @@ lemma NE_NF_eq:
 
 \<comment> \<open>Reducing search space for @{const SCR} and @{const WCR} involving root steps\<close>
 (*Brute forced proofs could be done nicer with more lemmas related to positions *)
-
+ 
 abbreviation "SCRp \<F> \<R> t u \<equiv> \<exists>v. (t, v) \<in> (srstep \<F> \<R>)\<^sup>= \<and> (u, v) \<in> (srstep \<F> \<R>)\<^sup>*"
 lemma SCR_rrstep_intro:
   assumes "\<And> s t u. (s, t) \<in> sig_step \<F> (rrstep \<R>) \<Longrightarrow> (s, u) \<in> srstep \<F> \<R> \<Longrightarrow> SCRp \<F> \<R> t u"
@@ -579,22 +579,22 @@ proof -
     have funas2 :"funas_term (r2 \<cdot> \<sigma>2) \<subseteq> \<F>" using funas_term_replace_at_lower[OF su(1)]
       using funas(3) unfolding su(4) by blast
     consider (a) "p \<le>\<^sub>p q" | (b) "q \<le>\<^sub>p p" | (c) "p \<bottom> q"
-      using position_par_def by blast
+      using parallel_pos by blast
     then have "SCRp \<F> \<R> t u"
     proof cases
       case a
       from a have up: "p \<in> poss u" using st(1) su(1) unfolding st(4) su(4)
-        by (metis pos_replace_at_pres position_less_eq_def poss_append_poss)
-      let ?C = "ctxt_at_pos s p" have fc: "funas_ctxt ?C \<subseteq> \<F>" using funas(1) st(1)
-        by (metis ctxt_at_pos_subt_at_id funas_ctxt_apply le_sup_iff)
+        by (metis pos_replace_at_pres less_eq_pos_def poss_append_poss)
+      let ?C = "ctxt_of_pos_term p s" have fc: "funas_ctxt ?C \<subseteq> \<F>" using funas(1) st(1)
+        by (metis ctxt_supt_id funas_term_ctxt_apply le_sup_iff)
       from funas have funas: "funas_term (s |_ p) \<subseteq> \<F>" "funas_term (t |_ p) \<subseteq> \<F>" "funas_term (u |_ p) \<subseteq> \<F>"
         using a st(1) pos_replace_at_pres[OF st(1)] up unfolding st(4) su(4)
         by (intro funas_term_subterm_atI, blast+)+
       have "(s |_ p, t |_ p) \<in> sig_step \<F> (rrstep \<R>)" unfolding st(4) su(4) using st(1 - 3) su(1 - 3) funas
         by (metis poss_of_termE poss_of_term_replace_term_at rrstep.intros sig_stepI st(4))
       moreover have "(s |_ p, u |_ p) \<in> srstep \<F> \<R>" unfolding st(4) su(4) using st(1 - 3) su(1 - 3) funas
-        by (smt (verit, best) a ctxt_at_pos_subt_at_pos ctxt_of_pos_term_apply_replace_at_ident position_less_eq_def
-            poss_append_poss replace_subterm_at_itself replace_term_at_subt_at_id rstepI sig_stepI su(4))
+        by (smt (verit, del_insts) a less_eq_subt_at_replace pos_replace_to_rstep poss_append_poss prefix_pos_diff
+            sig_stepI su(4) subt_at_append)
       ultimately obtain v where "(t |_ p, v) \<in> (srstep \<F> \<R>)\<^sup>=" "(u |_ p, v) \<in> (srstep \<F> \<R>)\<^sup>*"
         using assms(1) by blast
       from this(1) srsteps_eq_ctxt_closed[OF fc this(2)]
@@ -606,15 +606,15 @@ proof -
     next
       case b
       then have up: "q \<in> poss t" using st(1) su(1) unfolding st(4) su(4)
-        by (metis pos_replace_at_pres position_less_eq_def poss_append_poss)
-      let ?C = "ctxt_at_pos s q" have fc: "funas_ctxt ?C \<subseteq> \<F>" using funas(1) su(1)
-        by (metis Un_subset_iff ctxt_at_pos_subt_at_id funas_ctxt_apply)
+        by (metis pos_replace_at_pres less_eq_pos_def poss_append_poss)
+      let ?C = "ctxt_of_pos_term q s" have fc: "funas_ctxt ?C \<subseteq> \<F>" using funas(1) su(1)
+        by (metis Un_subset_iff ctxt_supt_id funas_term_ctxt_apply)
       from funas have funas: "funas_term (s |_ q) \<subseteq> \<F>" "funas_term (t |_ q) \<subseteq> \<F>" "funas_term (u |_ q) \<subseteq> \<F>"
         using su(1) pos_replace_at_pres[OF su(1)] up unfolding st(4) su(4)
         by (intro funas_term_subterm_atI, blast+)+
       have "(s |_ q, t |_ q) \<in> srstep \<F> \<R>" unfolding st(4) su(4) using st(1 - 3) su(1 - 3) funas
-        by (smt (verit, del_insts) b ctxt_at_pos_subt_at_pos ctxt_of_pos_term_apply_replace_at_ident
-            position_less_eq_def poss_append_poss replace_subterm_at_itself replace_term_at_subt_at_id rstepI sig_stepI st(4))
+        by (smt (verit, del_insts) b replace_at_subt_at ctxt_of_pos_term_apply_replace_at_ident
+            less_eq_pos_def poss_append_poss replace_subterm_at_itself replace_term_at_subt_at_id rstepI sig_stepI st(4))
       moreover have "(s |_ q, u |_ q) \<in> sig_step \<F> (rrstep \<R>)" unfolding st(4) su(4) using st(1 - 3) su(1 - 3) funas
         by (metis poss_of_termE poss_of_term_replace_term_at rrstep.intros sig_stepI su(4))
       ultimately obtain v where "(t |_ q, v) \<in> (srstep \<F> \<R>)\<^sup>=" "(u |_ q, v) \<in> (srstep \<F> \<R>)\<^sup>*"
@@ -634,7 +634,7 @@ proof -
         using parallel_replace_term_commute by blast
       from c have "(t, v) \<in> rstep \<R>" unfolding st(4) v_def
         using su(1 - 3) par_pos_replace_pres[OF su(1)]
-        by (metis par_pos_replace_term_at pos_replace_to_rstep position_par_def)
+        by (metis par_pos_replace_term_at pos_replace_to_rstep parallel_pos)
       moreover from c have "(u, v) \<in> rstep \<R>" unfolding su(4) *
         using st(1 - 3) par_pos_replace_pres[OF st(1)]
         by (intro pos_replace_to_rstep[of _ _ l]) (auto simp: par_pos_replace_term_at)
@@ -666,14 +666,14 @@ proof -
     have funas2 :"funas_term (r2 \<cdot> \<sigma>2) \<subseteq> \<F>" using funas_term_replace_at_lower[OF su(1)]
       using funas(3) unfolding su(4) by blast
     consider (a) "p \<le>\<^sub>p q" | (b) "q \<le>\<^sub>p p" | (c) "p \<bottom> q"
-      using position_par_def by blast
+      using parallel_pos by blast
     then have "(t, u) \<in> (srstep \<F> \<R>)\<^sup>\<down>"
     proof cases
       case a
       then have up: "p \<in> poss u" using st(1) su(1) unfolding st(4) su(4)
-        by (metis pos_replace_at_pres position_less_eq_def poss_append_poss)
-      let ?C = "ctxt_at_pos s p" have fc: "funas_ctxt ?C \<subseteq> \<F>" using funas(1) st(1)
-        by (metis Un_subset_iff ctxt_at_pos_subt_at_id funas_ctxt_apply)
+        by (metis pos_replace_at_pres less_eq_pos_def poss_append_poss)
+      let ?C = "ctxt_of_pos_term p s" have fc: "funas_ctxt ?C \<subseteq> \<F>" using funas(1) st(1)
+        by (metis ctxt_of_pos_term_apply_replace_at_ident funas(2) funas_term_ctxt_apply le_sup_iff st(4))
       from funas have funas: "funas_term (s |_ p) \<subseteq> \<F>" "funas_term (t |_ p) \<subseteq> \<F>" "funas_term (u |_ p) \<subseteq> \<F>"
         using a st(1) pos_replace_at_pres[OF st(1)] up unfolding st(4) su(4)
         by (intro funas_term_subterm_atI, blast+)+
@@ -681,7 +681,7 @@ proof -
         by (metis poss_of_termE poss_of_term_replace_term_at rrstep.intros sig_stepI st(4))
       moreover have "(s |_ p, u |_ p) \<in> srstep \<F> \<R>" unfolding st(4) su(4) using st(1 - 3) su(1 - 3) funas
         by (smt (verit, ccfv_threshold) a greater_eq_subt_at_replace less_eq_subt_at_replace pos_diff_append_itself
-            pos_replace_to_rstep position_less_eq_def poss_append_poss replace_term_at_subt_at_id sig_stepI su(4))
+            pos_replace_to_rstep less_eq_pos_def poss_append_poss replace_term_at_subt_at_id sig_stepI su(4))
       ultimately have "(t |_ p, u |_ p) \<in> (srstep \<F> \<R>)\<^sup>\<down>"
         using assms(1) by blast
       from sig_steps_join_ctxt_closed[OF fc this(1)]
@@ -690,15 +690,15 @@ proof -
     next
       case b
       then have up: "q \<in> poss t" using st(1) su(1) unfolding st(4) su(4)
-        by (metis pos_les_eq_append_diff pos_replace_at_pres poss_append_poss)
-      let ?C = "ctxt_at_pos s q" have fc: "funas_ctxt ?C \<subseteq> \<F>" using funas(1) su(1)
-        by (metis Un_subset_iff ctxt_at_pos_subt_at_id funas_ctxt_apply)
+        by (metis replace_term_at_above replace_term_at_not_poss replace_term_at_subt_at_id)
+      let ?C = "ctxt_of_pos_term q s" have fc: "funas_ctxt ?C \<subseteq> \<F>" using funas(1) su(1)
+        by (metis Un_subset_iff ctxt_supt_id funas_term_ctxt_apply)
       from funas have funas: "funas_term (s |_ q) \<subseteq> \<F>" "funas_term (t |_ q) \<subseteq> \<F>" "funas_term (u |_ q) \<subseteq> \<F>"
         using su(1) pos_replace_at_pres[OF su(1)] up unfolding st(4) su(4)
         by (intro funas_term_subterm_atI, blast+)+
       have "(s |_ q, t |_ q) \<in> srstep \<F> \<R>" unfolding st(4) su(4) using st(1 - 3) su(1 - 3) funas
         by (smt (verit, ccfv_SIG) b greater_eq_subt_at_replace less_eq_subt_at_replace pos_diff_append_itself
-            pos_replace_to_rstep position_less_eq_def poss_append_poss replace_term_at_subt_at_id sig_stepI st(4))
+            pos_replace_to_rstep less_eq_pos_def poss_append_poss replace_term_at_subt_at_id sig_stepI st(4))
       moreover have "(s |_ q, u |_ q) \<in> sig_step \<F> (rrstep \<R>)" unfolding st(4) su(4) using st(1 - 3) su(1 - 3) funas
         by (metis poss_of_termE poss_of_term_replace_term_at rrstep.intros sig_stepI su(4))
       ultimately have "(t |_ q, u |_ q) \<in> (srstep \<F> \<R>)\<^sup>\<down>"
@@ -715,7 +715,7 @@ proof -
         using parallel_replace_term_commute by blast
       from c have "(t, v) \<in> rstep \<R>" unfolding st(4) v_def
         using su(1 - 3) par_pos_replace_pres[OF su(1)]
-        by (metis par_pos_replace_term_at pos_replace_to_rstep position_par_def)
+        by (metis par_pos_replace_term_at pos_replace_to_rstep parallel_pos)
       moreover from c have "(u, v) \<in> rstep \<R>" unfolding su(4) *
         using st(1 - 3) par_pos_replace_pres[OF st(1)]
         by (metis par_pos_replace_term_at pos_replace_to_rstep)

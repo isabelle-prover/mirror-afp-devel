@@ -4,14 +4,15 @@ text \<open>This theory provides two algorithms, which both take a description o
   their constructors. The first algorithm computes the set of sorts that are nonempty, i.e., those
   sorts that are inhabited by ground terms; 
   and the second algorithm computes the set of sorts that are infinite,
-  i.e., where one can build arbitrary large ground terms.\<close>
+  i.e., where one can build arbitrary large ground terms. Furthermore, the cardinalities
+  of finite sorts can be computed (exactly, or up to a certain precision).\<close>
 
 theory Compute_Nonempty_Infinite_Sorts
   imports 
-    Sorted_Terms.Sorted_Terms
+    Sorted_Terms
     LP_Duality.Minimum_Maximum
     Matrix.Utility
-    FinFun.FinFun
+    FinFun_RBT_Impl
 begin
 
 (* TODO: move to some library *)
@@ -186,8 +187,8 @@ proof (induct xs)
 qed auto
 
 
-definition compute_card_of_sort :: "'\<tau> \<Rightarrow> ('f \<times> '\<tau> list)list \<Rightarrow> ('\<tau> \<Rightarrow>f nat) \<Rightarrow> nat" where
-  "compute_card_of_sort \<tau> cs cards = (\<Sum>f\<sigma>s\<leftarrow>remdups cs. prod_list (map (($) cards) (snd f\<sigma>s)))" 
+definition update_card_of_sort :: "'\<tau> \<Rightarrow> ('f \<times> '\<tau> list)list \<Rightarrow> ('\<tau> \<Rightarrow>f nat) \<Rightarrow> nat" where
+  "update_card_of_sort \<tau> cs cards = (\<Sum>f\<sigma>s\<leftarrow>remdups cs. prod_list (map (($) cards) (snd f\<sigma>s)))" 
  
 (* second argument: take list of types combined with constructors *)
 function compute_inf_card_main :: "'\<tau> set \<Rightarrow> ('\<tau> \<Rightarrow>f nat) \<Rightarrow> ('\<tau> \<times> ('f \<times> '\<tau> list)list) list \<Rightarrow> '\<tau> set \<times> ('\<tau> \<Rightarrow> nat)" where
@@ -196,7 +197,7 @@ function compute_inf_card_main :: "'\<tau> set \<Rightarrow> ('\<tau> \<Rightarr
          partition (\<lambda> (\<tau>,fs). \<forall> \<tau>s \<in> set (map snd fs). \<forall> \<tau> \<in> set \<tau>s. \<tau> \<notin> m_inf) ls 
     in if fin = [] then (m_inf, \<lambda> \<tau>. cards $ \<tau>) else 
       let new = map fst fin; 
-       cards' = finfun_update_all new (\<lambda> \<tau>. compute_card_of_sort \<tau> (the (map_of ls \<tau>)) cards) cards in 
+       cards' = finfun_update_all new (\<lambda> \<tau>. update_card_of_sort \<tau> (the (map_of ls \<tau>)) cards) cards in 
        compute_inf_card_main (m_inf - set new) cards' ls')" 
   by pat_completeness auto
 
@@ -253,7 +254,7 @@ proof (induct m_inf cards ls rule: compute_inf_card_main.induct)
     qed
   } note inhabited = this
   
-  define cards' where "cards' = finfun_update_all (map fst fin) (\<lambda> \<tau>. compute_card_of_sort \<tau> (the (map_of ls \<tau>)) cards) cards"  
+  define cards' where "cards' = finfun_update_all (map fst fin) (\<lambda> \<tau>. update_card_of_sort \<tau> (the (map_of ls \<tau>)) cards) cards"  
   {
     fix \<tau>
     assume asm: "\<tau> \<in> fst ` set fin"
@@ -263,7 +264,7 @@ proof (induct m_inf cards ls rule: compute_inf_card_main.induct)
     with dist(1) \<open>set ls \<subseteq> set Cs\<close> 
     have map: "map_of Cs \<tau> = Some cs" "map_of ls \<tau> = Some cs" 
       by (metis (no_types, opaque_lifting) eq_key_imp_eq_value map_of_SomeD subsetD weak_map_of_SomeI)+
-    from asm have cards': "cards' $ \<tau> = compute_card_of_sort \<tau> cs cards" unfolding cards'_def by (auto simp: map)
+    from asm have cards': "cards' $ \<tau> = update_card_of_sort \<tau> cs cards" unfolding cards'_def by (auto simp: map)
     from part asm have tau_fin: "\<tau> \<in> set (map fst fin)" by auto
     {
       fix f \<sigma>s
@@ -370,7 +371,7 @@ proof (induct m_inf cards ls rule: compute_inf_card_main.induct)
       by (intro sum.cong[OF refl] arg_cong[of _ _ prod_list], auto)
     also have "\<dots> = sum_list (map (\<lambda> f\<sigma>s. prod_list (map (($) cards) (snd f\<sigma>s))) (remdups cs))" 
       by (rule sum.set_conv_list)
-    also have "\<dots> = cards' $ \<tau>" unfolding cards' compute_card_of_sort_def ..
+    also have "\<dots> = cards' $ \<tau>" unfolding cards' update_card_of_sort_def ..
     finally have cards': "card ?TT = cards' $ \<tau>" by auto
 
 
@@ -429,7 +430,7 @@ proof (induct m_inf cards ls rule: compute_inf_card_main.induct)
         assume "\<tau> \<in> m_inf" 
         with 1(5) obtain cs where mem: "(\<tau>,cs) \<in> set ls" by auto
         from part True have ls': "ls' = ls" by (induct ls arbitrary: ls', auto)
-        from partition_P[OF part, unfolded ls']
+        from partition_P[OF part, unfolded ls'] 
         have "\<And> e. e \<in> set ls \<Longrightarrow> \<not> crit e" by auto
         from this[OF mem, unfolded crit_def split]
         obtain c \<tau>s \<tau>' where *: "(c,\<tau>s) \<in> set cs" "\<tau>' \<in> set \<tau>s" "\<tau>' \<in> m_inf" by auto
@@ -650,10 +651,140 @@ proof -
     show "finite (dom \<emptyset>)" by auto
   qed (auto simp: finite_sort)
 qed
+
+lemma min_sumlist_cong: assumes "\<And> x. x \<in> set xs \<Longrightarrow> min b (f x :: nat) = min b (g x)"
+  shows "min b (sum_list (map f xs)) = min b (sum_list (map g xs))" 
+  using assms
+proof (induct xs)
+  case (Cons x xs)
+  hence IH: "min b (sum_list (map f xs)) = min b (sum_list (map g xs))"
+    and "min b (f x) = min b (g x)" by auto
+  thus ?case by simp
+qed simp
+
+lemma min_prod_min_left: "min b (min b x * y :: nat) = min b (x * y)"
+  by (metis One_nat_def Suc_leI bot_nat_0.not_eq_extremum min.cobounded1 min_def mult.right_neutral
+      mult_is_0 mult_le_mono)
+
+lemma min_prod_min_right: "min b (x * min b y :: nat) = min b (x * y)" 
+  using min_prod_min_left[of b y x] by (simp add: ac_simps)
+
+lemma min_prod_min: "min b (min b x * min b y :: nat) = min b (x * y)" 
+  unfolding min_prod_min_left min_prod_min_right ..
+
+lemma min_prod_cong: assumes "min b x1 = (min b x2 :: nat)" "min b y1 = min b y2"
+  shows "min b (x1 * y1) = min b (x2 * y2)" 
+  using min_prod_min[of b x1 y1] min_prod_min[of b x2 y2] assms by metis 
+
+lemma min_prodlist_cong: assumes "\<And> x. x \<in> set xs \<Longrightarrow> min b (f x :: nat) = min b (g x)"
+  shows "min b (prod_list (map f xs)) = min b (prod_list (map g xs))" 
+  using assms
+proof (induct xs)
+  case (Cons x xs)
+  hence IH: "min b (prod_list (map f xs)) = min b (prod_list (map g xs))"
+    and "min b (f x) = min b (g x)" by auto
+  thus ?case by (auto intro: min_prod_cong)
+qed simp
+
+context 
+  fixes k :: nat
+begin
+abbreviation (input) minBnd where "minBnd \<equiv> min k" 
+
+abbreviation minBndFFun where "minBndFFun \<equiv> ((o$) minBnd)"
+
+definition update_card_of_sort_bnd :: "'\<tau> \<Rightarrow> ('f \<times> '\<tau> list)list \<Rightarrow> ('\<tau> \<Rightarrow>f nat) \<Rightarrow> nat" where
+  "update_card_of_sort_bnd \<tau> cs cards = minBnd (\<Sum>f\<sigma>s\<leftarrow>remdups cs. minBnd (prod_list (map (($) cards) (snd f\<sigma>s))))" 
+
+partial_function (tailrec) compute_inf_card_main_bnd  where
+  [code]: "compute_inf_card_main_bnd m_inf cards ls = (
+   let (fin, ls') = 
+         partition (\<lambda> (\<tau>,fs). \<forall> \<tau>s \<in> set (map snd fs). \<forall> \<tau> \<in> set \<tau>s. \<tau> \<notin> m_inf) ls 
+    in if fin = [] then (m_inf, \<lambda> \<tau>. cards $ \<tau>) else 
+      let new = map fst fin; 
+       cards' = finfun_update_all new (\<lambda> \<tau>. update_card_of_sort_bnd \<tau> (the (map_of ls \<tau>)) cards) cards in 
+       compute_inf_card_main_bnd (m_inf - set new) cards' ls')" 
+
+definition compute_inf_card_sorts_bnd :: "(('f \<times> 't list) \<times> 't)list \<Rightarrow> 't set \<times> ('t \<Rightarrow> nat)" where
+  "compute_inf_card_sorts_bnd Cs = (let 
+       Cs' = map (\<lambda> \<tau>. (\<tau>, map fst (filter(\<lambda>f. snd f = \<tau>) Cs))) (remdups (map snd Cs))
+    in compute_inf_card_main_bnd (set (map fst Cs')) (K$ 0) Cs')" 
+
+lemma compute_inf_card_sorts_bnd_equiv: "compute_inf_card_sorts_bnd Cs = map_prod id ((o) minBnd) (compute_inf_card_sorts Cs)" 
+proof -
+  have "(K$ 0) = (minBndFFun (K$ 0) :: 'a \<Rightarrow>f nat)" by simp  
+  define Cs' where "Cs' = map (\<lambda> \<tau>. (\<tau>, map fst (filter(\<lambda>f. snd f = \<tau>) Cs))) (remdups (map snd Cs))" 
+  define ls where "ls = set (map fst Cs')" 
+  define cards :: "'a \<Rightarrow>f nat" where "cards = (K$ 0)"
+  have "?thesis \<longleftrightarrow> compute_inf_card_main_bnd ls (minBndFFun cards) Cs'
+    = map_prod id ((o) minBnd) (compute_inf_card_main ls cards Cs')" 
+    unfolding compute_inf_card_sorts_bnd_def ls_def Cs'_def[symmetric] 
+      compute_inf_card_sorts_def cards_def by simp
+  also have \<dots>
+  proof (induct ls cards Cs' rule: compute_inf_card_main.induct)
+    case (1 m_inf cards ls)
+    obtain fin ls' where part: "partition (\<lambda>(\<tau>, fs). \<forall>\<tau>s\<in>set (map snd fs). \<forall>\<tau>\<in>set \<tau>s. \<tau> \<notin> m_inf) ls = (fin,ls')"
+      by force
+    note IH = 1[OF refl part[symmetric]]
+    note simps1 = compute_inf_card_main.simps[of m_inf cards ls, unfolded part Let_def split]
+    note simps2 = compute_inf_card_main_bnd.simps[of m_inf "minBndFFun cards" ls, unfolded part Let_def split]
+    show ?case
+    proof (cases "fin = []")
+      case True
+      show ?thesis unfolding simps1 simps2 True by auto
+    next
+      case False
+      define minf2 where "minf2 = m_inf - set (map fst fin)" 
+      define new where "new = map fst fin" 
+      define cards2 where "cards2 = (finfun_update_all new (\<lambda>\<tau>. update_card_of_sort \<tau> (the (map_of ls \<tau>)) cards) cards)" 
+      note IH = IH[OF False refl, folded minf2_def, folded new_def, OF cards2_def]
+      from False have False: "(fin = []) = False" by auto
+      note simps1 = simps1[folded minf2_def, unfolded False if_False, folded new_def, folded cards2_def]
+      note simps2 = simps2[folded minf2_def, unfolded False if_False, folded new_def]
+      show ?thesis unfolding simps1 simps2 IH[symmetric]
+      proof (rule arg_cong[of _ _ "\<lambda> c. compute_inf_card_main_bnd minf2 c ls'"], unfold cards2_def)
+        show "finfun_update_all new (\<lambda>\<tau>. update_card_of_sort_bnd \<tau> (the (map_of ls \<tau>)) (minBndFFun cards))
+         (minBndFFun cards) =
+         minBndFFun (finfun_update_all new (\<lambda>\<tau>. update_card_of_sort \<tau> (the (map_of ls \<tau>)) cards) cards)" 
+          apply (rule finfun_ext)
+          apply (unfold finfun_comp_apply)
+          apply (unfold finfun_update_all o_def)
+          apply (unfold if_distrib[of minBnd])
+          apply (unfold finfun_comp_apply o_def)
+          apply (rule if_cong[OF refl _ refl])
+          apply (unfold update_card_of_sort_bnd_def update_card_of_sort_def)
+          apply (unfold finfun_comp_apply o_def)
+          apply (rule min_sumlist_cong)
+          apply (unfold min.left_idem map_map)
+          by (rule min_prodlist_cong, auto)
+      qed
+    qed
+  qed
+  finally show ?thesis by blast
+qed
+end
 end
 
+lemma compute_inf_card_sorts_bnd:
+  fixes C :: "('f,'t)ssig"
+  assumes C_Cs: "C = map_of Cs" 
+  and arg_types_nonempty: "\<forall> f \<tau>s \<tau> \<tau>'. f : \<tau>s \<rightarrow> \<tau> in C \<longrightarrow> \<tau>' \<in> set \<tau>s \<longrightarrow> \<not> empty_sort C \<tau>'"
+  and dist: "distinct (map fst Cs)" 
+  and result: "compute_inf_card_sorts_bnd k Cs = (unb, cards)" 
+shows "unb = {\<tau>. \<not> bdd_above (size ` {t. t : \<tau> in \<T>(C)})}" (is ?A)
+  "cards = min k o card_of_sort C" (is ?B)
+  "unb = {\<tau>. \<not>finite_sort C \<tau>}" (is ?C)
+proof -
+  obtain un cds where res: "compute_inf_card_sorts Cs = (un,cds)" by force
+  note main = compute_inf_card_sorts[OF assms(1-3) this]
+  from compute_inf_card_sorts_bnd_equiv[of k Cs, unfolded res result]
+  have "unb = un" "cards = min k o cds" by auto
+  thus ?A ?B ?C using main by auto
+qed
+
+
 abbreviation compute_inf_sorts :: "(('f \<times> 't list) \<times> 't)list \<Rightarrow> 't set" where
-  "compute_inf_sorts Cs \<equiv> fst (compute_inf_card_sorts Cs)" 
+  "compute_inf_sorts Cs \<equiv> fst (compute_inf_card_sorts_bnd 0 Cs)" 
 
 lemma compute_inf_sorts:
   assumes arg_types_nonempty: "\<forall> f \<tau>s \<tau> \<tau>'. f : \<tau>s \<rightarrow> \<tau> in map_of Cs \<longrightarrow> \<tau>' \<in> set \<tau>s \<longrightarrow> \<not> empty_sort (map_of Cs) \<tau>'"
@@ -661,7 +792,7 @@ lemma compute_inf_sorts:
 shows 
   "compute_inf_sorts Cs = {\<tau>. \<not> bdd_above (size ` {t. t : \<tau> in \<T>(map_of Cs)})}"
   "compute_inf_sorts Cs = {\<tau>. \<not> finite_sort (map_of Cs) \<tau>}"
-  using compute_inf_card_sorts[OF refl assms] 
-    by (cases "compute_inf_card_sorts Cs", auto)+
+  using compute_inf_card_sorts_bnd[OF refl assms, where k = 0] 
+    by (cases "compute_inf_card_sorts_bnd 0 Cs", auto)+
 
 end

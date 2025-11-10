@@ -3403,6 +3403,8 @@ end
 class kleene_relation_algebra_tarski_consistent = kleene_relation_algebra + stone_kleene_relation_algebra_tarski_consistent
 begin
 
+subclass kleene_relation_algebra_tarski ..
+subclass kleene_relation_algebra_consistent ..
 subclass relation_algebra_tarski_consistent ..
 
 end

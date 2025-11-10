@@ -370,7 +370,7 @@ proof -
   from Inf_automata_dashI[OF run_gsubt_cl[OF r(1) p_gtu, unfolded gp] qinf]
   have dashI: "CInr (ex_rule_state (gsubt_at r p)) |\<in>| gta_der (Inf_automata (ta \<A>) (Q_infty (ta \<A>) \<F>)) (gsubt_at (gpair t u) p)"
     unfolding gp[symmetric] .
-  have "CInl (ex_comp_state r) |\<in>| ta_der ?A (ctxt_at_pos (term_of_gterm (gpair t u)) p)\<langle>Var (CInl (ex_rule_state (gsubt_at r p)))\<rangle>"
+  have "CInl (ex_comp_state r) |\<in>| ta_der ?A (ctxt_of_pos_term p (term_of_gterm (gpair t u)))\<langle>Var (CInl (ex_rule_state (gsubt_at r p)))\<rangle>"
     using ta_der_fmap_states_ta[OF run_ta_der_ctxt_split2[OF r(1) p_gtu], of CInl, THEN fsubsetD[OF Inl_A_res_Inf_automata]]
     unfolding replace_term_at_replace_at_conv[OF gposs_to_poss[OF p_gtu]]
     by (auto simp: gterm.map_ident simp flip: map_term_replace_at_dist[OF gposs_to_poss[OF p_gtu]])
@@ -459,7 +459,7 @@ proof -
     by auto
   have reach: "q |\<in>| ta_der (ta \<A>) (adapt_vars_ctxt C)\<langle>Var p\<rangle>"
     using gr Inf_automata_dash_reach_to_reach[OF reach]
-    by (auto simp: map_vars_term_ctxt_apply)
+    by (auto simp: map_vars_term_ctxt_commute)
   from q_inf_st(2) have inf: "infinite {v. funas_gterm v \<subseteq> fset \<F> \<and> p |\<in>| ta_der (ta \<A>) (?con v)}"
     by (simp add: Q_infty_fmember)
   have inf: "infinite {v. funas_gterm v \<subseteq> fset \<F> \<and> q |\<in>| gta_der (ta \<A>) (gctxt_of_ctxt C)\<langle>gterm_to_None_Some v\<rangle>\<^sub>G}"
@@ -476,8 +476,9 @@ proof -
   have to_gpair: "gpair t (gctxt_at_pos u (hole_pos C))\<langle>v\<rangle>\<^sub>G = (gctxt_of_ctxt C)\<langle>gterm_to_None_Some v\<rangle>\<^sub>G" for v
     unfolding ground_hole_pos_to_ghole[OF gr(2)] using ctxt gr
     using subst_at_gpair_nt_poss_None_Some[OF _ hp_nt, of u]
-    by (metis (no_types, lifting) UnE \<open>ghole_pos (gctxt_of_ctxt C) = hole_pos C\<close>
-        gposs_of_gpair gsubt_at_gctxt_apply_ghole hole_pos_in_ctxt_apply hp_nt poss_gposs_conv term_of_gterm_ctxt_apply)
+    by (metis \<open>ghole_pos (gctxt_of_ctxt C) = hole_pos C\<close> gfun_at_None_ngposs_iff
+        gfun_at_gpair gsubt_at_gctxt_apply_ghole hole_pos_poss hp_nt poss_gposs_conv
+        term_of_gterm_ctxt_apply)
   have inf: "infinite {v. gpair t ((gctxt_at_pos u (hole_pos C))\<langle>v\<rangle>\<^sub>G) \<in> \<L> \<A>}" using fin
     by (intro infinite_super[OF _ inf]) (auto simp: \<L>_def gta_der_def simp flip: to_gpair)
   have "infinite {u |u. gpair t u \<in> \<L> \<A>}"

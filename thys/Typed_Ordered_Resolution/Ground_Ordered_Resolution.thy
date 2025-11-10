@@ -17,43 +17,42 @@ begin
 
 subsection \<open>Resolution Calculus\<close>
 
-inductive resolution :: "'t clause \<Rightarrow> 't clause \<Rightarrow> 't clause \<Rightarrow> bool"
-where
-  resolutionI: "
-    C = add_mset L\<^sub>C C' \<Longrightarrow>
-    D = add_mset L\<^sub>D D' \<Longrightarrow>
-    L\<^sub>C = (Neg t) \<Longrightarrow>
-    L\<^sub>D = (Pos t) \<Longrightarrow>
-    D \<prec>\<^sub>c C \<Longrightarrow>
-    select C = {#} \<and> is_maximal L\<^sub>C C \<or> is_maximal L\<^sub>C (select C) \<Longrightarrow>
-    select D = {#} \<Longrightarrow>
-    is_strictly_maximal L\<^sub>D D \<Longrightarrow>
-    R = (C' + D') \<Longrightarrow>
-    resolution D C R"
+inductive resolution :: "'t clause \<Rightarrow> 't clause \<Rightarrow> 't clause \<Rightarrow> bool" where
+  resolutionI: 
+  "E = add_mset l\<^sub>1 E' \<Longrightarrow>
+   D = add_mset l\<^sub>2 D' \<Longrightarrow>
+   l\<^sub>1 = Neg t \<Longrightarrow>
+   l\<^sub>2 = Pos t \<Longrightarrow>
+   C = (E' + D') \<Longrightarrow>
+   resolution D E C"
+if 
+ "D \<prec>\<^sub>c E"
+ "select E = {#} \<and> is_maximal l\<^sub>1 E \<or> is_maximal l\<^sub>1 (select E)"
+ "select D = {#}"
+ "is_strictly_maximal l\<^sub>2 D"
 
-inductive factoring ::
-  "'t clause \<Rightarrow> 't clause \<Rightarrow> bool"
-where
-  factoringI: "
-  C = add_mset L\<^sub>1 (add_mset L\<^sub>1 C') \<Longrightarrow>
-  L\<^sub>1 = (Pos t) \<Longrightarrow>
-  select C = {#} \<Longrightarrow>
-  is_maximal L\<^sub>1 C \<Longrightarrow>
-  D = add_mset L\<^sub>1 C' \<Longrightarrow>
-  factoring C D"
+inductive factoring :: "'t clause \<Rightarrow> 't clause \<Rightarrow> bool" where
+  factoringI: 
+  "D = add_mset l (add_mset l D') \<Longrightarrow>
+   l = Pos t \<Longrightarrow>
+   C = add_mset l D' \<Longrightarrow>
+   factoring D C"
+if
+  "select D = {#}"
+  "is_maximal l D"
 
 subsection \<open>Ground Layer\<close>
 
 abbreviation resolution_inferences where
-  "resolution_inferences \<equiv> {Infer [D, C] R | D C R. resolution D C R}"
+  "resolution_inferences \<equiv> {Infer [D, E] C | D E C. resolution D E C}"
 
 abbreviation factoring_inferences where
-  "factoring_inferences \<equiv> {Infer [C] D | C D. factoring C D}"
+  "factoring_inferences \<equiv> {Infer [D] C | D C. factoring D C}"
 
 definition G_Inf :: "'t clause inference set" where
   "G_Inf =
-    {Infer [D, C] R | D C R. resolution D C R} \<union>
-    {Infer [P] C | P C. factoring P C}"
+    {Infer [D, E] C | D E C. resolution D E C} \<union>
+    {Infer [D] C | D C. factoring D C}"
 
 abbreviation G_Bot :: "'t clause set" where
   "G_Bot \<equiv> {{#}}"
@@ -65,15 +64,15 @@ subsection \<open>Smaller Conclussions\<close>
 
 lemma ground_resolution_smaller_conclusion:
   assumes
-    step: "resolution D C R"
-  shows "R \<prec>\<^sub>c C"
+    step: "resolution D E C"
+  shows "C \<prec>\<^sub>c E"
   using step
-proof (cases D C R rule: resolution.cases)
-  case (resolutionI L\<^sub>C C' L\<^sub>D D' t)
+proof (cases D E C rule: resolution.cases)
+  case (resolutionI l\<^sub>1 l\<^sub>2 E' D' t)
 
   have "\<forall>k\<in>#D'. k \<prec>\<^sub>l Pos t"
-    using \<open>is_strictly_maximal L\<^sub>D D\<close> \<open>D = add_mset L\<^sub>D D'\<close>
-    using is_strictly_maximal_def local.resolutionI(4) 
+    using \<open>is_strictly_maximal l\<^sub>2 D\<close> \<open>D = add_mset l\<^sub>2 D'\<close>
+    using is_strictly_maximal_def resolutionI(8)
     by fastforce
 
   moreover have "\<And>A. Pos A \<prec>\<^sub>l Neg A"
@@ -88,9 +87,9 @@ proof (cases D C R rule: resolution.cases)
     using one_step_implies_multp[of "{#Neg t#}" D' "(\<prec>\<^sub>l)" "{#}"]
     by (simp add: less\<^sub>c_def)
 
-  hence "D' + C' \<prec>\<^sub>c add_mset (Neg t) C'"
-    using multp_cancel[of "(\<prec>\<^sub>l)" C' D' "{#Neg t#}"]
-    using less\<^sub>c_def by force
+  hence "D' + E' \<prec>\<^sub>c add_mset (Neg t) E'"
+    using multp_cancel[of "(\<prec>\<^sub>l)" E' D' "{#Neg t#}"] less\<^sub>c_def 
+    by force
 
   thus ?thesis
     unfolding resolutionI
@@ -98,19 +97,19 @@ proof (cases D C R rule: resolution.cases)
 qed
 
 lemma ground_factoring_smaller_conclusion:
-  assumes step: "factoring C D"
-  shows "D \<prec>\<^sub>c C"
+  assumes step: "factoring D C"
+  shows "C \<prec>\<^sub>c D"
   using step
-proof (cases C D rule: factoring.cases)
-  case (factoringI L\<^sub>1 C' t)
-
-  have "D = add_mset L\<^sub>1 C'"
+proof (cases D C rule: factoring.cases)
+  case (factoringI l D' t)
+ 
+  have "C = add_mset l D'"
     using factoringI
     by argo
 
   then show ?thesis
     by (metis (lifting) add.comm_neutral add_mset_add_single add_mset_not_empty 
-        clause.order.multiset_extension_def empty_iff local.factoringI(1)
+        clause.order.multiset_extension_def empty_iff local.factoringI(3)
         one_step_implies_multp set_mset_empty)
 qed
 
@@ -179,18 +178,18 @@ next
   fix \<iota>
 
   have "concl_of \<iota> \<prec>\<^sub>c main_prem_of \<iota>"
-    if \<iota>_def: "\<iota> = Infer [D, C] R" and
-      infer: "resolution D C R"
-    for D C R
+    if \<iota>_def: "\<iota> = Infer [D, E] C" and
+      infer: "resolution D E C"
+    for E D C
     unfolding \<iota>_def
     using infer
     using ground_resolution_smaller_conclusion
     by simp
 
   moreover have "concl_of \<iota> \<prec>\<^sub>c main_prem_of \<iota>"
-    if \<iota>_def: "\<iota> = Infer [P] C" and
-      infer: "factoring P C"
-    for P C
+    if \<iota>_def: "\<iota> = Infer [D] C" and
+      infer: "factoring D C"
+    for D C
     unfolding \<iota>_def
     using infer
     using ground_factoring_smaller_conclusion

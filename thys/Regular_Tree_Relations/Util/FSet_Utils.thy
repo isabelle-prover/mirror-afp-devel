@@ -442,7 +442,7 @@ lift_definition fvars_ctxt :: "('f, 'v) ctxt \<Rightarrow> 'v fset" is vars_ctxt
 
 lemmas fvars_term_ctxt_apply [simp] = vars_term_ctxt_apply[Transfer.transferred]
 lemmas fvars_term_of_gterm [simp] = vars_term_of_gterm[Transfer.transferred]
-lemmas ground_fvars_term_empty [simp] = ground_vars_term_empty[Transfer.transferred]
+lemmas ground_fvars_term_empty = ground_vars_term_empty[Transfer.transferred]
 
 lemma ffuns_term_Var [simp]: "ffuns_term (Var x) = {||}"
   by transfer auto

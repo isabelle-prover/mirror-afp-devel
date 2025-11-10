@@ -5,8 +5,8 @@ theory IsaFoR_Ground_Term
 begin
 
 type_synonym 'f ground_term = "'f gterm"
-
-no_notation Term_Context.position_par (infixl \<open>\<bottom>\<close> 67)
+ 
+no_notation parallel_pos (infixl \<open>\<bottom>\<close> 64)
 
 (* TODO: Generalize consts for abstract contexts *)
 abbreviation positions\<^sub>G where

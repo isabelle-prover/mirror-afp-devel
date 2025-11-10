@@ -15,7 +15,7 @@ session First_Order_Terms = "Abstract-Rewriting" +
     Renaming2_String
   theories
     Seq_More
-    Fun_More
+    Fun_More2
     Option_Monad
   theories
     Matching

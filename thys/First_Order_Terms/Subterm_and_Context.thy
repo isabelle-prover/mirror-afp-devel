@@ -615,5 +615,16 @@ lemma funas_ctxt_subst [simp]:
   "funas_ctxt (C \<cdot>\<^sub>c \<sigma>) = funas_ctxt C \<union> \<Union>(funas_term ` \<sigma> ` vars_ctxt C)"
   by (induct C, auto simp: funas_term_subst)
 
+lemma funas_term_map [simp]:
+  "funas_term (map_term f h t) = (\<lambda> (g, n). (f g, n)) ` funas_term t"
+  by (induct t) auto
+
+lemma ctxt_comp_n_pres_funas [intro]:
+  "funas_ctxt C \<subseteq> \<F> \<Longrightarrow> funas_ctxt (C^n) \<subseteq> \<F>"
+  by (induct n arbitrary: C) auto
+
+lemma ctxt_comp_n_funas:
+  "f \<in> funas_ctxt (C^n) \<Longrightarrow> f \<in> funas_ctxt C"
+  by (induct n arbitrary: C) auto
 
 end

@@ -6,16 +6,13 @@ begin
 subsection \<open>Additional operations on terms and positions\<close>
 
 subsubsection \<open>Linearity\<close>
-fun linear_term :: "('f, 'v) term \<Rightarrow> bool" where
-  "linear_term (Var _) = True" |
-  "linear_term (Fun _ ts) = (is_partition (map vars_term ts) \<and> (\<forall>t\<in>set ts. linear_term t))"
 abbreviation "linear_sys \<R> \<equiv> \<forall> (l, r) \<in> \<R>. linear_term l \<and> linear_term r"
 
-subsubsection \<open>Positions induced by contexts, by variables and by given subterms\<close>
-
-definition "possc C = {p | p t. p \<in> poss C\<langle>t\<rangle>}"
-definition "varposs s = {p | p. p \<in> poss s \<and> is_Var (s |_ p)}"
+subsubsection \<open>Positions by given subterms\<close>
 definition "poss_of_term u t = {p. p \<in> poss t \<and> t |_ p = u}"
+
+lemma var_poss_def: "var_poss s = {p | p. p \<in> poss s \<and> is_Var (s |_ p)}" 
+  by (induct s, auto)
 
 
 subsubsection \<open>Replacing functions symbols that aren't specified in the signature by variables\<close>
@@ -117,24 +114,17 @@ lemma subst_poss_mono: "poss s \<subseteq> poss (s \<cdot> \<sigma>)"
 
 lemma par_pos_prefix [simp]:
   "(i # p) \<bottom> (i # q) \<Longrightarrow> p \<bottom> q"
-  by (simp add: par_Cons_iff)
+  by simp
 
 lemma pos_diff_itself [simp]: "p -\<^sub>p p = []"
   by (simp add: pos_diff_def)
 
-lemma pos_les_eq_append_diff [simp]:
-  "p \<le>\<^sub>p q \<Longrightarrow> p @ (q -\<^sub>p p) = q"
-  by (metis option.sel pos_diff_def position_less_eq_def remove_prefix_append)
-
 lemma pos_diff_append_itself [simp]: "(p @ q) -\<^sub>p p = q"
-  by (simp add: pos_diff_def remove_prefix_append)
+  by (simp add: pos_diff_def)
 
 lemma poss_pos_diffI:
   "p \<le>\<^sub>p q \<Longrightarrow> q \<in> poss s \<Longrightarrow> q -\<^sub>p p \<in> poss (s |_ p)"
   using poss_append_poss by fastforce
-
-lemma less_eq_poss_append_itself [simp]: "p \<le>\<^sub>p (p @ q)"
-  using position_less_eq_def by blast
 
 lemma poss_ctxt_apply [simp]:
   "hole_pos C @ p \<in> poss C\<langle>s\<rangle> \<longleftrightarrow> p \<in> poss s"
@@ -153,7 +143,7 @@ lemma par_pos_replace_pres:
 proof (induct p arbitrary: s q)
   case (Cons i p)
   show ?case using Cons(1)[of "args s ! i" "tl q"] Cons(2-)
-    by (cases s; cases q) (auto simp add: nth_list_update par_Cons_iff)
+    by (cases s; cases q) (auto simp add: nth_list_update)
 qed auto
 
 lemma poss_of_termE [elim]:
@@ -174,7 +164,7 @@ proof (induct p arbitrary: C)
     by (cases C) auto
 next
   case (Cons i p) then show ?case
-    by (cases C) (fastforce simp add: par_Cons_iff dest!: poss_of_term_Cons)+
+    by (cases C) (fastforce dest!: poss_of_term_Cons)+
 qed
 
 
@@ -191,13 +181,6 @@ lemma ctxt_apply_term_subt_at_hole_pos [simp]:
   "C\<langle>s\<rangle> |_ (hole_pos C @ q) = s |_ q"
   by (induct C) auto
 
-lemma subst_subt_at_dist:
-  "p \<in> poss s \<Longrightarrow> s \<cdot> \<sigma> |_ p = s |_ p \<cdot> \<sigma>"
-proof (induct p arbitrary: s)
-  case (Cons i p) then show ?case
-    by (cases s) auto
-qed auto
-
 lemma replace_term_at_subt_at_id [simp]: "s[p \<leftarrow> (s |_ p)] = s"
 proof (induct p arbitrary: s)
   case (Cons i p) then show ?case
@@ -207,22 +190,22 @@ qed auto
 
 lemma replace_term_at_same_pos [simp]:
   "s[p \<leftarrow> u][p \<leftarrow> t] = s[p \<leftarrow> t]"
-  using position_less_refl replace_term_at_above by blast
+  using replace_term_at_above by blast
 
 \<comment> \<open>Replacement at under substitution\<close>
 lemma subt_at_vars_term:
   "p \<in> poss s \<Longrightarrow> s |_ p = Var x \<Longrightarrow> x \<in> vars_term s"
-  by (metis UnCI ctxt_at_pos_subt_at_id term.set_intros(3) vars_term_ctxt_apply)
+  by (metis var_poss_iff vars_term_var_poss_iff)
 
-lemma linear_term_varposs_subst_replace_term:
-  "linear_term s \<Longrightarrow> p \<in> varposs s \<Longrightarrow> p \<le>\<^sub>p q \<Longrightarrow>
+lemma linear_term_var_poss_subst_replace_term:
+  "linear_term s \<Longrightarrow> p \<in> var_poss s \<Longrightarrow> p \<le>\<^sub>p q \<Longrightarrow>
      (s \<cdot> \<sigma>)[q \<leftarrow> u] = s \<cdot> (\<lambda> x. if Var x = s |_ p then (\<sigma> x)[q -\<^sub>p p \<leftarrow> u] else (\<sigma> x))"
 proof (induct q arbitrary: s p)
   case (Cons i q)
   show ?case using Cons(1)[of "args s ! i" "tl p"] Cons(2-)
-    by (cases s) (auto simp: varposs_def nth_list_update term_subst_eq_conv
+    by (cases s) (auto simp: var_poss_def nth_list_update term_subst_eq_conv
       is_partition_alt is_partition_alt_def disjoint_iff subt_at_vars_term intro!: nth_equalityI)
-qed (auto simp: varposs_def)
+qed (auto simp: var_poss_def)
 
 \<comment> \<open>Replacement at context parallel to the hole position\<close>
 lemma par_hole_pos_replace_term_context_at:
@@ -239,7 +222,7 @@ lemma par_pos_replace_term_at:
 proof (induct p arbitrary: s q)
   case (Cons i p)
   show ?case using Cons(1)[of "args s ! i" "tl q"] Cons(2-)
-    by (cases s; cases q) (auto, metis nth_list_update par_Cons_iff)
+    by (cases s; cases q) (auto, metis nth_list_update)
 qed auto
 
 
@@ -276,37 +259,11 @@ proof (induct C arbitrary: p)
     by (cases p) auto
 qed auto
 
-lemma ctxt_of_pos_term_apply_replace_at_ident:
-  assumes "p \<in> poss s"
-  shows "(ctxt_at_pos s p)\<langle>t\<rangle> = s[p \<leftarrow> t]"
-  using assms
-proof (induct p arbitrary: s)
-  case (Cons i p)
-  show ?case using Cons(1)[of "args s ! i"] Cons(2-)
-    by (cases s) (auto simp: nth_append_Cons intro!: nth_equalityI)
-qed auto
+lemmas ctxt_of_pos_term_apply_replace_at_ident = replace_term_at_replace_at_conv
 
 lemma ctxt_apply_term_replace_term_hole_pos [simp]:
   "C\<langle>s\<rangle>[hole_pos C @ q  \<leftarrow> u] = C\<langle>s[q  \<leftarrow> u]\<rangle>"
-  by (simp add: pos_diff_def position_less_eq_def remove_prefix_append)
-
-lemma ctxt_apply_subt_at_hole_pos [simp]: "C\<langle>s\<rangle> |_ hole_pos C = s"
-  by (induct C) auto
-
-lemma subt_at_imp_supteq':
-  assumes "p \<in> poss s" and "s|_p = t" shows "s \<unrhd> t" using assms
-proof (induct p arbitrary: s)
-  case (Cons i p)
-  from Cons(2-) show ?case using Cons(1)[of "args s ! i"]
-    by (cases s) force+
-qed auto
-
-lemma subt_at_imp_supteq:
-  assumes "p \<in> poss s" shows "s \<unrhd> s|_p"
-proof -
- have "s|_p = s|_p" by auto
- with assms show ?thesis by (rule subt_at_imp_supteq')
-qed
+  by (simp add: pos_diff_def less_eq_pos_def)
 
 
 subsection \<open>@{const term_to_sig} invariants and distributions\<close>
@@ -355,50 +312,14 @@ proof (induct t)
   qed auto
 qed simp
 
-lemma finite_poss: "finite (poss s)"
-proof (induct s)
-  case (Fun f ts)
-  have "poss (Fun f ts) = insert [] (\<Union> (set (map2 (\<lambda> i p. ((#) i) ` p) [0..< length ts] (map poss ts))))"
-    by (auto simp: image_iff set_zip split: prod.splits)
-  then show ?case using Fun
-    by (auto simp del: poss.simps dest!: set_zip_rightD)
-qed simp
-
-lemma finite_varposs: "finite (varposs s)"
-  by (intro finite_subset[of "varposs s" "poss s"]) (auto simp: varposs_def finite_poss)
-
-lemma gound_linear [simp]: "ground t \<Longrightarrow> linear_term t"
-  by (induct t) (auto simp: is_partition_alt is_partition_alt_def)
-
 declare ground_substI[intro, simp]
 lemma ground_ctxt_substI:
   "(\<And> x. x \<in> vars_ctxt C \<Longrightarrow> ground (\<sigma> x)) \<Longrightarrow> ground_ctxt (C \<cdot>\<^sub>c \<sigma>)"
   by (induct C) auto
 
-
-lemma funas_ctxt_subst_apply_ctxt:
-  "funas_ctxt (C \<cdot>\<^sub>c \<sigma>) = funas_ctxt C \<union> (\<Union> (funas_term ` \<sigma> ` vars_ctxt C))"
-proof (induct C)
-  case (More f ss C ts)
-  then show ?case
-    by (fastforce simp add: funas_term_subst)
-qed simp
-
-lemma varposs_Var[simp]:
-  "varposs (Var x) = {[]}"
-  by (auto simp: varposs_def)
-
-lemma varposs_Fun[simp]:
-  "varposs (Fun f ts) = { i # p| i p. i < length ts \<and> p \<in> varposs (ts ! i)}"
-  by (auto simp: varposs_def)
-
-lemma vars_term_varposs_iff:
-  "x \<in> vars_term s \<longleftrightarrow> (\<exists> p \<in> varposs s. s |_ p = Var x)"
-proof (induct s)
-  case (Fun f ts)
-  show ?case using Fun[OF nth_mem]
-    by (force simp: in_set_conv_nth Bex_def)
-qed auto
+lemma var_poss_Fun[simp]:
+  "var_poss (Fun f ts) = { i # p| i p. i < length ts \<and> p \<in> var_poss (ts ! i)}"
+  by auto
 
 lemma vars_term_empty_ground:
   "vars_term s = {} \<Longrightarrow> ground s"
@@ -407,30 +328,27 @@ lemma vars_term_empty_ground:
 lemma ground_subst_apply: "ground t \<Longrightarrow> t \<cdot> \<sigma> = t"
   by (induct t) (auto intro: nth_equalityI)
 
-lemma varposs_imp_poss:
-  "p \<in> varposs s \<Longrightarrow> p \<in> poss s" by (auto simp: varposs_def)
-
-lemma varposs_empty_gound:
- "varposs s = {} \<longleftrightarrow> ground s"
+lemma var_poss_empty_gound:
+ "var_poss s = {} \<longleftrightarrow> ground s"
   by (induct s) (fastforce simp: in_set_conv_nth)+
 
 lemma funas_term_subterm_atI [intro]:
   "p \<in> poss s \<Longrightarrow> funas_term s \<subseteq> \<F> \<Longrightarrow> funas_term (s |_ p) \<subseteq> \<F>"
-  by (metis ctxt_at_pos_subt_at_id funas_ctxt_apply le_sup_iff)
+  by (meson subset_trans subt_at_imp_supteq' supteq_imp_funas_term_subset)
 
-lemma varposs_ground_replace_at:
-  "p \<in> varposs s \<Longrightarrow> ground u \<Longrightarrow> varposs s[p \<leftarrow> u] = varposs s - {p}"
+lemma var_poss_ground_replace_at:
+  "p \<in> var_poss s \<Longrightarrow> ground u \<Longrightarrow> var_poss s[p \<leftarrow> u] = var_poss s - {p}"
 proof (induct p arbitrary: s)
   case Nil then show ?case
-    by (cases s) (auto simp: varposs_empty_gound)
+    by (cases s) (auto simp: var_poss_empty_gound)
 next
   case (Cons i p)
   from Cons(2) obtain f ts where [simp]: "s = Fun f ts" by (cases s) auto
-  from Cons(2) have var: "p \<in> varposs (ts ! i)" by auto
-  from Cons(1)[OF var Cons(3)] have "j < length ts \<Longrightarrow> {j # q| q. q \<in> varposs (ts[i := (ts ! i)[p \<leftarrow> u]] ! j)} =
-           {j # q |q. q \<in> varposs (ts ! j)} - {i # p}" for j
+  from Cons(2) have var: "p \<in> var_poss (ts ! i)" by auto
+  from Cons(1)[OF var Cons(3)] have "j < length ts \<Longrightarrow> {j # q| q. q \<in> var_poss (ts[i := (ts ! i)[p \<leftarrow> u]] ! j)} =
+           {j # q |q. q \<in> var_poss (ts ! j)} - {i # p}" for j
     by (cases "j = i") (auto simp add: nth_list_update)
-  then show ?case by auto blast
+  then show ?case by auto 
 qed
 
 lemma funas_term_replace_at_upper:

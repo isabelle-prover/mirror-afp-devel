@@ -2,8 +2,6 @@ theory Nonground_Context
   imports
     Generic_Context
     Nonground_Term
-
-    Abstract_Substitution.Functional_Substitution_Lifting
 begin
 
 section \<open>Nonground Contexts and Substitutions\<close>
@@ -21,20 +19,17 @@ notation apply_ground_context (\<open>_\<langle>_\<rangle>\<^sub>G\<close> [1000
 end
 
 locale nonground_context =
-  "term": nonground_term where term_vars = term_vars and term_to_ground = term_to_ground +
   term_based_lifting where
-  sub_subst = "(\<cdot>t)" and sub_vars = term.vars and sub_to_ground = term.to_ground and
-  sub_from_ground = term.from_ground and term_vars = term.vars and term_subst = "(\<cdot>t)" and
-  term_to_ground = term.to_ground and term_from_ground = term.from_ground and
-  to_ground_map = to_ground_context_map and ground_map = ground_context_map and 
-  from_ground_map = from_ground_context_map and map = map_context and to_set = context_to_set and
-  to_set_ground = ground_context_to_set +
+    sub_vars = "term_vars :: 't \<Rightarrow> 'v set" and sub_subst = "term_subst :: 't \<Rightarrow> 'subst \<Rightarrow> 't" and
+    sub_from_ground = term_from_ground and sub_to_ground = "term_to_ground :: 't \<Rightarrow> 't\<^sub>G" and
+    to_ground_map = to_ground_context_map and ground_map = ground_context_map and 
+    from_ground_map = from_ground_context_map and map = map_context and to_set = context_to_set and
+    to_set_ground = ground_context_to_set +
+
   "context" +
-  ground_context: ground_context where 
-  apply_ground_context = apply_ground_context
+
+  ground_context: ground_context where apply_ground_context = apply_ground_context
 for
-  term_vars :: "'t \<Rightarrow> 'v set" and 
-  term_to_ground :: "'t \<Rightarrow> 't\<^sub>G" and
   map_context :: "('t \<Rightarrow> 't) \<Rightarrow> 'c \<Rightarrow> 'c" and
   to_ground_context_map :: "('t \<Rightarrow> 't\<^sub>G) \<Rightarrow> 'c \<Rightarrow> 'c\<^sub>G" and
   from_ground_context_map :: "('t\<^sub>G \<Rightarrow> 't) \<Rightarrow> 'c\<^sub>G \<Rightarrow> 'c" and
@@ -54,12 +49,12 @@ assumes
     "\<And>c c'. from_ground (c \<circ>\<^sub>c\<^sub>G c') = from_ground c \<circ>\<^sub>c from_ground c'" and
   apply_context_vars [simp]: "\<And>c t. term.vars c\<langle>t\<rangle> = vars c \<union> term.vars t" and
   apply_context_subst [simp]: "\<And>c t \<sigma>. c\<langle>t\<rangle> \<cdot>t \<sigma> = (subst c \<sigma>)\<langle>t \<cdot>t \<sigma>\<rangle>" and
-  context_Var: "\<And>x t. x \<in> term.vars t \<longleftrightarrow> (\<exists>c. t = c\<langle>Var x\<rangle>)" and
+  context_Var: "\<And>x t. x \<in> term.vars t \<longleftrightarrow> (\<exists>c. t = c\<langle>term.Var x\<rangle>)" and
  
   (* TODO: Simplify? + Separate? *)
   subst_to_context: "t \<cdot>t \<gamma> = c\<^sub>G\<langle>t\<^sub>G\<rangle> \<Longrightarrow> term.is_ground (t \<cdot>t \<gamma>) \<Longrightarrow>
     (\<exists>c t'. t = c\<langle>t'\<rangle> \<and> t' \<cdot>t \<gamma> = t\<^sub>G \<and> subst c \<gamma> = c\<^sub>G) \<or>
-    (\<exists>c c\<^sub>G' x. t = c\<langle>Var x\<rangle> \<and> c\<^sub>G = (subst c \<gamma>) \<circ>\<^sub>c c\<^sub>G')"
+    (\<exists>c c\<^sub>G' x. t = c\<langle>term.Var x\<rangle> \<and> c\<^sub>G = (subst c \<gamma>) \<circ>\<^sub>c c\<^sub>G')"
 begin
 
 notation subst (infixl "\<cdot>t\<^sub>c" 67)
@@ -113,7 +108,7 @@ proof (cases "\<exists>c t'. t = c\<langle>t'\<rangle> \<and> t' \<cdot>t \<gamm
     using t_\<gamma> t_grounding 
     by auto
 
-  obtain x where t': "t' = Var x"
+  obtain x where t': "t' = term.Var x"
     using \<open>c \<cdot>t\<^sub>c \<gamma> = c\<^sub>G\<close> \<open>t' \<cdot>t \<gamma> = t\<^sub>G\<close> not_subst_into_Fun t
     by blast
 
@@ -124,7 +119,7 @@ proof (cases "\<exists>c t'. t = c\<langle>t'\<rangle> \<and> t' \<cdot>t \<gamm
       using t .
   next
 
-    show "t' = Var x"
+    show "t' = term.Var x"
       using t' .
   next
 
@@ -142,29 +137,28 @@ qed
 end
 
 locale occurences =
-  nonground_context where map_context = map_context and Var = Var
+  nonground_context where map_context = map_context and term_vars = term_vars
 for 
-  map_context :: "('t \<Rightarrow> 't) \<Rightarrow> 'c \<Rightarrow> 'c" and
-  Var :: "'v \<Rightarrow> 't" +
+  map_context :: "('t \<Rightarrow> 't) \<Rightarrow> 'c \<Rightarrow> 'c" and term_vars :: "'t \<Rightarrow> 'v set" +
 fixes occurences :: "'t \<Rightarrow> 'v \<Rightarrow> nat"
-assumes
+ assumes
   occurences:
-  "\<And>t\<^sub>G c x. term.is_ground t\<^sub>G \<Longrightarrow> occurences (c\<langle>Var x\<rangle>) x = Suc (occurences (c\<langle>t\<^sub>G\<rangle>) x)" and
-  vars_occurences: "x \<in> term.vars t \<longleftrightarrow> 0 < occurences t x"
+    "\<And>t\<^sub>G c x. term.is_ground t\<^sub>G \<Longrightarrow> occurences (c\<langle>term.Var x\<rangle>) x = Suc (occurences (c\<langle>t\<^sub>G\<rangle>) x)" and
+  vars_occurences: "\<And>x t. x \<in> term.vars t \<longleftrightarrow> 0 < occurences t x"
 begin
 
 lemma is_ground_no_occurences: "term.is_ground t \<Longrightarrow> occurences t x = 0"
-  using vars_occurences 
+  using vars_occurences
   by auto
 
 lemma occurences_obtain_context:
   assumes update: "term.is_ground t\<^sub>G" and occurences_in_t: "occurences t x = Suc n" 
   obtains c where 
-    "t = c\<langle>Var x\<rangle>"
+    "t = c\<langle>term.Var x\<rangle>"
     "occurences c\<langle>t\<^sub>G\<rangle> x = n"
 proof -
 
-  obtain c where t: "t = c\<langle>Var x\<rangle>"
+  obtain c where t: "t = c\<langle>term.Var x\<rangle>"
     using occurences_in_t context_Var vars_occurences zero_less_Suc 
     by presburger
 
@@ -181,7 +175,7 @@ qed
 lemma one_occurence_obtain_context:
   assumes "occurences t x = 1"
   obtains c where
-    "t = c\<langle>Var x\<rangle>"
+    "t = c\<langle>term.Var x\<rangle>"
     "x \<notin> vars c"
   using term.ground_exists occurences_obtain_context[OF _ assms[unfolded One_nat_def]]
   by (metis Un_iff apply_context_vars order_less_irrefl vars_occurences)

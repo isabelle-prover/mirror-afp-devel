@@ -18,7 +18,7 @@ lemma eq_resolution_lifting:
   fixes
     D\<^sub>G C\<^sub>G :: "'t\<^sub>G clause" and
     D C :: "'t clause" and
-    \<gamma> :: "'v \<Rightarrow> 't"
+    \<gamma> :: 'subst
   defines
     [simp]: "D\<^sub>G \<equiv> clause.to_ground (D \<cdot> \<gamma>)" and
     [simp]: "C\<^sub>G \<equiv> clause.to_ground (C \<cdot> \<gamma>)"
@@ -117,8 +117,7 @@ proof (cases D\<^sub>G C\<^sub>G rule: ground.eq_resolution.cases)
     using l_\<gamma> obtain_from_neg_literal_subst
     by meson
 
-  obtain \<mu> \<sigma> where 
-    \<gamma>: "\<gamma> = \<mu> \<odot> \<sigma>" and
+  obtain \<mu> where 
     type_preserving_\<mu>: "type_preserving_on (clause.vars D) \<V> \<mu>" and
     imgu: "term.is_imgu \<mu> {{t, t'}}"
   proof (rule obtain_type_preserving_on_imgu[OF _ that], intro conjI)
@@ -134,6 +133,11 @@ proof (cases D\<^sub>G C\<^sub>G rule: ground.eq_resolution.cases)
       unfolding D l
       by simp
   qed
+
+  obtain \<sigma> where \<gamma>: "\<gamma> = \<mu> \<odot> \<sigma>"
+    using term.obtain_imgu_absorption[of \<gamma>, OF _ imgu] l_\<gamma> 
+    unfolding l
+    by auto
 
   show ?thesis
   proof (rule that)
@@ -260,7 +264,7 @@ lemma eq_factoring_lifting:
   fixes
     D\<^sub>G C\<^sub>G :: "'t\<^sub>G clause" and
     D C :: "'t clause" and
-    \<gamma> :: "'v \<Rightarrow> 't"
+    \<gamma> :: 'subst
   defines
     [simp]: "D\<^sub>G \<equiv> clause.to_ground (D \<cdot> \<gamma>)" and
     [simp]: "C\<^sub>G \<equiv> clause.to_ground (C \<cdot> \<gamma>)"
@@ -351,8 +355,7 @@ proof(cases D\<^sub>G C\<^sub>G rule: ground.eq_factoring.cases)
     using D D_grounding ground_eq_factoringI(1,2,3) l\<^sub>1_\<gamma> l\<^sub>2_\<gamma>
     by force
 
-  obtain \<mu> \<sigma> where 
-    \<gamma>: "\<gamma> = \<mu> \<odot> \<sigma>" and 
+  obtain \<mu> where
     type_preserving_\<mu>: "type_preserving_on (clause.vars D) \<V> \<mu>" and
     imgu: "term.is_imgu \<mu> {{t\<^sub>1, t\<^sub>2}}"
   proof (rule obtain_type_preserving_on_imgu[OF _ that], intro conjI)
@@ -366,6 +369,10 @@ proof(cases D\<^sub>G C\<^sub>G rule: ground.eq_factoring.cases)
       unfolding D l\<^sub>1 l\<^sub>2
       by auto
   qed
+
+  obtain \<sigma> where \<gamma>: "\<gamma> = \<mu> \<odot> \<sigma>"
+    using term.obtain_imgu_absorption[of \<gamma>, OF _ imgu] t\<^sub>1_\<gamma> t\<^sub>2_\<gamma>
+    by auto
 
   let ?C'' = "add_mset (t\<^sub>1 \<approx> t\<^sub>2') (add_mset (t\<^sub>1' !\<approx> t\<^sub>2') D')"
   let ?C' = "?C'' \<cdot> \<mu>"
@@ -480,7 +487,7 @@ lemma superposition_lifting:
   fixes
     E\<^sub>G D\<^sub>G C\<^sub>G :: "'t\<^sub>G clause" and
     E D C :: "'t clause" and
-    \<gamma> \<rho>\<^sub>1 \<rho>\<^sub>2 :: "'v \<Rightarrow> 't" and
+    \<gamma> \<rho>\<^sub>1 \<rho>\<^sub>2 :: 'subst and
     \<V>\<^sub>1 \<V>\<^sub>2 :: "('v, 'ty) var_types"
   defines
     [simp]: "E\<^sub>G \<equiv> clause.to_ground (E \<cdot> \<rho>\<^sub>1 \<odot> \<gamma>)" and
@@ -696,7 +703,7 @@ proof (cases D\<^sub>G E\<^sub>G C\<^sub>G rule: ground.superposition.cases)
       then have c\<^sub>G'_is_ground [simp]: "context.is_ground c\<^sub>G'"
         by (metis context.composed_context_is_ground context.ground_is_ground)
 
-      obtain x where t\<^sub>1_\<rho>\<^sub>1: "t\<^sub>1 \<cdot>t \<rho>\<^sub>1 = Var x"
+      obtain x where t\<^sub>1_\<rho>\<^sub>1: "t\<^sub>1 \<cdot>t \<rho>\<^sub>1 = term.Var x"
         using t\<^sub>1_is_Var term.id_subst_rename[OF \<rho>\<^sub>1]
         by (metis term.comp_subst_iff term.left_neutral)
 
@@ -712,7 +719,7 @@ proof (cases D\<^sub>G E\<^sub>G C\<^sub>G rule: ground.superposition.cases)
         let ?t\<^sub>G = "c\<^sub>G'\<langle>term.from_ground t\<^sub>G\<^sub>3\<rangle>"
 
         define \<gamma>' where
-          "\<gamma>' \<equiv> \<gamma>(x := ?t\<^sub>G)"
+          "\<gamma>' \<equiv> \<gamma>\<lbrakk>x := ?t\<^sub>G\<rbrakk>"
 
         let ?E\<^sub>G' = "clause.to_ground (E \<cdot> \<rho>\<^sub>1 \<odot> \<gamma>')"
 
@@ -752,17 +759,17 @@ proof (cases D\<^sub>G E\<^sub>G C\<^sub>G rule: ground.superposition.cases)
             show "type_preserving_on (clause.vars E) \<V>\<^sub>1 (\<rho>\<^sub>1 \<odot> \<gamma>')"
             proof (rule term.type_preserving_on_subst_compose[OF type_preserving_\<rho>\<^sub>1])
 
-              have \<gamma>_type_preserving: "type_preserving_on (\<Union> (term.vars ` \<rho>\<^sub>1 ` clause.vars E)) \<V>\<^sub>1 \<gamma>"
+              have \<gamma>_type_preserving: "type_preserving_on (\<Union> (term.vars ` term.var_subst \<rho>\<^sub>1 ` clause.vars E)) \<V>\<^sub>1 \<gamma>"
                 using 
                   term.type_preserving_on_subst_compose_renaming[OF 
                     \<rho>\<^sub>1 type_preserving_\<rho>\<^sub>1 type_preserving_\<rho>\<^sub>1_\<gamma>] .
 
-              then show "type_preserving_on (\<Union> (term.vars ` \<rho>\<^sub>1 ` clause.vars E)) \<V>\<^sub>1 \<gamma>'"
+              then show "type_preserving_on (\<Union> (term.vars ` term.var_subst \<rho>\<^sub>1 ` clause.vars E)) \<V>\<^sub>1 \<gamma>'"
               proof (unfold \<gamma>'_def, rule type_preserving_on_subst_update, intro impI)
 
                 assume
-                  x_in_E_\<rho>\<^sub>1: "x \<in> \<Union> (term.vars ` \<rho>\<^sub>1 ` clause.vars E)" and 
-                  welltyped_x: "\<V>\<^sub>1 \<turnstile> Var x : \<V>\<^sub>1 x"
+                  x_in_E_\<rho>\<^sub>1: "x \<in> \<Union> (term.vars ` term.var_subst \<rho>\<^sub>1 ` clause.vars E)" and 
+                  welltyped_x: "\<V>\<^sub>1 \<turnstile> term.Var x : \<V>\<^sub>1 x"
 
                 then obtain \<tau> where welltyped_t\<^sub>G\<^sub>1: "\<V>\<^sub>1 \<turnstile> term.from_ground t\<^sub>G\<^sub>1 : \<tau>"
                   using welltyped_x 
@@ -822,7 +829,7 @@ proof (cases D\<^sub>G E\<^sub>G C\<^sub>G rule: ground.superposition.cases)
           then interpret clause_entailment where I = I
             by unfold_locales
 
-          have \<gamma>_x_is_ground: "term.is_ground (\<gamma> x)"
+          have \<gamma>_x_is_ground: "term.is_ground (x \<cdot>v \<gamma>)"
             using t\<^sub>1_\<gamma> t\<^sub>1_\<rho>\<^sub>1 c\<^sub>G'_is_ground
             by auto
 
@@ -849,7 +856,7 @@ proof (cases D\<^sub>G E\<^sub>G C\<^sub>G rule: ground.superposition.cases)
               unfolding t\<^sub>1_\<gamma> t\<^sub>1_\<gamma>'
               by simp
 
-            then have "(term.to_ground (\<gamma> x), (context.to_ground c\<^sub>G')\<langle>t\<^sub>G\<^sub>3\<rangle>\<^sub>G) \<in> I"
+            then have "(term.to_ground (x \<cdot>v \<gamma>), (context.to_ground c\<^sub>G')\<langle>t\<^sub>G\<^sub>3\<rangle>\<^sub>G) \<in> I"
               unfolding \<gamma>'_def
               using t\<^sub>1_\<rho>\<^sub>1
               by (auto simp: sym)
@@ -860,7 +867,7 @@ proof (cases D\<^sub>G E\<^sub>G C\<^sub>G rule: ground.superposition.cases)
 
             ultimately have "?I \<TTurnstile> E\<^sub>G"
               unfolding \<gamma>'_def
-              using clause.symmetric_congruence[of _ \<gamma>, OF _ \<gamma>_x_is_ground] E_grounding
+              using clause.symmetric_congruence[OF _ \<gamma>_x_is_ground] E_grounding
               by simp
 
             then have "?I \<TTurnstile> add_mset (\<P>\<^sub>G (Upair c\<^sub>G\<langle>t\<^sub>G\<^sub>3\<rangle>\<^sub>G t\<^sub>G\<^sub>2)) E\<^sub>G'"
@@ -877,11 +884,11 @@ proof (cases D\<^sub>G E\<^sub>G C\<^sub>G rule: ground.superposition.cases)
         show "?E\<^sub>G' \<prec>\<^sub>c\<^sub>G E\<^sub>G"
         proof-
 
-          have "\<gamma> x = t\<^sub>1 \<cdot>t \<rho>\<^sub>1 \<odot> \<gamma>"
+          have "x \<cdot>v \<gamma> = t\<^sub>1 \<cdot>t \<rho>\<^sub>1 \<odot> \<gamma>"
             using t\<^sub>1_\<rho>\<^sub>1
             by (metis t\<^sub>1_is_Var term.comp_subst_iff term.left_neutral)
 
-          then have t\<^sub>G_smaller: "?t\<^sub>G \<prec>\<^sub>t \<gamma> x"
+          then have t\<^sub>G_smaller: "?t\<^sub>G \<prec>\<^sub>t x \<cdot>v \<gamma>"
             using ground_superpositionI(8)
             unfolding t\<^sub>1_\<gamma> term.order.less\<^sub>G_def 
             by simp
@@ -956,8 +963,7 @@ proof (cases D\<^sub>G E\<^sub>G C\<^sub>G rule: ground.superposition.cases)
       using clause.renaming_grounding[OF \<rho>\<^sub>2 type_preserving_\<rho>\<^sub>2_\<gamma> D_grounding \<V>\<^sub>2_\<V>\<^sub>3] .
   qed
 
-  obtain \<mu> \<sigma> where
-    \<gamma>: "\<gamma> = \<mu> \<odot> \<sigma>" and
+  obtain \<mu> where
     type_preserving_\<mu>: "type_preserving_on (clause.vars (E \<cdot> \<rho>\<^sub>1) \<union> clause.vars (D \<cdot> \<rho>\<^sub>2)) \<V>\<^sub>3  \<mu>" and
     imgu: "term.is_imgu \<mu> {{t\<^sub>1 \<cdot>t \<rho>\<^sub>1, t\<^sub>2 \<cdot>t \<rho>\<^sub>2}}"
   proof (rule obtain_type_preserving_on_imgu[OF _ that], intro conjI)
@@ -972,6 +978,10 @@ proof (cases D\<^sub>G E\<^sub>G C\<^sub>G rule: ground.superposition.cases)
       unfolding  E D l\<^sub>1 l\<^sub>2
       by auto
   qed
+
+  obtain \<sigma> where \<gamma>: "\<gamma> = \<mu> \<odot> \<sigma>"
+    using term.obtain_imgu_absorption[of \<gamma>, OF _ imgu] t\<^sub>1_\<gamma> t\<^sub>2_\<gamma>
+    by auto
 
   define C' where
     C': "C' = add_mset (?\<P> (Upair (c\<^sub>1 \<cdot>t\<^sub>c \<rho>\<^sub>1)\<langle>t\<^sub>2' \<cdot>t \<rho>\<^sub>2\<rangle> (t\<^sub>1' \<cdot>t \<rho>\<^sub>1))) (E' \<cdot> \<rho>\<^sub>1 + D' \<cdot> \<rho>\<^sub>2) \<cdot> \<mu>"
@@ -1433,14 +1443,14 @@ proof-
     select_from_D: "clause.from_ground (select\<^sub>G D\<^sub>G) = select D \<cdot> \<gamma>\<^sub>2"
     by (simp_all add: select_ground_subst)
 
-  obtain \<rho>\<^sub>1 \<rho>\<^sub>2 \<gamma> :: "'v \<Rightarrow> 't" where
+  obtain \<rho>\<^sub>1 \<rho>\<^sub>2 \<gamma> :: 'subst where
     \<rho>\<^sub>1: "term.is_renaming \<rho>\<^sub>1" and
     \<rho>\<^sub>2: "term.is_renaming \<rho>\<^sub>2" and
     rename_apart: "clause.vars (E \<cdot> \<rho>\<^sub>1) \<inter> clause.vars (D \<cdot> \<rho>\<^sub>2) = {}" and
     type_preserving_\<rho>\<^sub>1: "type_preserving_on (clause.vars E) \<V>\<^sub>1 \<rho>\<^sub>1" and
     type_preserving_\<rho>\<^sub>2: "type_preserving_on (clause.vars D) \<V>\<^sub>2 \<rho>\<^sub>2" and
-    \<gamma>\<^sub>1_\<gamma>: "\<forall>x \<in> clause.vars E. \<gamma>\<^sub>1 x = (\<rho>\<^sub>1 \<odot> \<gamma>) x" and
-    \<gamma>\<^sub>2_\<gamma>: "\<forall>x \<in> clause.vars D. \<gamma>\<^sub>2 x = (\<rho>\<^sub>2 \<odot> \<gamma>) x"
+    \<gamma>\<^sub>1_\<gamma>: "\<forall>x \<in> clause.vars E. x \<cdot>v \<gamma>\<^sub>1 = x \<cdot>v \<rho>\<^sub>1 \<odot> \<gamma>" and
+    \<gamma>\<^sub>2_\<gamma>: "\<forall>x \<in> clause.vars D. x \<cdot>v \<gamma>\<^sub>2 = x \<cdot>v \<rho>\<^sub>2 \<odot> \<gamma>"
     using clause.obtain_merged_grounding[OF
             type_preserving_\<gamma>\<^sub>1 type_preserving_\<gamma>\<^sub>2 E_grounding D_grounding \<V>\<^sub>2 clause.finite_vars].
 

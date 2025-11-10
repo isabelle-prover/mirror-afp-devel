@@ -1,24 +1,21 @@
 section \<open>Pattern-Completeness and Related Properties\<close>
 
-text \<open>We use the core decision procedure for pattern completeness 
+text \<open>We use the decision procedures for pattern completeness
   and connect it to other properties like pattern completeness of programs (where the lhss are given), 
   or (strong) quasi-reducibility.\<close>
 
 theory Pattern_Completeness
   imports 
     Pattern_Completeness_List
+    Pattern_Completeness_Improved_Algorithm
     Show.Shows_Literal
     Certification_Monads.Check_Monad
+    Sorted_Terms.Basic_Terms
 begin
 
+lemmas [iff del] = domIff
 
 text \<open>A pattern completeness decision procedure for a set of lhss\<close>
-
-definition basic_terms :: "('f,'s)ssig \<Rightarrow> ('f,'s)ssig \<Rightarrow> ('v \<rightharpoonup> 's) \<Rightarrow> ('f,'v)term set" (\<open>\<B>'(_,_,_')\<close>) where
-  "\<B>(C,D,V) = { Fun f ts | f ss s ts . f : ss \<rightarrow> s in D \<and> ts :\<^sub>l ss in \<T>(C,V)}" 
-
-abbreviation basic_ground_terms :: "('f,'s)ssig \<Rightarrow> ('f,'s)ssig \<Rightarrow> ('f,unit)term set" (\<open>\<B>'(_,_')\<close>) where
-  "\<B>(C,D) \<equiv> \<B>(C,D,\<lambda>x. None)"
 
 definition matches :: "('f,'v)term \<Rightarrow> ('f,'w)term \<Rightarrow> bool" (infix \<open>matches\<close> 50) where
   "l matches t = (\<exists> \<sigma>. t = l \<cdot> \<sigma>)"
@@ -27,21 +24,20 @@ lemma matches_subst: "l matches t \<Longrightarrow> l matches t\<cdot>\<sigma>"
   by (auto simp: matches_def simp flip: subst_subst_compose) 
 
 definition pat_complete_lhss :: "('f,'s)ssig \<Rightarrow> ('f,'s)ssig \<Rightarrow> ('f,'v)term set \<Rightarrow> bool" where
-  "pat_complete_lhss C D L = (\<forall> t \<in> \<B>(C,D). \<exists>l \<in> L. l matches t)" 
+  "pat_complete_lhss C D L = (\<forall> t \<in> dom \<T>\<^sub>B(C,D). \<exists>l \<in> L. l matches t)" 
 
 lemma pat_complete_lhssD:
-  assumes comp: "pat_complete_lhss C D L" and t: "t \<in> \<B>(C,D,\<emptyset>)"
+  assumes comp: "pat_complete_lhss C D L" and t: "t \<in> dom \<T>\<^sub>B(C,D,\<emptyset>)"
   shows "\<exists>l \<in> L. l matches t" 
 proof -
   note * = map_subst_hastype[OF sorted_map_empty, of C _ _ "\<emptyset>::unit\<rightharpoonup>_" undefined]
-  from t have "t\<cdot>undefined \<in> \<B>(C,D)" (is "?t \<in> _")
-    by (force simp: basic_terms_def * cong: ex_cong)
+  from t have "t\<cdot>undefined \<in> dom \<T>\<^sub>B(C,D)" (is "?t \<in> _")
+    by (auto 0 3 simp: in_dom_iff_ex_type hastype_Basic intro!:*)
   from comp[unfolded pat_complete_lhss_def, rule_format, OF this]
   obtain l where l: "l \<in> L" "l matches ?t" by auto
   from t
   have t2: "?t \<cdot> undefined = t"
-    by (auto simp: basic_terms_def o_def
-        simp: map_subst_subst_Term_empty map_subst_Term_empty_id)
+    by (simp add: in_dom_Basic_empty_subst_subst in_dom_Basic_empty_subst_id)
   from l show "\<exists>l \<in> L. l matches t"
     apply (subst t2[symmetric])
     by (force simp: matches_subst)
@@ -68,18 +64,20 @@ definition decide_pat_complete_linear_lhss ::
     return (decide_pat_complete_lin C (pats_of_lhss D lhss))
   }" 
 
-definition decide_pat_complete_lhss :: 
+(* for experiments, we still keep the old FSCD algorithm *)
+definition decide_pat_complete_lhss_fscd :: 
   "(('f \<times> 's list) \<times> 's)list \<Rightarrow> (('f \<times> 's list) \<times> 's)list \<Rightarrow> ('f,'v)term list \<Rightarrow> showsl + bool" where
-  "decide_pat_complete_lhss C D lhss = do {
+  "decide_pat_complete_lhss_fscd C D lhss = do {
     check_signatures C D;
-    return (decide_pat_complete C (pats_of_lhss D lhss))
+    return (decide_pat_complete_fscd C (pats_of_lhss D lhss))
   }"  
 
-definition decide_pat_complete_lhss_fidl :: 
-  "_ \<Rightarrow> _ \<Rightarrow> _ \<Rightarrow> (('f \<times> 's list) \<times> 's)list \<Rightarrow> (('f \<times> 's list) \<times> 's)list \<Rightarrow> ('f,'v)term list \<Rightarrow> showsl + bool" where
-  "decide_pat_complete_lhss_fidl rn rv fidl_solver C D lhss = do {
+(* by default, we take the new algorithm *)
+definition decide_pat_complete_lhss :: 
+  "_ \<Rightarrow> _ \<Rightarrow> (('f \<times> 's list) \<times> 's)list \<Rightarrow> (('f \<times> 's list) \<times> 's)list \<Rightarrow> ('f,'v)term list \<Rightarrow> showsl + bool" where
+  "decide_pat_complete_lhss rn rv C D lhss = do {
     check_signatures C D;
-    return (decide_pat_complete_fidl rn rv fidl_solver C (pats_of_lhss D lhss))
+    return (decide_pat_complete rn rv C (pats_of_lhss D lhss))
   }"  
 
 lemma pats_of_lhss_vars: assumes condD: "\<forall>x\<in>set D. \<forall>a b. (\<forall>x2. x \<noteq> ((a, b), x2)) \<or> (\<forall>x\<in>set b. x \<in> S)"
@@ -118,7 +116,7 @@ qed
 lemma pats_of_lhss: 
   assumes "isOK(check_signatures C D)" 
   shows  "pats_complete (map_of C) (pat_list ` set (pats_of_lhss D lhss)) = 
-   (\<forall>t\<in>\<B>(map_of C,map_of D). \<exists>l\<in>set lhss. l matches t)" 
+   (\<forall>t \<in> dom \<T>\<^sub>B(map_of C,map_of D). \<exists>l\<in>set lhss. l matches t)" 
 proof -
   define S where "S = sorts_of_ssig_list C"
   note * = check_signatures[OF assms, folded S_def]
@@ -130,7 +128,7 @@ proof -
   let ?C = "map_of C" 
   let ?D = "map_of D" 
   let ?L = "{ pat \<cdot> \<sigma> | pat \<sigma>. pat \<in> set pats \<and> \<sigma> :\<^sub>s {x : \<iota> in \<V>. \<iota> \<in> set S} \<rightarrow> \<T>(?C)}" 
-  interpret pattern_completeness_list C
+  interpret pattern_completeness_list C 2
     rewrites "sorts_of_ssig_list C = S"
      apply unfold_locales
     using distC dec by (auto simp: S_def)
@@ -152,7 +150,7 @@ proof -
         cong: all_cong1 ex_cong1 conj_cong imp_cong)
     apply (subst all_comm)
     by (simp add: ac_simps verit_bool_simplify(4) o_def)
-  also have "?L = \<B>(?C,?D,\<emptyset>)" (is "_ = ?R") 
+  also have "?L = dom \<T>\<^sub>B(?C,?D,\<emptyset>)" (is "_ = ?R") 
   proof 
     {
       fix pat and \<sigma>
@@ -173,7 +171,7 @@ proof -
       have ts: "ts :\<^sub>l ss in \<T>(?C)" unfolding list_all2_conv_all_nth ts_def using ssigma by auto
       have pat: "pat \<cdot> \<sigma> = Fun f ts" 
         unfolding pat ts_def by (auto intro: nth_equalityI)
-      from pat f ts have "pat \<cdot> \<sigma> \<in> ?R" unfolding basic_terms_def by auto
+      from pat f ts have "pat \<cdot> \<sigma> \<in> ?R" by (auto simp: in_dom_Basic)
     }
     thus "?L \<subseteq> ?R" by auto
     {
@@ -211,14 +209,14 @@ proof -
       from pat id ssigma
       have "Fun f ts \<in> ?L" by auto
     }
-    thus "?R \<subseteq> ?L" unfolding basic_terms_def by auto
+    thus "?R \<subseteq> ?L" by (auto simp: in_dom_Basic)
   qed
   finally show ?thesis .
 qed
 
-theorem decide_pat_complete_lhss:
+theorem decide_pat_complete_lhss_fscd:
   fixes C D :: "(('f \<times> 's list) \<times> 's) list" and lhss :: "('f,'v)term list"
-  assumes "decide_pat_complete_lhss C D lhss = return b" 
+  assumes "decide_pat_complete_lhss_fscd C D lhss = return b" 
   shows "b = pat_complete_lhss (map_of C) (map_of D) (set lhss)" 
 proof -
   let ?C = "map_of C"
@@ -226,24 +224,24 @@ proof -
   define S where "S = sorts_of_ssig_list C"
   define P where "P = pats_of_lhss D lhss"
   have sig: "isOK(check_signatures C D)" 
-    and b: "b = decide_pat_complete C P"
+    and b: "b = decide_pat_complete_fscd C P"
     using assms
-     apply (unfold decide_pat_complete_lhss_def)
+     apply (unfold decide_pat_complete_lhss_fscd_def)
      apply (unfold Let_def P_def[symmetric] S_def[symmetric])
     by auto
   note * = check_signatures[OF sig]
   note distC = *(1) note distD = *(2) note condD = *(3) note dec = *(4)  
-  interpret pattern_completeness_list C
+  interpret pattern_completeness_list C 2
     rewrites "sorts_of_ssig_list C = S"
      apply unfold_locales
     using * by (auto simp: S_def)
   have "b = pats_complete ?C (pat_list ` set P)"
     apply (unfold b)
-    apply (rule decide_pat_complete[OF distC dec[unfolded S_def]])
+    apply (rule decide_pat_complete_fscd[OF distC dec[unfolded S_def]])
     apply (unfold P_def)
     apply (rule pats_of_lhss_vars[OF condD[unfolded P_def S_def]])
     done
-  also have "\<dots> = (\<forall>t\<in>\<B>(?C,?D). \<exists>l\<in>set lhss. l matches t)" unfolding P_def
+  also have "\<dots> = (\<forall>t \<in> dom \<T>\<^sub>B(?C,?D). \<exists>l\<in>set lhss. l matches t)" unfolding P_def
     by (rule pats_of_lhss[OF sig])
   finally show ?thesis unfolding pat_complete_lhss_def .
 qed
@@ -266,7 +264,7 @@ proof -
     by auto
   note * = check_signatures[OF sig]
   note distC = *(1) note distD = *(2) note condD = *(3) note dec = *(4)  
-  interpret pattern_completeness_list C
+  interpret pattern_completeness_list C 2
     rewrites "sorts_of_ssig_list C = S"
      apply unfold_locales
     using * by (auto simp: S_def)
@@ -298,16 +296,15 @@ proof -
         by (simp add: distinct_count_atmost_1)
     qed
   qed
-  also have "\<dots> = (\<forall>t\<in>\<B>(?C,?D). \<exists>l\<in>set lhss. l matches t)" unfolding P_def
+  also have "\<dots> = (\<forall>t \<in> dom \<T>\<^sub>B(?C,?D). \<exists>l\<in>set lhss. l matches t)" unfolding P_def
     by (rule pats_of_lhss[OF sig])
   finally show ?thesis unfolding pat_complete_lhss_def .
 qed
 
-theorem decide_pat_complete_lhss_fidl:
+theorem decide_pat_complete_lhss:
   fixes C D :: "(('f \<times> 's list) \<times> 's) list" and lhss :: "('f,'v)term list"
-  assumes "decide_pat_complete_lhss_fidl rn rv fidl_solver C D lhss = return b" 
+  assumes "decide_pat_complete_lhss rn rv C D lhss = return b" 
     and ren: "renaming_funs rn rv" 
-    and idl: "finite_idl_solver fidl_solver"
   shows "b = pat_complete_lhss (map_of C) (map_of D) (set lhss)" 
 proof -
   let ?C = "map_of C"
@@ -315,24 +312,24 @@ proof -
   define S where "S = sorts_of_ssig_list C"
   define P where "P = pats_of_lhss D lhss"
   have sig: "isOK(check_signatures C D)" 
-    and b: "b = decide_pat_complete_fidl rn rv fidl_solver C P"
+    and b: "b = decide_pat_complete rn rv C P"
     using assms
-     apply (unfold decide_pat_complete_lhss_fidl_def)
+     apply (unfold decide_pat_complete_lhss_def)
      apply (unfold Let_def P_def[symmetric] S_def[symmetric])
     by auto
   note * = check_signatures[OF sig]
   note distC = *(1) note distD = *(2) note condD = *(3) note dec = *(4)  
-  interpret pattern_completeness_list C
+  interpret pattern_completeness_list C 2
     rewrites "sorts_of_ssig_list C = S"
      apply unfold_locales
     using * by (auto simp: S_def)
   have "b = pats_complete ?C (pat_list ` set P)"
     apply (unfold b)
-    apply (rule decide_pat_complete_fidl[OF distC dec[unfolded S_def] _ ren idl])
+    apply (rule decide_pat_complete[OF distC dec[unfolded S_def] _ ren])
     apply (unfold P_def)
     apply (rule pats_of_lhss_vars[OF condD[unfolded P_def S_def]])
     done
-  also have "\<dots> = (\<forall>t\<in>\<B>(?C,?D). \<exists>l\<in>set lhss. l matches t)" unfolding P_def
+  also have "\<dots> = (\<forall>t \<in> dom \<T>\<^sub>B(?C,?D). \<exists>l\<in>set lhss. l matches t)" unfolding P_def
     by (rule pats_of_lhss[OF sig])
   finally show ?thesis unfolding pat_complete_lhss_def .
 qed
@@ -341,24 +338,25 @@ text \<open>Definition of strong quasi-reducibility and a corresponding decision
 
 definition strong_quasi_reducible :: "('f,'s)ssig \<Rightarrow> ('f,'s)ssig \<Rightarrow> ('f,'v)term set \<Rightarrow> bool" where
   "strong_quasi_reducible C D L =
-  (\<forall> t \<in> \<B>(C,D,\<emptyset>::unit\<rightharpoonup>'s). \<exists> ti \<in> set (t # args t). \<exists>l \<in> L. l matches ti)" 
+  (\<forall> t \<in> dom \<T>\<^sub>B(C,D). \<exists> ti \<in> set (t # args t). \<exists>l \<in> L. l matches ti)" 
 
 
 definition term_and_args :: "'f \<Rightarrow> ('f,'v)term list \<Rightarrow> ('f,'v)term list" where
   "term_and_args f ts = Fun f ts # ts"  
 
 definition decide_strong_quasi_reducible :: 
-  "(('f \<times> 's list) \<times> 's)list \<Rightarrow> (('f \<times> 's list) \<times> 's)list \<Rightarrow> ('f,'v)term list \<Rightarrow> showsl + bool" where
-  "decide_strong_quasi_reducible C D lhss = do {
+  "_ \<Rightarrow> _ \<Rightarrow> (('f \<times> 's list) \<times> 's)list \<Rightarrow> (('f \<times> 's list) \<times> 's)list \<Rightarrow> ('f,'v)term list \<Rightarrow> showsl + bool" where
+  "decide_strong_quasi_reducible rn rv C D lhss = do {
     check_signatures C D;
     let pats = map (\<lambda> ((f,ss),s). term_and_args f (map Var (zip [0..<length ss] ss))) D;
     let P = map (List.maps (\<lambda> pat. map (\<lambda> lhs. [(pat,lhs)]) lhss)) pats;
-    return (decide_pat_complete C P)
+    return (decide_pat_complete rn rv C P)
   }" 
 
 lemma decide_strong_quasi_reducible:
   fixes C D :: "(('f \<times> 's list) \<times> 's) list" and lhss :: "('f,'v)term list"
-  assumes "decide_strong_quasi_reducible C D lhss = return b" 
+  assumes "decide_strong_quasi_reducible rn rv C D lhss = return b" 
+    and ren: "renaming_funs rn rv" 
   shows "b = strong_quasi_reducible (map_of C) (map_of D) (set lhss)" 
 proof -
   let ?C = "map_of C"
@@ -372,14 +370,14 @@ proof -
   define V where "V = {x : \<iota> in \<V>. \<iota> \<in> set (sorts_of_ssig_list C)}"
   let ?match_lhs = "\<lambda>t. \<exists>l \<in> set lhss. l matches t" 
   from assms(1)
-  have b: "b = decide_pat_complete C P"
+  have b: "b = decide_pat_complete rn rv C P"
     and sig: "isOK (check_signatures C D)" 
     by (auto simp: decide_strong_quasi_reducible_def pats_def[symmetric] Let_def P_def[symmetric]
         split: prod.splits option.splits)
   note * = check_signatures[OF sig]
   note distC = *(1) note distD = *(2) note condD = *(3) note dec = *(4)
-  interpret pattern_completeness_list C
-    apply unfold_locales using distC dec.
+  interpret pattern_completeness_list C 2
+    apply unfold_locales using distC dec by auto
   have wf: "wf_pats (pat_list ` set P)" using condD
     by (force simp: P_def pats_def wf_pats_def wf_pat_def pat_list_def wf_match_def tvars_match_def
         term_and_args_def
@@ -388,7 +386,7 @@ proof -
     unfolding pat_list_def P_def by (auto simp: image_comp) force+
   have "b = pats_complete ?C (pat_list ` set P)"
     apply (unfold b)
-  proof (rule decide_pat_complete[OF dist(1) dec])
+  proof (rule decide_pat_complete[OF dist(1) dec _ ren])
     {
       fix f ss s i si
       assume mem: "((f, ss), s) \<in> set D" and isi: "(i, si) \<in> set (zip [0..<length ss] ss)"
@@ -469,15 +467,15 @@ proof -
       by (auto intro!: nth_equalityI simp: \<sigma>_def)      
     show "\<exists>ti \<in> set (term_and_args f ts). ?match_lhs ti" unfolding id[symmetric] using pat match by auto
   qed
-  also have "\<dots> = (\<forall>t. t \<in> \<B>(?C,?D,\<emptyset>::unit\<rightharpoonup>_) \<longrightarrow> (\<exists> ti \<in> set (t # args t). ?match_lhs ti))"
-    unfolding basic_terms_def term_and_args_def by fastforce
+  also have "\<dots> = (\<forall>t. t \<in> dom \<T>\<^sub>B(?C,?D) \<longrightarrow> (\<exists> ti \<in> set (t # args t). ?match_lhs ti))"
+    unfolding in_dom_Basic term_and_args_def by fastforce
   finally show ?thesis unfolding strong_quasi_reducible_def by blast
 qed
 
 subsection \<open>Connecting Pattern-Completeness, Strong Quasi-Reducibility and Quasi-Reducibility\<close>
 
 definition quasi_reducible :: "('f,'s)ssig \<Rightarrow> ('f,'s)ssig \<Rightarrow> ('f,'v)term set \<Rightarrow> bool" where
-  "quasi_reducible C D L = (\<forall> t \<in> \<B>(C,D,\<emptyset>::unit\<rightharpoonup>'s). \<exists> tp \<unlhd> t. \<exists>l \<in> L. l matches tp)" 
+  "quasi_reducible C D L = (\<forall>t \<in> dom \<T>\<^sub>B(C,D). \<exists> tp \<unlhd> t. \<exists>l \<in> L. l matches tp)" 
 
 lemma pat_complete_imp_strong_quasi_reducible:
   "pat_complete_lhss C D L \<Longrightarrow> strong_quasi_reducible C D L" 
@@ -502,7 +500,7 @@ proof (standard, rule strong_quasi_reducible_imp_quasi_reducible[OF pat_complete
     unfolding pat_complete_lhss_def
   proof 
     fix t :: "('f,unit)term"
-    assume t: "t \<in> \<B>(C,D,\<emptyset>)"
+    assume t: "t \<in> dom \<T>\<^sub>B(C,D)"
     from q[unfolded quasi_reducible_def, rule_format, OF this]
     obtain tp where tp: "t \<unrhd> tp" and match: "\<exists>l \<in> L. l matches tp" by auto
     show "\<exists>l \<in> L. l matches t" 
@@ -511,13 +509,17 @@ proof (standard, rule strong_quasi_reducible_imp_quasi_reducible[OF pat_complete
       thus ?thesis using match by auto
     next
       case False
-      from t[unfolded basic_terms_def] obtain f ts ss where t: "t = Fun f ts" and ts: "ts :\<^sub>l ss in \<T>(C,\<emptyset>)" by auto
-      from t False tp obtain ti where ti: "ti \<in> set ts" and subt: "ti \<unrhd> tp"
-        by (meson Fun_supteq)
+      from t[unfolded in_dom_Basic]
+      obtain f ts ss where t: "t = Fun f ts" and ts: "ts :\<^sub>l ss in \<T>(C,\<emptyset>)" by auto
+      from t False tp
+      obtain ti where ti: "ti \<in> set ts" and subt: "ti \<unrhd> tp" by (meson Fun_supteq)
       from subt obtain CC where ctxt: "ti = CC \<langle> tp \<rangle>" by auto
-      from ti ts obtain s where "ti : s in \<T>(C)" unfolding list_all2_conv_all_nth set_conv_nth by auto
-      from hastype_context_decompose[OF this[unfolded ctxt]] obtain s where tp: "tp : s in \<T>(C,\<emptyset>)" by blast
-      from match[unfolded matches_def] obtain l \<sigma> where l: "l \<in> L" and match: "tp = l \<cdot> \<sigma>" by auto
+      from ti ts
+      obtain s where "ti : s in \<T>(C)" unfolding list_all2_conv_all_nth set_conv_nth by auto
+      from hastype_context_decompose[OF this[unfolded ctxt]]
+      obtain s where tp: "tp : s in \<T>(C,\<emptyset>)" by blast
+      from match[unfolded matches_def]
+      obtain l \<sigma> where l: "l \<in> L" and match: "tp = l \<cdot> \<sigma>" by auto
       show ?thesis
       proof (cases l)
         case (Var x)

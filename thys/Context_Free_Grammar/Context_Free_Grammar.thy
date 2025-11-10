@@ -50,7 +50,7 @@ lemma isNt_simps[simp,code]:
   \<open>isNt (Tm a) = False\<close> 
 by (simp_all add: isNt_def)
 
-lemma isTm_simps[simp]:
+lemma isTm_simps[simp,code]:
   \<open>isTm (Nt A) = False\<close>
   \<open>isTm (Tm a) = True\<close> 
 by (simp_all add: isTm_def)
@@ -63,9 +63,6 @@ by auto
 
 definition Nts_syms :: "('n,'t)syms \<Rightarrow> 'n set" where
 "Nts_syms w = {A. Nt A \<in> set w}"
-
-lemma Nts_syms_code[code]: "Nts_syms w = (\<Union>s \<in> set w. case s of Nt A \<Rightarrow> {A} | _ \<Rightarrow> {})"
-unfolding Nts_syms_def by (auto split: sym.splits)
 
 definition Tms_syms :: "('n,'t)syms \<Rightarrow> 't set" where
 "Tms_syms w = {a. Tm a \<in> set w}"
@@ -82,11 +79,23 @@ definition Tms :: "('n,'t)Prods \<Rightarrow> 't set" where
 definition Syms :: "('n,'t)Prods \<Rightarrow> ('n,'t) sym set" where 
   "Syms P = (\<Union>(A,w)\<in>P. {Nt A} \<union> set w)"
 
-definition nts_syms :: "('n,'t)syms \<Rightarrow> 'n list \<Rightarrow> 'n list" where
-"nts_syms sys = foldr (\<lambda>sy ns. case sy of Nt A \<Rightarrow> List.insert A ns | Tm _ \<Rightarrow> ns) sys"
+definition nts_syms_acc :: "('n,'t)syms \<Rightarrow> 'n list \<Rightarrow> 'n list" where
+"nts_syms_acc = foldr (\<lambda>sy ns. case sy of Nt A \<Rightarrow> List.insert A ns | Tm _ \<Rightarrow> ns)"
+
+definition nts_syms :: "('n,'t)syms \<Rightarrow> 'n list" where
+"nts_syms sys = nts_syms_acc sys []"
 
 definition nts :: "('n,'t)prods \<Rightarrow> 'n list" where
-"nts ps = foldr (\<lambda>(A,sys) ns. List.insert A (nts_syms sys ns)) ps []"
+"nts ps = foldr (\<lambda>(A,sys) ns. List.insert A (nts_syms_acc sys ns)) ps []"
+
+definition tms_syms_acc :: "('n,'t)syms \<Rightarrow> 't list \<Rightarrow> 't list" where
+"tms_syms_acc = foldr (\<lambda>sy ts. case sy of Tm a \<Rightarrow> List.insert a ts | Nt _ \<Rightarrow> ts)"
+
+definition tms_syms :: "('n,'t)syms \<Rightarrow> 't list" where
+"tms_syms sys = tms_syms_acc sys []"
+
+definition tms :: "('n,'t)prods \<Rightarrow> 't list" where
+"tms ps = foldr (\<lambda>(_,sys). tms_syms_acc sys) ps []"
 
 definition Lhss :: "('n, 't) Prods \<Rightarrow> 'n set" where
 "Lhss P = (\<Union>(A,w) \<in> P. {A})"
@@ -114,10 +123,10 @@ by (cases u) auto
 
 lemmas map_Tm_eq_map_Nt_iff[simp] = eq_iff_swap[OF map_Nt_eq_map_Tm_iff]
 
-lemma Nts_syms_Nil[simp]: "Nts_syms [] = {}"
+lemma Nts_syms_Nil[simp,code]: "Nts_syms [] = {}"
 unfolding Nts_syms_def by auto
 
-lemma Nts_syms_Cons[simp]: "Nts_syms (a#v) = (case a of Nt A \<Rightarrow> {A} | _ \<Rightarrow> {}) \<union> Nts_syms v"
+lemma Nts_syms_Cons[simp,code]: "Nts_syms (s#ss) = (case s of Nt A \<Rightarrow> {A} | _ \<Rightarrow> {}) \<union> Nts_syms ss"
 by (auto simp: Nts_syms_def split: sym.split)
 
 lemma Nts_syms_append[simp]: "Nts_syms (u @ v) = Nts_syms u \<union> Nts_syms v"
@@ -166,6 +175,12 @@ unfolding Nts_def Lhss_def Rhs_Nts_def by auto
 lemma Nts_Nts_syms: "w \<in> Rhss P A \<Longrightarrow> Nts_syms w \<subseteq> Nts P"
 unfolding Rhss_def Nts_def by blast
 
+lemma Tms_syms_Nil[simp,code]: "Tms_syms [] = {}"
+unfolding Tms_syms_def by auto
+
+lemma Tms_syms_Cons[simp,code]: "Tms_syms (s#ss) = (case s of Tm a \<Rightarrow> {a} | _ \<Rightarrow> {}) \<union> Tms_syms ss"
+by (auto simp: Tms_syms_def split: sym.split)
+
 lemma Syms_simps[simp]:
   "Syms {} = {}"
   "Syms(insert (A,w) P) = {Nt A} \<union> set w \<union> Syms P"
@@ -178,19 +193,39 @@ lemma Lhss_simps[simp]:
   "Lhss(P \<union> P') = Lhss P \<union> Lhss P'"
 by(auto simp: Lhss_def)
 
-lemma set_nts_syms: "set(nts_syms sys ns) = Nts_syms sys \<union> set ns"
-unfolding nts_syms_def
+lemma set_nts_syms: "set(nts_syms_acc sys ns) = Nts_syms sys \<union> set ns"
+unfolding nts_syms_acc_def
 by(induction sys arbitrary: ns) (auto split: sym.split)
 
 lemma set_nts: "set(nts ps) = Nts (set ps)"
 by(induction ps) (auto simp: nts_def Nts_def set_nts_syms split: prod.splits)
 
-lemma distinct_nts_syms: "distinct(nts_syms sys ns) = distinct ns"
-unfolding nts_syms_def
+lemma distinct_nts_syms_acc: "distinct(nts_syms_acc sys ns) = distinct ns"
+unfolding nts_syms_acc_def
 by(induction sys arbitrary: ns) (auto split: sym.split)
 
+lemma distinct_nts_syms: "distinct(nts_syms sys)"
+unfolding nts_syms_def by(simp add: distinct_nts_syms_acc)
+
 lemma distinct_nts: "distinct(nts ps)"
-by(induction ps) (auto simp: nts_def distinct_nts_syms split: sym.split)
+by(induction ps) (auto simp: nts_def distinct_nts_syms_acc split: sym.split)
+
+lemma set_tms_syms: "set(tms_syms_acc sys ts) = Tms_syms sys \<union> set ts"
+unfolding tms_syms_acc_def
+by(induction sys arbitrary: ts) (auto split: sym.split)
+
+lemma set_tms: "set(tms ps) = Tms (set ps)"
+by(induction ps) (auto simp: tms_def Tms_def set_tms_syms split: prod.splits)
+
+lemma distinct_tms_syms_acc: "distinct(tms_syms_acc sys ts) = distinct ts"
+unfolding tms_syms_acc_def
+by(induction sys arbitrary: ts) (auto split: sym.split)
+
+lemma distinct_tms_syms: "distinct(tms_syms sys)"
+unfolding tms_syms_def by(simp add: distinct_tms_syms_acc)
+
+lemma distinct_tms: "distinct(tms ps)"
+by(induction ps) (auto simp: tms_def distinct_tms_syms_acc split: sym.split)
 
 
 subsubsection \<open>Finiteness Lemmas\<close>

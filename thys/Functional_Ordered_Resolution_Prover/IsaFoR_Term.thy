@@ -208,7 +208,7 @@ lemma vars_partitioned_var_disjoint:
 proof (intro allI impI)
   fix \<sigma>s :: \<open>('b \<Rightarrow> ('a, 'b) term) list\<close>
   assume "length \<sigma>s = length Cs"
-  with assms[unfolded vars_partitioned_def] Fun_More.fun_merge[of "map vars_clause Cs" "nth \<sigma>s"]
+  with assms[unfolded vars_partitioned_def] fun_merge[of "map vars_clause Cs" "nth \<sigma>s"]
   obtain \<sigma> where
     \<sigma>_p: "\<forall>i < length (map vars_clause Cs). \<forall>x \<in> map vars_clause Cs ! i. \<sigma> x = (\<sigma>s ! i) x"
     by auto

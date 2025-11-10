@@ -4,11 +4,13 @@ session Abstract_Substitution = HOL +
   sessions
     First_Order_Terms
     "HOL-ex"
+    Regular_Tree_Relations
   theories
-    Substitution
+    Abstract_Substitution
+    Based_Substitution
+    Based_Substitution_Lifting
     Substitution_First_Order_Term
     Substitution_HOL_ex_Unification
-    Functional_Substitution_Example
-    Functional_Substitution_Lifting_Example
+    Substitution_Lifting_Example
   document_files
     "root.tex"

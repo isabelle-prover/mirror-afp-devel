@@ -2,56 +2,58 @@ theory Ground_Ordered_Resolution_Soundness
   imports Ground_Ordered_Resolution
 begin
 
-lemma (in ground_ordered_resolution_calculus) soundness_ground_resolution:
+context ground_ordered_resolution_calculus
+begin
+
+lemma soundness_ground_resolution:
   assumes
-    step: "resolution D C R"
-  shows "G_entails {D, C} {R}"
+    step: "resolution D E C"
+  shows "G_entails {D, E} {C}"
   using step
-proof (cases D C R rule: resolution.cases)
-  case (resolutionI L\<^sub>C C' L\<^sub>D D')
+proof (cases D E C rule: resolution.cases)
+  case (resolutionI l\<^sub>1 l\<^sub>2 E' D' t)
 
   show ?thesis
     unfolding G_entails_def true_clss_singleton
     unfolding true_clss_insert
   proof (intro allI impI, elim conjE)
     fix I :: "'t set"
-    assume "I \<TTurnstile> C" and "I \<TTurnstile> D"
+    assume "I \<TTurnstile> E" and "I \<TTurnstile> D"
 
-    then obtain K1 K2 :: "'t literal" where
-      "K1 \<in># C" and "I \<TTurnstile>l K1" and "K2 \<in># D" and "I \<TTurnstile>l K2"
+    then obtain k\<^sub>1 k\<^sub>2 :: "'t literal" where
+      "k\<^sub>1 \<in># E" and "I \<TTurnstile>l k\<^sub>1" and "k\<^sub>2 \<in># D" and "I \<TTurnstile>l k\<^sub>2"
       by (auto simp: true_cls_def)
 
-    show "I \<TTurnstile> R"
-    proof (cases "K1 = L\<^sub>C")
+    show "I \<TTurnstile> C"
+    proof (cases "k\<^sub>1 = l\<^sub>1")
       case K1_def: True
 
-      hence "I \<TTurnstile>l L\<^sub>C"
-        using \<open>I \<TTurnstile>l K1\<close> 
+      hence "I \<TTurnstile>l l\<^sub>1"
+        using \<open>I \<TTurnstile>l k\<^sub>1\<close> 
         by simp
 
       show ?thesis
-      proof (cases "K2 = L\<^sub>D")
+      proof (cases "k\<^sub>2 = l\<^sub>2")
         case K2_def: True
 
-        hence "I \<TTurnstile>l L\<^sub>D"
-          using \<open>I \<TTurnstile>l K2\<close> 
+        hence "I \<TTurnstile>l l\<^sub>2"
+          using \<open>I \<TTurnstile>l k\<^sub>2\<close> 
           by simp
 
         hence False
-          using \<open>I \<TTurnstile>l L\<^sub>C\<close> 
-          by (simp add: local.resolutionI(3,4))
+          using \<open>I \<TTurnstile>l l\<^sub>1\<close> local.resolutionI(7,8) by auto
 
         thus ?thesis ..
       next
         case False
 
-        hence "K2 \<in># D'"
-          using \<open>K2 \<in># D\<close>
+        hence "k\<^sub>2 \<in># D'"
+          using \<open>k\<^sub>2 \<in># D\<close>
           unfolding resolutionI
           by simp
 
         hence "I \<TTurnstile> D'"
-          using \<open>I \<TTurnstile>l K2\<close> 
+          using \<open>I \<TTurnstile>l k\<^sub>2\<close> 
           by blast
 
         thus ?thesis
@@ -61,13 +63,13 @@ proof (cases D C R rule: resolution.cases)
     next
       case False
 
-      hence "K1 \<in># C'"
-        using \<open>K1 \<in># C\<close>
+      hence "k\<^sub>1 \<in># E'"
+        using \<open>k\<^sub>1 \<in># E\<close>
         unfolding resolutionI 
         by simp
 
-      hence "I \<TTurnstile> C'"
-        using \<open>I \<TTurnstile>l K1\<close> 
+      hence "I \<TTurnstile> E'"
+        using \<open>I \<TTurnstile>l k\<^sub>1\<close> 
         by blast
 
       thus ?thesis
@@ -77,29 +79,29 @@ proof (cases D C R rule: resolution.cases)
   qed
 qed
 
-lemma (in ground_ordered_resolution_calculus) soundness_ground_factoring:
-  assumes step: "factoring C D"
-  shows "G_entails {C} {D}"
+lemma soundness_ground_factoring:
+  assumes step: "factoring D C"
+  shows "G_entails {D} {C}"
   using step
-proof (cases C D rule: factoring.cases)
-  case (factoringI L\<^sub>1 C')
+proof (cases D C rule: factoring.cases)
+  case (factoringI l D' t)
 
   show ?thesis
     unfolding G_entails_def true_clss_singleton
   proof (intro allI impI)
     fix I :: "'t set"
-    assume "I \<TTurnstile> C"
+    assume "I \<TTurnstile> D"
 
-    then obtain K :: "'t literal" where
-      "K \<in># C" and "I \<TTurnstile>l K"
+    then obtain k :: "'t literal" where
+      "k \<in># D" and "I \<TTurnstile>l k"
       by (auto simp: true_cls_def)
 
-    show "I \<TTurnstile> D"
-    proof (cases "K = L\<^sub>1")
+    show "I \<TTurnstile> C"
+    proof (cases "k = l")
       case True
 
-      hence "I \<TTurnstile>l L\<^sub>1"
-        using \<open>I \<TTurnstile>l K\<close> 
+      hence "I \<TTurnstile>l l"
+        using \<open>I \<TTurnstile>l k\<close> 
         by metis
 
       thus ?thesis
@@ -108,23 +110,23 @@ proof (cases C D rule: factoring.cases)
     next
       case False
 
-      hence "K \<in># C'"
-        using \<open>K \<in># C\<close>
+      hence "k \<in># D'"
+        using \<open>k \<in># D\<close>
         unfolding factoringI
         by auto
 
-      hence "K \<in># D"
+      hence "k \<in># C"
         unfolding factoringI
         by simp
 
       thus ?thesis
-        using \<open>I \<TTurnstile>l K\<close> 
+        using \<open>I \<TTurnstile>l k\<close> 
         by blast
     qed
   qed
 qed
 
-sublocale ground_ordered_resolution_calculus \<subseteq> sound_inference_system where
+sublocale sound_inference_system where
   Inf = G_Inf and
   Bot = G_Bot and
   entails = G_entails
@@ -137,5 +139,7 @@ proof unfold_locales
     using soundness_ground_resolution soundness_ground_factoring
     by auto
 qed
+
+end
 
 end

@@ -26,7 +26,8 @@ proof -
   then show ?thesis
   proof cases
     case par
-    then have possc: "p \<in> possc C" using const t possc_def by blast 
+    then have possc: "p \<in> possc C" using const t
+      by (meson par_hole_pos_in_possc parallel_pos_sym) 
     then have "p \<in> poss_of_term (constT c) t" "(s[p \<leftarrow> u], t[p \<leftarrow> u]) \<in> rstep \<R>"
       using const par_hole_pos_replace_term_context_at[OF par]
       using possc_subt_at_ctxt_apply[OF possc par, of "r \<cdot> \<sigma>" "l \<cdot> \<sigma>"] rule
@@ -35,45 +36,47 @@ proof -
   next
     case below
     then obtain q where [simp]:"p = hole_pos C @ q" and poss: "q \<in> poss (l \<cdot> \<sigma>)"
-      using const position_less_eq_def
-      by (metis (full_types) ctxt_at_pos_hole_pos ctxt_at_pos_subt_at_pos poss_append_poss t(1))
+      using const less_eq_pos_def
+      by (metis (full_types) ctxt_of_pos_term_hole_pos replace_at_subt_at poss_append_poss t(1))
     have const: "l \<cdot> \<sigma> |_ q = constT c" using const by auto
-    from nt_lhs have "\<exists> r. r \<in> varposs l \<and> r \<le>\<^sub>p q" using const poss
+    from nt_lhs have "\<exists> r. r \<in> var_poss l \<and> r \<le>\<^sub>p q" using const poss
     proof (induct l arbitrary: q)
       case (Var x)
       then show ?case by auto
     next
       case (Fun f ts)
       from Fun(1)[OF nth_mem, of "hd q" "tl q"] Fun(2-) obtain r where
-        "r \<in> varposs (ts ! hd q) \<and> r \<le>\<^sub>p tl q"
+        "r \<in> var_poss (ts ! hd q) \<and> r \<le>\<^sub>p tl q"
         by (cases q) auto
       then show ?case using Fun(2- 4)
         by (intro exI[of _ "hd q # r"]) auto
     qed
-    then obtain x v where varposs: "v \<in> varposs l" "v \<le>\<^sub>p q" "l |_ v = Var x"
-      unfolding varposs_def by blast
+    then obtain x v where var_poss: "v \<in> var_poss l" "v \<le>\<^sub>p q" "l |_ v = Var x"
+      unfolding var_poss_def by blast
     let ?\<tau> = "\<lambda>x. if Var x = l |_ v then (\<sigma> x)[q -\<^sub>p v \<leftarrow> u] else \<sigma> x"
     show ?thesis
     proof (cases "x \<in> vars_term r")
       case True
-      then obtain q' where varposs_r: "q' \<in> varposs r" "r |_ q' = Var x"
-        by (metis vars_term_varposs_iff)
+      then obtain q' where var_poss_r: "q' \<in> var_poss r" "r |_ q' = Var x"
+        by (metis vars_term_var_poss_iff)
       have "(s[p \<leftarrow> u], t[(hole_pos C) @ q' @ (q -\<^sub>p v) \<leftarrow> u]) \<in> rstep \<R>"
-        using lin varposs rule varposs_r
-        by (auto simp: linear_term_varposs_subst_replace_term intro!: rstep_ctxtI)
+        using lin var_poss rule var_poss_r
+        by (auto simp: linear_term_var_poss_subst_replace_term intro!: rstep_ctxtI)
           (smt (verit, ccfv_SIG) pos_diff_append_itself rrstep.intros rrstep_rstep_mono subset_eq term_subst_eq)
       moreover have "(hole_pos C) @ q' @ q -\<^sub>p v \<in> poss_of_term (constT c) t"
-        using varposs_r varposs poss const poss_pos_diffI[OF varposs(2) poss]
+        using var_poss_r var_poss poss const poss_pos_diffI[OF var_poss(2) poss]
         using subt_at_append_dist[of q' "q -\<^sub>p v" "r \<cdot> \<sigma>"]
-        by (auto simp: poss_append_poss varposs_imp_poss[THEN subst_subt_at_dist] varposs_imp_poss[THEN subsetD[OF subst_poss_mono]])
-          (metis pos_les_eq_append_diff eval_term.simps(1) subst_subt_at_dist subt_at_append_dist varposs_imp_poss)
+        by (auto simp: poss_append_poss var_poss_imp_poss[THEN subt_at_subst] var_poss_imp_poss[THEN subsetD[OF subst_poss_mono]])
+          (metis (no_types, opaque_lifting) eval_term.simps(1) prefix_pos_diff subt_at_append_dist subt_at_subst
+            var_poss_iff)
+
       ultimately show ?thesis by auto
     next
       case False
-      then have [simp]: "r \<cdot> \<sigma> = r \<cdot> ?\<tau>" using varposs
+      then have [simp]: "r \<cdot> \<sigma> = r \<cdot> ?\<tau>" using var_poss
         by (auto simp add: term_subst_eq_conv)
-      have "(s[p \<leftarrow> u], t) \<in> rstep \<R>" using rule varposs lin
-        by (auto simp: linear_term_varposs_subst_replace_term)
+      have "(s[p \<leftarrow> u], t) \<in> rstep \<R>" using rule var_poss lin
+        by (auto simp: linear_term_var_poss_subst_replace_term)
       then show ?thesis by auto
     qed
   qed
@@ -211,23 +214,23 @@ lemma const_replace_closed_remove_subst_lhs:
     and const: "(c, 0) \<notin> funas_term t"
     and steps: "(s \<cdot> const_subst c, t) \<in> U"
   shows "(s, t) \<in> U" using steps
-proof (induct "card (varposs s)" arbitrary: s)
+proof (induct "card (var_poss s)" arbitrary: s)
   case (Suc n)
-  obtain p ps where vl: "varposs s = insert p ps" "p \<notin> ps" using Suc(2)
+  obtain p ps where vl: "var_poss s = insert p ps" "p \<notin> ps" using Suc(2)
     by (metis card_le_Suc_iff dual_order.refl)
-  let ?s = "s[p \<leftarrow> Fun c []]" have vp: "p \<in> varposs s" using vl by auto
+  let ?s = "s[p \<leftarrow> Fun c []]" have vp: "p \<in> var_poss s" using vl by auto
   then have [simp]: "?s \<cdot> const_subst c = s \<cdot> const_subst c"
     by (induct s arbitrary: p) (auto simp: nth_list_update map_update intro!: nth_equalityI)
-  have "varposs ?s = ps" using vl varposs_ground_replace_at[of p s "constT c"]
+  have "var_poss ?s = ps" using vl var_poss_ground_replace_at[of p s "constT c"]
     by auto
-  then have "n = card (varposs ?s)" using vl Suc(2) by (auto simp: card_insert_if finite_varposs)
+  then have "n = card (var_poss ?s)" using vl Suc(2) by (auto simp: card_insert_if finite_var_poss)
   from Suc(1)[OF this] have IH: "(s[p \<leftarrow> constT c], t) \<in> U" "p \<in> poss_of_term (constT c) s[p \<leftarrow> constT c]"
-    using Suc(2, 3) vl poss_of_term_replace_term_at varposs_imp_poss vp
+    using Suc(2, 3) vl poss_of_term_replace_term_at var_poss_imp_poss vp
     using \<open>s[p \<leftarrow> constT c] \<cdot> const_subst c = s \<cdot> const_subst c\<close>
     by fastforce+
   show ?case using const_replace_closedD[OF repcl] const IH(2, 1)
     by (metis constT_nfunas_term_poss_of_term_empty empty_iff replace_term_at_same_pos replace_term_at_subt_at_id)
-qed (auto simp: ground_subst_apply card_eq_0_iff finite_varposs varposs_empty_gound)
+qed (auto simp: ground_subst_apply card_eq_0_iff finite_var_poss var_poss_empty_gound)
 
 
 subsubsection \<open>Removal lemma applied to various rewrite relations\<close>

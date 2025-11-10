@@ -35,7 +35,7 @@ end
 
 locale witnessed_nonground_typing =
   nonground_typing +
-  base_witnessed_typing_properties where subst = "(\<cdot>t)" and id_subst = Var and
+  base_witnessed_typing_properties where subst = "(\<cdot>t)" and
   comp_subst = "(\<odot>)" and vars = term.vars and to_ground = term.to_ground and
   from_ground = term.from_ground
 begin

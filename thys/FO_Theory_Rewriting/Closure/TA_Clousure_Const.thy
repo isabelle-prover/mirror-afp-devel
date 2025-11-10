@@ -510,7 +510,7 @@ proof -
     have "s \<in> ?Rs" using fin ta_der'_ground_ctxt_structure[OF seq(1) vars]
       using ta_der'_Var_funas[OF seq(2), THEN subset_trans, OF reflcl_over_single_ta_sig[unfolded less_eq_fset.rep_eq]]
       by (auto intro!: exI[of _ "ta_der'_gctxt u"] exI[of _ "ta_der'_source_gctxt_arg u s"])
-        (metis Un_iff funas_ctxt_apply funas_ctxt_of_gctxt_conv subset_eq)
+        (metis Un_iff funas_term_ctxt_apply funas_ctxt_of_gctxt_conv subset_eq) 
   }
   then have ls: "?Ls \<subseteq> ?Rs" by blast
   {fix t assume "t \<in> ?Rs"
@@ -695,7 +695,7 @@ proof -
     then have "s \<in> ?Rs" using fin ta_der'_ground_ctxt_structure[OF seq(1) vars] seq(2)
       using ta_der'_Var_funas[OF seq(2), THEN subset_trans, OF reflcl_over_nhole_ctxt_ta_sig[unfolded less_eq_fset.rep_eq]]
       by (auto intro!: exI[of _ "ta_der'_gctxt u"] exI[of _ "ta_der'_source_gctxt_arg u s"])
-        (metis Un_iff funas_ctxt_apply funas_ctxt_of_gctxt_conv in_mono)}
+        (metis Un_iff funas_term_ctxt_apply funas_ctxt_of_gctxt_conv in_mono)}
   then have ls: "?Ls \<subseteq> ?Rs" by blast
   {fix t assume "t \<in> ?Rs"
     then obtain C s where gr_fun: "funas_gctxt C \<subseteq> fset \<F>" "C \<noteq> GHole" and reachA: "s \<in> gta_lang Q \<A>" and

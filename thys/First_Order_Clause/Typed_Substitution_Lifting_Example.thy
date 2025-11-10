@@ -1,8 +1,8 @@
-theory Typed_Functional_Substitution_Lifting_Example
+theory Typed_Substitution_Lifting_Example
   imports
-    Typed_Functional_Substitution_Lifting
-    Typed_Functional_Substitution_Example
-    Abstract_Substitution.Functional_Substitution_Lifting_Example
+    Typed_Substitution_Lifting
+    Typed_Substitution_Example
+    Abstract_Substitution.Substitution_Lifting_Example
 begin
 
 text \<open>All property locales have corresponding lifting locales\<close>
@@ -22,7 +22,7 @@ sublocale equation:
   base_vars = vars_term and base_subst = subst_apply_term and map = "\<lambda>f. map_prod f f" and
   to_set = set_prod and comp_subst = subst_compose and id_subst = Var and
   sub_vars = vars_term and sub_subst = subst_apply_term and
-  sub_welltyped = "welltyped \<F>" 
+  sub_welltyped = "welltyped \<F>" and subst_update = fun_upd and apply_subst = apply_subst
   by unfold_locales
 
 text \<open>Lifted lemmas and definitions\<close>
@@ -39,7 +39,7 @@ sublocale equation_set:
   base_vars = vars_term and base_subst = subst_apply_term and map = fimage and
   to_set = fset and comp_subst = subst_compose and id_subst = Var and
   sub_vars = equation_subst.vars and sub_subst = equation_subst.subst and
-  sub_welltyped = equation.welltyped
+  sub_welltyped = equation.welltyped and subst_update = fun_upd and apply_subst = apply_subst
   by unfold_locales
 
 text \<open>Lifted lemmas and definitions\<close>
@@ -52,6 +52,6 @@ term equation_set.is_welltyped
 end
 
 text \<open>Interpretation with unit as type\<close>
-global_interpretation example_typing_lifting "\<lambda>_. ([], ())".
+global_interpretation example_typing_lifting "\<lambda>_. ([], ())" .
 
 end

@@ -16,13 +16,12 @@ locale untyped_superposition_calculus =
   nonground_selection_function where
   select = select and atom_subst = "(\<cdot>a)" and atom_vars = atom.vars and
   atom_to_ground = atom.to_ground and atom_from_ground = atom.from_ground +
-  (* TODO? *)
-  "term": exists_imgu where vars = term_vars and subst = "(\<cdot>t)" and id_subst = Var +
+  "term": exists_imgu where vars = term_vars and subst = "(\<cdot>t)" +
   ground_critical_pairs where
   compose_context = compose_ground_context and apply_context = apply_ground_context and
   hole = ground_hole
   for
-    select :: "'t atom select" and   
+    select :: "'t atom select" and
     less\<^sub>t :: "'t \<Rightarrow> 't \<Rightarrow> bool" and
     tiebreakers :: "('t\<^sub>G atom, 't atom) tiebreakers" +
   assumes

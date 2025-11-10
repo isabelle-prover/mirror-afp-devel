@@ -35,6 +35,12 @@ lemma less_pos_eq_strict_prefix: \<^marker>\<open>contributor \<open>Martin Desh
 interpretation order_pos: order less_eq_pos less_pos
   by (standard) (auto simp: less_eq_pos_def less_pos_def)
 
+lemma less_eq_pos_induct [consumes 1]:
+  assumes "p \<le>\<^sub>p q" and "\<And> p. P p p"
+    and "\<And> p q r. p \<le>\<^sub>p q \<Longrightarrow> P p q \<Longrightarrow> P p (q @ r)"
+  shows "P p q"
+  using assms(1,2,3) less_eq_pos_def by auto
+
 lemma Nil_least [intro!, simp]:
   "[] \<le>\<^sub>p p"
   by (auto simp: less_eq_pos_def)
@@ -131,6 +137,10 @@ lemma remove_prefix_append [simp]:
   "remove_prefix xs (xs @ ys) = Some ys"
   by simp
 
+lemma less_eq_pos_remove_prefix_no_None:
+  "p \<le>\<^sub>p q \<Longrightarrow> remove_prefix p q \<noteq> None"
+  by (induct rule: less_eq_pos_induct) auto
+
 lemma less_eq_pos_remove_prefix:
   assumes "p \<le>\<^sub>p q"
   obtains r where "q = p @ r" and "remove_prefix p q = Some r"
@@ -160,6 +170,10 @@ fun parallel_pos :: "pos \<Rightarrow> pos \<Rightarrow> bool" (infixr \<open>\<
   | "_ \<bottom> [] \<longleftrightarrow> False"
   | "i # p \<bottom> j # q \<longleftrightarrow> i \<noteq> j \<or> p \<bottom> q"
 
+lemma Nil_not_par [simp]:
+  "p \<bottom> [] \<longleftrightarrow> False"
+  by (cases p, auto)+
+
 lemma parallel_pos_eq_parallel: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
   "parallel_pos = Sublist.parallel"
 proof (intro ext)
@@ -182,6 +196,9 @@ qed
 
 lemma parallel_pos: "p \<bottom> q = (\<not> p \<le>\<^sub>p q \<and> \<not> q \<le>\<^sub>p p)"
   by (induct p q rule: parallel_pos.induct) auto
+
+lemma par_not_refl [simp]: "p \<bottom> p \<longleftrightarrow> False"
+  by (simp add: parallel_pos)
 
 lemma parallel_remove_prefix: "p1 \<bottom> p2 \<Longrightarrow>
   \<exists> p i j q1 q2. p1 = p @ i # q1 \<and> p2 = p @ j # q2 \<and> i \<noteq> j"
@@ -535,7 +552,8 @@ lemma remove_prefix_same [simp]:
   "remove_prefix p p = Some []"
   by (induct p) simp_all
 
-definition "pos_diff p q = the (remove_prefix q p)"
+definition pos_diff  (infixl \<open>-\<^sub>p\<close> 67) where
+  "pos_diff p q = the (remove_prefix q p)"
 
 lemma prefix_pos_diff [simp]:
   assumes "p \<le>\<^sub>p q"
@@ -544,6 +562,10 @@ lemma prefix_pos_diff [simp]:
 
 lemma pos_diff_Nil2 [simp]:
   "pos_diff p [] = p"
+  by (auto simp: pos_diff_def)
+
+lemma position_diff_Cons [simp]:
+  "(i # ps) -\<^sub>p (i # qs) = ps -\<^sub>p qs"
   by (auto simp: pos_diff_def)
 
 lemma inj_nat_to_pos: "inj (rec_nat [] Cons)" (is "inj ?f")

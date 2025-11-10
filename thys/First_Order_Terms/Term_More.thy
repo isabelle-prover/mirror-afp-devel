@@ -21,7 +21,21 @@ theory Term_More
     Subterm_and_Context
     Polynomial_Factorization.Missing_List
     Unification
+    Fun_More2
 begin
+
+lemma fun_merge_is_partition:
+  assumes "is_partition as"
+    and "i < length as"
+    and "a \<in> as ! i"
+  shows "fun_merge fs as a = (fs ! i) a"
+  by (intro fun_merge_part assms, insert assms(1), auto simp: is_partition_alt is_partition_alt_def)
+
+lemma fun_merge_is_part:
+  assumes "is_partition as"
+  shows "\<exists>\<sigma>. \<forall>i<length as. \<forall>x\<in> as ! i. \<sigma> x = \<tau> i x"
+  by (rule fun_merge, insert assms(1), auto simp: is_partition_alt is_partition_alt_def)
+
 
 text \<open>@{text "showl"}-Instance for Terms\<close>
 
@@ -222,7 +236,7 @@ text \<open>
 
 text \<open>The position of the hole in a context is uniquely determined.\<close>
 fun
-  hole_pos :: "('f, 'v) ctxt \<Rightarrow> pos"
+  hole_pos :: "('f, 'v) actxt \<Rightarrow> pos"
   where
     "hole_pos \<box> = []" |
     "hole_pos (More f ss D ts) = length ss # hole_pos D"
@@ -338,6 +352,14 @@ next
     qed (insert More Cons, auto simp: nth_append)
   qed auto
 qed
+
+lemma subst_at_ctxt_at_eq_termI:
+  assumes "p \<in> poss s" "p \<in> poss t"
+    and "s |_p = t |_ p"
+    and "ctxt_of_pos_term p s = ctxt_of_pos_term p t"
+  shows "s = t" using assms 
+  by (metis ctxt_supt_id)
+
 
 text \<open>Conversions between contexts and proper subterms.\<close>
 
@@ -535,6 +557,10 @@ lemma subt_at_Cons_distr [simp]:
   assumes "i # p \<in> poss t" and "p \<noteq> []" (*avoid simplifier loop*)
   shows "t |_ (i # p) = (t |_ [i]) |_ p"
   using assms by (induct t) auto
+
+lemma subt_at_Cons_comp:
+  "i # p \<in> poss s \<Longrightarrow> (s |_ [i]) |_ p = s |_ (i # p)"
+  by (metis subt_at_Cons_distr subt_at.simps(1))
 
 lemma subt_at_append [simp]:
   "p \<in> poss t \<Longrightarrow> t |_ (p @ q) = (t |_ p) |_ q"
@@ -1640,6 +1666,11 @@ lemma map_vars_term_ctxt_commute:
   "map_vars_term m (c\<langle>t\<rangle>) = (map_vars_ctxt m c)\<langle>map_vars_term m t\<rangle>"
   by (induct c) auto
 
+lemma hole_pos_map_vars [simp]:
+  "hole_pos (map_vars_ctxt f C) = hole_pos C"
+  by (induct C) auto
+
+
 lemma map_vars_term_inj_compose:
   assumes inj: "\<And> x. n (m x) = x"
   shows "map_vars_term n (map_vars_term m t) = t"
@@ -1694,6 +1725,11 @@ proof (cases p)
       , unfolded id] have False by simp
   then show ?thesis by auto
 qed simp
+
+lemma subt_at_subterm [intro!]:
+  "p \<in> poss t \<Longrightarrow> p \<noteq> [] \<Longrightarrow>  t \<rhd> t |_ p"
+  using subt_at_id_imp_eps subt_at_imp_supteq subterm.order.not_eq_order_implies_strict by blast
+
 
 lemma pos_into_subst:
   assumes t: "t \<cdot> \<sigma> = s" and p: "p \<in> poss s" and nt: "\<not> (p \<in> poss t \<and> is_Fun (t |_ p))"
@@ -2615,6 +2651,11 @@ lemma ground_vars_term_ms_empty:
   unfolding set_mset_vars_term_ms [symmetric]
   by (simp del: set_mset_vars_term_ms)
 
+lemma ground_map_term [simp]:
+  "ground (map_term f h t) = ground t"
+  by (induct t) auto
+
+
 lemma vars_term_ms_map_funs_term [simp]:
   "vars_term_ms (map_funs_term fg t) = vars_term_ms t"
 proof (induct t)
@@ -2880,6 +2921,28 @@ lemma ground_ctxt_apply[simp]: "ground (C\<langle>t\<rangle>) = (ground_ctxt C \
 lemma ground_ctxt_compose[simp]: "ground_ctxt (C \<circ>\<^sub>c D) = (ground_ctxt C \<and> ground_ctxt D)"
   by (induct C, auto)
 
+lemma ground_ctxt_comp [intro]:
+  "ground_ctxt C \<Longrightarrow> ground_ctxt D \<Longrightarrow> ground_ctxt (C \<circ>\<^sub>c D)"
+  by simp
+
+lemma ctxt_comp_n_pres_ground [intro]:
+  "ground_ctxt C \<Longrightarrow> ground_ctxt (C^n)"
+  by (induct n arbitrary: C) auto
+
+lemma subterm_eq_pres_ground:
+  assumes "ground s" and "s \<unrhd> t"
+  shows "ground t" using assms(2,1)
+  by fastforce
+
+lemma ground_substD:
+  "ground (l \<cdot> \<sigma>) \<Longrightarrow> x \<in> vars_term l \<Longrightarrow> ground (\<sigma> x)"
+  by simp
+
+lemma ground_substI:
+  "(\<And> x. x \<in> vars_term s \<Longrightarrow> ground (\<sigma> x)) \<Longrightarrow> ground (s \<cdot> \<sigma>)"
+  by simp
+
+
 text \<open>Linearity of a term\<close>
 
 fun linear_term :: "('f, 'v) term \<Rightarrow> bool"
@@ -2895,7 +2958,7 @@ proof -
   let ?\<sigma> = "fun_merge ?\<tau> (map vars_term ts)"
   show ?thesis
     by (rule exI[of _ ?\<sigma>], intro allI impI ballI,
-        insert fun_merge_part[OF part, of _ _ ?\<tau>], auto)
+        insert fun_merge_is_partition[OF part, of _ _ ?\<tau>], auto)
 qed
 
 text \<open>Matching for linear terms\<close>

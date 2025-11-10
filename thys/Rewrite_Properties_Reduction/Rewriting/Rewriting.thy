@@ -444,7 +444,7 @@ lemma pos_replace_to_rstep:
     and "s |_ p = l \<cdot> \<sigma>" "t = s[p \<leftarrow> r \<cdot> \<sigma>]"
   shows "(s, t) \<in> rstep \<R>"
   using assms(1, 3-) replace_term_at_subt_at_id [of s p]
-  by (intro rstepI[OF assms(2), of s "ctxt_at_pos s p" \<sigma>])
+  by (intro rstepI[OF assms(2), of s "ctxt_of_pos_term p s" \<sigma>])
      (auto simp add: ctxt_of_pos_term_apply_replace_at_ident)
 
 end

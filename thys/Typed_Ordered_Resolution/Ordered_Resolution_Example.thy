@@ -1,7 +1,6 @@
 theory Ordered_Resolution_Example
   imports
     Monomorphic_Ordered_Resolution
-
     First_Order_Clause.IsaFoR_KBO
 begin
 

@@ -1,6 +1,7 @@
 theory Utils
   imports Regular_Tree_Relations.Term_Context
     Regular_Tree_Relations.FSet_Utils
+    First_Order_Terms.Fun_More2
 begin
 
 subsection \<open>Misc\<close>
@@ -136,11 +137,15 @@ lemma subst_merge:
   assumes part: "is_partition (map vars_term ts)"
   shows "\<exists>\<sigma>. \<forall>i<length ts. \<forall>x\<in>vars_term (ts ! i). \<sigma> x = \<tau> i x"
 proof -
+  let ?as = "map vars_term ts" 
   let ?\<tau> = "map \<tau> [0 ..< length ts]"
   let ?\<sigma> = "fun_merge ?\<tau> (map vars_term ts)"
+  from part[unfolded is_partition_alt is_partition_alt_def]
+  have "\<forall>i<length ?as.
+       \<forall>j<length ?as. i \<noteq> j \<longrightarrow> ?as ! i \<inter> ?as ! j = {}" by auto
+  from fun_merge_part[of ?as _ _ ?\<tau>, OF this]
   show ?thesis
-    by (rule exI[of _ ?\<sigma>], intro allI impI ballI,
-      insert fun_merge_part[OF part, of _ _ ?\<tau>], auto)
+    by (intro exI[of _ ?\<sigma>], intro allI impI ballI, auto)
 qed
 
 

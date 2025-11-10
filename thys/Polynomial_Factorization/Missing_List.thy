@@ -358,38 +358,6 @@ lemma case_prod_partition:
 lemmas map_id[simp] = list.map_id
 
 
-subsection \<open>merging functions\<close>
-
-definition fun_merge :: "('a \<Rightarrow> 'b)list \<Rightarrow> 'a set list \<Rightarrow> 'a \<Rightarrow> 'b"
-  where "fun_merge fs as a \<equiv> (fs ! (LEAST i. i < length as \<and> a \<in> as ! i)) a"
-
-lemma fun_merge: assumes 
-      i: "i < length as"
-  and a: "a \<in> as ! i"
-  and ident: "\<And> i j a. i < length as \<Longrightarrow> j < length as \<Longrightarrow> a \<in> as ! i \<Longrightarrow> a \<in> as ! j \<Longrightarrow> (fs ! i) a = (fs ! j) a"
-  shows "fun_merge fs as a = (fs ! i) a"
-proof -
-  let ?p = "\<lambda> i. i < length as \<and> a \<in> as ! i"
-  let ?l = "LEAST i. ?p i"
-  have p: "?p ?l"
-    by (rule LeastI, insert i a, auto)
-  show ?thesis unfolding fun_merge_def
-    by (rule ident[OF _ i _ a], insert p, auto)
-qed
-
-lemma fun_merge_part: assumes 
-      part: "is_partition as"
-  and i: "i < length as"
-  and a: "a \<in> as ! i"
-  shows "fun_merge fs as a = (fs ! i) a"
-proof(rule fun_merge[OF i a])
-  fix i j a
-  assume "i < length as" and "j < length as" and "a \<in> as ! i" and "a \<in> as ! j"
-  hence "i = j" using part[unfolded is_partition_alt is_partition_alt_def] by (cases "i = j", auto)
-  thus "(fs ! i) a = (fs ! j) a" by simp
-qed
-
-
 lemma map_nth_conv: "map f ss = map g ts \<Longrightarrow> \<forall>i < length ss. f(ss!i) = g(ts!i)"
 proof (intro allI impI)
   fix i show "map f ss = map g ts \<Longrightarrow> i < length ss \<Longrightarrow> f(ss!i) = g(ts!i)"

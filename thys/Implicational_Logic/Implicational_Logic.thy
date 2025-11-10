@@ -32,16 +32,17 @@ subsection \<open>Soundness and Derived Formulas\<close>
 theorem soundness: \<open>\<turnstile> p \<Longrightarrow> I \<Turnstile> p\<close>
   by (induct p rule: Ax.induct) auto
 
+lemma Rule: \<open>\<turnstile> q \<rightarrow> r \<Longrightarrow> \<turnstile> (p \<rightarrow> q) \<rightarrow> p \<rightarrow> r\<close>
+  using MP MP Tran Tran PR MP Tran MP Tran MP Simp .
+
 lemma Swap: \<open>\<turnstile> (p \<rightarrow> q \<rightarrow> r) \<rightarrow> q \<rightarrow> p \<rightarrow> r\<close>
-proof -
-  have \<open>\<turnstile> q \<rightarrow> (q \<rightarrow> r) \<rightarrow> r\<close>
-    using MP PR Simp Tran by metis
-  then show ?thesis
-    using MP Tran by meson
-qed
+  using MP MP Tran Tran MP Tran PR MP Rule Simp MP Tran Rule Simp .
+
+lemma Impl: \<open>\<turnstile> ((r \<rightarrow> s) \<rightarrow> p) \<rightarrow> ((q \<rightarrow> r) \<rightarrow> s) \<rightarrow> p\<close>
+  using MP Tran MP Tran Simp .
 
 lemma Peirce: \<open>\<turnstile> ((p \<rightarrow> q) \<rightarrow> p) \<rightarrow> p\<close>
-  using MP PR Simp Swap Tran by meson
+  using PR MP Swap Impl .
 
 lemma Hilbert: \<open>\<turnstile> (p \<rightarrow> p \<rightarrow> q) \<rightarrow> p \<rightarrow> q\<close>
   using MP MP Tran Tran Peirce .
@@ -56,13 +57,16 @@ lemma Frege: \<open>\<turnstile> (p \<rightarrow> q \<rightarrow> r) \<rightarro
   using MP MP Tran MP MP Tran Swap Tran' MP Tran' Hilbert .
 
 lemma Imp1: \<open>\<turnstile> (q \<rightarrow> s) \<rightarrow> ((q \<rightarrow> r) \<rightarrow> s) \<rightarrow> s\<close>
-  using MP Peirce Tran Tran' by meson
+  using MP MP Tran MP MP Tran Tran Tran MP Tran' Peirce .
 
 lemma Imp2: \<open>\<turnstile> ((r \<rightarrow> s) \<rightarrow> s) \<rightarrow> ((q \<rightarrow> r) \<rightarrow> s) \<rightarrow> s\<close>
-  using MP Tran MP Tran Simp .
+  using Impl .
+
+lemma Impx: \<open>\<turnstile> ((q \<rightarrow> s) \<rightarrow> p) \<rightarrow> (r \<rightarrow> s) \<rightarrow> (q \<rightarrow> r) \<rightarrow> p\<close>
+  using MP Swap MP MP Tran MP Swap Tran Tran .
 
 lemma Imp3: \<open>\<turnstile> ((q \<rightarrow> s) \<rightarrow> s) \<rightarrow> (r \<rightarrow> s) \<rightarrow> (q \<rightarrow> r) \<rightarrow> s\<close>
-  using MP Swap Tran by meson
+  using Impx .
 
 subsection \<open>Completeness and Main Theorem\<close>
 

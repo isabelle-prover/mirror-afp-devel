@@ -19,7 +19,7 @@ inductive_set rstep :: "_ \<Rightarrow> ('f, 'v) term rel" for R :: "('f, 'v) tr
     rstep: "\<And>C \<sigma> l r. (l, r) \<in> R \<Longrightarrow> s = C\<langle>l \<cdot> \<sigma>\<rangle> \<Longrightarrow> t = C\<langle>r \<cdot> \<sigma>\<rangle> \<Longrightarrow> (s, t) \<in> rstep R"
 
 definition rstep_r_p_s :: "('f, 'v) trs \<Rightarrow> ('f, 'v) rule \<Rightarrow> pos \<Rightarrow> ('f, 'v) subst \<Rightarrow> ('f, 'v) trs" where
-  "rstep_r_p_s R r p \<sigma> = {(s, t). p \<in> poss s \<and> p \<in> poss t \<and> r \<in> R \<and> ctxt_at_pos s p = ctxt_at_pos t p \<and>
+  "rstep_r_p_s R r p \<sigma> = {(s, t). p \<in> poss s \<and> p \<in> poss t \<and> r \<in> R \<and> ctxt_of_pos_term p s = ctxt_of_pos_term p t \<and>
      s[p \<leftarrow> (fst r \<cdot> \<sigma>)] = s \<and> t[p \<leftarrow> (snd r \<cdot> \<sigma>)] = t}"
 
 text \<open>Rewriting steps below the root position.\<close>
@@ -87,7 +87,7 @@ proof
     fix s t assume "(s, t) \<in> ?Ls"
     then obtain l r i ps \<sigma> where step: "(s, t) \<in> rstep_r_p_s R (l, r) (i # ps) \<sigma>"
           unfolding nrrstep_def by best
-    let ?C = "ctxt_at_pos s (i # ps)"
+    let ?C = "ctxt_of_pos_term (i # ps) s"
     from step have"i # ps \<in> poss s" and "(l, r) \<in> R" and "s = ?C\<langle>l\<cdot>\<sigma>\<rangle>" and "t = ?C\<langle>r\<cdot>\<sigma>\<rangle>"
       unfolding rstep_r_p_s_def Let_def by (auto simp flip: replace_term_at_replace_at_conv)
     moreover from \<open>i # ps \<in> poss s\<close> have "?C \<noteq> \<box>" by (induct s) auto
@@ -101,7 +101,7 @@ next
       and s: "s = C\<langle>l\<cdot>\<sigma>\<rangle>" and t: "t = C\<langle>r\<cdot>\<sigma>\<rangle>" by auto
     from \<open>C \<noteq> \<box>\<close> obtain i p where ip: "hole_pos C = i # p" by (induct C) auto
     have "i # p \<in> poss s" unfolding s ip[symmetric] by simp
-    then have C: "C = ctxt_at_pos s (i # p) "
+    then have C: "C = ctxt_of_pos_term (i # p) s"
       unfolding s ip[symmetric] by simp
     from \<open>i # p \<in> poss s\<close> in_R s t have "(s, t) \<in> rstep_r_p_s R (l, r) (i # p) \<sigma>"
       unfolding rstep_r_p_s_def C[symmetric] ip[symmetric] by simp

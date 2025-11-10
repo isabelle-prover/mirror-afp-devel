@@ -3,7 +3,7 @@ text\<open>This theory contains some auxiliary results previously located in Aux
 theory FOR_Preliminaries
   imports
     Polynomial_Factorization.Missing_List 
-    First_Order_Terms.Fun_More
+    First_Order_Terms.Fun_More2
 begin
 
 lemma finite_imp_eq [simp]:
