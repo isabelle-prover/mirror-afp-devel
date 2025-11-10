@@ -2165,13 +2165,13 @@ qed
 
 lemma run_ta_der_ctxt_split1:
   assumes "run \<A> s t" "p \<in> gposs t"
-  shows "ex_comp_state s |\<in>| ta_der \<A> (ctxt_at_pos (term_of_gterm t) p)\<langle>Var (ex_comp_state (gsubt_at s p))\<rangle>"
+  shows "ex_comp_state s |\<in>| ta_der \<A> (ctxt_of_pos_term p (term_of_gterm t))\<langle>Var (ex_comp_state (gsubt_at s p))\<rangle>"
   using assms
 proof (induct p arbitrary: s t)
   case (Cons i p)
   obtain q f qs ts where [simp]: "s = GFun q qs" "t = GFun f ts" and l: "length qs = length ts"
     using run_argsD[OF Cons(2)] by (cases s, cases t) auto
-  from Cons(2, 3) l have "ex_comp_state (qs ! i) |\<in>| ta_der \<A> (ctxt_at_pos (term_of_gterm (ts ! i)) p)\<langle>Var (ex_comp_state (gsubt_at (qs ! i) p))\<rangle>"
+  from Cons(2, 3) l have "ex_comp_state (qs ! i) |\<in>| ta_der \<A> (ctxt_of_pos_term p (term_of_gterm (ts ! i)))\<langle>Var (ex_comp_state (gsubt_at (qs ! i) p))\<rangle>"
     by (intro Cons(1)) (auto dest: run_argsD)
   then show ?case using Cons(2-) l
     by (fastforce simp: nth_append_Cons min_def dest: run_root_rule run_argsD
@@ -2182,7 +2182,7 @@ qed auto
 
 lemma run_ta_der_ctxt_split2:
   assumes "run \<A> s t" "p \<in> gposs t"
-  shows "ex_comp_state s |\<in>| ta_der \<A> (ctxt_at_pos (term_of_gterm t) p)\<langle>Var (ex_rule_state (gsubt_at s p))\<rangle>"
+  shows "ex_comp_state s |\<in>| ta_der \<A> (ctxt_of_pos_term p (term_of_gterm t))\<langle>Var (ex_rule_state (gsubt_at s p))\<rangle>"
 proof (cases "ex_rule_state (gsubt_at s p) = ex_comp_state (gsubt_at s p)")
   case False then show ?thesis
     using run_root_rule[OF run_gsubt_cl[OF assms]]

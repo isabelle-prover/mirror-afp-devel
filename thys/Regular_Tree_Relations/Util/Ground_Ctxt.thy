@@ -156,7 +156,7 @@ lemma gctxt_apply_inj_on_term: "inj_on (gctxt_apply_term C) S"
   by (auto simp: inj_on_def)
 
 lemma ctxt_of_pos_gterm [simp]:
-  "p \<in> gposs t \<Longrightarrow> ctxt_at_pos (term_of_gterm t) p = ctxt_of_gctxt (gctxt_at_pos t p)"
+  "p \<in> gposs t \<Longrightarrow> ctxt_of_pos_term p (term_of_gterm t) = ctxt_of_gctxt (gctxt_at_pos t p)"
   by (induct t arbitrary: p) (auto simp add: take_map drop_map)
 
 lemma gctxt_of_gpos_gterm_gsubt_at_to_gterm [simp]:
@@ -227,10 +227,6 @@ next
   then show ?case using Cons(2, 3)
     by (cases t) (auto simp: nth_append_Cons min_def)
 qed
-
-lemma gpos_less_eq_append [simp]: "p \<le>\<^sub>p (p @ q)"
-  unfolding position_less_eq_def
-  by blast
 
 lemma gposs_ConsE [elim]:
   assumes "i # p \<in> gposs t"

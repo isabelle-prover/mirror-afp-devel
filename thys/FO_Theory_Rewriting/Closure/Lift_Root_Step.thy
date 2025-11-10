@@ -183,7 +183,9 @@ subsection \<open>Equivalence lemmas\<close>
 lemma grrstep_subst_cl_conv:
   "grrstep \<R> = gsubst_cl \<R>"
   unfolding gsubst_cl_def grrstep_def rrstep_def rstep_r_p_s_def
-  by (auto, metis ground_substI ground_term_of_gterm term_of_gterm_inv) blast
+  apply auto
+   apply (metis ground_subst ground_term_of_gterm term_of_gterm_inv)
+  by blast
 
 lemma gnrrstepD_gnrrstep_conv:
   "gnrrstep \<R> = gnrrstepD UNIV (gsubst_cl \<R>)" (is "?Ls = ?Rs")
@@ -232,7 +234,7 @@ proof -
     proof (induct arbitrary: s t)
       case (root_step u v \<sigma>)
       then have "(s, t) \<in> gsubst_cl \<R>" unfolding gsubst_cl_def
-        by auto (metis ground_substI ground_term_of_gterm term_of_gterm_inv)
+        by auto (metis ground_subst ground_term_of_gterm term_of_gterm_inv) 
       then show ?case by auto
     next
       case (par_step_fun ts ss f)

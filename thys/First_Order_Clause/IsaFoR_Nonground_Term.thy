@@ -162,8 +162,8 @@ next
     by fastforce
 qed
 
-lemma term_context_ground_iff_term_is_ground [simp]: "Term_Context.ground t = term.is_ground t"
-  by (induction t) simp_all
+lemma term_context_ground_iff_term_is_ground [simp]: "Term.ground t = term.is_ground t"
+  by (rule Term.ground_vars_term_empty)
 
 declare Term_Context.ground_vars_term_empty [simp del]
 

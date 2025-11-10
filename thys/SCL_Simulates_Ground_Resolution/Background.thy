@@ -591,7 +591,7 @@ qed
 lemma atm_of_lit_of_glit_conv: "atm_of (lit_of_glit L) = term_of_gterm (atm_of L)"
   by (cases L) (simp_all add: lit_of_glit_def)
 
-lemma ground_atm_of_lit_of_glit[simp]: "Term_Context.ground (atm_of (lit_of_glit L))"
+lemma ground_atm_of_lit_of_glit[simp]: "ground (atm_of (lit_of_glit L))"
   by (simp add: atm_of_lit_of_glit_conv)
 
 lemma is_ground_lit_lit_of_glit[simp]: "is_ground_lit (lit_of_glit L)"
@@ -1641,10 +1641,10 @@ proof (rule conjI)
 next
   show "gterm_of_term ` {t. ground t} = UNIV"
   proof (rule Set.subset_antisym)
-    show "gterm_of_term ` {t. Term_Context.ground t} \<subseteq> UNIV"
+    show "gterm_of_term ` {t. ground t} \<subseteq> UNIV"
       by simp
   next
-    show "UNIV \<subseteq> gterm_of_term ` {t. Term_Context.ground t}"
+    show "UNIV \<subseteq> gterm_of_term ` {t. ground t}"
       by (metis (mono_tags, opaque_lifting) ground_term_of_gterm image_iff mem_Collect_eq subsetI
           term_of_gterm_inv)
   qed
