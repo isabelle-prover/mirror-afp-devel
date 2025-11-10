@@ -21,7 +21,7 @@ theory Term_More
     Subterm_and_Context
     Polynomial_Factorization.Missing_List
     Unification
-    Fun_More
+    Fun_More2
 begin
 
 lemma fun_merge_is_partition:
@@ -236,7 +236,7 @@ text \<open>
 
 text \<open>The position of the hole in a context is uniquely determined.\<close>
 fun
-  hole_pos :: "('f, 'v) ctxt \<Rightarrow> pos"
+  hole_pos :: "('f, 'v) actxt \<Rightarrow> pos"
   where
     "hole_pos \<box> = []" |
     "hole_pos (More f ss D ts) = length ss # hole_pos D"

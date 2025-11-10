@@ -1,7 +1,7 @@
 theory Utils
   imports Regular_Tree_Relations.Term_Context
     Regular_Tree_Relations.FSet_Utils
-    First_Order_Terms.Fun_More
+    First_Order_Terms.Fun_More2
 begin
 
 subsection \<open>Misc\<close>

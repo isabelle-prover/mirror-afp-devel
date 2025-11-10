@@ -11,7 +11,7 @@ theory Subsumption
   imports
     Term
     "Abstract-Rewriting.Seq"
-    Fun_More
+    Fun_More2
     Seq_More
 begin
 

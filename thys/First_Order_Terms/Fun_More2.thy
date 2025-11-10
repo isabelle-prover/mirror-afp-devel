@@ -5,7 +5,7 @@ License: LGPL
 *)
 subsection \<open>Results on Bijections\<close>
 
-theory Fun_More imports Main begin
+theory Fun_More2 imports Main begin
 
 lemma finite_card_eq_imp_bij_betw:
   assumes "finite A"
