@@ -46,8 +46,9 @@ fun parse_key names key_from_string =
     val parse_key = Parse.token (Parse.short_ident || Parse.long_ident)
       :|-- (fn tok => case key_from_string (Token.content_of tok) of
           NONE => Scan.fail ()
-        | SOME key => (Token.assign (SOME (Token.Literal (false, Markup.quasi_keyword))) tok;
-            Scan.succeed key))
+        | SOME key =>
+          let val _ = Token.assign (SOME (Token.Literal (false, Markup.quasi_keyword))) tok
+          in Scan.succeed key end)
   in Parse.group (K pretty_keys) parse_key end
 
 fun eq_key_entry eq_key (rn, (xn, _)) = eq_key (rn, xn)
