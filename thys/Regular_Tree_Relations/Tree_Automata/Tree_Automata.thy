@@ -650,7 +650,7 @@ qed
 
 lemma ground_ta_der_states:
   "ground t \<Longrightarrow> ta_der \<A> t |\<subseteq>| \<Q> \<A>"
-  using ta_der_states[of \<A> t] by auto
+  using ta_der_states[of \<A> t] by (auto simp: ground_fvars_term_empty)
 
 lemmas ground_ta_der_statesD = fsubsetD[OF ground_ta_der_states]
 
@@ -709,7 +709,7 @@ text \<open>Reachable states of ground terms are preserved over the @{const adap
 
 lemma ta_der_adapt_vars_ground [simp]:
   "ground t \<Longrightarrow> ta_der A (adapt_vars t) = ta_der A t"
-  by (induct t) auto
+  by (induct t, auto)
 
 lemma gterm_of_term_inv':
   "ground t \<Longrightarrow> term_of_gterm (gterm_of_term t) = adapt_vars t"
@@ -1089,7 +1089,7 @@ proof -
   moreover
   {fix t assume "ground (t :: ('b, 'a) term)"
     then have "ta_der \<A> t = ta_der (ta_only_reach \<A>) t" using ta_der_only_reach[of t \<A>]
-      by simp}
+      by (simp add: ground_fvars_term_empty)}
   ultimately show ?thesis unfolding ta_reachable_def
     by auto
 qed

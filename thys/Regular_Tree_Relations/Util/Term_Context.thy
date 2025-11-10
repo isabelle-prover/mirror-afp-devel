@@ -8,14 +8,6 @@ theory Term_Context
 begin
 
 subsection \<open>Additional functionality on @{type term} and @{type ctxt}\<close>
-
-fun remove_prefix where
-  "remove_prefix (x # xs) (y # ys) = (if x = y then remove_prefix xs ys else None)"
-| "remove_prefix [] ys = Some ys"
-| "remove_prefix xs [] = None"
-
-definition pos_diff  (infixl \<open>-\<^sub>p\<close> 67) where
-  "p -\<^sub>p q = the (remove_prefix q p)"
  
 fun replace_term_at (\<open>_[_ \<leftarrow> _]\<close> [1000, 0, 0] 1000) where
   "replace_term_at s [] t = t"
@@ -42,106 +34,6 @@ definition adapt_vars :: "('f, 'q) term \<Rightarrow> ('f,'v)term" where
 
 definition adapt_vars_ctxt :: "('f,'q)ctxt \<Rightarrow> ('f,'v)ctxt" where
   "adapt_vars_ctxt = map_vars_ctxt (\<lambda>_. undefined)"
-
-
-subsection \<open>Properties of @{type pos}\<close>
-
-lemma less_eq_pos_induct [consumes 1]:
-  assumes "p \<le>\<^sub>p q" and "\<And> p. P p p"
-    and "\<And> p q r. p \<le>\<^sub>p q \<Longrightarrow> P p q \<Longrightarrow> P p (q @ r)"
-  shows "P p q"
-  using assms(1,2,3) less_eq_pos_def by auto
-
-text \<open>We show the correspondence between the function @{const remove_prefix} and
-the order on positions @{const less_eq_pos}. Moreover how it can be used to
-compute the difference of positions.\<close>
-
-lemma remove_prefix_Nil [simp]:
-  "remove_prefix xs xs = Some []"
-  by (induct xs) auto
-
-lemma remove_prefix_Some:
-  assumes "remove_prefix xs ys = Some zs"
-  shows "ys = xs @ zs" using assms
-proof (induct xs arbitrary: ys)
-  case (Cons x xs)
-  show ?case using Cons(1)[of "tl ys"] Cons(2)
-    by (cases ys) (auto split: if_splits)
-qed auto
-
-lemma remove_prefix_append:
-  "remove_prefix xs (xs @ ys) = Some ys"
-  by (induct xs) auto
-
-lemma remove_prefix_iff:
-  "remove_prefix xs ys = Some zs \<longleftrightarrow> ys = xs @ zs"
-  using remove_prefix_Some remove_prefix_append
-  by blast
-
-lemma less_eq_pos_remove_prefix:
-  "p \<le>\<^sub>p q \<Longrightarrow> remove_prefix p q \<noteq> None"
-  by (induct rule: less_eq_pos_induct) (auto simp: remove_prefix_iff)
-
-text \<open>Simplification rules on @{const pos_diff},
-  and @{const parallel_pos}.\<close>
-
-lemma position_diff_Nil [simp]: "q -\<^sub>p [] = q"
-  by (auto simp: pos_diff_def)
-
-lemma position_diff_Cons [simp]:
-  "(i # ps) -\<^sub>p (i # qs) = ps -\<^sub>p qs"
-  by (auto simp: pos_diff_def)
-
-lemma Nil_not_par [simp]:
-  "[] \<bottom> p \<longleftrightarrow> False"
-  "p \<bottom> [] \<longleftrightarrow> False"
-  by (cases p, auto)+
-
-lemma par_not_refl [simp]: "p \<bottom> p \<longleftrightarrow> False"
-  by (simp add: parallel_pos)
-
-lemma par_Cons_iff:
-  "(i # ps) \<bottom> (j # qs) \<longleftrightarrow> (i \<noteq> j \<or> ps \<bottom> qs)"
-  by auto
-
-
-
-text \<open>Simplification rules on @{const hole_pos}\<close>
-
-lemma hole_pos_map_vars [simp]:
-  "hole_pos (map_vars_ctxt f C) = hole_pos C"
-  by (induct C) auto
-
-subsection \<open>Properties of @{const ground} and @{const ground_ctxt}\<close>
-
-lemma ground_vars_term_empty [simp]:
-  "ground t \<Longrightarrow> vars_term t = {}"
-  by (induct t) auto
-
-lemma ground_map_term [simp]:
-  "ground (map_term f h t) = ground t"
-  by (induct t) auto
-
-lemma ground_ctxt_comp [intro]:
-  "ground_ctxt C \<Longrightarrow> ground_ctxt D \<Longrightarrow> ground_ctxt (C \<circ>\<^sub>c D)"
-  by simp
-
-lemma ctxt_comp_n_pres_ground [intro]:
-  "ground_ctxt C \<Longrightarrow> ground_ctxt (C^n)"
-  by (induct n arbitrary: C) auto
-
-lemma subterm_eq_pres_ground:
-  assumes "ground s" and "s \<unrhd> t"
-  shows "ground t" using assms(2,1)
-  by fastforce
-
-lemma ground_substD:
-  "ground (l \<cdot> \<sigma>) \<Longrightarrow> x \<in> vars_term l \<Longrightarrow> ground (\<sigma> x)"
-  by simp
-
-lemma ground_substI:
-  "(\<And> x. x \<in> vars_term s \<Longrightarrow> ground (\<sigma> x)) \<Longrightarrow> ground (s \<cdot> \<sigma>)"
-  by simp
 
 
 subsection \<open>Properties on signature induced by a term @{type term}/context @{type ctxt}\<close>
@@ -211,7 +103,7 @@ next
   have "i \<noteq> j \<Longrightarrow> (Fun f ts)[p \<leftarrow> t][q \<leftarrow> u] = (Fun f ts)[q \<leftarrow> u][p \<leftarrow> t]"
     by (auto simp: list_update_swap)
   then show ?case using Fun(1)[OF nth_mem, of j ps qs] Fun(2)
-    by (cases "i = j") (auto simp: par_Cons_iff)
+    by (cases "i = j") auto
 qed
 
 lemma replace_term_at_above [simp]:
@@ -282,7 +174,6 @@ lemma adapt_vars_subst[simp]: "adapt_vars (l \<cdot> \<sigma>) = l \<cdot> (\<la
 lemma adapt_vars_gr_map_vars [simp]:
   "ground t \<Longrightarrow> map_vars_term f t = adapt_vars t"
   by (induct t) auto
-
 
 lemma adapt_vars_gr_ctxt_of_map_vars [simp]:
   "ground_ctxt C \<Longrightarrow> map_vars_ctxt f C = adapt_vars_ctxt C"

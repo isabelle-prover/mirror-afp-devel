@@ -204,8 +204,6 @@ subsection \<open>Compatibility with First_Order_Term\<close> \<^marker>\<open>c
 text \<open>Prefer @{thm [source] term.subst_id_subst} to @{thm [source] subst_apply_term_empty}.\<close>
 declare subst_apply_term_empty[no_atp]
 
-declare Term_Context.ground_vars_term_empty [simp del]
-
 lemma term_context_ground_iff_term_is_ground [simp]: "ground t = term.is_ground t"
   by (induction t) simp_all
 

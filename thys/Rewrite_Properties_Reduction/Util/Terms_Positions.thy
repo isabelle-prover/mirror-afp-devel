@@ -114,17 +114,13 @@ lemma subst_poss_mono: "poss s \<subseteq> poss (s \<cdot> \<sigma>)"
 
 lemma par_pos_prefix [simp]:
   "(i # p) \<bottom> (i # q) \<Longrightarrow> p \<bottom> q"
-  by (simp add: par_Cons_iff)
+  by simp
 
 lemma pos_diff_itself [simp]: "p -\<^sub>p p = []"
   by (simp add: pos_diff_def)
 
-lemma pos_les_eq_append_diff [simp]:
-  "p \<le>\<^sub>p q \<Longrightarrow> p @ (q -\<^sub>p p) = q"
-  by (metis option.sel pos_diff_def less_eq_pos_def remove_prefix_append)
-
 lemma pos_diff_append_itself [simp]: "(p @ q) -\<^sub>p p = q"
-  by (simp add: pos_diff_def remove_prefix_append)
+  by (simp add: pos_diff_def)
 
 lemma poss_pos_diffI:
   "p \<le>\<^sub>p q \<Longrightarrow> q \<in> poss s \<Longrightarrow> q -\<^sub>p p \<in> poss (s |_ p)"
@@ -147,7 +143,7 @@ lemma par_pos_replace_pres:
 proof (induct p arbitrary: s q)
   case (Cons i p)
   show ?case using Cons(1)[of "args s ! i" "tl q"] Cons(2-)
-    by (cases s; cases q) (auto simp add: nth_list_update par_Cons_iff)
+    by (cases s; cases q) (auto simp add: nth_list_update)
 qed auto
 
 lemma poss_of_termE [elim]:
@@ -168,7 +164,7 @@ proof (induct p arbitrary: C)
     by (cases C) auto
 next
   case (Cons i p) then show ?case
-    by (cases C) (fastforce simp add: par_Cons_iff dest!: poss_of_term_Cons)+
+    by (cases C) (fastforce dest!: poss_of_term_Cons)+
 qed
 
 
@@ -184,13 +180,6 @@ qed auto
 lemma ctxt_apply_term_subt_at_hole_pos [simp]:
   "C\<langle>s\<rangle> |_ (hole_pos C @ q) = s |_ q"
   by (induct C) auto
-
-lemma subst_subt_at_dist:
-  "p \<in> poss s \<Longrightarrow> s \<cdot> \<sigma> |_ p = s |_ p \<cdot> \<sigma>"
-proof (induct p arbitrary: s)
-  case (Cons i p) then show ?case
-    by (cases s) auto
-qed auto
 
 lemma replace_term_at_subt_at_id [simp]: "s[p \<leftarrow> (s |_ p)] = s"
 proof (induct p arbitrary: s)
@@ -233,7 +222,7 @@ lemma par_pos_replace_term_at:
 proof (induct p arbitrary: s q)
   case (Cons i p)
   show ?case using Cons(1)[of "args s ! i" "tl q"] Cons(2-)
-    by (cases s; cases q) (auto, metis nth_list_update par_Cons_iff)
+    by (cases s; cases q) (auto, metis nth_list_update)
 qed auto
 
 
@@ -274,7 +263,7 @@ lemmas ctxt_of_pos_term_apply_replace_at_ident = replace_term_at_replace_at_conv
 
 lemma ctxt_apply_term_replace_term_hole_pos [simp]:
   "C\<langle>s\<rangle>[hole_pos C @ q  \<leftarrow> u] = C\<langle>s[q  \<leftarrow> u]\<rangle>"
-  by (simp add: pos_diff_def less_eq_pos_def remove_prefix_append)
+  by (simp add: pos_diff_def less_eq_pos_def)
 
 
 subsection \<open>@{const term_to_sig} invariants and distributions\<close>
@@ -323,28 +312,10 @@ proof (induct t)
   qed auto
 qed simp
 
-lemma finite_poss: "finite (poss s)"
-proof (induct s)
-  case (Fun f ts)
-  have "poss (Fun f ts) = insert [] (\<Union> (set (map2 (\<lambda> i p. ((#) i) ` p) [0..< length ts] (map poss ts))))"
-    by (auto simp: image_iff set_zip split: prod.splits)
-  then show ?case using Fun
-    by (auto simp del: poss.simps dest!: set_zip_rightD)
-qed simp
-
 declare ground_substI[intro, simp]
 lemma ground_ctxt_substI:
   "(\<And> x. x \<in> vars_ctxt C \<Longrightarrow> ground (\<sigma> x)) \<Longrightarrow> ground_ctxt (C \<cdot>\<^sub>c \<sigma>)"
   by (induct C) auto
-
-
-lemma funas_ctxt_subst_apply_ctxt:
-  "funas_ctxt (C \<cdot>\<^sub>c \<sigma>) = funas_ctxt C \<union> (\<Union> (funas_term ` \<sigma> ` vars_ctxt C))"
-proof (induct C)
-  case (More f ss C ts)
-  then show ?case
-    by (fastforce simp add: funas_term_subst)
-qed simp
 
 lemma var_poss_Fun[simp]:
   "var_poss (Fun f ts) = { i # p| i p. i < length ts \<and> p \<in> var_poss (ts ! i)}"

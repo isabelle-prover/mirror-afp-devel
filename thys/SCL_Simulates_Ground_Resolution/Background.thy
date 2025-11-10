@@ -553,20 +553,11 @@ lemma (in scl_fol_calculus) decideI':
     decide N \<beta> (\<Gamma>, U, None) (\<Gamma>', U, None)"
   by (auto intro!: decideI)
 
-lemma ground_iff_vars_term_empty: "ground t \<longleftrightarrow> vars_term t = {}"
-proof (rule iffI)
-  show "ground t \<Longrightarrow> vars_term t = {}"
-    by (rule ground_vars_term_empty)
-next
-  show "vars_term t = {} \<Longrightarrow> ground t"
-    by (induction t) simp_all
-qed
-
 lemma is_ground_atm_eq_ground[iff]: "is_ground_atm = ground"
 proof (rule ext)
   fix t :: "('v, 'f) Term.term"
   show "is_ground_atm t = ground t"
-    by (simp only: is_ground_atm_iff_vars_empty ground_iff_vars_term_empty)
+    by (simp only: is_ground_atm_iff_vars_empty ground_vars_term_empty)
 qed
 
 definition lit_of_glit :: "'f gterm literal \<Rightarrow> ('f, 'v) term literal" where
@@ -614,7 +605,7 @@ lemma cls_of_gcls_gcls_of_cls_ident[simp]: "is_ground_cls D \<Longrightarrow> cl
   by (simp add: is_ground_cls_def cls_of_gcls_def gcls_of_cls_def)
 
 lemma vars_lit_lit_of_glit[simp]: "vars_lit (lit_of_glit L) = {}"
-  by simp
+  by (metis ground_atm_of_lit_of_glit ground_vars_term_empty)
 
 lemma vars_cls_cls_of_gcls[simp]: "vars_cls (cls_of_gcls C) = {}"
   by (metis is_ground_cls_cls_of_gcls is_ground_cls_iff_vars_empty)

@@ -1654,6 +1654,11 @@ lemma map_vars_term_ctxt_commute:
   "map_vars_term m (c\<langle>t\<rangle>) = (map_vars_ctxt m c)\<langle>map_vars_term m t\<rangle>"
   by (induct c) auto
 
+lemma hole_pos_map_vars [simp]:
+  "hole_pos (map_vars_ctxt f C) = hole_pos C"
+  by (induct C) auto
+
+
 lemma map_vars_term_inj_compose:
   assumes inj: "\<And> x. n (m x) = x"
   shows "map_vars_term n (map_vars_term m t) = t"
@@ -2629,6 +2634,11 @@ lemma ground_vars_term_ms_empty:
   unfolding set_mset_vars_term_ms [symmetric]
   by (simp del: set_mset_vars_term_ms)
 
+lemma ground_map_term [simp]:
+  "ground (map_term f h t) = ground t"
+  by (induct t) auto
+
+
 lemma vars_term_ms_map_funs_term [simp]:
   "vars_term_ms (map_funs_term fg t) = vars_term_ms t"
 proof (induct t)
@@ -2893,6 +2903,28 @@ lemma ground_ctxt_apply[simp]: "ground (C\<langle>t\<rangle>) = (ground_ctxt C \
 
 lemma ground_ctxt_compose[simp]: "ground_ctxt (C \<circ>\<^sub>c D) = (ground_ctxt C \<and> ground_ctxt D)"
   by (induct C, auto)
+
+lemma ground_ctxt_comp [intro]:
+  "ground_ctxt C \<Longrightarrow> ground_ctxt D \<Longrightarrow> ground_ctxt (C \<circ>\<^sub>c D)"
+  by simp
+
+lemma ctxt_comp_n_pres_ground [intro]:
+  "ground_ctxt C \<Longrightarrow> ground_ctxt (C^n)"
+  by (induct n arbitrary: C) auto
+
+lemma subterm_eq_pres_ground:
+  assumes "ground s" and "s \<unrhd> t"
+  shows "ground t" using assms(2,1)
+  by fastforce
+
+lemma ground_substD:
+  "ground (l \<cdot> \<sigma>) \<Longrightarrow> x \<in> vars_term l \<Longrightarrow> ground (\<sigma> x)"
+  by simp
+
+lemma ground_substI:
+  "(\<And> x. x \<in> vars_term s \<Longrightarrow> ground (\<sigma> x)) \<Longrightarrow> ground (s \<cdot> \<sigma>)"
+  by simp
+
 
 text \<open>Linearity of a term\<close>
 
