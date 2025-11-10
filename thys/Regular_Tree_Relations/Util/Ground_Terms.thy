@@ -250,7 +250,7 @@ proof (induct s arbitrary: p q)
   have "i \<noteq> j \<Longrightarrow> (GFun f ts)[p \<leftarrow> t]\<^sub>G[q \<leftarrow> u]\<^sub>G = (GFun f ts)[q \<leftarrow> u]\<^sub>G[p \<leftarrow> t]\<^sub>G"
     by (auto simp: list_update_swap)
   then show ?case using GFun(1)[OF nth_mem, of j ps qs] GFun(2)
-    by (cases "i = j") (auto simp: par_Cons_iff)
+    by (cases "i = j") auto
 qed
 
 lemma replace_gterm_at_above [simp]:

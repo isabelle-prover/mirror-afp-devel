@@ -66,8 +66,10 @@ proof -
       moreover have "(hole_pos C) @ q' @ q -\<^sub>p v \<in> poss_of_term (constT c) t"
         using var_poss_r var_poss poss const poss_pos_diffI[OF var_poss(2) poss]
         using subt_at_append_dist[of q' "q -\<^sub>p v" "r \<cdot> \<sigma>"]
-        by (auto simp: poss_append_poss var_poss_imp_poss[THEN subst_subt_at_dist] var_poss_imp_poss[THEN subsetD[OF subst_poss_mono]])
-          (metis pos_les_eq_append_diff eval_term.simps(1) subst_subt_at_dist subt_at_append_dist var_poss_imp_poss)
+        by (auto simp: poss_append_poss var_poss_imp_poss[THEN subt_at_subst] var_poss_imp_poss[THEN subsetD[OF subst_poss_mono]])
+          (metis (no_types, opaque_lifting) eval_term.simps(1) prefix_pos_diff subt_at_append_dist subt_at_subst
+            var_poss_iff)
+
       ultimately show ?thesis by auto
     next
       case False

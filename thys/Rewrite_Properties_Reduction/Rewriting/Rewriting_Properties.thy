@@ -593,9 +593,8 @@ proof -
       have "(s |_ p, t |_ p) \<in> sig_step \<F> (rrstep \<R>)" unfolding st(4) su(4) using st(1 - 3) su(1 - 3) funas
         by (metis poss_of_termE poss_of_term_replace_term_at rrstep.intros sig_stepI st(4))
       moreover have "(s |_ p, u |_ p) \<in> srstep \<F> \<R>" unfolding st(4) su(4) using st(1 - 3) su(1 - 3) funas
-        by (metis (no_types, lifting) a ctxt_supt_id hole_pos_ctxt_of_pos_term hole_pos_poss_conv
-            less_eq_subt_at_replace pos_les_eq_append_diff pos_replace_to_rstep sig_stepI su(4)
-            subt_at_append)
+        by (smt (verit, del_insts) a less_eq_subt_at_replace pos_replace_to_rstep poss_append_poss prefix_pos_diff
+            sig_stepI su(4) subt_at_append)
       ultimately obtain v where "(t |_ p, v) \<in> (srstep \<F> \<R>)\<^sup>=" "(u |_ p, v) \<in> (srstep \<F> \<R>)\<^sup>*"
         using assms(1) by blast
       from this(1) srsteps_eq_ctxt_closed[OF fc this(2)]
@@ -691,7 +690,7 @@ proof -
     next
       case b
       then have up: "q \<in> poss t" using st(1) su(1) unfolding st(4) su(4)
-        by (metis pos_les_eq_append_diff pos_replace_at_pres poss_append_poss)
+        by (metis replace_term_at_above replace_term_at_not_poss replace_term_at_subt_at_id)
       let ?C = "ctxt_of_pos_term q s" have fc: "funas_ctxt ?C \<subseteq> \<F>" using funas(1) su(1)
         by (metis Un_subset_iff ctxt_supt_id funas_term_ctxt_apply)
       from funas have funas: "funas_term (s |_ q) \<subseteq> \<F>" "funas_term (t |_ q) \<subseteq> \<F>" "funas_term (u |_ q) \<subseteq> \<F>"

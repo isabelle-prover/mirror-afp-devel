@@ -122,7 +122,7 @@ proof (rule ccontr)
     by (auto simp: subst_compose simp flip: subst_subst_compose intro!: term_subst_eq)
   have funas: "funas_ctxt D \<subseteq> \<H>" "funas_term (l \<cdot> ?\<tau>) \<subseteq> \<H>" "funas_term (r \<cdot> ?\<tau>) \<subseteq> \<H>"
     using step nf_f(1 - 3) fresh_const(2) unfolding D_def
-    by (auto simp: funas_ctxt_subst_apply_ctxt funas_term_subst funas_rel_def split: if_splits)
+    by (auto simp: funas_term_subst funas_rel_def split: if_splits)
   moreover have "ground_ctxt D" "ground (l \<cdot> ?\<tau>)" "ground (r \<cdot> ?\<tau>)" using arg_cong[OF s, of ground] unfolding D_def
     by (auto intro!: ground_substI)
   ultimately have "(D\<langle>l \<cdot> ?\<tau>\<rangle>, D\<langle>r \<cdot> ?\<tau>\<rangle>) \<in> gsrstep \<H> \<R>" using step(1)
