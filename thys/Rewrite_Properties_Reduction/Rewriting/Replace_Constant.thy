@@ -11,7 +11,7 @@ proof (induct l)
 qed (auto simp add: supteq_var_imp_eq)
 
 lemma fresh_const_single_step_replace:
-  assumes lin: "linear_sys \<R>" and fresh: "(c, 0) \<notin> funas_rel \<R>"
+  assumes lin: "linear_sys \<R>" and fresh: "(c, 0) \<notin> funas_trs \<R>"
     and occ: "p \<in> poss_of_term (constT c) s" and step: "(s, t) \<in> rstep \<R>"
   shows "(s[p \<leftarrow> u], t) \<in> rstep \<R> \<or>
     (\<exists> q. q \<in> poss_of_term (constT c) t \<and> (s[p \<leftarrow> u], t[q \<leftarrow> u]) \<in> rstep \<R>)"
@@ -61,8 +61,8 @@ proof -
         by (metis vars_term_var_poss_iff)
       have "(s[p \<leftarrow> u], t[(hole_pos C) @ q' @ (q -\<^sub>p v) \<leftarrow> u]) \<in> rstep \<R>"
         using lin var_poss rule var_poss_r
-        by (auto simp: linear_term_var_poss_subst_replace_term intro!: rstep_ctxtI)
-          (smt (verit, ccfv_SIG) pos_diff_append_itself rrstep.intros rrstep_rstep_mono subset_eq term_subst_eq)
+        by (auto simp: linear_term_var_poss_subst_replace_term intro!: rstep_ctxt)
+          (smt (verit, ccfv_SIG) pos_diff_append_itself rrstepI rrstep_rstep_mono subset_eq term_subst_eq)
       moreover have "(hole_pos C) @ q' @ q -\<^sub>p v \<in> poss_of_term (constT c) t"
         using var_poss_r var_poss poss const poss_pos_diffI[OF var_poss(2) poss]
         using subt_at_append_dist[of q' "q -\<^sub>p v" "r \<cdot> \<sigma>"]
@@ -83,7 +83,7 @@ proof -
 qed
 
 lemma fresh_const_steps_replace:
-  assumes lin: "linear_sys \<R>" and fresh: "(c, 0) \<notin> funas_rel \<R>"
+  assumes lin: "linear_sys \<R>" and fresh: "(c, 0) \<notin> funas_trs \<R>"
     and occ: "p \<in> poss_of_term (constT c) s" and steps: "(s, t) \<in> (rstep \<R>)\<^sup>+"
   shows "(s[p \<leftarrow> u], t) \<in> (rstep \<R>)\<^sup>+ \<or>
     (\<exists> q. q \<in> poss_of_term (constT c) t \<and> (s[p \<leftarrow> u], t[q \<leftarrow> u]) \<in> (rstep \<R>)\<^sup>+)"
@@ -109,7 +109,7 @@ next
 qed
 
 lemma remove_const_lhs_steps:
-  assumes lin: "linear_sys \<R>" and fresh: "(c, 0) \<notin> funas_rel \<R>"
+  assumes lin: "linear_sys \<R>" and fresh: "(c, 0) \<notin> funas_trs \<R>"
     and const: "(c, 0) \<notin> funas_term t"
     and pos: "p \<in> poss_of_term (constT c) s" 
     and steps: "(s, t) \<in> (rstep \<R>)\<^sup>+"
@@ -140,7 +140,7 @@ abbreviation const_subst :: "'f \<Rightarrow> 'v \<Rightarrow> ('f, 'v) Term.ter
   "const_subst c \<equiv> (\<lambda> x. Fun c [])"
 
 lemma lin_fresh_rstep_const_replace_closed:
-  "linear_sys \<R> \<Longrightarrow> (c, 0) \<notin> funas_rel \<R> \<Longrightarrow> const_replace_closed c (rstep \<R>)"
+  "linear_sys \<R> \<Longrightarrow> (c, 0) \<notin> funas_trs \<R> \<Longrightarrow> const_replace_closed c (rstep \<R>)"
   using fresh_const_single_step_replace[of \<R> c]
   by (intro const_replace_closedI) (auto simp: constT_nfunas_term_poss_of_term_empty, blast)
 
@@ -236,7 +236,7 @@ qed (auto simp: ground_subst_apply card_eq_0_iff finite_var_poss var_poss_empty_
 subsubsection \<open>Removal lemma applied to various rewrite relations\<close>
 
 lemma remove_const_subst_step_lhs:
-  assumes lin: "linear_sys \<R>" and fresh: "(c, 0) \<notin> funas_rel \<R>"
+  assumes lin: "linear_sys \<R>" and fresh: "(c, 0) \<notin> funas_trs \<R>"
     and const: "(c, 0) \<notin> funas_term t"
     and step: "(s \<cdot> const_subst c, t) \<in> (rstep \<R>)"
   shows "(s, t) \<in> (rstep \<R>)"
@@ -244,7 +244,7 @@ lemma remove_const_subst_step_lhs:
   by blast
 
 lemma remove_const_subst_steps_lhs:
-  assumes lin: "linear_sys \<R>" and fresh: "(c, 0) \<notin> funas_rel \<R>"
+  assumes lin: "linear_sys \<R>" and fresh: "(c, 0) \<notin> funas_trs \<R>"
     and const: "(c, 0) \<notin> funas_term t"
     and steps: "(s \<cdot> const_subst c, t) \<in> (rstep \<R>)\<^sup>+"
   shows "(s, t) \<in> (rstep \<R>)\<^sup>+"
@@ -254,7 +254,7 @@ lemma remove_const_subst_steps_lhs:
   by blast
 
 lemma remove_const_subst_steps_eq_lhs:
-  assumes lin: "linear_sys \<R>" and fresh: "(c, 0) \<notin> funas_rel \<R>"
+  assumes lin: "linear_sys \<R>" and fresh: "(c, 0) \<notin> funas_trs \<R>"
     and const: "(c, 0) \<notin> funas_term t"
     and steps: "(s \<cdot> const_subst c, t) \<in> (rstep \<R>)\<^sup>*"
   shows "(s, t) \<in> (rstep \<R>)\<^sup>*" using steps const 
@@ -262,7 +262,7 @@ lemma remove_const_subst_steps_eq_lhs:
       dest: remove_const_subst_steps_lhs[OF lin fresh const] split: if_splits)
 
 lemma remove_const_subst_steps_rhs:
-  assumes lin: "linear_sys \<R>" and fresh: "(c, 0) \<notin> funas_rel \<R>"
+  assumes lin: "linear_sys \<R>" and fresh: "(c, 0) \<notin> funas_trs \<R>"
     and const: "(c, 0) \<notin> funas_term s"
     and steps: "(s, t \<cdot> const_subst c) \<in> (rstep \<R>)\<^sup>+"
   shows "(s, t) \<in> (rstep \<R>)\<^sup>+"
@@ -275,7 +275,7 @@ proof -
 qed
 
 lemma remove_const_subst_steps_eq_rhs:
-  assumes lin: "linear_sys \<R>" and fresh: "(c, 0) \<notin> funas_rel \<R>"
+  assumes lin: "linear_sys \<R>" and fresh: "(c, 0) \<notin> funas_trs \<R>"
     and const: "(c, 0) \<notin> funas_term s"
     and steps: "(s, t \<cdot> const_subst c) \<in> (rstep \<R>)\<^sup>*"
   shows "(s, t) \<in> (rstep \<R>)\<^sup>*"
@@ -305,7 +305,7 @@ qed
 
 
 lemma remove_const_subst_steps:
-  assumes "linear_sys \<R>" and  "(c, 0) \<notin> funas_rel \<R>" and "(d, 0) \<notin> funas_rel \<R>"
+  assumes "linear_sys \<R>" and  "(c, 0) \<notin> funas_trs \<R>" and "(d, 0) \<notin> funas_trs \<R>"
     and "c \<noteq> d" "(c, 0) \<notin> funas_term t" "(d, 0) \<notin> funas_term s"
     and "(s \<cdot> const_subst c, t \<cdot> const_subst d) \<in> (rstep \<R>)\<^sup>*"
   shows "(s, t) \<in> (rstep \<R>)\<^sup>*"
@@ -324,7 +324,7 @@ qed
 
 lemma remove_const_subst_relcomp_lhs:
   assumes sys: "linear_sys \<R>" "linear_sys \<S>"
-    and fr: "(c, 0) \<notin> funas_rel \<R>" and fs:"(c, 0) \<notin> funas_rel \<S>"
+    and fr: "(c, 0) \<notin> funas_trs \<R>" and fs:"(c, 0) \<notin> funas_trs \<S>"
     and funas: "(c, 0) \<notin> funas_term t"
     and seq: "(s \<cdot> const_subst c, t) \<in> (rstep \<R>)\<^sup>* O (rstep \<S>)\<^sup>*"
   shows "(s, t) \<in> (rstep \<R>)\<^sup>* O (rstep \<S>)\<^sup>*" using seq
@@ -335,7 +335,7 @@ lemma remove_const_subst_relcomp_lhs:
 
 lemma remove_const_subst_relcomp_rhs:
   assumes sys: "linear_sys \<R>" "linear_sys \<S>"
-    and fr: "(c, 0) \<notin> funas_rel \<R>" and fs:"(c, 0) \<notin> funas_rel \<S>"
+    and fr: "(c, 0) \<notin> funas_trs \<R>" and fs:"(c, 0) \<notin> funas_trs \<S>"
     and funas: "(c, 0) \<notin> funas_term s"
     and seq: "(s, t \<cdot> const_subst c) \<in> (rstep \<R>)\<^sup>* O (rstep \<S>)\<^sup>*"
   shows "(s, t) \<in> (rstep \<R>)\<^sup>* O (rstep \<S>)\<^sup>*"
@@ -345,7 +345,7 @@ proof -
   then have "(t \<cdot> const_subst c,s) \<in> ((rstep \<S>)\<^sup>*)\<inverse> O ((rstep \<R>)\<^sup>*)\<inverse>"
     using converse_relcomp by blast
   note seq = this[unfolded rtrancl_converse[symmetric] rew_converse_inwards]
-  from sys fr fs have "linear_sys (\<S>\<inverse>)" "linear_sys (\<R>\<inverse>)" "(c, 0) \<notin> funas_rel (\<S>\<inverse>)" "(c, 0) \<notin> funas_rel (\<R>\<inverse>)"
+  from sys fr fs have "linear_sys (\<S>\<inverse>)" "linear_sys (\<R>\<inverse>)" "(c, 0) \<notin> funas_trs (\<S>\<inverse>)" "(c, 0) \<notin> funas_trs (\<R>\<inverse>)"
     by (auto simp: funas_rel_def)
   from remove_const_subst_relcomp_lhs[OF this funas seq]
   have "(t, s) \<in> (rstep (\<S>\<inverse>))\<^sup>* O (rstep (\<R>\<inverse>))\<^sup>*" by simp
@@ -357,8 +357,8 @@ qed
 
 lemma remove_const_subst_relcomp:
   assumes sys: "linear_sys \<R>" "linear_sys \<S>"
-    and fr: "(c, 0) \<notin> funas_rel \<R>" "(d, 0) \<notin> funas_rel \<R>"
-    and fs:"(c, 0) \<notin> funas_rel \<S>" "(d, 0) \<notin> funas_rel \<S>"
+    and fr: "(c, 0) \<notin> funas_trs \<R>" "(d, 0) \<notin> funas_trs \<R>"
+    and fs:"(c, 0) \<notin> funas_trs \<S>" "(d, 0) \<notin> funas_trs \<S>"
     and diff: "c \<noteq> d" and funas: "(c, 0) \<notin> funas_term t" "(d, 0) \<notin> funas_term s"
     and seq: "(s \<cdot> const_subst c, t \<cdot> const_subst d) \<in> (rstep \<R>)\<^sup>* O (rstep \<S>)\<^sup>*"
   shows "(s, t) \<in> (rstep \<R>)\<^sup>* O (rstep \<S>)\<^sup>*"

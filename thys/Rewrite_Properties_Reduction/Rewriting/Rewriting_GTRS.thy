@@ -10,7 +10,7 @@ lemma srrstep_ground:
   assumes "ground_sys \<R>"
     and "(s, t) \<in> srrstep \<F> \<R>"
   shows "ground s" "ground t" using assms
-  by (auto simp: sig_step_def ground_subst_apply vars_term_subst elim!: rrstep_subst)
+  by (auto simp: sig_step_def ground_subst_apply vars_term_subst elim!: rrstepE)
 
 lemma srstep_pres_ground_l:
   assumes "ground_sys \<R>" "ground s"
@@ -63,51 +63,51 @@ subsection \<open>funas\<close>
 lemma srrstep_funas:
   assumes "ground_sys \<R>"
     and "(s, t) \<in> srrstep \<F> \<R>"
-  shows "funas_term s \<subseteq> funas_rel \<R>" "funas_term t \<subseteq> funas_rel \<R>" using assms
-  by (auto simp: sig_step_def funas_term_subst ground_vars_term_empty funas_rel_def split: prod.splits elim!: rrstep_subst)
+  shows "funas_term s \<subseteq> funas_trs \<R>" "funas_term t \<subseteq> funas_trs \<R>" using assms
+  by (auto simp: sig_step_def' funas_term_subst ground_vars_term_empty funas_rel_def split: prod.splits elim!: rrstepE)
 
 lemma srstep_funas_l:
   assumes "ground_sys \<R>"
     and "(s, t) \<in> srstep \<F> \<R>"
-  shows "funas_term t \<subseteq> funas_term s \<union> funas_rel \<R>" using assms
-  by (auto simp: ground_vars_term_empty vars_term_subst sig_step_def vars_term_ctxt_apply
+  shows "funas_term t \<subseteq> funas_term s \<union> funas_trs \<R>" using assms
+  by (auto simp: ground_vars_term_empty vars_term_subst sig_step_def' vars_term_ctxt_apply
      funas_term_subst funas_rel_def split: prod.splits dest!: rstep_imp_C_s_r)
 
 lemma srstep_funas_r:
   assumes "ground_sys \<R>"
     and "(s, t) \<in> srstep \<F> \<R>"
-  shows "funas_term s \<subseteq> funas_term t \<union> funas_rel \<R>" using assms
+  shows "funas_term s \<subseteq> funas_term t \<union> funas_trs \<R>" using assms
   by (auto simp: ground_vars_term_empty vars_term_subst sig_step_def vars_term_ctxt_apply
      funas_term_subst funas_rel_def split: prod.splits dest!: rstep_imp_C_s_r)
 
 lemma srsteps_funas_l:
   assumes "ground_sys \<R>"
    and  "(s, t) \<in> (srstep \<F> \<R>)\<^sup>+"
-  shows "funas_term t \<subseteq> funas_term s \<union> funas_rel \<R>" using assms(2)
+  shows "funas_term t \<subseteq> funas_term s \<union> funas_trs \<R>" using assms(2)
   by (induct rule: converse_trancl_induct) (auto dest: srstep_funas_l[OF assms(1)])
 
 lemma srsteps_funas_r:
   assumes "ground_sys \<R>"
     and "(s, t) \<in> (srstep \<F> \<R>)\<^sup>+"
-  shows "funas_term s \<subseteq> funas_term t \<union> funas_rel \<R>" using assms(2)
+  shows "funas_term s \<subseteq> funas_term t \<union> funas_trs \<R>" using assms(2)
   by (induct rule: converse_trancl_induct) (auto dest: srstep_funas_r[OF assms(1)])
 
 lemma srsteps_eq_funas_l:
   assumes "ground_sys \<R>"
     and "(s, t) \<in> (srstep \<F> \<R>)\<^sup>*"
-  shows "funas_term t \<subseteq> funas_term s \<union> funas_rel \<R>" using srsteps_funas_l[OF assms(1)] assms(2)
+  shows "funas_term t \<subseteq> funas_term s \<union> funas_trs \<R>" using srsteps_funas_l[OF assms(1)] assms(2)
   by (auto simp: rtrancl_eq_or_trancl)
 
 lemma srsteps_eq_funas_r:
   assumes "ground_sys \<R>"
     and "(s, t) \<in> (srstep \<F> \<R>)\<^sup>*"
-  shows "funas_term s \<subseteq> funas_term t \<union> funas_rel \<R>" using srsteps_funas_r[OF assms(1)] assms(2)
+  shows "funas_term s \<subseteq> funas_term t \<union> funas_trs \<R>" using srsteps_funas_r[OF assms(1)] assms(2)
   by (auto simp: rtrancl_eq_or_trancl)
 
 lemma srsteps_with_root_step_funas:
   assumes "ground_sys \<R>"
     and "(s, t) \<in> srsteps_with_root_step \<F> \<R>"
-  shows "funas_term s \<subseteq> funas_rel \<R>" "funas_term t \<subseteq> funas_rel \<R>"
+  shows "funas_term s \<subseteq> funas_trs \<R>" "funas_term t \<subseteq> funas_trs \<R>"
   using srrstep_funas[OF assms(1)]
   using srsteps_eq_funas_l[OF assms(1)]
   using srsteps_eq_funas_r[OF assms(1)]

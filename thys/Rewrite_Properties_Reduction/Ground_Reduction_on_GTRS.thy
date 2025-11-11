@@ -19,7 +19,7 @@ proof -
       assume "s \<notin> NF (srstep \<F> \<V>)"
       then obtain C l r \<sigma> where step: "(l, r) \<in> \<V>" and rep: "s = C\<langle>l \<cdot> \<sigma>\<rangle>"
         and funas: "funas_ctxt C \<subseteq> \<F>" "funas_term l \<subseteq> \<F>" "funas_term r \<subseteq> \<F>" using ass(2)
-        by (auto simp: funas_term_subst NF_def sig_step_def dest!: rstep_imp_C_s_r) blast
+        by (auto simp: funas_term_subst NF_def sig_step_def dest!: rstep_imp_C_s_r)
       from step ass(2) rep have rep: "s = C\<langle>l\<rangle>" "ground l" "ground r"
         by (auto intro: ground_subst_apply)
       from step rep(2-) funas have "l \<notin> NF (gsrstep \<F> \<V>)"

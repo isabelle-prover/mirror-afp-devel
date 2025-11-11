@@ -5,6 +5,7 @@ theory Rewriting_Properties
 begin
 
 subsection \<open>Confluence related ARS properties\<close>
+
 definition "SCR_on r A \<equiv> (\<forall>a \<in> A. \<forall> b c. (a, b) \<in> r \<and> (a, c) \<in> r \<longrightarrow>
   (\<exists> d. (b, d) \<in> r\<^sup>= \<and>  (c, d) \<in> r\<^sup>*))"
 
@@ -28,26 +29,6 @@ abbreviation NE :: "'a rel \<Rightarrow> 'a rel \<Rightarrow> bool" where "NE r 
 subsection \<open>Signature closure of relation to model multihole context closure\<close>
 
 (* AUX lemmas *)
-
-lemma all_ctxt_closed_sig_rsteps [intro]:
-  fixes \<R> :: "('f,'v) term rel"
-  shows "all_ctxt_closed \<F> ((srstep \<F> \<R>)\<^sup>*)" (is "all_ctxt_closed _ (?R\<^sup>*)")
-proof (rule trans_ctxt_sig_imp_all_ctxt_closed)
-  fix C :: "('f,'v) ctxt" and s t :: "('f,'v)term"
-  assume C: "funas_ctxt C \<subseteq> \<F>"
-  and s: "funas_term s \<subseteq> \<F>"
-  and t: "funas_term t \<subseteq> \<F>"
-  and steps: "(s,t) \<in> ?R\<^sup>*"
-  from steps
-  show "(C \<langle> s \<rangle>, C \<langle> t \<rangle>) \<in> ?R\<^sup>*"
-  proof (induct)
-    case (step t u)
-    from step(2) have tu: "(t,u) \<in> rstep \<R>" and t: "funas_term t \<subseteq> \<F>" and u: "funas_term u \<subseteq> \<F>"
-      by (auto dest: srstepD)
-    have "(C \<langle> t \<rangle>, C \<langle> u \<rangle>) \<in> ?R" by (rule sig_stepI[OF _ _ rstep_ctxtI[OF tu]], insert C t u, auto)
-    with step(3) show ?case by auto
-  qed auto
-qed (auto intro: trans_rtrancl)
 
 lemma sigstep_trancl_funas:
   "(s, t) \<in> (srstep \<F> \<S>)\<^sup>* \<Longrightarrow> s \<noteq> t \<Longrightarrow> funas_term s \<subseteq> \<F>"
@@ -84,7 +65,7 @@ proof (rule ccontr)
   then obtain t where step: "(ss ! i, t) \<in> rstep \<R>" "funas_term t \<subseteq> \<F>"
     by (auto simp: NF_def sig_step_def)
   from assms(3) have [simp]: "Suc (length ss - Suc 0) = length ss" by auto
-  from rstep_ctxtI[OF step(1), where ?C = "ctxt_of_pos_term [i] (Fun f ss)"]  
+  from rstep_ctxt[OF step(1), where ?C = "ctxt_of_pos_term [i] (Fun f ss)"]  
   have "(Fun f ss, Fun f (ss[i := t])) \<in> srstep \<F> \<R>" using step(2) assms(2, 3)
     by (auto simp: sig_step_def upd_conv_take_nth_drop min_def UN_subset_iff
              dest: in_set_takeD in_set_dropD simp flip: id_take_nth_drop)
@@ -110,18 +91,6 @@ lemma CE_symmetric: "CE r s \<Longrightarrow> CE s r"
 
 text \<open>Reducing the quantification over rewrite sequences for properties @{const CR} ... to
 rewrite sequences containing at least one root step\<close>
-lemma all_ctxt_closed_sig_reflE:
-  "all_ctxt_closed \<F> \<R> \<Longrightarrow> funas_term t \<subseteq> \<F> \<Longrightarrow> (t, t) \<in> \<R>"
-proof (induct t)
-  case (Fun f ts)
-  from Fun(1)[OF nth_mem  Fun(2)] Fun(3)
-  have "i < length ts \<Longrightarrow> funas_term (ts ! i) \<subseteq> \<F>" "i < length ts \<Longrightarrow> (ts ! i, ts ! i) \<in> \<R>" for i
-    by (auto simp: SUP_le_iff)
-  then show ?case using all_ctxt_closedD[OF Fun(2)] Fun(3)
-    by simp
-qed (simp add: all_ctxt_closed_def)
-
-
 lemma all_ctxt_closed_relcomp [intro]:
   "(\<And> s t. (s, t) \<in> \<R> \<Longrightarrow> s \<noteq> t \<Longrightarrow> funas_term s \<subseteq> \<F> \<and> funas_term t \<subseteq> \<F>) \<Longrightarrow>
    (\<And> s t. (s, t) \<in> \<S> \<Longrightarrow> s \<noteq> t \<Longrightarrow> funas_term s \<subseteq> \<F> \<and> funas_term t \<subseteq> \<F>) \<Longrightarrow>
@@ -137,7 +106,7 @@ proof -
       using Ex_list_of_length_P[of "length ts" "\<lambda> x i. (ss ! i, x) \<in> \<R> \<and> (x, ts ! i) \<in> \<S>"]
       by auto
     from funas have fu: "\<And> i . i < length us \<Longrightarrow> funas_term (us ! i) \<subseteq> \<F>" using us ass(4, 5)
-      by (auto simp: funas_rel_def) (metis in_mono)
+      by auto (metis in_mono)
     have "(Fun f ss, Fun f us) \<in> \<R>" using ass(1, 2, 5) us(1, 2) fu
       by (intro all_ctxt_closedD[OF ctxt_cl(1), of f]) auto
     moreover have "(Fun f us, Fun f ts) \<in> \<S>"  using ass(1, 2, 4) us(1, 3) fu
@@ -295,8 +264,8 @@ definition "commute_redp \<F> \<R> \<S> s t \<longleftrightarrow> (s, t) \<in> (
 declare subsetI[rule del]
 lemma commute_redp_mctxt_cl:
   "prop_mctxt_cl \<F> (commute_redp \<F> \<R> \<S>)"
-  by (auto simp: commute_redp_def rew_converse_inwards
-    dest: sigstep_trancl_funas intro!: all_ctxt_closed_relcomp)
+  unfolding commute_redp_def rew_converse_inwards 
+  by (auto dest: sigstep_trancl_funas)
 declare subsetI[intro!]
 
 lemma commute_rrstep_intro:
@@ -308,8 +277,8 @@ proof -
   have [simp]: "x \<in> srsteps_with_root_step \<F> \<U> \<Longrightarrow> x \<in> \<L>\<^sup>* O (srstep \<F> \<U>)\<^sup>*" for x \<U> \<L>
     by (cases x) (auto dest!: srsteps_with_root_step_sresteps_eqD)
   have red: "\<And> s t. (s, t) \<in> comp_rrstep_rel \<F> (\<R>\<inverse>) \<S> \<Longrightarrow> commute_redp \<F> \<R> \<S> s t" using assms
-    unfolding commute_redp_def srstep_converse_dist
-    by (auto simp: rtrancl_eq_or_trancl) blast+
+    unfolding commute_redp_def srstep_converse_dist 
+    by (auto simp: rtrancl_eq_or_trancl)  blast+
   have comI: "(\<And> s t. (s, t) \<in> ((srstep \<F> (\<R>\<inverse>))\<^sup>*) O (srstep \<F> \<S>)\<^sup>* \<Longrightarrow> commute_redp \<F> \<R> \<S> s t) \<Longrightarrow>
     commute (srstep \<F> \<R>) (srstep \<F> \<S>)"
     by (auto simp: commute_redp_def commute_def subsetD rew_converse_inwards)
@@ -591,7 +560,7 @@ proof -
         using a st(1) pos_replace_at_pres[OF st(1)] up unfolding st(4) su(4)
         by (intro funas_term_subterm_atI, blast+)+
       have "(s |_ p, t |_ p) \<in> sig_step \<F> (rrstep \<R>)" unfolding st(4) su(4) using st(1 - 3) su(1 - 3) funas
-        by (metis poss_of_termE poss_of_term_replace_term_at rrstep.intros sig_stepI st(4))
+        by (metis poss_of_termE poss_of_term_replace_term_at rrstepI sig_stepI st(4))
       moreover have "(s |_ p, u |_ p) \<in> srstep \<F> \<R>" unfolding st(4) su(4) using st(1 - 3) su(1 - 3) funas
         by (smt (verit, del_insts) a less_eq_subt_at_replace pos_replace_to_rstep poss_append_poss prefix_pos_diff
             sig_stepI su(4) subt_at_append)
@@ -616,7 +585,7 @@ proof -
         by (smt (verit, del_insts) b replace_at_subt_at ctxt_of_pos_term_apply_replace_at_ident
             less_eq_pos_def poss_append_poss replace_subterm_at_itself replace_term_at_subt_at_id rstepI sig_stepI st(4))
       moreover have "(s |_ q, u |_ q) \<in> sig_step \<F> (rrstep \<R>)" unfolding st(4) su(4) using st(1 - 3) su(1 - 3) funas
-        by (metis poss_of_termE poss_of_term_replace_term_at rrstep.intros sig_stepI su(4))
+        by (metis poss_of_termE poss_of_term_replace_term_at rrstepI sig_stepI su(4))
       ultimately obtain v where "(t |_ q, v) \<in> (srstep \<F> \<R>)\<^sup>=" "(u |_ q, v) \<in> (srstep \<F> \<R>)\<^sup>*"
         using assms(2) by blast
       from this(1) srsteps_eq_ctxt_closed[OF fc this(2)]
@@ -678,7 +647,7 @@ proof -
         using a st(1) pos_replace_at_pres[OF st(1)] up unfolding st(4) su(4)
         by (intro funas_term_subterm_atI, blast+)+
       have "(s |_ p, t |_ p) \<in> sig_step \<F> (rrstep \<R>)" unfolding st(4) su(4) using st(1 - 3) su(1 - 3) funas
-        by (metis poss_of_termE poss_of_term_replace_term_at rrstep.intros sig_stepI st(4))
+        by (metis poss_of_termE poss_of_term_replace_term_at rrstepI sig_stepI st(4))
       moreover have "(s |_ p, u |_ p) \<in> srstep \<F> \<R>" unfolding st(4) su(4) using st(1 - 3) su(1 - 3) funas
         by (smt (verit, ccfv_threshold) a greater_eq_subt_at_replace less_eq_subt_at_replace pos_diff_append_itself
             pos_replace_to_rstep less_eq_pos_def poss_append_poss replace_term_at_subt_at_id sig_stepI su(4))
@@ -700,7 +669,7 @@ proof -
         by (smt (verit, ccfv_SIG) b greater_eq_subt_at_replace less_eq_subt_at_replace pos_diff_append_itself
             pos_replace_to_rstep less_eq_pos_def poss_append_poss replace_term_at_subt_at_id sig_stepI st(4))
       moreover have "(s |_ q, u |_ q) \<in> sig_step \<F> (rrstep \<R>)" unfolding st(4) su(4) using st(1 - 3) su(1 - 3) funas
-        by (metis poss_of_termE poss_of_term_replace_term_at rrstep.intros sig_stepI su(4))
+        by (metis poss_of_termE poss_of_term_replace_term_at rrstepI sig_stepI su(4))
       ultimately have "(t |_ q, u |_ q) \<in> (srstep \<F> \<R>)\<^sup>\<down>"
         using assms(1) by blast
       from sig_steps_join_ctxt_closed[OF fc this(1)]

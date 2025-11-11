@@ -32,7 +32,6 @@ lemma poss_of_term_hole_poss:
   shows "p -\<^sub>p hole_pos C \<in> poss_of_term t s" using assms
 proof (induct C arbitrary: p)
   case (More f ss C ts)
-  find_theorems "_ \<le>\<^sub>p _ @ _" 
   from More(3) obtain ps where [simp]: "p = length ss # ps" and h: "hole_pos C \<le>\<^sub>p ps"
     using less_eq_pos_def by auto
   show ?case using More(1)[OF _ h] More(2)
@@ -95,7 +94,7 @@ lemma ground_NF_srstep_gsrstep:
   by blast
 
 lemma NF_to_fresh_const_subst_NF:
-  assumes lin: "linear_sys \<R>" and fresh_const: "(c, 0) \<notin> funas_rel \<R>" "funas_rel \<R> \<subseteq> \<F>"
+  assumes lin: "linear_sys \<R>" and fresh_const: "(c, 0) \<notin> funas_trs \<R>" "funas_trs \<R> \<subseteq> \<F>"
     and nf_f: "funas_term s \<subseteq> \<F>" "s \<in> NF (srstep \<F> \<R>)"
   shows "s \<cdot> const_subst c \<in> NF (gsrstep \<H> \<R>)"
 proof (rule ccontr)
@@ -110,7 +109,7 @@ qed
 
 
 lemma fresh_const_subst_NF_pres:
-  assumes fresh_const: "(c, 0) \<notin> funas_rel \<R>" "funas_rel \<R> \<subseteq> \<F>"
+  assumes fresh_const: "(c, 0) \<notin> funas_trs \<R>" "funas_trs \<R> \<subseteq> \<F>"
     and nf_f: "funas_term s \<subseteq> \<F>" "\<F> \<subseteq> \<H>" "(c, 0) \<in> \<H>" "s \<cdot> const_subst c \<in> NF (gsrstep \<H> \<R>)"
   shows "s \<in> NF (srstep \<F> \<R>)"
 proof (rule ccontr)
@@ -133,8 +132,8 @@ qed
 
 lemma linear_sys_gNF_eq_NF_eq:
   assumes lin: "linear_sys \<R>" "linear_sys \<S>"
-   and well: "funas_rel \<R> \<subseteq> \<F>" "funas_rel \<S> \<subseteq> \<F>"
-   and fresh: "(c, 0) \<notin> funas_rel \<R>" "(c, 0) \<notin> funas_rel \<S>"
+   and well: "funas_trs \<R> \<subseteq> \<F>" "funas_trs \<S> \<subseteq> \<F>"
+   and fresh: "(c, 0) \<notin> funas_trs \<R>" "(c, 0) \<notin> funas_trs \<S>"
    and lift: "\<F> \<subseteq> \<H>" "(c, 0) \<in> \<H>"
    and nf: "NF (gsrstep \<H> \<R>) = NF (gsrstep \<H> \<S>)"
  shows "NF (srstep \<F> \<R>) = NF (srstep \<F> \<S>)"
@@ -242,8 +241,9 @@ lemma llrg_ground_rhs:
 
 lemma llrg_rrsteps_groundness:
   assumes "llrg \<R>" and "(s, t) \<in> (srrstep \<F> \<R>)"
-  shows "ground t" using assms(2) ground_vars_term_empty
-  by (fastforce simp: llrg_def sig_step_def dest!: llrg_ground_rhs[OF assms(1)] split: prod.splits)
+  shows "ground t" using assms(2) 
+  by (auto simp: llrg_def ground_vars_term_empty sig_step_def' vars_term_subst
+    elim!: rrstepE dest!: llrg_ground_rhs[OF assms(1)] split: prod.splits)
 
 lemma llrg_rsteps_pres_groundness:
   assumes "llrg \<R>" "ground s"
@@ -271,7 +271,7 @@ lemma llrg_srsteps_with_root_step_inv_ground:
 
 lemma llrg_funas_term_step_pres:
   assumes "llrg \<R>" and "(s, t) \<in> (rstep \<R>)"
-  shows "funas_term t \<subseteq> funas_rel \<R> \<union> funas_term s"
+  shows "funas_term t \<subseteq> funas_trs \<R> \<union> funas_term s"
 proof -
   have [simp]: "(l, r) \<in> \<R> \<Longrightarrow> r \<cdot> \<sigma> = r" for l r \<sigma>  using assms(1) unfolding llrg_def
     by(auto split: prod.splits intro: ground_subst_apply)
@@ -281,7 +281,7 @@ qed
 
 lemma llrg_funas_term_steps_pres:
   assumes "llrg \<R>" and "(s, t) \<in> (rstep \<R>)\<^sup>*"
-  shows "funas_term t \<subseteq> funas_rel \<R> \<union> funas_term s"
+  shows "funas_term t \<subseteq> funas_trs \<R> \<union> funas_term s"
   using assms(2) llrg_funas_term_step_pres[OF assms(1)]
   by (induct) auto
 
@@ -374,7 +374,7 @@ proof (induct s)
 qed simp
 
 lemma remove_const_lv_mondaic_step_lhs:
-  assumes lv: "lv \<R>" and fresh: "(c, 0) \<notin> funas_rel \<R>"
+  assumes lv: "lv \<R>" and fresh: "(c, 0) \<notin> funas_trs \<R>"
    and mon: "monadic \<F>"
    and step: "(s \<cdot> const_subst c, t) \<in> (srstep \<F> \<R>)"
  shows "(s, t) \<in> (srstep \<F> \<R>)"
@@ -402,7 +402,7 @@ proof -
     have ngrl: "\<not> ground l" using s(2) cs mt ng
     proof (induct s arbitrary: C)
       case (Var x) then show ?case using cl cs
-        by (cases C) (auto simp: funas_rel_def ground_subst_apply)
+        by (cases C) (auto simp: funas_trs_def ground_subst_apply)
     next
       case (Fun f ts)
       from Fun(5-) obtain t where [simp]: "ts = [t]" by (cases ts) auto
@@ -434,12 +434,12 @@ proof -
 qed
 
 lemma remove_const_lv_mondaic_step_rhs:
-  assumes lv: "lv \<R>" and fresh: "(c, 0) \<notin> funas_rel \<R>"
+  assumes lv: "lv \<R>" and fresh: "(c, 0) \<notin> funas_trs \<R>"
     and mon: "monadic \<F>"
     and step: "(s, t \<cdot> const_subst c) \<in> (srstep \<F> \<R>)"
   shows "(s, t) \<in> (srstep \<F> \<R>)"
 proof -
-  have inv_v: "lv (\<R>\<inverse>)""(c, 0) \<notin> funas_rel (\<R>\<inverse>)" using fresh lv
+  have inv_v: "lv (\<R>\<inverse>)""(c, 0) \<notin> funas_trs (\<R>\<inverse>)" using fresh lv
     by (auto simp: funas_rel_def lv_def)
   have "(t \<cdot> const_subst c, s) \<in> (srstep \<F> (\<R>\<inverse>))" using step
     by (auto simp: rew_converse_outwards)
@@ -449,7 +449,7 @@ proof -
 qed
 
 lemma remove_const_lv_mondaic_steps_lhs:
-  assumes lv: "lv \<R>" and fresh: "(c, 0) \<notin> funas_rel \<R>"
+  assumes lv: "lv \<R>" and fresh: "(c, 0) \<notin> funas_trs \<R>"
     and mon: "monadic \<F>"
     and steps: "(s \<cdot> const_subst c, t) \<in> (srstep \<F> \<R>)\<^sup>+"
   shows "(s, t) \<in> (srstep \<F> \<R>)\<^sup>+"
@@ -457,7 +457,7 @@ lemma remove_const_lv_mondaic_steps_lhs:
   by (meson converse_tranclE r_into_trancl trancl_into_trancl2)
 
 lemma remove_const_lv_mondaic_steps_rhs:
-  assumes lv: "lv \<R>" and fresh: "(c, 0) \<notin> funas_rel \<R>"
+  assumes lv: "lv \<R>" and fresh: "(c, 0) \<notin> funas_trs \<R>"
     and mon: "monadic \<F>"
     and steps: "(s, t \<cdot> const_subst c) \<in> (srstep \<F> \<R>)\<^sup>+"
   shows "(s, t) \<in> (srstep \<F> \<R>)\<^sup>+"
@@ -466,7 +466,7 @@ lemma remove_const_lv_mondaic_steps_rhs:
 
 
 lemma remove_const_lv_mondaic_steps:
-  assumes lv: "lv \<R>" and fresh: "(c, 0) \<notin> funas_rel \<R>"
+  assumes lv: "lv \<R>" and fresh: "(c, 0) \<notin> funas_trs \<R>"
     and mon: "monadic \<F>"
     and steps: "(s \<cdot> const_subst c, t \<cdot> const_subst c) \<in> (srstep \<F> \<R>)\<^sup>+"
   shows "(s, t) \<in> (srstep \<F> \<R>)\<^sup>+"
@@ -482,7 +482,7 @@ lemma lv_root_step_idep_subst:
   shows "(s \<cdot> \<sigma>, t \<cdot> \<tau>) \<in>  srrstep \<F> \<R>"
 proof -
   from assms(2) obtain l r \<gamma> where mid: "s = l \<cdot> \<gamma>" "t = r \<cdot> \<gamma>" "(l, r) \<in> \<R>"
-    by (auto simp: sig_step_def)
+    by (auto simp: sig_step_def' elim: rrstepE)
   from mid(3) assms(1) have vs: "x \<in> vars_term l \<Longrightarrow> x \<notin> vars_term r" for x
     by (auto simp: lv_def)
   let ?\<sigma> = "\<lambda> x. if x \<in> vars_term l then (\<gamma> x) \<cdot> \<sigma> else (\<gamma> x) \<cdot> \<tau>"
