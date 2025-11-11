@@ -106,6 +106,9 @@ definition Rhs_Nts :: "('n, 't) Prods \<Rightarrow> 'n set" where
 definition Rhss :: "('n \<times> 'a) set \<Rightarrow> 'n \<Rightarrow> 'a set" where
 "Rhss P A = {w. (A,w) \<in> P}"
 
+lemma Rhss_code[code]: "Rhss P A = snd ` {Aw \<in> P. fst Aw = A}"
+by(auto simp add: Rhss_def image_iff)
+
 lemma inj_Nt: "inj Nt"
 by (simp add: inj_def)
 

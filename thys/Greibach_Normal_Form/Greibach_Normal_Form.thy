@@ -34,7 +34,7 @@ lemma finite_image_filter: "finite (Option.image_filter f X) \<longleftrightarro
 text \<open>This theory formalizes a method to transform a set of productions into 
 Greibach Normal Form (GNF) \<^cite>\<open>Greibach\<close>. We concentrate on the essential property of the GNF:
 every production starts with a \<open>Tm\<close>; the tail of a rhs can contain further terminals.
-This is formalized as \<open>In_GNF_hd\<close> below. This more liberal definition of GNF is also found elsewhere
+This is formalized as \<open>GNF_hd\<close> below. This more liberal definition of GNF is also found elsewhere
 \cite{BlumK99}.
 
 The algorithm consists of two phases:
@@ -44,12 +44,12 @@ The algorithm consists of two phases:
   of the algorithm.
 
   \<^item> \<open>Expand_tri\<close> expands the Triangular form by substituting in:
-  Due to Triangular form, \<open>A0\<close> productions satisfy \<open>In_GNF_hd\<close> and we can substitute
-  them into the heads of the remaining productions. Now all \<open>A1\<close> productions satisfy \<open>In_GNF_hd\<close>,
-  and we continue until all productions satisfy \<open>In_GNF_hd\<close>.
+  Due to Triangular form, \<open>A0\<close> productions satisfy \<open>GNF_hd\<close> and we can substitute
+  them into the heads of the remaining productions. Now all \<open>A1\<close> productions satisfy \<open>GNF_hd\<close>,
+  and we continue until all productions satisfy \<open>GNF_hd\<close>.
 
 This is essentially the algorithm given by Hopcroft and Ullman \cite{HopcroftU79},
-except that we can drop the conversion to Chomsky Normal Form because of our more liberal \<open>In_GNF_hd\<close>.
+except that we can drop the conversion to Chomsky Normal Form because of our more liberal \<open>GNF_hd\<close>.
 \<close>
 
 
@@ -60,11 +60,11 @@ definition dep_on :: "('n,'t) Prods \<Rightarrow> 'n \<Rightarrow> 'n set" where
 "dep_on P A = {B. \<exists>w. (A, Nt B # w) \<in> P}"
 
 text \<open>GNF property: All productions start with a terminal.\<close>
-definition In_GNF_hd :: "('n,'t)Prods \<Rightarrow> bool" where 
-"In_GNF_hd P = (\<forall>(A, w) \<in> P. \<exists>t v. w = Tm t # v)"
+definition GNF_hd :: "('n,'t)Prods \<Rightarrow> bool" where 
+"GNF_hd P = (\<forall>(A, w) \<in> P. \<exists>t v. w = Tm t # v)"
 
-abbreviation in_GNF_hd :: "('n,'t)prods \<Rightarrow> bool" where 
-"in_GNF_hd P \<equiv> In_GNF_hd (set P)"
+abbreviation gnf_hd :: "('n,'t)prods \<Rightarrow> bool" where 
+"gnf_hd P \<equiv> GNF_hd (set P)"
 
 definition Subst_hd :: "('n,'t)Prods \<Rightarrow> ('n,'t)Prods \<Rightarrow> ('n,'t)Prods" where
 "Subst_hd P X = P - X \<union> {(A,v@w) | A v w. \<exists>B. (B,v) \<in> P \<and> (A, Nt B # w) \<in> X}"
@@ -124,9 +124,6 @@ next
     by (simp_all split: list.splits sym.splits)
   show ?case by (simp add:Let_def 1 set_subst_hd Cons)
 qed
-
-lemma Rhss_code[code]: "Rhss P A = snd ` {Aw \<in> P. fst Aw = A}"
-by(auto simp add: Rhss_def image_iff)
 
 declare Expand_hd.simps(1)[code]
 lemma Expand_hd_Cons_code[code]: "Expand_hd A (S#Ss) P =
@@ -294,19 +291,19 @@ lemma Expand_tri_Cons_code[code]: "Expand_tri (S#Ss) R =
   in P' - ({S} \<times> X) \<union> Y)"
 by(simp add: Let_def Rhss_def neq_Nil_conv Ball_def Subst_hd_def, safe, force+)
 
-text \<open>The main function \<open>gnf_hd\<close> converts into \<open>In_GNF_hd\<close>:\<close>
-definition Gnf_hd :: "'n::fresh list \<Rightarrow> ('n,'t) Prods \<Rightarrow> ('n,'t) Prods" where
-"Gnf_hd As P =
+text \<open>The main function \<open>GNF_hd_of\<close> converts into \<open>GNF_hd\<close>:\<close>
+definition GNF_hd_of :: "'n::fresh list \<Rightarrow> ('n,'t) Prods \<Rightarrow> ('n,'t) Prods" where
+"GNF_hd_of As P =
  (let As' = freshs (set As) As
   in Expand_tri (As' @ rev As) (Solve_tri As As' (Eps_elim P)))"
 
-definition gnf_hd :: "('n::fresh,'t)prods \<Rightarrow> ('n,'t)prods" where
-"gnf_hd P =
+definition gnf_hd_of :: "('n::fresh,'t)prods \<Rightarrow> ('n,'t)prods" where
+"gnf_hd_of P =
  (let As = nts P; As' = freshs (set As) As
   in expand_tri (As' @ rev As) (solve_tri As As' (eps_elim P)))"
 
-lemma set_gnf_hd: "set (gnf_hd P) = Gnf_hd (nts P) (set P)"
-  by (simp add: Gnf_hd_def gnf_hd_def set_expand_tri set_solve_tri set_eps_elim Let_def)
+lemma set_gnf_hd_of: "set (gnf_hd_of P) = GNF_hd_of (nts P) (set P)"
+  by (simp add: GNF_hd_of_def gnf_hd_of_def set_expand_tri set_solve_tri set_eps_elim Let_def)
 
 section \<open>Some Basic Lemmas\<close>
 
@@ -1538,17 +1535,17 @@ qed auto
 
 section \<open>Function \<open>Expand_hd\<close>: Convert Triangular Form into GNF\<close>
   
-subsection \<open>\<open>Expand_hd\<close>: Result is in \<open>In_GNF_hd\<close>\<close>
+subsection \<open>\<open>Expand_hd\<close>: Result is in \<open>GNF_hd\<close>\<close>
   
 lemma dep_on_helper: "dep_on R A = {} \<Longrightarrow> (A, w) \<in> R \<Longrightarrow> w = [] \<or> (\<exists>T wt. w = Tm T # wt)"
   using neq_Nil_conv[of w] by (simp add: dep_on_def) (metis sym.exhaust)
 
-lemma In_GNF_hd_iff_dep_on:
+lemma GNF_hd_iff_dep_on:
   assumes "Eps_free P"
-  shows "In_GNF_hd P \<longleftrightarrow> (\<forall>A \<in> Nts P. dep_on P A = {})" (is "?L=?R")
+  shows "GNF_hd P \<longleftrightarrow> (\<forall>A \<in> Nts P. dep_on P A = {})" (is "?L=?R")
 proof
   assume ?L
-  then show ?R by (auto simp add: In_GNF_hd_def dep_on_def)
+  then show ?R by (auto simp add: GNF_hd_def dep_on_def)
 next
   assume assm: ?R
   have 1: "\<forall>(B, w) \<in> P. \<exists>T wt. w = Tm T # wt \<or> w = []"
@@ -1561,7 +1558,7 @@ next
   qed
   have 2: "\<forall>(B, w) \<in> P. w \<noteq> []" using assms assm by (auto simp add: Eps_free_def)
   have "\<forall>(B, w) \<in> P. \<exists>T wt. w = Tm T # wt" using 1 2 by auto
-  then show "In_GNF_hd P" by (auto simp add: In_GNF_hd_def)
+  then show "GNF_hd P" by (auto simp add: GNF_hd_def)
 qed
 
 lemma Expand_tri_simp1: "A \<notin> set As \<Longrightarrow> (A,w) \<in> Expand_tri As P \<longleftrightarrow> (A,w) \<in> P"
@@ -1733,22 +1730,22 @@ lemma Nts_Expand_tri: "Nts (Expand_tri As R) \<subseteq> Nts R"
   by (metis Lhss_Expand_tri Nts_Lhss_Rhs_Nts Rhs_Nts_Expand_tri Un_mono)
 
 text \<open>If the entire \<open>Triangular\<close> form is expanded, the result is in GNF:\<close>
-theorem In_GNF_hd_Expand_tri: 
+theorem GNF_hd_Expand_tri: 
   assumes "Eps_free R" "Triangular (rev As) R" "distinct As" "Nts R \<subseteq> set As"
-  shows "In_GNF_hd (Expand_tri As R)"
-by (metis Eps_free_Expand_tri In_GNF_hd_iff_dep_on Int_absorb2 Nts_Expand_tri assms dep_on_Expand_tri
+  shows "GNF_hd (Expand_tri As R)"
+by (metis Eps_free_Expand_tri GNF_hd_iff_dep_on Int_absorb2 Nts_Expand_tri assms dep_on_Expand_tri
       dep_on_subs_Nts subset_trans subsetD)
 
 text \<open>Any set of productions can be transformed into GNF via \<open>Expand_tri (Solve_tri)\<close>.\<close>
-theorem In_GNF_hd_Expand_Solve_tri:
+theorem GNF_hd_Expand_Solve_tri:
   assumes assms: "Eps_free R" "distinct (As @ As')" "Nts R \<subseteq> set As" "length As \<le> length As'"
-  shows "In_GNF_hd (Expand_tri (As' @ rev As) (Solve_tri As As' R))"
+  shows "GNF_hd (Expand_tri (As' @ rev As) (Solve_tri As As' R))"
 proof -
   from assms have tri: "Triangular (As @ rev As') (Solve_tri As As' R)"
     by (simp add: Int_commute Triangular_Solve_tri)
   have "Nts (Solve_tri As As' R) \<subseteq> set As \<union> set As'" using assms Nts_Solve_tri_sub by fastforce 
   then show ?thesis 
-    using In_GNF_hd_Expand_tri[of "(Solve_tri As As' R)" "(As' @ rev As)"] assms tri 
+    using GNF_hd_Expand_tri[of "(Solve_tri As As' R)" "(As' @ rev As)"] assms tri 
     by (auto simp add: Eps_free_Solve_tri)
 qed
 
@@ -1829,7 +1826,7 @@ next
   qed
 qed
 
-section \<open>Function \<open>gnf_hd\<close>: Conversion to \<open>In_GNF_hd\<close>\<close>
+section \<open>Function @{const GNF_hd_of}: Conversion to @{const GNF_hd}\<close>
 
 text \<open>All epsilon-free grammars can be put into GNF while preserving their language.\<close>
 text \<open>Putting the productions into GNF via \<open>Expand_tri (Solve_tri)\<close> preserves the language.\<close>
@@ -1839,15 +1836,15 @@ lemma Lang_Expand_Solve_tri:
 using Lang_Solve_tri[OF assms] Expand_tri_Lang[of "(As' @ rev As)"] by blast
 
 text \<open>Any grammar can be brought into GNF.\<close>
-theorem In_GNF_hd_Gnf_hd: "distinct As \<Longrightarrow> Nts P \<subseteq> set As \<Longrightarrow> In_GNF_hd (Gnf_hd As P)"
-unfolding Gnf_hd_def Let_def
-  apply (rule In_GNF_hd_Expand_Solve_tri[OF Eps_free_Eps_elim])
+theorem GNF_hd_GNF_hd_of: "distinct As \<Longrightarrow> Nts P \<subseteq> set As \<Longrightarrow> GNF_hd (GNF_hd_of As P)"
+unfolding GNF_hd_of_def Let_def
+  apply (rule GNF_hd_Expand_Solve_tri[OF Eps_free_Eps_elim])
   using Nts_Eps_elim[of P]
   by(simp_all add: freshs_distinct freshs_disj length_freshs)
 
-corollary in_GNF_hd_gnf_hd: "in_GNF_hd (gnf_hd ps)"
-unfolding set_gnf_hd
-apply (rule In_GNF_hd_Gnf_hd)
+corollary gnf_hd_gnf_hd_of: "gnf_hd (gnf_hd_of ps)"
+unfolding set_gnf_hd_of
+apply (rule GNF_hd_GNF_hd_of)
 by (simp_all add: set_nts distinct_nts)
 
 lemma distinct_app_freshs: "\<lbrakk> distinct As; As' = freshs (set As) As \<rbrakk> \<Longrightarrow>
@@ -1855,12 +1852,9 @@ lemma distinct_app_freshs: "\<lbrakk> distinct As; As' = freshs (set As) As \<rb
 using freshs_disj[of "set As" As]
 by (auto simp: distinct_nts freshs_distinct)
 
-lemma lem: "A \<notin> Nts P \<Longrightarrow> Lang P A = {}"
-  by (simp add: Lang_empty_if_notin_Lhss Nts_Lhss_Rhs_Nts)
-
-text \<open>\<open>Gnf_hd\<close> preserves the language (modulo \<open>[]\<close>):\<close>
-theorem Lang_Gnf_hd: "distinct As \<Longrightarrow> Nts P \<subseteq> set As \<Longrightarrow> A \<in> set As \<Longrightarrow> Lang (Gnf_hd As P) A = Lang P A - {[]}"
-unfolding Gnf_hd_def Let_def
+text \<open>\<open>GNF_hd_of\<close> preserves the language (modulo \<open>[]\<close>):\<close>
+theorem Lang_GNF_hd_of: "distinct As \<Longrightarrow> Nts P \<subseteq> set As \<Longrightarrow> A \<in> set As \<Longrightarrow> Lang (GNF_hd_of As P) A = Lang P A - {[]}"
+unfolding GNF_hd_of_def Let_def
 apply(rule Lang_Expand_Solve_tri[OF Eps_free_Eps_elim, simplified Lang_Eps_elim])
    apply (simp add: length_freshs)
   apply (rule distinct_app_freshs;simp_all)
@@ -1869,17 +1863,17 @@ apply(rule Lang_Expand_Solve_tri[OF Eps_free_Eps_elim, simplified Lang_Eps_elim]
 apply (meson List.finite_set disjoint_iff freshs_disj subsetD)
 done
 
-corollary Lang_gnf_hd: "A \<in> set (nts ps) \<Longrightarrow> lang (gnf_hd ps) A = lang ps A - {[]}"
-  unfolding set_gnf_hd
-  apply (rule Lang_Gnf_hd)
+corollary lang_gnf_hd_of: "A \<in> set (nts ps) \<Longrightarrow> lang (gnf_hd_of ps) A = lang ps A - {[]}"
+  unfolding set_gnf_hd_of
+  apply (rule Lang_GNF_hd_of)
   by (auto simp: set_nts distinct_nts)
 
 text \<open>Two simple examples:\<close>
 
-lemma "gnf_hd [(0, [Nt(0::nat), Tm (1::int)])] = [(1, [Tm 1]), (1, [Tm 1, Nt 1])]"
+lemma "gnf_hd_of [(0, [Nt(0::nat), Tm (1::int)])] = [(1, [Tm 1]), (1, [Tm 1, Nt 1])]"
   by eval
 
-lemma "gnf_hd [(0, [Nt(0::nat), Tm (1::int)]), (0, [Tm 2]), (8, []), (9, [Nt 8])] =
+lemma "gnf_hd_of [(0, [Nt(0::nat), Tm (1::int)]), (0, [Tm 2]), (8, []), (9, [Nt 8])] =
   [(0, [Tm 2]), (0, [Tm 2]), (0, [Tm 2, Nt 1]), (1, [Tm 1]), (1, [Tm 1, Nt 1])]"
   by eval
 
@@ -2023,11 +2017,7 @@ next
 qed
 
 text \<open>The last Nt expanded by \<open>Expand_tri\<close> has an exponential number of productions.\<close>
-(*
-lemma bad_gram_last_expanded_card: 
-  "\<lbrakk>distinct As; length As = n; n \<ge> 1\<rbrakk>
-   \<Longrightarrow> card ({v. (hd As, v) \<in> Expand_tri As (bad_grammar As)}) = 2 ^ n" 
-*)
+
 lemma bad_gram_last_expanded_card:
   "card ({v. (n, v) \<in> Expand_tri (rev [0..<Suc n]) (set (bad_grammar n))}) = 2 ^ Suc n" 
 proof(induction n)
@@ -2136,7 +2126,7 @@ proof -
   show ?thesis by (auto simp del: upt_Suc)
 qed
 
-(* Attempt to prove gnf_hd (bad_grammar n). Aborted because nts cannot be ordered properly. *)
+(* Attempt to prove gnf_hd_of (bad_grammar n). Aborted because nts cannot be ordered properly. *)
 lemma in_dep_on_bad_grammar: "n \<in> dep_on (set (bad_grammar m)) l \<longleftrightarrow> l = Suc n \<and> n < m"
   by (induction m, auto simp: dep_on_insert)
 
