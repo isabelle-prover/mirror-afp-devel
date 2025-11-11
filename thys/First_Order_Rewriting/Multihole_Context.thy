@@ -383,6 +383,11 @@ lemma fill_holes_MHole:
   "length ts = 1 \<Longrightarrow> ts ! 0 = u \<Longrightarrow> fill_holes MHole ts = u"
   by (cases ts) simp_all
 
+lemma fill_holes_term_of_mctxt:
+  "num_holes C = 0 \<Longrightarrow> fill_holes C [] = term_of_mctxt C"
+  by (induct C) (auto intro: nth_equalityI)
+
+
 (*some compatibility lemmas (which should be dropped eventually)*)
 lemmas
   map_partition_holes_nth [simp] =
@@ -769,6 +774,10 @@ qed (auto simp: vars_term_list.simps)
 lemma split_vars_vars_term: "set (snd (split_vars t)) = vars_term t"
   using arg_cong[OF split_vars_vars_term_list[of t], of set] by auto
 
+lemma split_vars_funas_mctxt [simp]:
+  "funas_mctxt (fst (split_vars t)) = funas_term t"
+  by (induct t) auto
+
 lemma split_vars_eqf_subst_map_vars_term:
   "t \<cdot> \<sigma> =\<^sub>f (map_vars_mctxt vw (fst (split_vars t)), map \<sigma> (snd (split_vars t)))"
 proof (induct t)
@@ -910,6 +919,10 @@ lemma ground_cap_till_funas [intro]:
   "ground_mctxt (cap_till_funas F t)"
   by (induct t) simp_all
 
+lemma split_vars_ground' [simp]:
+  "ground_mctxt (fst (split_vars t))"
+  by (induct t) auto
+
 lemma ground_eq_fill: "t =\<^sub>f (C,ss) \<Longrightarrow> ground t = (ground_mctxt C \<and> (\<forall> s \<in> set ss. ground s))" 
 proof (induct C arbitrary: t ss)
   case (MVar x)
@@ -954,6 +967,11 @@ proof (induct t arbitrary: C xs)
       by (rule Fun(1)[OF t split]) 
   qed
 qed auto
+
+lemma split_vars_fill_holes:
+  assumes "C = fst (split_vars s)" and "ss = map Var (snd (split_vars s))"
+  shows "fill_holes C ss = s" using assms
+  by (metis eqfE(1) split_vars_eqf_subst subst_apply_term_empty)
 
 lemma split_vars_ground_vars:
   assumes "ground_mctxt C" and "num_holes C = length xs" 
