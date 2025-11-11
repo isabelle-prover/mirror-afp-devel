@@ -67,9 +67,6 @@ definition Nts_syms :: "('n,'t)syms \<Rightarrow> 'n set" where
 definition Tms_syms :: "('n,'t)syms \<Rightarrow> 't set" where
 "Tms_syms w = {a. Tm a \<in> set w}"
 
-lemma Tms_syms_code[code]: "Tms_syms w = (\<Union>s \<in> set w. case s of Tm a \<Rightarrow> {a} | _ \<Rightarrow> {})"
-unfolding Tms_syms_def by (auto split: sym.splits)
-
 definition Nts :: "('n,'t)Prods \<Rightarrow> 'n set" where
   "Nts P = (\<Union>(A,w)\<in>P. {A} \<union> Nts_syms w)"
 
@@ -129,19 +126,40 @@ unfolding Nts_syms_def by auto
 lemma Nts_syms_Cons[simp,code]: "Nts_syms (s#ss) = (case s of Nt A \<Rightarrow> {A} | _ \<Rightarrow> {}) \<union> Nts_syms ss"
 by (auto simp: Nts_syms_def split: sym.split)
 
+lemma Tms_syms_Nil[simp,code]: "Tms_syms [] = {}"
+unfolding Tms_syms_def by auto
+
+lemma Tms_syms_Cons[simp,code]: "Tms_syms (s#ss) = (case s of Tm a \<Rightarrow> {a} | _ \<Rightarrow> {}) \<union> Tms_syms ss"
+by (auto simp: Tms_syms_def split: sym.split)
+
 lemma Nts_syms_append[simp]: "Nts_syms (u @ v) = Nts_syms u \<union> Nts_syms v"
 by (auto simp: Nts_syms_def)
+
+lemma Tms_syms_append[simp]: "Tms_syms (u @ v) = Tms_syms u \<union> Tms_syms v"
+by (auto simp: Tms_syms_def)
 
 lemma Nts_syms_map_Nt[simp]: "Nts_syms (map Nt w) = set w"
 unfolding Nts_syms_def by auto
 
-lemma Nts_syms_rev: "Nts_syms (rev w) = Nts_syms w"
-by(auto simp: Nts_syms_def)
+lemma Tms_syms_map_Tm[simp]: "Tms_syms (map Tm w) = set w"
+unfolding Tms_syms_def by auto
 
 lemma Nts_syms_map_Tm[simp]: "Nts_syms (map Tm w) = {}"
 unfolding Nts_syms_def by auto
 
+lemma Tms_syms_map_Nt[simp]: "Tms_syms (map Nt w) = {}"
+unfolding Tms_syms_def by auto
+
+lemma Nts_syms_rev: "Nts_syms (rev w) = Nts_syms w"
+by(auto simp: Nts_syms_def)
+
+lemma Tms_syms_rev: "Tms_syms (rev w) = Tms_syms w"
+by(auto simp: Tms_syms_def)
+
 lemma Nts_syms_empty_iff: "Nts_syms w = {} \<longleftrightarrow> (\<exists>u. w = map Tm u)"
+by(induction w) (auto simp: ex_map_conv split: sym.split)
+
+lemma Tms_syms_empty_iff: "Tms_syms w = {} \<longleftrightarrow> (\<exists>u. w = map Nt u)"
 by(induction w) (auto simp: ex_map_conv split: sym.split)
 
 text \<open>If a sentential form contains a \<open>Nt\<close>, it must have a last and a first \<open>Nt\<close>:\<close>
@@ -175,12 +193,6 @@ unfolding Nts_def Lhss_def Rhs_Nts_def by auto
 lemma Nts_Nts_syms: "w \<in> Rhss P A \<Longrightarrow> Nts_syms w \<subseteq> Nts P"
 unfolding Rhss_def Nts_def by blast
 
-lemma Tms_syms_Nil[simp,code]: "Tms_syms [] = {}"
-unfolding Tms_syms_def by auto
-
-lemma Tms_syms_Cons[simp,code]: "Tms_syms (s#ss) = (case s of Tm a \<Rightarrow> {a} | _ \<Rightarrow> {}) \<union> Tms_syms ss"
-by (auto simp: Tms_syms_def split: sym.split)
-
 lemma Syms_simps[simp]:
   "Syms {} = {}"
   "Syms(insert (A,w) P) = {Nt A} \<union> set w \<union> Syms P"
@@ -208,7 +220,7 @@ lemma distinct_nts_syms: "distinct(nts_syms sys)"
 unfolding nts_syms_def by(simp add: distinct_nts_syms_acc)
 
 lemma distinct_nts: "distinct(nts ps)"
-by(induction ps) (auto simp: nts_def distinct_nts_syms_acc split: sym.split)
+by(induction ps) (auto simp: nts_def distinct_nts_syms_acc distinct_nts_syms)
 
 lemma set_tms_syms: "set(tms_syms_acc sys ts) = Tms_syms sys \<union> set ts"
 unfolding tms_syms_acc_def
@@ -231,14 +243,16 @@ by(induction ps) (auto simp: tms_def distinct_tms_syms_acc split: sym.split)
 subsubsection \<open>Finiteness Lemmas\<close>
 
 lemma finite_Nts_syms: "finite (Nts_syms w)"
-proof -
-  have "Nt ` {A. Nt A \<in> set w} \<subseteq> set w" by auto
-  from finite_inverse_image[OF _ inj_Nt]
-  show ?thesis unfolding Nts_syms_def using finite_inverse_image[OF _ inj_Nt] by auto
-qed
+by (induction w) (auto split: sym.split)
+
+lemma finite_Tms_syms: "finite (Tms_syms w)"
+by (induction w) (auto split: sym.split)
 
 lemma finite_nts: "finite(Nts (set ps))"
 unfolding Nts_def by (simp add: finite_Nts_syms split_def)
+
+lemma finite_tms: "finite(Tms (set ps))"
+unfolding Tms_def by (simp add: finite_Tms_syms split_def)
 
 lemma fresh0_nts: "fresh0(Nts (set ps)) \<notin> Nts (set ps)"
 by(fact fresh0_notIn[OF finite_nts])
@@ -251,6 +265,9 @@ by(fact fresh0_notIn[OF finite_nts_prods_start])
 
 lemma finite_Nts: "finite P \<Longrightarrow> finite (Nts P)"
 unfolding Nts_def by (simp add: case_prod_beta finite_Nts_syms)
+
+lemma finite_Tms: "finite P \<Longrightarrow> finite (Tms P)"
+unfolding Tms_def by (simp add: case_prod_beta finite_Tms_syms)
 
 lemma finite_Rhss: "finite P \<Longrightarrow> finite (Rhss P A)"
 unfolding Rhss_def by (metis Image_singleton finite_Image)
@@ -999,6 +1016,60 @@ next
   qed
   then show "?R \<turnstile> xs \<Rightarrow>* map Tm w \<Longrightarrow> ?L \<turnstile> xs \<Rightarrow>* map Tm w" for xs w
     by (auto simp: rtranclp_power)
+qed
+
+text \<open>Some facts about \<open>\<epsilon>\<close>-derivations:\<close>
+
+lemma deriven_Cons_Nil: "P \<turnstile> x # xs \<Rightarrow>(n) [] \<longleftrightarrow>
+  (\<exists>A \<alpha> l m. P \<turnstile> \<alpha> \<Rightarrow>(l) [] \<and> P \<turnstile> xs \<Rightarrow>(m) [] \<and> x = Nt A \<and> (A,\<alpha>) \<in> P \<and> n = Suc (l+m))"
+  using deriven_Nt_Cons_map_Tm[where w=Nil,simplified]
+  by (cases x, auto simp add: deriven_Nt_Cons_map_Tm[where w=Nil,simplified]
+      deriven_Tm_Cons)
+
+lemma derives_Cons_Nil: "P \<turnstile> x # xs \<Rightarrow>* [] \<longleftrightarrow>
+  (\<exists>A \<alpha>. P \<turnstile> \<alpha> \<Rightarrow>* [] \<and> P \<turnstile> xs \<Rightarrow>* [] \<and> x = Nt A \<and> (A,\<alpha>) \<in> P)"
+  by (auto simp: derives_Cons_decomp)
+
+text \<open>Adding production whose rhs does not derive \<open>\<epsilon>\<close> by other rules
+does not change the \<open>\<epsilon>\<close>-derivations.\<close>
+
+lemma insert_derives_Nil:
+  assumes \<alpha>0: "\<not> P \<turnstile> \<alpha> \<Rightarrow>* []"
+  shows "insert (A,\<alpha>) P \<turnstile> \<alpha>' \<Rightarrow>* [] \<longleftrightarrow> P \<turnstile> \<alpha>' \<Rightarrow>* []" (is "?l \<longleftrightarrow> ?r")
+proof
+  assume ?l
+  then obtain n where "insert (A,\<alpha>) P \<turnstile> \<alpha>' \<Rightarrow>(n) []" by (auto simp: rtranclp_power)
+  then show "P \<turnstile> \<alpha>' \<Rightarrow>* []"
+  proof (induction n arbitrary: \<alpha>' rule: less_induct)
+    case (less n)
+    show ?case
+    proof (cases \<alpha>')
+      case Nil
+      then show ?thesis by simp
+    next
+      case \<alpha>': (Cons x xs)
+      from less.prems[unfolded \<alpha>' deriven_Cons_Nil]
+      obtain B \<beta> l m where \<beta>: "insert (A,\<alpha>) P \<turnstile> \<beta> \<Rightarrow>(l) []"
+        and xs: "insert (A,\<alpha>) P \<turnstile> xs \<Rightarrow>(m) []"
+        and x: "x = Nt B"
+        and B: "(B,\<beta>) \<in> insert (A,\<alpha>) P"
+        and n: "n = Suc (l + m)"
+        by auto
+      from less.IH[OF _ \<beta>] have P\<beta>: "P \<turnstile> \<beta> \<Rightarrow>* []" by (simp add: n)
+      from less.IH[OF _ xs] have Pxs: "P \<turnstile> xs \<Rightarrow>* []" by (simp add: n)
+      show ?thesis
+      proof (cases "(B,\<beta>) \<in> P")
+        case True
+        with P\<beta> Pxs show ?thesis by (auto simp: \<alpha>' x derives_Cons_Nil)
+      next
+        case False
+        with B have "B = A" "\<beta> = \<alpha>" by auto
+        with P\<beta> \<alpha>0 show ?thesis by simp
+      qed
+    qed
+  qed
+next
+  assume r: ?r show "?l" by (rule derives_mono[OF _ r], auto) 
 qed
 
 
