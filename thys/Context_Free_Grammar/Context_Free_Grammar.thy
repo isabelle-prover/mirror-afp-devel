@@ -813,6 +813,15 @@ lemma deriven_Tm_Cons_map_Tm: "P \<turnstile> Tm a # \<beta> \<Rightarrow>(n) ma
 (\<exists>v. P \<turnstile> \<beta> \<Rightarrow>(n) map Tm v \<and> w = a # v)"
   by (auto simp: deriven_Tm_Cons)
 
+lemma deriven_Cons_map_Tm:
+  "P \<turnstile> x # u \<Rightarrow>(n) map Tm w \<longleftrightarrow>
+  (\<exists>a v2. x = Tm a \<and> w = a # v2 \<and> P \<turnstile> u \<Rightarrow>(n) map Tm v2) \<or>
+  (\<exists>n1 n2 A \<alpha> v1 v2. n = Suc (n1 + n2) \<and> w = v1 @ v2 \<and> x = Nt A \<and>
+   (A,\<alpha>) \<in> P \<and> P \<turnstile> \<alpha> \<Rightarrow>(n1) map Tm v1 \<and> P \<turnstile> u \<Rightarrow>(n2) map Tm v2)"
+  apply (cases x)
+   apply (force simp: deriven_Nt_Cons_map_Tm)
+  by (force simp: deriven_Tm_Cons_map_Tm)
+
 lemma deriven_append_map_Tm: "P \<turnstile> \<alpha> @ \<beta> \<Rightarrow>(n) map Tm w \<longleftrightarrow>
   (\<exists>m l v u. P \<turnstile> \<alpha> \<Rightarrow>(m) map Tm v \<and> P \<turnstile> \<beta> \<Rightarrow>(l) map Tm u \<and> n = m + l \<and> w = v @ u)"
 proof (induction \<alpha> arbitrary: \<beta> n w)
@@ -886,10 +895,15 @@ lemma derives_append_map_Tm:
 
 lemma derives_Nt_map_Tm:
  "P \<turnstile> \<alpha> @ Nt B # \<gamma> \<Rightarrow>* map Tm w \<longleftrightarrow>
-(\<exists>\<beta> v u t. (B,\<beta>) \<in> P \<and>
-  P \<turnstile> \<alpha> \<Rightarrow>* map Tm v \<and> P \<turnstile> \<beta> \<Rightarrow>* map Tm u \<and> P \<turnstile> \<gamma> \<Rightarrow>* map Tm t \<and>
-  w = v @ u @ t)"
+  (\<exists>\<beta> v u t. (B,\<beta>) \<in> P \<and>
+    P \<turnstile> \<alpha> \<Rightarrow>* map Tm v \<and> P \<turnstile> \<beta> \<Rightarrow>* map Tm u \<and> P \<turnstile> \<gamma> \<Rightarrow>* map Tm t \<and>
+    w = v @ u @ t)"
   by (force simp: rtranclp_power deriven_Nt_map_Tm)
+
+lemma derives_Nt_Cons_map_Tm:
+ "P \<turnstile> Nt A # \<beta> \<Rightarrow>* map Tm w \<longleftrightarrow>
+  (\<exists>\<alpha> v u. (A,\<alpha>) \<in> P \<and> P \<turnstile> \<alpha> \<Rightarrow>* map Tm v \<and> P \<turnstile> \<beta> \<Rightarrow>* map Tm u \<and> w = v @ u)"
+  using derives_Nt_map_Tm[where \<alpha> = "[]"] by simp
 
 lemma derives_append_append:
   "P \<turnstile> \<alpha> \<Rightarrow>* \<alpha>' \<Longrightarrow> P \<turnstile> \<beta> \<Rightarrow>* \<beta>' \<Longrightarrow> P \<turnstile> \<alpha> @ \<beta> \<Rightarrow>* \<alpha>' @ \<beta>'"
