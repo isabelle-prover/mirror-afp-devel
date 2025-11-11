@@ -76,6 +76,9 @@ definition Tms :: "('n,'t)Prods \<Rightarrow> 't set" where
 definition Syms :: "('n,'t)Prods \<Rightarrow> ('n,'t) sym set" where 
   "Syms P = (\<Union>(A,w)\<in>P. {Nt A} \<union> set w)"
 
+lemma Tms_mono: "P \<subseteq> P' \<Longrightarrow> Tms P \<subseteq> Tms P'"
+unfolding Tms_def Tms_syms_def by blast
+
 definition nts_syms_acc :: "('n,'t)syms \<Rightarrow> 'n list \<Rightarrow> 'n list" where
 "nts_syms_acc = foldr (\<lambda>sy ns. case sy of Nt A \<Rightarrow> List.insert A ns | Tm _ \<Rightarrow> ns)"
 
