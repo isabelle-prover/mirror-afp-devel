@@ -7,7 +7,6 @@ begin
 
 section \<open>Type class instantiations for the implementation\<close>
 
-derive linorder sum
 derive linorder bot_term
 derive linorder cl_states
 

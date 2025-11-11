@@ -3,14 +3,15 @@ chapter AFP
 session FO_Theory_Rewriting = "FOL-Fitting" +
   options [timeout = 2400]
   sessions
-    "Regular_Tree_Relations"
+    Regular_Tree_Relations
+    First_Order_Rewriting
   directories
     "Util"
     "Primitives"
     "Rewriting"
     "Closure"
   theories
-    "Util/Multihole_Context"
+    "Util/Multihole_Context_More"
     "Util/Ground_MCtxt"
     "Util/Bot_Terms"
     "Util/Saturation"

@@ -73,7 +73,7 @@ proof -
     using \<tau>_def by auto (metis term_subst_eq)
   from this(1) have [simp]: "funas_gterm s = funas_term C\<langle>l \<cdot> \<tau>\<rangle>" by (metis funas_term_of_gterm_conv)
   from w assms(1, 3, 4) have [simp]: "funas_term C\<langle>r \<cdot> \<tau>\<rangle> \<subseteq> \<F>" using \<tau>_def
-    by (auto simp: funas_trs_def funas_term_subst)
+    by (force simp: funas_trs_def funas_rule_def funas_term_subst split: if_splits)
   moreover have "ground C\<langle>r \<cdot> \<tau>\<rangle>" using terms(1) w \<tau>_def
     by (auto intro!: ground_substI) (metis term_of_gterm_ctxt_subst_apply_ground)
   ultimately show ?thesis using assms(2) terms(2)

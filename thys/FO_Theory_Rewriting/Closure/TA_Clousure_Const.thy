@@ -297,6 +297,7 @@ proof (induct u)
     by force
 qed (auto simp: refl_over_states_ta_def)
 
+
 lemma gen_parallelcl_lang:
   fixes \<A> :: "('q, 'f) ta"
   assumes "q |\<notin>| \<Q> \<A>"
@@ -334,9 +335,16 @@ proof -
       by (metis (full_types) finterI gta_langE gterm_ta_der_states length_map map_nth_eq_conv)
     then have "q |\<in>| ta_der ?A (fill_holes (mctxt_of_gmctxt C) (map term_of_gterm ss))"
       using reachA len gr_fun
-      by (intro sq.mctxt_const_to_ta_der[of "mctxt_of_gmctxt C" "map term_of_gterm ss" qs q])
-        (auto simp: funas_mctxt_of_gmctxt_conv
-          dest!: in_set_idx intro!: refl_over_states_ta_sound)
+      apply (intro sq.mctxt_const_to_ta_der[of "mctxt_of_gmctxt C" "map term_of_gterm ss" qs q])
+      subgoal by auto
+      subgoal by auto
+      subgoal by auto
+      subgoal 
+        apply (intro refl_over_states_ta_sound)
+        subgoal by (subst funas_mctxt_fill_holes, auto simp: funas_mctxt_of_gmctxt_conv)
+        subgoal by (auto dest!: in_set_idx)
+        done
+      done
     then have "t \<in> ?Ls" unfolding const
       by (simp add: fill_holes_mctxt_of_gmctxt_to_fill_gholes gta_langI len)}
   then show ?thesis using ls by blast
@@ -422,15 +430,16 @@ proof (induct u)
     using Fun(1)[OF nth_mem Fun(2)]
     by (metis (no_types, lifting) length_map nth_concat_split nth_map nth_replicate)
   then show ?case using Fun(1)[OF nth_mem Fun(2)]
-    by (auto intro: nth_equalityI)
-qed (auto dest: reflcl_over_single_ta_epsD)
+    by (metis in_set_conv_nth replicate_length_same
+        vars_term_list.simps(2))
+qed (auto dest: reflcl_over_single_ta_epsD simp: vars_term_list.simps)
 
 lemma reflcl_over_single_ta_vars_term:
   "q\<^sub>c |\<notin>| Q \<Longrightarrow> q\<^sub>c \<noteq> q\<^sub>f \<Longrightarrow> q\<^sub>f |\<in>| ta_der (reflcl_over_single_ta Q \<F> q\<^sub>c q\<^sub>f) u \<Longrightarrow>
    length (vars_term_list u) = n \<Longrightarrow> (\<exists> i q. i < n \<and> q |\<in>| finsert q\<^sub>f Q \<and> vars_term_list u = (replicate n q\<^sub>c)[i := q])"
 proof (induct u arbitrary: n)
   case (Var x) then show ?case
-    by (intro exI[of _ 0] exI[of _ x]) (auto dest: reflcl_over_single_ta_epsD(1))
+    by (intro exI[of _ 0] exI[of _ x]) (auto dest: reflcl_over_single_ta_epsD(1) simp: vars_term_list.simps)
 next
   case (Fun f ts)
   from Fun(2, 3, 4) obtain qs where rule: "TA_rule f qs q\<^sub>f |\<in>| semantic_path_rules \<F> q\<^sub>c q\<^sub>f q\<^sub>f"
@@ -449,7 +458,7 @@ next
   let ?l = "sum_list (map length (take i (map vars_term_list ts))) + k"
   show ?case using qc qf rule(2) Fun(5) states(1)
     apply (intro exI[of _ ?l] exI[of _ q])
-    apply (auto simp: concat_nth_length nth_list_update elim!: nth_concat_split' intro!: nth_equalityI)
+    apply (auto simp: vars_term_list.simps concat_nth_length nth_list_update elim!: nth_concat_split' intro!: nth_equalityI)
        apply (metis length_replicate nth_list_update_eq nth_list_update_neq nth_replicate)+
     done
 qed
@@ -574,8 +583,8 @@ proof (induct u)
     using Fun(1)[OF nth_mem Fun(2, 3)]
     by (metis (no_types, lifting) length_map map_nth_eq_conv nth_concat_split' nth_replicate)
   then show ?case using Fun(1)[OF nth_mem Fun(2)]
-    by (auto intro: nth_equalityI)
-qed (auto simp: reflcl_over_nhole_ctxt_ta_def dest: ftranclD2)
+    by (auto intro: nth_equalityI simp: vars_term_list.simps)
+qed (auto simp: reflcl_over_nhole_ctxt_ta_def dest: ftranclD2 simp: vars_term_list.simps)
 
 lemma reflcl_over_nhole_ctxt_ta_vars_term_Var:
   assumes disj: "q\<^sub>c |\<notin>| Q" "q\<^sub>f |\<notin>| Q" "q\<^sub>c \<noteq> q\<^sub>f" "q\<^sub>i \<noteq> q\<^sub>f" "q\<^sub>c \<noteq> q\<^sub>i"
@@ -590,7 +599,7 @@ lemma reflcl_over_nhole_ctxt_ta_vars_term:
   using assms
 proof (induct u)
   case (Var q) then show ?case
-    by (intro exI[of _ 0] exI[of _ q]) (auto simp: reflcl_over_nhole_ctxt_ta_def dest: ftranclD2)
+    by (intro exI[of _ 0] exI[of _ q]) (auto simp: reflcl_over_nhole_ctxt_ta_def vars_term_list.simps dest: ftranclD2)
 next
   case (Fun f ts)
   from Fun(2 - 7) obtain q qs where rule: "TA_rule f qs q\<^sub>f |\<in>| semantic_path_rules \<F> q\<^sub>c q q\<^sub>f" "q = q\<^sub>i \<or> q = q\<^sub>f"
@@ -607,11 +616,11 @@ next
     qf: "k < length (vars_term_list (ts ! i))" "q' |\<in>| {|q\<^sub>i, q\<^sub>f|} |\<union>| Q "
     "vars_term_list (ts ! i) = (replicate (length (vars_term_list (ts ! i))) q\<^sub>c)[k :=  q']"
     using reflcl_over_nhole_ctxt_ta_vars_term_Var[OF Fun(2 - 6), of \<F> "ts ! i"]
-    by (auto simp: nth_list_update split: if_splits) blast
+    by (auto simp: nth_list_update vars_term_list.simps split: if_splits) blast
   let ?l = "sum_list (map length (take i (map vars_term_list ts))) + k"
   show ?case using qc qf rule(3) states(1)
     apply (intro exI[of _ ?l] exI[of _  q'])
-    apply (auto 0 0 simp: concat_nth_length nth_list_update elim!: nth_concat_split' intro!: nth_equalityI)
+    apply (auto 0 0 simp: vars_term_list.simps concat_nth_length nth_list_update elim!: nth_concat_split' intro!: nth_equalityI)
          apply (metis length_replicate nth_list_update_eq nth_list_update_neq nth_replicate)+
     done
 qed
@@ -878,7 +887,10 @@ proof -
     have hole: "ta_der'_target_mctxt u \<noteq> MHole" using vars assms(3-)
       using reflcl_over_nhole_mctxt_ta_Fun[OF der]
       using ta_der'_mctxt_structure(1, 3)[OF seq(1)]
-      by auto (metis fill_holes_MHole gterm_ta_der_states length_map lessI map_nth_eq_conv seq(1) ta_der_to_ta_der' term.disc(1))
+      by auto
+        (metis One_nat_def fill_holes_MHole gterm_ta_der_states
+          length_map nth_map seq(1) ta_der_to_ta_der' term.disc(1)
+          zero_less_Suc)
     let ?w = "\<lambda> i. ta_der'_source_args u (term_of_gterm s) ! i"
     have "s \<in> ?Rs" using seq(1) ta_der'_Var_funas[OF seq(2)]
       using ground_ta_der_statesD[of "?w i" "ta_der'_target_args u ! i" \<A> for i] assms vars
@@ -903,10 +915,16 @@ proof -
       using len(3) by (cases C, auto)+
     have "q\<^sub>f |\<in>| ta_der ?A (fill_holes (mctxt_of_gmctxt C) (map term_of_gterm ss))"
       using reachA len gr_fun states
-      using reflcl_over_nhole_mctxt_ta_sound[of "fill_holes (mctxt_of_gmctxt C) (map Var qs)"]
-      by (intro sq.mctxt_const_to_ta_der[of "mctxt_of_gmctxt C" "map term_of_gterm ss" qs q\<^sub>f])
-        (auto simp: funas_mctxt_of_gmctxt_conv set_list_subset_eq_nth_conv
-          dest!: in_set_idx)
+      apply (intro sq.mctxt_const_to_ta_der[of "mctxt_of_gmctxt C" "map term_of_gterm ss" qs q\<^sub>f])
+      subgoal by auto
+      subgoal by auto
+      subgoal by auto
+      subgoal apply (intro reflcl_over_nhole_mctxt_ta_sound[of "fill_holes (mctxt_of_gmctxt C) (map Var qs)", simplified])
+        subgoal by (subst funas_mctxt_fill_holes, auto simp: funas_mctxt_of_gmctxt_conv)
+        subgoal by (auto dest!: in_set_idx)
+        subgoal by (auto dest!: in_set_idx)
+        done
+      done
     then have "t \<in> ?Ls" unfolding const
       by (simp add: fill_holes_mctxt_of_gmctxt_to_fill_gholes gta_langI len)}
   then show ?thesis using ls by blast
@@ -979,7 +997,8 @@ proof -
       using Ex_list_of_length_P[of "length ss" "\<lambda> q i. q |\<in>| ta_der \<A> (term_of_gterm (ss ! i)) \<and> q |\<in>| Q"]
       by (metis (full_types) finterI gta_langE gterm_ta_der_states length_map map_nth_eq_conv)
     have "C = GMHole \<Longrightarrow> is_Var (fill_holes (mctxt_of_gmctxt C) (map Var qs)) = True" using len states(1)
-      by (metis fill_holes_MHole length_map mctxt_of_gmctxt.simps(1) nth_map num_gholes.simps(1) term.disc(1))
+      by (metis One_nat_def fill_holes_MHole is_VarI length_map
+          mctxt_of_gmctxt.simps(1) nth_map num_gholes.simps(1))
     then have hole: "C = GMHole \<Longrightarrow> q\<^sub>i |\<in>| ta_der ?A (fill_holes (mctxt_of_gmctxt C) (map term_of_gterm ss))"
       using reachA len gr_fun states len
       using reflcl_over_nhole_mctxt_ta_sound[of "fill_holes (mctxt_of_gmctxt C) (map Var qs)"]
@@ -990,10 +1009,19 @@ proof -
       by (cases C) auto
     then have "C \<noteq> GMHole \<Longrightarrow> q\<^sub>f |\<in>| ta_der ?A (fill_holes (mctxt_of_gmctxt C) (map term_of_gterm ss))"
       using reachA len gr_fun states
-      using reflcl_over_nhole_mctxt_ta_sound[of "fill_holes (mctxt_of_gmctxt C) (map Var qs)"]
-      by (intro sq.mctxt_const_to_ta_der[of "mctxt_of_gmctxt C" "map term_of_gterm ss" qs q\<^sub>f])
-         (auto simp: funas_mctxt_of_gmctxt_conv set_list_subset_eq_nth_conv
-          dest!: in_set_idx)
+      apply (intro sq.mctxt_const_to_ta_der[of "mctxt_of_gmctxt C" "map term_of_gterm ss" qs q\<^sub>f])
+      subgoal by auto
+      subgoal by auto
+      subgoal by auto
+      subgoal 
+        apply (intro reflcl_over_nhole_mctxt_ta_sound[of "fill_holes (mctxt_of_gmctxt C) (map Var qs)", 
+              THEN conjunct2, rule_format])
+        subgoal by (subst funas_mctxt_fill_holes, auto simp: funas_mctxt_of_gmctxt_conv)
+        subgoal by (auto dest!: in_set_idx)
+        subgoal by (auto dest!: in_set_idx)
+        subgoal by auto
+        done
+      done
     then have "t \<in> ?Ls" using hole const' unfolding gta_lang_def gta_der_def
       by (metis (mono_tags, lifting) fempty_iff finsert_iff finterI mem_Collect_eq)}
   ultimately show ?thesis
