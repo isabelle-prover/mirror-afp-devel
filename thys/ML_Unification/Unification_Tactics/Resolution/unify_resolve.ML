@@ -12,7 +12,7 @@ Unification-resolution tactics with arguments from context.
 
 @{parse_entries (sig) PARSE_UNIFY_RESOLVE_CHAINED_MODES [insert, resolve, fact]}
 
-@{parse_entries (sig) PARSE_UNIFY_RESOLVE_RESOLVE_MODES [r, rr, e, re, d, rd, f, rf]}
+@{parse_entries (sig) PARSE_UNIFY_RESOLVE_RESOLVE_MODES [r, rr, e, re, d, rd, f]}
 
 signature UNIFY_RESOLVE_ARGS =
 sig
@@ -78,7 +78,7 @@ val parse_mode = PM.parse_key
 type chained_mode = PCM.key
 val parse_chained_mode = PCM.parse_key
 
-@{parse_entries (struct) PRM [r, rr, e, re, d, rd, f, rf]}
+@{parse_entries (struct) PRM [r, rr, e, re, d, rd, f]}
 type resolve_mode = PRM.key
 val parse_resolve_mode = PRM.parse_key
 
@@ -96,7 +96,6 @@ fun unify_resolve_tac args chained_facts ctxt i =
         PRM.rr _ => (PRM.key PRM.r, true)
       | PRM.re _ => (PRM.key PRM.e, true)
       | PRM.rd _ => (PRM.key PRM.d, true)
-      | PRM.rf _ => (PRM.key PRM.f, true)
       | _ => (rmode, false)
     val (rmode, repeat) = rmode_repeat (PA.get_resolve_mode args)
     val resolve_fn = (case (rmode, mode) of
@@ -283,7 +282,6 @@ val parse_method =
   end
 
 val setup_method = Method.local_setup binding parse_method o
-  the_default ("r/e/d/f-resolve rule(s) with first subgoal; with adjustable unifier "
-    ^ enclose "(" ")" FI.long_name)
+  the_default ("(e/d/f-)resolution with adjustable unifier " ^ enclose "(" ")" FI.long_name)
 
 end
