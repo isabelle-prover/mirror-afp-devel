@@ -190,6 +190,18 @@ by (auto simp add: Nts_def)
 lemma Nts_Un: "Nts (P1 \<union> P2) = Nts P1 \<union> Nts P2"
 by (simp add: Nts_def)
 
+lemma Rhss_Un: "Rhss (P \<union> Q) A = Rhss P A \<union> Rhss Q A"
+  by (auto simp: Rhss_def)
+
+lemma Rhss_UN: "Rhss (\<Union>PP) A = \<Union>{Rhss P A | P. P \<in> PP}"
+  by (auto simp: Rhss_def)
+
+lemma Rhss_empty[simp]: "Rhss {} A = {}"
+  by (auto simp: Rhss_def)
+
+lemma Rhss_insert: "Rhss (insert (A,\<alpha>) P) B = (if A = B then insert \<alpha> (Rhss P B) else Rhss P B)"
+  by (auto simp: Rhss_def)
+
 lemma Nts_Lhss_Rhs_Nts: "Nts P = Lhss P \<union> Rhs_Nts P"
 unfolding Nts_def Lhss_def Rhs_Nts_def by auto
 
@@ -1034,6 +1046,14 @@ next
   then show "?R \<turnstile> xs \<Rightarrow>* map Tm w \<Longrightarrow> ?L \<turnstile> xs \<Rightarrow>* map Tm w" for xs w
     by (auto simp: rtranclp_power)
 qed
+
+text \<open>In particular, if there is only one alternative, then one can just substitute
+an occurrence of the nonterminal by the alternative.\<close>
+
+lemma Lang_subst1:
+  assumes AB: "A \<noteq> B" and PB: "Rhss P B = {\<beta>}"
+  shows "Lang (insert (A, \<alpha> @ Nt B # \<gamma>) P) = Lang (insert (A,\<alpha>@\<beta>@\<gamma>) P)"
+  using Lang_expand[OF AB, where P = P, unfolded PB] by simp
 
 text \<open>Some facts about \<open>\<epsilon>\<close>-derivations:\<close>
 
