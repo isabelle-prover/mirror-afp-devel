@@ -1,8 +1,9 @@
 section \<open>Preliminaries\<close>
 theory Terms_Positions
-  imports Regular_Tree_Relations.Ground_Terms
+  imports 
+    Regular_Tree_Relations.Ground_Terms
+    First_Order_Rewriting.Trs
 begin
-
 subsection \<open>Additional operations on terms and positions\<close>
 
 subsubsection \<open>Linearity\<close>
@@ -17,7 +18,10 @@ lemma var_poss_def: "var_poss s = {p | p. p \<in> poss s \<and> is_Var (s |_ p)}
 
 subsubsection \<open>Replacing functions symbols that aren't specified in the signature by variables\<close>
 
-definition "funas_rel \<R> = (\<Union> (l, r) \<in> \<R>. funas_term l \<union> funas_term r)"
+abbreviation "funas_rel \<equiv> funas_trs" 
+
+lemma funas_rel_def: "funas_rel \<R> = (\<Union> (l, r) \<in> \<R>. funas_term l \<union> funas_term r)"
+  unfolding funas_trs_def funas_rule_def by auto
 
 fun term_to_sig where
   "term_to_sig \<F> v (Var x) = Var x"
@@ -51,61 +55,6 @@ fun replace_term_context_at :: "('f, 'v) ctxt \<Rightarrow> pos \<Rightarrow> ('
 
 abbreviation "constT c \<equiv> Fun c []"
 
-subsubsection \<open>Multihole context closure of a term relation as inductive set\<close>
-
-definition all_ctxt_closed where
-  "all_ctxt_closed F r \<longleftrightarrow> (\<forall>f ts ss. (f, length ss) \<in> F \<longrightarrow> length ts = length ss \<longrightarrow>
-    (\<forall>i. i < length ts \<longrightarrow> (ts ! i, ss ! i) \<in> r) \<longrightarrow>
-    (\<forall> i. i < length ts \<longrightarrow> funas_term (ts ! i) \<union> funas_term (ss ! i) \<subseteq> F) \<longrightarrow> (Fun f ts, Fun f ss) \<in> r) \<and>
-    (\<forall> x. (Var x, Var x) \<in> r)"
-
-
-
-subsection \<open>Destruction and introduction of @{const all_ctxt_closed}\<close>
-
-lemma all_ctxt_closedD: "all_ctxt_closed F r \<Longrightarrow> (f,length ss) \<in> F \<Longrightarrow> length ts = length ss
-  \<Longrightarrow> \<lbrakk>\<And> i. i < length ts \<Longrightarrow> (ts ! i, ss ! i) \<in> r \<rbrakk>
-  \<Longrightarrow> \<lbrakk>\<And> i. i < length ts \<Longrightarrow> funas_term (ts ! i) \<subseteq> F \<rbrakk>
-  \<Longrightarrow> \<lbrakk>\<And> i. i < length ts \<Longrightarrow> funas_term (ss ! i) \<subseteq> F \<rbrakk>
-  \<Longrightarrow> (Fun f ts, Fun f ss) \<in> r"
-  unfolding all_ctxt_closed_def by auto
-
-lemma trans_ctxt_sig_imp_all_ctxt_closed: assumes tran: "trans r"
-  and refl: "\<And> t. funas_term t \<subseteq> F \<Longrightarrow> (t,t) \<in> r"
-  and ctxt: "\<And> C s t. funas_ctxt C \<subseteq> F \<Longrightarrow> funas_term s \<subseteq> F \<Longrightarrow> funas_term t \<subseteq> F \<Longrightarrow> (s,t) \<in> r \<Longrightarrow> (C \<langle> s \<rangle>, C \<langle> t \<rangle>) \<in> r"
-  shows "all_ctxt_closed F r" unfolding all_ctxt_closed_def
-proof (rule, intro allI impI)
-  fix f ts ss
-  assume f: "(f,length ss) \<in> F" and
-         l: "length ts = length ss" and
-         steps: "\<forall> i < length ts. (ts ! i, ss ! i) \<in> r" and
-         sig: "\<forall> i < length ts. funas_term (ts ! i) \<union>  funas_term (ss ! i) \<subseteq> F"
-  from sig have sig_ts: "\<And> t. t \<in> set ts \<Longrightarrow> funas_term t \<subseteq> F"  unfolding set_conv_nth by auto
-  let ?p = "\<lambda> ss. (Fun f ts, Fun f ss) \<in> r \<and> funas_term (Fun f ss) \<subseteq> F"
-  let ?r = "\<lambda> xsi ysi. (xsi, ysi) \<in> r \<and> funas_term ysi \<subseteq> F"
-  have init: "?p ts" by (rule conjI[OF refl], insert f sig_ts l, auto)
-  have "?p ss"
-  proof (rule parallel_list_update[where p = ?p and r = ?r, OF _ HOL.refl init l[symmetric]])
-    fix xs i y
-    assume len: "length xs = length ts"
-       and i: "i < length ts"
-       and r: "?r (xs ! i) y"
-       and p: "?p xs"
-    let ?C = "More f (take i xs) Hole (drop (Suc i) xs)"
-    have id1: "Fun f xs = ?C \<langle> xs ! i\<rangle>" using id_take_nth_drop[OF i[folded len]] by simp
-    have id2: "Fun f (xs[i := y]) = ?C \<langle> y \<rangle>" using upd_conv_take_nth_drop[OF i[folded len]] by simp
-    from p[unfolded id1] have C: "funas_ctxt ?C \<subseteq> F" and xi: "funas_term (xs ! i) \<subseteq> F" by auto
-    from r have "funas_term y \<subseteq> F" "(xs ! i, y) \<in> r" by auto
-    with ctxt[OF C xi this] C have r: "(Fun f xs, Fun f (xs[i := y])) \<in> r"
-      and f: "funas_term (Fun f (xs[i := y])) \<subseteq> F" unfolding id1 id2 by auto
-    from p r tran have "(Fun f ts, Fun f (xs[i := y])) \<in> r" unfolding trans_def by auto
-    with f
-    show "?p (xs[i := y])"  by auto
-  qed (insert sig steps, auto)
-  then show "(Fun f ts, Fun f ss) \<in> r" ..
-qed (insert refl, auto)
-
-
 
 subsection \<open>Lemmas for @{const poss} and ordering of positions\<close>
 
@@ -126,9 +75,7 @@ lemma poss_pos_diffI:
   "p \<le>\<^sub>p q \<Longrightarrow> q \<in> poss s \<Longrightarrow> q -\<^sub>p p \<in> poss (s |_ p)"
   using poss_append_poss by fastforce
 
-lemma poss_ctxt_apply [simp]:
-  "hole_pos C @ p \<in> poss C\<langle>s\<rangle> \<longleftrightarrow> p \<in> poss s"
-  by (induct C) auto
+declare hole_pos_poss_conv[simp]
 
 lemma pos_replace_at_pres:
   "p \<in> poss s \<Longrightarrow> p \<in> poss s[p \<leftarrow> t]"
@@ -171,15 +118,11 @@ qed
 subsection \<open>Lemmas for @{const subt_at} and @{const replace_term_at}\<close>
 
 lemma subt_at_append_dist:
-  "p @ q \<in> poss s \<Longrightarrow> s |_ (p @ q) = (s |_ p) |_ q"
-proof (induct p arbitrary: s)
-  case (Cons i p) then show ?case
-    by (cases s) auto
-qed auto
+  "p @ q \<in> poss s \<Longrightarrow> s |_ (p @ q) = (s |_ p) |_ q" 
+  by simp
 
 lemma ctxt_apply_term_subt_at_hole_pos [simp]:
-  "C\<langle>s\<rangle> |_ (hole_pos C @ q) = s |_ q"
-  by (induct C) auto
+  "C\<langle>s\<rangle> |_ (hole_pos C @ q) = s |_ q" by simp
 
 lemma replace_term_at_subt_at_id [simp]: "s[p \<leftarrow> (s |_ p)] = s"
 proof (induct p arbitrary: s)
@@ -300,17 +243,7 @@ subsection \<open>Misc\<close>
 
 lemma funas_term_subt_at:
   "(f, n) \<in> funas_term t \<Longrightarrow> (\<exists> p ts. p \<in> poss t \<and> t |_ p = Fun f ts \<and> length ts = n)"
-proof (induct t)
-  case (Fun g ts) note IH = this
-  show ?case
-  proof (cases "g = f \<and> length ts = n")
-    case False
-    then obtain i where i: "i < length ts" "(f, n) \<in> funas_term (ts ! i)" using IH(2)
-      using in_set_idx by force
-    from IH(1)[OF nth_mem[OF this(1)] this(2)] show ?thesis using i(1)
-      by (metis poss_Cons_poss subt_at.simps(2) term.sel(4))
-  qed auto
-qed simp
+  unfolding funas_term_poss_conv by force
 
 declare ground_substI[intro, simp]
 lemma ground_ctxt_substI:
@@ -323,10 +256,7 @@ lemma var_poss_Fun[simp]:
 
 lemma vars_term_empty_ground:
   "vars_term s = {} \<Longrightarrow> ground s"
-  by (metis equals0D ground_substI subst_ident)
-
-lemma ground_subst_apply: "ground t \<Longrightarrow> t \<cdot> \<sigma> = t"
-  by (induct t) (auto intro: nth_equalityI)
+  unfolding ground_vars_term_empty .
 
 lemma var_poss_empty_gound:
  "var_poss s = {} \<longleftrightarrow> ground s"
@@ -392,12 +322,6 @@ lemma poss_of_term_poss_emptyD:
 
 lemma possc_subt_at_ctxt_apply:
   "p \<in> possc C \<Longrightarrow> p \<bottom> hole_pos C \<Longrightarrow> C\<langle>s\<rangle> |_ p = C\<langle>t\<rangle> |_ p"
-proof (induct p arbitrary: C)
-  case (Cons i p)
-  have [dest]: "length ss # p \<in> possc (More f ss D ts) \<Longrightarrow> p \<in> possc D" for f ss D ts
-    by (auto simp: possc_def)
-  show ?case using Cons
-    by (cases C) (auto simp: nth_append_Cons)
-qed simp
+  by (metis par_pos_replace_term_at poss_imp_possc replace_at_hole_pos)
 
 end

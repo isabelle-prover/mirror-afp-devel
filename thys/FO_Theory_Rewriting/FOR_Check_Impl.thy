@@ -140,7 +140,7 @@ proof -
     by (auto simp: case_prod_beta GTT_comp_eps_free_def intro!: agtt_lang_derI)
 qed
 
-fun gtt_of_gtt_rel_impl :: "('f \<times> nat) fset \<Rightarrow> ('f :: linorder, 'v) fin_trs list \<Rightarrow> ftrs gtt_rel \<Rightarrow> (nat, 'f) gtt option" where
+fun gtt_of_gtt_rel_impl :: "('f \<times> nat) fset \<Rightarrow> ('f :: compare, 'v) fin_trs list \<Rightarrow> ftrs gtt_rel \<Rightarrow> (nat, 'f) gtt option" where
   "gtt_of_gtt_rel_impl \<F> Rs (ARoot is) = liftO1 (\<lambda>R. relabel_gtt (root_step R \<F>)) (is_to_trs' Rs is)"
 | "gtt_of_gtt_rel_impl \<F> Rs (GInv g) = liftO1 prod.swap (gtt_of_gtt_rel_impl \<F> Rs g)"
 | "gtt_of_gtt_rel_impl \<F> Rs (AUnion g1 g2) = liftO2 (\<lambda>g1 g2. relabel_gtt (AGTT_union' g1 g2)) (gtt_of_gtt_rel_impl \<F> Rs g1) (gtt_of_gtt_rel_impl \<F> Rs g2)"
@@ -290,7 +290,7 @@ lemma \<L>_eps_free_nhole_mctxt_closure_reg:
     reflcl_over_nhole_ctxt_ta_def dest: ftranclD ftranclD2)
   by (meson fimageI finsert_iff finterI fr_into_trancl ftrancl_into_trancl)
 
-fun rr1_of_rr1_rel_impl :: "('f \<times> nat) fset \<Rightarrow> ('f :: linorder, 'v) fin_trs list \<Rightarrow> ftrs rr1_rel \<Rightarrow> (nat, 'f) reg option"
+fun rr1_of_rr1_rel_impl :: "('f \<times> nat) fset \<Rightarrow> ('f :: compare_order, 'v) fin_trs list \<Rightarrow> ftrs rr1_rel \<Rightarrow> (nat, 'f) reg option"
 and rr2_of_rr2_rel_impl :: "('f \<times> nat) fset \<Rightarrow> ('f, 'v) fin_trs list \<Rightarrow> ftrs rr2_rel \<Rightarrow> (nat, 'f option \<times> 'f option) reg option" where
   "rr1_of_rr1_rel_impl \<F> Rs R1Terms = Some (relabel_reg (term_reg \<F>))"
 | "rr1_of_rr1_rel_impl \<F> Rs (R1NF is) = liftO1 (\<lambda>R. (simplify_reg (nf_reg (fst |`| R) \<F>))) (is_to_trs' Rs is)"
@@ -653,7 +653,7 @@ lemma check_trss:
   unfolding check_trss_def list_all_iff
   by (auto simp: ffunas_trs.rep_eq less_eq_fset.rep_eq)
 
-fun check_inference_list :: "('f \<times> nat) fset \<Rightarrow> ('f ::  {compare,linorder}, 'v) fin_trs list
+fun check_inference_list :: "('f \<times> nat) fset \<Rightarrow> ('f :: compare_order, 'v) fin_trs list
   \<Rightarrow> (nat \<times> ftrs inference \<times> ftrs formula \<times> info list) list
   \<Rightarrow> (ftrs formula \<times> nat list \<times> (nat, 'f option list) reg) list option" where
   "check_inference_list \<F> Rs infs = do {

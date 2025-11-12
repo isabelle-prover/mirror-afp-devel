@@ -42,6 +42,8 @@ lemma unit_elim_rel_Eps_free:
   using assms 
   unfolding unit_elim_rel_def Eps_free_def Unit_rm_def Unit_prods_def New_prods_def by auto
 
+lemma Tms_Unit_elim_subset: "Tms (Unit_elim P) \<subseteq> Tms P"
+unfolding Unit_elim_def Unit_rm_def New_prods_def Tms_def by(auto)
 
 subsection \<open>Code on lists\<close>
 

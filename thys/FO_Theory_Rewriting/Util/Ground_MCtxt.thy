@@ -1,8 +1,9 @@
 theory Ground_MCtxt
   imports
-   Multihole_Context
+   Multihole_Context_More
    Regular_Tree_Relations.Ground_Terms
    Regular_Tree_Relations.Ground_Ctxt
+   Utils
 begin
 
 subsection \<open>Ground multihole context\<close>

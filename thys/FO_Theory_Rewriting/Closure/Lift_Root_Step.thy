@@ -4,7 +4,7 @@ theory Lift_Root_Step
     Rewriting
     FOR_Certificate
     Context_Extensions
-    Multihole_Context
+    First_Order_Rewriting.Multihole_Context
 begin
 
 text \<open>Closure under all contexts\<close>
@@ -74,11 +74,11 @@ lemma compatible_p [simp]:
   by rule (case_tac C, auto)+
 
 lemma gmctxtcl_funas_sigcl:
-  "all_ctxt_closed \<F> (gmctxtcl_funas \<F> \<R>)"
+  "all_ctxt_closed_gterm \<F> (gmctxtcl_funas \<F> \<R>)"
   by (intro gmctxtex_onp_sig_closed) auto
 
 lemma gctxtex_funas_nroot_sigcl:
-  "all_ctxt_closed \<F> (gmctxtex_funas_nroot \<F> \<R>)"
+  "all_ctxt_closed_gterm \<F> (gmctxtex_funas_nroot \<F> \<R>)"
   by (intro gmctxtex_onp_sig_closed) auto
 
 lemma gmctxtcl_funas_strict_funcl:
@@ -373,7 +373,7 @@ lemma R_in_gtrancl_rel:
 proof
   fix s t assume ass: "(s, t) \<in> \<R>"
   then have "(s, s) \<in> gmctxtcl_funas \<F> \<R>" "(t, t) \<in> gmctxtcl_funas \<F> \<R>" using assms
-    using all_ctxt_closed_imp_reflx_on_sig[OF gmctxtcl_funas_sigcl, of \<F> \<R>]
+    using all_ctxt_closed_gterm_imp_reflx_on_sig[OF gmctxtcl_funas_sigcl, of \<F> \<R>]
     by auto
   then show "(s, t) \<in> gtrancl_rel \<F> \<R>" using ass
     by (auto simp: gmctxt_cl_gmctxtex_onp_conv relcomp_unfold gtrancl_rel_def)

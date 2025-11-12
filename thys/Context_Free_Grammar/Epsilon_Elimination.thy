@@ -497,6 +497,10 @@ by(auto split: prod.splits dest: set_eps_closure_subset)
 corollary nts_eps_elim: "Nts(set(eps_elim ps)) \<subseteq> Nts(set ps)"
   by (metis set_eps_elim Nts_Eps_elim)
 
+corollary Tms_Eps_elim_subset:
+  "Tms (Eps_elim P) \<subseteq> Tms P"
+unfolding Tms_def Tms_syms_def Eps_elim_def using set_eps_closure_subset by force
+
 corollary lang_eps_elim: "lang (eps_elim ps) S = lang ps S - {[]}"
   by (metis Lang_Eps_elim set_eps_elim)
 

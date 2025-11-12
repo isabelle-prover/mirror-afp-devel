@@ -255,7 +255,7 @@ proof
   let ?t_o_g = "term_of_gterm :: 'f gterm \<Rightarrow> ('f, 'v) Term.term"
   have [simp]: "\<F> |\<union>| |\<Union>| ((ffunas_term \<circ> fst) |`| R) = \<F>"
     "\<F> |\<union>| |\<Union>| ((ffunas_term \<circ> snd) |`| R) = \<F>" using assms(2)
-    by (force simp: less_eq_fset.rep_eq ffunas_trs.rep_eq funas_trs_def ffunas_term.rep_eq ffUnion.rep_eq)+
+    by (fastforce simp: less_eq_fset.rep_eq ffunas_trs.rep_eq funas_trs_def funas_rule_def ffunas_term.rep_eq ffUnion.rep_eq)+
   {fix s t assume "(s, t) \<in> ?Ls"
     from pair_at_langE[OF this] obtain p q where st: "(q, p) |\<in>| Rel\<^sub>f R"
       "q |\<in>| gta_der (fst (root_pair_automaton \<F> R)) s" "p |\<in>| gta_der (snd (root_pair_automaton \<F> R)) t"
