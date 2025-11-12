@@ -3,7 +3,7 @@
                 Kevin Kappelmann TU Muenchen
 
 Higher-Order Patterns due to Tobias Nipkow.
-E-Unification and theorem construction due to Kevin Kappelmann.
+Proof-producing E-Unification due to Kevin Kappelmann.
 
 See also:
 Tobias Nipkow. Functional Unification of Higher-Order Patterns.
@@ -15,14 +15,14 @@ signature HIGHER_ORDER_PATTERN_UNIFICATION =
 sig
   include HAS_LOGGER
 
-  (* e-matching *)
+  (* E-matching *)
   (*precondition: types of terms are matched*)
   val e_match : Unification_Base.type_matcher -> Unification_Base.matcher ->
     Unification_Base.e_matcher
   val match : Unification_Base.matcher
   val norms_match : Unification_Base.normalisers
 
-  (* e-unification *)
+  (* E-unification *)
   (*precondition: types of terms are unified*)
   val e_unify : Unification_Base.type_unifier -> Unification_Base.unifier ->
     Unification_Base.e_unifier

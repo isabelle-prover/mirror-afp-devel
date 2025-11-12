@@ -1,7 +1,7 @@
 (*  Title:      ML_Unification/unification_combine.ML
     Author:     Kevin Kappelmann
 
-Combine a list of e-unifiers.
+Combine a list of E-unifiers.
 *)
 @{parse_entries (sig) PARSE_UNIFICATION_COMBINE_MODE [add, del]}
 
@@ -34,7 +34,7 @@ sig
   structure Table : TABLE
   where type key = Prio.prio
   type eunif_datas = eunif_data list Table.table
-  (*storing the e-unifiers and metadata*)
+  (*storing the E-unifiers and metadata*)
   structure Data : GENERIC_DATA
   where type T = eunif_datas
 
@@ -158,7 +158,7 @@ fun pretty_data ctxt = get_eunif_datas (Context.Proof ctxt)
 fun e_unify unif binders ctxt tp env = Seq.make (fn _ =>
   (@{log Logger.DEBUG} ctxt (fn _ =>
     Pretty.block [
-      Pretty.str "Combining e-unifiers for ",
+      Pretty.str "Combining E-unifiers for ",
       Unification_Util.pretty_unif_problem ctxt (apply2 (Envir_Normalisation.norm_term_unif env) tp)
     ] |> Pretty.string_of);
   UCB.concat_e_unifiers (get_e_unifiers (Context.Proof ctxt)) unif binders ctxt tp env) |> Seq.pull)

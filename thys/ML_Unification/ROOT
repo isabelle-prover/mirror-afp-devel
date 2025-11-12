@@ -2,7 +2,7 @@ chapter AFP
 
 session ML_Unification = HOL +
   description
-    \<open>Various unification utilities for Isabelle/ML, e.g. E-unification, E-matching, and unification hints.\<close>
+    \<open>Various unification utilities for Isabelle/ML, e.g. proof-producing E-unification, E-matching, and unification hints.\<close>
   options [timeout = 300]
   sessions
     SpecCheck

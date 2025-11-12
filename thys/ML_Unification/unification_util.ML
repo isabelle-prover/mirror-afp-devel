@@ -1,7 +1,7 @@
 (*  Title:      ML_Unification/unification_util.ML
     Author:     Kevin Kappelmann
 
-Utilities used for e-unifications.
+Utilities used for E-unifications.
 *)
 signature UNIFICATION_UTIL =
 sig

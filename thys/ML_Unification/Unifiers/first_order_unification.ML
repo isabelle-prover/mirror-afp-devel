@@ -1,18 +1,18 @@
 (*  Title:      ML_Unification/first_order_unification.ML
     Author:     Kevin Kappelmann, Paul Bachmann
 
-First-order E-unification.
+Proof-producing first-order E-unification.
 *)
 signature FIRST_ORDER_UNIFICATION =
 sig
   include HAS_LOGGER
 
-  (* e-matching *)
+  (* E-matching *)
   val e_match : Unification_Base.type_matcher -> Unification_Base.e_matcher
   val match : Unification_Base.matcher
   val norms_match : Unification_Base.normalisers
 
-  (* e-unification *)
+  (* E-unification *)
   val e_unify : Unification_Base.type_unifier -> Unification_Base.e_unifier
   val unify : Unification_Base.unifier
   val norms_unify : Unification_Base.normalisers
@@ -34,7 +34,7 @@ exception FALLBACK
 fun seq_try sq = General_Util.seq_try FALLBACK sq
 
 
-(* e-matching *)
+(* E-matching *)
 
 (*Note: by E-matching we mean "matching modulo equalities" in the general sense,
 i.e. when matching p \<equiv>? t, t may contain variables.*)
@@ -128,7 +128,7 @@ fun e_match match_types match_theory binders ctxt pt env = Seq.make (fn _ =>
 val match = e_match Util.match_types Comb.fail_match
 val norms_match = Util.eta_short_norms_match
 
-(* e-unification *)
+(* E-unification *)
 
 (*occurs check*)
 fun occurs v (Var (x, _)) = x = v
