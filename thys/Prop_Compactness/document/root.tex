@@ -1,7 +1,27 @@
 \documentclass[11pt,a4paper]{article}
-\usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage{isabelle,isabellesym}
+
+% further packages required for unusual symbols (see also
+% isabellesym.sty), use only when needed
+
+%\usepackage{amssymb}
+  %for \<leadsto>, \<box>, \<diamond>, \<sqsupset>, \<mho>, \<Join>,
+  %\<lhd>, \<lesssim>, \<greatersim>, \<lessapprox>, \<greaterapprox>,
+  %\<triangleq>, \<yen>, \<lozenge>
+
+%\usepackage{eurosym}
+  %for \<euro>
+
+%\usepackage[only,bigsqcap,bigparallel,fatsemi,interleave,sslash]{stmaryrd}
+  %for \<Sqinter>, \<Parallel>, \<Zsemi>, \<Parallel>, \<sslash>
+
+%\usepackage{eufrak}
+  %for \<AA> ... \<ZZ>, \<aa> ... \<zz> (also included in amssymb)
+
+%\usepackage{textcomp}
+  %for \<onequarter>, \<onehalf>, \<threequarters>, \<degree>, \<cent>,
+  %\<currency>
 
 % this should be the last package used
 \usepackage{pdfsetup}
@@ -28,13 +48,14 @@ Sede Manizales, Colombia \\[1mm]
 \maketitle
 
 \begin{abstract}
-This theory formalises the compactness theorem for propositional 
-logic based on the model existence theorem approach. 
-It also presents applications of the compactness theorem to formalize 
-combinatorial theorems over countable structures:  
-the de Bruijn-Erd\H{o}s Graph coloring theorem for countable graphs, 
-König's Lemma, and set- and graph-theoretical versions of Hall's Theorem for 
-countable families of sets and graphs.
+This theory formalises the compactness theorem for propositional logic
+based on the model existence theorem approach. It also presents
+applications of compactness theorem to formalize combinatorial
+theorems over countable structures:  the De Bruijn-Erdös Graph
+coloring theorem for countable graphs, König Lemma, and set- and
+graph-theoretical versions of Hall's Theorem for countable families of
+sets and graphs.  The theory has been updated following constructive
+recommendations gently provided by reviewers. 
 \end{abstract}
 
 

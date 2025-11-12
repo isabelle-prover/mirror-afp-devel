@@ -2,6 +2,7 @@
    Fabian Fernando Serrano Suárez  UNAL Manizales
    Thaynara Arielly de Lima        Universidade Federal de Goiáis 
    Mauricio Ayala-Rincón           Universidade de Brasília
+   Last modified: 11 Aug, 2025
 *) 
 theory Hall_Theorem
   imports  
@@ -29,43 +30,43 @@ lemma list_to_set:
   using assms  set_set_to_list  by auto
 
 primrec disjunction_atomic :: "'b list \<Rightarrow>'a \<Rightarrow> ('a \<times> 'b)formula"  where
- "disjunction_atomic [] i = FF"   
+ "disjunction_atomic [] i = \<bottom>."   
 | "disjunction_atomic (x#D) i = (atom (i, x)) \<or>. (disjunction_atomic D i)"
 
 lemma t_v_evaluation_disjunctions1:
-  assumes "t_v_evaluation I (disjunction_atomic (a # l) i) = Ttrue"
-  shows "t_v_evaluation I (atom (i,a)) = Ttrue \<or> t_v_evaluation I (disjunction_atomic l i) = Ttrue" 
+  assumes "t_v_evaluation I (disjunction_atomic (a # l) i)"
+  shows "t_v_evaluation I (atom (i,a)) \<or> t_v_evaluation I (disjunction_atomic l i)" 
 proof-
   have
   "(disjunction_atomic (a # l) i) = (atom (i,a)) \<or>. (disjunction_atomic l i)"
     by auto
-  hence "t_v_evaluation I ((atom (i ,a)) \<or>. (disjunction_atomic l i)) = Ttrue" 
+  hence "t_v_evaluation I ((atom (i ,a)) \<or>. (disjunction_atomic l i))" 
     using assms by auto
-  thus ?thesis using DisjunctionValues by blast
+  thus ?thesis  by auto
 qed
 
 lemma t_v_evaluation_atom:
-  assumes "t_v_evaluation I (disjunction_atomic l i) = Ttrue"
-  shows "\<exists>x. x \<in> set l \<and> (t_v_evaluation I (atom (i,x)) = Ttrue)"
+  assumes "t_v_evaluation I (disjunction_atomic l i)"
+  shows "\<exists>x. x \<in> set l \<and> (t_v_evaluation I (atom (i,x)))"
 proof-
-  have "t_v_evaluation I (disjunction_atomic l i) = Ttrue \<Longrightarrow>
-  \<exists>x. x \<in> set l \<and> (t_v_evaluation I (atom (i,x)) = Ttrue)"
+  have "t_v_evaluation I (disjunction_atomic l i) \<Longrightarrow>
+  \<exists>x. x \<in> set l \<and> (t_v_evaluation I (atom (i,x)))"
   proof(induct l)
     case Nil
     then show ?case by auto
   next   
     case (Cons a l)  
-    show  "\<exists>x. x \<in> set (a # l) \<and> t_v_evaluation I (atom (i,x)) = Ttrue"  
+    show  "\<exists>x. x \<in> set (a # l) \<and> t_v_evaluation I (atom (i,x))"  
     proof-
       have
-      "(t_v_evaluation I (atom (i,a)) = Ttrue) \<or> t_v_evaluation I (disjunction_atomic l i)=Ttrue" 
+      "(t_v_evaluation I (atom (i,a))) \<or> t_v_evaluation I (disjunction_atomic l i)" 
         using Cons(2) t_v_evaluation_disjunctions1[of I] by auto      
       thus ?thesis
     proof(rule disjE)
-      assume "t_v_evaluation I (atom (i,a)) = Ttrue"
+      assume "t_v_evaluation I (atom (i,a))"
       thus ?thesis by auto
     next
-      assume "t_v_evaluation I (disjunction_atomic l i) = Ttrue" 
+      assume "t_v_evaluation I (disjunction_atomic l i)" 
       thus ?thesis using Cons by auto    
     qed
   qed
@@ -88,8 +89,8 @@ definition \<T> :: "('a \<Rightarrow> 'b set) \<Rightarrow> 'a set \<Rightarrow>
    "\<T> S I  \<equiv> (\<F> S I) \<union> (\<G> S I) \<union> (\<H> S I)" 
 
 primrec indices_formula :: "('a \<times> 'b)formula  \<Rightarrow> 'a set" where
-  "indices_formula FF = {}"
-| "indices_formula TT = {}"
+  "indices_formula \<bottom>. = {}"
+| "indices_formula \<top>. = {}"
 | "indices_formula (atom P) =  {fst P}"
 | "indices_formula (\<not>. F) = indices_formula F"
 | "indices_formula (F \<and>. G) = indices_formula F \<union> indices_formula G"
@@ -431,42 +432,36 @@ proof-
   thus ?thesis by(unfold system_representatives_def, auto)
 qed
 
-fun Hall_interpretation :: "('a \<Rightarrow> 'b set) \<Rightarrow> 'a set \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> (('a \<times> 'b) \<Rightarrow> v_truth)"  where
-"Hall_interpretation A \<I> R = (\<lambda>(i,x).(if  i \<in> \<I> \<and> x \<in> (A i) \<and> (R i) = x  then Ttrue else Ffalse))"
+fun Hall_interpretation :: "('a \<Rightarrow> 'b set) \<Rightarrow> 'a set \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> (('a \<times> 'b) \<Rightarrow> bool)"  where
+"Hall_interpretation A \<I> R = (\<lambda>(i,x).(if  i \<in> \<I> \<and> x \<in> (A i) \<and> (R i) = x  then True else False))"
 
 lemma t_v_evaluation_index:
-  assumes  "t_v_evaluation (Hall_interpretation S I R) (atom (i,x)) = Ttrue"
+  assumes  "t_v_evaluation (Hall_interpretation S I R) (atom (i,x))"
   shows  "(R i) = x"
 proof(rule ccontr)
-  assume  "(R i) \<noteq> x" hence "t_v_evaluation (Hall_interpretation S I R) (atom (i,x)) \<noteq> Ttrue" 
+  assume  "(R i) \<noteq> x" hence "\<not> t_v_evaluation (Hall_interpretation S I R) (atom (i,x))" 
     by auto
-  hence "t_v_evaluation (Hall_interpretation S I R) (atom (i,x)) = Ffalse" 
-  using non_Ttrue[of "Hall_interpretation S I R" "atom (i,x)"] by auto 
+  hence "\<not> t_v_evaluation (Hall_interpretation S I R) (atom (i,x))" 
+    by auto
   thus False using assms by simp
 qed
 
 lemma distinct_elements_distinct_indices:
   assumes "F = \<not>.(atom (i,x) \<and>. atom(i,y))" and "x\<noteq>y"  
-  shows "t_v_evaluation (Hall_interpretation S I R) F = Ttrue"
+  shows "t_v_evaluation (Hall_interpretation S I R) F"
 proof(rule ccontr)
-  assume "t_v_evaluation (Hall_interpretation S I R) F \<noteq> Ttrue"
+  assume "\<not>t_v_evaluation (Hall_interpretation S I R) F"
   hence
-  "t_v_evaluation (Hall_interpretation S I R) (\<not>.(atom (i,x) \<and>. atom (i, y))) \<noteq> Ttrue" 
+  "\<not>t_v_evaluation (Hall_interpretation S I R) (\<not>.(atom (i,x) \<and>. atom (i, y)))" 
     using assms(1) by auto
   hence
-  "t_v_evaluation (Hall_interpretation S I R) (\<not>.(atom (i,x) \<and>. atom (i, y))) = Ffalse"
-    using
-  non_Ttrue[of "Hall_interpretation S I R" "\<not>.(atom (i,x) \<and>. atom (i, y))"]
-    by auto     
-  hence  "t_v_evaluation (Hall_interpretation S I R) ((atom (i,x) \<and>. atom (i, y))) = Ttrue" 
-    using
-  NegationValues1[of "Hall_interpretation S I R" "(atom (i,x) \<and>. atom (i, y))"]
+  "\<not> t_v_evaluation (Hall_interpretation S I R) (\<not>.(atom (i,x) \<and>. atom (i, y)))"
+  by auto     
+  hence  "t_v_evaluation (Hall_interpretation S I R) ((atom (i,x) \<and>. atom (i, y)))" 
     by auto
-  hence "t_v_evaluation (Hall_interpretation S I R) (atom (i,x)) = Ttrue" and
-  "t_v_evaluation (Hall_interpretation S I R) (atom (i, y)) = Ttrue"
-    using
- ConjunctionValues[of "Hall_interpretation S I R" "atom (i,x)" "atom (i, y)"]
-    by auto
+  hence "t_v_evaluation (Hall_interpretation S I R) (atom (i,x))" and
+  "t_v_evaluation (Hall_interpretation S I R) (atom (i, y))"
+    using t_v_evaluation.simps(5) by blast+
   hence "(R i)= x" and "(R i)= y" using t_v_evaluation_index by auto
   hence "x=y" by auto
   thus False using assms(2) by auto
@@ -475,23 +470,18 @@ qed
 lemma same_element_same_index:
   assumes
   "F = \<not>.(atom (i,x) \<and>. atom(j,x))"  and "i\<in>I \<and> j\<in>I" and "i\<noteq>j" and "inj_on R I"
-  shows "t_v_evaluation (Hall_interpretation S I R) F = Ttrue"
+  shows "t_v_evaluation (Hall_interpretation S I R) F "
 proof(rule ccontr)
-  assume "t_v_evaluation (Hall_interpretation S I R) F \<noteq> Ttrue"
-  hence  "t_v_evaluation (Hall_interpretation S I R) (\<not>.(atom (i,x) \<and>. atom (j,x))) \<noteq> Ttrue"
+  assume "\<not> t_v_evaluation (Hall_interpretation S I R) F"
+  hence  "\<not> t_v_evaluation (Hall_interpretation S I R) (\<not>.(atom (i,x) \<and>. atom (j,x)))"
     using assms(1) by auto
   hence
-  "t_v_evaluation (Hall_interpretation S I R) (\<not>.(atom (i,x) \<and>. atom (j, x))) = Ffalse" using
-  non_Ttrue[of "Hall_interpretation S I R" "\<not>.(atom (i,x) \<and>. atom (j, x))" ]
+  "\<not> t_v_evaluation (Hall_interpretation S I R) (\<not>.(atom (i,x) \<and>. atom (j, x)))" 
     by auto
-  hence  "t_v_evaluation (Hall_interpretation S I R) ((atom (i,x) \<and>. atom (j, x))) = Ttrue" 
-    using 
- NegationValues1[of "Hall_interpretation S I R" "(atom (i,x) \<and>. atom (j, x))"] 
-    by auto
-  hence "t_v_evaluation (Hall_interpretation S I R) (atom (i,x)) = Ttrue" and
-  "t_v_evaluation (Hall_interpretation S I R) (atom (j, x)) = Ttrue"
-    using ConjunctionValues[of "Hall_interpretation S I R" "atom (i,x)" "atom (j,x)"]
-    by auto
+  hence  "t_v_evaluation (Hall_interpretation S I R) ((atom (i,x) \<and>. atom (j, x)))" by auto
+  hence "t_v_evaluation (Hall_interpretation S I R) (atom (i,x))" and
+  "t_v_evaluation (Hall_interpretation S I R) (atom (j, x))"
+    using t_v_evaluation.simps(5) by blast+
   hence  "(R i)= x"  and  "(R j)= x" using t_v_evaluation_index by auto
   hence "(R i) = (R j)" by auto
   hence "i=j" using  `i\<in>I \<and> j\<in>I` `inj_on R I` by(unfold inj_on_def, auto)
@@ -499,36 +489,36 @@ proof(rule ccontr)
 qed
 
 lemma disjunctor_Ttrue_in_atomic_disjunctions:
-  assumes "x \<in> set l" and "t_v_evaluation I (atom (i,x)) = Ttrue"
-  shows "t_v_evaluation I (disjunction_atomic l i) = Ttrue"
+  assumes "x \<in> set l" and "t_v_evaluation I (atom (i,x))"
+  shows "t_v_evaluation I (disjunction_atomic l i)"
 proof-
-  have "x \<in> set l \<Longrightarrow> t_v_evaluation I (atom (i,x)) = Ttrue \<Longrightarrow>
-  t_v_evaluation I (disjunction_atomic l i) = Ttrue" 
+  have "x \<in> set l \<Longrightarrow> t_v_evaluation I (atom (i,x)) \<Longrightarrow>
+  t_v_evaluation I (disjunction_atomic l i)" 
   proof(induct l)
     case Nil
     then show ?case by auto
   next
     case (Cons a l)
-    then show  "t_v_evaluation I (disjunction_atomic (a # l) i) = Ttrue"
+    then show  "t_v_evaluation I (disjunction_atomic (a # l) i)"
     proof-
       have "x = a \<or> x\<noteq>a" by auto
-      thus  "t_v_evaluation I (disjunction_atomic (a # l) i) = Ttrue"
+      thus  "t_v_evaluation I (disjunction_atomic (a # l) i)"
       proof(rule disjE)
         assume "x = a"
           hence
           1:"(disjunction_atomic (a#l) i) = 
              (atom (i,x)) \<or>. (disjunction_atomic l i)"
           by auto 
-        have "t_v_evaluation I ((atom (i,x)) \<or>. (disjunction_atomic l i)) = Ttrue"  
-          using Cons(3)  by(unfold t_v_evaluation_def,unfold v_disjunction_def, auto)
+        have "t_v_evaluation I ((atom (i,x)) \<or>. (disjunction_atomic l i))"  
+          using Cons(3) by auto 
         thus ?thesis using 1  by auto
       next
         assume "x \<noteq> a"
         hence "x\<in> set l" using Cons(2) by auto
-        hence "t_v_evaluation I (disjunction_atomic l i ) = Ttrue"
+        hence "t_v_evaluation I (disjunction_atomic l i )"
           using Cons(1) Cons(3) by auto
         thus ?thesis
-          by(unfold t_v_evaluation_def,unfold v_disjunction_def, auto)
+          by auto
       qed
     qed
   qed
@@ -537,15 +527,15 @@ qed
 
 lemma t_v_evaluation_disjunctions:
   assumes  "finite (S i)"
-  and  "x \<in> (S i)  \<and>  t_v_evaluation I (atom (i,x)) = Ttrue" 
+  and  "x \<in> (S i)  \<and>  t_v_evaluation I (atom (i,x))" 
   and  "F = disjunction_atomic (set_to_list (S i)) i " 
-  shows "t_v_evaluation I F = Ttrue"
+  shows "t_v_evaluation I F"
 proof- 
   have "set (set_to_list (S i)) = (S i)" 
   using  set_set_to_list assms(1) by auto
   hence "x \<in> set (set_to_list (S i))"
     using assms(2) by auto
-  thus "t_v_evaluation I F = Ttrue"
+  thus "t_v_evaluation I F"
     using assms(2-3) disjunctor_Ttrue_in_atomic_disjunctions by auto
 qed
 
@@ -559,10 +549,10 @@ proof-
     have "inj_on R \<I>" using assms(4) system_representatives_def[of A \<I> R] by auto
     have "(Hall_interpretation A \<I> R) model (\<T> A \<I>)"
     proof(unfold model_def) 
-      show "\<forall>F \<in> (\<T> A \<I>). t_v_evaluation (Hall_interpretation A \<I> R) F = Ttrue"
+      show "\<forall>F \<in> (\<T> A \<I>). t_v_evaluation (Hall_interpretation A \<I> R) F"
       proof 
         fix F assume "F \<in> (\<T> A \<I>)"
-        show  "t_v_evaluation (Hall_interpretation A \<I> R) F  = Ttrue"
+        show  "t_v_evaluation (Hall_interpretation A \<I> R) F"
         proof-
           have "F \<in> (\<F> A \<I>) \<union> (\<G> A \<I>) \<union> (\<H> A \<I>)" 
             using  `F \<in> (\<T> A \<I>)` assms(3)  by(unfold \<T>_def,auto) 
@@ -578,9 +568,9 @@ proof-
             have 1: "finite (A i)" using i  assms(2) by auto
             have 2: " i \<in> \<I> \<and> (R i) \<in> (A i)" 
               using i assms(4) by (unfold system_representatives_def, auto)
-            hence "t_v_evaluation (Hall_interpretation A \<I> R) (atom (i,(R i))) = Ttrue"
+            hence "t_v_evaluation (Hall_interpretation A \<I> R) (atom (i,(R i)))"
               by auto 
-            thus "t_v_evaluation (Hall_interpretation A \<I> R) F  = Ttrue"
+            thus "t_v_evaluation (Hall_interpretation A \<I> R) F"
               using 1 2 assms(4) F           
             t_v_evaluation_disjunctions
             [of A i "(R i)" "(Hall_interpretation A \<I> R)" F]
@@ -598,7 +588,7 @@ proof-
                 where F: "F = \<not>.(atom (i,x) \<and>. atom(i,y))" 
             and "x\<in>(A i) \<and> y\<in>(A i) \<and>  x\<noteq>y \<and> i\<in>\<I>"
                 by auto
-          thus "t_v_evaluation (Hall_interpretation A \<I> R) F  = Ttrue"
+          thus "t_v_evaluation (Hall_interpretation A \<I> R) F"
             using `inj_on R \<I>` distinct_elements_distinct_indices[of F i x y A \<I> R] by auto
           next
               assume "F \<in> (\<H> A \<I>)"
@@ -608,7 +598,7 @@ proof-
               then obtain x i j
               where "F = \<not>.(atom (i,x) \<and>. atom(j,x))"  and "(i\<in>\<I> \<and> j\<in>\<I> \<and> i\<noteq>j)" 
                  by auto
-              thus "t_v_evaluation (Hall_interpretation A \<I> R) F  = Ttrue" using `inj_on R \<I>`
+              thus "t_v_evaluation (Hall_interpretation A \<I> R) F" using `inj_on R \<I>`
               same_element_same_index[of F i x j \<I> ]  by auto             
             qed
           qed
@@ -714,22 +704,22 @@ proof-
     using Compactness_Theorem by auto
 qed
 
-fun SDR ::  "(('a \<times> 'b) \<Rightarrow> v_truth) \<Rightarrow> ('a \<Rightarrow> 'b set) \<Rightarrow> 'a set \<Rightarrow> ('a \<Rightarrow>'b )"
+fun SDR ::  "(('a \<times> 'b) \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'b set) \<Rightarrow> 'a set \<Rightarrow> ('a \<Rightarrow>'b )"
   where
-"SDR M S I = (\<lambda>i. (THE x. (t_v_evaluation M (atom (i,x)) = Ttrue) \<and> x\<in>(S i)))"
+"SDR M S I = (\<lambda>i. (THE x. (t_v_evaluation M (atom (i,x)) = True) \<and> x\<in>(S i)))"
 
 lemma existence_representants:
  assumes "i \<in> I" and "M model (\<F> S I)" and "finite(S i)"  
-  shows "\<exists>x. (t_v_evaluation M (atom (i,x)) = Ttrue) \<and>  x \<in> (S i)" 
+  shows "\<exists>x. (t_v_evaluation M (atom (i,x))) \<and>  x \<in> (S i)" 
 proof- 
   from  `i \<in> I`  
   have  "(disjunction_atomic (set_to_list (S i)) i) \<in> (\<F> S I)" 
     by(unfold \<F>_def,auto)
-  hence "t_v_evaluation M (disjunction_atomic(set_to_list (S i)) i) = Ttrue"
+  hence "t_v_evaluation M (disjunction_atomic(set_to_list (S i)) i)"
     using assms(2) model_def[of M "\<F> S I"] by auto 
-  hence 1: "\<exists>x. x \<in> set (set_to_list (S i)) \<and> (t_v_evaluation M (atom (i,x)) = Ttrue)"
+  hence 1: "\<exists>x. x \<in> set (set_to_list (S i)) \<and> (t_v_evaluation M (atom (i,x)))"
     using t_v_evaluation_atom[of M "(set_to_list (S i))" i] by auto
-  thus  "\<exists>x. (t_v_evaluation M (atom (i,x)) = Ttrue) \<and>  x \<in> (S i)" 
+  thus  "\<exists>x. (t_v_evaluation M (atom (i,x)) ) \<and>  x \<in> (S i)" 
     using   `finite(S i)` set_set_to_list[of "(S i)"] by auto
 qed
 
@@ -750,114 +740,113 @@ qed
 lemma unicity_selection_representants:
  assumes "i \<in> I" and "M model (\<G> S I)" 
   shows  "\<forall>y.(x\<in>(S i) \<and> y\<in>(S i) \<and>  x\<noteq>y \<and> i\<in>I) \<longrightarrow> 
-  (t_v_evaluation M (\<not>.(atom (i,x) \<and>. atom(i,y))) = Ttrue)"
+  (t_v_evaluation M (\<not>.(atom (i,x) \<and>. atom(i,y))))"
 proof-
   have   "\<forall>y.(x\<in>(S i) \<and> y\<in>(S i) \<and>  x\<noteq>y \<and> i\<in>I) \<longrightarrow> 
   (\<not>.(atom (i,x) \<and>. atom(i,y))\<in> (\<G> S I))"
     using unicity_representants[of x S i] by auto
   thus  "\<forall>y.(x\<in>(S i) \<and> y\<in>(S i) \<and>  x\<noteq>y \<and> i\<in>I) \<longrightarrow> 
-  (t_v_evaluation M (\<not>.(atom (i,x) \<and>. atom(i,y))) = Ttrue)"
+  (t_v_evaluation M (\<not>.(atom (i,x) \<and>. atom(i,y))))"
     using assms(2)  model_def[of M "\<G> S I"] by blast
 qed
 
 lemma uniqueness_satisfaction:
-  assumes "t_v_evaluation M (atom (i,x)) = Ttrue \<and> x\<in>(S i)" and
-  "\<forall>y. y \<in> (S i) \<and> x\<noteq>y  \<longrightarrow>  t_v_evaluation M (atom (i, y)) = Ffalse"  
-shows "\<forall>z. t_v_evaluation M (atom (i, z)) = Ttrue \<and> z\<in>(S i) \<longrightarrow> z = x"
+  assumes "t_v_evaluation M (atom (i,x)) \<and> x\<in>(S i)" and
+  "\<forall>y. y \<in> (S i) \<and> x\<noteq>y  \<longrightarrow>  \<not> t_v_evaluation M (atom (i, y))"  
+shows "\<forall>z. t_v_evaluation M (atom (i, z)) \<and> z\<in>(S i) \<longrightarrow> z = x"
 proof(rule allI)
   fix z 
-  show "t_v_evaluation M (atom (i, z)) = Ttrue \<and> z \<in> S i  \<longrightarrow> z = x" 
+  show "t_v_evaluation M (atom (i, z)) \<and> z \<in> S i  \<longrightarrow> z = x" 
   proof(rule impI)
-    assume hip: "t_v_evaluation M (atom (i, z)) = Ttrue \<and> z \<in> (S i)"  
+    assume hip: "t_v_evaluation M (atom (i, z)) \<and> z \<in> (S i)"  
     show "z = x"
     proof(rule ccontr)
       assume 1: "z \<noteq> x"
       have   2: "z \<in> (S i)" using hip by auto
-      hence  "t_v_evaluation M (atom(i,z)) =  Ffalse" using 1 assms(2) by auto
+      hence  "\<not> t_v_evaluation M (atom(i,z))" using 1 assms(2) by auto
       thus False using hip by auto
     qed
   qed
 qed
 
 lemma uniqueness_satisfaction_in_Si:
-  assumes "t_v_evaluation M (atom (i,x)) = Ttrue \<and> x\<in>(S i)" and
-  "\<forall>y. y \<in> (S i) \<and> x\<noteq>y \<longrightarrow> (t_v_evaluation M (\<not>.(atom (i,x) \<and>. atom(i,y))) = Ttrue)"
-  shows "\<forall>y. y \<in> (S i)  \<and> x\<noteq>y  \<longrightarrow>  t_v_evaluation M (atom (i, y)) = Ffalse"
+  assumes "t_v_evaluation M (atom (i,x)) \<and> x\<in>(S i)" and
+  "\<forall>y. y \<in> (S i) \<and> x\<noteq>y \<longrightarrow> (t_v_evaluation M (\<not>.(atom (i,x) \<and>. atom(i,y))))"
+  shows "\<forall>y. y \<in> (S i) \<and> x\<noteq>y  \<longrightarrow>  \<not> t_v_evaluation M (atom (i, y))"
 proof(rule allI, rule impI)
   fix y
   assume hip: "y \<in> S i \<and> x \<noteq> y"
-  show "t_v_evaluation M (atom (i, y)) = Ffalse"
+  show "\<not>t_v_evaluation M (atom (i, y))"
   proof(rule ccontr)
-    assume "t_v_evaluation M (atom (i, y)) \<noteq> Ffalse" 
-    hence "t_v_evaluation M (atom (i, y)) = Ttrue" using  Bivaluation by blast
-    hence 1: "t_v_evaluation M (atom (i,x) \<and>. atom(i,y))  = Ttrue"
-      using assms(1) v_conjunction_def by auto
-    have "t_v_evaluation M (\<not>.(atom (i,x) \<and>. atom(i,y))) = Ttrue"
+    assume "\<not>\<not>t_v_evaluation M (atom (i, y))" 
+    hence 1: "t_v_evaluation M (atom (i,x) \<and>. atom(i,y))"
+      using assms(1)  by auto
+    have "t_v_evaluation M (\<not>.(atom (i,x) \<and>. atom(i,y)))"
       using hip assms(2) by auto
-    hence "t_v_evaluation M (atom (i,x) \<and>. atom(i,y)) = Ffalse" 
-      using NegationValues2  by blast
+    hence "\<not> t_v_evaluation M (atom (i,x) \<and>. atom(i,y))" 
+       by auto
     thus False using 1  by auto
   qed      
 qed
 
 lemma uniqueness_aux1:
-  assumes  "t_v_evaluation M (atom (i,x)) = Ttrue \<and> x\<in>(S i)"
-  and  "\<forall>y. y \<in> (S i) \<and> x\<noteq>y \<longrightarrow> (t_v_evaluation M (\<not>.(atom (i,x) \<and>. atom(i,y))) = Ttrue)"
-shows "\<forall>z. t_v_evaluation M (atom (i, z)) = Ttrue \<and> z\<in>(S i) \<longrightarrow> z = x" 
-  using assms uniqueness_satisfaction_in_Si[of M i x ]  uniqueness_satisfaction[of M i x] by blast 
+  assumes  "t_v_evaluation M (atom (i,x)) \<and> x\<in>(S i)"
+  and  "\<forall>y. y \<in> (S i) \<and> x\<noteq>y \<longrightarrow> (t_v_evaluation M (\<not>.(atom (i,x) \<and>. atom(i,y))))"
+shows "\<forall>z. t_v_evaluation M (atom (i, z)) \<and> z\<in>(S i) \<longrightarrow> z = x" 
+  using assms uniqueness_satisfaction_in_Si[of M i x ]  uniqueness_satisfaction[of M i x] by auto 
 
 lemma uniqueness_aux2:
-  assumes "t_v_evaluation M (atom (i,x)) = Ttrue \<and> x\<in>(S i)" and
-  "(\<And>z.(t_v_evaluation M (atom (i, z)) = Ttrue \<and> z\<in>(S i))  \<Longrightarrow> z = x)"
-shows "(THE a. (t_v_evaluation M (atom (i,a)) = Ttrue) \<and> a\<in>(S i)) = x" 
+  assumes "t_v_evaluation M (atom (i,x)) \<and> x\<in>(S i)" and
+  "(\<And>z.(t_v_evaluation M (atom (i, z))  \<and> z\<in>(S i))  \<Longrightarrow> z = x)"
+shows "(THE a. (t_v_evaluation M (atom (i,a))) \<and> a\<in>(S i)) = x" 
   using assms by(rule the_equality)
 
 lemma uniqueness_aux:
-  assumes  "t_v_evaluation M (atom (i,x)) = Ttrue \<and> x\<in>(S i)" and
-  "\<forall>y. y \<in> (S i) \<and> x\<noteq>y \<longrightarrow> (t_v_evaluation M (\<not>.(atom (i,x) \<and>. atom(i,y))) = Ttrue)"
-shows  "(THE a. (t_v_evaluation M (atom (i,a)) = Ttrue) \<and> a\<in>(S i)) = x" 
+  assumes  "t_v_evaluation M (atom (i,x)) \<and> x\<in>(S i)" and
+  "\<forall>y. y \<in> (S i) \<and> x\<noteq>y \<longrightarrow> (t_v_evaluation M (\<not>.(atom (i,x) \<and>. atom(i,y))))"
+shows  "(THE a. (t_v_evaluation M (atom (i,a))) \<and> a\<in>(S i)) = x" 
   using assms  uniqueness_aux1[of M i x ] uniqueness_aux2[of M i x] by blast
 
 lemma function_SDR:
   assumes "i \<in> I" and "M model (\<F> S I)" and "M model (\<G> S I)" and "finite(S i)"
-shows "\<exists>!x. (t_v_evaluation M (atom (i,x)) = Ttrue) \<and>  x \<in> (S i) \<and> (SDR  M S I i) = x" 
+shows "\<exists>!x. (t_v_evaluation M (atom (i,x))) \<and>  x \<in> (S i) \<and> (SDR  M S I i) = x" 
 proof- 
-  have  "\<exists>x. (t_v_evaluation M (atom (i,x)) = Ttrue) \<and>  x \<in> (S i)" 
+  have  "\<exists>x. (t_v_evaluation M (atom (i,x))) \<and>  x \<in> (S i)" 
     using assms(1-2,4) existence_representants by auto 
-  then obtain x where x: "(t_v_evaluation M (atom (i,x)) = Ttrue) \<and>  x \<in> (S i)"
+  then obtain x where x: "(t_v_evaluation M (atom (i,x))) \<and>  x \<in> (S i)"
     by auto
   moreover
   have "\<forall>y.(x\<in>(S i) \<and> y\<in>(S i) \<and>  x\<noteq>y \<and> i\<in>I) \<longrightarrow> 
-  (t_v_evaluation M (\<not>.(atom (i,x) \<and>. atom(i,y))) = Ttrue)" 
+  (t_v_evaluation M (\<not>.(atom (i,x) \<and>. atom(i,y))))" 
     using assms(1,3) unicity_selection_representants[of i I M S]  by auto
-  hence "(THE a. (t_v_evaluation M (atom (i,a)) = Ttrue) \<and> a\<in>(S i)) = x"
+  hence "(THE a. (t_v_evaluation M (atom (i,a))) \<and> a\<in>(S i)) = x"
    using x  `i \<in> I`  uniqueness_aux[of M i x] by auto 
   hence "SDR M S I i = x"  by auto
-  hence "(t_v_evaluation M (atom (i,x)) = Ttrue \<and> x \<in> (S i)) \<and>  SDR M S I i = x"
+  hence "(t_v_evaluation M (atom (i,x)) \<and> x \<in> (S i)) \<and>  SDR M S I i = x"
     using x by auto
   thus ?thesis  by auto
 qed
 
 lemma aux_for_\<H>_formulas:
   assumes
-  "(t_v_evaluation M (atom (i,a)) = Ttrue) \<and> a \<in> (S i)"
-  and "(t_v_evaluation M (atom (j,b)) = Ttrue) \<and> b \<in> (S j)" 
+  "(t_v_evaluation M (atom (i,a))) \<and> a \<in> (S i)"
+  and "(t_v_evaluation M (atom (j,b))) \<and> b \<in> (S j)" 
   and  "i\<in>I \<and> j\<in>I \<and> i\<noteq>j" 
   and "(a \<in> (S i) \<inter> (S j) \<and> i\<in>I \<and> j\<in>I \<and> i\<noteq>j \<longrightarrow>
-  (t_v_evaluation M (\<not>.(atom (i,a) \<and>. atom(j,a))) = Ttrue))"
+  (t_v_evaluation M (\<not>.(atom (i,a) \<and>. atom(j,a)))))"
   shows  "a \<noteq> b"
 proof(rule ccontr)
   assume  "\<not> a \<noteq> b" 
   hence hip: "a=b" by auto
-  hence "t_v_evaluation M (atom (i, a)) = Ttrue" and  "t_v_evaluation M (atom (j, a)) = Ttrue"
+  hence "t_v_evaluation M (atom (i, a))" and  "t_v_evaluation M (atom (j, a))"
     using assms by auto
-  hence "t_v_evaluation M (atom (i, a) \<and>. atom(j,a)) = Ttrue" using v_conjunction_def
+  hence "t_v_evaluation M (atom (i, a) \<and>. atom(j,a))" 
     by auto
-  hence "t_v_evaluation M (\<not>.(atom (i, a) \<and>. atom(j,a))) = Ffalse" 
-    using v_negation_def by auto
+  hence "\<not>t_v_evaluation M (\<not>.(atom (i, a) \<and>. atom(j,a)))" 
+    by auto
   moreover
   have  "a \<in> (S i) \<inter> (S j)" using hip assms(1-2) by auto
-  hence "t_v_evaluation M (\<not>.(atom (i, a) \<and>. atom(j, a))) = Ttrue" 
+  hence "t_v_evaluation M (\<not>.(atom (i, a) \<and>. atom(j, a)))" 
     using assms(3-4) by auto
   ultimately show False by auto
 qed
@@ -866,25 +855,25 @@ lemma model_of_all:
   assumes  "M model (\<T> S I)"
   shows  "M model (\<F> S I)" and  "M model (\<G> S I)" and  "M model (\<H> S I)" 
 proof(unfold model_def)
-  show "\<forall>F\<in>\<F> S I. t_v_evaluation M F = Ttrue"
+  show "\<forall>F\<in>\<F> S I. t_v_evaluation M F"
   proof
     fix F
     assume "F\<in> (\<F> S I)" hence "F\<in>(\<T> S I)" by(unfold \<T>_def, auto) 
-    thus "t_v_evaluation M F = Ttrue" using assms by(unfold model_def, auto)
+    thus "t_v_evaluation M F" using assms by(unfold model_def, auto)
   qed
 next
-  show "\<forall>F\<in>(\<G> S I). t_v_evaluation M F = Ttrue"
+  show "\<forall>F\<in>(\<G> S I). t_v_evaluation M F"
   proof
     fix F
     assume "F\<in>(\<G> S I)" hence "F\<in>(\<T> S I)" by(unfold \<T>_def, auto) 
-    thus "t_v_evaluation M F = Ttrue" using assms by(unfold model_def, auto)
+    thus "t_v_evaluation M F" using assms by(unfold model_def, auto)
   qed
 next
-  show "\<forall>F\<in>(\<H> S I). t_v_evaluation M F = Ttrue"
+  show "\<forall>F\<in>(\<H> S I). t_v_evaluation M F"
   proof
     fix F
     assume "F\<in>(\<H> S I)" hence "F\<in>(\<T> S I)" by(unfold \<T>_def, auto) 
-    thus "t_v_evaluation M F = Ttrue" using assms by(unfold model_def, auto)
+    thus "t_v_evaluation M F" using assms by(unfold model_def, auto)
   qed
 qed
 
@@ -896,15 +885,15 @@ lemma sets_have_distinct_representants:
 proof-
   have 1: "M model \<F> S I" and 2:  "M model \<G> S I"
     using hip4 model_of_all by auto
-  hence "\<exists>!x. (t_v_evaluation M (atom (i,x)) = Ttrue) \<and> x \<in> (S i) \<and>  SDR M S I i = x"
+  hence "\<exists>!x. (t_v_evaluation M (atom (i,x))) \<and> x \<in> (S i) \<and>  SDR M S I i = x"
     using  hip1  hip4  hip5 function_SDR[of i I M S] by auto  
   then obtain x where
-  x1: "(t_v_evaluation M (atom (i,x)) = Ttrue) \<and> x \<in> (S i)" and x2: "SDR M S I i = x"
+  x1: "(t_v_evaluation M (atom (i,x))) \<and> x \<in> (S i)" and x2: "SDR M S I i = x"
     by auto 
-  have "\<exists>!y. (t_v_evaluation M (atom (j,y)) = Ttrue) \<and> y \<in> (S j) \<and> SDR M S I j = y"
+  have "\<exists>!y. (t_v_evaluation M (atom (j,y))) \<and> y \<in> (S j) \<and> SDR M S I j = y"
   using 1 2  hip2  hip4  hip6 function_SDR[of j I M S] by auto   
   then obtain y where
-  y1: "(t_v_evaluation M (atom (j,y)) = Ttrue) \<and> y \<in> (S j)" and y2: "SDR M S I j = y"
+  y1: "(t_v_evaluation M (atom (j,y))) \<and> y \<in> (S j)" and y2: "SDR M S I j = y"
     by auto
   have "(x \<in> (S i) \<inter> (S j) \<and> i\<in>I \<and> j\<in>I \<and> i\<noteq>j) \<longrightarrow>
   (\<not>.(atom (i,x) \<and>. atom(j,x))\<in> (\<H> S I))"
@@ -913,7 +902,7 @@ proof-
   (\<not>.(atom (i,x) \<and>. atom(j,x)) \<in> (\<T> S I))"
     by(unfold  \<T>_def, auto)
   hence "(x \<in> (S i) \<inter> (S j) \<and> i\<in>I \<and> j\<in>I \<and> i\<noteq>j) \<longrightarrow>
-  (t_v_evaluation M (\<not>.(atom (i,x) \<and>. atom(j,x))) = Ttrue)" 
+  (t_v_evaluation M (\<not>.(atom (i,x) \<and>. atom(j,x))))" 
     using hip4 model_def[of M "\<T> S I"] by auto
   hence "x \<noteq> y" using x1 y1 assms(1-3) aux_for_\<H>_formulas[of M i x  S  j y I] 
     by auto

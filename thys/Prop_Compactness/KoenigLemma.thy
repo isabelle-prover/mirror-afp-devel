@@ -1,12 +1,14 @@
-(*  Formalization of König Lemma
+(* Formalization of König Lemma
    Fabian Fernando Serrano Suárez  UNAL Manizales
    Thaynara Arielly de Lima        Universidade Federal de Goiáis 
    Mauricio Ayala-Rincón           Universidade de Brasília
+   Last modified: 29 Sep, 2025
+
 *)
 
 (*<*)
 theory KoenigLemma
- imports PropCompactness  
+ imports HOL.Relation PropCompactness  
 begin
 (*>*)
 
@@ -16,16 +18,6 @@ text\<open>This section formalizes König Lemma from the compactness theorem for
 
 
 type_synonym 'a rel = "('a \<times> 'a) set"
-
-definition irreflexive_on ::  "'a set \<Rightarrow> 'a rel \<Rightarrow> bool"
- where "irreflexive_on A r \<equiv>  (\<forall>x\<in>A. (x, x) \<notin> r)"
-
-definition transitive_on :: "'a set \<Rightarrow> 'a rel \<Rightarrow> bool"
-  where "transitive_on A r \<equiv>
- (\<forall>x\<in>A. \<forall>y\<in>A. \<forall>z\<in>A. (x, y) \<in> r \<and> (y, z) \<in> r \<longrightarrow> (x, z) \<in> r)"
-
-definition total_on :: "'a set \<Rightarrow> 'a rel \<Rightarrow> bool"
-  where "total_on A r \<equiv> (\<forall>x\<in>A. \<forall>y\<in>A. x \<noteq> y \<longrightarrow> (x, y) \<in> r \<or> (y, x) \<in> r)"
 
 definition minimum ::  "'a set \<Rightarrow> 'a \<Rightarrow>'a rel \<Rightarrow> bool"
   where "minimum A a r \<equiv>  (a\<in>A \<and> (\<forall>x\<in>A. x \<noteq> a  \<longrightarrow> (a,x) \<in> r))"
@@ -44,7 +36,7 @@ definition imm_successors ::  "'a set \<Rightarrow> 'a \<Rightarrow> 'a rel \<Ri
  {x\<in>A. (a,x)\<in> r \<and> height A x r = (height A a r)+1}" 
 
 definition strict_part_order ::  "'a set \<Rightarrow> 'a rel \<Rightarrow> bool"
-  where  "strict_part_order A r \<equiv> irreflexive_on A r \<and> transitive_on A r"
+  where  "strict_part_order A r \<equiv> irrefl_on A r \<and> trans_on A r"
 
 lemma minimum_element:
   assumes  "strict_part_order A r" and "minimum A a r" and "r={}"
@@ -80,10 +72,10 @@ proof(rule ccontr)
     assume "r\<noteq>{}"
     hence 1: "(a,b)\<in>r \<and> (b,a)\<in>r" using hip assms(2-3)
       by(unfold minimum_def, auto)    
-    have  irr: "irreflexive_on A r" and tran: "transitive_on A r"     
+    have  irr: " irrefl_on A r" and tran: "trans_on A r"     
     using assms(1) by(unfold strict_part_order_def, auto)
-    have  "(a,a)\<in>r" using  `a\<in>A`  `b\<in>A` 1 tran by(unfold transitive_on_def, blast)
-    thus False using  `a\<in>A`  irr  by(unfold irreflexive_on_def, blast)
+    have  "(a,a)\<in>r" using  `a\<in>A`  `b\<in>A` 1 tran by(unfold trans_on_def, blast)
+    thus False using  `a\<in>A`  irr  by(unfold irrefl_on_def, blast)
   qed
 qed
 
@@ -91,19 +83,19 @@ lemma emptyness_pred_min_spo:
   assumes  "minimum A a r" and "strict_part_order A r"
   shows  "predecessors A a r = {}"
 proof(rule ccontr)
-  have  irr:  "irreflexive_on A r" and tran: "transitive_on A r" using assms(2)
+  have  irr:  " irrefl_on A r" and tran: "trans_on A r" using assms(2)
   by(unfold strict_part_order_def, auto)
   assume 1: "predecessors A a r \<noteq> {}" show False
   proof-
     have "\<exists>x\<in>A. (x,a)\<in> r" using 1  by(unfold predecessors_def, auto)
     then obtain x where "x\<in>A" and "(x,a)\<in> r" by auto
-    hence "x\<noteq>a" using irr by (unfold irreflexive_on_def, auto)
+    hence "x\<noteq>a" using irr by (unfold irrefl_on_def, auto)
     hence "(a,x)\<in>r" using  `x\<in>A` `minimum A a r` by(unfold minimum_def, auto)
     have  "a\<in>A" using  `minimum A a r` by(unfold minimum_def, auto)
     hence "(a,a)\<in>r" using `(a,x)\<in>r`  `(x,a)\<in> r`  `x\<in>A`  tran 
-      by(unfold transitive_on_def, blast)
-    thus False using `(a,a)\<in>r` `a\<in>A` irr  irreflexive_on_def
-      by (unfold irreflexive_on_def, auto)
+      by(unfold trans_on_def, blast)
+    thus False using `(a,a)\<in>r` `a\<in>A` irr  irrefl_on_def
+      by (unfold irrefl_on_def, auto)
   qed
 qed
 
@@ -185,44 +177,24 @@ lemma spo_subset_preservation:
   assumes "strict_part_order A r" and "B\<subseteq>A" 
   shows "strict_part_order B r" 
 proof-  
-  have  "irreflexive_on A r" and "transitive_on A r" 
+  have  " irrefl_on A r" and "trans_on A r" 
     using  `strict_part_order A r` 
     by(unfold strict_part_order_def, auto)
-  have 1: "irreflexive_on B r"
-  proof(unfold irreflexive_on_def)
+  have 1: " irrefl_on B r"
+  proof(unfold irrefl_on_def)
     show "\<forall>x\<in>B. (x, x) \<notin> r"
     proof
       fix x
       assume "x\<in>B" 
       hence "x\<in>A" using  `B\<subseteq>A` by auto
-      thus "(x,x)\<notin>r" using  `irreflexive_on A r`
-        by (unfold irreflexive_on_def, auto)
+      thus "(x,x)\<notin>r" using  ` irrefl_on A r`
+        by (unfold irrefl_on_def, auto)
     qed
   qed
-  have 2:  "transitive_on B r"
-  proof(unfold transitive_on_def)
-    show "\<forall>x\<in>B. \<forall>y\<in>B. \<forall>z\<in>B. (x, y) \<in> r \<and> (y, z) \<in> r \<longrightarrow> (x, z) \<in> r"
-    proof
-      fix x assume "x\<in>B"
-      show "\<forall>y\<in>B. \<forall>z\<in>B. (x, y) \<in> r \<and> (y, z) \<in> r \<longrightarrow> (x, z) \<in> r"
-      proof
-        fix y  assume "y\<in>B"
-        show "\<forall>z\<in>B. (x, y) \<in> r \<and> (y, z) \<in> r \<longrightarrow> (x, z) \<in> r"
-        proof 
-          fix z  assume "z\<in>B"
-          show "(x, y) \<in> r \<and> (y, z) \<in> r \<longrightarrow> (x, z) \<in> r"
-          proof(rule impI)
-            assume hip: "(x, y) \<in> r \<and> (y, z) \<in> r" 
-            show "(x, z) \<in> r"
-          proof-
-            have "x\<in>A" and  "y\<in>A" and  "z\<in>A" using `x\<in>B` `y\<in>B` `z\<in>B` `B\<subseteq>A`
-              by auto
-            thus "(x, z) \<in> r" using hip `transitive_on A  r` by(unfold transitive_on_def, blast)
-            qed
-          qed
-        qed
-      qed
-    qed
+  have 2:  "trans_on B r"
+  proof(unfold trans_on_def)
+    show " \<forall>x\<in>B. \<forall>y\<in>B. \<forall>z\<in>B. (x, y) \<in> r \<longrightarrow> (y, z) \<in> r \<longrightarrow> (x, z) \<in> r"
+      by (meson \<open>trans_on A r\<close> assms(2) subset_iff trans_onD)
   qed
   thus "strict_part_order B r"
     using 1 2  by(unfold strict_part_order_def, auto)   
@@ -292,7 +264,7 @@ proof-
         by(unfold total_on_def, auto)
       thus "\<exists>a. maximum (insert x A) a r"
       proof(rule disjE)
-        have  "transitive_on (insert x A) r" using  insert(4) 
+        have  "trans_on (insert x A) r" using  insert(4) 
           by(unfold strict_part_order_def, auto) 
         assume casoa: "(a, x) \<in> r"  
         have  "\<forall>z\<in>(insert x A). z \<noteq> x  \<longrightarrow> (z,x) \<in> r"
@@ -313,8 +285,8 @@ proof-
               have "a\<in>(insert x A)" and "z\<in>(insert x A)" and  "x\<in>(insert x A)"
                 using  `a\<in>A` `z\<in>A` by auto            
               thus  "(z, x) \<in> r"
-                using  `(z,a) \<in> r` `(a, x) \<in> r`  `transitive_on (insert x A) r`
-                by(unfold transitive_on_def, blast) 
+                using  `(z,a) \<in> r` `(a, x) \<in> r`  `trans_on (insert x A) r`
+                by(unfold trans_on_def, blast) 
             qed
           qed
         qed
@@ -440,56 +412,35 @@ lemma predecessors_spo:
   assumes "tree A r" 
   shows  "\<forall>x\<in>A. strict_part_order (predecessors A x r) r"
 proof- 
-  have "irreflexive_on A r" and "transitive_on A r"  using `tree A r`
+  have " irrefl_on A r" and "trans_on A r"  using `tree A r`
     by(unfold tree_def,unfold strict_part_order_def,auto) 
   thus ?thesis
 proof(unfold strict_part_order_def)
-  show "\<forall>x\<in>A. irreflexive_on (predecessors A x r) r \<and>
-        transitive_on (predecessors A x r) r"
+  show "\<forall>x\<in>A. irrefl_on (predecessors A x r) r \<and>
+        trans_on (predecessors A x r) r"
   proof
     fix x
     assume "x\<in>A"
-    show "irreflexive_on (predecessors A x r) r \<and> transitive_on (predecessors A x r) r"
+    show " irrefl_on (predecessors A x r) r \<and> trans_on (predecessors A x r) r"
     proof-
-      have 1: "irreflexive_on (predecessors A x r) r"
-      proof(unfold irreflexive_on_def)
+      have 1: " irrefl_on (predecessors A x r) r"
+      proof(unfold irrefl_on_def)
         show "\<forall>y\<in>(predecessors A x r). (y, y) \<notin> r"
         proof
           fix y
           assume "y\<in>(predecessors A x r)"
           hence "y\<in>A" by(unfold predecessors_def,auto)
-          thus "(y, y) \<notin> r" using `irreflexive_on A r` by(unfold irreflexive_on_def,auto)
+          thus "(y, y) \<notin> r" using ` irrefl_on A r` by(unfold irrefl_on_def,auto)
         qed
       qed
-      have 2: "transitive_on (predecessors A x r) r"
-      proof(unfold transitive_on_def)
-        let ?B= "(predecessors A x r)"
-        show "\<forall>w\<in>?B. \<forall>y\<in>?B. \<forall>z\<in>?B. (w, y) \<in> r \<and> (y, z) \<in> r \<longrightarrow> (w, z) \<in> r"
-        proof
-          fix w assume "w\<in>?B"
-         show "\<forall>y\<in>?B. \<forall>z\<in>?B. (w, y) \<in> r \<and> (y, z) \<in> r \<longrightarrow> (w, z) \<in> r"
-         proof
-           fix y assume "y\<in>?B"
-           show "\<forall>z\<in>?B. (w, y) \<in> r \<and> (y, z) \<in> r \<longrightarrow> (w, z) \<in> r"
-           proof 
-             fix z  assume "z\<in>?B"
-             show "(w, y) \<in> r \<and> (y, z) \<in> r \<longrightarrow> (w, z) \<in> r"
-             proof(rule impI)
-               assume hip: "(w, y) \<in> r \<and> (y, z) \<in> r" 
-               show "(w, z) \<in> r"
-               proof-
-                 have  "w\<in>A" and  "y\<in>A" and  "z\<in>A" using `w\<in>?B` `y\<in>?B` `z\<in>?B`
-                   by(unfold predecessors_def,auto)
-                 thus "(w, z) \<in> r"
-                   using hip `transitive_on A  r` by(unfold transitive_on_def, blast)
-                 qed
-               qed
-             qed
-           qed
-         qed
-       qed
+      have 2: "trans_on (predecessors A x r) r"
+      proof(unfold trans_on_def)
+        let ?B = "(predecessors A x r)"
+        show "\<forall>w\<in>?B. \<forall>y\<in>?B. \<forall>z\<in>?B. (w, y) \<in> r \<longrightarrow> (y, z) \<in> r \<longrightarrow> (w, z) \<in> r"
+          by (smt (verit, ccfv_SIG) \<open>trans_on A r\<close> mem_Collect_eq predecessors_def trans_onD)
+      qed
        show
-        "irreflexive_on (predecessors A x r) r \<and> transitive_on (predecessors A x r) r"
+        "?thesis"
        using 1 2 by auto
        qed
      qed
@@ -538,14 +489,14 @@ lemma imm_predecessor:
   "maximum (predecessors A x r) b r"
   shows "height A b r = n"
 proof- 
-  have "transitive_on A r" and  "r \<subseteq> A \<times> A" and  "irreflexive_on A r"
+  have "trans_on A r" and  "r \<subseteq> A \<times> A" and  " irrefl_on A r"
     using `tree A r`
     by (unfold tree_def, unfold strict_part_order_def, auto)
   have  "x\<in>A" using  assms(1) assms(2)  non_empty_preds_in_tree by auto
   have "strict_part_order (predecessors A x r) r"
     using `x\<in>A` `tree A r` predecessors_spo[of A r] by auto
-  hence  "irreflexive_on (predecessors A x r) r" and
-         "transitive_on (predecessors A x r) r"
+  hence  " irrefl_on (predecessors A x r) r" and
+         "trans_on (predecessors A x r) r"
     by(unfold strict_part_order_def, auto) 
   have "b\<in>(predecessors A x r)" 
     using `maximum (predecessors A x r) b r` by(unfold maximum_def, auto)
@@ -565,11 +516,11 @@ proof-
       fix y
       assume  "y\<in> (predecessors A b r)"
       hence "y\<in>A" and  "(y,b)\<in> r" by (unfold predecessors_def,auto)
-      hence "y\<noteq>b" using `irreflexive_on A r` by(unfold irreflexive_on_def,auto)
+      hence "y\<noteq>b" using ` irrefl_on A r` by(unfold irrefl_on_def,auto)
       have "(b,x)\<in>r" using 2 by (unfold predecessors_def,auto)
       hence "b\<in>A"  using `r \<subseteq> A \<times> A` by auto
-      have "(y,x)\<in> r" using `x\<in>A` `y\<in>A` `b\<in>A`  `(y,b)\<in> r`  `(b,x)\<in>r` `transitive_on A r`
-        by(unfold transitive_on_def, blast)    
+      have "(y,x)\<in> r" using `x\<in>A` `y\<in>A` `b\<in>A`  `(y,b)\<in> r`  `(b,x)\<in>r` `trans_on A r`
+        by(unfold trans_on_def, blast)    
       show "y\<in>(predecessors A x r - {b})" 
         using `y\<in>A` `(y,x)\<in> r` `y\<noteq>b` by(unfold predecessors_def, auto)
     qed
@@ -629,8 +580,8 @@ proof-
   hence "(y,x)\<in>r \<and> y \<in> (level A r n)" using y by(unfold level_def, auto)
   thus ?thesis by auto
 qed
-(*Para demostrar que en un árbol de ramificación los leveles son finites, se define
-la siguiente función. *)
+(* The next function is used to prove that the set of nodes at a level in 
+   a finitely branching three is a finite set *)
 primrec set_nodes_at_level ::  "'a set \<Rightarrow> 'a rel \<Rightarrow> nat \<Rightarrow>'a set" where
 "set_nodes_at_level A r 0 = {a. (minimum A a r)}"
 | "set_nodes_at_level A r (Suc n)  = (\<Union>a\<in> (set_nodes_at_level A r n). imm_successors A a r)"
@@ -782,7 +733,7 @@ proof-
   thus "x \<in> A" using assms by auto
 qed
 
-lemma finiteness_set_nodes_at_levela:
+lemma finiteness_set_nodes_at_level_aux:
   assumes  "\<forall>x\<in>A. finite (imm_successors A x r)" and "finite (set_nodes_at_level A r n)"
   shows "finite (\<Union>a\<in> (set_nodes_at_level A r n). imm_successors A a r)"
 proof  
@@ -809,7 +760,7 @@ next
     have 1: "\<forall>x\<in>A. finite (imm_successors A x r)"
       using assms by (unfold finitely_branching_def, auto)
     hence  "finite (\<Union>a\<in> (set_nodes_at_level A r n). imm_successors A a r)"
-      using Suc(1) finiteness_set_nodes_at_levela[of A r] by auto 
+      using Suc(1) finiteness_set_nodes_at_level_aux[of A r] by auto 
     thus "finite (set_nodes_at_level A r (Suc n))" by auto
   qed
 qed
@@ -940,10 +891,10 @@ proof-
           using  `tree A r` tree by auto
         hence "z\<in>A" and  "y\<in>A" and "x\<in>A"
           using `r \<subseteq> A \<times> A` `(z, y) \<in> r` `(y,x)\<in>r` by auto
-        have "transitive_on A r" using `strict_part_order A r`
+        have "trans_on A r" using `strict_part_order A r`
           by(unfold strict_part_order_def, auto)
         hence "(z, x) \<in> r" using `z\<in>A` `y\<in>A` and `x\<in>A` `(z, y) \<in> r` `(y,x)\<in>r`
-          by(unfold transitive_on_def, blast)
+          by(unfold trans_on_def, blast)
         thus "(\<exists>y. (y, x) \<in> r \<and> y \<in> level A r k)"
           using z2 by auto
       next
@@ -1105,7 +1056,7 @@ lemma inclusion_predecessors:
   assumes  "r \<subseteq> A \<times> A" and "strict_part_order A r" and "(x,y)\<in>r"
   shows "(predecessors A x r) \<subset> (predecessors A y r)"
 proof-
-  have "irreflexive_on A r" and "transitive_on A r" 
+  have " irrefl_on A r" and "trans_on A r" 
     using assms(2) by (unfold strict_part_order_def, auto) 
   have 1: "(predecessors A x r)\<subseteq> (predecessors A y r)"
   proof(rule subsetI)
@@ -1114,8 +1065,8 @@ proof-
     hence "z\<in>A" and "(z,x)\<in>r" by(unfold predecessors_def, auto)
     have "x\<in>A" and "y\<in>A"  using `(x,y)\<in>r` `r \<subseteq> A \<times> A` by auto
     hence "(z,y)\<in>r"
-      using `z\<in>A` `y\<in>A` `x\<in>A` `(z,x)\<in>r` `(x,y)\<in>r` `transitive_on A r` 
-      by (unfold transitive_on_def, blast) 
+      using `z\<in>A` `y\<in>A` `x\<in>A` `(z,x)\<in>r` `(x,y)\<in>r` `trans_on A r` 
+      by (unfold trans_on_def, blast) 
     thus "z\<in>predecessors A y r" 
       using `z\<in>A` by(unfold predecessors_def, auto)
   qed
@@ -1127,8 +1078,8 @@ proof-
     hence "x \<in> predecessors A x r" by auto
     hence "x\<in>A \<and> (x,x)\<in>r"
       by(unfold predecessors_def, auto)
-    thus False using `irreflexive_on A r`
-      by (unfold irreflexive_on_def, auto)
+    thus False using ` irrefl_on A r`
+      by (unfold irrefl_on_def, auto)
   qed
   have "(predecessors A x r) \<noteq> (predecessors A y r)"
     using 2 3 by auto
@@ -1231,60 +1182,62 @@ proof-
 qed
 
 primrec disjunction_nodes :: "'a list  \<Rightarrow> 'a formula"  where
- "disjunction_nodes [] = FF"   
+ "disjunction_nodes [] = \<bottom>."   
 | "disjunction_nodes (v#D) = (atom v) \<or>. (disjunction_nodes D)"
 
 lemma truth_value_disjunction_nodes:
-  assumes "v\<in> set l" and "t_v_evaluation I (atom v) = Ttrue"
-  shows "t_v_evaluation I (disjunction_nodes l) = Ttrue"
+  assumes "v\<in> set l" and "t_v_evaluation I (atom v)"
+  shows "t_v_evaluation I (disjunction_nodes l)"
 proof-
-  have "v\<in> set l \<Longrightarrow>  t_v_evaluation I (atom v) = Ttrue \<Longrightarrow>
-  t_v_evaluation I (disjunction_nodes l) = Ttrue" 
+  have "v\<in> set l \<Longrightarrow>  t_v_evaluation I (atom v) \<Longrightarrow>
+  t_v_evaluation I (disjunction_nodes l)" 
   proof(induct l)
     case Nil
     then show ?case by auto
   next
     case (Cons a l)
-    then show  "t_v_evaluation I (disjunction_nodes (a # l)) = Ttrue"
+    then show  "t_v_evaluation I (disjunction_nodes (a # l))"
     proof-
       have "v = a \<or> v\<noteq>a" by auto
-      thus  "t_v_evaluation I (disjunction_nodes (a # l)) = Ttrue"
+      thus  "t_v_evaluation I (disjunction_nodes (a # l))"
       proof(rule disjE)
         assume "v = a"
         hence 1: "disjunction_nodes (a#l) = (atom v) \<or>. (disjunction_nodes l)"
           by auto 
-        have "t_v_evaluation I ((atom v) \<or>. (disjunction_nodes l)) = Ttrue"  
-          using Cons(3)  by(unfold t_v_evaluation_def,unfold v_disjunction_def, auto)
+        have "t_v_evaluation I ((atom v) \<or>. (disjunction_nodes l))"  
+          using Cons(3) by auto
         thus ?thesis using 1  by auto
       next
         assume "v \<noteq> a"
         hence "v\<in> set l" using Cons(2) by auto
-        hence "t_v_evaluation I (disjunction_nodes l) = Ttrue"
+        hence "t_v_evaluation I (disjunction_nodes l)"
           using Cons(1) Cons(3) by auto
         thus ?thesis
-          by(unfold t_v_evaluation_def,unfold v_disjunction_def, auto)
+          by(unfold t_v_evaluation_def, auto)
       qed
     qed
   qed
   thus ?thesis using assms by auto
 qed
 
+
 lemma set_set_to_list1:
   assumes "tree A r" and  "finitely_branching A r" 
   shows "set (set_to_list (level A r n)) = (level A r n)"
-  using assms finite_level[of A r n]  set_set_to_list by auto
+  using assms finite_level[of A r n] finiteness_set_to_list
+  by metis 
 
 lemma truth_value_disjunction_formulas:
   assumes  "tree A r" and  "finitely_branching A r"
-  and  "v\<in>(level A r n) \<and> t_v_evaluation I (atom v) = Ttrue" 
+  and  "v\<in>(level A r n) \<and> t_v_evaluation I (atom v)" 
   and  "F = disjunction_nodes(set_to_list (level A r n))" 
-  shows "t_v_evaluation I  F = Ttrue"
+  shows "t_v_evaluation I  F "
 proof- 
   have "set (set_to_list (level A r n)) = (level A r n)" 
     using set_set_to_list1 assms(1-2) by auto
   hence "v\<in> set (set_to_list (level A r n))"
     using assms(3) by auto
-  thus "t_v_evaluation I F = Ttrue"
+  thus "t_v_evaluation I F"
     using assms(3-4) truth_value_disjunction_nodes by auto
 qed
 
@@ -1304,8 +1257,8 @@ definition \<T> :: "'a set \<Rightarrow> 'a rel \<Rightarrow> ('a formula) set" 
    "\<T> A r  \<equiv> (\<F> A r) \<union> (\<G> A r) \<union> (\<H> A r)" 
 
 primrec nodes_formula :: "'v formula  \<Rightarrow> 'v set" where
-  "nodes_formula FF = {}"
-| "nodes_formula TT = {}"
+  "nodes_formula \<bottom>. = {}"
+| "nodes_formula \<top>. = {}"
 | "nodes_formula (atom P) =  {P}"
 | "nodes_formula (\<not>. F) = nodes_formula F"
 | "nodes_formula (F \<and>. G) = nodes_formula F \<union> nodes_formula G"
@@ -1379,8 +1332,8 @@ proof-
   thus ?thesis by auto 
 qed
 
-fun path_interpretation :: "'v set \<Rightarrow>'v rel \<Rightarrow> 'v \<Rightarrow> ('v  \<Rightarrow>  v_truth)"  where
-"path_interpretation A r u = (\<lambda>v. (if (v,u)\<in>r  then Ttrue else Ffalse))"
+fun path_interpretation :: "'v set \<Rightarrow>'v rel \<Rightarrow> 'v \<Rightarrow> ('v  \<Rightarrow>  bool)"  where
+"path_interpretation A r u = (\<lambda>v. (if (v,u)\<in>r  then True else False))"
 
 lemma finiteness_nodes_formula:
  "finite (nodes_formula F)" by(induct F, auto)
@@ -1403,11 +1356,11 @@ proof-
 qed
 
 lemma value_path_interpretation:
-  assumes "t_v_evaluation (path_interpretation A r v) (atom u) = Ttrue"
+  assumes "t_v_evaluation (path_interpretation A r v) (atom u)"
   shows "(u,v)\<in>r"
 proof(rule ccontr)
   assume "(u, v) \<notin> r"
-  hence "t_v_evaluation (path_interpretation A r v) (atom u) = Ffalse"
+  hence "\<not>t_v_evaluation (path_interpretation A r v) (atom u)"
     by(unfold t_v_evaluation_def, auto) 
   thus False using assms by auto
 qed
@@ -1424,7 +1377,7 @@ proof-
   have 1: "tree A r" using `infinite_tree A r` by auto
   have  "r \<subseteq> A \<times> A" and "strict_part_order A r" 
     using  `tree A r` tree by auto
-  have "transitive_on A r" 
+  have "trans_on A r" 
     using `strict_part_order A r`
     by(unfold strict_part_order_def, auto) 
   have "\<exists>u. u \<in>?level" 
@@ -1435,10 +1388,10 @@ proof-
   hence "?u\<in>A" by(unfold level_def, auto)
   have "(path_interpretation A r ?u) model S"
   proof(unfold model_def)
-    show "\<forall>F\<in>S. t_v_evaluation (path_interpretation A r ?u) F = Ttrue"
+    show "\<forall>F\<in>S. t_v_evaluation (path_interpretation A r ?u) F"
     proof 
       fix F assume "F \<in> S"
-      show  "t_v_evaluation (path_interpretation A r ?u) F  = Ttrue"
+      show  "t_v_evaluation (path_interpretation A r ?u) F"
       proof-        
         have "F \<in> (\<F> A r) \<union> (\<G> A r) \<union> (\<H> A r)" 
         using `S \<subseteq>  \<T> A r` `F \<in> S` assms(2)  by(unfold \<T>_def,auto) 
@@ -1471,14 +1424,14 @@ proof-
             by auto
           then obtain y where y1: "(y,?u)\<in>r" and y2: "y \<in> (level A r n)"
             by auto
-          hence "t_v_evaluation (path_interpretation A r ?u) (atom y) = Ttrue" 
+          hence "t_v_evaluation (path_interpretation A r ?u) (atom y)" 
             by auto
-          thus "t_v_evaluation (path_interpretation A r ?u) F = Ttrue"
+          thus "t_v_evaluation (path_interpretation A r ?u) F"
             using 1 assms(2) y2 n  truth_value_disjunction_formulas[of A r y]
             by auto
         next
           assume  "F \<in> \<G> A r \<or> F \<in> \<H> A r"
-          thus "t_v_evaluation (path_interpretation A r ?u) F = Ttrue"
+          thus "t_v_evaluation (path_interpretation A r ?u) F"
           proof(rule disjE)
             assume  "F \<in> \<G> A r"
             hence "\<exists>u. \<exists>v. u\<in>A \<and> v\<in>A  \<and> (v,u)\<in> r  \<and>
@@ -1486,24 +1439,29 @@ proof-
               by (unfold  \<G>_def, auto)
             then obtain u v where "u\<in>A" and "v\<in>A" and "(v,u)\<in> r" 
             and F: "(F = (atom u) \<rightarrow>. (atom v))" by auto
-            show "t_v_evaluation (path_interpretation A r ?u) F = Ttrue"  
+            show "t_v_evaluation (path_interpretation A r ?u) F"  
             proof(rule ccontr)
-              assume "\<not>(t_v_evaluation (path_interpretation A r ?u) F = Ttrue)" 
-              hence "t_v_evaluation (path_interpretation A r ?u) F = Ffalse"
-                using Bivaluation by auto
-              hence "t_v_evaluation (path_interpretation A r ?u) (atom u) =  Ttrue \<and>
-              t_v_evaluation (path_interpretation A r ?u) (atom v) =  Ffalse" 
-                using F  eval_false_implication by blast
-              hence 1: "t_v_evaluation (path_interpretation A r ?u) (atom u) =  Ttrue"
-              and   2: "t_v_evaluation (path_interpretation A r ?u) (atom v) =  Ffalse"
+              assume "\<not>(t_v_evaluation (path_interpretation A r ?u) F)" 
+              hence "\<not>t_v_evaluation (path_interpretation A r ?u) F "
                 by auto
+              hence "t_v_evaluation (path_interpretation A r ?u) (atom u) \<and>
+              t_v_evaluation (path_interpretation A r ?u) (atom v)" 
+                using F  eval_false_implication
+                by (metis \<open>(v, u) \<in> r\<close> \<open>node_sig_level_max A r S \<in> A\<close> \<open>trans_on A r\<close> 
+                    \<open>u \<in> A\<close> \<open>v \<in> A\<close>
+                    path_interpretation.simps t_v_evaluation.simps(3) trans_on_def)
+              hence 1: "t_v_evaluation (path_interpretation A r ?u) (atom u)"
+              and   2: "t_v_evaluation (path_interpretation A r ?u) (atom v)"           
+                by blast+
               have "(u,?u)\<in>r" using 1 value_path_interpretation by auto
               hence "(v,?u)\<in> r" 
-                using  `u\<in>A` `v\<in>A` `?u\<in>A` `(v,u)\<in> r` `transitive_on A r` 
-                by(unfold transitive_on_def, blast)
-              hence "t_v_evaluation (path_interpretation A r ?u) (atom v) =  Ttrue" 
+                using  `u\<in>A` `v\<in>A` `?u\<in>A` `(v,u)\<in> r` `trans_on A r` 
+                by(unfold trans_on_def, blast)
+              hence "t_v_evaluation (path_interpretation A r ?u) (atom v)" 
                 by auto
-              thus False using 2 by auto
+              thus False
+                using F \<open>\<not> t_v_evaluation (path_interpretation A r (node_sig_level_max A r S)) F\<close>
+                  t_v_evaluation.simps(7) by blast
             qed
           next
             assume  "F \<in> \<H> A r" 
@@ -1516,18 +1474,16 @@ proof-
             then obtain u v where F: "F = \<not>.((atom u) \<and>. (atom v))" 
             and "u\<in>(level A r n)" and "v\<in>(level A r n)" and "u\<noteq>v"
               by auto
-            show "t_v_evaluation (path_interpretation A r ?u) F = Ttrue"  
+            show "t_v_evaluation (path_interpretation A r ?u) F"  
             proof(rule ccontr)
-              assume "t_v_evaluation (path_interpretation A r ?u) F \<noteq> Ttrue"
-              hence "t_v_evaluation (path_interpretation A r ?u) F = Ffalse"
-                using Bivaluation by auto
+              assume "\<not>t_v_evaluation (path_interpretation A r ?u) F"            
               hence
               "t_v_evaluation (path_interpretation A r ?u)((atom u) \<and>.
-               (atom v)) = Ttrue" 
-                using F  NegationValues1 by blast
-              hence "t_v_evaluation (path_interpretation A r ?u)(atom u) = Ttrue \<and>
-              t_v_evaluation (path_interpretation A r ?u)(atom v) = Ttrue"
-                using ConjunctionValues by blast
+               (atom v))" 
+                using F  by auto
+              hence "t_v_evaluation (path_interpretation A r ?u)(atom u) \<and>
+              t_v_evaluation (path_interpretation A r ?u)(atom v)"
+                 by auto
               hence "(u,?u)\<in>r" and  "(v,?u)\<in>r"
                 using  value_path_interpretation by auto
               hence a: "(level A r n) \<inter> (level A r n) = {}"
@@ -1546,8 +1502,8 @@ proof-
   thus "satisfiable S" by(unfold satisfiable_def, auto)
 qed
 
-definition \<B>:: "'a set \<Rightarrow> ('a  \<Rightarrow> v_truth) \<Rightarrow> 'a set" where
-"\<B> A I  \<equiv> {u|u. u\<in>A \<and> t_v_evaluation I (atom u) = Ttrue}"
+definition \<B>:: "'a set \<Rightarrow> ('a  \<Rightarrow> bool) \<Rightarrow> 'a set" where
+"\<B> A I  \<equiv> {u|u. u\<in>A \<and> t_v_evaluation I (atom u)}"
 
 lemma value_disjunction_list1:
   assumes "t_v_evaluation I (disjunction_nodes (a # l)) = Ttrue"
@@ -1557,30 +1513,30 @@ proof-
     by auto
   hence "t_v_evaluation I ((atom a) \<or>. (disjunction_nodes l)) = Ttrue" 
     using assms by auto
-  thus ?thesis using DisjunctionValues by blast
+  thus ?thesis by auto
 qed
 
 lemma value_disjunction_list:
-  assumes "t_v_evaluation I (disjunction_nodes l) = Ttrue"
-  shows "\<exists>x. x \<in> set l \<and> t_v_evaluation I (atom x) = Ttrue" 
+  assumes "t_v_evaluation I (disjunction_nodes l)"
+  shows "\<exists>x. x \<in> set l \<and> t_v_evaluation I (atom x)" 
 proof-
-  have "t_v_evaluation I (disjunction_nodes l) = Ttrue \<Longrightarrow>
-  \<exists>x. x \<in> set l \<and>  t_v_evaluation I (atom x) = Ttrue" 
+  have "t_v_evaluation I (disjunction_nodes l) \<Longrightarrow>
+  \<exists>x. x \<in> set l \<and>  t_v_evaluation I (atom x)" 
   proof(induct l)
     case Nil
     then show ?case by auto
   next   
     case (Cons a l)  
-    show  "\<exists>x. x \<in> set (a # l) \<and> t_v_evaluation I (atom x) = Ttrue"  
+    show  "\<exists>x. x \<in> set (a # l) \<and> t_v_evaluation I (atom x)"  
     proof-
-      have "t_v_evaluation I (atom a) = Ttrue \<or> t_v_evaluation I (disjunction_nodes l)=Ttrue" 
+      have "t_v_evaluation I (atom a) \<or> t_v_evaluation I (disjunction_nodes l)" 
         using Cons(2) value_disjunction_list1[of I] by auto      
       thus ?thesis
     proof(rule disjE)
-      assume "t_v_evaluation I (atom a) = Ttrue"
+      assume "t_v_evaluation I (atom a)"
       thus ?thesis by auto
     next
-      assume "t_v_evaluation I (disjunction_nodes l) = Ttrue" 
+      assume "t_v_evaluation I (disjunction_nodes l)" 
       thus ?thesis
         using Cons by auto    
     qed
@@ -1591,56 +1547,56 @@ qed
 
 lemma intersection_branch_set_nodes_at_level:
   assumes "infinite_tree A r" and "finitely_branching A r" 
-  and I: "\<forall>F \<in> (\<F> A r). t_v_evaluation I F = Ttrue"
+  and I: "\<forall>F \<in> (\<F> A r). t_v_evaluation I F"
 shows "\<forall>n. \<exists>x. x \<in> level A r n \<and> x \<in> (\<B> A I)" using all_levels_non_empty
 proof- 
   fix n 
-  have "\<forall>n. t_v_evaluation I (disjunction_nodes(set_to_list (level A r n))) = Ttrue"
+  have "\<forall>n. t_v_evaluation I (disjunction_nodes(set_to_list (level A r n)))"
     using I by (unfold \<F>_def, auto)
   hence 1:
-  "\<forall>n. \<exists>x. x \<in> set (set_to_list (level A r n)) \<and> t_v_evaluation I (atom x) = Ttrue"
+  "\<forall>n. \<exists>x. x \<in> set (set_to_list (level A r n)) \<and> t_v_evaluation I (atom x)"
     using value_disjunction_list by auto
   have "tree A r" 
     using `infinite_tree A r`by auto
   hence "\<forall>n. set (set_to_list (level A r n)) = level A r n" 
     using assms(1-2)  set_set_to_list1 by auto
-  hence  "\<forall>n. \<exists>x. x \<in> level A r n \<and>  t_v_evaluation I (atom x) = Ttrue"
+  hence  "\<forall>n. \<exists>x. x \<in> level A r n \<and>  t_v_evaluation I (atom x)"
     using 1  by auto
-  hence  "\<forall>n. \<exists>x. x \<in> level A r n \<and> x\<in>A \<and> t_v_evaluation I (atom x) = Ttrue" 
+  hence  "\<forall>n. \<exists>x. x \<in> level A r n \<and> x\<in>A \<and> t_v_evaluation I (atom x)" 
     by(unfold level_def, auto)
   thus ?thesis using \<B>_def[of A I] by auto
 qed
 
 lemma intersection_branch_emptyness_below_height:
-  assumes I:  "\<forall>F \<in> (\<H> A r). t_v_evaluation I F = Ttrue" 
+  assumes I:  "\<forall>F \<in> (\<H> A r). t_v_evaluation I F" 
   and "x\<in>(\<B> A I)"  and  "y\<in>(\<B> A I)"  and  "x \<noteq> y" and  n: "x \<in> level A r n"
   and m: "y \<in> level A r m" 
 shows  "n \<noteq> m"
 proof(rule ccontr)
   assume "\<not> n \<noteq> m"
   hence "n=m" by auto
-  have "x\<in>A" and  "y\<in>A" and v1: "t_v_evaluation I (atom x) = Ttrue" 
-  and v2: "t_v_evaluation I (atom y) = Ttrue" 
+  have "x\<in>A" and  "y\<in>A" and v1: "t_v_evaluation I (atom x)" 
+  and v2: "t_v_evaluation I (atom y)" 
     using  `x\<in>(\<B> A I)` `y\<in>(\<B> A I)`  by(unfold \<B>_def, auto) 
   have "\<not>.((atom x) \<and>. (atom y)) \<in> (\<H>n A r n)" 
     using `x\<in>A`   `y\<in>A`  `x \<noteq> y` n m `n=m`
     by(unfold \<H>n_def, auto)             
   hence "\<not>.((atom x) \<and>. (atom y)) \<in> (\<H> A r)"
     by(unfold \<H>_def, auto)                   
-  hence "t_v_evaluation I (\<not>.((atom x) \<and>. (atom y))) = Ttrue"
+  hence "t_v_evaluation I (\<not>.((atom x) \<and>. (atom y)))"
     using I by auto
   moreover                  
-  have "t_v_evaluation I ((atom x) \<and>. (atom y)) = Ttrue"
-    using v1 v2 v_conjunction_def by auto
-  hence "t_v_evaluation I (\<not>.((atom x) \<and>. (atom y))) = Ffalse" 
-    using v_negation_def by auto 
+  have "t_v_evaluation I ((atom x) \<and>. (atom y))" 
+    using v1 v2  by auto
+  hence "\<not>t_v_evaluation I (\<not>.((atom x) \<and>. (atom y)))" 
+    by auto 
   ultimately
   show False by auto
 qed
 
 lemma intersection_branch_level: 
   assumes  "infinite_tree A r" and "finitely_branching A r" 
-  and I: "\<forall>F \<in> (\<F> A r) \<union> (\<H> A r). t_v_evaluation I F = Ttrue"
+  and I: "\<forall>F \<in> (\<F> A r) \<union> (\<H> A r). t_v_evaluation I F"
 shows "\<forall>n. \<exists>u. (\<B> A I) \<inter>  level A r n = {u}"
 proof
   fix n 
@@ -1666,41 +1622,41 @@ proof
     qed
     have "(\<B> A I) \<inter> level A r n = {u}"
       using 1 2 by auto
-    thus "\<exists>u.(\<B> A I) \<inter>  level A r n = {u}"  by auto
+    thus "\<exists>u.(\<B> A I) \<inter>  level A r n = {u}" by auto
   qed
 qed
 
 lemma predecessor_in_branch:
-  assumes I:  "\<forall>F \<in> (\<G> A r). t_v_evaluation I F = Ttrue" 
+  assumes I:  "\<forall>F \<in> (\<G> A r). t_v_evaluation I F" 
   and "y\<in>(\<B> A I)"  and  "(x,y)\<in> r" and "x\<in>A" and "y\<in>A"
 shows "x\<in>(\<B> A I)"
 proof- 
   have "(atom y) \<rightarrow>. (atom x)\<in> \<G> A r" 
     using `x\<in>A`  `y\<in>A`  `(x, y)\<in>r` by (unfold  \<G>_def, auto)
-  hence "t_v_evaluation I ((atom y) \<rightarrow>. (atom x)) = Ttrue"
+  hence "t_v_evaluation I ((atom y) \<rightarrow>. (atom x))"
     using I by auto
   moreover
-  have "t_v_evaluation I (atom y) = Ttrue" 
+  have "t_v_evaluation I (atom y)" 
     using  `y\<in>(\<B> A I)` by(unfold \<B>_def, auto)
   ultimately
-  have "t_v_evaluation I (atom x) = Ttrue"
-    using v_implication_def by  auto
+  have "t_v_evaluation I (atom x)"
+    by auto
   thus  "x\<in>(\<B> A I)" using  `x\<in>A`  by(unfold \<B>_def, auto) 
 qed
 
 lemma is_path: 
   assumes  "infinite_tree A r" and "finitely_branching A r" 
-  and I: "\<forall>F \<in> (\<T> A r). t_v_evaluation I F = Ttrue" 
+  and I: "\<forall>F \<in> (\<T> A r). t_v_evaluation I F" 
 shows "path (\<B> A I) A r"
 proof(unfold path_def)
   let ?B = "(\<B> A I)" 
   have "tree A r" 
   using  `infinite_tree A r` by auto
-  have "\<forall>F \<in> (\<F> A r) \<union> (\<G> A r) \<union> (\<H> A r). t_v_evaluation I F = Ttrue"
+  have "\<forall>F \<in> (\<F> A r) \<union> (\<G> A r) \<union> (\<H> A r). t_v_evaluation I F"
     using I by(unfold \<T>_def)
-  hence I1:  "\<forall>F \<in> (\<F> A r). t_v_evaluation I F = Ttrue" 
-  and   I2:  "\<forall>F \<in> (\<G> A r). t_v_evaluation I F = Ttrue"
-  and   I3:  "\<forall>F \<in> (\<H> A r). t_v_evaluation I F = Ttrue" 
+  hence I1:  "\<forall>F \<in> (\<F> A r). t_v_evaluation I F" 
+  and   I2:  "\<forall>F \<in> (\<G> A r). t_v_evaluation I F"
+  and   I3:  "\<forall>F \<in> (\<H> A r). t_v_evaluation I F" 
     by auto 
   have 0: "sub_linear_order ?B A r"
   proof(unfold sub_linear_order_def)
@@ -1720,8 +1676,8 @@ proof(unfold path_def)
           show "x \<noteq> y \<longrightarrow> (x, y) \<in> r \<or> (y, x) \<in> r" 
           proof(rule impI)
             assume "x \<noteq> y" 
-            have "x\<in>A" and "y\<in>A" and v1: "t_v_evaluation I (atom x) = Ttrue" 
-            and v2: "t_v_evaluation I (atom y) = Ttrue" 
+            have "x\<in>A" and "y\<in>A" and v1: "t_v_evaluation I (atom x)" 
+            and v2: "t_v_evaluation I (atom y)" 
               using `x\<in>?B` `y\<in>?B`  by(unfold \<B>_def, auto)
             have "(\<exists>n. x \<in> level A r n)" and "(\<exists>m. y \<in> level A r m)" 
               using `x\<in>A` and `y\<in>A` level_element[of A r]
@@ -1907,7 +1863,7 @@ qed
 
 lemma infinite_path:
   assumes  "infinite_tree A r" and  "finitely_branching A r"
-  and  I: "\<forall>F \<in> (\<F> A r). t_v_evaluation I F = Ttrue"
+  and  I: "\<forall>F \<in> (\<F> A r). t_v_evaluation I F"
 shows "infinite (\<B> A I)"
 proof-
   have a: "\<forall>n. \<forall>m.  n \<noteq> m \<longrightarrow> level A r n \<inter> level A r m = {}"
@@ -1934,15 +1890,15 @@ proof-
     thus "satisfiable (\<T> A r)"
       using Compactness_Theorem[of "(\<T> A r)"] by auto
   qed
-  hence "\<exists>I. (\<forall>F \<in> (\<T> A r). t_v_evaluation I F = Ttrue)" 
+  hence "\<exists>I. (\<forall>F \<in> (\<T> A r). t_v_evaluation I F)" 
     by(unfold satisfiable_def, unfold model_def, auto) 
-  then obtain I where I:  "\<forall>F \<in> (\<T> A r). t_v_evaluation I F = Ttrue"  
+  then obtain I where I:  "\<forall>F \<in> (\<T> A r). t_v_evaluation I F"  
     by auto
-  hence "\<forall>F \<in> (\<F> A r) \<union> (\<G> A r) \<union> (\<H> A r). t_v_evaluation I F = Ttrue"
+  hence "\<forall>F \<in> (\<F> A r) \<union> (\<G> A r) \<union> (\<H> A r). t_v_evaluation I F"
     by(unfold \<T>_def)
-  hence I1:  "\<forall>F \<in> (\<F> A r). t_v_evaluation I F = Ttrue" 
-  and   I2:  "\<forall>F \<in> (\<G> A r). t_v_evaluation I F = Ttrue"
-  and   I3:  "\<forall>F \<in> (\<H> A r). t_v_evaluation I F = Ttrue" 
+  hence I1:  "\<forall>F \<in> (\<F> A r). t_v_evaluation I F" 
+  and   I2:  "\<forall>F \<in> (\<G> A r). t_v_evaluation I F"
+  and   I3:  "\<forall>F \<in> (\<H> A r). t_v_evaluation I F" 
     by auto 
   let ?B = "(\<B> A I)"
   have "infinite_path ?B A r"
