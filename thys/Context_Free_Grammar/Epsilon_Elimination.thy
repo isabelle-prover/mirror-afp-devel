@@ -490,16 +490,21 @@ apply(induction P w arbitrary: u rule: eps_closure.induct)
 apply (fastforce split: if_splits)
 done
 
+lemma Lhss_Eps_elim: "Lhss (Eps_elim P) \<subseteq> Lhss P"
+by(auto simp: Lhss_def Eps_elim_def dest: set_eps_closure_subset)
+
+lemma Tms_Eps_elim: "Tms (Eps_elim P) \<subseteq> Tms P"
+by(auto simp: Tms_def Tms_syms_def Eps_elim_def dest: set_eps_closure_subset)
+
+lemma Rhs_Nts_Eps_elim: "Rhs_Nts (Eps_elim P) \<subseteq> Rhs_Nts P"
+by(auto simp: Rhs_Nts_def Nts_syms_def Eps_elim_def dest: set_eps_closure_subset)
+
 lemma Nts_Eps_elim: "Nts (Eps_elim P) \<subseteq> Nts P"
-unfolding Nts_def Eps_elim_def Nts_syms_def
-by(auto split: prod.splits dest: set_eps_closure_subset)
+  using Lhss_Eps_elim[of P] Rhs_Nts_Eps_elim[of P]
+by (auto simp: Nts_Lhss_Rhs_Nts)
 
 corollary nts_eps_elim: "Nts(set(eps_elim ps)) \<subseteq> Nts(set ps)"
   by (metis set_eps_elim Nts_Eps_elim)
-
-corollary Tms_Eps_elim_subset:
-  "Tms (Eps_elim P) \<subseteq> Tms P"
-unfolding Tms_def Tms_syms_def Eps_elim_def using set_eps_closure_subset by force
 
 corollary lang_eps_elim: "lang (eps_elim ps) S = lang ps S - {[]}"
   by (metis Lang_Eps_elim set_eps_elim)

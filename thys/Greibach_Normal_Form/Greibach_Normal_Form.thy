@@ -361,53 +361,108 @@ lemma Expand_hd_id: "dep_on P A \<inter> set As = {} \<Longrightarrow> Expand_hd
 lemma dep_on_subs_Nts: "dep_on R A \<subseteq> Nts R"
   by (auto simp add: Nts_def dep_on_def)
 
-lemma Nts_Expand_hd_sub: "Nts (Expand_hd A As R) \<subseteq> Nts R"
-proof (induction A As R rule: Expand_hd.induct)
-  case (1 A R)
-  then show ?case by simp
+section \<open>Transformations and Symbols\<close>
+
+lemma Lhss_Subst_hd: "Lhss (Subst_hd P X) \<subseteq> Lhss P \<union> Lhss X"
+  by (auto simp: Lhss_def Subst_hd_def)
+
+lemma Rhs_Nts_Subst_hd: "Rhs_Nts (Subst_hd P X) \<subseteq> Rhs_Nts P \<union> Rhs_Nts X"
+  by (auto simp: Subst_hd_def Rhs_Nts_def Nts_syms_def split: prod.splits)
+
+lemma Nts_Subst_hd: "Nts (Subst_hd P X) \<subseteq> Nts P \<union> Nts X"
+  using Un_mono[OF Lhss_Subst_hd Rhs_Nts_Subst_hd]
+  by (simp add: Nts_Lhss_Rhs_Nts ac_simps)
+
+lemma Tms_Subst_hd: "Tms (Subst_hd P X) \<subseteq> Tms P \<union> Tms X"
+  by (auto simp: Subst_hd_def Tms_def Tms_syms_def split: prod.splits)
+
+lemma Lhss_Expand_hd: "Lhss (Expand_hd A Ss P) \<subseteq> Lhss P"
+  and Tms_Expand_hd: "Tms (Expand_hd A Ss P) \<subseteq> Tms P"
+  and Rhs_Nts_Expand_hd: "Rhs_Nts (Expand_hd A Ss P) \<subseteq> Rhs_Nts P"
+proof (atomize(full), induction Ss arbitrary: P)
+  case Nil
+  show ?case by simp
 next
-  case (2 A S Ss R)
-  let ?R' = "Expand_hd A Ss R"
-  let ?X = "{r \<in> ?R'. \<exists>w. r = (A, Nt S # w)}"
-  let ?Y = "{(A, v @ w) |v w. (S, v) \<in> ?R' \<and> (A, Nt S # w) \<in> ?R'}"
-
-  have lhs_sub: "Lhss ?Y \<subseteq> Lhss ?R'" by (auto simp add: Lhss_def)
-
-  have "B \<notin> Rhs_Nts ?R' \<longrightarrow> B \<notin> Rhs_Nts ?Y" for B 
-    by (force simp add: Rhs_Nts_def split: prod.splits)
-  then have rhs_sub: "Rhs_Nts ?Y \<subseteq> Rhs_Nts ?R'" by auto
-
-  have "Nts ?Y \<subseteq> Nts ?R'" using lhs_sub rhs_sub by (auto simp add: Nts_Lhss_Rhs_Nts)
-  then have "Nts ?Y \<subseteq> Nts R" using 2 by auto
-  then show ?case using Nts_mono[of "?R' - ?X"] 2
-    by (auto simp add: Let_def Nts_def Subst_hd_def)
-qed
-  
-lemma Nts_Solve_lrec_sub: "Nts (Solve_lrec A A' R) \<subseteq> Nts R \<union> {A'}"
-proof -
-  have 1: "Nts (Rm_lrec A R) \<subseteq> Nts R" 
-    by (auto simp add: Nts_mono Rm_lrec_def)
-
-  have 2: "Lhss (Rrec_of_lrec A A' R) \<subseteq> Lhss R \<union> {A'}" 
-    by (auto simp add: Rrec_of_lrec_def Let_def Lhss_def)
-  have 3: "Rhs_Nts (Rrec_of_lrec A A' R) \<subseteq> Rhs_Nts R \<union> {A'}" 
-    by (auto simp add: Rrec_of_lrec_def Let_def Rhs_Nts_def)
-
-  have "Nts (Rrec_of_lrec A A' R) \<subseteq> Nts R \<union> {A'}" using 2 3 by (auto simp add: Nts_Lhss_Rhs_Nts)
-  then show ?thesis using 1 by (auto simp add: Solve_lrec_def Nts_Un)
+  case (Cons S Ss)
+  define P' where "P' = Expand_hd A Ss P"
+  define X where "X = {r \<in> P'. \<exists>w. r = (A, Nt S # w)}"
+  have "Lhss X \<subseteq> Lhss P'" and "Tms X \<subseteq> Tms P'" and "Rhs_Nts X \<subseteq> Rhs_Nts P'"
+    by (auto simp: X_def Lhss_def Tms_def Tms_syms_def Rhs_Nts_def Nts_syms_def)
+  moreover from Cons
+  have "Lhss P' \<subseteq> Lhss P" and "Tms P' \<subseteq> Tms P" and "Rhs_Nts P' \<subseteq> Rhs_Nts P" by (auto simp: P'_def)
+  ultimately show ?case
+    by (auto simp flip: P'_def X_def dest!: subsetD[OF Lhss_Subst_hd] subsetD[OF Tms_Subst_hd] subsetD[OF Rhs_Nts_Subst_hd])
 qed
 
-lemma Nts_Solve_tri_sub: "Nts (Solve_tri As As' R) \<subseteq> Nts R \<union> set As'"
-proof (induction As As' R rule: Solve_tri.induct)
-  case *: (1 A As A' As' R)
-  have "Nts (Solve_tri (A # As) (A' # As') R) = 
-        Nts (Solve_lrec A A' (Expand_hd A As (Solve_tri As As' R)))" by simp
-  also have "... \<subseteq> Nts (Expand_hd A As (Solve_tri As As' R)) \<union> {A'}"
-    using Nts_Solve_lrec_sub[of A A' "Expand_hd A As (Solve_tri As As' R)"] by simp
-  also have "... \<subseteq> Nts (Solve_tri As As' R) \<union> {A'}" 
-    using Nts_Expand_hd_sub[of A As "Solve_tri As As' R"] by auto
-  finally show ?case using * by auto
-qed auto
+lemma Nts_Expand_hd: "Nts (Expand_hd A Ss P) \<subseteq> Nts P"
+  using Un_mono[OF Lhss_Expand_hd Rhs_Nts_Expand_hd]
+  by (simp add: Nts_Lhss_Rhs_Nts ac_simps)
+
+lemma Tms_Solve_lrec: "Tms (Solve_lrec A A' P) \<subseteq> Tms P"
+  by (auto simp: Tms_def Tms_syms_def Solve_lrec_defs)
+
+lemma Lhss_Solve_lrec: "Lhss (Solve_lrec A A' P) \<subseteq> Lhss P \<union> {A'}"
+  by (auto simp: Lhss_def Solve_lrec_defs)
+
+lemma Rhs_Nts_Solve_lrec: "Rhs_Nts (Solve_lrec A A' P) \<subseteq> Rhs_Nts P \<union> {A'}"
+  by (auto simp: Rhs_Nts_def Solve_lrec_defs)
+
+lemma Nts_Solve_lrec: "Nts (Solve_lrec A A' P) \<subseteq> Nts P \<union> {A'}"
+  using Lhss_Solve_lrec[of A A' P] Rhs_Nts_Solve_lrec[of A A' P]
+  by (auto simp: Nts_Lhss_Rhs_Nts)
+
+lemma Lhss_Solve_tri: "Lhss (Solve_tri As As' P) \<subseteq> Lhss P \<union> set As'"
+  and Tms_Solve_tri: "Tms (Solve_tri As As' P) \<subseteq> Tms P"
+  and Rhs_Nts_Solve_tri: "Rhs_Nts (Solve_tri As As' P) \<subseteq> Rhs_Nts P \<union> set As'"
+  apply (induction rule: Solve_tri.induct)
+  by (auto dest!:
+      subsetD[OF Lhss_Solve_lrec] subsetD[OF Lhss_Expand_hd]
+      subsetD[OF Tms_Solve_lrec] subsetD[OF Tms_Expand_hd]
+      subsetD[OF Rhs_Nts_Solve_lrec] subsetD[OF Rhs_Nts_Expand_hd])
+
+lemma Nts_Solve_tri: "Nts (Solve_tri As As' P) \<subseteq> Nts P \<union> set As'"
+  using Lhss_Solve_tri[of As As' P] Rhs_Nts_Solve_tri[of As As' P]
+  by (auto simp: Nts_Lhss_Rhs_Nts)
+
+lemma Lhss_Expand_tri: "Lhss (Expand_tri As P) \<subseteq> Lhss P"
+  and Tms_Expand_tri: "Tms (Expand_tri As P) \<subseteq> Tms P"
+  and Rhs_Nts_Expand_tri: "Rhs_Nts (Expand_tri As P) \<subseteq> Rhs_Nts P"
+proof (atomize(full), induction As)
+  case Nil
+  show ?case by simp
+next
+  case (Cons A As)
+  define P' where "P' = Expand_tri As P"
+  define X where "X = {r \<in> P'. \<exists>w B. r = (A, Nt B # w) \<and> B \<in> set As}"
+  from Cons have 1: "Lhss P' \<subseteq> Lhss P" "Tms P' \<subseteq> Tms P" "Rhs_Nts P' \<subseteq> Rhs_Nts P"
+    by (auto simp: P'_def)
+  have 2: "Lhss X \<subseteq> Lhss P'" "Tms X \<subseteq> Tms P'" "Rhs_Nts X \<subseteq> Rhs_Nts P'"
+    by (auto simp: X_def Lhss_def Tms_def Rhs_Nts_def)
+  show ?case
+    by (auto simp flip: P'_def X_def
+        dest!: subsetD[OF Lhss_Subst_hd] subsetD[OF Tms_Subst_hd] subsetD[OF Rhs_Nts_Subst_hd]
+        1[THEN subsetD] 2[THEN subsetD])
+qed
+
+lemma Nts_Expand_tri: "Nts (Expand_tri As P) \<subseteq> Nts P"
+  using Lhss_Expand_tri[of As P] Rhs_Nts_Expand_tri[of As P]
+  by (auto simp: Nts_Lhss_Rhs_Nts)
+
+lemma Lhss_GNF_hd_of: "Lhss (GNF_hd_of As P) \<subseteq> Lhss P \<union> set (freshs (set As) As)"
+  by (auto simp: GNF_hd_of_def Let_def
+      dest!: subsetD[OF Lhss_Expand_tri] subsetD[OF Lhss_Solve_tri] subsetD[OF Lhss_Eps_elim])
+
+lemma Rhs_Nts_GNF_hd_of: "Rhs_Nts (GNF_hd_of As P) \<subseteq> Rhs_Nts P \<union> set (freshs (set As) As)"
+  by (auto simp: GNF_hd_of_def Let_def
+      dest!: subsetD[OF Rhs_Nts_Expand_tri] subsetD[OF Rhs_Nts_Solve_tri] subsetD[OF Rhs_Nts_Eps_elim])
+
+lemma Tms_GNF_hd_of: "Tms (GNF_hd_of As P) \<subseteq> Tms P"
+  by (auto simp: GNF_hd_of_def Let_def
+      dest!: subsetD[OF Tms_Expand_tri] subsetD[OF Tms_Solve_tri] subsetD[OF Tms_Eps_elim])
+
+lemma Nts_GNF_hd_of: "Nts (GNF_hd_of As P) \<subseteq> Nts P \<union> set (freshs (set As) As)"
+  using Lhss_GNF_hd_of[of As P] Rhs_Nts_GNF_hd_of[of As P]
+  by (auto simp: Nts_Lhss_Rhs_Nts)
 
 subsection \<open>Lemmas about \<open>Triangular\<close>\<close>
 
@@ -617,9 +672,9 @@ proof (induction As As' R rule: Solve_tri.induct)
     using * by (auto simp add: Triangular_Expand_hd)
   then have F1: "Triangular (rev As') (Solve_tri (A#As) (A'#As') R)"
     using * by (auto simp add: Triangular_Solve_lrec)
-  have "Nts (Solve_tri As As' R) \<subseteq> Nts R \<union> set As'" using * by (auto simp add: Nts_Solve_tri_sub)
+  have "Nts (Solve_tri As As' R) \<subseteq> Nts R \<union> set As'" using * by (auto simp add: Nts_Solve_tri)
   then have F_nts: "Nts (Expand_hd A As (Solve_tri As As' R)) \<subseteq> Nts R \<union> set As'"
-    using Nts_Expand_hd_sub[of A As "(Solve_tri As As' R)"] by auto
+    using Nts_Expand_hd[of A As "(Solve_tri As As' R)"] by auto
   then have "A' \<notin> dep_on (Solve_lrec A A' (Expand_hd A As (Solve_tri As As' R))) A'" 
     using * Solve_lrec_no_new_own_dep[of A A'] by auto
   then have F2: "Triangular [A'] (Solve_tri (A#As) (A'#As') R)" by auto
@@ -1517,10 +1572,10 @@ proof (induction As As' P rule: Solve_tri.induct)
     by (simp add: Eps_free_Expand_hd Eps_free_Solve_tri)
   have "length As \<le> length As'" using * by simp
   then have "Nts (Expand_hd Aa As (Solve_tri As As' R)) \<subseteq> Nts R \<union> set As'"
-    using * Nts_Expand_hd_sub Nts_Solve_tri_sub
+    using * Nts_Expand_hd Nts_Solve_tri
     by (metis subset_trans)
   then have nts1: " A' \<notin> Nts (Expand_hd Aa As (Solve_tri As As' R))"
-    using * Nts_Expand_hd_sub Nts_Solve_tri_sub by auto
+    using * Nts_Expand_hd Nts_Solve_tri by auto
   
   have "Lang (Solve_tri (Aa # As) (A' # As') R) A 
         = Lang (Solve_lrec Aa A' (Expand_hd Aa As (Solve_tri As As' R))) A"
@@ -1701,34 +1756,6 @@ next
   qed
 qed
 
-text \<open>Interlude: \<open>Nts\<close> of \<open>Expand_tri\<close>:\<close>
-
-lemma Lhss_Expand_tri: "Lhss (Expand_tri As R) \<subseteq> Lhss R"
-  by (induction As R rule: Expand_tri.induct) (auto simp add: Lhss_def Let_def Subst_hd_def)
-
-lemma Rhs_Nts_Expand_tri: "Rhs_Nts (Expand_tri As R) \<subseteq> Rhs_Nts R"
-proof (induction As R rule: Expand_tri.induct)
-  case (1 R)
-  then show ?case by simp
-next
-  case (2 S Ss R)
-  let ?X = "{r \<in> Expand_tri Ss R. \<exists>w B. r = (S, Nt B # w) \<and> B \<in> set Ss}"
-  let ?Y = "{(S,v@w)|v w. \<exists>B. (B,v) \<in> Expand_tri Ss R \<and> (S, Nt B # w) \<in> Expand_tri Ss R \<and> B \<in> set Ss}"
-  have F1: "Rhs_Nts ?X \<subseteq> Rhs_Nts R" using 2 by (auto simp add: Rhs_Nts_def)
-  have "Rhs_Nts ?Y \<subseteq> Rhs_Nts R"
-  proof
-    fix x
-    assume "x \<in> Rhs_Nts ?Y"
-    then have "\<exists>y ys. (y, ys) \<in> ?Y \<and> x \<in> Nts_syms ys" by (auto simp add: Rhs_Nts_def)
-    then obtain y ys where P1: "(y, ys) \<in> ?Y \<and> x \<in> Nts_syms ys" by blast
-    then show "x \<in> Rhs_Nts R" using P1 2 Rhs_Nts_def by fastforce
-  qed
-  then show ?case using F1 2 by (auto simp add: Rhs_Nts_def Let_def UN_subset_iff subset_eq Subst_hd_def)
-qed
-
-lemma Nts_Expand_tri: "Nts (Expand_tri As R) \<subseteq> Nts R"
-  by (metis Lhss_Expand_tri Nts_Lhss_Rhs_Nts Rhs_Nts_Expand_tri Un_mono)
-
 text \<open>If the entire \<open>Triangular\<close> form is expanded, the result is in GNF:\<close>
 theorem GNF_hd_Expand_tri: 
   assumes "Eps_free R" "Triangular (rev As) R" "distinct As" "Nts R \<subseteq> set As"
@@ -1743,7 +1770,7 @@ theorem GNF_hd_Expand_Solve_tri:
 proof -
   from assms have tri: "Triangular (As @ rev As') (Solve_tri As As' R)"
     by (simp add: Int_commute Triangular_Solve_tri)
-  have "Nts (Solve_tri As As' R) \<subseteq> set As \<union> set As'" using assms Nts_Solve_tri_sub by fastforce 
+  have "Nts (Solve_tri As As' R) \<subseteq> set As \<union> set As'" using assms Nts_Solve_tri by fastforce 
   then show ?thesis 
     using GNF_hd_Expand_tri[of "(Solve_tri As As' R)" "(As' @ rev As)"] assms tri 
     by (auto simp add: Eps_free_Solve_tri)
