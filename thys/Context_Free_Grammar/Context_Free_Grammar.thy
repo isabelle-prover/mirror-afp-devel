@@ -296,7 +296,7 @@ subsection "Derivations"
 subsubsection \<open>The standard derivations \<open>\<Rightarrow>\<close>, \<open>\<Rightarrow>*\<close>, \<open>\<Rightarrow>(n)\<close>\<close>
 
 inductive derive :: "('n,'t) Prods \<Rightarrow> ('n,'t) syms \<Rightarrow> ('n,'t)syms \<Rightarrow> bool"
-  ("(2_ \<turnstile>/ (_ \<Rightarrow>/ _))" [50, 0, 50] 50) where
+  ("(2_ \<turnstile>/ (_ \<Rightarrow>/ _))" [50, 0, 50] 50) for P where
 "(A,\<alpha>) \<in> P \<Longrightarrow> P \<turnstile> u @ [Nt A] @ v \<Rightarrow> u @ \<alpha> @ v"
 
 abbreviation deriven ("(2_ \<turnstile>/ (_ /\<Rightarrow>'(_')/ _))" [50, 0, 0, 50] 50) where
@@ -1113,26 +1113,32 @@ next
 qed
 
 
+lemma derive_set_subset:
+  "P \<turnstile> u \<Rightarrow> v \<Longrightarrow> set v \<subseteq> set u \<union> Syms P"
+by (auto simp: derive_iff Syms_def)
 
 lemma derives_set_subset:
   "P \<turnstile> u \<Rightarrow>* v \<Longrightarrow> set v \<subseteq> set u \<union> Syms P"
-proof (induction rule: derives_induct)
-  case base
-  then show ?case by simp
-next
-  case (step u A v w)
-  then show ?case unfolding Syms_def by (auto)
-qed
+by(induction rule: rtranclp_induct)
+  (auto dest!:derive_set_subset)
+
+lemma derive_Nts_syms_subset:
+  "P \<turnstile> u \<Rightarrow> v \<Longrightarrow> Nts_syms v \<subseteq> Nts_syms u \<union> Nts P"
+by(auto simp: Nts_def derive_iff)
+
+lemma derive_Tms_syms_subset:
+  "P \<turnstile> u \<Rightarrow> v \<Longrightarrow> Tms_syms v \<subseteq> Tms_syms u \<union> Tms P"
+by(auto simp: Tms_def derive_iff)
 
 lemma derives_Nts_syms_subset:
   "P \<turnstile> u \<Rightarrow>* v \<Longrightarrow> Nts_syms v \<subseteq> Nts_syms u \<union> Nts P"
-by(drule derives_set_subset)
-  (auto simp: Nts_syms_def Nts_def Syms_def)
+by(induction rule: converse_rtranclp_induct)
+  (auto dest!: derive_Nts_syms_subset)
 
 lemma derives_Tms_syms_subset:
   "P \<turnstile> u \<Rightarrow>* v \<Longrightarrow> Tms_syms v \<subseteq> Tms_syms u \<union> Tms P"
-by(drule derives_set_subset)
-  (auto simp: Tms_syms_def Tms_def Syms_def)
+by(induction rule: converse_rtranclp_induct)
+  (auto dest!: derive_Tms_syms_subset)
 
 
 text \<open>Bottom-up definition of \<open>\<Rightarrow>*\<close>. Single definition yields more compact inductions.
@@ -1688,6 +1694,43 @@ next
   qed
 qed
 
+subsection \<open>Redundant Productions\<close>
+
+text \<open>Productions whose lhss do not appear in other rules are redundant.\<close>
+
+lemma derive_Un_disj_Lhss:
+  assumes \<alpha>: "Nts_syms \<alpha> \<inter> Lhss Q = {}"
+  shows "P \<union> Q \<turnstile> \<alpha> \<Rightarrow> \<beta> \<longleftrightarrow> P \<turnstile> \<alpha> \<Rightarrow> \<beta>"
+  using \<alpha> by (auto simp: Lhss_def derive_iff)
+
+lemma derives_Un_disj_Lhss:
+  assumes disj: "Nts P \<inter> Lhss Q = {}" and \<alpha>: "Nts_syms \<alpha> \<inter> Lhss Q = {}"
+  shows "P \<union> Q \<turnstile> \<alpha> \<Rightarrow>* \<beta> \<longleftrightarrow> P \<turnstile> \<alpha> \<Rightarrow>* \<beta>" (is "?l \<longleftrightarrow> ?r")
+proof
+  show "?l \<Longrightarrow> ?r"
+  proof (insert \<alpha>, induction rule: converse_rtranclp_induct)
+    case base
+    show ?case by simp
+  next
+    case (step y z)
+    then have yz: "P \<turnstile> y \<Rightarrow> z" by (simp add: derive_Un_disj_Lhss)
+    from derive_Nts_syms_subset[OF yz] step.prems disj
+    have "Nts_syms z \<inter> Lhss Q = {}" by auto
+    from yz step.IH[OF this]
+    show ?case by auto
+  qed
+next
+  assume ?r
+  from derives_mono[OF _ this]
+  show ?l by auto
+qed
+
+lemma Lang_Un_disj_Lhss:
+  assumes disj: "Nts P \<inter> Lhss Q = {}" and A: "A \<notin> Lhss Q"
+  shows "Lang (P \<union> Q) A = Lang P A"
+  apply (rule Lang_eqI_derives)
+  apply (rule derives_Un_disj_Lhss)
+  using assms by auto
 
 subsection \<open>Substitution in Lists\<close>
 
