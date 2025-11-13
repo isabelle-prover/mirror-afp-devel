@@ -26,6 +26,13 @@
     <category>Logic/General logic/Mechanization of proofs</category>
 </item>
 <item>
+  <title>Abstract Substitution</title>
+  <link>https://isa-afp.org/entries/Abstract_Substitution.html</link>
+  <pubDate>Mon, 16 Sep 2024 00:00:00 +0000</pubDate>
+  <description>Abstract Substitution in the AFP</description>
+    <category>Logic</category>
+</item>
+<item>
   <title>Real-Time Double-Ended Queue</title>
   <link>https://isa-afp.org/entries/Real_Time_Deque.html</link>
   <pubDate>Thu, 23 Jun 2022 00:00:00 +0000</pubDate>

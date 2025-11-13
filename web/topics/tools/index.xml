@@ -4,6 +4,13 @@
     <title>Tools</title>
     <link>https://isa-afp.org/topics/tools/</link>
     <description>AFP entries in Tools</description><item>
+  <title>Zippy - Generic White-Box Proof Search with Zippers</title>
+  <link>https://isa-afp.org/entries/Zippy.html</link>
+  <pubDate>Tue, 11 Nov 2025 00:00:00 +0000</pubDate>
+  <description>Zippy - Generic White-Box Proof Search with Zippers in the AFP</description>
+    <category>Tools</category>
+</item>
+<item>
   <title>Muntac: A Verified Certificate Checker for Timed Automata</title>
   <link>https://isa-afp.org/entries/Munta_Certificate_Checker.html</link>
   <pubDate>Sun, 12 Oct 2025 00:00:00 +0000</pubDate>

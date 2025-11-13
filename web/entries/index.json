@@ -1,5 +1,21 @@
 [
  {
+  "abstract": "This entry contains Zippy, a framework for tree-based searches. Zippy is largely independent of concrete search tree representations, search algorithms, states and effects. It is designed to create analysable and navigable searches that are open to customisation and extensions by users. An accompanying arXiv preprint is available here. This entry also provides a concrete instantiation of the framework in the form of a general purpose white-box prover, called zip. The prover performs a proof tree search with customisable expansion actions and search strategies, including A${}^{*}$, breadth-first, depth-first, and best-first search. By default, it integrates the classical reasoner, simplifier, the blast and metis prover, and supports resolution with higher-order and certifying unification, conditional substitutions, case splitting and induction, among other things. Users are free to extend the prover with additional expansion actions and search strategies. We demonstrate the capabilities of zip in an examples theory. In most cases, zip can be used as a drop-in replacement for Isabelle's classical methods, including auto, fastforce, force, fast, etc. We demonstrate this with a benchmark containing 2267 method calls from Isabelle's standard library, where zip achieves a success rate of 99.82% (2263/2267). The Zippy framework is founded on concepts from functional programming theory, particularly zippers, arrows, monads, lenses, and coroutines. This entry contains a library of mentioned concepts for Isabelle/ML.",
+  "authors": [
+   "Kevin Kappelmann"
+  ],
+  "link": "/entries/Zippy.html",
+  "shortname": "Zippy",
+  "title": "Zippy - Generic White-Box Proof Search with Zippers",
+  "topic_links": [
+   "/topics/tools/"
+  ],
+  "topics": [
+   "Tools"
+  ],
+  "year": "2025"
+ },
+ {
   "abstract": "The objective of this theory development is an implementation of the Z mathematical  toolkit in Isabelle/HOL that is both efficient for proof and faithful to the standard. We construct the Z metalanguage and type universe on top of HOL, and link this to corresponding concrete types (finite functions, lists etc.) in Isabelle, to enable efficient proof automation. We then utilise coercive subtyping and overloading to support processing of Z-like expressions in Isabelle/HOL. We then use this to develop the mathematical toolkit for sets, relations, functions, and sequences.",
   "authors": [
    "Simon Foster",
@@ -1483,7 +1499,8 @@
  {
   "abstract": "This entry provides a small, reusable, theory that specifies the abstract concept of substition as monoid action. Both the substitution type and the object type are kept abstract. The theory provides multiple useful definitions and lemmas. Two example usages are provided for first order terms: one for terms from the AFP/First_Order_Terms session and one for terms from the Isabelle/HOL-ex session.",
   "authors": [
-   "Martin Desharnais-Schäfer"
+   "Martin Desharnais-Schäfer",
+   "Balazs Toth"
   ],
   "link": "/entries/Abstract_Substitution.html",
   "shortname": "Abstract_Substitution",
@@ -1939,7 +1956,7 @@
   "year": "2024"
  },
  {
-  "abstract": "This entry provides a basic library for many-sorted terms and algebras. We view sorted sets just as partial maps from elements to sorts, and define sorted set of terms reusing the data type from the existing library of (unsorted) first order terms. All the existing functionality, such as substitutions and contexts, can be reused without any modifications. We provide predicates stating what substitutions or contexts are considered sorted, and prove facts that they preserve sorts as expected.",
+  "abstract": "This entry provides a basic library for many-sorted terms and algebras. We view sorted sets just as partial maps from elements to sorts, and define sorted set of terms reusing the data type from the existing library of (unsorted) first order terms. All the existing functionality, such as substitutions and contexts, can be reused without any modifications. We provide predicates stating what substitutions or contexts are considered sorted, and prove facts that they preserve sorts as expected. We further provide algorithms for computing emptyness, finiteness and cardinality of sorts. ",
   "authors": [
    "Akihisa Yamada",
    "René Thiemann"
@@ -3068,7 +3085,7 @@
   "year": "2023"
  },
  {
-  "abstract": "This article provides various unification utilities for Isabelle/ML, most prominently: First-order and higher-order pattern E-unification and E-matching. While unifiers in Isabelle/ML only consider the $\\alpha\\beta\\eta$-equational theory of the $\\lambda$-calculus, unifiers in this article may take an extra background theory, in the form of an equational prover, into account. For example, the unification problem $n + 1 \\equiv {}?m + Suc\\; 0$ may be solved by providing a prover for the background theory $\\forall n.\\ n + 1 \\equiv n + Suc\\; 0$. Tactics, methods, and attributes with adjustable unifiers (e.g.\\ resolution, fact, assumption, OF). A generalisation of unification hints. Unification hints are a flexible extension for unifiers. Among other things, they can be used for reflective tactics, to provide canonical unification instances, or to simply strengthen the background theory of a unifier in a controlled manner. Simplifier integration for e-unifiers. Practical combinations of unification algorithms, e.g. a combination of first-order and higher-order pattern unification. A hierarchical logger for Isabelle/ML, including per logger configurations with log levels, output channels, message filters. While this entry works with every object logic, some extra setup for Isabelle/HOL and application examples are provided. All unifiers are tested with SpecCheck.",
+  "abstract": "This article provides various unification utilities for Isabelle/ML, most prominently: Proof-producing first-order and higher-order pattern E-unification and E-matching. While unifiers in Isabelle/ML only consider the $\\alpha\\beta\\eta$-equational theory of the $\\lambda$-calculus, unifiers in this article may take an extra background theory, in the form of an equational prover, into account. For example, the unification problem $n + 1 \\equiv {}?m + Suc\\; 0$ may be solved by providing a prover for the background theory $\\forall n.\\ n + 1 \\equiv n + Suc\\; 0$. Tactics, methods, and attributes with adjustable unifiers (e.g. resolution, fact, assumption, OF). A generalisation of unification hints. Unification hints are a flexible extension for unifiers. Among other things, they can be used for reflective tactics, to provide canonical unification instances, or to simply strengthen the background theory of a unifier in a controlled manner. Simplifier integration for E-unifiers. Practical combinations of unification algorithms, e.g. a combination of first-order and higher-order pattern unification. A hierarchical logger for Isabelle/ML, including per logger configurations with log levels, output channels, message filters. While this entry works with every object logic, some extra setup for Isabelle/HOL and application examples are provided. All unifiers are tested with SpecCheck.",
   "authors": [
    "Kevin Kappelmann"
   ],

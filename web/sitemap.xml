@@ -3,10 +3,13 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://isa-afp.org/entries/index.json</loc>
-    <lastmod>2025-10-16T00:00:00+00:00</lastmod>
+    <lastmod>2025-11-11T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/</loc>
-    <lastmod>2025-10-16T00:00:00+00:00</lastmod>
+    <lastmod>2025-11-11T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Zippy.html</loc>
+    <lastmod>2025-11-11T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/entries/Z_Toolkit.html</loc>
     <lastmod>2025-10-16T00:00:00+00:00</lastmod>
@@ -6110,6 +6113,10 @@
     <loc>https://isa-afp.org/authors/wangz/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/jiangz/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/sessions/zip_benchmarks/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/sessions/zippy/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/fan/</loc>
   </url>
