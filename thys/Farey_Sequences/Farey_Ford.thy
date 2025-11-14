@@ -1,9 +1,27 @@
 section \<open>Farey Sequences and Ford Circles\<close>
 
 theory Farey_Ford
-  imports "HOL-Analysis.Analysis" "HOL-Number_Theory.Totient" "HOL-Library.Sublist"
+  imports  "HOL-Analysis.Analysis" "HOL-Number_Theory.Totient" "HOL-Library.Sublist"
 
 begin
+
+lemma sublist_map_nth:
+  assumes "j \<le> length xs"
+  shows   "sublist (map (\<lambda>i. xs ! i) [i..<j]) xs"
+proof (cases "i \<le> j")
+  case True
+  have "sublist (map (\<lambda>i. xs ! i) [i..<j])
+          (map (\<lambda>i. xs ! i) [0..<i] @ map (\<lambda>i. xs ! i) [i..<j] @ map (\<lambda>i. xs ! i) [j..<length xs])"
+    by simp
+  also have "\<dots> = map (\<lambda>i. xs ! i) ([0..<i] @ [i..<j] @ [j..<length xs])"
+    by simp
+  also have "[0..<i] @ [i..<j] @ [j..<length xs] = [0..<length xs]"
+    using True assms upt_add_eq_append[of 0 i "length xs - i"] 
+          upt_add_eq_append[of i j "length xs - j"] by simp
+  also have "map (\<lambda>i. xs ! i) \<dots> = xs"
+    by (rule map_nth)
+  finally show ?thesis .
+qed simp_all
 
 subsection \<open>Farey sequences\<close>
 
@@ -36,6 +54,14 @@ next
     by (metis list.set_intros(1) set_subset_Cons sorted_wrt.simps(2) sorted_wrt_append sublist_def
         set_mono_sublist sorted subset_iff)
 qed
+
+lemma sorted_two_sublist_nth:
+  fixes l:: "'a::order list"
+  assumes "Suc j < length l" "sorted_wrt (<) l"
+  shows  "sublist [l ! j, l ! Suc j] l"
+  using assms
+  apply (simp add: sorted_two_sublist set_conv_nth sorted_wrt_iff_nth_less)
+  by (metis (mono_tags, opaque_lifting) linorder_neqE_nat not_less_eq order.strict_iff_not order_refl)
 
 (* not clear to do with these transp lemmas, are they of general use?*)
 lemma transp_add1_int:
@@ -272,11 +298,14 @@ proof (rule coprimeI)
     by (metis add_diff_cancel_left' dvd_diff dvd_mult2)
 qed
 
-definition fareys :: "int \<Rightarrow> rat list"
+definition fareys :: "nat \<Rightarrow> rat list"
   where "fareys n \<equiv> sorted_list_of_set {x \<in> {0..1}. denom_farey x \<le> n}"
 
-lemma strict_sorted_fareys: "sorted_wrt (<) (fareys n)"
-  by (simp add: fareys_def)
+lemma strict_sorted_fareys: "sorted_wrt (<) (fareys n)" and sorted_fareys: "sorted (fareys n)"
+  by (auto simp: fareys_def)
+
+lemma distinct_fareys: "distinct (fareys n)"
+  using strict_sorted_fareys strict_sorted_iff by blast
 
 lemma farey_set_UN_farey: "{x \<in> {0..1}. denom_farey x \<le> n} = (\<Union>b \<in> {1..n}. \<Union>a \<in> {0..b}. {farey a b})"
 proof -
@@ -332,10 +361,77 @@ lemma denom_fareys_leI: "x \<in> set (fareys n) \<Longrightarrow> denom_farey x 
 lemma denom_fareys_leD: "\<lbrakk>denom_farey x \<le> int n; x \<in> {0..1}\<rbrakk> \<Longrightarrow> x \<in> set (fareys n)"
   using denom_in_fareys_iff by blast
 
-lemma fareys_increasing_1: "set (fareys n) \<subseteq> set (fareys (1 + n))"
+lemma fareys_increasing_1: "set (fareys n) \<subseteq> set (fareys (Suc n))"
   using farey_set_UN_farey by (force simp: fareys_def)
 
-definition fareys_new :: "int \<Rightarrow> rat set" where
+lemma fareys_1_minus_half:
+  assumes "r \<in> set (fareys n)"
+  shows "1-r \<in> set(fareys n)"
+proof -
+  obtain a b where r: "quotient_of r = (a,b)" and "b>0" and req: "r = of_int a / of_int b" and "denom_farey r = b"
+    using quotient_of_denom_pos quotient_of_div by (fastforce simp add: denom_farey_def)
+  then have "coprime a b"
+    using quotient_of_coprime r by blast
+  then have "coprime (b-a) b"
+    by (smt (verit) coprimeI coprime_common_divisor_int dvd_diff zdvd1_eq)
+  moreover have "1-r = (of_int b - of_int a) / of_int b"
+    using \<open>b>0\<close> by (simp add: req field_simps)
+  ultimately have "denom_farey (1-r) = b"
+    using \<open>0 < b\<close> num_denom_farey_eqI by fastforce
+  with assms show ?thesis
+    by (simp add: \<open>denom_farey r = b\<close> denom_in_fareys_iff)
+qed
+
+lemma fareys_1_minus_image: "(-)1 ` set (fareys n) = set (fareys n)"
+  using fareys_1_minus_half by force
+
+lemma fareys_eq_rev_fareys: "fareys n = rev (map ((-)1) (fareys n))"
+proof (rule sorted_distinct_set_unique)
+  show "sorted (rev (map ((-)1) (fareys n)))"
+    using sorted_fareys [of n] unfolding sorted_rev_iff_nth_mono 
+    by (auto simp: sorted_iff_nth_mono )
+  show "distinct (rev (map ((-)1) (fareys n)))"
+    by (simp add: distinct_fareys distinct_map)
+qed (auto simp: sorted_fareys distinct_fareys fareys_1_minus_image)
+
+lemma fareys_opposite: "i < length(fareys n) \<Longrightarrow> fareys n ! i = 1 - fareys n ! (length(fareys n) - Suc i)"
+    by (metis (no_types) fareys_eq_rev_fareys length_rev nth_map rev_map rev_nth)
+
+lemma fareys_nonempty: "n > 0 \<Longrightarrow> fareys n \<noteq> []"
+    using fareys_def finite_farey_set by auto
+
+lemma  hd_fareys [simp]:
+  assumes "n > 0"
+  shows "hd (fareys n) = 0" 
+proof -
+  have *: "fareys n \<noteq> []" and "0 \<in> set (fareys n)"
+    using assms fareys_def finite_farey_set by auto
+  then obtain i where "i < length (fareys n)" "(fareys n) ! i = 0"
+    by (meson in_set_conv_nth)
+  then have "\<not> hd (fareys n) > 0"
+    using strict_sorted_fareys
+    by (metis "*" hd_conv_nth less_zeroE not_less_iff_gr_or_eq sorted_wrt_nth_less)
+  moreover have "\<not> r < 0" if "r \<in> set (fareys n)" for r
+    by (metis assms atLeastAtMost_iff denom_in_fareys_iff linorder_not_le pos_int_cases that)
+  ultimately show ?thesis
+    using "*" hd_in_set linorder_less_linear by blast
+qed
+
+lemma last_fareys [simp]:
+  assumes "n > 0"
+  shows   "last (fareys n) = 1"
+proof -
+  have "1 - fareys n ! (length (fareys n) - Suc 0) = 0"
+    by (metis assms fareys_nonempty fareys_opposite hd_fareys length_greater_0_conv list.exhaust list.sel(1)
+        nth_Cons_0)
+  then show ?thesis
+    by (simp add: assms fareys_nonempty last_conv_nth)
+qed
+
+subsection \<open>Creating Farey sequences layer by layer\<close>
+
+text \<open>Specifying the precise denominator\<close>
+definition fareys_new :: "nat \<Rightarrow> rat set" where
   "fareys_new n \<equiv> {Fract a n| a. coprime a n \<and> a \<in> {0..n}}"
 
 lemma fareys_new_0 [simp]: "fareys_new 0 = {}"
@@ -358,7 +454,7 @@ qed
 lemma fareys_new_not01:
   assumes "n>1"
   shows "0 \<notin> (fareys_new n)" "1 \<notin> (fareys_new n)"
-  using assms by (simp_all add: Fract_of_int_quotient fareys_new_def)
+  using assms by (auto simp: Fract_of_int_quotient fareys_new_def of_nat_of_int_iff)
 
 lemma inj_num_farey: "inj_on num_farey (fareys_new n)"
 proof (cases "n=1")
@@ -370,8 +466,8 @@ next
   then show ?thesis
   proof -
     have "Fract a n = Fract a' n"
-      if "coprime a n" "0 \<le> a" "a \<le> n"
-        and "coprime a' n" "0 \<le> a'" "a' \<le> n"
+      if "coprime a (int n)" "0 \<le> a" "a \<le> n"
+        and "coprime a' (int n)" "0 \<le> a'" "a' \<le> n"
         and "num_farey (Fract a n) = num_farey (Fract a' n)"
       for a a'
     proof -
@@ -391,7 +487,7 @@ lemma finite_fareys_new [simp]: "finite (fareys_new n)"
 
 lemma card_fareys_new:
   assumes "n > 1"
-  shows "card (fareys_new (int n)) = totient n"
+  shows "card (fareys_new n) = totient n"
 proof -
   have "bij_betw num_farey (fareys_new n) (int ` totatives n)"
   proof -
@@ -421,7 +517,7 @@ proof -
       then have "int a = num_farey (Fract (int a) n)"
         using \<open>coprime (int a) (int n)\<close> assms by auto
       then show ?thesis
-        using \<open>Fract (int a) (int n) \<in> fareys_new (int n)\<close> by blast
+        using \<open>Fract (int a) (int n) \<in> fareys_new n\<close> by blast
     qed
     ultimately show ?thesis
       by (auto simp add: totatives_def bij_betw_def inj_num_farey comp_inj_on image_iff)
@@ -432,12 +528,12 @@ qed
 
 lemma disjoint_fareys_plus1: 
   assumes "n > 0"
-  shows "disjnt (set (fareys n)) (fareys_new (1 + n))"
+  shows "disjnt (set (fareys n)) (fareys_new (Suc n))"
 proof -
   have False
-    if \<section>: "0 \<le> a" "a \<le> 1 + n" "coprime a (1 + n)"
+    if \<section>: "0 \<le> a" "a \<le> 1 + n" "coprime a (1 + int n)"
       "1 \<le> d" "d \<le> n" "Fract a (1 + n) = Fract c d" "0 \<le> c" "c \<le> d" "coprime c d"
-    for a c d
+    for a c d::int
   proof (cases "c<d")
     case True
     have alen: "a \<le> n"
@@ -452,9 +548,8 @@ proof -
     case False
     with \<open>c \<le> d\<close> have "c=d" by auto
     with that have "d=1" by force
-    with that have "1 + n = 1"
-      by (metis One_rat_def \<open>c = d\<close> assms denom_farey_1 denom_farey_Fract le_imp_0_less
-          order_less_le)
+    with that have "Suc n = 1"
+      using denom_farey_Fract by fastforce
     then show ?thesis
       using \<open>c = d\<close> \<section> assms by auto
   qed
@@ -463,20 +558,19 @@ proof -
     by auto
 qed
 
-
-lemma set_fareys_plus1: "set (fareys (1 + n)) = set (fareys n) \<union> fareys_new (1 + n)"
+lemma set_fareys_Suc: "set (fareys (Suc n)) = set (fareys n) \<union> fareys_new (Suc n)"
 proof -
-  have "\<exists>b\<ge>1. b \<le> n \<and> (\<exists>a\<ge>0. a \<le> b \<and> coprime a b \<and> Fract c d = Fract a b)"
-    if "Fract c d \<notin> fareys_new (1 + n)"
+  have "\<exists>b\<ge>1. b \<le> int n \<and> (\<exists>a\<ge>0. a \<le> b \<and> coprime a b \<and> Fract c d = Fract a b)"
+    if "Fract c d \<notin> fareys_new (Suc n)"
       and "coprime c d" "1 \<le> d" "d \<le> 1 + n" "0 \<le> c" "c \<le> d"
     for c d
-  proof (cases "d = 1 + n")
+  proof (cases "d = Suc n")
     case True
     with that show ?thesis
       by (auto simp: fareys_new_def)
   qed (use that in auto)
-  moreover have "\<exists>d\<ge>1. d \<le> 1 + n \<and> (\<exists>c\<ge>0. c \<le> d \<and> coprime c d \<and> x = Fract c d)"
-    if "x \<in> fareys_new (1 + n)" for x
+  moreover have "\<exists>d\<ge>1. d \<le> 1 + int n \<and> (\<exists>c\<ge>0. c \<le> d \<and> coprime c d \<and> x = Fract c d)"
+    if "x \<in> fareys_new (Suc n)" for x
     using that nle_le by (fastforce simp add: fareys_new_def)
   ultimately show ?thesis
     unfolding fareys_def farey_set_UN_Fract' by fastforce
@@ -484,19 +578,18 @@ qed
 
 lemma length_fareys_Suc: 
   assumes "n>0"
-  shows "length (fareys (1 + int n)) = length (fareys n) + totient (Suc n)"
+  shows "length (fareys (Suc n)) = length (fareys n) + totient (Suc n)"
 proof -
-  have "length (fareys (1 + int n)) = card (set (fareys (1 + int n)))"
+  have "length (fareys (Suc n)) = card (set (fareys (Suc n)))"
     by (metis fareys_def finite_farey_set sorted_list_of_set.sorted_key_list_of_set_unique)
-  also have "\<dots> = card (set (fareys n)) + card (fareys_new(1 + int n))"
-    using disjoint_fareys_plus1 assms by (simp add: set_fareys_plus1 card_Un_disjnt)
+  also have "\<dots> = card (set (fareys n)) + card (fareys_new(Suc n))"
+    using disjoint_fareys_plus1 assms by (simp add: set_fareys_Suc card_Un_disjnt)
   also have "\<dots> = card (set (fareys n)) + totient (Suc n)"
     using assms card_fareys_new by force
   also have "\<dots> = length (fareys n) + totient (Suc n)"
     using fareys_def finite_farey_set by auto
   finally show ?thesis .
 qed
-
 
 lemma fareys_0 [simp]: "fareys 0 = []"
   unfolding fareys_def farey_set_UN_farey
@@ -510,7 +603,7 @@ proof -
     by (simp add: fareys_def)
 qed
 
-lemma fareys_2 [simp]: "fareys 2 = [0, farey 1 2, 1]"
+lemma fareys_2 [simp]: "fareys 2 = [0, 1/2, 1]"
 proof -
   have \<section>: "denom_farey x \<le> 2 \<longleftrightarrow> denom_farey x = 1 \<or> denom_farey x = 2" for x
     using denom_farey_pos [of x] by auto
@@ -531,29 +624,43 @@ proof -
   also have "\<dots> = {0, 1/2, 1::rat}"
     by (simp add: farey_def Fract_of_int_quotient)
   finally show ?thesis
-    by (simp add: fareys_def farey_def Fract_of_int_quotient)
+    by (simp add: fareys_def Fract_of_int_quotient)
 qed
 
-lemma length_fareys_1: 
-  shows "length (fareys 1) = 1 + totient 1"
-  by simp
+lemma length_fareys_1: "length (fareys 1) = 1 + totient 1"
+  using fareys_1 by auto
+
+lemma length_fareys_Suc_if: 
+  shows "length (fareys (Suc n)) = (if n=0 then Suc (totient 1) else length (fareys n) + totient (Suc n))"
+  using fareys_1 by (auto simp: length_fareys_Suc)
 
 lemma length_fareys: "n>0 \<Longrightarrow> length (fareys n) = 1 + (\<Sum>k=1..n. totient k)"
 proof (induction n)
-  case (Suc n)
-  then show ?case
-    by (cases "n=0") (auto simp add: length_fareys_Suc)
+  case (Suc n) 
+  then show ?case by (simp add: length_fareys_Suc_if)
 qed auto
 
-lemma subseq_fareys_1: "subseq (fareys n) (fareys (1 + n))"
+lemma length_fareys_ge2:
+  assumes "n > 0"
+  shows   "length (fareys n) \<ge> 2"
+proof -
+  have "sum totient {1..n} \<ge> sum totient {1::nat}"
+    by (rule sum_mono2) (use assms in auto)
+  then show ?thesis
+    by (simp add: assms length_fareys)
+qed
+
+lemma subseq_fareys_1: "subseq (fareys n) (fareys (Suc n))"
   by (metis fareys_increasing_1 strict_sorted_fareys sorted_subset_imp_subseq strict_sorted_imp_sorted)
 
 lemma monotone_fareys: "monotone (\<le>) subseq fareys"
-  using refl_transp_add1_int [OF _ _ subseq_order.reflp_on_le subseq_order.transp_on_le]
-  by (metis monotoneI subseq_fareys_1)
+  by (simp add: monotone_on_def subseq_fareys_1 subseq_order.lift_Suc_mono_le)
 
 lemma farey_unimodular_0_1 [simp, intro]: "farey_unimodular 0 1"
   by (auto simp: farey_unimodular_def)
+
+lemma fareys_have_01: "n > 0 \<Longrightarrow> {0,1} \<subseteq> set (fareys n)"
+  by (induction n; use fareys_1 fareys_increasing_1 in force)
 
 text \<open>Apostol's Theorem 5.2 for integers\<close>
 lemma mediant_lies_betw_int:
@@ -581,7 +688,7 @@ lemma sublist_fareys_add_denoms:
   fixes a b c d::int
   defines "x \<equiv> Fract a b"
   defines "y \<equiv> Fract c d"
-  assumes sub: "sublist [x,y] (fareys (int n))" and "b>0" "d>0" "coprime a b" "coprime c d"
+  assumes sub: "sublist [x,y] (fareys n)" and "b>0" "d>0" "coprime a b" "coprime c d"
   shows "b + d > n"
 proof (rule ccontr)
   have \<section>: "x < y" "\<forall>z \<in> set (fareys n). z \<le> x \<or> z \<ge> y"
@@ -728,8 +835,8 @@ proof -
     using \<open>n>1\<close> of_nat_le_0_iff by fastforce+
   ultimately
   obtain a b c d where 
-    abcd: "m = a+c" "n = b+d" "b*c - a*d = 1" "a\<ge>0" "b>0" "c>0" "d>0" "a<b" "c\<le>d"
-    by (metis get_consecutive_parents)
+    abcd: "int m = a+c" "int n = b+d" "b*c - a*d = 1" "a\<ge>0" "b>0" "c>0" "d>0" "a<b" "c\<le>d"
+    by (metis get_consecutive_parents coprime_int_iff of_nat_0_less_iff of_nat_less_iff)
   show thesis
   proof
     have "Fract a b < Fract c d"
@@ -747,7 +854,7 @@ qed
 text \<open>Apostol's Theorem 5.5, second part: "Moreover, if @{term"a/b<c/d"} are consecutive in any @{term"F(n)"},
 then they satisfy the unimodular relation @{term"bc - ad = 1"}.\<close>
 theorem consec_imp_unimodular:
-  assumes "sublist [Fract a b, Fract c d] (fareys (int n))" "b>0" "d>0" "coprime a b" "coprime c d"
+  assumes "sublist [Fract a b, Fract c d] (fareys n)" "b>0" "d>0" "coprime a b" "coprime c d"
   shows  "b*c - a*d = 1"
   using assms 
 proof (induction n arbitrary: a b c d)
@@ -756,10 +863,10 @@ proof (induction n arbitrary: a b c d)
     by auto
 next
   case (Suc n)
-  show ?case
+  show ?case                                   
   proof (cases "n=0")
     case True
-    with Suc.prems have "Fract a b = 0" "Fract c d = 1"
+    with Suc.prems fareys_1 have "Fract a b = 0" "Fract c d = 1"
       by (auto simp add: sublist_Cons_right)
     with Suc.prems obtain "a=0" "b=1" "c=1" "d=1"
       by (auto simp: Fract_of_int_quotient)
@@ -767,15 +874,17 @@ next
       by auto
   next
     case False
+    then have gt1: "Suc n > 1"
+      by linarith
     have "Fract a b < Fract c d" 
-      and ab: "Fract a b \<in> set (fareys (1 + int n))" and cd: "Fract c d \<in> set (fareys (1 + int n))"
+      and ab: "Fract a b \<in> set (fareys (Suc n))" and cd: "Fract c d \<in> set (fareys (Suc n))"
       using strict_sorted_fareys [of "Suc n"] Suc.prems
       by (auto simp add: sublist_def sorted_wrt_append)
-    have con: "z \<le> Fract a b \<or> Fract c d \<le> z" if "z \<in> set (fareys (int n))" for z
+    have con: "z \<le> Fract a b \<or> Fract c d \<le> z" if "z \<in> set (fareys n)" for z
     proof -
-      have "z \<in> set (fareys (1 + int n))"
+      have "z \<in> set (fareys (Suc n))"
         using fareys_increasing_1 that by blast
-      with Suc.prems strict_sorted_fareys [of "1 + int n"] show ?thesis
+      with Suc.prems strict_sorted_fareys [of "Suc n"] show ?thesis
         by (fastforce simp add: sublist_def sorted_wrt_append)
     qed
     show ?thesis
@@ -787,11 +896,11 @@ next
         by (simp add: Suc) 
     next
       case False
-      have notboth: False if \<section>: "Fract a b \<in> fareys_new (1+n)" "Fract c d \<in> fareys_new (1+n)"
+      have notboth: False if \<section>: "Fract a b \<in> fareys_new (Suc n)" "Fract c d \<in> fareys_new (Suc n)"
       proof -
         obtain a' b' c' d' where eq':
           "sublist [Fract a' b', Fract c' d'] (fareys n)" "Fract a b = mediant (Fract a' b') (Fract c' d')"
-          by (smt (verit) \<open>n\<noteq>0\<close> \<section> fareys_new_eq_mediant of_nat_Suc of_nat_le_0_iff plus_1_eq_Suc)
+          using \<section> gt1 fareys_new_eq_mediant [of _ "Suc n"] by (metis diff_Suc_1)
         then have abcd': "Fract a' b' \<in> set (fareys n)" "Fract c' d' \<in> set (fareys n)"
           by (auto simp: sublist_def)
         have con': "z \<le> Fract a' b' \<or> Fract c' d' \<le> z" if "z \<in> set (fareys n)" for z
@@ -800,12 +909,12 @@ next
           using eq'(1) sorted_two_sublist [OF strict_sorted_fareys] by blast         
         then obtain A: "Fract a' b' < Fract a b" "Fract a b < Fract c' d'"
           using eq'(2) mediant_inbetween by presburger
-          obtain a'' b'' c'' d'' where eq'':
-          "sublist [Fract a'' b'', Fract c'' d''] (fareys n)" "Fract c d = mediant (Fract a'' b'') (Fract c'' d'')"
-          by (smt (verit) \<section> \<open>n\<noteq>0\<close> fareys_new_eq_mediant of_nat_Suc of_nat_le_0_iff plus_1_eq_Suc)
+        obtain a'' b'' c'' d'' where eq'': "sublist [Fract a'' b'', Fract c'' d''] (fareys n)" 
+                                           "Fract c d = mediant (Fract a'' b'') (Fract c'' d'')"
+          using \<section> gt1 fareys_new_eq_mediant [of "Fract _ _" "Suc n"] by (metis diff_Suc_1)
         then have abcd'': "Fract a'' b'' \<in> set (fareys n)" "Fract c'' d'' \<in> set (fareys n)"
           by (auto simp: sublist_def)
-        then have "Fract c'' d'' \<in> set (fareys (1 + int n))"
+        then have "Fract c'' d'' \<in> set (fareys (Suc n))"
           using fareys_increasing_1 by blast
         have con'': "z \<le> Fract a'' b'' \<or> Fract c'' d'' \<le> z" if "z \<in> set (fareys n)" for z
           using sorted_two_sublist [OF strict_sorted_fareys] eq''(1) that by blast
@@ -815,17 +924,15 @@ next
           using con' con'' abcd' abcd'' con \<open>Fract a b < Fract c d\<close>
           by (metis eq'(2) eq''(2) dual_order.strict_trans1 not_less_iff_gr_or_eq)
       qed
-      consider "Fract a b \<in> fareys_new (1+n)" | "Fract c d \<in> fareys_new (1+n)"
-        using False set_fareys_plus1 [of n]
-        by (metis (mono_tags, opaque_lifting) Suc.prems(1) Suc_eq_plus1_left UnE list.set_intros(1) of_nat_Suc set_mono_sublist
-            set_subset_Cons subset_iff)
+      consider "Fract a b \<in> fareys_new (Suc n)" | "Fract c d \<in> fareys_new (Suc n)"
+        using False set_fareys_Suc [of n] ab cd by blast
       then show ?thesis
       proof cases
         case 1
         then obtain a' b' c' d' where eq:
           "sublist [Fract a' b', Fract c' d'] (fareys n)" 
           "Fract a b = mediant (Fract a' b') (Fract c' d')" "coprime a' b'" "coprime c' d'" "b'>0" "d'>0" 
-          by (smt (verit) \<open>n\<noteq>0\<close> fareys_new_eq_mediant of_nat_Suc of_nat_le_0_iff plus_1_eq_Suc)
+          using gt1 fareys_new_eq_mediant [of "Fract _ _" "Suc n"] by (metis diff_Suc_1)
         then have abcd': "Fract a' b' \<in> set (fareys n)" "Fract c' d' \<in> set (fareys n)"
           by (auto simp: sublist_def)
         have con': "z \<le> Fract a' b' \<or> Fract c' d' \<le> z" if "z \<in> set (fareys n)" for z
@@ -839,7 +946,7 @@ next
           by (metis con' \<open>Fract a b < Fract c d\<close> \<open>Fract a' b' < Fract c' d'\<close> eq(2) order.trans linorder_not_less mediant_inbetween(1)
               nless_le that)
         ultimately have "Fract c' d' = Fract c d"
-          using notboth "1" cd set_fareys_plus1 by auto
+          using notboth "1" cd set_fareys_Suc by auto
         with Suc.prems obtain "c' = c" "d' = d"
           by (metis \<open>0 < d'\<close> \<open>coprime c' d'\<close> denom_farey_Fract num_farey_Fract)
         then have uni: "b'*c - a'*d = 1"
@@ -855,7 +962,7 @@ next
         then obtain a' b' c' d' where eq:
           "sublist [Fract a' b', Fract c' d'] (fareys n)" 
           "Fract c d = mediant (Fract a' b') (Fract c' d')" "coprime a' b'" "coprime c' d'" "b'>0" "d'>0" 
-          by (smt (verit) \<open>n\<noteq>0\<close> fareys_new_eq_mediant of_nat_Suc of_nat_le_0_iff plus_1_eq_Suc)
+          using gt1 fareys_new_eq_mediant [of "Fract _ _" "Suc n"] by (metis diff_Suc_1)
         then have abcd': "Fract a' b' \<in> set (fareys n)" "Fract c' d' \<in> set (fareys n)"
           by (auto simp: sublist_def)
         have con': "z \<le> Fract a' b' \<or> Fract c' d' \<le> z" if "z \<in> set (fareys n)" for z
@@ -870,7 +977,7 @@ next
           by (metis \<open>Fract a b < Fract c d\<close> \<open>Fract a' b' < Fract c' d'\<close> con' order.strict_trans2 eq(2) mediant_inbetween(2)
               not_less_iff_gr_or_eq that)
         ultimately have "Fract a' b' = Fract a b"
-          using notboth 2 ab set_fareys_plus1 by auto
+          using notboth 2 ab set_fareys_Suc by auto
         with Suc.prems obtain "a' = a" "b' = b"
           by (metis \<open>0 < b'\<close> \<open>coprime a' b'\<close> denom_farey_Fract num_farey_Fract)
         then have uni: "b*c' - a*d' = 1"
@@ -885,6 +992,7 @@ next
     qed
   qed
 qed
+
 
 subsection \<open>Ford circles\<close>
 
@@ -997,11 +1105,12 @@ proof -
   finally show ?thesis .
 qed
 
+text \<open>The Rademacher transformation (for theorem 5.8)\<close>
 definition Radem_trans :: "rat \<Rightarrow> complex \<Rightarrow> complex" where
   "Radem_trans \<equiv> \<lambda>r \<tau>. let (h,k) = quotient_of r in - \<i> * of_int k ^ 2 * (\<tau> - of_rat r)"
 
 text \<open>Theorem 5.8 first part\<close>
-lemma Radem_trans_image: "Radem_trans r ` Ford_circle r = sphere (of_rat (1/2)) (1/2)"
+lemma Radem_trans_image: "Radem_trans r ` Ford_circle r = sphere (1/2) (1/2)"
 proof -
   obtain h k where r: "quotient_of r = (h,k)" and "k>0" and req: "r = of_int h / of_int k"
     using quotient_of_denom_pos quotient_of_div by fastforce
@@ -1012,7 +1121,7 @@ proof -
   also have "\<dots> = sphere (- \<i> * (of_int k)\<^sup>2 * (Ford_center r - r))
                           (cmod (- \<i> * (of_int k)\<^sup>2) * Ford_radius r)"
     using \<open>k>0\<close> by (intro sphere_cscale) auto
-  also have "\<dots> = sphere (of_rat (1/2)) (1/2)"
+  also have "\<dots> = sphere (1/2) (1/2)"
   proof -
     have "(- \<i> * (of_int k)\<^sup>2 * (Ford_center r - r)) = 1/2"
       using \<open>k>0\<close>
@@ -1023,16 +1132,37 @@ proof -
       using \<open>k>0\<close>
       by (simp add: norm_mult norm_power Ford_radius_def r)
     ultimately show ?thesis
-      by (metis of_rat_1 of_rat_divide of_rat_numeral_eq)
+      by presburger
   qed
   finally show ?thesis .
+qed
+
+text \<open>For the last part of theorem 5.9\<close>
+lemma RMS_calc:
+  assumes "b + a > int N" "N>0"
+  shows "1 / sqrt (a\<^sup>2 + b\<^sup>2) < sqrt 2 / N"
+proof -
+  have \<section>: "(a + b)/2 \<le> sqrt ((a\<^sup>2 + b\<^sup>2) / 2)"
+    using sum_squared_le_sum_of_squares_2 by simp
+  have "N / sqrt 2 < (N+1) / sqrt 2"
+    by (simp add: divide_strict_right_mono)
+  also have "\<dots> \<le> (a + b) / sqrt 2"
+    using assms by (simp add: divide_simps)
+  also have "\<dots> = (a + b)/2 * sqrt 2"
+    by (metis nonzero_divide_eq_eq real_div_sqrt times_divide_eq_right zero_le_numeral
+        zero_neq_numeral)
+  also have "\<dots> \<le> sqrt (a\<^sup>2 + b\<^sup>2)"
+    using \<section> by (simp add: le_divide_eq real_sqrt_divide)
+  finally have 1: "real N / sqrt 2 < sqrt (real_of_int (a\<^sup>2 + b\<^sup>2))" .
+  with \<open>N>0\<close> not_sum_power2_lt_zero show ?thesis
+    by (force simp add: mult.commute divide_simps)
 qed
 
 locale three_Ford =
   fixes N::nat
   fixes h1 k1 h k h2 k2::int
-  assumes sub1: "sublist [Fract h1 k1, Fract h k] (fareys (int N))"
-  assumes sub2: "sublist [Fract h k, Fract h2 k2] (fareys (int N))"
+  assumes sub1: "sublist [Fract h1 k1, Fract h k] (fareys N)"
+  assumes sub2: "sublist [Fract h k, Fract h2 k2] (fareys N)"
   assumes coprime: "coprime h1 k1" "coprime h k" "coprime h2 k2"
   assumes k_pos: "k1 > 0" "k > 0" "k2 > 0"
 
@@ -1161,29 +1291,6 @@ proof -
     unfolding cmod_def by force
 qed
 
-
-text \<open>The last part of theorem 5.9\<close>
-
-lemma RMS_calc:
-  assumes "k' > 0" "k' + k > int N"
-  shows "k / sqrt (k\<^sup>2 + k'\<^sup>2) < sqrt 2 * k/N"
-proof -
-  have \<section>: "(k + k')/2 \<le> sqrt ((k\<^sup>2 + k'\<^sup>2) / 2)"
-    using sum_squared_le_sum_of_squares_2 by simp
-  have "N / sqrt 2 < (N+1) / sqrt 2"
-    by (simp add: divide_strict_right_mono)
-  also have "\<dots> \<le> (k + k') / sqrt 2"
-    using assms by (simp add: divide_simps)
-  also have "\<dots> = (k + k')/2 * sqrt 2"
-    by (metis nonzero_divide_eq_eq real_div_sqrt times_divide_eq_right zero_le_numeral
-        zero_neq_numeral)
-  also have "\<dots> \<le> sqrt (k\<^sup>2 + k'\<^sup>2)"
-    using \<section> by (simp add: le_divide_eq real_sqrt_divide)
-  finally have 1: "real N / sqrt 2 < sqrt (real_of_int (k\<^sup>2 + k'\<^sup>2))" .
-  with N_pos k_pos not_sum_power2_lt_zero show ?thesis
-    by (force simp add: cmod_zed1 mult.commute divide_simps)
-qed
-
 lemma on_chord_bounded_cmod:
   assumes "z \<in> closed_segment zed1 zed2"
   shows "cmod z < sqrt 2 * k/N"
@@ -1191,8 +1298,12 @@ proof -
   have "cmod z \<le> max (cmod zed1) (cmod zed2)"
     using segment_furthest_le [OF assms, of 0] by auto
   moreover
+  have"k / sqrt (k\<^sup>2 + k'\<^sup>2) < sqrt 2 * k/N" if "k' + k > int N" for k'
+    using mult_strict_left_mono [OF RMS_calc, of N k' k k] that
+    by (simp add: N_pos k_pos mult.commute)
+  with cmod_zed1 cmod_zed2 greaterN1 greaterN2 k_pos
   obtain "cmod zed1 < sqrt 2 * k/N" "cmod zed2 < sqrt 2 * k/N"
-    using RMS_calc cmod_zed1 cmod_zed2 greaterN1 greaterN2 k_pos by force
+    by force
   ultimately show ?thesis
     using assms cmod_zed1 cmod_zed2 by linarith
 qed
@@ -1209,5 +1320,187 @@ proof -
 qed
 
 end
+
+subsection \<open>Material for \<tt>\<open>Farey\_Ford\<close>\<close>
+
+
+text \<open>
+  The point of tangency between the Ford circles corresponding to the given two rational numbers.
+  It is assumed that $x$ and $y$ are consecutive Farey fractions, in that order.
+\<close>
+definition Ford_tanp :: "rat \<Rightarrow> rat \<Rightarrow> complex" where
+  "Ford_tanp x y = 
+     (let (h1,k1) = quotient_of x; (h2,k2) = quotient_of y; m = k1^2+k2^2
+      in  Complex (h1 / k1 + k2 / (k1 * m)) (1 / m))"
+
+lemma Im_Ford_tanp_pos: "Im (Ford_tanp x y) > 0"
+  using quotient_of_denom_pos' [of x] quotient_of_denom_pos' [of y]
+  by (auto simp: Ford_tanp_def case_prod_unfold Let_def intro!: add_pos_pos)
+
+lemma Ford_tanp_on_Ford_circle1: "Ford_tanp x y \<in> Ford_circle x"
+proof -
+  obtain h k where hk: "x = of_int h / of_int k" "coprime h k" "k > 0"
+                       "quotient_of x = (h, k)"
+    using quotient_of_coprime quotient_of_denom_pos quotient_of_div by force
+  obtain h' k' where hk': "y = of_int h' / of_int k'" "coprime h' k'" "k' > 0"
+                          "quotient_of y = (h', k')"
+    using quotient_of_coprime quotient_of_denom_pos quotient_of_div by force
+  define m where "m = k\<^sup>2 + k' ^ 2"
+  define c where "c = Complex (of_int h / of_int k) (1 / (2 * of_int (k\<^sup>2)))"
+  define r where "r = (1 / (2 * real_of_int (k\<^sup>2)))"
+  have m: "m > 0"
+    using \<open>k > 0\<close> \<open>k' > 0\<close> by (auto simp: m_def intro!: add_pos_pos)
+  
+  have "Ford_tanp x y = Complex (of_int h / of_int k + of_int k' / (of_int k * m)) (1 / m)"
+    using hk hk' by (simp add: Ford_tanp_def m_def Let_def)
+  also have "dist \<dots> c = sqrt ((of_int k' / (of_int k * m))\<^sup>2 + (1 / m - 1 / (2 * of_int (k\<^sup>2)))\<^sup>2)"
+    unfolding dist_norm cmod_def by (simp add: c_def)
+  also have "(real_of_int k' / (of_int k * m))\<^sup>2 + (1 / m - 1 / (2 * of_int (k\<^sup>2)))\<^sup>2 = 
+             of_int ((2 * k' * k)\<^sup>2 + (2 * k\<^sup>2 - m)\<^sup>2) / of_int (2 * k\<^sup>2 * m) ^ 2"
+    using m \<open>k > 0\<close>
+    apply (simp add: divide_simps del: div_mult_self3 div_mult_self4 div_mult_self2 div_mult_self1)
+    apply (simp add: algebra_simps power2_eq_square power4_eq_xxxx)?
+    done
+  also have "(2 * k' * k)\<^sup>2 + (2 * k\<^sup>2 - m)\<^sup>2 = m\<^sup>2"
+    unfolding m_def by (Groebner_Basis.algebra)
+  also have "real_of_int (m\<^sup>2) / (real_of_int (2 * k\<^sup>2 * m))\<^sup>2 = (1 / of_int (2 * k\<^sup>2)) ^ 2"
+    using m by (simp add: field_simps)
+  also have "sqrt \<dots> = Ford_radius x"
+    using hk by (simp add: Ford_radius_def)
+  also have "c = Ford_center x"
+    using hk by (simp add: Ford_center_def c_def)
+  finally show ?thesis
+    by (simp add: Ford_circle_def dist_commute)
+qed
+
+lemma Ford_tanp_on_Ford_circle2:
+  assumes "farey_unimodular x y"
+  shows   "Ford_tanp x y \<in> Ford_circle y"
+proof -
+  obtain h k where hk: "x = of_int h / of_int k" "coprime h k" "k > 0"
+                       "quotient_of x = (h, k)"
+    using quotient_of_coprime quotient_of_denom_pos quotient_of_div by force
+  obtain h' k' where hk': "y = of_int h' / of_int k'" "coprime h' k'" "k' > 0"
+                          "quotient_of y = (h', k')"
+    using quotient_of_coprime quotient_of_denom_pos quotient_of_div by force
+  define m where "m = k\<^sup>2 + k' ^ 2"
+  define c where "c = Complex (of_int h' / of_int k') (1 / (2 * of_int k' ^ 2))"
+  define r where "r = (1 / (2 * real_of_int k' ^ 2))"
+  have m: "m > 0"
+    using \<open>k > 0\<close> \<open>k' > 0\<close> by (auto simp: m_def intro!: add_pos_pos)
+  from assms have unimod: "k * h' - h * k' = 1"
+    using hk hk' unfolding farey_unimodular_def by (simp add: denom_farey_def num_farey_def)
+  
+  have "Ford_tanp x y = Complex (of_int h / of_int k + of_int k' / (of_int k * m)) (1 / m)"
+    using hk hk' by (simp add: Ford_tanp_def m_def Let_def)
+  also have "dist \<dots> c = sqrt ((of_int h / of_int k + of_int k' / (of_int k * of_int m) - of_int h' / of_int k')\<^sup>2 +
+                               (1 / of_int m - 1 / (2 * (of_int k')\<^sup>2))\<^sup>2)"
+    (is "_ = sqrt ?a")
+    unfolding dist_norm cmod_def by (simp add: c_def)
+  also have "?a = of_int ((2 * h * k'\<^sup>2 * m + 2 * k' ^ 3 - 2 * (h' * k) * k' * m)\<^sup>2 + 
+                          (2 * k * k'\<^sup>2 - k * m)\<^sup>2) / of_int (2 * k * k'\<^sup>2 * m) ^ 2"
+    using m \<open>k' > 0\<close> \<open>k > 0\<close>
+    apply (simp add: divide_simps del: div_mult_self3 div_mult_self4 div_mult_self2 div_mult_self1)
+    apply (simp add: algebra_simps power2_eq_square power3_eq_cube power4_eq_xxxx)?
+    done
+  also have "h' * k = 1 + h * k'"
+    using unimod by (Groebner_Basis.algebra)
+  also have "(2 * h * k'\<^sup>2 * m + 2 * k' ^ 3 - 2 * (1 + h * k') * k' * m)\<^sup>2 + (2 * k * k'\<^sup>2 - k * m)\<^sup>2 = 
+             (k * m) ^ 2"
+    unfolding m_def by Groebner_Basis.algebra
+  also have "real_of_int \<dots> / real_of_int (2 * k * k'\<^sup>2 * m) ^ 2 = (1 / real_of_int (2 * k' ^ 2)) ^ 2"
+    using m \<open>k > 0\<close> \<open>k' > 0\<close> by (simp add: field_simps)
+  also have "sqrt \<dots> = Ford_radius y"
+    using hk' by (simp add: Ford_radius_def)
+  also have "c = Ford_center y"
+    unfolding c_def using hk' by (simp add: Ford_center_def)
+  finally show ?thesis
+    by (simp add: Ford_circle_def dist_commute)
+qed
+
+lemma farey_unimodular_fareys:
+  assumes "Suc j < length (fareys n)"
+  shows   "farey_unimodular (fareys n ! j) (fareys n ! Suc j)"
+proof -
+  have "n > 0"
+    by (rule ccontr) (use assms in auto)
+  obtain h k where hk: "fareys n ! j = of_int h / of_int k" "coprime h k" "k > 0"
+                       "quotient_of (fareys n ! j) = (h, k)"
+    using quotient_of_coprime quotient_of_denom_pos quotient_of_div by force
+  obtain h' k' where hk': "fareys n ! Suc j = of_int h' / of_int k'" "coprime h' k'" "k' > 0"
+                          "quotient_of (fareys n ! Suc j) = (h', k')"
+    using quotient_of_coprime quotient_of_denom_pos quotient_of_div by force
+  have "k * h' - h * k' = 1"
+  proof (rule consec_imp_unimodular)
+    have "sublist [fareys n ! j, fareys n ! Suc j] (fareys n)"
+      using sublist_map_nth[of "j+2" "fareys n" j] assms by simp
+    thus "sublist [Rat.Fract h k, Rat.Fract h' k'] (fareys n)"
+      using hk hk' \<open>n > 0\<close> by (simp add: Fract_of_int_quotient)
+  qed (use hk hk' in auto)
+  thus ?thesis
+    using hk hk' by (simp add: farey_unimodular_def num_farey_def denom_farey_def)
+qed
+
+
+lemma quotient_of_divide [simp]: "\<lbrakk>coprime h k; k>0\<rbrakk> \<Longrightarrow> quotient_of (rat_of_int h / rat_of_int k) = (h,k)"
+  using Fract_of_int_quotient normalize_stable quotient_of_Fract by presburger
+
+lemma quotient_of_divide_nat [simp]: "\<lbrakk>coprime h k; k>0\<rbrakk> \<Longrightarrow> quotient_of (of_nat h / of_nat k) = (int h, int k)"
+  by (metis coprime_int_iff of_int_of_nat_eq of_nat_0_less_iff quotient_of_divide)
+
+lemma quotient_of_oneover_pos_int: "n > 0 \<Longrightarrow> quotient_of (1 / of_int n) = (1, n)"
+  using quotient_of_divide[of 1 n] by simp
+
+lemma quotient_of_oneover_pos_nat: "n > 0 \<Longrightarrow> quotient_of (1 / of_nat n) = (1, int n)"
+  using quotient_of_divide[of 1 "int n"] by simp
+
+lemma nth_fareys_1:
+  assumes "n > 0"
+  shows   "fareys n ! Suc 0 = 1 / of_nat n" (is "_ = ?rhs")
+proof -
+  have 0: "fareys n ! 0 = 0"
+    by (metis assms fareys_nonempty hd_conv_nth hd_fareys)
+  have "?rhs \<in> set (fareys n)"
+    using assms
+    by (auto simp: denom_in_fareys_iff denom_farey_def quotient_of_oneover_pos_nat)
+  then obtain i where i: "fareys n ! i = ?rhs" "i < length (fareys n)"
+    by (meson in_set_conv_nth)
+  then have "i \<noteq> 0"
+    using 0 of_nat_0_less_iff by fastforce
+  moreover
+  have False if "i>1"
+  proof -
+    obtain a b where ab: "fareys n ! Suc 0 = of_int a / of_int b" "coprime a b" "b > 0"
+                         "quotient_of (fareys n ! 1) = (a, b)"
+      using quotient_of_coprime quotient_of_denom_pos quotient_of_div by force
+    obtain "0 < fareys n ! 1" "fareys n ! 1 < ?rhs"
+      using strict_sorted_fareys [of n] that i sorted_wrt_nth_less
+      by (metis "0" \<open>i>1\<close> order.order_iff_strict less_one order_le_less_trans)
+    moreover have "fareys n ! 1 \<in> set (fareys n)"
+      using i that by fastforce
+    ultimately obtain "0 < a" "rat_of_int a * rat_of_nat n < rat_of_int b" "b \<le> n"
+      using ab by (simp add: denom_in_fareys_iff denom_farey_def divide_simps)
+    then show False
+      using assms of_int_less_iff[of "a * int n" b] order.strict_trans2[of "a * int n" b "int n"]
+      by auto
+  qed
+  ultimately show ?thesis
+    using i not_less_iff_gr_or_eq by fastforce
+qed
+
+lemma nth_fareys_second_to_last:
+  assumes "n > 0"
+  shows   "fareys n ! (length (fareys n) - 2) = of_nat (n - 1) / of_nat n" (is "?lhs = ?rhs")
+proof -
+  have "length (fareys n) - Suc (length (fareys n) - 2) = Suc 0"
+    using assms length_fareys_ge2 by auto
+  then have "?lhs = 1 - fareys n ! Suc 0"
+    by (metis assms diff_less fareys_nonempty fareys_opposite length_greater_0_conv pos2)
+  also have "... = 1 - 1 / of_nat n"
+    by (simp add: assms nth_fareys_1)
+  also have "... = ?rhs"
+    using assms by (simp add: divide_simps)
+  finally show ?thesis .
+qed
 
 end
