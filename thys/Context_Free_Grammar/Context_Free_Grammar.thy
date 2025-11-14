@@ -733,6 +733,30 @@ next
     by (auto simp: derives_append_decomp)
 qed
 
+lemma derives_append_append:
+  "P \<turnstile> \<alpha> \<Rightarrow>* \<alpha>' \<Longrightarrow> P \<turnstile> \<beta> \<Rightarrow>* \<beta>' \<Longrightarrow> P \<turnstile> \<alpha> @ \<beta> \<Rightarrow>* \<alpha>' @ \<beta>'"
+  using derives_append_decomp by blast
+
+lemma derives_append_Nt_Cons:
+"(B,\<beta>) \<in> P \<Longrightarrow>
+  P \<turnstile> \<alpha> \<Rightarrow>* \<alpha>' \<Longrightarrow> P \<turnstile> \<beta> \<Rightarrow>* \<beta>' \<Longrightarrow> P \<turnstile> \<gamma> \<Rightarrow>* \<gamma>' \<Longrightarrow>
+  P \<turnstile> \<alpha> @ Nt B # \<gamma> \<Rightarrow>* \<alpha>' @ \<beta>' @ \<gamma>'"
+  by (metis derives_Cons_decomp derives_append_decomp)
+
+lemma derives_simul_rules:
+  assumes "\<And>A w. (A,w) \<in> P \<Longrightarrow> P' \<turnstile> [Nt A] \<Rightarrow>* w"
+  shows "P \<turnstile> w \<Rightarrow>* w' \<Longrightarrow> P' \<turnstile> w \<Rightarrow>* w'"
+proof(induction rule: derives_induct)
+  case base
+  then show ?case by simp
+next
+  case (step u A v w)
+  then show ?case
+    by (meson assms derives_append derives_prepend rtranclp_trans)
+qed
+
+subsubsection \<open>Derivations leading to terminal words\<close>
+
 lemma derive_decomp_Tm: "P \<turnstile> \<alpha> \<Rightarrow>(n) map Tm \<beta> \<Longrightarrow>
   \<exists>\<beta>s ns. \<beta> = concat \<beta>s \<and> length \<alpha> = length \<beta>s \<and> length \<alpha> = length ns \<and> sum_list ns = n
           \<and> (\<forall>i < length \<beta>s. P \<turnstile> [\<alpha> ! i] \<Rightarrow>(ns!i) map Tm (\<beta>s ! i))"
@@ -807,20 +831,6 @@ proof -
     by (simp add: add.assoc)
   then show ?thesis using P2 by blast
 qed
-
-lemma derives_simul_rules:
-  assumes "\<And>A w. (A,w) \<in> P \<Longrightarrow> P' \<turnstile> [Nt A] \<Rightarrow>* w"
-  shows "P \<turnstile> w \<Rightarrow>* w' \<Longrightarrow> P' \<turnstile> w \<Rightarrow>* w'"
-proof(induction rule: derives_induct)
-  case base
-  then show ?case by simp
-next
-  case (step u A v w)
-  then show ?case
-    by (meson assms derives_append derives_prepend rtranclp_trans)
-qed
-
-text \<open>Derivations leading to terminal words.\<close>
 
 lemma deriven_Nt_Cons_map_Tm: "P \<turnstile> Nt A # \<beta> \<Rightarrow>(n) map Tm w \<longleftrightarrow>
 (\<exists>\<alpha> m l v u. (A,\<alpha>) \<in> P \<and> P \<turnstile> \<alpha> \<Rightarrow>(m) map Tm v \<and> P \<turnstile> \<beta> \<Rightarrow>(l) map Tm u \<and>
@@ -923,195 +933,33 @@ lemma derives_Nt_Cons_map_Tm:
   (\<exists>\<alpha> v u. (A,\<alpha>) \<in> P \<and> P \<turnstile> \<alpha> \<Rightarrow>* map Tm v \<and> P \<turnstile> \<beta> \<Rightarrow>* map Tm u \<and> w = v @ u)"
   using derives_Nt_map_Tm[where \<alpha> = "[]"] by simp
 
-lemma derives_append_append:
-  "P \<turnstile> \<alpha> \<Rightarrow>* \<alpha>' \<Longrightarrow> P \<turnstile> \<beta> \<Rightarrow>* \<beta>' \<Longrightarrow> P \<turnstile> \<alpha> @ \<beta> \<Rightarrow>* \<alpha>' @ \<beta>'"
-  using derives_append_decomp by blast
+lemma derives_Nt_Cons_Lang:
+"P \<turnstile> Nt A # \<alpha> \<Rightarrow>* map Tm w \<longleftrightarrow> (\<exists>v u. v \<in> Lang P A \<and> P \<turnstile> \<alpha> \<Rightarrow>* map Tm u \<and> w = v @ u)"
+  by (force simp: derives_Cons_decomp Lang_def map_eq_Cons_conv map_eq_append_conv)
 
-lemma derives_append_Nt_Cons:
-"(B,\<beta>) \<in> P \<Longrightarrow>
-  P \<turnstile> \<alpha> \<Rightarrow>* \<alpha>' \<Longrightarrow> P \<turnstile> \<beta> \<Rightarrow>* \<beta>' \<Longrightarrow> P \<turnstile> \<gamma> \<Rightarrow>* \<gamma>' \<Longrightarrow>
-  P \<turnstile> \<alpha> @ Nt B # \<gamma> \<Rightarrow>* \<alpha>' @ \<beta>' @ \<gamma>'"
-  by (metis derives_Cons_decomp derives_append_decomp)
-
-text \<open>The language is preserved by expanding one occurrence of a nonterminal in
-a grammar by all alternatives.\<close>
-
-lemma Lang_expand:
-  assumes AB: "A \<noteq> B"
-  shows "Lang (insert (A, \<alpha> @ Nt B # \<gamma>) P) = Lang ({(A, \<alpha> @ \<beta> @ \<gamma>) |\<beta>. \<beta> \<in> Rhss P B} \<union> P)"
-    (is "Lang ?L = Lang ?R")
-proof (intro ext Lang_eqI_derives iffI)
-  have "?L \<turnstile> xs \<Rightarrow>(n) map Tm w \<Longrightarrow> ?R \<turnstile> xs \<Rightarrow>* map Tm w" for xs w n
-  proof (induction n arbitrary: xs w rule: less_induct)
-    case (less n)
-    show ?case
-    proof (cases "\<exists>C. Nt C \<in> set xs")
-      case False
-      with less.prems have "xs = map Tm w"
-        by (metis (no_types, lifting) deriven_from_TmsD destTm.cases ex_map_conv)
-      then show ?thesis by auto
-    next
-      case True
-      then obtain ys zs C where xs: "xs = ys @ Nt C # zs" by (metis split_list) 
-      from less.prems[unfolded this deriven_Nt_map_Tm]
-      obtain \<delta> m l k v u t where C\<delta>: "(C,\<delta>) \<in> ?L"
-        and Lys: "?L \<turnstile> ys \<Rightarrow>(m) map Tm v"
-        and L\<delta>: "?L \<turnstile> \<delta> \<Rightarrow>(l) map Tm u"
-        and Lzs: "?L \<turnstile> zs \<Rightarrow>(k) map Tm t"
-        and n: "n = Suc (m + l + k)"
-        and w: "w = v @ u @ t" by force
-      from n have mn: "m < n" and ln: "l < n" and kn: "k < n" by auto
-      with less.IH L\<delta> Lys Lzs
-      have R\<delta>: "?R \<turnstile> \<delta> \<Rightarrow>* map Tm u"
-        and Rys: "?R \<turnstile> ys \<Rightarrow>* map Tm v"
-        and Rzs: "?R \<turnstile> zs \<Rightarrow>* map Tm t" by auto
-      show ?thesis
-      proof (cases "(C,\<delta>) \<in> P")
-        case True
-        with R\<delta> Rys Rzs
-        show ?thesis
-          by (auto simp: xs w derives_Nt_map_Tm simp del: map_append)
+lemma Lang_eq_iff_derives:
+"Lang P = Lang P' \<longleftrightarrow> (\<forall>\<alpha> w. P \<turnstile> \<alpha> \<Rightarrow>* map Tm w \<longleftrightarrow> P' \<turnstile> \<alpha> \<Rightarrow>* map Tm w)"
+proof-
+  { fix P P' \<alpha> w
+    assume L: "Lang P = Lang P'"
+      and "P \<turnstile> \<alpha> \<Rightarrow>* map Tm w"
+      then have "P' \<turnstile> \<alpha> \<Rightarrow>* map Tm w"
+      proof (induction \<alpha> arbitrary: w)
+        case Nil
+        then show ?case by simp
       next
-        case False
-        with C\<delta> have C: "C = A" and \<delta>: "\<delta> = \<alpha> @ Nt B # \<gamma>" by auto
-        from L\<delta>[unfolded \<delta> deriven_Nt_map_Tm] AB
-        obtain \<beta> j i h s r q where B\<beta>: "(B,\<beta>) \<in> P"
-          and L\<alpha>: "?L \<turnstile> \<alpha> \<Rightarrow>(j) map Tm s"
-          and L\<beta>: "?L \<turnstile> \<beta> \<Rightarrow>(i) map Tm r"
-          and L\<gamma>: "?L \<turnstile> \<gamma> \<Rightarrow>(h) map Tm q"
-          and l: "l = Suc (j+i+h)" and u: "u = s @ r @ q" by auto
-        from B\<beta> have A: "(A,\<alpha>@\<beta>@\<gamma>) \<in> ?R"
-          by (auto simp: Rhss_def)
-        from n l have "j < n" "i < n" "h < n" by auto
-        with less L\<alpha> L\<beta> L\<gamma>
-        have R\<alpha>: "?R \<turnstile> \<alpha> \<Rightarrow>* map Tm s"
-          and R\<beta>: "?R \<turnstile> \<beta> \<Rightarrow>* map Tm r"
-          and R\<gamma>: "?R \<turnstile> \<gamma> \<Rightarrow>* map Tm q" by auto
-        then have "?R \<turnstile> \<alpha>@\<beta>@\<gamma> \<Rightarrow>* map Tm u"
-          by (auto simp: derives_append_map_Tm u simp del: map_append)
-        from derives_append_Nt_Cons[OF A Rys this Rzs]
-        show ?thesis by (simp add: xs w C)
+        case (Cons x \<alpha>)
+        show ?case proof (cases x)
+          case (Nt A)
+          with Cons show ?thesis by (auto simp: derives_Nt_Cons_Lang L)
+        next
+          case (Tm a)
+          with Cons show ?thesis by (auto simp: derives_Tm_Cons)
+        qed
       qed
-    qed
-  qed
-  then show "?L \<turnstile> xs \<Rightarrow>* map Tm w \<Longrightarrow> ?R \<turnstile> xs \<Rightarrow>* map Tm w" for xs w
-    by (auto simp: rtranclp_power)
-next
-  have "?R \<turnstile> xs \<Rightarrow>(n) map Tm w \<Longrightarrow> ?L \<turnstile> xs \<Rightarrow>* map Tm w" for xs w n
-  proof (induction n arbitrary: xs w rule: less_induct)
-    case (less n)
-    show ?case
-    proof (cases "\<exists>C. Nt C \<in> set xs")
-      case False
-      with less.prems have "xs = map Tm w"
-        by (metis (no_types, lifting) deriven_from_TmsD destTm.cases ex_map_conv)
-      then show ?thesis by auto
-    next
-      case True
-      then obtain ys zs C where xs: "xs = ys @ Nt C # zs" by (metis split_list) 
-      from less.prems[unfolded this deriven_Nt_map_Tm]
-      obtain \<delta> m l k v u t where C\<delta>: "(C,\<delta>) \<in> ?R"
-        and Rys: "?R \<turnstile> ys \<Rightarrow>(m) map Tm v"
-        and R\<delta>: "?R \<turnstile> \<delta> \<Rightarrow>(l) map Tm u"
-        and Rzs: "?R \<turnstile> zs \<Rightarrow>(k) map Tm t"
-        and n: "n = Suc (m + l + k)"
-        and w: "w = v @ u @ t" by force
-      from n have mn: "m < n" and ln: "l < n" and kn: "k < n" by auto
-      with less.IH R\<delta> Rys Rzs
-      have L\<delta>: "?L \<turnstile> \<delta> \<Rightarrow>* map Tm u"
-        and Lys: "?L \<turnstile> ys \<Rightarrow>* map Tm v"
-        and Lzs: "?L \<turnstile> zs \<Rightarrow>* map Tm t" by auto
-      show ?thesis
-      proof (cases "(C,\<delta>) \<in> P")
-        case True
-        with L\<delta> Lys Lzs
-        show ?thesis
-          by (auto simp: xs w derives_Nt_map_Tm simp del: map_append)
-      next
-        case False
-        with C\<delta> obtain \<beta> where B: "(B,\<beta>) \<in> P"
-          and C: "C = A" and \<delta>: "\<delta> = \<alpha> @ \<beta> @ \<gamma>" by (auto simp: Rhss_def)
-        from R\<delta>[unfolded \<delta> deriven_append_map_Tm] AB
-        obtain j i h s r q where R\<alpha>: "?R \<turnstile> \<alpha> \<Rightarrow>(j) map Tm s"
-          and R\<beta>: "?R \<turnstile> \<beta> \<Rightarrow>(i) map Tm r"
-          and R\<gamma>: "?R \<turnstile> \<gamma> \<Rightarrow>(h) map Tm q"
-          and l: "l = j+i+h" and u: "u = s @ r @ q" by auto
-        from B have A: "(A, \<alpha> @ Nt B # \<gamma>) \<in> ?L"
-          by (auto simp: Rhss_def)
-        have "?L \<turnstile> \<alpha> @ Nt B # \<gamma> \<Rightarrow>* \<delta>" using B by (auto simp: \<delta> intro!: derive.intros[simplified])
-        also note L\<delta>
-        finally have "?L \<turnstile> \<alpha> @ Nt B # \<gamma> \<Rightarrow>* map Tm u".
-        from Lys Lzs derives_append_Nt_Cons[OF A Lys this Lzs]
-        show ?thesis by (auto simp: xs C w)
-      qed
-    qed
-  qed
-  then show "?R \<turnstile> xs \<Rightarrow>* map Tm w \<Longrightarrow> ?L \<turnstile> xs \<Rightarrow>* map Tm w" for xs w
-    by (auto simp: rtranclp_power)
+  }
+  from this[of P P'] this[of P' P] show ?thesis by (auto intro!: Lang_eqI_derives)
 qed
-
-text \<open>In particular, if there is only one alternative, then one can just substitute
-an occurrence of the nonterminal by the alternative.\<close>
-
-lemma Lang_subst1:
-  assumes AB: "A \<noteq> B" and PB: "Rhss P B = {\<beta>}"
-  shows "Lang (insert (A, \<alpha> @ Nt B # \<gamma>) P) = Lang (insert (A,\<alpha>@\<beta>@\<gamma>) P)"
-  using Lang_expand[OF AB, where P = P, unfolded PB] by simp
-
-text \<open>Some facts about \<open>\<epsilon>\<close>-derivations:\<close>
-
-lemma deriven_Cons_Nil: "P \<turnstile> x # xs \<Rightarrow>(n) [] \<longleftrightarrow>
-  (\<exists>A \<alpha> l m. P \<turnstile> \<alpha> \<Rightarrow>(l) [] \<and> P \<turnstile> xs \<Rightarrow>(m) [] \<and> x = Nt A \<and> (A,\<alpha>) \<in> P \<and> n = Suc (l+m))"
-  using deriven_Nt_Cons_map_Tm[where w=Nil,simplified]
-  by (cases x, auto simp add: deriven_Nt_Cons_map_Tm[where w=Nil,simplified]
-      deriven_Tm_Cons)
-
-lemma derives_Cons_Nil: "P \<turnstile> x # xs \<Rightarrow>* [] \<longleftrightarrow>
-  (\<exists>A \<alpha>. P \<turnstile> \<alpha> \<Rightarrow>* [] \<and> P \<turnstile> xs \<Rightarrow>* [] \<and> x = Nt A \<and> (A,\<alpha>) \<in> P)"
-  by (auto simp: derives_Cons_decomp)
-
-text \<open>Adding production whose rhs does not derive \<open>\<epsilon>\<close> by other rules
-does not change the \<open>\<epsilon>\<close>-derivations.\<close>
-
-lemma insert_derives_Nil:
-  assumes \<alpha>0: "\<not> P \<turnstile> \<alpha> \<Rightarrow>* []"
-  shows "insert (A,\<alpha>) P \<turnstile> \<alpha>' \<Rightarrow>* [] \<longleftrightarrow> P \<turnstile> \<alpha>' \<Rightarrow>* []" (is "?l \<longleftrightarrow> ?r")
-proof
-  assume ?l
-  then obtain n where "insert (A,\<alpha>) P \<turnstile> \<alpha>' \<Rightarrow>(n) []" by (auto simp: rtranclp_power)
-  then show "P \<turnstile> \<alpha>' \<Rightarrow>* []"
-  proof (induction n arbitrary: \<alpha>' rule: less_induct)
-    case (less n)
-    show ?case
-    proof (cases \<alpha>')
-      case Nil
-      then show ?thesis by simp
-    next
-      case \<alpha>': (Cons x xs)
-      from less.prems[unfolded \<alpha>' deriven_Cons_Nil]
-      obtain B \<beta> l m where \<beta>: "insert (A,\<alpha>) P \<turnstile> \<beta> \<Rightarrow>(l) []"
-        and xs: "insert (A,\<alpha>) P \<turnstile> xs \<Rightarrow>(m) []"
-        and x: "x = Nt B"
-        and B: "(B,\<beta>) \<in> insert (A,\<alpha>) P"
-        and n: "n = Suc (l + m)"
-        by auto
-      from less.IH[OF _ \<beta>] have P\<beta>: "P \<turnstile> \<beta> \<Rightarrow>* []" by (simp add: n)
-      from less.IH[OF _ xs] have Pxs: "P \<turnstile> xs \<Rightarrow>* []" by (simp add: n)
-      show ?thesis
-      proof (cases "(B,\<beta>) \<in> P")
-        case True
-        with P\<beta> Pxs show ?thesis by (auto simp: \<alpha>' x derives_Cons_Nil)
-      next
-        case False
-        with B have "B = A" "\<beta> = \<alpha>" by auto
-        with P\<beta> \<alpha>0 show ?thesis by simp
-      qed
-    qed
-  qed
-next
-  assume r: ?r show "?l" by (rule derives_mono[OF _ r], auto) 
-qed
-
 
 lemma derive_set_subset:
   "P \<turnstile> u \<Rightarrow> v \<Longrightarrow> set v \<subseteq> set u \<union> Syms P"
@@ -1773,6 +1621,60 @@ qed
 
 
 subsection \<open>Epsilon-Freeness\<close>
+
+text \<open>Some facts about \<open>\<epsilon>\<close>-derivations:\<close>
+
+lemma deriven_Cons_Nil: "P \<turnstile> x # xs \<Rightarrow>(n) [] \<longleftrightarrow>
+  (\<exists>A \<alpha> l m. P \<turnstile> \<alpha> \<Rightarrow>(l) [] \<and> P \<turnstile> xs \<Rightarrow>(m) [] \<and> x = Nt A \<and> (A,\<alpha>) \<in> P \<and> n = Suc (l+m))"
+  using deriven_Nt_Cons_map_Tm[where w=Nil,simplified]
+  by (cases x, auto simp add: deriven_Nt_Cons_map_Tm[where w=Nil,simplified]
+      deriven_Tm_Cons)
+
+lemma derives_Cons_Nil: "P \<turnstile> x # xs \<Rightarrow>* [] \<longleftrightarrow>
+  (\<exists>A \<alpha>. P \<turnstile> \<alpha> \<Rightarrow>* [] \<and> P \<turnstile> xs \<Rightarrow>* [] \<and> x = Nt A \<and> (A,\<alpha>) \<in> P)"
+  by (auto simp: derives_Cons_decomp)
+
+text \<open>Adding production whose rhs does not derive \<open>\<epsilon>\<close> by other rules
+does not change the \<open>\<epsilon>\<close>-derivations.\<close>
+
+lemma insert_derives_Nil:
+  assumes \<alpha>0: "\<not> P \<turnstile> \<alpha> \<Rightarrow>* []"
+  shows "insert (A,\<alpha>) P \<turnstile> \<alpha>' \<Rightarrow>* [] \<longleftrightarrow> P \<turnstile> \<alpha>' \<Rightarrow>* []" (is "?l \<longleftrightarrow> ?r")
+proof
+  assume ?l
+  then obtain n where "insert (A,\<alpha>) P \<turnstile> \<alpha>' \<Rightarrow>(n) []" by (auto simp: rtranclp_power)
+  then show "P \<turnstile> \<alpha>' \<Rightarrow>* []"
+  proof (induction n arbitrary: \<alpha>' rule: less_induct)
+    case (less n)
+    show ?case
+    proof (cases \<alpha>')
+      case Nil
+      then show ?thesis by simp
+    next
+      case \<alpha>': (Cons x xs)
+      from less.prems[unfolded \<alpha>' deriven_Cons_Nil]
+      obtain B \<beta> l m where \<beta>: "insert (A,\<alpha>) P \<turnstile> \<beta> \<Rightarrow>(l) []"
+        and xs: "insert (A,\<alpha>) P \<turnstile> xs \<Rightarrow>(m) []"
+        and x: "x = Nt B"
+        and B: "(B,\<beta>) \<in> insert (A,\<alpha>) P"
+        and n: "n = Suc (l + m)"
+        by auto
+      from less.IH[OF _ \<beta>] have P\<beta>: "P \<turnstile> \<beta> \<Rightarrow>* []" by (simp add: n)
+      from less.IH[OF _ xs] have Pxs: "P \<turnstile> xs \<Rightarrow>* []" by (simp add: n)
+      show ?thesis
+      proof (cases "(B,\<beta>) \<in> P")
+        case True
+        with P\<beta> Pxs show ?thesis by (auto simp: \<alpha>' x derives_Cons_Nil)
+      next
+        case False
+        with B have "B = A" "\<beta> = \<alpha>" by auto
+        with P\<beta> \<alpha>0 show ?thesis by simp
+      qed
+    qed
+  qed
+next
+  assume r: ?r show "?l" by (rule derives_mono[OF _ r], auto) 
+qed
 
 definition Eps_free where "Eps_free R = (\<forall>(_,r) \<in> R. r \<noteq> [])"
 
