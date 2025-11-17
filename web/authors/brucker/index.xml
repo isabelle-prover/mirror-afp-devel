@@ -4,6 +4,15 @@
     <title>Achim D. Brucker</title>
     <link>https://isa-afp.org/authors/brucker/</link>
     <description>AFP entries of Achim D. Brucker</description><item>
+  <title>Formalizing Neural Networks</title>
+  <link>https://isa-afp.org/entries/Neural_Networks.html</link>
+  <pubDate>Sun, 09 Nov 2025 00:00:00 +0000</pubDate>
+  <description>Formalizing Neural Networks in the AFP</description>
+    <category>Computer science/Artificial intelligence</category>
+    <category>Tools</category>
+    <category>Computer science/Data structures</category>
+</item>
+<item>
   <title>Isabelle/DOF</title>
   <link>https://isa-afp.org/entries/Isabelle_DOF.html</link>
   <pubDate>Fri, 26 Apr 2024 00:00:00 +0000</pubDate>

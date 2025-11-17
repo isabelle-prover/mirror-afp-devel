@@ -3,10 +3,13 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://isa-afp.org/entries/index.json</loc>
-    <lastmod>2025-10-22T00:00:00+00:00</lastmod>
+    <lastmod>2025-11-09T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/</loc>
-    <lastmod>2025-10-22T00:00:00+00:00</lastmod>
+    <lastmod>2025-11-09T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Neural_Networks.html</loc>
+    <lastmod>2025-11-09T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/entries/Path_Automation.html</loc>
     <lastmod>2025-10-22T00:00:00+00:00</lastmod>
@@ -4980,6 +4983,8 @@
     <loc>https://isa-afp.org/sessions/network_security_policy_verification/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/neumann_morgenstern_utility/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/sessions/neural_networks/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/meric/</loc>
   </url><url>
