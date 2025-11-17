@@ -1,0 +1,39 @@
+title = "Formalizing Neural Networks"
+date = 2025-11-09
+topics = [
+  "Computer science/Artificial intelligence",
+  "Tools",
+  "Computer science/Data structures",
+]
+abstract = """
+Deep learning, i.e., machine learning using neural networks, is used successfully in many application areas. Still, their use in safety-critical or security-critical applications is limited, due to the lack of testing and verification techniques. 
+
+We address this problem by formalizing  an important class of neural networks, feed-forward neural networks, in Isabelle/HOL. We present two different approaches of formalizing feed-forward networks and show their equivalence as well as demonstrate their use in verifying certain safety and correctness properties of various example. Moreover, we do not only provide a formal model that allows to reason over feed-forward neural networks, we also provide a datatype package for Isabelle/HOL that supports importing models from TensorFlow.js."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.brucker]
+email = "brucker_email"
+
+[authors.stell]
+email = "stell_email"
+
+[contributors]
+
+[notify]
+brucker = "brucker_email2"
+stell = "stell_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = [
+  "10.1007/978-3-031-27481-7_24",
+]
+pubs = [
+  "Amy Stell. Trustworthy Machine Learning for High-Assurance Systems. PhD Thesis. University of Exeter, UK. 2025.",
+]

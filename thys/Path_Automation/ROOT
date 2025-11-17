@@ -1,0 +1,11 @@
+chapter AFP
+
+session Path_Automation (AFP) = "HOL-Complex_Analysis" +
+  options [timeout = 600]
+  sessions 
+    "HOL-Library"
+  theories
+    Path_Automation
+  document_files
+    "root.tex"
+    "root.bib"

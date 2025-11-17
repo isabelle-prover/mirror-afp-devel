@@ -16,6 +16,43 @@
   "year": "2025"
  },
  {
+  "abstract": "Deep learning, i.e., machine learning using neural networks, is used successfully in many application areas. Still, their use in safety-critical or security-critical applications is limited, due to the lack of testing and verification techniques.   We address this problem by formalizing  an important class of neural networks, feed-forward neural networks, in Isabelle/HOL. We present two different approaches of formalizing feed-forward networks and show their equivalence as well as demonstrate their use in verifying certain safety and correctness properties of various example. Moreover, we do not only provide a formal model that allows to reason over feed-forward neural networks, we also provide a datatype package for Isabelle/HOL that supports importing models from TensorFlow.js.",
+  "authors": [
+   "Achim D. Brucker",
+   "Amy Stell"
+  ],
+  "link": "/entries/Neural_Networks.html",
+  "shortname": "Neural_Networks",
+  "title": "Formalizing Neural Networks",
+  "topic_links": [
+   "/topics/computer-science/artificial-intelligence/",
+   "/topics/tools/",
+   "/topics/computer-science/data-structures/"
+  ],
+  "topics": [
+   "Computer science/Artificial intelligence",
+   "Tools",
+   "Computer science/Data structures"
+  ],
+  "year": "2025"
+ },
+ {
+  "abstract": "In complex analysis, one often has to manipulate paths, i.e. curves in the complex plane. This entry defines three useful relations on paths:\nan equivalence relation $\\equiv_{\\text{p}}$ that describes that two paths are the same up to reparametrisation a preorder $\\leq_{\\text{p}}$ that expresses the notion that one path is a subpath of another an equivalence relation $\\equiv_{\\bigcirc}$ that describes equivalence of closed paths up to reparametrisation and “shifting” (e.g. if we have a rectangular path, it does not matter which corner we start in) It also provides the path tactic, which proves or simplifies some common proof obligations for composite paths. Namely:\nproving $\\equiv_{\\text{p}}$, $\\leq_{\\text{p}}$, $\\equiv_{\\bigcirc}$ proving well-definedness of paths (path, valid_path) determining the image of a path (path_image) showing that a path is not self-intersecting (arc, simple_path) decomposing integrals on a composite path into the integrals on the constituent paths ",
+  "authors": [
+   "Manuel Eberl"
+  ],
+  "link": "/entries/Path_Automation.html",
+  "shortname": "Path_Automation",
+  "title": "Path Equivalence and Automation for Integration Contours",
+  "topic_links": [
+   "/topics/tools/"
+  ],
+  "topics": [
+   "Tools"
+  ],
+  "year": "2025"
+ },
+ {
   "abstract": "The objective of this theory development is an implementation of the Z mathematical  toolkit in Isabelle/HOL that is both efficient for proof and faithful to the standard. We construct the Z metalanguage and type universe on top of HOL, and link this to corresponding concrete types (finite functions, lists etc.) in Isabelle, to enable efficient proof automation. We then utilise coercive subtyping and overloading to support processing of Z-like expressions in Isabelle/HOL. We then use this to develop the mathematical toolkit for sets, relations, functions, and sequences.",
   "authors": [
    "Simon Foster",
@@ -647,7 +684,7 @@
   "year": "2025"
  },
  {
-  "abstract": " Multi-level syllogistic with monotone functions (MLSSmf) is a sublanguage of set theory introduced by Cantone et al., involving set-to-set functions and their monotonicity, additivity, and multiplicativity. It is an extension of multi-level syllogistic with singleton (MLSS), which involves the predicates membership, set equality, set inclusion, and the operators union, intersection, set difference, and singleton. In this work we formalize the reduction algorithm from MLSSmf to MLSS and verify the correctness proof originally presented by Cantone et al. Combined with the verified decision procedure for MLSS formalized by Stevens, this yields an executable and verified decision procedure for MLSSmf. ",
+  "abstract": " Multi-level syllogistic with monotone functions (MLSSmf) is a sublanguage of set theory introduced by Cantone et al., involving set-to-set functions and their monotonicity, additivity, and multiplicativity. It is an extension of multi-level syllogistic with singleton (MLSS), which involves the predicates membership, set equality, set inclusion, and the operators union, intersection, set difference, and singleton. In this work we formalize the reduction algorithm from MLSSmf to MLSS and verify the correctness proof originally presented by Cantone et al. Combined with the verified decision procedure for MLSS formalized by Stevens, this yields a verified decision procedure for MLSSmf. ",
   "authors": [
    "Yiran Duan",
    "Lukas Stevens"

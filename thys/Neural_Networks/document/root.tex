@@ -1,0 +1,411 @@
+\documentclass[11pt,DIV=13,a4paper,abstract=true,twoside=semi,openright]
+{scrreprt}
+\usepackage[]{mathtools}
+\usepackage[T1]{fontenc}
+\usepackage[USenglish]{babel}
+\usepackage[varqu,varl]{zi4}% inconsolata typewriter
+% for lualatex
+\usepackage{fontspec}
+\setmonofont{Inconsolatazi4}
+\usepackage{fontawesome5}
+\usepackage{subcaption}
+\usepackage[sfdefault,scaled=.85]{FiraSans}
+\usepackage{sansmathaccent}
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+\else % if luatex or xetex
+  \usepackage{lualatex-math}
+\fi
+\usepackage{csquotes}
+\usepackage{isabelle,isabellesym}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{xspace}
+\usepackage[cmyk]{xcolor}
+\usepackage{listings}
+\usepackage{railsetup}
+\usepackage[backend=bibtex,style=trad-abbrv]{biblatex}
+\addbibresource{root.bib}
+\definecolor{lhWhite}        {RGB}{248,248,248}
+\definecolor{lhOrange}       {RGB}{243,107, 33}
+\definecolor{lhMagentaDark}  {RGB}{ 62, 10, 71}
+\definecolor{CornflowerBlue}{cmyk}{0.65,0.13,0,0}
+
+\usepackage[pdfpagelabels, pageanchor=false, plainpages=false]{hyperref}
+\usepackage{orcidlink}
+\newcommand\tocgobble[1]{}% 
+%\renewcommand\familydefault{\sfdefault}
+\colorlet{sectioncolor}{blue!60!black}
+\addtokomafont{chapterentrypagenumber}{\color{sectioncolor}}
+\addtokomafont{partentry}{\color{sectioncolor}\Large}
+\addtokomafont{chapterentry}{\color{sectioncolor}}
+\addtokomafont{title}{\color{sectioncolor}\bfseries}
+\addtokomafont{part}{\color{sectioncolor}}
+\addtokomafont{chapter}{\color{sectioncolor}\bfseries}
+\addtokomafont{section}{\color{sectioncolor}}
+\addtokomafont{subsection}{\color{sectioncolor}}
+\addtokomafont{subsubsection}{\color{sectioncolor}}
+\addtokomafont{paragraph}{\color{sectioncolor}}
+\addtokomafont{subparagraph}{\color{sectioncolor}}
+\sloppy
+
+\addtokomafont{partentry}{\hfill}
+\RedeclareSectionCommand[
+  tocpagenumberbox=\tocgobble%
+]{part}
+
+
+\renewcommand{\isastyletext}{\normalsize\normalfont\sffamily}
+\renewcommand{\isastyletxt}{\normalfont\sffamily}
+\renewcommand{\isastylecmt}{\normalfont\sffamily}
+\input{preamble.tex}
+\isabellestyle{literal}
+\isabellestyle{tt}
+\usepackage{listings}
+\usepackage{listingsutf8}
+\usepackage[many]{tcolorbox}
+\tcbuselibrary{listings}
+\tcbuselibrary{skins}
+
+\lstdefinelanguage{JSON}{%
+  keywords={},
+  keywordstyle=\color{blue}\bfseries,
+  ndkeywords={},
+  ndkeywordstyle=\color{darkgray}\bfseries,
+  identifierstyle=\color{black},
+  sensitive=false,
+  comment=[l]{//},
+  morecomment=[s]{/*}{*/},
+  % ommentstyle=\color{purple}\ttfamily,
+%  stringstyle=\color{red}\ttfamily,
+  morestring=[b]',
+  morestring=[b]"
+}
+\lstdefinestyle{json}{language=JSON,
+  basicstyle=\ttfamily\color{black},
+  commentstyle=\itshape\color{black},
+  stringstyle=\color{lhOrange},
+  keywordstyle=\color{lhCyan},
+  ndkeywordstyle=\color{lhGreen},
+}
+\lstdefinestyle{displayjson}{style=json,
+  floatplacement={tbp},
+  captionpos=b,
+  framexleftmargin=0pt,
+  basicstyle=\ttfamily\color{black},
+  numbers=left,,%=left,
+  numberstyle=\footnotesize,
+  stepnumber=1,
+  backgroundcolor=\color{black!95},
+  frame=lines,
+  xleftmargin=1cm,
+  escapeinside={(*@}{@*)}
+}
+
+\def\inlinejson{\lstinline[style=json, columns=fullflexible]}
+\newtcblisting{json}[1][]{%
+      listing only%
+     ,boxrule=0pt
+     ,boxsep=0pt
+     ,colback=white!90!gray
+     ,enhanced jigsaw
+     ,borderline west={2pt}{0pt}{gray!60!black}
+     ,sharp corners
+     % ,before skip=10pt
+     % ,after skip=10pt
+     ,enlarge top by=0mm
+     ,enhanced
+     ,overlay={\node[draw,fill=gray!60!black,xshift=0pt,anchor=north
+       east,font=\bfseries\footnotesize\color{white}]
+                at (frame.north east) {JSON};}
+        ,listing options={
+          style=json
+          ,breakatwhitespace=true
+          ,columns=flexible%
+          ,basicstyle=\small\ttfamily
+          %,mathescape
+          ,#1
+      }
+  }%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+%% <python>
+\lstloadlanguages{python}
+\providecolor{python}{named}{lhMagentaDark}
+\lstdefinestyle{python}{
+   basicstyle=\ttfamily,%
+   commentstyle=\itshape,%
+   keywordstyle=\bfseries\color{CornflowerBlue},%
+   ndkeywordstyle=\color{green},%
+   language=python
+   ,keywordstyle=[6]{\itshape}%
+   ,morekeywords=[6]{args_type}%
+}%
+\def\inlinepython{\lstinline[style=python,breaklines=true,mathescape,breakatwhitespace=true]}
+\newtcblisting{python}[1][]{%
+      listing only%
+     ,boxrule=0pt
+     ,boxsep=0pt
+     ,colback=white!90!python
+     ,enhanced jigsaw
+     ,borderline west={2pt}{0pt}{python!60!black}
+     ,sharp corners
+     % ,before skip=10pt
+     % ,after skip=10pt
+     ,enlarge top by=0mm
+     ,enhanced
+     ,overlay={\node[draw,fill=python!60!black,xshift=0pt,anchor=north
+       east,font=\bfseries\footnotesize\color{white}]
+                at (frame.north east) {Python};}
+        ,listing options={
+          style=python
+          ,columns=flexible%
+          ,basicstyle=\small\ttfamily
+          ,mathescape
+          ,#1
+      }
+  }%
+%% </python>
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+
+
+%%% <todo>
+\usepackage{tcolorbox}
+\isakeeptag{todo}
+\newenvironment{isatodoenv}{%
+\mbox{}\\
+\tcbsetforeverylayer{colframe=red!75!black}
+\begin{tcolorbox}[title={\textsf{\textbf{ToDo}}}]}{%
+\end{tcolorbox}
+}
+\renewcommand{\isatagtodo}{\begin{isatodoenv}}
+\renewcommand{\endisatagtodo}{\end{isatodoenv}}
+%%% </todo>
+\isabellestyle{literal}
+\isabellestyle{it}
+\renewcommand{\isacharunderscore}{\_}%
+\renewcommand{\isacharunderscorekeyword}{\_}%
+
+\newcommand{\thy}{%
+  \begingroup% 
+    \def\isacharunderscore{\textunderscore}%
+    {\small\faFile*[regular]}\,\isabellecontext%
+  \endgroup% 
+}
+
+%\renewcommand{\isamarkupchapter}[1]{\chapter{#1 (\thy)}}
+\renewcommand{\isamarkupsection}[1]{\section{#1 (\thy)}}
+\let\oldisakeyword\isakeyword
+\renewcommand{\isakeyword}[1]{\oldisakeyword{\color{black!70!white}#1}}
+\renewcommand{\isacommand}[1]{\isakeyword{\color{sectioncolor}#1}}
+
+\usepackage{hyperref}
+\urlstyle{sf}
+\setcounter{tocdepth}{2} 
+\hypersetup{%
+   bookmarksdepth=3
+  ,pdfpagelabels
+  ,pageanchor=true
+  ,bookmarksnumbered
+  ,plainpages=false
+} % more detailed digital TOC (aka bookmarks)
+
+\begin{document}
+\renewcommand{\chapterautorefname}{Chapter}
+\renewcommand{\sectionautorefname}{Section}
+\renewcommand{\subsectionautorefname}{Section}
+\renewcommand{\subsubsectionautorefname}{Section}
+\maketitle
+\begin{abstract}
+  \begin{quote}
+  Deep learning, i.e., machine learning using neural networks, is used
+  successfully in many application areas. Still, their use in safety-critical or
+  security-critical applications is limited, due to the lack of testing and
+  verification techniques. 
+
+  We address this problem by formalizing  an important class
+  of neural networks, feed-forward neural networks, in Isabelle/HOL. We present
+  two different approaches of formalizing feed-forward networks and show their
+  equivalence as well as demonstrate their use in verifying certain safety and
+  correctness properties of various example. Moreover, we do not only provide a
+  formal model that allows to reason over feed-forward neural networks, we also
+  provide a datatype package for Isabelle/HOL that supports importing models
+  from TensorFlow.js. 
+
+  \bigskip
+  \noindent\textbf{Keywords:} Deep Learning, Neural Networks, Verification,
+  TensorFlow
+  \end{quote}
+\end{abstract}
+
+\tableofcontents
+
+\chapter{Introduction}
+Machine learning (ML) and, in particular, deep learning (DL) is used
+successfully in many application areas. Still, their use in safety-critical or
+security-critical applications is limited, due to the lack of testing and
+verification techniques that satisfy the stringent requirements of industrial
+certification standards such as BS EN 50128~\cite{bsi:50128:2014} (safety) or
+Common Criteria~\cite{cc:cc:2017} (security) that are required in such
+applications. On their highest assurance level, these certification standards
+require a formal (mathematical) specification of the system, allowing for a
+formal verification of the system. Moreover, requirements need to be traceable
+from their elicitation to the execution of test cases on the level of the
+implementation. 
+
+As of today, tools and techniques for certifying high-assurance systems rely on
+the existence of human-readable program code that can be analyzed, verified, and
+tested. For systems that are relying on a trained neural network, such a
+human-readable representation does not exist. 
+
+We address this problem by formalizing  an important class of
+neural networks, feed-forward neural networks, in Isabelle/HOL. We present two
+different approaches of formalizing feed-forward networks and show their
+equivalence as well as demonstrate their use in verifying certain safety and
+correctness properties of various example. Moreover, we do not only provide a
+formal model that allows to reason over feed-forward neural networks, we also
+provide a datatype package for Isabelle/HOL that supports importing models from
+TensorFlow.js. 
+
+In more detail, our contributions are:
+\begin{itemize}
+  \item Two different formal models of feed-forward neural networks in
+  Isabelle/HOL:
+  \begin{itemize} 
+    \item The first model (see \autoref{ch:nn_graph}) is based on direct graphs 
+    and, hence, is very close to the representation of neural networks in textbooks,
+    e.g.,~\cite{aggarwal:neural:2018}. 
+    \item The second model (see \autoref{ch:layers}) is based on a structure of layers 
+    of nodes that share the same activation function. This model is very close to the 
+    representation of modern machine learning frameworks such as 
+    TensorFlow~\cite{abadi.ea:tensorflow:2015}. For this model, we formalized two 
+    variants:
+    \begin{itemize}
+    \item A version optimised for execution that is based on list operations
+    (\autoref{sec:list}). This model is, usually, also preferred for the
+    verification of a concrete neural network. 
+    \item A version that is based on vector and matrix operations
+    (\autoref{sec:matrix}), which is more suitable for formal reasoning over the
+    model itself.  
+    \end{itemize}
+    Moreover, we formally show the equivalence two layer-based models and show that the 
+    digraph model is as expressive as the layer-based models. 
+  \end{itemize}  
+  \item A proof of the semantic equivalence of both models (for the subset of
+    models that can be represented in both models).
+  \item A data type package that supports the automatic encoding of
+  machine learning models trained in TensorFlow into our formal framework in
+  Isabelle/HOL.
+  \item A small case studies demonstrating how our formal framework can be used
+  for the verification of safety and correctness trained neural networks.
+\end{itemize}  
+
+The main theories for users of this formalisation are:
+\begin{itemize}
+\item For works that build on the formalisation of neural networks as layers
+(i.e., following the approach of TensorFlow), where the underlying
+implementation uses the list data type, the theory \verb|NN_Layers_List_Main|
+(\autoref{sec:list}) acts as main entry point. For most practical application
+that have the aim of verifying properties of neural networks, this is the
+recommended starting point. 
+\item For works that build on the formalisation of neural networks as layers
+(i.e., following the approach of TensorFlow), where the underlying
+implementation uses vector and matrix types,  
+the theory \verb|NN_Layers_Matrix_Main| (\autoref{sec:matrix}) acts as main
+entry point.
+\item The theory \verb|NN_Layers_List_Main| (\autoref{sec:list}) encodes the 
+TensorFlow-style layers on top of the model using directed graphs. 
+\item The theory \verb|NN_Layers_Main| (\autoref{thy:NN_Layers_Main}) combiners
+all three layer-based models. This is mainly useful for works that focus on 
+meta-level-reasoning, such as proving the equivalence between models or for 
+developing transformations between the different models. 
+\item For works that build on the formalisation of neural networks as directed
+graphs, the theory \verb|NN_Digraph_Main| (\autoref{thy:NN_Digraph_Main}) acts
+as main entry point.
+\item The theory \verb|NN_Main| (\autoref{thy:NN_Main}) combiners all models.
+This is mainly useful for works that focus on meta-level-reasoning, such as
+proving the equivalence between models or for developing transformations between
+the different models. 
+\item The theory \verb|NN_Manual| (\autoref{ch:manual}) contains a brief description 
+of the top-level Isar commands and proof methods provided by this AFP entry. 
+\end{itemize}
+
+\begin{figure}
+  \centering
+  \includegraphics[height=\textheight, width=\textwidth, keepaspectratio]{session_graph}
+  \caption{The Dependency Graph of the Isabelle Theories.\label{fig:session-graph}}
+\end{figure}
+The rest of this document is automatically generated from the
+formalization in Isabelle/HOL, i.e., all content is checked by
+Isabelle.  Overall, the structure of this document follows the
+theory dependencies (see \autoref{fig:session-graph}). A high-level description 
+of this work is published in the proceedings of the International Conference on 
+Formal Methods (FM 2023)~\cite{brucker.ea:feedforward-nn-verification:2023}:
+\begin{quote}
+A. D. Brucker and A. Stell. Verifying feedforward neural networks for classification in Isabelle/HOL. In M.
+Chechik, J.-P. Katoen, and M. Leucker, editors, Formal Methods (FM 2023). Lübeck, Germany, 2023. ISBN:
+978-3-642-38915-3. 
+\end{quote}
+A more detailed description, including the presentation of a verfication approach for 
+neural networks and further examples, is published in the following PhD 
+Thesis~\cite{stell:nn-formalisation:2025}:
+\begin{quote}
+A. Stell. Trustworthy Machine Learning for High-Assurance Systems. PhD Thesis. University of Exeter, UK. 2025.
+\end{quote}
+
+\part*{Generated Sessions}
+%\input{session}
+
+\chapter{Preliminaries}
+\input{Matrix_Utils.tex}
+\input{TensorFlow_Import.tex}
+\input{NN_Common.tex}
+
+% Chapter (defined within theory)
+\input{Activation_Functions.tex}
+
+%%
+\chapter{Neural Networks as Directed Graphs}\label{ch:nn_graph}
+\input{Prediction_Utils.tex}
+\input{Properties.tex}
+\input{NN_Digraph.tex}
+\input{NN_Digraph_Main.tex}
+
+
+\chapter{Neural Networks as Layers}\label{ch:layers}
+\section{Preliminaries}
+\input{Prediction_Utils_Matrix.tex}
+\input{Properties_Matrix.tex}
+\input{NN_Layers.tex}
+\input{NN_Lipschitz_Continuous.tex}
+
+\section{Models}
+\input{NN_Digraph_Layers.tex}
+\input{NN_Layers_List_Main.tex}
+\input{NN_Layers_Matrix_Main.tex}
+%
+\input{NN_Layers_Main.tex}
+
+\input{NN_Main.tex}
+\input{NN_Manual.tex}
+
+\chapter{Examples}
+\section{Compass}
+\input{Compass_Digraph.tex}
+\input{Compass_Layers_List.tex}
+\input{Compass_Layers_Matrix.tex}
+
+% \section{Line Classification Model (Grid)}
+\input{Grid_Layers.tex}
+\input{Grid_Layers_List.tex}
+\input{Grid_Layers_Matrix.tex}
+
+
+\printbibliography
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
+\endinput
+

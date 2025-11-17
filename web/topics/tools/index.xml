@@ -11,6 +11,22 @@
     <category>Tools</category>
 </item>
 <item>
+  <title>Formalizing Neural Networks</title>
+  <link>https://isa-afp.org/entries/Neural_Networks.html</link>
+  <pubDate>Sun, 09 Nov 2025 00:00:00 +0000</pubDate>
+  <description>Formalizing Neural Networks in the AFP</description>
+    <category>Computer science/Artificial intelligence</category>
+    <category>Tools</category>
+    <category>Computer science/Data structures</category>
+</item>
+<item>
+  <title>Path Equivalence and Automation for Integration Contours</title>
+  <link>https://isa-afp.org/entries/Path_Automation.html</link>
+  <pubDate>Wed, 22 Oct 2025 00:00:00 +0000</pubDate>
+  <description>Path Equivalence and Automation for Integration Contours in the AFP</description>
+    <category>Tools</category>
+</item>
+<item>
   <title>Muntac: A Verified Certificate Checker for Timed Automata</title>
   <link>https://isa-afp.org/entries/Munta_Certificate_Checker.html</link>
   <pubDate>Sun, 12 Oct 2025 00:00:00 +0000</pubDate>

@@ -1,0 +1,41 @@
+title = "Path Equivalence and Automation for Integration Contours"
+date = 2025-10-22
+topics = [
+  "Tools",
+]
+abstract = """
+<p>In complex analysis, one often has to manipulate <em>paths</em>, i.e. curves in the complex plane. 
+This entry defines three useful relations on paths:</p>
+<ul>
+<li>an equivalence relation $\\equiv_{\\text{p}}$ that describes that two paths are the same up to reparametrisation</li>
+<li>a preorder $\\leq_{\\text{p}}$ that expresses the notion that one path is a subpath of another</li>
+<li>an equivalence relation $\\equiv_{\\bigcirc}$ that describes equivalence of closed paths up to reparametrisation and “shifting” (e.g. if we have a rectangular path, it does not matter which corner we start in)</li>
+</ul>
+<p>It also provides the <em>path</em> tactic, which proves or simplifies some common proof obligations for composite paths. Namely:</p>
+<ul>
+<li>proving $\\equiv_{\\text{p}}$, $\\leq_{\\text{p}}$, $\\equiv_{\\bigcirc}$</li>
+<li>proving well-definedness of paths (<tt>path</tt>, <tt>valid_path</tt>)</li>
+<li>determining the <em>image</em> of a path (<tt>path_image</tt>)</li>
+<li>showing that a path is not self-intersecting (<tt>arc</tt>, <tt>simple_path</tt>)</li>
+<li>decomposing integrals on a composite path into the integrals on the constituent paths</li>
+</ul>"""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.eberl]
+email = "eberl_email"
+
+[contributors]
+
+[notify]
+eberl = "eberl_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

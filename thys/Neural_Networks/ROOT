@@ -1,0 +1,56 @@
+chapter AFP
+
+session Neural_Networks (AFP) = "Interval_Analysis"+
+  options [timeout = 3600]
+  sessions 
+    Graph_Theory
+    Nano_JSON
+    "HOL-Decision_Procs"
+    "HOL-Eisbach"
+    "Jordan_Normal_Form"
+  directories
+    "document"
+    "examples/compass"
+    "examples/grid"
+  theories
+    NN_Common 
+    NN_Digraph
+    NN_Digraph_Layers
+    NN_Digraph_Main
+
+    NN_Layers
+    NN_Layers_List_Main
+    NN_Layers_Main
+    NN_Layers_Matrix_Main
+    NN_Main
+    NN_Manual
+ 
+    Compass_Digraph
+    Compass_Layers_Matrix
+    Compass_Layers_List
+
+    Grid_Layers_List
+    Grid_Layers_Matrix
+
+    TensorFlow_Import
+
+    NN_Lipschitz_Continuous
+
+    Prediction_Utils_Matrix
+    Properties_Matrix
+    Prediction_Utils
+    TensorFlow_Import
+    Activation_Functions
+    Matrix_Utils
+    Properties
+
+  document_files
+    "root.tex"
+    "root.bib"
+    "preamble.tex"
+    "orcidlink.sty"
+    "grid-horizontal.pdf"
+    "grid-misclassification.pdf"
+    "grid-nn.pdf"
+    "grid-noline.pdf"
+    "grid-vertical.pdf"

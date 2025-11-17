@@ -4,6 +4,15 @@
     <title>Computer science/Data structures</title>
     <link>https://isa-afp.org/topics/computer-science/data-structures/</link>
     <description>AFP entries in Data structures</description><item>
+  <title>Formalizing Neural Networks</title>
+  <link>https://isa-afp.org/entries/Neural_Networks.html</link>
+  <pubDate>Sun, 09 Nov 2025 00:00:00 +0000</pubDate>
+  <description>Formalizing Neural Networks in the AFP</description>
+    <category>Computer science/Artificial intelligence</category>
+    <category>Tools</category>
+    <category>Computer science/Data structures</category>
+</item>
+<item>
   <title>Power Operator for Lists</title>
   <link>https://isa-afp.org/entries/List_Power.html</link>
   <pubDate>Wed, 29 Jan 2025 00:00:00 +0000</pubDate>

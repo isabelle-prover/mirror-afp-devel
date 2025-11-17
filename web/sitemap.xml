@@ -11,6 +11,12 @@
     <loc>https://isa-afp.org/entries/Zippy.html</loc>
     <lastmod>2025-11-11T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>https://isa-afp.org/entries/Neural_Networks.html</loc>
+    <lastmod>2025-11-09T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Path_Automation.html</loc>
+    <lastmod>2025-10-22T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>https://isa-afp.org/entries/Z_Toolkit.html</loc>
     <lastmod>2025-10-16T00:00:00+00:00</lastmod>
   </url><url>
@@ -4997,6 +5003,8 @@
   </url><url>
     <loc>https://isa-afp.org/sessions/neumann_morgenstern_utility/</loc>
   </url><url>
+    <loc>https://isa-afp.org/sessions/neural_networks/</loc>
+  </url><url>
     <loc>https://isa-afp.org/authors/meric/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/peltier/</loc>
@@ -5122,6 +5130,8 @@
     <loc>https://isa-afp.org/authors/noce/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/password_authentication_protocol/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/sessions/path_automation/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/lederer/</loc>
   </url><url>
