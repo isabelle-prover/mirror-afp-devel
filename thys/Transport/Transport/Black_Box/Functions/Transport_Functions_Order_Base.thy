@@ -414,14 +414,14 @@ lemma symmetric_leftI:
   assumes "symmetric (\<le>\<^bsub>L1\<^esub>)"
   and "symmetric (\<le>\<^bsub>L2\<^esub>)"
   shows "symmetric (\<le>\<^bsub>L\<^esub>)"
-  using assms by (intro tpdfr.symmetric_leftI) auto
+  using assms by (intro tmdfr.symmetric_leftI) auto
 
 lemma partial_equivalence_rel_leftI:
   assumes "reflexive_on (in_field (\<le>\<^bsub>L1\<^esub>)) (\<le>\<^bsub>L1\<^esub>)"
   and "symmetric (\<le>\<^bsub>L1\<^esub>)"
   and "partial_equivalence_rel (\<le>\<^bsub>L2\<^esub>)"
   shows "partial_equivalence_rel (\<le>\<^bsub>L\<^esub>)"
-  using assms by (intro tpdfr.partial_equivalence_rel_leftI) auto
+  using assms by (intro tmdfr.partial_equivalence_rel_leftI) auto
 
 end
 

@@ -341,7 +341,7 @@ lemma galois_equivalenceI:
   and "transitive (\<le>\<^bsub>L2\<^esub>)"
   and "transitive (\<le>\<^bsub>R2\<^esub>)"
   shows "((\<le>\<^bsub>L\<^esub>) \<equiv>\<^sub>G (\<le>\<^bsub>R\<^esub>)) l r"
-  using assms by (intro tpdfr.galois_equivalenceI
+  using assms by (intro tmdfr.galois_equivalenceI
     galois_connection_left_rightI flip.galois_prop_left_rightI)
   (auto intro: reflexive_on_if_le_pred_if_reflexive_on
     in_field_if_in_dom in_field_if_in_codom)
