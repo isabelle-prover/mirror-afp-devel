@@ -2,14 +2,13 @@
 theory Transport_Typedef
   imports
     "HOL-Library.FSet"
+    Galois_Relator_Syntax
     Transport_Typedef_Base
     Transport_Prototype
-    Transport_Syntax
     HOL_Alignment_Functions
 begin
 
-context
-  includes galois_rel_syntax and transport_syntax
+context includes galois_rel_Galois_syntax and transport_equivalences_syntax
 begin
 
 typedef pint = "{i :: int. 0 \<le> i}" by auto
@@ -120,7 +119,7 @@ lemma image_parametric' [trp_related_intro]:
 
 lemma Galois_id_hint [trp_uhint]:
   "(L :: 'a \<Rightarrow> 'a \<Rightarrow> bool) \<equiv> R \<Longrightarrow> r \<equiv> id \<Longrightarrow> E \<equiv> L \<Longrightarrow> (\<^bsub>L\<^esub>\<lessapprox>\<^bsub>R r\<^esub>) \<equiv> E"
-  by (simp only: eq_reflection[OF transport_id.left_Galois_eq_left])
+  by (simp add: eq_reflection[OF transport_id.left_Galois_eq_left])
 
 lemma Freq [trp_uhint]: "L \<equiv> (=) \<Rrightarrow> (=) \<Longrightarrow> L \<equiv> (=)"
   by auto

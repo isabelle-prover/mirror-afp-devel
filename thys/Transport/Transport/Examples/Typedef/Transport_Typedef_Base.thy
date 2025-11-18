@@ -17,8 +17,7 @@ sublocale transport? :
   transport_eq_restrict_bijection "mem_of A" "\<top> :: 'b \<Rightarrow> bool" Abs Rep
   rewrites "(=\<^bsub>mem_of A\<^esub>) \<equiv> L"
   and "(=\<^bsub>\<top> :: 'b \<Rightarrow> bool\<^esub>) \<equiv> R"
-  and "(galois_rel.Galois (=) (=) Rep)\<restriction>\<^bsub>mem_of A\<^esub>\<upharpoonleft>\<^bsub>\<top> :: 'b \<Rightarrow> bool\<^esub> \<equiv>
-    (galois_rel.Galois (=) (=) Rep)"
+  and "(galois_rel.Galois (=) (=) Rep)\<restriction>\<^bsub>mem_of A\<^esub>\<upharpoonleft>\<^bsub>\<top> :: 'b \<Rightarrow> bool\<^esub> \<equiv> (galois_rel.Galois (=) (=) Rep)"
   using Abs_inverse Rep_inverse
   by (intro transport_eq_restrict_bijection.intro bijection_onI)
   (auto intro!: eq_reflection galois_rel.left_GaloisI Rep elim: galois_rel.left_GaloisE)
