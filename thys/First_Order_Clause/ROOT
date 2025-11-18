@@ -12,6 +12,7 @@ session First_Order_Clause = Abstract_Substitution +
     "Regular-Sets"
     Regular_Tree_Relations
     Saturation_Framework_Extensions
+    Sorted_Terms
     VeriComp
   theories
     Ground_Term_Typing

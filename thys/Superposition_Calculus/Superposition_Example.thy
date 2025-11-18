@@ -16,15 +16,15 @@ abbreviation trivial_select :: "'a clause \<Rightarrow> 'a clause" where
 abbreviation unit_typing where
   "unit_typing _ _ \<equiv> Some ([], ())"
 
-interpretation unit_types: witnessed_monomorphic_term_typing where \<F> = unit_typing
-  by unfold_locales auto
-                                           
+interpretation unit_types: monomorphic_term_typing where \<F> = unit_typing
+  by unfold_locales
+
 interpretation example1: monomorphic_superposition_calculus where
     select = "trivial_select :: (('f :: weighted , 'v :: infinite) term atom) select" and
     less\<^sub>t = less_kbo and
     \<F> = unit_typing and
     tiebreakers = trivial_tiebreakers
-  by unfold_locales auto
+  by unfold_locales (auto intro: unit_types.exists_witness_if_exists_const_for_all_types)
 
 instantiation nat :: infinite
 begin
@@ -41,9 +41,17 @@ abbreviation types :: "nat \<Rightarrow> nat \<Rightarrow> (type list \<times> t
     let type = if even f then A else B
     in Some (replicate n type, type)"
 
-interpretation example_types: witnessed_monomorphic_term_typing where \<F> = types
-proof unfold_locales
+interpretation example_types: monomorphic_term_typing where \<F> = types
+  by unfold_locales
+
+interpretation example2: monomorphic_superposition_calculus where
+    select = "KBO.select_max :: (nat, nat) term atom select" and
+    less\<^sub>t = less_kbo and
+    \<F> = types and
+    tiebreakers = trivial_tiebreakers
+proof (unfold_locales, rule example_types.exists_witness_if_exists_const_for_all_types)
   fix \<tau>
+
   show "\<exists>f. types f 0 = Some ([], \<tau>)"
   proof (cases \<tau>)
     case A
@@ -57,12 +65,5 @@ proof unfold_locales
       by (rule exI[of _ 1]) auto
   qed
 qed
-
-interpretation example2: monomorphic_superposition_calculus where
-    select = "KBO.select_max :: (nat, nat) term atom select" and
-    less\<^sub>t = less_kbo and
-    \<F> = types and
-    tiebreakers = trivial_tiebreakers
-  by unfold_locales
 
 end
