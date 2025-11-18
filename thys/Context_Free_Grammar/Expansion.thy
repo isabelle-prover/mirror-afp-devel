@@ -26,7 +26,7 @@ lemma Expand_sym_ops_self: "{[x]} \<in> Expand_sym_ops P L x"
 
 text \<open>Mixed words allow all possible combinations of the options for the symbols.\<close>
 
-fun Expand_syms_ops where
+fun Expand_syms_ops :: "('n,'t) Prods \<Rightarrow> 'n set \<Rightarrow> ('n,'t) syms \<Rightarrow> ('n,'t) syms set set" where
   "Expand_syms_ops P L [] = {{[]}}"
 | "Expand_syms_ops P L (x#xs) =
    {\<alpha>s @@ \<beta>s | \<alpha>s \<beta>s. \<alpha>s \<in> Expand_sym_ops P L x \<and> \<beta>s \<in> Expand_syms_ops P L xs}"
@@ -72,7 +72,7 @@ next
   show ?case by (simp add: X Cons.IH[OF Z] Expand_sym_ops_Lang_of_Cons[OF Y L] Lang_of_set_conc)
 qed
 
-definition Expand where
+definition Expand :: "(('n,'t) syms \<Rightarrow> ('n,'t) syms set) \<Rightarrow> ('n,'t) Prods \<Rightarrow> ('n,'t) Prods" where
 "Expand f Q = (\<Union>(A,\<alpha>) \<in> Q. Pair A ` f \<alpha>)"
 
 lemma Lhss_Expand: "Lhss (Expand f Q) \<subseteq> Lhss Q"
@@ -215,7 +215,7 @@ lemma Expand_sym_ops: "Expand_sym P L x \<in> Expand_sym_ops P L x"
 
 subsubsection \<open>Expanding all nonterminals\<close>
 
-fun Expand_all_syms where
+fun Expand_all_syms :: "('n,'t) Prods \<Rightarrow> 'n set \<Rightarrow> ('n,'t) syms \<Rightarrow> ('n,'t) syms set" where
   "Expand_all_syms P L [] = {[]}"
 | "Expand_all_syms P L (x#xs) = Expand_sym P L x @@ Expand_all_syms P L xs"
 
@@ -225,7 +225,7 @@ lemma Expand_all_syms_ops: "Expand_all_syms P L xs \<in> Expand_syms_ops P L xs"
 lemma Expand_all_ops: "Expand_all_syms P L \<in> Expand_ops P L"
   by (auto simp: Expand_ops_def Expand_all_syms_ops)
 
-abbreviation Expand_all where
+abbreviation Expand_all :: "('n,'t) Prods \<Rightarrow> 'n set \<Rightarrow> ('n,'t) Prods \<Rightarrow> ('n,'t) Prods" where
   "Expand_all P L Q \<equiv> Expand (Expand_all_syms P L) Q"
 
 theorem Lang_Expand_all:
@@ -235,13 +235,13 @@ theorem Lang_Expand_all:
 
 subsubsection \<open>Expanding head nonterminals\<close>
 
-definition Expand_hd_syms where
+definition Expand_hd_syms :: "('n,'t) Prods \<Rightarrow> 'n set \<Rightarrow> ('n,'t) syms \<Rightarrow> ('n,'t) syms set" where
   "Expand_hd_syms P L \<alpha> = (case \<alpha> of [] \<Rightarrow> {[]} | x#xs \<Rightarrow> Expand_sym P L x @@ {xs})"
 
 lemma Expand_hd_ops: "Expand_hd_syms P L \<in> Expand_ops P L"
   by (auto simp: Expand_hd_syms_def Expand_ops_def intro!: Expand_sym_ops Expand_syms_ops_self split: list.split)
 
-abbreviation Expand_hd where
+abbreviation Expand_hd :: "('n,'t) Prods \<Rightarrow> 'n set \<Rightarrow> ('n,'t) Prods \<Rightarrow> ('n,'t) Prods" where
   "Expand_hd P L Q \<equiv> Expand (Expand_hd_syms P L) Q"
 
 theorem Lang_Expand_hd:
