@@ -42,7 +42,7 @@ in
     structure Log_Base = Z.Logging.Base\<close>\<close>
 structure Zip =
 struct open Zip
-(*add resolution with certifying unification*)
+(*add resolution with proof-producing unification*)
 structure Logging =
 struct open Logging
   structure URule = Zippy_Logger_Mixin_Base(val parent_logger = logger; val name = "URule")
@@ -161,7 +161,7 @@ local_setup\<open>Zip.Rule.setup_attribute
 local_setup\<open>Zip.Match.setup_attribute
   (Either.Right "(e/d/f-)resolution with higher-order matching")\<close>
 local_setup\<open>Zip.URule.setup_attribute
-  (Either.Right "(e/d/f-)resolution with certifying unification")\<close>
+  (Either.Right "(e/d/f-)resolution with proof-producing unification")\<close>
 
 declare [[zip_init_gc \<open>
   let
@@ -218,10 +218,10 @@ declare [[zip_init_gc \<open>
   in (id, init) end\<close>
   \<open>let
     open Zippy Zip.URule.Resolve; open ZLPC MU; open SC A Mo
-    val id = @{binding resolve_cert_unif_first}
-    val descr = Lazy.value "resolution with certifying unification on first possible goal"
+    val id = @{binding resolve_proof_unif_first}
+    val descr = Lazy.value "resolution with proof-producing unification on first possible goal"
     val meta = Base_Data.ACMeta.metadata (id,
-      Lazy.value "resolution with cerifying unification on first possible goal")
+      Lazy.value "resolution with proof-producing unification on first possible goal")
     val tac = Unify_Resolve_Base.unify_resolve_tac
     fun ztac normalisers unifier mk_meta thm _ = Ctxt.with_ctxt (tac normalisers unifier thm
       #> Tac_AAM.lift_tac mk_meta
@@ -300,9 +300,9 @@ declare [[zip_init_gc
   in (id, init) end\<close>
   \<open>let
     open Zippy Zip.URule.EResolve; open ZLPC MU; open SC A Mo
-    val id = @{binding eresolve_cert_unif_first}
+    val id = @{binding eresolve_proof_unif_first}
     val meta = Base_Data.ACMeta.metadata (id,
-      Lazy.value "e-resolution with certifying unification on first possible goal")
+      Lazy.value "e-resolution with proof-producing unification on first possible goal")
     fun tac norms unify = Unify_Resolve_Base.unify_eresolve_tac norms unify norms unify
     fun ztac normalisers unifier mk_meta thm _ = Ctxt.with_ctxt (tac normalisers unifier thm
       #> Tac_AAM.lift_tac mk_meta
@@ -387,9 +387,9 @@ declare [[zip_init_gc
   in (id, init) end\<close>
   \<open>let
     open Zippy Zip.URule.DResolve; open ZLPC MU; open SC A Mo
-    val id = @{binding dresolve_cert_unif_first}
+    val id = @{binding dresolve_proof_unif_first}
     val meta = Base_Data.ACMeta.metadata (id,
-      Lazy.value "d-resolution with certifying unification on first possible goal")
+      Lazy.value "d-resolution with proof-producing unification on first possible goal")
     val tac = Unify_Resolve_Base.unify_dresolve_tac
     fun ztac normalisers unifier mk_meta thm _ = Ctxt.with_ctxt (tac normalisers unifier thm
       #> Tac_AAM.lift_tac mk_meta
@@ -466,9 +466,9 @@ declare [[zip_init_gc
   in (id, init) end\<close>
   \<open>let
     open Zippy Zip.URule.FResolve; open ZLPC MU; open SC A Mo
-    val id = @{binding fresolve_cert_unif_first}
+    val id = @{binding fresolve_proof_unif_first}
     val meta = Base_Data.ACMeta.metadata (id,
-      Lazy.value "f-resolution with certifying unification on first possible goal")
+      Lazy.value "f-resolution with proof-producing unification on first possible goal")
     val tac = Unify_Resolve_Base.unify_fresolve_tac
     fun ztac normalisers unifier mk_meta thm _ = Ctxt.with_ctxt (tac normalisers unifier thm
       #> Tac_AAM.lift_tac mk_meta
