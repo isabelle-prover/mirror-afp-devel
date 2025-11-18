@@ -362,7 +362,7 @@ theorem Pumping_Lemma_CNF:
 using inner_pumping[OF assms, of \<open>card (Nts P)\<close>] by blast
 
 theorem Pumping_Lemma:
-  assumes "finite (P :: ('n::infinite,'t)Prods)"
+  assumes "finite (P :: ('n::fresh0,'t)Prods)"
   shows "\<exists>n. pumping_property (Lang P S) n"
 proof -
   obtain ps' :: "('n,'t)Prods" where ps': "finite ps'" "CNF(ps')" "Lang ps' S = Lang P S - {[]}"

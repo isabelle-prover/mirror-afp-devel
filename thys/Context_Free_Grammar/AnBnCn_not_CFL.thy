@@ -221,7 +221,7 @@ proof-
 qed
 
 theorem anbncn_not_cfl:
-  assumes "finite (P :: ('n::infinite,'a)Prods)"
+  assumes "finite (P :: ('n::fresh0,'a)Prods)"
   shows "Lang P S \<noteq> (\<Union>n. {[a]^^n @ [b]^^n @ [c]^^n})" (is "\<not> ?E")
 proof
   assume "?E"

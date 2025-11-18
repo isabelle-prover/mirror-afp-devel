@@ -246,12 +246,15 @@ unfolding nts_syms_def by(simp add: distinct_nts_syms_acc)
 lemma distinct_nts: "distinct(nts ps)"
 by(induction ps) (auto simp: nts_def distinct_nts_syms_acc distinct_nts_syms)
 
-lemma set_tms_syms: "set(tms_syms_acc sys ts) = Tms_syms sys \<union> set ts"
+lemma set_tms_syms_acc: "set(tms_syms_acc sys ts) = Tms_syms sys \<union> set ts"
 unfolding tms_syms_acc_def
 by(induction sys arbitrary: ts) (auto split: sym.split)
 
+corollary set_tms_syms: "set(tms_syms sys) = Tms_syms sys"
+unfolding tms_syms_def Tms_syms_def set_tms_syms_acc Tms_syms_def by (auto)
+
 lemma set_tms: "set(tms ps) = Tms (set ps)"
-by(induction ps) (auto simp: tms_def Tms_def set_tms_syms split: prod.splits)
+by(induction ps) (auto simp: tms_def Tms_def set_tms_syms_acc split: prod.splits)
 
 lemma distinct_tms_syms_acc: "distinct(tms_syms_acc sys ts) = distinct ts"
 unfolding tms_syms_acc_def
