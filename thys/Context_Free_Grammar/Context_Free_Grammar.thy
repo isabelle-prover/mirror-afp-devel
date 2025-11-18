@@ -343,10 +343,10 @@ abbreviation langS :: "('n,'t) cfg \<Rightarrow> 't list set" where
 
 text \<open>Language is extended over mixed words.\<close>
 
-definition Lang_of where
+definition Lang_of :: "('n,'t) Prods \<Rightarrow> ('n,'t) syms \<Rightarrow> 't list set" where
 "Lang_of P \<alpha> = {w. P \<turnstile> \<alpha> \<Rightarrow>* map Tm w}"
 
-abbreviation Lang_of_set where
+abbreviation Lang_of_set :: "('n,'t) Prods \<Rightarrow> ('n,'t) syms set \<Rightarrow> 't list set" where
 "Lang_of_set P X \<equiv> \<Union>(Lang_of P ` X)"
 
 lemma Lang_Ders: "map Tm ` (Lang P A) \<subseteq> Ders P A"
