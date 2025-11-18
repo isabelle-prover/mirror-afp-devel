@@ -4,6 +4,13 @@
     <title>Archive of Formal Proofs</title>
     <link>https://isa-afp.org/</link>
     <description>Formal developments in the AFP</description><item>
+  <title>Pre*: The Predecessors of a Regular Language w.r.t. a Context-Free Grammar, with Applications</title>
+  <link>https://isa-afp.org/entries/Pre_Star_CFG.html</link>
+  <pubDate>Tue, 18 Nov 2025 00:00:00 +0000</pubDate>
+  <description>Pre*: The Predecessors of a Regular Language w.r.t. a Context-Free Grammar, with Applications in the AFP</description>
+    <category>Computer science/Automata and formal languages</category>
+</item>
+<item>
   <title>Formalizing Neural Networks</title>
   <link>https://isa-afp.org/entries/Neural_Networks.html</link>
   <pubDate>Sun, 09 Nov 2025 00:00:00 +0000</pubDate>

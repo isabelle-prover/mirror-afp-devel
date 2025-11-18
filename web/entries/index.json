@@ -1,5 +1,22 @@
 [
  {
+  "abstract": "Let $L$ be a language, $G$ a context-free grammar and let $pre^*(L)$ be the language of all predecessors (w.r.t. $G$) of words in $L$. The following fact has been rediscovered in the literature repeatedly: If $L$ is regular, so is $pre^*(L)$. Moreover, given an NFA $M$ for $L$, an NFA $M'$ for $pre^*(L)$ can be computed very elegantly from $M$. Starting from a suitable $M$, simple checks on $M'$ provide solutions to many elementary decision problems concerning $G$, such as the word-problem, emptiness problem, and more.  We formalize two algorithms to compute $pre^*(L)$ for a regular $L$ (using NFAs as representation). The first one is very simple and elegant and works for any CFG, while the second one is more efficient but is restricted to CFGs in in extended-CNF. All our algorithms are executable, allowing many basic problems on context-free grammars to be solved automatically.",
+  "authors": [
+   "Tassilo Lemke",
+   "Tobias Nipkow"
+  ],
+  "link": "/entries/Pre_Star_CFG.html",
+  "shortname": "Pre_Star_CFG",
+  "title": "Pre*: The Predecessors of a Regular Language w.r.t. a Context-Free Grammar, with Applications",
+  "topic_links": [
+   "/topics/computer-science/automata-and-formal-languages/"
+  ],
+  "topics": [
+   "Computer science/Automata and formal languages"
+  ],
+  "year": "2025"
+ },
+ {
   "abstract": "Deep learning, i.e., machine learning using neural networks, is used successfully in many application areas. Still, their use in safety-critical or security-critical applications is limited, due to the lack of testing and verification techniques.   We address this problem by formalizing  an important class of neural networks, feed-forward neural networks, in Isabelle/HOL. We present two different approaches of formalizing feed-forward networks and show their equivalence as well as demonstrate their use in verifying certain safety and correctness properties of various example. Moreover, we do not only provide a formal model that allows to reason over feed-forward neural networks, we also provide a datatype package for Isabelle/HOL that supports importing models from TensorFlow.js.",
   "authors": [
    "Achim D. Brucker",

@@ -3,10 +3,13 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://isa-afp.org/entries/index.json</loc>
-    <lastmod>2025-11-09T00:00:00+00:00</lastmod>
+    <lastmod>2025-11-18T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/</loc>
-    <lastmod>2025-11-09T00:00:00+00:00</lastmod>
+    <lastmod>2025-11-18T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Pre_Star_CFG.html</loc>
+    <lastmod>2025-11-18T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/entries/Neural_Networks.html</loc>
     <lastmod>2025-11-09T00:00:00+00:00</lastmod>
@@ -5198,6 +5201,8 @@
   </url><url>
     <loc>https://isa-afp.org/sessions/pratt_certificate/</loc>
   </url><url>
+    <loc>https://isa-afp.org/sessions/pre_star_cfg/</loc>
+  </url><url>
     <loc>https://isa-afp.org/sessions/prefix_free_code_combinators/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/presburger-automata/</loc>
@@ -5810,6 +5815,8 @@
     <loc>https://isa-afp.org/authors/liut/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/tarskis_geometry/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/authors/lemket/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/taylor_models/</loc>
   </url><url>
