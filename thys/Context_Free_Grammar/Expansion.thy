@@ -81,11 +81,17 @@ lemma Lhss_Expand: "Lhss (Expand f Q) \<subseteq> Lhss Q"
 lemma Rhss_Expand: "Rhss (Expand f Q) A = \<Union>(f ` Rhss Q A)"
   by (auto simp: Rhss_def Expand_def)
 
+lemma Rhs_Nts_Expand: "Rhs_Nts (Expand f Q) = (\<Union>(A,\<alpha>) \<in> Q. \<Union>\<beta> \<in> f \<alpha>. Nts_syms \<beta>)"
+  by (auto simp: Expand_def Rhs_Nts_def)
+
 text \<open>When each production is expanded in an admissible way,
 then the language is preserved.\<close>
 
+definition Expand_ops :: "('n,'t) Prods \<Rightarrow> 'n set \<Rightarrow> (('n,'t) syms \<Rightarrow> ('n,'t) syms set) set" where
+"Expand_ops P L = {f. \<forall>\<alpha>. f \<alpha> \<in> Expand_syms_ops P L \<alpha>}"
+
 theorem Lang_Un_Expand:
-  assumes f: "\<forall>(A,\<alpha>) \<in> Q. f \<alpha> \<in> Expand_syms_ops P L \<alpha>" and L: "Lhss Q \<subseteq> L"
+  assumes f: "f \<in> Expand_ops P L" and L: "Lhss Q \<subseteq> L"
   shows "Lang (P \<union> Expand f Q) = Lang (P \<union> Q)"
   unfolding Lang_eq_iff_Lang_of_eq
 proof (safe intro!: ext elim!: Lang_ofE_deriven)
@@ -130,7 +136,7 @@ proof (safe intro!: ext elim!: Lang_ofE_deriven)
           by (auto simp: Lang_of_def)
         also have "\<dots> = Lang_of (P \<union> Q) \<alpha>"
           apply (subst Expand_syms_ops_Lang_of)
-          using f AQ L by auto
+          using f AQ L by (auto simp: Expand_ops_def)
         also have "\<dots> \<subseteq> Lang (P \<union> Q) A"
           apply (rule Lang_of_prod_subset)
           using AQ by auto
@@ -176,7 +182,7 @@ next
       next
         case False
         with A\<alpha> have A\<alpha>Q: "(A,\<alpha>) \<in> Q" by simp
-        with f have f\<alpha>: "f \<alpha> \<in> Expand_syms_ops P L \<alpha>" by auto
+        with f have f\<alpha>: "f \<alpha> \<in> Expand_syms_ops P L \<alpha>" by (auto simp: Expand_ops_def)
         from L Lhss_Expand[of f Q]
         have Lhss: "Lhss (Expand f Q) \<subseteq> L" by auto
         from L A\<alpha>Q have Rhss: "f \<alpha> \<subseteq> Rhss (Expand f Q) A"
@@ -193,7 +199,7 @@ next
 qed
 
 corollary Lang_Expand_Un:
-  assumes f: "\<forall>(A,\<alpha>) \<in> Q. f \<alpha> \<in> Expand_syms_ops P L \<alpha>" and L: "Lhss Q \<subseteq> L"
+  assumes f: "f \<in> Expand_ops P L" and L: "Lhss Q \<subseteq> L"
   shows "Lang (Expand f Q \<union> P) = Lang (Q \<union> P)"
   using Lang_Un_Expand[OF f L] by (simp add: ac_simps)
 
@@ -216,22 +222,24 @@ fun Expand_all_syms where
 lemma Expand_all_syms_ops: "Expand_all_syms P L xs \<in> Expand_syms_ops P L xs"
   by (induction xs, simp, force simp: Expand_sym_ops)
 
+lemma Expand_all_ops: "Expand_all_syms P L \<in> Expand_ops P L"
+  by (auto simp: Expand_ops_def Expand_all_syms_ops)
+
 abbreviation Expand_all where
   "Expand_all P L Q \<equiv> Expand (Expand_all_syms P L) Q"
 
 theorem Lang_Expand_all:
   assumes "Lhss Q \<subseteq> L"
   shows "Lang (Expand_all P L Q \<union> P) = Lang (Q \<union> P)"
-  apply (rule Lang_Expand_Un[OF _ assms])
-  by (simp add: Expand_all_syms_ops)
+  using Lang_Expand_Un[OF Expand_all_ops assms].
 
 subsubsection \<open>Expanding head nonterminals\<close>
 
 definition Expand_hd_syms where
   "Expand_hd_syms P L \<alpha> = (case \<alpha> of [] \<Rightarrow> {[]} | x#xs \<Rightarrow> Expand_sym P L x @@ {xs})"
 
-lemma Expand_hd_syms_ops: "Expand_hd_syms P L xs \<in> Expand_syms_ops P L xs"
-  by (auto simp:Expand_hd_syms_def intro!: Expand_sym_ops Expand_syms_ops_self split: list.split)
+lemma Expand_hd_ops: "Expand_hd_syms P L \<in> Expand_ops P L"
+  by (auto simp: Expand_hd_syms_def Expand_ops_def intro!: Expand_sym_ops Expand_syms_ops_self split: list.split)
 
 abbreviation Expand_hd where
   "Expand_hd P L Q \<equiv> Expand (Expand_hd_syms P L) Q"
@@ -239,7 +247,6 @@ abbreviation Expand_hd where
 theorem Lang_Expand_hd:
   assumes "Lhss Q \<subseteq> L"
   shows "Lang (Expand_hd P L Q \<union> P) = Lang (Q \<union> P)"
-  apply (rule Lang_Expand_Un[OF _ assms])
-  by (simp add: Expand_hd_syms_ops)
+  using Lang_Expand_Un[OF Expand_hd_ops assms].
 
 end

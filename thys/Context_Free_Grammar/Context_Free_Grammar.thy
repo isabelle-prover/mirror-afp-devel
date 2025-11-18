@@ -1638,6 +1638,12 @@ lemma Lang_Un_disj_Lhss:
   apply (rule derives_Un_disj_Lhss)
   using assms by auto
 
+lemma Lang_disj_Lhss_Un:
+  assumes disj: "Lhss P \<inter> Nts Q = {}" and A: "A \<notin> Lhss P"
+  shows "Lang (P \<union> Q) A = Lang Q A"
+  using Lang_Un_disj_Lhss[of Q P A] assms by (simp add: ac_simps)
+
+
 subsection \<open>Substitution in Lists\<close>
 
 text \<open>Function \<open>substs y ys xs\<close> replaces every occurrence of \<open>y\<close> in \<open>xs\<close> with the list \<open>ys\<close>\<close>
