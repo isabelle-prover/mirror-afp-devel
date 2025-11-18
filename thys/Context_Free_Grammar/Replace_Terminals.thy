@@ -22,7 +22,7 @@ abbreviation Replace_Tm_new :: "('t \<Rightarrow> 'n) \<Rightarrow> 't set \<Rig
 
 text \<open>Admissible replacements can choose to replace or preserve each terminal.\<close>
 
-fun Replace_Tm_syms_ops where
+fun Replace_Tm_syms_ops :: "('t \<Rightarrow> 'n) \<Rightarrow> ('n,'t) syms \<Rightarrow> ('n,'t) syms set" where
   "Replace_Tm_syms_ops f [] = {[]}"
 | "Replace_Tm_syms_ops f (x#xs) =
    insert [x] (case x of Tm a \<Rightarrow> {[Nt (f a)]} | _ \<Rightarrow> {}) @@ Replace_Tm_syms_ops f xs"
@@ -126,7 +126,7 @@ fun fresh_map :: "'a :: fresh0 set \<Rightarrow> 'b list \<Rightarrow> 'b \<righ
   "fresh_map A [] = Map.empty"
 | "fresh_map A (x#xs) = (let a = fresh0 A in (fresh_map (insert a A) xs)(x \<mapsto> a))"
 
-abbreviation fresh_fun where
+abbreviation fresh_fun :: "'a :: fresh0 set \<Rightarrow> 'b list \<Rightarrow> 'b \<Rightarrow> 'a" where
 "fresh_fun A xs x \<equiv> the (fresh_map A xs x)"
 
 lemma fresh_fun_notIn: "finite A \<Longrightarrow> x \<in> set xs \<Longrightarrow> fresh_fun A xs x \<notin> A"
