@@ -15,7 +15,7 @@ called <em>zip</em>.
 The prover performs a proof tree search with customisable expansion actions and search strategies,
 including A${}^{*}$, breadth-first, depth-first, and best-first search.
 By default, it integrates the classical reasoner, simplifier, the blast and metis prover,
-and supports resolution with higher-order and <a href=\"https://www.isa-afp.org/entries/ML_Unification.html\">certifying unification</a>, conditional substitutions, case splitting and induction,
+and supports resolution with higher-order and <a href=\"https://www.isa-afp.org/entries/ML_Unification.html\">proof-producing unification</a>, conditional substitutions, case splitting, and induction,
 among other things.
 Users are free to extend the prover with additional expansion actions and search strategies.
 We demonstrate the capabilities of zip in an examples theory.

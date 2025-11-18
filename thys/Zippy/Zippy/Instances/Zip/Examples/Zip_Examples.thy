@@ -14,7 +14,7 @@ with a brief technical overview for users interested in customising the method.
 On a high-level, @{method zip} performs a proof tree search with customisable
 expansion actions and search strategies. By default, it uses an \<open>A\<^sup>*\<close> search and integrates the
 classical reasoner, simplifier, the blast and metis prover, and supports resolution with higher-order and
-certifying unification \cite{ML_Unification-AFP}, conditional substitutions, case splitting and
+proof-producing unification \cite{ML_Unification-AFP}, conditional substitutions, case splitting and
 induction, among other things.
 
 In most cases, @{method zip} can be used as a drop-in replacement for Isabelle's classical methods
@@ -303,13 +303,13 @@ lemma lexord_cons_cons:
 qed (auto simp add: lexord_def; (blast | meson Cons_eq_appendI)) *)
 
 text \<open>One can pass (elim-/dest-/forward-)rules that should be resolved by Isabelle's standard
-higher-order unifier, matcher, or a customisable certifying unifier (see @{session ML_Unification}).
+higher-order unifier, matcher, or a customisable proof-producing unifier (see @{session ML_Unification}).
 In contrast to the rules passed to the classical reasoner, each such rule can be annotated with
-individual data, e.g. priority, cost, and certifying unifier to be used.
+individual data, e.g. priority, cost, and proof-producing unifier to be used.
 
-Resolving rules with a certifying unifier is particularly useful in situations where equations do
+Resolving rules with a proof-producing unifier is particularly useful in situations where equations do
 not hold up to \<open>\<alpha>\<beta>\<eta>\<close>-equality but some stronger, provable equality (see the examples theories in
-@{session ML_Unification} for more details). By default, the certifying unifier
+@{session ML_Unification} for more details). By default, the proof-producing unifier
 @{ML Standard_Mixed_Comb_Unification.first_higherp_comb_unify} is used, which uses the simplifier
 and unification hints (cf. @{theory ML_Unification.ML_Unification_Hints}), among other things.\<close>
 
@@ -327,7 +327,7 @@ definition opaque in general, as is the case with @{command abbreviation}):\<clo
 
 definition "my_refl P \<equiv> reflp_on {x. P x}" (*some derived concept*)
 
-(*register a unification hint for the certifying unifier*)
+(*register a unification hint for the proof-producing unifier*)
 lemma my_refl_uhint [uhint]:
   assumes "{x. P x} \<equiv> S"
   shows "my_refl P \<equiv> reflp_on S"
