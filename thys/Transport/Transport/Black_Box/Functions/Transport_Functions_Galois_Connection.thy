@@ -297,7 +297,7 @@ lemma galois_connection_left_rightI:
   and "transitive (\<le>\<^bsub>L2\<^esub>)"
   and "transitive (\<le>\<^bsub>R2\<^esub>)"
   shows "((\<le>\<^bsub>L\<^esub>) \<stileturn> (\<le>\<^bsub>R\<^esub>)) l r"
-  using assms by (intro tpdfr.galois_connectionI galois_prop_left_rightI
+  using assms by (intro tmdfr.galois_connectionI galois_prop_left_rightI
     mono_wrt_rel_leftI flip.mono_wrt_rel_leftI)
   auto
 

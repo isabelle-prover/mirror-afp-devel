@@ -142,7 +142,7 @@ lemma Galois_Refl_RelI:
   and "in_field (\<le>\<^bsub>L\<^esub>)\<^sup>\<oplus> x"
   and "in_field (\<le>\<^bsub>R\<^esub>)\<^sup>\<oplus> y"
   and "in_codom (\<le>\<^bsub>R\<^esub>) y \<Longrightarrow> x \<^bsub>L\<^esub>\<lessapprox> y"
-  shows "(galois_rel.Galois ((\<le>\<^bsub>L\<^esub>)\<^sup>\<oplus>) ((\<le>\<^bsub>R\<^esub>)\<^sup>\<oplus>) r) x y"
+  shows "gR.Galois x y"
   using assms by (intro gR.left_GaloisI in_codomI Refl_Rel_app_rightI[where ?f=r])
   auto
 
