@@ -33,6 +33,12 @@ definition Replace_Tm_ops :: "('t \<Rightarrow> 'n) \<Rightarrow> (('n,'t) syms 
 definition Replace_Tm :: "('t \<Rightarrow> 'n) \<Rightarrow> (('n,'t) syms \<Rightarrow> ('n,'t) syms) \<Rightarrow> ('n,'t) Prods \<Rightarrow> ('n,'t) Prods" where
 "Replace_Tm f g P = {(A, g \<alpha>) | A \<alpha>. (A,\<alpha>) \<in> P} \<union> Replace_Tm_new f (Tms P)"
 
+definition replace_Tm :: "('t \<Rightarrow> 'n) \<Rightarrow> (('n,'t) syms \<Rightarrow> ('n,'t) syms) \<Rightarrow> ('n,'t) prods \<Rightarrow> ('n,'t) prods" where
+"replace_Tm f g P = [(A, g \<alpha>). (A,\<alpha>) \<leftarrow> P] @ [(f a, [Tm a]). a \<leftarrow> tms P]"
+
+lemma set_replace_Tm: "set (replace_Tm f g P) = Replace_Tm f g (set P)"
+  by (auto simp: replace_Tm_def Replace_Tm_def set_tms)
+
 text \<open>Expansion with respect to the grammar @{const Replace_Tm_new} should
 revert the fresh nonterminals to the original terminals,
 while preserving terminals and locked nonterminals.\<close>
@@ -177,6 +183,12 @@ subsubsection \<open>Replacing all terminals\<close>
 definition Replace_all_Tm :: "('t \<Rightarrow> 'n) \<Rightarrow> ('n,'t) Prods \<Rightarrow> ('n,'t) Prods" where
 "Replace_all_Tm f = Replace_Tm f (map (replace_Tm_sym f))"
 
+definition replace_all_Tm :: "('t \<Rightarrow> 'n) \<Rightarrow> ('n,'t) prods \<Rightarrow> ('n,'t) prods" where
+"replace_all_Tm f = replace_Tm f (map (replace_Tm_sym f))"
+
+lemma set_replace_all_Tm: "set (replace_all_Tm f P) = Replace_all_Tm f (set P)"
+  by (simp add: replace_all_Tm_def Replace_all_Tm_def set_replace_Tm)
+
 lemma map_replace_Tm_sym_ops:
   "map (replace_Tm_sym f) xs \<in> Replace_Tm_syms_ops f xs"
   by (induction xs, auto split: sym.splits simp: insert_conc replace_Tm_sym_simps)
@@ -197,6 +209,12 @@ definition replace_Tm_tl_syms :: "('t \<Rightarrow> 'n) \<Rightarrow> ('n,'t) sy
 
 definition Replace_Tm_tl :: "('t \<Rightarrow> 'n) \<Rightarrow> ('n,'t) Prods \<Rightarrow> ('n,'t) Prods" where
 "Replace_Tm_tl f = Replace_Tm f (replace_Tm_tl_syms f)"
+
+definition replace_Tm_tl :: "('t \<Rightarrow> 'n) \<Rightarrow> ('n,'t) prods \<Rightarrow> ('n,'t) prods" where
+"replace_Tm_tl f = replace_Tm f (replace_Tm_tl_syms f)"
+
+lemma set_replace_Tm_tl: "set (replace_Tm_tl f P) = Replace_Tm_tl f (set P)"
+  by (simp add: replace_Tm_tl_def Replace_Tm_tl_def set_replace_Tm)
 
 lemma replace_Tm_tl_syms_ops:
   "replace_Tm_tl_syms f xs \<in> Replace_Tm_syms_ops f xs"

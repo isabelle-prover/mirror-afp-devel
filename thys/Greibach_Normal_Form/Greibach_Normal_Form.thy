@@ -4,6 +4,7 @@ theory Greibach_Normal_Form
 imports
   "Context_Free_Grammar.Context_Free_Grammar"
   "Context_Free_Grammar.Epsilon_Elimination"
+  "Context_Free_Grammar.Replace_Terminals"
   Fresh_Identifiers.Fresh_Nat
 begin
 
@@ -31,40 +32,54 @@ lemma finite_these: "finite (Option.these X) \<longleftrightarrow> finite X"
 lemma finite_image_filter: "finite (Option.image_filter f X) \<longleftrightarrow> finite (f ` X)"
   by (auto simp: Option.image_filter_eq finite_these)
 
-text \<open>This theory formalizes a method to transform a set of productions into 
-Greibach Normal Form (GNF) \<^cite>\<open>Greibach\<close>. We concentrate on the essential property of the GNF:
-every production starts with a \<open>Tm\<close>; the tail of a rhs can contain further terminals.
-This is formalized as \<open>GNF_hd\<close> below. This more liberal definition of GNF is also found elsewhere
-\cite{BlumK99}.
+section \<open>Definition of Greibach Normal Forms\<close>
 
-The algorithm consists of two phases:
+text \<open>This theory formalizes a method to transform a set of productions into 
+Greibach Normal Form (GNF) \<^cite>\<open>Greibach\<close>.
+A grammar is in GNF iff the rhss of each production is a terminal followed by nonterminals.\<close>
+
+definition GNF where
+"GNF P = (\<forall>(A,\<alpha>) \<in> P. \<exists>a Bs. \<alpha> = Tm a # map Nt Bs)"
+
+abbreviation gnf where
+"gnf P \<equiv> GNF (set P)"
+
+lemma GNF_I: "(\<And>A \<alpha>. (A,\<alpha>) \<in> P \<Longrightarrow> \<exists>a Bs. \<alpha> = Tm a # map Nt Bs) \<Longrightarrow> GNF P"
+  by (auto simp: GNF_def)
+
+lemma GNF_Un: "GNF (P \<union> Q) \<longleftrightarrow> GNF P \<and> GNF Q"
+  by (auto simp: GNF_def ball_Un)
+
+text \<open>We first concentrate on the essential property of the GNF:
+every production starts with a \<open>Tm\<close>; the tail of a rhs can contain further terminals.
+We call such grammars are \emph{head GNF}, and formalize as \<open>GNF_hd\<close> below.
+This more liberal definition of GNF is also found elsewhere \cite{BlumK99}.
+\<close>
+definition GNF_hd :: "('n,'t)Prods \<Rightarrow> bool" where 
+"GNF_hd P = (\<forall>(A, w) \<in> P. \<exists>t v. w = Tm t # v)"
+
+abbreviation gnf_hd :: "('n,'t)prods \<Rightarrow> bool" where 
+"gnf_hd P \<equiv> GNF_hd (set P)"
+
+section \<open>Transformation to Head GNF\<close>
+
+text \<open>The algorithm to obtain head GNF consists of two phases:
 
   \<^item> \<open>Solve_tri\<close> converts the productions into a \<open>Triangular\<close> form, where Nt \<open>Ai\<close> does not 
   depend on Nts \<open>Ai, \<dots>, An\<close>. This involves the elimination of left-recursion and is the heart
   of the algorithm.
 
-  \<^item> \<open>Expand_tri\<close> expands the Triangular form by substituting in:
-  Due to Triangular form, \<open>A0\<close> productions satisfy \<open>GNF_hd\<close> and we can substitute
+  \<^item> \<open>Expand_tri_rec\<close> expands the triangular form by substituting in:
+  Due to triangular form, \<open>A0\<close> productions satisfy \<open>GNF_hd\<close> and we can substitute
   them into the heads of the remaining productions. Now all \<open>A1\<close> productions satisfy \<open>GNF_hd\<close>,
   and we continue until all productions satisfy \<open>GNF_hd\<close>.
 
 This is essentially the algorithm given by Hopcroft and Ullman \cite{HopcroftU79},
 except that we can drop the conversion to Chomsky Normal Form because of our more liberal \<open>GNF_hd\<close>.
 \<close>
-
-
-section \<open>Function Definitions\<close>
-
 text \<open>Depend on: \<open>A\<close> depends on \<open>B\<close> if there is a rule \<open>A \<rightarrow> B w\<close>:\<close>
 definition dep_on :: "('n,'t) Prods \<Rightarrow> 'n \<Rightarrow> 'n set" where
 "dep_on P A = {B. \<exists>w. (A, Nt B # w) \<in> P}"
-
-text \<open>GNF property: All productions start with a terminal.\<close>
-definition GNF_hd :: "('n,'t)Prods \<Rightarrow> bool" where 
-"GNF_hd P = (\<forall>(A, w) \<in> P. \<exists>t v. w = Tm t # v)"
-
-abbreviation gnf_hd :: "('n,'t)prods \<Rightarrow> bool" where 
-"gnf_hd P \<equiv> GNF_hd (set P)"
 
 definition Subst_hd :: "('n,'t)Prods \<Rightarrow> ('n,'t)Prods \<Rightarrow> ('n,'t)Prods" where
 "Subst_hd P X = P - X \<union> {(A,v@w) | A v w. \<exists>B. (B,v) \<in> P \<and> (A, Nt B # w) \<in> X}"
@@ -1862,7 +1877,8 @@ lemma Lang_Expand_Solve_tri:
   shows "Lang (Expand_tri (As' @ rev As) (Solve_tri As As' P)) A = Lang P A"
 using Lang_Solve_tri[OF assms] Expand_tri_Lang[of "(As' @ rev As)"] by blast
 
-text \<open>Any grammar can be brought into GNF.\<close>
+text \<open>Any grammar can be brought into head GNF.\<close>
+
 theorem GNF_hd_GNF_hd_of: "distinct As \<Longrightarrow> Nts P \<subseteq> set As \<Longrightarrow> GNF_hd (GNF_hd_of As P)"
 unfolding GNF_hd_of_def Let_def
   apply (rule GNF_hd_Expand_Solve_tri[OF Eps_free_Eps_elim])
@@ -1930,6 +1946,113 @@ lemma
    in
      Solve_tri [3,2,1] [4,5,6] (set P0) = set P1 \<and> Expand_tri [4,1,2,3] (set P1) = set P2"
 by eval
+
+section \<open>Full Greibach Normal Form\<close>
+
+text \<open>One can easily convert head GNF into full GNF by replacing tail terminals
+by fresh nonterminals.\<close>
+
+lemma GNF_Replace_Tm_tl:
+  assumes P: "GNF_hd P"
+  shows "GNF (Replace_Tm_tl f P)"
+  apply (unfold Replace_Tm_tl_def Replace_Tm_def set_append GNF_Un)
+proof (intro conjI GNF_I)
+  fix A \<alpha>' assume "(A,\<alpha>') \<in> {(A, replace_Tm_tl_syms f \<alpha>) | A \<alpha>. (A,\<alpha>) \<in> P}"
+  then obtain \<alpha> where "(A,\<alpha>) \<in> P" and \<alpha>': "\<alpha>' = replace_Tm_tl_syms f \<alpha>" by auto
+  with P obtain a \<beta> where "\<alpha> = Tm a # \<beta>" by (auto simp: GNF_hd_def)
+  with \<alpha>' have \<alpha>': "\<alpha>' = Tm a # map (replace_Tm_sym f) \<beta>" by (auto simp: replace_Tm_tl_syms_def)
+  define Bs where "Bs \<equiv> [case x of Nt B \<Rightarrow> B | Tm b \<Rightarrow> f b. x \<leftarrow> \<beta>]"
+  have "map (replace_Tm_sym f) \<beta> = map Nt Bs"
+    by (unfold Bs_def, induction \<beta>, auto simp: replace_Tm_sym_simps split: sym.splits)
+  with \<alpha>' have "\<alpha>' = Tm a # map Nt Bs" by simp
+  then show "\<exists>a Bs. \<alpha>' = Tm a # map Nt Bs" by blast
+qed auto
+
+definition GNF_of :: "'n list \<Rightarrow> 't list \<Rightarrow> ('n::fresh0,'t)Prods \<Rightarrow> ('n,'t)Prods" where
+"GNF_of As as P =
+ (let As' = freshs (set As) As;
+      P' = Expand_tri (As' @ rev As) (Solve_tri As As' (Eps_elim P));
+      f = fresh_fun (set As \<union> set As') as
+  in Replace_Tm_tl f P')"
+
+definition gnf_of :: "('n::fresh0,'t)prods \<Rightarrow> ('n,'t)prods" where
+"gnf_of P =
+ (let As = nts P;
+      As' = freshs (set As) As;
+      P' = expand_tri (As' @ rev As) (solve_tri As As' (eps_elim P));
+      f = fresh_fun (set As \<union> set As') (tms P)
+  in replace_Tm_tl f P')"
+
+lemma set_gnf_of: "set (gnf_of P) = GNF_of (nts P) (tms P) (set P)"
+  by (simp add: gnf_of_def GNF_of_def Let_def set_replace_Tm_tl set_expand_tri set_solve_tri set_eps_elim)
+
+lemma GNF_of_via_GNF_hd_of:
+  "GNF_of As as P =
+  (let As' = freshs (set As) As;
+       f = fresh_fun (set As \<union> set As') as
+   in Replace_Tm_tl f (GNF_hd_of As P))"
+  by (auto simp: GNF_of_def GNF_hd_of_def Let_def)
+
+theorem GNF_GNF_of:
+  assumes "distinct As" and "Nts P \<subseteq> set As"
+  shows "GNF (GNF_of As as P)"
+  apply (unfold GNF_of_via_GNF_hd_of Let_def)
+  apply (rule GNF_Replace_Tm_tl)
+  using GNF_hd_GNF_hd_of[OF assms].
+
+theorem Lang_GNF_of:
+  assumes As: "distinct As" and PAs: "Nts P \<subseteq> set As" and Pas: "Tms P \<subseteq> set as"
+    and AAs: "A \<in> set As"
+  shows "Lang (GNF_of As as P) A = Lang P A - {[]}"
+proof-
+  define As' where "As' = freshs (set As) As"
+  define f where "f = fresh_fun (set As \<union> set As') as"
+  show ?thesis
+    apply (unfold GNF_of_via_GNF_hd_of Let_def)
+    apply (fold As'_def)
+    apply (fold f_def)
+    apply (fold Lang_GNF_hd_of[OF As PAs AAs])
+  proof (rule Lang_Replace_Tm_tl[OF _ _ ])
+    have as: "Tms (GNF_hd_of As P) \<subseteq> set as"
+      using subset_trans[OF Tms_GNF_hd_of Pas].
+    show "inj_on f (Tms (GNF_hd_of As P))"
+      apply (unfold f_def)
+      apply (rule inj_on_subset[OF fresh_fun_inj_on])
+      by (simp_all add: finite_Nts as)
+    have "(set As \<union> set As') \<inter> f ` Tms (GNF_hd_of As P) = {}"
+      apply (unfold f_def)
+      apply (rule fresh_fun_disj)
+      by (simp_all add: as)
+    with AAs as PAs
+    show "A \<notin> f ` Tms (GNF_hd_of As P)"
+      and "Nts (GNF_hd_of As P) \<inter> f ` Tms (GNF_hd_of As P) = {}"
+      by (auto simp: As'_def dest!: subsetD[OF Nts_GNF_hd_of])
+  qed
+qed
+
+value "GNF_of [1,2,3] [0,1] {
+(1::nat, [Nt 2, Nt 3]),
+(2,[Nt 3, Nt 1]), (2, [Tm (1::int)]),
+(3,[Nt 1, Nt 2]), (3,[Tm 0])}"
+
+
+corollary gnf_gnf_of: "gnf (gnf_of P)"
+  apply (unfold set_gnf_of)
+  apply (rule GNF_GNF_of)
+  using distinct_nts by (auto simp: set_nts)
+
+theorem lang_gnf_of:
+  assumes A: "A \<in> set (nts P)"
+  shows "lang (gnf_of P) A = lang P A - {[]}"
+  apply (unfold set_gnf_of)
+  apply (rule Lang_GNF_of)
+  using distinct_nts A by (auto simp: set_nts set_tms)
+
+value "remdups (gnf_of [
+(1::nat, [Nt 2, Nt 3]),
+(2,[Nt 3, Nt 1]), (2, [Tm (1::int)]),
+(3,[Nt 1, Nt 2]), (3,[Tm 0])])"
+
 
 
 section \<open>Complexity\<close>
