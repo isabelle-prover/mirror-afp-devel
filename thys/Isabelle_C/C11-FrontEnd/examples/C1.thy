@@ -285,6 +285,7 @@ val _ =
 in end
 \<close>
 
+
 ML \<open>
 structure Include =
 struct
@@ -292,14 +293,15 @@ fun init name vars =
   Context.theory_map
     (Directive_include.map
       (Symtab.update
-        (name, map (rpair {global = true, params = [], ret = C_Env.Previous_in_stack}) vars)))
+        (name, map (rpair {scope = C_Env.Global, params = [], ret = C_Env.Previous_in_stack, functionArgs= C_Ast.None}) vars)))
 
 fun append name vars =
   Context.theory_map
     (Directive_include.map
       (Symtab.map_default
         (name, [])
-        (rev o fold (cons o rpair {global = true, params = [], ret = C_Env.Previous_in_stack}) vars
+        (rev o fold (cons o rpair {scope = C_Env.Global, params = [], ret = C_Env.Previous_in_stack, 
+                                   functionArgs = C_Ast.None}) vars
              o rev)))
 
 val show =
@@ -631,7 +633,13 @@ void display(int a[],const int size)
 }
 \<close>
 
+(*
+ fun transformDeclaration decl =
+                  case decl of 
+                       (CDecl0 ([CTypeSpec0 (typespec)],[((Some (CDeclr0 (nameIdent,potentialArrDeclarations,_,_,_)),_),_)],_)) => (getVarName nameIdent,decl) 
+                  | dd => error ("unknown declaration format : "^ @{make_string} dd)  
 
+*)
 
 section \<open>C Code: Floats Exist Lexically.\<close>
 

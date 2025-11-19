@@ -477,10 +477,11 @@ retrieved from the environment of the position of where it is declared. \<close>
 text \<open> In more detail, the second argument of
 \<^ML>\<open>C_Grammar_Rule_Lib.markup_var\<close> is among other of the form:
 \<^ML_type>\<open>Position.T * {global: bool}\<close>, where particularly the field
-\<^ML>\<open>#global : C_Env.markup_ident -> bool\<close> of the record is informing
+\<^ML>\<open>#scope : C_Env.markup_ident -> C_Env.markup_global\<close> of the record is returning
 \<^ML>\<open>C_Grammar_Rule_Lib.markup_var\<close> if the variable being reported (at either first
-declaration time, or first use time) is global or local (inside a function for instance). Because
-once declared, the property \<^ML>\<open>#global : C_Env.markup_ident -> bool\<close> of a variable
+declaration time, or first use time) is global, local (inside a function for instance) or a
+parameter of a function. Because
+once declared, the property \<^ML>\<open>#scope: C_Env.markup_ident -> C_Env.markup_global \<close> of a variable
 does not change afterwards, it is enough to store that information in the monadic environment:
 \<^item> \<^bold>\<open>Storing the information at declaration time\<close> The part deciding if a
 variable being declared is global or not is implemented in
