@@ -6,7 +6,9 @@ Based on HOL4 theories by Aditi Barthwal
 section \<open>Elimination of Epsilon Productions\<close>
 
 theory Epsilon_Elimination
-imports Context_Free_Grammar "HOL-Library.While_Combinator"
+imports
+  Context_Free_Grammar
+  "HOL-Library.While_Combinator"
 begin
 
 inductive Nullable :: "('n,'t) Prods \<Rightarrow> ('n,'t) sym \<Rightarrow> bool"
@@ -159,17 +161,17 @@ fun eps_closure :: "('n, 't) Prods \<Rightarrow> ('n, 't) syms \<Rightarrow> ('n
     else map ((#) s) (eps_closure ps sl))"
 
 definition Eps_elim :: "('n, 't) Prods \<Rightarrow> ('n, 't) Prods" where
-"Eps_elim ps \<equiv> {(l,r'). \<exists>r. (l,r) \<in> ps \<and> r' \<in> set (eps_closure ps r) \<and> (r' \<noteq> [])}"
+"Eps_elim P = {(l,r'). \<exists>r. (l,r) \<in> P \<and> r' \<in> set (eps_closure P r) \<and> (r' \<noteq> [])}"
+
+lemma Eps_elim_code[code]: "Eps_elim P =
+  (\<Union>(l,r) \<in> P. \<Union>r' \<in> set (eps_closure P r). if r' = [] then {} else {(l,r')})"
+unfolding Eps_elim_def by (auto split: prod.split)
 
 definition eps_elim :: "('n, 't) prods \<Rightarrow> ('n, 't) prods" where
 "eps_elim ps \<equiv> concat (map (\<lambda>(l,r). map (\<lambda>r'. (l,r')) (filter (\<lambda>r'. r' \<noteq> []) (eps_closure (set ps) r))) ps)"
 
 lemma set_eps_elim: "set(eps_elim ps) = Eps_elim (set ps)"
 unfolding eps_elim_def Eps_elim_def by auto
-
-lemma Eps_elim_code[code]: "Eps_elim ps =
-  (\<Union>(l,r) \<in> ps. \<Union>r' \<in> set (eps_closure ps r). if r' = [] then {} else {(l,r')})"
-unfolding Eps_elim_def by (auto split: prod.split)
 
 lemma "Eps_elim
   {(0::int, [Nt 1, Nt 2, Nt 1]), (1, [Tm (0::int), Nt 1]), (1, []), (2, [Tm 1, Nt 2]), (2,[])}

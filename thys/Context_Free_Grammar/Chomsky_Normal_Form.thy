@@ -987,8 +987,8 @@ proof -
   let ?ps1 = "eps_elim ps" let ?ps2 = "unit_elim ?ps1"
   let ?ps3 = "uniformize S ?ps2" let ?ps4 = "binarize S ?ps3"
   have "eps_free ?ps1" by (rule eps_free_eps_elim)
-  hence "eps_free ?ps2" by (meson unit_elim_correct unit_elim_rel_Eps_free)
-  have "Unit_free(set ?ps2)" by (metis unit_elim_correct Unit_free_if_unit_elim_rel)
+  hence "eps_free ?ps2" by (meson unit_elim_correct Unit_elim_rel_Eps_free)
+  have "Unit_free(set ?ps2)" by (metis unit_elim_correct Unit_free_if_Unit_elim_rel)
   have "eps_free ?ps3" by(rule eps_free_uniformize[OF \<open>eps_free ?ps2\<close>])
   have "Unit_free(set ?ps3)" by (rule Unit_free_uniformize[OF \<open>Unit_free(set ?ps2)\<close>])
   have "uniform (set ?ps3)" by (rule uniform_uniformize)
