@@ -5,7 +5,9 @@ Authors: Tobias Nipkow, Akihisa Yamada
 section "Context-Free Grammars"
 
 theory Context_Free_Grammar
-imports "Fresh_Identifiers.Fresh_Nat" "Regular-Sets.Regular_Set"
+imports
+  "Fresh_Identifiers.Fresh_Nat"
+  "Regular-Sets.Regular_Set"
 begin
 
 lemma insert_conc: "insert w W @@ V = {w @ v | v. v \<in> V} \<union> W @@ V"

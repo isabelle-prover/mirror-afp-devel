@@ -41,6 +41,10 @@ email = "yamada_email"
 nipkow = "nipkow_email"
 
 [history]
+2025-11-19 = """
+Made CNF translation contructive.
+Binarization proofs due to Felipe Escallon<br>
+"""
 
 [extra]
 

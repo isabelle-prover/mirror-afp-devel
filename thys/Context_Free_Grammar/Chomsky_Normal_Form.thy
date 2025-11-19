@@ -22,7 +22,7 @@ A production \<open>A \<rightarrow> \<alpha>\<close> is
 \<close>
 
 definition CNF :: "('n, 't) Prods \<Rightarrow> bool" where
-"CNF P \<equiv> (\<forall>(A,\<alpha>) \<in> P. (\<exists>B C. \<alpha> = [Nt B, Nt C]) \<or> (\<exists>a. \<alpha> = [Tm a]))"
+"CNF P = (\<forall>(A,\<alpha>) \<in> P. (\<exists>B C. \<alpha> = [Nt B, Nt C]) \<or> (\<exists>a. \<alpha> = [Tm a]))"
 
 
 subsection \<open>Uniformization\<close>
@@ -971,8 +971,7 @@ next
 qed
 
 definition cnf_of :: "('n::fresh0, 't) prods \<Rightarrow> 'n \<Rightarrow> ('n,'t) prods" where
-  "cnf_of ps S \<equiv> let ts = tms ps in
-    (binarize S \<circ> uniformize S \<circ> unit_elim \<circ> eps_elim) ps"
+  "cnf_of ps S = (binarize S \<circ> uniformize S \<circ> unit_elim \<circ> eps_elim) ps"
 
 theorem cnf_lemma: 
   assumes "(\<lambda>x y. \<exists>A B\<^sub>1 B\<^sub>2. binarizeStep A B\<^sub>1 B\<^sub>2 S x y)^** (set (uniformize S ps)) P''"
